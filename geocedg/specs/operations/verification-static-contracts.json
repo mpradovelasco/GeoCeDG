@@ -18,7 +18,7 @@
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"source/desktop/desktop/build.gradle.kts","sha256":"73f098959bbb9d6a3490573423da0e7cc9f5d068233fa3d875441a613df769a1"},
       {"path":"gradle/libs.versions.toml","sha256":"6c4bdfa7611575b35e6d346112b064e40860f2f8fcdd3e5ea9252cad8d0bc2a4"},
-      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"f52472d679869ecf7d500407390a59e9828673ab40077c4b210cf50d2ba17128"}
+      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"2e5b328dedec1e673dd8c65942730da49169802e4d35bc0628e348302584a122"}
     ]},
     {"contract_id":"scientific.python-reference-inputs","semantic_domain":"SCIENTIFIC","inputs":[
       {"path":"geocedg/validation/locus-v2/g7a/generate_metric_references.py","sha256":"b23a3e824cb4e70f83d499a0c7601950fb13458c9a77e7ba69d6ca886d7eb3a8"},
@@ -29,7 +29,7 @@
     ]},
     {"contract_id":"pre-g9b-r6.ggbscript-capability-matrix","semantic_domain":"PRODUCT","inputs":[
       {"path":"geocedg/specs/operations/ggbscript-capability-matrix.schema.json","sha256":"6d73870aceb447e26f3cd322437f1919eb96f759d5f3babcd855ec8de8852f8b"},
-      {"path":"geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json","sha256":"ea6dcbf0861b83f5c3c3a2acd65b943b5808606828cd511877c07918a2ef227b"},
+      {"path":"geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json","sha256":"24344e9333a40f37271443190205fcc80bea5afd2cf4bfa0e2e4271d237d1296"},
       {"path":"tools/agent/checks/ggbscript-capability-matrix.ps1","sha256":"eac16ea8d7ac9b1942a336585e4b6c404bdbaae886d90ff4be87305dcc26e165"}
     ]}
   ]

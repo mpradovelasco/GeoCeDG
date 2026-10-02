@@ -368,6 +368,66 @@ The GeoCeDG Classic diagnostic session is a separate process with its own
 isolated preferences. It reads ordinary documents, but it does not acquire
 GeoCeDG semantic-curve creation. See section 14.
 
+### 4.5 Picture export and the export area
+
+**File → Import and export** offers **Graphics View as Picture…** (PNG, PDF,
+SVG, EMF and EMF+), **Export 2D geometry as DXF (experimental)…** (section 11),
+**PSTricks…**, **PGF/TikZ…** and **Asymptote…**; **Print preview…** (File →
+Print) prints the same picture. STL, Collada, HTML Collada, Dynamic Worksheet and
+upload, Animated GIF and WebM are not offered.
+
+**The export area.** A picture always shows one rectangle of Graphics 1 or
+Graphics 2, its *export area*, chosen in this order:
+
+1. the area you choose under **File → Export area**: **Define export area…**
+   (four world bounds, starting from the current area, or the visible view) or
+   **Use Export_1 and Export_2**;
+2. otherwise the points `Export_1` and `Export_2` of the document, when both
+   exist and span a rectangle;
+3. otherwise the visible part of the view.
+
+A selection rectangle drawn with the mouse is never an export area. The area
+need not be visible: everything inside it is drawn completely — points, lines,
+conics, polygons, functions, axes, grid, text and Locus V2 — also where it lies
+outside the window. **Show export area** outlines it in Graphics 1; the outline
+is never exported. **Clear export area** returns to rules 2 and 3. The area you
+choose belongs to the session: it is not saved in the document, is not an undo
+step and does not mark the document as modified, and New and Open clear it.
+
+**Exact size.** Every format reproduces the export area exactly, with no added
+margin and no cropping:
+
+- PNG uses the nearest whole number of pixels for the chosen resolution and
+  maps the four bounds of the area onto them.
+- PDF uses a page of exactly the size of the area (within 0.001 pt), without
+  page margins or fit-to-page.
+- SVG declares the exact area as its `viewBox`; width and height keep its aspect
+  ratio, and circles stay circles.
+- EMF and EMF+ round the picture bounds to whole device units.
+
+**What a picture contains.** The preview in the Save dialog, the saved file,
+printing and copying the Graphics view as an image (`Ctrl`+`Shift`+`C` or the
+dialog's clipboard button) show the same area and omit hidden layers
+(section 12.5). Objects at an absolute screen position keep that position on the
+picture. Background images belong to the view background and are not hidden
+with their layer, in the view and in the picture alike.
+
+**The same area elsewhere.** `ExportImage`, the scripting functions
+`writePNGtoFile`, `getPNGBase64`, `exportSVG` and `exportPDF`, and the command
+line option `--export` produce the same area. `ExportImage` with the type `gif`
+or `webm` and the option `--exportAnimation` are refused with an error, and the
+command line never leaves an empty file behind.
+
+**Limits in this version.**
+
+- PSTricks, PGF/TikZ, Asymptote and DXF do not use the export area yet and still
+  write the objects of hidden layers.
+- A legacy `Locus` is drawn only from the samples it already has, which cover
+  the window in which it was computed; outside that window it may look
+  incomplete. Locus V2 has no such limit.
+- The physical frame recorded inside an EMF file is rounded to the hundredths of
+  a millimetre of the format.
+
 ---
 
 <!-- geocedg-guide-section: basic-geometry -->
@@ -1311,11 +1371,11 @@ layers** for the current session.
   visibility of every object on a layer, and that visibility is saved with the
   document.
 
-**Exports while a layer is hidden.** PNG, PDF, EMF, printing and copying the
-Graphics view as an image follow the view and omit hidden layers. SVG,
-PGF/TikZ, PSTricks, Asymptote and DXF still write the objects of hidden layers
-in this version. This temporary difference ends when those exports are
-completed.
+**Exports while a layer is hidden.** PNG, PDF, SVG, EMF, printing, the Save
+preview and copying the Graphics view as an image omit hidden layers
+(section 4.5). PGF/TikZ, PSTricks, Asymptote and DXF still write the objects of
+hidden layers in this version. This temporary difference ends when those
+exports are completed.
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -1460,8 +1520,11 @@ These are the limitations that affect what you can do in the application today.
   bound.
 - There is no DXF import, viewport export, physical-unit contract, text export,
   legacy `Locus` export, implicit-curve contouring or 3D export.
-- While a layer is hidden, SVG, LaTeX (PGF/TikZ, PSTricks, Asymptote) and DXF
-  still write its objects, whereas PNG, PDF, EMF and printing omit them (12.5).
+- LaTeX (PGF/TikZ, PSTricks, Asymptote) and DXF do not use the export area yet
+  and still write the objects of hidden layers, whereas PNG, PDF, SVG, EMF and
+  printing use the area and omit them (4.5, 12.5).
+- A legacy `Locus` in a picture is complete only within the window in which it
+  was sampled (4.5).
 
 **Not available**
 
@@ -1508,6 +1571,8 @@ These are the limitations that affect what you can do in the application today.
 | Reflect | same | `Reflect(S,line)` / `Mirror(S,line)` | new semantic curve | construct the mirror line explicitly; axes are not selectable |
 | Dilate | same | `Dilate(S,k,O)` | new semantic curve | length scales by `abs(k)`; `k=0` collapses but keeps its domain |
 | Export DXF | File → Import and export → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
+| Export a picture | File → Import and export → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
+| Choose the export area | File → Export area | — | — | session only; the outline is never exported |
 | Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
 | Save a document | File → Save / Save as… | — | — | save native work as `.cedg` |
 | Inspect a definition | context menu → Inspect definition… | — | — | read-only; does not change Algebra display mode |
@@ -1596,6 +1661,9 @@ file extensions and code literals are identifiers and are never translated.
 | `F2` | edit the selected object |
 | `F1` | tool help |
 | `Tab` | move through controls |
+| `Ctrl`+`Shift`+`U` | Graphics View as Picture… |
+| `Ctrl`+`Shift`+`C` | copy the Graphics view as an image of the export area |
+| `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF (experimental)… |
 
 ---
 

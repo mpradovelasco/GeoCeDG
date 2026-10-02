@@ -1726,6 +1726,8 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 		} else {
 			fileChooser.setSelectedFile(null);
 		}
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B format context of the preview
+		fileChooser.setSaveExtension(fileExtensions[0]);
 		fileChooser.resetChoosableFileFilters();
 		FileExtensionFilter fileFilter;
 		FileExtensionFilter mainFilter = null;
@@ -1740,6 +1742,11 @@ public class GuiManagerD extends GuiManager implements GuiManagerInterfaceD {
 			}
 		}
 		fileChooser.setFileFilter(mainFilter);
+		if (getApp().getPictureExportRoute() != null) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B regenerate the preview of the
+			// pending save; reopening Save with the same name fires no selection event
+			fileChooser.refreshPreview();
+		}
 
 		while (!done) {
 			// show save dialog

@@ -45,9 +45,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.plaf.basic.BasicFileChooserUI;
 
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.io.MyXMLio;
+import org.geogebra.common.util.FileExtensions;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.awt.GGraphics2DD;
 import org.geogebra.desktop.gui.MyImageD;
@@ -110,6 +112,49 @@ public class GeoGebraFileChooser extends JFileChooser
 	 * case the dialog is too small.
 	 */
 	private boolean showAccessory = true;
+
+	/** GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B format of the pending save */
+	FileExtensions saveExtension;
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B format of the pending save, used
+	 * by the save-mode preview.
+	 *
+	 * @param extension main extension of the save dialog
+	 */
+	public void setSaveExtension(FileExtensions extension) {
+		saveExtension = extension;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B regenerates the preview of the
+	 * pending save. A reused chooser fires no selection event when the same
+	 * name is selected again, and a selection reset to null leaves the earlier
+	 * name in the file-name field; both kept a stale thumbnail.
+	 */
+	public void refreshPreview() {
+		File file = getSelectedFile();
+		if (file == null && getUI() instanceof BasicFileChooserUI) {
+			String name = ((BasicFileChooserUI) getUI()).getFileName();
+			if (name != null && !name.isEmpty()) {
+				File named = new File(name);
+				file = named.isAbsolute() ? named
+						: new File(getCurrentDirectory(), name);
+			}
+		}
+		if (file == null || !file.exists()) {
+			// nothing to preview: never keep the thumbnail of an earlier save
+			previewPanel.setImg(null);
+		} else if (showAccessory) {
+			try {
+				previewPanel.updateImage(file);
+			} catch (IOException e) {
+				Log.debug("preview unavailable: " + e.getMessage());
+				previewPanel.setImg(null);
+			}
+		}
+		previewPanel.repaint();
+	}
 
 	/**
 	 * Construct a file chooser without a restricted file system view.
@@ -473,8 +518,11 @@ public class GeoGebraFileChooser extends JFileChooser
 				// Update preview for saving a ggb file
 				else if (fileChooser
 						.getMode() == GeoGebraFileChooser.MODE_GEOGEBRA_SAVE) {
+					// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the preview of the
+					// pending save, rendered for its format context
 					tmpImage = (MyImageD)
-							app.getExportImage(MyXMLio.THUMBNAIL_PIXELS_X,
+							app.getSavePreviewImage(fileChooser.saveExtension,
+									MyXMLio.THUMBNAIL_PIXELS_X,
 									MyXMLio.THUMBNAIL_PIXELS_Y);
 					// TODO: show file size info?
 					fileLabel.setText(null);

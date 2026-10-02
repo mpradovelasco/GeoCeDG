@@ -30,19 +30,19 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java",
       "change": "modified",
-      "purpose": "Preserve the product title/menu hooks and add conservative document-open, native-extension and product-window seams for .cedg while retaining Classic defaults. G9U1: Expose protected view-construction and document-filter-description seams for the product-specific interaction view and branding, preserving Classic defaults. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-S4-R1: refresh toolbar command-help typography through the existing Desktop font-update graph.",
+      "purpose": "Preserve the product title/menu hooks and add conservative document-open, native-extension and product-window seams for .cedg while retaining Classic defaults. G9U1: Expose protected view-construction and document-filter-description seams for the product-specific interaction view and branding, preserving Classic defaults. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-S4-R1: refresh toolbar command-help typography through the existing Desktop font-update graph. PRE-G9B-R6-plus-B: give the save chooser its file format and regenerate its preview on every opening when the application provides a picture route; the host path is unchanged. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/app/GeoGebraFrame.java",
       "change": "modified",
-      "purpose": "Add conservative title, application ID, and frame factory hooks with unchanged Classic defaults.",
+      "purpose": "Add conservative title, application ID, and frame factory hooks with unchanged Classic defaults. PRE-G9B-R6-plus-B: render --export through the application picture route when it handles the view, and reject --exportAnimation where the product offers no animated export; the host path is unchanged. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "docs/adr/0001-geocedg-product-profile.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title. PRE-G9B-R6-plus-B: add the host-default seams getPictureExportRoute (none), getSavePreviewImage (the host thumbnail) and isUpstreamExportEntryAvailable (every entry). Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -66,7 +66,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -84,13 +84,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: require the 116-action catalog with the working-layer mode. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: require the 116-action catalog with the working-layer mode. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: require the 124-action catalog with the export surface and the export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "change": "added",
-      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Round 3 verifies the product frame icon/startup resource bindings without upstream fallback. Final presentation polish verifies the deterministic 361x480 startup derivative binding and the nine native toolbar groups remaining after the two declared mixed-action flyouts. PRE-G9B-R4 corrective: the dedicated List tools group makes ten native toolbar groups. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Round 3 verifies the product frame icon/startup resource bindings without upstream fallback. Final presentation polish verifies the deterministic 361x480 startup derivative binding and the nine native toolbar groups remaining after the two declared mixed-action flyouts. PRE-G9B-R4 corrective: the dedicated List tools group makes ten native toolbar groups. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-B: the 124-action catalog. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -396,7 +396,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderPolicy2D.java",
       "change": "added",
-      "purpose": "Own bounded uniform-reference and adaptive-visual sampling solely as render policies.",
+      "purpose": "Own bounded uniform-reference and adaptive-visual sampling solely as render policies. PRE-G9B-R6-plus-B: follow the output resolution while the view is exported, so the Locus V2 visual tolerance holds in output pixels; render-only, never semantic. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
@@ -3738,7 +3738,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9. PRE-G9B-R6-plus-B: execute the Picture, PSTricks, PGF/TikZ and Asymptote export actions and the four export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3756,7 +3756,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
       "change": "added",
-      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects.",
+      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects. PRE-G9B-R6-plus-B: paint the transient export-area overlay in the live view only; exports never paint it. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3852,7 +3852,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Round 3 verifies view-specific construction-navigation state and zero Construction/undo mutation. Final presentation polish verifies symmetric English/Spanish Locus V2 and Spline V2 labels while the inherited Classic label remains unchanged. Review fixture isolation preserves preexisting Swing roots and native runtime behavior.",
+      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Round 3 verifies view-specific construction-navigation state and zero Construction/undo mutation. Final presentation polish verifies symmetric English/Spanish Locus V2 and Spline V2 labels while the inherited Classic label remains unchanged. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R6-plus-B: the 124-action catalog with the export surface. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3882,7 +3882,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1 asserted the unchanged 110-action taxonomy and reduced toolbar. Round 3 verifies 28 presentation groups and seven typed menu sections. Final presentation polish verifies 11 toolbar groups, 52 projected stable actions, 44 native modes, two mixed-action profile flyouts, exact catalog coverage and fail-closed rendering/duplicate/unknown/unreachable references. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R4 corrective: the List tools group is second in the toolbar order and Polygons no longer contains the list tool.",
+      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1 asserted the unchanged 110-action taxonomy and reduced toolbar. Round 3 verifies 28 presentation groups and seven typed menu sections. Final presentation polish verifies 11 toolbar groups, 52 projected stable actions, 44 native modes, two mixed-action profile flyouts, exact catalog coverage and fail-closed rendering/duplicate/unknown/unreachable references. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R4 corrective: the List tools group is second in the toolbar order and Polygons no longer contains the list tool. PRE-G9B-R6-plus-B: the 124-action catalog with the export surface. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3906,7 +3906,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state and one stable menu occurrence. Final presentation polish verifies the two registry-backed mixed flyouts, their exact shared action identity, 52-action toolbar projection and absence of a detached Spline V2 button. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-S4-R2 verifies the persistent adjunct has native toolbar membership without becoming a profile group or changing group order. PRE-G9B-R4 corrective: verifies the List tools group second in the toolbar and in the Construction menu.",
+      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state and one stable menu occurrence. Final presentation polish verifies the two registry-backed mixed flyouts, their exact shared action identity, 52-action toolbar projection and absence of a detached Spline V2 button. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-S4-R2 verifies the persistent adjunct has native toolbar membership without becoming a profile group or changing group order. PRE-G9B-R4 corrective: verifies the List tools group second in the toolbar and in the Construction menu. PRE-G9B-R6-plus-B: the 124-action catalog and the File export surface order. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3936,7 +3936,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
       "change": "modified",
-      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged. PRE-G9B-R6-plus-A-1: add the product seams getLayerForNewObject(construction, upstreamLayer) and isLayerShown(layer); the host returns the upstream layer and shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged. PRE-G9B-R6-plus-A-1: add the product seams getLayerForNewObject(construction, upstreamLayer) and isLayerShown(layer); the host returns the upstream layer and shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: add the export seams getExportFrameWidth(view), getExportFrameHeight(view) and isAnimatedExportAvailable(); the host returns the view export size and true. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -4236,7 +4236,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianView.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged. PRE-G9B-R6-plus-A-1: skip objects on hidden layers in the painting of the geometric, action, mask and measurement passes and in label, bounding-box-handle and input-box hits; a direct drawActionObjects call and the background pass keep host behavior; the host shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged. PRE-G9B-R6-plus-A-1: skip objects on hidden layers in the painting of the geometric, action, mask and measurement passes and in label, bounding-box-handle and input-box hits; a direct drawActionObjects call and the background pass keep host behavior; the host shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: expose drawActionObjectsOnShownLayers for the SVG groups of the export viewport; drawObjects uses it with identical behavior. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {
@@ -4920,7 +4920,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures.",
+      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
     },
     {
@@ -5178,7 +5178,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrixTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES.",
+      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES. PRE-G9B-R6-plus-B: execute the ExportImage rows and pin the derived inventory with ExportImage. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
     },
     {
@@ -5232,14 +5232,134 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1LayerWorkspaceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-1 working layer on every interactive route, rebuild and lifecycle rules, paste, the one-shot mode, the profile delta, the status bar and the Algebra View groups.",
+      "purpose": "PRE-G9B-R6-plus-A-1 working layer on every interactive route, rebuild and lifecycle rules, paste, the one-shot mode, the profile delta, the status bar and the Algebra View groups. PRE-G9B-R6-plus-B: the 124-action catalog. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1HiddenLayerTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-1 effective visibility in painting and hit testing of Graphics 1 and 2, session-only state, unchanged geometry and object visibility, and the export boundary to B and C.",
+      "purpose": "PRE-G9B-R6-plus-A-1 effective visibility in painting and hit testing of Graphics 1 and 2, session-only state, unchanged geometry and object visibility, and the export boundary to B and C. PRE-G9B-R6-plus-B: SVG omits hidden layers through the picture service; LaTeX and DXF stay unchanged until C. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B modified third-party FreeHEP VectorGraphics source (LGPL; provenance in docs/licensing/freehep-vectorgraphics-provenance.md): an opt-in exact page extent held in double for the page box, the page transform, transforms and rectangular clips; a writer that does not opt in produces the original output.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/euclidian/EuclidianViewD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: print through the application picture route when it handles this view; the host path is unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/export/GraphicExportDialog.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: the size label from the export-frame seam and the PNG, PDF, SVG and EMF writes delegated to the application picture route when present; the host path is unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/export/PrintScalePanel.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: the export size from the export-frame seam.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/export/SVGExtensions.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: an opt-in exact fractional viewBox and pixel size; without the opt-in the output is unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: the v1 fallback entries for worksheet and upload, Animated GIF, STL, Collada and HTML Collada are created only where the application offers them; the host offers all.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/util/GeoGebraFileChooser.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: the save-mode preview from the application save-preview seam for the format of the chooser, and refreshPreview for a reopened chooser.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/plugin/GgbAPID.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: PNG file, clipboard and Base64 images through the application picture route when it handles the view; the host path is unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdExportImage.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-B: sizes from the export-frame seam and the DQ-B1 explicit refusal of gif and webm through org.geocedg.common.export.PictureExportPolicy where the product offers no animated export; the host behavior is unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/PictureExportPolicy.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B shared DQ-B1 rule for animated export types.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExportAreaPrompt.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B manual export-area prompt (four bounds or the visible view), injectable for tests.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportArea.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B immutable export-area value: exact world bounds, source view and producer.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportAreaSession.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B session export-area authority: the explicit producer, then Export_1/Export_2, then the visible viewport; never serialized and never an undo point.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportAreaUnavailableException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B explicit failure when no valid export area exists.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportViewport.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportCommandLine.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B --export through the picture service: a temporary file, a non-zero exit and no empty file on failure.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B picture-route interface consumed by the upstream Desktop seams.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportService.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusBPictureFidelityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B exact and complete picture output: viewport isolation, sizes, raster grid, PDF page box, SVG viewBox, EMF bounds, content, hidden layers, screen-anchored objects, Locus V2 and legacy Locus.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusBExportSurfaceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-B ExportArea session and producers, surface and fallback, shortcuts, save preview, print, clipboard, command line, ExportImage and graphics APIs, and the Classic defaults.",
+      "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     }
   ]
 }

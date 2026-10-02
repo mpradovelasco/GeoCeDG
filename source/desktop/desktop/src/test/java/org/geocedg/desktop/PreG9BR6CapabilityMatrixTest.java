@@ -42,8 +42,8 @@ class PreG9BR6CapabilityMatrixTest {
 		Matrix matrix = PreG9BR6CapabilityMatrix.load();
 		Inventory inventory = inventory();
 
-		assertEquals(PreG9BR6CapabilityMatrix.setOf("Dilate", "Intersect", "Length",
-				"LocusLength", "LocusV2", "Mirror", "Point", "Rotate", "SplineV2",
+		assertEquals(PreG9BR6CapabilityMatrix.setOf("Dilate", "ExportImage", "Intersect",
+				"Length", "LocusLength", "LocusV2", "Mirror", "Point", "Rotate", "SplineV2",
 				"Translate"), inventory.roles().keySet(), "derived inventory changed");
 		assertEquals(List.of(), PreG9BR6CapabilityMatrix.violations(inventory, matrix,
 				junitMethods()));
@@ -121,6 +121,12 @@ class PreG9BR6CapabilityMatrixTest {
 
 	@Test
 	void dilateRows(TestInfo test, @TempDir Path directory) throws Exception {
+		executeRows(test, directory);
+	}
+
+	/** PRE-G9B-R6-plus-B: the explicit DQ-B1 refusal of an animated type. */
+	@Test
+	void exportImageRows(TestInfo test, @TempDir Path directory) throws Exception {
 		executeRows(test, directory);
 	}
 

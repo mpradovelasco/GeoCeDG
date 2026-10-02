@@ -11,15 +11,20 @@ import java.awt.event.FocusEvent;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
+import org.geocedg.desktop.export.ExportArea;
 import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
+import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
 
 /** GeoCeDG-only transient rich-result overlay; creates no construction objects. */
 public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
+	private static final GColor EXPORT_AREA_OVERLAY = GColor.newColor(230, 120, 0);
+
 	/** Creates the regular Desktop view with a non-semantic overlay. */
 	public GeoCeDGEuclidianView(EuclidianController controller, boolean[] axes,
 			boolean grid, int number, EuclidianSettings settings) {
@@ -35,9 +40,36 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 		});
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-B transient overlay of the effective export area. Only the
+	 * live paint draws it; exports paint an export viewport through
+	 * {@code exportPaint}, which never calls this method.
+	 */
+	private void paintExportAreaOverlay(GGraphics2D graphics) {
+		if (!(getApplication() instanceof AppGeoCeDG app) || !app.isExportAreaOverlayShown()) {
+			return;
+		}
+		ExportArea area = app.getExportAreaSession().resolve(this);
+		if (area == null || area.getSource() == ExportArea.Source.VISIBLE_VIEWPORT) {
+			return;
+		}
+		double left = toScreenCoordXd(area.getXmin());
+		double top = toScreenCoordYd(area.getYmax());
+		double right = toScreenCoordXd(area.getXmax());
+		double bottom = toScreenCoordYd(area.getYmin());
+		graphics.setColor(EXPORT_AREA_OVERLAY);
+		graphics.setStroke(AwtFactory.getPrototype().newBasicStroke(2,
+				GBasicStroke.CAP_BUTT, GBasicStroke.JOIN_MITER, 10,
+				new double[] { 8, 4 }));
+		GRectangle2D outline = AwtFactory.getPrototype().newRectangle2D();
+		outline.setRect(left, top, right - left, bottom - top);
+		graphics.draw(outline);
+	}
+
 	@Override
 	public void paint(GGraphics2D graphics) {
 		super.paint(graphics);
+		paintExportAreaOverlay(graphics);
 		if (!(getEuclidianController() instanceof GeoCeDGEuclidianController)) {
 			return;
 		}

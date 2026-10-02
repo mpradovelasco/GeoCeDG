@@ -47,6 +47,7 @@ import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GDimension;
@@ -369,7 +370,14 @@ public class EuclidianViewD extends EuclidianView
 			g2d.translate(0, h + 20);
 		}
 		double scale = (PRINTER_PIXEL_PER_CM / getXscale()) * printingScale;
-		exportPaint(g2d, scale, ExportType.PRINTING);
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B Print Preview obeys the export area
+		PictureExportRoute route = getApplication().getPictureExportRoute();
+		if (route != null && route.handles(this)) {
+			route.exportPaint(this, new GGraphics2DD(g2d), scale, false,
+					ExportType.PRINTING);
+		} else {
+			exportPaint(g2d, scale, ExportType.PRINTING);
+		}
 
 		// clear page margins at bottom and right
 		double pagewidth = pageFormat.getWidth();

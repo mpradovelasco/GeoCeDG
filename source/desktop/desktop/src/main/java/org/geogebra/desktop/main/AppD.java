@@ -105,6 +105,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.awt.AwtFactory;
@@ -1933,6 +1934,54 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	public void copyGraphicsViewToClipboard() {
 
 		copyGraphicsViewToClipboard(getActiveEuclidianView());
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B picture-export seam.
+	 *
+	 * @return the route that renders picture exports of this application's 2D
+	 *         views, or null to keep every upstream export frame
+	 */
+	public PictureExportRoute getPictureExportRoute() {
+		return null;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B preview of a pending save.
+	 *
+	 * @param extension main extension of the save dialog, may be null
+	 * @param maxX maximum width
+	 * @param maxY maximum height
+	 * @return preview image; the host returns {@link #getExportImage}
+	 */
+	public MyImage getSavePreviewImage(FileExtensions extension, double maxX,
+			double maxY) {
+		return getExportImage(maxX, maxY);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B product seam for the upstream
+	 * export menu entries that a product may close.
+	 *
+	 * @param entry upstream export entry
+	 * @return whether the entry is offered; always true in the host
+	 */
+	public boolean isUpstreamExportEntryAvailable(UpstreamExportEntry entry) {
+		return true;
+	}
+
+	/** GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B upstream export menu entries. */
+	public enum UpstreamExportEntry {
+		/** Dynamic Worksheet / worksheet upload */
+		WORKSHEET,
+		/** Animated GIF */
+		ANIMATED_GIF,
+		/** STL */
+		STL,
+		/** Collada */
+		COLLADA,
+		/** Collada HTML */
+		COLLADA_HTML
 	}
 
 	/***

@@ -36,6 +36,9 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.AlgebraStyle;
+import org.geogebra.desktop.export.pstricks.AsymptoteFrame;
+import org.geogebra.desktop.export.pstricks.PgfFrame;
+import org.geogebra.desktop.export.pstricks.PstricksFrame;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.menubar.LoadFileListener;
@@ -68,7 +71,10 @@ public final class GeoCeDGActionRegistry {
 			"host.preference.global-properties",
 			"geocedg.inspect.definition", "geocedg.semantic-curve.inspect-definition",
 			"host.preference.algebra-style.VALUE", "host.preference.algebra-style.DESCRIPTION",
-			"host.preference.algebra-style.DEFINITION");
+			"host.preference.algebra-style.DEFINITION", "host.export.picture",
+			"host.export.pstricks", "host.export.pgf", "host.export.asymptote",
+			"geocedg.export.area.define-rectangle", "geocedg.export.area.use-export-points",
+			"geocedg.export.area.show", "geocedg.export.area.clear");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -326,6 +332,32 @@ public final class GeoCeDGActionRegistry {
 		case "geocedg.export.dxf.dialog":
 			new GeoCeDGDxfExportController(app).showExportDialog();
 			break;
+		case "host.export.picture":
+			gui.showGraphicExport();
+			break;
+		case "host.export.pstricks":
+			app.newGeoGebraToPstricks(PstricksFrame::new);
+			break;
+		case "host.export.pgf":
+			app.newGeoGebraToPgf(PgfFrame::new);
+			break;
+		case "host.export.asymptote":
+			app.newGeoGebraToAsymptote(AsymptoteFrame::new);
+			break;
+		case "geocedg.export.area.define-rectangle":
+			((AppGeoCeDG) app).defineManualExportArea();
+			break;
+		case "geocedg.export.area.use-export-points":
+			if (!((AppGeoCeDG) app).useExportPointsArea()) {
+				message(text("ExportArea.ExportPointsUnavailable"));
+			}
+			break;
+		case "geocedg.export.area.show":
+			((AppGeoCeDG) app).toggleExportAreaOverlay();
+			break;
+		case "geocedg.export.area.clear":
+			((AppGeoCeDG) app).clearExportArea();
+			break;
 		case "host.help.input":
 		case "host.help.command-list":
 			app.setShowAlgebraInput(true, true);
@@ -418,6 +450,8 @@ public final class GeoCeDGActionRegistry {
 			return controller().isAutoMaterializeIntersectionSolutions();
 		case "geocedg.navigation.zoom-window":
 			return controller().isZoomWindowActive();
+		case "geocedg.export.area.show":
+			return ((AppGeoCeDG) app).isExportAreaOverlayShown();
 		case "host.preference.algebra-style.VALUE":
 			return app.getSettings().getAlgebra().getStyle() == AlgebraStyle.VALUE;
 		case "host.preference.algebra-style.DESCRIPTION":

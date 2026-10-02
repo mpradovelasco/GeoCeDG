@@ -8,6 +8,7 @@ package org.geocedg.common.euclidian.draw;
 import java.util.Objects;
 
 import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.main.App;
 
 /** View-owned tessellation policy, excluded from semantic contracts. */
 public final class LocusRenderPolicy2D {
@@ -92,19 +93,42 @@ public final class LocusRenderPolicy2D {
 				view.getHeight(), view.getXscale(), view.getYscale(), samples);
 	}
 
-	/** @return default bounded adaptive policy derived from one view */
+	/**
+	 * @return default bounded adaptive policy derived from one view; while the
+	 *         view is exported at a higher output resolution, the visual
+	 *         tolerance and the budget follow the output pixels
+	 *         (PRE-G9B-R6-plus-B, 2026-10-02)
+	 */
 	public static LocusRenderPolicy2D adaptiveFrom(EuclidianView view) {
-		int samples = samplesFor(view);
+		double resolution = exportResolution(view);
+		int samples = samplesFor(view, resolution);
 		return adaptive(view.getViewID(), view.getWidth(), view.getHeight(),
 				view.getXscale(), view.getYscale(), samples,
-				DEFAULT_VISUAL_TOLERANCE_PIXELS, DEFAULT_MAX_ADAPTIVE_DEPTH);
+				DEFAULT_VISUAL_TOLERANCE_PIXELS / resolution, DEFAULT_MAX_ADAPTIVE_DEPTH);
 	}
 
 	private static int samplesFor(EuclidianView view) {
+		return samplesFor(view, 1);
+	}
+
+	private static int samplesFor(EuclidianView view, double resolution) {
 		double scale = Math.max(Math.abs(view.getXscale()),
-				Math.abs(view.getYscale()));
+				Math.abs(view.getYscale())) * resolution;
 		int samples = (int) Math.ceil(scale / 4);
 		return Math.max(MIN_SAMPLES, Math.min(MAX_SAMPLES, samples));
+	}
+
+	/**
+	 * @return output pixels per view pixel while the view's application is
+	 *         exporting, at least 1; render-only, never semantic
+	 */
+	private static double exportResolution(EuclidianView view) {
+		App app = view.getApplication();
+		if (app == null || !app.isExporting()) {
+			return 1;
+		}
+		double scale = app.getExportScale();
+		return Double.isFinite(scale) && scale > 1 ? scale : 1;
 	}
 
 	public int getSamplesPerComponent() {

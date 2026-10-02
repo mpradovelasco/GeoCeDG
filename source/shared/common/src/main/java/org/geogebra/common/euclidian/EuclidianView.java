@@ -3623,18 +3623,30 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 hides action objects on
 		// hidden layers only in this painting path; a direct call of
 		// drawActionObjects keeps the host behavior.
-		actionObjectsOnShownLayersOnly = true;
-		try {
-			drawActionObjects(g2);
-		} finally {
-			actionObjectsOnShownLayersOnly = false;
-		}
+		drawActionObjectsOnShownLayers(g2);
 
 		if (previewDrawable != null) {
 			previewDrawable.drawPreview(g2);
 		}
 		drawMasks(g2);
 		drawMeasurementTools(g2);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B draws the action objects with the
+	 * hidden-layer filter of {@link #drawObjects}, for a writer that groups the
+	 * drawables itself.
+	 *
+	 * @param g2
+	 *            graphics
+	 */
+	public void drawActionObjectsOnShownLayers(GGraphics2D g2) {
+		actionObjectsOnShownLayersOnly = true;
+		try {
+			drawActionObjects(g2);
+		} finally {
+			actionObjectsOnShownLayersOnly = false;
+		}
 	}
 
 	/**

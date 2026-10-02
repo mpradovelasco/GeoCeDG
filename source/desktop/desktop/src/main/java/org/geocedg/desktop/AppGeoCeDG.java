@@ -9,7 +9,10 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -17,12 +20,20 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geocedg.desktop.export.ExportArea;
+import org.geocedg.desktop.export.ExportAreaSession;
+import org.geocedg.desktop.export.ExportAreaUnavailableException;
+import org.geocedg.desktop.export.PictureExportRoute;
+import org.geocedg.desktop.export.PictureExportService;
 import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
+import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.io.layout.Perspective;
@@ -35,17 +46,22 @@ import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.FontSettings;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.CommandLineArguments;
+import org.geogebra.desktop.awt.GBufferedImageD;
 import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
+import org.geogebra.desktop.gui.MyImageD;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.gui.dialog.options.OptionPanelD;
 import org.geogebra.desktop.gui.inputbar.AlgebraInputD;
 import org.geogebra.desktop.gui.inputbar.InputBarHelpPanelD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
+import org.geogebra.desktop.gui.util.ImageSelection;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolNavigationD;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.geogebra.desktop.main.AppD;
+import org.geogebra.desktop.main.AppD.UpstreamExportEntry;
 import org.geogebra.desktop.main.GlobalKeyDispatcherD;
+import org.geogebra.editor.share.util.KeyCodes;
 
 /**
  * Desktop application instance bound to the GeoCeDG product profile.
@@ -62,6 +78,14 @@ public final class AppGeoCeDG extends App3D {
 	private boolean layerWorkspaceActive;
 	private GeoCeDGStatusBar statusBar;
 	private GeoCeDGWorkingLayerChooser layerChooser;
+	/**
+	 * PRE-G9B-R6-plus-B session export area and the single picture service; created
+	 * lazily because views created inside the host constructor may paint first.
+	 */
+	private ExportAreaSession exportAreaSession;
+	private PictureExportService pictureExportService;
+	private GeoCeDGExportAreaPrompt exportAreaPrompt = GeoCeDGExportAreaPrompt.dialog();
+	private Runnable dxfShortcutAction = () -> runProfileAction("export.dxf-2d");
 
 	/**
 	 * @param args command line arguments
@@ -132,6 +156,172 @@ public final class AppGeoCeDG extends App3D {
 		return layerWorkspace == null || layerWorkspace.isLayerShown(layer);
 	}
 
+	/** @return PRE-G9B-R6-plus-B session export-area authority */
+	ExportAreaSession getExportAreaSession() {
+		if (exportAreaSession == null) {
+			exportAreaSession = new ExportAreaSession(getKernel());
+			// presentation only: the overlay repaints, the document never changes
+			exportAreaSession.addListener(() -> getKernel().notifyRepaint());
+		}
+		return exportAreaSession;
+	}
+
+	/** @return PRE-G9B-R6-plus-B single picture-export service */
+	PictureExportService getPictureExportService() {
+		if (pictureExportService == null) {
+			pictureExportService = new PictureExportService(this, getExportAreaSession(),
+					AppGeoCeDG::copyToSystemClipboard);
+		}
+		return pictureExportService;
+	}
+
+	@Override
+	public PictureExportRoute getPictureExportRoute() {
+		return getPictureExportService();
+	}
+
+	@Override
+	public double getExportFrameWidth(EuclidianView view) {
+		PictureExportService service = getPictureExportService();
+		if (!service.handles(view)) {
+			return super.getExportFrameWidth(view);
+		}
+		ExportArea area = service.resolve(view);
+		return area == null ? 0 : area.pixelWidth(view.getXscale());
+	}
+
+	@Override
+	public double getExportFrameHeight(EuclidianView view) {
+		PictureExportService service = getPictureExportService();
+		if (!service.handles(view)) {
+			return super.getExportFrameHeight(view);
+		}
+		ExportArea area = service.resolve(view);
+		return area == null ? 0 : area.pixelHeight(view.getYscale());
+	}
+
+	/** Animated GIF/WebM stay outside this generation (AQ-X4, AQ-X5, DQ-B1). */
+	@Override
+	public boolean isAnimatedExportAvailable() {
+		return false;
+	}
+
+	/**
+	 * Worksheet upload, Animated GIF, STL, Collada and Collada HTML are never
+	 * offered, also in the v1 fallback (AQ-X3, DQ-B2).
+	 */
+	@Override
+	public boolean isUpstreamExportEntryAvailable(UpstreamExportEntry entry) {
+		return false;
+	}
+
+	/**
+	 * The Save preview of a pending picture export is rendered by the picture
+	 * service from the current export area and hidden layers; the native
+	 * document Save keeps the host preview.
+	 */
+	@Override
+	public MyImage getSavePreviewImage(FileExtensions extension, double maxX,
+			double maxY) {
+		EuclidianView view = getActiveEuclidianView();
+		PictureExportService service = getPictureExportService();
+		if (isPictureExtension(extension) && service.handles(view)) {
+			GBufferedImage image = service.previewImage(view, maxX, maxY);
+			return image == null ? null
+					: new MyImageD(GBufferedImageD.getAwtBufferedImage(image));
+		}
+		return super.getSavePreviewImage(extension, maxX, maxY);
+	}
+
+	private static boolean isPictureExtension(FileExtensions extension) {
+		return FileExtensions.PNG.equals(extension) || FileExtensions.PDF.equals(extension)
+				|| FileExtensions.SVG.equals(extension) || FileExtensions.EMF.equals(extension);
+	}
+
+	/** The graphics clipboard is a consumer of the picture service (AQ-X4, DQ-B6). */
+	@Override
+	public void copyGraphicsViewToClipboard(EuclidianView copyView) {
+		PictureExportService service = getPictureExportService();
+		if (!service.handles(copyView)) {
+			super.copyGraphicsViewToClipboard(copyView);
+			return;
+		}
+		getSelectionManager().clearSelectedGeos(true, false);
+		updateSelection(false);
+		try {
+			if (!service.copyToClipboard(copyView)) {
+				showError(Errors.SaveFileFailed);
+			}
+		} catch (ExportAreaUnavailableException e) {
+			showError(Errors.SaveFileFailed);
+		}
+	}
+
+	private static void copyToSystemClipboard(BufferedImage image) {
+		Toolkit.getDefaultToolkit().getSystemClipboard()
+				.setContents(new ImageSelection(image), null);
+	}
+
+	/** File action: defines and activates the MANUAL producer for Graphics 1. */
+	void defineManualExportArea() {
+		EuclidianView view = getEuclidianView1();
+		ExportArea current = getExportAreaSession().resolve(view);
+		ExportArea visible = ExportAreaSession.visibleViewportOf(view);
+		double[] initial = current == null ? new double[] { -1, 1, -1, 1 }
+				: GeoCeDGExportAreaPrompt.bounds(current);
+		double[] chosen;
+		try {
+			chosen = exportAreaPrompt.ask(this, initial,
+					visible == null ? initial : GeoCeDGExportAreaPrompt.bounds(visible));
+		} catch (NumberFormatException e) {
+			exportAreaMessage("ExportArea.Invalid");
+			return;
+		}
+		if (chosen != null && !getExportAreaSession().defineManual(view.getViewID(),
+				chosen[0], chosen[1], chosen[2], chosen[3])) {
+			exportAreaMessage("ExportArea.Invalid");
+		}
+	}
+
+	/** @return whether Export_1/Export_2 were activated explicitly */
+	boolean useExportPointsArea() {
+		return getExportAreaSession().useExportPoints(getEuclidianView1().getViewID());
+	}
+
+	void toggleExportAreaOverlay() {
+		getExportAreaSession().setOverlayShown(!getExportAreaSession().isOverlayShown());
+	}
+
+	boolean isExportAreaOverlayShown() {
+		return exportAreaSession != null && exportAreaSession.isOverlayShown();
+	}
+
+	void clearExportArea() {
+		getExportAreaSession().clear();
+	}
+
+	void setExportAreaPrompt(GeoCeDGExportAreaPrompt prompt) {
+		exportAreaPrompt = prompt;
+	}
+
+	void setDxfShortcutAction(Runnable action) {
+		dxfShortcutAction = action;
+	}
+
+	private void exportAreaMessage(String key) {
+		JOptionPane.showMessageDialog(getMainComponent(),
+				GeoCeDGProfile.getText(key, getLocale().getLanguage()),
+				GeoCeDGProfile.getText("ExportArea.Define.Title", getLocale().getLanguage()),
+				JOptionPane.WARNING_MESSAGE);
+	}
+
+	private void runProfileAction(String actionId) {
+		if (getGuiManager() instanceof GuiManagerGeoCeDG manager) {
+			manager.getActionRegistry().get(actionId).actionPerformed(
+					new ActionEvent(this, 0, actionId));
+		}
+	}
+
 	/**
 	 * Opens the bounded layer chooser and applies an explicit choice; a hidden
 	 * layer named here is shown and becomes the working layer (AQ-L7).
@@ -188,6 +378,7 @@ public final class AppGeoCeDG extends App3D {
 		boolean cleared = super.clearConstruction();
 		if (cleared && layerWorkspaceActive) {
 			layerWorkspace.resetForNewDocument();
+			getExportAreaSession().resetForDocument();
 		}
 		return cleared;
 	}
@@ -203,6 +394,7 @@ public final class AppGeoCeDG extends App3D {
 				() -> super.loadExistingFile(file, false));
 		if (loaded) {
 			layerWorkspace.resetForOpenedDocument();
+			getExportAreaSession().resetForDocument();
 		}
 		return loaded;
 	}
@@ -215,6 +407,7 @@ public final class AppGeoCeDG extends App3D {
 		boolean loaded = layerWorkspace.runDocumentTransition(() -> super.loadXML(xml));
 		if (loaded) {
 			layerWorkspace.resetForOpenedDocument();
+			getExportAreaSession().resetForDocument();
 		}
 		return loaded;
 	}
@@ -568,6 +761,33 @@ public final class AppGeoCeDG extends App3D {
 					}
 				}
 				return super.handleGeneralKeys(event);
+			}
+
+			/**
+			 * PRE-G9B-R6-plus-B hidden export routes (AQ-X3): U opens the Picture
+			 * surface and C copies through the picture service (both reach the same
+			 * service through the host handling and the copy override); W and M are
+			 * consumed without action; D runs only the GeoCeDG DXF action, so the
+			 * host branch never writes selectionAllowed or slider fixing; B keeps
+			 * the host Base64 document copy.
+			 */
+			@Override
+			protected boolean handleCtrlKey(KeyCodes key, boolean isShiftDown,
+					boolean fromSpreadsheet, boolean fromEuclidianView) {
+				if (isShiftDown) {
+					switch (key) {
+					case W:
+					case M:
+						return true;
+					case D:
+						dxfShortcutAction.run();
+						return true;
+					default:
+						break;
+					}
+				}
+				return super.handleCtrlKey(key, isShiftDown, fromSpreadsheet,
+						fromEuclidianView);
 			}
 		};
 	}

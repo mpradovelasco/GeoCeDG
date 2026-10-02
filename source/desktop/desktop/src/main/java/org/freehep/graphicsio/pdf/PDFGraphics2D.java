@@ -1,4 +1,7 @@
 // Copyright 2000-2006 FreeHEP
+// Modified by GeoCeDG on 2026-10-02 (PRE-G9B-R6-plus-B): opt-in exact page
+// extent, see setExactPageSize. Provenance:
+// docs/licensing/freehep-vectorgraphics-provenance.md
 package org.freehep.graphicsio.pdf;
 
 import java.awt.BasicStroke;
@@ -26,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -233,6 +238,12 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 
 	private Dimension pageSize = null;
 
+	// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B opt-in exact page extent in
+	// points; NaN keeps the original integer page and canvas behavior.
+	private static final int EXACT_DECIMALS = 9;
+	private double exactPageWidth = Double.NaN;
+	private double exactPageHeight = Double.NaN;
+
 	/*
 	 * =========================================================================
 	 * = ====== | 1. Constructors & Factory Methods
@@ -409,9 +420,15 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 		for (int i = 1; i <= currentPage; i++) {
 			pages.addPage("Page" + i);
 		}
-		Dimension pageSize = getSize(getProperty(PAGE_SIZE),
-				getProperty(ORIENTATION));
-		pages.setMediaBox(0, 0, pageSize.getWidth(), pageSize.getHeight());
+		if (hasExactPageSize()) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B exact page box in points.
+			pages.entry("MediaBox", new Object[] { "0", "0",
+					exactNumber(exactPageWidth), exactNumber(exactPageHeight) });
+		} else {
+			Dimension pageSize = getSize(getProperty(PAGE_SIZE),
+					getProperty(ORIENTATION));
+			pages.setMediaBox(0, 0, pageSize.getWidth(), pageSize.getHeight());
+		}
 		pages.setResources("Resources");
 		os.close(pages);
 
@@ -560,16 +577,22 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 				getProperty(ORIENTATION));
 		Insets margins = PageConstants.getMargins(
 				getPropertyInsets(PAGE_MARGINS), getProperty(ORIENTATION));
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the exact page extent, when
+		// set, replaces the integer Dimension values in this transform.
+		double pageHeight = hasExactPageSize() ? exactPageHeight
+				: pageSize.getHeight();
+		double canvasWidth = hasExactPageSize() ? getWidth() : size.width;
+		double canvasHeight = hasExactPageSize() ? getHeight() : size.height;
 		pageTrafo.translate(margins.left,
-				-(pageSize.getHeight() - margins.top));
+				-(pageHeight - margins.top));
 
 		// in between write the header and footer (which should not be scaled!)
 		writeHeadline(pageTrafo);
 		writeFootline(pageTrafo);
 
 		// 2. check whether we have to rescale the image to fit onto the page
-		double scaleFactor = Math.min(getWidth() / size.width,
-				getHeight() / size.height);
+		double scaleFactor = Math.min(getWidth() / canvasWidth,
+				getHeight() / canvasHeight);
 		if ((scaleFactor < 1) || isProperty(FIT_TO_PAGE)) {
 			pageTrafo.scale(scaleFactor, scaleFactor);
 		} else {
@@ -577,8 +600,8 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 		}
 
 		// 3. center the image on the page
-		double dx = (getWidth() - size.width * scaleFactor) / 2 / scaleFactor;
-		double dy = (getHeight() - size.height * scaleFactor) / 2 / scaleFactor;
+		double dx = (getWidth() - canvasWidth * scaleFactor) / 2 / scaleFactor;
+		double dy = (getHeight() - canvasHeight * scaleFactor) / 2 / scaleFactor;
 		pageTrafo.translate(dx, dy);
 
 		writeTransform(pageTrafo);
@@ -586,7 +609,11 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 		// save the graphics context resets before setClip
 		writeGraphicsSave();
 
-		clipRect(0, 0, size.width, size.height);
+		if (hasExactPageSize()) {
+			clipRect(0.0, 0.0, canvasWidth, canvasHeight);
+		} else {
+			clipRect(0, 0, size.width, size.height);
+		}
 
 		// save the graphics context resets before setClip
 		writeGraphicsSave();
@@ -836,6 +863,16 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 	/** Write the given transformation matrix to the file. */
 	@Override
 	protected void writeTransform(AffineTransform t) throws IOException {
+		if (hasExactPageSize()) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B transforms of an exact
+			// page keep the exact number format: no additional scaling.
+			pageStream.println(exactNumber(t.getScaleX()) + " "
+					+ exactNumber(t.getShearY()) + " " + exactNumber(t.getShearX())
+					+ " " + exactNumber(t.getScaleY()) + " "
+					+ exactNumber(t.getTranslateX()) + " "
+					+ exactNumber(t.getTranslateY()) + " cm");
+			return;
+		}
 		pageStream.matrix(t);
 	}
 
@@ -871,7 +908,16 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 			return;
 		}
 
-		if (s instanceof Rectangle2D) {
+		if (s instanceof Rectangle2D && hasExactPageSize()) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B rectangular clips of an
+			// exact page keep the exact number format: no crop of the area.
+			Rectangle2D r = (Rectangle2D) s;
+			pageStream.println(exactNumber(r.getMinX()) + " "
+					+ exactNumber(r.getMinY()) + " " + exactNumber(r.getWidth())
+					+ " " + exactNumber(r.getHeight()) + " re");
+			pageStream.clip();
+			pageStream.endPath();
+		} else if (s instanceof Rectangle2D) {
 			pageStream.move(((Rectangle2D) s).getMinX(),
 					((Rectangle2D) s).getMinY());
 			pageStream.line(((Rectangle2D) s).getMaxX(),
@@ -1074,7 +1120,8 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 				getProperty(ORIENTATION));
 		Insets margins = PageConstants.getMargins(
 				getPropertyInsets(PAGE_MARGINS), getProperty(ORIENTATION));
-		return pageSize.getWidth() - margins.left - margins.right;
+		double width = hasExactPageSize() ? exactPageWidth : pageSize.getWidth();
+		return width - margins.left - margins.right;
 	}
 
 	private double getHeight() {
@@ -1082,7 +1129,44 @@ public class PDFGraphics2D extends AbstractVectorGraphicsIO
 				getProperty(ORIENTATION));
 		Insets margins = PageConstants.getMargins(
 				getPropertyInsets(PAGE_MARGINS), getProperty(ORIENTATION));
-		return pageSize.getHeight() - margins.top - margins.bottom;
+		double height = hasExactPageSize() ? exactPageHeight : pageSize.getHeight();
+		return height - margins.top - margins.bottom;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B opt-in exact page extent. When
+	 * set before the export starts, the page box, the page transform and the
+	 * canvas clip use these values in points instead of the integer
+	 * {@link Dimension} sizes; the page box, every transform and every
+	 * rectangular clip are then written with nine decimals instead of five
+	 * significant digits. Path coordinates keep the original number format. A
+	 * writer that never calls this method produces exactly the original output.
+	 *
+	 * @param width page width in points, finite and positive
+	 * @param height page height in points, finite and positive
+	 */
+	public void setExactPageSize(double width, double height) {
+		if (!(width > 0) || !(height > 0) || Double.isInfinite(width)
+				|| Double.isInfinite(height)) {
+			throw new IllegalArgumentException(
+					"exact page size must be finite and positive");
+		}
+		exactPageWidth = width;
+		exactPageHeight = height;
+	}
+
+	private boolean hasExactPageSize() {
+		return !Double.isNaN(exactPageWidth);
+	}
+
+	/**
+	 * @param value number
+	 * @return decimal text rounded half-even to nine decimals, for the opt-in
+	 *         exact page box, transforms and rectangular clips only
+	 */
+	static String exactNumber(double value) {
+		return new BigDecimal(value).setScale(EXACT_DECIMALS, RoundingMode.HALF_EVEN)
+				.stripTrailingZeros().toPlainString();
 	}
 
 	/**

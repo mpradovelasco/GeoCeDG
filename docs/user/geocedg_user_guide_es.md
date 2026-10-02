@@ -381,6 +381,70 @@ La sesión de diagnóstico Classic de GeoCeDG es un proceso separado con
 preferencias aisladas. Lee documentos ordinarios, pero no adquiere la creación de
 curvas semánticas de GeoCeDG. Véase la sección 14.
 
+### 4.5 Exportación de imágenes y área de exportación
+
+**Archivo → Importar y exportar** ofrece **Vista gráfica como imagen…** (PNG,
+PDF, SVG, EMF y EMF+), **Exportar geometría 2D como DXF (experimental)…**
+(sección 11), **PSTricks…**, **PGF/TikZ…** y **Asymptote…**; **Vista previa de
+impresión…** (Archivo → Imprimir) imprime la misma imagen. No se ofrecen STL, Collada,
+Collada HTML, la hoja dinámica y su publicación, GIF animado ni WebM.
+
+**El área de exportación.** Una imagen muestra siempre un rectángulo de la vista
+Gráfica 1 o de la vista Gráfica 2, su *área de exportación*, elegido en este
+orden:
+
+1. el área que elija en **Archivo → Área de exportación**: **Definir área de
+   exportación…** (cuatro límites en coordenadas del mundo, partiendo del área
+   actual o de la vista visible) o **Usar Export_1 y Export_2**;
+2. si no, los puntos `Export_1` y `Export_2` del documento, cuando existen ambos
+   y definen un rectángulo;
+3. si no, la parte visible de la vista.
+
+Un rectángulo de selección trazado con el ratón nunca es un área de exportación.
+El área no tiene que estar visible: todo lo que contiene se dibuja completo
+—puntos, rectas, cónicas, polígonos, funciones, ejes, cuadrícula, texto y
+Locus V2—, también donde queda fuera de la ventana. **Mostrar área de
+exportación** la contornea en la vista Gráfica 1; el contorno nunca se exporta.
+**Borrar área de exportación** vuelve a las reglas 2 y 3. El área que elija
+pertenece a la sesión: no se guarda en el documento, no es un paso de deshacer
+ni marca el documento como modificado, y Nuevo y Abrir la borran.
+
+**Tamaño exacto.** Todos los formatos reproducen exactamente el área de
+exportación, sin margen añadido ni recorte:
+
+- PNG usa el número entero de píxeles más próximo para la resolución elegida y
+  hace corresponder con ellos los cuatro límites del área.
+- PDF usa una página exactamente del tamaño del área (con 0,001 pt de
+  tolerancia), sin márgenes de página ni ajuste a la página.
+- SVG declara el área exacta como su `viewBox`; la anchura y la altura conservan
+  su proporción y los círculos siguen siendo círculos.
+- EMF y EMF+ redondean los límites de la imagen a unidades enteras del
+  dispositivo.
+
+**Qué contiene una imagen.** La previsualización del diálogo Guardar, el archivo
+guardado, la impresión y la copia de la vista gráfica como imagen
+(`Ctrl`+`Mayús`+`C` o el botón de portapapeles del diálogo) muestran la misma
+área y omiten las capas ocultas (sección 12.5). Los objetos con posición
+absoluta en pantalla conservan esa posición en la imagen. Las imágenes de fondo
+pertenecen al fondo de la vista y no se ocultan con su capa, ni en la vista ni
+en la imagen.
+
+**La misma área en otras rutas.** `ExportImage`, las funciones de guion
+`writePNGtoFile`, `getPNGBase64`, `exportSVG` y `exportPDF`, y la opción de
+línea de órdenes `--export` producen la misma área. `ExportImage` con el tipo
+`gif` o `webm` y la opción `--exportAnimation` se rechazan con un error, y la
+línea de órdenes nunca deja un archivo vacío.
+
+**Límites en esta versión.**
+
+- PSTricks, PGF/TikZ, Asymptote y DXF todavía no usan el área de exportación y
+  siguen escribiendo los objetos de las capas ocultas.
+- Un `Locus` heredado se dibuja solo con las muestras que ya tiene, que cubren la
+  ventana en la que se calculó; fuera de esa ventana puede verse incompleto.
+  Locus V2 no tiene ese límite.
+- El marco físico registrado dentro de un archivo EMF se redondea a las
+  centésimas de milímetro del formato.
+
 ---
 
 <!-- geocedg-guide-section: basic-geometry -->
@@ -1359,11 +1423,11 @@ ocultas** para la sesión actual.
   fijando la visibilidad de cada objeto de una capa, y esa visibilidad se guarda
   con el documento.
 
-**Exportaciones con una capa oculta.** PNG, PDF, EMF, la impresión y la copia
-de la vista gráfica como imagen siguen la vista y omiten las capas ocultas. SVG,
-PGF/TikZ, PSTricks, Asymptote y DXF siguen escribiendo los objetos de las capas
-ocultas en esta versión. Esta diferencia temporal termina cuando esas
-exportaciones se completen.
+**Exportaciones con una capa oculta.** PNG, PDF, SVG, EMF, la impresión, la
+previsualización de Guardar y la copia de la vista gráfica como imagen omiten
+las capas ocultas (sección 4.5). PGF/TikZ, PSTricks, Asymptote y DXF siguen
+escribiendo los objetos de las capas ocultas en esta versión. Esta diferencia
+temporal termina cuando esas exportaciones se completen.
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -1515,9 +1579,11 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 - No hay importación DXF, exportación de viewport, contrato de unidades físicas,
   exportación de texto, exportación del `Locus` heredado, contorneado de curvas
   implícitas ni exportación 3D.
-- Con una capa oculta, SVG, LaTeX (PGF/TikZ, PSTricks, Asymptote) y DXF siguen
-  escribiendo sus objetos, mientras que PNG, PDF, EMF y la impresión los omiten
-  (12.5).
+- LaTeX (PGF/TikZ, PSTricks, Asymptote) y DXF todavía no usan el área de
+  exportación y siguen escribiendo los objetos de las capas ocultas, mientras
+  que PNG, PDF, SVG, EMF y la impresión usan el área y los omiten (4.5, 12.5).
+- Un `Locus` heredado en una imagen solo está completo dentro de la ventana en
+  la que se muestreó (4.5).
 
 **No disponible**
 
@@ -1565,6 +1631,8 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Reflejar | ídem | `Reflect(S,line)` / `Mirror(S,line)` | nueva curva semántica | construya la recta espejo explícitamente; los ejes no son seleccionables |
 | Homotecia | ídem | `Dilate(S,k,O)` | nueva curva semántica | la longitud se escala por `abs(k)`; en `k=0` colapsa pero conserva su dominio |
 | Exportar DXF | Archivo → Importar y exportar → Exportar geometría 2D como DXF (experimental)… | — | archivo DXF (+ manifiesto) | preflight primero; petición completa estricta por defecto |
+| Exportar una imagen | Archivo → Importar y exportar → Vista gráfica como imagen… | `ExportImage` | archivo PNG, PDF, SVG, EMF/EMF+ | área de exportación exacta (sección 4.5) |
+| Elegir el área de exportación | Archivo → Área de exportación | — | — | solo de sesión; el contorno nunca se exporta |
 | Abrir un documento | Archivo → Abrir… | — | — | `.cedg` nativo, `.ggb` entrada de compatibilidad |
 | Guardar un documento | Archivo → Guardar / Guardar como… | — | — | guarde el trabajo nativo como `.cedg` |
 | Inspeccionar una definición | menú contextual → Inspeccionar definición… | — | — | solo lectura; no cambia el modo de presentación de Álgebra |
@@ -1657,6 +1725,9 @@ y no se traducen nunca.
 | `F2` | editar el objeto seleccionado |
 | `F1` | ayuda de la herramienta |
 | `Tab` | recorrer los controles |
+| `Ctrl`+`Mayús`+`U` | Vista gráfica como imagen… |
+| `Ctrl`+`Mayús`+`C` | copiar la vista gráfica como imagen del área de exportación |
+| `Ctrl`+`Mayús`+`D` | Exportar geometría 2D como DXF (experimental)… |
 
 ---
 

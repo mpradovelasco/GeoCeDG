@@ -2236,6 +2236,144 @@
       "notes": "Extended fidelity remains inside the same exporter under cedg.export.dxf.extended; no duplicate action."
     },
     {
+      "id": "export.picture",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.export.picture"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ExportPicture",
+      "icon_ref": "geocedg.action.ExportPicture",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B: PNG, PDF, SVG and EMF/EMF+ of the effective ExportArea through the single picture service; exact area, no outside padding, complete content outside the live viewport."
+    },    {
+      "id": "export.pstricks",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.export.pstricks"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ExportPstricks",
+      "icon_ref": "geocedg.action.ExportPstricks",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B exposes the host exporter; its area and hidden-layer semantics stay as at the base until PRE-G9B-R6-plus-C."
+    },    {
+      "id": "export.pgf",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.export.pgf"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ExportPgf",
+      "icon_ref": "geocedg.action.ExportPgf",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B exposes the host exporter; its area and hidden-layer semantics stay as at the base until PRE-G9B-R6-plus-C."
+    },    {
+      "id": "export.asymptote",
+      "kind": "product-action",
+      "target": {
+        "symbol": "host.export.asymptote"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "read-only",
+      "localization_ref": "geocedg.action.ExportAsymptote",
+      "icon_ref": "geocedg.action.ExportAsymptote",
+      "availability_profile_id": "host-inherited",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B exposes the host exporter; its area and hidden-layer semantics stay as at the base until PRE-G9B-R6-plus-C."
+    },    {
+      "id": "export.area.define-rectangle",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.area.define-rectangle"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ExportAreaDefine",
+      "icon_ref": "geocedg.action.ExportAreaDefine",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B MANUAL producer: world bounds through a dialog, bound to the source view; SESSION state, no construction change, no undo point, no serialization."
+    },    {
+      "id": "export.area.use-export-points",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.area.use-export-points"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ExportAreaUsePoints",
+      "icon_ref": "geocedg.action.ExportAreaUsePoints",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B explicit EXPORT_POINTS producer, derived live from Export_1 and Export_2; SESSION state."
+    },    {
+      "id": "export.area.show",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.area.show"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ExportAreaShow",
+      "icon_ref": "geocedg.action.ExportAreaShow",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B transient overlay of the effective export area in Graphics 1; presentation only, never exported."
+    },    {
+      "id": "export.area.clear",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.area.clear"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ExportAreaClear",
+      "icon_ref": "geocedg.action.ExportAreaClear",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-B back to the automatic resolution: Export_1/Export_2 when valid, otherwise the visible viewport."
+    },
+
+    {
       "id": "help.input-panel",
       "kind": "help-route",
       "target": {
@@ -2842,7 +2980,15 @@
       "toolbar_action_ids": [],
       "overflow_action_ids": [],
       "menu_action_ids": [
-        "export.dxf-2d"
+        "export.picture",
+        "export.dxf-2d",
+        "export.pstricks",
+        "export.pgf",
+        "export.asymptote",
+        "export.area.define-rectangle",
+        "export.area.use-export-points",
+        "export.area.show",
+        "export.area.clear"
       ],
       "context_action_ids": [],
       "inspector_action_ids": [],
@@ -3064,9 +3210,9 @@
     },
     {
       "id": "document.sheet-export",
-      "target": "PDF/SVG sheet production and broad CAD import",
+      "target": "PDF/SVG sheet production (ISO A borders, drawing scale and units, title blocks) and broad CAD import",
       "disposition": "deferred",
-      "reason": "Only current native/compatibility document handling and approved DXF export are in scope.",
+      "reason": "PRE-G9B-R6-plus-B delivered the picture export (PNG, PDF, SVG, EMF/EMF+) of a session ExportArea, Print Preview and the exposure of the LaTeX and DXF exporters; ISO A areas and borders remain with PRE-G9B-R6-plus-E3, units and engineering scale with D1 and C, title blocks with G15, and broad CAD import stays out of scope.",
       "required_authority": "Independent document/export design and author authorization"
     },
     {
@@ -3191,7 +3337,15 @@
     {
       "id": "file-import-export",
       "name_key": "Group.File.ImportExport",
-      "action_ids": ["export.dxf-2d"],
+      "action_ids": ["export.picture", "export.dxf-2d", "export.pstricks", "export.pgf",
+        "export.asymptote"],
+      "toolbar_action_ids": []
+    },
+    {
+      "id": "file-export-area",
+      "name_key": "Group.File.ExportArea",
+      "action_ids": ["export.area.define-rectangle", "export.area.use-export-points",
+        "export.area.show", "export.area.clear"],
       "toolbar_action_ids": []
     },
     {
@@ -3378,6 +3532,8 @@
         {"kind": "separator"},
         {"kind": "actions", "group_id": "file-import-export"},
         {"kind": "separator"},
+        {"kind": "actions", "group_id": "file-export-area"},
+        {"kind": "separator"},
         {"kind": "actions", "group_id": "file-close"}
       ]
     },
@@ -3520,6 +3676,7 @@
     "Group.File.Save": {"en": "Save", "es": "Guardar"},
     "Group.File.Print": {"en": "Print", "es": "Imprimir"},
     "Group.File.ImportExport": {"en": "Import and export", "es": "Importar y exportar"},
+    "Group.File.ExportArea": {"en": "Export area", "es": "Área de exportación"},
     "Group.File.Close": {"en": "Close", "es": "Cerrar"},
     "Group.Edit.History": {"en": "History", "es": "Historial"},
     "Group.Edit.Selection": {"en": "Selection and editing", "es": "Selección y edición"},
@@ -4121,6 +4278,166 @@
       "en": "Cannot perform Legacy laboratory (separate session) in the current context.",
       "es": "No se puede ejecutar Laboratorio heredado (sesión separada) en el contexto actual."
     },
+    "geocedg.action.ExportPicture.name": {
+      "en": "Graphics View as Picture…",
+      "es": "Vista gráfica como imagen…"
+    },
+    "geocedg.action.ExportPicture.short_help": {
+      "en": "Export the export area as PNG, PDF, SVG or EMF/EMF+.",
+      "es": "Exporta el área de exportación como PNG, PDF, SVG o EMF/EMF+."
+    },
+    "geocedg.action.ExportPicture.long_help": {
+      "en": "Open the picture dialog. The exported rectangle is the effective export area: an area defined in File, otherwise Export_1 and Export_2, otherwise the visible view. It is exported exactly and completely, also outside the visible view, and objects on hidden layers are omitted.",
+      "es": "Abre el diálogo de imagen. El rectángulo exportado es el área de exportación efectiva: un área definida en Archivo, si no Export_1 y Export_2, si no la vista visible. Se exporta de forma exacta y completa, también fuera de la vista visible, y omite los objetos de capas ocultas."
+    },
+    "geocedg.action.ExportPicture.status": {
+      "en": "Ready: Graphics View as Picture…",
+      "es": "Disponible: Vista gráfica como imagen…"
+    },
+    "geocedg.action.ExportPicture.error": {
+      "en": "Cannot perform Graphics View as Picture… in the current context.",
+      "es": "No se puede ejecutar Vista gráfica como imagen… en el contexto actual."
+    },    "geocedg.action.ExportPstricks.name": {
+      "en": "PSTricks…",
+      "es": "PSTricks…"
+    },
+    "geocedg.action.ExportPstricks.short_help": {
+      "en": "Export the graphics view as PSTricks code for LaTeX.",
+      "es": "Exporta la vista gráfica como código PSTricks para LaTeX."
+    },
+    "geocedg.action.ExportPstricks.long_help": {
+      "en": "Open the PSTricks exporter. Until a later phase it keeps the host area rule and writes objects on hidden layers; the picture export already follows the export area.",
+      "es": "Abre el exportador PSTricks. Hasta una fase posterior conserva la regla de área del host y escribe los objetos de capas ocultas; la exportación de imagen ya sigue el área de exportación."
+    },
+    "geocedg.action.ExportPstricks.status": {
+      "en": "Ready: PSTricks…",
+      "es": "Disponible: PSTricks…"
+    },
+    "geocedg.action.ExportPstricks.error": {
+      "en": "Cannot perform PSTricks… in the current context.",
+      "es": "No se puede ejecutar PSTricks… en el contexto actual."
+    },    "geocedg.action.ExportPgf.name": {
+      "en": "PGF/TikZ…",
+      "es": "PGF/TikZ…"
+    },
+    "geocedg.action.ExportPgf.short_help": {
+      "en": "Export the graphics view as PGF/TikZ code for LaTeX.",
+      "es": "Exporta la vista gráfica como código PGF/TikZ para LaTeX."
+    },
+    "geocedg.action.ExportPgf.long_help": {
+      "en": "Open the PGF/TikZ exporter. Until a later phase it keeps the host area rule and writes objects on hidden layers; the picture export already follows the export area.",
+      "es": "Abre el exportador PGF/TikZ. Hasta una fase posterior conserva la regla de área del host y escribe los objetos de capas ocultas; la exportación de imagen ya sigue el área de exportación."
+    },
+    "geocedg.action.ExportPgf.status": {
+      "en": "Ready: PGF/TikZ…",
+      "es": "Disponible: PGF/TikZ…"
+    },
+    "geocedg.action.ExportPgf.error": {
+      "en": "Cannot perform PGF/TikZ… in the current context.",
+      "es": "No se puede ejecutar PGF/TikZ… en el contexto actual."
+    },    "geocedg.action.ExportAsymptote.name": {
+      "en": "Asymptote…",
+      "es": "Asymptote…"
+    },
+    "geocedg.action.ExportAsymptote.short_help": {
+      "en": "Export the graphics view as Asymptote code.",
+      "es": "Exporta la vista gráfica como código Asymptote."
+    },
+    "geocedg.action.ExportAsymptote.long_help": {
+      "en": "Open the Asymptote exporter. Until a later phase it keeps the host area rule and writes objects on hidden layers; the picture export already follows the export area.",
+      "es": "Abre el exportador Asymptote. Hasta una fase posterior conserva la regla de área del host y escribe los objetos de capas ocultas; la exportación de imagen ya sigue el área de exportación."
+    },
+    "geocedg.action.ExportAsymptote.status": {
+      "en": "Ready: Asymptote…",
+      "es": "Disponible: Asymptote…"
+    },
+    "geocedg.action.ExportAsymptote.error": {
+      "en": "Cannot perform Asymptote… in the current context.",
+      "es": "No se puede ejecutar Asymptote… en el contexto actual."
+    },    "geocedg.action.ExportAreaDefine.name": {
+      "en": "Define export area…",
+      "es": "Definir área de exportación…"
+    },
+    "geocedg.action.ExportAreaDefine.short_help": {
+      "en": "Enter the world bounds of the export area of Graphics 1.",
+      "es": "Introduce los límites en coordenadas mundo del área de exportación de Gráficos 1."
+    },
+    "geocedg.action.ExportAreaDefine.long_help": {
+      "en": "Enter xmin, xmax, ymin and ymax in world coordinates. The rectangle becomes the active export area of this session for every picture route; it is not saved with the document and creates no undo step.",
+      "es": "Introduzca xmin, xmax, ymin e ymax en coordenadas mundo. El rectángulo pasa a ser el área de exportación activa de la sesión para todas las rutas de imagen; no se guarda con el documento ni crea un paso de deshacer."
+    },
+    "geocedg.action.ExportAreaDefine.status": {
+      "en": "Ready: Define export area…",
+      "es": "Disponible: Definir área de exportación…"
+    },
+    "geocedg.action.ExportAreaDefine.error": {
+      "en": "Cannot perform Define export area… in the current context.",
+      "es": "No se puede ejecutar Definir área de exportación… en el contexto actual."
+    },    "geocedg.action.ExportAreaUsePoints.name": {
+      "en": "Use Export_1 and Export_2",
+      "es": "Usar Export_1 y Export_2"
+    },
+    "geocedg.action.ExportAreaUsePoints.short_help": {
+      "en": "Make the rectangle of the points Export_1 and Export_2 the active export area.",
+      "es": "Hace del rectángulo de los puntos Export_1 y Export_2 el área de exportación activa."
+    },
+    "geocedg.action.ExportAreaUsePoints.long_help": {
+      "en": "Activate the points Export_1 and Export_2 of the document as the export area. The area follows the points while they move; it requires two defined points that span a rectangle.",
+      "es": "Activa los puntos Export_1 y Export_2 del documento como área de exportación. El área sigue a los puntos cuando se mueven; requiere dos puntos definidos que formen un rectángulo."
+    },
+    "geocedg.action.ExportAreaUsePoints.status": {
+      "en": "Ready: Use Export_1 and Export_2",
+      "es": "Disponible: Usar Export_1 y Export_2"
+    },
+    "geocedg.action.ExportAreaUsePoints.error": {
+      "en": "Cannot perform Use Export_1 and Export_2 in the current context.",
+      "es": "No se puede ejecutar Usar Export_1 y Export_2 en el contexto actual."
+    },    "geocedg.action.ExportAreaShow.name": {
+      "en": "Show export area",
+      "es": "Mostrar área de exportación"
+    },
+    "geocedg.action.ExportAreaShow.short_help": {
+      "en": "Show or hide the outline of the export area in Graphics 1.",
+      "es": "Muestra u oculta el contorno del área de exportación en Gráficos 1."
+    },
+    "geocedg.action.ExportAreaShow.long_help": {
+      "en": "Show or hide a dashed outline of the effective export area in Graphics 1. The outline is presentation only and never appears in an export, a preview, a print or the clipboard.",
+      "es": "Muestra u oculta un contorno discontinuo del área de exportación efectiva en Gráficos 1. El contorno es solo presentación y nunca aparece en una exportación, una vista previa, una impresión ni el portapapeles."
+    },
+    "geocedg.action.ExportAreaShow.status": {
+      "en": "Ready: Show export area",
+      "es": "Disponible: Mostrar área de exportación"
+    },
+    "geocedg.action.ExportAreaShow.error": {
+      "en": "Cannot perform Show export area in the current context.",
+      "es": "No se puede ejecutar Mostrar área de exportación en el contexto actual."
+    },    "geocedg.action.ExportAreaClear.name": {
+      "en": "Clear export area",
+      "es": "Borrar área de exportación"
+    },
+    "geocedg.action.ExportAreaClear.short_help": {
+      "en": "Return to the automatic export area.",
+      "es": "Vuelve al área de exportación automática."
+    },
+    "geocedg.action.ExportAreaClear.long_help": {
+      "en": "Discard the defined export area. Picture exports then use Export_1 and Export_2 when both are valid points, otherwise the visible view.",
+      "es": "Descarta el área de exportación definida. Las exportaciones de imagen usan entonces Export_1 y Export_2 cuando ambos son puntos válidos y, si no, la vista visible."
+    },
+    "geocedg.action.ExportAreaClear.status": {
+      "en": "Ready: Clear export area",
+      "es": "Disponible: Borrar área de exportación"
+    },
+    "geocedg.action.ExportAreaClear.error": {
+      "en": "Cannot perform Clear export area in the current context.",
+      "es": "No se puede ejecutar Borrar área de exportación en el contexto actual."
+    },    "ExportArea.Define.Title": {"en": "Export area", "es": "Área de exportación"},
+    "ExportArea.Define.Xmin": {"en": "x minimum", "es": "x mínima"},
+    "ExportArea.Define.Xmax": {"en": "x maximum", "es": "x máxima"},
+    "ExportArea.Define.Ymin": {"en": "y minimum", "es": "y mínima"},
+    "ExportArea.Define.Ymax": {"en": "y maximum", "es": "y máxima"},
+    "ExportArea.Define.UseView": {"en": "Use visible view", "es": "Usar vista visible"},
+    "ExportArea.Invalid": {"en": "The export area needs four finite numbers that span a rectangle of non-zero width and height. The previous export area is kept.", "es": "El área de exportación necesita cuatro números finitos que formen un rectángulo de anchura y altura no nulas. Se conserva el área de exportación anterior."},
+    "ExportArea.ExportPointsUnavailable": {"en": "Export_1 and Export_2 must both be defined points that span a rectangle of non-zero width and height.", "es": "Export_1 y Export_2 deben ser puntos definidos que formen un rectángulo de anchura y altura no nulas."},
     "geocedg.action.ExportDxf.name": {
       "en": "Export 2D geometry as DXF (experimental)…",
       "es": "Exportar geometría 2D como DXF (experimental)…"

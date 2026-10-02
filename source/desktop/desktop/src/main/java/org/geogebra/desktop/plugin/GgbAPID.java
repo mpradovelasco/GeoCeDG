@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 import javax.swing.JOptionPane;
 
+import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -156,10 +157,8 @@ public class GgbAPID extends GgbAPIJre {
 		final File file = file1;
 		try {
 			// draw graphics view into image
-			GBufferedImage img = getApplication()
-					.getActiveEuclidianView()
-					.getExportImage(exportScale, transparent,
-							ExportType.PNG);
+			GBufferedImage img = exportImage(getApplication()
+					.getActiveEuclidianView(), exportScale, transparent);
 
 			if (greyscale) {
 				((GBufferedImageD) img).convertToGrayscale();
@@ -189,8 +188,7 @@ public class GgbAPID extends GgbAPIJre {
 	protected void exportPNGClipboardDPIisNaN(boolean transparent,
 			double exportScale, EuclidianView ev) {
 		// pastes into more programs
-		GBufferedImage img = ev.getExportImage(exportScale, transparent,
-				ExportType.PNG);
+		GBufferedImage img = exportImage(ev, exportScale, transparent);
 
 		ImageSelection imgSel = new ImageSelection(
 				GBufferedImageD.getAwtBufferedImage(img));
@@ -201,9 +199,30 @@ public class GgbAPID extends GgbAPIJre {
 	@Override
 	protected String base64encodePNG(boolean transparent, double DPI,
 			double exportScale, EuclidianView ev) {
-		GBufferedImage img = ((EuclidianViewInterfaceD) ev)
-				.getExportImage(exportScale, transparent, ExportType.PNG);
+		GBufferedImage img = exportImage(ev, exportScale, transparent);
+		if (img == null && pictureRoute(ev) != null) {
+			// the device limit: ExportImage reports its explicit size error
+			return null;
+		}
 		return GBufferedImageD.base64encode(GBufferedImageD.getAwtBufferedImage(img), DPI);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B graphics APIs render the export
+	 * area through the product picture route when the application offers one.
+	 */
+	private GBufferedImage exportImage(EuclidianView ev, double exportScale,
+			boolean transparent) {
+		PictureExportRoute route = pictureRoute(ev);
+		if (route != null) {
+			return route.exportImage(ev, exportScale, transparent, ExportType.PNG);
+		}
+		return ev.getExportImage(exportScale, transparent, ExportType.PNG);
+	}
+
+	private PictureExportRoute pictureRoute(EuclidianView ev) {
+		PictureExportRoute route = ((AppD) app).getPictureExportRoute();
+		return route != null && route.handles(ev) ? route : null;
 	}
 
 	@Override

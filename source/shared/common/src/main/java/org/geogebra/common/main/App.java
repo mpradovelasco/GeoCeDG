@@ -1415,6 +1415,42 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	}
 
 	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B export-area seam for the width
+	 * that picture routes size their output from.
+	 *
+	 * @param view
+	 *            exported view
+	 * @return export width in view pixels; the host returns the view's export
+	 *         frame width
+	 */
+	public double getExportFrameWidth(EuclidianView view) {
+		return view.getExportWidth();
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B export-area seam for the height
+	 * that picture routes size their output from.
+	 *
+	 * @param view
+	 *            exported view
+	 * @return export height in view pixels; the host returns the view's export
+	 *         frame height
+	 */
+	public double getExportFrameHeight(EuclidianView view) {
+		return view.getExportHeight();
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B product seam for animated picture
+	 * export (GIF, WebM).
+	 *
+	 * @return whether animated export is offered; always true in the host
+	 */
+	public boolean isAnimatedExportAvailable() {
+		return true;
+	}
+
+	/**
 	 * @param min
 	 *            real world x min
 	 * @param max

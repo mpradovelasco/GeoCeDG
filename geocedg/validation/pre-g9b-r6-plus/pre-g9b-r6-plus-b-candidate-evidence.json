@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-B",
+  "registeredPhaseId": "PRE-G9B-R6-PLUS-B",
+  "phaseKind": "PRODUCT_IMPLEMENTATION_DESKTOP_EXPORT_SURFACE_AND_SESSION_EXPORT_AREA",
+  "report": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-B",
+    "tools/agent/verify.ps1 -Profile INTEGRATION"
+  ],
+  "acceptanceRule": "both ACCEPTED / COMPLETE on the same exact commit and tree; neither substitutes for the other",
+  "finalRequired": false,
+  "productChange": true,
+  "serializationChange": "NONE",
+  "guideImpact": "UPDATED",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "verificationInfrastructureImpact": "PHASE_LOCAL",
+  "entry": {
+    "implementationBase": {"commit": "f6194f09358de9c5f8ac5051c31b3a9dc8a9491b", "tree": "9ac09c5371bce7d9b093541f232b43464073118b"},
+    "localMainOriginMainLiveRemoteMain": "f6194f09358de9c5f8ac5051c31b3a9dc8a9491b",
+    "worktree": "clean",
+    "branch": "phase/pre-g9b-r6-plus-b-export-surface",
+    "branchPublished": false,
+    "deletedMergedLocalBranches": [
+      {"branch": "phase/pre-g9b-r6-plus-a1-layer-workspace", "was": "d32ad608b"},
+      {"branch": "phase/pre-g9b-r6-plus-a1-prompt", "was": "069c7a03d"},
+      {"branch": "phase/pre-g9b-r6-plus-b-prompt", "was": "f6194f093"},
+      {"branch": "phase/pre-g9b-r6-plus-p0-characterization-design", "was": "562e2bb1e"}
+    ],
+    "remoteBranchesDeleted": []
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-plus-b-export-surface-and-export-area.prompt.md",
+    "blobBase": "4a1e0bc537885546aa17d4dae5a68e3a7a8920cf",
+    "amendments": [
+      {"commit": "fe70c5ac", "blob": "d13b3cb182c0fed4b21bab30e074c697ec58f423", "content": "authorization, base, frozen class, DQ-B dispositions, raster contract"},
+      {"commit": "dd6d517c", "blob": "4ac70712bad82e6d5825c8fce2ed71f8b21742bc", "content": "author resolution of the DQ-B8 stop"},
+      {"commit": "574808a0", "blob": "feb0fb0d2e987477045c124f51216d11130f9083", "content": "author resolution of the characterization stops"}
+    ],
+    "amendedInOwnCommits": true
+  },
+  "sharedSeams": [
+    {"seam": "App.getExportFrameWidth(view) / getExportFrameHeight(view)", "hostDefault": "view.getExportWidth() / getExportHeight()"},
+    {"seam": "App.isAnimatedExportAvailable()", "hostDefault": "true"},
+    {"seam": "EuclidianView.drawActionObjectsOnShownLayers(g)", "hostDefault": "the A-1 filtered action pass; drawObjects uses it with identical behavior"},
+    {"seam": "CmdExportImage sizes through the frame seam; gif/webm refused through PictureExportPolicy", "hostDefault": "upstream behavior"},
+    {"seam": "AppD.getPictureExportRoute()", "hostDefault": "null"},
+    {"seam": "AppD.getSavePreviewImage(extension, maxX, maxY)", "hostDefault": "getExportImage(maxX, maxY)"},
+    {"seam": "AppD.isUpstreamExportEntryAvailable(entry)", "hostDefault": "true"},
+    {"seam": "PDFGraphics2D.setExactPageSize(width, height)", "hostDefault": "not called: byte-identical output"},
+    {"seam": "SVGExtensions.setExactViewBox(width, height)", "hostDefault": "not called: integer viewBox"},
+    {"seam": "LocusRenderPolicy2D export resolution", "hostDefault": "resolution 1 when not exporting"}
+  ],
+  "freehep": {
+    "provenanceRecord": "docs/licensing/freehep-vectorgraphics-provenance.md",
+    "provenanceMirror": "geocedg/validation/pre-g9b-r6-plus/freehep-vectorgraphics-provenance.json",
+    "modifiedFiles": ["source/desktop/desktop/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java"],
+    "otherFamiliesChanged": false,
+    "apacheInferred": false,
+    "hostPdfNormalizedSha256": "d392d83957e4724d34c81efd18a814ba33761234a5039cc8f8a4a91ea219fbb7",
+    "hostPdfIdenticalToBase": true
+  },
+  "pdfExactness": {
+    "case": "200.15 x 150.355 px at 50 px/unit, printingScale 1",
+    "requestedPt": [113.47086614173229, 85.24062992125982],
+    "mediaBox": ["0", "0", "113.470866142", "85.240629921"],
+    "absoluteErrorPt": 2.6771829197969055E-10,
+    "tolerancePt": 0.001,
+    "pageTransform": "1 0 0 -1 0 85.240629921 cm",
+    "viewportTransform": "0.566929134 0 0 0.566929134 0 0 cm",
+    "areaClip": "0 0 200.15 150.355 re",
+    "pageMargins": 0,
+    "fitToPage": false,
+    "crop": false,
+    "additionalScaling": false
+  },
+  "rasterRule": "grid = max(1, round(w*s)) x max(1, round(h*s)); canvas scaled by grid/w and grid/h; world bounds unchanged; no padding, +2, widening, narrowing or crop",
+  "savePreview": {
+    "route": "GuiManagerD.showSaveDialog -> GeoGebraFileChooser MODE_GEOGEBRA_SAVE preview",
+    "reproduction": "reused chooser, same existing file reselected after hiding the layer: preview kept 404 red pixels (stale); another file and back: 0",
+    "fix": "format context and refreshPreview on every opening; picture formats through the picture service; native Save keeps the host thumbnail",
+    "regression": "PreG9BR6PlusBExportSurfaceTest.reopeningSaveWithTheSameNameRegeneratesThePreview"
+  },
+  "screenAnchored": {
+    "rule": "screen-anchored -> export canvas",
+    "baseCharacterization": "host Export_1/Export_2 (0,-1)-(4,3): 202x202 and the anchored text absent, identical on a git archive of f6194f09 and on the candidate host path",
+    "geocedg": "200x200 with the text at its canvas position"
+  },
+  "interimC": {
+    "pgfSha256": "1d2570f9453ad70c64a5f7c9deac22c0362520358bf4c259d84795f04d364844",
+    "pstricksSha256": "ba1a29b2f9d1f499a4131235f1b210132c0118beba0869ef204cd136c098c514",
+    "asymptoteSha256": "9e5cf21cfd5f5a52f595dad437817410a8301eede902e1e37c173577a3eeffbc",
+    "dxfSha256": "e7ba040534c447cf40e3c005ab18c0d2780ceaa9c70e9ea0cc2ac0ccd980f0f2",
+    "identicalOnBaseArchive": true,
+    "unchangedByManualArea": true
+  },
+  "ggbscriptMatrix": {
+    "commandAdded": "ExportImage",
+    "role": "GEOCEDG_MODIFIED",
+    "rows": 6,
+    "probes": 14,
+    "rowVerdict": "UNSUPPORTED_TRUTHFUL / IllegalArgument (X=ExportImage(\"type\",\"gif\"))",
+    "inventoryReference": "org.geocedg.common.export.PictureExportPolicy",
+    "schemaOrGateChanged": false,
+    "matrixSha256": "24344e9333a40f37271443190205fcc80bea5afd2cf4bfa0e2e4271d237d1296"
+  },
+  "registration": {
+    "phaseId": "PRE-G9B-R6-PLUS-B",
+    "phaseIdReason": "registry schema requires upper-case phase ids; verify.ps1 upper-cases -Phase before resolving",
+    "requiredCheckIds": ["compile.shared.semantic", "compile.desktop.semantic", "workspace-profile.product", "junit.shared.pre-g9b-r6-plus-b.semantic", "junit.desktop.pre-g9b-r6-plus-b.semantic", "static.ggbscript-matrix-inputs.semantic", "ggbscript-matrix.product"],
+    "profileAuthorityAmendment": "tools/agent/workspace-profile-validation.ps1 approves the eight B action ids (A-1 pattern); input pin updated",
+    "registryShapePins": {"selections": 36, "phaseSelections": 44, "pre-g9b-r6.desktop": 54, "pre-g9b-r6-plus-b.shared": 21, "pre-g9b-r6-plus-b.desktop": 241}
+  },
+  "planIdentities": {
+    "PHASE PRE-G9B-R6-plus-B": {"coverage": "COMPLETE", "nodes": 11, "executionPlanHash": "e98cf890c036e9b46d144543196b89d2d4d31375f00fa47a2692bc8a77ae2fd8"},
+    "INTEGRATION": {"coverage": "COMPLETE", "nodes": 46},
+    "FINAL": {"coverage": "COMPLETE", "nodes": 68},
+    "STATIC": {"coverage": "COMPLETE", "nodes": 10},
+    "INFRA_UNIT": {"coverage": "COMPLETE", "nodes": 22}
+  },
+  "inventory": {
+    "pinsBefore": {"junit_inventory": "b6e11fe431ea7e8ee25c5ce176f8c865db8a892345de335f3da72d921d649338", "static_contracts": "c2b6e3883d6cadf72510bd37566555f7233b65d920dea8dd1c92814ecbaafe40", "workspaceProfileValidationInput": "f52472d679869ecf7d500407390a59e9828673ab40077c4b210cf50d2ba17128", "ggbscriptMatrixInput": "ea6dcbf0861b83f5c3c3a2acd65b943b5808606828cd511877c07918a2ef227b"},
+    "pinsAfter": {"junit_inventory": "4ebae708695ec325ccfa75a98479278484538b927a0f0d115451d19d11573dca", "static_contracts": "eaba0ba56bc6de2b08996e1aafe68e53ec973a6be6b758c664bd4b877869b403", "workspaceProfileValidationInput": "2e5b328dedec1e673dd8c65942730da49169802e4d35bc0628e348302584a122", "ggbscriptMatrixInput": "24344e9333a40f37271443190205fcc80bea5afd2cf4bfa0e2e4271d237d1296"},
+    "changes": [
+      {"id": "module desktop discovery", "from": 1697, "to": 1733, "sha256": "c7499918ceed8948feddf2c67b870fe3fbcd71901169eaebeed953a1c6a29a90"},
+      {"id": "final.desktop", "from": 1691, "to": 1727, "sha256": "f019d45c6a7eb5d54294078267d023fef01def550a8811080e1dc74f9d195514"},
+      {"id": "pre-g9b-r6.desktop", "from": 53, "to": 54, "sha256": "93da10597fb5e2180ea33330ef6f22b31222b90d54829d0a5c050524b6f78fae"},
+      {"id": "pre-g9b-r6-plus-b.shared", "from": null, "to": 21, "sha256": "373b352ec314f314e5f23056477bb40e1526afc37d9be43cfa46a0ada28f94a3"},
+      {"id": "pre-g9b-r6-plus-b.desktop", "from": null, "to": 241, "sha256": "a16e8888dee00c8e3350ec77f40634b43f304b06ff83673eddd335def6fae795"}
+    ],
+    "unchanged": {"module shared discovery": 5940, "final.shared": 6857},
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 with discovery and executed producer evidence; no hash typed by hand"
+  },
+  "preFreezeRegression": {
+    "focal": {"PreG9BR6PlusBPictureFidelityTest": 15, "PreG9BR6PlusBExportSurfaceTest": 20, "PreG9BR6CapabilityMatrixTest": 15, "PreG9BR6PlusA1HiddenLayerTest": 12, "failures": 0},
+    "developmentFullSuites": {"desktop": {"tests": 1732, "failures": 0, "skipped": 1, "note": "before the guide and CLI edits"}},
+    "producers": {
+      "final.shared": {"tests": 6857, "failures": 0, "skipped": 10},
+      "final.desktop": {"tests": 1727, "failures": 0, "skipped": 1},
+      "pre-g9b-r6.desktop": {"tests": 54, "failures": 0},
+      "pre-g9b-r6-plus-b.shared": {"tests": 21, "failures": 0},
+      "pre-g9b-r6-plus-b.desktop": {"tests": 241, "failures": 0}
+    },
+    "processLevelCommandLine": {"export": "exit 0, 85x85 PNG of Export_1/Export_2 (20,10)-(23,13) at 72 dpi (1x1 before the printing-scale fix)", "exportAnimation": "exit 1, message, no file"},
+    "checkstyle": "no finding in the touched sources; the remaining PreG9BR6PlusA1HiddenLayerTest.java:188 warning is pre-existing",
+    "upstreamBoundary": "OK, 893 registered files",
+    "developmentStatic": {"runId": "verification-60ae3acdaa2d4919a688b7c048b540a8", "verdict": "ACCEPTED / COMPLETE"},
+    "developmentInfraUnit": {"runId": "verification-26a4c42a392341a5979f9f52cbdbd809", "verdict": "ACCEPTED / COMPLETE", "leaves": 22},
+    "note": "development and inventory evidence, not acceptance campaigns"
+  },
+  "deviations": [
+    "PictureExportPolicy in org.geocedg.common.export carries the DQ-B1 rule so that CmdExportImage meets the existing inventory rule",
+    "opt-in PDF path also writes transforms and rectangular clips exactly",
+    "rectangle-shape viewport clip instead of the truncating Desktop setClip(double...)",
+    "useExportPoints discards a stored MANUAL rectangle (single area)",
+    "Save online treated as part of the excluded worksheet upload",
+    "profile-authority allow-list extension (A-1 precedent)",
+    "no new export specification; G5/DXF specifications untouched"
+  ],
+  "observations": [
+    "OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE",
+    "OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION (owner C)",
+    "OBS-B-FREEHEP-PATH-COORDINATE-PRECISION",
+    "OBS-A1-BACKGROUND-IMAGE-LAYER re-characterized: background pass not layered in view, preview and pictures"
+  ],
+  "temporaryInconsistencyWithC": {
+    "areaAndHiddenLayers": ["PNG", "PDF", "SVG", "EMF/EMF+", "preview", "print", "clipboard", "--export", "ExportImage", "graphics APIs"],
+    "unchangedUntilC": ["PSTricks", "PGF/TikZ", "Asymptote", "DXF"]
+  },
+  "authorSmoke": "checklist in the report section 17; not performed or attributed by the agent",
+  "authorizationState": {
+    "PRE-G9B-R6-plus-B": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "PRE-G9B-R6-plus-A-2, D0, D1, C, E1, E2, E3, F1, F2, G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

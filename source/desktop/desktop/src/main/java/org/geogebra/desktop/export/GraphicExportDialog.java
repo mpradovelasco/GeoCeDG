@@ -50,6 +50,7 @@ import org.freehep.graphicsio.emf.EMFPlusGraphics2D;
 import org.freehep.graphicsio.pdf.PDFGraphics2D;
 import org.freehep.graphicsio.svg.SVGGraphics2D;
 import org.freehep.util.UserProperties;
+import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -534,6 +535,9 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 	void updateSizeLabel() {
 		EuclidianView ev = (EuclidianView) getEuclidianView();
 		double printingScale = ev.getPrintingScale();
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B sizes come from the export-area seam
+		double exportWidth = app.getExportFrameWidth(ev);
+		double exportHeight = app.getExportFrameHeight(ev);
 		// takes dpi into account (note: eps has 72dpi)
 
 		StringBuilder sb = new StringBuilder();
@@ -543,7 +547,7 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			pixelHeight = psp.getPixelHeight();
 			cmWidth = (pixelWidth * 2.54) / getDPI();
 			cmHeight = (pixelHeight * 2.54) / getDPI();
-			exportScale = pixelWidth / ((double) ev.getExportWidth());
+			exportScale = pixelWidth / exportWidth;
 			break;
 
 		case FIXED_SIZE:
@@ -555,34 +559,34 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			// double screenPixelsY = 100 * ev.getPrintingScale() /
 			// ev.getYscale();
 
-			cmWidth = ev.getExportWidth() / 100.0 * screenPixels;
+			cmWidth = exportWidth / 100.0 * screenPixels;
 			// not screenPixelsY
 			// eg
 			// https://help.geogebra.org/topic/picture-export-adds-huge-margin-when-axes-ratio-not-1-1
-			cmHeight = ev.getExportHeight() / 100.0 * screenPixels;
+			cmHeight = exportHeight / 100.0 * screenPixels;
 
 			pixelWidth = (int) (cmWidth / 2.54 * getDPI());
 			pixelHeight = (int) (cmHeight / 2.54 * getDPI());
 
-			exportScale = pixelWidth / ((double) ev.getExportWidth());
+			exportScale = pixelWidth / exportWidth;
 
 			break;
 
 		case SIZEINCM:
 			exportScale = (printingScale * getDPI()) / 2.54 / ev.getXscale();
 			// cm size
-			cmWidth = printingScale * (ev.getExportWidth() / ev.getXscale());
+			cmWidth = printingScale * (exportWidth / ev.getXscale());
 
 			// getXscale() is not a typo, see #2894
 			// #4185 changed back to getYscale()
 			// * ev.getYscale() / ev.getXscale() added for when x:y ratio is not
 			// 1:1
 			// https://help.geogebra.org/topic/picture-export-adds-huge-margin-when-axes-ratio-not-1-1
-			cmHeight = printingScale * (ev.getExportHeight() / ev.getYscale())
+			cmHeight = printingScale * (exportHeight / ev.getYscale())
 					* ev.getYscale() / ev.getXscale();
 
-			pixelWidth = (int) Math.floor(ev.getExportWidth() * exportScale);
-			pixelHeight = (int) Math.floor(ev.getExportHeight() * exportScale);
+			pixelWidth = (int) Math.floor(exportWidth * exportScale);
+			pixelHeight = (int) Math.floor(exportHeight * exportScale);
 			break;
 		}
 
@@ -860,6 +864,18 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			boolean textAsShapes, int pixelWidth, int pixelHeight,
 			double cmWidth, double cmHeight, double exportScale,
 			boolean transparent0) {
+		PictureExportRoute route = pictureRoute(app, ev);
+		if (route != null) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the export area, not the view
+			try {
+				route.writeSVG(ev, file, textAsShapes,
+						cmWidth > 0 ? cmWidth / app.getExportFrameWidth(ev) : -1,
+						exportScale, transparent0);
+			} catch (IOException e) {
+				Log.debug(e);
+			}
+			return;
+		}
 		UserProperties props = (UserProperties) SVGGraphics2D
 				.getDefaultProperties();
 		props.setProperty(SVGGraphics2D.EMBED_FONTS, !textAsShapes);
@@ -934,6 +950,16 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			boolean useEMFplus, int pixelWidth, int pixelHeight,
 			double exportScale) {
 
+		PictureExportRoute route = pictureRoute(ev.getApplication(), ev);
+		if (route != null) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the export area, not the view
+			try {
+				route.writeEMF(ev, file, useEMFplus, exportScale);
+			} catch (IOException e) {
+				Log.debug(e);
+			}
+			return;
+		}
 		VectorGraphics g;
 		try {
 			if (useEMFplus) {
@@ -982,6 +1008,16 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			double exportScale) {
 
 		ImageIO.scanForPlugins();
+		PictureExportRoute route = pictureRoute(view.getApplication(), view);
+		if (route != null) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B exact page box of the export area
+			try {
+				route.writePDF(view, file, textAsShapes);
+			} catch (IOException e) {
+				Log.debug(e);
+			}
+			return;
+		}
 		// export text as shapes or plaintext
 		// shapes: better representation
 		// text: smaller file size, but some unicode symbols don't export eg
@@ -1054,8 +1090,38 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			boolean transparent, int dpi, double exportScale,
 			boolean exportToClipboard, ExportType exportType) {
 
+		PictureExportRoute route = ev instanceof EuclidianView
+				? pictureRoute(((EuclidianView) ev).getApplication(), ev) : null;
+		if (route != null) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the export area, not the view
+			try {
+				route.writePNG((EuclidianView) ev, file, transparent, dpi,
+						exportScale, exportType);
+				if (exportToClipboard) {
+					sendToClipboard(file);
+				}
+			} catch (IOException e) {
+				Log.debug(e);
+			}
+			return;
+		}
 		ev.exportImagePNG(exportScale, transparent, dpi, file,
 				exportToClipboard, exportType);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B picture-export seam.
+	 *
+	 * @param app application
+	 * @param ev exported view
+	 * @return the product route for this view, or null for the host path
+	 */
+	private static PictureExportRoute pictureRoute(App app, Object ev) {
+		if (!(app instanceof AppD) || !(ev instanceof EuclidianView)) {
+			return null;
+		}
+		PictureExportRoute route = ((AppD) app).getPictureExportRoute();
+		return route != null && route.handles((EuclidianView) ev) ? route : null;
 	}
 
 	/**

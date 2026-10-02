@@ -652,6 +652,62 @@ call and the shared background pass), the LaTeX exporters and DXF do not; they
 belong to `PRE-G9B-R6-plus-B` and `C`. The domain stays `0..9`; widening and
 hidden-layer persistence belong to `A-2`.
 
+### Picture export and the export area (PRE-G9B-R6-plus-B)
+
+`ExportArea` (`org.geocedg.desktop.export`) is an immutable world rectangle
+with an explicit source view id and its producer. `ExportAreaSession`, owned by
+`AppGeoCeDG`, resolves it per view: the explicitly activated producer
+(`MANUAL` or `EXPORT_POINTS`), then `Export_1`/`Export_2`, then the visible
+viewport; the upstream selection rectangle never counts. The state is session
+presentation: never serialized, never an undo point, never a modification, reset
+by New and Open. The live-view overlay is painted by `GeoCeDGEuclidianView`
+only.
+
+`PictureExportService` is the single renderer of the GeoCeDG picture routes. It
+paints a fresh `ExportViewport` per export: an `EuclidianViewD` with its own
+controller, view id (`0x40000000`) and drawables, no shared settings, never
+attached to the kernel (no kernel view bounds, no `notifyEuclidianViewCE`, no
+recomputation), whose coordinate system represents the area at the source
+scale and whose clip is the exact area (a rectangle shape, because the Desktop
+`setClip(double...)` truncates to `int`). Output mapping:
+
+- raster: an integer grid `round(w·s) × round(h·s)` onto which the exact bounds
+  are mapped by a sub-pixel transform;
+- PDF: the opt-in exact page of the vendored FreeHEP `PDFGraphics2D`
+  (`setExactPageSize`, modified third-party source, provenance in
+  `docs/licensing/freehep-vectorgraphics-provenance.md`) with instance
+  properties `PAGE_MARGINS = 0` and `FIT_TO_PAGE = false`; the page box,
+  transforms and rectangular clips are written with nine decimals, and a writer
+  that does not opt in is byte-identical to the base;
+- SVG: the exact fractional `viewBox` of `SVGExtensions.setExactViewBox`; no
+  `preserveAspectRatio` change;
+- EMF/EMF+: device bounds rounded to whole units; the FreeHEP EMF family is
+  unchanged and `rclFrame` keeps its physical quantization
+  (`OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION`, owner `C`).
+
+The routes reach the service through seams whose host defaults reproduce the
+base: `App.getExportFrameWidth/Height(view)` (size label, print scale,
+`ExportImage`), `App.isAnimatedExportAvailable()` (the `DQ-B1` refusal of
+`gif`/`webm` in `CmdExportImage` through
+`org.geocedg.common.export.PictureExportPolicy`, and of `--exportAnimation`),
+`AppD.getPictureExportRoute()` (the static `GraphicExportDialog` writers,
+`EuclidianViewD.print`, `GgbAPID`, `--export` through
+`PictureExportCommandLine`), `AppD.getSavePreviewImage(extension, …)` (the Save
+chooser, regenerated on every opening by `GeoGebraFileChooser.refreshPreview`;
+the native document Save keeps the host thumbnail) and
+`AppD.isUpstreamExportEntryAvailable(entry)` (the v1 fallback `FileMenuD`).
+`EuclidianView.drawActionObjectsOnShownLayers` lets the SVG groups of the
+viewport keep the `A-1` filter. A view that is not laid out yet (the command
+line) has no printing scale; `ExportViewport.printingScaleOf` then derives it
+from the view scale by the host rule, without changing the view.
+
+Screen-anchored objects stay anchored to the export canvas. Locus V2 is
+tessellated for the export resolution (`LocusRenderPolicy2D`), while a legacy
+`GeoLocus` is drawn only from its existing kernel samples
+(`OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE`). PSTricks, PGF/TikZ, Asymptote and DXF
+are exposed unchanged; their `ExportArea` integration and hidden-layer policy
+belong to `C`.
+
 ## Persistence and compatibility
 
 The round-1 native-save correction uses the existing archive reader to preflight

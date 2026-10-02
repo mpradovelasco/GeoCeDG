@@ -47,6 +47,10 @@ public class SVGExtensions extends org.freehep.graphicsio.svg.SVGGraphics2D {
 
 	private double cmWidth;
 	private double cmHeight;
+	// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B opt-in exact viewBox; NaN keeps
+	// the host integer viewBox
+	private double exactViewBoxWidth = Double.NaN;
+	private double exactViewBoxHeight = Double.NaN;
 
 	protected String title;
 	protected String desc;
@@ -89,11 +93,66 @@ public class SVGExtensions extends org.freehep.graphicsio.svg.SVGGraphics2D {
 			os.println("     width=\"" + cmWidth + "cm\"");
 			os.println("     height=\"" + cmHeight + "cm\"");
 
+		} else if (hasExactViewBox()) {
+			os.println("     width=\"" + exactViewBoxWidth + "px\"");
+			os.println("     height=\"" + exactViewBoxHeight + "px\"");
 		} else {
 			super.writeSize(os);
 
 		}
 
+		if (hasExactViewBox()) {
+			// the host header prints its integer viewBox right after this hook
+			this.os = new ExactViewBoxWriter(this.os, "     viewBox=\"0 0 "
+					+ exactViewBoxWidth + " " + exactViewBoxHeight + "\"");
+		}
+
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B exact canvas in user units. When
+	 * set before the export starts, the root viewBox (and the pixel size when no
+	 * centimetre size is given) carry these fractional values instead of the
+	 * integer Dimension, so the viewBox and the physical size describe the same
+	 * rectangle with the same aspect ratio and no scaling is anisotropic.
+	 *
+	 * @param width canvas width in user units, finite and positive
+	 * @param height canvas height in user units, finite and positive
+	 */
+	public void setExactViewBox(double width, double height) {
+		if (!(width > 0) || !(height > 0) || Double.isInfinite(width)
+				|| Double.isInfinite(height)) {
+			throw new IllegalArgumentException(
+					"exact viewBox must be finite and positive");
+		}
+		exactViewBoxWidth = width;
+		exactViewBoxHeight = height;
+	}
+
+	private boolean hasExactViewBox() {
+		return !Double.isNaN(exactViewBoxWidth);
+	}
+
+	/** Replaces the first root viewBox line of the host header, once. */
+	private static final class ExactViewBoxWriter extends PrintWriter {
+		private static final String VIEW_BOX_PREFIX = "     viewBox=\"";
+		private final String viewBoxLine;
+		private boolean replaced;
+
+		ExactViewBoxWriter(PrintWriter target, String viewBoxLine) {
+			super(target, true);
+			this.viewBoxLine = viewBoxLine;
+		}
+
+		@Override
+		public void println(String line) {
+			if (!replaced && line != null && line.startsWith(VIEW_BOX_PREFIX)) {
+				replaced = true;
+				super.println(viewBoxLine);
+			} else {
+				super.println(line);
+			}
+		}
 	}
 
 	public void setElementTitle(String title) {

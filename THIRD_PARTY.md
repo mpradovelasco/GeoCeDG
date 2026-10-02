@@ -46,6 +46,12 @@ official GeoGebra legal repository on 2026-09-15.
 The full JAR-by-JAR mapping is intentionally machine-readable rather than
 duplicated here. It is joined to actual staged bytes by the package builder.
 
+## Vendored third-party source inside the inherited tree
+
+| Component | Recorded terms | Provenance | Status |
+|---|---|---|---|
+| FreeHEP VectorGraphics, `source/desktop/desktop/src/main/java/org/freehep/**` | release 2.0 notes: LGPL (version not stated); 30 files carry a GeoGebra GmbH EUPL-1.2 header; the later Apache-2.0 option of the current FreeHEP repository is not attributed to this snapshot | FreeHEP VectorGraphics 2.0 line (2006-12-07); `PDFGraphics2D.java` matches FreeHEP revision `36ad488`; modified by GeoGebra and, in `PDFGraphics2D.java` only, by GeoCeDG (`PRE-G9B-R6-plus-B`) | RECORDED — package legal-bundle treatment open for release review; see `docs/licensing/freehep-vectorgraphics-provenance.md` |
+
 ## Renderer fonts
 
 The Windows runtime distributes 46 exact TTF files. All 46 are connected to

@@ -52,6 +52,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.geocedg.desktop.export.PictureExportCommandLine;
+import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.jre.util.DownloadManager;
@@ -854,6 +856,16 @@ public class GeoGebraFrame extends JFrame
 		final CommandLineArguments args = app.getCommandLineArgs();
 
 		if (args != null && args.containsArg("exportAnimation")
+				&& !app.isAnimatedExportAvailable()) {
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B explicit rejection while
+			// Animated GIF stays outside the product surface (AQ-X5)
+			Log.error(PictureExportCommandLine.animationRejectedMessage());
+			System.err.println(PictureExportCommandLine.animationRejectedMessage());
+			AppD.exit(PictureExportCommandLine.FAILURE);
+			return;
+		}
+
+		if (args != null && args.containsArg("exportAnimation")
 				&& args.containsArg("slider")) {
 
 			String dpiStr = args.getStringValue("dpi");
@@ -1062,6 +1074,17 @@ public class GeoGebraFrame extends JFrame
 
 							export3D = true;
 						}
+					}
+
+					PictureExportRoute route = app.getPictureExportRoute();
+					if (!export3D && route != null
+							&& route.handles((EuclidianView) ev)) {
+						// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the common
+						// service and ExportArea; explicit failure status (DQ-B9)
+						AppD.exit(PictureExportCommandLine.export(route,
+								(EuclidianView) ev, new File(filename), dpi,
+								args.getStringValue("maxSize")));
+						return;
 					}
 
 					double printingScale = ev.getPrintingScale();

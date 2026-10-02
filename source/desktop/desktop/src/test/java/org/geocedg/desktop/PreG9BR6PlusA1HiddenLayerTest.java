@@ -323,7 +323,10 @@ class PreG9BR6PlusA1HiddenLayerTest {
 		assertTrue(dxf.contains("CIRCLE") && dxf.contains("LINE"), "DXF writes them");
 
 		app.getLayerWorkspace().setLayerHidden(3, true);
-		assertEquals(svg, svg(app, view), "SVG belongs to B");
+		// PRE-G9B-R6-plus-B delivered the SVG part: the picture service omits it
+		String hiddenSvg = svg(app, view);
+		assertNotEquals(svg, hiddenSvg, "SVG belongs to B");
+		assertFalse(hiddenSvg.contains("layer3"), "B omits the hidden layer from SVG");
 		assertEquals(latex, latex(app, view), "LaTeX exclusion belongs to C");
 		assertEquals(dxf, dxf(app), "DXF policy belongs to C");
 		assertTrue(s.isEuclidianVisible());

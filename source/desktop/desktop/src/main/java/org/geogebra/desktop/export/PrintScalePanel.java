@@ -198,7 +198,7 @@ public class PrintScalePanel extends JPanel {
 			this.remove(cmModePanel);
 			this.remove(fixedSizeModePanel);
 			this.add(pxModePanel);
-			updateSizeTextFields(ev.getExportWidth(), ev.getExportHeight());
+			updateSizeTextFields(exportWidth(), exportHeight());
 			break;
 		case FIXED_SIZE:
 			this.remove(cmModePanel);
@@ -300,10 +300,19 @@ public class PrintScalePanel extends JPanel {
 		}
 	}
 
+	// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B pixel sizes through the export-area seam
+	private int exportWidth() {
+		return (int) Math.round(ev.getApplication().getExportFrameWidth(ev));
+	}
+
+	private int exportHeight() {
+		return (int) Math.round(ev.getApplication().getExportFrameHeight(ev));
+	}
+
 	void fireWidthTextFieldUpdate() {
 		try {
 			int width = Integer.parseInt(tfSize1.getText());
-			int height = (width * ev.getExportHeight()) / ev.getExportWidth();
+			int height = (width * exportHeight()) / exportWidth();
 			updateSizeTextFields(width, height);
 			notifyListeners();
 		} catch (Exception e) {
@@ -315,7 +324,7 @@ public class PrintScalePanel extends JPanel {
 	void fireHeightTextFieldUpdate() {
 		try {
 			int height = Integer.parseInt(tfSize2.getText());
-			int width = (height * ev.getExportWidth()) / ev.getExportHeight();
+			int width = (height * exportWidth()) / exportHeight();
 			updateSizeTextFields(width, height);
 			notifyListeners();
 		} catch (Exception e) {

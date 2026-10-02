@@ -456,12 +456,17 @@ Symbolic action IDs remain the manifest authority.
 
 These eleven groups remain the professional Construction design; R1 is consumed
 through existing actions and does not change the 110 stable action IDs.
-Current live catalog (2026-10-02): 116 actions. The 110-action figure in this
+Current live catalog (2026-10-02): 124 actions. The 110-action figure in this
 section is the G9U1 baseline; POST-G9U1-A7 added two navigation actions,
-PRE-G9B-R4 three authoring tools, and PRE-G9B-R6-plus-A-1 the one-shot
+PRE-G9B-R4 three authoring tools, PRE-G9B-R6-plus-A-1 the one-shot
 `construction.working-layer` mode, placed in the Move group (`edit-selection`)
-after Move and Rotate around Point. The working layer and hidden layers it uses
-are session presentation state, never document or geometric state.
+after Move and Rotate around Point, and PRE-G9B-R6-plus-B eight File actions:
+`export.picture`, `export.pstricks`, `export.pgf` and `export.asymptote` in the
+import/export group, and the four session export-area actions
+(`export.area.define-rectangle`, `export.area.use-export-points`,
+`export.area.show`, `export.area.clear`) in a new File group. The working layer,
+hidden layers and export area are session presentation state, never document or
+geometric state.
 The main toolbar should expose groups, not one permanent button per action.
 Actions the author explicitly does not need as direct buttons—such as Delete,
 Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and

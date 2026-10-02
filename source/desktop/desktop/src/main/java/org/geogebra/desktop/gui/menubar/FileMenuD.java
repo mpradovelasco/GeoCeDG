@@ -39,6 +39,7 @@ import org.geogebra.desktop.export.pstricks.PgfFrame;
 import org.geogebra.desktop.export.pstricks.PstricksFrame;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.main.AppD;
+import org.geogebra.desktop.main.AppD.UpstreamExportEntry;
 import org.geogebra.desktop.util.GuiResourcesD;
 import org.geogebra.editor.share.util.Unicode;
 
@@ -140,21 +141,29 @@ class FileMenuD extends BaseMenu {
 		add(saveAsAction);
 		addSeparator();
 
-		mi = add(saveOnlineAction);
-		mi.setIcon(app.getMenuIcon(GuiResourcesD.EXPORT_SMALL));
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B a product may close the upstream
+		// worksheet upload, Animated GIF, STL and Collada entries
+		if (available(UpstreamExportEntry.WORKSHEET)) {
+			mi = add(saveOnlineAction);
+			mi.setIcon(app.getMenuIcon(GuiResourcesD.EXPORT_SMALL));
+		}
 
 		// export
 		JMenu submenu = new JMenu(loc.getMenu("Export"));
 		submenu.setIcon(app.getEmptyIcon());
 		add(submenu);
 
-		mi = submenu.add(exportWorksheet);
-		setMenuShortCutShiftAccelerator(mi, 'W');
+		if (available(UpstreamExportEntry.WORKSHEET)) {
+			mi = submenu.add(exportWorksheet);
+			setMenuShortCutShiftAccelerator(mi, 'W');
+		}
 
 		mi = submenu.add(exportGraphicAction);
 		setMenuShortCutShiftAccelerator(mi, 'U');
 
-		submenu.add(exportAnimationAction);
+		if (available(UpstreamExportEntry.ANIMATED_GIF)) {
+			submenu.add(exportAnimationAction);
+		}
 
 		mi = submenu.add(drawingPadToClipboardAction);
 		setMenuShortCutShiftAccelerator(mi, 'C');
@@ -165,11 +174,17 @@ class FileMenuD extends BaseMenu {
 
 		submenu.add(exportPgfAction);
 		submenu.add(exportAsymptoteAction);
-		submenu.add(exportSTLaction);
+		if (available(UpstreamExportEntry.STL)) {
+			submenu.add(exportSTLaction);
+		}
 
 		if (app.is3D()) {
-			submenu.add(exportColladaAction);
-			submenu.add(exportColladaHTMLAction);
+			if (available(UpstreamExportEntry.COLLADA)) {
+				submenu.add(exportColladaAction);
+			}
+			if (available(UpstreamExportEntry.COLLADA_HTML)) {
+				submenu.add(exportColladaHTMLAction);
+			}
 		}
 		addSeparator();
 
@@ -198,6 +213,10 @@ class FileMenuD extends BaseMenu {
 
 		// support for right-to-left languages
 		app.setComponentOrientation(this);
+	}
+
+	private boolean available(UpstreamExportEntry entry) {
+		return app.isUpstreamExportEntryAvailable(entry);
 	}
 
 	/**

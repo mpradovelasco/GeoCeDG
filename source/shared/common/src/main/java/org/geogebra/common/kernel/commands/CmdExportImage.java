@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.geocedg.common.export.PictureExportPolicy;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
@@ -77,7 +78,13 @@ public class CmdExportImage extends CmdScripting {
 			argMap.put(StringUtil.toLowerCaseUS(key
 					.toValueString(StringTemplate.maxDecimals)), value);
 		}
-		final ExportType type = toExportType(getString(argMap, "type", ""));
+		String typeName = getString(argMap, "type", "");
+		final ExportType type = toExportType(typeName);
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B explicit rejection, never a
+		// silent no-op, where the product offers no animated export (DQ-B1)
+		if (PictureExportPolicy.rejectsAnimatedType(app, type)) {
+			throw argErr(c, new MyStringBuffer(kernel, typeName));
+		}
 		final int view = (int) getValue(argMap, "view", 1);
 		final int time = (int) getValue(argMap, "time", 200);
 		final boolean transparent = getBool(argMap, "transparent", false);
@@ -123,7 +130,8 @@ public class CmdExportImage extends CmdScripting {
 		}
 
 		EuclidianView ev = app.getActiveEuclidianView();
-		double viewWidth = ev.getExportWidth();
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B sizes from the export-area seam
+		double viewWidth = app.getExportFrameWidth(ev);
 		double xScale = ev.getXscale();
 		double widthRW = viewWidth / xScale;
 
@@ -140,7 +148,7 @@ public class CmdExportImage extends CmdScripting {
 			exportScale = width / viewWidth;
 
 		} else if (height > 0) {
-			double viewHeight = ev.getExportHeight();
+			double viewHeight = app.getExportFrameHeight(ev);
 			exportScale = height / viewHeight;
 		} else if (scaleCM > 0) {
 
@@ -203,9 +211,9 @@ public class CmdExportImage extends CmdScripting {
 
 				if (pngBase64 == null) {
 
-					int w = (int) Math.floor(ev.getExportWidth() * exportScale);
+					int w = (int) Math.floor(app.getExportFrameWidth(ev) * exportScale);
 					int h = (int) Math
-							.floor(ev.getExportHeight() * exportScale);
+							.floor(app.getExportFrameHeight(ev) * exportScale);
 
 					throw MyError.forCommand(loc, loc.getPlain("ImageErrorAB",
 							w + "", h + ""), c.getName(), null);

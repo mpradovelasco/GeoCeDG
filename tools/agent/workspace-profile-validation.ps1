@@ -52,11 +52,24 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     $preG9BR6PlusA1ActionIds = @(
         "construction.working-layer"
     )
+    # PRE-G9B-R6-plus-B File/Export surface and session export-area actions,
+    # authorized for implementation on 2026-10-02; its canonical prompt and the
+    # B author-decision record own their contract.
+    $preG9BR6PlusBActionIds = @(
+        "export.picture",
+        "export.pstricks",
+        "export.pgf",
+        "export.asymptote",
+        "export.area.define-rectangle",
+        "export.area.use-export-points",
+        "export.area.show",
+        "export.area.clear"
+    )
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
-        $preG9BR6PlusA1ActionIds | Sort-Object -CaseSensitive)
+        $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4 and R6-plus-A-1 amendments."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4, R6-plus-A-1 and R6-plus-B amendments."
     }
     $featureIds = @($profile.features.id)
     if ($featureIds.Count -ne @($candidate.features).Count -or
