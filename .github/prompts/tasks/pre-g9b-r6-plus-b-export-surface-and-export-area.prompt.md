@@ -296,6 +296,88 @@ and decided:
   specific tests, stays within `B`. `FINAL` is not run without an explicit
   escalation and authorization.
 
+### Author resolution of the characterization stops (2026-10-02)
+
+The characterization raised two further stops before any product change: the
+legacy `GeoLocus` is sampled by `AlgoLocusND` inside a window derived from the
+live views' kernel bounds (one of 149 samples inside a disjoint area), and the
+FreeHEP `EMFHeader` derives the physical `rclFrame` from the integer device
+bounds with fixed device constants and truncation. It also found that the
+offscreen viewport is viable without kernel attachment, that the Save side
+preview is a stale thumbnail of the reused chooser, that screen-anchored
+objects stay naturally anchored to the export canvas, and that the SVG
+`viewBox` is integer. The author decided, keeping
+`VERIFICATION_CLASS = INTEGRATED_PHASE`:
+
+- **Legacy `Locus` (option a).** A legacy `GeoLocus` is never resampled or
+  recomputed to extend its coverage to the `ExportArea`. Changing the kernel
+  view bounds, calling `kernel.setEuclidianViewBounds` to export, provoking
+  `notifyEuclidianViewCE`, recomputing view-dependent algorithms, duplicating
+  the locus-generating semantics in the export layer, and creating a second
+  render-only locus algorithm are not authorized. Ordinary geometry and Locus
+  V2 respect the `ExportArea` completely, also outside the live viewport; a
+  legacy `GeoLocus` is rendered only from the samples the construction already
+  holds. `B` does not guarantee global coverage of a legacy locus outside its
+  existing sampling window and never claims that such an export is complete.
+  Residual observation `OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE`: legacy
+  `GeoLocus` coverage remains limited by its kernel/live-view sampling window;
+  `B` does not mutate or recompute the construction to extend it. It is not
+  promoted to `C`; the `G` closeout may keep it as a legacy-compatibility
+  limitation. This replaces the earlier obligation of complete legacy-locus
+  coverage outside the sampled window.
+- **EMF / EMF+ (option c).** `B` does not modify `org/freehep/graphicsio/emf/**`.
+  The `B` contract covers the geometric correspondence of the `ExportArea`,
+  correct drawing bounds and canvas, no `+2`, no crop, no added outside padding
+  and no geometric deformation. The physical `rclFrame` field and its relation
+  to units and engineering drawing scale are outside the physical contract of
+  `B`. Residual observation `OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION`, primary
+  owner `PRE-G9B-R6-plus-C` (after `D1`). The evidence keeps the requested and
+  emitted `rclBounds` and `rclFrame` and the observed quantization error.
+- **PDF.** The resolution of the `DQ-B8` stop is kept in full. The FreeHEP
+  provenance gate is technically sufficient. The versioned record identifies
+  the snapshot as the FreeHEP VectorGraphics 2.0 line at the exact revision
+  established, keeps copyright and provenance, and attributes to the snapshot
+  only the terms proven for that release or revision: Apache 2.0 is not
+  inferred retroactively from the current dual-licensed repository. No other
+  FreeHEP family is opened by the PDF remediation.
+- **SVG.** `preserveAspectRatio="none"` is not accepted as a general solution
+  when the integer `viewBox` and the physical size have different aspect
+  ratios: it must never introduce anisotropic scaling or deform circles,
+  angles or X/Y ratios to remove padding. The preferred route keeps the
+  geometric relation exact through a `viewBox` or transform of sufficient
+  precision, ideally in GeoGebra-owned `SVGExtensions` without modifying
+  FreeHEP. Contract: world bounds unchanged; no outside padding; no crop; no
+  anisotropic deformation; circles stay circles; X/Y ratio preserved;
+  `width`/`height` and `viewBox`/transform describe the same rectangle
+  coherently. `preserveAspectRatio="none"` may only be used if a test proves
+  the aspect ratios exactly coherent and free of deformation, never to hide an
+  integer-quantization mismatch.
+- **Save side preview.** The stale-thumbnail characterization is accepted. The
+  preview of the pending export is regenerated on every relevant opening of the
+  Save flow, through the common export service and the current `ExportArea`,
+  hidden layers and format context, so that
+  `save-dialog preview effective visibility == final export effective visibility`.
+  The native document Save keeps the same chooser and preview. Regression:
+  export with the layer visible; close and reopen Save with the same name; hide
+  the layer; reopen Save without changing the name; the preview is updated and
+  not stale.
+- **Screen-anchored objects.** They stay anchored to the export canvas and are
+  never converted to world coordinates through the live viewport. The
+  difference against the legacy `Export_1`/`Export_2` behavior is
+  characterized and documented, and is not a failure when the approved
+  `screen-anchored → export-canvas / presentation anchored` contract holds.
+- **Offscreen viewport.** Accepted with the characterized architecture: a
+  dedicated `EuclidianViewD`, its own controller, `EVNO_GENERAL`, no shared
+  settings (never `settingsChanged(settings)` on the live view's settings, whose
+  bound objects can be mutated), no `kernel.attach`, its own `viewId`, no
+  mutation of the live view, no change of construction values and no residual
+  cache or render state, with explicit side-effect tests.
+- **Class.** No escalation: no kernel widening for legacy `GeoLocus`, no FreeHEP
+  EMF change, a focal FreeHEP PDF change only, and no `ExportArea`
+  serialization. A second FreeHEP family, a kernel recomputation change, any
+  serialized state or a material widening of the shared renderer stops the
+  phase for reclassification.
+
 ### Raster discretization (author contract of 2026-10-02)
 
 `ExportArea.worldBounds` is the exact geometric authority. A PNG and every
@@ -351,9 +433,11 @@ prompt, not an author decision.
 - **Exact dimensions.** The area width and height in world units times the
   source view scale and the export scale give the exact output size. PDF uses
   it within `0.001 pt` per page-box dimension, SVG maps the exact bounds onto
-  its canvas, EMF/EMF+ quantize their integer fields by at most half a native
-  unit, and raster outputs follow the *Raster discretization* contract, all as
-  decided in the *Author resolution of the `DQ-B8` stop*. There is no `+2`.
+  its canvas through a `viewBox` of sufficient precision without anisotropy,
+  EMF/EMF+ map the area onto correct drawing bounds with their physical
+  `rclFrame` outside the `B` contract, and raster outputs follow the *Raster
+  discretization* contract, all as decided in the two author resolutions above.
+  There is no `+2`.
 - **Producers.**
   - `EXPORT_POINTS` is derived live from `Export_1` and `Export_2` whenever it
     is read. It is valid only when both labels name finite `GeoPoint` objects
@@ -608,6 +692,13 @@ still apply; the phase re-establishes every one it relies on before using it.
   or any silent rounding or truncation of the PDF physical size (`DQ-B8`).
 - Resolving the save-dialog preview by hiding the panel, by presenting it as an
   earlier file, or by a second render route with different semantics.
+- Resampling or recomputing a legacy `GeoLocus` for export: changing kernel
+  view bounds, `kernel.setEuclidianViewBounds`, `notifyEuclidianViewCE`,
+  recomputing view-dependent algorithms, duplicating locus semantics in the
+  export layer or a render-only locus algorithm.
+- Any change to `org/freehep/graphicsio/emf/**` or any FreeHEP family other
+  than `org/freehep/graphicsio/pdf/**`; `preserveAspectRatio="none"` used to
+  hide an integer-quantization mismatch.
 - Changes to the 3D view or its picture export, to Classic or Web behavior, or
   to the Classic diagnostic session, beyond upstream-identical seam defaults.
 - Every other subphase (`D0`, `D1`, `A-2`, `C`, `E1`, `E2`, `E3`, `F1`, `F2`,
@@ -669,7 +760,7 @@ or shortcut. Rendering data is never metric authority.
 | screen-anchored object | anchored to the export canvas at its presentation position; clipped normally outside the canvas; never converted through live-view world coordinates (`DQ-B3`) |
 | raster output | integer grid by a documented deterministic rule; the four exact world bounds map onto the canvas; world bounds unchanged |
 | Locus V2 at high export resolution | tessellated for the export viewport, not reused from the live view |
-| legacy locus | sampled for the export viewport window |
+| legacy locus | rendered only from the samples the construction already holds; never resampled or recomputed; coverage outside its existing sampling window not claimed (`OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE`) |
 | view-dependent command (`Corner`) | value unchanged by the export |
 | overlay shown | never present in any output |
 
@@ -697,14 +788,15 @@ executes all of them:
 | `T-EXACT-SIZE` | exact output size for inside, larger and disjoint areas in PNG (two scales), PDF, SVG, EMF and EMF+; zero outside padding; no `+2` |
 | `T-RASTER-BOUNDS` | the documented raster rule: world bounds unchanged, the four exact bounds mapped onto the canvas, no padding, no crop; requested versus effective resolution recorded as a sampling property |
 | `T-PDF-EXACT` | for the canonical cases: requested extent, emitted `/MediaBox`, absolute error `<= 0.001 pt` per dimension, applied transform, no margins, no `FIT_TO_PAGE`, no crop and no additional scaling |
-| `T-SVG-EXACT` | the exact world bounds map onto the SVG canvas without padding, crop or deformation; the physical `width` and `height` keep the backend precision |
-| `T-EMF-QUANTIZATION` | for each relevant EMF/EMF+ field: requested value, emitted value, smallest native unit and absolute error `<= 0.5` unit; no crop, padding or deformation |
+| `T-SVG-EXACT` | the exact world bounds map onto the SVG canvas without padding, crop or anisotropic deformation; `width`/`height` and `viewBox` describe the same rectangle with the same aspect ratio; circles stay circles |
+| `T-EMF-QUANTIZATION` | requested and emitted `rclBounds` and `rclFrame` with the observed quantization recorded (`rclFrame` outside the `B` contract, `OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION`); correct drawing bounds; no `+2`, crop, added padding or deformation |
 | `T-FREEHEP-CLASSIC` | the remediated PDF backend reproduces the base output byte for byte for every caller that does not opt in, including Classic |
-| `T-CONTENT` | points; lines, segments, rays and vectors; conics; polygons; functions; axes; grid; labels and text; legacy Locus; Locus V2 at export resolution — present and complete for inside, larger and disjoint areas in every picture format, with nothing outside the rectangle |
+| `T-CONTENT` | points; lines, segments, rays and vectors; conics; polygons; functions; axes; grid; labels and text; Locus V2 at export resolution — present and complete for inside, larger and disjoint areas in every picture format, with nothing outside the rectangle; the documented legacy-Locus behavior (rendered from its existing samples only) with construction XML and values invariant and no kernel bound change or recomputation |
 | `T-SVG-AREA` | SVG is written from the area, not clipped to the view, with its layer groups |
 | `T-HIDDEN-LAYERS` | every picture format, SVG included, and the preview omit objects on hidden layers; showing the layer restores them |
 | `T-PREVIEW-FINAL` | first reproduces the author flow `Picture export → Save → file chooser → right-hand preview panel` and identifies its chooser mode and route; then the save-dialog generated preview equals the final export in effective visibility and area, with an `A-1` hidden layer |
 | `T-NATIVE-SAVE-PREVIEW` | the native document Save preview, which shares the save-mode route, keeps its behavior |
+| `T-SAVE-PREVIEW-STALE` | export with the layer visible; close and reopen Save with the same name; hide the layer; reopen Save without changing the name; the preview is regenerated and not stale |
 | `T-SCREEN-ANCHORED` | screen-anchored objects keep their presentation position relative to the output canvas and are clipped normally; never converted through live-view world coordinates; the legacy `Export_1`/`Export_2` difference against the base is characterized |
 | `T-BACKGROUND-IMAGE` | the re-characterization of `OBS-A1-BACKGROUND-IMAGE-LAYER`; preview equals final; normal-view semantics unchanged |
 | `T-PRECEDENCE` | explicit producer > `EXPORT_POINTS` > viewport on every route; `selectionRectangle`, including a leftover one, ignored |
@@ -837,7 +929,10 @@ Stop and report rather than improvise when:
   consumers outside the GeoCeDG export (reclassification);
 - the PDF page box cannot meet `0.001 pt` per dimension;
 - an SVG probe proves that the integer `viewBox` forces a change of world
-  bounds, a deformation, padding or crop;
+  bounds, a deformation, padding or crop that `SVGExtensions` cannot avoid;
+- the work would need a second FreeHEP family, a change of kernel recomputation
+  (for example to extend legacy-locus coverage), any serialized state, or a
+  material widening of the shared renderer (reclassification);
 - the raster backend would force a change of the `ExportArea` world bounds;
 - the canvas-anchored semantics of screen-anchored objects cannot be preserved
   without turning presentation into geometry or materially widening scope
