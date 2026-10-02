@@ -1,51 +1,66 @@
 # PRE-G9B-R6-plus-D0 — normative unit-system design
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR NORMATIVE/DOCUMENTARY EXECUTION
+ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-02. That
-instruction fixed the unit decisions for `PRE-G9B-R6-plus-D0`, named the exact
-published base below, and authorized only the documentary preparation of this
-prompt, the record of the decisions and the status updates they strictly
-require. It stated that it **does not authorize the execution of `D0` or
-`D1`**. The decisions are recorded, versioned, in the
+The author's explicit instruction of 2026-10-02 approves the documentary
+preparation package of `PRE-G9B-R6-plus-D0` (`T_R6PLUS_D0_PROMPT`), names it as
+the exact execution base, gives the author dispositions on `DQ-D0-1` to
+`DQ-D0-13`, and authorizes the execution of `D0`. The instruction is recorded,
+versioned, in the
+[D0 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md).
+It also requires this amendment, as the first tracked edit of the phase, so
+that the prompt becomes the executable contract of the phase. The amendment
+replaces the prepared prompt of `T_R6PLUS_D0_PROMPT` (blob
+`beb4d6d97dd6c0e5d27b11d3876fa8647223e38b`): it records the authorized base,
+integrates the `DQ-D0` dispositions, the existing-specification boundary, the
+Picture-export boundary and the living-plan supersession, and removes the
+G9X1 cross-reference note the prepared prompt allowed. Where the prepared
+prompt and the record differed, the record prevailed; this amendment carries
+that precedence into the text. Every other scope, forbidden-scope and stop
+rule of the prepared prompt is kept. The unit decisions are recorded, versioned,
+in the
 [D0 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d0_author_decisions_record.md).
-The existence of this file is not authorization.
-
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-D0` and confirms or replaces the base below. That instruction
-may authorize, as the first tracked edit of the phase, an amendment of this
-prompt to the authorized state, following the `P0`, `A-1` and `B` precedent.
 This file is an execution contract, not a second policy document: the unit
-semantics live in the mini-track plan §4 and the author-decision record now,
-and in the ADR and specification `D0` writes once they are author-accepted.
-The design input is the `P0`
+semantics live in the mini-track plan §4 and the two records now, and in the
+ADR and specification `D0` writes once they are author-accepted. The design
+input is the `P0`
 [D0 unit-system inputs](../../../docs/architecture/pre_g9b_r6_plus_d0_unit_system_inputs.md),
 as amended by the author decisions and re-characterized below against the
 base.
 
 ```text
 PRE-G9B-R6-plus-D0 =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR EXECUTION
 
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (normative/documentary execution only)
 passClaimed              = false
 PHASE_KIND               = NORMATIVE DESIGN — ADR, VERSIONED SPECIFICATION AND
-                           EXPORT-FOUNDATION AMENDMENT; NO PRODUCT CHANGE
+                           FUTURE EXPORT AMENDMENT CONTRACT; NO PRODUCT CHANGE
 DEPENDS_ON               = PRE-G9B-R6-plus-P0  = PASS — AUTHOR APPROVED — PUBLISHED
                            PRE-G9B-R6-plus-B   = PASS — AUTHOR APPROVED — PUBLISHED
                                                  (AUTHOR_SMOKE = PASS; operational
                                                  order only, not a dependency)
+DEPENDS_ON_PACKAGE       = D0 PREPARATION PACKAGE = PASS — AUTHOR APPROVED
+                                                 (not published)
 NEXT_SUBPHASE            = PRE-G9B-R6-plus-D1   (hard dependency on the
                                                  author-accepted D0 output)
 ```
 
+`implementationAuthorized = true` authorizes only the normative and
+documentary execution defined below: no product code, Java, implemented
+serialization, GUI, status bar, copy/paste, exporter, verifier change,
+native dimension, `IsoABorder`, layer work or later subphase.
 `authorApproved = false` means that no candidate of this phase has been
-author-approved. Technical verification never creates author approval. Once
-authorized, the phase stops with one exact technically verified documentary
-candidate pending author review. Its ADR and specification become normative
-only when the author accepts them explicitly.
+author-approved. Technical verification never creates author approval. The
+phase stops with one exact technically verified documentary candidate pending
+author review:
+`PRE-G9B-R6-plus-D0 = DOCUMENTARY CANDIDATE PENDING AUTHOR REVIEW`, with
+`selfApproved = false`, `authorApproved = false` and `passClaimed = false`. Its
+ADR and specification become normative only when the author accepts them
+explicitly.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -61,26 +76,34 @@ Turn the author-fixed unit semantics and the author decisions `AQ-U1` to
   element and its lexical grammar, undo, copy and paste, the unspecified
   state, `drawingScale`, the physical-export relation and the
   forward-compatibility limitation;
-- the normative amendment of the
+- the proposed future amendment contract for geometry export, recorded
+  without promoting the experimental
   [geometry export foundation](../../../geocedg/specs/export/geometry-export-foundation.md)
-  for the future DXF unit contract;
-- invariant, persistence and compatibility matrices;
-- `AQ-U1` to `AQ-U6` traceability;
+  and without changing the author-approved
+  [extended DXF fidelity contract](../../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md);
+- the persistence and XML grammar contract for `D1`, including the exact
+  `usm` grammar and lifecycle;
+- the invariant matrix and the persistence, undo and compatibility matrix;
+- `AQ-U1` to `AQ-U6` traceability and the `DQ-D0-1` to `DQ-D0-13`
+  dispositions;
 - an explicit consumer contract for `D1`, `C`, `E2` and `E3`;
+- the correction of the living-plan wording on physical output;
 - a candidate report and its machine-readable mirror.
 
 ```text
 constructionUnit := UNSPECIFIED_MODEL_UNIT | mm | cm | m | usm
 presentationUnit := mm | cm | m | usm            (absent -> constructionUnit)
-usm              := one document-scoped definition  1 usm = k m,  k finite, k > 0
-drawingScale     := SESSION ratio, default 1:1
+usm              := one document-scoped definition  1 usm = k m,
+                    k a finite binary64, k > 0
+drawingScale     := SESSION pair a:b of positive integers, gcd-normalized,
+                    physical output / physical model = a / b, default 1:1
 
 metreFactor(mm) = 10^-3    metreFactor(cm) = 10^-2    metreFactor(m) = 1
 metreFactor(usm) = k
 
 displayValue(L) = L · metreFactor(constructionUnit) / metreFactor(presentationUnit)
                   (both physical; L in model units)
-printedLength(L, 1:n) = L · metreFactor(constructionUnit) / n   metres on paper,
+printedLength(L, a:b) = L · metreFactor(constructionUnit) · a / b   metres on paper,
                   independent of presentationUnit          (AQ-U1)
 ```
 
@@ -126,7 +149,11 @@ which is their authority, together with the author-fixed semantics of the
 | undo | `constructionUnit`, `presentationUnit` and an active `usm` factor change are undoable document operations; `drawingScale` and the new-document preference are not | normative text |
 | invariant | no live dependency of coordinates, authoritative numeric geometry, DAG topology, dependencies, identities, construction order, Locus V2, Spline V2, parameter domains or numeric geometric outputs on units or scale; live consumers only dimension presentation strings, status/presentation UI and export adapters; creation-time capture only | normative text |
 | persistence target | flat, versioned, self-closing GeoCeDG element under `<construction>`; lazy; absence = unspecified; reset in `clearConstruction`; paste and macros never apply it; no preferences XML; coherent undo; legacy byte identity | normative contract for `D1` |
-| export foundation | `$INSUNITS` from `constructionUnit` in `C`/`D1`; `0` while unspecified; no coordinate conversion; screen scale, `printingScale` and DPI never the model unit | normative amendment, not implementation |
+| export foundation | `$INSUNITS` from `constructionUnit` in `C`/`D1`; `0` while unspecified; no coordinate conversion; screen scale, `printingScale` and DPI never the model unit | future amendment contract, not implementation |
+| `DQ-D0-1`–`DQ-D0-13` | the author dispositions below | normative text |
+| existing specifications | the foundation stays `Experimental` and is not promoted; the G9X1 fidelity contract stays unitless and unchanged; `C` amends both, the verification pins, the exporter and the sidecar metadata together | recorded boundary and obligation for `C` |
+| Picture export | after `B` it still sizes through `printingScale`; `D0` does not alter it; `printingScale`, zoom, DPI and viewport are not a model-unit authority | recorded boundary; `C` replaces it |
+| living plan | `physical model-to-output unit = presentationUnit` is superseded: physical output derives from `constructionUnit + drawingScale` | specification clause and plan supersession note |
 
 No other open decision of the
 [P0 candidate report](../../../docs/validation/pre_g9b_r6_plus_p0_characterization_design_candidate_report.md)
@@ -136,12 +163,13 @@ on.
 
 ### Re-characterization of the inputs against the base
 
-The preparation re-read, at the base below, every seam this prompt turns into
-a normative contract. Paths use the `P0` abbreviations (`common/`,
-`geocedg-common/`, `desktop/`, `geocedg-desktop/`). Citation drift caused by
-`A-1` and `B` is corrected; substantive differences from the `P0` inputs are
-marked **contradiction** or **new**. The phase re-establishes each one before
-relying on it.
+The preparation re-read, at `P_R6PLUS_B` `0ef616bb7`, every seam this prompt
+turns into a normative contract. The authorized base differs from it only by
+documentation, so the citations below still apply. Paths use the `P0`
+abbreviations (`common/`, `geocedg-common/`, `desktop/`, `geocedg-desktop/`).
+Citation drift caused by `A-1` and `B` is corrected; substantive differences
+from the `P0` inputs are marked **contradiction** or **new**. The phase
+re-establishes each one before relying on it.
 
 | Seam | At the base | Relation to the `P0` inputs |
 |---|---|---|
@@ -162,7 +190,7 @@ relying on it.
 | DXF unit | `enum Unit { UNITLESS }` is the only value (`geocedg-common/export/GeometryExportModel.java:27-31`, `:564-565`); `$INSUNITS` written as `0` (`geocedg-common/export/DxfExporter.java:109-110`) | confirmed |
 | DXF staleness fingerprint | spatial section plus element XML only (`geocedg-common/export/G9X1GeometryExportAdapter.java:1049-1060`) | confirmed; must include the unit state in `C`/`D1` |
 | export foundation | `Status: Experimental`, ADR 0005 `Accepted for G5 experimental implementation`; `UNITLESS` (`geometry-export-foundation.md:39`, `:72-75`), the future contract clause (`:77-78`), the G5 PASS clause `$INSUNITS = 0` (`:118`) | **contradiction** of wording: the `P0` inputs call it "accepted"; it is an experimental contract under an accepted ADR |
-| extended DXF fidelity | `NORMATIVE / AUTHOR APPROVED`; unitless coordinates and `$INSUNITS=0` (`geocedg/specs/export/dxf-curve-fidelity-and-approximation.md:48`), unitless dialog (`:180`), sidecar units (`:192`); the G9X1 verifier evidence check requires `fidelityContract.units == "UNITLESS"` (`tools/agent/verify-g9x1-extended-dxf.ps1:449`) | **new**: not in the `P0` inputs; the amendment must name this contract and the verifier pin as `C`-owned consequences; `D0` changes neither |
+| extended DXF fidelity | `NORMATIVE / AUTHOR APPROVED`; unitless coordinates and `$INSUNITS=0` (`geocedg/specs/export/dxf-curve-fidelity-and-approximation.md:48`), unitless dialog (`:180`), sidecar units (`:192`); the G9X1 verifier evidence check requires `fidelityContract.units == "UNITLESS"` (`tools/agent/verify-g9x1-extended-dxf.ps1:449`) | **new**: not in the `P0` inputs; `D0` records this contract and the verifier pin as `C`-owned obligations and edits neither (`DQ-D0-10`, existing-specification boundary) |
 | axis unit label | free text per view (`common/main/settings/EuclidianSettings.java:1197`), options `""`, °, π, `mm`, `cm`, `m`, `km`, `$` (`common/gui/dialog/options/model/AxisModel.java:113-121`), tick suffix (`common/euclidian/DrawAxis.java:572-573`) | confirmed; see `DQ-D0-13` |
 | model-unit notions | `MetricUnit2D.CONSTRUCTION_LENGTH_UNIT` (`geocedg-common/kernel/locus/metric/MetricUnit2D.java:9-10`); residual unit `"model-coordinate"` (`geocedg-common/kernel/locus/intersection/LocusIntersectionPolicy2D.java:79`, `:129`) | confirmed; stay model-unit |
 | spatial frame `units` token | free text, required on version-2 frame records (`geocedg-common/kernel/spatial/identity/ProjectionFrameRecord.java:81`, `:138-140`), written and parsed by `SpatialRecordXmlCodec` (`:354-361`, `:90`), compared by string equality (`SpatialIdentityRegistry.java:1925`, also `:1130`, `:1943`, `:2021`, `:2622`) | confirmed; opaque and unrelated to `constructionUnit` in v1 |
@@ -186,8 +214,9 @@ verification class. Each is carried into `D0` as stated.
    amendment is written against an experimental contract and must say so.
 2. **A second DXF unit contract.** The inputs name only the foundation. The
    author-approved G9X1 fidelity contract and the G9X1 verifier evidence check
-   also pin `UNITLESS`. The amendment cross-references them; changing them
-   is `C`'s work, and the verifier pin is verification infrastructure that
+   also pin `UNITLESS`. By author disposition `D0` does not edit them: the
+   specification records the obligation, and changing them is `C`'s work,
+   together with the verifier pin, which is verification infrastructure that
    `C` must reconcile through an authorized route.
 3. **Reset routes.** The inputs justify "reset in `clearConstruction`, not on
    parse" by paste and macros only. Undo restore, redefine rebuild and
@@ -206,7 +235,8 @@ verification class. Each is carried into `D0` as stated.
    "dimensional and export quantities". By `AQ-U1` and the inputs §7, printed
    size depends on `constructionUnit` and `drawingScale` only;
    `presentationUnit` only expresses quantities. `D0` writes the relation in
-   that form and does not edit the plan.
+   that form and, by author instruction, adds an explicit supersession note
+   to plan §4.4 without deleting the author-fixed text.
 7. **Malformed metadata.** The inputs offer only lenient or fail-closed for
    **older** builds. The author fixed lenient for them, and also that an
    absent or invalid factor never turns `usm` into `UNSPECIFIED_MODEL_UNIT`.
@@ -227,64 +257,83 @@ verification class. Each is carried into `D0` as stated.
     replacement for `C`; the base has more consumers to replace, and the
     unspecified case needs an explicit non-physical mode (`DQ-D0-11`).
 
-### Decisions requested before authorization
+### Author dispositions on `DQ-D0-1` to `DQ-D0-13`
 
-The author decisions do not settle the details below. For each, this prompt
-fixes a **default contract**. The authorizing instruction may confirm or
-replace it; without an explicit replacement the default applies. None is an
-author decision until the author makes it.
+The prepared prompt fixed a default contract for each requested decision. The
+author disposed of all of them on 2026-10-02; the
+[D0 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md)
+is their authority and prevails over the prepared defaults. In substance:
 
-| ID | Question | Default contract of this prompt |
+| ID | Outcome | Disposition (substance) |
 |---|---|---|
-| `DQ-D0-1` | Which units does the new-document `USER_PREFERENCE` cover, and when does it apply? | one optional preference for both the construction and the presentation unit of **new** documents, standard tokens only (`usm` is document-scoped and is never a preference default); unset by default, so a new document is `UNSPECIFIED_MODEL_UNIT` as today; applied only at File → New and to the initial empty document, after the preferences XML is re-applied; never on Open, undo, redo, redefine, paste or insert; applying it creates no undo point and does not mark the document modified; a physical default so applied is a declaration and is written on save; the presentation default applies only together with a physical construction default |
-| `DQ-D0-2` | Can a `presentationUnit` exist while `constructionUnit` is unspecified? | no: presentation cannot be selected while the construction unit is unspecified; the unit element exists only when `constructionUnit` is physical and never carries a presentation unit, or a `usm` definition, without a construction unit |
-| `DQ-D0-3` | Can the user return a document to `UNSPECIFIED_MODEL_UNIT`? | yes, as one explicit undoable document operation ("clear unit declaration") that removes the whole element, including the `usm` definition; the document then re-saves as if no unit had ever been declared; it is never a side effect of another operation |
-| `DQ-D0-4` | What happens to a valid `usm` definition when neither unit references `usm`? | it stays document state and is written in the element while the element exists, so undo snapshots stay coherent and no definition is lost silently on save; it ends only with `DQ-D0-3`, New or Open; changing the factor while `usm` is unreferenced is an undoable document operation without any reinterpretation |
-| `DQ-D0-5` | Where are the `usm` name and symbol stored, and what suffix is shown? | optional attributes of the same element (names fixed by `D0`), XML-escaped Unicode with a bounded length; the dimension suffix is the symbol, else the literal `usm`; a rename or symbol change is an undoable presentation operation; neither ever takes part in compatibility, paste or export comparisons |
-| `DQ-D0-6` | Numeric meaning and lexical form of the factor `k`. | the semantic value is the IEEE-754 double parsed from the serialized string; the writer emits the shortest decimal that round-trips that double, with `.` as the separator and an optional `E` exponent, independent of locale; the reader accepts exactly that grammar; metre-factor comparisons (paste, export) are exact equality on the parsed doubles, with no tolerance |
-| `DQ-D0-7` | A build that implements v1 reads a newer `version` or a malformed v1 element (unknown token, `usm` referenced without a valid factor, a non-finite or non-positive factor, presentation without construction). | a newer `version`: ignored like an older build would, with a visible notice that the unit metadata was not understood; the document loads `UNSPECIFIED_MODEL_UNIT`; a malformed v1 element: the document is **not** opened and an explicit error names the defect, because the build that owns the format may neither infer a value nor drop declared physical semantics silently |
-| `DQ-D0-8` | How does paste learn the source unit, and which routes show the notice? | at copy time the source's effective construction unit and metre factor (or `UNSPECIFIED_MODEL_UNIT`) are captured as in-memory metadata beside the clipboard buffer, never in the clipboard XML; every Desktop route that pastes that buffer compares it with the target and shows the notice; a paste without such metadata (external text, script or API XML insertion, a buffer from an earlier build) counts as source unspecified: no notice, no inference |
-| `DQ-D0-9` | The dimension text is a kernel string that other objects and scripts can consume. | the output-only `angleUnit` precedent applies: the unit-dependent presentation string is a permitted live consumer; numeric outputs never depend on units; the specification states that an object or script consuming a dimension's text string observes presentation changes and lies outside the numeric-geometric invariant, and `E2` must not route that string into a geometric input |
-| `DQ-D0-10` | DXF `$INSUNITS` for `usm`, whose factor has no general DXF code. | `$INSUNITS = 0` for `usm`, even when `k` equals a coded unit, with an explicit export notice that states the declared factor; `mm`, `cm` and `m` map to their DXF codes, which `D0` cites from the DXF reference; coordinates are never converted |
-| `DQ-D0-11` | Export of documents whose unit is unspecified, given that every picture route and the LaTeX exporters size output from a zoom-derived or default centimetre mapping today. | picture, print and LaTeX export stay available in a **non-physical mode**: picture formats keep the device mapping they have after `B`, and LaTeX keeps its explicit, user-visible `xunit`/`yunit` device parameter; neither is offered as an engineering scale or presented as a model unit, and no `1:n` scale is shown; only engineering-scale export and `IsoABorder` require a declared unit; `C` implements |
-| `DQ-D0-12` | Domain and notation of `drawingScale`. | `a:b` with `a` and `b` positive integers (`1:n` reduction, `n:1` enlargement), default `1:1`, held per application window; consistent with `E3`'s integer pair (`AQ-E3a` stays `E3`'s decision) |
-| `DQ-D0-13` | Relation between the axis `unitLabel` and the unit system. | none in v1: the axis label stays an independent per-view presentation label that the unit system never reads, writes or synchronizes |
+| `DQ-D0-1` | accepted with precision | preferences may default both units, applied only when a **new blank document** is created; construction preference in {`UNSPECIFIED_MODEL_UNIT`, `mm`, `cm`, `m`}, never `usm`; never applied to an opened document; with an unspecified effective construction unit the presentation preference stays inert |
+| `DQ-D0-2` | accepted with precision | no effective document `presentationUnit` while `constructionUnit = UNSPECIFIED_MODEL_UNIT`; a preference may exist but is inert; no presentation unit is serialized as if it gave an unspecified model physical meaning |
+| `DQ-D0-3` | **replaced** | explicit `constructionUnit = UNSPECIFIED_MODEL_UNIT` is an undoable document operation that removes the physical interpretation and any dependent presentation interpretation; a valid unused `usm` definition may stay stored; the element is omitted only when no unit metadata remains; legacy documents that never acquired metadata stay byte-identical with no element |
+| `DQ-D0-4` | accepted | a valid `usm` definition persists while its element exists, even when unselected |
+| `DQ-D0-5` | accepted | optional name and symbol are presentation metadata; identity = token `usm` + declared `metersPerUnit`; symbol fallback `usm` |
+| `DQ-D0-6` | accepted with an exact numerical contract | `k` a finite binary64 `> 0`; locale-independent deterministic shortest round-trip decimal; invalid, zero, negative, NaN or infinite values rejected, previous definition kept; `usm` equality = binary64 equality; built-ins exact SI; an arbitrary `k` never called symbolically exact |
+| `DQ-D0-7` | **replaced** | a build that recognizes `<geocedgUnits>` **fails closed** with an explicit user-visible load error on a newer version, a malformed v1 element, a selected `usm` without a valid factor, or ambiguous physical semantics; older readers stay lenient, recorded as a forward-compatibility limitation; never moved into `geocedgSpatial` |
+| `DQ-D0-8` | accepted with precision | source unit context is transient clipboard provenance beside the internal copy buffer, never geometry, construction XML, clipboard element content or document state; paste never depends on it; notice only with reliable provenance and different physical meanings |
+| `DQ-D0-9` | accepted with precision | a native dimension keeps a stable model-unit number separate from its `GeoText` presentation; the text may change with either unit and explicit consumers may observe it; presentation dependency, not geometric-unit dependency; no parsing of the string back into geometry or numbers |
+| `DQ-D0-10` | **replaced** | `mm`, `cm`, `m` may map to native `$INSUNITS`; `usm`: unchanged coordinates, `$INSUNITS = 0`, custom-unit warning, **required** paired GeoCeDG sidecar recording at least `usm` and the canonical `metersPerUnit`; `D0` records the future contract only and changes no G9X1 product, verifier or fidelity specification; `C` amends them coherently |
+| `DQ-D0-11` | accepted with precision | unspecified forbids any physical engineering-scale claim; a clearly non-physical legacy/device-scale picture/vector mode may stay where existing functionality requires it, never labelled or read as `1:n`; `IsoABorder` and every model-to-physical conversion unavailable; no `1 model unit = 1 cm` fallback |
+| `DQ-D0-12` | accepted with precision | positive integer pair `a:b`, `physical output / physical model = a / b`, gcd-normalized, default `1:1`, `SESSION`, per application/document window export context, reset on New/Open, not serialized, not undoable |
+| `DQ-D0-13` | accepted | the axis `unitLabel` stays an independent view presentation facility; no unit, dimensional or export authority; no synchronization in `D0` or `D1` |
+
+### Existing-specification and Picture-export boundaries
+
+- `geometry-export-foundation.md` is `Status: Experimental` under ADR 0005,
+  accepted for the G5 experimental implementation. `D0` does not promote it.
+- `dxf-curve-fidelity-and-approximation.md` is `NORMATIVE / AUTHOR APPROVED`
+  and fixes the DXF baseline as unitless. `D0` does not change it while the
+  product and the G9X1 verifier enforce `UNITLESS`.
+- `D0` defines the future unit semantics and an explicit obligation for `C` to
+  amend, together and consistently: the applicable DXF normative
+  specification, the geometry export foundation where appropriate, the G9X1
+  and future verification pins, exporter behavior, and fidelity and sidecar
+  unit metadata. Until `C`, the implemented DXF baseline stays unitless.
+- After `B`, Picture export still derives its existing physical sizing
+  through `printingScale`. `D0` does not alter it, and establishes that
+  `printingScale`, zoom, DPI and the viewport are not a model-unit authority.
+  `C` replaces the physical engineering-scale interpretation with the
+  `D0`/`D1` contract.
 
 ### Contract details fixed by this prompt
 
-Where the author decisions and the requested decisions above leave a detail
-open, the following are contracts of the prepared prompt, not author
-decisions; the authorizing instruction may change them.
+Where the author decisions and dispositions leave a detail open, the
+following are contracts of this prompt, not author decisions.
 
-- **Document set and locations.** One ADR, `docs/adr/<next free number>-…`
-  (`0032` is the next free number at the base; `D0` takes the next free number
-  at its own base), with status `PROPOSED` until the author accepts it. One
-  specification, proposed at `geocedg/specs/units/unit-system.md` with an
-  explicit header (`Status: NORMATIVE CANDIDATE — NOT AUTHOR APPROVED`,
+- **Document set and locations.** One ADR, `docs/adr/0032-…` (the next free
+  number at the base), with status `PROPOSED` until the author accepts it. One
+  specification at `geocedg/specs/units/unit-system.md` with an explicit
+  header (`Status: NORMATIVE CANDIDATE — NOT AUTHOR APPROVED`,
   `Version: 1.0`, owner phase, implementing phases), so that acceptance later
-  changes only the status line. The matrices live in the specification; the
-  candidate report under `docs/validation/` and its JSON mirror under
+  changes only the status line. The matrices, the traceability and the
+  consumer contracts live in the specification; the candidate report under
+  `docs/validation/` and its JSON mirror under
   `geocedg/validation/pre-g9b-r6-plus/` reference them and do not restate
-  them.
+  their rules.
 - **Single source of truth.** The specification owns the unit semantics. The
   ADR records the decision, its alternatives and its consequences and points
-  to the specification for the rules. The export amendment, the candidate
+  to the specification for the rules. The export pointer, the candidate
   report, the roadmap and the plan reference the specification and never
   restate its rules.
 - **Names and grammar.** The specification fixes the element name, every
   attribute name, the `version` value, the token grammar (case-sensitive, the
   exact tokens `mm`, `cm`, `m`, `usm`), the factor grammar (`DQ-D0-6`), the
-  attribute order and the writer's placement relative to `<geocedgSpatial>`
-  in `Construction.getConstructionXML`, so that `D1` writes byte-deterministic
-  output. The conceptual name `geocedgUnits` is the default.
+  name and symbol grammar (`DQ-D0-5`), the attribute order, the omission rule
+  (`DQ-D0-3`) and the writer's placement relative to `<worksheetText>`,
+  `<geocedgSpatial>` and the elements in `Construction.getConstructionXML`, so
+  that `D1` writes byte-deterministic output. The element name is
+  `geocedgUnits`.
 - **Routes that parse a `<construction>`.** The specification enumerates
   every route that parses or emits construction XML — full document load,
-  undo and redo restore, redefine rebuild, rollback restore, File → New,
-  paste, macro construction, user-tool (`.ggt`) load, the preferences XML, and
-  every scripting or API route that inserts or replaces XML — and states for
-  each whether the unit element is written, read, ignored or reset. Only the
-  clearing loads of a full document or of the current undo XML (load, undo,
-  redo, redefine rebuild, rollback restore) apply it, after
+  undo and redo restore, redefine rebuild, rollback restore (including the
+  paste rollback and the rejected-spatial-parse rollback), File → New, paste,
+  scripting and API XML insertion and replacement, macro construction,
+  user-tool (`.ggt`) load and the preferences XML — and states for each
+  whether the unit element is written, read, ignored or reset. Only the
+  clearing loads of a full document or of the current undo XML apply it, after
   `clearConstruction` has reset the state; the element is therefore part of
   `getCurrentUndoXML`.
 - **Effective-unit function.** One pure function of the stored state defines
@@ -294,73 +343,82 @@ decisions; the authorizing instruction may change them.
   unit on its own.
 - **Unit-independence invariant.** Stated as a normative MUST with the full
   list of the decision record, the permitted live consumers, the creation-time
-  capture rule and its consequence for `E2` (`AQ-E4`) and `E3` (`AQ-E3c`),
-  and a list of the existing model-unit notions that stay model-unit:
-  `MetricUnit2D.CONSTRUCTION_LENGTH_UNIT`, the intersection residual unit
-  `"model-coordinate"`, the export model's coordinate unit, and the spatial
-  frame `units` token, which stays an opaque identity token unrelated to
-  `constructionUnit` in v1.
+  capture rule and its consequence for `E2` (`AQ-E4`) and `E3` (`AQ-E3c`), the
+  `DQ-D0-9` precision on presentation strings, and the existing model-unit
+  notions that stay model-unit: `MetricUnit2D.CONSTRUCTION_LENGTH_UNIT`, the
+  intersection residual unit `"model-coordinate"`, the export model's
+  coordinate unit, and the spatial frame `units` token, which stays an opaque
+  identity token unrelated to `constructionUnit` in v1.
 - **Physical export relation.** The specification states the printed-length
   formula above, shows its invariance under `presentationUnit` (`AQ-U1`), and
-  states that `presentationUnit` is never a second scale factor. It corrects
-  the ambiguous plan §4.4 wording "physical model-to-output unit =
-  presentationUnit" by reference to `AQ-U1`, without editing the author-fixed
-  plan text.
-- **Export amendment form.** The amendment is a delimited, versioned section
-  of `geometry-export-foundation.md` that states the future rule, its
-  effective condition (implementation by `C`/`D1` and author acceptance) and
-  its owners. The in-force G5 statements (`UNITLESS`, `$INSUNITS = 0`, the G5
-  PASS clause) stay unchanged and are annotated as the rule that holds until
-  then, so the experimental contract never describes behavior the exporter
-  does not have. The G9X1 fidelity contract receives only a cross-reference
-  note.
+  states that `presentationUnit` is never a second scale factor. It
+  supersedes the plan §4.4 wording "physical model-to-output unit =
+  presentationUnit"; the plan receives an explicit supersession note after
+  §4.4 that keeps the author-fixed text and points to the specification.
+- **Export amendment form.** The future amendment contract lives in the
+  specification, with the replacement rules for the foundation and the G9X1
+  fidelity contract, their effective condition (implementation by `C`/`D1`
+  and author acceptance) and their owner. The foundation receives only a
+  delimited pointer note that states it is not in force, keeps every G5
+  statement (`UNITLESS`, `$INSUNITS = 0`, the G5 PASS clause) unchanged, and
+  does not change its `Experimental` status. The G9X1 fidelity contract is
+  not edited.
 - **Excluded formats.** STL, Collada and the AR unit keep their own output
   units, are outside the export surface (`AQ-X3`) and are not governed by the
   unit system in v1.
 - **Undo.** Each undoable unit operation stores exactly one undo point,
   restores through the ordinary construction-XML snapshot, and leaves object
   identity and every geometric value unchanged on undo and redo; the
-  specification states which session state (`drawingScale`, `ExportArea`)
-  survives an undo restore unchanged.
+  specification states which session state (`drawingScale`, `ExportArea`,
+  clipboard provenance) survives an undo restore unchanged.
 - **Forward compatibility.** The specification states the lenient behavior of
   older GeoCeDG builds and Classic as observed at the base (unknown tag logged,
-  rest loaded, element lost on re-save), the resulting silent semantic loss,
-  and the rule for a newer `version` and a malformed element in a build that
-  implements v1 (`DQ-D0-7`).
+  rest loaded, element lost on re-save) as an explicit limitation, and the
+  fail-closed rule of `DQ-D0-7` for builds that recognize the family.
 - **Consumer contract.** One section per consumer: `D1` (persistence, effective
-  units, undo, paste notice, new-document default, status segments,
-  byte-identity proof obligations), `C` (engineering scale, LaTeX units, DXF
-  header, the non-physical mode, the G9X1 fidelity contract), `E2` (text
-  presentation, suffix, bare values, creation-time capture), `E3` (`u` capture
-  from the effective metre factor, unspecified-unit gate). Each lists the
-  normative clauses it must implement and the evidence its own phase must
-  produce. `D0` sets no verification class for them.
+  units, undo, fail-closed load, paste provenance and notice, new-document
+  defaults, status segments, byte-identity proof obligations), `C`
+  (engineering scale, LaTeX units, DXF header and sidecar, the non-physical
+  mode, the G9X1 and foundation amendments, the verification pins), `E2`
+  (number and text separation, suffix, bare values, creation-time capture),
+  `E3` (`u` capture from the effective metre factor, `drawingScale` pair,
+  unspecified-unit gate). Each lists the normative clauses it must implement
+  and the evidence its own phase must produce. `D0` sets no verification class
+  for them.
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 ```text
 IMPLEMENTATION_BASE =
-0ef616bb7bb8efd3e4f19762f38936ff4742d1c3          (P_R6PLUS_B, published B closeout)
+8814468101e3caef45d9f6cbad4bf563523c3478          (T_R6PLUS_D0_PROMPT, approved D0
+                                                   preparation package; not published)
 
 IMPLEMENTATION_BASE_TREE =
-be7ef7acbc3503002f3dac2bc33f047795f7a644
+edbe623604330e62db11ff3d3b05b7d73671dbd0
+
+IMPLEMENTATION_BASE_PARENT =
+0ef616bb7bb8efd3e4f19762f38936ff4742d1c3          (P_R6PLUS_B, published B closeout;
+                                                   tree be7ef7acbc3503002f3dac2bc33f047795f7a644)
+
+D0_PREPARATION_PACKAGE =
+PASS — AUTHOR APPROVED                             (2026-10-02; not published)
 
 B_STATE =
 PASS — AUTHOR APPROVED — PUBLISHED                 (AUTHOR_SMOKE = PASS)
-
-B_APPROVED_TECHNICAL_CANDIDATE =
-848206c413eb4f78694c9149e153f6e867eb9525          (T_R6PLUS_B)
 ```
 
-A moving branch is not a base. Entry gate: local `main`, `origin/main` and the
-live remote `main` equal the base the authorizing instruction names, its tree
-matches, and the worktree is clean. If the documentary commit that publishes
-this prompt and the author-decision record is published first, the authorizing
-instruction names that commit instead; this prompt assumes no later base on its
-own. The phase works on a new local branch from the named commit and is not
-rebased onto any later commit without a new author instruction. Between the
-base and that documentary commit only documentation changes, so the citations
+A moving branch is not a base. The authorizing instruction names the
+unpublished approved package `T_R6PLUS_D0_PROMPT` as the exact execution base,
+so the entry gate is: `HEAD` of the local branch
+`phase/pre-g9b-r6-plus-d0-prompt` equals `IMPLEMENTATION_BASE`, its tree
+matches, its parent is `P_R6PLUS_B`, the worktree is clean, and local `main`,
+`origin/main` and the live remote `main` still equal `P_R6PLUS_B`. The phase
+continues on that branch with new commits: first the authorization edit
+(this amendment and the closeout and authorization record), then the frozen
+documentary candidate, whose parent is the authorization edit. The approved
+package is never amended, rebased or squashed. Between `P_R6PLUS_B` and
+`IMPLEMENTATION_BASE` only five documentation files differ, so the citations
 above still apply; the phase re-establishes every one it relies on before using
 it.
 
@@ -370,12 +428,17 @@ it.
    verification contract (`verification-levels.md`, the typed registry and its
    schemas, `tools/agent/verify.ps1`).
 2. Current source and tests at the base.
-3. The author-fixed unit semantics of the mini-track plan §4 and the
-   [D0 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d0_author_decisions_record.md).
-4. The accepted specifications the amendment touches: the
+3. The author-fixed unit semantics of the mini-track plan §4, the
+   [D0 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d0_author_decisions_record.md)
+   and the
+   [D0 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md),
+   which prevails over the prepared defaults.
+4. The existing export specifications and their status, which `D0` records
+   and does not change in force: the
    [geometry export foundation](../../../geocedg/specs/export/geometry-export-foundation.md)
-   and ADR 0005, and the
-   [extended DXF fidelity contract](../../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md).
+   (`Experimental`) and ADR 0005, and the
+   [extended DXF fidelity contract](../../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md)
+   (`NORMATIVE / AUTHOR APPROVED`).
 5. Design input, re-characterized before use: the
    [D0 unit-system inputs](../../../docs/architecture/pre_g9b_r6_plus_d0_unit_system_inputs.md),
    the [P0 report](../../../docs/validation/pre_g9b_r6_plus_p0_characterization_design_candidate_report.md)
@@ -394,25 +457,23 @@ it.
 - focused reading of current source, tests, specifications and the pinned
   upstream source, to re-establish every seam it relies on;
 - scratch probes executed from the session scratchpad, never written into
-  tracked source paths or `artifacts/`, to settle a characterization question
-  (for example the undo-restore and paste parse paths). A probe result is
-  characterization evidence, not acceptance evidence;
-- the new ADR under `docs/adr/` (status `PROPOSED`);
-- the new versioned specification under `geocedg/specs/units/` (or another
-  `geocedg/specs/` location the phase justifies), with candidate status;
-- the normative amendment of
-  `geocedg/specs/export/geometry-export-foundation.md` (`DQ-D0-10`, *Export
-  amendment form*), and a cross-reference note in
-  `geocedg/specs/export/dxf-curve-fidelity-and-approximation.md` that names
-  the amendment and its future owner, without changing that contract's
-  in-force rules;
+  tracked source paths or `artifacts/`, to settle a characterization question.
+  A probe result is characterization evidence, not acceptance evidence;
+- the new ADR `docs/adr/0032-…` (status `PROPOSED`);
+- the new versioned specification `geocedg/specs/units/unit-system.md`, with
+  candidate status, carrying the future export amendment contract;
+- a delimited, not-in-force pointer note in
+  `geocedg/specs/export/geometry-export-foundation.md` that keeps every G5
+  statement and the `Experimental` status unchanged (*Export amendment form*);
+- an explicit supersession note after the mini-track plan §4.4 that keeps the
+  author-fixed text and points to the specification;
 - a candidate report under `docs/validation/` and its machine-readable mirror
   under `geocedg/validation/pre-g9b-r6-plus/` (plain JSON with
   `schemaVersion`, no new schema, no static-contract registration);
 - roadmap and mini-track plan status updates limited to `D0`'s state and to
   corrections the evidence forces outside the author-fixed parts;
-- the amendment of this prompt to the authorized state, when the authorizing
-  instruction permits it.
+- this amendment of the prompt and the closeout and authorization record with
+  its mirror, as the first tracked edit.
 
 ```text
 PRODUCT_PHASE_EFFECT = NONE
@@ -425,16 +486,23 @@ PRODUCT_PHASE_EFFECT = NONE
 
 - any change under `source/**`, `apps/**`, `packaging/**` or product
   resources: no Java, no product behavior, no localized string;
-- any serialization or document-format implementation, including a sample
-  `.cedg` or `.ggb` with unit metadata committed as a model or fixture;
-- any GUI, status-bar, preference-store or menu implementation;
+- any serialization or document-format implementation, including an XML
+  reader or writer, and a sample `.cedg` or `.ggb` with unit metadata committed
+  as a model or fixture;
+- any GUI, status-bar, preference-store, copy/paste or menu implementation;
 - any exporter change, including `$INSUNITS`, LaTeX units, picture scale, the
   DXF staleness fingerprint or the G9X1 sidecar;
-- native dimensions (`E2`), `IsoABorder` or the ISO producers (`E3`);
-- any change to the meaning of the in-force G5 and G9X1 export rules before
-  `C`/`D1` implement the amendment;
-- edits of the author-fixed mini-track plan §4 or of the frozen `P0`
-  artifacts;
+- any edit of `geocedg/specs/export/dxf-curve-fidelity-and-approximation.md`,
+  any G9X1 verifier or evidence change, and any verifier change that
+  implements `C` (`DQ-D0-10`);
+- promoting `geometry-export-foundation.md` from `Experimental`, or changing
+  the meaning of any in-force G5 or G9X1 export rule before `C`/`D1` implement
+  the amendment;
+- native dimensions (`E2`), `IsoABorder` or the ISO producers (`E3`), and
+  layer work;
+- edits of the author-fixed mini-track plan §4 other than the supersession
+  note, and edits of the frozen `P0` artifacts;
+- amending the approved preparation candidate `T_R6PLUS_D0_PROMPT`;
 - creating or editing any prompt file other than this canonical `D0` prompt,
   including the prompts of `D1`, `C`, `E2` and `E3`;
 - publication of any kind.
@@ -443,8 +511,9 @@ It must also not: edit `AGENTS.md`, `CLAUDE.md`, `FIRST_AGENT_TASK.md` or
 `ai-shell/prompts/**`; edit `geocedg/specs/operations/verification-*`,
 `prompt-contracts.json` or `tools/agent/**`; register a verification phase or a
 schema; mark any gate, phase, specification or ADR approved, `PASS` or
-authorized; reopen an author-fixed semantic or an author decision; or start
-`D1`, `A-2`, `C`, `E1`, `E2`, `E3`, `F1`, `F2`, `G`, `PRE-G9B-R7` or `G9B`.
+authorized; reopen an author-fixed semantic, an author decision or an author
+disposition; or start `D1`, `A-2`, `C`, `E1`, `E2`, `E3`, `F1`, `F2`, `G`,
+`PRE-G9B-R7` or `G9B`.
 
 ## Architectural placement
 
@@ -455,15 +524,18 @@ authorized; reopen an author-fixed semantic or an author decision; or start
   serialized in the shared `<construction>` XML, because they change the
   physical meaning of the document and must be consumed coherently by every
   frontend; they are not geometric truth and no algorithm reads them live.
-- `presentationUnit`: shared document presentation, in the same element.
+- `presentationUnit` and the `usm` name and symbol: shared document
+  presentation, in the same element.
 - The effective-unit function: shared, read-only, beside the document state.
 - Dimension presentation strings: produced by `E2`'s kernel objects through
   the effective-unit function, with the output-only half of the `angleUnit`
-  precedent and none of its parsing or rounding effects.
+  precedent and none of its parsing or rounding effects (`DQ-D0-9`).
 - `drawingScale`: Desktop/application session export state, never document
-  state (`AQ-U5`).
-- The new-document default: a GeoCeDG `USER_PREFERENCE` on the
+  state (`AQ-U5`, `DQ-D0-12`).
+- The new-document defaults: GeoCeDG `USER_PREFERENCE` entries on the
   `geocedg.<area>.<name>.v1` key precedent (`DQ-D0-1`).
+- Clipboard provenance: transient Desktop state beside the internal copy
+  buffer (`DQ-D0-8`).
 - Export adapters (`C`): read-only consumers outside the kernel
   (`AGENTS.md` §13).
 
@@ -472,27 +544,32 @@ another layer.
 
 ## Required design/specification
 
-The minimum `D0` output set is the author-fixed list of the decision record:
+The minimum `D0` output set is the author-fixed list of the closeout and
+authorization record:
 
-1. the ADR on unit semantics and persistence ownership, with the rejected
-   owners of the `P0` inputs §3 (`<kernel>`, a `<construction>` attribute,
-   `<euclidianView>`, inside `<geocedgSpatial>`) and the rejected
-   alternatives for each requested decision;
-2. the versioned normative specification;
-3. the amendment of the geometry export foundation;
-4. the invariant matrix (every protected property × every unit operation:
-   set, change and clear `constructionUnit`, change `presentationUnit`, define
-   and change `usm`, rename `usm`, change `drawingScale`, undo, redo, paste,
-   load, New), the persistence matrix (every unit state × its class, owner,
-   writer, reader, reset point, undo and preference behavior) and the
-   compatibility matrix (legacy `.cedg`, Classic `.ggb`, older GeoCeDG,
-   Classic reading a new document, a newer `version`, a malformed element,
-   paste across documents and windows, macros and user tools);
-5. `AQ-U1` to `AQ-U6` traceability: each decision → the specification clause
+1. the unit-system ADR, with the rejected owners of the `P0` inputs §3
+   (`<kernel>`, a `<construction>` attribute, `<euclidianView>`, inside
+   `<geocedgSpatial>`) and the rejected alternatives of each disposition;
+2. the normative unit-system specification;
+3. the proposed future amendment contract for geometry export;
+4. the persistence and XML grammar contract for `D1`;
+5. the exact `usm` grammar and lifecycle;
+6. the invariant matrix (every protected property × every unit operation:
+   set, change and clear `constructionUnit`, change `presentationUnit`, define,
+   change, rename and remove `usm`, change `drawingScale`, undo, redo, paste,
+   load, New, redefine);
+7. the persistence, undo and compatibility matrix (every unit state × its
+   class, owner, writer, reader, reset point, undo and preference behavior;
+   legacy `.cedg`, Classic `.ggb`, older GeoCeDG, Classic reading a new
+   document, a newer `version`, a malformed element, paste across documents
+   and windows, macros and user tools);
+8. `AQ-U1` to `AQ-U6` traceability: each decision → the specification clause
    that carries it → the consumer phase that implements it → the evidence that
    phase must produce;
-6. the consumer contract for `D1`, `C`, `E2` and `E3`;
-7. the candidate report and its machine-readable mirror.
+9. the `DQ-D0-1` to `DQ-D0-13` dispositions → specification clauses;
+10. the consumer contracts for `D1`, `C`, `E2` and `E3`;
+11. the candidate report;
+12. its machine-readable evidence mirror.
 
 ## Geometric invariants and degeneracies
 
@@ -505,11 +582,11 @@ invariant normatively and the degeneracies below:
 | `usm` factor changed while active | the same reinterpretation; undoable |
 | attempted `usm` factor non-finite, zero, negative or unparsable | rejected; the previous valid definition stays |
 | `usm` selected without a valid definition | not selectable; no fallback |
-| `presentationUnit` absent | effective `presentationUnit = constructionUnit` |
-| `constructionUnit = UNSPECIFIED_MODEL_UNIT` | bare values, no suffix; no engineering-scale export; `IsoABorder` and physical operations require a declaration first |
+| `presentationUnit` absent with a physical construction unit | effective `presentationUnit = constructionUnit` |
+| `constructionUnit = UNSPECIFIED_MODEL_UNIT` | no effective presentation unit; bare values, no suffix; no engineering-scale export; `IsoABorder` and physical operations require a declaration first |
 | a conversion whose result is not finite | a defined presentation failure state, never an exception, a silent infinity or a changed model value |
-| paste between differing effective metre factors | numbers unchanged; non-blocking notice |
-| paste with either side unspecified | numbers unchanged; no notice; no inference |
+| paste between differing effective metre factors with reliable provenance | numbers unchanged; non-blocking notice |
+| paste with either side unspecified, or without provenance | numbers unchanged; no notice; no inference |
 | undo or redo of a unit operation | unit and presentation restored coherently; identity and geometry unchanged |
 | a tool that captured a unit-derived input at creation | the input stays an ordinary parameter after any later unit change |
 
@@ -517,11 +594,12 @@ invariant normatively and the degeneracies below:
 
 `D0` changes no serialization. Its specification must state, for every unit
 state, whether it serializes, where, how a legacy document without it loads
-(`UNSPECIFIED_MODEL_UNIT`, nothing written until the user declares a unit),
+(`UNSPECIFIED_MODEL_UNIT`, nothing written until unit metadata is acquired),
 how a Classic `.ggb` loads, how an older GeoCeDG build and Classic treat a new
-document (lenient, element lost on re-save), how a newer `version` and a
-malformed element are treated (`DQ-D0-7`), and that no migration is needed.
-Legacy documents round-trip byte-identically while no unit is declared. It
+document (lenient, element lost on re-save, an explicit limitation), how a
+build that recognizes the family treats a newer `version` and a malformed
+element (fail closed, `DQ-D0-7`), and that no migration is needed. Legacy
+documents that never acquired unit metadata round-trip byte-identically. It
 never infers `cm`.
 
 <!-- geocedg-field: required_checks -->
@@ -536,8 +614,9 @@ never infers `cm`.
    validation of this amended prompt (below); `git diff --check`; proof that
    no forbidden or product path changed (`git diff --name-only` against
    `IMPLEMENTATION_BASE` lists only allowed paths);
-3. one clean immutable candidate commit whose parent is
-   `IMPLEMENTATION_BASE`, staging only authorized `D0` paths;
+3. one clean immutable documentary candidate commit whose parent is the
+   authorization edit, whose parent is `IMPLEMENTATION_BASE`, staging only
+   authorized `D0` paths;
 4. on that exact candidate:
 
    ```text
@@ -549,12 +628,10 @@ never infers `cm`.
    standing `STATIC` diagnostics are reported, not waived;
 5. `git diff --check`.
 
-This prompt is changed only under the explicit authorization of the
-authorizing instruction. Validate it after amendment and again before
-freezing with `Test-PromptContractDocument` from
-`tools/agent/prompt-contract-parser.psm1` and the `task` profile of
-`geocedg/specs/operations/prompt-contracts.json`; `execution_safe` must be
-`true`.
+Validate this amended prompt, after amendment and again before freezing, with
+`Test-PromptContractDocument` from `tools/agent/prompt-contract-parser.psm1`
+and the `task` profile of `geocedg/specs/operations/prompt-contracts.json`;
+`execution_safe` must be `true`.
 
 No `PHASE`, `INTEGRATION` or `FINAL` run is part of `D0`. Report the profile,
 exact command, exit code, report path, acceptance verdict, coverage verdict,
@@ -563,12 +640,11 @@ diagnostic count and execution identity of every run.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file is authorized. The author decisions it records do not
-authorize execution. Execution requires a new explicit author instruction
-naming `PRE-G9B-R6-plus-D0` and its exact base. That instruction would
-authorize only the documentary scope above: the amendment of this prompt, the
-`D0` documents, local commits, one frozen documentary candidate and its
-`STATIC` verification.
+The author's explicit instruction of 2026-10-02 names `PRE-G9B-R6-plus-D0` and
+its exact base above. It authorizes only the normative and documentary scope of
+this file: this amendment and the closeout and authorization record, the `D0`
+documents, local commits, one frozen documentary candidate and its `STATIC`
+verification.
 
 `D0` authorizes nothing that follows it. The operational order is
 `A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → G`; `D1` additionally
@@ -580,17 +656,25 @@ explicitly. Author approval is never created by technical verification.
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary
 
-Once authorized: a local branch from the base and local commits only. Push,
-branch publication, merge, promotion to `main`, rebase, squash, amend after
-freeze, force push, tag, release and binary publication are forbidden; each
-needs a separate explicit author instruction naming the exact candidate SHA.
-Acceptance evidence never grants publication authority.
+A local branch and local commits only. Push, branch publication, merge,
+promotion to `main`, rebase, squash, amend after freeze, force push, tag,
+release and binary publication are forbidden; each needs a separate explicit
+author instruction naming the exact candidate SHA. Acceptance evidence never
+grants publication authority.
 
 ## Acceptance and closeout
 
-`D0` stops with one documentary candidate pending author review. Author
-approval is an explicit decision naming the exact accepted commit; it may
-accept the ADR and the specification, amend them, or return them. The
+`D0` stops with one documentary candidate pending author review:
+
+```text
+PRE-G9B-R6-plus-D0 = DOCUMENTARY CANDIDATE PENDING AUTHOR REVIEW
+selfApproved       = false
+authorApproved     = false
+passClaimed        = false
+```
+
+Author approval is an explicit decision naming the exact accepted commit; it
+may accept the ADR and the specification, amend them, or return them. The
 candidate report and its mirror record only invariant facts:
 
 ```text
@@ -605,15 +689,15 @@ rather than create an unrequested descendant.
 
 ## Required artifacts
 
-- The ADR, the specification and the export-foundation amendment above, with
-  the G9X1 cross-reference note.
+- The ADR, the specification with its future export amendment contract, and
+  the foundation pointer note and plan supersession note above.
 - A candidate report under `docs/validation/` with: entry-gate evidence; the
   re-characterized seams and any correction to the `P0` inputs; the
-  enumeration of construction-XML routes; the matrices (by reference to the
-  specification); the `AQ-U1`–`AQ-U6` traceability; the disposition of every
-  `DQ-D0` item as received from the authorizing instruction; the consumer
-  contract summary; residual risks; the questions that need an author
-  decision before `D1` can be authorized.
+  enumeration of construction-XML routes; the matrices, traceability and
+  consumer contracts (by reference to the specification); the disposition of
+  every `DQ-D0` item and the specification clause that carries it; the
+  inherited contracts and supersessions; residual risks; the questions that
+  need an author decision before `D1` can be authorized.
 - Machine-readable evidence beside it, following the existing conventions.
 - `PRODUCT_PHASE_EFFECT = NONE`, `VERIFICATION_INFRASTRUCTURE_IMPACT`,
   `BOOTSTRAP IMPACT` and `GUIDE_IMPACT` declarations, and the exact `STATIC`
@@ -625,15 +709,17 @@ rather than create an unrequested descendant.
 Stop and report rather than improvise when:
 
 - the entry gate fails, or the base differs from the authorizing instruction;
-- an author-fixed semantic or an author decision cannot be carried without
-  contradiction, or two of them contradict each other at the base;
+- an author-fixed semantic, an author decision or an author disposition cannot
+  be carried without contradiction, or two of them contradict each other at
+  the base;
 - the persistence target meets a demonstrated compatibility blocker at the
-  base (for example an undo-restore or paste route that cannot preserve the
-  reset-in-`clearConstruction` rule);
-- a normative rule would need a product, serialization, exporter, verifier or
-  evidence-contract change to be stated truthfully;
-- a design would make a geometric output, number, dependency, identity or
-  parameter domain depend live on a unit or on `drawingScale`;
+  base (for example an undo-restore, rollback or paste route that cannot
+  preserve the reset-in-`clearConstruction` rule);
+- a normative rule would need a product, serialization, exporter, verifier,
+  evidence-contract or G9X1-specification change to be stated truthfully;
+- a design would make a geometric output, an authoritative number, a
+  dependency, an identity or a parameter domain depend live on a unit or on
+  `drawingScale`;
 - a consumer contract for `C`, `E2` or `E3` would need an author decision
   owned by that phase (`AQ-E3a`, `AQ-E3c`, `AQ-E4`);
 - the work needs a verification level above `DOCUMENTATION_STATUS_ONLY`;
