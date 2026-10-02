@@ -1,23 +1,29 @@
 # PRE-G9B-R6-plus-D1 — unit-system implementation and status integration
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-02. That
-instruction named the exact published base below, fixed the verification
-class, the product boundary, the architecture rule and the stop conditions of
-`PRE-G9B-R6-plus-D1`, and authorized only the documentary preparation of this
-prompt, a characterization report, the record of those decisions and the
-status updates they require. It stated that it **does not authorize the
-implementation of `D1`**. The decisions are recorded, versioned, in the
+The author's explicit instruction of 2026-10-03 approves the documentary
+preparation package of `PRE-G9B-R6-plus-D1` (`T_R6PLUS_D1_PROMPT`), names it as
+the exact start of the implementation branch, gives the author dispositions on
+`DQ-D1-1` to `DQ-D1-11`, accepts the characterization `C1`–`C11` as
+implementation constraints, keeps `GLOBAL_IMPACT / FINAL`, and authorizes the
+implementation of `D1`. The instruction is recorded, versioned, in the
+[D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md).
+It also requires this amendment, as the first tracked edit of the phase, so
+that the prompt becomes the executable contract of the phase. The amendment
+replaces the prepared prompt of `T_R6PLUS_D1_PROMPT` (blob
+`96f6e612cce1c43e2043abafe17ead3e897f4ef8`): it records the authorized branch
+start, integrates the `DQ-D1` dispositions, corrects the boundaries they
+supersede (the saved-state seam of `DQ-D1-5` and the Classic/Web boundary of
+`DQ-D1-11`), and freezes the class. Where the prepared prompt and the record
+differ, the record prevails; this amendment carries that precedence into the
+text. Every other scope, forbidden-scope and stop rule of the prepared prompt
+is kept. The preparation decisions are recorded in the
 [D1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d1_author_decisions_record.md);
 the evidence behind the characterization below is in the
 [D1 preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_d1_preparation_characterization_report.md).
-The existence of this file is not authorization.
 
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-D1` and the exact prepared candidate or base. That instruction
-may authorize, as the first tracked edit of the phase, an amendment of this
-prompt to the authorized state, following the `A-1`, `B` and `D0` precedent.
 This file is an execution contract, not a second policy document: the unit
 semantics, grammar and matrices are stated once in the
 [unit-system specification](../../../geocedg/specs/units/unit-system.md) v1.0
@@ -27,11 +33,11 @@ This prompt cites their clauses as `§n.m` and does not restate them.
 
 ```text
 PRE-G9B-R6-plus-D1 =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (D1 implementation and technical verification only)
 passClaimed              = false
 PHASE_KIND               = PRODUCT IMPLEMENTATION — SHARED DOCUMENT UNIT STATE,
                            <geocedgUnits> PERSISTENCE, UNIT LIFECYCLE, NEW-DOCUMENT
@@ -41,13 +47,19 @@ DEPENDS_ON               = PRE-G9B-R6-plus-D0  = PASS — AUTHOR APPROVED — PU
                                                  (status bar; AUTHOR_SMOKE = PASS)
                            PRE-G9B-R6-plus-B   = PASS — AUTHOR APPROVED — PUBLISHED
                                                  (export regressions; AUTHOR_SMOKE = PASS)
-NEXT_SUBPHASE            = PRE-G9B-R6-plus-A-2   (operational order)
+DEPENDS_ON_PACKAGE       = D1 PREPARATION PACKAGE = PASS — AUTHOR APPROVED
+                                                 (not published)
+NEXT_SUBPHASE            = PRE-G9B-R6-plus-A-2   (operational order; not authorized)
+STOP_STATE               = PRE-G9B-R6-plus-D1 = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
 ```
 
+`implementationAuthorized = true` authorizes only the implementation and
+technical verification defined below. It authorizes no later subphase.
 `authorApproved = false` means that no technical candidate of this phase has
 been author-approved. Technical verification never creates author approval.
-Once authorized, the phase stops with one exact technically verified candidate
-pending author review and author smoke.
+The phase stops with one exact technically verified candidate pending author
+review and author smoke, with `selfApproved = false`, `authorApproved = false`
+and `passClaimed = false`. The agent does not perform or claim author smoke.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -81,10 +93,11 @@ UnitState := { c : unit-token?, p : unit-token?, usm : NONE | DEFINED(k, name?, 
 
 ```text
 CHANGE_ROUTE         = ORDINARY
-VERIFICATION_CLASS   = GLOBAL_IMPACT          (author-frozen on 2026-10-02)
-frozenAtPhaseStart   = true from the authorization on (the class is already author-frozen)
-PLANNED_ACCEPTANCE   = FINAL on one exact frozen clean candidate
-                       no FINAL during preparation; no downgrade because focal tests pass
+VERIFICATION_CLASS   = GLOBAL_IMPACT          (author-frozen on 2026-10-02; kept at the
+                                               authorization of 2026-10-03)
+frozenAtPhaseStart   = true
+PLANNED_ACCEPTANCE   = FINAL — one and only one, on one exact frozen clean candidate,
+                       after FINAL -PlanOnly; no downgrade because focal tests pass
 ```
 
 Section 12.8 of `geocedg/specs/operations/verification-levels.md` maps
@@ -113,6 +126,7 @@ met. A `VERIFICATION_ESCALATION_REQUEST` does not apply upwards, because
 | D0 closeout finding 4 | `drawingScale` belongs to `C`; the conditional `D1` clauses of §18.1 and §19.1 do not apply |
 | D0 closeout findings 6, 7 | not `D1` (`C` preparation; `G` backlog) |
 | [D1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d1_author_decisions_record.md) | the frozen class, product boundary, architecture rule and stop conditions |
+| [D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md) | the authorization, the `DQ-D1-1`–`DQ-D1-11` dispositions (they prevail over the prepared defaults), the accepted characterization constraints and the additional stop conditions |
 | `AQ-U1`–`AQ-U6`, `DQ-D0-1`–`DQ-D0-13` | through the clauses that carry them (§19) |
 
 The specification controls over the `P0` recommendations and over older
@@ -148,7 +162,9 @@ Paths use the abbreviations of the specification (§6.4) plus `jre/` =
 `dtest/` = `source/desktop/desktop/src/test/java/org/geocedg/desktop/`. The
 phase re-establishes each citation before relying on it. A result marked
 **contract** is binding on the implementation; a result marked **finding** is
-evidence that a contract rests on.
+evidence that a contract rests on. The author accepted `C1`–`C11` on
+2026-10-03 as implementation constraints, subject to that re-establishment;
+where a `DQ-D1` disposition below changes a contract, the disposition governs.
 
 #### C1. State owner and lifecycle
 
@@ -293,7 +309,8 @@ product (author stop rule).
   that is not started (`common/main/App.java:1672-1675`), and
   `Construction.isStarted()` counts only used geo types and macros (`:4003-4005`);
   `isSaved()` is its only consumer. A unit change in an otherwise empty
-  document would therefore never prompt on New or close. See `DQ-D1-5`.
+  document would therefore never prompt on New or close. Resolved by the
+  replaced `DQ-D1-5`: a save-relevant-content seam, `isStarted()` unchanged.
 - **Rebuild identity (finding).** Undo, redo, rebuild and rollback re-create
   every instance (`jre-test/spatial/PostG9U1A4ConstructionPositionCharacterizationTest.java:93-96`),
   so object identity is checked by label, `PersistentGeoId` and order, never by
@@ -390,7 +407,9 @@ product (author stop rule).
     save prompt appears for an untouched new document. With an unspecified
     construction default the state stays `EMPTY` and the New lifecycle is
     upstream-identical.
-  - Changing a preference is not a document operation (§7.3, §10).
+  - Changing a preference is not a document operation (§7.3, §10): it never
+    alters the current document's `UnitState`, XML, undo stack or saved/dirty
+    state (`DQ-D1-2`).
 - **Restore default settings (finding).** "Restore default settings" and
   `--resetSettings` exist only in the v1 fallback and do not clear GeoCeDG keys
   (`desktop/main/GeoGebraPreferencesD.java:596-613`); `D1` does not change that.
@@ -422,9 +441,11 @@ product (author stop rule).
     *define* is available while `usm` is `NONE`; the factor, name and symbol are
     editable while it is `DEFINED`; *remove* is enabled only while neither
     stored unit is `usm` (§4.3);
-  - validation per §4.2 and §4.4 with the §8.4 reader grammar (`DQ-D1-8`); a
-    failed edit shows a localized warning and leaves the document state, and
-    any previous valid definition, unchanged;
+  - validation per §4.2 and §4.4 with the §8.4 reader grammar (`DQ-D1-8`: `.`
+    as decimal separator, no grouping separators, a decimal comma rejected with
+    a localized hint and never converted); a failed edit shows a localized
+    warning and leaves the document state, and any previous valid definition,
+    unchanged;
   - OK applies one validated combined operation, which is one undo point when
     it changes the state and none otherwise (§7.1); Cancel changes nothing;
   - one `usm` per document; no registry, list or library of custom units.
@@ -570,55 +591,58 @@ product (author stop rule).
 A contradiction that would change scope, owner, serialization or class stops
 the phase.
 
-### Decisions requested before authorization
+### Author dispositions on `DQ-D1-1` to `DQ-D1-11`
 
-The preparation found details that the author authorities do not settle. For
-each, this prompt fixes a **default contract**. The authorizing instruction may
-confirm or replace it; without an explicit replacement the default applies.
-None is an author decision until the author makes it.
+The prepared prompt fixed a default contract for each requested decision. The
+author disposed of all of them on 2026-10-03; the
+[D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md)
+is their authority and prevails over the prepared defaults. In substance:
 
-| ID | Question | Default contract of this prompt |
+| ID | Outcome | Contract |
 |---|---|---|
-| `DQ-D1-1` | Interaction route: status-bar controls, or a document action and dialog? | one `document.units` action in `options-product` and one modal dialog (C7); the unit status segments are text and open the same action on click (C8) |
-| `DQ-D1-2` | Where the new-document defaults are edited. | a GeoCeDG-owned *New document units* panel in Preferences → *Layout & Presentation*, live-applied like the existing product panels (`desktop/gui/dialog/options/OptionsLayoutD.java:128-141`; `AppGeoCeDG.java:571-592`), through the narrowest additional panel seam |
-| `DQ-D1-3` | A `geocedgUnits` element outside the document `<construction>` (at `<geogebra>` level, or in a `<macro>` outside its construction). | in a document: fail closed as metadata whose semantics cannot be established (§8.7.4), like the misplaced spatial section; in a macro context: ignored with a text log (§8.8) |
-| `DQ-D1-4` | The user-visible open error. | a localized message (`en`, `es`) that names the file and the defect class (newer version, malformed element, `usm` without a valid factor, duplicate or misplaced element), shown through the existing preflight and `setXML` error paths |
-| `DQ-D1-5` | Saved state of a unit-only change. | `Construction.isStarted()` also returns `true` for a non-`EMPTY` unit state (its only consumer is `App.isSaved()`); applying defaults ends saved (C6); so a unit operation on an empty document prompts on New and close, an untouched new document never does, and Classic, whose state stays `EMPTY`, is unchanged |
-| `DQ-D1-6` | Preference key names. | `geocedg.units.new-document-construction.v1` and `geocedg.units.new-document-presentation.v1` with the values of C6 |
-| `DQ-D1-7` | Insert File and provenance. | Insert File replaces the buffer at the base, so its provenance is the inserted document's effective unit; the insertion gives the §11 notice when the physical meanings differ, and a later Ctrl+V of the same buffer keeps that provenance; the target state never changes |
-| `DQ-D1-8` | Factor input in the dialog. | the §8.4 reader grammar exactly (decimal point, optional exponent); a decimal comma is rejected with a localized hint, not normalized |
-| `DQ-D1-9` | Form of the non-blocking notice. | a transient `paste-notice` segment of the GeoCeDG status bar naming both units, cleared by a `javax.swing.Timer` after 10 s, by the next paste or by the next document transition; no dialog, no sound, no undo point |
-| `DQ-D1-10` | An immediate UI warning about older readers. | none in `D1`; the limitation is recorded in the candidate report and the author-smoke checklist, and its user-guide wording stays `G`'s |
-| `DQ-D1-11` | The Classic app built from this tree. | the shared reader and writer apply to every app of this build, as `geocedgSpatial` does (its parsing is not gated by app); Classic has no unit UI and writes no element while its state is `EMPTY`, so its output for every document without the element is byte-identical; Web is not compiled by the verifier and no Web behavior is claimed |
-
+| `DQ-D1-1` | accepted | one `document.units` action under `options-product` opens the single Document Units dialog (C7); the two permanent unit status segments are presentation-only and invoke that action on click (C8); the status bar has no editing authority |
+| `DQ-D1-2` | accepted with precision | a GeoCeDG-owned *New document units* panel in Preferences → *Layout & Presentation* stores defaults only for future blank documents; changing them never alters the current document's `UnitState`, XML, undo stack or saved/dirty state; they reach a document only through the C6 lifecycle |
+| `DQ-D1-3` | accepted | a recognized `geocedgUnits` element outside the document `<construction>` fails closed (its document semantics cannot be established); in a macro context it stays ignored with a text diagnostic (§8.8); misplaced metadata is never reinterpreted |
+| `DQ-D1-4` | accepted | localized (`en`, `es`) user-visible diagnostics name the file and the defect: unsupported newer version, malformed element, invalid or missing `usm` factor, duplicate element, misplaced element; a failed File → Open leaves the previous live document and its saved, undo and file state unchanged |
+| `DQ-D1-5` | **replaced** | `Construction.isStarted()` keeps its meaning (geometric or macro construction content exists). A narrow shared seam, `Construction.hasSaveRelevantContent()` or an equivalent justified name, is `constructionStarted OR persistentDocumentMetadataPresent`, where for `D1` `persistentDocumentMetadataPresent` includes `UnitState != EMPTY`; `App.isSaved()` uses it. An otherwise empty document whose unit state changes becomes unsaved and prompts on New and close; an untouched new document with applied defaults stays saved after the baseline is retaken; Classic documents without unit metadata keep the upstream saved-state behavior. Presentation and session state never become save-relevant content. If the separation is impossible without material widening, stop and report |
+| `DQ-D1-6` | accepted | `geocedg.units.new-document-construction.v1` ∈ {`unspecified`, `mm`, `cm`, `m`} and `geocedg.units.new-document-presentation.v1` ∈ {`none`, `mm`, `cm`, `m`}; never `usm`; invalid stored values behave as unset and are not rewritten by reading |
+| `DQ-D1-7` | accepted | Insert File carries the inserted document's provenance; different physical construction meanings show the same non-blocking notice as an ordinary cross-document paste; never rescale geometry, convert coordinates or modify target units; a later Ctrl+V keeps that provenance until the buffer is replaced or cleared |
+| `DQ-D1-8` | accepted | the persisted factor and the dialog input use the §8.4 grammar with `.` as decimal separator; a decimal comma is rejected with a localized hint (the equivalent of "Use "." as the decimal separator."), never converted; no grouping separators; the canonical writer stays locale-independent |
+| `DQ-D1-9` | accepted | a transient `paste-notice` segment of the GeoCeDG status bar names the source and target units; no serialization, undo, geometry, sound or modal dialog; it clears after about 10 s, on the next paste or on the next document transition; it is EDT-safe and distinct from the permanent `layer | construction-unit | presentation-unit` segments; its timer is injectable so that tests need no real 10-second sleep |
+| `DQ-D1-10` | accepted | no immediate older-reader warning; the limitation is recorded in the candidate evidence and the author-smoke checklist; its user-guide treatment stays `G`'s |
+| `DQ-D1-11` | accepted with a boundary correction | `geocedgUnits` is shared document semantics: the shared reader, writer, validation and fail-closed rules also apply to the Classic diagnostic application built from this tree. In a Classic session: no unit UI and no unit geometry behavior; an `EMPTY` document changes no byte; a valid unit-bearing document is read and preserved per `D0`; malformed or future unit metadata fails closed. Forbidden are only Classic-specific unit UI, geometry semantics, orchestration or feature expansion beyond that shared behavior. Web: no new frontend or product claim, shared code within its build constraints, no Web-specific unit UI or behavior; a Web semantic fork or a material frontend broadening stops the phase |
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 ```text
-IMPLEMENTATION_BASE =
-3268f9b99d20c5d9cf62f25d8066ee0a8e47765c          (P_R6PLUS_D0, published D0 closeout)
+IMPLEMENTATION_BRANCH_START =
+3fb7542af3ef36db150291ca77e03b0bf4b6f888          (T_R6PLUS_D1_PROMPT, approved
+                                                   preparation package; not published)
 
-IMPLEMENTATION_BASE_TREE =
-83b32b6cb579dc28162f990160c3eef0b1928be6
+IMPLEMENTATION_BRANCH_START_TREE =
+de71421e6adbd9a9b5e6acc8051dd5154f6a5f63
+
+PUBLISHED_BASE =
+3268f9b99d20c5d9cf62f25d8066ee0a8e47765c          (P_R6PLUS_D0, published D0 closeout;
+                                                   tree 83b32b6cb579dc28162f990160c3eef0b1928be6)
+
+IMPLEMENTATION_BRANCH =
+phase/pre-g9b-r6-plus-d1-unit-system              (local; created from the exact
+                                                   branch start; never rebased)
 
 D0_STATE =
 PASS — AUTHOR APPROVED — PUBLISHED
-
-D0_APPROVED_DOCUMENTARY_CANDIDATE =
-8383a153dc2228fc08b4e00a0c92ef8025608916          (T_R6PLUS_D0)
 ```
 
 A moving branch is not a base. Entry gate: local `main`, `origin/main` and the
-live remote `main` equal the base the authorizing instruction names, its tree
-matches, and the worktree is clean. If the documentary commit that carries
-this prompt, its decision record and its characterization report is published
-first, the authorizing instruction names that commit instead; this prompt
-assumes no later base on its own. The phase works on a new local branch from
-the named commit and is not rebased onto any later commit without a new author
-instruction. Between the base and that documentary commit only documentation
-changes, so the citations above still apply; the phase re-establishes every one
-it relies on before using it.
-
+live remote `main` equal `P_R6PLUS_D0` and its tree; `T_R6PLUS_D1_PROMPT` exists
+with its tree and has `P_R6PLUS_D0` as its only parent; the worktree is clean.
+The phase works on its implementation branch from the exact branch start and is
+not rebased onto any later commit without a new author instruction. The
+prepared candidate stays immutable: this amendment is a new commit on top of
+it. `T_R6PLUS_D1_PROMPT` differs from `P_R6PLUS_D0` only in documentation, so
+the citations of this prompt still apply; the phase re-establishes every one it
+relies on before using it.
 ## Authority and evidence hierarchy
 
 1. `AGENTS.md`, the canonical governance and verification prompts, and the
@@ -629,7 +653,7 @@ it relies on before using it.
    and the [unit specification](../../../geocedg/specs/units/unit-system.md)
    v1.0; the [D0 closeout record](../../../docs/validation/pre_g9b_r6_plus_d0_closeout_record.md);
    the `D0` author-decision records.
-4. The [D1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d1_author_decisions_record.md).
+4. The [D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md)
 5. Evidence, re-established before use: the
    [D1 characterization report](../../../docs/validation/pre_g9b_r6_plus_d1_preparation_characterization_report.md)
    and its mirror; the [A-1](../../../docs/validation/pre_g9b_r6_plus_a1_closeout_record.md)
@@ -651,7 +675,11 @@ it relies on before using it.
 - `Construction` (minimal): the holder field and getter, reset in
   `clearConstruction`, the writer call in `getConstructionXML` with its macro
   guard, a non-consuming read of the pending load purpose, and the
-  `isStarted()` extension of `DQ-D1-5`.
+  save-relevant-content seam of `DQ-D1-5` (`hasSaveRelevantContent()` or an
+  equivalent justified name); `isStarted()` is not changed.
+- `App` (minimal): `isSaved()` through the save-relevant-content seam, and the
+  narrowest error-message seam for a rejected `setXML` (`DQ-D1-4`), each
+  upstream-identical for a document without unit metadata.
 - `MyXMLHandler` (minimal): the `geocedgUnits` branch, its construction mode,
   the effective-purpose capture at document-construction start, duplicate,
   child, text and misplacement detection, and the ignored contexts.
@@ -717,9 +745,17 @@ it relies on before using it.
   `unitLabel` (§16.3).
 - A new command, command processor change or GGBScript surface: the derived
   GGBScript inventory stays unchanged.
-- Changes to Classic or Web behavior beyond upstream-identical shared defaults
-  (`DQ-D1-11`); changes to the meaning of the `A-1` layer workspace or the `B`
-  export area.
+- Classic-specific unit UI, geometry semantics, orchestration or feature
+  expansion beyond the shared document-semantic reader/writer behavior required
+  by `D0` (`DQ-D1-11`). The shared reader, writer, validation and fail-closed
+  rules do apply to the Classic diagnostic application: a valid unit-bearing
+  document is read and preserved, malformed or future metadata fails closed,
+  and an `EMPTY` document changes no byte.
+- Web-specific unit UI or behavior, a Web semantic fork, or a new Web frontend
+  or product claim; shared code stays within its build constraints.
+- Changes to the meaning of `Construction.isStarted()`, or any presentation or
+  session state treated as save-relevant document content (`DQ-D1-5`).
+- Changes to the meaning of the `A-1` layer workspace or the `B` export area.
 - Edits of the normative `D0` documents (ADR 0032, the unit specification), of
   the governance layer, of `AGENTS.md`, `CLAUDE.md`, `.github/prompts/**`
   other than this prompt's authorized amendment, `ai-shell/prompts/**`, the
@@ -741,7 +777,7 @@ it relies on before using it.
 ## Required design/specification
 
 The unit specification v1.0 and ADR 0032 are the design; this prompt's
-characterization and its default contracts complete it at the implementation
+characterization and the `DQ-D1` dispositions complete it at the implementation
 level. Before product edits, the phase records in its candidate report the
 re-established seams, the chosen class and package names, the exception and
 diagnostic shape, the hooks and their defaults, and every correction to C1–C11.
@@ -796,19 +832,20 @@ or `final.desktop`:
 | `T-LOAD-RESTORE` | File → Open of every fail-closed fixture as `.cedg`, `.ggb` and an archive with macros: preflight rejection; document XML, unit state, unique id, file, path, recent list, `isSaved`, undo history and file bytes unchanged; message per `DQ-D1-4` in `en` and `es`; an injected live-load failure; a failed startup load; `setXML` restored to its entry snapshot (C3) |
 | `T-IGNORED` | element in a paste payload, `evalXML`, action replay, document macros, `.ggt`, `addMacroXML`, `MacroConstruction.loadXML`: ignored, text log, target state unchanged; macro, `.ggt`, clipboard and preferences XML never contain it |
 | `T-ROUTES` | every row of the C1 lifecycle map, including the archive-with-macros row |
-| `T-UNDO` | each §7.1 and §4.3 operation exactly one undo point (Desktop latch); no-op and rejected operations none (2-second latch); combined define-and-select one; undo and redo restore the exact state; operations mark the document modified (`DQ-D1-5`) |
+| `T-UNDO` | each §7.1 and §4.3 operation exactly one undo point (Desktop latch); no-op and rejected operations none (2-second latch); combined define-and-select one; undo and redo restore the exact state; operations mark the document modified |
 | `T-REBUILD` | redefine rebuild, batch redefine, failed-redefine restore, atomic-mutation rollback, paste rollback and rejected-parse restore carry the exact state |
 | `T-NEW-OPEN` | defaults on File → New, startup without a file, New Window, failed startup load, reset without a file, `openURL` clear; never on Open, legacy Open, reset reload, undo, redo, rebuild, rollback, paste, Insert File, `setXML`, `evalXML`; baseline includes the defaults; no undo point and saved after applying them; unspecified default plus presentation default gives `EMPTY`; Open never carries the previous state; a preference change changes no document |
-| `T-PREFS` | keys and values of C6 through an injected store; invalid stored values unset and not written back; no unit state in preferences XML or documents; the real developer store never touched |
+| `T-PREFS` | keys and values of C6 through an injected store; invalid stored values unset and not written back; no unit state in preferences XML or documents; a preference change leaves the current `UnitState`, XML, undo stack and saved/dirty state unchanged (`DQ-D1-2`); the real developer store never touched |
+| `T-SAVED` | `DQ-D1-5`: `isStarted()` unchanged for every case; `hasSaveRelevantContent()` true exactly for a started construction or a non-`EMPTY` unit state; a unit change on an empty document makes `isSaved()` false and New prompts; an untouched new document with applied defaults stays saved; an `EMPTY` Classic document keeps the upstream behavior; no presentation or session state (layers, export area, provenance, notice) is save-relevant |
 | `T-USM-LIFECYCLE` | the lifecycle cases of C7 |
 | `T-INVARIANCE` | C10 on its corpus, for every operation, undo and redo |
 | `T-NOTIFY` | the notification fires on every operation, reset and application without any construction recompute or geo update |
-| `T-STATUS` | segment order and texts in `en` and `es`, unspecified and `usm` displays, tooltips, refresh on every transition and after layout rebuilds, EDT marshalling; the `A-1` layer texts unchanged |
+| `T-STATUS` | segment order and texts in `en` and `es`, unspecified and `usm` displays, tooltips, refresh on every transition and after layout rebuilds, EDT marshalling, a click on a unit segment invoking `document.units`; the `A-1` layer texts unchanged; the `paste-notice` lifecycle (shown, replaced on the next paste, cleared on a document transition and on expiry) through an injected timer, without real sleeps (`DQ-D1-9`) |
 | `T-UI` | the Document Units dialog through an injected prompt: every field, validation warnings with `JOptionPane` mocked, OK as one undo point, Cancel as none |
-| `T-CLIPBOARD` | provenance recorded only on buffer replacement; same meaning no notice; copy, New with a different default, paste: notice; copy, Open, paste across `mm`, `cm`, `m`, `usm` with equal and different factors; unspecified sides; Insert File per `DQ-D1-7`; numbers unchanged; no undo point and no XML change by the notice; two windows: distinct buffers and no cross-window paste; the equation paste and API routes give no notice |
+| `T-CLIPBOARD` | provenance recorded only on buffer replacement; same meaning no notice; copy, New with a different default, paste: notice; copy, Open, paste across `mm`, `cm`, `m`, `usm` with equal and different factors; unspecified sides; Insert File with a different physical meaning gives the same notice and a later Ctrl+V keeps its provenance (`DQ-D1-7`); numbers and target units unchanged; no undo point and no XML change by the notice; two windows: distinct buffers and no cross-window paste; the equation paste and API routes give no notice |
 | `T-LEGACY-BYTES` | the committed base-fingerprint fixture reproduced for the corpus (C11) |
 | `T-COMPAT-CORPUS` | the mandatory corpus of C11 |
-| `T-CLASSIC` | a Classic headless app (`AppDNoGui` with the default config) with `EMPTY` state is byte-identical; `DQ-D1-11` behavior for a document with the element |
+| `T-CLASSIC` | a Classic headless app (`AppDNoGui` with the default config): an `EMPTY` document is byte-identical; a valid unit-bearing document is read and re-written with the same element; malformed and future metadata fail closed; no unit UI exists (`DQ-D1-11`) |
 | `T-EXPORT-REGRESSION` | with each unit state, picture export sizes, DXF `$INSUNITS = 0`, the `UNITLESS` fidelity contract and LaTeX output are byte-identical to the `EMPTY` state |
 | `T-GGBSCRIPT` | the derived GGBScript inventory and its pin unchanged |
 | `T-DETERMINISM` | writing the same state twice, and under different default locales, yields identical bytes |
@@ -864,7 +901,9 @@ console log         : the session scratchpad, never under artifacts\
 ```
 
 Exactly one `FINAL`, `ACCEPTED / COMPLETE`, with its receipt bound to the exact
-candidate commit and tree; no further commit afterwards. A focal, adjacent,
+candidate commit and tree; no further commit afterwards. If product or test
+code changes after `FINAL`, that candidate is no longer the accepted candidate:
+stop and report instead of claiming the old receipt. A focal, adjacent,
 `DEV` or `INTEGRATION` PASS never substitutes for it, and it is not repeated for
 an unchanged candidate. The two standing diagnostics
 (`diagnostic.governance` `DIAGNOSTIC_FINDING`, `diagnostic.historical-consistency`
@@ -876,11 +915,12 @@ exit codes, run ids, plan, result and receipt hashes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file is authorized. The author decisions it records do not
-authorize implementation. Execution requires a new explicit author instruction
-naming `PRE-G9B-R6-plus-D1` and its exact base. That instruction would
-authorize only the scope above: local implementation, local commits, technical
-verification and one frozen technical candidate for author review and smoke.
+The author's instruction of 2026-10-03, recorded in the
+[D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md),
+authorizes only the scope above: local implementation on the implementation
+branch, local commits, technical verification, the single `FINAL` and one
+frozen technical candidate for author review and smoke. It does not authorize
+self-approval, author smoke by the agent, or any change of the frozen class.
 
 `D1` authorizes nothing that follows it. The operational order is
 `A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → G`; it is the order the
@@ -891,16 +931,17 @@ verification.
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary
 
-Once authorized: a local branch from the base and local commits only. Push,
-branch publication, merge, promotion to `main`, rebase, squash, amend after
-freeze, force push, tag, release and binary publication are forbidden; each
-needs a separate explicit author instruction naming the exact candidate SHA.
-Acceptance evidence never grants publication authority.
+A local implementation branch from the exact branch start and local commits
+only. Push, branch publication, merge, promotion to `main`, rebase, squash,
+amend after freeze, force push, tag, release and binary publication are
+forbidden; each needs a separate explicit author instruction naming the exact
+candidate SHA. Acceptance evidence never grants publication authority.
 
 ## Acceptance and closeout
 
 `D1` stops with one technically verified candidate pending author review and
-author smoke. Author approval is an explicit decision naming the exact accepted
+author smoke: `PRE-G9B-R6-plus-D1 = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW`,
+with `selfApproved = false`. Author approval is an explicit decision naming the exact accepted
 commit. The candidate report and its evidence record
 `AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT`; a later closeout record is
 the sole authority for approval. After approval,
@@ -919,7 +960,16 @@ documentary steps.
   fail-closed matrix with the restore observations; the two-window and
   cross-document clipboard results; the older-reader base-tree evidence; the
   export-regression evidence; residual risks and observations; the
-  author-smoke checklist, including the older-reader limitation.
+  author-smoke checklist.
+- The author-smoke checklist covers at least: new-document defaults; the
+  Document Units dialog; standard-unit changes; define, edit, switch and remove
+  `usm`; status segments and tooltips; undo and redo; the unsaved prompt on an
+  otherwise empty document after a unit change; Open of valid unit-bearing
+  documents; rejection of malformed or newer metadata; paste after New/Open
+  with matching and mismatching units; the Insert File mismatch notice; legacy
+  document behavior; Classic diagnostic preservation; confirmation that the
+  current picture, DXF and LaTeX export behavior has not changed; and the
+  older-reader limitation (`DQ-D1-10`).
 - Machine-readable evidence beside it, following existing conventions.
 - The bootstrap-impact outcome and rationale, the
   verification-infrastructure-impact assessment, `GUIDE_IMPACT` with paths,
@@ -944,8 +994,12 @@ Stop and report rather than improvise when:
 - malformed or future recognized unit metadata would be accepted silently;
 - paste would scale geometry;
 - a general multi-custom-unit registry would be introduced;
-- Classic or Web behavior would change beyond upstream-identical shared
-  defaults;
+- satisfying `DQ-D1-11` would require frontend-specific Classic or Web unit
+  semantics instead of shared document semantics, a Web semantic fork, or a
+  material broadening of frontend scope;
+- implementing `DQ-D1-5` would require materially redefining general save
+  semantics beyond a narrow document-metadata seam, or changing the meaning of
+  `Construction.isStarted()`;
 - the normative `D0` contract would have to change;
 - fail-closed unit parsing would need a material broadening of the load
   architecture (C3);
@@ -956,4 +1010,5 @@ Stop and report rather than improvise when:
 - current governance requires a verification class other than
   `GLOBAL_IMPACT`;
 - the `FINAL` is rejected for a cause attributable to the candidate, or its
-  coverage is incomplete or untrusted.
+  coverage is incomplete or untrusted;
+- product or test code would change after `FINAL`.
