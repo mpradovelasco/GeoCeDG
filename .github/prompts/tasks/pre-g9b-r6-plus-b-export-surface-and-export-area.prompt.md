@@ -206,7 +206,7 @@ prompt.
 | `DQ-B5` | Which views the producers apply to. | **accepted with a precision**: the initial UI may expose the `MANUAL` definition from Graphics 1 only; `ExportArea` and the shared service never hard-code Graphics 1 as a semantic identity, keep an explicit `sourceViewId` and stay valid for any supported 2D view; `EXPORT_POINTS` may be resolved for the corresponding 2D source view; the 3D-view export stays entirely outside `B` and does not change |
 | `DQ-B6` | `Ctrl+Shift+C`: open the Picture surface or copy directly? | **accepted**: the graphics copy runs directly through the common service and the same `ExportArea`; no Picture dialog; not a second authority |
 | `DQ-B7` | PSTricks, PGF/TikZ and Asymptote still read `selectionRectangle` until `C`. | **accepted**: their upstream area behavior, including `selectionRectangle`, is kept until `C` as an explicitly documented temporary inconsistency; `B` does not change it |
-| `DQ-B8` | The PDF writer takes an integer `Dimension`. | **accepted as an explicit stop condition**: PDF exactness is never obtained by silent rounding or truncation. If the PDF backend cannot represent the required physical size with the exactness of this contract, the phase stops, characterizes the limitation and requests an author decision before introducing any approximation |
+| `DQ-B8` | The PDF writer takes an integer `Dimension`. | **accepted as an explicit stop condition**: PDF exactness is never obtained by silent rounding or truncation. If the PDF backend cannot represent the required physical size with the exactness of this contract, the phase stops, characterizes the limitation and requests an author decision before introducing any approximation. **Raised and resolved** on 2026-10-02: see *Author resolution of the `DQ-B8` stop* |
 | `DQ-B9` | Command-line `--export` ran on a zero-size view and wrote a 0-byte file (`OBS-R6P0-CLI-EXPORT-ZERO-SIZE`). | **accepted**: when no valid area or output can be produced, the export fails explicitly with a message and a non-zero exit and leaves no empty file as an apparently valid result. The viewport fallback uses the stored size of the document's source view |
 
 ### Screen-anchored objects (`DQ-B3`, author disposition)
@@ -228,6 +228,73 @@ screen-anchored objects with the export translation, so their canvas position
 can differ from the base. If the backend cannot preserve this semantics
 without turning presentation into geometry or without a material widening of
 scope, the phase stops and reports the evidence for an author decision.
+
+### Author resolution of the `DQ-B8` stop (2026-10-02)
+
+The phase stopped at the `DQ-B8` gate before any product change. A scratch
+probe of the vendored FreeHEP `PDFGraphics2D` showed that the page and canvas
+sizes are integer `java.awt.Dimension` values, that `openPage` clips, centres
+and fits with those integers, that the writer prints about five significant
+digits (`MediaBox 113.39` for 113.3858 pt), and that
+`GraphicExportDialog.exportPDF` keeps the FreeHEP defaults `PAGE_MARGINS =
+SMALL` and `FIT_TO_PAGE = true`, which shrink the drawing inside the page at the
+base. The author recorded the stop as design evidence, not as a failure of `B`,
+and decided:
+
+- **PDF.** Integer truncation, silent rounding, implicit FreeHEP margins,
+  `FIT_TO_PAGE = true` and removing PDF exactness from `B` are not accepted.
+  A minimal remediation of the vendored PDF backend is authorized so that page
+  extents and page transforms are held in `double` and an integer
+  `java.awt.Dimension` is no longer the authority of the physical size, under a
+  prior gate: before any `org/freehep/**` file is modified, the phase
+  identifies the most precise origin and revision of the vendored snapshot,
+  links it to the applicable license evidence, registers FreeHEP in the
+  GeoCeDG licensing and provenance records, preserves copyright and notices,
+  and registers every modified FreeHEP file as modified third-party source. If
+  provenance or license cannot be established sufficiently, the phase stops
+  again before touching FreeHEP. The GeoCeDG route sets `PAGE_MARGINS = 0` and
+  `FIT_TO_PAGE = false` explicitly; the content is never reduced, centred with
+  implicit margins or shifted to accommodate FreeHEP defaults. The target
+  extent derives from `ExportArea` and the current export scale. Tolerance of
+  the finite PDF serialization:
+  `abs(emittedExtent - requestedExtent) <= 0.001 pt` for each page-box
+  dimension. It belongs only to the numeric representation and changes no
+  world bounds, geometry, geometric scale, dependency or identity. The report
+  records, for the canonical cases, the requested extent, the emitted
+  `/MediaBox`, the absolute error, the applied transform, and the absence of
+  margins, of `FIT_TO_PAGE`, of crop and of additional scaling.
+- **SVG.** An integer `viewBox` is not by itself a stop condition. The world
+  bounds are the exact authority and the `viewBox` is an internal canvas
+  representation; the export-viewport transform maps the exact world bounds
+  onto the SVG canvas without outside padding, crop or deformation, and the
+  physical `width` and `height` keep the precision the backend offers. Only a
+  probe proving that the integer `viewBox` forces a change of world bounds, a
+  deformation, padding or crop stops the phase.
+- **EMF / EMF+.** The intrinsic quantization of the integer fields of the
+  format is accepted when explicit and bounded: world bounds unchanged, no
+  geometric deformation, no crop, no added padding, extents and device units
+  quantized to the nearest native representation. For each relevant physical
+  field the evidence records the requested value, the emitted value, the
+  smallest representable unit and the absolute error; the maximum error is half
+  a native unit of the field.
+- **Raster.** The raster contract below is kept.
+- **`getFrame()` and `+2`.** Neither the integer truncation of `getFrame()` nor
+  the `+2` remains an authority: the architecture is
+  `ExportArea.worldBounds → output mapping`, never
+  `ExportArea → source-view integer rectangle → padding → output`.
+- **Characterization first.** Before product changes resume, the phase
+  characterizes in the scratchpad the viability of the offscreen export
+  viewport, the reproduction and identification of the Save side preview, and
+  the canvas-anchored semantics of screen-anchored objects, plus focal SVG and
+  EMF/EMF+ probes. It reports and stops immediately if any of them raises
+  another stop condition; otherwise it continues without a new confirmation.
+- **Class.** `VERIFICATION_CLASS = INTEGRATED_PHASE` is unchanged. A broad
+  modification of the library, several `graphicsio` families, a new
+  dependency, a backend replacement, or a change that affects consumers outside
+  the GeoCeDG export stops the phase for reclassification. A small, focal
+  change of the vendored PDF backend, backed by provenance and licensing and by
+  specific tests, stays within `B`. `FINAL` is not run without an explicit
+  escalation and authorization.
 
 ### Raster discretization (author contract of 2026-10-02)
 
@@ -282,10 +349,11 @@ prompt, not an author decision.
   It carries its own view identity, which never collides with Graphics 1 or 2,
   and the Locus V2 render caches it creates are released with it.
 - **Exact dimensions.** The area width and height in world units times the
-  source view scale and the export scale give the exact output size. Vector
-  formats (PDF, SVG, EMF/EMF+) use that size exactly; for PDF any limitation of
-  the writer is the `DQ-B8` stop condition. Raster outputs follow the author's
-  *Raster discretization* contract above. There is no `+2`.
+  source view scale and the export scale give the exact output size. PDF uses
+  it within `0.001 pt` per page-box dimension, SVG maps the exact bounds onto
+  its canvas, EMF/EMF+ quantize their integer fields by at most half a native
+  unit, and raster outputs follow the *Raster discretization* contract, all as
+  decided in the *Author resolution of the `DQ-B8` stop*. There is no `+2`.
 - **Producers.**
   - `EXPORT_POINTS` is derived live from `Export_1` and `Export_2` whenever it
     is read. It is valid only when both labels name finite `GeoPoint` objects
@@ -463,6 +531,12 @@ still apply; the phase re-establishes every one it relies on before using it.
   predicate and keeps its layer groups.
 - The Picture dialog wired to the export service and the effective area,
   including any preview it shows.
+- After the provenance and licensing gate, the minimal focal remediation of
+  the vendored FreeHEP PDF backend (`org/freehep/graphicsio/pdf/**`) that holds
+  page extents and page transforms in `double`, opt-in for the GeoCeDG route so
+  that every other caller keeps the base output; the FreeHEP licensing and
+  provenance records; the modified-file registration of every FreeHEP file
+  changed.
 
 ### Surface and routes
 
@@ -622,7 +696,10 @@ executes all of them:
 | `T-VIEWPORT` | the export viewport is built, painted and disposed without changing the live view, its settings, the selection, the undo history or any kernel value; no drawable, render cache or listener remains; its view identity never collides with Graphics 1 or 2 and its Locus V2 render caches are released |
 | `T-EXACT-SIZE` | exact output size for inside, larger and disjoint areas in PNG (two scales), PDF, SVG, EMF and EMF+; zero outside padding; no `+2` |
 | `T-RASTER-BOUNDS` | the documented raster rule: world bounds unchanged, the four exact bounds mapped onto the canvas, no padding, no crop; requested versus effective resolution recorded as a sampling property |
-| `T-PDF-EXACT` | the PDF page size equals the exact area without silent rounding or truncation, or the `DQ-B8` stop is recorded with its characterization |
+| `T-PDF-EXACT` | for the canonical cases: requested extent, emitted `/MediaBox`, absolute error `<= 0.001 pt` per dimension, applied transform, no margins, no `FIT_TO_PAGE`, no crop and no additional scaling |
+| `T-SVG-EXACT` | the exact world bounds map onto the SVG canvas without padding, crop or deformation; the physical `width` and `height` keep the backend precision |
+| `T-EMF-QUANTIZATION` | for each relevant EMF/EMF+ field: requested value, emitted value, smallest native unit and absolute error `<= 0.5` unit; no crop, padding or deformation |
+| `T-FREEHEP-CLASSIC` | the remediated PDF backend reproduces the base output byte for byte for every caller that does not opt in, including Classic |
 | `T-CONTENT` | points; lines, segments, rays and vectors; conics; polygons; functions; axes; grid; labels and text; legacy Locus; Locus V2 at export resolution — present and complete for inside, larger and disjoint areas in every picture format, with nothing outside the rectangle |
 | `T-SVG-AREA` | SVG is written from the area, not clipped to the view, with its layer groups |
 | `T-HIDDEN-LAYERS` | every picture format, SVG included, and the preview omit objects on hidden layers; showing the layer restores them |
@@ -753,9 +830,14 @@ Stop and report rather than improvise when:
 - any part of `ExportArea` would be serialized or enter undo;
 - the save-dialog preview reported in `A-1` cannot be reproduced or
   identified, or its real route contradicts the characterization;
-- the PDF backend cannot represent the exact physical size without silent
-  rounding or truncation (`DQ-B8`): characterize, stop and request an author
-  decision before any approximation;
+- the provenance or license of the vendored FreeHEP snapshot cannot be
+  established sufficiently before an `org/freehep/**` file is modified;
+- the PDF remediation needs a broad library change, several `graphicsio`
+  families, a new dependency, a backend replacement, or a change visible to
+  consumers outside the GeoCeDG export (reclassification);
+- the PDF page box cannot meet `0.001 pt` per dimension;
+- an SVG probe proves that the integer `viewBox` forces a change of world
+  bounds, a deformation, padding or crop;
 - the raster backend would force a change of the `ExportArea` world bounds;
 - the canvas-anchored semantics of screen-anchored objects cannot be preserved
   without turning presentation into geometry or materially widening scope
