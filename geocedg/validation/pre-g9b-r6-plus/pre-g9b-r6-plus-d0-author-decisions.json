@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-D0",
+  "recordKind": "AUTHOR_DECISIONS",
+  "record": "docs/validation/pre_g9b_r6_plus_d0_author_decisions_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "decidedOnBase": {
+    "name": "P_R6PLUS_B",
+    "commit": "0ef616bb7bb8efd3e4f19762f38936ff4742d1c3",
+    "tree": "be7ef7acbc3503002f3dac2bc33f047795f7a644"
+  },
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productPhaseEffect": "NONE",
+  "authorizedByThisInstruction": ["documentary preparation of the canonical D0 prompt", "record of the D0 author decisions", "strictly necessary status updates"],
+  "notAuthorizedByThisInstruction": ["execution of D0", "D1", "A-2", "C", "E1", "E2", "E3", "F1", "F2", "G", "PRE-G9B-R7", "G9B", "any product change"],
+  "authorFixedSemantics": {
+    "constructionUnit": "physical meaning of one numerical model unit; changing it is physical reinterpretation, never geometric scaling, coordinate transformation or redefine",
+    "legacyDocument": "no unit metadata -> constructionUnit = UNSPECIFIED_MODEL_UNIT; cm never inferred from printingScale, zoom, DPI, viewport or historical exporter behavior",
+    "presentationUnit": "expresses dimensional presentation quantities",
+    "drawingScale": "dimensionless engineering ratio",
+    "AQ-U1": "RESOLVED — AUTHOR CONFIRMED (2026-10-01): printed/exported physical dimension invariant under an equivalent presentationUnit change"
+  },
+  "decisions": [
+    {"id": "AQ-U2", "owner": "D0", "decision": "v1: only the native dimension objects delivered by E2 present physical units; Distance, Length, LocusLength and other existing numeric results stay model-unit values without physical suffix; general GeoNumeric objects are not turned into dimensional quantities; areas, volumes and other unit powers outside D0 v1; angles stay under the independent angleUnit contract"},
+    {"id": "AQ-U3", "owner": "D0", "decision": "physical construction units v1: mm, cm, m, usm, plus the non-physical state UNSPECIFIED_MODEL_UNIT; exact factors mm = 10^-3 m, cm = 10^-2 m, m = 1 m; usm is one document-scoped user-defined physical unit with durable semantic identity token usm and definition 1 usm = k m, k finite and > 0; the factor must be explicitly defined before usm can become the effective construction or presentation unit; an absent or invalid factor never falls back to an inferred value and never turns usm into UNSPECIFIED_MODEL_UNIT; name and symbol are presentation metadata, not semantic identity; renaming without changing the factor does not change physical semantics; changing the factor while usm is active is a physical reinterpretation (no coordinate change, no scaling, no DAG change, no identity change, undoable, dependent dimensional presentation and export interpretation update); an invalid attempted factor change is rejected and the previous valid definition stays; one usm definition per document in v1, no custom-unit registry in D0/D1; presentationUnit may use the same definition; constructionUnit = usm without explicit presentationUnit -> effective presentationUnit = usm; a standard construction unit may present in usm when a valid definition exists; serialized tokens exactly mm, cm, m, usm; UNSPECIFIED_MODEL_UNIT is the absence of construction-unit metadata, never a token; when usm is referenced its metre factor is serialized in the same flat, versioned, self-closing GeoCeDG unit element in a locale-independent, deterministic, round-trip-reproducible lexical form; exact element and attribute names are a D0 decision; the custom-unit definition is never inside geocedgSpatial; older GeoCeDG and Classic stay lenient, unknown unit metadata may be ignored and lost on re-save, and D0 documents this limitation"},
+    {"id": "AQ-U4", "owner": "D0", "decision": "copy/paste moves numeric geometry, not physical lengths; never converts coordinates or scales geometry; both physical with different effective metre factors: accept, keep values exactly, non-blocking notice, no implicit conversion; one or both unspecified: accept, keep values, infer no unit, no scaling; compatibility/warning logic compares effective metre factors, not only tokens (two usm documents with different factors produce the notice); the notice is not geometry and not part of the paste undo beyond the paste's normal behavior"},
+    {"id": "AQ-U5", "owner": "D0", "decision": "drawingScale is SESSION, default 1:1, not serialized, not undoable, reset on New/Open; export/presentation state, not geometric semantics"},
+    {"id": "AQ-U6", "owner": "D0", "decision": "with UNSPECIFIED_MODEL_UNIT no engineering-scale physical export exists; the user must declare a physical unit before an engineering drawing scale with physical meaning, IsoABorder or any operation converting model units to a physical magnitude; no implicit 1 unit = 1 cm fallback; dimensions show only the bare model value without suffix; UNSPECIFIED_MODEL_UNIT is the only state without physical model-unit interpretation; a valid usm enables engineering-scale export and IsoABorder exactly like mm, cm or m; an undefined usm cannot be selected and does not enable physical export"},
+    {"id": "UNDO", "owner": "D0", "decision": "constructionUnit change = one undoable document operation; presentationUnit change = one undoable document operation; usm factor change while active = undoable; drawingScale not undoable; changing the user preference used as default for new documents = no document undo; undo/redo restore unit and dimensional presentation coherently without changing identity or geometry"},
+    {"id": "UNIT-INDEPENDENCE", "owner": "D0", "decision": "constructionUnit, presentationUnit and drawingScale MUST NOT alter live coordinates, authoritative numeric geometry, DAG topology, dependencies, semantic identities, construction order, geometric object identity, LocusV2 branch/component identity, LocusV2 semantics, SplineV2 semantics, parameter domains or numeric geometric outputs; the only live consumers are dimension presentation strings, status/presentation UI and export adapters; a tool may read unit/scale once at creation to compute an explicit model-unit input, which then is an ordinary construction parameter not following later unit changes; no live geometric dependency on units"},
+    {"id": "PERSISTENCE-TARGET-D1", "owner": "D0 (normative) / D1 (implementation)", "decision": "flat, versioned, self-closing GeoCeDG element under <construction>, conceptually <geocedgUnits version=\"1\" construction=\"mm\" presentation=\"cm\"/>, final names by D0; lazy writing; absence = unspecified; no automatic writing for legacy documents; reset in clearConstruction, not by absence during parse; paste does not reset the target unit; macro constructions neither write nor consume the element; flat, no children; no preferences XML; coherent undo snapshot; legacy byte identity without units"},
+    {"id": "EXPORT-FOUNDATION", "owner": "D0 (amendment) / C, D1 (implementation)", "decision": "D0 writes the normative amendment of geocedg/specs/export/geometry-export-foundation.md: model coordinates stay unconverted; DXF $INSUNITS derives from constructionUnit in C/D1; $INSUNITS = 0 while unspecified; screen scale, printingScale and DPI are never reinterpreted as model unit; D0 does not modify the exporter"}
+  ],
+  "d0Outputs": ["ADR on unit semantics and persistence ownership", "versioned normative unit-system specification", "geometry-export-foundation amendment", "invariant, persistence and compatibility matrices", "AQ-U1 to AQ-U6 traceability", "explicit contract for D1, C, E2 and E3", "candidate report and machine-readable mirror"],
+  "d0Excluded": ["product code", "Java", "serialization implementation", "GUI implementation", "status-bar implementation", "exporter implementation", "native dimensions", "IsoABorder"],
+  "verificationClass": {
+    "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+    "plannedAcceptance": ["STATIC"],
+    "onExactDocumentaryCandidate": true,
+    "notRun": ["PHASE", "INTEGRATION", "FINAL"],
+    "unlessScopeChangesBeforeFreeze": true
+  },
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-d0-normative-unit-system-design.prompt.md",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "stillOpen": ["DQ-D0-1 to DQ-D0-13 of the canonical D0 prompt (default contracts fixed by the prompt, not author decisions)", "AQ-E3a, AQ-E3c (E3) and AQ-E4 (E2)", "every other open decision of the P0 candidate report section 15"],
+  "operationalOrder": ["A-1", "B", "D0", "D1", "A-2", "C", "E1", "E2", "E3", "F1", "F2", "G"],
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED (AUTHOR_SMOKE = PASS)",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED — PUBLISHED (AUTHOR_SMOKE = PASS)",
+    "PRE-G9B-R6-plus-D0": "PREPARED — NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

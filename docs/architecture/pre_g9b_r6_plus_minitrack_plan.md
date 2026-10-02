@@ -13,6 +13,7 @@
 - First executable task: [`PRE-G9B-R6-plus-P0`](../../.github/prompts/tasks/pre-g9b-r6-plus-p0-integrated-characterization-and-design.prompt.md), `PASS — AUTHOR APPROVED` (2026-10-02) on `T_R6PLUS_P0` `6b7fd5de343b6556b384e71a9345907e7944d1e5` ([closeout record](../validation/pre_g9b_r6_plus_p0_closeout_record.md)); its design candidates stay candidates and its open author decisions stay open
 - Author decisions for `A` (2026-10-02): [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md). `A` is split into `A-1` (`INTEGRATED_PHASE`) and `A-2` (`GLOBAL_IMPACT`); the next subphase is `A-1`, whose [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md) is prepared on `562e2bb1e77b249b9c97c2e6e06e8b123d6de900`, tree `9f578093f2f3cba481f5630fe827fd3ef08cff61` and is `NOT AUTHORIZED`; the preparation package `T_R6PLUS_A1_PROMPT` `3c5aba19b2efd4b65d6f7b7deba6d3b19611630b` is `PASS — AUTHOR APPROVED` (2026-10-02, [closeout record](../validation/pre_g9b_r6_plus_a1_prompt_closeout_record.md)); implementation was authorized on 2026-10-02 on `069c7a03da92f2c30f015815a0aa278e7356b356` and `A-1` is `PASS — AUTHOR APPROVED` (2026-10-02, author smoke PASS, `T_R6PLUS_A1` `2a71133ad622e18e9963b04a466a92665a784722`; [closeout record](../validation/pre_g9b_r6_plus_a1_closeout_record.md)); the next operational subphase is `B`, `NOT AUTHORIZED`
 - Author decisions for `B` (2026-10-02): [B author-decision record](../validation/pre_g9b_r6_plus_b_author_decisions_record.md) (`AQ-X1` to `AQ-X7`). The [canonical `B` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-b-export-surface-and-export-area.prompt.md) is prepared on `d32ad608ba8821bc18c9d4dc783c1b700a165ff2`, tree `9b123be7ed8c7176b5a7e19f74be5946f0164c8b`: `PREPARED — NOT AUTHORIZED`, proposed class `INTEGRATED_PHASE`; the preparation package `T_R6PLUS_B_PROMPT` `7e00e451167b0d915b061655c478c2faac99e51c` is `PASS — AUTHOR APPROVED` (2026-10-02, with the author dispositions on `DQ-B1` to `DQ-B9`, which prevail over the prompt's defaults; [closeout record](../validation/pre_g9b_r6_plus_b_prompt_closeout_record.md)); implementation was authorized on 2026-10-02 on `f6194f09358de9c5f8ac5051c31b3a9dc8a9491b`, the amended prompt is the execution contract, and `B` is `PASS — AUTHOR APPROVED` (2026-10-02, author smoke PASS, `T_R6PLUS_B` `848206c413eb4f78694c9149e153f6e867eb9525`; [candidate report](../validation/pre_g9b_r6_plus_b_candidate_report.md), [closeout record](../validation/pre_g9b_r6_plus_b_closeout_record.md)); the next operational subphase is `D0`, `NOT AUTHORIZED`
+- Author decisions for `D0` (2026-10-02): [D0 author-decision record](../validation/pre_g9b_r6_plus_d0_author_decisions_record.md) (`AQ-U2` to `AQ-U6`, undo semantics, the unit-independence invariant, the persistence target for `D1` and the export-foundation amendment). The [canonical `D0` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-d0-normative-unit-system-design.prompt.md) is prepared on `0ef616bb7bb8efd3e4f19762f38936ff4742d1c3`, tree `be7ef7acbc3503002f3dac2bc33f047795f7a644`: `PREPARED — NOT AUTHORIZED`, class `DOCUMENTATION_STATUS_ONLY` (author-frozen; future acceptance `STATIC`); execution stays not authorized
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -209,7 +210,7 @@ boundary changed.
 | `A-1` | layer workspace with session-only layer state: working layer, Move-group mode, status bar, numeric Algebra View order, effective hiding in the normal views; no domain widening, no new serialization, no exporter change | application session, view, Desktop | `INTEGRATED_PHASE` (author-accepted) | `PASS — AUTHOR APPROVED` (2026-10-02; `T_R6PLUS_A1` `2a71133a`) |
 | `A-2` | layer-domain widening to `0..99` and hidden-layer persistence | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` (author-accepted) | `NOT AUTHORIZED` |
 | `B` | export surface and `ExportArea` authority | profile, Desktop, shared view export path | `INTEGRATED_PHASE` (author-proposed; frozen at authorization) | `PASS — AUTHOR APPROVED` (2026-10-02; `T_R6PLUS_B` `848206c4`; authorized 2026-10-02 on `f6194f09`; canonical prompt prepared on `d32ad608` and `AUTHORIZED`; author decisions `AQ-X1`–`AQ-X7` recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED` 2026-10-02, `T_R6PLUS_B_PROMPT` `7e00e451`, with the `DQ-B` dispositions) |
-| `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` | `NOT AUTHORIZED` — next operational subphase |
+| `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` (author-frozen 2026-10-02) | `PREPARED — NOT AUTHORIZED` — next operational subphase (canonical prompt prepared on `0ef616bb`; author decisions `AQ-U2`–`AQ-U6` recorded 2026-10-02) |
 | `D1` | unit-system implementation and status integration | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` | `NOT AUTHORIZED` |
 | `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence) | `NOT AUTHORIZED` |
@@ -1083,6 +1084,12 @@ On 2026-10-02 the author also decided `AQ-X1` to `AQ-X7`. The
 is their authority and supersedes the planning recommendations in the `AQ-X`
 rows below.
 
+On 2026-10-02 the author also decided `AQ-U2` to `AQ-U6`, the undo semantics
+of the unit state and the unit-independence invariant. The
+[D0 author-decision record](../validation/pre_g9b_r6_plus_d0_author_decisions_record.md)
+is their authority and supersedes the planning recommendations in the `AQ-U`
+rows below. It does not change §4.
+
 | ID | Question | Blocks | Planning recommendation |
 |---|---|---|---|
 | `AQ-L1` | **AUTHOR TARGET FIXED**: the working layer is not restricted by the current 0..9 UX/domain (§2, §5.1). | `P0` | `P0` designs the least invasive correct extension and classifies `A` from its real impact |
@@ -1120,7 +1127,9 @@ PRE-G9B-R6-plus-A-1        = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_A1 2
 PRE-G9B-R6-plus-A-2        = NOT AUTHORIZED
 PRE-G9B-R6-plus-B          = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_B 848206c4;
                              AUTHOR_SMOKE = PASS)
-PRE-G9B-R6-plus-D0 … G     = NOT AUTHORIZED (D0 is the next operational subphase)
+PRE-G9B-R6-plus-D0         = PREPARED — NOT AUTHORIZED (next operational subphase;
+                             canonical prompt prepared on 0ef616bb)
+PRE-G9B-R6-plus-D1 … G     = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
                              BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED
 G9B                        = NOT AUTHORIZED
