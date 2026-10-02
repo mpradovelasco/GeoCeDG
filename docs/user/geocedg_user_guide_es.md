@@ -1276,7 +1276,9 @@ transportan; la capa, el color RGB y la visibilidad vigente sí.
 ## 12. Presentación y visualización
 
 Todo lo de esta sección es presentación. Nada de ello cambia la geometría, la
-identidad, las medidas, el contenido del documento ni la salida de exportación.
+identidad, las medidas ni el contenido del documento. Las capas ocultas (12.5)
+son lo único que cambia la salida de exportación: las exportaciones de imagen las
+omiten.
 
 ### 12.1 Temas y lienzo
 
@@ -1324,6 +1326,44 @@ foco y use `Ctrl`+`+` y `Ctrl`+`-`. No los escriba en la Entrada algebraica.
 Ninguna operación de zoom o navegación cambia medidas, coordenadas, identidad ni
 proveniencia.
 
+### 12.5 Capas y capa de trabajo
+
+Cada objeto está en una capa de 0 a 9; los objetos de capas más altas se dibujan
+sobre los de capas más bajas. GeoCeDG añade una **capa de trabajo** y **capas
+ocultas** para la sesión actual.
+
+- **Capa de trabajo.** Los objetos nuevos se crean en la capa de trabajo,
+  vengan de una herramienta, de la Entrada algebraica, de un guion, de
+  `Execute`, de una herramienta de usuario, de Locus V2 o de Spline V2. La barra
+  de estado, en la parte inferior de la ventana, la muestra como **Capa: n**.
+  Un documento nuevo empieza en la capa 0; un documento abierto empieza en la
+  capa más alta que usan sus objetos dibujables. Deshacer, rehacer y redefinir
+  conservan las capas guardadas en el documento, y **Pegar** conserva las capas
+  de los objetos copiados.
+- **Cómo elegirla.** **Capa de trabajo** está en el grupo Mover de la barra de
+  herramientas, después de Mover y Rotar alrededor de un punto. Es una
+  herramienta de un solo uso: haga clic en un objeto para usar su capa, o en un
+  espacio vacío para elegir una capa de 0 a 9. Tras una elección válida la
+  herramienta vuelve a Mover; cancelar no cambia nada. Hacer clic en
+  **Capa: n** en la barra de estado abre el mismo selector.
+- **Ocultar una capa.** En la Vista algebraica, elija **Ordenar por capa**: cada
+  grupo de capa tiene un ojo. Al hacer clic en él se oculta o se muestra la capa
+  entera en las vistas gráficas. Sus objetos no se dibujan ni se pueden
+  seleccionar allí, pero cada objeto conserva su propia visibilidad, así que su
+  marcador no cambia. La capa de trabajo no se puede ocultar, y elegir una capa
+  oculta en el selector la vuelve a mostrar.
+- **Solo de sesión.** La capa de trabajo y las capas ocultas pertenecen a la
+  sesión. No se guardan en el documento, no son pasos de deshacer y no marcan
+  el documento como modificado. Nuevo y Abrir vuelven a mostrar todas las capas.
+- **No es lo mismo que `ShowLayer` y `HideLayer`.** Estos comandos siguen
+  fijando la visibilidad de cada objeto de una capa, y esa visibilidad se guarda
+  con el documento.
+
+**Exportaciones con una capa oculta.** PNG, PDF, EMF, la impresión y la copia
+de la vista gráfica como imagen siguen la vista y omiten las capas ocultas. SVG,
+PGF/TikZ, PSTricks, Asymptote y DXF siguen escribiendo los objetos de las capas
+ocultas en esta versión. Esta diferencia temporal termina cuando esas
+exportaciones se completen.
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -1475,6 +1515,9 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 - No hay importación DXF, exportación de viewport, contrato de unidades físicas,
   exportación de texto, exportación del `Locus` heredado, contorneado de curvas
   implícitas ni exportación 3D.
+- Con una capa oculta, SVG, LaTeX (PGF/TikZ, PSTricks, Asymptote) y DXF siguen
+  escribiendo sus objetos, mientras que PNG, PDF, EMF y la impresión los omiten
+  (12.5).
 
 **No disponible**
 
@@ -1507,6 +1550,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Crear un lugar geométrico semántico | Construcción → Curvas semánticas → Locus V2 | `LocusV2(G,u,dom)` | curva semántica | el dominio es explícito; no procede del rango de un deslizador |
 | Crear una spline semántica | Construcción → Curvas semánticas → Spline V2, Spline V2 con grado o Spline V2 cerrada | `SplineV2({A,B,C,D},3)` | curva semántica | seleccione los puntos en orden y después de nuevo el primero; los puntos constructores no son puntos semánticos |
 | Crear una lista en el orden de selección | Construcción → Herramientas de listas → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
+| Elegir la capa de trabajo | Barra de herramientas → grupo Mover → Capa de trabajo, o clic en **Capa: n** en la barra de estado | — | estado de sesión | de un solo uso; clic en un objeto para usar su capa o en un espacio vacío para elegir de 0 a 9; no se guarda |
 | Punto sobre curva semántica, interactivo | Herramienta Punto, clic en el trazo | — | punto semántico | preimagen única, o elección explícita; nunca por proximidad |
 | Punto sobre curva semántica, por parámetro | Construcción → Curvas semánticas → Punto sobre curva semántica | `Point(S,"spline-v2/main",0.25)` | punto semántico | clave de rama y parámetro canónico; el parámetro puede ser un número con nombre |
 | Punto sobre un Locus V2, por parámetro | ídem | `Point(L,"generator.main",1)` | punto semántico | clave de rama por defecto del generador |

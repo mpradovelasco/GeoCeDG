@@ -30,7 +30,13 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 	MATERIALIZE("mode_geocedg_materialize"),
 	ZOOM_WINDOW("/org/geogebra/common/icons_toolbar/p64/", "mode_zoom", ".png"),
 	/** Inherited host list artwork, reused explicitly for the ordered list tool. */
-	ORDERED_LIST("mode_list");
+	ORDERED_LIST("mode_list"),
+	/**
+	 * Inherited host artwork, reused explicitly for the working-layer mode
+	 * (PRE-G9B-R6-plus-A-1): it takes a property from a clicked object. No new
+	 * asset is introduced, so no asset-manifest entry changes.
+	 */
+	WORKING_LAYER("mode_copyvisualstyle");
 
 	private static final int RASTER_SIZE = 64;
 	private final String filename;
@@ -56,6 +62,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return SPLINE_V2;
 		case "geocedg.action.OrderedListCreate":
 			return ORDERED_LIST;
+		case "geocedg.action.WorkingLayer":
+			return WORKING_LAYER;
 		case "geocedg.action.LocusV2Point":
 			return SEMANTIC_POINT;
 		case "geocedg.action.LocusV2Create":
@@ -96,6 +104,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return SPLINE_V2;
 		case "orderedlist":
 			return ORDERED_LIST;
+		case "workinglayer":
+			return WORKING_LAYER;
 		default:
 			return null;
 		}

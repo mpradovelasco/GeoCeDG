@@ -288,7 +288,10 @@ public class AlgoMacro extends AlgoElement
 	private void createOutputObjects() {
 		setOutputLength(macroOutput.length);
 
-		int layer = kernel.getApplication().getMaxLayerUsed();
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 working-layer seam;
+		// the host returns its maximum used layer unchanged.
+		int layer = kernel.getApplication().getLayerForNewObject(cons,
+				kernel.getApplication().getMaxLayerUsed());
 		for (int i = 0; i < macroOutput.length; i++) {
 			// copy output object of macro and make the copy part of this
 			// construction

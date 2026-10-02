@@ -90,6 +90,7 @@ import org.geogebra.common.javax.swing.GImageIcon;
 import org.geogebra.common.javax.swing.RelationPane;
 import org.geogebra.common.kernel.AnimationManager;
 import org.geogebra.common.kernel.CommandLookupStrategy;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.GeoGebraCasInterface;
 import org.geogebra.common.kernel.Kernel;
@@ -1384,6 +1385,33 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	 */
 	public int getMaxLayerUsed() {
 		return maxLayerUsed;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 product seam for the layer of a
+	 * newly created object. The host keeps its own rule unchanged.
+	 *
+	 * @param construction
+	 *            construction that owns the new object
+	 * @param upstreamLayer
+	 *            layer chosen by the host rule
+	 * @return layer for the new object; the host returns {@code upstreamLayer}
+	 */
+	public int getLayerForNewObject(Construction construction, int upstreamLayer) {
+		return upstreamLayer;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 product seam for layer
+	 * presentation. It never changes the visibility of any object.
+	 *
+	 * @param layer
+	 *            layer
+	 * @return whether objects on the layer are painted and hittable in the
+	 *         views; always true in the host
+	 */
+	public boolean isLayerShown(int layer) {
+		return true;
 	}
 
 	/**

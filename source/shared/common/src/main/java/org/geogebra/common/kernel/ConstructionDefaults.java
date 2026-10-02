@@ -919,7 +919,9 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 			int layer = Math.min(EuclidianStyleConstants.MAX_LAYERS - 1,
 					app.getMaxLayerUsed());
 
-			geo.setLayer(layer);
+			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 working-layer seam;
+			// the host returns the layer above unchanged.
+			geo.setLayer(app.getLayerForNewObject(geo.getConstruction(), layer));
 		}
 	}
 

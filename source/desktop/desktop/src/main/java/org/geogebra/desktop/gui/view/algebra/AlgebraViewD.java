@@ -517,16 +517,17 @@ public class AlgebraViewD extends AlgebraTree
 
 			// do we have to create the parent node?
 			if (parent == null) {
-				String layerStr = layer + "";
 				parent = new DefaultMutableTreeNode(layer);
 				layerNodesMap.put(layer, parent);
 
 				// find insert pos
+				// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 numeric layer order;
+				// identical to the former text order within 0..9.
 				int pos = rootLayer.getChildCount();
 				for (int i = 0; i < pos; i++) {
 					DefaultMutableTreeNode child = (DefaultMutableTreeNode) rootLayer
 							.getChildAt(i);
-					if (layerStr.compareTo(child.toString()) < 0) {
+					if (layer < (Integer) child.getUserObject()) {
 						pos = i;
 						break;
 					}

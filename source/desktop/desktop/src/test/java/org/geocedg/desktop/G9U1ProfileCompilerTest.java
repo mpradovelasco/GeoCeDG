@@ -41,7 +41,7 @@ class G9U1ProfileCompilerTest {
 		assertEquals(2, profile.getInt("schema_version"));
 		assertEquals(11, profile.getJSONObject("taxonomy").getJSONArray("broad_families").length());
 		assertEquals(18, profile.getJSONArray("clusters").length());
-		assertEquals(115, GeoCeDGProfile.getActions().size());
+		assertEquals(116, GeoCeDGProfile.getActions().size());
 		assertEquals(GeoCeDGProfile.getToolbarDefinition(),
 				GeoCeDGProfile.compileProfile(profile.toString()));
 	}
@@ -49,10 +49,11 @@ class G9U1ProfileCompilerTest {
 	@Test
 	void nativeToolbarContainsFortyFiveCuratedModesWhileCatalogRetainsAllSixtySix() {
 		String[] modes = GeoCeDGProfile.getToolbarDefinition().split("[ |]+");
-		// Identity-stable name; PRE-G9B-R4 adds the ordered list mode and three SplineV2 modes.
-		assertEquals(46, modes.length);
-		assertEquals(46, new HashSet<>(Arrays.asList(modes)).size());
-		assertEquals(70, GeoCeDGProfile.getActions().stream()
+		// Identity-stable name; PRE-G9B-R4 adds the ordered list mode and three SplineV2 modes;
+		// PRE-G9B-R6-plus-A-1 adds the working-layer mode.
+		assertEquals(47, modes.length);
+		assertEquals(47, new HashSet<>(Arrays.asList(modes)).size());
+		assertEquals(71, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
 		assertFalse(Arrays.asList(modes).contains("54"));
@@ -207,7 +208,7 @@ class G9U1ProfileCompilerTest {
 				assertTrue(ids.add(id), id);
 			}
 		}
-		assertEquals(115, ids.size());
+		assertEquals(116, ids.size());
 		assertEquals(List.of("edit-selection", "construction-lists",
 				"construction-relations", "construction-lines-vectors",
 				"construction-polygons",
@@ -249,7 +250,8 @@ class G9U1ProfileCompilerTest {
 	void nativeToolbarFlyoutsMatchTheRequestedConstructionGroups() throws Exception {
 		JSONObject profile = GeoCeDGProfile.getCatalog();
 		var groups = profile.getJSONArray("presentation_groups");
-		assertEquals(List.of("construction.move", "construction.move-rotate"),
+		assertEquals(List.of("construction.move", "construction.move-rotate",
+				"construction.working-layer"),
 				toolbarIds(groups, "edit-selection"));
 		assertEquals(List.of("construction.line", "construction.segment", "construction.ray",
 				"construction.vector", "construction.fixed-segment",
@@ -378,7 +380,7 @@ class G9U1ProfileCompilerTest {
 	void validV2DoesNotUseFallback() {
 		var selected = GeoCeDGProfile.loadDefinition(GeoCeDGProfile.getCatalog().toString(), "");
 		assertFalse(selected.legacyFallback);
-		assertEquals(115, selected.actionCount());
+		assertEquals(116, selected.actionCount());
 	}
 
 	@Test

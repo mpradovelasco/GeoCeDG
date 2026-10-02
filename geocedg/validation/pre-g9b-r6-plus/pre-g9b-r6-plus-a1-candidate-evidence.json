@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-A-1",
+  "registeredPhaseId": "PRE-G9B-R6-PLUS-A-1",
+  "phaseKind": "PRODUCT_IMPLEMENTATION_DESKTOP_SESSION_AND_VIEW_PRESENTATION",
+  "report": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-A-1",
+    "tools/agent/verify.ps1 -Profile INTEGRATION"
+  ],
+  "acceptanceRule": "both ACCEPTED / COMPLETE on the same exact commit and tree; neither substitutes for the other",
+  "finalRequired": false,
+  "productChange": true,
+  "serializationChange": "NONE",
+  "layerDomain": "UNCHANGED 0..9",
+  "guideImpact": "UPDATED",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "verificationInfrastructureImpact": "PHASE_LOCAL",
+  "entry": {
+    "implementationBase": {"commit": "069c7a03da92f2c30f015815a0aa278e7356b356", "tree": "707c0b557ed93de3aaf4fea7d76bb643fb20411a"},
+    "localMainOriginMainLiveRemoteMain": "069c7a03da92f2c30f015815a0aa278e7356b356",
+    "worktree": "clean",
+    "branch": "phase/pre-g9b-r6-plus-a1-layer-workspace",
+    "branchPublished": false,
+    "p0State": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "a1PreparationPackageState": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "a1StateBeforeInstruction": "NOT AUTHORIZED"
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md",
+    "blobBefore": "38ac4be386b6b6ddb11eb422214a1357bfc59ad6",
+    "blobAfter": "237c8f303249f72e6cfd95624e1895e8c5675a77",
+    "amendedInOwnCommit": true,
+    "validation": {"profile": "task", "executionSafe": true}
+  },
+  "sharedSeams": [
+    {"seam": "App.getLayerForNewObject(construction, upstreamLayer)", "hostDefault": "returns upstreamLayer"},
+    {"seam": "App.isLayerShown(layer)", "hostDefault": "returns true"},
+    {"seam": "ConstructionDefaults.setMaxLayerUsed asks the seam", "hostDefault": "min(8, maxLayerUsed)"},
+    {"seam": "AlgoMacro.createOutputObjects asks the seam", "hostDefault": "maxLayerUsed"},
+    {"seam": "EuclidianView painting and label, handle and input-box hits skip hidden layers", "hostDefault": "every layer shown"},
+    {"seam": "HitDetector point, rectangle and intersection hits skip hidden layers before the top-layer rule", "hostDefault": "every layer shown"},
+    {"seam": "DrawableList.drawAll(g2, predicate)", "hostDefault": "drawAll(g2) admits every drawable"},
+    {"seam": "EuclidianConstants.MODE_WORKING_LAYER = 141", "hostDefault": "not offered by Classic"},
+    {"seam": "AlgebraViewD numeric Sort-by-Layer order", "hostDefault": "identical to text order within 0..9"}
+  ],
+  "deviationsFromP0Design": ["D1 hit filter inside HitDetector loops", "D2 status bar via buildApplicationPanel", "D3 construction-aware seam", "D4 action, mask and measurement passes; SVG paths untouched", "D5 eye in processMouseEvent", "D6 API getVisible instead of an IsVisible command", "D7 numeric order in AlgebraViewD", "D8 host artwork reused, no new asset"],
+  "registration": {
+    "phaseId": "PRE-G9B-R6-PLUS-A-1",
+    "phaseIdReason": "registry schema requires upper-case phase ids; verify.ps1 upper-cases -Phase before resolving",
+    "requiredCheckIds": ["compile.shared.semantic", "compile.desktop.semantic", "workspace-profile.product", "junit.shared.pre-g9b-r6-plus-a1.semantic", "junit.desktop.pre-g9b-r6-plus-a1.semantic"],
+    "profileAuthorityAmendment": "tools/agent/workspace-profile-validation.ps1 approves construction.working-layer (R4 pattern); input pin updated",
+    "registryShapePins": {"selections": 34, "phaseSelections": 43, "pre-g9b-r6-plus-a1.shared": 17, "pre-g9b-r6-plus-a1.desktop": 173}
+  },
+  "planIdentities": {
+    "PHASE PRE-G9B-R6-plus-A-1": {"coverage": "COMPLETE", "nodes": 9},
+    "INTEGRATION": {"coverage": "COMPLETE", "nodes": 46},
+    "FINAL": {"coverage": "COMPLETE", "nodes": 68},
+    "STATIC": {"coverage": "COMPLETE", "nodes": 10},
+    "INFRA_UNIT": {"coverage": "COMPLETE", "nodes": 22}
+  },
+  "inventory": {
+    "pinsBefore": {"junit_inventory": "a611c831ce8202167b084c7f7fcdd36b37efa9ed5001669541e9e14898e0b4e7", "static_contracts": "fa2004a14cd0a56559e09671e61e490ca89c736ce7c6543380538ef9f4c31736", "workspaceProfileValidationInput": "44d9c8d708143fa16cf6f0e839936a3e54e26e3436c334a5363c5627f87ff23a"},
+    "pinsAfter": {"junit_inventory": "b6e11fe431ea7e8ee25c5ce176f8c865db8a892345de335f3da72d921d649338", "static_contracts": "c2b6e3883d6cadf72510bd37566555f7233b65d920dea8dd1c92814ecbaafe40", "workspaceProfileValidationInput": "f52472d679869ecf7d500407390a59e9828673ab40077c4b210cf50d2ba17128"},
+    "changes": [
+      {"id": "module shared discovery", "from": 5933, "to": 5940, "sha256": "798f6f2ee82c33dd730019fa188ffdd7eaf9ee7e22165a721ad99da87b34c004"},
+      {"id": "module desktop discovery", "from": 1663, "to": 1697, "sha256": "3ba9d9ae5019f9eff70acbb6079e1bc328fd9066bd0072ca0be63af505f0d851"},
+      {"id": "final.shared", "from": 6850, "to": 6857, "sha256": "5d5f3546280f1dcd0530a018d0e58e897faeda35057e4221f7b3c35a261755ef"},
+      {"id": "final.desktop", "from": 1657, "to": 1691, "sha256": "8f9df112d767482986b801c1106e2a5d8ed2319e3dce534fad9496e9e3447847"},
+      {"id": "pre-g9b-r6-plus-a1.shared", "from": null, "to": 17, "sha256": "df27b4412d5a1d42f8d77fbf61185e5a3a9044cb8c902d4a5e1dfaf3bf833639"},
+      {"id": "pre-g9b-r6-plus-a1.desktop", "from": null, "to": 173, "sha256": "f78d36e43e1b4f7e4cef830061d651af740319a937f9d48deac5f22aa78e7c8d"}
+    ],
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 with discovery and executed producer evidence; no hash typed by hand"
+  },
+  "preFreezeRegression": {
+    "focal": {"PreG9BR6PlusA1LayerSeamTest": 7, "PreG9BR6PlusA1LayerWorkspaceTest": 22, "PreG9BR6PlusA1HiddenLayerTest": 12, "failures": 0},
+    "developmentFullSuites": {"shared": {"tests": 6857, "failures": 0, "skipped": 10}, "desktop": {"tests": 1697, "failures": 0, "skipped": 1}},
+    "producers": {
+      "final.shared": {"tests": 6857, "failures": 0, "skipped": 10},
+      "final.desktop": {"tests": 1691, "failures": 0, "skipped": 1},
+      "pre-g9b-r6-plus-a1.shared": {"tests": 17, "failures": 0},
+      "pre-g9b-r6-plus-a1.desktop": {"tests": 173, "failures": 0}
+    },
+    "checkstyle": "no finding in touched main sources; five test warnings fixed"
+  },
+  "exportBoundary": {
+    "inheritedFromViewPainting": ["PNG", "PDF", "EMF", "print", "graphics image copy"],
+    "unchangedUntilB": ["SVG"],
+    "unchangedUntilC": ["PGF/TikZ", "PSTricks", "Asymptote", "DXF"]
+  },
+  "retainedObservations": ["OBS-A1-GRAPHICS2-GEOCEDG-MODES", "OBS-A1-BACKGROUND-IMAGE-LAYER", "OBS-A1-3D-VIEW", "OBS-A1-NON-HIT-SELECTION", "OBS-A1-RECOMPUTE-OUTPUTS", "OBS-A1-URL-OPEN"],
+  "authorSmoke": "checklist in the report section 8; not performed or attributed by the agent",
+  "authorizationState": {
+    "PRE-G9B-R6-plus-A-1": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-B, D0, D1, C, E1, E2, E3, F1, F2, G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

@@ -337,9 +337,9 @@ public final class GeoCeDGProfile {
 					action.getString("localization_ref"), presentationNameKey,
 					action.getString("icon_ref")));
 		}
-		if (actions.size() != 115) {
-			throw new IllegalStateException(
-					"Approved A7 catalog plus the PRE-G9B-R4 tools requires 115 actions");
+		if (actions.size() != 116) {
+			throw new IllegalStateException("Approved A7 catalog plus the PRE-G9B-R4 tools"
+					+ " and the PRE-G9B-R6-plus-A-1 working layer requires 116 actions");
 		}
 		validatePlacements(root, ids);
 		return actions;

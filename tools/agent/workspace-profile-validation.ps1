@@ -47,11 +47,16 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         "semantic.spline-v2.create-closed",
         "construction.list-from-selection"
     )
-    $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds |
-        Sort-Object -CaseSensitive)
+    # PRE-G9B-R6-plus-A-1 working-layer mode, authorized for implementation on
+    # 2026-10-02; its canonical prompt and the A author-decision record own its contract.
+    $preG9BR6PlusA1ActionIds = @(
+        "construction.working-layer"
+    )
+    $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
+        $preG9BR6PlusA1ActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved A7 and R4 amendments."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4 and R6-plus-A-1 amendments."
     }
     $featureIds = @($profile.features.id)
     if ($featureIds.Count -ne @($candidate.features).Count -or

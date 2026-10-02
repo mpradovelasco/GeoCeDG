@@ -66,7 +66,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -84,7 +84,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: require the 116-action catalog with the working-layer mode. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
@@ -360,7 +360,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusV2.java",
       "change": "added",
-      "purpose": "Provide the normal-DAG revisioned semantic snapshot algorithm base.",
+      "purpose": "Provide the normal-DAG revisioned semantic snapshot algorithm base. PRE-G9B-R6-plus-A-1: ask the application layer seam for the creation layer of the V2 output. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "docs/adr/0006-parallel-locus-v2-semantic-entity.md"
     },
     {
@@ -1986,7 +1986,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoMacro.java",
       "change": "modified",
-      "purpose": "Instantiate a fresh, complete identity closure only after the macro template-to-instance geo map is available.",
+      "purpose": "Instantiate a fresh, complete identity closure only after the macro template-to-instance geo map is available. PRE-G9B-R6-plus-A-1: ask the application layer seam for the output layer of a macro instance; the host value (maximum used layer) is unchanged. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2658,13 +2658,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
       "change": "modified",
-      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47. PRE-G9B-R4: allocate the SplineV2 authoring modes 137-139 and the ordered-list mode 140 with their mode-text keys. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47. PRE-G9B-R4: allocate the SplineV2 authoring modes 137-139 and the ordered-list mode 140 with their mode-text keys. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: add MODE_WORKING_LAYER 141 and its WorkingLayer.Tool text key. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
       "change": "added",
-      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: dispatch the one-shot working-layer mode 141. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2700,19 +2700,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3588,7 +3588,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
       "change": "added",
-      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying. PRE-G9B-R4: reuse the owned SplineV2 artwork for the SplineV2 tool variants and the inherited host list artwork for the ordered list tool. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md.",
+      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying. PRE-G9B-R4: reuse the owned SplineV2 artwork for the SplineV2 tool variants and the inherited host list artwork for the ordered list tool. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: reuse the inherited host copy-visual-style artwork explicitly for the working-layer mode; no new asset. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -3936,7 +3936,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
       "change": "modified",
-      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged.",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged. PRE-G9B-R6-plus-A-1: add the product seams getLayerForNewObject(construction, upstreamLayer) and isLayerShown(layer); the host returns the upstream layer and shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -4236,7 +4236,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianView.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged.",
+      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged. PRE-G9B-R6-plus-A-1: skip objects on hidden layers in the painting of the geometric, action, mask and measurement passes and in label, bounding-box-handle and input-box hits; a direct drawActionObjects call and the background pass keep host behavior; the host shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {
@@ -4272,7 +4272,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/algebra/AlgebraViewD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: update Algebra editor typography from its independent preference.",
+      "purpose": "PRE-G9B-S4: update Algebra editor typography from its independent preference. PRE-G9B-R6-plus-A-1: order Sort-by-Layer groups numerically instead of by text, identical within the host domain 0..9. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {
@@ -4338,7 +4338,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAlgebraView.java",
       "change": "added",
-      "purpose": "POST-G9U1-A3 frontend: Route eligible Algebra-view redefinition through the explicit semantic assessment while preserving ordinary Classic behavior.",
+      "purpose": "POST-G9U1-A3 frontend: Route eligible Algebra-view redefinition through the explicit semantic assessment while preserving ordinary Classic behavior. PRE-G9B-R6-plus-A-1: per-layer eye and hidden marker for Sort-by-Layer groups, handled before the host controller. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
       "authority": "docs/validation/post_g9u1_a3_frontend_matrix.md"
     },
     {
@@ -5186,6 +5186,60 @@
       "change": "added",
       "purpose": "PRE-G9B-R6 surface semantics: rich-result orchestration not inherited by scripts, undo storage per surface, the inherited nested Execute result contract, and the script-editor boundary across UI languages and a same-session language change.",
       "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/ConstructionDefaults.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-A-1: ask the application layer seam for the default layer of a new object; the host returns its unchanged top-layer rule.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/HitDetector.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-A-1: objects on hidden layers are not hittable, filtered before the host top-layer rule so they never shadow shown objects; the host shows every layer.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/DrawableList.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-A-1: add a predicate form of drawAll; the existing form admits every drawable.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLayerWorkspace.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-A-1 session layer workspace: working layer and hidden-layer set, never serialized and never an undo point.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkingLayerChooser.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-A-1 bounded 0..9 working-layer chooser; a hidden layer named here is shown.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStatusBar.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-A-1 extensible status bar with the Layer: n segment.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/PreG9BR6PlusA1LayerSeamTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-A-1 shared seams: host defaults reproduce the upstream layer rule and presentation; construction defaults, macro outputs and Locus V2 outputs ask the seam with the owning construction.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1LayerWorkspaceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-A-1 working layer on every interactive route, rebuild and lifecycle rules, paste, the one-shot mode, the profile delta, the status bar and the Algebra View groups.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1HiddenLayerTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-A-1 effective visibility in painting and hit testing of Graphics 1 and 2, session-only state, unchanged geometry and object visibility, and the export boundary to B and C.",
+      "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
     }
   ]
 }

@@ -317,6 +317,8 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	private final ArrayList<GeoPointND> stickyPointList = new ArrayList<>();
 
 	private DrawableList allDrawableList;
+	/** GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1, set only inside drawObjects */
+	private boolean actionObjectsOnShownLayersOnly;
 
 	// on add: change resetLists()
 	/** list of background images */
@@ -2300,7 +2302,7 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 
 		for (Drawable d : allDrawableList) {
 			if (d instanceof DrawInputBox
-					&& d.isEuclidianVisible()
+					&& d.isEuclidianVisible() && isOnShownLayer(d)
 					&& (d.hit(x, y, app.getCapturingThreshold(type)) || d.hitLabel(x, y))) {
 				GeoElement geo = d.getGeoElement();
 				if (geo.isEuclidianVisible() && geo.isSelectionAllowed(this)) {
@@ -2338,7 +2340,7 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 			return null;
 		}
 		for (Drawable d : allDrawableList) {
-			if (d.hitLabel(p.x, p.y)) {
+			if (isOnShownLayer(d) && d.hitLabel(p.x, p.y)) {
 				GeoElement geo = d.getGeoElement();
 				if (geo.isEuclidianVisible() && geo.isLabelVisible()) {
 					return geo;
@@ -2377,6 +2379,9 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 		}
 
 		for (Drawable d : allDrawableList) {
+			if (!isOnShownLayer(d)) {
+				continue;
+			}
 			hitHandler = d.hitBoundingBoxHandler(p.x, p.y, app.getCapturingThreshold(type));
 			if (hitHandler != EuclidianBoundingBoxHandler.UNDEFINED) {
 				GeoElement geo = d.getGeoElement();
@@ -3598,7 +3603,8 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	 */
 	private void drawGeometricObjects(GGraphics2D g2) {
 		// only draw drawables we need
-		allDrawableList.drawAll(g2);
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 skips hidden layers.
+		allDrawableList.drawAll(g2, this::isOnShownLayer);
 
 		if (getEuclidianController().isMultiSelection()) {
 			getEuclidianController()
@@ -3614,13 +3620,34 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	 */
 	public void drawObjects(GGraphics2D g2) {
 		drawGeometricObjects(g2);
-		drawActionObjects(g2);
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 hides action objects on
+		// hidden layers only in this painting path; a direct call of
+		// drawActionObjects keeps the host behavior.
+		actionObjectsOnShownLayersOnly = true;
+		try {
+			drawActionObjects(g2);
+		} finally {
+			actionObjectsOnShownLayersOnly = false;
+		}
 
 		if (previewDrawable != null) {
 			previewDrawable.drawPreview(g2);
 		}
 		drawMasks(g2);
 		drawMeasurementTools(g2);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 presentation predicate for
+	 * painting and hit testing. It reads layer state only; object visibility
+	 * and geometry are unchanged.
+	 *
+	 * @param d
+	 *            drawable
+	 * @return whether the layer of the drawable's object is shown
+	 */
+	boolean isOnShownLayer(Drawable d) {
+		return app.isLayerShown(d.getGeoElement().getLayer());
 	}
 
 	/**
@@ -4215,6 +4242,9 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 		DrawDropDownList selected = null;
 		DrawDropDownList opened = null;
 		for (Drawable d : allDrawableList) {
+			if (actionObjectsOnShownLayersOnly && !isOnShownLayer(d)) {
+				continue;
+			}
 			if (d instanceof DrawDropDownList) {
 				DrawDropDownList dl = (DrawDropDownList) d;
 				dl.updateIfNeeded();
@@ -4251,7 +4281,7 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	 */
 	private void drawMasks(GGraphics2D g2) {
 		for (Drawable d : allDrawableList) {
-			if (d.geo.isMask()) {
+			if (d.geo.isMask() && isOnShownLayer(d)) {
 				d.updateIfNeeded();
 				d.draw(g2);
 			}
@@ -4260,7 +4290,7 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 
 	private void drawMeasurementTools(GGraphics2D g2) {
 		for (Drawable d : allDrawableList) {
-			if (d.geo.isMeasurementTool()) {
+			if (d.geo.isMeasurementTool() && isOnShownLayer(d)) {
 				d.updateIfNeeded();
 				d.draw(g2);
 			}

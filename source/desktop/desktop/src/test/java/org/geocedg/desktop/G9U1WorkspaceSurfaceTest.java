@@ -121,7 +121,7 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collect(component, ids);
 		}
-		assertEquals(115, ids.size());
+		assertEquals(116, ids.size());
 		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
 		assertTrue(ids.contains("navigation.zoom-factor-in"));
@@ -368,7 +368,7 @@ class G9U1WorkspaceSurfaceTest {
 		final ToolbarD toolbar = container.getToolbar(-1);
 		Map<String, List<String>> expected = new LinkedHashMap<>();
 		expected.put("edit-selection", List.of("construction.move",
-				"construction.move-rotate"));
+				"construction.move-rotate", "construction.working-layer"));
 		expected.put("construction-lists", List.of("construction.list-from-selection"));
 		expected.put("construction-relations", List.of("construction.point",
 				"construction.point-on-object", "construction.midpoint",
@@ -695,8 +695,8 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(56, toolbarIds.size());
-		assertEquals(115, menuIds.size());
+		assertEquals(57, toolbarIds.size());
+		assertEquals(116, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();

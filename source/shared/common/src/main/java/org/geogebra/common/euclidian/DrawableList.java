@@ -19,6 +19,7 @@ package org.geogebra.common.euclidian;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.function.Predicate;
 
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -67,7 +68,23 @@ public class DrawableList extends ArrayList<Drawable> {
 	 *            Graphic to be used
 	 */
 	public final void drawAll(GGraphics2D g2) {
+		drawAll(g2, d -> true);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 draws only the drawables the
+	 * predicate admits; {@link #drawAll(GGraphics2D)} admits all of them.
+	 *
+	 * @param g2
+	 *            graphics
+	 * @param shown
+	 *            presentation predicate
+	 */
+	public final void drawAll(GGraphics2D g2, Predicate<Drawable> shown) {
 		for (Drawable d : this) {
+			if (!shown.test(d)) {
+				continue;
+			}
 			GeoElement geo = d.getGeoElement();
 			if (d.isInteractiveEditor()) {
 				d.updateIfNeeded();

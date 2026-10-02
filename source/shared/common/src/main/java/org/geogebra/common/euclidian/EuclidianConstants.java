@@ -464,6 +464,8 @@ public final class EuclidianConstants {
 	public static final int MODE_SPLINE_V2_CLOSED = 139;
 	/** GeoCeDG ordinary dependent list built in click order. */
 	public static final int MODE_ORDERED_LIST = 140;
+	/** GeoCeDG one-shot choice of the session working layer (PRE-G9B-R6-plus-A-1). */
+	public static final int MODE_WORKING_LAYER = 141;
 
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
@@ -805,6 +807,9 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_ORDERED_LIST:
 			return "OrderedList.Tool";
+
+		case EuclidianConstants.MODE_WORKING_LAYER:
+			return "WorkingLayer.Tool";
 
 		case EuclidianConstants.MODE_AREA:
 			return "Area";

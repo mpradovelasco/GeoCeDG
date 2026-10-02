@@ -13,6 +13,7 @@ import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.Algos;
 import org.geogebra.common.kernel.algos.GetCommand;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.main.App;
 
 /** Base for internal V2 algorithms publishing immutable semantic snapshots. */
 public abstract class AlgoLocusV2 extends AlgoElement
@@ -24,7 +25,7 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	protected AlgoLocusV2(Construction construction, String locusIdentity,
 			GeoElement[] inputs) {
 		super(construction, false);
-		locus = new GeoLocusV2(construction, locusIdentity);
+		locus = createOutput(new GeoLocusV2(construction, locusIdentity));
 		configuredInputs = inputs.clone();
 		setInputOutput();
 		setDependencies();
@@ -36,7 +37,7 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	 */
 	protected AlgoLocusV2(Construction construction, GeoElement[] inputs) {
 		super(construction);
-		locus = new GeoLocusV2(construction);
+		locus = createOutput(new GeoLocusV2(construction));
 		configuredInputs = inputs.clone();
 		setInputOutput();
 		setDependencies();
@@ -50,10 +51,25 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	protected AlgoLocusV2(Construction construction, GeoElement[] commandInputs,
 			GeoElement[] evaluatorInputs) {
 		super(construction);
-		locus = new GeoLocusV2(construction);
+		locus = createOutput(new GeoLocusV2(construction));
 		configuredInputs = commandInputs.clone();
 		setInputOutput();
 		setEfficientDependencies(configuredInputs, evaluatorInputs.clone());
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-A-1: the V2 output never reaches the construction-defaults
+	 * path, so it asks the same application seam for its creation layer. Outside
+	 * GeoCeDG interactive creation the seam returns the current layer unchanged;
+	 * a stored layer is restored afterwards from the document.
+	 */
+	private static GeoLocusV2 createOutput(GeoLocusV2 output) {
+		App app = output.getKernel().getApplication();
+		if (app != null) {
+			output.setLayer(app.getLayerForNewObject(output.getConstruction(),
+					output.getLayer()));
+		}
+		return output;
 	}
 
 	@Override

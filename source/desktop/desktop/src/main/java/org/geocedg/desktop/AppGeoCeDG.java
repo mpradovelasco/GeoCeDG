@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Image;
@@ -25,6 +26,7 @@ import org.geogebra.common.awt.GColor;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.io.layout.Perspective;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.main.AppConfig;
@@ -51,6 +53,15 @@ import org.geogebra.desktop.main.GlobalKeyDispatcherD;
 public final class AppGeoCeDG extends App3D {
 	private GeoCeDGPresentationPreferences presentationPreferences;
 	private GeoCeDGThemePreference themePreference;
+	/**
+	 * PRE-G9B-R6-plus-A-1 session layer state. Views created inside the host
+	 * constructor may create it early (no field initializer), but it takes part
+	 * in object creation only once the product constructor has finished.
+	 */
+	private GeoCeDGLayerWorkspace layerWorkspace;
+	private boolean layerWorkspaceActive;
+	private GeoCeDGStatusBar statusBar;
+	private GeoCeDGWorkingLayerChooser layerChooser;
 
 	/**
 	 * @param args command line arguments
@@ -64,6 +75,7 @@ public final class AppGeoCeDG extends App3D {
 			AppConfigGeoCeDG config) {
 		super(args, frame, config);
 		bindFeatureService(config);
+		initializeLayerWorkspace();
 		initializePresentationTheme();
 		initializePresentationPreferences();
 	}
@@ -80,8 +92,131 @@ public final class AppGeoCeDG extends App3D {
 			AppConfigGeoCeDG config) {
 		super(args, component, config);
 		bindFeatureService(config);
+		initializeLayerWorkspace();
 		initializePresentationTheme();
 		initializePresentationPreferences();
+	}
+
+	private void initializeLayerWorkspace() {
+		GeoCeDGLayerWorkspace workspace = getLayerWorkspace();
+		// A document opened by the host constructor initializes the session too.
+		workspace.resetForOpenedDocument();
+		layerChooser = GeoCeDGWorkingLayerChooser.dialog(this);
+		workspace.addListener(() -> {
+			// Presentation only: repaint the views, never mark the document changed.
+			getKernel().notifyRepaint();
+			if (statusBar != null) {
+				statusBar.updateText();
+			}
+		});
+		layerWorkspaceActive = true;
+	}
+
+	/** @return PRE-G9B-R6-plus-A-1 session layer workspace */
+	GeoCeDGLayerWorkspace getLayerWorkspace() {
+		if (layerWorkspace == null) {
+			layerWorkspace = new GeoCeDGLayerWorkspace(getKernel());
+		}
+		return layerWorkspace;
+	}
+
+	@Override
+	public int getLayerForNewObject(Construction construction, int upstreamLayer) {
+		return layerWorkspaceActive
+				? layerWorkspace.layerForNewObject(construction, upstreamLayer)
+				: upstreamLayer;
+	}
+
+	@Override
+	public boolean isLayerShown(int layer) {
+		return layerWorkspace == null || layerWorkspace.isLayerShown(layer);
+	}
+
+	/**
+	 * Opens the bounded layer chooser and applies an explicit choice; a hidden
+	 * layer named here is shown and becomes the working layer (AQ-L7).
+	 *
+	 * @return whether a layer was chosen
+	 */
+	boolean chooseWorkingLayer() {
+		Integer chosen = layerChooser.choose(layerWorkspace.getWorkingLayer());
+		if (chosen == null) {
+			return false;
+		}
+		layerWorkspace.setWorkingLayer(chosen);
+		return true;
+	}
+
+	void setWorkingLayerChooser(GeoCeDGWorkingLayerChooser chooser) {
+		layerChooser = chooser;
+	}
+
+	/** @return the status bar, created once and reattached by every panel rebuild */
+	GeoCeDGStatusBar getStatusBar() {
+		if (statusBar == null) {
+			statusBar = new GeoCeDGStatusBar(this);
+		}
+		return statusBar;
+	}
+
+	/**
+	 * @param key GeoCeDG text key
+	 * @param arguments values for %0, %1, ...
+	 * @return product text in the current language
+	 */
+	String layerText(String key, String... arguments) {
+		String text = GeoCeDGProfile.getText(key, getLocale().getLanguage());
+		for (int i = 0; i < arguments.length; i++) {
+			text = text.replace("%" + i, arguments[i]);
+		}
+		return text;
+	}
+
+	@Override
+	public JPanel buildApplicationPanel() {
+		JPanel panel = super.buildApplicationPanel();
+		// The SOUTH slot of the returned panel is free in the host layout and is
+		// not cleared by updateApplicationLayout, which only rebuilds side panels.
+		if (isUsingFullGui()) {
+			panel.add(getStatusBar(), BorderLayout.SOUTH);
+		}
+		return panel;
+	}
+
+	@Override
+	public boolean clearConstruction() {
+		boolean cleared = super.clearConstruction();
+		if (cleared && layerWorkspaceActive) {
+			layerWorkspace.resetForNewDocument();
+		}
+		return cleared;
+	}
+
+	@Override
+	public boolean loadExistingFile(File file, boolean isMacroFile) {
+		if (isMacroFile || !layerWorkspaceActive) {
+			// Startup files load inside the host constructor, before the session
+			// workspace exists; it then starts from that document below.
+			return super.loadExistingFile(file, isMacroFile);
+		}
+		boolean loaded = layerWorkspace.runDocumentTransition(
+				() -> super.loadExistingFile(file, false));
+		if (loaded) {
+			layerWorkspace.resetForOpenedDocument();
+		}
+		return loaded;
+	}
+
+	@Override
+	public boolean loadXML(String xml) {
+		if (!layerWorkspaceActive) {
+			return super.loadXML(xml);
+		}
+		boolean loaded = layerWorkspace.runDocumentTransition(() -> super.loadXML(xml));
+		if (loaded) {
+			layerWorkspace.resetForOpenedDocument();
+		}
+		return loaded;
 	}
 
 	@Override
@@ -137,6 +272,9 @@ public final class AppGeoCeDG extends App3D {
 		// Product language policy only; never remove the upstream locale corpus.
 		super.setLocale(locale != null && "es".equals(locale.getLanguage())
 				? Locale.forLanguageTag("es") : Locale.ENGLISH);
+		if (statusBar != null) {
+			statusBar.updateText();
+		}
 	}
 
 	/**

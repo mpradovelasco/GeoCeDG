@@ -626,6 +626,32 @@ source may produce application/package derivatives only after small-size and
 platform suitability checks. No icon, palette, workspace or marker
 implementation is part of R3 or R6.
 
+### Session layer workspace (PRE-G9B-R6-plus-A-1)
+
+The working layer and the hidden-layer set are Desktop session presentation
+state owned by `GeoCeDGLayerWorkspace` in `AppGeoCeDG`. They are never
+serialized, never written into the undo, macro, clipboard or preferences XML,
+never an undo point and never written into an object's layer or visibility.
+The shared kernel only exposes two `App` seams with host-identical defaults:
+
+- `getLayerForNewObject(construction, upstreamLayer)`, asked by
+  `ConstructionDefaults`, `AlgoMacro` and the Locus V2 family (`AlgoLocusV2`).
+  GeoCeDG answers the working layer only for interactive creation in the
+  document construction; file, undo/redo, redefinition rebuild, paste, macro
+  construction and the New/Open transition keep the upstream value.
+- `isLayerShown(layer)`, consulted by `EuclidianView` painting (geometric,
+  action, mask and measurement passes) and by `HitDetector` and the view's
+  label, bounding-box-handle and input-box hits, so Graphics 1 and the upstream
+  Graphics 2 view obey it. The hit filter runs before the host top-layer rule.
+  `isVisibleInThisView` is not used, so slope-field and ODE geometry is
+  unchanged.
+
+Exports that reuse `exportPaint` (PNG, PDF, EMF, print, image copy) inherit the
+hiding. The SVG route (its own drawable loop, the direct `drawActionObjects`
+call and the shared background pass), the LaTeX exporters and DXF do not; they
+belong to `PRE-G9B-R6-plus-B` and `C`. The domain stays `0..9`; widening and
+hidden-layer persistence belong to `A-2`.
+
 ## Persistence and compatibility
 
 The round-1 native-save correction uses the existing archive reader to preflight

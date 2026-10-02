@@ -62,7 +62,7 @@ class G9U1ActionRegistryTest {
 	@Test
 	void everyActionHasExactlyOneBoundTargetAndReadableName() {
 		GeoCeDGActionRegistry registry = new GeoCeDGActionRegistry(app(true));
-		assertEquals(115, registry.ids().size());
+		assertEquals(116, registry.ids().size());
 		for (String id : registry.ids()) {
 			assertEquals(id, registry.get(id).getValue(GeoCeDGActionRegistry.ACTION_ID));
 			assertFalse(((String) registry.get(id).getValue(Action.NAME)).isBlank(), id);

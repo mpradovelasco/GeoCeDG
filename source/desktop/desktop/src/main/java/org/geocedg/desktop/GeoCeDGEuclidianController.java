@@ -497,6 +497,14 @@ public final class GeoCeDGEuclidianController
 					createOrderedList(hits, selectionPreview), false, callback,
 					selectionPreview);
 		}
+		if (mode == EuclidianConstants.MODE_WORKING_LAYER) {
+			if (!selectionPreview) {
+				chooseWorkingLayer(hits);
+			}
+			// Session state only: no construction change and no undo point.
+			return endOfSwitchModeForProcessMode(null, false, callback,
+					selectionPreview);
+		}
 		if (!isLocusV2Mode(mode) && !GeoCeDGSplineV2Authoring.handles(mode)) {
 			if (mode == EuclidianConstants.MODE_INTERSECT && !selectionPreview
 					&& callback != null && intersectionSession.isAutoMaterialize()) {
@@ -699,6 +707,34 @@ public final class GeoCeDGEuclidianController
 		}
 		addSelectedPoint(hits, Integer.MAX_VALUE, false, selectionPreview);
 		return null;
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-A-1 one-shot working-layer mode (AQ-L4): a click on an
+	 * object adopts its layer; a click on empty space opens the bounded chooser.
+	 * After a valid choice the mode returns to Move. Objects on hidden layers are
+	 * never in the hits, so a click can never adopt a hidden layer; only the
+	 * chooser, which names a layer, can choose one and show it (AQ-L7).
+	 */
+	private void chooseWorkingLayer(Hits hits) {
+		AppGeoCeDG geoCeDG = (AppGeoCeDG) kernel.getApplication();
+		GeoElement chosen = null;
+		for (GeoElement geo : hits) {
+			if (!geo.isAxis()) {
+				chosen = geo;
+				break;
+			}
+		}
+		boolean selected;
+		if (chosen != null) {
+			geoCeDG.getLayerWorkspace().setWorkingLayer(chosen.getLayer());
+			selected = true;
+		} else {
+			selected = geoCeDG.chooseWorkingLayer();
+		}
+		if (selected) {
+			geoCeDG.setMoveMode();
+		}
 	}
 
 	/**

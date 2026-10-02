@@ -1235,7 +1235,8 @@ visibility are.
 ## 12. Presentation and visualization
 
 Everything in this section is presentation. None of it changes geometry,
-identity, metrics, document content or export output.
+identity, metrics or document content. Hidden layers (12.5) are the only part
+that changes export output: picture exports omit them.
 
 ### 12.1 Themes and canvas
 
@@ -1280,6 +1281,41 @@ use `Ctrl`+`+` and `Ctrl`+`-`. Do not type those into Algebra Input.
 No zoom or navigation operation changes metrics, coordinates, identity or
 provenance.
 
+### 12.5 Layers and the working layer
+
+Every object lies on a layer from 0 to 9; objects on higher layers are drawn
+above objects on lower ones. GeoCeDG adds a **working layer** and **hidden
+layers** for the current session.
+
+- **Working layer.** New objects are created on the working layer, whether they
+  come from a tool, Algebra Input, a script, `Execute`, a user tool, Locus V2 or
+  Spline V2. The status bar at the bottom of the window shows it as
+  **Layer: n**. A new document starts at layer 0; an opened document starts at
+  the highest layer used by its drawable objects. Undo, redo and redefinition
+  keep the layers stored in the document, and **Paste** keeps the layers of the
+  copied objects.
+- **Choosing it.** **Working Layer** sits in the Move group of the toolbar,
+  after Move and Rotate around Point. It is a one-shot tool: click an object to
+  use its layer, or click empty space to choose a layer from 0 to 9. After a
+  valid choice the tool returns to Move; cancelling changes nothing. Clicking
+  **Layer: n** in the status bar opens the same chooser.
+- **Hiding a layer.** In the Algebra View, choose **Sort by Layer**: each layer
+  group has an eye. Clicking it hides or shows the whole layer in the Graphics
+  views. Its objects are neither drawn nor selectable there, but each object
+  keeps its own visibility, so its marble does not change. The working layer
+  cannot be hidden, and choosing a hidden layer in the chooser shows it again.
+- **Session only.** The working layer and the hidden layers belong to the
+  session. They are not saved in the document, are not undo steps and do not
+  mark the document as modified. New and Open show every layer again.
+- **Not the same as `ShowLayer` and `HideLayer`.** These commands still set the
+  visibility of every object on a layer, and that visibility is saved with the
+  document.
+
+**Exports while a layer is hidden.** PNG, PDF, EMF, printing and copying the
+Graphics view as an image follow the view and omit hidden layers. SVG,
+PGF/TikZ, PSTricks, Asymptote and DXF still write the objects of hidden layers
+in this version. This temporary difference ends when those exports are
+completed.
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -1424,6 +1460,8 @@ These are the limitations that affect what you can do in the application today.
   bound.
 - There is no DXF import, viewport export, physical-unit contract, text export,
   legacy `Locus` export, implicit-curve contouring or 3D export.
+- While a layer is hidden, SVG, LaTeX (PGF/TikZ, PSTricks, Asymptote) and DXF
+  still write its objects, whereas PNG, PDF, EMF and printing omit them (12.5).
 
 **Not available**
 
@@ -1455,6 +1493,7 @@ These are the limitations that affect what you can do in the application today.
 | Create a semantic locus | Construction → Semantic curves → Locus V2 | `LocusV2(G,u,dom)` | semantic curve | the domain is explicit; it does not come from a slider range |
 | Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
 | Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
+| Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 9; not saved |
 | Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
 | Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
 | Point on a Locus V2, by parameter | same | `Point(L,"generator.main",1)` | semantic point | default generator branch key |

@@ -452,6 +452,25 @@
       "implementation_state": "existing"
     },
     {
+      "id": "construction.working-layer",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_WORKING_LAYER",
+        "audited_numeric_id": 141
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.working-layer-one-shot",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.WorkingLayer",
+      "icon_ref": "geocedg.action.WorkingLayer",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-A-1: one-shot choice of the session working layer; an object adopts its layer, empty space opens the bounded 0..9 chooser; returns to Move after a valid choice; no construction change, no undo point, no serialization."
+    },
+    {
       "id": "construction.select",
       "kind": "upstream-mode",
       "target": {
@@ -2499,6 +2518,7 @@
       "toolbar_action_ids": [
         "construction.move",
         "construction.move-rotate",
+        "construction.working-layer",
         "construction.attach-detach"
       ],
       "overflow_action_ids": [
@@ -3189,8 +3209,8 @@
     {
       "id": "edit-selection",
       "name_key": "Group.Edit.Selection",
-      "action_ids": ["construction.move", "construction.move-rotate", "construction.select", "construction.attach-detach"],
-      "toolbar_action_ids": ["construction.move", "construction.move-rotate"]
+      "action_ids": ["construction.move", "construction.move-rotate", "construction.working-layer", "construction.select", "construction.attach-detach"],
+      "toolbar_action_ids": ["construction.move", "construction.move-rotate", "construction.working-layer"]
     },
     {
       "id": "edit-delete",
@@ -4697,6 +4717,26 @@
     "Workspace.Scripting": {
       "en": "Use the Scripting tab in the existing Properties dialog.",
       "es": "Usa la pestaña Guiones del diálogo de Propiedades."
+    },
+    "Workspace.Layer.Status": {
+      "en": "Layer: %0",
+      "es": "Capa: %0"
+    },
+    "Workspace.Layer.StatusTooltip": {
+      "en": "Working layer for new objects. Click to choose another layer.",
+      "es": "Capa de trabajo de los objetos nuevos. Haz clic para elegir otra capa."
+    },
+    "Workspace.Layer.ChooserTitle": {
+      "en": "Working Layer",
+      "es": "Capa de trabajo"
+    },
+    "Workspace.Layer.ChooserMessage": {
+      "en": "Layer for new objects (0 to 9). A hidden layer chosen here is shown.",
+      "es": "Capa para los objetos nuevos (de 0 a 9). Una capa oculta elegida aquí se muestra."
+    },
+    "Workspace.Layer.HiddenGroup": {
+      "en": "%0 (hidden)",
+      "es": "%0 (oculta)"
     },
     "Workspace.SplineHelp": {
       "en": "Examples: SplineV2(A,B,C) or SplineV2({A,B,C,D}) use degree 3; SplineV2({A,B,C,D},4) sets an explicit degree, from 3 to the number of points; SplineV2(A,B,C,D,A) repeats the first point for the closed form. No object is created until Enter.",

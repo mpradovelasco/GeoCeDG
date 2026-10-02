@@ -58,8 +58,11 @@ public class HitDetector {
 		}
 		boolean hitMask = false;
 
+		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 objects on hidden layers are
+		// not hittable; filtered before the top-layer rule below so that they
+		// never shadow a shown object.
 		for (Drawable d : ev.getAllDrawableList()) {
-			if (d.isEuclidianVisible()) {
+			if (d.isEuclidianVisible() && ev.isOnShownLayer(d)) {
 				if (d.hit(p.x, p.y, hitThreshold)) {
 					GeoElement geo = d.getGeoElement();
 					hitMask = hitMask || (geo.isMask() || geo.isMeasurementTool())
@@ -190,7 +193,8 @@ public class HitDetector {
 
 		for (Drawable d : ev.getAllDrawableList()) {
 			GeoElement geo = d.getGeoElement();
-			if (geo.isEuclidianVisible() && geo.isSelectionAllowed(ev) && filter.test(geo)
+			if (geo.isEuclidianVisible() && ev.isOnShownLayer(d)
+					&& geo.isSelectionAllowed(ev) && filter.test(geo)
 					&& !hits.contains(geo)
 					&& d.intersectsRectangle(rect)) {
 				d.setPartialHitClip(rect);
@@ -221,7 +225,7 @@ public class HitDetector {
 
 		for (Drawable d : ev.getAllDrawableList()) {
 			GeoElement geo = d.getGeoElement();
-			if (geo.isEuclidianVisible() && d.isInside(rect)) {
+			if (geo.isEuclidianVisible() && ev.isOnShownLayer(d) && d.isInside(rect)) {
 				hits.add(geo);
 			}
 		}
