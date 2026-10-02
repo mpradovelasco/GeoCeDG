@@ -2,20 +2,21 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE CANDIDATE — NOT AUTHOR APPROVED** |
+| Status | **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-02 on the exact documentary candidate `T_R6PLUS_D0` `8383a153dc2228fc08b4e00a0c92ef8025608916`, tree `442e27fcafea223af426b4ee65102a8a5d90be8c`; [D0 closeout record](../../../docs/validation/pre_g9b_r6_plus_d0_closeout_record.md)); implementation not authorized |
 | Version | `1.0` |
 | Owner phase | `PRE-G9B-R6-plus-D0` (normative design; no implementation) |
 | Implementing phases | `D1` (document state, persistence, undo, defaults, paste notice, status), `C` (export), `E2` (native dimensions), `E3` (`IsoABorder`) |
-| Decision | [ADR 0032](../../../docs/adr/0032-unit-system-semantics-and-persistence-ownership.md) (`PROPOSED`) |
+| Decision | [ADR 0032](../../../docs/adr/0032-unit-system-semantics-and-persistence-ownership.md) (`ACCEPTED — AUTHOR APPROVED`) |
 | Governing author decisions | [mini-track plan](../../../docs/architecture/pre_g9b_r6_plus_minitrack_plan.md) §4; [D0 author-decision record](../../../docs/validation/pre_g9b_r6_plus_d0_author_decisions_record.md); [D0 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md) |
 | Serialization effect of this document | none; it specifies the contract `D1` implements |
 
 ## 0. Status and normative language
 
-This specification is a **candidate**. It becomes normative only when the
-author accepts it explicitly; until then no product behavior may be claimed
-against it, and the in-force export rules of §15.1 stay unchanged. Acceptance
-changes only the status line.
+This specification was accepted by the author on 2026-10-02 and is normative;
+the clauses below are unchanged from the approved candidate, and acceptance
+changed only the status markers. Acceptance authorizes no implementation: no
+product behavior may be claimed against it until the implementing phases
+deliver it, and the in-force export rules of §15.1 stay unchanged until `C`.
 
 `MUST`, `MUST NOT`, `SHOULD` and `MAY` have their usual normative meaning. Each
 numbered clause is cited as `§n.m`. The author decisions listed in the header

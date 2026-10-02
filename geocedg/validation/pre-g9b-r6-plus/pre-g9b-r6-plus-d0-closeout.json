@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-D0",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-D0 — PASS — AUTHOR APPROVED",
+  "record": "docs/validation/pre_g9b_r6_plus_d0_closeout_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "productChange": "NONE",
+  "serializationImplementationChange": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "normativeAuthorities": [
+    {"path": "docs/adr/0032-unit-system-semantics-and-persistence-ownership.md", "status": "ACCEPTED — AUTHOR APPROVED"},
+    {"path": "geocedg/specs/units/unit-system.md", "version": "1.0", "status": "NORMATIVE / AUTHOR APPROVED", "implementationAuthorized": false},
+    {"source": "docs/validation/pre_g9b_r6_plus_d0_author_decisions_record.md", "decisions": "AQ-U1..AQ-U6"},
+    {"source": "docs/validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md", "decisions": "DQ-D0-1..DQ-D0-13"}
+  ],
+  "candidateReportRecommendationsAuthority": "none independent; approved only where reflected coherently in the normative authorities or strict consequences of them",
+  "acceptedDesignPoints": [
+    {"point": "an unreferenced usm definition may be removed explicitly, never while constructionUnit or presentationUnit selects usm", "clause": "4.3"},
+    {"point": "a presentationUnit user preference cannot be usm", "clause": "10"},
+    {"point": "DXF codes for mm, cm and m re-verified by C before changing the contract or exporter", "clause": "15.2"}
+  ],
+  "pendingFindingDispositions": [
+    {"n": 1, "finding": "fail-closed restore and window state after a failed File > Open", "owner": "D1", "disposition": "mandatory characterization and test"},
+    {"n": 2, "finding": "binary64 factor determinism across supported JDKs", "owner": "D1", "disposition": "mandatory characterization and test; if Double.toString does not give identical canonical bytes on the supported corpus, D1 provides a deterministic representation compatible with the D0 contract"},
+    {"n": 3, "finding": "unit UI, usm definition, preferences and paste notice", "owner": "D1"},
+    {"n": 4, "finding": "owner of drawingScale", "owner": "C", "disposition": "C, not D1"},
+    {"n": 5, "finding": "clipboard between two windows", "owner": "D1", "disposition": "mandatory probe"},
+    {"n": 6, "finding": "possible reclassification of C because of the G9X1 verifier change", "owner": "C preparation"},
+    {"n": 7, "finding": "forward-compatibility warning in user documentation", "owner": "G", "disposition": "mandatory backlog for the integrated closeout; does not block D1"}
+  ],
+  "identities": {
+    "publishedBase": {"name": "P_R6PLUS_B", "commit": "0ef616bb7bb8efd3e4f19762f38936ff4742d1c3", "tree": "be7ef7acbc3503002f3dac2bc33f047795f7a644"},
+    "preparationPackage": {"name": "T_R6PLUS_D0_PROMPT", "commit": "8814468101e3caef45d9f6cbad4bf563523c3478", "tree": "edbe623604330e62db11ff3d3b05b7d73671dbd0"},
+    "authorizationEdit": {"name": "A_R6PLUS_D0", "commit": "804e20c08f8d25419799ed10b780483fa1670920", "tree": "63c7cfa07f892f0dbcb7cf09a53539ca4c32b807"},
+    "technicalCandidate": {"name": "T_R6PLUS_D0", "commit": "8383a153dc2228fc08b4e00a0c92ef8025608916", "tree": "442e27fcafea223af426b4ee65102a8a5d90be8c", "parent": "804e20c08f8d25419799ed10b780483fa1670920", "amended": false},
+    "closeout": {"name": "P_R6PLUS_D0", "identity": "this closeout commit; reported with the publication"},
+    "branch": "phase/pre-g9b-r6-plus-d0-prompt"
+  },
+  "acceptedEvidence": {
+    "run": "verification-1e336856b96b41b5b0dd41ae58556af0",
+    "profile": "STATIC",
+    "commit": "8383a153dc2228fc08b4e00a0c92ef8025608916",
+    "tree": "442e27fcafea223af426b4ee65102a8a5d90be8c",
+    "exitCode": 0,
+    "acceptanceVerdict": "ACCEPTED",
+    "coverageVerdict": "COMPLETE",
+    "acceptance": ["prompt.execution-safety", "repository.boundary-safety", "static.scientific-inputs.semantic"],
+    "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+    "resultHash": "b4a7d5389bcc7a42a44025f868e9d28ebda06277dfe820bfa3dd8e4797dd499f",
+    "standingDiagnostics": {"diagnostic.governance": "DIAGNOSTIC_FINDING", "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"},
+    "diffCheck": "exit 0 over 8814468..8383a153"
+  },
+  "publication": {
+    "authorized": true,
+    "range": ["0ef616bb7bb8efd3e4f19762f38936ff4742d1c3", "8814468101e3caef45d9f6cbad4bf563523c3478", "804e20c08f8d25419799ed10b780483fa1670920", "8383a153dc2228fc08b4e00a0c92ef8025608916", "P_R6PLUS_D0 (this closeout commit)"],
+    "method": "clean non-force fast-forward of main",
+    "precondition": "local main, origin/main and live remote main equal P_R6PLUS_B immediately before the push",
+    "forbidden": ["merge commits", "rebases", "squashes", "amends", "force pushes", "tags", "releases", "binary publication", "any implementation"]
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED (AUTHOR_SMOKE = PASS)",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED — PUBLISHED (AUTHOR_SMOKE = PASS)",
+    "PRE-G9B-R6-plus-D0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED (next operational subphase)",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

@@ -1,10 +1,14 @@
 # ADR 0032: Unit-system semantics and persistence ownership
 
-- Status: **Proposed — `PRE-G9B-R6-plus-D0` documentary candidate**
+- Status: **ACCEPTED — AUTHOR APPROVED** (decision of 2026-10-02 on the exact
+  documentary candidate `T_R6PLUS_D0`
+  `8383a153dc2228fc08b4e00a0c92ef8025608916`, tree
+  `442e27fcafea223af426b4ee65102a8a5d90be8c`; recorded in the
+  [D0 closeout record](../validation/pre_g9b_r6_plus_d0_closeout_record.md))
 - Date: 2026-10-02
 - Phase: `PRE-G9B-R6-plus-D0` (normative design; no implementation)
 - Normative contract: [GeoCeDG unit system](../../geocedg/specs/units/unit-system.md)
-  (`NORMATIVE CANDIDATE — NOT AUTHOR APPROVED`, version `1.0`)
+  (`NORMATIVE / AUTHOR APPROVED`, version `1.0`)
 - Author decisions carried:
   [mini-track plan](../architecture/pre_g9b_r6_plus_minitrack_plan.md) §4,
   [D0 author-decision record](../validation/pre_g9b_r6_plus_d0_author_decisions_record.md),
@@ -14,14 +18,18 @@
   not amended by this ADR)
 
 ```text
-TECHNICAL_CANDIDATE_STATE = FROZEN
-AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
+AUTHOR_DECISION           = APPROVED (exact documentary candidate 8383a153…)
 selfApproved              = false
+implementationAuthorized  = false   (D1 and every later subphase)
+PRODUCT_PHASE_EFFECT      = NONE
 ```
 
-This record carries no approval of its own; acceptance is recorded only by a
-separate author-decision record. The rules it decides are stated in the unit
-specification, which this ADR does not restate.
+This ADR carries no approval of its own. Acceptance is recorded by the separate
+closeout record named in the status line. The decision text below is
+unchanged from the approved candidate `8383a153…`; only the status lines were
+updated. Acceptance does not authorize `D1` or any later subphase. The rules
+it decides are stated in the unit specification, which this ADR does not
+restate.
 
 ## Context
 
