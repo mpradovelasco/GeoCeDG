@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-A-1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-A-1 — PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "record": "docs/validation/pre_g9b_r6_plus_a1_closeout_record.md",
+  "authorDecisionDate": "2026-10-02",
+  "authorConfirmedDirectly": true,
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "PRE-G9B-R6-plus-A-1 technical candidate only",
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "identities": {
+    "implementationBase": {"name": "P_R6PLUS_A1_PROMPT", "commit": "069c7a03da92f2c30f015815a0aa278e7356b356", "tree": "707c0b557ed93de3aaf4fea7d76bb643fb20411a"},
+    "promptAmendment": {"name": "A_R6PLUS_A1_PROMPT", "commit": "bfee814235c1a6979b7016df1e6a60c5ffd5fb92", "promptBlob": "237c8f303249f72e6cfd95624e1895e8c5675a77"},
+    "technicalCandidate": {"name": "T_R6PLUS_A1", "commit": "2a71133ad622e18e9963b04a466a92665a784722", "tree": "e9bf297f4307b8ab027c64b6e791870ac1d55e93", "parent": "bfee814235c1a6979b7016df1e6a60c5ffd5fb92", "modifiedByCloseout": false},
+    "branch": "phase/pre-g9b-r6-plus-a1-layer-workspace",
+    "branchPushed": false
+  },
+  "acceptedEvidence": [
+    {"profile": "PHASE", "command": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-A-1", "run": "verification-4a7c3d61fab944fb81112edffcd08cf8", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "5/5", "executionPlanHash": "70e86626c15048c462de5a80f3846266f07130dec7528db754965c16a0ac6319", "resultHash": "ef40697dbb43b04e70fae382150cad5a749573b7d32883de18e085ed532af481"},
+    {"profile": "INTEGRATION", "command": "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts/agent/pre-g9b-r6-plus-a1-integration-2a71133a", "run": "verification-94c28552e125490c98da11b292f57412", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "19/19", "executionPlanHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "resultHash": "67f597dfde00d4de0a76f1ad1e80bfc9dae52fad8e35fea54f4557845b1ecea9", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"]}
+  ],
+  "invalidHistoricalAttempts": [
+    {"profile": "INTEGRATION", "run": "verification-3cdf3c5491804a229568bc54bea3688b", "verdict": "REJECTED_VERIFICATION_CORE / UNTRUSTED", "untrustedLeaf": "packaging.repository-safety", "cause": "log root outside the repository; tools/agent/checks/repository-safety.ps1 requires a contained non-Git repository path", "classification": "invalid attempt from incorrect log-root configuration, not a product failure", "semanticLeaves": "all satisfied", "acceptanceEvidence": false}
+  ],
+  "gitDiffCheck": {"range": "069c7a03da92f2c30f015815a0aa278e7356b356..2a71133ad622e18e9963b04a466a92665a784722", "exitCode": 0},
+  "frozenPromptClarification": {
+    "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-a1-layer-workspace-session.prompt.md",
+    "incorrectWording": "-LogDirectory <fresh root outside artifacts/> for INTEGRATION",
+    "correctRule": "PHASE and STATIC may use an external log root; INTEGRATION and FINAL need -LogDirectory artifacts/agent/<fresh> inside the repository; every console log stays outside artifacts/",
+    "promptModified": false
+  },
+  "observations": {
+    "recordedAtAuthorSmoke": [
+      {"id": "OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS", "observation": "the PNG export preview can show objects on hidden layers while the final PNG export omits them", "blocking": false, "primaryOwner": "PRE-G9B-R6-plus-B", "revalidateIn": "PRE-G9B-R6-plus-A-2", "correctInA1": false}
+    ],
+    "deferredFromCandidate": ["OBS-A1-GRAPHICS2-GEOCEDG-MODES", "OBS-A1-BACKGROUND-IMAGE-LAYER", "OBS-A1-3D-VIEW", "OBS-A1-NON-HIT-SELECTION", "OBS-A1-RECOMPUTE-OUTPUTS", "OBS-A1-URL-OPEN"]
+  },
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_a1_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a1-closeout.json"
+  ],
+  "publication": {
+    "range": ["069c7a03da92f2c30f015815a0aa278e7356b356", "bfee814235c1a6979b7016df1e6a60c5ffd5fb92", "2a71133ad622e18e9963b04a466a92665a784722", "P_R6PLUS_A1 (this closeout commit)"],
+    "method": "clean non-force fast-forward of main",
+    "precondition": "local main = origin/main = live remote main = P_R6PLUS_A1_PROMPT"
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-B": "NOT AUTHORIZED (next operational subphase)",
+    "PRE-G9B-R6-plus-D0": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-D1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}
