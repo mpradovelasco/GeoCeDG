@@ -26,7 +26,6 @@ import org.geogebra.common.kernel.arithmetic.NumberValue;
 import org.geogebra.common.kernel.commands.CmdScripting;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.MyError;
-import org.geogebra.common.plugin.EuclidianStyleConstants;
 
 /**
  * HideLayer
@@ -57,7 +56,9 @@ public class CmdShowHideLayer extends CmdScripting {
 			GeoElement[] arg = resArgs(c);
 			if (arg[0] instanceof NumberValue) {
 				int layer = (int) arg[0].evaluateDouble();
-				if (layer < 0 || layer > EuclidianStyleConstants.MAX_LAYERS) {
+				// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-8) the admissible
+				// range is the product layer domain; object visibility is unchanged.
+				if (layer < 0 || layer > kernel.getApplication().getConfig().getMaxLayer()) {
 					return arg;
 				}
 				Iterator<GeoElement> it = kernel.getConstruction()

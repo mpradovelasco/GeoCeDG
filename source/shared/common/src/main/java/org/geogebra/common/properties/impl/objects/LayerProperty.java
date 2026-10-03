@@ -19,9 +19,9 @@ package org.geogebra.common.properties.impl.objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.Localization;
-import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.properties.impl.AbstractNamedEnumeratedProperty;
 import org.geogebra.common.properties.impl.objects.delegate.NotApplicablePropertyException;
 
@@ -46,8 +46,9 @@ public class LayerProperty extends AbstractNamedEnumeratedProperty<Integer> {
 		}
 		this.element = element;
 
+		// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-11) product layer domain.
 		setValues(IntStream
-				.range(0, EuclidianStyleConstants.MAX_LAYERS + 1)
+				.range(0, LayerDomain.maxLayer(element.getKernel().getApplication()) + 1)
 				.boxed()
 				.collect(Collectors.toUnmodifiableList()));
 	}

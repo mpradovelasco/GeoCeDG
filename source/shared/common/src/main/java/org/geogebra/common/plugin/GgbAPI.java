@@ -23,6 +23,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GFont;
@@ -396,7 +397,9 @@ public abstract class GgbAPI implements JavaScriptAPI {
 	 */
 	@Override
 	public synchronized void setLayerVisible(int layer, boolean visible) {
-		if (layer < 0 || layer > EuclidianStyleConstants.MAX_LAYERS) {
+		// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-8) product layer domain;
+		// this still writes each object's own visibility.
+		if (layer < 0 || layer > LayerDomain.maxLayer(app)) {
 			return;
 		}
 		String[] names = getAllObjectNames();

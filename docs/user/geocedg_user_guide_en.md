@@ -1357,8 +1357,8 @@ visibility are.
 ## 12. Presentation and visualization
 
 Everything in this section is presentation. None of it changes geometry,
-identity, metrics or document content. Hidden layers (12.5) are the only part
-that changes export output: picture exports omit them.
+identity or metrics. Hidden layers (12.5) are saved with the document and are
+the only part that changes export output: picture exports omit them.
 
 ### 12.1 Themes and canvas
 
@@ -1405,20 +1405,21 @@ provenance.
 
 ### 12.5 Layers and the working layer
 
-Every object lies on a layer from 0 to 9; objects on higher layers are drawn
-above objects on lower ones. GeoCeDG adds a **working layer** and **hidden
-layers** for the current session.
+Every object lies on a layer from 0 to 99; objects on higher layers are drawn
+above objects on lower ones. GeoCeDG adds a **working layer** for the current
+session and **hidden layers** that are saved with the document.
 
 - **Working layer.** New objects are created on the working layer, whether they
   come from a tool, Algebra Input, a script, `Execute`, a user tool, Locus V2 or
   Spline V2. The status bar at the bottom of the window shows it as
   **Layer: n**. A new document starts at layer 0; an opened document starts at
-  the highest layer used by its drawable objects. Undo, redo and redefinition
-  keep the layers stored in the document, and **Paste** keeps the layers of the
-  copied objects.
+  the highest layer used by its drawable objects that is not hidden, or else at
+  the lowest layer that is not hidden. Undo, redo and redefinition keep the
+  layers stored in the document, and **Paste** keeps the layers of the copied
+  objects.
 - **Choosing it.** **Working Layer** sits in the Move group of the toolbar,
   after Move and Rotate around Point. It is a one-shot tool: click an object to
-  use its layer, or click empty space to choose a layer from 0 to 9. After a
+  use its layer, or click empty space to choose a layer from 0 to 99. After a
   valid choice the tool returns to Move; cancelling changes nothing. Clicking
   **Layer: n** in the status bar opens the same chooser.
 - **Hiding a layer.** In the Algebra View, choose **Sort by Layer**: each layer
@@ -1426,9 +1427,20 @@ layers** for the current session.
   views. Its objects are neither drawn nor selectable there, but each object
   keeps its own visibility, so its marble does not change. The working layer
   cannot be hidden, and choosing a hidden layer in the chooser shows it again.
-- **Session only.** The working layer and the hidden layers belong to the
-  session. They are not saved in the document, are not undo steps and do not
-  mark the document as modified. New and Open show every layer again.
+- **Saved, but never an undo step.** The hidden layers are saved in the `.cedg`
+  document and hidden again when it is opened; opening a document never shows
+  one of its hidden layers. Hiding or showing a layer marks the document as
+  modified, so New and closing ask to save it, even when the document has no
+  objects. It is not an undo step: Undo and Redo never change which layers are
+  hidden. The working layer belongs to the session and is not saved. New shows
+  every layer again.
+- **Damaged information.** A document whose hidden-layer information is
+  damaged, names a layer outside 0 to 99, hides every layer or comes from a
+  newer version does not open: a message names the problem and the current
+  document stays exactly as it was.
+- **Older versions.** Earlier GeoCeDG versions and GeoGebra Classic read
+  layers above 9 as layer 9 and show every layer. If they save the document,
+  layers above 9 and the hidden layers are lost.
 - **Not the same as `ShowLayer` and `HideLayer`.** These commands still set the
   visibility of every object on a layer, and that visibility is saved with the
   document.
@@ -1618,7 +1630,7 @@ These are the limitations that affect what you can do in the application today.
 | Create a semantic locus | Construction → Semantic curves → Locus V2 | `LocusV2(G,u,dom)` | semantic curve | the domain is explicit; it does not come from a slider range |
 | Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
 | Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
-| Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 9; not saved |
+| Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 99; not saved |
 | Set the document units | Options → GeoCeDG options → Document units…, or click a unit in the status bar | — | document metadata | one undo step; reinterprets the model and never converts coordinates; saved with the document |
 | Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
 | Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |

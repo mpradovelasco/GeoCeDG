@@ -25,6 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
+import org.geocedg.common.kernel.layers.HiddenLayerSet;
 import org.geocedg.common.kernel.units.DocumentUnitSystem;
 import org.geocedg.common.kernel.units.UnitDocumentOperations;
 import org.geocedg.common.kernel.units.UnitMetadataException;
@@ -87,6 +89,13 @@ public final class AppGeoCeDG extends App3D {
 	 */
 	private GeoCeDGLayerWorkspace layerWorkspace;
 	private boolean layerWorkspaceActive;
+	/**
+	 * PRE-G9B-R6-plus-A-2 (DQ-A2-6): hidden set reported by the last completed document
+	 * parse, committed only by a document transition. A startup file is parsed inside
+	 * the host constructor, so these fields have no initializer.
+	 */
+	private HiddenLayerSet parsedHiddenLayers;
+	private boolean documentTransitionCommitted;
 	private GeoCeDGStatusBar statusBar;
 	private GeoCeDGWorkingLayerChooser layerChooser;
 	/**
@@ -272,22 +281,49 @@ public final class AppGeoCeDG extends App3D {
 
 	@Override
 	protected void showDocumentLoadFailure(String fileName, Throwable failure) {
-		UnitMetadataException rejection = UnitMetadataException.find(failure);
-		if (rejection == null) {
+		String message = metadataLoadErrorText(failure, fileName);
+		if (message == null) {
 			super.showDocumentLoadFailure(fileName, failure);
 			return;
 		}
-		showUnitLoadError(unitLoadErrorText(rejection, fileName));
+		showUnitLoadError(message);
 	}
 
 	@Override
 	protected void showXMLLoadFailure(Exception failure) {
-		UnitMetadataException rejection = UnitMetadataException.find(failure);
-		if (rejection == null) {
+		String message = metadataLoadErrorText(failure,
+				layerText("Units.LoadError.Document"));
+		if (message == null) {
 			super.showXMLLoadFailure(failure);
 			return;
 		}
-		showUnitLoadError(unitLoadErrorText(rejection, layerText("Units.LoadError.Document")));
+		showUnitLoadError(message);
+	}
+
+	/**
+	 * @param failure load failure
+	 * @param documentName file or document name
+	 * @return the localized message naming a fail-closed unit (DQ-D1-4) or hidden-layer
+	 *         (DQ-A2-4) metadata defect, or null for any other failure
+	 */
+	private String metadataLoadErrorText(Throwable failure, String documentName) {
+		UnitMetadataException units = UnitMetadataException.find(failure);
+		if (units != null) {
+			return unitLoadErrorText(units, documentName);
+		}
+		HiddenLayerMetadataException layers = HiddenLayerMetadataException.find(failure);
+		return layers == null ? null : hiddenLayerLoadErrorText(layers, documentName);
+	}
+
+	/**
+	 * @param rejection hidden-layer metadata rejection
+	 * @param documentName file or document name
+	 * @return the localized message naming the defect (DQ-A2-4)
+	 */
+	String hiddenLayerLoadErrorText(HiddenLayerMetadataException rejection,
+			String documentName) {
+		return layerText("Workspace.Layer.LoadError." + rejection.getCode().name(), documentName,
+				Integer.toString(getLayerWorkspace().getMaxLayer()));
 	}
 
 	private void showUnitLoadError(String message) {
@@ -318,17 +354,92 @@ public final class AppGeoCeDG extends App3D {
 
 	private void initializeLayerWorkspace() {
 		GeoCeDGLayerWorkspace workspace = getLayerWorkspace();
-		// A document opened by the host constructor initializes the session too.
-		workspace.resetForOpenedDocument();
+		// A document opened by the host constructor initializes the workspace from its
+		// own persisted hidden set (DQ-A2-6); a blank startup document has none.
+		workspace.commitOpenedDocument(blankStartupDocument || parsedHiddenLayers == null
+				? HiddenLayerSet.EMPTY : parsedHiddenLayers);
+		parsedHiddenLayers = null;
 		layerChooser = GeoCeDGWorkingLayerChooser.dialog(this);
 		workspace.addListener(() -> {
-			// Presentation only: repaint the views, never mark the document changed.
+			// Presentation: repaint the views; this never marks the document changed.
 			getKernel().notifyRepaint();
 			if (statusBar != null) {
 				statusBar.updateText();
 			}
 		});
+		// DQ-A2-2: a user edit of the persisted hidden set is persistent but not
+		// undoable: the document becomes unsaved and no undo point is stored.
+		workspace.setPersistedSetEditListener(this::setUnsaved);
 		layerWorkspaceActive = true;
+	}
+
+	/** PRE-G9B-R6-plus-A-2 (DQ-A2-3): the persisted set of the full document XML. */
+	@Override
+	public HiddenLayerSet getDocumentHiddenLayers() {
+		return layerWorkspace == null ? HiddenLayerSet.EMPTY
+				: layerWorkspace.getHiddenLayerSet();
+	}
+
+	/** PRE-G9B-R6-plus-A-2 (DQ-A2-6): recorded only; a document transition commits it. */
+	@Override
+	public void documentHiddenLayersParsed(HiddenLayerSet hiddenLayers) {
+		parsedHiddenLayers = hiddenLayers;
+	}
+
+	/** PRE-G9B-R6-plus-A-2 (DQ-A2-2): a non-empty hidden set is save-relevant. */
+	@Override
+	protected boolean hasSaveRelevantDocumentPresentation() {
+		return layerWorkspace != null && !layerWorkspace.getHiddenLayers().isEmpty();
+	}
+
+	/** Committed native-document load transaction: every .cedg/.ggb Open route. */
+	@Override
+	protected void nativeDocumentLoadCommitted() {
+		if (layerWorkspaceActive) {
+			commitLoadedDocument();
+		}
+	}
+
+	/**
+	 * Runs a document-replacing load (DQ-A2-6). The reported set is cleared first;
+	 * after success the document's persisted hidden set replaces the workspace set,
+	 * which a failure leaves exactly as it was.
+	 */
+	private boolean runDocumentLoad(GeoCeDGLayerWorkspace.DocumentTransition load) {
+		parsedHiddenLayers = null;
+		documentTransitionCommitted = false;
+		boolean loaded = layerWorkspace.runDocumentTransition(load);
+		if (loaded && !documentTransitionCommitted) {
+			commitLoadedDocument();
+		}
+		parsedHiddenLayers = null;
+		return loaded;
+	}
+
+	private void commitLoadedDocument() {
+		HiddenLayerSet persisted = parsedHiddenLayers == null ? HiddenLayerSet.EMPTY
+				: parsedHiddenLayers;
+		parsedHiddenLayers = null;
+		documentTransitionCommitted = true;
+		layerWorkspace.commitOpenedDocument(persisted);
+	}
+
+	/**
+	 * A clearing {@code setXML} replaces the document (it resets the current file):
+	 * when its document parse completed, the parsed hidden set is committed
+	 * (DQ-A2-6); a non-clearing merge never commits.
+	 */
+	@Override
+	public void setXML(String xml, boolean clearAll) {
+		if (!clearAll || !layerWorkspaceActive) {
+			super.setXML(xml, clearAll);
+			return;
+		}
+		parsedHiddenLayers = null;
+		super.setXML(xml, clearAll);
+		if (parsedHiddenLayers != null) {
+			commitLoadedDocument();
+		}
 	}
 
 	/** @return PRE-G9B-R6-plus-A-1 session layer workspace */
@@ -609,10 +720,8 @@ public final class AppGeoCeDG extends App3D {
 			// workspace exists; it then starts from that document below.
 			return super.loadExistingFile(file, isMacroFile);
 		}
-		boolean loaded = layerWorkspace.runDocumentTransition(
-				() -> super.loadExistingFile(file, false));
+		boolean loaded = runDocumentLoad(() -> super.loadExistingFile(file, false));
 		if (loaded) {
-			layerWorkspace.resetForOpenedDocument();
 			getExportAreaSession().resetForDocument();
 			getStatusBar().clearPasteNotice();
 		}
@@ -624,9 +733,8 @@ public final class AppGeoCeDG extends App3D {
 		if (!layerWorkspaceActive) {
 			return super.loadXML(xml);
 		}
-		boolean loaded = layerWorkspace.runDocumentTransition(() -> super.loadXML(xml));
+		boolean loaded = runDocumentLoad(() -> super.loadXML(xml));
 		if (loaded) {
-			layerWorkspace.resetForOpenedDocument();
 			getExportAreaSession().resetForDocument();
 			getStatusBar().clearPasteNotice();
 		}

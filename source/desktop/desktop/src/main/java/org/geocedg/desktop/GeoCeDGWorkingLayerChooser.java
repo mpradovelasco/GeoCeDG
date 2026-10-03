@@ -11,15 +11,15 @@ import javax.swing.JOptionPane;
 
 /**
  * PRE-G9B-R6-plus-A-1 numeric chooser of the working layer, bounded by the
- * unchanged host domain 0..9. It names a layer explicitly, so a hidden layer
- * chosen here is shown (AQ-L7).
+ * product's configured layer domain (PRE-G9B-R6-plus-A-2: 0..L_MAX). It names a
+ * layer explicitly, so a hidden layer chosen here is shown (AQ-L7).
  */
 @FunctionalInterface
 interface GeoCeDGWorkingLayerChooser {
 
 	/**
 	 * @param current current working layer
-	 * @return chosen layer in 0..9, or null when the user cancels
+	 * @return chosen layer in the domain, or null when the user cancels
 	 */
 	Integer choose(int current);
 
@@ -30,14 +30,15 @@ interface GeoCeDGWorkingLayerChooser {
 	 */
 	static GeoCeDGWorkingLayerChooser dialog(AppGeoCeDG app) {
 		return current -> {
-			Integer[] layers = new Integer[GeoCeDGLayerWorkspace.MAX_LAYER
-					- GeoCeDGLayerWorkspace.MIN_LAYER + 1];
+			int maxLayer = app.getLayerWorkspace().getMaxLayer();
+			Integer[] layers = new Integer[maxLayer - GeoCeDGLayerWorkspace.MIN_LAYER + 1];
 			for (int i = 0; i < layers.length; i++) {
 				layers[i] = GeoCeDGLayerWorkspace.MIN_LAYER + i;
 			}
 			Component parent = app.getMainComponent();
 			Object chosen = JOptionPane.showInputDialog(parent,
-					app.layerText("Workspace.Layer.ChooserMessage"),
+					app.layerText("Workspace.Layer.ChooserMessage",
+							Integer.toString(maxLayer)),
 					app.layerText("Workspace.Layer.ChooserTitle"),
 					JOptionPane.QUESTION_MESSAGE, null, layers, current);
 			return chosen instanceof Integer ? (Integer) chosen : null;

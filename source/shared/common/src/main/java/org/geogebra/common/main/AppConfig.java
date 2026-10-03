@@ -39,6 +39,7 @@ import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.main.settings.updater.SettingsUpdater;
 import org.geogebra.common.main.syntax.suggestionfilter.SyntaxFilter;
+import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.properties.factory.PropertiesFactory;
 import org.geogebra.common.properties.remembered.RememberedPropertyHandler;
 import org.geogebra.common.restrictions.Restrictable;
@@ -398,6 +399,28 @@ public interface AppConfig extends Restrictable, Serializable {
 	 * @return whether command heads are presented in canonical English
 	 */
 	default boolean presentsCanonicalEnglishCommandHeads() {
+		return false;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2, AQ-L1a. Highest admissible object
+	 * layer of this product; layers are clamped to 0..getMaxLayer(). The default keeps
+	 * the inherited domain.
+	 *
+	 * @return highest admissible layer
+	 */
+	default int getMaxLayer() {
+		return EuclidianStyleConstants.MAX_LAYERS;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2, AQ-L3, DQ-A2-5. Whether documents
+	 * persist a document-wide hidden-layer set. The default keeps the inherited reader
+	 * and writer.
+	 *
+	 * @return whether the hidden-layer document element is read and written
+	 */
+	default boolean persistsDocumentHiddenLayers() {
 		return false;
 	}
 

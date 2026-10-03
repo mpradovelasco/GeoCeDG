@@ -1409,7 +1409,7 @@ transportan; la capa, el color RGB y la visibilidad vigente sí.
 ## 12. Presentación y visualización
 
 Todo lo de esta sección es presentación. Nada de ello cambia la geometría, la
-identidad, las medidas ni el contenido del documento. Las capas ocultas (12.5)
+identidad ni las medidas. Las capas ocultas (12.5) se guardan con el documento y
 son lo único que cambia la salida de exportación: las exportaciones de imagen las
 omiten.
 
@@ -1461,22 +1461,23 @@ proveniencia.
 
 ### 12.5 Capas y capa de trabajo
 
-Cada objeto está en una capa de 0 a 9; los objetos de capas más altas se dibujan
-sobre los de capas más bajas. GeoCeDG añade una **capa de trabajo** y **capas
-ocultas** para la sesión actual.
+Cada objeto está en una capa de 0 a 99; los objetos de capas más altas se
+dibujan sobre los de capas más bajas. GeoCeDG añade una **capa de trabajo** para
+la sesión actual y **capas ocultas** que se guardan con el documento.
 
 - **Capa de trabajo.** Los objetos nuevos se crean en la capa de trabajo,
   vengan de una herramienta, de la Entrada algebraica, de un guion, de
   `Execute`, de una herramienta de usuario, de Locus V2 o de Spline V2. La barra
   de estado, en la parte inferior de la ventana, la muestra como **Capa: n**.
   Un documento nuevo empieza en la capa 0; un documento abierto empieza en la
-  capa más alta que usan sus objetos dibujables. Deshacer, rehacer y redefinir
-  conservan las capas guardadas en el documento, y **Pegar** conserva las capas
-  de los objetos copiados.
+  capa más alta que usan sus objetos dibujables y que no está oculta o, si no
+  hay ninguna, en la capa más baja que no está oculta. Deshacer, rehacer y
+  redefinir conservan las capas guardadas en el documento, y **Pegar** conserva
+  las capas de los objetos copiados.
 - **Cómo elegirla.** **Capa de trabajo** está en el grupo Mover de la barra de
   herramientas, después de Mover y Rotar alrededor de un punto. Es una
   herramienta de un solo uso: haga clic en un objeto para usar su capa, o en un
-  espacio vacío para elegir una capa de 0 a 9. Tras una elección válida la
+  espacio vacío para elegir una capa de 0 a 99. Tras una elección válida la
   herramienta vuelve a Mover; cancelar no cambia nada. Hacer clic en
   **Capa: n** en la barra de estado abre el mismo selector.
 - **Ocultar una capa.** En la Vista algebraica, elija **Ordenar por capa**: cada
@@ -1485,9 +1486,21 @@ ocultas** para la sesión actual.
   seleccionar allí, pero cada objeto conserva su propia visibilidad, así que su
   marcador no cambia. La capa de trabajo no se puede ocultar, y elegir una capa
   oculta en el selector la vuelve a mostrar.
-- **Solo de sesión.** La capa de trabajo y las capas ocultas pertenecen a la
-  sesión. No se guardan en el documento, no son pasos de deshacer y no marcan
-  el documento como modificado. Nuevo y Abrir vuelven a mostrar todas las capas.
+- **Se guardan, pero nunca son un paso de deshacer.** Las capas ocultas se
+  guardan en el documento `.cedg` y se vuelven a ocultar al abrirlo; abrir un
+  documento nunca muestra una de sus capas ocultas. Ocultar o mostrar una capa
+  marca el documento como modificado, así que Nuevo y cerrar piden guardarlo,
+  aunque el documento no tenga objetos. No es un paso de deshacer: Deshacer y
+  Rehacer nunca cambian qué capas están ocultas. La capa de trabajo pertenece a
+  la sesión y no se guarda. Nuevo vuelve a mostrar todas las capas.
+- **Información dañada.** Un documento cuya información de capas ocultas está
+  dañada, nombra una capa fuera de 0 a 99, oculta todas las capas o procede de
+  una versión más reciente no se abre: un mensaje nombra el problema y el
+  documento actual queda exactamente como estaba.
+- **Versiones anteriores.** Las versiones anteriores de GeoCeDG y GeoGebra
+  Classic leen las capas superiores a 9 como la capa 9 y muestran todas las
+  capas. Si guardan el documento, se pierden las capas superiores a 9 y las
+  capas ocultas.
 - **No es lo mismo que `ShowLayer` y `HideLayer`.** Estos comandos siguen
   fijando la visibilidad de cada objeto de una capa, y esa visibilidad se guarda
   con el documento.
@@ -1685,7 +1698,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Crear un lugar geométrico semántico | Construcción → Curvas semánticas → Locus V2 | `LocusV2(G,u,dom)` | curva semántica | el dominio es explícito; no procede del rango de un deslizador |
 | Crear una spline semántica | Construcción → Curvas semánticas → Spline V2, Spline V2 con grado o Spline V2 cerrada | `SplineV2({A,B,C,D},3)` | curva semántica | seleccione los puntos en orden y después de nuevo el primero; los puntos constructores no son puntos semánticos |
 | Crear una lista en el orden de selección | Construcción → Herramientas de listas → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
-| Elegir la capa de trabajo | Barra de herramientas → grupo Mover → Capa de trabajo, o clic en **Capa: n** en la barra de estado | — | estado de sesión | de un solo uso; clic en un objeto para usar su capa o en un espacio vacío para elegir de 0 a 9; no se guarda |
+| Elegir la capa de trabajo | Barra de herramientas → grupo Mover → Capa de trabajo, o clic en **Capa: n** en la barra de estado | — | estado de sesión | de un solo uso; clic en un objeto para usar su capa o en un espacio vacío para elegir de 0 a 99; no se guarda |
 | Definir las unidades del documento | Opciones → Opciones de GeoCeDG → Unidades del documento…, o clic en una unidad de la barra de estado | — | metadatos del documento | un paso de deshacer; reinterpreta el modelo y nunca convierte coordenadas; se guarda con el documento |
 | Punto sobre curva semántica, interactivo | Herramienta Punto, clic en el trazo | — | punto semántico | preimagen única, o elección explícita; nunca por proximidad |
 | Punto sobre curva semántica, por parámetro | Construcción → Curvas semánticas → Punto sobre curva semántica | `Point(S,"spline-v2/main",0.25)` | punto semántico | clave de rama y parámetro canónico; el parámetro puede ser un número con nombre |

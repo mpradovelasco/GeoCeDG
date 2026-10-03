@@ -25,6 +25,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
+import org.geocedg.common.kernel.layers.HiddenLayerSet;
+import org.geocedg.common.kernel.layers.HiddenLayersXml;
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
@@ -81,6 +85,7 @@ import org.geogebra.common.kernel.parser.Parser;
 import org.geogebra.common.kernel.statistics.Regression;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.App.InputPosition;
+import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.GeoGebraPreferencesXML;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError;
@@ -117,6 +122,8 @@ public class MyXMLHandler implements DocHandler {
 	private static final int MODE_INVALID = -1;
 	private static final int MODE_GEOGEBRA = 1;
 	private static final int MODE_MACRO = 50;
+	/** PRE-G9B-R6-plus-A-2: inside the document-level hidden-layer element. */
+	private static final int MODE_GEOCEDG_HIDDEN_LAYERS = 60;
 	private static final int MODE_EUCLIDIAN_VIEW = 100;
 	/** currently parsing tags for Euclidian3D view */
 	protected static final int MODE_EUCLIDIAN_VIEW3D = 101; // only for 3D
@@ -163,6 +170,11 @@ public class MyXMLHandler implements DocHandler {
 	/** PRE-G9B-R6-plus-D1: whether this parse applies document unit metadata. */
 	private boolean unitLoadApplies;
 	private boolean unitElementSeen;
+	/** PRE-G9B-R6-plus-A-2: whether this parse reads document hidden-layer metadata. */
+	private boolean hiddenLayerLoadApplies;
+	private boolean hiddenLayerRollbackRestore;
+	private boolean hiddenLayerElementSeen;
+	private HiddenLayerSet parsedHiddenLayers = HiddenLayerSet.EMPTY;
 	private final IdentityHashMap<GeoElement, String> pendingSpatialGeoIds =
 			new IdentityHashMap<>();
 
@@ -323,6 +335,11 @@ public class MyXMLHandler implements DocHandler {
 			throw new UnitMetadataException(UnitMetadataException.Code.MALFORMED_ELEMENT,
 					"geocedgUnits cannot contain text");
 		}
+		if (mode == MODE_GEOCEDG_HIDDEN_LAYERS && !str.trim().isEmpty()) {
+			throw new HiddenLayerMetadataException(
+					HiddenLayerMetadataException.Code.MALFORMED_ELEMENT,
+					HiddenLayersXml.ELEMENT + " cannot contain text");
+		}
 	}
 
 	@Override
@@ -366,11 +383,22 @@ public class MyXMLHandler implements DocHandler {
 				&& (constMode == MODE_CONSTRUCTION || constMode == MODE_CONST_UNITS))) {
 			misplacedUnitElement();
 		}
+		if (HiddenLayersXml.ELEMENT.equals(eName) && mode != MODE_GEOGEBRA
+				&& appliesHiddenLayerMetadata()) {
+			throw new HiddenLayerMetadataException(
+					HiddenLayerMetadataException.Code.MISPLACED_ELEMENT,
+					HiddenLayersXml.ELEMENT + " outside the document root");
+		}
 
 		switch (mode) {
 		case MODE_GEOGEBRA: // top level mode
 			startGeoGebraElement(eName, attrs);
 			break;
+
+		case MODE_GEOCEDG_HIDDEN_LAYERS:
+			throw new HiddenLayerMetadataException(
+					HiddenLayerMetadataException.Code.MALFORMED_ELEMENT,
+					HiddenLayersXml.ELEMENT + " cannot contain " + eName);
 
 		case MODE_EUCLIDIAN_VIEW:
 			startEuclidianViewElement(eName, attrs);
@@ -628,6 +656,12 @@ public class MyXMLHandler implements DocHandler {
 			}
 			break;
 
+		case MODE_GEOCEDG_HIDDEN_LAYERS:
+			if (HiddenLayersXml.ELEMENT.equals(eName)) {
+				mode = MODE_GEOGEBRA;
+			}
+			break;
+
 		case MODE_GEOGEBRA:
 			if ("geogebra".equals(eName)) {
 				// start animation if necessary
@@ -660,6 +694,10 @@ public class MyXMLHandler implements DocHandler {
 	// ====================================
 	private void startGeoGebraElement(String eName,
 			Map<String, String> attrs) {
+		if (HiddenLayersXml.ELEMENT.equals(eName) && persistsHiddenLayers()) {
+			startHiddenLayersElement(attrs);
+			return;
+		}
 		switch (eName) {
 		case "euclidianView":
 			mode = MODE_EUCLIDIAN_VIEW;
@@ -2993,6 +3031,72 @@ public class MyXMLHandler implements DocHandler {
 					"geocedgUnits outside the document construction");
 		}
 		Log.debug("geocedgUnits ignored outside a document construction");
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-A-2 (DQ-A2-6): classifies the parse that is about to start, with
+	 * the effective load purpose of the D1 rule. Only a parse that loads a document
+	 * construction, on a non-macro kernel of a product that persists hidden layers,
+	 * reads the document hidden-layer element; it never applies it.
+	 */
+	void beginHiddenLayerLoad() {
+		LoadPurpose pending = origKernel.getConstruction().peekSpatialIdentityLoadPurpose();
+		LoadPurpose effective = pending != null ? pending : spatialIdentityLoadPurpose;
+		hiddenLayerLoadApplies = persistsHiddenLayers()
+				&& !(origKernel instanceof MacroKernel)
+				&& (effective == LoadPurpose.NATIVE_OR_UNDO_RESTORE
+						|| effective == LoadPurpose.REDEFINE_REBUILD
+						|| effective == LoadPurpose.ORDINARY_EDIT_REBUILD
+						|| effective == LoadPurpose.ROLLBACK_RESTORE);
+		hiddenLayerRollbackRestore = effective == LoadPurpose.ROLLBACK_RESTORE;
+		hiddenLayerElementSeen = false;
+		parsedHiddenLayers = HiddenLayerSet.EMPTY;
+	}
+
+	/**
+	 * Reports the hidden layers of a parse that completed; called only after the whole
+	 * document was read without failure. The app decides whether a document
+	 * transition commits them. A rollback restore re-establishes the entry document,
+	 * whose set the app already holds, so it validates but never reports: a failed
+	 * load leaves nothing that a later commit could take.
+	 */
+	void reportHiddenLayerLoad() {
+		if (hiddenLayerLoadApplies && !hiddenLayerRollbackRestore) {
+			app.documentHiddenLayersParsed(parsedHiddenLayers);
+		}
+	}
+
+	/** Ends the parse classification; a later parse must classify itself again. */
+	void endHiddenLayerLoad() {
+		hiddenLayerLoadApplies = false;
+		hiddenLayerRollbackRestore = false;
+		hiddenLayerElementSeen = false;
+		parsedHiddenLayers = HiddenLayerSet.EMPTY;
+	}
+
+	private boolean persistsHiddenLayers() {
+		AppConfig config = app.getConfig();
+		return config != null && config.persistsDocumentHiddenLayers();
+	}
+
+	private boolean appliesHiddenLayerMetadata() {
+		return hiddenLayerLoadApplies && !(kernel instanceof MacroKernel);
+	}
+
+	private void startHiddenLayersElement(Map<String, String> attrs) {
+		if (!appliesHiddenLayerMetadata()) {
+			// never read in a macro, merge or paste parse; stays an ignored tag
+			Log.debug(HiddenLayersXml.ELEMENT + " ignored in a non-document parse");
+			return;
+		}
+		if (hiddenLayerElementSeen) {
+			throw new HiddenLayerMetadataException(
+					HiddenLayerMetadataException.Code.DUPLICATE_ELEMENT,
+					"more than one " + HiddenLayersXml.ELEMENT + " element");
+		}
+		hiddenLayerElementSeen = true;
+		parsedHiddenLayers = HiddenLayersXml.read(attrs, LayerDomain.maxLayer(app));
+		mode = MODE_GEOCEDG_HIDDEN_LAYERS;
 	}
 
 	/**

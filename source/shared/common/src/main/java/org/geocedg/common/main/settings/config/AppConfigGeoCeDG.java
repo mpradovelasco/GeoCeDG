@@ -35,6 +35,12 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 	 * {@link #DEFAULT_LOCUS_V2_CREATION_ENABLED}; neither implies the other.
 	 */
 	public static final boolean DEFAULT_EXTENDED_DXF_ENABLED = true;
+	/**
+	 * PRE-G9B-R6-plus-A-2 (AQ-L1a): highest admissible GeoCeDG object layer. A current
+	 * product limit, not a conceptual CeDG restriction; the only authority of the
+	 * GeoCeDG layer domain 0..L_MAX.
+	 */
+	public static final int L_MAX = 99;
 
 	private final RuntimeFeatureService runtimeFeatureService;
 
@@ -109,6 +115,18 @@ public final class AppConfigGeoCeDG extends AppConfigDefault {
 
 	@Override
 	public boolean scalesConstructionTextWithEuclidianView() {
+		return true;
+	}
+
+	/** PRE-G9B-R6-plus-A-2 (AQ-L1a): the GeoCeDG layer domain is 0..L_MAX. */
+	@Override
+	public int getMaxLayer() {
+		return L_MAX;
+	}
+
+	/** PRE-G9B-R6-plus-A-2 (AQ-L3): documents persist the document-wide hidden-layer set. */
+	@Override
+	public boolean persistsDocumentHiddenLayers() {
 		return true;
 	}
 

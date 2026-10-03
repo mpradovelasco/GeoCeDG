@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLStringBuilder;
@@ -908,7 +909,11 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	 * 
 	 * set geo to max layer used or max layer-1 if all layers used (layer 9
 	 * reserved so that it's always over new objects)
-	 * 
+	 *
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-7) the reserved top layer is
+	 * the top of the product layer domain; the rule stays a cap on the highest used
+	 * layer, never a default layer.
+	 *
 	 * @param geo
 	 *            geo
 	 * @param app
@@ -916,7 +921,7 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	 */
 	private static void setMaxLayerUsed(GeoElement geo, App app) {
 		if (app != null) {
-			int layer = Math.min(EuclidianStyleConstants.MAX_LAYERS - 1,
+			int layer = Math.min(LayerDomain.maxLayer(app) - 1,
 					app.getMaxLayerUsed());
 
 			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 working-layer seam;

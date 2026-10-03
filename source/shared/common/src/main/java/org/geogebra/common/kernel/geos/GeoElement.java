@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.MyImage;
@@ -1005,9 +1006,12 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		}
 
 		int oldLayer = this.layer;
+		// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (AQ-L1a, DQ-A2-10) the bound is
+		// the product layer domain; the inherited configuration keeps MAX_LAYERS.
+		int maxLayer = LayerDomain.maxLayer(kernel.getApplication());
 
-		if (newLayer > EuclidianStyleConstants.MAX_LAYERS) {
-			this.layer = EuclidianStyleConstants.MAX_LAYERS;
+		if (newLayer > maxLayer) {
+			this.layer = maxLayer;
 		} else if (newLayer < 0) {
 			this.layer = 0;
 		} else {

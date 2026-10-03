@@ -62,10 +62,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * PRE-G9B-R6-plus-A-1 focal contract for session hidden layers: effective
- * visibility in the painting and hit testing of Graphics 1 and Graphics 2,
- * session-only state, unchanged geometry and object visibility, and the export
- * boundary to B and C.
+ * PRE-G9B-R6-plus-A-1 focal contract for hidden layers: effective visibility in
+ * the painting and hit testing of Graphics 1 and Graphics 2, state that is never
+ * an undo point (persistent since PRE-G9B-R6-plus-A-2), unchanged geometry and
+ * object visibility, and the export boundary to B and C.
  */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class PreG9BR6PlusA1HiddenLayerTest {
@@ -177,14 +177,14 @@ class PreG9BR6PlusA1HiddenLayerTest {
 	// -------------------------------------------------------------- T-HIDE-STATE
 
 	@Test
-	void togglingIsSessionOnlyAndSurvivesUndoAndRedo() throws Exception {
+	void togglingIsPersistentButNeverAnUndoPointAndSurvivesUndoAndRedo() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		app.getLayerWorkspace().setWorkingLayer(3);
 		eval(app, "A=(1,1)");
 		UndoManagerD undo = undo(app);
 		baseline(undo);
 		app.setSaved();
-		final String document = app.getXML();
+		final String construction = constructionXml(app);
 		final String undoXml = app.getKernel().getConstruction().getCurrentUndoXML(false).toString();
 		final String preferences = app.getPreferencesXML();
 		int history = undo.getHistorySize();
@@ -196,12 +196,15 @@ class PreG9BR6PlusA1HiddenLayerTest {
 		app.getLayerWorkspace().setLayerHidden(7, true);
 		assertFalse(stored.await(2, TimeUnit.SECONDS), "no undo point");
 		assertEquals(history, undo.getHistorySize());
-		assertTrue(app.isSaved(), "the document is not modified");
-		assertEquals(document, app.getXML(), "no document state");
+		// PRE-G9B-R6-plus-A-2 (DQ-A2-2, DQ-A2-3): persistent, so the document is
+		// modified and the full document carries the set; never the undo snapshot
+		assertFalse(app.isSaved(), "the persisted set changed");
+		assertEquals(construction, constructionXml(app), "no construction state");
+		assertTrue(app.getXML().contains(
+				"<geocedgHiddenLayers version=\"1\" layers=\"3 7\"/>"));
 		assertEquals(undoXml,
 				app.getKernel().getConstruction().getCurrentUndoXML(false).toString());
 		assertEquals(preferences, app.getPreferencesXML());
-		assertFalse(app.getXML().contains("hidden"), "nothing is serialized");
 
 		eval(app, "B=(2,2)");
 		awaitStore(app, undo);

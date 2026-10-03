@@ -31,6 +31,8 @@ import java.util.function.Supplier;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.layers.HiddenLayerSet;
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.SuiteSubApp;
@@ -1282,8 +1284,10 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	 */
 	public void updateMaxLayerUsed(int layer) {
 		int newLayer = layer;
-		if (layer > EuclidianStyleConstants.MAX_LAYERS) {
-			newLayer = EuclidianStyleConstants.MAX_LAYERS;
+		// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 product layer domain (AQ-L1a).
+		int maxLayer = LayerDomain.maxLayer(this);
+		if (layer > maxLayer) {
+			newLayer = maxLayer;
 		}
 		if (layer > maxLayerUsed) {
 			maxLayerUsed = newLayer;
@@ -1412,6 +1416,39 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	 */
 	public boolean isLayerShown(int layer) {
 		return true;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (AQ-L3, DQ-A2-3) persistent
+	 * document-wide hidden layers written into the full document XML. The host has
+	 * none and writes nothing.
+	 *
+	 * @return the document's hidden-layer set; the host returns the empty set
+	 */
+	public HiddenLayerSet getDocumentHiddenLayers() {
+		return HiddenLayerSet.EMPTY;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-6) reports the hidden-layer
+	 * set of a document parse that completed with a document load purpose. It never
+	 * applies the set; a product applies it only when a document transition
+	 * commits. The host ignores it.
+	 *
+	 * @param hiddenLayers set read from the parsed XML, empty when it had none
+	 */
+	public void documentHiddenLayersParsed(HiddenLayerSet hiddenLayers) {
+		// host: no hidden-layer state
+	}
+
+	/**
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-2) document presentation that
+	 * persists outside the construction and is save-relevant content.
+	 *
+	 * @return whether such content exists; always false in the host
+	 */
+	protected boolean hasSaveRelevantDocumentPresentation() {
+		return false;
 	}
 
 	/**
@@ -1667,11 +1704,13 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 
 	/**
 	 * @return whether all changes are saved; ignore EV moves if no objects are
-	 *         present (PRE-G9B-R6-plus-D1: and no persistent unit metadata)
+	 *         present (PRE-G9B-R6-plus-D1: and no persistent unit metadata;
+	 *         PRE-G9B-R6-plus-A-2: and no save-relevant document presentation)
 	 */
 	public final boolean isSaved() {
 		return isSaved || kernel.getConstruction() == null
-				|| !kernel.getConstruction().hasSaveRelevantContent();
+				|| !(kernel.getConstruction().hasSaveRelevantContent()
+						|| hasSaveRelevantDocumentPresentation());
 	}
 
 	/**

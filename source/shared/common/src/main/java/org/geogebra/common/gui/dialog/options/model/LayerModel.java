@@ -19,11 +19,11 @@ package org.geogebra.common.gui.dialog.options.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geogebra.common.kernel.geos.GProperty;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.Localization;
-import org.geogebra.common.plugin.EuclidianStyleConstants;
 
 public class LayerModel extends MultipleOptionsModel {
 
@@ -39,7 +39,9 @@ public class LayerModel extends MultipleOptionsModel {
 	@Override
 	public List<String> getChoices(Localization loc) {
 		List<String> choices = new ArrayList<>();
-		for (int layer = 0; layer <= EuclidianStyleConstants.MAX_LAYERS; ++layer) {
+		// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-11) the choices are the
+		// product layer domain; the index stays the layer.
+		for (int layer = 0; layer <= LayerDomain.maxLayer(app); ++layer) {
 			choices.add(" " + layer);
 		}
 		return choices;

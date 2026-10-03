@@ -726,15 +726,27 @@ public abstract class Drawable3D extends DrawableND implements CaptionFactory {
 	}
 
 	/**
-	 * 
-	 * @return geo layer
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-9) presentation adapter only:
+	 * the 3D layer coding (alpha packing, depth shift) receives the model layer
+	 * clamped to the inherited range, so layers above it share its 3D draw order. The
+	 * model layer, its XML and its API value are never changed.
+	 *
+	 * @return layer used by the 3D renderer coding
 	 */
 	public int getLayer() {
 		if (createdByDrawList()) {
 			return ((Drawable3D) getDrawListCreator()).getLayer();
 		}
 
-		return getGeoElement().getLayer();
+		return renderCodingLayer(getGeoElement().getLayer());
+	}
+
+	/**
+	 * @param modelLayer layer of the element
+	 * @return the layer within the inherited range coded by the 3D renderer
+	 */
+	public static int renderCodingLayer(int modelLayer) {
+		return Math.min(modelLayer, EuclidianStyleConstants.MAX_LAYERS);
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////

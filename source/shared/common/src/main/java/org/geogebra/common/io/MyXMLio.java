@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
+import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
+import org.geocedg.common.kernel.layers.HiddenLayersXml;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geocedg.common.kernel.units.UnitMetadataException;
@@ -316,6 +318,11 @@ public abstract class MyXMLio {
 		// save construction
 		cons.getConstructionXML(sb, false);
 
+		// GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-3) document-wide hidden
+		// layers, written only into the full document, never into undo, preferences,
+		// macro or clipboard XML; nothing when the set is empty
+		HiddenLayersXml.write(sb, app.getDocumentHiddenLayers());
+
 		sb.closeTag("geogebra");
 		return sb.toString();
 	}
@@ -421,8 +428,10 @@ public abstract class MyXMLio {
 				? LoadPurpose.NATIVE_OR_UNDO_RESTORE
 				: LoadPurpose.GENERIC_MERGE);
 		handler.beginUnitLoad();
+		handler.beginHiddenLayerLoad();
 		try {
 			parseXmlUnsafe(stream, settingsBatch, isGGTOrDefaults);
+			handler.reportHiddenLayerLoad();
 		} catch (CommandNotLoadedError e) {
 			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
 			handler.abortSpatialIdentityLoad();
@@ -447,11 +456,12 @@ public abstract class MyXMLio {
 			}
 			Log.error(e.getMessage());
 			if (e instanceof SpatialIdentityException || e instanceof UnitMetadataException
-					|| !isGGTOrDefaults) {
+					|| e instanceof HiddenLayerMetadataException || !isGGTOrDefaults) {
 				throw e;
 			}
 		} finally {
 			handler.endUnitLoad();
+			handler.endHiddenLayerLoad();
 			cons.clearNextSpatialIdentityLoadPurpose();
 			kernel.setLoadingMode(false);
 			kernel.setCommandLookupStrategy(oldVal2);
@@ -499,9 +509,11 @@ public abstract class MyXMLio {
 	private boolean isRejectedSpatialParse(Throwable failure,
 			boolean identityBearingParse) {
 		// PRE-G9B-R6-plus-D1: a fail-closed unit rejection restores the entry snapshot
-		// too, so a non-native route never leaves a half-loaded construction.
+		// too, so a non-native route never leaves a half-loaded construction;
+		// PRE-G9B-R6-plus-A-2: so does a fail-closed hidden-layer rejection.
 		return failure instanceof SpatialIdentityException
-				|| failure instanceof UnitMetadataException || identityBearingParse;
+				|| failure instanceof UnitMetadataException
+				|| failure instanceof HiddenLayerMetadataException || identityBearingParse;
 	}
 
 	private boolean canRestoreRejectedSpatialParse() {

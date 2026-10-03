@@ -3308,6 +3308,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		}
 
 		refreshNativeDocumentPublication(wasIniting);
+		nativeDocumentLoadCommitted();
 		return true;
 	}
 
@@ -3317,6 +3318,15 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	protected void beforeNativeUndoBaselineCommit() {
 		// Extension point for host validation and deterministic failure tests.
+	}
+
+	/**
+	 * GeoCeDG (2026-10-03): PRE-G9B-R6-plus-A-2 (DQ-A2-6) called once a native
+	 * document load transaction has committed and replaced the document; a failed
+	 * load never reaches it. A product may commit document presentation here.
+	 */
+	protected void nativeDocumentLoadCommitted() {
+		// upstream: nothing
 	}
 
 	private void refreshNativeDocumentPublication(boolean wasIniting) {

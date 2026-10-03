@@ -628,11 +628,13 @@ implementation is part of R3 or R6.
 
 ### Session layer workspace (PRE-G9B-R6-plus-A-1)
 
-The working layer and the hidden-layer set are Desktop session presentation
-state owned by `GeoCeDGLayerWorkspace` in `AppGeoCeDG`. They are never
-serialized, never written into the undo, macro, clipboard or preferences XML,
-never an undo point and never written into an object's layer or visibility.
-The shared kernel only exposes two `App` seams with host-identical defaults:
+The working layer and the hidden-layer set are Desktop presentation state owned
+by `GeoCeDGLayerWorkspace` in `AppGeoCeDG`. The working layer is session state
+and never serialized; since A-2 the hidden-layer set is persisted with the
+document (next section). Neither is ever written into the undo, macro,
+clipboard or preferences XML, ever an undo point or ever written into an
+object's layer or visibility. The shared kernel exposes two `App` seams with
+host-identical defaults:
 
 - `getLayerForNewObject(construction, upstreamLayer)`, asked by
   `ConstructionDefaults`, `AlgoMacro` and the Locus V2 family (`AlgoLocusV2`).
@@ -649,8 +651,47 @@ The shared kernel only exposes two `App` seams with host-identical defaults:
 Exports that reuse `exportPaint` (PNG, PDF, EMF, print, image copy) inherit the
 hiding. The SVG route (its own drawable loop, the direct `drawActionObjects`
 call and the shared background pass), the LaTeX exporters and DXF do not; they
-belong to `PRE-G9B-R6-plus-B` and `C`. The domain stays `0..9`; widening and
-hidden-layer persistence belong to `A-2`.
+belong to `PRE-G9B-R6-plus-B` and `C`.
+
+### Layer domain and persistent hidden layers (PRE-G9B-R6-plus-A-2)
+
+The layer bound is product configuration: `AppConfig.getMaxLayer()` returns the
+inherited `EuclidianStyleConstants.MAX_LAYERS` (9) and
+`AppConfigGeoCeDG.getMaxLayer()` returns `L_MAX` = 99, the only `99` literal.
+`LayerDomain.maxLayer(app)` (`org.geocedg.common.kernel.layers`) reads it for
+`GeoElement.setLayer` (clamp `<0 → 0`, `>L_MAX → L_MAX`),
+`App.updateMaxLayerUsed`, the default-layer cap of `ConstructionDefaults`
+(`min(L_MAX − 1, maxLayerUsed)`, a cap, never a default layer),
+`ShowLayer`/`HideLayer`, `setLayerVisible`, `LayerModel` and `LayerProperty`.
+Classic configurations keep `0..9` value for value. The 3D renderer receives
+`Drawable3D.renderCodingLayer`, clamped to the inherited range; the model
+layer is never written by it.
+
+The hidden-layer set is document presentation, never construction state.
+`MyXMLio.getFullXML` writes it, when non-empty, as a direct child of
+`<geogebra>` after `</construction>`:
+
+```xml
+<geocedgHiddenLayers version="1" layers="3 7 50"/>
+```
+
+The writer reads `App.getDocumentHiddenLayers()` (host: empty), so undo,
+preferences, macro and clipboard XML never contain it. `MyXMLHandler` reads it
+only in a document parse (the D1 effective load purpose, non-macro kernel,
+`persistsDocumentHiddenLayers()`), fails closed with
+`HiddenLayerMetadataException` on every recognized defect, and reports the set
+through `App.documentHiddenLayersParsed` only after the whole parse completed;
+a rollback restore validates without reporting. The parser never applies the
+set: `AppGeoCeDG` commits the last report only in a document transition (the
+`AppD.nativeDocumentLoadCommitted` hook of the native Open transaction,
+`loadXML(String)`, the clearing `setXML` and startup), so undo, redo, rebuilds,
+rollbacks, merges, paste, Insert File and Apply Template never change it, and a
+failed load leaves the set and the working layer exactly as they were. A user
+edit of the set calls `setUnsaved` without storing an undo point; `App.isSaved`
+consults `hasSaveRelevantDocumentPresentation()` (host: false), which GeoCeDG
+answers with whether the set is non-empty. After a commit the working layer is
+the highest layer used by a drawable object that is not hidden, else the lowest
+layer that is not hidden; a set covering `0..L_MAX` is rejected as invalid.
 
 ### Picture export and the export area (PRE-G9B-R6-plus-B)
 

@@ -97,6 +97,11 @@
       "processor_class": "org.geogebra.common.kernel.scripting.CmdExecute",
       "reason": "NO_GEOCEDG_SEMANTIC_REFERENCE",
       "note": "PRE-G9B-R6 lookup-strategy restore only; Execute is the GGBSCRIPT_EXECUTE entry surface, exercised by every GGBSCRIPT_EXECUTE row and the strategy-restore regressions."
+    },
+    {
+      "processor_class": "org.geogebra.common.kernel.scripting.CmdShowHideLayer",
+      "reason": "NO_GEOCEDG_SEMANTIC_REFERENCE",
+      "note": "PRE-G9B-R6-plus-A-2 (DQ-A2-8) range bound read from the configured product layer domain only; ShowLayer and HideLayer keep their object-visibility semantics, create no object and are not rerouted; covered by the A-2 layer-domain tests."
     }
   ],
   "form_exclusions": [

@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-A-2",
+  "phaseKind": "PRODUCT_IMPLEMENTATION_LAYER_DOMAIN_AND_HIDDEN_LAYER_PERSISTENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_a2_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile FINAL -PlanOnly",
+    "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "acceptanceRule": "exactly one FINAL, ACCEPTED / COMPLETE, with its receipt bound to the exact candidate commit and tree; no commit afterwards; a code or test change after FINAL stops the phase",
+  "finalRequired": true,
+  "productChange": true,
+  "serializationChange": "GeoCeDG <layer val> admissible 0..99; document-level <geocedgHiddenLayers version=\"1\" layers=\"...\"/> after </construction>, written only when non-empty",
+  "guideImpact": "UPDATED",
+  "guidePaths": [
+    "docs/user/geocedg_user_guide_en.md",
+    "docs/user/geocedg_user_guide_es.md",
+    "docs/developer/geocedg_developer_guide.md",
+    "geocedg/specs/ui/cedg-workspaces.md"
+  ],
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "verificationInfrastructureImpact": "INVENTORY_AND_MATRIX_PIN",
+  "entry": {
+    "publishedBase": {"name": "P_R6PLUS_D1", "commit": "2941ddf2f2712340e831d292bdc2687b879850d6", "tree": "158184b150a42e6dcae2946c39620d92cbfcd888"},
+    "f3Planning": {"name": "T_R6PLUS_F3_PLAN", "commit": "f467eb4563de7a7eb162da1b74954f9f847fa9d3", "tree": "ece51c96117d6cbd55bc200d29c5240686516da9"},
+    "preparedCandidate": {"name": "T_R6PLUS_A2_PROMPT", "commit": "0e50626f70107376e691df6dea7bfcfe06de5c0a", "tree": "fefc57cece8090941ad0ac16098e58a679a290ec"},
+    "implementationBranch": "phase/pre-g9b-r6-plus-a2-layer-domain-persistence",
+    "implementationBranchStart": "0e50626f70107376e691df6dea7bfcfe06de5c0a",
+    "rebased": false,
+    "preparedCandidateModified": false,
+    "branchPublished": false
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-plus-a2-layer-domain-and-hidden-layer-persistence.prompt.md",
+    "preparedBlob": "459dbf5dc620a966d8dd593ae899010470789043",
+    "unchangedAfterAuthorizationEdit": true,
+    "authorizationEdit": {"name": "A_R6PLUS_A2_PROMPT", "commit": "bc7436e8d4eb8c35c9bec7ab107c7fc13f63f67c", "tree": "8df989d752f7cc3b640a40fb461f3f6a571bdccb", "promptBlob": "0e87c8e72091d44f3eb0a1d0e7fc0ceb68b07e2a"},
+    "closeoutRecord": "docs/validation/pre_g9b_r6_plus_a2_prompt_closeout_record.md",
+    "closeoutMirror": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a2-prompt-closeout.json"
+  },
+  "layerDomain": {
+    "authority": "AppConfig.getMaxLayer(): default EuclidianStyleConstants.MAX_LAYERS (9); AppConfigGeoCeDG.getMaxLayer() = AppConfigGeoCeDG.L_MAX = 99, the only 99 literal",
+    "reader": "org.geocedg.common.kernel.layers.LayerDomain.maxLayer(app), null-safe",
+    "enforcementSites": [
+      "GeoElement.setLayer: clamp < 0 -> 0, > bound -> bound (DQ-A2-10)",
+      "App.updateMaxLayerUsed",
+      "ConstructionDefaults default-layer cap: min(bound - 1, maxLayerUsed), a cap, never a default (DQ-A2-7)",
+      "CmdShowHideLayer and GgbAPI.setLayerVisible: range only (DQ-A2-8)",
+      "LayerModel and LayerProperty: 0..bound, index is the layer (DQ-A2-11)",
+      "GeoCeDGLayerWorkspace and GeoCeDGWorkingLayerChooser: 0..bound, parameterized text"
+    ],
+    "classic": "AppConfigDefault keeps 0..9 on every route, persistence off, element logged and dropped (DQ-A2-5)",
+    "renderer3D": "Drawable3D.renderCodingLayer = min(layer, MAX_LAYERS), renderer input only (DQ-A2-9)"
+  },
+  "hiddenLayers": {
+    "runtimeOwner": "GeoCeDGLayerWorkspace (Desktop, one per AppGeoCeDG)",
+    "sharedTypes": ["HiddenLayerSet", "HiddenLayersXml", "HiddenLayerMetadataException"],
+    "appHooks": [
+      {"seam": "App.getDocumentHiddenLayers()", "hostDefault": "empty set"},
+      {"seam": "App.documentHiddenLayersParsed(HiddenLayerSet)", "hostDefault": "ignore"},
+      {"seam": "App.hasSaveRelevantDocumentPresentation()", "hostDefault": "false"},
+      {"seam": "AppD.nativeDocumentLoadCommitted()", "hostDefault": "no-op"}
+    ],
+    "element": "<geocedgHiddenLayers version=\"1\" layers=\"3 7 50\"/>",
+    "placement": "direct child of <geogebra> after </construction>, own line, written by MyXMLio.getFullXML only when non-empty; never in undo, preferences, macro, .ggt or clipboard XML",
+    "readerScope": "persistsDocumentHiddenLayers(), non-macro kernel, effective load purpose NATIVE_OR_UNDO_RESTORE, REDEFINE_REBUILD, ORDINARY_EDIT_REBUILD or ROLLBACK_RESTORE; reported only after a completed parse; rollback restores validate without reporting",
+    "failClosedCodes": ["UNSUPPORTED_VERSION", "MALFORMED_ELEMENT", "OUT_OF_DOMAIN_LAYER", "ALL_LAYERS_HIDDEN", "DUPLICATE_ELEMENT", "MISPLACED_ELEMENT"],
+    "commitContexts": ["native .cedg/.ggb load transaction (nativeDocumentLoadCommitted)", "loadXML(String) and loadExistingFile (runDocumentLoad)", "clearing setXML", "New (reset, then the preferences reload)", "startup (initializeLayerWorkspace)"],
+    "savedState": "user edits of the persisted set call setUnsaved and store no undo point; App.isSaved also consults hasSaveRelevantDocumentPresentation (non-empty set)",
+    "openWorkingLayer": "highest used drawable layer that is not hidden, else the lowest non-hidden layer of 0..L_MAX; the persisted set is never modified (DQ-A2-1)"
+  },
+  "ggbscriptMatrix": {
+    "instance": "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json",
+    "change": "one processor_exclusions entry: org.geogebra.common.kernel.scripting.CmdShowHideLayer, NO_GEOCEDG_SEMANTIC_REFERENCE",
+    "inputPinBefore": "24344e9333a40f37271443190205fcc80bea5afd2cf4bfa0e2e4271d237d1296",
+    "inputPinAfter": "91906cd7c79f24886f2deb829888fd463fe0a8501ae6726e028ddeedb30ada23",
+    "schemaChecker": "CONTRACT_SATISFIED"
+  },
+  "tests": {
+    "sharedNew": {"classes": ["org.geocedg.common.layers.PreG9BR6PlusA2LayerDomainTest", "org.geocedg.common.layers.PreG9BR6PlusA2HiddenLayerXmlTest"], "tests": 18},
+    "desktopNew": {"classes": ["org.geocedg.desktop.PreG9BR6PlusA2LayerDomainDesktopTest", "org.geocedg.desktop.PreG9BR6PlusA2HiddenLayerPersistenceTest"], "tests": 22},
+    "a1Updated": ["org.geocedg.desktop.PreG9BR6PlusA1HiddenLayerTest", "org.geocedg.desktop.PreG9BR6PlusA1LayerWorkspaceTest"],
+    "renamedMethod": {"from": "togglingIsSessionOnlyAndSurvivesUndoAndRedo", "to": "togglingIsPersistentButNeverAnUndoPointAndSurvivesUndoAndRedo"}
+  },
+  "olderReader": {
+    "kind": "scratch probe on a git archive of P_R6PLUS_D1, not a committed test",
+    "candidateDocumentSha256": "4e8fa862e26b527ead8c232f4afab0634833f5d33f90273cb97d91387fe61ddc",
+    "resultSha256": "9f39c5125dcd3f39365c73eccf3da372cc29f671a100b68a70df95f018abb761",
+    "candidateLayers": [0, 5, 9, 10, 50, 99],
+    "baseGeoCeDG": {"loadedLayers": [0, 5, 9, 9, 9, 9], "maxLayerUsed": 9, "elementResaved": false, "everyObjectVisible": true},
+    "baseClassic": {"loadedLayers": [0, 5, 9, 9, 9, 9], "maxLayerUsed": 9, "elementResaved": false, "everyObjectVisible": true}
+  },
+  "preFreeze": {
+    "focal": {"sharedTests": 25, "desktopTests": 56, "failures": 0, "errors": 0},
+    "adjacent": {"sharedTests": 2932, "desktopClasses": 39, "desktopTests": 364, "failures": 0, "errors": 0},
+    "checkstyle": "no finding in A-2 files; PreG9BR6PlusA1HiddenLayerTest.java:188 pre-existing",
+    "upstreamBoundary": {"baseline": "9b93256b7df401ff056c37b502d82df4d72b1522", "result": "OK", "registeredFiles": 932},
+    "liveWorkspaceProfile": "OK",
+    "guideStructure": "DIAGNOSTIC_CLEAR",
+    "ggbscriptMatrixSchema": "CONTRACT_SATISFIED",
+    "gitDiffCheck": "clean",
+    "producers": {
+      "discovery.shared": {"testDryRun": true, "identities": 5994},
+      "discovery.desktop": {"testDryRun": true, "identities": 1789},
+      "final.shared": {"tests": 6911, "failures": 0, "errors": 0, "skipped": 10},
+      "final.desktop": {"tests": 1783, "failures": 0, "errors": 0, "skipped": 1},
+      "pre-g9b-r6-plus-a1.desktop": {"tests": 173, "failures": 0, "errors": 0},
+      "pre-g9b-r6-plus-b.desktop": {"tests": 241, "failures": 0, "errors": 0}
+    },
+    "inventory": {
+      "updater": "tools/agent/update-verification-junit-inventory.ps1, in-session, absolute paths, discovery and executed selection evidence",
+      "discovery.shared": {"from": 5976, "to": 5994, "sha256": "7e215c6ecd82c92a5f2bb6bb3e2687390c5e57d305a14a964885a41144338bbc"},
+      "discovery.desktop": {"from": 1767, "to": 1789, "sha256": "f4fa9c9103a02cf2907ca5b445a7971607ae305bbda4084fd0a71ff794af6d4c"},
+      "final.shared": {"from": 6893, "to": 6911, "sha256": "5ad08d3638a30d0767ef151f7581555e987f30298e02c212f91798d1374307e3"},
+      "final.desktop": {"from": 1761, "to": 1783, "sha256": "3ae4ac1cc72d37761875dd82295be965fca1a5e8e91973bd6a39e76a110df1a6"},
+      "pre-g9b-r6-plus-a1.desktop": {"from": 173, "to": 173, "sha256": "0100420f98a1c66f9b11fcc972aa52c02a7f387eee8a4e8ffc96111bf42cd72a"},
+      "pre-g9b-r6-plus-b.desktop": {"from": 241, "to": 241, "sha256": "56ea89f4bb3b333d5d738bf25d1acf05bcc34c64a8b57f4ac2fd3ca31971718c"},
+      "pinsBefore": {"junit_inventory": "3895083f57f02e836e658e073f52324192793d235e89658d3ea741e8c0a41374", "static_contracts": "567c095813739497c6d63e12ed4a74b90700a4574d709484ef592ffc833a880c"},
+      "pinsAfter": {"junit_inventory": "df9e65e131dad3959493d4af4b9ac193804abe01be450692bd7e79d6a3408761", "static_contracts": "e51b2f18a5870e6d100eec93e5bc44a2d399bce4e1a0f3f88d05a43a76d7237d"},
+      "registryShapeChanged": false,
+      "selectionsAdded": 0
+    },
+    "developmentStatic": {"runId": "verification-aef38a77a49f415da6c428817a02ee0c", "verdict": "ACCEPTED / COMPLETE", "leaves": 3},
+    "developmentInfraUnit": {"runId": "verification-26867e0d66964247a4e5bc238dd33598", "verdict": "ACCEPTED / COMPLETE", "leaves": 22},
+    "note": "development and inventory evidence, not acceptance"
+  },
+  "deviations": [
+    "rollback restores (ROLLBACK_RESTORE) validate the element without reporting it; the C6 outcome (set and working layer unchanged) holds",
+    "CmdShowHideLayer reconciled as a GGBScript matrix processor exclusion",
+    "the C12 Locus V2 has one branch with two valid components (the command surface creates one branch per locus)",
+    "one A-1 test method renamed; the a1.desktop and b.desktop selections refreshed with executed evidence",
+    "hidden-layer rejections reuse the D1 message route, whose names predate A-2",
+    "T-OLDER-READER read a document from the shared full-document writer"
+  ],
+  "observations": [
+    "3D draw-order coding is shared by layers 9..99 (DQ-A2-9 residual)",
+    "Base64 archives and non-native URL documents do not commit a set (OBS-A1-URL-OPEN remainder)",
+    "an opened empty document is started for the host, so clearing its set prompts",
+    "the Locus V2 value string carries the session revision counter, advanced by a reopen; not geometry",
+    "OBS-A1-NON-HIT-SELECTION unchanged",
+    "OBS-D1-ROLLBACK-CONSPROT-GUI unchanged",
+    "Apply Template re-layering stays an open F3 question",
+    "Checkstyle PreG9BR6PlusA1HiddenLayerTest.java:188 pre-existing"
+  ],
+  "closedObservations": [
+    "OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS closed under persistent reopen (T-EFFECTIVE-REOPEN)"
+  ],
+  "authorSmoke": "checklist in the report section 13; not performed or attributed by the agent",
+  "authorizationState": {
+    "PRE-G9B-R6-plus-A-2": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "PRE-G9B-R6-plus-F3": "PLANNED — AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-C, E1, E2, E3, F1, F2, F3, G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

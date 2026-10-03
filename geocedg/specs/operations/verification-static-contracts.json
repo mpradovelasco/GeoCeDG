@@ -29,7 +29,7 @@
     ]},
     {"contract_id":"pre-g9b-r6.ggbscript-capability-matrix","semantic_domain":"PRODUCT","inputs":[
       {"path":"geocedg/specs/operations/ggbscript-capability-matrix.schema.json","sha256":"6d73870aceb447e26f3cd322437f1919eb96f759d5f3babcd855ec8de8852f8b"},
-      {"path":"geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json","sha256":"24344e9333a40f37271443190205fcc80bea5afd2cf4bfa0e2e4271d237d1296"},
+      {"path":"geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json","sha256":"91906cd7c79f24886f2deb829888fd463fe0a8501ae6726e028ddeedb30ada23"},
       {"path":"tools/agent/checks/ggbscript-capability-matrix.ps1","sha256":"eac16ea8d7ac9b1942a336585e4b6c404bdbaae886d90ff4be87305dcc26e165"}
     ]}
   ]

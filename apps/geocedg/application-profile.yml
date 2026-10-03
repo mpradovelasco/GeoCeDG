@@ -5230,8 +5230,32 @@
       "es": "Capa de trabajo"
     },
     "Workspace.Layer.ChooserMessage": {
-      "en": "Layer for new objects (0 to 9). A hidden layer chosen here is shown.",
-      "es": "Capa para los objetos nuevos (de 0 a 9). Una capa oculta elegida aquí se muestra."
+      "en": "Layer for new objects (0 to %0). A hidden layer chosen here is shown.",
+      "es": "Capa para los objetos nuevos (de 0 a %0). Una capa oculta elegida aquí se muestra."
+    },
+    "Workspace.Layer.LoadError.UNSUPPORTED_VERSION": {
+      "en": "%0 cannot be opened: it uses a newer version of the GeoCeDG hidden-layer metadata.",
+      "es": "No se puede abrir %0: usa una versión más reciente de los metadatos de capas ocultas de GeoCeDG."
+    },
+    "Workspace.Layer.LoadError.MALFORMED_ELEMENT": {
+      "en": "%0 cannot be opened: its hidden-layer metadata is malformed.",
+      "es": "No se puede abrir %0: sus metadatos de capas ocultas están mal formados."
+    },
+    "Workspace.Layer.LoadError.OUT_OF_DOMAIN_LAYER": {
+      "en": "%0 cannot be opened: its hidden-layer metadata names a layer outside 0 to %1.",
+      "es": "No se puede abrir %0: sus metadatos de capas ocultas nombran una capa fuera del intervalo de 0 a %1."
+    },
+    "Workspace.Layer.LoadError.ALL_LAYERS_HIDDEN": {
+      "en": "%0 cannot be opened: its hidden-layer metadata hides every layer from 0 to %1.",
+      "es": "No se puede abrir %0: sus metadatos de capas ocultas ocultan todas las capas de 0 a %1."
+    },
+    "Workspace.Layer.LoadError.DUPLICATE_ELEMENT": {
+      "en": "%0 cannot be opened: it contains more than one hidden-layer metadata element.",
+      "es": "No se puede abrir %0: contiene más de un elemento de metadatos de capas ocultas."
+    },
+    "Workspace.Layer.LoadError.MISPLACED_ELEMENT": {
+      "en": "%0 cannot be opened: its hidden-layer metadata is not at the document level.",
+      "es": "No se puede abrir %0: sus metadatos de capas ocultas no están en el nivel del documento."
     },
     "Workspace.Layer.HiddenGroup": {
       "en": "%0 (hidden)",

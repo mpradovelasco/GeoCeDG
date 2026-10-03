@@ -189,7 +189,7 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		assertEquals(6, lookup(app, "A").getLayer());
 		assertEquals(null, app.getKernel().lookupLabel("B"));
 		GeoElement reloaded = lookup(app, "n");
-		int upstream = Math.min(8, app.getMaxLayerUsed());
+		int upstream = Math.min(app.getConfig().getMaxLayer() - 1, app.getMaxLayerUsed());
 		assertEquals(upstream, reloaded.getLayer(),
 				"a numeric without <layer> takes the host value on reload");
 		assertNotEquals(workspace.getWorkingLayer(), reloaded.getLayer());
@@ -284,7 +284,7 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		AppGeoCeDG app = G9U1TestApp.create();
 		app.getLayerWorkspace().setWorkingLayer(2);
 		GeoElement a = eval(app, "A=(1,1)");
-		for (int working = 0; working <= GeoCeDGLayerWorkspace.MAX_LAYER; working++) {
+		for (int working = 0; working <= app.getLayerWorkspace().getMaxLayer(); working++) {
 			app.getLayerWorkspace().setWorkingLayer(working);
 			Set<GeoElement> before = new HashSet<>(app.getKernel().getConstruction()
 					.getGeoSetConstructionOrder());
@@ -408,14 +408,16 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 					});
 			assertTrue(app.chooseWorkingLayer());
 		}
+		// PRE-G9B-R6-plus-A-2 (DQ-A2-11): the configured product domain 0..99
 		List<Integer> expected = new ArrayList<>();
-		for (int layer = 0; layer <= 9; layer++) {
+		for (int layer = 0; layer <= app.getConfig().getMaxLayer(); layer++) {
 			expected.add(layer);
 		}
+		assertEquals(100, expected.size());
 		assertEquals(expected, List.of(offered.get()));
 		assertEquals(8, app.getLayerWorkspace().getWorkingLayer());
 		assertThrows(IllegalArgumentException.class,
-				() -> app.getLayerWorkspace().setWorkingLayer(10));
+				() -> app.getLayerWorkspace().setWorkingLayer(100));
 		assertThrows(IllegalArgumentException.class,
 				() -> app.getLayerWorkspace().setWorkingLayer(-1));
 		assertEquals(8, app.getLayerWorkspace().getWorkingLayer());

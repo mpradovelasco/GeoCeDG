@@ -464,9 +464,19 @@ after Move and Rotate around Point, and PRE-G9B-R6-plus-B eight File actions:
 `export.picture`, `export.pstricks`, `export.pgf` and `export.asymptote` in the
 import/export group, and the four session export-area actions
 (`export.area.define-rectangle`, `export.area.use-export-points`,
-`export.area.show`, `export.area.clear`) in a new File group. The working layer,
-hidden layers and export area are session presentation state, never document or
-geometric state. PRE-G9B-R6-plus-D1 added `document.units` (Document units…) in
+`export.area.show`, `export.area.clear`) in a new File group. The working layer
+and export area are session presentation state, never document or geometric
+state. Since PRE-G9B-R6-plus-A-2 the hidden layers are document presentation:
+persisted with the document, never geometric state and never an undo step. The
+layer domain of GeoCeDG is `0..99` (Classic keeps `0..9`). A non-empty set is
+written by the full document XML only, as a direct child of `<geogebra>` after
+`</construction>`, never into undo, preferences, macro, `.ggt` or clipboard XML:
+`hidden-element = "<geocedgHiddenLayers" SP 'version="1"' SP 'layers="'
+layer-list '"' "/>"`, `layer-list = layer *( SP layer )` strictly ascending,
+`layer = "0" / ( %x31-39 *DIGIT )` and at most 99; an empty set writes nothing.
+A newer version, a malformed list, a value above 99, a set hiding every layer,
+a child or text, a second element or any other position fails closed.
+PRE-G9B-R6-plus-D1 added `document.units` (Document units…) in
 the GeoCeDG options group (`options-product`) and as the settings action of the
 document-lifecycle cluster; the construction-unit and presentation-unit status
 segments only invoke it. Document units are document metadata, never geometric
