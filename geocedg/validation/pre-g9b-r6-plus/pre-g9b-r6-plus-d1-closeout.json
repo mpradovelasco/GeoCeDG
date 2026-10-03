@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-D1",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-D1 — PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "record": "docs/validation/pre_g9b_r6_plus_d1_closeout_record.md",
+  "authorDecisionDate": "2026-10-03",
+  "authorConfirmedDirectly": true,
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "PRE-G9B-R6-plus-D1 revised technical candidate only",
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": "<geocedgUnits> element per unit-system v1.0 section 8",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "smokeVerified": ["copy from a construction unit mm document", "File New or Open of a construction unit cm document", "paste", "coordinates preserved", "target unit preserved", "non-modal notice visible in the status bar", "full text in the tooltip in a narrow window"],
+  "identities": {
+    "publicationBase": {"name": "P_R6PLUS_D0", "commit": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c", "tree": "83b32b6cb579dc28162f990160c3eef0b1928be6"},
+    "preparation": {"name": "T_R6PLUS_D1_PROMPT", "commit": "3fb7542af3ef36db150291ca77e03b0bf4b6f888", "tree": "de71421e6adbd9a9b5e6acc8051dd5154f6a5f63"},
+    "authorization": {"name": "A_R6PLUS_D1_PROMPT", "commit": "a246d74d1999a0018899c40157e939845babe91e", "tree": "eae86c2b2d791d979bb761a69f1497e4c5ec07eb", "promptBlob": "008c397c55d34401dda645969281f2eef76d3937"},
+    "firstTechnicalCandidate": {"name": "T_R6PLUS_D1_R1", "commit": "b55aa8173045d6d6bf735e70eb22302979b2b26a", "tree": "b07fad69c73f226ed1922465ac9c358ce5979a6a", "status": "superseded for acceptance; historical evidence only"},
+    "technicalCandidate": {"name": "T_R6PLUS_D1", "commit": "6e1d845902f534b9d45b533ac265089cbc01e689", "tree": "3eb4ca454f22fb596fc1972552db2ab9e359d24b", "parent": "b55aa8173045d6d6bf735e70eb22302979b2b26a", "modifiedByCloseout": false},
+    "branch": "phase/pre-g9b-r6-plus-d1-unit-system"
+  },
+  "acceptedEvidence": [
+    {"profile": "FINAL", "command": "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r6-plus-d1-remediation-final-6e1d845", "run": "verification-9cf1a0af85fd42abada05105aacf3d89", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "41/41", "executionPlanHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "resultHash": "9b1f8224481b84351fef903f93d034342604a7b5a7f057fd387c6edfadb0b338", "receiptId": "bbbdb5b32f66e36f392ce4c87520b52c5357a67dfafdc8f9eec9f810b1b2a903", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"]}
+  ],
+  "closeoutInspect": {"command": "tools/agent/phase-closeout.ps1 -Action INSPECT", "exitCode": 0, "identityConfirmed": true, "mismatches": [], "verificationExecuted": false, "repositoryMutated": false},
+  "historicalEvidence": [
+    {"profile": "FINAL", "run": "verification-c9c0501a068a40738a3a9333b27dcb50", "commit": "b55aa8173045d6d6bf735e70eb22302979b2b26a", "tree": "b07fad69c73f226ed1922465ac9c358ce5979a6a", "verdict": "ACCEPTED / COMPLETE", "receiptId": "29de0ba1ee85c3652fcce9f96810706935b74949f50a10201ea110100f284035", "role": "superseded candidate; not acceptance evidence for T_R6PLUS_D1"}
+  ],
+  "gitDiffCheck": {"range": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c..6e1d845902f534b9d45b533ac265089cbc01e689", "exitCode": 0},
+  "acceptedDeviation": {
+    "disposition": "ACCEPTED DEVIATION — PHASE-LOCAL APPROVED-ACTION GATE AMENDMENT",
+    "file": "tools/agent/workspace-profile-validation.ps1",
+    "change": "document.units added to the approved actions",
+    "rationale": ["the mechanism already carries explicit R4, A-1 and B amendments", "D1 introduces an author-approved product action", "no change of the general verifier semantics", "no reclassification of GLOBAL_IMPACT", "the final candidate passed INFRA_UNIT and FINAL"],
+    "authorizesOtherVerifierChanges": false
+  },
+  "smokeRemediation": {
+    "status": "CLOSED",
+    "rootCause": "provenance, physical comparison, paste hook and notice correct; FlowLayout placed the notice in a second row cut off by the one-row status-bar slot in narrow windows, especially with Spanish text",
+    "acceptedSolution": "single-row layout, notice elided to the remaining width, full text in the tooltip",
+    "furtherChangeRequired": false
+  },
+  "textualPrecisionKm": {
+    "location": "candidate report, remediation section, screen-capture description",
+    "finding": "runtime evidence: the author's smoke document Vacio.cedg defines usm with usmMetersPerUnit 1000.0, name kilometers, symbol km; the status bar names usm by its user-defined symbol",
+    "disposition": "\"km\" in the remediation report is the user-defined symbol of the document's custom unit (usm, 1 usm = 1000 m, name \"kilometers\"). The product displayed it correctly by its symbol. It is not a built-in unit and does not extend the v1 unit set, which remains exclusively mm, cm, m and usm.",
+    "confirmedByAuthor": true,
+    "unitSet": ["mm", "cm", "m", "usm"],
+    "frozenReportModified": false
+  },
+  "observations": [
+    {"id": "OBS-D1-ROLLBACK-CONSPROT-GUI", "disposition": "PRE-EXISTING — CHARACTERIZED — NOT CAUSED BY D1 — NOT D1 BLOCKING — IMPLEMENTATION NOT AUTHORIZED", "characterizedOn": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c", "proposal": "A+B+C and tests from the scratch characterization; evidence for a future independent authorization"},
+    {"id": "OBS-D1-DEFAULTS-SAVE-RELEVANT", "disposition": "kept as recorded by the candidate"},
+    {"id": "OBS-D1-INSTALLED-PREFERENCES-IN-TESTS", "disposition": "kept as recorded by the candidate"},
+    {"id": "OBS-D1-INHERITED-HEADLESS-LOGGER", "disposition": "kept as recorded by the candidate"},
+    {"id": "OBS-D1-ANIMATING-DOCUMENT-RETENTION", "disposition": "kept as recorded by the candidate"},
+    {"id": "DQ-D1-10 older-reader limitation", "disposition": "kept; guide wording belongs to G"}
+  ],
+  "recordedDebts": [
+    {
+      "id": "DEBT-R6PLUS-FILE-INSERT-SURFACE",
+      "recorded": "2026-10-03",
+      "status": "PENDING SCHEDULING / RECONCILIATION — IMPLEMENTATION NOT AUTHORIZED",
+      "assignedSubphase": null,
+      "notAssignedTo": ["D1", "A-2", "C", "G"],
+      "requirements": [
+        "create a File -> Insert surface",
+        "move Insert File and Apply Template from the current File/Open surface to File -> Insert",
+        "both accept GeoCeDG .cedg documents besides .ggb, respecting each operation's semantics",
+        "Insert File stays an import of geometry/construction into the current document, not Open and not a document replacement",
+        "Apply Template keeps applying defaults and styles and must neither replace the UnitState nor import geometry",
+        "OFF file is not presented in the GeoCeDG UI for now (explicitly 3D route)",
+        "internal upstream OFF support is not removed unless later authorized; surface/product-profile requirement",
+        "explicit subphase and verification-class assignment before implementation",
+        "must be closed before the global closeout of PRE-G9B-R6-plus"
+      ]
+    }
+  ],
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_d1_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d1-closeout.json"
+  ],
+  "publication": {
+    "range": ["3268f9b99d20c5d9cf62f25d8066ee0a8e47765c", "3fb7542af3ef36db150291ca77e03b0bf4b6f888", "a246d74d1999a0018899c40157e939845babe91e", "b55aa8173045d6d6bf735e70eb22302979b2b26a", "6e1d845902f534b9d45b533ac265089cbc01e689", "P_R6PLUS_D1 (this closeout commit)"],
+    "method": "clean non-force fast-forward of main",
+    "precondition": "local main = origin/main = live remote main = P_R6PLUS_D0"
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED (next operational subphase)",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "DEBT-R6PLUS-FILE-INSERT-SURFACE": "PENDING SCHEDULING — NOT AUTHORIZED",
+    "OBS-D1-ROLLBACK-CONSPROT-GUI correction": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}
