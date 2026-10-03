@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-A-2",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_a2_preparation_characterization_report.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-a2-layer-domain-and-hidden-layer-persistence.prompt.md",
+  "authorDecisionRecord": "docs/validation/pre_g9b_r6_plus_a2_author_decisions_record.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "serializationChange": "NONE",
+  "publishedBase": {
+    "name": "P_R6PLUS_D1",
+    "commit": "2941ddf2f2712340e831d292bdc2687b879850d6",
+    "tree": "158184b150a42e6dcae2946c39620d92cbfcd888"
+  },
+  "entryGate": {
+    "localMain": "2941ddf2f2712340e831d292bdc2687b879850d6",
+    "originMain": "2941ddf2f2712340e831d292bdc2687b879850d6",
+    "liveRemoteMain": "2941ddf2f2712340e831d292bdc2687b879850d6",
+    "tree": "158184b150a42e6dcae2946c39620d92cbfcd888",
+    "worktreeClean": true
+  },
+  "preparationBase": {
+    "name": "T_R6PLUS_F3_PLAN",
+    "commit": "f467eb4563de7a7eb162da1b74954f9f847fa9d3",
+    "tree": "ece51c96117d6cbd55bc200d29c5240686516da9",
+    "parent": "2941ddf2f2712340e831d292bdc2687b879850d6",
+    "branch": "phase/pre-g9b-r6-plus-f3-planning",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE",
+    "staticEvidence": {
+      "run": "verification-f2735a0c88ef4a1895f69f1bca4b34fb",
+      "profile": "STATIC",
+      "exitCode": 0,
+      "acceptanceVerdict": "ACCEPTED",
+      "coverageVerdict": "COMPLETE",
+      "acceptance": ["prompt.execution-safety", "repository.boundary-safety", "static.scientific-inputs.semantic"],
+      "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+      "resultHash": "2a3dc6840c328bdb2b6c765a37fd3d4b7e47c260a97e1aa9531fb48145cbf712",
+      "standingDiagnostics": {"diagnostic.governance": "DIAGNOSTIC_FINDING", "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"}
+    }
+  },
+  "branchCleanup": {
+    "method": "git branch -d only; no remote ref touched",
+    "toolsReferencesToDeletedBranches": 0,
+    "otherTrackedMentions": "historical evidence fields of the D1 records; no pinned ref",
+    "worktrees": ["repository root on phase/pre-g9b-r6-plus-f3-planning", ".claude/worktrees/blissful-bhabha-c66a90 on claude/blissful-bhabha-c66a90 (not touched)"],
+    "branches": [
+      {"branch": "phase/pre-g9b-r6-plus-d1-unit-system", "tip": "2941ddf2f2712340e831d292bdc2687b879850d6", "ancestorOfMain": true, "uniqueCommits": 0, "worktree": null, "retentionReason": null, "result": "DELETED"},
+      {"branch": "phase/pre-g9b-r6-plus-d1-prompt", "tip": "3fb7542af3ef36db150291ca77e03b0bf4b6f888", "ancestorOfMain": true, "uniqueCommits": 0, "worktree": null, "retentionReason": null, "result": "DELETED"}
+    ],
+    "remoteBranchesTouched": 0,
+    "remainingLocalBranches": [
+      "claude/blissful-bhabha-c66a90",
+      "feature/g9u1-construction-workspace-planning",
+      "feature/g9u1-construction-workspace-planning-after-r6",
+      "main",
+      "maintenance/retire-orphaned-historical-verification-suites",
+      "phase/pre-g9b-r6-plus-a2-prompt",
+      "phase/pre-g9b-r6-plus-f3-planning"
+    ]
+  },
+  "preparationBranch": "phase/pre-g9b-r6-plus-a2-prompt",
+  "probes": {
+    "command": "gradlew.bat --init-script <scratch> :shared:common-jre:test --tests 'org.geocedg.common.a2probe.*'",
+    "scratchOnly": true,
+    "cleanup": "compileTestJava without the init script; probe JUnit XML and two stash copies deleted; worktree clean",
+    "firstRunDefect": "the first run of A2PrepLayerXmlProbeTest inserted no layer value (probe regex); corrected and re-run; only the corrected run is reported",
+    "classes": [
+      {"class": "A2PrepLayerXmlProbeTest", "configuration": "headless Classic (AppConfigDefault)", "sourceSha256": "7aedd68ace9217adc77046d69e31b09659492fafd2db7a0135a5588c3813d0fd", "outputSha256": "0eaf3a19477b8850267e331e2049ec0293ae428c710ce3dff6ce2e15bab1285c", "junitXmlSha256": "5767156e492f6660839a19143c36da6d99aa54274d0d9567e295a15e9a6021c1", "tests": 1, "failures": 0, "errors": 0},
+      {"class": "A2PrepGeoCeDGConfigLayerProbeTest", "configuration": "headless AppConfigGeoCeDG", "sourceSha256": "f40695bc2a3c3c3559f7ab3728190f65be8eb9f233b825257b79865b75340fee", "outputSha256": "084b9a2df673c3d06a04d6f80ea337080ac8c6bb24fa7f90acb6c14dffbe792b", "junitXmlSha256": "fd332e0a6bddb1ee28f4d12a7054a7db490e93fa53f9eb01e39cb4a041d0c2e6", "tests": 1, "failures": 0, "errors": 0}
+    ],
+    "P-LAYER-SETTER": {"input": [-5, -1, 0, 5, 9, 10, 50, 99, 100, 1000], "result": [0, 0, 0, 5, 9, 9, 9, 9, 9, 9]},
+    "P-LAYER-COMMAND": {"input": [5, 50, 99, -1], "result": [5, 9, 9, 0]},
+    "P-LAYER-API": {"input": [5, 50, 99, -1], "result": [5, 9, 9, 0]},
+    "P-LAYER-XML-READ": {"written": [-5, -1, 0, 5, 9, 10, 50, 99, 100, 1000], "read": [0, 0, 0, 5, 9, 9, 9, 9, 9, 9], "maxLayerUsed": 9, "resaved": [0, 0, 0, 5, 9, 9, 9, 9, 9, 9]},
+    "P-UNKNOWN-ELEMENT": {"element": "<geocedgLayers version=\"1\" hidden=\"2 7\"/>", "placements": ["first child of <geogebra>", "after </construction>", "inside <euclidianView>", "inside <construction>", "inside <gui>"], "loaded": true, "objectsKept": "10 of 10", "elementOnResave": false, "evalXML": "no exception; logged as unknown tag in <construction>; nothing added"},
+    "P-XML-PARTS": {
+      "undoXml": ["euclidianView", "kernel", "tableview", "construction"],
+      "fullXmlAndAppGetXml": ["gui", "euclidianView", "algebraView", "kernel", "tableview", "scripting", "construction"],
+      "preferencesXml": ["gui", "euclidianView", "algebraView", "kernel", "tableview", "scripting"]
+    },
+    "P-GEOCEDG-CONFIG": {"setLayerInput": [-1, 9, 10, 50, 99, 100], "setLayerResult": [0, 9, 9, 9, 9, 9], "newObjectLayerWithObjectOn9": 8, "hideLayer42": "silent no-op", "hideLayer3": "writes the object's own visibility"}
+  },
+  "domainAuthority": {
+    "constant": "source/shared/common/src/main/java/org/geogebra/common/plugin/EuclidianStyleConstants.java:186 (MAX_LAYERS = 9)",
+    "enforcementSites": [
+      {"site": "GeoElement.setLayer", "evidence": "common/kernel/geos/GeoElement.java:1001-1018", "class": "semantic authority / validation"},
+      {"site": "App.updateMaxLayerUsed", "evidence": "common/main/App.java:1283-1291", "class": "validation"},
+      {"site": "ConstructionDefaults default layer", "evidence": "common/kernel/ConstructionDefaults.java:907-926", "class": "semantic rule", "decision": "DQ-A2-7"},
+      {"site": "CmdShowHideLayer", "evidence": "common/kernel/scripting/CmdShowHideLayer.java:58-62", "class": "validation", "decision": "DQ-A2-8"},
+      {"site": "GgbAPI.setLayerVisible", "evidence": "common/plugin/GgbAPI.java:398-401", "class": "validation", "decision": "DQ-A2-8"},
+      {"site": "LayerModel", "evidence": "common/gui/dialog/options/model/LayerModel.java:40-58", "class": "UI bound", "decision": "DQ-A2-11"},
+      {"site": "LayerProperty", "evidence": "common/properties/impl/objects/LayerProperty.java:48-53", "class": "UI bound"},
+      {"site": "GeoCeDGLayerWorkspace and chooser", "evidence": "geocedg-desktop/GeoCeDGLayerWorkspace.java:29-31; GeoCeDGWorkingLayerChooser.java:31-44", "class": "UI/session bound"}
+    ],
+    "otherConsumers": ["3D render coding (renderer encoding; DQ-A2-9)", "<layer val> read/write (compatibility)", "draw order, hit testing, selection sentinels (unchanged)", "Algebra View numeric order (unchanged)", "DXF/SVG names (no code change; C owns exporters)", "Web Algebra View (unchanged; Web stays 0..9)", "test pins of A-1 (test-only)"],
+    "proposedAuthority": "one AppConfig default method returning EuclidianStyleConstants.MAX_LAYERS, overridden only by AppConfigGeoCeDG to return L_MAX = 99",
+    "magicNumberRule": "99 appears only in the AppConfigGeoCeDG override"
+  },
+  "classicSeparation": {
+    "mechanism": "configuration default method; AppConfigDefault keeps 9",
+    "configBeforeKernel": "desktop/main/AppD.java:410-411 before initKernel at :456",
+    "geocedgHelpers": ["Insert File / Apply Template helper: geocedg-desktop/AppGeoCeDG.java:664-672", "Open preflight: geocedg-desktop/AppGeoCeDG.java:1026-1032"],
+    "classicPreflight": "desktop/main/AppD.java:3187-3189 (AppConfigDefault)",
+    "materialRedesignNeeded": false,
+    "proof": "T-CLASSIC"
+  },
+  "layerXmlBehavior": {
+    "writer": "XMLBuilder.java:139-147, every drawable including layer 0",
+    "reader": "ConsElementXMLHandler.java:610-618, through the setLayer clamp",
+    "olderReaderLoss": "values outside 0..9 become 0 or 9 and are lost on re-save (P-LAYER-XML-READ); accepted by AQ-L1c",
+    "a2BuildOutOfDomain": "DQ-A2-10"
+  },
+  "hiddenLayerOwner": {
+    "runtimeOwner": "GeoCeDGLayerWorkspace (Desktop, one per AppGeoCeDG), unchanged from A-1",
+    "sharedParts": ["immutable value, grammar, canonical writer, strict reader, diagnostic", "MyXMLio.getFullXML writer call", "MyXMLHandler.startGeoGebraElement reader case", "App save and staging hooks, upstream-identical"],
+    "rejectedHolder": "Construction (cleared by every clearing parse, including undo: Construction.java:4133-4183, Kernel.java:3061-3082)"
+  },
+  "persistenceDesign": {
+    "shape": "flat, versioned element as a direct child of <geogebra>, after </construction>, written only when non-empty by MyXMLio.getFullXML",
+    "defaultName": "geocedgHiddenLayers",
+    "defaultGrammar": "<geocedgHiddenLayers version=\"1\" layers=\"L1 L2 ...\"/> ascending, unique, no sign, no leading zero, each <= L_MAX",
+    "neverIn": ["undo XML", "preferences XML", "macro XML", ".ggt", "clipboard XML"],
+    "rejectedPlacements": ["inside <construction> (undoable by design, as <geocedgUnits>)", "inside <euclidianView> (undoable, preferences, per view)", "inside <gui> (preferences and layout parsing)"],
+    "materialDifferenceFromAcceptedCandidate": false,
+    "decision": "DQ-A2-3"
+  },
+  "persistenceWithoutUndo": {
+    "parser": "element present: validate and stage; absent: nothing",
+    "commit": "at commit points only (DQ-A2-6): staged set or empty replaces the workspace set after a successful load",
+    "undoRedo": "undo XML has no element and no commit: set unchanged",
+    "fullXmlRollbacks": "re-parse the current value; staged only; set unchanged",
+    "secondAuthority": false,
+    "undoArchitectureChange": false
+  },
+  "lifecycle": {
+    "new": "empty set; working layer 0",
+    "open": "staging cleared at transition start; commit after success; working layer by DQ-A2-1; persisted set never rewritten; document not marked modified",
+    "legacyDocument": "empty set",
+    "failedOpen": "previous set, working layer, file, saved state and undo history unchanged",
+    "a1DefectWithoutChange": "resetForOpenedDocument clears the hidden set after the load (GeoCeDGLayerWorkspace.java:164-174)",
+    "stagingField": "no field initializer (startup files parse in the host constructor)"
+  },
+  "decisionsRequested": [
+    {"id": "DQ-A2-1", "topic": "AQ-L7(3): working layer after Open", "default": "workingLayer = max(U \\ H), else min({0..L_MAX} \\ H); H never modified; full-domain H invalid", "alternative": "A-1 rule plus showing the chosen layer with a visible notice"},
+    {"id": "DQ-A2-2", "topic": "save state of a hidden-set change", "default": "setUnsaved, no undo point, presentation never save-relevant content (DQ-D1-5 kept)", "alternative": "never mark modified (A-1 behavior)"},
+    {"id": "DQ-A2-3", "topic": "element name, grammar, position", "default": "<geocedgHiddenLayers version=\"1\" layers=\"...\"/> after </construction>", "alternative": "another name or the position before <construction>"},
+    {"id": "DQ-A2-4", "topic": "recognized invalid hidden-layer metadata", "default": "fail closed with localized diagnostics and the existing Open transaction", "alternative": "open with every layer shown and a non-blocking notice"},
+    {"id": "DQ-A2-5", "topic": "Classic diagnostic and Web", "default": "older readers: persistence off, log and ignore, write nothing", "alternative": "Classic validates and preserves without presenting"},
+    {"id": "DQ-A2-6", "topic": "commit points", "default": "New, Open routes, loadXML(String), startup, clearing App.setXML, loadXML(URL)/Base64/openURL; never undo, rebuild, rollback, paste, evalXML, macro loads, preflight, Insert File, Apply Template", "alternative": "API, URL and Base64 routes outside (OBS-A1-URL-OPEN kept)"},
+    {"id": "DQ-A2-7", "topic": "default layer of non-interactive new objects", "default": "min(L_MAX - 1, highestUsed): GeoCeDG 98, Classic 8", "alternative": "keep 8 in GeoCeDG"},
+    {"id": "DQ-A2-8", "topic": "ShowLayer/HideLayer/setLayerVisible range", "default": "the configured domain; semantics unchanged (AQ-L5); GGBScript matrix reconciled if its inventory changes", "alternative": "keep 0..9 in GeoCeDG"},
+    {"id": "DQ-A2-9", "topic": "3D render coding", "default": "clamp the coded layer to the Classic range; render coding only", "alternative": "no 3D change"},
+    {"id": "DQ-A2-10", "topic": "object layer outside the reader's domain in an A-2 build", "default": "keep the upstream silent clamp", "alternative": "fail closed"},
+    {"id": "DQ-A2-11", "topic": "layer pickers for 0..99", "default": "Properties combo and chooser list 0..L_MAX from the configuration; texts carry the bound as a parameter", "alternative": "numeric spinner or field"}
+  ],
+  "aq_l7_3_cases": [
+    {"case": 1, "situation": "highest used drawable layer shown", "default": "it"},
+    {"case": 2, "situation": "highest used drawable layer hidden", "default": "highest used shown layer"},
+    {"case": 3, "situation": "layer 0 hidden", "default": "fallback skips it"},
+    {"case": 4, "situation": "all used layers hidden", "default": "lowest shown layer of 0..L_MAX"},
+    {"case": 5, "situation": "all layers 0..L_MAX hidden", "default": "invalid element (DQ-A2-4); unreachable by a GeoCeDG writer"},
+    {"case": 6, "situation": "no drawables", "default": "lowest shown layer"},
+    {"case": 7, "situation": "only candidate on a hidden layer", "default": "as case 2 or 4"}
+  ],
+  "observations": [
+    {"id": "OBS-A1-GRAPHICS2-GEOCEDG-MODES", "state": "unaffected", "owner": "later frontend phase"},
+    {"id": "OBS-A1-BACKGROUND-IMAGE-LAYER", "state": "unaffected", "owner": "author / future"},
+    {"id": "OBS-A1-3D-VIEW", "state": "interaction with A-2 (render coding, DQ-A2-9); hidden layers still not applied in 3D", "owner": "author"},
+    {"id": "OBS-A1-NON-HIT-SELECTION", "state": "interaction with A-2 (more exposure after reopen); no change", "owner": "author"},
+    {"id": "OBS-A1-RECOMPUTE-OUTPUTS", "state": "unaffected in nature", "owner": "none required"},
+    {"id": "OBS-A1-URL-OPEN", "state": "interaction with A-2 (stale set on the API URL route)", "owner": "A-2 by DQ-A2-6, or kept as observation"},
+    {"id": "OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS", "state": "corrected by B for session state; not formally closed; revalidation under persistent reopen is an A-2 obligation (T-EFFECTIVE-REOPEN)", "owner": "A-2 revalidation"}
+  ],
+  "compatibilityCorpus": ["legacy .cedg with layers 0..9", "Classic .ggb", "objects on layers 10, 50 and 99", "attempted values below 0 and above 99 (XML, SetLayer, API, properties)", "persistent hidden-layer document", "all-used-layers-hidden document", "all-layers-hidden document (invalid)", "document with Graphics 2", "document with macros and a .ggt", "clipboard and paste across documents with different sets", "undo snapshot", "redefine and rollback routes", "unit-bearing D1 document combined with hidden layers"],
+  "obligationToTest": {
+    "T-DOMAIN-CONFIG": "A2-C1", "T-DOMAIN-ROUTES": "A2-C1, A2-C3", "T-DOMAIN-CONSUMERS": "A2-C1", "T-CLASSIC": "A2-C2", "T-WORKSPACE-DOMAIN": "A2-C1", "T-3D-CODING": "DQ-A2-9",
+    "T-XML-WRITER": "A2-C5", "T-XML-READER": "A2-C5", "T-FAIL-CLOSED": "DQ-A2-4", "T-PERSIST-NO-UNDO": "A2-C6", "T-ROUTES": "A2-C6", "T-NEW-OPEN": "A2-C7, DQ-A2-6",
+    "T-OPEN-WORKING-LAYER": "A2-C8, DQ-A2-1", "T-SAVED": "DQ-A2-2", "T-EFFECTIVE-REOPEN": "A2-C9", "T-INVARIANCE": "A2-C12", "T-UNITS-INDEPENDENCE": "A2-C11",
+    "T-LEGACY-BYTES": "A2-C11", "T-OLDER-READER": "A2-C3", "T-COMPAT-CORPUS": "A2-C11", "T-GGBSCRIPT": "DQ-A2-8", "T-SMOKE": "author smoke checklist"
+  },
+  "proposedAcceptance": {
+    "verificationClass": "GLOBAL_IMPACT",
+    "acceptance": "one FINAL on one exact frozen clean candidate after FINAL -PlanOnly",
+    "finalNodesAtPreparationBase": 68,
+    "finalNodeKinds": {"ACCEPTANCE_LEAF": 28, "EVIDENCE_PROJECTION": 19, "PROCESS_PRODUCER": 17, "DIAGNOSTIC_LEAF": 4},
+    "blockingAcceptanceClassNodes": 41,
+    "phaseSelectionProposed": false,
+    "commands": ["tools/agent/verify.ps1 -Profile FINAL -PlanOnly", "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\<fresh-name>"]
+  },
+  "contradictions": [
+    {"source": "mini-track plan section 11 row hiddenLayers", "statement": "per view, captured by undo", "effect": "superseded by AQ-L3; A-2 follows C5"},
+    {"source": "geocedg/specs/ui/cedg-workspaces.md:467-469; docs/developer/geocedg_developer_guide.md:629-634", "statement": "hidden layers are session state", "effect": "updated by A-2"},
+    {"source": "user guides en:1408,1421,1621; es:1464,1479,1688", "statement": "layer domain 0..9", "effect": "updated by A-2 with the older-reader loss"},
+    {"source": "GeoElementND.java:1106,1120; SelectionManager.java:396", "statement": "Javadoc 0 to 9", "effect": "recorded drift; not edited"},
+    {"source": "A-1 tests", "statement": "chooser 0..9; GeoCeDG cap 8; toggle leaves the document saved", "effect": "changed only as DQ-A2-2, DQ-A2-7, DQ-A2-11 decide"},
+    {"source": "P0 persistence matrix row workingLayer", "statement": "after Open, highest drawable layer", "effect": "refined by DQ-A2-1"}
+  ],
+  "impact": {
+    "productPhaseEffect": "NONE",
+    "serializationChange": "NONE",
+    "verificationInfrastructureImpact": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "guideImpact": "NONE",
+    "guideJustification": "documentary preparation of a phase prompt; no observable behavior, command, workflow or file-format contract changes"
+  },
+  "changedPaths": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-a2-layer-domain-and-hidden-layer-persistence.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_a2_author_decisions_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a2-author-decisions.json",
+    "docs/validation/pre_g9b_r6_plus_a2_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a2-preparation-characterization.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
