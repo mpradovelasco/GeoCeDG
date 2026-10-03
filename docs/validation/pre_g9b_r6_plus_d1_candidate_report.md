@@ -1,8 +1,13 @@
 # PRE-G9B-R6-plus-D1 — unit-system implementation and status integration: candidate report
 
 ```text
-TECHNICAL_CANDIDATE_STATE = FROZEN
+TECHNICAL_CANDIDATE_STATE = FROZEN (revision 2: author-smoke remediation, §20)
 AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
+PREVIOUS_CANDIDATE        = b55aa8173045d6d6bf735e70eb22302979b2b26a
+                            tree b07fad69c73f226ed1922465ac9c358ce5979a6a
+                            FINAL verification-c9c0501a068a40738a3a9333b27dcb50
+                            ACCEPTED / COMPLETE (historical evidence for that
+                            candidate only; superseded for acceptance)
 
 PHASE                     = PRE-G9B-R6-plus-D1
 CHANGE_ROUTE              = ORDINARY
@@ -385,9 +390,9 @@ exporter, export specification or verifier owned by `C` changed.
 | `T-USM-LIFECYCLE` | `DocumentUnitsTest.eachUnitOperation…` (define, edit factor, name and symbol, switch, deselect, remove), `rejectedEdits…` |
 | `T-INVARIANCE` | `UnitInvarianceTest.unitOperationsNeverTouchGeometryAndUpdateNoGeo`, `undoAndRedoOfUnitOperations…` |
 | `T-NOTIFY` | `UnitXmlTest.notificationFiresOnEveryChangeAndNeverOnANoOp`; `UnitInvarianceTest` (no geo update) |
-| `T-STATUS` | `DocumentUnitsTest.statusSegmentsPresent…`, `statusFollowsUndoAndRedo` (layout rebuild), `pasteNoticeLifecycleNeedsNoRealSleep` |
+| `T-STATUS` | `DocumentUnitsTest.statusSegmentsPresent…`, `statusFollowsUndoAndRedo` (layout rebuild), `pasteNoticeLifecycleNeedsNoRealSleep`; `PasteNoticeVisibilityTest` (notice inside the laid-out live bar, revision 2) |
 | `T-UI` | `DocumentUnitsTest.theDefaultDialogReturnsTheFieldsOrNull`, `eachUnitOperation…`, `rejectedEdits…` |
-| `T-CLIPBOARD` | `UnitClipboardTest` (all seven) |
+| `T-CLIPBOARD` | `UnitClipboardTest` (all seven); `PasteNoticeVisibilityTest` (P1–P5 with the visible notice, revision 2) |
 | `T-LEGACY-BYTES` | `LegacyByteIdentityTest` |
 | `T-COMPAT-CORPUS` | §8; `UnitXmlTest`; `UnitLoadTest` (physical, `usm`, `usm`-only, malformed, future, macro, `.ggt`); `UnitXmlTest.undoSnapshot…`, `nonClearingParses…` |
 | `T-CLASSIC` | `UnitLoadTest.theClassicDiagnosticConfigurationSharesTheDocumentSemantics`; `UnitInvarianceTest.classicConfiguration…`; `LegacyByteIdentityTest` (Classic) |
@@ -398,7 +403,7 @@ exporter, export specification or verifier owned by `C` changed.
 
 Shared tests live in `source/shared/common-jre/src/test/java/org/geocedg/common/units/`
 (36 tests), Desktop tests in `source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1*`
-(29 tests); class names above omit the `PreG9BR6PlusD1` prefix.
+(29 tests in revision 1, 34 with `PasteNoticeVisibilityTest` in revision 2); class names above omit the `PreG9BR6PlusD1` prefix.
 
 ## 13. Deviations and interpretations
 
@@ -642,3 +647,97 @@ verifier (`tools/agent/verify.ps1`, its modules and checks; the only
 `tools/agent` change is the allow-list entry of §13 item 6) and its schemas,
 `prompt-contracts.json`, every exporter and export
 specification, and `artifacts/author-input/**`.
+
+## 20. Revision 2: author-smoke remediation of the paste notice
+
+The author smoke of `b55aa817` found one functional defect: after copying from a
+document with one physical construction unit and pasting into a document with
+another, the geometry was pasted with unchanged numbers and target unit, but no
+notice was visible. The author authorized a bounded correction of that defect
+only; this revision is the resulting candidate. The previous candidate and its
+`FINAL` (header) remain historical evidence for that commit only.
+
+**Reproduction.** Scratch probes ran the real windowed product
+(`GeoCeDG.main`, isolated copies of the author's settings file and of the
+author's smoke documents `Circle.cedg` (`mm`) and `Vacio.cedg`): open, `Ctrl+A`,
+`Ctrl+C`, open the target, switch its construction unit to `cm` through the
+Document units operation, `Ctrl+V` through the focus manager's dispatch. The
+whole chain worked: provenance `mm` present at paste time, target `cm`, the
+comparison true, the hook fired on the event thread (paste 26–92 ms), the
+notice label of the window's own bar set visible with the localized text, no
+premature clearing. In Spanish, at the author's 800 × 600 window, the notice was
+nevertheless laid out at `y = 19` in a bar 19 pixels high: entirely below the
+visible bar. The screenshot shows the permanent segments, a separator and no
+notice. Pasting into `Vacio.cedg` as saved (construction `mm`) correctly shows
+no notice.
+
+**Root cause.** The bar used a `FlowLayout`, which moves a component that does
+not fit into a further row. The bar sits in the one-row `BorderLayout.SOUTH` slot
+of the application panel, so that row receives no height. The notice is the last
+segment and the longest: whenever the bar's content was wider than the window
+(925 pixels needed against 786 available in Spanish; English at 800 pixels fit
+by 5 pixels in the real look and feel and did not fit in the test look and feel),
+the notice disappeared while Swing still reported it visible and showing.
+
+**Why the tests missed it.** The D1 tests asserted the notice segment's
+`isVisible()` and text on a bar that was never laid out inside the application
+panel; they never checked its bounds against the bar.
+
+**Fix.** `GeoCeDGStatusBar` lays its segments out with `SingleRowLayout`: one
+row that never wraps; every segment keeps its preferred size; the last visible
+segment (the notice) receives only the remaining width, so a long notice is
+elided by the label and its tooltip carries the full text. Nothing else changed:
+the provenance, the shared physical-meaning comparison, the notice text,
+lifetime, clearing, timer and the permanent segments are those of revision 1.
+The user guide (section 4.6, both editions) and the developer guide mention the
+shortening.
+
+**Evidence.**
+
+- The same Spanish replay after the fix: notice at `x = 394, y = 2`, 384 × 16
+  pixels inside the 786 × 19 bar; a real screen capture (`java.awt.Robot`) of
+  the window's bottom row shows `Capa: 0 | Unidad de construcción: cm | Unidad de
+  presentación: km | Pegado desde un documento en mm a un documento en cm; las
+  coorden…`.
+- `PreG9BR6PlusD1PasteNoticeVisibilityTest` (5 tests) lays the real application
+  panel out with the real status bar and pastes through the global key
+  dispatcher: P1 (copy in `mm`, File > New, `cm`, paste) in English and Spanish at
+  a width 200 pixels below the bar's content, P2 (Open between copy and paste),
+  P3 (`usm` k = 0.001 against `mm`: no notice), P4 (unspecified source or target:
+  no notice), P5 (Insert File, `m` into `mm`); the notice clears on the next
+  paste, on File > New and on the injected timer's expiry; the permanent
+  segments keep their text, bounds and preferred widths; units, coordinates and
+  XML are unchanged by the notice. Run against the `b55aa817` status bar (file
+  swapped temporarily and restored byte-identical), four of its five tests fail
+  with the notice at `y = 19` below a 19-pixel bar; the no-notice test passes.
+- `T-CLIPBOARD`, `T-STATUS` and every other D1 test are unchanged and pass.
+
+**Observation.** The offscreen paint used by the probes clips the last
+characters of the permanent labels; the real screen capture does not, so it is
+an artifact of painting into an image, not a product defect.
+
+**Revised author-smoke step.** In an 800 × 600 window, in English and in
+Spanish: copy from a document whose construction unit is `mm`, File > New (or
+Open) a document whose construction unit is `cm`, paste: the notice appears at
+the right of the status bar, shortened if the window is narrow, with the whole
+text in its tooltip, and disappears after about ten seconds, on the next paste
+or on New/Open.
+
+**Pre-freeze evidence of revision 2** (development and inventory evidence, not
+acceptance):
+
+| Run | Result |
+|---|---|
+| D1 Desktop focal `PreG9BR6PlusD1*` | 6 classes, 34 tests, 0 failures/errors |
+| Desktop adjacent (status bar, layers, export surface, lifecycle, clipboard, profile and guide suites) | 278 tests, 0 failures/errors |
+| guide suites after the guide edits; guide structure | `PreG9BR5AGuideOutlineTest`, `PostP1BilingualUserGuideTest`, `PostP1GuideRenderingTest` green; 0 findings, vectors equal |
+| Checkstyle `:desktop:desktop:checkstyleMain`, `:desktop:desktop:checkstyleTest` | no finding in D1 files; the pre-existing `PreG9BR6PlusA1HiddenLayerTest.java:188` warning only |
+| `Assert-GeoCeDGUpstreamBoundary -ExpectedBaseline 9b93256b…` | OK, 919 registered files (the new test added; the status-bar entry annotated) |
+| producer `discovery.desktop` (`--test-dry-run`) | completed, 1 767 identities |
+| producer `final.desktop` (executed) | 1 761 tests, 0 failures/errors, 1 skip |
+| inventory updater (in-session; the revision-1 `discovery.shared` dry run reused, no shared source changed) | `discovery.desktop` 1 762 → 1 767 (`cc9bb17c…`), `final.desktop` 1 756 → 1 761 (`7b70e68c…`); every other selection unchanged; `junit_inventory` pin `3895083f57f02e836e658e073f52324192793d235e89658d3ea741e8c0a41374`; no registry-shape pin changed |
+| `git diff --check` (staged) | clean |
+| development `STATIC` and `INFRA_UNIT` on the staged tree | `ACCEPTED / COMPLETE` (`verification-2273c2a422dc48568be8dba658d54ec4`, 3/3; `verification-1a03e8dc0ca949eb9fa47fcc1a215602`, 22/22); standing diagnostics only |
+
+The single `FINAL` of revision 2 is made on the frozen revision-2 commit and
+reported outside this file; the revision-1 receipt does not certify it.

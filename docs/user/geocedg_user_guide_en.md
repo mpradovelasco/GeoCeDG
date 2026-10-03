@@ -481,7 +481,8 @@ was.
 **Copy and paste.** Pasting copies numbers unchanged and never changes the units
 of the target document. When the copied objects come from a document with a
 different physical unit, the status bar says so for about ten seconds; the
-notice is not an undo step and is not saved. Inserting a document (the
+notice is not an undo step and is not saved. In a narrow window the notice is
+shortened to the space left in the status bar; its tooltip shows the whole text. Inserting a document (the
 **Insert File** file type of **File → Open…**) shows the same notice, and a
 later paste of the same objects keeps it. No notice is shown when either
 document has no physical unit.

@@ -5220,7 +5220,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStatusBar.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-1 extensible status bar with the Layer: n segment. PRE-G9B-R6-plus-D1: construction-unit and presentation-unit segments that open Document Units, and the transient paste-notice segment. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-A-1 extensible status bar with the Layer: n segment. PRE-G9B-R6-plus-D1: construction-unit and presentation-unit segments that open Document Units, and the transient paste-notice segment, all on one row that never wraps (the notice is elided to the remaining width, author-smoke remediation). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
     },
     {
@@ -5509,6 +5509,12 @@
       "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r6-plus-d1/legacy-construction-fingerprints.json",
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-D1 base-tree legacy construction fingerprints: 67 documents per configuration and one documented exclusion.",
+      "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1PasteNoticeVisibilityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-D1 author-smoke remediation: the paste notice is visible on the row of the live status bar of the real application panel, also when the window is narrower than the bar's content; same meaning, unspecified sides, clearing and Insert File.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     }
   ]

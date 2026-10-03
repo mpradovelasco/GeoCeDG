@@ -5,8 +5,12 @@
 
 package org.geocedg.desktop;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.FlowLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.SystemColor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -56,8 +60,94 @@ final class GeoCeDGStatusBar extends JPanel {
 	private transient NoticeTimer noticeTimer = GeoCeDGStatusBar::swingTimer;
 	private transient Runnable cancelNotice;
 
+	/**
+	 * One row that never wraps (PRE-G9B-R6-plus-D1 remediation). A FlowLayout moves a
+	 * segment that does not fit into a second row, but the SOUTH slot of the
+	 * application panel is one row high, so a long paste notice was laid out below the
+	 * visible bar. Here every segment keeps its preferred size on the single row; the
+	 * last visible segment gets only the remaining width, so a long notice is elided
+	 * (its tooltip holds the full text) instead of disappearing.
+	 */
+	static final class SingleRowLayout implements LayoutManager {
+		private static final int HGAP = 8;
+		private static final int VGAP = 1;
+
+		@Override
+		public void addLayoutComponent(String name, Component component) {
+			// no constraints
+		}
+
+		@Override
+		public void removeLayoutComponent(Component component) {
+			// no constraints
+		}
+
+		@Override
+		public Dimension preferredLayoutSize(Container parent) {
+			return size(parent, true);
+		}
+
+		@Override
+		public Dimension minimumLayoutSize(Container parent) {
+			return size(parent, false);
+		}
+
+		private static Dimension size(Container parent, boolean lastAtPreferredWidth) {
+			Component last = lastVisible(parent);
+			int width = HGAP;
+			int height = 0;
+			for (Component component : parent.getComponents()) {
+				if (component.isVisible()) {
+					Dimension preferred = component.getPreferredSize();
+					width += (component == last && !lastAtPreferredWidth ? 0 : preferred.width)
+							+ HGAP;
+					height = Math.max(height, preferred.height);
+				}
+			}
+			Insets insets = parent.getInsets();
+			return new Dimension(width + insets.left + insets.right,
+					height + 2 * VGAP + insets.top + insets.bottom);
+		}
+
+		private static Component lastVisible(Container parent) {
+			Component last = null;
+			for (Component component : parent.getComponents()) {
+				if (component.isVisible()) {
+					last = component;
+				}
+			}
+			return last;
+		}
+
+		@Override
+		public void layoutContainer(Container parent) {
+			Insets insets = parent.getInsets();
+			Component last = lastVisible(parent);
+			int rowHeight = 0;
+			for (Component component : parent.getComponents()) {
+				if (component.isVisible()) {
+					rowHeight = Math.max(rowHeight, component.getPreferredSize().height);
+				}
+			}
+			int right = parent.getWidth() - insets.right - HGAP;
+			int x = insets.left + HGAP;
+			for (Component component : parent.getComponents()) {
+				if (!component.isVisible()) {
+					continue;
+				}
+				Dimension preferred = component.getPreferredSize();
+				int width = component == last
+						? Math.max(0, Math.min(preferred.width, right - x))
+						: preferred.width;
+				component.setBounds(x, insets.top + VGAP + (rowHeight - preferred.height) / 2,
+						width, preferred.height);
+				x += width + HGAP;
+			}
+		}
+	}
+
 	GeoCeDGStatusBar(AppGeoCeDG app) {
-		super(new FlowLayout(FlowLayout.LEADING, 8, 1));
+		super(new SingleRowLayout());
 		this.app = app;
 		setName("geocedg.status-bar");
 		setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.controlShadow));

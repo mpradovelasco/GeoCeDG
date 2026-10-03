@@ -760,7 +760,10 @@ are normative; this section names the implementation seams only.
   paste and `setXML` never apply them. `GeoCeDGCopyPaste` keeps the source
   `UnitState` beside each window's buffer, replaced with the buffer;
   `CopyPasteD.onPasteCompleted` lets it show the transient `paste-notice`
-  segment for a different physical meaning, with an injectable timer. The
+  segment for a different physical meaning, with an injectable timer. The bar
+  lays its segments out on one row that never wraps (`SingleRowLayout`): the
+  SOUTH slot is one row high, so a wrapped notice would be invisible; the last
+  visible segment is elided to the remaining width instead. The
   Classic diagnostic app shares the reader, writer and fail-closed rules and has
   no unit UI.
 

@@ -503,7 +503,9 @@ nombra el problema, y el documento actual queda como estaba.
 **Copiar y pegar.** Pegar copia los números sin cambios y nunca cambia las
 unidades del documento de destino. Cuando los objetos copiados proceden de un
 documento con otra unidad física, la barra de estado lo indica durante unos diez
-segundos; el aviso no es un paso de deshacer y no se guarda. Insertar un
+segundos; el aviso no es un paso de deshacer y no se guarda. En una ventana
+estrecha el aviso se acorta al espacio libre de la barra de estado; su descripción
+emergente muestra el texto completo. Insertar un
 documento (el tipo de archivo **Inserta Archivo** de **Archivo → Abrir…**)
 muestra el mismo aviso, y un pegado posterior de los mismos objetos lo conserva.
 No se muestra aviso cuando alguno de los dos documentos no tiene unidad física.
