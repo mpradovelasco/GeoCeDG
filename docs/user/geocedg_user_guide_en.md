@@ -116,7 +116,8 @@ edition of this guide **Help → GeoCeDG user guide** opens.
 select an object.
 
 The **Layout & Presentation** tab holds the GeoCeDG presentation settings: the
-presentation theme and the presentation sizes described below.
+presentation theme and the presentation sizes described below, and the
+**New document units** group (section 4.6).
 
 ### 2.5 Presentation themes
 
@@ -358,9 +359,11 @@ current format only when you redefine that object (section 3.6). A GeoCeDG build
 that predates this format refuses a document containing an updated record
 instead of misreading it.
 
+It also records the document units when they are set (section 4.6).
+
 It does not preserve application preferences. Language, theme, presentation
-sizes and the installed user-tool library belong to the GeoCeDG profile, not to
-the document.
+sizes, the new-document units and the installed user-tool library belong to the
+GeoCeDG profile, not to the document.
 
 ### 4.4 Relation to Classic
 
@@ -427,6 +430,64 @@ command line never leaves an empty file behind.
   incomplete. Locus V2 has no such limit.
 - The physical frame recorded inside an EMF file is rounded to the hundredths of
   a millimetre of the format.
+
+### 4.6 Document units
+
+A document can record what one model unit means physically. The units are
+document metadata: changing them reinterprets the model and never converts
+coordinates, values, definitions, identities or the construction order, and no
+construction command reads them.
+
+| Setting | Values | Meaning |
+|---|---|---|
+| Construction unit | unspecified, `mm`, `cm`, `m`, `usm` | the physical length of one model unit; *unspecified* is the default and means the model has no physical scale |
+| Presentation unit | same as construction unit, `mm`, `cm`, `m`, `usm` | the unit in which dimensional quantities are expressed; it needs a construction unit |
+| Custom unit (`usm`) | factor, optional name, optional symbol | at most one per document, defined as 1 usm = k m |
+
+**Document units.** **Options → GeoCeDG options → Document units…** opens the
+dialog. OK applies all its changes as one undo step and marks the document
+modified; Cancel, or OK without a change, does nothing. Undo and redo restore
+the previous units exactly. A unit change alone also makes an otherwise empty
+document unsaved, so New and Close ask before discarding it.
+
+**Custom unit.** Write the factor in metres with `.` as the decimal separator,
+for example `0.0254` or `2.54E-5`; it must be finite and greater than zero. A
+comma, grouping separators, `NaN` and `Infinity` are refused. The name and the
+symbol are optional and take 1 to 64 characters, without control characters or
+leading or trailing spaces. `usm` can be selected only once the custom unit is
+defined, and the custom unit cannot be removed while a document unit uses it. A
+refused entry shows a warning and leaves the document unchanged.
+
+**Status bar.** Beside **Layer: n** the status bar shows
+**Construction unit: …** and **Presentation unit: …**. A custom unit is shown by
+its symbol, or as `usm`; the tooltips explain each unit and give the custom-unit
+factor. Clicking either unit opens Document units.
+
+**New documents.** The **New document units** group under
+**Options → Preferences… → Layout & Presentation** chooses the construction and
+presentation units of new blank documents: at startup without a file, after
+**New file** and in a new window. It is a preference of the GeoCeDG profile; it
+never changes the current document, and a presentation default without a
+construction default has no effect. Applying the defaults is not an undo step,
+and an untouched new document stays saved.
+
+**Open and save.** An opened document always keeps its own units; the
+preferences never apply to it. A document without unit metadata stays without
+it: opening and saving it writes it exactly as before. A document whose unit
+metadata is malformed, or written by a newer GeoCeDG version, is refused when
+opened, with a message naming the problem, and the current document stays as it
+was.
+
+**Copy and paste.** Pasting copies numbers unchanged and never changes the units
+of the target document. When the copied objects come from a document with a
+different physical unit, the status bar says so for about ten seconds; the
+notice is not an undo step and is not saved. Inserting a document (the
+**Insert File** file type of **File → Open…**) shows the same notice, and a
+later paste of the same objects keeps it. No notice is shown when either
+document has no physical unit.
+
+**Current exports.** Picture, PSTricks, PGF/TikZ, Asymptote and DXF export do
+not use the document units in this version; DXF stays unitless.
 
 ---
 
@@ -1557,6 +1618,7 @@ These are the limitations that affect what you can do in the application today.
 | Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
 | Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
 | Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 9; not saved |
+| Set the document units | Options → GeoCeDG options → Document units…, or click a unit in the status bar | — | document metadata | one undo step; reinterprets the model and never converts coordinates; saved with the document |
 | Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
 | Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
 | Point on a Locus V2, by parameter | same | `Point(L,"generator.main",1)` | semantic point | default generator branch key |

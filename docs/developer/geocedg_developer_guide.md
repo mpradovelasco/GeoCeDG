@@ -708,6 +708,65 @@ tessellated for the export resolution (`LocusRenderPolicy2D`), while a legacy
 are exposed unchanged; their `ExportArea` integration and hidden-layer policy
 belong to `C`.
 
+### Document unit system (PRE-G9B-R6-plus-D1)
+
+The [unit-system specification](../../geocedg/specs/units/unit-system.md) v1.0
+and [ADR 0032](../adr/0032-unit-system-semantics-and-persistence-ownership.md)
+are normative; this section names the implementation seams only.
+
+- **Shared owner.** `org.geocedg.common.kernel.units` holds the immutable
+  `UnitState` (construction selection, presentation selection, optional
+  `UsmDefinition`), `UnitToken`, `UnitQuantity` and the per-construction
+  `DocumentUnitSystem`, created `final` in the `Construction` constructor and
+  reached as `construction.getUnitSystem()`. A `MacroConstruction` owns one that
+  stays `EMPTY` and refuses replacement. `clearConstruction` resets it and
+  notifies its listeners; nothing in the kernel reads the state, so a unit
+  change recomputes and updates nothing.
+- **One operation.** `UnitDocumentOperations.commit(app, next)` replaces the
+  state and, only when it changed, stores one undo point and marks the document
+  modified. Defaults, loads and tests use `replace` and store nothing.
+- **Persistence.** `UnitStateXml` writes `<geocedgUnits version="1" …/>` lazily
+  (nothing for `EMPTY`) inside `<construction>` after `worksheetText`; macro
+  constructions never write it. `MyXMLHandler` fixes the effective load purpose
+  once at parse start (`beginUnitLoad`, reading but never consuming
+  `peekSpatialIdentityLoadPurpose`), so an archive with macros, which parses
+  `geogebra.xml` with `clearConstruction = false`, still applies it. The element
+  is applied for `NATIVE_OR_UNDO_RESTORE`, `REDEFINE_REBUILD`,
+  `ORDINARY_EDIT_REBUILD` and `ROLLBACK_RESTORE` on a non-macro kernel, and
+  ignored with a text log for paste, `evalXML`, action replay and macro parses.
+- **Fail closed.** A recognized defect throws `UnitMetadataException` with one
+  of five codes (`UNSUPPORTED_VERSION`, `MALFORMED_ELEMENT`,
+  `INVALID_USM_FACTOR`, `DUPLICATE_ELEMENT`, `MISPLACED_ELEMENT`). `MyXMLio`
+  treats it like a rejected spatial parse and restores the complete pre-parse
+  construction; the Desktop preflight rejects the archive before the live
+  document is touched. `AppD.showDocumentLoadFailure` and
+  `App.showXMLLoadFailure` are the message seams; their host defaults keep the
+  upstream message and `AppGeoCeDG` localizes the five codes.
+- **Canonical factor.** `CanonicalBinary64` writes the shortest decimal that
+  reads back to the same binary64 by the Java SE 19 rule, with exact `BigDecimal`
+  arithmetic, so the bytes do not depend on the JDK (17 for compilation and
+  tests, 25 at run time) or the locale; `Double.toString` is never used.
+- **Saved state.** `Construction.hasSaveRelevantContent()` is
+  `isStarted() || unitSystem.hasPersistentMetadata()` and is what `App.isSaved()`
+  consults; `isStarted()` keeps its meaning.
+- **Desktop.** `AppGeoCeDG` owns the `document.units` action (one entry in
+  `options-product`), the dialog behind the injectable
+  `GeoCeDGDocumentUnitsPrompt`, validation in `GeoCeDGDocumentUnits` and the
+  status segments of `GeoCeDGStatusBar`, which only invoke the same action. The
+  new-document defaults live in `GeoCeDGUnitPreferences` (two keys, read without
+  rewriting) and are applied after the host New, on a blank startup document
+  (`AppD.recordStartupDocument`) and on a reset without a file, inside the
+  re-taken undo baseline and with the document left saved; Open, undo, rebuild,
+  paste and `setXML` never apply them. `GeoCeDGCopyPaste` keeps the source
+  `UnitState` beside each window's buffer, replaced with the buffer;
+  `CopyPasteD.onPasteCompleted` lets it show the transient `paste-notice`
+  segment for a different physical meaning, with an injectable timer. The
+  Classic diagnostic app shares the reader, writer and fail-closed rules and has
+  no unit UI.
+
+Exports do not read the units; the DXF unit header, `drawingScale` and
+dimensional presentation belong to `C`, `E2` and later phases.
+
 ## Persistence and compatibility
 
 The round-1 native-save correction uses the existing archive reader to preflight

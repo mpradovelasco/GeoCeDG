@@ -74,7 +74,8 @@ public final class GeoCeDGActionRegistry {
 			"host.preference.algebra-style.DEFINITION", "host.export.picture",
 			"host.export.pstricks", "host.export.pgf", "host.export.asymptote",
 			"geocedg.export.area.define-rectangle", "geocedg.export.area.use-export-points",
-			"geocedg.export.area.show", "geocedg.export.area.clear");
+			"geocedg.export.area.show", "geocedg.export.area.clear",
+			"geocedg.document.units");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -357,6 +358,9 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.export.area.clear":
 			((AppGeoCeDG) app).clearExportArea();
+			break;
+		case "geocedg.document.units":
+			((AppGeoCeDG) app).editDocumentUnits();
 			break;
 		case "host.help.input":
 		case "host.help.command-list":

@@ -1667,11 +1667,11 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 
 	/**
 	 * @return whether all changes are saved; ignore EV moves if no objects are
-	 *         present
+	 *         present (PRE-G9B-R6-plus-D1: and no persistent unit metadata)
 	 */
 	public final boolean isSaved() {
 		return isSaved || kernel.getConstruction() == null
-				|| !kernel.getConstruction().isStarted();
+				|| !kernel.getConstruction().hasSaveRelevantContent();
 	}
 
 	/**
@@ -5129,8 +5129,18 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 			showError(err);
 		} catch (Exception e) {
 			Log.debug(e);
-			showError(Errors.LoadFileFailed);
+			showXMLLoadFailure(e);
 		}
+	}
+
+	/**
+	 * Reports a rejected {@link #setXML(String, boolean)}; a product may name the
+	 * defect (PRE-G9B-R6-plus-D1, DQ-D1-4).
+	 *
+	 * @param failure the rejection
+	 */
+	protected void showXMLLoadFailure(Exception failure) {
+		showError(Errors.LoadFileFailed);
 	}
 
 	public String getThreadId() {

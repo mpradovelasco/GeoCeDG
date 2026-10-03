@@ -31,6 +31,8 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadSession;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefineRebuildToken;
+import org.geocedg.common.kernel.units.UnitMetadataException;
+import org.geocedg.common.kernel.units.UnitStateXml;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.SuiteSubApp;
 import org.geogebra.common.awt.AwtFactory;
@@ -133,6 +135,7 @@ public class MyXMLHandler implements DocHandler {
 	private static final int MODE_CONST_GEO_ELEMENT = 301;
 	private static final int MODE_CONST_COMMAND = 302;
 	private static final int MODE_CONST_SPATIAL_IDENTITY = 303;
+	private static final int MODE_CONST_UNITS = 304;
 
 	private static final int MODE_GUI = 400;
 	private static final int MODE_GUI_PERSPECTIVES = 401; // <perspectives>
@@ -157,6 +160,9 @@ public class MyXMLHandler implements DocHandler {
 	private Construction spatialIdentityLoadConstruction;
 	private int spatialIdentityRecordDepth;
 	private boolean spatialIdentityBearingParse;
+	/** PRE-G9B-R6-plus-D1: whether this parse applies document unit metadata. */
+	private boolean unitLoadApplies;
+	private boolean unitElementSeen;
 	private final IdentityHashMap<GeoElement, String> pendingSpatialGeoIds =
 			new IdentityHashMap<>();
 
@@ -313,6 +319,10 @@ public class MyXMLHandler implements DocHandler {
 			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
 					"geocedgSpatial cannot contain free text");
 		}
+		if (constMode == MODE_CONST_UNITS && !str.trim().isEmpty()) {
+			throw new UnitMetadataException(UnitMetadataException.Code.MALFORMED_ELEMENT,
+					"geocedgUnits cannot contain text");
+		}
 	}
 
 	@Override
@@ -351,6 +361,10 @@ public class MyXMLHandler implements DocHandler {
 		if (kernel.userStopsLoading()) {
 			kernel.setUserStopsLoading(false);
 			throw new XMLParseException("User has cancelled loading");
+		}
+		if (UnitStateXml.ELEMENT.equals(eName) && !(mode == MODE_CONSTRUCTION
+				&& (constMode == MODE_CONSTRUCTION || constMode == MODE_CONST_UNITS))) {
+			misplacedUnitElement();
 		}
 
 		switch (mode) {
@@ -2928,6 +2942,60 @@ public class MyXMLHandler implements DocHandler {
 	}
 
 	/**
+	 * PRE-G9B-R6-plus-D1: classifies the parse that is about to start. Unit metadata is
+	 * applied only by a clearing load of the document construction, identified by its
+	 * effective load purpose (the construction's pending purpose, read without consuming
+	 * it, else the parser default), never by the clearing flag: an archive with macros
+	 * parses its construction with {@code clearConstruction = false} after the macro
+	 * parse cleared it. Paste, generic merges and every macro parse ignore it.
+	 */
+	void beginUnitLoad() {
+		LoadPurpose pending = origKernel.getConstruction().peekSpatialIdentityLoadPurpose();
+		LoadPurpose effective = pending != null ? pending : spatialIdentityLoadPurpose;
+		unitLoadApplies = !(origKernel instanceof MacroKernel)
+				&& (effective == LoadPurpose.NATIVE_OR_UNDO_RESTORE
+						|| effective == LoadPurpose.REDEFINE_REBUILD
+						|| effective == LoadPurpose.ORDINARY_EDIT_REBUILD
+						|| effective == LoadPurpose.ROLLBACK_RESTORE);
+		unitElementSeen = false;
+	}
+
+	/** Ends the parse classification; a later parse must classify itself again. */
+	void endUnitLoad() {
+		unitLoadApplies = false;
+		unitElementSeen = false;
+	}
+
+	private boolean appliesUnitMetadata() {
+		return unitLoadApplies && !(kernel instanceof MacroKernel);
+	}
+
+	private void startUnitElement(Map<String, String> attrs) {
+		if (!appliesUnitMetadata()) {
+			// Section 8.8: never applied, never validated; the parse continues exactly
+			// as for any unknown construction child.
+			Log.debug("geocedgUnits ignored in a "
+					+ (kernel instanceof MacroKernel ? "macro" : "non-clearing") + " parse");
+			return;
+		}
+		if (unitElementSeen) {
+			throw new UnitMetadataException(UnitMetadataException.Code.DUPLICATE_ELEMENT,
+					"more than one geocedgUnits element");
+		}
+		unitElementSeen = true;
+		cons.getUnitSystem().applyLoaded(UnitStateXml.read(attrs));
+		constMode = MODE_CONST_UNITS;
+	}
+
+	private void misplacedUnitElement() {
+		if (appliesUnitMetadata()) {
+			throw new UnitMetadataException(UnitMetadataException.Code.MISPLACED_ELEMENT,
+					"geocedgUnits outside the document construction");
+		}
+		Log.debug("geocedgUnits ignored outside a document construction");
+	}
+
+	/**
 	 * Reports whether the current parse encountered native GeoCeDG identity data.
 	 * The flag deliberately survives section commit/abort so the outer XML
 	 * transaction can restore its entry snapshot after a later host parse failure.
@@ -3089,10 +3157,16 @@ public class MyXMLHandler implements DocHandler {
 			} else if ("geocedgSpatial".equals(eName)) {
 				startSpatialIdentitySection(attrs);
 				constMode = MODE_CONST_SPATIAL_IDENTITY;
+			} else if (UnitStateXml.ELEMENT.equals(eName)) {
+				startUnitElement(attrs);
 			} else {
 				Log.error("unknown tag in <construction>: " + eName);
 			}
 			break;
+
+		case MODE_CONST_UNITS:
+			throw new UnitMetadataException(UnitMetadataException.Code.MALFORMED_ELEMENT,
+					"geocedgUnits cannot contain child elements");
 
 		case MODE_CONST_GEO_ELEMENT:
 			this.geoHandler.startGeoElement(eName, attrs, errors);
@@ -3161,6 +3235,11 @@ public class MyXMLHandler implements DocHandler {
 			if ("command".equals(eName)) {
 				cons.setOutputGeo(null);
 				casMap = null;
+				constMode = MODE_CONSTRUCTION;
+			}
+			break;
+		case MODE_CONST_UNITS:
+			if (UnitStateXml.ELEMENT.equals(eName)) {
 				constMode = MODE_CONSTRUCTION;
 			}
 			break;

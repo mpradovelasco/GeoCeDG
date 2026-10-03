@@ -506,6 +506,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			GeoGebraPreferencesD.getPref().loadXMLPreferences(this);
 			imageManager.setMaxIconSizeAsPt(getFontSize());
 		}
+		recordStartupDocument(!fileLoaded || ggtloading);
 
 		if (MAC_OS) {
 			String path = System.getProperty("user.home") + "/Documents";
@@ -2826,6 +2827,14 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	}
 
 	/**
+	 * Product hook for the new-document units defaults (PRE-G9B-R6-plus-D1).
+	 * @return product units options, or {@code null}
+	 */
+	public OptionPanelD newProductNewDocumentUnitsPanel() {
+		return null;
+	}
+
+	/**
 	 * @return whether the product profile owns application presentation sizing, so the
 	 *         inherited mixed GUI-font row must not be offered a second time
 	 */
@@ -3140,13 +3149,13 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			byte[] archive = Files.readAllBytes(file.toPath());
 			if (!DocumentArchivePreflight.validate(archive,
 					createDocumentPreflightConfig())) {
-				showError(Errors.LoadFileFailed, file.getName());
+				showDocumentLoadFailure(file.getName(), null);
 				return null;
 			}
 			return archive;
 		} catch (Exception exception) {
 			Log.debug(exception);
-			showError(Errors.LoadFileFailed, file.getName());
+			showDocumentLoadFailure(file.getName(), exception);
 			return null;
 		}
 	}
@@ -3177,6 +3186,28 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	/** @return a fresh parser config for disposable native archive validation */
 	protected AppConfig createDocumentPreflightConfig() {
 		return new org.geogebra.common.main.settings.config.AppConfigDefault();
+	}
+
+	/**
+	 * Reports a rejected native document load; a product may name the defect
+	 * (PRE-G9B-R6-plus-D1, DQ-D1-4).
+	 *
+	 * @param fileName name of the rejected file
+	 * @param failure the rejection, or {@code null} when the reader only refused
+	 */
+	protected void showDocumentLoadFailure(String fileName, Throwable failure) {
+		showError(Errors.LoadFileFailed, fileName);
+	}
+
+	/**
+	 * Called once by the constructor; a product may initialize a new blank document
+	 * (PRE-G9B-R6-plus-D1). Subclass fields are not yet initialized here.
+	 *
+	 * @param blankDocument whether startup left a blank document (no document file
+	 *        was opened)
+	 */
+	protected void recordStartupDocument(boolean blankDocument) {
+		// upstream: nothing
 	}
 
 	/**
@@ -3271,7 +3302,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			restoreNativeDocumentLoadState(previousState, loadFailure);
 			if (loadFailure != null) {
 				Log.debug(loadFailure);
-				showError(Errors.LoadFileFailed, sourceName);
+				showDocumentLoadFailure(sourceName, loadFailure);
 			}
 			return false;
 		}

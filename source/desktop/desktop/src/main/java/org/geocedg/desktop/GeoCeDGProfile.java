@@ -337,10 +337,11 @@ public final class GeoCeDGProfile {
 					action.getString("localization_ref"), presentationNameKey,
 					action.getString("icon_ref")));
 		}
-		if (actions.size() != 124) {
+		if (actions.size() != 125) {
 			throw new IllegalStateException("Approved A7 catalog plus the PRE-G9B-R4 tools,"
 					+ " the PRE-G9B-R6-plus-A-1 working layer and the PRE-G9B-R6-plus-B"
-					+ " export surface requires 124 actions");
+					+ " export surface and the PRE-G9B-R6-plus-D1 document units requires"
+					+ " 125 actions");
 		}
 		validatePlacements(root, ids);
 		return actions;

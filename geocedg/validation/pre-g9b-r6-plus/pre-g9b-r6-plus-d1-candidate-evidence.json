@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-D1",
+  "phaseKind": "PRODUCT_IMPLEMENTATION_DOCUMENT_UNIT_SYSTEM_AND_STATUS_INTEGRATION",
+  "report": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile FINAL -PlanOnly",
+    "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "acceptanceRule": "exactly one FINAL, ACCEPTED / COMPLETE, with its receipt bound to the exact candidate commit and tree; no commit afterwards; a code change after FINAL stops the phase",
+  "finalRequired": true,
+  "productChange": true,
+  "serializationChange": "<geocedgUnits> element per unit-system v1.0 section 8",
+  "guideImpact": "UPDATED",
+  "guidePaths": [
+    "docs/user/geocedg_user_guide_en.md",
+    "docs/user/geocedg_user_guide_es.md",
+    "docs/developer/geocedg_developer_guide.md",
+    "geocedg/specs/ui/cedg-workspaces.md"
+  ],
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "verificationInfrastructureImpact": "INVENTORY_AND_PROFILE_AUTHORITY_PIN",
+  "profileAuthorityAmendment": {
+    "file": "tools/agent/workspace-profile-validation.ps1",
+    "change": "one approved action id (document.units) beside the R4, A-1 and B amendments; no validator logic change",
+    "precedent": ["PRE-G9B-R4", "PRE-G9B-R6-plus-A-1", "PRE-G9B-R6-plus-B"],
+    "inputPinBefore": "2e5b328dedec1e673dd8c65942730da49169802e4d35bc0628e348302584a122",
+    "inputPinAfter": "92c61af0bbae85f6a6c581c550deecddd7d07aac1bfdc5ad37ded9b5a2fde8f8",
+    "reportedForAuthorReview": true
+  },
+  "normativeContract": {
+    "specification": "geocedg/specs/units/unit-system.md",
+    "specificationVersion": "1.0",
+    "adr": "docs/adr/0032-unit-system-semantics-and-persistence-ownership.md"
+  },
+  "entry": {
+    "preparedCandidate": {"name": "T_R6PLUS_D1_PROMPT", "commit": "3fb7542af3ef36db150291ca77e03b0bf4b6f888", "tree": "de71421e6adbd9a9b5e6acc8051dd5154f6a5f63"},
+    "preparedCandidateParent": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+    "implementationBranch": "phase/pre-g9b-r6-plus-d1-unit-system",
+    "implementationBranchStart": "3fb7542af3ef36db150291ca77e03b0bf4b6f888",
+    "rebased": false,
+    "preparedCandidateModified": false,
+    "branchPublished": false
+  },
+  "canonicalPrompt": {
+    "path": ".github/prompts/tasks/pre-g9b-r6-plus-d1-unit-system-implementation-and-status.prompt.md",
+    "preparedBlob": "96f6e612cce1c43e2043abafe17ead3e897f4ef8",
+    "unchangedAfterAuthorizationEdit": true,
+    "authorizationEdit": {"commit": "a246d74d1999a0018899c40157e939845babe91e", "tree": "eae86c2b2d791d979bb761a69f1497e4c5ec07eb", "promptBlob": "008c397c55d34401dda645969281f2eef76d3937"},
+    "closeoutRecord": "docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md",
+    "closeoutMirror": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-d1-prompt-closeout.json"
+  },
+  "sharedApi": {
+    "package": "org.geocedg.common.kernel.units",
+    "types": ["UnitToken", "UsmDefinition", "UnitState", "UnitQuantity", "DocumentUnitSystem", "UnitDocumentOperations", "UnitStateXml", "UnitMetadataException", "CanonicalBinary64"],
+    "owner": "final DocumentUnitSystem per Construction, Construction.getUnitSystem(); MacroConstruction owner stays EMPTY",
+    "operation": "UnitDocumentOperations.commit(app, next): replace; one undo point and setUnsaved only when changed"
+  },
+  "sharedSeams": [
+    {"seam": "Construction.getUnitSystem() / peekSpatialIdentityLoadPurpose() / hasSaveRelevantContent()", "hostDefault": "hasSaveRelevantContent() equals isStarted() without unit metadata; peek never consumes"},
+    {"seam": "Construction.getConstructionXML writes geocedgUnits after worksheetText", "hostDefault": "nothing written for EMPTY"},
+    {"seam": "Construction.clearConstruction resets the unit system", "hostDefault": "EMPTY"},
+    {"seam": "App.isSaved() consults hasSaveRelevantContent()", "hostDefault": "unchanged without unit metadata"},
+    {"seam": "App.showXMLLoadFailure(Exception)", "hostDefault": "showError(Errors.LoadFileFailed)"},
+    {"seam": "MyXMLHandler.beginUnitLoad/endUnitLoad and the geocedgUnits element", "hostDefault": "documents without the element parse unchanged"},
+    {"seam": "MyXMLio rethrows UnitMetadataException and restores like a rejected spatial parse", "hostDefault": "unchanged for other failures"}
+  ],
+  "desktopSeams": [
+    {"seam": "AppD.recordStartupDocument(boolean)", "hostDefault": "no-op"},
+    {"seam": "AppD.showDocumentLoadFailure(String, Throwable)", "hostDefault": "showError(Errors.LoadFileFailed, name)"},
+    {"seam": "AppD.newProductNewDocumentUnitsPanel()", "hostDefault": "null"},
+    {"seam": "CopyPasteD.onPasteCompleted(App, boolean)", "hostDefault": "no-op"},
+    {"seam": "OptionsLayoutD hosts the product units panel", "hostDefault": "nothing added when the hook returns null"}
+  ],
+  "xml": {
+    "element": "geocedgUnits",
+    "version": 1,
+    "position": "inside the document <construction>, after worksheetText, before geocedgSpatial and the elements, own line",
+    "lazy": true,
+    "appliedPurposes": ["NATIVE_OR_UNDO_RESTORE", "REDEFINE_REBUILD", "ORDINARY_EDIT_REBUILD", "ROLLBACK_RESTORE"],
+    "ignoredContexts": ["CLIPBOARD_IMPORT", "GENERIC_MERGE", "MacroKernel parses"],
+    "effectivePurposeCapture": "parse start (MyXMLio.doParseXML -> beginUnitLoad), non-consuming",
+    "archiveWithMacros": "applied"
+  },
+  "failClosed": {
+    "codes": ["UNSUPPORTED_VERSION", "MALFORMED_ELEMENT", "INVALID_USM_FACTOR", "DUPLICATE_ELEMENT", "MISPLACED_ELEMENT"],
+    "desktopArchives": 6,
+    "extensions": [".cedg", ".ggb"],
+    "unchangedOnRejection": ["rejected file bytes", "live file bytes", "document XML", "unit state", "current file", "current path", "unique id", "recent-file list", "unsaved flag", "undo history"],
+    "messages": "one localized message per attempt (en verbatim; es for one case)",
+    "liveLoadFailure": "previous unit state and construction restored",
+    "rejectedSetXml": "entry state restored, defect named",
+    "failedStartupLoad": "blank document with the defaults, one message"
+  },
+  "canonicalFactor": {
+    "algorithm": "Java SE 19 shortest representation, exact BigDecimal arithmetic; never Double.toString, String.valueOf(double), implicit concatenation or locale formatters",
+    "referenceEntries": 48,
+    "jdk17DivergentEntries": [25, 29, 30, 31, 38, 40, 42, 43],
+    "locales": ["ROOT", "es-ES", "de-DE", "ar-EG", "hi-IN", "fr-FR"],
+    "sweep": {"values": 400000, "seed": 20261002, "sha256": "5f2cec099ad0f70c4a2398e1ae676f47911c02e7e10b453876e209ba73352303"},
+    "testRuntime": "Java 17.0.10 (Gradle test toolchain): reference and sweep reproduced",
+    "scratchRuntimes": [
+      {"runtime": "Temurin 25.0.4+7", "referenceChecks": 288, "mismatches": 0, "roundTripFailures": 0, "sweepSha256": "5f2cec099ad0f70c4a2398e1ae676f47911c02e7e10b453876e209ba73352303"},
+      {"runtime": "Oracle 22.0.2+9", "referenceChecks": 288, "mismatches": 0, "roundTripFailures": 0, "sweepSha256": "5f2cec099ad0f70c4a2398e1ae676f47911c02e7e10b453876e209ba73352303"}
+    ],
+    "candidateSourceSha256": "43e04b971cee835c28ddfda63c3427db9b631df64a806d100dcdf988d5e6d662"
+  },
+  "legacyByteIdentity": {
+    "corpusDocuments": 68,
+    "fingerprintedPerConfiguration": 67,
+    "configurations": ["GeoCeDG preflight (AppConfigGeoCeDG)", "Classic default (AppConfigDefault)"],
+    "exclusions": [{"path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/g9u1-review/TestBasic1.cedg", "reason": "does not load at the base: SpatialIdentityException (immutable malformed author archive)"}],
+    "fixture": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r6-plus-d1/legacy-construction-fingerprints.json",
+    "fixtureSha256": "c0a80d66124c4385be85038d991fb4d33e53ad4419cee210aefbcdf9ce86c413",
+    "capturedOnUnchangedTree": true,
+    "reproducedOnGitArchiveOfBase": true,
+    "helperSha256": "7d26430f01596eddd611dbb0ad197633889155aa411bb44a687397be41d8d228",
+    "helperChangesAfterCapture": ["Checkstyle line wrapping of the corpus list (paths unchanged)", "load, read and animation stop in one event-thread task"],
+    "helperReproducedFixtureOnBaseAfterEachChange": true,
+    "animatingCorpusDocuments": ["colored-cube.ggb", "polyhedron.ggb", "spring.ggb"],
+    "noMigrationOnLoad": true
+  },
+  "olderReader": {
+    "probe": "base build (git archive) opens a candidate-written usm/cm document",
+    "loaded": true,
+    "geometryIntact": true,
+    "elementDroppedOnResave": true,
+    "disposition": "documented section 8.9 limitation; no D1 warning (DQ-D1-10); guide wording belongs to G"
+  },
+  "exportRegression": {
+    "states": ["mm", "cm/mm", "m", "usm 0.0254 / cm", "usm-only 0.3048"],
+    "identicalToEmpty": ["PNG pixels and size", "SVG (clip ids normalized)", "DXF", "DXF model units UNITLESS/UNITLESS", "PGF/TikZ", "PSTricks", "Asymptote"],
+    "dxfInsunits": 0,
+    "cOwnedFilesChanged": false
+  },
+  "focalTests": {
+    "shared": {"directory": "source/shared/common-jre/src/test/java/org/geocedg/common/units", "classes": 4, "tests": 36},
+    "desktop": {"prefix": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1", "classes": 5, "tests": 29}
+  },
+  "inventory": {
+    "pinsBefore": {"junit_inventory": "4ebae708695ec325ccfa75a98479278484538b927a0f0d115451d19d11573dca", "static_contracts": "eaba0ba56bc6de2b08996e1aafe68e53ec973a6be6b758c664bd4b877869b403", "workspaceProfileValidationInput": "2e5b328dedec1e673dd8c65942730da49169802e4d35bc0628e348302584a122"},
+    "pinsAfter": {"junit_inventory": "1cbb3bf18b29bd43a871e1c5596d47b1ace047cf7b8a17075df3784ea9684709", "static_contracts": "567c095813739497c6d63e12ed4a74b90700a4574d709484ef592ffc833a880c", "workspaceProfileValidationInput": "92c61af0bbae85f6a6c581c550deecddd7d07aac1bfdc5ad37ded9b5a2fde8f8"},
+    "changes": [
+      {"id": "module shared discovery", "from": 5940, "to": 5976, "sha256": "7d26d560887b6ded3d9a44b714707632c803ece30dae2266b9f0cf82b33d73dc"},
+      {"id": "module desktop discovery", "from": 1733, "to": 1762, "sha256": "fa18bc0b3e76662056644c98fc9119d143edf751b8769c72b945f1507fc97cff"},
+      {"id": "final.shared", "from": 6857, "to": 6893, "sha256": "3f60a048b5e84d79a80fdc3f51fe0d114d596891b14cbf36b470e92294a796e2"},
+      {"id": "final.desktop", "from": 1727, "to": 1756, "sha256": "d3faaeb09c94cd850faa7cca91d31c65f88a881d0cd4d239711e4a7b6099b4c5"}
+    ],
+    "selectionsAdded": [],
+    "registryShapePinsChanged": false,
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 in-session with discovery (--test-dry-run) and executed producer evidence; no hash typed by hand"
+  },
+  "preFreezeRegression": {
+    "focal": {"shared": {"classes": 4, "tests": 36, "failures": 0}, "desktop": {"classes": 5, "tests": 29, "failures": 0}},
+    "adjacent": {
+      "firstCombinedRun": {"desktopTests": 292, "failures": 5, "cause": "inherited headless logger in that class order; fixed by per-test logger isolation"},
+      "secondCombinedRun": {"sharedClasses": 13, "sharedTests": 150, "sharedFailures": 0, "desktopTests": 365, "desktopFailures": 2, "cause": "guide outline pins for section 4.6; fixed, PreG9BR5AGuideOutlineTest 20/20"}
+    },
+    "producers": {
+      "discovery.shared": {"identities": 5976, "testDryRun": true},
+      "discovery.desktop": {"identities": 1762, "testDryRun": true},
+      "final.shared": {"tests": 6893, "failures": 0, "errors": 0, "skipped": 10},
+      "final.desktop.firstRun": {"tests": 1756, "failures": 1, "failure": "SvgLoadTest.testLoadSvgsGGB OutOfMemoryError (animating-document retention, fixed in the helper)", "usedAsEvidence": false},
+      "final.desktop": {"tests": 1756, "failures": 0, "errors": 0, "skipped": 1}
+    },
+    "heapProbe": {"legacyByteIdentityBeforeFixMB": 50, "legacyByteIdentityAfterFixMB": 27, "otherD1ClassesMB": "20-24", "a1LayerWorkspaceMB": 25},
+    "guideStructure": "0 findings per edition; vectors equal",
+    "checkstyle": "no finding in D1 files; PreG9BR6PlusA1HiddenLayerTest.java:188 pre-existing",
+    "upstreamBoundary": "OK, 918 registered files",
+    "liveWorkspaceProfile": "OK, 125 actions",
+    "gitDiffCheck": "clean",
+    "developmentStatic": {"runId": "verification-a226ac4b947a4509bc65d20932ea448c", "verdict": "ACCEPTED / COMPLETE", "leaves": 3},
+    "developmentInfraUnit": {"runId": "verification-a908120178b2470f928e094f9b3a85fa", "verdict": "ACCEPTED / COMPLETE", "leaves": 22},
+    "note": "development and inventory evidence, not acceptance"
+  },
+  "deviations": [
+    "D1 Desktop tests install an empty in-memory unit-preference store and the Desktop logger per test",
+    "Insert File tests call GeoCeDGCopyPaste.insertFrom, the method the inherited Insert File filter reaches",
+    "status bar shows the usm symbol, else usm; the name appears in the tooltip",
+    "live-load failure test compares the construction section (pre-existing GUI behavior)",
+    "guide outline pins follow section 4.6",
+    "profile-authority allow-list: one approved action id (R4/A-1/B precedent), reported for author review"
+  ],
+  "observations": [
+    "OBS-D1-ROLLBACK-CONSPROT-GUI (pre-existing, reproduced on the base archive)",
+    "OBS-D1-DEFAULTS-SAVE-RELEVANT",
+    "OBS-D1-INSTALLED-PREFERENCES-IN-TESTS",
+    "OBS-D1-INHERITED-HEADLESS-LOGGER (pre-existing)",
+    "OBS-D1-ANIMATING-DOCUMENT-RETENTION (pre-existing host behavior; first final.desktop producer run ended with one OutOfMemoryError in SvgLoadTest before the helper fix)",
+    "older readers drop the element on re-save (DQ-D1-10)",
+    "Checkstyle PreG9BR6PlusA1HiddenLayerTest.java:188 pre-existing"
+  ],
+  "authorSmoke": "checklist in the report section 16; not performed or attributed by the agent",
+  "authorizationState": {
+    "PRE-G9B-R6-plus-D1": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "PRE-G9B-R6-plus-A-2, C, E1, E2, E3, F1, F2, G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}

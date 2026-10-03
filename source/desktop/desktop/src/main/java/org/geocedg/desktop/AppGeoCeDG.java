@@ -18,11 +18,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import org.geocedg.common.kernel.units.DocumentUnitSystem;
+import org.geocedg.common.kernel.units.UnitDocumentOperations;
+import org.geocedg.common.kernel.units.UnitMetadataException;
+import org.geocedg.common.kernel.units.UnitState;
+import org.geocedg.common.kernel.units.UnitToken;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geocedg.desktop.export.ExportArea;
@@ -40,11 +47,13 @@ import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.FontSettings;
 import org.geogebra.common.util.FileExtensions;
+import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.awt.GBufferedImageD;
 import org.geogebra.desktop.geogebra3D.App3D;
@@ -61,6 +70,8 @@ import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.AppD.UpstreamExportEntry;
 import org.geogebra.desktop.main.GlobalKeyDispatcherD;
+import org.geogebra.desktop.main.undo.UndoManagerD;
+import org.geogebra.desktop.util.CopyPasteD;
 import org.geogebra.editor.share.util.KeyCodes;
 
 /**
@@ -86,6 +97,17 @@ public final class AppGeoCeDG extends App3D {
 	private PictureExportService pictureExportService;
 	private GeoCeDGExportAreaPrompt exportAreaPrompt = GeoCeDGExportAreaPrompt.dialog();
 	private Runnable dxfShortcutAction = () -> runProfileAction("export.dxf-2d");
+	/**
+	 * PRE-G9B-R6-plus-D1: whether the host constructor left a blank document. It is set
+	 * inside the host constructor, so it has no field initializer.
+	 */
+	private boolean blankStartupDocument;
+	private boolean documentUnitsActive;
+	private boolean insideFileNew;
+	private boolean clearedInFileNew;
+	private GeoCeDGCopyPaste unitCopyPaste;
+	private GeoCeDGDocumentUnitsPrompt documentUnitsPrompt = GeoCeDGDocumentUnitsPrompt.dialog();
+	private Consumer<String> unitLoadErrorSink;
 
 	/**
 	 * @param args command line arguments
@@ -102,6 +124,7 @@ public final class AppGeoCeDG extends App3D {
 		initializeLayerWorkspace();
 		initializePresentationTheme();
 		initializePresentationPreferences();
+		initializeDocumentUnits(true);
 	}
 
 	/**
@@ -109,16 +132,188 @@ public final class AppGeoCeDG extends App3D {
 	 * @param component parent component
 	 */
 	public AppGeoCeDG(CommandLineArguments args, Container component) {
-		this(args, component, createConfig(args));
+		this(args, component, createConfig(args), true);
 	}
 
 	private AppGeoCeDG(CommandLineArguments args, Container component,
-			AppConfigGeoCeDG config) {
+			AppConfigGeoCeDG config, boolean newDocumentDefaults) {
 		super(args, component, config);
 		bindFeatureService(config);
 		initializeLayerWorkspace();
 		initializePresentationTheme();
 		initializePresentationPreferences();
+		initializeDocumentUnits(newDocumentDefaults);
+	}
+
+	// ----------------------------------------------------- PRE-G9B-R6-plus-D1 units
+
+	private void initializeDocumentUnits(boolean newDocumentDefaults) {
+		getKernel().getConstruction().getUnitSystem().addListener(this::unitStateChanged);
+		documentUnitsActive = true;
+		if (newDocumentDefaults && blankStartupDocument) {
+			applyNewDocumentUnitDefaults();
+		}
+	}
+
+	@Override
+	protected void recordStartupDocument(boolean blankDocument) {
+		blankStartupDocument = blankDocument;
+	}
+
+	/** @return the shared unit-state owner of the document construction */
+	DocumentUnitSystem getDocumentUnits() {
+		return getKernel().getConstruction().getUnitSystem();
+	}
+
+	/**
+	 * Applies the new-document defaults to a new blank document (section 10): no undo
+	 * point, the document stays saved and the undo baseline includes them. With an
+	 * unspecified construction default the state stays EMPTY and nothing else happens.
+	 */
+	void applyNewDocumentUnitDefaults() {
+		if (!documentUnitsActive) {
+			return;
+		}
+		UnitState defaults = new GeoCeDGUnitPreferences().newDocumentState();
+		if (defaults.isEmpty() || !getDocumentUnits().replace(defaults)) {
+			return;
+		}
+		if (getKernel().isUndoActive() && getKernel().getConstruction()
+				.getUndoManager() instanceof UndoManagerD undo) {
+			try (UndoManagerD.PreparedUndoBaseline baseline = undo.prepareUndoBaseline()) {
+				undo.commitUndoBaseline(baseline);
+			} catch (IOException e) {
+				Log.debug("unit defaults: undo baseline not retaken: " + e.getMessage());
+			}
+		}
+		setSaved();
+	}
+
+	private void unitStateChanged() {
+		if (statusBar == null) {
+			return;
+		}
+		if (SwingUtilities.isEventDispatchThread()) {
+			statusBar.updateText();
+		} else {
+			SwingUtilities.invokeLater(statusBar::updateText);
+		}
+	}
+
+	/** Opens the single Document Units dialog through its profile action. */
+	void openDocumentUnits() {
+		if (getGuiManager() instanceof GuiManagerGeoCeDG) {
+			runProfileAction("document.units");
+		} else {
+			editDocumentUnits();
+		}
+	}
+
+	/**
+	 * The {@code document.units} action: one dialog, one validated combined operation,
+	 * one undo point when the state changes (sections 4.3 and 7.1).
+	 *
+	 * @return whether the document state changed
+	 */
+	boolean editDocumentUnits() {
+		UnitState current = getDocumentUnits().getState();
+		GeoCeDGDocumentUnits.Request request = documentUnitsPrompt.ask(this,
+				GeoCeDGDocumentUnits.fromState(current));
+		if (request == null) {
+			return false;
+		}
+		GeoCeDGDocumentUnits.Result result = GeoCeDGDocumentUnits.validate(request, current);
+		if (!result.isValid()) {
+			JOptionPane.showMessageDialog(getMainComponent(), layerText(result.errorKey),
+					layerText("Units.Dialog.Title"), JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		return UnitDocumentOperations.commit(this, result.state);
+	}
+
+	void setDocumentUnitsPrompt(GeoCeDGDocumentUnitsPrompt prompt) {
+		documentUnitsPrompt = prompt;
+	}
+
+	@Override
+	public CopyPasteD getCopyPaste() {
+		if (unitCopyPaste == null) {
+			unitCopyPaste = new GeoCeDGCopyPaste(this);
+		}
+		return unitCopyPaste;
+	}
+
+	/**
+	 * After a successful paste from this window's buffer: a non-blocking notice when
+	 * both documents are physical with different metre factors (section 11). The paste
+	 * itself never depends on it.
+	 *
+	 * @param source provenance of the buffer, or {@code null} when unavailable
+	 * @param target target application
+	 */
+	void unitPasteCompleted(UnitState source, App target) {
+		GeoCeDGStatusBar bar = getStatusBar();
+		bar.clearPasteNotice();
+		UnitState targetState = target.getKernel().getConstruction().getUnitSystem()
+				.getState();
+		if (source == null || !source.isPhysical() || !targetState.isPhysical()
+				|| UnitState.samePhysicalMeaning(source, targetState)) {
+			return;
+		}
+		bar.showPasteNotice(layerText("Units.PasteNotice", describeConstructionUnit(source),
+				describeConstructionUnit(targetState)));
+	}
+
+	private static String describeConstructionUnit(UnitState state) {
+		UnitToken unit = state.effectiveConstructionUnit();
+		return unit == UnitToken.USM ? state.symbolOf(unit) + " (1 usm = "
+				+ state.getUsm().canonicalFactor() + " m)" : unit.token();
+	}
+
+	@Override
+	protected void showDocumentLoadFailure(String fileName, Throwable failure) {
+		UnitMetadataException rejection = UnitMetadataException.find(failure);
+		if (rejection == null) {
+			super.showDocumentLoadFailure(fileName, failure);
+			return;
+		}
+		showUnitLoadError(unitLoadErrorText(rejection, fileName));
+	}
+
+	@Override
+	protected void showXMLLoadFailure(Exception failure) {
+		UnitMetadataException rejection = UnitMetadataException.find(failure);
+		if (rejection == null) {
+			super.showXMLLoadFailure(failure);
+			return;
+		}
+		showUnitLoadError(unitLoadErrorText(rejection, layerText("Units.LoadError.Document")));
+	}
+
+	private void showUnitLoadError(String message) {
+		if (unitLoadErrorSink != null) {
+			unitLoadErrorSink.accept(message);
+		} else {
+			showErrorDialog(message);
+		}
+	}
+
+	void setUnitLoadErrorSink(Consumer<String> sink) {
+		unitLoadErrorSink = sink;
+	}
+
+	/**
+	 * @param rejection unit-metadata rejection
+	 * @param documentName file or document name
+	 * @return the localized message naming the defect (DQ-D1-4)
+	 */
+	String unitLoadErrorText(UnitMetadataException rejection, String documentName) {
+		return layerText("Units.LoadError." + rejection.getCode().name(), documentName);
+	}
+
+	@Override
+	public OptionPanelD newProductNewDocumentUnitsPanel() {
+		return new GeoCeDGNewDocumentUnitsPanel(this, new GeoCeDGUnitPreferences());
 	}
 
 	private void initializeLayerWorkspace() {
@@ -374,11 +569,35 @@ public final class AppGeoCeDG extends App3D {
 	}
 
 	@Override
+	public void fileNew() {
+		insideFileNew = true;
+		clearedInFileNew = false;
+		try {
+			super.fileNew();
+		} finally {
+			insideFileNew = false;
+		}
+		// after the host reapplied the preferences XML, itself a clearing load
+		if (clearedInFileNew) {
+			applyNewDocumentUnitDefaults();
+		}
+	}
+
+	@Override
 	public boolean clearConstruction() {
 		boolean cleared = super.clearConstruction();
 		if (cleared && layerWorkspaceActive) {
 			layerWorkspace.resetForNewDocument();
 			getExportAreaSession().resetForDocument();
+		}
+		if (cleared && documentUnitsActive) {
+			getStatusBar().clearPasteNotice();
+			if (insideFileNew) {
+				clearedInFileNew = true;
+			} else {
+				// reset without a current file, openURL: a new blank document too
+				applyNewDocumentUnitDefaults();
+			}
 		}
 		return cleared;
 	}
@@ -395,6 +614,7 @@ public final class AppGeoCeDG extends App3D {
 		if (loaded) {
 			layerWorkspace.resetForOpenedDocument();
 			getExportAreaSession().resetForDocument();
+			getStatusBar().clearPasteNotice();
 		}
 		return loaded;
 	}
@@ -408,6 +628,7 @@ public final class AppGeoCeDG extends App3D {
 		if (loaded) {
 			layerWorkspace.resetForOpenedDocument();
 			getExportAreaSession().resetForDocument();
+			getStatusBar().clearPasteNotice();
 		}
 		return loaded;
 	}
@@ -443,10 +664,11 @@ public final class AppGeoCeDG extends App3D {
 	@Override
 	protected AppD newAppForTemplateOrInsertFile() {
 		AppConfigGeoCeDG config = (AppConfigGeoCeDG) getConfig();
+		// A hidden helper is replaced by the loaded file at once: no new-document defaults.
 		return new AppGeoCeDG(new CommandLineArguments(null), new JPanel(),
 				new AppConfigGeoCeDG(config.getRuntimeFeatureService()
 						.isLocusV2CreationEnabled(), config.getRuntimeFeatureService()
-								.isExtendedDxfEnabled()));
+								.isExtendedDxfEnabled()), false);
 	}
 
 	@Override

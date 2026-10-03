@@ -122,7 +122,7 @@ ningún objeto.
 
 La pestaña **Disposición y presentación** reúne los ajustes de presentación de
 GeoCeDG: el tema de presentación y los tamaños de presentación descritos a
-continuación.
+continuación, y el grupo **Unidades de los documentos nuevos** (sección 4.6).
 
 ### 2.5 Temas de presentación
 
@@ -371,9 +371,12 @@ actualiza al formato actual solo cuando se redefine ese objeto (sección 3.6).
 Una versión de GeoCeDG anterior a este formato rechaza un documento que contiene
 un registro actualizado en lugar de leerlo mal.
 
+También registra las unidades del documento cuando están definidas
+(sección 4.6).
+
 No conserva las preferencias de la aplicación. Idioma, tema, tamaños de
-presentación y biblioteca de herramientas propias instaladas pertenecen al perfil
-GeoCeDG, no al documento.
+presentación, unidades de los documentos nuevos y biblioteca de herramientas
+propias instaladas pertenecen al perfil GeoCeDG, no al documento.
 
 ### 4.4 Relación con Classic
 
@@ -444,6 +447,70 @@ línea de órdenes nunca deja un archivo vacío.
   Locus V2 no tiene ese límite.
 - El marco físico registrado dentro de un archivo EMF se redondea a las
   centésimas de milímetro del formato.
+
+### 4.6 Unidades del documento
+
+Un documento puede registrar qué significa físicamente una unidad del modelo.
+Las unidades son metadatos del documento: cambiarlas reinterpreta el modelo y
+nunca convierte coordenadas, valores, definiciones, identidades ni el orden de
+construcción, y ninguna orden de construcción las lee.
+
+| Ajuste | Valores | Significado |
+|---|---|---|
+| Unidad de construcción | sin especificar, `mm`, `cm`, `m`, `usm` | la longitud física de una unidad del modelo; *sin especificar* es el valor por defecto y significa que el modelo no tiene escala física |
+| Unidad de presentación | igual que la unidad de construcción, `mm`, `cm`, `m`, `usm` | la unidad en la que se expresan las magnitudes dimensionales; requiere una unidad de construcción |
+| Unidad personalizada (`usm`) | factor, nombre opcional, símbolo opcional | como máximo una por documento, definida como 1 usm = k m |
+
+**Unidades del documento.** **Opciones → Opciones de GeoCeDG → Unidades del
+documento…** abre el diálogo. Aceptar aplica todos sus cambios como un único
+paso de deshacer y marca el documento como modificado; Cancelar, o Aceptar sin
+cambios, no hace nada. Deshacer y rehacer restauran exactamente las unidades
+anteriores. Un cambio de unidades por sí solo también deja sin guardar un
+documento por lo demás vacío, de modo que Nuevo y Cerrar preguntan antes de
+descartarlo.
+
+**Unidad personalizada.** Escriba el factor en metros con `.` como separador
+decimal, por ejemplo `0.0254` o `2.54E-5`; debe ser finito y mayor que cero. Se
+rechazan la coma, los separadores de miles, `NaN` e `Infinity`. El nombre y el
+símbolo son opcionales y admiten de 1 a 64 caracteres, sin caracteres de control
+ni espacios al principio o al final. `usm` solo puede seleccionarse una vez
+definida la unidad personalizada, y la unidad personalizada no puede eliminarse
+mientras una unidad del documento la use. Una entrada rechazada muestra un aviso
+y deja el documento sin cambios.
+
+**Barra de estado.** Junto a **Capa: n** la barra de estado muestra
+**Unidad de construcción: …** y **Unidad de presentación: …**. Una unidad
+personalizada se muestra por su símbolo, o como `usm`; las descripciones
+emergentes explican cada unidad y dan el factor de la unidad personalizada. Un
+clic en cualquiera de las dos unidades abre Unidades del documento.
+
+**Documentos nuevos.** El grupo **Unidades de los documentos nuevos** de
+**Opciones → Preferencias… → Disposición y presentación** elige las unidades de
+construcción y de presentación de los documentos nuevos en blanco: al iniciar sin
+archivo, tras **Nuevo archivo** y en una ventana nueva. Es una preferencia del
+perfil GeoCeDG; nunca cambia el documento actual, y una unidad de presentación
+por defecto sin unidad de construcción por defecto no tiene efecto. Aplicar las
+unidades por defecto no es un paso de deshacer, y un documento nuevo sin tocar
+sigue guardado.
+
+**Abrir y guardar.** Un documento abierto conserva siempre sus propias unidades;
+las preferencias nunca se le aplican. Un documento sin metadatos de unidades
+sigue sin ellos: abrirlo y guardarlo lo escribe exactamente como antes. Un
+documento cuyos metadatos de unidades están mal formados, o fueron escritos por
+una versión más reciente de GeoCeDG, se rechaza al abrirlo con un mensaje que
+nombra el problema, y el documento actual queda como estaba.
+
+**Copiar y pegar.** Pegar copia los números sin cambios y nunca cambia las
+unidades del documento de destino. Cuando los objetos copiados proceden de un
+documento con otra unidad física, la barra de estado lo indica durante unos diez
+segundos; el aviso no es un paso de deshacer y no se guarda. Insertar un
+documento (el tipo de archivo **Inserta Archivo** de **Archivo → Abrir…**)
+muestra el mismo aviso, y un pegado posterior de los mismos objetos lo conserva.
+No se muestra aviso cuando alguno de los dos documentos no tiene unidad física.
+
+**Exportaciones actuales.** La exportación de imágenes, PSTricks, PGF/TikZ,
+Asymptote y DXF no usa las unidades del documento en esta versión; DXF sigue sin
+unidades.
 
 ---
 
@@ -1617,6 +1684,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Crear una spline semántica | Construcción → Curvas semánticas → Spline V2, Spline V2 con grado o Spline V2 cerrada | `SplineV2({A,B,C,D},3)` | curva semántica | seleccione los puntos en orden y después de nuevo el primero; los puntos constructores no son puntos semánticos |
 | Crear una lista en el orden de selección | Construcción → Herramientas de listas → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
 | Elegir la capa de trabajo | Barra de herramientas → grupo Mover → Capa de trabajo, o clic en **Capa: n** en la barra de estado | — | estado de sesión | de un solo uso; clic en un objeto para usar su capa o en un espacio vacío para elegir de 0 a 9; no se guarda |
+| Definir las unidades del documento | Opciones → Opciones de GeoCeDG → Unidades del documento…, o clic en una unidad de la barra de estado | — | metadatos del documento | un paso de deshacer; reinterpreta el modelo y nunca convierte coordenadas; se guarda con el documento |
 | Punto sobre curva semántica, interactivo | Herramienta Punto, clic en el trazo | — | punto semántico | preimagen única, o elección explícita; nunca por proximidad |
 | Punto sobre curva semántica, por parámetro | Construcción → Curvas semánticas → Punto sobre curva semántica | `Point(S,"spline-v2/main",0.25)` | punto semántico | clave de rama y parámetro canónico; el parámetro puede ser un número con nombre |
 | Punto sobre un Locus V2, por parámetro | ídem | `Point(L,"generator.main",1)` | punto semántico | clave de rama por defecto del generador |

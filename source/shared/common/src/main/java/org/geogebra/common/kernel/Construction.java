@@ -56,6 +56,8 @@ import org.geocedg.common.kernel.spatial.identity.SpatialRedefineEffect;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefinePersistedOutput;
 import org.geocedg.common.kernel.spatial.identity.SpatialRedefineTransaction;
 import org.geocedg.common.kernel.spatial.runtime.SpatialSemanticRuntime;
+import org.geocedg.common.kernel.units.DocumentUnitSystem;
+import org.geocedg.common.kernel.units.UnitStateXml;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.LayerManager;
@@ -241,6 +243,8 @@ public class Construction {
 	private MyXMLio xmlio;
 	private final SpatialIdentityRegistry spatialIdentityRegistry;
 	private final SpatialSemanticRuntime spatialSemanticRuntime;
+	/** PRE-G9B-R6-plus-D1 document unit state: metadata, never geometry. */
+	private final DocumentUnitSystem unitSystem;
 	private LoadPurpose nextSpatialIdentityLoadPurpose;
 	private RedefineRebuildToken nextSpatialIdentityRedefineRebuildToken;
 	private int spatialIdentityXmlDepth;
@@ -276,6 +280,7 @@ public class Construction {
 		kernel = k;
 		spatialIdentityRegistry = new SpatialIdentityRegistry(this);
 		spatialSemanticRuntime = new SpatialSemanticRuntime(this);
+		unitSystem = new DocumentUnitSystem(this instanceof MacroConstruction);
 		spatialIdentityRegistry.registerLifecycleRuntime(spatialSemanticRuntime);
 		spatialIdentityRegistry.registerRedefineProvider(
 				new SpatialPointPilotRedefineProvider(spatialIdentityRegistry));
@@ -320,6 +325,13 @@ public class Construction {
 	/** @return this construction's G9A2 normal-DAG spatial runtime */
 	public SpatialSemanticRuntime getSpatialSemanticRuntime() {
 		return spatialSemanticRuntime;
+	}
+
+	/**
+	 * @return this construction's PRE-G9B-R6-plus-D1 document unit state owner
+	 */
+	public DocumentUnitSystem getUnitSystem() {
+		return unitSystem;
 	}
 
 	/**
@@ -455,6 +467,16 @@ public class Construction {
 		LoadPurpose purpose = nextSpatialIdentityLoadPurpose;
 		nextSpatialIdentityLoadPurpose = null;
 		return purpose == null ? defaultPurpose : purpose;
+	}
+
+	/**
+	 * Reads the pending explicit load purpose without consuming it, so the unit-state
+	 * reader can classify a parse without changing the spatial one-shot.
+	 *
+	 * @return pending explicit load purpose, or {@code null}
+	 */
+	public LoadPurpose peekSpatialIdentityLoadPurpose() {
+		return nextSpatialIdentityLoadPurpose;
 	}
 
 	/**
@@ -1530,6 +1552,11 @@ public class Construction {
 				sb.attr("above", getWorksheetText(0));
 				sb.attr("below", getWorksheetText(1));
 				sb.endTag();
+			}
+
+			// PRE-G9B-R6-plus-D1: never for a macro construction; nothing when EMPTY.
+			if (!(this instanceof MacroConstruction)) {
+				UnitStateXml.write(sb, unitSystem.getState());
 			}
 
 			if (!spatialIdentityRegistry.isEmpty()) {
@@ -4005,6 +4032,18 @@ public class Construction {
 	}
 
 	/**
+	 * PRE-G9B-R6-plus-D1 (DQ-D1-5): content that makes unsaved changes worth a save
+	 * prompt. It is construction content ({@link #isStarted()}, unchanged) or persistent
+	 * document metadata; in D1 that metadata is a non-empty unit state. Presentation and
+	 * session state never count.
+	 *
+	 * @return whether the document has save-relevant content
+	 */
+	public boolean hasSaveRelevantContent() {
+		return isStarted() || unitSystem.hasPersistentMetadata();
+	}
+
+	/**
 	 * Returns a set with all labeled GeoElement objects sorted in alphabetical
 	 * order of their type strings and labels (e.g. Line g, Line h, Point A,
 	 * Point B, ...). Note: the returned TreeSet is a copy of the current
@@ -4135,6 +4174,7 @@ public class Construction {
 		date = null;
 		worksheetText[0] = null;
 		worksheetText[1] = null;
+		unitSystem.reset();
 
 		usedMacros = null;
 		spreadsheetTraces = false;

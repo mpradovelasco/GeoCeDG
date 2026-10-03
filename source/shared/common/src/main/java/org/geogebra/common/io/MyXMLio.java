@@ -23,6 +23,7 @@ import javax.annotation.CheckForNull;
 
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
+import org.geocedg.common.kernel.units.UnitMetadataException;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.GeoGebraConstants.Platform;
 import org.geogebra.common.awt.annotations.HasNativeSubclass;
@@ -419,6 +420,7 @@ public abstract class MyXMLio {
 		handler.setSpatialIdentityLoadPurpose(clearConstruction
 				? LoadPurpose.NATIVE_OR_UNDO_RESTORE
 				: LoadPurpose.GENERIC_MERGE);
+		handler.beginUnitLoad();
 		try {
 			parseXmlUnsafe(stream, settingsBatch, isGGTOrDefaults);
 		} catch (CommandNotLoadedError e) {
@@ -444,10 +446,12 @@ public abstract class MyXMLio {
 				}
 			}
 			Log.error(e.getMessage());
-			if (e instanceof SpatialIdentityException || !isGGTOrDefaults) {
+			if (e instanceof SpatialIdentityException || e instanceof UnitMetadataException
+					|| !isGGTOrDefaults) {
 				throw e;
 			}
 		} finally {
+			handler.endUnitLoad();
 			cons.clearNextSpatialIdentityLoadPurpose();
 			kernel.setLoadingMode(false);
 			kernel.setCommandLookupStrategy(oldVal2);
@@ -494,7 +498,10 @@ public abstract class MyXMLio {
 
 	private boolean isRejectedSpatialParse(Throwable failure,
 			boolean identityBearingParse) {
-		return failure instanceof SpatialIdentityException || identityBearingParse;
+		// PRE-G9B-R6-plus-D1: a fail-closed unit rejection restores the entry snapshot
+		// too, so a non-native route never leaves a half-loaded construction.
+		return failure instanceof SpatialIdentityException
+				|| failure instanceof UnitMetadataException || identityBearingParse;
 	}
 
 	private boolean canRestoreRejectedSpatialParse() {

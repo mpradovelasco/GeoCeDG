@@ -556,6 +556,19 @@ public class CopyPasteD extends CopyPaste {
 				.getSpatialIdentityRegistry().isParticipating(geo))) {
 			app.getUndoManager().storeAddGeo(createdGeos);
 		}
+		onPasteCompleted(app, putdown);
+	}
+
+	/**
+	 * Called once after a successful paste from the internal buffer; the product may
+	 * present a notice (PRE-G9B-R6-plus-D1). It must not change the construction, the
+	 * selection or the undo history.
+	 *
+	 * @param app target application
+	 * @param putdown whether the paste is the Insert File paste
+	 */
+	protected void onPasteCompleted(App app, boolean putdown) {
+		// upstream: nothing
 	}
 
 	private boolean evalClipboardXML(App app, String xml, boolean scriptsBlocked) {

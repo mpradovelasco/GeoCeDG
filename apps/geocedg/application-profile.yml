@@ -257,6 +257,12 @@
         "undo": "none"
       },
       {
+        "id": "document-metadata",
+        "construction": "none",
+        "preview": "none",
+        "undo": "single"
+      },
+      {
         "id": "single-materialization",
         "construction": "explicit-single",
         "preview": "none",
@@ -2510,6 +2516,24 @@
       "implementation_state": "new-frontend"
     },
     {
+      "id": "document.units",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.document.units"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "document-metadata",
+      "localization_ref": "geocedg.action.DocumentUnits",
+      "icon_ref": "geocedg.action.DocumentUnits",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "PRE-G9B-R6-plus-D1 Document Units dialog: construction unit, presentation unit and the one document usm; one undoable document operation per change; geometry, coordinates and identities never change."
+    },
+    {
       "id": "view.construction-protocol",
       "kind": "view-toggle",
       "target": {
@@ -2956,7 +2980,9 @@
       ],
       "context_action_ids": [],
       "inspector_action_ids": [],
-      "settings_action_ids": []
+      "settings_action_ids": [
+        "document.units"
+      ]
     },
     {
       "id": "automation-scripting",
@@ -3479,7 +3505,7 @@
     {
       "id": "options-product",
       "name_key": "Group.Options.Product",
-      "action_ids": ["view.properties", "presentation.axes-toggle", "presentation.grid-toggle", "settings.product-language", "result.show-candidate-markers", "result.auto-materialize-initial"],
+      "action_ids": ["view.properties", "presentation.axes-toggle", "presentation.grid-toggle", "settings.product-language", "result.show-candidate-markers", "result.auto-materialize-initial", "document.units"],
       "toolbar_action_ids": []
     },
     {
@@ -5034,6 +5060,162 @@
     "Workspace.Scripting": {
       "en": "Use the Scripting tab in the existing Properties dialog.",
       "es": "Usa la pestaña Guiones del diálogo de Propiedades."
+    },
+    "geocedg.action.DocumentUnits.name": {
+      "en": "Document units…",
+      "es": "Unidades del documento…"
+    },
+    "geocedg.action.DocumentUnits.short_help": {
+      "en": "Set the construction unit, the presentation unit and the custom unit of this document.",
+      "es": "Define la unidad de construcción, la unidad de presentación y la unidad personalizada de este documento."
+    },
+    "geocedg.action.DocumentUnits.long_help": {
+      "en": "The construction unit gives one model unit its physical meaning; changing it reinterprets the model and never converts coordinates. The presentation unit expresses dimensional quantities. One custom unit (usm) can be defined as 1 usm = k m. Each change is one undo step and is saved with the document.",
+      "es": "La unidad de construcción da significado físico a una unidad del modelo; cambiarla reinterpreta el modelo y nunca convierte coordenadas. La unidad de presentación expresa las magnitudes dimensionales. Se puede definir una unidad personalizada (usm) como 1 usm = k m. Cada cambio es un paso de deshacer y se guarda con el documento."
+    },
+    "geocedg.action.DocumentUnits.status": {
+      "en": "Ready: Document units…",
+      "es": "Disponible: Unidades del documento…"
+    },
+    "geocedg.action.DocumentUnits.error": {
+      "en": "Cannot perform Document units… in the current context.",
+      "es": "No se puede ejecutar Unidades del documento… en el contexto actual."
+    },
+    "Units.Status.Construction": {
+      "en": "Construction unit: %0",
+      "es": "Unidad de construcción: %0"
+    },
+    "Units.Status.Presentation": {
+      "en": "Presentation unit: %0",
+      "es": "Unidad de presentación: %0"
+    },
+    "Units.Unspecified": {
+      "en": "unspecified",
+      "es": "sin especificar"
+    },
+    "Units.None": {
+      "en": "none",
+      "es": "ninguna"
+    },
+    "Units.Status.ConstructionTooltip": {
+      "en": "Physical meaning of one model unit. Click to open Document units.",
+      "es": "Significado físico de una unidad del modelo. Haz clic para abrir Unidades del documento."
+    },
+    "Units.Status.PresentationTooltipExplicit": {
+      "en": "Unit of dimensional presentation, chosen explicitly. Click to open Document units.",
+      "es": "Unidad de presentación dimensional, elegida explícitamente. Haz clic para abrir Unidades del documento."
+    },
+    "Units.Status.PresentationTooltipFollows": {
+      "en": "Unit of dimensional presentation; it follows the construction unit. Click to open Document units.",
+      "es": "Unidad de presentación dimensional; sigue a la unidad de construcción. Haz clic para abrir Unidades del documento."
+    },
+    "Units.Status.UsmDefinition": {
+      "en": "Custom unit %0: 1 usm = %1 m.",
+      "es": "Unidad personalizada %0: 1 usm = %1 m."
+    },
+    "Units.PasteNotice": {
+      "en": "Pasted from a document in %0 into a document in %1; coordinates were not converted.",
+      "es": "Pegado desde un documento en %0 a un documento en %1; las coordenadas no se han convertido."
+    },
+    "Units.Dialog.Title": {
+      "en": "Document units",
+      "es": "Unidades del documento"
+    },
+    "Units.Dialog.Construction": {
+      "en": "Construction unit:",
+      "es": "Unidad de construcción:"
+    },
+    "Units.Dialog.Presentation": {
+      "en": "Presentation unit:",
+      "es": "Unidad de presentación:"
+    },
+    "Units.Dialog.FollowsConstruction": {
+      "en": "same as construction unit",
+      "es": "igual que la unidad de construcción"
+    },
+    "Units.Dialog.UsmDefine": {
+      "en": "Define a custom unit (usm)",
+      "es": "Definir una unidad personalizada (usm)"
+    },
+    "Units.Dialog.UsmFactor": {
+      "en": "1 usm in metres:",
+      "es": "1 usm en metros:"
+    },
+    "Units.Dialog.UsmName": {
+      "en": "Name (optional):",
+      "es": "Nombre (opcional):"
+    },
+    "Units.Dialog.UsmSymbol": {
+      "en": "Symbol (optional):",
+      "es": "Símbolo (opcional):"
+    },
+    "Units.Dialog.Hint": {
+      "en": "Changing a unit reinterprets the model; coordinates are never converted.",
+      "es": "Cambiar una unidad reinterpreta el modelo; las coordenadas nunca se convierten."
+    },
+    "Units.Error.FactorComma": {
+      "en": "Use \".\" as the decimal separator.",
+      "es": "Usa \".\" como separador decimal."
+    },
+    "Units.Error.Factor": {
+      "en": "The custom unit needs a finite factor greater than zero, for example 0.0254 or 2.54E-5.",
+      "es": "La unidad personalizada necesita un factor finito mayor que cero, por ejemplo 0.0254 o 2.54E-5."
+    },
+    "Units.Error.Label": {
+      "en": "Name and symbol need 1 to 64 characters, without control characters or leading or trailing spaces.",
+      "es": "El nombre y el símbolo necesitan de 1 a 64 caracteres, sin caracteres de control ni espacios al principio o al final."
+    },
+    "Units.Error.UsmUndefined": {
+      "en": "Define the custom unit before selecting usm.",
+      "es": "Define la unidad personalizada antes de seleccionar usm."
+    },
+    "Units.Error.UsmInUse": {
+      "en": "The custom unit cannot be removed while a document unit uses it.",
+      "es": "La unidad personalizada no se puede eliminar mientras una unidad del documento la use."
+    },
+    "Units.Error.PresentationWithoutConstruction": {
+      "en": "Choose a construction unit before a presentation unit.",
+      "es": "Elige una unidad de construcción antes que una unidad de presentación."
+    },
+    "Units.LoadError.UNSUPPORTED_VERSION": {
+      "en": "%0 cannot be opened: it uses a newer version of the GeoCeDG unit metadata.",
+      "es": "No se puede abrir %0: usa una versión más reciente de los metadatos de unidades de GeoCeDG."
+    },
+    "Units.LoadError.MALFORMED_ELEMENT": {
+      "en": "%0 cannot be opened: its unit metadata is malformed.",
+      "es": "No se puede abrir %0: sus metadatos de unidades están mal formados."
+    },
+    "Units.LoadError.INVALID_USM_FACTOR": {
+      "en": "%0 cannot be opened: its custom unit (usm) has an invalid or missing factor.",
+      "es": "No se puede abrir %0: su unidad personalizada (usm) tiene un factor no válido o ausente."
+    },
+    "Units.LoadError.DUPLICATE_ELEMENT": {
+      "en": "%0 cannot be opened: it contains more than one unit metadata element.",
+      "es": "No se puede abrir %0: contiene más de un elemento de metadatos de unidades."
+    },
+    "Units.LoadError.MISPLACED_ELEMENT": {
+      "en": "%0 cannot be opened: its unit metadata is outside the construction.",
+      "es": "No se puede abrir %0: sus metadatos de unidades están fuera de la construcción."
+    },
+    "Units.LoadError.Document": {
+      "en": "The document",
+      "es": "el documento"
+    },
+    "Units.Preferences.Group": {
+      "en": "New document units",
+      "es": "Unidades de los documentos nuevos"
+    },
+    "Units.Preferences.Construction": {
+      "en": "Construction unit:",
+      "es": "Unidad de construcción:"
+    },
+    "Units.Preferences.Presentation": {
+      "en": "Presentation unit:",
+      "es": "Unidad de presentación:"
+    },
+    "Units.Preferences.Hint": {
+      "en": "Applied only to new blank documents; opened documents keep their own units.",
+      "es": "Solo se aplican a los documentos nuevos en blanco; los documentos abiertos conservan sus propias unidades."
     },
     "Workspace.Layer.Status": {
       "en": "Layer: %0",

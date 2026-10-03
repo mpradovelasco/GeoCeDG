@@ -62,6 +62,8 @@ public class OptionsLayoutD
 	private OptionPanelD productPresentationPanel;
 	/** PRE-G9B-P0 product presentation theme, hosted by this tab. */
 	private OptionPanelD productThemePanel;
+	/** PRE-G9B-R6-plus-D1 product new-document units, hosted by this tab. */
+	private OptionPanelD productUnitsPanel;
 
 	private JCheckBox ckShowInputHelp;
 	private JCheckBox ckShowTitleBar;
@@ -127,6 +129,7 @@ public class OptionsLayoutD
 		initSideBarPanel();
 		productPresentationPanel = app.newProductPresentationOptionsPanel();
 		productThemePanel = app.newProductPresentationThemePanel();
+		productUnitsPanel = app.newProductNewDocumentUnitsPanel();
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new FullWidthLayout());
@@ -139,6 +142,9 @@ public class OptionsLayoutD
 		}
 		if (productThemePanel != null) {
 			panel.add(productThemePanel.getWrappedPanel());
+		}
+		if (productUnitsPanel != null) {
+			panel.add(productUnitsPanel.getWrappedPanel());
 		}
 
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -353,6 +359,9 @@ public class OptionsLayoutD
 		if (productThemePanel != null) {
 			productThemePanel.updateGUI();
 		}
+		if (productUnitsPanel != null) {
+			productUnitsPanel.updateGUI();
+		}
 		revalidate();
 
 	}
@@ -471,6 +480,9 @@ public class OptionsLayoutD
 		if (productThemePanel instanceof SetLabels) {
 			((SetLabels) productThemePanel).setLabels();
 		}
+		if (productUnitsPanel instanceof SetLabels) {
+			((SetLabels) productUnitsPanel).setLabels();
+		}
 	}
 
 	@Override
@@ -527,6 +539,9 @@ public class OptionsLayoutD
 		if (productThemePanel != null) {
 			productThemePanel.updateFont();
 		}
+		if (productUnitsPanel != null) {
+			productUnitsPanel.updateFont();
+		}
 	}
 
 	@Override
@@ -537,6 +552,9 @@ public class OptionsLayoutD
 		}
 		if (productThemePanel != null) {
 			productThemePanel.setSelected(flag);
+		}
+		if (productUnitsPanel != null) {
+			productUnitsPanel.setSelected(flag);
 		}
 	}
 }
