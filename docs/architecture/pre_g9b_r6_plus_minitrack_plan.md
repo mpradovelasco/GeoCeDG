@@ -15,7 +15,7 @@
 - Author decisions for `B` (2026-10-02): [B author-decision record](../validation/pre_g9b_r6_plus_b_author_decisions_record.md) (`AQ-X1` to `AQ-X7`). The [canonical `B` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-b-export-surface-and-export-area.prompt.md) is prepared on `d32ad608ba8821bc18c9d4dc783c1b700a165ff2`, tree `9b123be7ed8c7176b5a7e19f74be5946f0164c8b`: `PREPARED — NOT AUTHORIZED`, proposed class `INTEGRATED_PHASE`; the preparation package `T_R6PLUS_B_PROMPT` `7e00e451167b0d915b061655c478c2faac99e51c` is `PASS — AUTHOR APPROVED` (2026-10-02, with the author dispositions on `DQ-B1` to `DQ-B9`, which prevail over the prompt's defaults; [closeout record](../validation/pre_g9b_r6_plus_b_prompt_closeout_record.md)); implementation was authorized on 2026-10-02 on `f6194f09358de9c5f8ac5051c31b3a9dc8a9491b`, the amended prompt is the execution contract, and `B` is `PASS — AUTHOR APPROVED` (2026-10-02, author smoke PASS, `T_R6PLUS_B` `848206c413eb4f78694c9149e153f6e867eb9525`; [candidate report](../validation/pre_g9b_r6_plus_b_candidate_report.md), [closeout record](../validation/pre_g9b_r6_plus_b_closeout_record.md)); the next operational subphase is `D0`, `NOT AUTHORIZED`
 - Author decisions for `D0` (2026-10-02): [D0 author-decision record](../validation/pre_g9b_r6_plus_d0_author_decisions_record.md) (`AQ-U2` to `AQ-U6`, undo semantics, the unit-independence invariant, the persistence target for `D1` and the export-foundation amendment). The [canonical `D0` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-d0-normative-unit-system-design.prompt.md) is prepared on `0ef616bb7bb8efd3e4f19762f38936ff4742d1c3`, tree `be7ef7acbc3503002f3dac2bc33f047795f7a644`: `PREPARED — NOT AUTHORIZED`, class `DOCUMENTATION_STATUS_ONLY` (author-frozen; future acceptance `STATIC`); the preparation package `T_R6PLUS_D0_PROMPT` `8814468101e3caef45d9f6cbad4bf563523c3478` is `PASS — AUTHOR APPROVED` (2026-10-02, with the author dispositions on `DQ-D0-1` to `DQ-D0-13`, which prevail over the prompt's defaults; [closeout and authorization record](../validation/pre_g9b_r6_plus_d0_prompt_closeout_record.md)); execution was authorized on 2026-10-02 on that unpublished package, the amended prompt is the execution contract, and `D0` is `PASS — AUTHOR APPROVED` (2026-10-02, `T_R6PLUS_D0` `8383a153dc2228fc08b4e00a0c92ef8025608916`; [candidate report](../validation/pre_g9b_r6_plus_d0_candidate_report.md); [closeout record](../validation/pre_g9b_r6_plus_d0_closeout_record.md); [ADR 0032](../adr/0032-unit-system-semantics-and-persistence-ownership.md) `ACCEPTED — AUTHOR APPROVED`; [unit-system specification](../../geocedg/specs/units/unit-system.md) v1.0 `NORMATIVE / AUTHOR APPROVED`); the next operational subphase is `D1`, `NOT AUTHORIZED`
 - Author decisions for `D1` (2026-10-02): [D1 author-decision record](../validation/pre_g9b_r6_plus_d1_author_decisions_record.md) (frozen class, product boundary, architecture rule, stop conditions). The [canonical `D1` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-d1-unit-system-implementation-and-status.prompt.md) is prepared on `3268f9b99d20c5d9cf62f25d8066ee0a8e47765c`, tree `83b32b6cb579dc28162f990160c3eef0b1928be6`; preparation package `PASS — AUTHOR APPROVED` and implementation authorized on 2026-10-03 on `3fb7542a` ([closeout and authorization record](../validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md), `DQ-D1-1` to `DQ-D1-11`); class `GLOBAL_IMPACT` (author-frozen; acceptance by one `FINAL`), with its [characterization report](../validation/pre_g9b_r6_plus_d1_preparation_characterization_report.md) and its [candidate report](../validation/pre_g9b_r6_plus_d1_candidate_report.md): `PASS — AUTHOR APPROVED` (2026-10-03; `T_R6PLUS_D1` `6e1d8459`, revision 2 after the author smoke of `b55aa817`; `AUTHOR_SMOKE = PASS`; `FINAL` `verification-9cf1a0af…` `ACCEPTED / COMPLETE`; [closeout record](../validation/pre_g9b_r6_plus_d1_closeout_record.md))
-- Pending mini-track debt (2026-10-03): `DEBT-R6PLUS-FILE-INSERT-SURFACE` — a File → Insert surface holding Insert File and Apply Template, both accepting `.cedg` and `.ggb` with their own semantics (Insert File imports into the current document; Apply Template applies defaults and styles and never replaces the `UnitState` or imports geometry); OFF files are not presented in the GeoCeDG UI, internal upstream OFF support stays. Not assigned to any subphase and not authorized; it needs an explicit subphase and verification class and must be closed before the global closeout of `PRE-G9B-R6-plus` ([D1 closeout record](../validation/pre_g9b_r6_plus_d1_closeout_record.md))
+- Mini-track debt `DEBT-R6PLUS-FILE-INSERT-SURFACE` (recorded 2026-10-03, [D1 closeout record](../validation/pre_g9b_r6_plus_d1_closeout_record.md)): a File → Insert surface holding Insert File and Apply Template, both accepting `.cedg` and `.ggb` with their own semantics (Insert File imports into the current document; Apply Template applies defaults and styles and never replaces the `UnitState` or imports geometry); OFF files are not presented in the GeoCeDG UI, internal upstream OFF support stays. Assigned by the author's planning decision of 2026-10-03 to the new subphase `F3` — File / Insert surface and document insertion compatibility ([F3 author-decision record](../validation/pre_g9b_r6_plus_f3_author_decisions_record.md)): `PLANNED — NOT AUTHORIZED`, planned class `INTEGRATED_PHASE` (registered `PHASE` + `INTEGRATION`), hard dependency `D1 → F3`; it must be closed before the global closeout of `PRE-G9B-R6-plus`, and its implementation prompt is not prepared
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -203,8 +203,11 @@ the dependencies: two links are added, one is downgraded and three are scoped
 to the frontend part of a subphase, each justified in §3.1.
 
 On 2026-10-02 the author split `A` into `A-1` and `A-2` (`AQ-L1b`, as `P0`
-recommended; [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md)). No other
-boundary changed.
+recommended; [A author-decision record](../validation/pre_g9b_r6_plus_a_author_decisions_record.md)). On
+2026-10-03 the author added `F3`, which takes the debt
+`DEBT-R6PLUS-FILE-INSERT-SURFACE` recorded at the `D1` closeout
+([F3 author-decision record](../validation/pre_g9b_r6_plus_f3_author_decisions_record.md)).
+No other boundary changed.
 
 | ID | Scope | Owning layers (§10) | Proposed class (§12) | State |
 |---|---|---|---|---|
@@ -220,6 +223,7 @@ boundary changed.
 | `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `F1` | direction visualization | view/drawables, Desktop option | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
 | `F2` | authoring-memory refinements | Desktop mode orchestration | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
+| `F3` | File / Insert surface and document insertion compatibility (`DEBT-R6PLUS-FILE-INSERT-SURFACE`) | profile, Desktop file surface and chooser routes, minimal upstream-identical seams | `INTEGRATED_PHASE` (author planning assignment 2026-10-03; frozen at authorization) | `PLANNED — NOT AUTHORIZED` (implementation prompt not prepared) |
 | `G` | help, integrated verification and R6-plus closeout | documentation, verification | `INTEGRATED_PHASE` (`INTEGRATION`) | `NOT AUTHORIZED` |
 
 The `State` column is the only current status. Every proposed class is a
@@ -243,8 +247,9 @@ A-1 ──► A-2                                  A-2 widens the domain and per
 A-1 ──► C                                    [added] C's LaTeX and DXF exporters consume A-1's effective-visibility rule
 D1 ──► E2                                    dimension values need the presentation-unit conversion
 D1 ──► E3                                    ISO physical size, drawing scale and unit contract
+D1 ──► F3                                    [added 2026-10-03] Insert File keeps the D1 unit-provenance contract
 P0 ──► F1, F2
-A-1, A-2, B, C, D1, E1, E2, E3, F1, F2 ──► G
+A-1, A-2, B, C, D1, E1, E2, E3, F1, F2, F3 ──► G
 G = PASS — AUTHOR APPROVED ──► unblocks PRE-G9B-R7
 
 Scoped to the frontend part of a subphase only:
@@ -273,16 +278,19 @@ linkage and `E1` becomes recommended.
 **Recommended execution predecessors**
 
 ```text
-P0 → A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → G
+P0 → A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → F3 → G
 ```
 
-This is the author's order, as accepted on 2026-10-02 with the split of `A`.
+This is the author's order, as accepted on 2026-10-02 with the split of `A`
+and extended on 2026-10-03 with `F3` before `G`.
 `A-2` follows `D1`, so the two subphases that add shared serialization and
 need `FINAL` run adjacently. Since the split, `A` in the prose of this
 subsection means `A-1`, the subphase that introduces the effective-visibility
 rule and the status bar. The sequence is the operational order currently
 chosen by the author, not a dependency: `D0` is documentation, technically
 independent, and may be scheduled in parallel with `A-1` or `B`. `F1` and `F2` are independent and may be scheduled anywhere after `P0`.
+`F3` has `D1` as its only hard predecessor; the author created no dependency
+between `F3` and `A-2` or `C` in either direction.
 None of these orderings is a kernel dependency.
 
 **Global and release gates**
@@ -354,6 +362,18 @@ each into an exact design candidate.
 - **`E3` — `IsoABorder`.** §8.6.
 - **`F1` — direction cue.** §9.1, with the `AQ-F1` option scope.
 - **`F2` — authoring memory.** §9.2 and §9.3.
+- **`F3` — File / Insert surface.** Added by the author on 2026-10-03
+  ([F3 author-decision record](../validation/pre_g9b_r6_plus_f3_author_decisions_record.md),
+  which also records the characterization at `P_R6PLUS_D1`). A GeoCeDG
+  File → Insert surface holding Insert File and Apply Template, both accepting
+  `.cedg` and `.ggb`. Insert File keeps its semantics: it imports into the
+  current document, is not Open, keeps the `D1` provenance and notice policy
+  and never scales coordinates by units. Apply Template keeps its semantics:
+  labeling, defaults and styles only, no geometry, no change of the target
+  `UnitState`. OFF files leave the GeoCeDG UI; the upstream OFF support stays.
+  No other format and no 3D import. Desktop surface and policy, with minimal
+  upstream-identical seams; no geometry semantics and no document-format
+  change.
 - **`G` — help and closeout.** Bilingual guide and in-product help for every
   accepted capability, the integrated `INTEGRATION` run, debt and observation
   reconciliation, and the closeout pending author approval.
@@ -1019,6 +1039,7 @@ drawable code, which is frontend presentation even though it is shared.
 | orientation cue | view decoration reading kernel direction | no | presentation derived from kernel semantics, read-only |
 | parallel/perpendicular memory | Desktop controller session helper | no | mode and session orchestration |
 | hidden angle for Angle with Given Size | Desktop controller companion | no | tool-path authoring default; the command is unchanged |
+| File → Insert surface, Insert File and Apply Template routes (`F3`) | profile, action registry and Desktop chooser routes, with minimal upstream-identical seams | no | menu, chooser and orchestration of existing document-consuming operations; no geometry semantics and no document-format change |
 | help and guide | documentation and localization | no | help |
 
 No row duplicates semantics in Desktop or Python. Four rows are kernel rows:
@@ -1071,6 +1092,7 @@ from the importance of the track.
 | `E3` | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | new shared command; `ExportArea` producer; units | as `E2` |
 | `F1` | `BOUNDED_PHASE` | registered `PHASE` | presentation-only decoration and option | the cue is exported or persisted per object |
 | `F2` | `BOUNDED_PHASE` | registered `PHASE` | Desktop mode orchestration only | a command or algorithm changes |
+| `F3` | `INTEGRATED_PHASE` (author planning assignment 2026-10-03; frozen at authorization) | registered `PHASE` + `INTEGRATION` | GeoCeDG File surface and profile pins; chooser routes in the shared upstream `GuiManagerD`; two document-consuming operations (Insert File through the hidden helper and the copy buffer, Apply Template through the shared `TemplateHelper`); the `D1` Insert File provenance; no serialization and no kernel geometry | shared serialization or parser change, a Classic semantic change of `ConstructionDefaults` or `TemplateHelper`, or a global verification-infrastructure change → stop for author review |
 | `G` | `INTEGRATED_PHASE` | `INTEGRATION` on `G`'s own candidate | integrates the accepted subphases; no evidence is inherited from any earlier subphase, including `D1`'s `FINAL` | a subphase changed global verification infrastructure → `FINAL` |
 
 Registering a phase selection is ordinary phase-local work and does not make a
@@ -1145,8 +1167,11 @@ PRE-G9B-R6-plus-D0         = PASS — AUTHOR APPROVED (2026-10-02; T_R6PLUS_D0 8
 PRE-G9B-R6-plus-D1         = PASS — AUTHOR APPROVED (2026-10-03; T_R6PLUS_D1 6e1d8459;
                              AUTHOR_SMOKE = PASS; revision 2 after the author smoke
                              of b55aa817)
-DEBT-R6PLUS-FILE-INSERT-SURFACE = PENDING SCHEDULING — NOT AUTHORIZED
-PRE-G9B-R6-plus-C … G      = NOT AUTHORIZED
+PRE-G9B-R6-plus-C … F2     = NOT AUTHORIZED
+PRE-G9B-R6-plus-F3         = PLANNED — NOT AUTHORIZED (2026-10-03; takes
+                             DEBT-R6PLUS-FILE-INSERT-SURFACE)
+DEBT-R6PLUS-FILE-INSERT-SURFACE = ASSIGNED TO PRE-G9B-R6-plus-F3 — NOT AUTHORIZED
+PRE-G9B-R6-plus-G          = NOT AUTHORIZED
 PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
                              BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED
 G9B                        = NOT AUTHORIZED

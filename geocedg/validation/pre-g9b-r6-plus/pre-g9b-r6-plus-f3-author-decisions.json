@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "recordKind": "AUTHOR_DECISIONS",
+  "recordSubkind": "PLANNING_DEBT_ASSIGNMENT",
+  "record": "docs/validation/pre_g9b_r6_plus_f3_author_decisions_record.md",
+  "authorDecisionDate": "2026-10-03",
+  "decidedOnBase": {
+    "name": "P_R6PLUS_D1",
+    "commit": "2941ddf2f2712340e831d292bdc2687b879850d6",
+    "tree": "158184b150a42e6dcae2946c39620d92cbfcd888"
+  },
+  "phaseState": "PLANNED — NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productPhaseEffect": "NONE",
+  "implementationPromptPrepared": false,
+  "debt": {
+    "id": "DEBT-R6PLUS-FILE-INSERT-SURFACE",
+    "recordedIn": "docs/validation/pre_g9b_r6_plus_d1_closeout_record.md",
+    "previousStatus": "PENDING SCHEDULING / RECONCILIATION — IMPLEMENTATION NOT AUTHORIZED",
+    "status": "ASSIGNED TO PRE-G9B-R6-plus-F3 — NOT AUTHORIZED",
+    "closesWith": "author approval of PRE-G9B-R6-plus-F3"
+  },
+  "subphase": {
+    "id": "PRE-G9B-R6-plus-F3",
+    "title": "File / Insert surface and document insertion compatibility",
+    "scope": [
+      "a GeoCeDG File -> Insert surface",
+      "Insert File and Apply Template move to that surface",
+      "both accept .cedg and .ggb",
+      "Insert File keeps its semantics: imports geometry/construction into the current document; not Open; no document replacement; keeps the D1 provenance and physical-mismatch notice policy; never scales coordinates by units",
+      "Apply Template keeps its semantics: applies labeling, defaults and styles; imports no geometry; does not replace the UnitState; does not apply the template document's units to the target",
+      "OFF file no longer presented in the GeoCeDG UI during this mini-track",
+      "internal upstream OFF support neither removed nor rewritten",
+      "no widening to other formats or to 3D import",
+      "closed before the global closeout of PRE-G9B-R6-plus"
+    ],
+    "architectureRule": [
+      "product-specific surface and policy stay in the GeoCeDG Desktop layer where possible",
+      "shared and upstream seams minimal and upstream-identical by default",
+      "no new geometry semantics",
+      "no document-format change"
+    ],
+    "verificationClass": {
+      "verificationClass": "INTEGRATED_PHASE",
+      "plannedAcceptance": ["registered PHASE", "INTEGRATION"],
+      "frozenAtPhaseStart": false,
+      "freezesWhenAuthorized": true,
+      "characterizationCheck": "class confirmed; no reclassification proposed",
+      "wouldNeedAuthorReviewIf": [
+        "shared document serialization or the shared parser must change",
+        "ConstructionDefaults or TemplateHelper semantics must change for Classic",
+        "global verification infrastructure must change beyond the phase-local allow-list amendment precedent"
+      ]
+    }
+  },
+  "dependencies": {
+    "hard": [{"from": "D1", "to": "F3", "reason": "Insert File preserves the D1 physical-unit and provenance contract"}],
+    "notCreated": ["A-2 -> F3", "C -> F3", "F3 -> C"],
+    "globalGate": "G includes the accepted F3 in its integrated closeout; F3 closes before the global closeout of PRE-G9B-R6-plus"
+  },
+  "operationalOrder": ["P0", "A-1", "B", "D0", "D1", "A-2", "C", "E1", "E2", "E3", "F1", "F2", "F3", "G"],
+  "operationalOrderIsDependency": false,
+  "characterization": [
+    {"seam": "GeoCeDG File menu", "evidence": ["apps/geocedg/application-profile.yml:3545-3565", "apps/geocedg/application-profile.yml:3346-3349", "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java:299-301"], "finding": "no Insert File, Apply Template or OFF action in the v2 profile"},
+    {"seam": "location of the operations", "evidence": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2002-2015", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2038-2098", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java:315-323"], "finding": "file-type filters of the shared upstream Open dialog, reached through document.open and the v1 fallback"},
+    {"seam": "accepted formats", "evidence": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2003", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2008", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2051", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2070", "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java:96-99"], "finding": "Insert and Template filters accept .ggb only"},
+    {"seam": "OFF route", "evidence": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2012-2015", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:1948-1959", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2163-2166", "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2196-2197", "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:3025-3046"], "finding": "filter plus typed-extension dispatch; removing the filter alone would not close the typed route (inferred)"},
+    {"seam": "Insert File", "evidence": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:4734-4787", "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:664-672"], "finding": "hidden AppGeoCeDG helper, then CopyPasteD.insertFrom"},
+    {"seam": "Apply Template", "evidence": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:4796-4815", "source/shared/common-jre/src/main/java/org/geogebra/common/jre/main/TemplateHelper.java:43-48"], "finding": "labeling, defaults and styles; no construction element copied; target UnitState untouched by code path, untested"},
+    {"seam": "Apply Template and layers", "evidence": ["source/shared/common/src/main/java/org/geogebra/common/kernel/ConstructionDefaults.java:917-926", "source/shared/common/src/main/java/org/geogebra/common/kernel/ConstructionDefaults.java:998-1001", "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:343-347"], "finding": "restyling appears to re-layer every restyled target object through the A-1 working-layer seam (inferred, untested)"},
+    {"seam": "helper loading", "evidence": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:605-620", "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:3074-3087", "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:3144-3161", "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:1061-1064", "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:3284", "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java:1095"], "finding": ".cedg and .ggb load by code path; untested from disk; recent-list side effect inferred"},
+    {"seam": "D1 provenance", "evidence": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGCopyPaste.java:22", "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java:559-572", "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java:644-684", "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:254-265"], "finding": "Insert File carries the inserted document's provenance and shows the same notice (DQ-D1-7)"},
+    {"seam": "profile mechanics", "evidence": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java:97-103", "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java:340-345", "tools/agent/workspace-profile-validation.ps1"], "finding": "group entries become submenus; File has none; action-count pin 125; approved-action allow-list amendment needed"},
+    {"seam": "Classic", "evidence": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/GuiManagerD.java:2002-2015"], "finding": "Classic shows the same four filters; GeoCeDG-only overrides of upstream-identical hooks keep it unchanged"},
+    {"seam": "documentation and tests", "evidence": ["docs/user/geocedg_user_guide_en.md:485-486", "docs/user/geocedg_user_guide_es.md:508-509"], "finding": "guides describe Insert File as a file type of File -> Open; no end-to-end test of the filters, insertFile, applyTemplate or OFF"}
+  ],
+  "stillOpen": [
+    "F3 implementation prompt (separate author instruction)",
+    "exact submenu and action identities",
+    "closing the typed .off route in the GeoCeDG UI",
+    "the helper's recent-list side effect",
+    "Apply Template re-layering and its interaction with the A-1 working layer and the A-2 domain"
+  ],
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-2": "NOT AUTHORIZED (next operational subphase)",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F3": "PLANNED — NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "DEBT-R6PLUS-FILE-INSERT-SURFACE": "ASSIGNED TO PRE-G9B-R6-plus-F3 — NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus IS PASS — AUTHOR APPROVED",
+    "G9B": "NOT AUTHORIZED"
+  }
+}
