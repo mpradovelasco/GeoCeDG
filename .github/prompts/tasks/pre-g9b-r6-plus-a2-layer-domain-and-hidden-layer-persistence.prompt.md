@@ -1,37 +1,44 @@
 # PRE-G9B-R6-plus-A-2 — layer-domain widening and persistent hidden layers
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-03. That
-instruction named the published base and the exact preparation base below,
-kept the author-accepted verification class, fixed the normative scope, the
-mandatory characterization, the forbidden scope and the stop conditions of
-`PRE-G9B-R6-plus-A-2`, and authorized only the documentary preparation of this
-prompt, a characterization report, the record of those decisions and the
-status updates they require. It stated that it **does not authorize the
-implementation of `A-2`**. The decisions are recorded, versioned, in the
+The author's explicit instruction of 2026-10-03 approves the documentary
+preparation package of `PRE-G9B-R6-plus-A-2` (`T_R6PLUS_A2_PROMPT`), names it as
+the exact start of the implementation branch, gives the author dispositions on
+`DQ-A2-1` to `DQ-A2-11`, accepts the prepared architecture, adds regression
+obligations and stop conditions, keeps `GLOBAL_IMPACT / FINAL`, and authorizes
+the implementation of `A-2`. The same instruction approves the `F3` planning
+reconciliation as planning only. The instruction is recorded, versioned, in the
+[A-2 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_a2_prompt_closeout_record.md).
+It also requires this amendment, as the first tracked edit of the phase, so
+that the prompt becomes the executable contract of the phase. The amendment
+replaces the prepared prompt of `T_R6PLUS_A2_PROMPT` (blob
+`459dbf5dc620a966d8dd593ae899010470789043`): it records the authorized branch
+start, integrates the `DQ-A2` dispositions, corrects the defaults they
+supersede (the saved state of `DQ-A2-2`, the commit context of `DQ-A2-6`, the
+cap wording of `DQ-A2-7` and the renderer-adapter boundary of `DQ-A2-9`), and
+freezes the class. Where the prepared prompt and the record differ, the record
+prevails; this amendment carries that precedence into the text. Every other
+scope, forbidden-scope and stop rule of the prepared prompt is kept. The
+preparation decisions are recorded in the
 [A-2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_a2_author_decisions_record.md);
 the evidence behind the characterization below is in the
 [A-2 preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_a2_preparation_characterization_report.md).
-The existence of this file is not authorization.
 
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-A-2` and the exact prepared candidate or base, and that
-disposes of the requested decisions `DQ-A2-1` to `DQ-A2-11`. That instruction
-may authorize, as the first tracked edit of the phase, an amendment of this
-prompt to the authorized state, following the `A-1`, `B`, `D0` and `D1`
-precedent. This file is an execution contract, not a second policy document:
-the layer decisions are stated once in the
+This file is an execution contract, not a second policy document: the layer
+decisions are stated once in the
 [A author-decision record](../../../docs/validation/pre_g9b_r6_plus_a_author_decisions_record.md)
-(`AQ-L1a`–`AQ-L8`), which this prompt cites and does not restate differently.
+(`AQ-L1a`–`AQ-L8`) and the `DQ-A2` dispositions once in the authorization
+record; this prompt cites them and does not restate them differently.
 
 ```text
 PRE-G9B-R6-plus-A-2 =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (A-2 implementation and technical verification only)
 passClaimed              = false
 PHASE_KIND               = PRODUCT IMPLEMENTATION — GEOCEDG LAYER DOMAIN 0..99,
                            DOCUMENT-WIDE PERSISTENT HIDDEN LAYERS (NOT UNDOABLE),
@@ -43,14 +50,21 @@ DEPENDS_ON               = PRE-G9B-R6-plus-A-1 = PASS — AUTHOR APPROVED — PU
                            PRE-G9B-R6-plus-D1  = PASS — AUTHOR APPROVED — PUBLISHED
                                                  (serialization landscape; recommended
                                                  predecessor)
-PRECONDITION             = author disposition of AQ-L7(3) (requested as DQ-A2-1)
+DEPENDS_ON_PACKAGE       = A-2 PREPARATION PACKAGE = PASS — AUTHOR APPROVED
+                                                 (not published)
+AQ-L7(3)                 = decided by the author as DQ-A2-1 (2026-10-03)
 NEXT_SUBPHASE            = PRE-G9B-R6-plus-C     (operational order; not authorized)
+STOP_STATE               = PRE-G9B-R6-plus-A-2 = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
 ```
 
-`authorApproved = false` means that no technical candidate of this phase has
-been author-approved. Technical verification never creates author approval.
-Once authorized, the phase stops with one exact technically verified candidate
-pending author review and author smoke.
+`implementationAuthorized = true` authorizes only the implementation and
+technical verification defined below. It authorizes no later subphase and no
+`F3` work. `authorApproved = false` means that no technical candidate of this
+phase has been author-approved. Technical verification never creates author
+approval. The phase stops with one exact technically verified candidate
+pending author review and author smoke, with `selfApproved = false`,
+`authorApproved = false` and `passClaimed = false`. The agent does not perform
+or claim author smoke.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -85,8 +99,9 @@ the effective normal-view visibility derived from it.
 ```text
 CHANGE_ROUTE         = ORDINARY
 VERIFICATION_CLASS   = GLOBAL_IMPACT          (author-accepted on 2026-10-02; kept by the
-                                               preparation instruction of 2026-10-03)
-frozenAtPhaseStart   = true when authorized
+                                               preparation instruction and the
+                                               authorization of 2026-10-03)
+frozenAtPhaseStart   = true
 PLANNED_ACCEPTANCE   = FINAL — one and only one, on one exact frozen clean candidate,
                        after FINAL -PlanOnly; no downgrade because edits look small
 ```
@@ -96,8 +111,10 @@ Section 12.8 of `geocedg/specs/operations/verification-levels.md` maps
 that select it: the admissible range of the shared `<layer val>` element, read
 on every load and written on every save, undo and rebuild snapshot, widens for
 GeoCeDG; a new document-level element enters the shared full-document writer
-and the shared top-level reader; a fail-closed rule (if `DQ-A2-4` keeps the
-default) enters the shared parser used by the Open preflight; the shared
+and the shared top-level reader; a fail-closed rule (`DQ-A2-4`) enters the
+shared parser used by the Open preflight; the saved-state predicate consumed
+by every New, Open and close prompt gains a document-presentation seam
+(`DQ-A2-2`); the shared
 domain consumers (`GeoElement`, `App`, `ConstructionDefaults`, scripting, API,
 property models, 3D render coding) change for one product configuration and
 must be proven unchanged for Classic; a forward-compatibility loss for older
@@ -118,10 +135,11 @@ on an unchanged candidate is refused.
 | same record `AQ-L1b` | the split; `A-2` carries only domain widening and persistence |
 | same record `AQ-L3` | document-wide, persistent, not undoable hidden layers; the LaTeX exclusion and the DXF policy stay with `C` |
 | same record `AQ-L2`, `AQ-L4`, `AQ-L5`, `AQ-L7(1)`, `AQ-L7(2)`, `AQ-L8` | kept unchanged: session working layer, one-shot mode, upstream `ShowLayer`/`HideLayer` semantics, the working layer is never hidden by interaction, choosing a hidden layer shows it, paste keeps layers |
-| same record `AQ-L7(3)` | still open; requested as `DQ-A2-1` |
+| same record `AQ-L7(3)` | decided by the author as `DQ-A2-1` (2026-10-03) |
 | [A-2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_a2_author_decisions_record.md) | the kept class, normative scope, mandatory characterization, forbidden scope and stop conditions |
+| [A-2 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_a2_prompt_closeout_record.md) | the authorization, the `DQ-A2-1`–`DQ-A2-11` dispositions (they prevail over the prepared defaults), the accepted architecture, the twelve additional regression obligations, the author-smoke checklist content and the additional stop conditions |
 | [A-1 closeout record](../../../docs/validation/pre_g9b_r6_plus_a1_closeout_record.md) and the accepted `A-1` implementation | the workspace, predicate and invariants `A-2` extends; `OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS` to revalidate under persistence |
-| [D1 closeout record](../../../docs/validation/pre_g9b_r6_plus_d1_closeout_record.md) and the [D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md) | the current serialization landscape, the Open transaction, `DQ-D1-5` (presentation never save-relevant content) and `DQ-D1-4` (localized load diagnostics) |
+| [D1 closeout record](../../../docs/validation/pre_g9b_r6_plus_d1_closeout_record.md) and the [D1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_d1_prompt_closeout_record.md) | the current serialization landscape, the Open transaction, the `DQ-D1-5` save-relevance seam (which `DQ-A2-2` extends for a non-empty hidden set through a separate document-presentation seam) and `DQ-D1-4` (localized load diagnostics) |
 | [layer-workspace design candidate](../../../docs/architecture/pre_g9b_r6_plus_a_layer_workspace_design_candidate.md) §3, §7 | evidence; where it differs from the author records, the records prevail |
 
 No open decision of any other subphase is resolved here.
@@ -136,7 +154,8 @@ No open decision of any other subphase is resolved here.
 | writing and reading the element | shared `MyXMLio.getFullXML` and `MyXMLHandler.startGeoGebraElement` (minimal seams), with `App` hooks that are upstream-identical by default | the only full-document writer and the only top-level reader |
 | the runtime hidden-layer set and the working layer | Desktop `GeoCeDGLayerWorkspace` owned by `AppGeoCeDG` (unchanged owner from `A-1`) | presentation; the only runtime holder; never in `Construction`, which every undo restore clears |
 | transient staging of a parsed set until a commit point | `AppGeoCeDG` (an `App` hook) | startup files are parsed in the host constructor before the workspace exists |
-| commit points, the working-layer rule after Open, save state, chooser, Algebra View eye, status | Desktop `AppGeoCeDG` and its workspace classes | orchestration and presentation |
+| save relevance of a non-empty hidden set (`DQ-A2-2`) | one `App` document-presentation seam consulted by `App.isSaved`, upstream default `false`, answered by `AppGeoCeDG` from the workspace | no duplicate of the set in `Construction` |
+| commit points, the working-layer rule after Open, save-state notification, chooser, Algebra View eye, status | Desktop `AppGeoCeDG` and its workspace classes | orchestration and presentation |
 
 No geometry algorithm, command or construction element reads the hidden-layer
 set. No second hidden-layer authority exists: the parser stages, the
@@ -156,8 +175,10 @@ Paths use `common/` = `source/shared/common/src/main/java/org/geogebra/common/`,
 `jre-test/` = `source/shared/common-jre/src/test/java/org/geocedg/common/` and
 `dtest/` = `source/desktop/desktop/src/test/java/org/geocedg/desktop/`. The
 phase re-establishes each citation before relying on it. A result marked
-**contract** is binding on the implementation once authorized; a result marked
-**finding** is evidence that a contract rests on.
+**contract** is binding on the implementation; a result marked **finding** is
+evidence that a contract rests on. The author accepted the prepared
+architecture on 2026-10-03; where a `DQ-A2` disposition below changes a
+contract, the disposition governs.
 
 #### C1. Layer-domain authority map (`A2-C1`)
 
@@ -169,13 +190,13 @@ every other consumer works with any non-negative bounded integer.
 |---|---|---|---|
 | clamp of every route (XML, `SetLayer`, API, properties, the `A-1` seam) | `common/kernel/geos/GeoElement.java:1001-1018` | semantic authority / validation | reads the configured bound |
 | highest-used bookkeeping | `common/main/App.java:1283-1291` (via `common/kernel/Kernel.java:4899-4900`) | validation (second clamp) | reads the configured bound |
-| default layer of non-interactive new objects, top layer reserved | `common/kernel/ConstructionDefaults.java:907-926` | semantic rule | `DQ-A2-7` |
+| default layer of non-interactive new objects, top layer reserved | `common/kernel/ConstructionDefaults.java:907-926` | semantic rule | `DQ-A2-7`: the structural cap `min(L_MAX − 1, maxLayerUsed)` with the configured bound; a cap, not a default layer |
 | `ShowLayer`/`HideLayer` argument range | `common/kernel/scripting/CmdShowHideLayer.java:58-62` | validation (silent no-op) | `DQ-A2-8` |
 | API `setLayerVisible` range | `common/plugin/GgbAPI.java:398-401` | validation (silent no-op) | `DQ-A2-8` |
 | Properties layer combo (index is the layer) | `common/gui/dialog/options/model/LayerModel.java:40-58`; `desktop/gui/dialog/ComboPanel.java` | UI bound | `DQ-A2-11`; a layer above the list length makes `setSelectedIndex` throw |
 | property collection of the newer UI | `common/properties/impl/objects/LayerProperty.java:48-53` | UI bound (shared, used by Web) | reads the configured bound |
 | GeoCeDG session bound | `geocedg-desktop/GeoCeDGLayerWorkspace.java:29-31`, `:34`, `:72`, `:171`, `:186-190`; chooser `geocedg-desktop/GeoCeDGWorkingLayerChooser.java:31-44`; message `apps/geocedg/application-profile.yml:5232-5235` | UI/session bound | reads the configured bound; message parameterized |
-| 3D render coding (layer packed into alpha, depth bias) | `common/geogebra3D/euclidian3D/openGL/BufferPack.java:218-224`; `common/geogebra3D/main/VertexShader.java:105-110`, `:133`, `:152-153`; Desktop GL2 fallback `desktop/geogebra3D/euclidian3D/opengl/RendererImplGL2.java:711-713` | renderer encoding | decodes correctly on Desktop float32; depth bias grows about tenfold at 99; `DQ-A2-9` |
+| 3D render coding (layer packed into alpha, depth bias) | `common/geogebra3D/euclidian3D/openGL/BufferPack.java:218-224`; `common/geogebra3D/main/VertexShader.java:105-110`, `:133`, `:152-153`; Desktop GL2 fallback `desktop/geogebra3D/euclidian3D/opengl/RendererImplGL2.java:711-713` | renderer encoding | decodes correctly on Desktop float32; depth bias grows about tenfold at 99; `DQ-A2-9`: a presentation adapter may clamp the renderer input only, never the model layer |
 | `<layer val>` read and write | `common/io/ConsElementXMLHandler.java:610-618`, `:2384-2386`; `common/kernel/geos/XMLBuilder.java:139-147` (written for every drawable, including 0) | compatibility | read through the clamp; writer unchanged |
 | draw order, hit testing, selection sentinels | `common/kernel/geos/DefaultGeoPriorityComparator.java:25-26`; `common/euclidian/HitDetector.java:61-65`, `:105-119`; `common/main/SelectionManager.java:376-389` | ordering | unchanged; non-negative bounded values are safe |
 | Algebra View group order | `desktop/gui/view/algebra/AlgebraViewD.java:513-537` (numeric since `A-1`) | UI ordering | unchanged |
@@ -287,8 +308,9 @@ never in undo XML) was re-characterized against the `D1` architecture:
   keeps every object, and drops the element on re-save.
 - **Contract.** The persistence shape is the accepted candidate; `D1` offers no
   more appropriate equivalent, because its element is construction-scoped and
-  undoable by design. The element name, grammar and position are requested as
-  `DQ-A2-3` with this default:
+  undoable by design. The element name, grammar and position are accepted by the
+  author (`DQ-A2-3`); the grammar applies unless implementation evidence reveals
+  a contradiction, which stops the phase for author review:
 
   ```text
   hidden-element = "<geocedgHiddenLayers" SP 'version="1"' SP 'layers="' layer-list '"' "/>"
@@ -307,23 +329,41 @@ never in undo XML) was re-characterized against the `D1` architecture:
   - read by one `geocedgHiddenLayers` case in
     `MyXMLHandler.startGeoGebraElement` (`MyXMLHandler.java:661-731`), active
     only when the configuration enables persistent hidden layers (`DQ-A2-5`),
-    which validates (`DQ-A2-4`) and hands the value to an `App` staging hook
-    (upstream default: nothing);
-  - ignored with a text log in macro parses (the macro part of an archive,
-    `common-jre/io/MyXMLioJre.java:200-208`; `.ggt`; `addMacroXML`), in
-    defaults and preferences XML, and in every non-clearing parse.
+    which validates (`DQ-A2-4`, fail closed) and records the value for the app
+    (C6);
+  - ignored with a text log in macro-kernel parses (`.ggt`, `addMacroXML`), in
+    generic merges, paste and every other non-document parse; Classic and Web
+    keep the upstream log-and-ignore behavior (`DQ-A2-5`); the macro part of an
+    archive (`common-jre/io/MyXMLioJre.java:200-208`) never carries the element,
+    and a value recorded there is superseded by the archive's own document
+    parse, which always follows it.
 
 #### C6. Persistence without undo (`A2-C6`)
 
 The reader cannot tell an undo restore from a document load: both are clearing
-parses with `NATIVE_OR_UNDO_RESTORE` (`MyXMLio.java:420-422`). The mechanism
-therefore never decides at the parser:
+parses with `NATIVE_OR_UNDO_RESTORE` (`MyXMLio.java:420-422`), and the lazy
+writer makes an absent element ambiguous. The decision therefore combines the
+effective load purpose of the parse with the document-replacement context
+established by the live architecture, never a method name alone (`DQ-A2-6`):
 
 ```text
-parser       : element present → validate → stage (transient);  absent → nothing
-commit point : staged value, or the empty set when nothing was staged,
-               replaces the workspace set after a successful load (DQ-A2-6)
-any other route: no commit; the workspace set is untouched
+parser          : a parse whose effective load purpose (the D1 rule: the construction's
+                  pending purpose read without consuming it, else the parser default) is
+                  NATIVE_OR_UNDO_RESTORE, REDEFINE_REBUILD, ORDINARY_EDIT_REBUILD or
+                  ROLLBACK_RESTORE, on a non-macro kernel whose configuration persists
+                  hidden layers, validates a present element (fail closed) and, only when
+                  the whole parse completes, reports its set to the app (empty when absent)
+commit context  : a document replacement established by the live architecture — the
+                  committed native-document load transaction of AppD (every .cedg/.ggb
+                  Open route, including the final loadXML(File) and loadXML(URL) routes),
+                  the clearing replacements App.setXML(xml, true) and AppD.loadXML(String)
+                  (both reset or set the current file), New, and startup; after it
+                  succeeds, the last reported set (empty when none) replaces the workspace
+                  set and the working layer follows DQ-A2-1
+any other route : no commit; undo, redo, rebuild, rollback and every merge leave the
+                  workspace set untouched; a reported set outside a transition is discarded
+                  when the next transition starts
+failure         : no commit; the previous set and working layer stay exactly
 ```
 
 | Route | Evidence | XML parsed | Element | Hidden set after |
@@ -333,16 +373,17 @@ any other route: no commit; the workspace set is untouched
 | undo, redo | `desktop/main/undo/UndoManagerD.java:184-244` → `MyXMLioJre.readZipFromMemory`; headless `DefaultUndoManager` | undo | absent | unchanged |
 | redefine rebuild, CAS change, collected redefines, failed-redefine restore | `Construction.java:2126`, `:2146`, `:4217-4249` | undo | absent | unchanged |
 | atomic mutation rollback | `Construction.java:2698-2732` | undo | absent | unchanged |
-| rejected-parse restore | `MyXMLio.java:405-406`, `:511-536` | full (`app.getXML()`) | present = current value | unchanged (staged only) |
-| paste rollback, Insert File spatial rollback | `common/util/InternalClipboard.java:623`, `:663-685`; `desktop/util/CopyPasteD.java:672` | full | present = current value | unchanged (staged only) |
+| rejected-parse restore | `MyXMLio.java:405-406`, `:511-536` | full (`app.getXML()`) | present = current value | unchanged (reported only) |
+| paste rollback, Insert File spatial rollback | `common/util/InternalClipboard.java:623`, `:663-685`; `desktop/util/CopyPasteD.java:672` | full | present = current value | unchanged (reported only) |
 | paste, `evalXML`, action replay | `InternalClipboard.java:626-640`; `common/plugin/GgbAPI.java:168-180` | construction-wrapped | cannot occur at top level | unchanged |
 | File → Open `.cedg`/`.ggb`, archives with macros, Open Recent, reset reload | `geocedg-desktop/AppGeoCeDG.java:605-620` → `desktop/main/AppD.java:3074-3087`, `:3144-3161`, `:3253-3312` | full | present or absent | **commit** (C7) |
-| failed live load after preflight | `AppD.java:3301-3307`, `:3333-3368` (the rollback snapshot is a full archive) | full | previous value | previous set and working layer unchanged; staging discarded |
+| failed live load after preflight | `AppD.java:3301-3307`, `:3333-3368` (the rollback snapshot is a full archive) | full | previous value | previous set and working layer unchanged exactly; the report is discarded |
 | `loadXML(String)` | `AppGeoCeDG.java:622-634` | full | present or absent | **commit** |
 | startup with a file | the host constructor parses before the workspace exists (`AppGeoCeDG.java:607-611`, `:319-332`) | full | present or absent | **commit** in `initializeLayerWorkspace` |
 | File → New, startup without a file | `AppGeoCeDG.java:586-603` | — | — | empty |
-| clearing `App.setXML` (public API, tool-creation reload, edit-macro switch, preferences loads) | `common/main/App.java:5114-5134`, `:1733-1747`; `common/plugin/GgbAPI.java:1473-1477`; `desktop/gui/dialog/ToolCreationDialogD.java:294`; `desktop/main/AppD.java:483`, `:506`, `:1175` | full or preferences | present or absent | `DQ-A2-6` |
-| `loadXML(URL)`, Base64 open, `openURL` | `AppD.java:3218-3251`; `desktop/gui/GuiManagerD.java:1838-1842`, `:1864`, `:1888`, `:1893` | full | present or absent | `DQ-A2-6` (`OBS-A1-URL-OPEN`) |
+| clearing `App.setXML` (public API, tool-creation reload, edit-macro switch, preferences loads) | `common/main/App.java:5114-5134`, `:1733-1747`; `common/plugin/GgbAPI.java:1473-1477`; `desktop/gui/dialog/ToolCreationDialogD.java:294`; `desktop/main/AppD.java:483`, `:506`, `:1175` | full or preferences | present or absent | **commit** when a document parse completed (`DQ-A2-6`); a reload of the same document re-commits its own set |
+| `loadXML(URL)` and `loadXML(File)` of a `.cedg`/`.ggb` (API open, `openURL`) | `AppD.java:3094-3100`, `:3218-3251`; `desktop/gui/GuiManagerD.java:1838-1842`, `:1864`, `:1888`, `:1893` | full | present or absent | **commit** through the native-document transaction (`DQ-A2-6`; `OBS-A1-URL-OPEN` for hidden layers and the working layer) |
+| Base64 archives and non-native URL documents (`App.loadXML(byte[])`, the non-transactional branch of `loadXML(URL)`) | `common/main/App.java:4233`; `AppD.java:3231-3241` | full | present or absent | not a native-document transaction: no commit, recorded as a residual observation; a Base64 startup argument commits at startup |
 | Insert File, Apply Template | `AppD.java:4734-4787`, `:4796-4815`; helper `AppGeoCeDG.java:664-672` | the source loads into the helper | the helper's own business | target unchanged: never imported |
 | macro part of an archive, `.ggt`, `addMacroXML` | `MyXMLioJre.java:200-208`; `App.java:3664-3670` | macro | ignored with a log | unchanged |
 | Open preflight | `DocumentArchivePreflight.java:36-52` | full | validated; staged into the scratch app's no-op hook | live state untouched |
@@ -362,18 +403,19 @@ architecture. A route that cannot keep this table stops the phase.
   persisted set.
 - **Contract.**
   - New: empty set; working layer 0 (`A-1`).
-  - Open and every commit point of `DQ-A2-6`: staging is cleared when the
-    transition starts; after a successful load the workspace takes the staged
+  - Open and every commit context of C6: the recorded report is cleared when the
+    transition starts; after a successful load the workspace takes the reported
     set or the empty set, then chooses the working layer by `DQ-A2-1`. A legacy
     document therefore opens with an empty set.
   - Open never writes the persisted set merely to satisfy the working-layer
-    initialization, never infers hidden layers from object visibility, and never
-    marks the document modified.
+    initialization, never unhides a persisted hidden layer, never infers hidden
+    layers from object visibility, and never marks the document modified.
   - A failed load leaves the previous set, working layer, file, saved state and
-    undo history unchanged.
-  - The staging field of `AppGeoCeDG` has no field initializer, because the
+    undo history exactly unchanged.
+  - The report fields of `AppGeoCeDG` have no field initializer, because the
     host constructor parses a startup file before the subclass initializers
-    run (the precedent of `AppGeoCeDG.java:83-89`).
+    run (the precedent of `AppGeoCeDG.java:83-89`); a failed startup load leaves
+    a blank document whose set is empty.
 
 #### C8. `AQ-L7(3)`: Open and persistent hidden layers (`A2-C8`)
 
@@ -382,18 +424,20 @@ architecture. A route that cannot keep this table stops the phase.
 as working shows it (`AQ-L7(2)`, `:56-65`). After Open, the `A-1` rule takes the
 highest drawable layer. With persistence, that layer can be hidden.
 
-| Case | `A-1` rule unchanged | Default of `DQ-A2-1` |
+| Case | `A-1` rule unchanged | `DQ-A2-1` (author disposition) |
 |---|---|---|
 | 1. highest used drawable layer is shown | it | it |
 | 2. highest used drawable layer is hidden | a hidden working layer (breaks `AQ-L7(1)`) | the highest used **shown** layer |
 | 3. layer 0 is hidden | unaffected unless 0 is the fallback | the fallback skips it |
-| 4. all used layers are hidden | a hidden working layer | the lowest shown layer of `0..L_MAX` (possibly unused) |
-| 5. all layers `0..L_MAX` are hidden | a hidden working layer | cannot be opened: a GeoCeDG writer never produces it, because the working layer is never hidden when the set is saved; the element is invalid (`DQ-A2-4`) |
-| 6. no drawables | 0 | the lowest shown layer (0 unless 0 is hidden) |
+| 4. all used layers are hidden | a hidden working layer | the lowest non-hidden layer of `0..L_MAX` (possibly unused) |
+| 5. all layers `0..L_MAX` are hidden | a hidden working layer | invalid persisted metadata: the document fails closed with an explicit diagnostic (`DQ-A2-1`, `DQ-A2-4`); a GeoCeDG writer never produces it, because the working layer is never hidden when the set is saved |
+| 6. no drawables | 0 | the lowest non-hidden layer (0 unless 0 is hidden) |
 | 7. the only candidate is on a hidden layer | a hidden working layer | as 2 or 4 |
 
-The persisted set is never modified by this rule. The status bar shows the
-chosen working layer; nothing else changes.
+**Contract.** The persisted set is never modified by this rule; the working
+layer is session state and is never serialized. The status bar shows the
+chosen working layer; nothing else changes. The `A-1` session degeneracy of
+every layer being hidden never authorizes writing an invalid persisted set.
 
 #### C9. Effective visibility after reopen (`A2-C9`)
 
@@ -427,10 +471,10 @@ chosen working layer; nothing else changes.
 |---|---|---|
 | `OBS-A1-GRAPHICS2-GEOCEDG-MODES` | unaffected: GeoCeDG modes still do not act in the upstream Graphics 2 controller; painting and hit filtering do | later frontend phase |
 | `OBS-A1-BACKGROUND-IMAGE-LAYER` | unaffected: the background pass stays unlayered; persistence makes no difference (B §12) | author / future |
-| `OBS-A1-3D-VIEW` | interaction: the domain widening reaches the 3D render coding (`DQ-A2-9`); hidden layers still do not apply in 3D | author |
+| `OBS-A1-3D-VIEW` | interaction: the domain widening reaches the 3D render coding; `DQ-A2-9` allows only a renderer-input adapter, never the model layer; layers above the renderer's distinguishable range may lose distinct 3D draw-order encoding (residual presentation limitation); hidden layers still do not apply in 3D | author |
 | `OBS-A1-NON-HIT-SELECTION` | interaction: persistent sets make reopened documents with hidden objects common, so Select All and keyboard selection reach them more often; no change in `A-2` | author |
 | `OBS-A1-RECOMPUTE-OUTPUTS` | unaffected in nature; outputs may now take a working layer in `10..99` | none required |
-| `OBS-A1-URL-OPEN` | interaction: with persistence a stale set would survive the API URL route; the default of `DQ-A2-6` makes that route a commit point | `A-2` by `DQ-A2-6`, or kept as observation |
+| `OBS-A1-URL-OPEN` | interaction: with persistence a stale set would survive the API URL route; under `DQ-A2-6` the native-document transaction commits for `.cedg`/`.ggb` URL and file routes; Base64 and non-native URL documents stay outside (C6) | `A-2` for the native routes; the remainder kept as observation |
 
 Nothing else is absorbed because `A-2` touches layers.
 
@@ -477,58 +521,67 @@ the effective normal-view visibility derived from it may differ.
 | `geocedg/specs/ui/cedg-workspaces.md:467-469`; developer guide `:629-634` | hidden layers are session state, never serialized | true for `A-1` | `A-2` updates both living documents |
 | user guides (C11) | the layer domain is `0..9` | true at the base | `A-2` updates both guides and documents the older-reader loss |
 | `GeoElementND.java:1106`, `:1120`; `SelectionManager.java:396` | Javadoc "0 to 9" | upstream text | recorded drift; not edited |
-| `A-1` tests (C1) | the chooser offers exactly `0..9`; the GeoCeDG default cap is 8; a toggle leaves the document saved | true for `A-1` | changed only as `DQ-A2-2`, `DQ-A2-7` and `DQ-A2-11` decide |
+| `A-1` tests (C1) | the chooser offers exactly `0..9`; the GeoCeDG default cap is 8; a toggle leaves the document saved and writes nothing | true for `A-1` | changed only as `DQ-A2-2`, `DQ-A2-3`, `DQ-A2-7` and `DQ-A2-11` decide |
+| `D1` record `DQ-D1-5`; `Construction.java:4034-4044` | presentation and session state never count as save-relevant content | true at the base | `DQ-A2-2` makes a non-empty persistent hidden set save-relevant through a separate `App` document-presentation seam; `Construction` and its unit seam are unchanged |
 | `P0` persistence matrix, row `workingLayer` | after Open, the highest drawable layer | `A-1` implements it capped at 9 | refined by `DQ-A2-1` |
 
 A contradiction that would change scope, owner, serialization or class stops
 the phase.
 
-### Decisions requested before authorization
+### Author dispositions on `DQ-A2-1` to `DQ-A2-11`
 
-Each row fixes a default contract. None is an author decision until the
-author disposes of it; the authorizing instruction is expected to record the
-dispositions, which then prevail over these defaults.
+The prepared prompt fixed a default contract for each requested decision. The
+author disposed of all of them on 2026-10-03; the
+[A-2 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_a2_prompt_closeout_record.md)
+is their authority and prevails over the prepared defaults. In substance:
 
-| ID | Question | Default contract | Main alternative |
-|---|---|---|---|
-| `DQ-A2-1` | `AQ-L7(3)`: working layer after Open with a persisted hidden set | C8: with `H` the persisted set and `U` the layers of drawables, `workingLayer = max(U \ H)`, else `min({0..L_MAX} \ H)`; `H` is never modified; a full-domain `H` is invalid | keep the `A-1` rule and show the chosen layer with a visible notice (an explicit mutation of the persisted set) |
-| `DQ-A2-2` | does a hidden-set change mark the document modified? | yes: an Algebra View eye toggle, or a working-layer choice that shows a hidden layer, calls `setUnsaved`, stores no undo point, and does not make presentation save-relevant content (`DQ-D1-5` kept: an otherwise empty document never prompts); a working-layer change alone, and every commit point, do not mark it | never mark it (the `A-1` behavior); the set is saved only with another change |
-| `DQ-A2-3` | element name, grammar and position | C5: `<geocedgHiddenLayers version="1" layers="…"/>`, ascending canonical list, written only when non-empty, after `</construction>` by `getFullXML` only | another name, or the position before `<construction>` (it would enter the header that `App.openEditMacro` copies, `App.java:1733-1747`) |
-| `DQ-A2-4` | recognized invalid hidden-layer metadata | fail closed, as `D1` §8.7 does for units, with localized (`en`, `es`) diagnostics naming the defect and the existing Open transaction (preflight first): a newer `version`; a missing or non-integer `version`; an attribute outside the grammar; a malformed list (sign, leading zero, not ascending, duplicate, empty, other separators); a value above the reader's `L_MAX`; a set covering the whole domain; a child element or text; a second element; the element anywhere but directly under `<geogebra>`. Macro, `.ggt`, defaults and preferences contexts ignore it with a text log | open with every layer shown and a non-blocking notice, dropping the element on the next save |
-| `DQ-A2-5` | Classic diagnostic and Web | older readers: a configuration default method keeps persistence off, so the reader keeps the upstream log-and-ignore behavior and the writer writes nothing; no Classic or Web hidden-layer UI | Classic validates and preserves the element without presenting it (incoherent with the Classic clamp of layers above 9) |
-| `DQ-A2-6` | commit points | New, Open (`.cedg`, `.ggb`, archives with macros, Open Recent, reset reload), `loadXML(String)`, startup with or without a file, every clearing `App.setXML` in GeoCeDG, and the `loadXML(URL)`, Base64 and `openURL` routes; never undo, redo, rebuild, rollback, paste, `evalXML`, action replay, macro loads, preflight, Insert File or Apply Template, which never import the source document's set | keep the API, URL and Base64 routes outside, as `OBS-A1-URL-OPEN` recorded |
-| `DQ-A2-7` | default layer of non-interactive new objects | `min(L_MAX − 1, highestUsed)` through the configured bound: GeoCeDG 98, Classic 8 unchanged; interactive creation keeps the `A-1` working layer | keep the GeoCeDG cap at 8 |
-| `DQ-A2-8` | range of `ShowLayer`, `HideLayer` and API `setLayerVisible` | the configured domain (GeoCeDG `0..99`, Classic `0..9`); semantics unchanged (`AQ-L5`): they still write individual object visibility and never touch the hidden set; the GGBScript capability matrix rule is re-applied and its derived inventory reconciled through the official mechanism if it changes | keep `0..9` in GeoCeDG, so `HideLayer(42)` stays a silent no-op although objects live on 42 |
-| `DQ-A2-9` | 3D render coding | clamp the layer fed to the 3D alpha coding and depth bias to the Classic range before the per-type shifts; render coding only; Classic unchanged | no 3D change, accepting a depth bias up to about ten times larger at layer 99 |
-| `DQ-A2-10` | an object layer outside the reader's domain in an `A-2` build | keep the upstream silent clamp on read (above `L_MAX` → `L_MAX`, below 0 → 0) | fail closed, which changes the upstream reader read by Classic too |
-| `DQ-A2-11` | layer pickers for `0..99` | the Properties combo (index is the layer) and the working-layer chooser list `0..L_MAX` from the configuration; texts carry the bound as a parameter | a numeric spinner or field in the GeoCeDG Properties panel |
+| ID | Outcome | Contract |
+|---|---|---|
+| `DQ-A2-1` | accepted with precision | C8: after a successful Open, the highest used drawable layer that is not hidden; if none is visible, the lowest non-hidden layer of `0..L_MAX`; the persisted set is never modified to choose a working layer; the working layer is session state and never serialized; a persisted set containing every layer of `0..L_MAX` is invalid and fails closed with an explicit diagnostic; hidden layers are never inferred from object state |
+| `DQ-A2-2` | **replaced in part** | a hidden-layer toggle is not undoable and creates no undo point, but it is persistent, so it marks the document unsaved whenever it changes the persisted set (an Algebra View eye toggle, or a working-layer choice that shows a hidden layer); a working-layer change alone, and every commit, do not mark it. A non-empty hidden set is save-relevant document content: an otherwise geometrically empty document prompts when its hidden state changed and was not saved; an untouched empty document with an empty set stays saved. `persistent != undoable`. The set is not duplicated in `Construction`: `App.isSaved` consults one `App` document-presentation seam (upstream default `false`) that `AppGeoCeDG` answers from the workspace, the single runtime owner. If this needs duplicating the authoritative set or materially redesigning general save semantics, stop and report |
+| `DQ-A2-3` | accepted | C5: `<geocedgHiddenLayers version="1" layers="…"/>`, a direct child of the full document XML outside `<construction>`, after `</construction>`, written only by `getFullXML`; lazy; canonical; document-wide; never in preferences, macro, `.ggt`, clipboard or undo XML; the prepared grammar unless evidence reveals a contradiction (stop for author review) |
+| `DQ-A2-4` | accepted | fail closed, with the `D1` transaction (preflight first) and localized (`en`, `es`) diagnostics naming the defect, on: a newer `version`; a missing or non-integer `version`; an attribute outside the grammar; a malformed list (sign, leading zero, not ascending, duplicate, empty, other separators); a value above the reader's `L_MAX`; a set covering the whole domain; a child element or text; a second element; the element anywhere but directly under `<geogebra>` in a document parse. Recognized `A-2` metadata is never silently discarded; older readers may drop it |
+| `DQ-A2-5` | accepted | Classic stays `0..9`; Classic and Web acquire no hidden-layer product semantics: a configuration default method keeps persistence off, so they keep the upstream log-and-ignore behavior and write nothing; no Classic or Web hidden-layer UI or runtime authority; no frontend broadening; stop if a shared change would make Classic accept layers above 9 as authoritative |
+| `DQ-A2-6` | accepted with precision | C6: the set is applied only in an effective full-document, clearing document transition whose effective load purpose denotes replacement of the document — New, the native-document Open transaction (all `.cedg`/`.ggb` routes, including the API file and URL routes), the clearing `App.setXML` and `AppD.loadXML(String)` replacements, and startup; never from `evalXML`, generic merges, paste, Insert File, Apply Template, macro loads, `.ggt` or non-clearing fragments; decided from the load purpose and context, not from a method name alone; a failed Open restores the previous hidden state exactly |
+| `DQ-A2-7` | **wording replaced** | the upstream structural rule `min(MAX_LAYERS − 1, app.getMaxLayerUsed())` is kept with its bound read from the configured authority: `min(L_MAX − 1, maxLayerUsed)`, so GeoCeDG's cap is 98 and Classic's stays 8 — caps, not default layers; no object lands on 98 merely because the domain is `0..99`; the `A-1` creation hook stays authoritative for interactive GeoCeDG creation and is neither bypassed nor redefined |
+| `DQ-A2-8` | accepted | `ShowLayer`, `HideLayer` and API `setLayerVisible` accept the configured domain (GeoCeDG `0..99`, Classic `0..9`) with unchanged object-visibility semantics (`AQ-L5`); never rerouted to the hidden-layer presentation; the GGBScript capability matrix rule is re-applied and its instance reconciled through the official mechanism if the derived inventory changes |
+| `DQ-A2-9` | accepted only as a presentation compatibility adapter | the 3D renderer input may be clamped to its current Classic-compatible range; the adapter never writes `GeoElement.layer`, XML, the API-visible layer or the domain, and never creates a semantic layer value; layers above the renderer's distinguishable range may lose distinct 3D draw-order encoding (a recorded residual presentation limitation); no hidden-layer behavior in 3D; stop if safe adaptation needs geometric or spatial semantics |
+| `DQ-A2-10` | accepted | the clamp on read is kept against the effective product domain: GeoCeDG `< 0 → 0`, `> 99 → 99`; Classic `< 0 → 0`, `> 9 → 9`; no wrap, no inferred migration; distinct from malformed hidden-layer metadata, which fails closed |
+| `DQ-A2-11` | accepted | every GeoCeDG layer picker or chooser that represents the product domain (the Properties combo, whose index is the layer, and the working-layer chooser) derives `0..L_MAX` from the configured authority; texts carry the bound as a parameter; no literal `99` in Desktop; Classic keeps its domain |
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 ```text
+IMPLEMENTATION_BRANCH_START =
+0e50626f70107376e691df6dea7bfcfe06de5c0a          (T_R6PLUS_A2_PROMPT, approved
+                                                   preparation package; not published)
+
+IMPLEMENTATION_BRANCH_START_TREE =
+fefc57cece8090941ad0ac16098e58a679a290ec
+
+PREPARATION_BASE =
+f467eb4563de7a7eb162da1b74954f9f847fa9d3          (T_R6PLUS_F3_PLAN, approved F3 planning;
+                                                   tree ece51c96117d6cbd55bc200d29c5240686516da9)
+
 PUBLISHED_BASE =
 2941ddf2f2712340e831d292bdc2687b879850d6          (P_R6PLUS_D1, published D1 closeout;
                                                    tree 158184b150a42e6dcae2946c39620d92cbfcd888)
 
-PREPARATION_BASE =
-f467eb4563de7a7eb162da1b74954f9f847fa9d3          (T_R6PLUS_F3_PLAN, local F3 planning
-                                                   commit; tree
-                                                   ece51c96117d6cbd55bc200d29c5240686516da9)
-
-IMPLEMENTATION_BRANCH_START =
-named by the authorizing instruction (the prepared candidate that carries this
-prompt, or a later published commit that contains it)
+IMPLEMENTATION_BRANCH =
+phase/pre-g9b-r6-plus-a2-layer-domain-persistence (local; created from the exact
+                                                   branch start; never rebased)
 ```
 
 A moving branch is not a base. Entry gate: local `main`, `origin/main` and the
-live remote `main` equal the published base the authorizing instruction names,
-its tree matches, the named branch start exists with its tree, and the
-worktree is clean. The phase works on a new local branch from the named commit
-and is not rebased onto any later commit without a new author instruction.
-Between `P_R6PLUS_D1` and the preparation candidate only documentation changes,
-so the citations above still apply; the phase re-establishes every one it
-relies on before using it.
+live remote `main` equal `P_R6PLUS_D1` and its tree; `T_R6PLUS_A2_PROMPT` exists
+with its tree and descends from `P_R6PLUS_D1` through `T_R6PLUS_F3_PLAN` only;
+the worktree is clean. The phase works on its implementation branch from the
+exact branch start and is not rebased onto any later commit without a new
+author instruction. The prepared candidate stays immutable: this amendment is a
+new commit on top of it. Between `P_R6PLUS_D1` and the branch start only
+documentation changes, so the citations above still apply; the phase
+re-establishes every one it relies on before using it.
 
 ## Authority and evidence hierarchy
 
@@ -538,7 +591,8 @@ relies on before using it.
 2. Current source, tests, build and serialization at the base.
 3. The [A author-decision record](../../../docs/validation/pre_g9b_r6_plus_a_author_decisions_record.md),
    the [A-2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_a2_author_decisions_record.md)
-   and the author's dispositions of `DQ-A2-1` to `DQ-A2-11`.
+   and the [A-2 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_a2_prompt_closeout_record.md)
+   with the author's dispositions of `DQ-A2-1` to `DQ-A2-11`.
 4. The accepted `A-1`, `B` and `D1` closeout records and their accepted
    implementations.
 5. Evidence, re-established before use: the
@@ -562,20 +616,31 @@ relies on before using it.
 - A new `org.geocedg.common` layers package: the immutable hidden-layer value,
   its grammar, canonical writer, strict reader, structured diagnostic and
   dedicated unchecked exception.
-- `MyXMLio.getFullXML`: one writer call; `MyXMLHandler.startGeoGebraElement`:
-  one reader case with misplacement detection (`DQ-A2-4`); `App`: the save and
-  staging hooks with upstream-identical defaults; the narrowest error-message
-  seam for a rejected element, reusing the `D1` diagnostic route.
-- The 3D render coding clamp, if `DQ-A2-9` keeps the default.
+- `MyXMLio.getFullXML`: one writer call; `MyXMLio.doParseXML`: the parse
+  classification, success report and rejected-parse restore trigger beside the
+  `D1` unit calls; `MyXMLHandler`: one top-level reader case with misplacement,
+  duplicate, child and text detection (`DQ-A2-4`); `App`: the writer, report
+  and save-relevance hooks with upstream-identical defaults, `App.isSaved`
+  through the document-presentation seam (`DQ-A2-2`); the narrowest
+  error-message seam for a rejected element, reusing the `D1` diagnostic route.
+- A renderer-input adapter for the 3D layer coding (`DQ-A2-9`), presentation
+  only, never writing the model layer.
 - Kernel localization keys for the diagnostics, if raised from shared code
   (`menu*.properties` are mixed-EOL; new lines with LF).
 
-### Desktop GeoCeDG layer
+### Desktop host and GeoCeDG layer
 
-- `GeoCeDGLayerWorkspace`: the configured bound, the commit of a staged set,
-  the `DQ-A2-1` rule, the `DQ-A2-2` save-state notification.
-- `AppGeoCeDG`: the save and staging hooks, the commit points of `DQ-A2-6`, the
-  startup commit, the failure path, the error messages.
+- `AppD`: one protected hook, upstream-identical by default, after a committed
+  native-document load transaction (the commit context of C6 for every
+  `.cedg`/`.ggb` route, including the final `loadXML(File)`/`loadXML(URL)`
+  routes); registered in `docs/upstream/modified-files.yml`.
+- `GeoCeDGLayerWorkspace`: the configured bound, the commit of a reported set,
+  the `DQ-A2-1` rule, the `DQ-A2-2` notification of user changes of the
+  persisted set.
+- `AppGeoCeDG`: the writer, report and save-relevance hooks, the commit contexts
+  of `DQ-A2-6` (Open, `loadXML(String)`, the clearing `setXML`, the
+  native-transaction hook, New, startup), the failure path, `setUnsaved` for
+  user changes of the persisted set, the error messages.
 - `GeoCeDGWorkingLayerChooser`, `GeoCeDGAlgebraView`, `GeoCeDGStatusBar` and the
   profile text `Workspace.Layer.ChooserMessage`: the configured bound only.
 
@@ -583,6 +648,9 @@ relies on before using it.
 
 - Tests for every obligation below and the fixture documents, registered in
   `docs/upstream/modified-files.yml` where they live under `source/`.
+- The GGBScript capability-matrix instance, its static-contract input pin and
+  the registry `static_contracts` pin, through the official mechanism, if the
+  `DQ-A2-8` edit of `CmdShowHideLayer` changes the derived inventory.
 - Registration of every modified upstream file in
   `docs/upstream/modified-files.yml` with the narrowest rationale.
 - The JUnit inventory and registry pin through the official updater with
@@ -606,16 +674,21 @@ relies on before using it.
 - `G11` scope: layer hierarchy, roles, locking, filters, named layer states;
   per-view persistent layer state beyond the document-wide set.
 - Rewriting object visibility to emulate hidden layers; changing
-  `ShowLayer`/`HideLayer` semantics (`AQ-L5`); making hidden layers geometric,
-  DAG, construction or object state; serializing `workingLayer`; making a
-  hidden-set change undoable.
+  `ShowLayer`/`HideLayer` semantics (`AQ-L5`) or rerouting them to the
+  hidden-layer presentation; making hidden layers geometric, DAG, construction
+  or object state; duplicating the hidden set in `Construction`; serializing
+  `workingLayer`; making a hidden-set change undoable; changing the `A-1`
+  hidden-layer predicate.
+- Resolving or implementing the open `F3` question on Apply Template
+  re-layering, and any further `F3` preparation or implementation.
 - Widening Classic or Web to `0..99`; raising
   `EuclidianStyleConstants.MAX_LAYERS`; repeating `99` outside the GeoCeDG
   configuration.
 - The rollback GUI debt `OBS-D1-ROLLBACK-CONSPROT-GUI`; any other `A-1`
   observation beyond C10.
-- Opportunistic 3D-layer behavior beyond the characterized render-coding
-  decision of `DQ-A2-9`.
+- Opportunistic 3D-layer behavior beyond the renderer-input adapter of
+  `DQ-A2-9`; any write of the 3D adaptation back to the model layer; hidden-layer
+  behavior in the 3D view.
 - Edits of the governance layer, `AGENTS.md`, `CLAUDE.md`,
   `.github/prompts/**` other than this prompt's authorized amendment,
   `ai-shell/prompts/**`, the verifier, its schemas or `prompt-contracts.json`,
@@ -656,10 +729,12 @@ owner, serialization or class stops the phase.
 | any layer above 9 in Classic | clamped to 9, as at the base |
 | empty hidden set | no element; byte identity |
 | hidden set containing the working layer at save | impossible by `AQ-L7(1)` |
-| hidden set covering `0..L_MAX` | invalid (`DQ-A2-4`) |
+| hidden set covering `0..L_MAX` | invalid persisted metadata; fails closed (`DQ-A2-1`, `DQ-A2-4`) |
 | hidden layer with no object | kept and persisted; never pruned |
 | object visible flag false on a shown layer | stays hidden; its flag is never written by `A-2` |
+| hidden-set change | document unsaved; no undo point (`DQ-A2-2`) |
 | undo after a hidden-set change | the set is unchanged |
+| object on a layer above the 3D renderer's distinguishable range | its model layer is unchanged; its 3D draw-order coding may coincide with the range end (`DQ-A2-9`) |
 
 ## Compatibility and serialization
 
@@ -683,18 +758,18 @@ or `final.desktop`:
 |---|---|
 | `T-DOMAIN-CONFIG` | the configuration bound: 9 by default, 99 in `AppConfigGeoCeDG`; the only `99` literal in product code |
 | `T-DOMAIN-ROUTES` | GeoCeDG keeps 10, 50, 99 through `setLayer`, `SetLayer`, the API, the XML reader, the Properties model and paste; `DQ-A2-10` outside the domain |
-| `T-DOMAIN-CONSUMERS` | `updateMaxLayerUsed`; the default cap (`DQ-A2-7`); macro and Locus V2 outputs; `GeoList` and polyhedron propagation; `ShowLayer`, `HideLayer`, `setLayerVisible` (`DQ-A2-8`); `LayerProperty`; numeric Algebra View order over `0..99`; the hit-test top-layer rule and the draw order with layers above 9 |
+| `T-DOMAIN-CONSUMERS` | `updateMaxLayerUsed`; the default cap (`DQ-A2-7`: a cap on `maxLayerUsed`, never a default layer; no object lands on 98 unless the highest used layer is at least 98); macro and Locus V2 outputs; `GeoList` and polyhedron propagation; `ShowLayer`, `HideLayer`, `setLayerVisible` (`DQ-A2-8`); `LayerProperty`; numeric Algebra View order over `0..99`; the hit-test top-layer rule and the draw order with layers above 9 |
 | `T-CLASSIC` | with `AppConfigDefault`: every probe value of C3 gives the base result; `ShowLayer(42)` is a no-op; the Properties combo has 10 entries; the hidden-layer element is logged, ignored and not re-written (`DQ-A2-5`); a corpus document is byte-identical |
 | `T-WORKSPACE-DOMAIN` | the workspace bound, the chooser offering `0..L_MAX`, `requireLayer`, the eye on groups above 9, the status text, the parameterized chooser message |
-| `T-3D-CODING` | `DQ-A2-9` on the coding arithmetic, without a GL context |
+| `T-3D-CODING` | `DQ-A2-9` on the coding arithmetic, without a GL context: the renderer input is clamped, the model layer, its XML and the API layer are never changed |
 | `T-XML-WRITER` | grammar, canonical order, omission when empty, position after `</construction>`, own line; never in undo, preferences, macro or clipboard XML; deterministic bytes under several default locales |
-| `T-XML-READER` | round trip through save and reopen; staging only; ignored contexts with a text log |
-| `T-FAIL-CLOSED` | every `DQ-A2-4` case: dedicated exception, structured diagnostic, preflight rejection, localized message in `en` and `es`, previous document, file, saved state and undo history unchanged |
+| `T-XML-READER` | round trip through save and reopen; report only, never applied by the parser; ignored contexts with a text log |
+| `T-FAIL-CLOSED` | every `DQ-A2-4` case, including the all-domain set: dedicated exception, structured diagnostic, preflight rejection, localized message in `en` and `es`, previous document, hidden set, working layer, file, saved state and undo history unchanged |
 | `T-PERSIST-NO-UNDO` | a change stores no undo point (2-second latch); undo and redo of construction changes, redefine rebuild, atomic rollback, paste rollback and rejected-parse restore leave the set unchanged; save, reopen, then undo: the set stays |
 | `T-ROUTES` | every row of the C6 table |
-| `T-NEW-OPEN` | New clears; Open commits; a legacy document opens empty; a failed Open keeps the previous set and working layer; startup with a file; `loadXML(String)`; the `DQ-A2-6` routes; Insert File and Apply Template never import the source set |
-| `T-OPEN-WORKING-LAYER` | the seven cases of C8 under the `DQ-A2-1` disposition; the persisted set is unchanged by Open |
-| `T-SAVED` | `DQ-A2-2`; `hasSaveRelevantContent` unchanged; an otherwise empty document never prompts |
+| `T-NEW-OPEN` | New clears; Open commits; a legacy document opens empty; a failed Open restores the previous set and working layer exactly; startup with a file; `loadXML(String)`; the clearing `setXML`; the native API file and URL routes; Insert File, Apply Template, paste, `evalXML` and macro loads never import a set |
+| `T-OPEN-WORKING-LAYER` | the seven cases of C8 under the `DQ-A2-1` disposition; Open never unhides a persisted hidden layer; the persisted set is unchanged by Open |
+| `T-SAVED` | `DQ-A2-2`: a toggle that changes the persisted set marks the document unsaved and stores no undo point; a geometrically empty document with a non-empty set is save-relevant and prompts; an untouched empty document with an empty set stays saved; a working-layer change alone and every commit do not mark it; `Construction.hasSaveRelevantContent` and `isStarted` unchanged |
 | `T-EFFECTIVE-REOPEN` | Graphics 1, Graphics 2, hit testing, the Algebra View and every picture export and its Save preview give the same effective visibility before saving and after reopening; LaTeX and DXF output unchanged |
 | `T-INVARIANCE` | C12 |
 | `T-UNITS-INDEPENDENCE` | a unit-bearing document with a hidden set round-trips both; a unit change and its undo leave the hidden set unchanged; a hidden-set change leaves the unit state, its XML and its undo stack unchanged; each fail-closed family reports its own diagnostic |
@@ -703,6 +778,21 @@ or `final.desktop`:
 | `T-COMPAT-CORPUS` | the mandatory corpus of C11 |
 | `T-GGBSCRIPT` | the derived GGBScript inventory and its pin, reconciled only as `DQ-A2-8` decides |
 | `T-SMOKE` | an explicit author-smoke checklist; the agent does not perform author smoke |
+
+The twelve additional regression obligations of the authorization record are
+each proven explicitly and mapped in the candidate report: (1) a toggle changes
+the saved state but adds no undo point (`T-SAVED`, `T-PERSIST-NO-UNDO`); (2) a
+geometrically empty document with a non-empty set is save-relevant
+(`T-SAVED`); (3) undo and redo never change the set (`T-PERSIST-NO-UNDO`); (4)
+a failed Open restores the set exactly (`T-NEW-OPEN`, `T-FAIL-CLOSED`); (5) Open
+never silently unhides a persisted hidden layer (`T-OPEN-WORKING-LAYER`); (6)
+all-domain persisted metadata fails closed (`T-FAIL-CLOSED`); (7) Classic stays
+clamped to `0..9` (`T-CLASSIC`); (8) GeoCeDG accepts and persists 10, 50 and 99
+(`T-DOMAIN-ROUTES`); (9) the `L_MAX − 1` rule is a cap on `maxLayerUsed`
+(`T-DOMAIN-CONSUMERS`); (10) the 3D adapter never mutates the model layer
+(`T-3D-CODING`); (11) `UnitState` and the hidden set round-trip independently
+(`T-UNITS-INDEPENDENCE`); (12) `B`'s preview/final-export consistency holds after
+save and reopen (`T-EFFECTIVE-REOPEN`).
 
 Harness rules: Desktop tests mock `JOptionPane`, inject the spatial-redefine
 presentation and the dialog prompts, use an injected preference store, wait for
@@ -769,14 +859,12 @@ hashes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-This prompt authorizes nothing. Its existence records a prepared contract.
-Execution requires an explicit author instruction naming
-`PRE-G9B-R6-plus-A-2`, the exact branch start and the dispositions of
-`DQ-A2-1` to `DQ-A2-11`; that instruction may authorize local implementation,
-local commits, technical verification, the single `FINAL` and one frozen
-technical candidate for author review and smoke. No instruction derived from
-this file authorizes self-approval, author smoke by the agent, or any change of
-the class.
+The author's instruction of 2026-10-03, recorded in the
+[A-2 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_a2_prompt_closeout_record.md),
+authorizes only the scope above: local implementation on the implementation
+branch, local commits, technical verification, the single `FINAL` and one
+frozen technical candidate for author review and smoke. It does not authorize
+self-approval, author smoke by the agent, or any change of the frozen class.
 
 `A-2` authorizes nothing that follows it. The operational order is
 `P0 → A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → F3 → G`; it is
@@ -818,15 +906,15 @@ documentary steps.
   `git archive` reproduction; the older-reader base-tree evidence; the
   obligation-to-test map; residual risks and observations; the author-smoke
   checklist.
-- The author-smoke checklist covers at least: choosing working layers 10, 50
-  and 99; Properties on an object of layer 99; hiding layers, saving, closing
-  and reopening; undo and redo after hiding; the working layer after opening
-  each `DQ-A2-1` case; New after a document with hidden layers; the save prompt
-  of `DQ-A2-2`; opening a legacy document; rejection of invalid hidden-layer
-  metadata; paste and Insert File between documents with different sets; the
-  picture export and its Save preview after reopen; Graphics 2; a unit-bearing
-  document with hidden layers; the Classic diagnostic application; and the
-  documented older-reader loss.
+- The author-smoke checklist is concise and covers at least the content the
+  authorization record requires: creation and selection of layers 0, 10, 50 and
+  99; chooser bounds; Classic stays `0..9`; hide layers, save, close and reopen;
+  hidden state survives reopen; the working layer after Open in the
+  hidden-highest-layer case; the all-used-hidden case; rejection of malformed
+  and all-domain hidden metadata; a hidden-layer toggle takes no part in
+  undo/redo; a hidden-layer change makes the document unsaved; a legacy
+  document opens with an empty hidden set; `B`'s picture preview and export stay
+  coherent after reopen; `D1` units coexist with persistent hidden layers.
 - Machine-readable evidence beside it, following existing conventions.
 - The bootstrap-impact outcome and rationale, the
   verification-infrastructure-impact assessment, `GUIDE_IMPACT` with paths,
@@ -840,7 +928,18 @@ documentary steps.
 Stop and report rather than improvise when:
 
 - the entry gate fails, or the base differs from the authorizing instruction;
-- correctness requires widening Classic or Web to `0..99`, or raising
+- implementing the saved-state semantics of `DQ-A2-2` requires duplicating the
+  hidden set in `Construction` or materially redesigning general save
+  semantics;
+- an all-domain hidden persisted document cannot be rejected cleanly without
+  materially changing the load architecture;
+- renderer compatibility requires modifying the authoritative model layer, or
+  safe 3D adaptation requires geometric or spatial semantics;
+- correctness requires changing the `A-1` hidden-layer predicate or
+  object-visibility semantics;
+- `F3` or `C` work becomes necessary;
+- correctness requires widening Classic or Web to `0..99`, making Classic accept
+  layers above 9 as authoritative, or raising
   `EuclidianStyleConstants.MAX_LAYERS`;
 - correctness requires changing object visibility to persist hidden layers;
 - correctness requires making hidden layers geometric, DAG, construction or
@@ -851,8 +950,9 @@ Stop and report rather than improvise when:
 - correctness requires per-view hidden sets instead of the document-wide set;
 - a `C`-owned exporter, specification or verifier would change;
 - unit semantics or the `<geocedgUnits>` contract would change;
-- the accepted `AQ-L1a`, `AQ-L1c`, `AQ-L3` or `AQ-L7` decisions would change,
-  or a `DQ-A2` question is reached without an author disposition;
+- the accepted `AQ-L1a`, `AQ-L1c`, `AQ-L3` or `AQ-L7` decisions or a `DQ-A2`
+  disposition would change, or the `DQ-A2-3` grammar meets contradicting
+  implementation evidence;
 - a route of the C6 table cannot keep its row;
 - the product bound cannot be supplied by configuration without a material
   upstream or kernel redesign;
