@@ -1,9 +1,9 @@
 # PRE-G9B-R6-plus-C author-decision record
 
 ```text
-RECORD_KIND              = AUTHOR_DECISIONS (preparation instruction)
-                           + PENDING DECISION QUESTIONS (DQ-C1 to DQ-C17)
-DECISION_DATE            = 2026-10-04
+RECORD_KIND              = AUTHOR_DECISIONS (preparation and reconciliation instructions)
+                           + DECISION QUESTIONS (DQ-C1 to DQ-C17)
+DECISION_DATE            = 2026-10-04 (preparation; reconciliation the same day)
 DECIDED_ON_BASE          = e613502831e3b412780d69424d4a1e433a4ae688
                            tree 48b00681a727ea4bd8768c3e9b0159bc01573ff0
                            (P_R6PLUS_A2, published A-2 closeout)
@@ -15,15 +15,18 @@ authorApproved           = false   (no C candidate exists)
 implementationAuthorized = false   (C and every later subphase)
 passClaimed              = false
 productPhaseEffect       = NONE
-DQ-C1 .. DQ-C17          = PENDING — NOT AUTHOR DECISIONS
+DQ-C5, DQ-C7             = AUTHOR-DIRECTED (2026-10-04); confirmation at authorization
+DQ-C1..C4, C6, C8..C17   = PENDING — NOT AUTHOR DECISIONS
 ```
 
 This record preserves, versioned, the decisions that the author's instruction
-of 2026-10-04 fixed for the preparation of `PRE-G9B-R6-plus-C` (§1, §2), and the
-decision questions that the preparation found still open (§3). It is the
-authority for §1 and §2. **§3 contains questions, not decisions**: every row is
-`PENDING`; its recommended default is the preparation's proposal and has no
-authority until the author disposes of it. Its machine-readable mirror is
+of 2026-10-04 fixed for the preparation of `PRE-G9B-R6-plus-C` (§1, §2), the
+author's reconciliation instruction of the same day (§1.1), and the decision
+questions (§3). It is the authority for §1, §1.1 and §2, and for the author
+directions recorded in `DQ-C5` and `DQ-C7`. **Every other row of §3 is a
+question, not a decision**: it is `PENDING`, and its recommended default is the
+preparation's proposal with no authority until the author disposes of it. Its
+machine-readable mirror is
 [`pre-g9b-r6-plus-c-author-decisions.json`](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-author-decisions.json).
 
 The instruction authorized only the documentary preparation of the canonical
@@ -50,6 +53,43 @@ cites and does not restate differently.
 | hidden layers (`A-2`) | `hiddenLayers` is document-presentation state; `effectiveVisible` is presentation, not geometry; `C` consumes the accepted visibility semantics and modifies no object visibility, geometry, DAG or identity | [A author-decision record](pre_g9b_r6_plus_a_author_decisions_record.md) `AQ-L3`; [A-2 closeout record](pre_g9b_r6_plus_a2_closeout_record.md) |
 | semantic curves | `GeoLocusV2` and Spline V2 semantics, branches, components, domains, revisions and semantic evaluation remain kernel authority; export code is a read-only consumer; render tessellation is never semantic export authority | `AGENTS.md` §11, §13; [DXF curve fidelity](../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md) §1; ADR 0014 |
 | `drawingScale` (`D0`) | `a:b`, positive integers, normal form `(a/g):(b/g)`, default `1:1`, `SESSION`, not serialized, not undoable, reset to `1:1` on New and Open | [unit-system specification](../../geocedg/specs/units/unit-system.md) §12 |
+
+### 1.1 Reconciliation instruction (2026-10-04)
+
+The author reviewed the prepared package and decided:
+
+```text
+T_R6PLUS_C_PROMPT  = 5ad96304ae9718c296db753b4822130cf3d99b61
+                     tree 1596b5153681828c9c3206b98ca9ebd31505e765
+                     acceptable in general; kept intact (not amended, not rewritten)
+D_R6PLUS_C_PROMPT  = a linear documentary reconciliation descendant of 5ad96304,
+                     without product code, product tests, normative C
+                     implementation amendments or verifier changes
+implementation of C = NOT AUTHORIZED
+```
+
+Scope of the reconciliation, and nothing else:
+
+1. `DQ-C5`: the prepared wording is superseded by the author direction on local
+   admissibility versus global completeness, with a characterized minimum
+   result and report model and no kernel state (§3).
+2. `DQ-C7`: the prepared recommendation is too broad; `drawingScale` resets only
+   on a successful effective document transition, characterized on the actual
+   lifecycle seams, with the determination of whether a `.ggt` or tool-save
+   workflow invokes a clearing `setXML` (§3).
+3. `DQ-C13`: the recommendation "DXF ignores `ExportArea`" is not accepted;
+   a focused characterization of geometric clipping, participation filtering and
+   a typed hybrid, keeping semantic domain, approximation work and area rule
+   separate, with compatibility impact, examples, a revised recommendation and
+   test obligations; the author decision is not taken by the preparation (§3).
+4. `DQ-C9` stays pending; its recommended implementation constraints are
+   amended (§3).
+5. `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` is not fixed for
+   `ExportArea` or the paste notice.
+
+Verification of the reconciliation: prompt contract, JSON, links, EOL,
+`git diff --check` and the same documentary `STATIC` as the first package.
+No push, no merge, no authorization of `C`.
 
 ## 2. Fixed preparation scope
 
@@ -134,12 +174,13 @@ selfApproved             = false
 passClaimed              = false
 ```
 
-## 3. Pending decision questions (`DQ-C1` to `DQ-C17`)
+## 3. Decision questions (`DQ-C1` to `DQ-C17`)
 
-Every row below is `PENDING`. "Recommended default" is the preparation's
-proposal; it is not an author decision. "Before authorization" states whether
-the implementation cannot start without the disposition. Evidence references
-are prompt sections and the characterization report.
+`DQ-C5` and `DQ-C7` carry the author directions of 2026-10-04 and are marked
+`AUTHOR-DIRECTED`; every other row is `PENDING`. "Recommended default" is the
+preparation's proposal; it is not an author decision. "Before authorization"
+states whether the implementation cannot start without the disposition.
+Evidence references are prompt sections and the characterization report.
 
 ### `DQ-C1` — exact Bézier output for `SplineV2` of degree ≤ 3 (`AQ-C1`)
 
@@ -229,23 +270,43 @@ are prompt sections and the characterization report.
 
 ### `DQ-C5` — invalid, partial and incomplete semantic curves in LaTeX
 
-- **Question.** What does LaTeX output when a semantic curve has a missing
-  domain, an invalid component, a gap, a work-limit exhaustion, a stale source
-  or locally valid components without global completeness?
-- **Alternatives.** (a) The DXF strict precedent: any `MISSING_DOMAIN`,
-  `DISCONTINUITY_UNRESOLVED`, `WORK_LIMIT`, `STALE_SOURCE_REVISION` or
-  `UNSUPPORTED` component blocks Generate with an explicit report and no code;
-  gaps are separate paths; locally certified components without global
-  completeness are emitted with an incomplete-coverage disclosure. (b) Emit every
-  exportable component and an explicit in-text omission notice per failed
-  component, plus the dialog report. (c) Omit failing sources with a warning
-  only (rejected: near-silent).
-- **Evidence.** C14; G9X1 strict default and writability rule; ADR 0014
-  Decision 6; LaTeX carries its disclosure inside the artifact, unlike DXF.
-- **Recommended default.** (a).
-- **Consequence.** `T-LATEX-FAILURES` for every case; the API route behavior
-  under `DQ-C16`.
-- **Before authorization.** Yes.
+- **Status.** `AUTHOR-DIRECTED (2026-10-04)`: the author superseded the prepared
+  default with the direction below. The detailed contract is prompt C14; the
+  authorizing instruction confirms it. Implementation not authorized.
+- **Author direction.** A locally certified, valid and unambiguous semantic
+  branch component may be emitted even when the source or global export result
+  is incomplete or completeness is `NOT_ESTABLISHED`; this never implies global
+  completeness. Branch and component identity, explicit gaps and
+  discontinuities are preserved; only certified valid components are emitted;
+  nothing is interpolated across an invalid or unresolved interval; failure
+  evidence is never omitted silently; the generated LaTeX carries approximation
+  and completeness comments; the export UI or report states incomplete coverage
+  visibly; stale-source, missing-domain, work-limit and tolerance failures are
+  classified explicitly. The export result distinguishes at least `COMPLETE`,
+  `INCOMPLETE_WITH_CERTIFIED_COMPONENTS` and `REJECTED / NO_ADMISSIBLE_OUTPUT`.
+  G9X1's partial-output-disabled rule is not applied mechanically to LaTeX.
+- **Prepared minimum model (C14).** Per-component outcomes are the existing
+  `SourceExportOutcome` (`Fidelity`, `Reason`, `ComponentAddress`,
+  `SemanticCoverage`, `ApproximationEvidence`); one derived classification is
+  added at source level (`COMPLETE`, `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`,
+  `NO_ADMISSIBLE_OUTPUT`) and at export level (`COMPLETE`,
+  `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`, `REJECTED / NO_ADMISSIBLE_OUTPUT`), in
+  the GeoCeDG export package, with no kernel state. `STALE_SOURCE_REVISION` and
+  an unestablishable tolerance or guarantee reject the export; `MISSING_DOMAIN`,
+  `DISCONTINUITY_UNRESOLVED`, `NON_FINITE`, `DEGENERATE_SOURCE` and `WORK_LIMIT`
+  fail the component or the source and leave the export incomplete with
+  evidence; gaps are separate paths. A source with no admissible output beside
+  other admissible content makes the export incomplete; nothing admissible at
+  all rejects it.
+- **Evidence.** C10, C14; G9X1 keeps per-component outcomes and only its
+  writability rule is strict (`GeometryExportPreflight.java:97-99`).
+- **Boundary.** DXF keeps its accepted strict rule and sidecar (fidelity spec
+  §7, ADR 0014 Decision 6); the shared adapter decides no writability.
+- **Consequence.** `T-LATEX-FAILURES`, `T-EXPORT-RESULT-MODEL`; the exact
+  comment and report form stays `DQ-C12`.
+- **Before authorization.** The authorizing instruction confirms the prepared
+  model or adjusts it (for example the export classification of a source with
+  no admissible output beside other content).
 
 ### `DQ-C6` — `drawingScale` input range, normalization and extreme outputs
 
@@ -266,19 +327,47 @@ are prompt sections and the characterization report.
 
 ### `DQ-C7` — owner and lifecycle of `drawingScale`
 
-- **Question.** Where does the session value live and where is it reset?
-- **Alternatives.** (a) C2: one `AppGeoCeDG` field per window; reset in the
-  `clearConstruction` override and in `commitLoadedDocument`, including clearing
-  `setXML` same-document reloads (a tool-creation save resets to `1:1`). (b) The
-  same, excluding clearing `setXML` (an API `setXML` replacement then keeps the
-  previous scale, documented as a gap). (c) A shared session-state holder that
-  also absorbs `ExportArea` (rejected: it would silently change the open
-  observation of C16).
-- **Evidence.** C2, C16.
-- **Recommended default.** (a): a stale scale from another document is worse
-  than a reset to `1:1` after a same-document reload.
-- **Consequence.** `T-SCALE-LIFECYCLE` route by route.
-- **Before authorization.** Yes.
+- **Status.** `AUTHOR-DIRECTED (2026-10-04)`: the prepared recommendation (reset
+  in the `clearConstruction` override and in `commitLoadedDocument`) was judged
+  too broad and is superseded. The detailed contract is prompt C2.
+  Implementation not authorized.
+- **Author direction.** `drawingScale` stays window/session export state,
+  default `1:1`. It resets only on a successful effective document transition:
+  a completed File → New, or a successful full-document replacement or Open,
+  independently of transport. It stays unchanged through undo, redo, redefine,
+  rollback, macro and tool processing, generic merge and `evalXML`,
+  non-document `setXML` and temporary construction clearing. Lifecycle
+  semantics decide, not `clearConstruction` or method names; the D1/A-2
+  successful-transition hooks are reused where they exist. A `.ggt` or
+  tool-save workflow that invokes a clearing `setXML` must not reset it. The
+  separate `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` is not
+  fixed for `ExportArea` or the paste notice.
+- **Prepared seams (C2).** `E1` the completed-New branch of `AppGeoCeDG.fileNew`;
+  `E2` `nativeDocumentLoadCommitted`; `E3` `documentReplacementCommitted`; `E4`
+  a successful `runDocumentLoad` (`loadXML(String)` and `loadExistingFile`);
+  `E5` the API `setXML(String)` document replacement, which has no
+  distinguishing hook at the base and needs one GeoCeDG-gated `GgbAPID` marker
+  observed by `AppGeoCeDG.setXML` when the parse completes; `E6` `reset()`
+  without a current file (graphics reset icon, API `reset`), a blank-document
+  replacement that `D1` and `A-2` already treat as a new document.
+- **Tool workflows (determined).** Yes, a current tool-save workflow invokes a
+  clearing `setXML`: Create New Tool with an existing command name → Replace,
+  and the save from a macro-edit window, both reload the document window with
+  `appToSave.setXML(appToSave.getXML(), true)`
+  (`desktop/gui/dialog/ToolCreationDialogD.java:223-233`, `:265-294`; shared
+  `common/gui/dialog/ToolCreationDialogModel.java:244-245`, `:272-291`). Probe
+  `P-C7-TOOL-REPLACE` proves that this reload reaches the `A-2` commit (working
+  layer 2 → 6, construction identical). Under the prepared seams it would have
+  reset `drawingScale`; under `E1`–`E6` it does not, because no successful
+  transition event fires on that path. The macro-edit window
+  (`App.openEditMacro`) runs in a fresh window; `.ggt` open, save and delete and
+  the GeoCeDG tool library never reach a transition event.
+- **Open detail.** Whether `E6` (reset to a blank document without a current
+  file) counts as a successful effective transition; default yes.
+- **Consequence.** `T-SCALE-LIFECYCLE` with every positive and negative route of
+  C2.
+- **Before authorization.** The authorizing instruction confirms the seams and
+  `E6`.
 
 ### `DQ-C8` — export UI per unit state
 
@@ -300,24 +389,32 @@ are prompt sections and the characterization report.
 
 ### `DQ-C9` — EMF `rclFrame`
 
+- **Status.** `PENDING`. The author amended the implementation constraints of
+  the recommendation on 2026-10-04; this does not authorize implementation.
 - **Question.** How does `C` make the EMF physical frame meet the §13 contract?
 - **Alternatives.** (a) Device-reference scaling on FreeHEP's fixed 0.3125 mm
   unit, no FreeHEP change, documenting a frame error up to about 0.32 mm.
-  (b) An opt-in exact frame in the FreeHEP EMF writer, computed from the exact
-  physical size and rounded to the nearest 0.01 mm (≤ 0.005 mm), non-opt-in
-  output byte-identical, under the `B` provenance gate and records. (c) EMF
-  declared device-only in GeoCeDG: no physical claim, labelled.
+  (b) An opt-in exact frame in the FreeHEP EMF writer under the `B` provenance
+  gate and records. (c) EMF declared device-only in GeoCeDG: no physical claim,
+  labelled.
+- **Author constraints if FreeHEP is modified (2026-10-04).** The change is
+  opt-in for GeoCeDG; the default host and Classic behavior stays unchanged; the
+  physical `rclFrame` derives directly from the requested physical output size;
+  DPI does not determine the physical frame; each dimension is rounded to the
+  nearest representable 0.01 mm and the unavoidable quantization of at most
+  0.005 mm per dimension is documented; no wider FreeHEP redesign.
 - **Evidence.** C5; probe `P-C-EMF`: the base frame is `D/81.28` times the
   labelled size; device-reference errors observed up to 0.12 mm on a 3 mm
-  extent; nearest-0.01 mm errors ≤ 0.003 mm.
-- **Recommended default.** (b), following the `B` PDF precedent; it is the only
-  option that meets the contract within the format's own quantization. Because
-  the `B` record made any further FreeHEP family change an explicit author
-  decision, the disposition also confirms that it stays inside
-  `INTEGRATED_PHASE`.
+  extent; nearest-0.01 mm errors ≤ 0.003 mm on every probed case.
+- **Recommended default.** (b) within the author constraints, following the `B`
+  PDF precedent; it is the only option that meets the contract within the
+  format's own quantization. Because the `B` record made any further FreeHEP
+  family change an explicit author decision, the disposition also confirms that
+  it stays inside `INTEGRATED_PHASE`.
 - **Consequence.** (b): a third-party source change with provenance,
   `THIRD_PARTY.md`, component-matrix and modified-files records, a byte-identity
-  test of the non-opt-in writer and `T-PHYSICAL-PICTURE` frame checks.
+  test of the non-opt-in writer, DPI-independence and nearest-0.01 mm frame
+  checks in `T-PHYSICAL-PICTURE`.
 - **Before authorization.** Yes.
 
 ### `DQ-C10` — `OBS-R6PLUS-EXPORT-PREVIEW-ABSENT`
@@ -352,33 +449,111 @@ are prompt sections and the characterization report.
 - **Consequence.** `T-DXF-USM`, `T-DXF-SIDECAR`; manifest tests and spec §8.
 - **Before authorization.** Yes.
 
-### `DQ-C12` — disclosure of approximate semantic curves in LaTeX
+### `DQ-C12` — form of the LaTeX disclosure
 
-- **Question.** Where is the approximation disclosed?
-- **Alternatives.** (a) A comment per exported source in the generated code
-  (fidelity, tolerance, guarantee, achieved estimate, component count, coverage)
-  plus a non-modal report area in the dialog. (b) Comments only. (c) Report
-  only.
+- **Status.** `PENDING`, narrowed by the `DQ-C5` direction, which requires both
+  comments in the generated LaTeX and a visible statement in the export UI or
+  report.
+- **Question.** What exact form do the comments and the report take?
+- **Alternatives.** (a) One header comment with the export classification, one
+  comment per semantic source (fidelity, tolerance, guarantee, achieved
+  estimate, components, coverage, failures), and a non-modal report area in the
+  dialog. (b) The same comments with the report as a modal summary after
+  Generate.
 - **Evidence.** C12: the dialogs have no report area; each dialect has a
   comment syntax.
 - **Recommended default.** (a).
-- **Consequence.** `T-LATEX-SEMANTIC`; a GeoCeDG-gated report area.
+- **Consequence.** `T-LATEX-SEMANTIC`, `T-EXPORT-RESULT-MODEL`; a GeoCeDG-gated
+  report area.
 - **Before authorization.** Yes.
 
-### `DQ-C13` — `ExportArea` in DXF and the remaining area/domain interactions
+### `DQ-C13` — how DXF consumes the authoritative `ExportArea`
 
-- **Question.** Does DXF consume `ExportArea`, and how do area, semantic domain
-  and approximation bounds interact?
-- **Alternatives.** DXF: (a) ignore the area (model-space interchange; no
-  geometric clipping in the exporter), stated in dialog and guide; (b) filter
-  entities by bounding-box overlap with the area, without clipping; (c)
-  geometric clipping (rejected by `AGENTS.md` §13 and G5: geometric solving in
-  the exporter and approximation of exact entities). LaTeX: the area is only the
-  format clip, resolved for the active Graphics view; never a domain, never an
-  approximation bound or cull.
-- **Evidence.** C9.
-- **Recommended default.** DXF (a); LaTeX as stated.
-- **Consequence.** `T-DXF-AREA`, `T-LATEX-AREA`.
+- **Status.** `PENDING`. The author rejected the prepared default "DXF ignores
+  `ExportArea`" (2026-10-04): it conflicts with the accepted `B`/`C` contract
+  that the picture exporters, the LaTeX exporters and DXF converge on the one
+  `B` `ExportArea`. The author also excluded assuming that clipping every DXF
+  entity is correct. The full per-family matrix, the impact matrix and the
+  examples are prompt C9-DXF; this section states the decision question.
+- **Question.** Which rule lets the implementation truthfully state that DXF
+  consumes the same authoritative `ExportArea` as the other `C` exporters?
+- **Facts every alternative respects.** `ExportArea.resolve` always yields an
+  area, falling back to `VISIBLE_VIEWPORT`; consuming that fallback would make
+  the DXF zoom-dependent and break the G5 PASS clause, so every alternative
+  treats it as "no explicit area" (model space as at the base) and consumes
+  only `MANUAL`, `EXPORT_POINTS_EXPLICIT` and `EXPORT_POINTS_AUTOMATIC`; the
+  area is resolved for the active 2D Graphics view; the semantic finite domain,
+  the approximation domain and work, and the area rule stay separate, and the
+  area never substitutes for a missing required semantic domain; the consumed
+  area (bounds, producer, view) is reported, recorded in the sidecar when one is
+  written, and enters the staleness fingerprint.
+- **Alternatives.**
+  - **A — geometric clipping.** Emit the part of every source inside the closed
+    area. Consequences: `RAY` and `XLINE` become `LINE`; `CIRCLE` becomes 0–4
+    `ARC`; ellipses become elliptic arcs; closed polygon boundaries become open
+    polylines (region clipping would invent edges); clipped endpoints and angles
+    are computed values (divisions, square roots), so `EXACT` in the G5 sense
+    (no tolerance beyond text round trip) no longer holds; the exporter gains
+    intersection solving (`AGENTS.md` §13); one source maps to several entities;
+    a Locus V2 component cut at the area gets piece parameters from sampled
+    coordinates, so its identity could no longer be truthful.
+  - **B — participation.** The area decides which sources, and which certified
+    components of a semantic source, participate; participating entities are
+    emitted whole and exact; non-participating ones are reported as outside the
+    area (a population outcome, not a fidelity failure). Predicate variants: B1
+    the geometry meets the closed area; B2 its bounding box overlaps the area;
+    B3 it lies wholly inside. Infinite `RAY`/`XLINE` that meet the area are
+    emitted whole (infinite); under B3 they never participate. For a semantic
+    component, participation is decided on its certified approximation enlarged
+    by the achieved estimate. The meaning of the area for DXF is "the geometry
+    that meets the area, whole", not "the drawing cut to the area"; the dialog,
+    report, header comment and guide must say so.
+  - **C — typed hybrid.** Clip some classes, filter the others. No class can be
+    clipped without either a family change (`RAY`, `XLINE`, `CIRCLE`, closed
+    polygon) or computed endpoints that need a new exactness class (`LINE`,
+    `ARC`, `ELLIPSE`, polyline); semantic components cannot be clipped
+    truthfully at all. A file would mix two meanings of the area.
+- **Concrete examples** (`R = [0, 10] × [0, 10]`): segment (−1, 0)–(2, 1) → A
+  `LINE` (0, 1/3)–(2, 1) with a rounded endpoint, B whole; ray from (5, 5) along
+  +x → A `LINE` (5, 5)–(10, 5), B whole `RAY`; line y = 5 → A `LINE`
+  (0, 5)–(10, 5), B whole `XLINE`; circle centre (10, 10), r = 3 → A `ARC`
+  180°–270°, B whole `CIRCLE`; circle centre (5, 5), r = 20 → A nothing, B1 not
+  participating, B2 participating; square (−2, −2)…(2, 2) → A open polyline
+  (0, 2)–(2, 2)–(2, 0), B whole closed square; `LocusV2` y = x² on [−2, 2] → A
+  the piece x ∈ [0, 2] cut at an interpolated vertex, B the whole component.
+- **Recommended default.** **B1 participation**: explicit producers only;
+  sources and certified components whose geometry meets the closed area are
+  emitted whole and exact in construction order; the others are reported as
+  outside the area (never silently); applied to complete-construction and
+  current-selection requests alike (selection ∩ area, outside-area selected
+  sources reported); a header comment and the sidecar record the area and the
+  participation rule. Reasons: it is the only alternative that keeps every
+  accepted G5/G9X1 contract (entity families, exactness, identity, handles per
+  entity, the infinite-geometry rule), adds no geometric solving to the
+  exporter (closed-form predicates only, no emitted computed geometry), keeps
+  semantic component identity, and lets the implementation state truthfully
+  that DXF consumes the same `ExportArea` authority with a documented,
+  format-appropriate meaning. Sub-choices for the author: B1 versus B2 or B3;
+  whether current selection is also filtered (default yes).
+- **Compatibility cost of the recommendation.** No change without an explicit
+  area (G5 and G9X1 corpora byte-identical; zoom invariance kept); documents
+  with `Export_1`/`Export_2` now export a participation subset; a new
+  outside-area outcome or diagnostic, counted in preflight and recorded in the
+  sidecar; a header comment when an area is consumed; the area in the staleness
+  fingerprint; handles renumber deterministically over the subset; spec
+  amendments of the G5 foundation (area rule, population statement) and the
+  fidelity spec §7 and §8. Cost of A or C: the same plus amendments of ADR 0005
+  Decisions 5–6, the G5 exactness and infinite-geometry rules and the fidelity
+  vocabulary, new sidecar sub-addresses for split entities, and no truthful
+  clipping of semantic curves without a new kernel capability (a stop).
+- **Test obligations.** `T-DXF-AREA` (prompt): the `VISIBLE_VIEWPORT` fallback
+  gives the base bytes at every zoom; `MANUAL` and both `EXPORT_POINTS`
+  producers; inside, crossing, outside and boundary-touching sources of every
+  family, including infinite lines and rays, the area-enclosing circle and
+  closed polygons; semantic components per component; both selection modes;
+  outside-area reporting, header comment and sidecar record; the area of the
+  active view; determinism and handle order; a missing semantic domain never
+  replaced by the area; `T-DXF-STALENESS` for an area change after preflight.
 - **Before authorization.** Yes.
 
 ### `DQ-C14` — FreeHEP five-significant-digit path coordinates
@@ -443,7 +618,12 @@ are prompt sections and the characterization report.
 
 ```text
 PRE-G9B-R6-plus-C        = PREPARED — NOT AUTHORIZED
-DQ-C1 .. DQ-C17          = PENDING — NOT AUTHOR DECISIONS
+                           (prepared 5ad96304; reconciled by D_R6PLUS_C_PROMPT)
+implementationAuthorized = false
+DQ-C5, DQ-C7             = AUTHOR-DIRECTED (2026-10-04); confirmation at authorization
+DQ-C1..C4, C6, C8..C17   = PENDING — NOT AUTHOR DECISIONS
+OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT = RECORDED BY THE C RECONCILIATION —
+                           A-2 BEHAVIOR — NOT C SCOPE — NOT FIXED
 PRE-G9B-R6-plus-E1, E2, E3, F1, F2, G = NOT AUTHORIZED
 PRE-G9B-R6-plus-F3       = PLANNED — AUTHOR APPROVED — PUBLISHED — IMPLEMENTATION NOT AUTHORIZED
 PRE-G9B-R7               = DESIGNED — NOT AUTHORIZED

@@ -176,9 +176,75 @@
     "phaseSelectionsAtBase": 44,
     "escalationTriggers": ["document serialization", "XML parser or undo snapshot change", "global renderer semantics", "material Classic semantics change", "global verifier architecture change", "FreeHEP family beyond the DQ-C9 disposition"]
   },
-  "obligations": ["T-ROUTES", "T-SCALE-VALUE", "T-SCALE-LIFECYCLE", "T-SCALE-UI", "T-PHYSICAL-PICTURE", "T-PRESENTATION-INVARIANCE", "T-ZOOM-INVARIANCE", "T-COORDINATES", "T-UNSPECIFIED", "T-EXTREMES", "T-LATEX-AREA", "T-LATEX-VISIBILITY", "T-LATEX-UNITS", "T-SEMANTIC-ADAPTER", "T-LATEX-SEMANTIC", "T-LATEX-FAILURES", "T-SPLINE", "T-LEGACY-LOCUS", "T-DXF-UNITS", "T-DXF-USM", "T-DXF-SIDECAR", "T-DXF-STALENESS", "T-DXF-VISIBILITY", "T-DXF-AREA", "T-G9X1-IDENTITY", "T-B-REGRESSION", "T-D1-REGRESSION", "T-A2-REGRESSION", "T-CLASSIC", "T-WEB-BOUNDARY", "T-NO-SERIALIZATION", "T-DETERMINISM", "T-PREVIEW", "T-API-ROUTES", "T-HISTORICAL-PINS", "T-GUIDE", "T-SMOKE"],
+  "obligations": ["T-ROUTES", "T-SCALE-VALUE", "T-SCALE-LIFECYCLE", "T-SCALE-UI", "T-PHYSICAL-PICTURE", "T-PRESENTATION-INVARIANCE", "T-ZOOM-INVARIANCE", "T-COORDINATES", "T-UNSPECIFIED", "T-EXTREMES", "T-LATEX-AREA", "T-LATEX-VISIBILITY", "T-LATEX-UNITS", "T-SEMANTIC-ADAPTER", "T-LATEX-SEMANTIC", "T-LATEX-FAILURES", "T-EXPORT-RESULT-MODEL", "T-SPLINE", "T-LEGACY-LOCUS", "T-DXF-UNITS", "T-DXF-USM", "T-DXF-SIDECAR", "T-DXF-STALENESS", "T-DXF-VISIBILITY", "T-DXF-AREA", "T-G9X1-IDENTITY", "T-B-REGRESSION", "T-D1-REGRESSION", "T-A2-REGRESSION", "T-CLASSIC", "T-WEB-BOUNDARY", "T-NO-SERIALIZATION", "T-DETERMINISM", "T-PREVIEW", "T-API-ROUTES", "T-HISTORICAL-PINS", "T-GUIDE", "T-SMOKE"],
   "decisionQuestions": ["DQ-C1", "DQ-C2", "DQ-C3", "DQ-C4", "DQ-C5", "DQ-C6", "DQ-C7", "DQ-C8", "DQ-C9", "DQ-C10", "DQ-C11", "DQ-C12", "DQ-C13", "DQ-C14", "DQ-C15", "DQ-C16", "DQ-C17"],
-  "decisionQuestionStatus": "PENDING — NOT AUTHOR DECISIONS",
+  "decisionQuestionStatus": "DQ-C5 and DQ-C7 AUTHOR_DIRECTED (2026-10-04); the others PENDING — NOT AUTHOR DECISIONS",
+  "reconciliation": {
+    "keptCandidate": {
+      "name": "T_R6PLUS_C_PROMPT",
+      "commit": "5ad96304ae9718c296db753b4822130cf3d99b61",
+      "tree": "1596b5153681828c9c3206b98ca9ebd31505e765",
+      "promptBlob": "f798eab867608ba4eb824f7a0d8fb925fbbbff2e",
+      "static": {
+        "run": "verification-8b483c2f07f14b1f9e18524d9d772207",
+        "exitCode": 0,
+        "acceptanceVerdict": "ACCEPTED",
+        "coverageVerdict": "COMPLETE",
+        "acceptance": ["prompt.execution-safety", "repository.boundary-safety", "static.scientific-inputs.semantic"],
+        "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+        "resultHash": "66f118814ed833e71a393ec207fdea311925a9095bc9c294dac5703b6ebb9887",
+        "standingDiagnostics": {"diagnostic.governance": "DIAGNOSTIC_FINDING", "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE"}
+      }
+    },
+    "scope": ["DQ-C5", "DQ-C7", "DQ-C13", "DQ-C9 constraints"],
+    "probe": {
+      "id": "P-C7-TOOL-REPLACE",
+      "class": "org.geocedg.desktop.CPrepToolReplaceProbeTest",
+      "exitCode": 0,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceSha256": "9469df371b6f20e32f9b201be224cd3feabcf7cfb637b20aef8a2c8d8f600040",
+      "outputLinesSha256": "4874dbe293b1eed984c369ba5b5b44046f63743616d4b57bf30243373ae4d0ba",
+      "junitXmlSha256": "0ee929e29b56f0f312211a2d644832a0b95643a56e4baf48537131b52205618a",
+      "results": {"overwriteRouteTaken": true, "workingLayerBefore": 2, "workingLayerAfter": 6, "workspaceChangeNotifications": 1, "constructionXmlIdentical": true},
+      "conclusion": "a tool replacement reloads the document window with a clearing setXML that reaches the A-2 document commit"
+    },
+    "drawingScaleLifecycle": {
+      "resetEvents": {
+        "E1": "AppGeoCeDG.fileNew completed (clearedInFileNew)",
+        "E2": "AppGeoCeDG.nativeDocumentLoadCommitted",
+        "E3": "AppGeoCeDG.documentReplacementCommitted",
+        "E4": "successful runDocumentLoad (loadExistingFile, loadXML(String))",
+        "E5": "API setXML(String) document replacement through a GeoCeDG-gated GgbAPID marker (no distinguishing seam at the base)",
+        "E6": "reset() without a current file (open detail)"
+      },
+      "notResetPoints": ["clearConstruction override", "commitLoadedDocument", "setXML override in general", "documentHiddenLayersParsed", "DocumentUnitSystem listeners", "Construction or Kernel clearConstruction"],
+      "unchangedRoutes": ["tool replacement", "macro-edit window", ".ggt open, save and delete", "GeoCeDG tool library", "portable and installed preference reloads", "Open URL pre-clear and cancel", "evalXML, non-clearing setXML, merge", "undo, redo", "redefine, rebuild, rollback, rejected parse", "paste, Insert File, Apply Template", "failed or cancelled loads, cancelled New"],
+      "clearingSetXmlCallers": ["GgbAPI.setXML (API document replacement)", "App.openEditMacro (macro-edit window)", "ToolCreationDialogModel.overwriteMacro", "ToolCreationDialogD.overwriteMacro", "GeoGebraPortablePreferences.loadXMLPreferences", "SpreadsheetDemo (demonstration application)"]
+    },
+    "resultModel": {
+      "perComponent": "SourceExportOutcome (Fidelity, Reason, ComponentAddress, SemanticCoverage, ApproximationEvidence)",
+      "sourceLevel": ["COMPLETE", "INCOMPLETE_WITH_CERTIFIED_COMPONENTS", "NO_ADMISSIBLE_OUTPUT"],
+      "exportLevel": ["COMPLETE", "INCOMPLETE_WITH_CERTIFIED_COMPONENTS", "REJECTED / NO_ADMISSIBLE_OUTPUT"],
+      "kernelState": false,
+      "dxfStrictRuleChanged": false
+    },
+    "dxfExportArea": {
+      "visibleViewportFallback": "treated as no explicit area (zoom invariance of G5)",
+      "explicitProducers": ["MANUAL", "EXPORT_POINTS_EXPLICIT", "EXPORT_POINTS_AUTOMATIC"],
+      "corpusWithExportPoints": false,
+      "alternatives": {
+        "A": "geometric clipping: family changes (RAY, XLINE to LINE; CIRCLE to ARC; closed to open), computed endpoints break G5 exactness, intersection solving in the exporter, semantic piece identity from samples",
+        "B": "participation: whole exact entities; B1 meets, B2 bounding box, B3 wholly inside; outside-area reporting",
+        "C": "typed hybrid: every clipped class needs a family change or a new exactness class; semantic curves cannot be clipped truthfully"
+      },
+      "recommendation": "B1 participation (pending author decision)"
+    },
+    "verificationClass": "INTEGRATED_PHASE holds",
+    "newObservation": "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT (A-2 behavior; not C scope; not fixed)"
+  },
   "impact": {
     "productPhaseEffect": "NONE",
     "serializationChange": "NONE",

@@ -2,9 +2,23 @@
   "schemaVersion": 1,
   "track": "PRE-G9B-R6-plus",
   "phase": "PRE-G9B-R6-plus-C",
-  "recordKind": "AUTHOR_DECISIONS_AND_PENDING_DECISION_QUESTIONS",
+  "recordKind": "AUTHOR_DECISIONS_AND_DECISION_QUESTIONS",
   "record": "docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md",
   "authorDecisionDate": "2026-10-04",
+  "reconciliation": {
+    "instructionDate": "2026-10-04",
+    "keptCandidate": {
+      "name": "T_R6PLUS_C_PROMPT",
+      "commit": "5ad96304ae9718c296db753b4822130cf3d99b61",
+      "tree": "1596b5153681828c9c3206b98ca9ebd31505e765",
+      "promptBlob": "f798eab867608ba4eb824f7a0d8fb925fbbbff2e",
+      "authorAssessment": "acceptable in general; kept intact"
+    },
+    "descendant": "D_R6PLUS_C_PROMPT (linear documentary descendant; cannot name itself)",
+    "scope": ["DQ-C5 author direction", "DQ-C7 author direction", "DQ-C13 re-characterization (pending)", "DQ-C9 implementation constraints (pending)"],
+    "notFixed": ["OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET for ExportArea and the paste notice"],
+    "implementationAuthorized": false
+  },
   "decidedOnBase": {
     "name": "P_R6PLUS_A2",
     "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
@@ -80,19 +94,21 @@
     {"id": "DQ-C2", "status": "PENDING", "topic": "DXF policy for objects on hidden layers", "recommendedDefault": "emit unchanged on their layer and write that layer off (negative 62); report; fingerprint includes the hidden set", "mainAlternative": "omit before preflight with a counted presentation diagnostic", "beforeAuthorization": true},
     {"id": "DQ-C3", "status": "PENDING", "topic": "individually hidden DXF objects and OBS-R6P-DXF-VISIBLE-CONTRACT", "recommendedDefault": "keep include + 60=1 + report; rename the profile selection-contract reference truthfully", "beforeAuthorization": true},
     {"id": "DQ-C4", "status": "PENDING", "topic": "LaTeX semantic-curve tolerance", "recommendedDefault": "per-dialog model-coordinate chord tolerance, default 0.001, positive finite, not converted by units, DXF budgets, not session state", "beforeAuthorization": true},
-    {"id": "DQ-C5", "status": "PENDING", "topic": "invalid, partial and incomplete semantic curves in LaTeX", "recommendedDefault": "DXF strict precedent: failures block Generate with a report; locally certified components emitted with incomplete-coverage disclosure", "beforeAuthorization": true},
+    {"id": "DQ-C5", "status": "AUTHOR_DIRECTED", "directionDate": "2026-10-04", "topic": "local admissibility versus global completeness in LaTeX", "authorDirection": "a locally certified, valid and unambiguous component may be emitted when the source or export is incomplete or completeness is NOT_ESTABLISHED; never a completeness claim; identity, gaps and discontinuities preserved; only certified components; no interpolation across invalid intervals; failure evidence never omitted; comments in the LaTeX and a visible report; stale-source, missing-domain, work-limit and tolerance failures classified explicitly; G9X1 partial-output rule not applied mechanically", "preparedModel": {"source": ["COMPLETE", "INCOMPLETE_WITH_CERTIFIED_COMPONENTS", "NO_ADMISSIBLE_OUTPUT"], "export": ["COMPLETE", "INCOMPLETE_WITH_CERTIFIED_COMPONENTS", "REJECTED / NO_ADMISSIBLE_OUTPUT"], "rejecting": ["STALE_SOURCE_REVISION", "TOLERANCE_NOT_ESTABLISHED or invalid tolerance", "invalid budgets", "nothing admissible"], "kernelState": false, "dxfRuleChanged": false}, "beforeAuthorization": "confirmation"},
     {"id": "DQ-C6", "status": "PENDING", "topic": "drawingScale input range, normalization, extreme outputs", "recommendedDefault": "positive int pairs, gcd normalization, editable presets, explicit failures beyond format limits or below one device unit", "beforeAuthorization": true},
-    {"id": "DQ-C7", "status": "PENDING", "topic": "drawingScale owner and lifecycle", "recommendedDefault": "AppGeoCeDG field; reset in clearConstruction override and commitLoadedDocument, including clearing setXML reloads", "beforeAuthorization": true},
+    {"id": "DQ-C7", "status": "AUTHOR_DIRECTED", "directionDate": "2026-10-04", "topic": "drawingScale owner and lifecycle", "authorDirection": "window/session export state, default 1:1; reset only on a completed File New or a successful full-document replacement or Open, any transport; unchanged through undo, redo, redefine, rollback, macro and tool processing, merge and evalXML, non-document setXML and temporary clearing; no clearConstruction or method-name proxy", "preparedEvents": ["E1 completed fileNew", "E2 nativeDocumentLoadCommitted", "E3 documentReplacementCommitted", "E4 successful runDocumentLoad", "E5 API setXML marker in GgbAPID", "E6 reset() without a current file"], "toolSaveInvokesClearingSetXML": true, "toolSaveResetsDrawingScale": false, "openDetail": "whether E6 counts as a transition (default yes)", "beforeAuthorization": "confirmation"},
     {"id": "DQ-C8", "status": "PENDING", "topic": "export UI per unit state", "recommendedDefault": "physical: a:b, Fixed size removed, PNG pixel mode as non-physical device mode; unspecified: relabelled non-physical device scale with notice", "beforeAuthorization": true},
-    {"id": "DQ-C9", "status": "PENDING", "topic": "EMF rclFrame", "recommendedDefault": "opt-in exact frame in the FreeHEP EMF writer, nearest 0.01 mm, non-opt-in byte-identical, under the B provenance gate; class confirmation", "beforeAuthorization": true},
+    {"id": "DQ-C9", "status": "PENDING", "topic": "EMF rclFrame", "recommendedDefault": "opt-in exact frame in the FreeHEP EMF writer under the B provenance gate", "authorConstraintsIfFreeHepChanges": ["opt-in for GeoCeDG", "host and Classic behavior unchanged", "rclFrame from the requested physical output size", "DPI does not determine the frame", "nearest 0.01 mm per dimension, <= 0.005 mm quantization documented", "no wider FreeHEP redesign"], "beforeAuthorization": true},
     {"id": "DQ-C10", "status": "PENDING", "topic": "OBS-R6PLUS-EXPORT-PREVIEW-ABSENT", "recommendedDefault": "NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED", "beforeAuthorization": true},
     {"id": "DQ-C11", "status": "PENDING", "topic": "usm DXF warning and sidecar schema", "recommendedDefault": "sidecar schema_version 2 with a units object; warning as preflight line plus mandatory-sidecar confirmation; name and symbol not exported", "beforeAuthorization": true},
-    {"id": "DQ-C12", "status": "PENDING", "topic": "LaTeX disclosure of approximate semantic curves", "recommendedDefault": "per-source comment in the code plus a non-modal dialog report", "beforeAuthorization": true},
-    {"id": "DQ-C13", "status": "PENDING", "topic": "ExportArea in DXF and area/domain interactions", "recommendedDefault": "DXF ignores the area; LaTeX uses it only as the format clip for the active Graphics view; never a domain or approximation bound", "beforeAuthorization": true},
+    {"id": "DQ-C12", "status": "PENDING", "topic": "form of the LaTeX disclosure (both comments and a visible report required by DQ-C5)", "recommendedDefault": "header comment with the export classification, one comment per semantic source, non-modal dialog report area", "beforeAuthorization": true},
+    {"id": "DQ-C13", "status": "PENDING", "topic": "how DXF consumes the authoritative ExportArea", "rejectedPreparedDefault": "DXF ignores ExportArea", "alternatives": ["A geometric clipping", "B participation (B1 meets, B2 bounding box, B3 wholly inside)", "C typed hybrid"], "commonFacts": ["VISIBLE_VIEWPORT fallback treated as no explicit area (G5 zoom invariance)", "explicit producers MANUAL, EXPORT_POINTS_EXPLICIT, EXPORT_POINTS_AUTOMATIC", "area of the active Graphics view", "semantic domain, approximation work and area rule separate", "area in report, sidecar and staleness fingerprint"], "recommendedDefault": "B1 participation: sources and certified components meeting the closed area emitted whole and exact; others reported outside the area; both selection modes", "beforeAuthorization": true},
     {"id": "DQ-C14", "status": "PENDING", "topic": "FreeHEP five-significant-digit path coordinates", "recommendedDefault": "accepted writer limitation, documented; no change", "beforeAuthorization": false},
     {"id": "DQ-C15", "status": "PENDING", "topic": "historical G9X1 and G5 verifier pins", "recommendedDefault": "frozen evidence and G5 pin unchanged; live-document pins of verify-g9x1-extended-dxf.ps1 re-pinned as recorded successors naming C; no registry change", "beforeAuthorization": true},
     {"id": "DQ-C16", "status": "PENDING", "topic": "non-dialog routes (CLI, ExportImage, JavaScript picture and LaTeX APIs)", "recommendedDefault": "follow unit state and session drawingScale when no explicit scale; explicit numeric arguments stay device parameters; LaTeX API uses area, visibility and semantic curves", "beforeAuthorization": true},
     {"id": "DQ-C17", "status": "PENDING", "topic": "ADR 0005 Decision 3", "recommendedDefault": "dated amendment section in ADR 0005 pointing to ADR 0032 Decision 8 and unit-system §15", "beforeAuthorization": true}
   ],
-  "decisionQuestionsAreAuthorDecisions": false
+  "pendingQuestionsAreAuthorDecisions": false,
+  "authorDirectedQuestions": ["DQ-C5", "DQ-C7"],
+  "newObservation": {"id": "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT", "owner": "A-2 behavior; author disposition", "cScope": false, "fixed": false}
 }

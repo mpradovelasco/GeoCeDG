@@ -168,8 +168,8 @@ shape contracts beyond a direct reading of the governing records:
 |---|---|---|
 | 1 | every physical picture and print size is `W·p` cm with `p` the zoom-derived power-of-ten `printingScale`; one GeoCeDG quantity `fb(effC)·100·a/b` reproduces the D0 formulas for PDF, PNG, SVG, print and LaTeX | C1, C4 |
 | 2 | the EMF frame scales with a hidden DPI and FreeHEP's fixed 81.28 DPI reference, not only with a 0.01 mm quantization | C5 |
-| 3 | no `drawingScale` holder exists; `AppGeoCeDG` is per window and reached by every exporter; the A-2 commit seam plus the `clearConstruction` override cover New, Open and every non-native replacement without touching undo paths | C2, C16 |
-| 4 | clearing `setXML` includes same-document reloads (tool-creation save, macro edit window, portable preferences) | C2, `DQ-C7` |
+| 3 | no `drawingScale` holder exists; `AppGeoCeDG` is per window and reached by every exporter; the A-2 commit seam plus the `clearConstruction` override cover New, Open and every non-native replacement without touching undo paths (reset points superseded by the reconciliation, §11.2) | C2, C16 |
+| 4 | clearing `setXML` includes same-document reloads (tool-creation save, macro edit window, portable preferences) (proved at runtime for the tool replacement, §11.2) | C2, `DQ-C7` |
 | 5 | the LaTeX dialects never read `ExportArea`, `printingScale` or layers, write the selection rectangle on bound edits, and silently drop every Locus V2 and Spline V2 | C1, C9 |
 | 6 | `App.isLayerShown` already gives shared code the `effectiveVisible` rule with a host default of `true` | C9, C18 |
 | 7 | the Locus V2 export logic is private to the G9X1 adapter; the approximation builder is DXF-free and reusable | C10 |
@@ -221,9 +221,10 @@ implementation deliverable, on the `PRE-G9B-R6-PLUS-B` precedent.
 ## 8. Obligations and planned tests
 
 The obligation-to-test map is the `T-*` table of the prompt's *Required tests
-and commands* (37 identifiers) and its mandatory corpus, with the seventeen
-requested decisions `DQ-C1` to `DQ-C17` and their default contracts in
-*Decisions requested before authorization*.
+and commands* (37 identifiers in the prepared candidate; 38 after the
+reconciliation, §11) and its mandatory corpus, with the seventeen decision
+questions `DQ-C1` to `DQ-C17` and their default contracts in *Decisions
+requested before authorization*.
 
 ## 9. Impact
 
@@ -253,3 +254,134 @@ GUIDE_JUSTIFICATION                = documentary preparation of a phase prompt; 
 The validation of the prompt contract and the `STATIC` run of the frozen
 preparation candidate are reported outside this artifact, because it cannot
 name its own commit.
+
+## 11. Documentary reconciliation (`D_R6PLUS_C_PROMPT`)
+
+### 11.1 Identity and instruction
+
+```text
+T_R6PLUS_C_PROMPT  = 5ad96304ae9718c296db753b4822130cf3d99b61
+                     tree 1596b5153681828c9c3206b98ca9ebd31505e765
+                     prompt blob f798eab867608ba4eb824f7a0d8fb925fbbbff2e
+                     kept intact; parent of the reconciliation
+STATIC on it       = verification-8b483c2f07f14b1f9e18524d9d772207: exit 0,
+                     ACCEPTED / COMPLETE, 3/3 (prompt.execution-safety,
+                     repository.boundary-safety, static.scientific-inputs.semantic),
+                     plan 25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52,
+                     result 66f118814ed833e71a393ec207fdea311925a9095bc9c294dac5703b6ebb9887,
+                     standing diagnostics only
+D_R6PLUS_C_PROMPT  = the linear descendant that contains this section
+```
+
+The author's reconciliation instruction of 2026-10-04 is recorded in the
+[C author-decision record](pre_g9b_r6_plus_c_author_decisions_record.md) §1.1.
+Its scope is `DQ-C5`, `DQ-C7`, `DQ-C13` and the constraints of `DQ-C9`; no other
+contract changed. No product, test, build, verifier, specification or ADR file
+changed, and no `PHASE`, `INTEGRATION` or `FINAL` ran.
+
+### 11.2 `DQ-C7`: lifecycle evidence
+
+Static reading at the base: every caller of `App.setXML(…, true)` was listed
+(`common/plugin/GgbAPI.java:1477-1478`; `common/main/App.java:1785`;
+`common/gui/dialog/ToolCreationDialogModel.java:291`;
+`desktop/gui/dialog/ToolCreationDialogD.java:294`;
+`desktop/main/GeoGebraPortablePreferences.java:284`;
+`desktop/spreadsheet/SpreadsheetDemo.java:104`, a demonstration application),
+together with every App-level `clearConstruction` caller (`AppD.fileNew`,
+`AppD.reset`, `GuiManagerD.openURL`) and the transition hooks
+(`desktop/main/AppD.java:3311`, `common/main/App.java:4305`,
+`desktop/headless/GFileHandler.java:111`). The resulting event map `E1`–`E6` and
+the unchanged routes are prompt C2. The parse report that `A-2` commits fires
+for every clearing parse of a document construction
+(`common/io/MyXMLHandler.java:3036-3066`), which is why the clearing `setXML`
+cannot distinguish a tool reload from an API document replacement by itself.
+
+Probe `P-C7-TOOL-REPLACE` (scratch-only, same init-script method as §2;
+`gradlew.bat --init-script <scratch>\cprep-probe.gradle :desktop:desktop:test --tests 'org.geocedg.desktop.CPrepToolReplaceProbeTest'`:
+exit 0, 1 test, 0 failures, 0 errors, 0 skipped):
+
+| Item | SHA-256 |
+|---|---|
+| probe source `CPrepToolReplaceProbeTest.java` | `9469df371b6f20e32f9b201be224cd3feabcf7cfb637b20aef8a2c8d8f600040` |
+| extracted output lines (`CPREP7 …`) | `4874dbe293b1eed984c369ba5b5b44046f63743616d4b57bf30243373ae4d0ba` |
+| JUnit XML | `0ee929e29b56f0f312211a2d644832a0b95643a56e4baf48537131b52205618a` |
+
+Scene: points `A`, `B`, line `f`, a tool `WorkLine` built from them, a point
+`Z` on layer 6, working layer 2. A second tool with the same command name takes
+the overwrite route of the shared `ToolCreationDialogModel` (the Desktop dialog
+performs the same reload):
+
+| Fact | Result |
+|---|---|
+| overwrite route taken | `finish` returned `true`; one macro before and after |
+| working layer | 2 before, **6 after** |
+| workspace change notifications | 1 |
+| layer of `Z` | 6, unchanged |
+| construction XML (between `<construction` and `</construction>`) | identical before and after |
+
+Conclusion: a current tool-save workflow invokes a clearing `setXML` that
+reaches the `A-2` document commit. A `drawingScale` reset placed at
+`commitLoadedDocument` or in the `setXML` override would fire there; the events
+`E1`–`E6` do not. The working-layer recomputation itself is an `A-2` behavior
+recorded as `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` (not `C` scope, not
+fixed). After the probe, `:desktop:desktop:compileTestJava` ran without the
+init script (exit 0) and the stash copies of both probe classes were deleted;
+the worktree stayed clean.
+
+### 11.3 `DQ-C5`: result-model characterization
+
+The existing per-component model (`SourceExportOutcome`: `Fidelity`, `Reason`
+with 13 codes, `IdentityScope`, `ComponentAddress`, `SemanticCoverage`,
+`ApproximationEvidence`; `geocedg-common/export/SourceExportOutcome.java:14-52`)
+already separates local certification from global completeness. Only the
+writability decision of `GeometryExportPreflight` (`:95-99`) is strict and
+DXF-specific. The minimum addition is one derived classification at source and
+export level, computed from those outcomes in the export package; it needs no
+kernel state and no change of the DXF rule. The model, the failure
+classification and the disclosure points are prompt C14.
+
+### 11.4 `DQ-C13`: area characterization
+
+- `ExportArea.Source` has four values, the last being the zoom-dependent
+  `VISIBLE_VIEWPORT` fallback (`geocedg-desktop/export/ExportArea.java:19-28`),
+  and `resolve` always returns an area (`ExportAreaSession.java:65-79`).
+- No document of `models/regression` and no export test fixture defines
+  `Export_1`/`Export_2` (search), so the G5 and G9X1 corpora keep their bytes
+  when only explicit producers are consumed.
+- The DXF population is the complete construction or the current selection
+  (`geocedg-desktop/GeoCeDGDxfExportController.java:458-464`).
+- The per-family consequences of clipping, participation and a typed hybrid,
+  the impact matrix and the examples are prompt C9-DXF; the decision question,
+  the revised recommendation (B1 participation, pending), its compatibility
+  cost and its test obligations are the record's `DQ-C13`.
+
+### 11.5 `DQ-C9`: constraints
+
+The author's constraints for any FreeHEP change (opt-in for GeoCeDG, host and
+Classic unchanged, frame from the requested physical size, DPI-independent,
+nearest 0.01 mm with ≤ 0.005 mm per dimension documented, no wider redesign)
+are recorded in prompt C5 and the record's `DQ-C9`, which stays pending.
+
+### 11.6 Verification class
+
+`INTEGRATED_PHASE` still holds: the `DQ-C5` model is export-layer reporting; the
+`DQ-C7` lifecycle adds Desktop reset calls at existing hooks and one
+GeoCeDG-gated `GgbAPID` marker; every `DQ-C13` alternative stays in the export
+package, the DXF controller and the sidecar. None serializes or touches the
+kernel, the parser, undo or the verifier architecture. Alternatives A and C of
+`DQ-C13` would additionally amend ADR 0005 decisions and the G5 exactness
+vocabulary, an author-level normative decision, without changing the class by
+themselves.
+
+### 11.7 Changed paths of the reconciliation
+
+- `.github/prompts/tasks/pre-g9b-r6-plus-c-2d-export-completion.prompt.md`
+- `docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md`
+- `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-author-decisions.json`
+- `docs/validation/pre_g9b_r6_plus_c_preparation_characterization_report.md` (this section and the two notes of §5 and §8)
+- `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-preparation-characterization.json`
+- `docs/roadmap/geocedg_roadmap.md` (the version line and the `C` row only)
+- `docs/architecture/pre_g9b_r6_plus_minitrack_plan.md` (status lines only)
+
+The `STATIC` run of the reconciliation candidate is reported outside this
+artifact, because it cannot name its own commit.
