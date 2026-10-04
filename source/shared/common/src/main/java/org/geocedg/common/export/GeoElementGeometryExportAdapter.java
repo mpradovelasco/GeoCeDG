@@ -27,7 +27,10 @@ import org.geocedg.common.export.GeometryExportModel.PointGeometry;
 import org.geocedg.common.export.GeometryExportModel.PolylineGeometry;
 import org.geocedg.common.export.GeometryExportModel.SelectionMode;
 import org.geocedg.common.export.GeometryExportModel.Style;
+import org.geocedg.common.kernel.layers.HiddenLayerSet;
+import org.geocedg.common.kernel.units.UnitState;
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -40,6 +43,7 @@ import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoSegmentND;
 import org.geogebra.common.kernel.matrix.Coords;
+import org.geogebra.common.main.App;
 
 /**
  * Sole G5 boundary that reads GeoGebra geometry and creates neutral entities.
@@ -49,6 +53,9 @@ public final class GeoElementGeometryExportAdapter {
 	private static final double DIRECTION_EPSILON = 1E-14;
 
 	/**
+	 * Adapts with the document context of the sources (unit state and hidden
+	 * layers) and no export area.
+	 *
 	 * @param geos ordered source population
 	 * @param selectionMode source population provenance
 	 * @return immutable neutral model
@@ -58,11 +65,61 @@ public final class GeoElementGeometryExportAdapter {
 		if (geos == null) {
 			throw new IllegalArgumentException("Source geometry collection is required");
 		}
+		return adapt(geos, selectionMode, documentContext(geos));
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C truthful default for callers that pass no explicit
+	 * context: the unit state of the sources' construction and the persistent
+	 * hidden layers of its application, without an export area. This adapter is
+	 * the only boundary that reads GeoGebra objects.
+	 *
+	 * @param sources ordered requested sources
+	 * @return document context of the first source, or the unspecified context
+	 */
+	public static GeometryExportContext documentContext(
+			Collection<GeoElement> sources) {
+		if (sources == null) {
+			return GeometryExportContext.UNSPECIFIED;
+		}
+		for (GeoElement geo : sources) {
+			if (geo != null) {
+				Construction construction = geo.getConstruction();
+				UnitState state = construction.getUnitSystem() == null
+						? UnitState.EMPTY : construction.getUnitSystem().getState();
+				App app = construction.getApplication();
+				HiddenLayerSet hidden = app == null ? null
+						: app.getDocumentHiddenLayers();
+				return GeometryExportContext.of(state,
+						hidden == null ? HiddenLayerSet.EMPTY : hidden, null);
+			}
+		}
+		return GeometryExportContext.UNSPECIFIED;
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C: adapts with an explicit export context; an explicit
+	 * export area applies the {@code B1} participation rule ({@code DQ-C13}).
+	 *
+	 * @param geos ordered source population
+	 * @param selectionMode source population provenance
+	 * @param context unit state, hidden layers and export area
+	 * @return immutable neutral model
+	 */
+	public GeometryExportModel adapt(Collection<GeoElement> geos,
+			SelectionMode selectionMode, GeometryExportContext context) {
+		if (geos == null) {
+			throw new IllegalArgumentException("Source geometry collection is required");
+		}
+		if (context == null) {
+			throw new IllegalArgumentException("The export context is required");
+		}
 		GeometryExportPopulation2D.Result population =
 				GeometryExportPopulation2D.select(geos, selectionMode);
 		List<GeoElement> ordered = population.getSources();
 		Set<GeoElement> polygonSides = polygonSides(ordered);
 		List<Entity> entities = new ArrayList<>();
+		List<GeometryExportModel.AreaExclusion> exclusions = new ArrayList<>();
 		List<Diagnostic> diagnostics = new ArrayList<>(
 				population.getDiagnostics());
 		for (int ordinal = 0; ordinal < ordered.size(); ordinal++) {
@@ -96,15 +153,26 @@ public final class GeoElementGeometryExportAdapter {
 							unsupportedMessage(geo)));
 					continue;
 				}
-				entities.add(new Entity(sourceId, sourceType, geo.getLabelSimple(),
-						layerName(geo.getLayer()), style(geo), Exactness.EXACT,
-						null, geometry));
+				Entity entity = new Entity(sourceId, sourceType,
+						geo.getLabelSimple(), layerName(geo.getLayer()), style(geo),
+						Exactness.EXACT, null, geometry);
+				if (context.hasAreaBoundary() && !ExportAreaParticipation2D.meets(
+						geometry, context.getArea())) {
+					exclusions.add(new GeometryExportModel.AreaExclusion(sourceId,
+							sourceType, geo.getLabelSimple(), 0,
+							geo.isEuclidianVisible(),
+							SourceExportOutcome.IdentityScope.CONSTRUCTION_REVISION,
+							new ComponentAddress(null, entity.getNeutralEntityId())));
+					continue;
+				}
+				entities.add(entity);
 			} catch (IllegalArgumentException exception) {
 				diagnostics.add(diagnostic(geo, sourceId, DiagnosticCode.DEGENERATE,
 						exception.getMessage()));
 			}
 		}
-		return new GeometryExportModel(selectionMode, entities, diagnostics);
+		return new GeometryExportModel(selectionMode, entities, diagnostics, context,
+				exclusions);
 	}
 
 	private Geometry adaptGeometry(GeoElement geo) {

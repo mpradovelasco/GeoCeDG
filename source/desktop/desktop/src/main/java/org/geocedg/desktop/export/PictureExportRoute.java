@@ -106,7 +106,9 @@ public interface PictureExportRoute {
 	 * @param out target stream
 	 * @param textAsShapes whether text is written as shapes
 	 * @param cmPerPixel physical centimetres per source-view pixel, or a
-	 *            non-positive value for a pixel-sized document
+	 *            non-positive value for a pixel-sized document; with a
+	 *            physical construction unit a non-positive value means the
+	 *            physical scale of PRE-G9B-R6-plus-C (no explicit device scale)
 	 * @param exportScale scale used by the host for embedded LaTeX resolution
 	 * @param transparent transparent background
 	 * @throws IOException when writing fails
@@ -116,16 +118,21 @@ public interface PictureExportRoute {
 
 	/**
 	 * EMF/EMF+ with device bounds quantized to the nearest unit and an
-	 * isotropic drawing; {@code rclFrame} is outside the physical contract of B.
+	 * isotropic drawing. PRE-G9B-R6-plus-C (DQ-C9): the {@code rclFrame} is
+	 * written from the requested output size, never from DPI, rounded to the
+	 * nearest 0.01 mm, through the opt-in exact frame of the FreeHEP writer.
 	 *
 	 * @param view exported view
 	 * @param file target EMF
 	 * @param plus EMF+ records
 	 * @param scale output device units per source-view pixel
+	 * @param frameWidthCm requested output width in centimetres, or NaN to
+	 *            keep the FreeHEP frame
+	 * @param frameHeightCm requested output height in centimetres, or NaN
 	 * @throws IOException when writing fails
 	 */
-	void writeEMF(EuclidianView view, File file, boolean plus, double scale)
-			throws IOException;
+	void writeEMF(EuclidianView view, File file, boolean plus, double scale,
+			double frameWidthCm, double frameHeightCm) throws IOException;
 
 	/**
 	 * Save-dialog preview of a pending picture export.

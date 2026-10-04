@@ -105,6 +105,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.geocedg.desktop.export.ExportScalePresentation;
 import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.GeoGebraConstants.Platform;
@@ -1945,6 +1946,27 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	public PictureExportRoute getPictureExportRoute() {
 		return null;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C engineering-scale presentation of
+	 * the picture, print-preview and LaTeX dialogs.
+	 *
+	 * @return the product presentation, or null to keep every upstream dialog
+	 */
+	public ExportScalePresentation getExportScalePresentation() {
+		return null;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C (DQ-C7, event E5) runs an API call
+	 * that its contract defines as a full-document replacement. The host only
+	 * runs it.
+	 *
+	 * @param replacement the API call
+	 */
+	public void runApiDocumentReplacement(Runnable replacement) {
+		replacement.run();
 	}
 
 	/**

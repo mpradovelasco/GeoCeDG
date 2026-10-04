@@ -30,8 +30,21 @@
     {"statement": "current repository LGPL.txt is LGPL 2.1 (February 1999)", "source": "https://raw.githubusercontent.com/freehep/freehep-vectorgraphics/master/LGPL.txt", "reason": "current master text; not proven to be the text of release 2.0"},
     {"statement": "current repository LICENSE.txt dual-licenses under LGPL and Apache-2.0, copyright CERN, SLAC and UC Santa Cruz 2000-2009", "source": "https://raw.githubusercontent.com/freehep/freehep-vectorgraphics/master/LICENSE.txt", "reason": "no primary evidence connects Apache-2.0 to release 2.0 or revision 36ad488"}
   ],
+  "emfFamily": {
+    "recordedBy": "PRE-G9B-R6-plus-C",
+    "recordedOn": "2026-10-04",
+    "recordedBeforeModification": true,
+    "releaseLine": "FreeHEP VectorGraphics 2.0 line: the vendored emf family has the gdi subpackage introduced by revision ab52a27 (2006-12-07)",
+    "emfOutputStreamRevision": {"revision": "a285e1f", "date": "2006-03-02", "header": "Copyright 2001-2006, FreeHEP.", "note": "the vendored close() also passes a header type to EMFHeader, a later GeoGebra change"},
+    "emfGraphics2DRevision": {"revision": null, "range": "at or after ab52a27 (2006-12-07)", "header": "Copyright 2000-2006 FreeHEP"},
+    "emfPlusFiles": {"paths": ["emf/EMFPlusGraphics2D.java", "emf/gdiplus/**", "header types of emf/EMFHeader.java"], "header": "Copyright 2006, FreeHEP", "revision": null, "establishable": false, "reason": "no revision of the official FreeHEP repository contains them; they entered through GeoGebra CVS (murkle, 2009-08-17)"},
+    "terms": "the release-2.0 statement recorded for the snapshot only"
+  },
   "geocedgModifiedFiles": [
-    {"path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java", "phase": "PRE-G9B-R6-plus-B", "change": "opt-in exact page extent (double page box and page transform); callers that do not opt in keep the original output"}
+    {"path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java", "phase": "PRE-G9B-R6-plus-B", "change": "opt-in exact page extent (double page box and page transform); callers that do not opt in keep the original output"},
+    {"path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/emf/EMFOutputStream.java", "phase": "PRE-G9B-R6-plus-C", "change": "opt-in exact rclFrame in 0.01 mm written into the header; streams that do not opt in keep the original output"},
+    {"path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/emf/EMFGraphics2D.java", "phase": "PRE-G9B-R6-plus-C", "change": "public opt-in setter forwarding the exact frame to its stream; default unchanged"},
+    {"path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/emf/EMFPlusGraphics2D.java", "phase": "PRE-G9B-R6-plus-C", "change": "public opt-in setter forwarding the exact frame to its stream; default unchanged"}
   ],
   "openForReleaseReview": "the package legal bundle (LICENSES/manifest.json, component audit, source-access manifest) does not list FreeHEP separately; unchanged by this record"
 }

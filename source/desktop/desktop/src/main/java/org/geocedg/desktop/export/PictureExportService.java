@@ -21,6 +21,7 @@ import org.freehep.graphicsio.emf.EMFPlusGraphics2D;
 import org.freehep.graphicsio.pdf.PDFGraphics2D;
 import org.freehep.graphicsio.svg.SVGGraphics2D;
 import org.freehep.util.UserProperties;
+import org.geocedg.common.export.PhysicalExportScale;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.awt.GGraphics2D;
@@ -50,9 +51,14 @@ import org.geogebra.desktop.io.MyImageIO;
  * <li>SVG: a fractional viewBox equal to the area, with the physical size of
  * the same aspect ratio, and an isotropic drawing;</li>
  * <li>EMF/EMF+: device bounds quantized to the nearest unit and an isotropic
- * drawing; the physical {@code rclFrame} is outside the B contract
- * ({@code OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION}).</li>
+ * drawing; since PRE-G9B-R6-plus-C the {@code rclFrame} is the requested
+ * output size rounded to the nearest 0.01 mm ({@code DQ-C9}).</li>
  * </ul>
+ *
+ * <p>PRE-G9B-R6-plus-C: with a physical construction unit every route without
+ * an explicit device scale is sized by {@code fb(c) * 100 * a / b} centimetres
+ * per model unit ({@link #isPhysical(App)}); zoom, DPI and the view
+ * {@code printingScale} are never its authority.
  */
 public final class PictureExportService implements PictureExportRoute {
 	/** Creator written into vector outputs. */
@@ -156,6 +162,11 @@ public final class PictureExportService implements PictureExportRoute {
 		double pointsPerPixel = pdfPointsPerPixel(view);
 		double pageWidth = area.pixelWidth(view.getXscale()) * pointsPerPixel;
 		double pageHeight = area.pixelHeight(view.getYscale()) * pointsPerPixel;
+		if (isPhysical(app)) {
+			// C4: an unrepresentable physical page fails explicitly
+			PhysicalExportScale.requirePdfPageExtent(pageWidth, "PDF page width");
+			PhysicalExportScale.requirePdfPageExtent(pageHeight, "PDF page height");
+		}
 		PDFGraphics2D graphics = new PDFGraphics2D(file, new Dimension(
 				(int) Math.ceil(pageWidth), (int) Math.ceil(pageHeight)));
 		graphics.setCreator(CREATOR);
@@ -190,10 +201,16 @@ public final class PictureExportService implements PictureExportRoute {
 		ExportArea area = require(view);
 		double width = area.pixelWidth(view.getXscale());
 		double height = area.pixelHeight(view.getYscale());
+		// PRE-G9B-R6-plus-C (DQ-C16): without an explicit physical size a
+		// physical document is sized by its unit contract and drawing scale
+		double physicalCmPerPixel = cmPerPixel;
+		if (!(cmPerPixel > 0) && isPhysical(app)) {
+			physicalCmPerPixel = app.getPhysicalExportScale() / view.getXscale();
+		}
 		SVGExtensions graphics = new SVGExtensions(out,
 				new Dimension((int) Math.ceil(width), (int) Math.ceil(height)),
-				cmPerPixel > 0 ? width * cmPerPixel : -1,
-				cmPerPixel > 0 ? height * cmPerPixel : -1);
+				physicalCmPerPixel > 0 ? width * physicalCmPerPixel : -1,
+				physicalCmPerPixel > 0 ? height * physicalCmPerPixel : -1);
 		UserProperties properties = new UserProperties();
 		properties.setProperty(SVGGraphics2D.EMBED_FONTS, !textAsShapes);
 		properties.setProperty(AbstractVectorGraphicsIO.TEXT_AS_SHAPES, textAsShapes);
@@ -235,14 +252,41 @@ public final class PictureExportService implements PictureExportRoute {
 	}
 
 	@Override
-	public void writeEMF(EuclidianView view, File file, boolean plus, double scale)
-			throws IOException {
+	public void writeEMF(EuclidianView view, File file, boolean plus, double scale,
+			double frameWidthCm, double frameHeightCm) throws IOException {
 		ExportArea area = require(view);
-		int deviceWidth = rasterSize(area.pixelWidth(view.getXscale()) * scale);
-		int deviceHeight = rasterSize(area.pixelHeight(view.getYscale()) * scale);
+		double exactWidth = area.pixelWidth(view.getXscale()) * scale;
+		double exactHeight = area.pixelHeight(view.getYscale()) * scale;
+		boolean physical = isPhysical(app);
+		// C4: a physical output never takes the B minimum of one device unit
+		int deviceWidth = physical
+				? PhysicalExportScale.deviceExtent(exactWidth, "EMF width")
+				: rasterSize(exactWidth);
+		int deviceHeight = physical
+				? PhysicalExportScale.deviceExtent(exactHeight, "EMF height")
+				: rasterSize(exactHeight);
+		// DQ-C9: the frame comes from the requested output size, never from DPI
+		boolean exactFrame = Double.isFinite(frameWidthCm)
+				&& Double.isFinite(frameHeightCm);
+		int frameWidth = exactFrame ? PhysicalExportScale
+				.emfFrameHundredthsOfMillimetre(frameWidthCm, "EMF frame width") : 0;
+		int frameHeight = exactFrame ? PhysicalExportScale
+				.emfFrameHundredthsOfMillimetre(frameHeightCm, "EMF frame height") : 0;
 		Dimension bounds = new Dimension(deviceWidth, deviceHeight);
-		VectorGraphics graphics = plus ? new EMFPlusGraphics2D(file, bounds)
-				: new EMFGraphics2D(file, bounds);
+		VectorGraphics graphics;
+		if (plus) {
+			EMFPlusGraphics2D emfPlus = new EMFPlusGraphics2D(file, bounds);
+			if (exactFrame) {
+				emfPlus.setExactFrame(frameWidth, frameHeight);
+			}
+			graphics = emfPlus;
+		} else {
+			EMFGraphics2D emf = new EMFGraphics2D(file, bounds);
+			if (exactFrame) {
+				emf.setExactFrame(frameWidth, frameHeight);
+			}
+			graphics = emf;
+		}
 		graphics.setCreator(CREATOR);
 		graphics.setDeviceIndependent(true);
 		graphics.startExport();
@@ -283,6 +327,35 @@ public final class PictureExportService implements PictureExportRoute {
 		}
 		clipboardSink.accept(GBufferedImageD.getAwtBufferedImage(image));
 		return true;
+	}
+
+	/**
+	 * @param app exporting application
+	 * @return whether the application exports with the physical unit contract
+	 *         of PRE-G9B-R6-plus-C
+	 */
+	public static boolean isPhysical(App app) {
+		double scale = app.getPhysicalExportScale();
+		return scale > 0 && Double.isFinite(scale);
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (C4): explicit limits of a physical raster before it
+	 * is written; nothing applies to a device-scale route.
+	 *
+	 * @param app exporting application
+	 * @param view exported view
+	 * @param scale output pixels per source-view pixel
+	 */
+	public static void requirePhysicalRaster(App app, EuclidianView view,
+			double scale) {
+		if (!isPhysical(app)) {
+			return;
+		}
+		PhysicalExportScale.deviceExtent(app.getExportFrameWidth(view) * scale,
+				"Picture width");
+		PhysicalExportScale.deviceExtent(app.getExportFrameHeight(view) * scale,
+				"Picture height");
 	}
 
 	/**

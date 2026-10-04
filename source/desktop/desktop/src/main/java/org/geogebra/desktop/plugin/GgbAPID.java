@@ -103,6 +103,16 @@ public class GgbAPID extends GgbAPIJre {
 	}
 
 	/**
+	 * Opens construction given in XML format. GeoCeDG (2026-10-04):
+	 * PRE-G9B-R6-plus-C (DQ-C7, event E5) marks the call as the API's
+	 * full-document replacement; the host only runs it.
+	 */
+	@Override
+	public synchronized void setXML(String xml) {
+		((AppD) app).runApiDocumentReplacement(() -> super.setXML(xml));
+	}
+
+	/**
 	 * Refreshes all views. Note: clears traces in geometry window.
 	 */
 	@Override

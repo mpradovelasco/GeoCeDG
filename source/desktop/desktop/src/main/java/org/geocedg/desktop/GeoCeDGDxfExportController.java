@@ -29,6 +29,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.geocedg.common.export.ApproximationEvidence.Guarantee;
 import org.geocedg.common.export.DxfEncodingResult;
 import org.geocedg.common.export.G9X1GeometryExportAdapter;
+import org.geocedg.common.export.GeometryExportArea;
+import org.geocedg.common.export.GeometryExportContext;
 import org.geocedg.common.export.GeometryExportModel;
 import org.geocedg.common.export.GeometryExportModel.Diagnostic;
 import org.geocedg.common.export.GeometryExportModel.SelectionMode;
@@ -36,6 +38,7 @@ import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.GeometryExportRequest.SemanticDomain;
 import org.geocedg.common.export.GeometryExportService;
+import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.desktop.export.DxfExportPreflightPresentation;
 import org.geocedg.desktop.export.DxfExportPreflightPresentation.Destination;
 import org.geocedg.desktop.export.DxfFidelityManifestWriter;
@@ -45,6 +48,8 @@ import org.geocedg.desktop.export.DxfPreparedOutput;
 import org.geocedg.desktop.export.DxfReportPane;
 import org.geocedg.desktop.export.DxfWriteException;
 import org.geocedg.desktop.export.DxfWriteResult;
+import org.geocedg.desktop.export.ExportArea;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.desktop.main.AppD;
 
@@ -100,7 +105,7 @@ final class GeoCeDGDxfExportController {
 
 		try {
 			GeometryExportPreflight preflight = service.preflight(sources,
-					choice.selectionMode, choice.request);
+					choice.selectionMode, choice.request, this::exportContext);
 			DxfExportPreflightPresentation presentation =
 					DxfExportPreflightPresentation.from(preflight);
 			Destination destination = presentation.requestDestination(
@@ -124,6 +129,74 @@ final class GeoCeDGDxfExportController {
 		} catch (RuntimeException exception) {
 			showError("DXF export failed before publication: "
 					+ exception.getMessage());
+		}
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C: the document unit state, the persistent hidden layers
+	 * (DQ-C2) and the export area of the active 2D Graphics view (DQ-C13).
+	 * Resolved at preflight and again on every currentness check.
+	 *
+	 * @return current DXF export context
+	 */
+	GeometryExportContext exportContext() {
+		Construction construction = app.getKernel().getConstruction();
+		UnitState state = construction.getUnitSystem() == null ? UnitState.EMPTY
+				: construction.getUnitSystem().getState();
+		return GeometryExportContext.of(state, app.getDocumentHiddenLayers(),
+				exportArea());
+	}
+
+	private GeometryExportArea exportArea() {
+		if (!(app instanceof AppGeoCeDG)) {
+			return null;
+		}
+		ExportArea area = ((AppGeoCeDG) app).resolveActiveExportArea();
+		if (area == null) {
+			return null;
+		}
+		switch (area.getSource()) {
+		case MANUAL:
+			return GeometryExportArea.explicit(GeometryExportArea.Producer.MANUAL,
+					area.getXmin(), area.getXmax(), area.getYmin(), area.getYmax(),
+					area.getSourceViewId());
+		case EXPORT_POINTS_EXPLICIT:
+			return GeometryExportArea.explicit(
+					GeometryExportArea.Producer.EXPORT_POINTS_EXPLICIT, area.getXmin(),
+					area.getXmax(), area.getYmin(), area.getYmax(),
+					area.getSourceViewId());
+		case EXPORT_POINTS_AUTOMATIC:
+			return GeometryExportArea.explicit(
+					GeometryExportArea.Producer.EXPORT_POINTS_AUTOMATIC,
+					area.getXmin(), area.getXmax(), area.getYmin(), area.getYmax(),
+					area.getSourceViewId());
+		case VISIBLE_VIEWPORT:
+		default:
+			// DQ-C13: the zoom-dependent fallback is no DXF boundary
+			return GeometryExportArea.visibleViewportFallback();
+		}
+	}
+
+	/**
+	 * @param context export context
+	 * @return coordinate and unit statement of the dialogs and reports
+	 */
+	static String unitsText(GeometryExportContext context) {
+		switch (context.getUnit()) {
+		case MM:
+		case CM:
+		case M:
+			return "Cartesian 2D world / " + context.getUnit().getToken()
+					+ " ($INSUNITS " + context.getUnit().getInsunitsCode()
+					+ "); coordinates unchanged";
+		case USM:
+			return "Cartesian 2D world / usm (custom unit, "
+					+ context.getCanonicalMetresPerUnit()
+					+ " m per unit; $INSUNITS 0; physical meaning only in the "
+					+ "mandatory sidecar); coordinates unchanged";
+		case UNITLESS:
+		default:
+			return "Cartesian 2D world / UNITLESS";
 		}
 	}
 
@@ -159,7 +232,15 @@ final class GeoCeDGDxfExportController {
 			return;
 		}
 
-		GeometryExportModel model = service.createModel(sources, selectionMode);
+		GeometryExportModel model = service.createModel(sources, selectionMode,
+				exportContext());
+		if (model.getTargetUnit() == GeometryExportModel.Unit.USM) {
+			// DQ-C11: usm needs the mandatory paired sidecar of the extended flow
+			showError("The construction unit usm needs the mandatory paired "
+					+ "fidelity sidecar of the extended DXF export, which is "
+					+ "disabled; nothing was written.");
+			return;
+		}
 		if (model.getEntities().isEmpty()) {
 			showDiagnostics(model, "No supported 2D entity can be exported.",
 					JOptionPane.ERROR_MESSAGE);
@@ -184,7 +265,11 @@ final class GeoCeDGDxfExportController {
 			JOptionPane.showMessageDialog(parent,
 					"DXF written: " + target.getAbsolutePath() + "\nEntities: "
 							+ model.getEntities().size() + "\nSkipped: "
-							+ model.getDiagnostics().size(),
+							+ model.getDiagnostics().size()
+							+ "\nOutside the export area: "
+							+ model.getAreaExclusions().size()
+							+ "\nCoordinates / units: "
+							+ unitsText(model.getContext()),
 					"GeoCeDG DXF export", JOptionPane.INFORMATION_MESSAGE);
 		} catch (IOException | RuntimeException exception) {
 			showError("DXF export failed: " + exception.getMessage());
@@ -274,7 +359,7 @@ final class GeoCeDGDxfExportController {
 		panel.add(new JLabel("Maximum total vertices:"));
 		panel.add(totalVertices);
 		panel.add(new JLabel("Coordinates / units:"));
-		panel.add(new JLabel("Cartesian 2D world / UNITLESS"));
+		panel.add(new JLabel(unitsText(exportContext())));
 		panel.add(new JLabel("Partial output:"));
 		panel.add(new JLabel("Disabled (strict complete request)"));
 		panel.add(new JLabel("Sidecar:"));
@@ -474,7 +559,14 @@ final class GeoCeDGDxfExportController {
 				.append("\nHidden sources: ").append(preflight.getHiddenCount())
 				.append("\nOutside geometric population: ")
 				.append(preflight.getExcludedPopulationCount())
-				.append("\nCoordinates: unitless Cartesian 2D world")
+				.append("\nOutside the export area: ")
+				.append(preflight.getOutsideExportAreaCount())
+				.append("\nExport area: ")
+				.append(presentation.getAreaText())
+				.append("\nHidden layers (DXF layers OFF): ")
+				.append(presentation.getHiddenLayersText())
+				.append("\nCoordinates / units: ")
+				.append(unitsText(preflight.getModel().getContext()))
 				.append("\nDXF SHA-256: ").append(result.getDxfSha256());
 		if (result.getManifestPath() != null) {
 			message.append("\nFidelity sidecar: ")

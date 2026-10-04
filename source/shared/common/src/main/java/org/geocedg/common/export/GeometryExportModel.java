@@ -24,10 +24,44 @@ public final class GeometryExportModel {
 		CURRENT_SELECTION
 	}
 
-	/** Unit carried by source and target model. */
+	/**
+	 * Unit carried by source and target model: the effective construction unit
+	 * (unit-system section 15.2). Coordinates are never converted.
+	 */
 	public enum Unit {
-		/** No approved physical unit is present. */
-		UNITLESS
+		/** {@code UNSPECIFIED_MODEL_UNIT}: no physical unit is present. */
+		UNITLESS(0, null),
+		/** Millimetre. */
+		MM(4, "mm"),
+		/** Centimetre. */
+		CM(5, "cm"),
+		/** Metre. */
+		M(6, "m"),
+		/** The document's user-defined unit; the core DXF stays unitless. */
+		USM(0, "usm");
+
+		private final int insunits;
+		private final String token;
+
+		Unit(int insunits, String token) {
+			this.insunits = insunits;
+			this.token = token;
+		}
+
+		/** @return DXF header {@code $INSUNITS} code (group 70) */
+		public int getInsunitsCode() {
+			return insunits;
+		}
+
+		/** @return unit-system token, or null when unspecified */
+		public String getToken() {
+			return token;
+		}
+
+		/** @return whether the unit carries a declared physical meaning */
+		public boolean isPhysical() {
+			return this != UNITLESS;
+		}
 	}
 
 	/** Fidelity of a neutral entity relative to its source geometry. */
@@ -522,14 +556,86 @@ public final class GeometryExportModel {
 		}
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-C ({@code DQ-C13}): a source, or a certified component of a
+	 * semantic source, that does not meet the explicit export area. It is a
+	 * population outcome: never a fidelity reduction, never unsupported or
+	 * invalid, and never emitted.
+	 */
+	public static final class AreaExclusion {
+		private final String sourceId;
+		private final String sourceType;
+		private final String label;
+		private final long sourceRevision;
+		private final boolean visible;
+		private final SourceExportOutcome.IdentityScope identityScope;
+		private final ComponentAddress componentAddress;
+
+		/**
+		 * @param sourceId source identifier in its identity scope
+		 * @param sourceType source family
+		 * @param label optional source label
+		 * @param sourceRevision captured non-negative source revision
+		 * @param visible current object visibility
+		 * @param identityScope stability scope of the source identifier
+		 * @param componentAddress excluded component or whole-source address
+		 */
+		public AreaExclusion(String sourceId, String sourceType, String label,
+				long sourceRevision, boolean visible,
+				SourceExportOutcome.IdentityScope identityScope,
+				ComponentAddress componentAddress) {
+			this.sourceId = requireText(sourceId, "source id");
+			this.sourceType = requireText(sourceType, "source type");
+			this.label = label;
+			if (sourceRevision < 0) {
+				throw new IllegalArgumentException(
+						"source revision must be non-negative");
+			}
+			this.sourceRevision = sourceRevision;
+			this.visible = visible;
+			this.identityScope = require(identityScope, "identity scope");
+			this.componentAddress = require(componentAddress, "component address");
+		}
+
+		public String getSourceId() {
+			return sourceId;
+		}
+
+		public String getSourceType() {
+			return sourceType;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public long getSourceRevision() {
+			return sourceRevision;
+		}
+
+		public boolean isVisible() {
+			return visible;
+		}
+
+		public SourceExportOutcome.IdentityScope getIdentityScope() {
+			return identityScope;
+		}
+
+		public ComponentAddress getComponentAddress() {
+			return componentAddress;
+		}
+	}
+
 	private final int modelVersion;
 	private final SelectionMode selectionMode;
 	private final String coordinateSystem;
 	private final Unit sourceUnit;
 	private final Unit targetUnit;
+	private final GeometryExportContext context;
 	private final List<Entity> entities;
 	private final List<Diagnostic> diagnostics;
 	private final List<SourceExportOutcome> outcomes;
+	private final List<AreaExclusion> areaExclusions;
 
 	/**
 	 * @param selectionMode source population
@@ -538,7 +644,24 @@ public final class GeometryExportModel {
 	 */
 	public GeometryExportModel(SelectionMode selectionMode, List<Entity> entities,
 			List<Diagnostic> diagnostics) {
-		this(1, selectionMode, entities, diagnostics, legacyOutcomes(entities));
+		this(selectionMode, entities, diagnostics, GeometryExportContext.UNSPECIFIED,
+				Collections.<AreaExclusion>emptyList());
+	}
+
+	/**
+	 * Creates a version-one exact model with its document context.
+	 *
+	 * @param selectionMode source population
+	 * @param entities neutral entities
+	 * @param diagnostics explicit omissions
+	 * @param context unit, hidden-layer and export-area inputs
+	 * @param areaExclusions sources outside the explicit export area
+	 */
+	public GeometryExportModel(SelectionMode selectionMode, List<Entity> entities,
+			List<Diagnostic> diagnostics, GeometryExportContext context,
+			List<AreaExclusion> areaExclusions) {
+		this(1, selectionMode, entities, diagnostics, legacyOutcomes(entities),
+				context, areaExclusions);
 	}
 
 	/**
@@ -551,21 +674,48 @@ public final class GeometryExportModel {
 	 */
 	public GeometryExportModel(SelectionMode selectionMode, List<Entity> entities,
 			List<Diagnostic> diagnostics, List<SourceExportOutcome> outcomes) {
-		this(2, selectionMode, entities, diagnostics, outcomes);
+		this(selectionMode, entities, diagnostics, outcomes,
+				GeometryExportContext.UNSPECIFIED,
+				Collections.<AreaExclusion>emptyList());
+	}
+
+	/**
+	 * Creates a version-two model with its document context.
+	 *
+	 * @param selectionMode source population
+	 * @param entities emitted neutral entities
+	 * @param diagnostics legacy-compatible source diagnostics
+	 * @param outcomes complete per-component fidelity outcomes of the
+	 *        participating population
+	 * @param context unit, hidden-layer and export-area inputs
+	 * @param areaExclusions sources and components outside the explicit area
+	 */
+	public GeometryExportModel(SelectionMode selectionMode, List<Entity> entities,
+			List<Diagnostic> diagnostics, List<SourceExportOutcome> outcomes,
+			GeometryExportContext context, List<AreaExclusion> areaExclusions) {
+		this(2, selectionMode, entities, diagnostics, outcomes, context,
+				areaExclusions);
 		validateVersionTwo();
 	}
 
 	private GeometryExportModel(int modelVersion, SelectionMode selectionMode,
 			List<Entity> entities, List<Diagnostic> diagnostics,
-			List<SourceExportOutcome> outcomes) {
+			List<SourceExportOutcome> outcomes, GeometryExportContext context,
+			List<AreaExclusion> areaExclusions) {
 		this.modelVersion = modelVersion;
 		this.selectionMode = require(selectionMode, "selection mode");
 		this.coordinateSystem = "GEOGEBRA_CARTESIAN_2D_WORLD";
-		this.sourceUnit = Unit.UNITLESS;
-		this.targetUnit = Unit.UNITLESS;
+		this.context = require(context, "export context");
+		this.sourceUnit = context.getUnit();
+		this.targetUnit = context.getUnit();
 		this.entities = immutableCopy(entities);
 		this.diagnostics = immutableCopy(diagnostics);
 		this.outcomes = immutableCopy(outcomes);
+		this.areaExclusions = immutableCopy(areaExclusions);
+		if (!this.areaExclusions.isEmpty() && !context.hasAreaBoundary()) {
+			throw new IllegalArgumentException(
+					"Area exclusions require an explicit export area");
+		}
 	}
 
 	public int getModelVersion() {
@@ -593,6 +743,47 @@ public final class GeometryExportModel {
 
 	public Unit getTargetUnit() {
 		return targetUnit;
+	}
+
+	/** @return unit, hidden-layer and export-area inputs of this model */
+	public GeometryExportContext getContext() {
+		return context;
+	}
+
+	/**
+	 * @return sources and certified components left out by the explicit export
+	 *         area, in source and component order
+	 */
+	public List<AreaExclusion> getAreaExclusions() {
+		return areaExclusions;
+	}
+
+	/**
+	 * @param layer normalized export layer name
+	 * @return whether the DXF layer is emitted OFF because its GeoCeDG layer is
+	 *         persistently hidden ({@code DQ-C2})
+	 */
+	public boolean isLayerOff(String layer) {
+		return context.isLayerHidden(layerNumber(layer));
+	}
+
+	/**
+	 * @param layer normalized export layer name ({@code 0} or
+	 *        {@code GEOCEDG_L<n>})
+	 * @return GeoCeDG layer number, or -1 for a name outside the mapping
+	 */
+	public static int layerNumber(String layer) {
+		if ("0".equals(layer)) {
+			return 0;
+		}
+		if (layer != null && layer.startsWith("GEOCEDG_L")) {
+			try {
+				return Integer.parseInt(layer.substring("GEOCEDG_L".length()));
+			} catch (NumberFormatException exception) {
+				return -1;
+			}
+		}
+		return -1;
 	}
 
 	public List<Entity> getEntities() {

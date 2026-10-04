@@ -4,6 +4,10 @@
 - Feature: `cedg.export.dxf.2d`
 - Decision: `docs/adr/0005-neutral-2d-geometry-export.md`
 - Format profile: ASCII DXF AC1015, model space, Cartesian XY, `z = 0`
+- Amended by `PRE-G9B-R6-plus-C` (2026-10-04, technical candidate pending
+  author review): units, hidden layers, the explicit export area and the G5
+  PASS clause below, under the author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`,
+  `DQ-C13` and `DQ-C17`
 
 ## Boundary
 
@@ -33,10 +37,13 @@ Every neutral entity records:
 - optional approximation tolerance.
 
 The model records selection mode, source coordinate system, source unit, target
-unit, and diagnostics for all skipped or typed-outside-population objects. A
-complete-construction request applies `geocedg-dxf-geometric-2d/v1` before
-adaptation; current selection remains unfiltered. G5 uses the coordinate system
-`GEOGEBRA_CARTESIAN_2D_WORLD`, identity transform, and `UNITLESS` units.
+unit, the document export context (unit state, persistent hidden-layer set and
+consumed export area), the sources and certified components outside an explicit
+export area, and diagnostics for all skipped or typed-outside-population
+objects. A complete-construction request applies `geocedg-dxf-geometric-2d/v1`
+before adaptation; current selection remains unfiltered. The coordinate system
+is `GEOGEBRA_CARTESIAN_2D_WORLD` with the identity transform; the unit is the
+effective construction unit (below).
 
 ## G5 type policy
 
@@ -65,34 +72,79 @@ generated segments are suppressed to prevent duplicate geometry.
 ## Infinite geometry
 
 `GeoLine` and `GeoRay` map to `XLINE` and `RAY`. Their directions are
-normalized. View limits are never read. G5 has no viewport-clipped mode.
+normalized. View limits are never read. There is no viewport-clipped mode and
+no geometric clipping of any family (below).
+
+## Explicit export area (`PRE-G9B-R6-plus-C`, `DQ-C13`, choice `B1`)
+
+The DXF consumes the single session `ExportArea` of the active 2D Graphics view
+(`PRE-G9B-R6-plus-B`) by participation, never by clipping, under the versioned
+rule `geocedg-export-area-participation-b1/v1`:
+
+- only the explicit producers `MANUAL`, `EXPORT_POINTS_EXPLICIT` and
+  `EXPORT_POINTS_AUTOMATIC` define a closed participation area `R`; the
+  `VISIBLE_VIEWPORT` fallback is no DXF boundary, so the export keeps its
+  model-space population and never depends on the zoom;
+- a source, entity or certified component participates when its exported
+  geometric support meets `R` and is then emitted whole, with its exact entity
+  family and parameters; complete-construction and current-selection requests
+  apply the same rule to their candidates;
+- exact entities are decided by closed-form predicates on their boundaries,
+  never on filled regions: points by closed inclusion; segments, polyline and
+  polygon edges, rays and lines by exact separating-axis sign tests; circles by
+  exact squared distances; circular and elliptic arcs by closed-form edge
+  intersections in binary64 with ties resolved toward participation;
+- a Locus V2 or Spline V2 certified component is left out only when the
+  kernel's ADR 0028 certified interval curve model proves it disjoint from `R`
+  (outward enclosures over a deterministic bisection with a bounded budget);
+  without a certified model, or without a proof within the budget, it
+  participates whole; approximable sources without a certified model
+  participate whole;
+- a non-participating source or component is an `OUTSIDE_EXPORT_AREA`
+  population outcome, never unsupported, invalid or a fidelity reduction; it is
+  counted in preflight and the report, recorded in the sidecar when one is
+  written, stated by a DXF header comment (group `999`), and the explicit area
+  enters the staleness check; area filtering alone never makes the sidecar
+  mandatory; a missing semantic domain is never replaced by the area.
 
 ## Units, scale, and coordinate system
 
-GeoGebra Classic constructions do not provide a G5-approved physical model
-unit. The source unit is therefore `UNITLESS`, the identity transform is used,
-and DXF `$INSUNITS` is `0`. Zoom, DPI, export image scale, printing scale, and
-window bounds are excluded from the service API.
+The document/application unit contract is the
+[GeoCeDG unit system](../units/unit-system.md) §15.2, implemented by
+`PRE-G9B-R6-plus-C` (`DQ-C11`). The neutral model carries the effective
+construction unit and, for `usm`, its binary64 factor; coordinates are always
+written numerically unchanged with the identity transform:
 
-Future physical-unit support requires an explicit document/application
-contract. It must not reinterpret screen scale as model scale.
+| Effective construction unit | Neutral unit | DXF `$INSUNITS` (group 70) | Sidecar |
+|---|---|---|---|
+| `UNSPECIFIED_MODEL_UNIT` | `UNITLESS` | `0` | when fidelity requires it; `unitless`, no factor |
+| `mm` | `MM` | `4` | when fidelity requires it; unit metadata `mm` |
+| `cm` | `CM` | `5` | when fidelity requires it; unit metadata `cm` |
+| `m` | `M` | `6` | when fidelity requires it; unit metadata `m` |
+| `usm` | `USM` | `0`, with a custom-unit header comment and warning | **mandatory**, with the token `usm` and the canonical `metersPerUnit` |
 
-> **Pending unit amendment — not in force.** The document/application
-> contract required above is defined in the
-> [GeoCeDG unit system](../units/unit-system.md) §15 (`NORMATIVE / AUTHOR
-> APPROVED` 2026-10-02, `PRE-G9B-R6-plus-D0`). That section defines the future
-> DXF unit header and the amendment obligations of `PRE-G9B-R6-plus-C`. Until
-> `C` implements it and the author accepts that implementation, every rule of this
-> specification, including `UNITLESS`, `$INSUNITS = 0` and the G5 PASS clause,
-> stays in force unchanged, and this specification keeps
-> `Status: Experimental`.
+The codes are those of the Autodesk DXF header reference. `$MEASUREMENT` and
+`$LUNITS` are not written. `presentationUnit`, zoom, DPI, export image scale,
+printing scale, the drawing scale and window bounds are excluded from the
+service API; screen scale is never reinterpreted as model scale. The unit
+state, the hidden-layer set and the explicit export area enter the staleness
+check of a pending preflight. The default exact (G5) Desktop flow refuses a
+`usm` document, because it writes no sidecar.
 
 ## Layers and style
 
+The exported population is the requested geometric population: individually
+hidden objects and objects on hidden GeoCeDG layers are included; their hidden
+states are transported, never used to drop geometry (`DQ-C2`, `DQ-C3`).
+
 - layer `0` -> DXF `0`;
 - nonzero layer `n` -> DXF `GEOCEDG_L<n>`;
+- a GeoCeDG layer in the persistent hidden-layer set (`PRE-G9B-R6-plus-A-2`) ->
+  its DXF `LAYER` record is written OFF (negative color group `62 = -7`); its
+  objects stay in the file on that layer;
 - object RGB -> DXF true-color group `420`;
-- hidden object -> DXF visibility group `60 = 1`;
+- individually hidden object -> DXF visibility group `60 = 1`; an object both
+  hidden and on a hidden layer carries both mechanisms;
 - construction-revision source identifier -> DXF comment group `999`;
 - line thickness, point size, fill, opacity, and dash style are not transported
   in G5.
@@ -125,9 +177,12 @@ A G5 PASS requires:
 
 - exact entity counts and types;
 - coordinate, radius, angle, and polyline-closure invariants;
-- `$ACADVER = AC1015` and `$INSUNITS = 0`;
+- `$ACADVER = AC1015` and `$INSUNITS = 0` for a document with
+  `UNSPECIFIED_MODEL_UNIT` (the G5 corpus), otherwise the mapped code of the
+  effective construction unit;
 - deterministic layer/style mapping;
-- semantic equality across zoom changes;
+- semantic equality across zoom changes, also when no explicit export area
+  exists (`VISIBLE_VIEWPORT`);
 - explicit unsupported diagnostics;
 - GUI export in GeoCeDG and unchanged Classic availability.
 

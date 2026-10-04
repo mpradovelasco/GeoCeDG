@@ -1478,6 +1478,53 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	}
 
 	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C physical export scale (unit-system
+	 * sections 13 and 15.2) read by the picture, print and LaTeX routes.
+	 *
+	 * @return centimetres on the output per model unit, or NaN when the host
+	 *         device scale applies; always NaN in the host
+	 */
+	public double getPhysicalExportScale() {
+		return Double.NaN;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C bounds of the product export area
+	 * that the LaTeX exporters initialize from (DQ-C13).
+	 *
+	 * @param view
+	 *            exported view
+	 * @return {xmin, xmax, ymin, ymax} in world coordinates, or null when the
+	 *         host bounds (selection rectangle or view) apply; always null in the
+	 *         host
+	 */
+	public double[] getExportAreaWorldBounds(EuclidianView view) {
+		return null;
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C bound edits of the LaTeX exporters
+	 * (DQ-C13).
+	 *
+	 * @param view
+	 *            exported view
+	 * @param xmin
+	 *            edited minimal x
+	 * @param xmax
+	 *            edited maximal x
+	 * @param ymin
+	 *            edited minimal y
+	 * @param ymax
+	 *            edited maximal y
+	 * @return whether the product handled the edit; false in the host, which
+	 *         then writes the selection rectangle
+	 */
+	public boolean exportAreaBoundsEdited(EuclidianView view, double xmin,
+			double xmax, double ymin, double ymax) {
+		return false;
+	}
+
+	/**
 	 * GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B product seam for animated picture
 	 * export (GIF, WebM).
 	 *

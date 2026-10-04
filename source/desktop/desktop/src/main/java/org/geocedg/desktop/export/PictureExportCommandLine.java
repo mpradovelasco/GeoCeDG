@@ -70,9 +70,19 @@ public final class PictureExportCommandLine {
 		try {
 			// written beside the target and moved only when valid, so a failure
 			// never leaves an empty file and never removes an earlier one
+			if ("png".equals(extension)) {
+				// PRE-G9B-R6-plus-C (C4): a physical raster below one pixel or
+				// beyond the integer range fails explicitly
+				PictureExportService.requirePhysicalRaster(view.getApplication(),
+						view, exportScale);
+			}
 			temporary = File.createTempFile(".geocedg-export-", "." + extension,
 					target.getParentFile());
-			write(route, view, temporary, extension, effectiveDpi, exportScale);
+			// DQ-C9: the EMF frame is the output size of the printing scale,
+			// physical when the document has a construction unit
+			write(route, view, temporary, extension, effectiveDpi, exportScale,
+					width / view.getXscale() * printingScale,
+					height / view.getXscale() * printingScale);
 			if (temporary.length() == 0) {
 				return fail(temporary, "export produced no output: " + file);
 			}
@@ -86,7 +96,8 @@ public final class PictureExportCommandLine {
 	}
 
 	private static void write(PictureExportRoute route, EuclidianView view, File file,
-			String extension, int dpi, double exportScale) throws IOException {
+			String extension, int dpi, double exportScale, double frameWidthCm,
+			double frameHeightCm) throws IOException {
 		switch (extension) {
 		case "png":
 			route.writePNG(view, file, true, dpi, exportScale, ExportType.PNG);
@@ -95,7 +106,8 @@ public final class PictureExportCommandLine {
 			route.writePDF(view, file, true);
 			break;
 		case "emf":
-			route.writeEMF(view, file, true, exportScale);
+			route.writeEMF(view, file, true, exportScale, frameWidthCm,
+					frameHeightCm);
 			break;
 		default:
 			try (OutputStream out = Files.newOutputStream(file.toPath())) {

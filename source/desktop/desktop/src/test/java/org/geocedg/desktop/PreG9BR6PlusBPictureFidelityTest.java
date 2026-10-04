@@ -616,7 +616,9 @@ class PreG9BR6PlusBPictureFidelityTest {
 	static byte[] emf(AppGeoCeDG app, EuclidianView view, double scale) throws Exception {
 		File file = Files.createTempFile("b-fidelity", ".emf").toFile();
 		try {
-			app.getPictureExportService().writeEMF(view, file, true, scale);
+			// PRE-G9B-R6-plus-C: no exact frame requested, the B device bounds
+			app.getPictureExportService().writeEMF(view, file, true, scale,
+					Double.NaN, Double.NaN);
 			return Files.readAllBytes(file.toPath());
 		} finally {
 			Files.deleteIfExists(file.toPath());

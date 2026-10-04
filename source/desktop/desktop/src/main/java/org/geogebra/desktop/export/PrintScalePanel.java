@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.geocedg.desktop.export.ExportScalePresentation;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.debug.Log;
@@ -75,6 +76,8 @@ public class PrintScalePanel extends JPanel {
 	private PrintScaleModes mode = PrintScaleModes.SIZEINCM;
 
 	private boolean pixelSizeEnabled = true;
+	// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C physical engineering-scale mode
+	private final boolean physicalMode;
 
 	private String jcbItemSizeInPixels = "";
 	private String jcbItemFixedSize = "";
@@ -115,9 +118,17 @@ public class PrintScalePanel extends JPanel {
 		// new variables added (3 rows) - are used as items in the combo box
 		// exportMode
 		Localization loc = app.getLocalization();
-		jcbItemScaleInCentimeter = loc.getMenu("ScaleInCentimeter") + ":";
-		jcbItemFixedSize = loc.getMenu("FixedSize") + ":";
-		jcbItemSizeInPixels = loc.getMenu("SizeInPixels") + ":";
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C engineering scale (DQ-C6,
+		// DQ-C8): a physical document offers only its drawing scale; a document
+		// without a construction unit keeps the device modes, labelled so
+		ExportScalePresentation presentation = app.getExportScalePresentation();
+		physicalMode = presentation != null && presentation.isPhysical();
+		jcbItemScaleInCentimeter = deviceLabel(presentation, "ScaleInCentimeter",
+				loc.getMenu("ScaleInCentimeter") + ":");
+		jcbItemFixedSize = deviceLabel(presentation, "FixedSize",
+				loc.getMenu("FixedSize") + ":");
+		jcbItemSizeInPixels = deviceLabel(presentation, "SizeInPixels",
+				loc.getMenu("SizeInPixels") + ":");
 
 		exportMode = new JComboBox();
 
@@ -126,7 +137,9 @@ public class PrintScalePanel extends JPanel {
 		exportMode.addItem(jcbItemSizeInPixels);
 		// end of block update
 
-		add(exportMode);
+		if (!physicalMode) {
+			add(exportMode);
+		}
 
 		exportMode.addActionListener(arg0 -> switchMode());
 
@@ -152,9 +165,23 @@ public class PrintScalePanel extends JPanel {
 		pxModePanel.add(tfSize2);
 		pxModePanel.add(new JLabel(loc.getMenu("Pixels.short")));
 
+		if (physicalMode) {
+			// the session drawing scale is the sole sizing authority
+			add(presentation.createScaleControl(this::notifyListeners));
+			return;
+		}
 		add(cmModePanel);
+		if (presentation != null) {
+			add(presentation.createDeviceModeStatement());
+		}
 
 		updateScaleTextFields();
+	}
+
+	private static String deviceLabel(ExportScalePresentation presentation,
+			String key, String hostLabel) {
+		return presentation == null ? hostLabel
+				: presentation.deviceScaleLabel(key, hostLabel);
 	}
 
 	/**
@@ -162,7 +189,7 @@ public class PrintScalePanel extends JPanel {
 	 */
 	@SuppressWarnings("unchecked")
 	public void enableAbsoluteSize(boolean b) {
-		if (b == pixelSizeEnabled) {
+		if (b == pixelSizeEnabled || physicalMode) {
 			return;
 		}
 		pixelSizeEnabled = b;

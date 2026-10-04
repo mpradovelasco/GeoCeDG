@@ -49,6 +49,36 @@ public final class GeometryExportService {
 	}
 
 	/**
+	 * PRE-G9B-R6-plus-C: exact model with an explicit document export context.
+	 *
+	 * @param geos already selected source population
+	 * @param selectionMode population provenance
+	 * @param context unit state, hidden layers and export area
+	 * @return immutable neutral model
+	 */
+	public GeometryExportModel createModel(Collection<GeoElement> geos,
+			SelectionMode selectionMode, GeometryExportContext context) {
+		return adapter.adapt(geos, selectionMode, context);
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C: strict preflight with an explicit document export
+	 * context, resolved again on every currentness check.
+	 *
+	 * @param geos ordered requested source population
+	 * @param selectionMode population provenance
+	 * @param request explicit approximation and work policy
+	 * @param contextSource unit state, hidden layers and export area
+	 * @return immutable complete-request preflight
+	 */
+	public GeometryExportPreflight preflight(Collection<GeoElement> geos,
+			SelectionMode selectionMode, GeometryExportRequest request,
+			GeometryExportContext.Source contextSource) {
+		return extendedAdapter.preflight(geos, selectionMode, request,
+				contextSource);
+	}
+
+	/**
 	 * Performs the explicit G9X1 fidelity classification before destination
 	 * selection or serialization. The legacy G5 API remains exact-only.
 	 *

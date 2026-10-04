@@ -17,6 +17,8 @@ the clauses below are unchanged from the approved candidate, and acceptance
 changed only the status markers. Acceptance authorizes no implementation: no
 product behavior may be claimed against it until the implementing phases
 deliver it, and the in-force export rules of §15.1 stay unchanged until `C`.
+Status marker (2026-10-04): `C` delivers §13 and §15 in a technical candidate
+pending author review (§15).
 
 `MUST`, `MUST NOT`, `SHOULD` and `MAY` have their usual normative meaning. Each
 numbered clause is cited as `§n.m`. The author decisions listed in the header
@@ -272,7 +274,7 @@ by the unit state in version 1:
 |---|---|
 | `MetricUnit2D.CONSTRUCTION_LENGTH_UNIT` (Locus V2 metrics) | `geocedg-common/kernel/locus/metric/MetricUnit2D.java:9-10` |
 | intersection residual unit `"model-coordinate"` | `geocedg-common/kernel/locus/intersection/LocusIntersectionPolicy2D.java:79`, `:129` |
-| export model coordinate unit `UNITLESS` (until `C`, §15) | `geocedg-common/export/GeometryExportModel.java:27-31` |
+| export model coordinate unit: `UNITLESS` until `C`; since the `C` technical candidate the effective construction unit with `UNITLESS` for `UNSPECIFIED_MODEL_UNIT` (§15.2) | `geocedg-common/export/GeometryExportModel.java` (`Unit`) |
 | spatial frame `units` token: free text, string-equality compared | `geocedg-common/kernel/spatial/identity/ProjectionFrameRecord.java:81`, `:138-140` |
 
 The spatial frame `units` token is an opaque identity token unrelated to
@@ -500,7 +502,7 @@ never moved into `<geocedgSpatial>` to make old readers fail closed.
 | scripting / API XML insertion (`evalXML`) | non-clearing (`GgbAPI.java:169-179`; `common/main/App.java:5126`) | ignored (§8.8) |
 | macro construction write and read, user tools (`.ggt`), `addMacroXML` | `Macro.java:175`, `:792-796`; `App.java:3664-3670` | never written; ignored (§8.8) |
 | preferences XML | `MyXMLio.java:346-358` (no construction) | never written |
-| DXF staleness fingerprint | `geocedg-common/export/G9X1GeometryExportAdapter.java:1049-1060` | not part of it at the base; `C` adds the unit state (§15.3) |
+| DXF staleness fingerprint | `geocedg-common/export/G9X1GeometryExportAdapter.java` (construction fingerprint and export-context guard) | not part of it at the base; the `C` technical candidate adds the unit state to the currentness check (§15.3) |
 
 `D1` re-establishes every row at its own base and adds any further route it
 finds; a route that cannot keep these rules is a `D1` stop condition.
@@ -640,12 +642,17 @@ or `k` change, without recomputing any geometry.
 When `display(L)` is not finite, the text shows a defined presentation failure
 marker chosen by `E2`; the numeric output is unchanged.
 
-## 15. Export amendment contract (future; owner `C`)
+## 15. Export amendment contract (owner `C`)
 
-### 15.1 In-force rules until `C`
+Implementation status: `PRE-G9B-R6-plus-C` implements §13 and §15.2 and
+amends the export specifications, the verifier pins and the sidecar of §15.3
+in one technical candidate pending author review (2026-10-04). This status
+marker changes no clause of this section.
 
-Until `C` implements this section and the author accepts it, the existing
-rules stay in force unchanged:
+### 15.1 Rules in force before `C`
+
+Until `C` implemented this section, the following rules were in force; they
+remain the historical baseline of the G5 and G9X1 evidence:
 
 - [`geometry-export-foundation.md`](../export/geometry-export-foundation.md)
   (`Status: Experimental`, under ADR 0005 accepted for the G5 experimental
@@ -795,6 +802,9 @@ class for any of them.
   preferences XML free of unit state.
 
 ### 18.2 `C` — export
+
+Status: implemented by the `PRE-G9B-R6-plus-C` technical candidate pending
+author review (2026-10-04).
 
 - Implement §13 and §15.2; discharge §15.3 in one coherent change.
 - Evidence: physical output sizes for each unit and scale; invariance under

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR APPROVED** |
-| Version | `1.0` |
+| Status | **NORMATIVE / AUTHOR APPROVED** (version `1.0`); the version `1.1` amendment below is a `PRE-G9B-R6-plus-C` technical candidate pending author review |
+| Version | `1.1` (2026-10-04: units, hidden layers, explicit export area and sidecar schema version 2; author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`, `DQ-C13`) |
 | Phase | G9X1 design; implementation not authorized |
 | Scope | Read-only 2D DXF fidelity, approximation, preflight, and sidecar contract |
 | Hard dependencies | [G5 geometry export foundation](geometry-export-foundation.md) and approved internal G6-G8 semantic source contracts |
@@ -45,9 +45,15 @@ GeoCeDG menu/controller
     -> ASCII DXF AC1015
 ```
 
-The current writer emits unitless Cartesian 2D coordinates (`$INSUNITS=0`).
-It transports layer, RGB, and current visibility, but not line weight/style,
-fill, opacity, point size, or labels. Hidden objects are included and marked.
+The writer emits Cartesian 2D model coordinates, numerically unchanged, with
+`$INSUNITS` from the effective construction unit (`mm` 4, `cm` 5, `m` 6;
+`UNSPECIFIED_MODEL_UNIT` and `usm` 0), as defined in the
+[geometry export foundation](geometry-export-foundation.md) and the
+[unit-system specification](../units/unit-system.md) §15.2 (version 1.1; until
+`PRE-G9B-R6-plus-C` every export was unitless). It transports layer, RGB,
+current visibility and the OFF state of persistently hidden GeoCeDG layers, but
+not line weight/style, fill, opacity, point size, or labels. Individually
+hidden objects are included and marked (`60 = 1`).
 The existing source identifier is construction-revision scoped and can depend
 on label/ordinal; it is not a durable cross-save identity.
 
@@ -166,7 +172,18 @@ unsupported, invalid, and omitted component counts. The approved defaults are:
 - partial component output is disabled and strict reject/stop is the default;
 - any future partial-output option requires explicit user intent for that
   operation, a visible warning, and a mandatory sidecar; and
-- hidden sources remain included but visibly reported.
+- hidden sources remain included but visibly reported; sources on a
+  persistently hidden GeoCeDG layer remain included on their layer, which is
+  written OFF and reported (version 1.1, `DQ-C2`, `DQ-C3`).
+
+An explicit export area (`MANUAL`, `EXPORT_POINTS_EXPLICIT`,
+`EXPORT_POINTS_AUTOMATIC`) selects whole sources and certified components by
+the `B1` participation rule of the geometry export foundation (version 1.1,
+`DQ-C13`); the `VISIBLE_VIEWPORT` fallback is no boundary. A non-participating
+source or component is an `OUTSIDE_EXPORT_AREA` population outcome: it is
+neither unsupported nor invalid, is never a fidelity reduction, never blocks
+the strict request and never makes the sidecar mandatory by itself. The strict
+writability rule above is unchanged for every participating component.
 
 For a complete-construction request, the input to strict preflight is the
 versioned typed population `geocedg-dxf-geometric-2d/v1`, not every labeled
@@ -177,19 +194,37 @@ eligible geometric source remains subject to strict exact/approximate,
 unsupported and invalid classification. Current selection is explicit and is
 never filtered by this population rule.
 
-The dialog must show unitless coordinates, tolerance/guarantee, work limits,
-explicit domains, sidecar creation, and every warning that can affect fidelity.
+The dialog must show the coordinate system with its unit and `$INSUNITS` code
+(`unitless` for `UNSPECIFIED_MODEL_UNIT`; a visible custom-unit warning for
+`usm`), tolerance/guarantee, work limits, explicit domains, the hidden layers
+written OFF, the consumed export area and the sources outside it, sidecar
+creation, and every warning that can affect fidelity.
 
 ## 8. Conditional mandatory sidecar and paired output
 
 A deterministic UTF-8 `<drawing>.dxf.manifest.json` is mandatory whenever an
 export operation contains `APPROXIMATE` geometry, omitted or partial geometry,
 an unsupported requested component that was not emitted, work-limit
-termination, or any other fidelity reduction. A wholly `EXACT` export may omit
-the sidecar unless another product policy requires it. When present, it records:
+termination, or any other fidelity reduction, and whenever the effective
+construction unit is `usm` (version 1.1, `DQ-C11`: the core DXF stays unitless
+and only the sidecar carries the declared physical meaning). A wholly `EXACT` export may omit
+the sidecar unless another product policy requires it, such as the `usm` rule
+above; export-area filtering alone never requires it. When present, it
+records:
 
-- schema, application/build version, embedded repository commit, DXF AC1015,
-  coordinate system, units, and DXF SHA-256;
+- schema `org.geocedg.dxf.fidelity-manifest` with `schema_version` 2 (version
+  1.1; a version-1 sidecar keeps its original meaning, unitless coordinates,
+  and is never reinterpreted), application/build version, embedded repository
+  commit, DXF AC1015, coordinate system, source and target unit, `$INSUNITS`
+  and DXF SHA-256;
+- versioned unit metadata (`org.geocedg.dxf.unit-metadata` version 1): the
+  unit state (`physical` or `unspecified_model_unit`), the construction-unit
+  token, the canonical binary64 `meters_per_unit` (none when unspecified), and
+  for `usm` the token `usm`, its canonical `meters_per_unit`, name and symbol;
+- the persistent hidden GeoCeDG layers and the DXF layers written OFF;
+- the export-area record: the participation rule, the resolved producer,
+  whether a boundary applied, its bounds and source view, and every source or
+  component outside the area with its identifier, scope and address;
 - the complete request policy and deterministic work limits;
 - source identifier plus `id_scope` (`persistent` or
   `construction-revision`), source family/label/revision;

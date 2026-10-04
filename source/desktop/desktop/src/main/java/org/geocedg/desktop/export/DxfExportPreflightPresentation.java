@@ -14,7 +14,12 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 import org.geocedg.common.export.ApproximationEvidence;
+import org.geocedg.common.export.ComponentAddress;
+import org.geocedg.common.export.GeometryExportArea;
+import org.geocedg.common.export.GeometryExportContext;
+import org.geocedg.common.export.GeometryExportModel.AreaExclusion;
 import org.geocedg.common.export.GeometryExportModel.Diagnostic;
+import org.geocedg.common.export.GeometryExportModel.Entity;
 import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.GeometryExportRequest.SemanticDomain;
@@ -194,9 +199,39 @@ public final class DxfExportPreflightPresentation {
 		return preflight.isSidecarRequired();
 	}
 
+	/** @return PRE-G9B-R6-plus-C consumed export area statement (DQ-C13) */
+	public String getAreaText() {
+		return areaText(preflight.getModel().getContext());
+	}
+
+	/** @return PRE-G9B-R6-plus-C hidden layers written OFF (DQ-C2) */
+	public String getHiddenLayersText() {
+		return hiddenLayersText(preflight.getModel().getContext());
+	}
+
+	private static String areaText(GeometryExportContext context) {
+		GeometryExportArea area = context.getArea();
+		if (area == null) {
+			return "none resolved: model-space population";
+		}
+		return area.describe() + " (" + GeometryExportArea.RULE_ID + ")";
+	}
+
+	private static String hiddenLayersText(GeometryExportContext context) {
+		if (context.getHiddenLayers().isEmpty()) {
+			return "none";
+		}
+		List<String> layers = new ArrayList<>();
+		for (int layer : context.getHiddenLayers().toList()) {
+			layers.add(layer == 0 ? "0" : "GEOCEDG_L" + layer);
+		}
+		return String.join(", ", layers)
+				+ " (objects kept; the DXF layer is written OFF)";
+	}
+
 	private static String buildSummary(GeometryExportPreflight preflight,
 			boolean sourceRevisionCurrent, boolean writable) {
-		GeometryExportRequest request = preflight.getRequest();
+		final GeometryExportRequest request = preflight.getRequest();
 		StringBuilder text = new StringBuilder();
 		text.append("Component outcomes: exact=").append(preflight.getExactCount())
 				.append(", approximate=").append(preflight.getApproximateCount())
@@ -205,13 +240,26 @@ public final class DxfExportPreflightPresentation {
 				.append(", omitted=").append(preflight.getOmittedCount())
 				.append(", hidden=").append(preflight.getHiddenCount())
 				.append(", outside geometric population=")
-				.append(preflight.getExcludedPopulationCount()).append('\n');
+				.append(preflight.getExcludedPopulationCount())
+				.append(", outside the export area=")
+				.append(preflight.getOutsideExportAreaCount()).append('\n');
+		GeometryExportContext context = preflight.getModel().getContext();
 		text.append("Coordinates: ")
 				.append(preflight.getModel().getCoordinateSystem())
 				.append("; source unit=")
 				.append(preflight.getModel().getSourceUnit())
 				.append("; target unit=")
-				.append(preflight.getModel().getTargetUnit()).append('\n');
+				.append(preflight.getModel().getTargetUnit())
+				.append("; $INSUNITS=")
+				.append(preflight.getModel().getTargetUnit().getInsunitsCode());
+		if (preflight.isCustomUnit()) {
+			text.append("; usm metresPerUnit=")
+					.append(context.getCanonicalMetresPerUnit());
+		}
+		text.append("; coordinates unchanged\n");
+		text.append("Hidden layers: ").append(hiddenLayersText(context))
+				.append('\n');
+		text.append("Export area: ").append(areaText(context)).append('\n');
 		text.append("Population rule: ")
 				.append(preflight.getModel().getPopulationRuleId()).append('\n');
 		text.append("Semantic coverage: ")
@@ -323,6 +371,28 @@ public final class DxfExportPreflightPresentation {
 	private static String buildWarnings(GeometryExportPreflight preflight,
 			boolean sourceRevisionCurrent) {
 		List<String> lines = new ArrayList<>();
+		if (preflight.isCustomUnit()) {
+			lines.add("CUSTOM_UNIT_USM: the construction unit usm ("
+					+ preflight.getModel().getContext().getCanonicalMetresPerUnit()
+					+ " m per unit) has no DXF code; $INSUNITS is 0 and the "
+					+ "mandatory paired sidecar carries its physical meaning.");
+		}
+		for (Entity entity : preflight.getModel().getEntities()) {
+			if (preflight.getModel().isLayerOff(entity.getLayer())) {
+				lines.add("HIDDEN_LAYER_OFF " + entity.getSourceId() + "/"
+						+ entity.getNeutralEntityId() + ": on hidden layer "
+						+ entity.getLayer() + ", kept in the DXF on a layer written OFF.");
+			}
+		}
+		for (AreaExclusion exclusion : preflight.getModel().getAreaExclusions()) {
+			ComponentAddress address = exclusion.getComponentAddress();
+			String component = address.getBranchKey() == null
+					? address.getComponentKey()
+					: address.getBranchKey() + "/" + address.getComponentKey();
+			lines.add("OUTSIDE_EXPORT_AREA " + exclusion.getSourceId() + "/"
+					+ component + ": does not meet the explicit export area; not "
+					+ "emitted (population, not a fidelity reduction).");
+		}
 		for (SourceExportOutcome outcome : preflight.getModel().getOutcomes()) {
 			String component = componentLabel(outcome);
 			if (outcome.getFidelity() == Fidelity.APPROXIMATE) {

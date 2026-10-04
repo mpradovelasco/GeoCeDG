@@ -42,7 +42,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title. PRE-G9B-R6-plus-B: add the host-default seams getPictureExportRoute (none), getSavePreviewImage (the host thumbnail) and isUpstreamExportEntryAvailable (every entry). Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: record whether the startup document is blank, route preflight and live document-load failures through a protected diagnostic seam whose default keeps the Classic message, and offer a null-returning new-document units options hook. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: one protected nativeDocumentLoadCommitted hook, a no-op by default, called once a native document load transaction has committed; a failed load never reaches it. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title. PRE-G9B-R6-plus-B: add the host-default seams getPictureExportRoute (none), getSavePreviewImage (the host thumbnail) and isUpstreamExportEntryAvailable (every entry). Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: record whether the startup document is blank, route preflight and live document-load failures through a protected diagnostic seam whose default keeps the Classic message, and offer a null-returning new-document units options hook. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: one protected nativeDocumentLoadCommitted hook, a no-op by default, called once a native document load transaction has committed; a failed load never reaches it. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: add the null getExportScalePresentation() seam and the runApiDocumentReplacement(Runnable) marker seam; the host only runs the replacement. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -66,7 +66,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: own the Document Units action, dialog and status refresh, apply the new-document defaults to blank documents only and inside the undo baseline, track clipboard provenance, show the paste notice and localize unit load errors. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the document hidden-layer hooks, the commit of a parsed set in document transitions only (native Open, loadXML(String), clearing setXML, startup), the save relevance of a non-empty set and the localized fail-closed diagnostics. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: Base64 and non-native file or URL replacements commit the document hidden-layer set through the same commit logic. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 3 (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT, pre-existing): a completed File > New, after the host preference reload and the new-document defaults, is the saved baseline. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: own the Document Units action, dialog and status refresh, apply the new-document defaults to blank documents only and inside the undo baseline, track clipboard provenance, show the paste notice and localize unit load errors. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the document hidden-layer hooks, the commit of a parsed set in document transitions only (native Open, loadXML(String), clearing setXML, startup), the save relevance of a non-empty set and the localized fail-closed diagnostics. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: Base64 and non-native file or URL replacements commit the document hidden-layer set through the same commit logic. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 3 (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT, pre-existing): a completed File > New, after the host preference reload and the new-document defaults, is the saved baseline. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: own the per-window drawing scale and reset it at the document-replacement boundaries E1-E6 only, the export-scale presentation, the physical export scale, the export-area seams of the LaTeX exporters and of the DXF export context, and the GeoCeDG LaTeX exporters. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -96,25 +96,25 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportModel.java",
       "change": "added",
-      "purpose": "Define the immutable read-only 2D export representation and validate G9X1 per-component fidelity outcomes without making export geometry authoritative.",
+      "purpose": "Define the immutable read-only 2D export representation and validate G9X1 per-component fidelity outcomes without making export geometry authoritative. PRE-G9B-R6-plus-C: units UNITLESS, mm, cm, m and usm, the export context, export-area exclusions and LAYER OFF for hidden layers. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeoElementGeometryExportAdapter.java",
       "change": "added",
-      "purpose": "Provide the sole boundary that adapts resolved GeoGebra 2D objects to neutral export geometry.",
+      "purpose": "Provide the sole boundary that adapts resolved GeoGebra 2D objects to neutral export geometry. PRE-G9B-R6-plus-C: adaptation under an export context with export-area exclusions, and the document context of the sources. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/geometry-export-foundation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportService.java",
       "change": "added",
-      "purpose": "Expose the retained exact G5 API plus UI-independent G9X1 preflight and validated encoding entry points.",
+      "purpose": "Expose the retained exact G5 API plus UI-independent G9X1 preflight and validated encoding entry points. PRE-G9B-R6-plus-C: model and preflight under an export context. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/DxfExporter.java",
       "change": "added",
-      "purpose": "Preserve exact G5 bytes while encoding validated G9X1 neutral entities as deterministic ASCII DXF AC1015 with auditable handle mappings.",
+      "purpose": "Preserve exact G5 bytes while encoding validated G9X1 neutral entities as deterministic ASCII DXF AC1015 with auditable handle mappings. PRE-G9B-R6-plus-C: $INSUNITS from the construction unit, LAYER OFF for document hidden layers, and the usm and export-area comments. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -138,7 +138,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
       "change": "added",
-      "purpose": "Retain the exact G5 flow and coordinate the opt-in G9X1 request, preflight, acknowledgement, destination, sidecar, and safe paired-write flow outside the kernel.",
+      "purpose": "Retain the exact G5 flow and coordinate the opt-in G9X1 request, preflight, acknowledgement, destination, sidecar, and safe paired-write flow outside the kernel. PRE-G9B-R6-plus-C: export context (construction unit, document hidden layers, explicit export area), units text, usm refusal on the disabled extended path and the result report lines. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -2964,13 +2964,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfExportPreflightPresentation.java",
       "change": "added",
-      "purpose": "Present completed G9X1 preflight evidence and require approximation acknowledgement before destination selection.",
+      "purpose": "Present completed G9X1 preflight evidence and require approximation acknowledgement before destination selection. PRE-G9B-R6-plus-C: units, usm, hidden layers, export area and outside-area summary and warnings. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfFidelityManifestWriter.java",
       "change": "added",
-      "purpose": "Create the deterministic mandatory fidelity sidecar and bind source outcomes to actual DXF entity handles.",
+      "purpose": "Create the deterministic mandatory fidelity sidecar and bind source outcomes to actual DXF entity handles. PRE-G9B-R6-plus-C: sidecar schema version 2 with unit metadata, layers, export area and outside-area records. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -2988,7 +2988,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DxfManifestEncoding.java",
       "change": "added",
-      "purpose": "Carry one validated deterministic UTF-8 fidelity-manifest encoding and its digest.",
+      "purpose": "Carry one validated deterministic UTF-8 fidelity-manifest encoding and its digest. PRE-G9B-R6-plus-C: the schema version 2 header. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -3042,13 +3042,13 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1DxfManifestTest.java",
       "change": "added",
-      "purpose": "Verify deterministic fidelity-sidecar schema, provenance, entity mappings, and exact-versus-approximate requirements.",
+      "purpose": "Verify deterministic fidelity-sidecar schema, provenance, entity mappings, and exact-versus-approximate requirements. PRE-G9B-R6-plus-C: sidecar schema version 2 and the units block. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/export/G9X1PairedOutputTest.java",
       "change": "added",
-      "purpose": "Verify paired-output collision, replacement, failure injection, compensation, cleanup, and rollback outcomes.",
+      "purpose": "Verify paired-output collision, replacement, failure injection, compensation, cleanup, and rollback outcomes. PRE-G9B-R6-plus-C: the schema version 2 header. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -3102,13 +3102,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/G9X1GeometryExportAdapter.java",
       "change": "added",
-      "purpose": "Adapt sources read-only by retaining exact G5 entities and producing only approved component-wise export approximations.",
+      "purpose": "Adapt sources read-only by retaining exact G5 entities and producing only approved component-wise export approximations. PRE-G9B-R6-plus-C: preflight under an export context (unit, hidden layers, export area) with B1 participation and a context guard; the Locus glue moves to SemanticCurveExportAdapter2D. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportPreflight.java",
       "change": "added",
-      "purpose": "Represent one immutable complete-request classification before destination selection or serialization.",
+      "purpose": "Represent one immutable complete-request classification before destination selection or serialization. PRE-G9B-R6-plus-C: the sidecar is mandatory for usm; outside-area count. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -3936,7 +3936,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/main/App.java",
       "change": "modified",
-      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged. PRE-G9B-R6-plus-A-1: add the product seams getLayerForNewObject(construction, upstreamLayer) and isLayerShown(layer); the host returns the upstream layer and shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: add the export seams getExportFrameWidth(view), getExportFrameHeight(view) and isAnimatedExportAvailable(); the host returns the view export size and true. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: isSaved uses Construction.hasSaveRelevantContent so a unit-only document can be unsaved, and setXML reports load failures through a protected seam whose default message is unchanged. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: updateMaxLayerUsed reads the configured layer domain; document hidden-layer writer, report and save-relevance hooks with empty, ignoring and false defaults; isSaved also consults the save-relevance hook. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: documentReplacementCommitted() hook, a no-op by default, called at the end of a successful loadXML(ZipFile) full-document replacement; a failed load never reaches it. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md.",
+      "purpose": "G9U1 application presentation correction: compare the existing stored construction-navigation flag in the setter shortcut so native rollback can restore its prior value; retain the special public visibility getter, serialized format, identities and kernel semantics. PRE-G9B-S4: add a behavior-neutral Euclidian UI-font ownership seam; Classic still returns the construction application font. PRE-G9B-P0: add a null-returning application presentation-background hook that never participates in serialization. PRE-G9B-R5-B (ADR 0031 decision 9): record the command identities offered by the existing input-bar and CAS dictionary passes (getOfferedCommands, getCasTableCommands) so presentation consumers carry identity; the reverse command table and the dictionaries are unchanged. PRE-G9B-R6-plus-A-1: add the product seams getLayerForNewObject(construction, upstreamLayer) and isLayerShown(layer); the host returns the upstream layer and shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: add the export seams getExportFrameWidth(view), getExportFrameHeight(view) and isAnimatedExportAvailable(); the host returns the view export size and true. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: isSaved uses Construction.hasSaveRelevantContent so a unit-only document can be unsaved, and setXML reports load failures through a protected seam whose default message is unchanged. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: updateMaxLayerUsed reads the configured layer domain; document hidden-layer writer, report and save-relevance hooks with empty, ignoring and false defaults; isSaved also consults the save-relevance hook. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: documentReplacementCommitted() hook, a no-op by default, called at the end of a successful loadXML(ZipFile) full-document replacement; a failed load never reaches it. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: add the export seams getPhysicalExportScale(), getExportAreaWorldBounds(view) and exportAreaBoundsEdited(view, bounds); the host returns NaN, null and false, so host sizing and LaTeX bounds are unchanged. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -5238,7 +5238,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1HiddenLayerTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-1 effective visibility in painting and hit testing of Graphics 1 and 2, session-only state, unchanged geometry and object visibility, and the export boundary to B and C. PRE-G9B-R6-plus-B: SVG omits hidden layers through the picture service; LaTeX and DXF stay unchanged until C. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-A-2: a toggle is persistent and marks the document unsaved but is never an undo point. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-A-1 effective visibility in painting and hit testing of Graphics 1 and 2, session-only state, unchanged geometry and object visibility, and the export boundary to B and C. PRE-G9B-R6-plus-B: SVG omits hidden layers through the picture service; LaTeX and DXF stay unchanged until C. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-A-2: a toggle is persistent and marks the document unsaved but is never an undo point. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: SVG, LaTeX and DXF follow a hidden layer after B and C. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
     },
     {
@@ -5250,19 +5250,19 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/euclidian/EuclidianViewD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R6-plus-B: print through the application picture route when it handles this view; the host path is unchanged.",
+      "purpose": "PRE-G9B-R6-plus-B: print through the application picture route when it handles this view; the host path is unchanged. PRE-G9B-R6-plus-C: printing uses the application physical export scale and the print-scale title of its presentation when present; the host print scale is unchanged. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/export/GraphicExportDialog.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R6-plus-B: the size label from the export-frame seam and the PNG, PDF, SVG and EMF writes delegated to the application picture route when present; the host path is unchanged.",
+      "purpose": "PRE-G9B-R6-plus-B: the size label from the export-frame seam and the PNG, PDF, SVG and EMF writes delegated to the application picture route when present; the host path is unchanged. PRE-G9B-R6-plus-C: the size label, PNG check and EMF frame follow the application physical export scale when present, and physical size-limit failures are reported explicitly; the host path is unchanged. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/export/PrintScalePanel.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R6-plus-B: the export size from the export-frame seam.",
+      "purpose": "PRE-G9B-R6-plus-B: the export size from the export-frame seam. PRE-G9B-R6-plus-C: with an application export-scale presentation in physical mode, show only its drawing-scale control; in device mode relabel the device controls as non-physical through that presentation; the host keeps its controls and labels. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5286,7 +5286,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/plugin/GgbAPID.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R6-plus-B: PNG file, clipboard and Base64 images through the application picture route when it handles the view; the host path is unchanged.",
+      "purpose": "PRE-G9B-R6-plus-B: PNG file, clipboard and Base64 images through the application picture route when it handles the view; the host path is unchanged. PRE-G9B-R6-plus-C: setXML(String) runs the inherited replacement through the application API document-replacement marker; the host runs it unchanged. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5328,37 +5328,37 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportViewport.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip.",
+      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip. PRE-G9B-R6-plus-C: the printing scale follows the application physical export scale. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportCommandLine.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B --export through the picture service: a temporary file, a non-zero exit and no empty file on failure.",
+      "purpose": "PRE-G9B-R6-plus-B --export through the picture service: a temporary file, a non-zero exit and no empty file on failure. PRE-G9B-R6-plus-C: physical raster check and the EMF frame from the printing scale. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B picture-route interface consumed by the upstream Desktop seams.",
+      "purpose": "PRE-G9B-R6-plus-B picture-route interface consumed by the upstream Desktop seams. PRE-G9B-R6-plus-C: EMF writes carry the requested frame size. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportService.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea.",
+      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea. PRE-G9B-R6-plus-C: physical sizing from the drawing scale and the construction unit, the opt-in exact EMF frame, PDF page limits and physical SVG size. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusBPictureFidelityTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B exact and complete picture output: viewport isolation, sizes, raster grid, PDF page box, SVG viewBox, EMF bounds, content, hidden layers, screen-anchored objects, Locus V2 and legacy Locus.",
+      "purpose": "PRE-G9B-R6-plus-B exact and complete picture output: viewport isolation, sizes, raster grid, PDF page box, SVG viewBox, EMF bounds, content, hidden layers, screen-anchored objects, Locus V2 and legacy Locus. PRE-G9B-R6-plus-C: the EMF helper requests no frame. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusBExportSurfaceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B ExportArea session and producers, surface and fallback, shortcuts, save preview, print, clipboard, command line, ExportImage and graphics APIs, and the Classic defaults.",
+      "purpose": "PRE-G9B-R6-plus-B ExportArea session and producers, surface and fallback, shortcuts, save preview, print, clipboard, command line, ExportImage and graphics APIs, and the Classic defaults. PRE-G9B-R6-plus-C: LaTeX and DXF keep the base output without an area and follow an explicit area. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5478,7 +5478,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1ExportRegressionTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 picture, DXF and LaTeX outputs independent of the unit state; DXF stays unitless.",
+      "purpose": "PRE-G9B-R6-plus-D1 picture, DXF and LaTeX outputs independent of the unit state; DXF stays unitless. PRE-G9B-R6-plus-C: exports keep model coordinates and only DXF declares the unit. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5600,6 +5600,192 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-A-2 revision 3: a completed File > New is the saved baseline with factory preferences, with user preferences that restore a construction step and a table view, and with new-document unit defaults; the first real edit still makes the document unsaved.",
       "authority": "docs/validation/pre_g9b_r6_plus_a2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/emf/EMFOutputStream.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-C modified third-party FreeHEP VectorGraphics source (LGPL; provenance in docs/licensing/freehep-vectorgraphics-provenance.md): an opt-in exact EMF frame (rclFrame) in 0.01 mm applied to the header when the stream closes; a writer that does not opt in produces the original output.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/emf/EMFGraphics2D.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-C modified third-party FreeHEP VectorGraphics source (LGPL; provenance in docs/licensing/freehep-vectorgraphics-provenance.md): the opt-in setExactFrame(width, height) in 0.01 mm passed to the output stream with the header; a writer that does not opt in produces the original output.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/emf/EMFPlusGraphics2D.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-C modified third-party FreeHEP VectorGraphics source (LGPL; provenance in docs/licensing/freehep-vectorgraphics-provenance.md): the opt-in setExactFrame(width, height) in 0.01 mm passed to the output stream with the header; a writer that does not opt in produces the original output.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/export/pstricks/ExportFrame.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-C: show the application LaTeX panel (drawing scale, tolerance, result report) when the application provides an export-scale presentation, and keep the derived physical units read-only; the host dialog is unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/export/pstricks/GeoGebraExport.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-C: read the export bounds from the application seam, let the application absorb bound edits, skip objects on hidden layers through App.isLayerShown, and pass unsupported elements to an overridable hook whose default only logs as before; host bounds, selection rectangle and output are unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExportScalePresentation.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C export-scale presentation: drawing-scale control, device-mode statements and labels, print-scale title and LaTeX panel.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DrawingScale.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C drawing scale a:b: bounded integers, gcd normal form, presets and explicit rejection (DQ-C6).",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DrawingScaleControl.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C editable drawing-scale control with presets and explicit rejection.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DrawingScaleHolder.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C per-window drawing-scale owner with listeners.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportScalePresentation.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C export-scale presentation interface consumed by the upstream export dialogs.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToAsymptote.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C Asymptote exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPgf.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C PGF/TikZ exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPstricks.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C PSTricks exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGLatexSettings.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C LaTeX settings decorator: physical units and the result and scale comments.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/LatexExportPanel.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C LaTeX panel: drawing scale, tolerance and the non-modal result report.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/LatexSemanticExportSupport.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C LaTeX semantic export: certified approximation of LocusV2 and SplineV2 within the model-coordinate tolerance, result classification and report (DQ-C4, DQ-C5, DQ-C12).",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/LatexSemanticExporter.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C access to the semantic support of a GeoCeDG LaTeX exporter.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCBaseIdentityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C base identity: G5 and G9X1 DXF and normalized sidecars, Classic LaTeX and pictures, default FreeHEP EMF and unspecified GeoCeDG LaTeX equal the A-2 closeout base; the host seams and the Web-compatible LaTeX package.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCDrawingScaleTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C drawing scale value, control and per-window ownership; resets at E1-E6 only, never at the excluded operations.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCDxfDesktopTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C DXF Desktop export context, version-2 sidecar, usm, reopened hidden layers and unchanged coordinates.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCLatexExportTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C LaTeX physical units, tolerance, certified semantic paths, result classes, report, export area and hidden layers in the three dialects.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCPhysicalExportTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C physical PNG, PDF, SVG, EMF, print, command-line and API sizing from the drawing scale and the construction unit, device mode and limits.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/PreG9BR6PlusCSharedExportTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C shared export: units and $INSUNITS, hidden-layer LAYER OFF, B1 export-area participation and certified disjointness, classification and physical-scale arithmetic.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/ExportAreaParticipation2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C B1 export-area participation predicates for exact geometry against the closed area.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportArea.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C export-area record: explicit producers, the visible-viewport fallback without boundary and the rule identifier.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportContext.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C export context: unit state, document hidden layers and export area.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/PhysicalExportLimitException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C explicit physical-size limit failure.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/PhysicalExportScale.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C physical export arithmetic: centimetres per unit from the drawing scale and the construction unit, device extents, EMF frame and PDF page limits.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/SemanticCurveExportAdapter2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C LocusV2 export adaptation extracted from the G9X1 adapter, with per-component export-area participation.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/export/SemanticExportClassification.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C result classes COMPLETE, INCOMPLETE_WITH_CERTIFIED_COMPONENTS, NO_ADMISSIBLE_OUTPUT and REJECTED (DQ-C5).",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedComponentAreaDisjointness2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C read-only certified disjointness of a LocusV2 component and a closed rectangle (DQ-C13); disjointness is proven only by certified enclosures.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
     }
   ]
 }

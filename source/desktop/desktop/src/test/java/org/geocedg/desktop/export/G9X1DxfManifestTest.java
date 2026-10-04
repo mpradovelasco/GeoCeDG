@@ -61,7 +61,8 @@ class G9X1DxfManifestTest extends BaseUnitTest {
 
 		assertTrue(manifest.startsWith(
 				"{\"schema\":\"org.geocedg.dxf.fidelity-manifest\","));
-		assertContains(manifest, "\"schema_version\":1");
+		// PRE-G9B-R6-plus-C (DQ-C11): explicit schema evolution to version 2
+		assertContains(manifest, "\"schema_version\":2");
 		assertContains(manifest, "\"name\":\"GeoCeDG\"");
 		assertContains(manifest, "\"version\":\"test-1.0\"");
 		assertContains(manifest,
@@ -75,6 +76,11 @@ class G9X1DxfManifestTest extends BaseUnitTest {
 				"\"coordinate_system\":\"GEOGEBRA_CARTESIAN_2D_WORLD\"");
 		assertContains(manifest, "\"source_unit\":\"unitless\"");
 		assertContains(manifest, "\"target_unit\":\"unitless\"");
+		assertContains(manifest, "\"insunits\":0");
+		assertContains(manifest, "\"units\":{\"metadata_schema\":"
+				+ "\"org.geocedg.dxf.unit-metadata\",\"metadata_version\":1,"
+				+ "\"state\":\"unspecified_model_unit\",\"construction_unit\":null,"
+				+ "\"insunits\":0,\"meters_per_unit\":null,\"usm\":null,");
 		GeoCeDGBuildProvenance unavailable = new GeoCeDGBuildProvenance(
 				"test-1.0", "UNAVAILABLE", RepositoryState.UNAVAILABLE,
 				ResolutionSource.UNAVAILABLE);

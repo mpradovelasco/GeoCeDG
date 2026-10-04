@@ -47,6 +47,7 @@ import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import org.geocedg.desktop.export.ExportScalePresentation;
 import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.awt.GColor;
@@ -369,7 +370,12 @@ public class EuclidianViewD extends EuclidianView
 		if (h > 0) {
 			g2d.translate(0, h + 20);
 		}
-		double scale = (PRINTER_PIXEL_PER_CM / getXscale()) * printingScale;
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C physical documents print at
+		// fb(c) * 100 * a / b cm per unit; the host uses the printing scale
+		double physicalScale = getApplication().getPhysicalExportScale();
+		double scale = (PRINTER_PIXEL_PER_CM / getXscale())
+				* (physicalScale > 0 && Double.isFinite(physicalScale) ? physicalScale
+						: printingScale);
 		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B Print Preview obeys the export area
 		PictureExportRoute route = getApplication().getPictureExportRoute();
 		if (route != null && route.handles(this)) {
@@ -900,6 +906,14 @@ public class EuclidianViewD extends EuclidianView
 	}
 
 	private String getScaleString() {
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C a physical document prints its
+		// engineering drawing scale, not the zoom-derived printing scale
+		ExportScalePresentation presentation = getApplication()
+				.getExportScalePresentation();
+		if (isPrintScaleString() && presentation != null
+				&& presentation.isPhysical()) {
+			return presentation.printScaleTitle();
+		}
 		if (isPrintScaleString()) {
 			Localization loc = getApplication().getLocalization();
 			StringBuilder sb = new StringBuilder(

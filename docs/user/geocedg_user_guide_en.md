@@ -406,7 +406,9 @@ margin and no cropping:
   page margins or fit-to-page.
 - SVG declares the exact area as its `viewBox`; width and height keep its aspect
   ratio, and circles stay circles.
-- EMF and EMF+ round the picture bounds to whole device units.
+- EMF and EMF+ round the picture bounds to whole device units; the physical
+  frame recorded in the file is the output size you chose, rounded to the
+  nearest hundredth of a millimetre and never derived from the resolution.
 
 **What a picture contains.** The preview in the Save dialog, the saved file,
 printing and copying the Graphics view as an image (`Ctrl`+`Shift`+`C` or the
@@ -415,21 +417,57 @@ dialog's clipboard button) show the same area and omit hidden layers
 picture. Background images belong to the view background and are not hidden
 with their layer, in the view and in the picture alike.
 
+**Physical size and drawing scale.** In a document with a construction unit
+(section 4.6) the picture, print and LaTeX dialogs size the output from that
+unit and the *drawing scale* `a:b` of the window: a length of the model is
+drawn at `a/b` of its real size (`1:1` full size, `1:2` half size, `2:1` double
+size). Choose a preset (`1:1`, `1:2`, `1:5`, `1:10`, `2:1`, `5:1`) or type
+another pair of positive whole numbers; it is shown reduced (`2:4` becomes
+`1:2`), and an invalid entry is refused and leaves the scale unchanged. The
+drawing scale belongs to the window session: it is not saved, is not an undo
+step and does not mark the document as modified. New, Open and every
+replacement of the whole document set it back to `1:1`; undo, redo, editing or
+replacing a tool and similar actions keep it. Zoom, the window and the
+resolution never change a physical size: the resolution only sets the number
+of pixels, and the presentation unit only changes how lengths are expressed. A
+size that a format cannot represent, for example below one pixel, is refused
+with a message instead of being clamped. In a document without a construction
+unit the dialogs keep their device scales, labelled as non-physical, and no
+engineering scale is offered.
+
 **The same area elsewhere.** `ExportImage`, the scripting functions
 `writePNGtoFile`, `getPNGBase64`, `exportSVG` and `exportPDF`, and the command
-line option `--export` produce the same area. `ExportImage` with the type `gif`
-or `webm` and the option `--exportAnimation` are refused with an error, and the
-command line never leaves an empty file behind.
+line option `--export` produce the same area. Without a scale of their own they
+use the physical size of a document with a construction unit; a scale or size
+given to them explicitly stays a device setting and never changes the drawing
+scale. `ExportImage` with the type `gif` or `webm` and the option
+`--exportAnimation` are refused with an error, and the command line never
+leaves an empty file behind.
+
+**LaTeX.** PSTricks, PGF/TikZ and Asymptote start from the same export area,
+and editing their bounds defines the export area (no selection rectangle is
+drawn). They omit hidden layers and hidden objects, as the pictures do. With a
+construction unit their x and y units are the physical scale of the drawing
+scale and are shown but not editable; without one they stay non-physical
+device settings. A Locus V2 or Spline V2 is written as one path per certified
+valid component, approximated within the semantic-curve tolerance of the
+dialog (default `0.001` model units); components are never joined across a
+gap. Comments at the top of the code and at each curve, and the report in the
+dialog, state whether the export is complete: a curve of which only some
+components could be certified is written with those components and marked
+incomplete, and when a curve changes during generation or the tolerance cannot
+be met, no code is generated.
 
 **Limits in this version.**
 
-- PSTricks, PGF/TikZ, Asymptote and DXF do not use the export area yet and still
-  write the objects of hidden layers.
 - A legacy `Locus` is drawn only from the samples it already has, which cover
   the window in which it was computed; outside that window it may look
   incomplete. Locus V2 has no such limit.
-- The physical frame recorded inside an EMF file is rounded to the hundredths of
-  a millimetre of the format.
+- The preview in the Save dialog appears only when the chosen file already
+  exists and the file chooser is at least 600 pixels wide; for a new file name
+  the preview area stays empty.
+- PDF and SVG path coordinates are written with five significant digits; page,
+  frame and `viewBox` sizes are exact.
 
 ### 4.6 Document units
 
@@ -487,8 +525,11 @@ shortened to the space left in the status bar; its tooltip shows the whole text.
 later paste of the same objects keeps it. No notice is shown when either
 document has no physical unit.
 
-**Current exports.** Picture, PSTricks, PGF/TikZ, Asymptote and DXF export do
-not use the document units in this version; DXF stays unitless.
+**Exports.** With a construction unit, pictures, printing and LaTeX use the
+physical size and drawing scale of section 4.5, and DXF records the unit in its
+header (`mm`, `cm`, `m`) or, for a custom unit, in its mandatory sidecar
+(section 11). Coordinates are never converted. Without a construction unit no
+export claims a physical scale, and DXF stays unitless.
 
 ---
 
@@ -1301,7 +1342,7 @@ English regardless of the product language.
 | Closed domains | explicit finite domains, as `start:end` or `source@branch:start:end`, separated by `;` |
 | Allowed evidence | `ESTIMATED_ERROR` |
 | Maximum evaluations / dyadic depth / vertices per component / total vertices | deterministic work limits |
-| Coordinates / units | `Cartesian 2D world / UNITLESS` |
+| Coordinates / units | `Cartesian 2D world / UNITLESS` for a document without a construction unit; with one, for example `Cartesian 2D world / mm ($INSUNITS 4); coordinates unchanged` (`cm` 5, `m` 6), and for a custom unit the `usm` warning and the mandatory sidecar |
 | Partial output | `Disabled (strict complete request)` |
 | Sidecar | request a manifest even for an all-exact export |
 
@@ -1318,17 +1359,22 @@ rule.
 
 Partial component output is **disabled** by default: a request that cannot be
 satisfied completely is rejected rather than silently truncated. Hidden objects
-are included and visibly reported.
+are included and visibly reported. Objects on a hidden layer (section 12.5) are
+included too, on their layer, which the DXF marks as off.
 
 ### 11.9 Sidecar manifest
 
 A deterministic UTF-8 `<drawing>.dxf.manifest.json` is written whenever the
 export contains approximate geometry, omitted or partial geometry, an
-unsupported requested component, or a work-limit termination. A wholly exact
-export may omit it, and you may request it explicitly.
+unsupported requested component, or a work-limit termination, and always for a
+document whose construction unit is the custom unit `usm`. A wholly exact
+export may omit it otherwise, and you may request it explicitly.
 
-The manifest records the schema and build provenance, the DXF SHA-256, the
-complete request policy and work limits, and per component: the source
+The manifest (schema version 2) records the schema and build provenance, the
+DXF SHA-256, the units (construction unit, `$INSUNITS` and, for `usm`, its
+factor in metres), the hidden layers written off, the export area and every
+source outside it, the complete request policy and work limits, and per
+component: the source
 identifier and its scope, the branch key, the component, the semantic interval,
 the DXF handle and entity type, the fidelity, the approximation method, the
 requested tolerance, the achieved estimate, the guarantee, the evaluation count,
@@ -1339,17 +1385,28 @@ then promoted together under a defined rollback policy.
 
 ### 11.10 Viewport independence
 
-Coordinates are unitless Cartesian model coordinates. Neither the export nor its
+Coordinates are Cartesian model coordinates, never converted; the header states
+the construction unit as described in section 11.7. Neither the export nor its
 fidelity depends on zoom, pan, window size, DPI or the current view. The same
 construction revision and the same request always produce the same output.
 
+**Export area.** When you have chosen an export area under **File → Export
+area** (or `Export_1` and `Export_2` define one), the DXF contains only the
+sources and Locus V2 components whose geometry meets that rectangle, each
+written whole and unchanged; nothing is cut. A Locus V2 or Spline V2 component
+is left out only when it is proven to lie outside. Everything left out is
+listed as outside the export area, in the report and in the manifest when there
+is one; it is not an error and does not block the export. The visible view is
+never used: without a chosen area the DXF contains the whole population,
+whatever the zoom.
+
 ### 11.11 Current export boundary
 
-There is no DXF import, no viewport export, no physical-unit contract, no text
+There is no DXF import, no viewport export, no text
 export, no export of the legacy sampled `Locus`, no implicit-curve contouring,
 no exact `SPLINE` and no 3D export. Line weight, line style, fill, opacity,
-point size and labels are not transported; layer, RGB colour and current
-visibility are.
+point size and labels are not transported; layer, RGB colour, current
+visibility and the off state of hidden layers are.
 
 ---
 
@@ -1358,7 +1415,8 @@ visibility are.
 
 Everything in this section is presentation. None of it changes geometry,
 identity or metrics. Hidden layers (12.5) are saved with the document and are
-the only part that changes export output: picture exports omit them.
+the only part that changes export output: picture and LaTeX exports omit them,
+and DXF writes their layers as off.
 
 ### 12.1 Themes and canvas
 
@@ -1446,10 +1504,10 @@ session and **hidden layers** that are saved with the document.
   document.
 
 **Exports while a layer is hidden.** PNG, PDF, SVG, EMF, printing, the Save
-preview and copying the Graphics view as an image omit hidden layers
-(section 4.5). PGF/TikZ, PSTricks, Asymptote and DXF still write the objects of
-hidden layers in this version. This temporary difference ends when those
-exports are completed.
+preview, copying the Graphics view as an image, PGF/TikZ, PSTricks and Asymptote
+omit hidden layers (section 4.5). DXF keeps their objects on their layers and
+writes those layers as off, so that a CAD program shows them hidden
+(section 11.8).
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -1592,11 +1650,10 @@ These are the limitations that affect what you can do in the application today.
   `LWPOLYLINE`.
 - Approximation evidence is `ESTIMATED_ERROR`, not a certified global error
   bound.
-- There is no DXF import, viewport export, physical-unit contract, text export,
-  legacy `Locus` export, implicit-curve contouring or 3D export.
-- LaTeX (PGF/TikZ, PSTricks, Asymptote) and DXF do not use the export area yet
-  and still write the objects of hidden layers, whereas PNG, PDF, SVG, EMF and
-  printing use the area and omit them (4.5, 12.5).
+- There is no DXF import, viewport export, text export, legacy `Locus` export,
+  implicit-curve contouring or 3D export.
+- LaTeX writes Locus V2 and Spline V2 as approximate paths with their evidence;
+  there is no exact Bézier or spline output, also for cubic Spline V2 (4.5).
 - A legacy `Locus` in a picture is complete only within the window in which it
   was sampled (4.5).
 

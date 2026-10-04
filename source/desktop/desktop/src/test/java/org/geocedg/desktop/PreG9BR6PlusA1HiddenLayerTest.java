@@ -302,10 +302,15 @@ class PreG9BR6PlusA1HiddenLayerTest {
 		assertEquals(0, red(printed((EuclidianViewD) view)), "print uses exportPaint");
 	}
 
-	// -------------------------------------------------------- T-EXPORT-INTERIM
+	// ------------------------------------------------- T-EXPORT (B, then C)
 
+	/**
+	 * PRE-G9B-R6-plus-C replaces the interim expectation of A-1: LaTeX now
+	 * excludes a hidden layer like the picture exporters (effectiveVisible), and
+	 * DXF keeps its objects on a layer written OFF (DQ-C2).
+	 */
 	@Test
-	void svgLatexAndDxfAreUnchangedByAHiddenLayerUntilBAndC() throws Exception {
+	void svgLatexAndDxfFollowAHiddenLayerAfterBAndC() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		EuclidianView view = sized(app.getEuclidianView1());
 		app.getLayerWorkspace().setWorkingLayer(3);
@@ -330,8 +335,18 @@ class PreG9BR6PlusA1HiddenLayerTest {
 		String hiddenSvg = svg(app, view);
 		assertNotEquals(svg, hiddenSvg, "SVG belongs to B");
 		assertFalse(hiddenSvg.contains("layer3"), "B omits the hidden layer from SVG");
-		assertEquals(latex, latex(app, view), "LaTeX exclusion belongs to C");
-		assertEquals(dxf, dxf(app), "DXF policy belongs to C");
+		List<String> hiddenLatex = latex(app, view);
+		for (String code : hiddenLatex) {
+			assertFalse(code.toLowerCase(java.util.Locale.ROOT).contains("circle"),
+					"C: each LaTeX dialect omits the circle on the hidden layer");
+		}
+		String hiddenDxf = dxf(app);
+		assertTrue(hiddenDxf.contains("CIRCLE") && hiddenDxf.contains("LINE"),
+				"C: DXF keeps the objects of a hidden layer");
+		assertTrue(hiddenDxf.contains("\r\n2\r\nGEOCEDG_L3\r\n70\r\n0\r\n62\r\n-7\r\n"),
+				"C: the DXF layer of the hidden GeoCeDG layer is written OFF");
+		assertTrue(dxf.contains("\r\n2\r\nGEOCEDG_L3\r\n70\r\n0\r\n62\r\n7\r\n"),
+				"the layer was on before");
 		assertTrue(s.isEuclidianVisible());
 	}
 

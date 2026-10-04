@@ -16,6 +16,7 @@
 
 package org.geogebra.desktop.export.pstricks;
 
+import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedOutputStream;
@@ -37,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.geocedg.desktop.export.ExportScalePresentation;
 import org.geogebra.common.export.pstricks.ExportSettings;
 import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -108,6 +110,8 @@ abstract public class ExportFrame extends JFrame implements ExportSettings {
 	ListenKey listenKey;
 	protected FileExtensions fileExtension = FileExtensions.TEX;
 	protected String fileExtensionMsg = "TeX ";
+	// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C product scale presentation
+	private ExportScalePresentation scalePresentation;
 
 	// definition of the behaviour of the textValues corresponding
 	// to xmin, xmax, ymin and ymax.
@@ -253,6 +257,37 @@ abstract public class ExportFrame extends JFrame implements ExportSettings {
 				Log.debug(e2);
 			}
 		});
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C engineering scale or device
+		// statement, semantic-curve tolerance and the non-modal export report
+		// (DQ-C4, DQ-C8, DQ-C12); the host has no presentation
+		scalePresentation = app.getExportScalePresentation();
+		if (scalePresentation != null) {
+			getContentPane().add(scalePresentation.createLatexPanel(ggb,
+					this::updatePhysicalUnits), BorderLayout.NORTH);
+			updatePhysicalUnits();
+		}
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C with a physical construction unit
+	 * the unit, width and height are derived from the drawing scale and are not
+	 * editable.
+	 */
+	private void updatePhysicalUnits() {
+		if (scalePresentation == null || !scalePresentation.isPhysical()) {
+			return;
+		}
+		double unit = scalePresentation.centimetresPerUnit();
+		ggb.setXunit(unit);
+		ggb.setYunit(unit);
+		textXUnit.setValue(unit);
+		textYUnit.setValue(unit);
+		textwidth.setValue(unit * width);
+		textheight.setValue(unit * height);
+		textXUnit.setEditable(false);
+		textYUnit.setEditable(false);
+		textwidth.setEditable(false);
+		textheight.setEditable(false);
 	}
 
 	protected void centerOnScreen() {

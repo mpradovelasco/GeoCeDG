@@ -16,6 +16,7 @@ import static org.geocedg.desktop.PreG9BR6PlusBPictureFidelityTest.svgViewBox;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -654,8 +655,15 @@ class PreG9BR6PlusBExportSurfaceTest {
 		"9e5cf21cfd5f5a52f595dad437817410a8301eede902e1e37c173577a3eeffbc",
 		"e7ba040534c447cf40e3c005ab18c0d2780ceaa9c70e9ea0cc2ac0ccd980f0f2"};
 
+	/**
+	 * PRE-G9B-R6-plus-C replaces the interim expectation of B: without an
+	 * explicit area the LaTeX and DXF bytes of a document without a construction
+	 * unit stay the base bytes; an explicit area now bounds LaTeX and selects the
+	 * DXF population by B1 participation (DQ-C13).
+	 */
 	@Test
-	void latexAndDxfKeepTheBaseOutputWhatEverTheAreaUntilC() throws Exception {
+	void latexAndDxfKeepTheBaseOutputWithoutAnAreaAndFollowAnExplicitArea()
+			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		EuclidianView view = app.getEuclidianView1();
 		// sized exactly as the base probe: the default grid is part of the output
@@ -667,8 +675,22 @@ class PreG9BR6PlusBExportSurfaceTest {
 		interimScene(app);
 		assertArrayEquals(BASE_INTERIM_SHA256, interimDigests(app), "no area");
 		define(app, 20, 23, 10, 13);
-		assertArrayEquals(BASE_INTERIM_SHA256, interimDigests(app),
-				"PGF/TikZ, PSTricks, Asymptote and DXF belong to C");
+		String[] withArea = interimDigests(app);
+		for (int i = 0; i < 3; i++) {
+			assertNotEquals(BASE_INTERIM_SHA256[i], withArea[i],
+					"C: LaTeX output " + i + " follows the explicit area");
+		}
+		assertEquals(BASE_INTERIM_SHA256[3], withArea[3],
+				"the context-free service API reads no export area");
+		org.geocedg.common.export.GeometryExportService service =
+				new org.geocedg.common.export.GeometryExportService();
+		String dxf = service.exportDxf(service.createModel(new ArrayList<>(app.getKernel()
+				.getConstruction().getGeoSetConstructionOrder()),
+				org.geocedg.common.export.GeometryExportModel.SelectionMode
+						.COMPLETE_CONSTRUCTION, new GeoCeDGDxfExportController(app)
+								.exportContext()));
+		assertTrue(dxf.contains("geocedg-export-area-participation-b1/v1"), dxf);
+		assertFalse(dxf.contains("AcDbPoint"), "every source lies outside the area");
 	}
 
 	// ---------------------------------------------------------------- T-LEGACY

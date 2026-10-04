@@ -160,6 +160,11 @@ public abstract class GeoGebraExport {
 	 * Change selection rectangle to fit user input.
 	 */
 	public void refreshSelectionRectangle() {
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C bound edits may write the product
+		// export area instead of the selection rectangle (DQ-C13)
+		if (app.exportAreaBoundsEdited(euclidianView, xmin, xmax, ymin, ymax)) {
+			return;
+		}
 		int x1 = euclidianView.toScreenCoordX(xmin);
 		int x2 = euclidianView.toScreenCoordX(xmax);
 		int y1 = euclidianView.toScreenCoordY(ymin);
@@ -240,11 +245,19 @@ public abstract class GeoGebraExport {
 	private void initBounds() {
 		xunit = 1;
 		yunit = 1;
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C bounds of the product export
+		// area (DQ-C13); the host uses the selection rectangle or the view
+		double[] areaBounds = app.getExportAreaWorldBounds(euclidianView);
 		// Changes to make xmin,xmax,ymin,ymax be defined by the selection
 		// rectangle
 		// when this one is defined.
 		GRectangle rect = this.euclidianView.getSelectionRectangle();
-		if (rect != null) {
+		if (areaBounds != null) {
+			xmin = areaBounds[0];
+			xmax = areaBounds[1];
+			ymin = areaBounds[2];
+			ymax = areaBounds[3];
+		} else if (rect != null) {
 			xmin = euclidianView.toRealWorldCoordX(rect.getMinX());
 			xmax = euclidianView.toRealWorldCoordX(rect.getMaxX());
 			ymin = euclidianView.toRealWorldCoordY(rect.getMaxY());
@@ -348,6 +361,11 @@ public abstract class GeoGebraExport {
 	 */
 	protected void drawGeoElement(GeoElement g, boolean fromGeoList,
 			boolean trimmedInter) {
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C effective visibility (AQ-L3):
+		// objects on a hidden product layer are not exported; true in the host
+		if (!app.isLayerShown(g.getLayer())) {
+			return;
+		}
 		if (g.isGeoList()) {
 			GeoList geo = (GeoList) g;
 			for (int i = 0; i < geo.size(); i++) {
@@ -455,11 +473,22 @@ public abstract class GeoGebraExport {
 			} else if (g instanceof GeoLocus) {
 				drawLocus((GeoLocus) g);
 			} else {
-				Log.debug("Export: unsupported GeoElement "
-						+ g.getGeoClassType() + " " + g.isDrawable());
+				drawUnsupportedElement(g);
 			}
 		}
 
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C dispatch hook for an element the
+	 * host does not export; the host only logs it.
+	 *
+	 * @param g
+	 *            visible element without a host export
+	 */
+	protected void drawUnsupportedElement(GeoElement g) {
+		Log.debug("Export: unsupported GeoElement " + g.getGeoClassType() + " "
+				+ g.isDrawable());
 	}
 
 	private void drawNumeric(GeoElement g) {

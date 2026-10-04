@@ -40,7 +40,28 @@ Every FreeHEP file GeoCeDG modifies is registered in
 modified third-party FreeHEP source. It keeps its copyright header and carries a
 dated GeoCeDG modification notice at the change. `PRE-G9B-R6-plus-B` modifies
 only `org/freehep/graphicsio/pdf/PDFGraphics2D.java`, with an opt-in exact page
-extent; no other FreeHEP family is touched.
+extent; no other FreeHEP family is touched by `B`. `PRE-G9B-R6-plus-C` modifies
+three files of the EMF family (below).
+
+### EMF family (`PRE-G9B-R6-plus-C`, recorded 2026-10-04)
+
+Recorded before any `org/freehep/graphicsio/emf/**` file was modified, under
+the same gate, for the opt-in exact EMF frame of author decision `DQ-C9`.
+`PRE-G9B-R6-plus-C` modifies only `emf/EMFOutputStream.java`,
+`emf/EMFGraphics2D.java` and `emf/EMFPlusGraphics2D.java`, with an explicit
+opt-in exact `rclFrame`; a writer that does not opt in produces the original
+output. No other FreeHEP family and no default behavior change.
+
+| Fact | Evidence |
+|---|---|
+| Release line | the vendored `emf` family has the `gdi` subpackage that FreeHEP introduced in revision `ab52a27` ("Moved emf tags to gdi", 2006-12-07, the date of the 2.0 release); `EMFGraphics2D.java` carries "Copyright 2000-2006 FreeHEP". It therefore belongs to the same FreeHEP VectorGraphics 2.0 line as `PDFGraphics2D.java` | official repository history of `EMFGraphics2D.java` and of the `emf` directory |
+| `emf/EMFOutputStream.java` | its constructors, fields and header ("Copyright 2001-2006, FreeHEP.") match the FreeHEP revision `a285e1f` (2006-03-02, the last revision of that file in the official history); the vendored `close()` additionally passes a header type to `EMFHeader`, a later GeoGebra change | official repository history and the raw file at `a285e1f` |
+| `emf/EMFGraphics2D.java` | 2.0 line, at or after `ab52a27`; the exact revision among `ab52a27` (2006-12-07) and the 2007 revisions was not determined; GeoGebra disabled the device query (`// GeoGebra: disabled`) | official repository history |
+| `emf/EMFPlusGraphics2D.java`, the `emf/gdiplus` package and the header types of `emf/EMFHeader.java` | headers "Copyright 2006, FreeHEP"; **no revision of the official FreeHEP repository contains them** (the file has no history there and the `emf` directory at `ab52a27` has no `gdiplus`); they reached this tree through GeoGebra CVS (`$Id … 2009-08-17 murkle`). Their exact FreeHEP revision is **not establishable** from public primary sources | official repository history; file headers |
+| Terms | the FreeHEP VectorGraphics release-2.0 statement recorded above (LGPL, version not stated) is the only statement attributed to the family; nothing else is inferred | as above |
+
+The exact-revision limitation of the EMF+ files is recorded for the author's
+review of `C`; it changes no license attribution of the snapshot.
 
 ## Open for release review
 
@@ -57,6 +78,11 @@ access need a FreeHEP entry is left to the professional release review
 - <https://github.com/freehep/freehep-vectorgraphics/commits/master/freehep-graphicsio-pdf/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java>
 - <https://raw.githubusercontent.com/freehep/freehep-vectorgraphics/36ad488/freehep-graphicsio-pdf/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java>
 - <https://raw.githubusercontent.com/freehep/freehep-vectorgraphics/7bf7c53/freehep-graphicsio-pdf/src/main/java/org/freehep/graphicsio/pdf/PDFGraphics2D.java>
+- <https://github.com/freehep/freehep-vectorgraphics/commits/master/freehep-graphicsio-emf/src/main/java/org/freehep/graphicsio/emf/EMFGraphics2D.java>
+- <https://github.com/freehep/freehep-vectorgraphics/commits/master/freehep-graphicsio-emf/src/main/java/org/freehep/graphicsio/emf/EMFOutputStream.java>
+- <https://github.com/freehep/freehep-vectorgraphics/commits/master/freehep-graphicsio-emf/src/main/java/org/freehep/graphicsio/emf/EMFHeader.java>
+- <https://raw.githubusercontent.com/freehep/freehep-vectorgraphics/a285e1f/freehep-graphicsio-emf/src/main/java/org/freehep/graphicsio/emf/EMFOutputStream.java>
+- <https://github.com/freehep/freehep-vectorgraphics/tree/ab52a27/freehep-graphicsio-emf/src/main/java/org/freehep/graphicsio/emf>
 - <https://freehep.github.io/freehep-vectorgraphics/ReleaseNotes-2.0.html>
 - <https://freehep.github.io/freehep-vectorgraphics/News.html>
 - <https://raw.githubusercontent.com/freehep/freehep-vectorgraphics/master/LICENSE.txt>

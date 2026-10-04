@@ -381,7 +381,7 @@ class G9X1PairedOutputTest {
 	private static DxfPreparedOutput pairedOutput() {
 		String hash = DxfHashing.sha256(APPROXIMATE_DXF);
 		String manifest = "{\"schema\":\"org.geocedg.dxf.fidelity-manifest\","
-				+ "\"schema_version\":1,\"dxf\":{\"sha256\":\"" + hash
+				+ "\"schema_version\":2,\"dxf\":{\"sha256\":\"" + hash
 				+ "\"}}\n";
 		return DxfPreparedOutput.paired(APPROXIMATE_DXF,
 				new DxfManifestEncoding(ascii(manifest), hash));

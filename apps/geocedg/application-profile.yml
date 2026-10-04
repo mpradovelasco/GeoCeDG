@@ -2231,7 +2231,7 @@
       "feature_requirements": [
         "cedg.export.dxf.2d"
       ],
-      "selection_contract_ref": "geocedg.dxf-exportable-visible-geometry",
+      "selection_contract_ref": "geocedg.dxf-exportable-geometry-population",
       "effect_profile_id": "read-only",
       "localization_ref": "geocedg.action.ExportDxf",
       "icon_ref": "geocedg.action.ExportDxf",
@@ -2239,7 +2239,7 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "existing",
-      "notes": "Extended fidelity remains inside the same exporter under cedg.export.dxf.extended; no duplicate action."
+      "notes": "Extended fidelity remains inside the same exporter under cedg.export.dxf.extended; no duplicate action. PRE-G9B-R6-plus-C (DQ-C2, DQ-C3, DQ-C11, DQ-C13): the exported population includes individually hidden objects (60 = 1) and objects on hidden layers (OFF DXF layers); $INSUNITS from the construction unit; usm with a mandatory sidecar; an explicit export area selects whole sources by B1 participation."
     },
     {
       "id": "export.picture",
@@ -2257,7 +2257,7 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "existing",
-      "notes": "PRE-G9B-R6-plus-B: PNG, PDF, SVG and EMF/EMF+ of the effective ExportArea through the single picture service; exact area, no outside padding, complete content outside the live viewport."
+      "notes": "PRE-G9B-R6-plus-B: PNG, PDF, SVG and EMF/EMF+ of the effective ExportArea through the single picture service; exact area, no outside padding, complete content outside the live viewport. PRE-G9B-R6-plus-C: physical size from the construction unit and the session drawing scale a:b; EMF frame from the requested size."
     },    {
       "id": "export.pstricks",
       "kind": "product-action",
@@ -2274,7 +2274,7 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "existing",
-      "notes": "PRE-G9B-R6-plus-B exposes the host exporter; its area and hidden-layer semantics stay as at the base until PRE-G9B-R6-plus-C."
+      "notes": "PRE-G9B-R6-plus-C: bounds from the single ExportArea (bound edits define MANUAL), effective visibility (hidden layers excluded), physical xunit = yunit = fb(c) * 100 * a / b cm for a document with a construction unit, and read-only Locus V2 / Spline V2 paths per certified component with disclosure comments and a dialog report."
     },    {
       "id": "export.pgf",
       "kind": "product-action",
@@ -2291,7 +2291,7 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "existing",
-      "notes": "PRE-G9B-R6-plus-B exposes the host exporter; its area and hidden-layer semantics stay as at the base until PRE-G9B-R6-plus-C."
+      "notes": "PRE-G9B-R6-plus-C: bounds from the single ExportArea (bound edits define MANUAL), effective visibility (hidden layers excluded), physical xunit = yunit = fb(c) * 100 * a / b cm for a document with a construction unit, and read-only Locus V2 / Spline V2 paths per certified component with disclosure comments and a dialog report."
     },    {
       "id": "export.asymptote",
       "kind": "product-action",
@@ -2308,7 +2308,7 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "existing",
-      "notes": "PRE-G9B-R6-plus-B exposes the host exporter; its area and hidden-layer semantics stay as at the base until PRE-G9B-R6-plus-C."
+      "notes": "PRE-G9B-R6-plus-C: bounds from the single ExportArea (bound edits define MANUAL), effective visibility (hidden layers excluded), physical xunit = yunit = fb(c) * 100 * a / b cm for a document with a construction unit, and read-only Locus V2 / Spline V2 paths per certified component with disclosure comments and a dialog report."
     },    {
       "id": "export.area.define-rectangle",
       "kind": "product-action",
@@ -4462,6 +4462,17 @@
     "ExportArea.Define.Ymin": {"en": "y minimum", "es": "y mínima"},
     "ExportArea.Define.Ymax": {"en": "y maximum", "es": "y máxima"},
     "ExportArea.Define.UseView": {"en": "Use visible view", "es": "Usar vista visible"},
+    "ExportScale.Engineering": {"en": "Engineering scale (drawing : real)", "es": "Escala técnica (dibujo : real)"},
+    "ExportScale.Unit": {"en": "Construction unit: %0", "es": "Unidad de construcción: %0"},
+    "ExportScale.Invalid": {"en": "A drawing scale is two positive integers a:b, each at most 1000000000 after reduction, for example 1:2. The previous scale is kept.", "es": "Una escala de dibujo son dos enteros positivos a:b, cada uno como máximo 1000000000 tras simplificar, por ejemplo 1:2. Se conserva la escala anterior."},
+    "ExportScale.DeviceStatement": {"en": "This document has no construction unit: the sizes below are a non-physical device scale, not an engineering scale.", "es": "Este documento no tiene unidad de construcción: los tamaños siguientes son una escala de dispositivo no física, no una escala técnica."},
+    "ExportScale.DeviceCm": {"en": "Device scale (non-physical)", "es": "Escala de dispositivo (no física)"},
+    "ExportScale.DeviceFixed": {"en": "Device scale from the screen (non-physical)", "es": "Escala de dispositivo según la pantalla (no física)"},
+    "ExportScale.DevicePixels": {"en": "Size in pixels (device)", "es": "Tamaño en píxeles (dispositivo)"},
+    "ExportScale.PrintTitle": {"en": "Scale %0 (construction unit %1)", "es": "Escala %0 (unidad de construcción %1)"},
+    "ExportScale.LatexDevice": {"en": "This document has no construction unit: the x and y units, width and height are non-physical device parameters.", "es": "Este documento no tiene unidad de construcción: las unidades x e y, la anchura y la altura son parámetros de dispositivo no físicos."},
+    "LatexExport.Tolerance": {"en": "Semantic curve tolerance (model units):", "es": "Tolerancia de curvas semánticas (unidades del modelo):"},
+    "LatexExport.Report": {"en": "Export report", "es": "Informe de exportación"},
     "ExportArea.Invalid": {"en": "The export area needs four finite numbers that span a rectangle of non-zero width and height. The previous export area is kept.", "es": "El área de exportación necesita cuatro números finitos que formen un rectángulo de anchura y altura no nulas. Se conserva el área de exportación anterior."},
     "ExportArea.ExportPointsUnavailable": {"en": "Export_1 and Export_2 must both be defined points that span a rectangle of non-zero width and height.", "es": "Export_1 y Export_2 deben ser puntos definidos que formen un rectángulo de anchura y altura no nulas."},
     "geocedg.action.ExportDxf.name": {

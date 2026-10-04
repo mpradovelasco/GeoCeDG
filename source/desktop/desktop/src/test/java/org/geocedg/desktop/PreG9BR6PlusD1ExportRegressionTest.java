@@ -29,9 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * PRE-G9B-R6-plus-D1 T-EXPORT-REGRESSION: D1 does not reinterpret the current export
- * semantics. For every unit state the picture, DXF and LaTeX outputs are identical to
- * the unit-free document; DXF stays unitless (C owns the future unit header).
+ * PRE-G9B-R6-plus-D1 T-EXPORT-REGRESSION, as superseded by PRE-G9B-R6-plus-C
+ * (T-D1-REGRESSION): exports never change the unit state, its XML or the
+ * coordinates; since C the DXF declares the construction unit and outputs without
+ * an explicit device scale are physical (covered by the C focal tests).
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -67,8 +68,14 @@ class PreG9BR6PlusD1ExportRegressionTest {
 		return outputs;
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-C replaces the D1 pin "every export is independent of the
+	 * unit state" on purpose: DXF now declares the construction unit, while
+	 * explicit device-scale outputs and every model coordinate stay identical
+	 * and no export changes the unit state, its XML or the undo history.
+	 */
 	@Test
-	void everyExportIsIndependentOfTheUnitState() throws Exception {
+	void exportsKeepModelCoordinatesAndOnlyDxfDeclaresTheUnit() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		app.getKernel().setContinuous(false);
 		PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
@@ -78,20 +85,38 @@ class PreG9BR6PlusD1ExportRegressionTest {
 		}
 		List<Object> baseline = outputs(app);
 		assertTrue(((String) baseline.get(3)).contains("$INSUNITS\r\n70\r\n0\r\n"),
-				"DXF stays unitless");
-		assertEquals("UNITLESS/UNITLESS", baseline.get(4), "the UNITLESS fidelity contract");
+				"an unspecified document stays unitless");
+		assertEquals("UNITLESS/UNITLESS", baseline.get(4), "the UNITLESS contract");
 		UnitState[] states = {UnitState.of(UnitToken.MM, null, null),
 				UnitState.of(UnitToken.CM, UnitToken.MM, null),
 				UnitState.of(UnitToken.M, null, null),
 				UnitState.of(UnitToken.USM, UnitToken.CM, UsmDefinition.of(0.0254, "in", "in")),
 				UnitState.of(null, null, UsmDefinition.of(0.3048, null, "ft"))};
-		for (UnitState state : states) {
+		String[] units = {"MM/MM", "CM/CM", "M/M", "USM/USM", "UNITLESS/UNITLESS"};
+		int[] codes = {4, 5, 6, 0, 0};
+		for (int index = 0; index < states.length; index++) {
+			UnitState state = states[index];
 			app.getDocumentUnits().replace(state);
+			final String xml = app.getXML();
 			List<Object> outputs = outputs(app);
 			assertArrayEquals((int[]) baseline.get(0), (int[]) outputs.get(0), "PNG " + state);
-			for (int i = 1; i < baseline.size(); i++) {
-				assertEquals(baseline.get(i), outputs.get(i), "output " + i + " " + state);
+			assertEquals(baseline.get(1), outputs.get(1), "explicit device size " + state);
+			assertEquals(baseline.get(2), outputs.get(2), "explicit SVG size " + state);
+			String dxf = (String) outputs.get(3);
+			assertTrue(dxf.contains("$INSUNITS\r\n70\r\n" + codes[index] + "\r\n"),
+					"DXF unit header " + state);
+			assertEquals(baseline.get(3), dxf
+					.replace("$INSUNITS\r\n70\r\n" + codes[index] + "\r\n",
+							"$INSUNITS\r\n70\r\n0\r\n")
+					.replaceAll("999\r\nGeoCeDG construction unit usm[^\r]*\r\n", ""),
+					"DXF coordinates and entities unchanged " + state);
+			assertEquals(units[index], outputs.get(4), "neutral unit " + state);
+			for (int i = 5; i < baseline.size(); i++) {
+				assertEquals(baseline.get(i), outputs.get(i),
+						"host LaTeX with explicit device units " + i + " " + state);
 			}
+			assertEquals(state, app.getDocumentUnits().getState(), "unit state " + state);
+			assertEquals(xml, app.getXML(), "document XML " + state);
 		}
 	}
 }

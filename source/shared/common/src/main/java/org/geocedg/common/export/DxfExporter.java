@@ -66,7 +66,7 @@ public final class DxfExporter {
 		}
 		Map<String, SourceExportOutcome> emittedOutcomes = emittedOutcomes(model);
 		DxfPairs out = new DxfPairs();
-		writeHeader(out, allEntitiesExact(model));
+		writeHeader(out, allEntitiesExact(model), model);
 		writeTables(out, model);
 		out.pair(0, "SECTION");
 		out.pair(2, "ENTITIES");
@@ -98,16 +98,34 @@ public final class DxfExporter {
 		return new DxfEncodingResult(model, out.toString(), encodings);
 	}
 
-	private static void writeHeader(DxfPairs out, boolean allExact) {
+	private static void writeHeader(DxfPairs out, boolean allExact,
+			GeometryExportModel model) {
 		out.pair(999, allExact
 				? "GeoCeDG neutral 2D geometry export; exact G5 entities only"
 				: "GeoCeDG neutral 2D geometry export; fidelity sidecar required");
+		GeometryExportContext context = model.getContext();
+		if (model.getTargetUnit() == GeometryExportModel.Unit.USM) {
+			// PRE-G9B-R6-plus-C (DQ-C11): the core DXF stays unitless; the
+			// paired sidecar carries the declared physical meaning.
+			out.pair(999, "GeoCeDG construction unit usm (custom unit, "
+					+ context.getCanonicalMetresPerUnit()
+					+ " m per unit); $INSUNITS 0; physical meaning only in the "
+					+ "paired fidelity sidecar");
+		}
+		if (context.hasAreaBoundary()) {
+			// PRE-G9B-R6-plus-C (DQ-C13): B1 participation, never clipping.
+			out.pair(999, "GeoCeDG export area " + GeometryExportArea.RULE_ID
+					+ ": " + context.getArea().describe()
+					+ "; whole sources and components meeting the closed area; "
+					+ model.getAreaExclusions().size()
+					+ " outside the export area, reported, not emitted");
+		}
 		out.pair(0, "SECTION");
 		out.pair(2, "HEADER");
 		out.pair(9, "$ACADVER");
 		out.pair(1, ACAD_VERSION);
 		out.pair(9, "$INSUNITS");
-		out.pair(70, 0);
+		out.pair(70, model.getTargetUnit().getInsunitsCode());
 		out.pair(0, "ENDSEC");
 	}
 
@@ -137,7 +155,9 @@ public final class DxfExporter {
 			out.pair(0, "LAYER");
 			out.pair(2, layer);
 			out.pair(70, 0);
-			out.pair(62, 7);
+			// PRE-G9B-R6-plus-C (DQ-C2): a persistently hidden GeoCeDG layer is an
+			// OFF DXF layer (negative color); its objects stay in the file.
+			out.pair(62, model.isLayerOff(layer) ? -7 : 7);
 			out.pair(6, "CONTINUOUS");
 		}
 		out.pair(0, "ENDTAB");

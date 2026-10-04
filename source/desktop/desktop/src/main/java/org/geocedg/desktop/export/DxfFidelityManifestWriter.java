@@ -21,7 +21,10 @@ import org.geocedg.common.export.ComponentAddress;
 import org.geocedg.common.export.DxfEncodingResult;
 import org.geocedg.common.export.DxfEncodingResult.EntityEncoding;
 import org.geocedg.common.export.DxfExporter;
+import org.geocedg.common.export.GeometryExportArea;
+import org.geocedg.common.export.GeometryExportContext;
 import org.geocedg.common.export.GeometryExportModel;
+import org.geocedg.common.export.GeometryExportModel.AreaExclusion;
 import org.geocedg.common.export.GeometryExportModel.Diagnostic;
 import org.geocedg.common.export.GeometryExportModel.Entity;
 import org.geocedg.common.export.GeometryExportPreflight;
@@ -30,13 +33,22 @@ import org.geocedg.common.export.GeometryExportRequest.SemanticDomain;
 import org.geocedg.common.export.SourceExportOutcome;
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
 import org.geocedg.common.export.SourceExportOutcome.IdentityScope;
+import org.geocedg.common.kernel.units.UsmDefinition;
 
 /** Creates the deterministic fidelity manifest paired with G9X1 DXF output. */
 public final class DxfFidelityManifestWriter {
 
 	private static final String SCHEMA =
 			"org.geocedg.dxf.fidelity-manifest";
-	private static final int SCHEMA_VERSION = 1;
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C11): version 2 adds the unit metadata, the hidden
+	 * layers, the export area and the outside-area records. A version-1 sidecar
+	 * keeps its own meaning (unitless coordinates) and is never reinterpreted.
+	 */
+	private static final int SCHEMA_VERSION = 2;
+	private static final String UNIT_METADATA_SCHEMA =
+			"org.geocedg.dxf.unit-metadata";
+	private static final int UNIT_METADATA_VERSION = 1;
 	private final GeoCeDGBuildProvenance provenance;
 
 	/** Uses the immutable provenance resource embedded by the Desktop build. */
@@ -115,11 +127,104 @@ public final class DxfFidelityManifestWriter {
 		root.put("schema_version", SCHEMA_VERSION);
 		root.put("application", application());
 		root.put("dxf", dxf(model, dxfSha256));
+		root.put("units", units(model));
+		root.put("layers", layers(model));
+		root.put("export_area", exportArea(model));
 		root.put("request", request(preflight.getRequest()));
 		root.put("preflight", preflight(preflight));
 		root.put("outcomes", outcomes(model, encoding));
+		root.put("outside_export_area", outsideExportArea(model));
 		root.put("warnings", warnings(model));
 		return root;
+	}
+
+	private static Map<String, Object> units(GeometryExportModel model) {
+		GeometryExportContext context = model.getContext();
+		Map<String, Object> value = object();
+		value.put("metadata_schema", UNIT_METADATA_SCHEMA);
+		value.put("metadata_version", UNIT_METADATA_VERSION);
+		boolean physical = model.getTargetUnit().isPhysical();
+		value.put("state", physical ? "physical" : "unspecified_model_unit");
+		value.put("construction_unit", model.getTargetUnit().getToken());
+		value.put("insunits", model.getTargetUnit().getInsunitsCode());
+		value.put("meters_per_unit", context.getCanonicalMetresPerUnit());
+		UsmDefinition usm = context.getUsmDefinition();
+		if (usm == null) {
+			value.put("usm", null);
+		} else {
+			Map<String, Object> custom = object();
+			custom.put("token", "usm");
+			custom.put("meters_per_unit", usm.canonicalFactor());
+			custom.put("name", usm.getName());
+			custom.put("symbol", usm.getSymbol());
+			value.put("usm", custom);
+		}
+		value.put("coordinates", "model coordinates, numerically unchanged");
+		return value;
+	}
+
+	private static Map<String, Object> layers(GeometryExportModel model) {
+		Map<String, Object> value = object();
+		List<Object> hidden = new ArrayList<>();
+		for (int layer : model.getContext().getHiddenLayers().toList()) {
+			hidden.add(layer);
+		}
+		value.put("hidden_geocedg_layers", hidden);
+		Set<String> written = new java.util.LinkedHashSet<>();
+		written.add("0");
+		for (Entity entity : model.getEntities()) {
+			written.add(entity.getLayer());
+		}
+		List<Object> off = new ArrayList<>();
+		for (String layer : written) {
+			if (model.isLayerOff(layer)) {
+				off.add(layer);
+			}
+		}
+		value.put("dxf_layers_off", off);
+		value.put("rule", "hidden GeoCeDG layers stay in the DXF on OFF layers; "
+				+ "individually hidden objects keep group 60 = 1");
+		return value;
+	}
+
+	private static Map<String, Object> exportArea(GeometryExportModel model) {
+		GeometryExportArea area = model.getContext().getArea();
+		Map<String, Object> value = object();
+		value.put("rule", GeometryExportArea.RULE_ID);
+		value.put("resolved_producer", area == null ? null
+				: lower(area.getProducer()));
+		boolean boundary = area != null && area.isBoundary();
+		value.put("boundary", boundary);
+		if (boundary) {
+			Map<String, Object> bounds = object();
+			bounds.put("xmin", area.getXmin());
+			bounds.put("xmax", area.getXmax());
+			bounds.put("ymin", area.getYmin());
+			bounds.put("ymax", area.getYmax());
+			value.put("bounds", bounds);
+			value.put("source_view_id", area.getSourceViewId());
+		} else {
+			value.put("bounds", null);
+			value.put("source_view_id", null);
+		}
+		value.put("outside_export_area", model.getAreaExclusions().size());
+		return value;
+	}
+
+	private static List<Object> outsideExportArea(GeometryExportModel model) {
+		List<Object> values = new ArrayList<>();
+		for (AreaExclusion exclusion : model.getAreaExclusions()) {
+			Map<String, Object> value = object();
+			value.put("source_id", exclusion.getSourceId());
+			value.put("id_scope", identityScope(exclusion.getIdentityScope()));
+			value.put("source_family", exclusion.getSourceType());
+			value.put("source_label", exclusion.getLabel());
+			value.put("source_revision", exclusion.getSourceRevision());
+			value.put("visible", exclusion.isVisible());
+			value.put("component", component(exclusion.getComponentAddress()));
+			values.add(value);
+		}
+		return values;
 	}
 
 	private Map<String, Object> application() {
@@ -141,6 +246,7 @@ public final class DxfFidelityManifestWriter {
 		value.put("coordinate_system", model.getCoordinateSystem());
 		value.put("source_unit", lower(model.getSourceUnit()));
 		value.put("target_unit", lower(model.getTargetUnit()));
+		value.put("insunits", model.getTargetUnit().getInsunitsCode());
 		value.put("sha256", sha256);
 		return value;
 	}
@@ -208,6 +314,8 @@ public final class DxfFidelityManifestWriter {
 		value.put("hidden_sources", preflight.getHiddenCount());
 		value.put("outside_geometric_population",
 				preflight.getExcludedPopulationCount());
+		value.put("outside_export_area", preflight.getOutsideExportAreaCount());
+		value.put("custom_unit_usm", preflight.isCustomUnit());
 		value.put("incomplete_semantic_coverage_components",
 				preflight.getIncompleteSemanticCoverageCount());
 		value.put("semantic_coverage_complete",
@@ -289,6 +397,25 @@ public final class DxfFidelityManifestWriter {
 
 	private static List<Object> warnings(GeometryExportModel model) {
 		List<Object> values = new ArrayList<>();
+		if (model.getTargetUnit() == GeometryExportModel.Unit.USM) {
+			values.add(warning("custom_unit_usm", null, null, null,
+					"The construction unit usm has no DXF unit code: $INSUNITS is "
+							+ "0 and this sidecar carries its physical meaning."));
+		}
+		for (Entity entity : model.getEntities()) {
+			if (model.isLayerOff(entity.getLayer())) {
+				values.add(warning("hidden_layer_off", entity.getSourceId(), null,
+						entity.getNeutralEntityId(), "The source is on the hidden layer "
+								+ entity.getLayer() + ", written OFF in the DXF."));
+			}
+		}
+		for (AreaExclusion exclusion : model.getAreaExclusions()) {
+			values.add(warning("outside_export_area", exclusion.getSourceId(),
+					exclusion.getComponentAddress().getBranchKey(),
+					exclusion.getComponentAddress().getComponentKey(),
+					"Outside the explicit export area: not emitted; a population "
+							+ "outcome, not a fidelity reduction."));
+		}
 		for (SourceExportOutcome outcome : model.getOutcomes()) {
 			if (outcome.getFidelity() == Fidelity.APPROXIMATE) {
 				values.add(warning("approximate_geometry", outcome.getSourceId(),

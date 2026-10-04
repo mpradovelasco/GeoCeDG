@@ -106,3 +106,26 @@ metadata belongs to the generated model and artifact evidence.
 - focused G5 verifier subordinate to `tools/agent/verify.ps1`;
 - GeoCeDG GUI/manual export and Classic launch regression;
 - shared/Desktop build, manifests, packaging composition, and whitespace gates.
+
+## Amendment 1 (2026-10-04): units after `PRE-G9B-R6-plus-C`
+
+- Version: amendment 1 of this ADR; author decision `DQ-C17` of 2026-10-04
+  ([C preparation closeout and authorization record](../validation/pre_g9b_r6_plus_c_prompt_closeout_record.md)).
+- Status of this amendment: delivered with the `PRE-G9B-R6-plus-C` technical
+  candidate pending author review. The original decisions above stay as
+  written.
+
+Decision 3 governed the G5 experimental contract, when GeoGebra constructions
+had no approved physical model unit. It is superseded for `C`-era GeoCeDG
+export by the `D0`/`C` unit contract: the
+[GeoCeDG unit system](../../geocedg/specs/units/unit-system.md) §13 and §15.2
+([ADR 0032](0032-unit-system-semantics-and-persistence-ownership.md)) and the
+amended [geometry export foundation](../../geocedg/specs/export/geometry-export-foundation.md).
+Coordinates stay model-space Cartesian with `z = 0` and are never converted;
+the neutral model carries the effective construction unit; DXF `$INSUNITS` is
+`4`, `5` or `6` for `mm`, `cm` or `m` from the same Autodesk header reference,
+and `0` for `UNSPECIFIED_MODEL_UNIT` and for `usm`, whose declared physical
+meaning is carried only by the mandatory paired sidecar. No physical unit or
+drawing scale is inferred from zoom, DPI, printing scale or the viewport.
+Decision 5 is kept: no entity is clipped; an explicit export area selects whole
+sources by participation (`DQ-C13`). ADR 0014 is unchanged.

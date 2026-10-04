@@ -422,7 +422,9 @@ exportación, sin margen añadido ni recorte:
 - SVG declara el área exacta como su `viewBox`; la anchura y la altura conservan
   su proporción y los círculos siguen siendo círculos.
 - EMF y EMF+ redondean los límites de la imagen a unidades enteras del
-  dispositivo.
+  dispositivo; el marco físico registrado en el archivo es el tamaño de salida
+  elegido, redondeado a la centésima de milímetro más próxima y nunca derivado
+  de la resolución.
 
 **Qué contiene una imagen.** La previsualización del diálogo Guardar, el archivo
 guardado, la impresión y la copia de la vista gráfica como imagen
@@ -432,21 +434,59 @@ absoluta en pantalla conservan esa posición en la imagen. Las imágenes de fond
 pertenecen al fondo de la vista y no se ocultan con su capa, ni en la vista ni
 en la imagen.
 
+**Tamaño físico y escala de dibujo.** En un documento con unidad de
+construcción (sección 4.6), los diálogos de imagen, impresión y LaTeX dan a la
+salida el tamaño que resulta de esa unidad y de la *escala de dibujo* `a:b` de
+la ventana: una longitud del modelo se dibuja a `a/b` de su tamaño real (`1:1`
+tamaño real, `1:2` mitad, `2:1` doble). Elija una escala predefinida (`1:1`,
+`1:2`, `1:5`, `1:10`, `2:1`, `5:1`) o escriba otro par de números enteros
+positivos; se muestra simplificada (`2:4` pasa a `1:2`), y una entrada no válida
+se rechaza y deja la escala sin cambios. La escala de dibujo pertenece a la
+sesión de la ventana: no se guarda, no es un paso de deshacer y no marca el
+documento como modificado. Nuevo, Abrir y toda sustitución del documento
+completo la devuelven a `1:1`; deshacer, rehacer, editar o reemplazar una
+herramienta y acciones parecidas la conservan. El zoom, la ventana y la
+resolución nunca cambian un tamaño físico: la resolución solo fija el número de
+píxeles, y la unidad de presentación solo cambia cómo se expresan las
+longitudes. Un tamaño que un formato no puede representar, por ejemplo menor
+que un píxel, se rechaza con un mensaje en lugar de recortarse. En un documento
+sin unidad de construcción los diálogos conservan sus escalas de dispositivo,
+rotuladas como no físicas, y no se ofrece ninguna escala técnica.
+
 **La misma área en otras rutas.** `ExportImage`, las funciones de guion
 `writePNGtoFile`, `getPNGBase64`, `exportSVG` y `exportPDF`, y la opción de
-línea de órdenes `--export` producen la misma área. `ExportImage` con el tipo
-`gif` o `webm` y la opción `--exportAnimation` se rechazan con un error, y la
-línea de órdenes nunca deja un archivo vacío.
+línea de órdenes `--export` producen la misma área. Sin una escala propia usan
+el tamaño físico de un documento con unidad de construcción; una escala o un
+tamaño que se les indique explícitamente sigue siendo un ajuste de dispositivo
+y nunca cambia la escala de dibujo. `ExportImage` con el tipo `gif` o `webm` y
+la opción `--exportAnimation` se rechazan con un error, y la línea de órdenes
+nunca deja un archivo vacío.
+
+**LaTeX.** PSTricks, PGF/TikZ y Asymptote parten de la misma área de
+exportación, y editar sus límites define el área de exportación (no se dibuja
+ningún rectángulo de selección). Omiten las capas ocultas y los objetos
+ocultos, igual que las imágenes. Con unidad de construcción, sus unidades x e y
+son la escala física de la escala de dibujo y se muestran pero no se pueden
+editar; sin ella siguen siendo ajustes de dispositivo no físicos. Un Locus V2 o
+un Spline V2 se escribe como un trayecto por cada componente válida
+certificada, aproximado dentro de la tolerancia de curvas semánticas del
+diálogo (por defecto `0.001` unidades del modelo); las componentes nunca se unen
+a través de un hueco. Los comentarios al principio del código y en cada curva,
+y el informe del diálogo, indican si la exportación es completa: una curva de la
+que solo algunas componentes pudieron certificarse se escribe con esas
+componentes y se marca como incompleta, y si una curva cambia durante la
+generación o la tolerancia no puede cumplirse, no se genera código.
 
 **Límites en esta versión.**
 
-- PSTricks, PGF/TikZ, Asymptote y DXF todavía no usan el área de exportación y
-  siguen escribiendo los objetos de las capas ocultas.
 - Un `Locus` heredado se dibuja solo con las muestras que ya tiene, que cubren la
   ventana en la que se calculó; fuera de esa ventana puede verse incompleto.
   Locus V2 no tiene ese límite.
-- El marco físico registrado dentro de un archivo EMF se redondea a las
-  centésimas de milímetro del formato.
+- La previsualización del diálogo Guardar solo aparece cuando el archivo elegido
+  ya existe y el selector de archivos tiene al menos 600 píxeles de ancho; para
+  un nombre de archivo nuevo el área de previsualización queda vacía.
+- Las coordenadas de los trayectos en PDF y SVG se escriben con cinco cifras
+  significativas; los tamaños de página, marco y `viewBox` son exactos.
 
 ### 4.6 Unidades del documento
 
@@ -510,9 +550,12 @@ documento (el tipo de archivo **Inserta Archivo** de **Archivo → Abrir…**)
 muestra el mismo aviso, y un pegado posterior de los mismos objetos lo conserva.
 No se muestra aviso cuando alguno de los dos documentos no tiene unidad física.
 
-**Exportaciones actuales.** La exportación de imágenes, PSTricks, PGF/TikZ,
-Asymptote y DXF no usa las unidades del documento en esta versión; DXF sigue sin
-unidades.
+**Exportaciones.** Con unidad de construcción, las imágenes, la impresión y
+LaTeX usan el tamaño físico y la escala de dibujo de la sección 4.5, y DXF
+registra la unidad en su cabecera (`mm`, `cm`, `m`) o, para una unidad
+personalizada, en su manifiesto acompañante obligatorio (sección 11). Las
+coordenadas nunca se convierten. Sin unidad de construcción ninguna exportación
+afirma una escala física, y DXF sigue sin unidades.
 
 ---
 
@@ -1350,7 +1393,7 @@ inglés con independencia del idioma de producto.
 | Closed domains | dominios finitos explícitos, como `inicio:fin` o `fuente@rama:inicio:fin`, separados por `;` |
 | Allowed evidence | `ESTIMATED_ERROR` |
 | Maximum evaluations / dyadic depth / vertices per component / total vertices | límites deterministas de trabajo |
-| Coordinates / units | `Cartesian 2D world / UNITLESS` |
+| Coordinates / units | `Cartesian 2D world / UNITLESS` para un documento sin unidad de construcción; con ella, por ejemplo `Cartesian 2D world / mm ($INSUNITS 4); coordinates unchanged` (`cm` 5, `m` 6), y para una unidad personalizada el aviso de `usm` y el manifiesto obligatorio |
 | Partial output | `Disabled (strict complete request)` |
 | Sidecar | solicitar manifiesto incluso en una exportación totalmente exacta |
 
@@ -1367,19 +1410,24 @@ selección explícita vigente nunca se filtra por esta regla.
 
 La salida parcial por componentes está **desactivada** por defecto: una petición
 que no pueda satisfacerse íntegramente se rechaza en lugar de truncarse en
-silencio. Los objetos ocultos se incluyen y se notifican de forma visible.
+silencio. Los objetos ocultos se incluyen y se notifican de forma visible. Los
+objetos de una capa oculta (sección 12.5) también se incluyen, en su capa, que
+el DXF marca como desactivada.
 
 ### 11.9 Manifiesto acompañante
 
 Se escribe un `<dibujo>.dxf.manifest.json` determinista en UTF-8 siempre que la
 exportación contenga geometría aproximada, geometría omitida o parcial, un
-componente solicitado no soportado, o una terminación por límite de trabajo. Una
-exportación completamente exacta puede omitirlo, y usted puede solicitarlo
-explícitamente.
+componente solicitado no soportado, o una terminación por límite de trabajo, y
+siempre para un documento cuya unidad de construcción es la unidad
+personalizada `usm`. En los demás casos una exportación completamente exacta
+puede omitirlo, y usted puede solicitarlo explícitamente.
 
-El manifiesto registra el esquema y la proveniencia de la compilación, el SHA-256
-del DXF, la política completa de la petición y sus límites de trabajo, y por cada
-componente: el identificador de fuente y su alcance, la clave de rama, el
+El manifiesto (versión 2 del esquema) registra el esquema y la proveniencia de
+la compilación, el SHA-256 del DXF, las unidades (unidad de construcción,
+`$INSUNITS` y, para `usm`, su factor en metros), las capas ocultas escritas como
+desactivadas, el área de exportación y cada fuente fuera de ella, la política
+completa de la petición y sus límites de trabajo, y por cada componente: el identificador de fuente y su alcance, la clave de rama, el
 componente, el intervalo semántico, el handle y el tipo de entidad DXF, la
 fidelidad, el método de aproximación, la tolerancia solicitada, la estimación
 alcanzada, la garantía, el número de evaluaciones, el número de vértices y la
@@ -1390,18 +1438,30 @@ validan y se promueven juntos bajo una política de reversión definida.
 
 ### 11.10 Independencia del viewport
 
-Las coordenadas son coordenadas cartesianas del modelo, sin unidades. Ni la
+Las coordenadas son coordenadas cartesianas del modelo, nunca convertidas; la
+cabecera indica la unidad de construcción como describe la sección 11.7. Ni la
 exportación ni su fidelidad dependen del zoom, el desplazamiento, el tamaño de la
 ventana, los DPI o la vista vigente. La misma revisión de construcción y la misma
 petición producen siempre la misma salida.
 
+**Área de exportación.** Cuando ha elegido un área de exportación en
+**Archivo → Área de exportación** (o `Export_1` y `Export_2` la definen), el DXF
+contiene solo las fuentes y las componentes de Locus V2 cuya geometría toca ese
+rectángulo, cada una completa y sin cambios; nada se recorta. Una componente de
+Locus V2 o de Spline V2 solo se deja fuera cuando se demuestra que está fuera.
+Todo lo que queda fuera se enumera como fuera del área de exportación, en el
+informe y en el manifiesto si lo hay; no es un error y no impide la exportación.
+La vista visible nunca se usa: sin un área elegida el DXF contiene toda la
+población, sea cual sea el zoom.
+
 ### 11.11 Frontera actual de exportación
 
-No hay importación DXF, exportación de viewport, contrato de unidades físicas,
-exportación de texto, exportación del `Locus` muestreado heredado, contorneado de
-curvas implícitas, `SPLINE` exacta ni exportación 3D. El grosor y estilo de
-línea, el relleno, la opacidad, el tamaño de punto y las etiquetas no se
-transportan; la capa, el color RGB y la visibilidad vigente sí.
+No hay importación DXF, exportación de viewport, exportación de texto,
+exportación del `Locus` muestreado heredado, contorneado de curvas implícitas,
+`SPLINE` exacta ni exportación 3D. El grosor y estilo de línea, el relleno, la
+opacidad, el tamaño de punto y las etiquetas no se transportan; la capa, el
+color RGB, la visibilidad vigente y el estado desactivado de las capas ocultas
+sí.
 
 ---
 
@@ -1410,8 +1470,8 @@ transportan; la capa, el color RGB y la visibilidad vigente sí.
 
 Todo lo de esta sección es presentación. Nada de ello cambia la geometría, la
 identidad ni las medidas. Las capas ocultas (12.5) se guardan con el documento y
-son lo único que cambia la salida de exportación: las exportaciones de imagen las
-omiten.
+son lo único que cambia la salida de exportación: las exportaciones de imagen y
+LaTeX las omiten, y DXF escribe sus capas como desactivadas.
 
 ### 12.1 Temas y lienzo
 
@@ -1506,10 +1566,10 @@ la sesión actual y **capas ocultas** que se guardan con el documento.
   con el documento.
 
 **Exportaciones con una capa oculta.** PNG, PDF, SVG, EMF, la impresión, la
-previsualización de Guardar y la copia de la vista gráfica como imagen omiten
-las capas ocultas (sección 4.5). PGF/TikZ, PSTricks, Asymptote y DXF siguen
-escribiendo los objetos de las capas ocultas en esta versión. Esta diferencia
-temporal termina cuando esas exportaciones se completen.
+previsualización de Guardar, la copia de la vista gráfica como imagen, PGF/TikZ,
+PSTricks y Asymptote omiten las capas ocultas (sección 4.5). DXF conserva sus
+objetos en sus capas y escribe esas capas como desactivadas, de modo que un
+programa de CAD las muestra ocultas (sección 11.8).
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -1658,12 +1718,12 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   `LWPOLYLINE` aproximada.
 - La evidencia de aproximación es `ESTIMATED_ERROR`, no una cota de error global
   certificada.
-- No hay importación DXF, exportación de viewport, contrato de unidades físicas,
-  exportación de texto, exportación del `Locus` heredado, contorneado de curvas
-  implícitas ni exportación 3D.
-- LaTeX (PGF/TikZ, PSTricks, Asymptote) y DXF todavía no usan el área de
-  exportación y siguen escribiendo los objetos de las capas ocultas, mientras
-  que PNG, PDF, SVG, EMF y la impresión usan el área y los omiten (4.5, 12.5).
+- No hay importación DXF, exportación de viewport, exportación de texto,
+  exportación del `Locus` heredado, contorneado de curvas implícitas ni
+  exportación 3D.
+- LaTeX escribe Locus V2 y Spline V2 como trayectos aproximados con su
+  evidencia; no hay salida exacta de Bézier ni de spline, tampoco para un
+  Spline V2 cúbico (4.5).
 - Un `Locus` heredado en una imagen solo está completo dentro de la ventana en
   la que se muestreó (4.5).
 

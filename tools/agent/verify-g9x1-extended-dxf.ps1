@@ -52,6 +52,16 @@ $SpecificationSuccessorSha = `
 $SpecificationSupersededByCommit = `
     "e5260fc7dd4924f0599ac3ac2700025bf5e48330"
 $SpecificationSupersedingPhase = "PRE-G9B-S1-R1"
+# PRE-G9B-R6-plus-C (DQ-C15, 2026-10-04). The living specification evolved
+# again (version 1.1: units, hidden layers, export area, sidecar schema 2).
+# The PRE-G9B-S1-R1 successor above stays recorded and is now proven from its
+# own commit blob; the live file is pinned as the next successor, authorized by
+# the C authorization record commit. Frozen G9X1 evidence is not edited.
+$SpecificationLiveSha = `
+    "863c60add091544fe241cc25f0ce48f6b9fa110ae9b4e0c216c0bdcf56268263"
+$SpecificationLiveAuthorizedByCommit = `
+    "75a2cf06b62afbd20f6e3a3fc0e079579a3cab2a"
+$SpecificationLiveSupersedingPhase = "PRE-G9B-R6-plus-C"
 $AdrRelativePath = `
     "docs/adr/0014-export-only-dxf-approximation-and-sidecar.md"
 $AdrSha = "2bc0a4f7eed551778f1e4b50b6704214ca3dab96a2c69d0514bdc24a9c715eb3"
@@ -127,10 +137,33 @@ function Assert-SpecificationSupersession {
     Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
             $supersedes -ceq $SpecificationSupersededByCommit) `
         -Message "Superseding G9X1 specification commit is unresolvable."
+    # PRE-G9B-R6-plus-C: prove the recorded S1-R1 successor from its own blob.
+    $successor = (& git -C $RepositoryRoot show `
+        "${SpecificationSupersededByCommit}:${SpecificationRelativePath}") -join "`n"
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0) `
+        -Message "Recorded successor specification blob is unreadable."
+    $successorSha = [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData(
+            [Text.UTF8Encoding]::new($false).GetBytes(
+                ($successor -replace "`r`n", "`n") + "`n"))).ToLowerInvariant()
+    Assert-Condition -Condition ($successorSha -ceq $SpecificationSuccessorSha) `
+        -Message ("Recorded successor specification does not match its pin: " +
+            $successorSha)
+    Assert-Condition -Condition ($SpecificationLiveSha -cne `
+            $SpecificationSuccessorSha) `
+        -Message "The live specification must differ from the recorded successor."
+    $authorizedBy = (& git -C $RepositoryRoot rev-parse --verify `
+        "${SpecificationLiveAuthorizedByCommit}^{commit}").Trim()
+    Assert-Condition -Condition ($LASTEXITCODE -eq 0 -and
+            $authorizedBy -ceq $SpecificationLiveAuthorizedByCommit) `
+        -Message "The authorization of the live specification is unresolvable."
     Write-Host ("G9X1 specification authority: historical " +
         "$SpecificationHistoricalSha frozen at $EntrySha; successor " +
         "$SpecificationSuccessorSha superseded by " +
-        "$SpecificationSupersededByCommit ($SpecificationSupersedingPhase).")
+        "$SpecificationSupersededByCommit ($SpecificationSupersedingPhase); " +
+        "live $SpecificationLiveSha authorized by " +
+        "$SpecificationLiveAuthorizedByCommit " +
+        "($SpecificationLiveSupersedingPhase).")
 }
 
 function Assert-CanonicalHash {
@@ -728,7 +761,7 @@ try {
 
     Assert-CanonicalHash -RelativePath $PromptRelativePath -Expected $PromptSha
     Assert-CanonicalHash -RelativePath $SpecificationRelativePath `
-        -Expected $SpecificationSuccessorSha
+        -Expected $SpecificationLiveSha
     Assert-SpecificationSupersession
     Assert-CanonicalHash -RelativePath $AdrRelativePath -Expected $AdrSha
 
@@ -768,14 +801,17 @@ try {
     }
     # Identical structured literals in both editions: exact SPLINE remains
     # unimplemented, SplineV2 exports as approximate LWPOLYLINE, the guarantee
-    # stays ESTIMATED_ERROR, coordinates stay Cartesian model UNITLESS, and
-    # partial output stays disabled under a strict-complete request.
+    # stays ESTIMATED_ERROR, coordinates stay Cartesian model coordinates
+    # (UNITLESS without a construction unit; since PRE-G9B-R6-plus-C, DQ-C15,
+    # the mapped $INSUNITS otherwise), and partial output stays disabled under a
+    # strict-complete request.
     $sharedContract = @(
         "<!-- geocedg-guide-section: dxf-export -->",
         "DXF SPLINE exact entity      = NOT IMPLEMENTED",
         "SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE under current G9X1",
         "| Allowed evidence | ``ESTIMATED_ERROR`` |",
-        "| Coordinates / units | ``Cartesian 2D world / UNITLESS`` |",
+        "| Coordinates / units | ``Cartesian 2D world / UNITLESS``",
+        "``Cartesian 2D world / mm (`$INSUNITS 4); coordinates unchanged``",
         "| Partial output | ``Disabled (strict complete request)`` |",
         "``--enableExtendedDxf=false``")
     foreach ($edition in $guideEditions.Keys) {

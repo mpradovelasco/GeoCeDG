@@ -1,0 +1,119 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.pre-g9b-r6-plus-c-export-completion",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures",
+    "author": "GeoCeDG contributors",
+    "date": "2026-10-04",
+    "provenance_notes": "Project-authored PRE-G9B-R6-plus-C author-smoke documents, built through the product API (document units, layers, hidden layers, Export_1/Export_2, Locus V2, Spline V2) and written by the native .cedg writer of the candidate; never hand-edited. inspect-export.ps1 is a read-only helper that prints the facts of exported files named by the smoke checklist."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-physical-cm.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-physical-cm-presentation-mm.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-units-mm.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-units-m.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-units-usm-inch.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-unspecified.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-layers-and-area.cedg",
+    "models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/c-semantic-curves.cedg",
+    "models/regression/pre-g9b-s1-dxf/original/TestExport1.cedg"
+  ],
+  "outputs": [
+    "manual physical-size observation of PNG, PDF, SVG, EMF and print at a:b drawing scales",
+    "manual LaTeX (PSTricks, PGF/TikZ, Asymptote) observation of units, area, visibility and semantic-curve disclosure",
+    "manual DXF observation of $INSUNITS, OFF layers, group 60, export area and the paired sidecar"
+  ],
+  "validity_domain": {
+    "description": "GeoCeDG Desktop with the PRE-G9B-R6-plus-C candidate; the drawing scale and the export area are session state chosen by the author during the smoke, never stored in these documents. Export_1/Export_2 define the explicit EXPORT_POINTS area of the documents that contain them.",
+    "parameters": [
+      "ruler documents: 10 x 5 model-unit rectangle, radius-2 circle, 10-unit ruler segment; Export_1 (-1,-2), Export_2 (17,6)",
+      "c-layers-and-area.cedg: construction unit cm; layer 3 hidden in the document; Export_1 (-1,-3), Export_2 (6,6); far lies outside",
+      "c-units-usm-inch.cedg: usm 0.0254 m per unit, name inch, symbol in"
+    ]
+  },
+  "known_degeneracies": [
+    "The documents carry no drawing scale, tolerance or export area of their own: each is session state (DQ-C7, DQ-C13).",
+    "TestExport1.cedg (PRE-G9B-S1 fixture, referenced, not copied) holds the Locus V2 m, whose components are locally certified with global coverage not established: LaTeX marks the export incomplete and DXF keeps its strict rule.",
+    "A Locus V2 that fails entirely is produced in the session with a LaTeX tolerance the work limits cannot reach (for example 1E-300), not by a stored document."
+  ],
+  "reference_models": [],
+  "expected_metrics": {
+    "c-physical-cm.cedg": {
+      "bytes": 4940,
+      "sha256": "9639be3d8ef4a85e0c2c0f4aeb31848373f59f5c4230c694b443a5bb3672ef9e",
+      "construction_unit": "cm",
+      "presentation_unit": "cm",
+      "export_area_model_units": "18 x 8"
+    },
+    "c-physical-cm-presentation-mm.cedg": {
+      "bytes": 4946,
+      "sha256": "79a76bc3522b5e98b720ec3c08b75100fa8b06f84d3f34a7f118ccfe674df104",
+      "construction_unit": "cm",
+      "presentation_unit": "mm",
+      "export_area_model_units": "18 x 8"
+    },
+    "c-units-mm.cedg": {
+      "bytes": 4940,
+      "sha256": "aaa051ae69f532945ffb84c3180dece8554a618c8040566ff01f07dedc757e56",
+      "construction_unit": "mm",
+      "dxf_insunits": 4
+    },
+    "c-units-m.cedg": {
+      "bytes": 4939,
+      "sha256": "2b770c7cdd49d9925db575b4f5169840ad7e73ff9a2451039bc3e692b7eb92c4",
+      "construction_unit": "m",
+      "dxf_insunits": 6
+    },
+    "c-units-usm-inch.cedg": {
+      "bytes": 4972,
+      "sha256": "2d104078487c58f21bd43fabef9fb2753df1877cf1b31d586ad9dff7dd978693",
+      "construction_unit": "usm",
+      "usm_meters_per_unit": 0.0254,
+      "dxf_insunits": 0
+    },
+    "c-unspecified.cedg": {
+      "bytes": 4922,
+      "sha256": "7381ad9a81c94e94972c2d7ad0f78948193716702c7addd105c45fd6559ec658",
+      "construction_unit": null,
+      "dxf_insunits": 0
+    },
+    "c-layers-and-area.cedg": {
+      "bytes": 4962,
+      "sha256": "855f7753760fe536b534f78f0b85491cab4b242c5d281a9d3494c017742d8136",
+      "construction_unit": "cm",
+      "hidden_layers": [3],
+      "layers_used": [0, 3, 12],
+      "individually_hidden_objects": ["hiddenObject"],
+      "outside_export_area": ["far"]
+    },
+    "c-semantic-curves.cedg": {
+      "bytes": 5763,
+      "sha256": "a954277da8f7a626119c6878b57e46b24b360be3a4582bef3c3f3634a2f2153d",
+      "construction_unit": "cm",
+      "locus_v2": ["L (two components)", "C (closed, full period)"],
+      "spline_v2": ["S3 (degree 3)", "S5 (degree 5)"],
+      "legacy_locus": ["legacy"]
+    }
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Project-authored validation constructions; public redistribution remains subject to repository license approval.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "derived_artifacts": [],
+  "implementation": {
+    "mechanisms": ["native-cedg-archive", "document-units", "persistent-hidden-layers", "export-points-area", "locus-v2", "spline-v2"],
+    "embedded_tools": 0,
+    "global_javascript": false
+  },
+  "publications": []
+}

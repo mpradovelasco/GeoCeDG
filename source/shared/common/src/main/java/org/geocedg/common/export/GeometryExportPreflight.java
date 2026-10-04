@@ -92,8 +92,11 @@ public final class GeometryExportPreflight {
 								.OUTSIDE_GEOMETRIC_POPULATION)
 				.count();
 		incompleteSemanticCoverageCount = incompleteCoverage;
+		// PRE-G9B-R6-plus-C (DQ-C11): a usm construction unit makes the paired
+		// sidecar mandatory; export-area filtering alone never does (DQ-C13).
 		sidecarRequired = request.isSidecarRequested()
-				|| model.hasFidelityReduction() || incompleteCoverage > 0;
+				|| model.hasFidelityReduction() || incompleteCoverage > 0
+				|| model.getTargetUnit() == GeometryExportModel.Unit.USM;
 		writable = !request.isPartialOutputAllowed()
 				&& !model.getEntities().isEmpty() && unsupported == 0
 				&& invalid == 0;
@@ -135,6 +138,19 @@ public final class GeometryExportPreflight {
 	/** @return sources excluded before strict geometric preflight */
 	public int getExcludedPopulationCount() {
 		return excludedPopulationCount;
+	}
+
+	/**
+	 * @return sources and certified components left out by the explicit export
+	 *         area ({@code DQ-C13}); a population count, never a fidelity count
+	 */
+	public int getOutsideExportAreaCount() {
+		return model.getAreaExclusions().size();
+	}
+
+	/** @return whether the construction unit is the custom unit usm */
+	public boolean isCustomUnit() {
+		return model.getTargetUnit() == GeometryExportModel.Unit.USM;
 	}
 
 	/** @return emitted components whose source decomposition is not globally known */

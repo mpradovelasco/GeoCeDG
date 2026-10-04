@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.geocedg.common.export.PhysicalExportScale;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
 import org.geocedg.common.kernel.units.DocumentUnitSystem;
@@ -34,9 +35,15 @@ import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.common.kernel.units.UnitToken;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geocedg.desktop.export.DrawingScale;
+import org.geocedg.desktop.export.DrawingScaleHolder;
 import org.geocedg.desktop.export.ExportArea;
 import org.geocedg.desktop.export.ExportAreaSession;
 import org.geocedg.desktop.export.ExportAreaUnavailableException;
+import org.geocedg.desktop.export.ExportScalePresentation;
+import org.geocedg.desktop.export.GeoCeDGGeoGebraToAsymptote;
+import org.geocedg.desktop.export.GeoCeDGGeoGebraToPgf;
+import org.geocedg.desktop.export.GeoCeDGGeoGebraToPstricks;
 import org.geocedg.desktop.export.PictureExportRoute;
 import org.geocedg.desktop.export.PictureExportService;
 import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
@@ -45,6 +52,7 @@ import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
@@ -54,10 +62,12 @@ import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.FontSettings;
+import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.awt.GBufferedImageD;
+import org.geogebra.desktop.export.pstricks.ExportGraphicsFactoryD;
 import org.geogebra.desktop.geogebra3D.App3D;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.MyImageD;
@@ -79,7 +89,7 @@ import org.geogebra.editor.share.util.KeyCodes;
 /**
  * Desktop application instance bound to the GeoCeDG product profile.
  */
-public final class AppGeoCeDG extends App3D {
+public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private GeoCeDGPresentationPreferences presentationPreferences;
 	private GeoCeDGThemePreference themePreference;
 	/**
@@ -117,6 +127,15 @@ public final class AppGeoCeDG extends App3D {
 	private GeoCeDGCopyPaste unitCopyPaste;
 	private GeoCeDGDocumentUnitsPrompt documentUnitsPrompt = GeoCeDGDocumentUnitsPrompt.dialog();
 	private Consumer<String> unitLoadErrorSink;
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C7) session engineering drawing scale of this window;
+	 * null means 1:1. It is reset only at the successful-transition events E1-E6,
+	 * which may run inside the host constructor, so it has no field initializer.
+	 */
+	private DrawingScale drawingScale;
+	private ArrayList<Runnable> drawingScaleListeners;
+	private boolean apiDocumentReplacement;
+	private GeoCeDGExportScalePresentation exportScalePresentation;
 
 	/**
 	 * @param args command line arguments
@@ -398,6 +417,8 @@ public final class AppGeoCeDG extends App3D {
 		if (layerWorkspaceActive) {
 			commitLoadedDocument();
 		}
+		// PRE-G9B-R6-plus-C (DQ-C7) E2: a committed native Open
+		resetDrawingScale();
 	}
 
 	/**
@@ -411,6 +432,8 @@ public final class AppGeoCeDG extends App3D {
 		if (layerWorkspaceActive) {
 			commitLoadedDocument();
 		}
+		// PRE-G9B-R6-plus-C (DQ-C7) E3: a committed non-native replacement
+		resetDrawingScale();
 	}
 
 	/**
@@ -426,6 +449,10 @@ public final class AppGeoCeDG extends App3D {
 			commitLoadedDocument();
 		}
 		parsedHiddenLayers = null;
+		if (loaded) {
+			// PRE-G9B-R6-plus-C (DQ-C7) E4: a successful document load
+			resetDrawingScale();
+		}
 		return loaded;
 	}
 
@@ -452,7 +479,121 @@ public final class AppGeoCeDG extends App3D {
 		super.setXML(xml, clearAll);
 		if (parsedHiddenLayers != null) {
 			commitLoadedDocument();
+			if (apiDocumentReplacement) {
+				// PRE-G9B-R6-plus-C (DQ-C7) E5: the API document replacement whose
+				// parse completed; a tool-replacement reload carries no marker
+				resetDrawingScale();
+			}
 		}
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C7) E5: marks the API's full-document {@code setXML};
+	 * the reset happens only when {@link #setXML(String, boolean)} observes the
+	 * completed document parse.
+	 */
+	@Override
+	public void runApiDocumentReplacement(Runnable replacement) {
+		boolean outer = apiDocumentReplacement;
+		apiDocumentReplacement = true;
+		try {
+			replacement.run();
+		} finally {
+			apiDocumentReplacement = outer;
+		}
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C7) E6: a reset that reloads the current file relies
+	 * on that load's own transition (E2/E4); a reset to a blank document resets
+	 * the drawing scale at the completed reset boundary.
+	 */
+	@Override
+	public void reset() {
+		if (getCurrentFile() != null) {
+			super.reset();
+			return;
+		}
+		if (clearConstruction()) {
+			resetDrawingScale();
+		}
+	}
+
+	/** @return session engineering drawing scale of this window (DQ-C7) */
+	@Override
+	public DrawingScale getDrawingScale() {
+		return drawingScale == null ? DrawingScale.ONE_TO_ONE : drawingScale;
+	}
+
+	/**
+	 * Export interpretation only: no undo point, no modified flag, never written
+	 * to the document or the preferences.
+	 *
+	 * @param scale new session drawing scale
+	 */
+	@Override
+	public void setDrawingScale(DrawingScale scale) {
+		if (scale == null) {
+			throw new IllegalArgumentException("A drawing scale is required");
+		}
+		if (scale.equals(getDrawingScale())) {
+			return;
+		}
+		drawingScale = scale;
+		if (drawingScaleListeners != null) {
+			for (Runnable listener : new ArrayList<>(drawingScaleListeners)) {
+				listener.run();
+			}
+		}
+	}
+
+	/**
+	 * @param listener presentation listener of export dialogs
+	 */
+	@Override
+	public void addDrawingScaleListener(Runnable listener) {
+		if (drawingScaleListeners == null) {
+			drawingScaleListeners = new ArrayList<>();
+		}
+		drawingScaleListeners.add(listener);
+	}
+
+	/**
+	 * @param listener presentation listener to remove
+	 */
+	@Override
+	public void removeDrawingScaleListener(Runnable listener) {
+		if (drawingScaleListeners != null) {
+			drawingScaleListeners.remove(listener);
+		}
+	}
+
+	private void resetDrawingScale() {
+		setDrawingScale(DrawingScale.ONE_TO_ONE);
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (C4): {@code fb(effC) * 100 * a / b} with the document's
+	 * effective construction unit and this window's drawing scale; NaN without a
+	 * construction unit.
+	 */
+	@Override
+	public double getPhysicalExportScale() {
+		Construction construction = getKernel().getConstruction();
+		UnitState state = construction.getUnitSystem() == null ? UnitState.EMPTY
+				: construction.getUnitSystem().getState();
+		DrawingScale scale = getDrawingScale();
+		return PhysicalExportScale.centimetresPerUnit(state, scale.getNumerator(),
+				scale.getDenominator());
+	}
+
+	/** @return PRE-G9B-R6-plus-C product scale presentation of export dialogs */
+	@Override
+	public ExportScalePresentation getExportScalePresentation() {
+		if (exportScalePresentation == null) {
+			exportScalePresentation = new GeoCeDGExportScalePresentation(this);
+		}
+		return exportScalePresentation;
 	}
 
 	/** @return PRE-G9B-R6-plus-A-1 session layer workspace */
@@ -517,6 +658,76 @@ public final class AppGeoCeDG extends App3D {
 		}
 		ExportArea area = service.resolve(view);
 		return area == null ? 0 : area.pixelHeight(view.getYscale());
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C13): the export area of the active 2D Graphics view,
+	 * else of Graphics 1, as consumed by the DXF export context.
+	 *
+	 * @return resolved export area, or null when none can be resolved
+	 */
+	ExportArea resolveActiveExportArea() {
+		EuclidianView view = getActiveEuclidianView();
+		if (!getPictureExportService().handles(view)) {
+			view = getEuclidianView1();
+		}
+		return getExportAreaSession().resolve(view);
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C13): the LaTeX exporters start from the export area
+	 * of the active 2D Graphics view; the selection rectangle is never read.
+	 */
+	@Override
+	public double[] getExportAreaWorldBounds(EuclidianView view) {
+		if (view == null) {
+			return null;
+		}
+		ExportArea area = getPictureExportService().handles(view)
+				? getExportAreaSession().resolve(view) : null;
+		if (area == null) {
+			return new double[] {view.getXmin(), view.getXmax(), view.getYmin(),
+					view.getYmax()};
+		}
+		return new double[] {area.getXmin(), area.getXmax(), area.getYmin(),
+				area.getYmax()};
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (DQ-C13): a LaTeX bound edit that forms a valid rectangle
+	 * defines the MANUAL export area of the view; the selection rectangle is
+	 * never written.
+	 */
+	@Override
+	public boolean exportAreaBoundsEdited(EuclidianView view, double xmin,
+			double xmax, double ymin, double ymax) {
+		if (view != null && getPictureExportService().handles(view)) {
+			ExportArea current = getExportAreaSession().resolve(view);
+			if (current == null || current.getXmin() != xmin
+					|| current.getXmax() != xmax || current.getYmin() != ymin
+					|| current.getYmax() != ymax) {
+				getExportAreaSession().defineManual(view.getViewID(), xmin, xmax,
+						ymin, ymax);
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void newGeoGebraToPstricks(AsyncOperation<GeoGebraExport> callback) {
+		callback.callback(new GeoCeDGGeoGebraToPstricks(this,
+				new ExportGraphicsFactoryD()));
+	}
+
+	@Override
+	public void newGeoGebraToPgf(AsyncOperation<GeoGebraExport> callback) {
+		callback.callback(new GeoCeDGGeoGebraToPgf(this, new ExportGraphicsFactoryD()));
+	}
+
+	@Override
+	public void newGeoGebraToAsymptote(AsyncOperation<GeoGebraExport> callback) {
+		callback.callback(new GeoCeDGGeoGebraToAsymptote(this,
+				new ExportGraphicsFactoryD()));
 	}
 
 	/** Animated GIF/WebM stay outside this generation (AQ-X4, AQ-X5, DQ-B1). */
@@ -711,6 +922,8 @@ public final class AppGeoCeDG extends App3D {
 			// <tableview> (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT,
 			// pre-existing). A cancelled or failed New never gets here.
 			setSaved();
+			// PRE-G9B-R6-plus-C (DQ-C7) E1: a completed New
+			resetDrawingScale();
 		}
 	}
 

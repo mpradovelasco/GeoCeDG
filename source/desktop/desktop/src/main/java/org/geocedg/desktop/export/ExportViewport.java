@@ -118,6 +118,12 @@ public final class ExportViewport extends EuclidianViewD {
 	 * @return positive printing scale
 	 */
 	public static double printingScaleOf(EuclidianView source) {
+		// PRE-G9B-R6-plus-C (C4): a physical document is sized by its unit
+		// contract and drawing scale; the zoom-derived value is never used then
+		double physical = source.getApplication().getPhysicalExportScale();
+		if (physical > 0 && Double.isFinite(physical)) {
+			return physical;
+		}
 		double scale = source.getPrintingScale();
 		if (scale > 0 && Double.isFinite(scale)) {
 			return scale;

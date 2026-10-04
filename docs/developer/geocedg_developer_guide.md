@@ -725,9 +725,8 @@ scale and whose clip is the exact area (a rectangle shape, because the Desktop
   that does not opt in is byte-identical to the base;
 - SVG: the exact fractional `viewBox` of `SVGExtensions.setExactViewBox`; no
   `preserveAspectRatio` change;
-- EMF/EMF+: device bounds rounded to whole units; the FreeHEP EMF family is
-  unchanged and `rclFrame` keeps its physical quantization
-  (`OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION`, owner `C`).
+- EMF/EMF+: device bounds rounded to whole units; since `C` the `rclFrame` is
+  the requested size through the FreeHEP opt-in (next sections).
 
 The routes reach the service through seams whose host defaults reproduce the
 base: `App.getExportFrameWidth/Height(view)` (size label, print scale,
@@ -748,9 +747,9 @@ from the view scale by the host rule, without changing the view.
 Screen-anchored objects stay anchored to the export canvas. Locus V2 is
 tessellated for the export resolution (`LocusRenderPolicy2D`), while a legacy
 `GeoLocus` is drawn only from its existing kernel samples
-(`OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE`). PSTricks, PGF/TikZ, Asymptote and DXF
-are exposed unchanged; their `ExportArea` integration and hidden-layer policy
-belong to `C`.
+(`OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE`). The `ExportArea` integration and
+hidden-layer policy of PSTricks, PGF/TikZ, Asymptote and DXF are delivered by
+`C` (see *Export completion*).
 
 ### Document unit system (PRE-G9B-R6-plus-D1)
 
@@ -811,8 +810,77 @@ are normative; this section names the implementation seams only.
   Classic diagnostic app shares the reader, writer and fail-closed rules and has
   no unit UI.
 
-Exports do not read the units; the DXF unit header, `drawingScale` and
-dimensional presentation belong to `C`, `E2` and later phases.
+Since `PRE-G9B-R6-plus-C` the exports read the units as described in the next
+section; dimensional presentation belongs to `E2` and later phases.
+
+### Export completion (PRE-G9B-R6-plus-C)
+
+The [unit-system specification](../../geocedg/specs/units/unit-system.md) §12,
+§13 and §15, the amended
+[geometry export foundation](../../geocedg/specs/export/geometry-export-foundation.md)
+and [DXF fidelity specification](../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md)
+version 1.1 are the contract; this section names the seams only.
+
+- **`drawingScale`.** `DrawingScale` (`org.geocedg.desktop.export`) is the
+  immutable `a:b` value: gcd normal form, terms at most `1 000 000 000`,
+  `parse` refuses every other text. `AppGeoCeDG` holds one value per window
+  (`DrawingScaleHolder`; null means `1:1`) and resets it only at the
+  successful-transition events of `DQ-C7`: E1 the completed branch of
+  `fileNew`, E2 `nativeDocumentLoadCommitted`, E3 `documentReplacementCommitted`,
+  E4 a successful `runDocumentLoad`, E5 a completed document parse inside
+  `AppD.runApiDocumentReplacement` (marked by `GgbAPID.setXML`; a tool
+  replacement reload carries no marker) and E6 the `reset()` override for a
+  blank document (a reset that reloads the current file relies on E2/E4). It
+  is never reset by `clearConstruction` or `commitLoadedDocument`, never
+  serialized, never an undo point and never marks the document modified.
+- **Physical scale.** `PhysicalExportScale.centimetresPerUnit`
+  (`org.geocedg.common.export`) evaluates `((fb * 100) * a) / b`; NaN without a
+  construction unit. `App.getPhysicalExportScale()` (NaN in the host) is the one
+  seam: `ExportViewport.printingScaleOf` (PDF, `--export`),
+  `GraphicExportDialog.updateSizeLabel`, `EuclidianViewD.print` and the LaTeX
+  settings read it, so the zoom-derived `printingScale` is never a physical
+  authority. `PictureExportService.writeSVG` uses it when no explicit size is
+  given (API, command line); explicit API/CLI scales stay device parameters
+  (`DQ-C16`). `PhysicalExportScale` also holds the explicit limits (device
+  extents, EMF frame range, PDF page range) that raise
+  `PhysicalExportLimitException`.
+- **Dialogs.** `AppD.getExportScalePresentation()` (null in the host) gives
+  `PrintScalePanel` (picture and Print Preview), `EuclidianViewD` (printed
+  scale) and `ExportFrame` (LaTeX) the product presentation: the `a:b`
+  `DrawingScaleControl` for a physical document, the relabelled device modes
+  and a statement otherwise, the semantic tolerance and the report.
+- **EMF.** The vendored FreeHEP `EMFOutputStream.setExactFrame`, forwarded by
+  `EMFGraphics2D`/`EMFPlusGraphics2D.setExactFrame`, writes `rclFrame` from the
+  requested size rounded to the nearest 0.01 mm; writers that do not opt in are
+  unchanged (provenance in
+  `docs/licensing/freehep-vectorgraphics-provenance.md`).
+- **LaTeX.** `GeoGebraExport` gained host-identical seams:
+  `App.getExportAreaWorldBounds` (bounds), `App.exportAreaBoundsEdited`
+  (`refreshSelectionRectangle`; GeoCeDG defines `MANUAL` and never writes the
+  selection rectangle), the `App.isLayerShown` gate at the top of
+  `drawGeoElement`, and the `drawUnsupportedElement` hook (host: the old debug
+  log). `AppGeoCeDG.newGeoGebraTo*` create `GeoCeDGGeoGebraTo{Pstricks,Pgf,Asymptote}`;
+  during `generateAllCode` they swap the protected `frame` for
+  `GeoCeDGLatexSettings` (physical units, derived size, final text) and write
+  Locus V2/Spline V2 through `LatexSemanticExportSupport`: one path per
+  certified component from `SemanticCurveExportAdapter2D`, `%`/`//` comments,
+  the `SemanticExportClassification` of `DQ-C5` and the dialog report.
+- **Semantic adapter.** `SemanticCurveExportAdapter2D` is the read-only Locus V2
+  glue extracted from `G9X1GeometryExportAdapter`; G9X1 replays its components
+  unchanged, so G5/G9X1 DXF bytes are identical for documents without unit and
+  area.
+- **DXF.** `GeometryExportContext` (unit state, `HiddenLayerSet`,
+  `GeometryExportArea`) enters the model and the preflight currentness check;
+  `DxfExporter` writes `$INSUNITS` from `GeometryExportModel.Unit`, hidden layers
+  as `62 = -7`, and `999` comments for `usm` and an explicit area.
+  `ExportAreaParticipation2D` holds the exact `B1` predicates; Locus V2 and
+  Spline V2 components are excluded only through the kernel query
+  `CertifiedComponentAreaDisjointness2D.prove` (ADR 0028 interval model). The
+  sidecar is schema version 2 (`units`, `layers`, `export_area`,
+  `outside_export_area`). The Desktop controller takes the area of the active
+  2D Graphics view (else Graphics 1) through
+  `AppGeoCeDG.resolveActiveExportArea`, so no DXF export class names a view type
+  (the historical G9X1 source-authority scan).
 
 ## Persistence and compatibility
 

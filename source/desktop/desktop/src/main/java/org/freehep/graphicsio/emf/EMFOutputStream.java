@@ -1,4 +1,7 @@
 // Copyright 2001-2006, FreeHEP.
+// Modified by GeoCeDG on 2026-10-04 (PRE-G9B-R6-plus-C): opt-in exact frame,
+// see setExactFrame. Provenance:
+// docs/licensing/freehep-vectorgraphics-provenance.md
 package org.freehep.graphicsio.emf;
 
 import java.awt.Color;
@@ -39,6 +42,9 @@ public class EMFOutputStream extends TaggedOutputStream {
 
 	private Dimension device;
 
+	// GeoCeDG opt-in: picture frame in 0.01 mm; null keeps the FreeHEP frame
+	private Rectangle exactFrame;
+
 	public EMFOutputStream(OutputStream os, Rectangle imageBounds,
 			EMFHandleManager handles, String application, String name,
 			Dimension device, int version) throws IOException {
@@ -72,6 +78,9 @@ public class EMFOutputStream extends TaggedOutputStream {
 		EMFHeader header = new EMFHeader(EMFHeader.TYPE_WMF, imageBounds,
 				getVersion(), 0, len, recordCount, handles.maxHandlesUsed(),
 				application, name, device);
+		if (exactFrame != null) {
+			header.getFrame().setBounds(exactFrame);
+		}
 		writeHeader(header);
 		append();
 
@@ -274,6 +283,18 @@ public class EMFOutputStream extends TaggedOutputStream {
 
 	public void writeHeader(EMFHeader header) throws IOException {
 		header.write(this);
+	}
+
+	/**
+	 * GeoCeDG opt-in (PRE-G9B-R6-plus-C, DQ-C9): writes the given picture frame
+	 * ({@code rclFrame}, 0.01 mm units) instead of the frame derived from the
+	 * 320 x 240 mm reference device. A stream that does not opt in writes the
+	 * original frame.
+	 *
+	 * @param frame frame in hundredths of a millimetre
+	 */
+	public void setExactFrame(Rectangle frame) {
+		exactFrame = frame == null ? null : new Rectangle(frame);
 	}
 
 	public int getVersion() {

@@ -480,7 +480,15 @@ PRE-G9B-R6-plus-D1 added `document.units` (Document units…) in
 the GeoCeDG options group (`options-product`) and as the settings action of the
 document-lifecycle cluster; the construction-unit and presentation-unit status
 segments only invoke it. Document units are document metadata, never geometric
-state.
+state. PRE-G9B-R6-plus-C added no action: the picture, Print Preview and LaTeX
+dialogs of the existing export actions show the session engineering
+`drawingScale` (`a:b`, per window, reset to `1:1` by New, Open and full-document
+replacement, never serialized or undoable) for a document with a construction
+unit and a non-physical device-scale statement otherwise; the LaTeX dialogs add
+the semantic-curve tolerance and a non-modal export report; the DXF action
+reports units, hidden layers written off and the explicit export area. The DXF
+action's selection contract is `geocedg.dxf-exportable-geometry-population`
+(individually hidden objects and hidden-layer objects included).
 The main toolbar should expose groups, not one permanent button per action.
 Actions the author explicitly does not need as direct buttons—such as Delete,
 Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and

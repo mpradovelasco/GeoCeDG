@@ -50,7 +50,9 @@ import org.freehep.graphicsio.emf.EMFPlusGraphics2D;
 import org.freehep.graphicsio.pdf.PDFGraphics2D;
 import org.freehep.graphicsio.svg.SVGGraphics2D;
 import org.freehep.util.UserProperties;
+import org.geocedg.common.export.PhysicalExportLimitException;
 import org.geocedg.desktop.export.PictureExportRoute;
+import org.geocedg.desktop.export.PictureExportService;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -417,6 +419,15 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 		Format index = selectedFormat();
 		switch (index) {
 		case PNG:
+			// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C a physical raster below one
+			// pixel or beyond the integer range fails explicitly (C4)
+			try {
+				PictureExportService.requirePhysicalRaster(app,
+						(EuclidianView) getEuclidianView(), exportScale);
+			} catch (PhysicalExportLimitException ex) {
+				app.showError(Errors.SaveFileFailed, ex.getMessage());
+				return;
+			}
 
 			FontManagerD fm = app.getFontManager();
 			int fontSize = fm.getFontSize();
@@ -534,7 +545,11 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 	 */
 	void updateSizeLabel() {
 		EuclidianView ev = (EuclidianView) getEuclidianView();
-		double printingScale = ev.getPrintingScale();
+		// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C a physical document is sized
+		// from its construction unit and drawing scale, never from the zoom
+		double physicalScale = app.getPhysicalExportScale();
+		double printingScale = physicalScale > 0 && Double.isFinite(physicalScale)
+				? physicalScale : ev.getPrintingScale();
 		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B sizes come from the export-area seam
 		double exportWidth = app.getExportFrameWidth(ev);
 		double exportHeight = app.getExportFrameHeight(ev);
@@ -647,13 +662,17 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 			return;
 		}
 		try {
+			// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C frame = labelled size
 			exportEMF((EuclidianViewD) getEuclidianView(), file,
-					useEMFplus, pixelWidth, pixelHeight, exportScale);
+					useEMFplus, pixelWidth, pixelHeight, exportScale, cmWidth,
+					cmHeight);
 
 			if (exportToClipboard) {
 				sendToClipboard(file);
 			}
 
+		} catch (PhysicalExportLimitException ex) {
+			app.showError(Errors.SaveFileFailed, ex.getMessage());
 		} catch (RuntimeException | Error ex) {
 			app.showError(Errors.SaveFileFailed);
 			Log.debug(ex.toString());
@@ -688,6 +707,9 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 				sendToClipboard(file);
 			}
 
+		} catch (PhysicalExportLimitException ex) {
+			// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C explicit physical limit
+			app.showError(Errors.SaveFileFailed, ex.getMessage());
 		} catch (RuntimeException | Error ex) {
 			Log.debug(ex);
 			app.showError(Errors.SaveFileFailed);
@@ -949,12 +971,41 @@ public class GraphicExportDialog extends Dialog implements KeyListener {
 	public static void exportEMF(EuclidianViewD ev, File file,
 			boolean useEMFplus, int pixelWidth, int pixelHeight,
 			double exportScale) {
+		exportEMF(ev, file, useEMFplus, pixelWidth, pixelHeight, exportScale,
+				Double.NaN, Double.NaN);
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-C EMF with the opt-in exact frame
+	 * of the product route (DQ-C9); the host ignores the frame size.
+	 *
+	 * @param ev
+	 *            view
+	 * @param file
+	 *            target file
+	 * @param useEMFplus
+	 *            whether to use EMF+
+	 * @param pixelWidth
+	 *            width in pixels
+	 * @param pixelHeight
+	 *            height in pixels
+	 * @param exportScale
+	 *            scale units / cm
+	 * @param frameWidthCm
+	 *            requested output width in cm, or NaN
+	 * @param frameHeightCm
+	 *            requested output height in cm, or NaN
+	 */
+	public static void exportEMF(EuclidianViewD ev, File file,
+			boolean useEMFplus, int pixelWidth, int pixelHeight,
+			double exportScale, double frameWidthCm, double frameHeightCm) {
 
 		PictureExportRoute route = pictureRoute(ev.getApplication(), ev);
 		if (route != null) {
 			// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-B the export area, not the view
 			try {
-				route.writeEMF(ev, file, useEMFplus, exportScale);
+				route.writeEMF(ev, file, useEMFplus, exportScale, frameWidthCm,
+						frameHeightCm);
 			} catch (IOException e) {
 				Log.debug(e);
 			}

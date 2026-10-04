@@ -1,4 +1,7 @@
 // Copyright 2006, FreeHEP
+// Modified by GeoCeDG on 2026-10-04 (PRE-G9B-R6-plus-C): opt-in exact frame,
+// see setExactFrame. Provenance:
+// docs/licensing/freehep-vectorgraphics-provenance.md
 package org.freehep.graphicsio.emf;
 
 import java.awt.BasicStroke;
@@ -59,6 +62,8 @@ public class EMFPlusGraphics2D extends AbstractVectorGraphicsIO {
 	private OutputStream ros;
 	private EMFOutputStream os;
 	private Rectangle imageBounds;
+	// GeoCeDG opt-in: exact picture frame in 0.01 mm, or null
+	private Rectangle exactFrame;
 	// FIXME do we need this?
 	private EMFHandleManager handleManager;
 	private Value containerIndex;
@@ -146,6 +151,22 @@ public class EMFPlusGraphics2D extends AbstractVectorGraphicsIO {
 		restorePaint = graphics.getPaint();
 	}
 
+	/**
+	 * GeoCeDG opt-in (PRE-G9B-R6-plus-C, DQ-C9): the picture frame
+	 * ({@code rclFrame}) to write, in hundredths of a millimetre, instead of the
+	 * frame derived from the 320 x 240 mm reference device. Call before
+	 * {@code startExport}; a writer that does not opt in is unchanged.
+	 *
+	 * @param widthHundredthsMm frame width in 0.01 mm
+	 * @param heightHundredthsMm frame height in 0.01 mm
+	 */
+	public void setExactFrame(int widthHundredthsMm, int heightHundredthsMm) {
+		if (widthHundredthsMm <= 0 || heightHundredthsMm <= 0) {
+			throw new IllegalArgumentException("exact frame must be positive");
+		}
+		exactFrame = new Rectangle(0, 0, widthHundredthsMm, heightHundredthsMm);
+	}
+
 	@Override
 	public void writeHeader() throws IOException {
 		ros = new BufferedOutputStream(ros);
@@ -161,6 +182,7 @@ public class EMFPlusGraphics2D extends AbstractVectorGraphicsIO {
 		}
 		os = new EMFOutputStream(ros, imageBounds, handleManager, getCreator(),
 				producer, device, 0x4001);
+		os.setExactFrame(exactFrame);
 
 		os.writeTag(new Header());
 
