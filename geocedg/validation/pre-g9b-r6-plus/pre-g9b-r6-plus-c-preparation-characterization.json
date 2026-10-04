@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_c_preparation_characterization_report.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-c-2d-export-completion.prompt.md",
+  "authorDecisionRecord": "docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "serializationChange": "NONE",
+  "publishedBase": {
+    "name": "P_R6PLUS_A2",
+    "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0"
+  },
+  "entryGate": {
+    "localMain": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "originMain": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "liveRemoteMain": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0",
+    "worktreeClean": true
+  },
+  "preparationBase": {
+    "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0",
+    "branch": "phase/pre-g9b-r6-plus-c-prompt",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "method": {
+    "staticReading": "every cited seam re-read at the base; five read-only sweeps consolidated; contract-bearing lines re-read directly",
+    "probes": "one scratch-only Desktop probe class through a Gradle init script; JUnit XML redirected to the scratchpad; compileTestJava rerun without it; stash copy deleted; worktree clean",
+    "externalReferences": ["Autodesk DXF header variables (AutoCAD 2021), $INSUNITS codes"],
+    "notRun": ["PHASE", "INTEGRATION", "FINAL"],
+    "productOrTestFilesChanged": false
+  },
+  "probe": {
+    "class": "org.geocedg.desktop.CPrepExportProbeTest",
+    "command": "gradlew.bat --init-script <scratch>/cprep-probe.gradle :desktop:desktop:test --tests 'org.geocedg.desktop.CPrepExportProbeTest'",
+    "exitCode": 0,
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sourceSha256": "f08fcb96f1852d60d5ef1f051b3faf297c5e006c12b645e41ba286c144365fcc",
+    "initScriptSha256": "5fab82889e6113093006d6383a12216eed6f8286ef8b0f3dacbb083e55e1c59d",
+    "outputLinesSha256": "cdcd03db15b5aaa24056ad8059662aec583663aa4d34328aa8bf30949c846c1a",
+    "junitXmlSha256": "4a112de6aa2f9b55c8aecee34e2f45a391727a51af8d594e6889c9021069a86f",
+    "host": "G9U1TestApp, view 400x300 px at 50 px per unit, printingScale 1",
+    "results": {
+      "P-C-EMF-dialog": {
+        "area": "4 x 3 units, 200 x 150 px",
+        "formula": "s = p*D/(2.54*sx); rclFrame = floor(bounds*31.25)",
+        "rows": [
+          {"dpi": 72, "rclBounds": [113, 85], "rclFrame": [3531, 2656], "labelMm": [40, 30], "ratio": 0.8828},
+          {"dpi": 96, "rclBounds": [151, 113], "rclFrame": [4718, 3531], "labelMm": [40, 30], "ratio": 1.1795},
+          {"dpi": 150, "rclBounds": [236, 177], "rclFrame": [7375, 5531], "labelMm": [40, 30], "ratio": 1.8438},
+          {"dpi": 300, "rclBounds": [472, 354], "rclFrame": [14750, 11062], "labelMm": [40, 30], "ratio": 3.6875},
+          {"dpi": 600, "rclBounds": [945, 709], "rclFrame": [29531, 22156], "labelMm": [40, 30], "ratio": 7.3828}
+        ],
+        "conclusion": "frame = W*p*D/81.28 cm, not the labelled W*p cm"
+      },
+      "P-C-EMF-deviceReference": {
+        "formula": "s = outputMm*3.2/(W*sx); one device unit = 0.3125 mm",
+        "rows": [
+          {"metresPerUnit": 0.001, "scale": "1:1", "model": [4, 3], "outputMm": [4.0, 3.0], "rclFrame": [406, 312], "frameErrorMm": [0.06, 0.12], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 0.01, "scale": "1:1", "model": [4, 3], "outputMm": [40.0, 30.0], "rclFrame": [4000, 3000], "frameErrorMm": [0.0, 0.0], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 0.01, "scale": "1:2", "model": [4, 3], "outputMm": [20.0, 15.0], "rclFrame": [2000, 1500], "frameErrorMm": [0.0, 0.0], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 0.01, "scale": "2:1", "model": [4, 3], "outputMm": [80.0, 60.0], "rclFrame": [8000, 6000], "frameErrorMm": [0.0, 0.0], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 0.01, "scale": "1:1", "model": [4.003, 3.0071], "outputMm": [40.03, 30.071], "rclFrame": [4000, 3000], "frameErrorMm": [-0.03, -0.071], "nearestErrorMm": [0.0, -0.001]},
+          {"metresPerUnit": 0.0254, "scale": "1:1", "model": [4, 3], "outputMm": [101.6, 76.2], "rclFrame": [10156, 7625], "frameErrorMm": [-0.04, 0.05], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 1.0, "scale": "1:1", "model": [4, 3], "outputMm": [4000.0, 3000.0], "rclFrame": [400000, 300000], "frameErrorMm": [0.0, 0.0], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 1.0, "scale": "1:50", "model": [4, 3], "outputMm": [80.0, 60.0], "rclFrame": [8000, 6000], "frameErrorMm": [0.0, 0.0], "nearestErrorMm": [0.0, 0.0]},
+          {"metresPerUnit": 0.001, "scale": "1:1", "model": [4.003, 3.0071], "outputMm": [4.003, 3.0071], "rclFrame": [406, 312], "frameErrorMm": [0.057, 0.1129], "nearestErrorMm": [-0.003, 0.0029]}
+        ]
+      },
+      "P-C-PRINTING-SCALE": {
+        "area": "4-unit MANUAL area",
+        "rows": [
+          {"pxPerUnit": 3, "printingScale": 0.1, "pdfPageWidthCm": 0.4},
+          {"pxPerUnit": 20, "printingScale": 1.0, "pdfPageWidthCm": 4.0},
+          {"pxPerUnit": 37.79527559, "printingScale": 1.0, "pdfPageWidthCm": 4.0},
+          {"pxPerUnit": 50, "printingScale": 1.0, "pdfPageWidthCm": 4.0},
+          {"pxPerUnit": 100, "printingScale": 10.0, "pdfPageWidthCm": 40.0},
+          {"pxPerUnit": 378, "printingScale": 10.0, "pdfPageWidthCm": 40.0},
+          {"pxPerUnit": 500, "printingScale": 10.0, "pdfPageWidthCm": 40.0},
+          {"pxPerUnit": 4000, "printingScale": 100.0, "pdfPageWidthCm": 400.0}
+        ],
+        "conclusion": "physical picture size follows the zoom in powers of ten"
+      },
+      "P-C-LATEX-SEMANTIC": {
+        "pgfChars": 566,
+        "pstricksChars": 800,
+        "asymptoteChars": 1392,
+        "identicalWithAndWithoutLocusV2AndSplineV2": true,
+        "mentionsLocusOrSpline": false,
+        "conclusion": "silent omission in every dialect"
+      },
+      "P-C-SAVE-PREVIEW": {
+        "newTarget": "no image",
+        "existingTarget": "image",
+        "chooserWidth500": "accessory removed",
+        "chooserWidth800": "accessory restored",
+        "selectionNullNameFieldExisting": "image"
+      }
+    }
+  },
+  "externalReference": {
+    "source": "Autodesk DXF header variables, AutoCAD 2021 (page cited by ADR 0005)",
+    "insunits": {"0": "Unitless", "4": "Millimeters", "5": "Centimeters", "6": "Meters"},
+    "outsideD0Contract": ["$MEASUREMENT", "$LUNITS"],
+    "msEmfHeaderPage": "not fetched (HTTP 404); rclFrame statements rest on FreeHEP source and the probe"
+  },
+  "characterization": {
+    "C1": "route matrix: every physical picture and print size is W*p cm with p the zoom-derived printingScale; EMF and clipboard are device; LaTeX reads selection rectangle or view bounds, unit 1 cm, no layers, drops LocusV2; DXF unitless, always-on layers, hidden objects included with 60=1",
+    "C2": "no holder at the base; owner AppGeoCeDG per window; reset in the clearConstruction override and in commitLoadedDocument; never from undo, redo, redefine or rollback paths",
+    "C3": "PrintScalePanel (Picture, Print Preview) and ExportFrame (LaTeX) controls; no dialog bounds its values; one shared cm-per-model-unit model can drive them",
+    "C4": "pPhysical = fb(effC)*100*a/b cm per model unit reproduces the D0 formulas; printingScale bypassed as authority in physical mode",
+    "C5": "EMF frame = W*p*D/81.28 cm; device grid 0.3125 mm plus truncation; format quantization 0.01 mm; path coordinates 5 significant digits",
+    "C6": "no unit-to-INSUNITS mapping in code; mm 4, cm 5, m 6, unspecified 0, usm 0 with warning and mandatory sidecar; neutral Unit enum UNITLESS only; fingerprint excludes units",
+    "C7": "live G9X1 verifier pins (fidelity spec hash, guide literal) and Java pins change together; frozen G9X1 evidence and G5 corpus pin stay true",
+    "C8": "object visibility, GeoCeDG hidden layer, DXF layer state and source layer identity are distinct; accepted rule keeps hidden sources",
+    "C9": "LaTeX bounds from ExportArea, edits through MANUAL; area is a format clip only; DXF area policy open",
+    "C10": "Locus V2 export glue private to G9X1; builder DXF-free; extract one read-only adapter, G9X1 bytes identical",
+    "C11": "DXF tolerance 0.001 model coordinates, ESTIMATED_ERROR, budgets 65536/20/16384/131072",
+    "C12": "existing polyline idioms per dialect; no plot coordinates or pscurve",
+    "C13": "SplineV2 degree 3..12; cubic case is a numerically solved interpolant; rounded spans not coefficient authority",
+    "C14": "G9X1 strict precedent; locally certified components emitted with incomplete-coverage disclosure",
+    "C15": "Save preview only for an existing target in a chooser at least 600 px wide; upstream conditions older than B; no Picture-dialog preview",
+    "C16": "drawingScale resets at existing commit points; no ExportArea or paste-notice reset changes; observation stays open",
+    "C17": "unspecified: no a:b, device-scale controls relabelled as non-physical, DXF 0 and UNITLESS",
+    "C18": "Classic through host-identical seam defaults; GWT module excludes org/geocedg while 37 shared classes import it"
+  },
+  "findings": [
+    "physical picture and print sizes are W*p cm with a zoom-derived power-of-ten printingScale",
+    "the EMF frame scales with a hidden DPI and the fixed 81.28 DPI FreeHEP reference",
+    "no drawingScale holder; AppGeoCeDG per window; A-2 commit seam plus clearConstruction cover every replacement",
+    "clearing setXML includes same-document reloads",
+    "LaTeX ignores ExportArea, printingScale and layers, writes the selection rectangle and drops LocusV2/SplineV2",
+    "App.isLayerShown gives shared code effectiveVisible with a host default of true",
+    "Locus V2 export glue is private to G9X1; the approximation builder is reusable",
+    "DXF writes INSUNITS 0 and always-on layers; fingerprint excludes units and hidden layers",
+    "PowerShell DXF verifiers are historical, not registry leaves",
+    "D1, B and A-1 tests pin the interim export state on purpose",
+    "SplineV2 cubic case is a numerically solved interpolant",
+    "Save preview conditions are upstream and older than B",
+    "ADR 0032 does not amend ADR 0005 Decision 3",
+    "Web build compatibility is not established by any registered check",
+    "the DXF selection-contract reference is undefined and contradicts the behavior"
+  ],
+  "observations": {
+    "OBS-B-EMF-RCLFRAME-PHYSICAL-QUANTIZATION": "wider than quantization; policy DQ-C9",
+    "OBS-B-FREEHEP-PATH-COORDINATE-PRECISION": "writer limitation distinct from sizing; DQ-C14",
+    "OBS-R6PLUS-EXPORT-PREVIEW-ABSENT": "proposed NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED; DQ-C10",
+    "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET": "not absorbed; unchanged; author-owned"
+  },
+  "preExistingUpstreamLatexDefectsOutsideC": [
+    "parametric-plot warning without a newline (PGF, PSTricks)",
+    "warning flags never reset between generations (PGF)",
+    "empty getLineTemplate in PSTricks and Asymptote"
+  ],
+  "verificationClass": {
+    "planned": "INTEGRATED_PHASE",
+    "recharacterized": "INTEGRATED_PHASE",
+    "plannedAcceptance": ["PHASE -Phase PRE-G9B-R6-plus-C (to be registered)", "INTEGRATION"],
+    "final": "NOT_REQUIRED",
+    "integrationNodesAtBase": 46,
+    "integrationAcceptanceLeavesAtBase": 19,
+    "phaseSelectionsAtBase": 44,
+    "escalationTriggers": ["document serialization", "XML parser or undo snapshot change", "global renderer semantics", "material Classic semantics change", "global verifier architecture change", "FreeHEP family beyond the DQ-C9 disposition"]
+  },
+  "obligations": ["T-ROUTES", "T-SCALE-VALUE", "T-SCALE-LIFECYCLE", "T-SCALE-UI", "T-PHYSICAL-PICTURE", "T-PRESENTATION-INVARIANCE", "T-ZOOM-INVARIANCE", "T-COORDINATES", "T-UNSPECIFIED", "T-EXTREMES", "T-LATEX-AREA", "T-LATEX-VISIBILITY", "T-LATEX-UNITS", "T-SEMANTIC-ADAPTER", "T-LATEX-SEMANTIC", "T-LATEX-FAILURES", "T-SPLINE", "T-LEGACY-LOCUS", "T-DXF-UNITS", "T-DXF-USM", "T-DXF-SIDECAR", "T-DXF-STALENESS", "T-DXF-VISIBILITY", "T-DXF-AREA", "T-G9X1-IDENTITY", "T-B-REGRESSION", "T-D1-REGRESSION", "T-A2-REGRESSION", "T-CLASSIC", "T-WEB-BOUNDARY", "T-NO-SERIALIZATION", "T-DETERMINISM", "T-PREVIEW", "T-API-ROUTES", "T-HISTORICAL-PINS", "T-GUIDE", "T-SMOKE"],
+  "decisionQuestions": ["DQ-C1", "DQ-C2", "DQ-C3", "DQ-C4", "DQ-C5", "DQ-C6", "DQ-C7", "DQ-C8", "DQ-C9", "DQ-C10", "DQ-C11", "DQ-C12", "DQ-C13", "DQ-C14", "DQ-C15", "DQ-C16", "DQ-C17"],
+  "decisionQuestionStatus": "PENDING — NOT AUTHOR DECISIONS",
+  "impact": {
+    "productPhaseEffect": "NONE",
+    "serializationChange": "NONE",
+    "verificationInfrastructureImpact": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "guideImpact": "NONE"
+  },
+  "changedPaths": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-c-2d-export-completion.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-author-decisions.json",
+    "docs/validation/pre_g9b_r6_plus_c_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-preparation-characterization.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}

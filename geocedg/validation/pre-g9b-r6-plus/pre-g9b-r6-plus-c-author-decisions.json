@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C",
+  "recordKind": "AUTHOR_DECISIONS_AND_PENDING_DECISION_QUESTIONS",
+  "record": "docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md",
+  "authorDecisionDate": "2026-10-04",
+  "decidedOnBase": {
+    "name": "P_R6PLUS_A2",
+    "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0"
+  },
+  "preparationBase": {
+    "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0",
+    "branch": "phase/pre-g9b-r6-plus-c-prompt",
+    "published": false
+  },
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productPhaseEffect": "NONE",
+  "authorizedByThisInstruction": [
+    "documentary preparation of the canonical C prompt",
+    "C preparation characterization report and machine-readable mirror",
+    "record of the preparation inputs and pending decision questions with its mirror",
+    "minimal roadmap and mini-track status updates",
+    "scratch-only probes outside the tracked tree",
+    "documentary and static preparation verification"
+  ],
+  "notAuthorizedByThisInstruction": [
+    "implementation of C",
+    "product code or product test changes",
+    "normative export specifications in an in-force C state",
+    "PHASE, INTEGRATION or FINAL as implementation evidence",
+    "push",
+    "merge",
+    "E1", "E2", "E3", "F1", "F2", "F3", "G", "PRE-G9B-R7", "G9B"
+  ],
+  "frozenSemanticInputs": {
+    "ExportArea": {
+      "source": "B: AQ-X2, B closeout record",
+      "content": "one authoritative session ExportArea; accepted producer precedence and behavior; C exporters consume it; no selection-rectangle authority; a retained LaTeX bound edit updates the same ExportArea through MANUAL"
+    },
+    "units": {
+      "source": "D0/D1: unit-system specification v1.0 §12, §13, §15, §18.2",
+      "content": "constructionUnit = physical meaning of one model unit; presentationUnit = expression only; output(L) = L * fb(constructionUnit) * a / b; presentationUnit-only change never changes physical size; coordinates never converted; UNSPECIFIED_MODEL_UNIT never means cm"
+    },
+    "hiddenLayers": {
+      "source": "A: AQ-L3; A-2 closeout record",
+      "content": "hiddenLayers is document-presentation state; effectiveVisible is presentation; C modifies no object visibility, geometry, DAG or identity"
+    },
+    "semanticCurves": {
+      "source": "AGENTS.md §11, §13; DXF curve fidelity §1; ADR 0014",
+      "content": "GeoLocusV2 and Spline V2 semantics, branches, components, domains, revisions and evaluation are kernel authority; export code is a read-only consumer; render tessellation is never export authority"
+    },
+    "drawingScale": {
+      "source": "unit-system specification §12",
+      "content": "a:b, positive integers, normal form (a/g):(b/g), default 1:1, SESSION, not serialized, not undoable, reset to 1:1 on New and Open"
+    }
+  },
+  "verificationClass": {
+    "verificationClass": "INTEGRATED_PHASE",
+    "plannedAcceptance": "registered PHASE + INTEGRATION on the same exact candidate",
+    "finalRequiredBecauseD1OrA2UsedFinal": false,
+    "reclassificationRule": "stop and propose for author review; never reclassify silently"
+  },
+  "mandatoryCharacterization": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18"],
+  "stopState": {
+    "PRE-G9B-R6-plus-C": "PREPARED — NOT AUTHORIZED",
+    "implementationAuthorized": false,
+    "authorApproved": false,
+    "selfApproved": false,
+    "passClaimed": false
+  },
+  "decisionQuestions": [
+    {"id": "DQ-C1", "status": "PENDING", "topic": "exact Bezier output for SplineV2 of degree <= 3 (AQ-C1)", "recommendedDefault": "no special case: one approximation contract for every LocusV2", "beforeAuthorization": true},
+    {"id": "DQ-C2", "status": "PENDING", "topic": "DXF policy for objects on hidden layers", "recommendedDefault": "emit unchanged on their layer and write that layer off (negative 62); report; fingerprint includes the hidden set", "mainAlternative": "omit before preflight with a counted presentation diagnostic", "beforeAuthorization": true},
+    {"id": "DQ-C3", "status": "PENDING", "topic": "individually hidden DXF objects and OBS-R6P-DXF-VISIBLE-CONTRACT", "recommendedDefault": "keep include + 60=1 + report; rename the profile selection-contract reference truthfully", "beforeAuthorization": true},
+    {"id": "DQ-C4", "status": "PENDING", "topic": "LaTeX semantic-curve tolerance", "recommendedDefault": "per-dialog model-coordinate chord tolerance, default 0.001, positive finite, not converted by units, DXF budgets, not session state", "beforeAuthorization": true},
+    {"id": "DQ-C5", "status": "PENDING", "topic": "invalid, partial and incomplete semantic curves in LaTeX", "recommendedDefault": "DXF strict precedent: failures block Generate with a report; locally certified components emitted with incomplete-coverage disclosure", "beforeAuthorization": true},
+    {"id": "DQ-C6", "status": "PENDING", "topic": "drawingScale input range, normalization, extreme outputs", "recommendedDefault": "positive int pairs, gcd normalization, editable presets, explicit failures beyond format limits or below one device unit", "beforeAuthorization": true},
+    {"id": "DQ-C7", "status": "PENDING", "topic": "drawingScale owner and lifecycle", "recommendedDefault": "AppGeoCeDG field; reset in clearConstruction override and commitLoadedDocument, including clearing setXML reloads", "beforeAuthorization": true},
+    {"id": "DQ-C8", "status": "PENDING", "topic": "export UI per unit state", "recommendedDefault": "physical: a:b, Fixed size removed, PNG pixel mode as non-physical device mode; unspecified: relabelled non-physical device scale with notice", "beforeAuthorization": true},
+    {"id": "DQ-C9", "status": "PENDING", "topic": "EMF rclFrame", "recommendedDefault": "opt-in exact frame in the FreeHEP EMF writer, nearest 0.01 mm, non-opt-in byte-identical, under the B provenance gate; class confirmation", "beforeAuthorization": true},
+    {"id": "DQ-C10", "status": "PENDING", "topic": "OBS-R6PLUS-EXPORT-PREVIEW-ABSENT", "recommendedDefault": "NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED", "beforeAuthorization": true},
+    {"id": "DQ-C11", "status": "PENDING", "topic": "usm DXF warning and sidecar schema", "recommendedDefault": "sidecar schema_version 2 with a units object; warning as preflight line plus mandatory-sidecar confirmation; name and symbol not exported", "beforeAuthorization": true},
+    {"id": "DQ-C12", "status": "PENDING", "topic": "LaTeX disclosure of approximate semantic curves", "recommendedDefault": "per-source comment in the code plus a non-modal dialog report", "beforeAuthorization": true},
+    {"id": "DQ-C13", "status": "PENDING", "topic": "ExportArea in DXF and area/domain interactions", "recommendedDefault": "DXF ignores the area; LaTeX uses it only as the format clip for the active Graphics view; never a domain or approximation bound", "beforeAuthorization": true},
+    {"id": "DQ-C14", "status": "PENDING", "topic": "FreeHEP five-significant-digit path coordinates", "recommendedDefault": "accepted writer limitation, documented; no change", "beforeAuthorization": false},
+    {"id": "DQ-C15", "status": "PENDING", "topic": "historical G9X1 and G5 verifier pins", "recommendedDefault": "frozen evidence and G5 pin unchanged; live-document pins of verify-g9x1-extended-dxf.ps1 re-pinned as recorded successors naming C; no registry change", "beforeAuthorization": true},
+    {"id": "DQ-C16", "status": "PENDING", "topic": "non-dialog routes (CLI, ExportImage, JavaScript picture and LaTeX APIs)", "recommendedDefault": "follow unit state and session drawingScale when no explicit scale; explicit numeric arguments stay device parameters; LaTeX API uses area, visibility and semantic curves", "beforeAuthorization": true},
+    {"id": "DQ-C17", "status": "PENDING", "topic": "ADR 0005 Decision 3", "recommendedDefault": "dated amendment section in ADR 0005 pointing to ADR 0032 Decision 8 and unit-system §15", "beforeAuthorization": true}
+  ],
+  "decisionQuestionsAreAuthorDecisions": false
+}
