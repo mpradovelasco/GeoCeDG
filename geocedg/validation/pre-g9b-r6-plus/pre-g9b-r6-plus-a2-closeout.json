@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-A-2",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-A-2 — PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "record": "docs/validation/pre_g9b_r6_plus_a2_closeout_record.md",
+  "authorDecisionDate": "2026-10-04",
+  "authorConfirmedDirectly": true,
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "PRE-G9B-R6-plus-A-2 revision 3 technical candidate only; F3 planning (planned state only); A-2 preparation package",
+  "implementationAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": {
+    "relativeToD1PreA2": "YES",
+    "changes": ["GeoCeDG <layer val> authoritative range expands to 0..99", "new lazy full-document element <geocedgHiddenLayers version=\"1\" layers=\"...\"/>"],
+    "relativeToA2Revision2AndRevision3": "NONE"
+  },
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "smokeVerified": ["File New with no user action, close: no save prompt", "hide a layer, close: save prompt appears", "save the hidden-layer change, close: no further save prompt"],
+  "smokePreferences": "author's installed preferences",
+  "earlierSmokeFindings": "accepted evidence; not repeated",
+  "identities": {
+    "publicationBase": {"name": "P_R6PLUS_D1", "commit": "2941ddf2f2712340e831d292bdc2687b879850d6", "tree": "158184b150a42e6dcae2946c39620d92cbfcd888"},
+    "f3Planning": {"name": "T_R6PLUS_F3_PLAN", "commit": "f467eb4563de7a7eb162da1b74954f9f847fa9d3", "tree": "ece51c96117d6cbd55bc200d29c5240686516da9", "parent": "2941ddf2f2712340e831d292bdc2687b879850d6", "status": "PLANNED — AUTHOR APPROVED"},
+    "preparation": {"name": "T_R6PLUS_A2_PROMPT", "commit": "0e50626f70107376e691df6dea7bfcfe06de5c0a", "tree": "fefc57cece8090941ad0ac16098e58a679a290ec", "parent": "f467eb4563de7a7eb162da1b74954f9f847fa9d3", "status": "PASS — AUTHOR APPROVED"},
+    "authorization": {"name": "A_R6PLUS_A2_PROMPT", "commit": "bc7436e8d4eb8c35c9bec7ab107c7fc13f63f67c", "tree": "8df989d752f7cc3b640a40fb461f3f6a571bdccb", "parent": "0e50626f70107376e691df6dea7bfcfe06de5c0a", "status": "implementation authorization record"},
+    "candidateRevision1": {"name": "T_R6PLUS_A2_R1", "commit": "e3cbdc60743b9f91490f7bb6a80f789d87a8f814", "tree": "235869d7c127dc9d90b104cbd10a5c461ee0690c", "parent": "bc7436e8d4eb8c35c9bec7ab107c7fc13f63f67c", "status": "historical evidence only"},
+    "candidateRevision2": {"name": "T_R6PLUS_A2_R2", "commit": "c1c08e9016c7c52446a3b6cd51856cdf7e67e20d", "tree": "1c824ce7399d23acedadf251832cfd01e7bf265c", "parent": "e3cbdc60743b9f91490f7bb6a80f789d87a8f814", "status": "historical evidence only"},
+    "technicalCandidate": {"name": "T_R6PLUS_A2", "commit": "06a2ea6b4523a71f9f84fefca39e7d3b2b717e64", "tree": "a05d84fd0e4ddcff27e15b2e09757ae28d36debb", "parent": "c1c08e9016c7c52446a3b6cd51856cdf7e67e20d", "revision": 3, "status": "authoritative; author approved", "modifiedByCloseout": false},
+    "branch": "phase/pre-g9b-r6-plus-a2-layer-domain-persistence"
+  },
+  "acceptedEvidence": [
+    {"profile": "FINAL", "command": "tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r6-plus-a2-rev3-final-06a2ea6b", "run": "verification-814f89fabe834b78ad29f08d78729081", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "41/41", "executionPlanHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "resultHash": "a40db4dacf7ed917080d7692506e55dbf68e8bdb474b8b59034c6e5a3ef3fc45", "receiptId": "b492d484fa3ae9f820036927045373128606b6eee59a4e80961fe0756db0d9ea", "receiptFileSha256": "8a810cbdc37c8d304ca398719ca6ccd57b58b71807aac09950a2b7716369288f", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"]}
+  ],
+  "closeoutInspect": {"command": "tools/agent/phase-closeout.ps1 -Action INSPECT", "exitCode": 0, "identityConfirmed": true, "mismatches": [], "verificationExecuted": false, "repositoryMutated": false},
+  "historicalEvidence": [
+    {"profile": "FINAL", "run": "verification-b7942a8be41c44728a1a6b6289ecf08a", "commit": "e3cbdc60743b9f91490f7bb6a80f789d87a8f814", "tree": "235869d7c127dc9d90b104cbd10a5c461ee0690c", "verdict": "ACCEPTED / COMPLETE", "receiptId": "65abf5d1b4f8dbba8ed15c8eac967ac1d3df88b9a6bd94dff89abfbed1e66e80", "role": "revision 1; historical evidence only; not acceptance evidence for T_R6PLUS_A2"},
+    {"profile": "FINAL", "run": "verification-e81bd96094fc47f080a3b234448834a9", "commit": "c1c08e9016c7c52446a3b6cd51856cdf7e67e20d", "tree": "1c824ce7399d23acedadf251832cfd01e7bf265c", "verdict": "ACCEPTED / COMPLETE", "receiptId": "1db2e4cd5b0d79faca5a8666cadfb9f524fb8c5f5b0310ba529f359c92b25fa5", "role": "revision 2; historical evidence only; not acceptance evidence for T_R6PLUS_A2"}
+  ],
+  "gitDiffCheck": {"range": "2941ddf2f2712340e831d292bdc2687b879850d6..06a2ea6b4523a71f9f84fefca39e7d3b2b717e64", "exitCode": 0},
+  "acceptedResult": [
+    "GeoCeDG layer domain 0..99; Classic remains 0..9",
+    "L_MAX = 99 is a product/configuration bound, not a permanent CeDG conceptual limit",
+    "hidden layers are DOCUMENT_PRESENTATION, document-wide, persistent, not undoable",
+    "runtime owner remains GeoCeDGLayerWorkspace",
+    "hidden layers do not modify object visibility, geometry, DAG or semantic identity",
+    "working layer remains session state",
+    "Open chooses the highest used non-hidden layer, otherwise the lowest non-hidden layer",
+    "Open never silently changes the persisted hidden set",
+    "all-domain hidden metadata fails closed",
+    "layer values outside the effective product domain retain the accepted clamp behavior",
+    "3D renderer clamping is presentation-only and never mutates the authoritative layer value",
+    "persistent hidden-layer edits mark the document unsaved without adding an undo point",
+    "a completed untouched New establishes a saved baseline after all automatic initialization",
+    "Base64 and non-native-transport full-document replacements commit persistent hidden-layer state through the accepted document-replacement hook",
+    "merge/import routes remain non-document transitions and do not consume hidden-layer metadata"
+  ],
+  "focalCorrections": [
+    {"revision": 2, "subject": "Base64 / non-native document replacement", "disposition": "A2 FOCAL REMEDIATION — ACCEPTED", "rootCause": "some full-document replacement transports parsed A-2 metadata but had no successful document-replacement commit seam", "acceptedSolution": ["shared default-no-op documentReplacementCommitted() seam", "successful Base64/non-native replacement calls it", "AppGeoCeDG reuses its existing document-commit logic", "startup/native transaction/import/merge semantics remain distinct"], "note": "Base64 is a transport, not a separate document format"},
+    {"revision": 3, "id": "OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT", "disposition": "PRE-EXISTING — REPRODUCED ON P_R6PLUS_D1 2941ddf2 — NOT CAUSED BY A-2 — AUTHOR-AUTHORIZED FOCAL CORRECTION DURING A-2 REVIEW — CLOSED", "rootCause": "installed preferences could make an untouched New appear started/unsaved through host preference reload effects (consStep and tableview numeric registration)", "acceptedSemanticCorrection": "after a successful File New has completed all automatic initialization, including preferences, D1 defaults and A-2 workspace initialization, that resulting initial state is the saved baseline", "introducedByA2": false}
+  ],
+  "residualObservations": [
+    {"id": "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "disposition": "OPEN — NOT A-2 BLOCKING — IMPLEMENTATION NOT AUTHORIZED — MUST RECEIVE DISPOSITION BEFORE GLOBAL PRE-G9B-R6-plus CLOSEOUT", "observedScopeIncludes": ["B ExportArea", "D1 transient paste notice"], "assignedSubphase": null},
+    {"id": "OBS-R6PLUS-EXPORT-PREVIEW-ABSENT", "disposition": "NOT PROVEN A-2 REGRESSION — CHARACTERIZE BEFORE/DURING C — NOT A-2 BLOCKING", "preferredCharacterizationOwner": "C", "distinctFrom": "OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS"},
+    {"id": "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY", "disposition": "ENHANCEMENT — NOT A-2 BLOCKING — IMPLEMENTATION NOT AUTHORIZED", "preferredOwner": "F2", "desiredUx": ["retain the existing layer list/scroll", "add direct numeric text entry", "validate against the same configured 0..L_MAX", "both routes modify the same authoritative working-layer state"]},
+    {"id": "3D draw-order limitation", "disposition": "KNOWN PRESENTATION LIMITATION — NOT AUTHORITATIVE LAYER SEMANTICS — NOT A-2 BLOCKING", "finding": "GeoCeDG layers above the renderer's distinguishable Classic-compatible range may share the same 3D draw-order coding", "authoritativeValueClamped": false},
+    {"id": "F3 Apply Template re-layering", "disposition": "OPEN F3 CHARACTERIZATION QUESTION — F3 IMPLEMENTATION NOT AUTHORIZED", "finding": "Apply Template may re-layer restyled objects through existing default-layer behavior"}
+  ],
+  "f3Planning": {"commit": "f467eb4563de7a7eb162da1b74954f9f847fa9d3", "tree": "ece51c96117d6cbd55bc200d29c5240686516da9", "state": "PLANNED — AUTHOR APPROVED — PUBLISHED", "implementation": "NOT AUTHORIZED", "futureClass": "INTEGRATED_PHASE", "plannedAcceptance": "PHASE + INTEGRATION", "futureScope": ["File -> Insert", "Insert File", "Apply Template", ".cedg + .ggb", "OFF hidden from the GeoCeDG UI"]},
+  "a2Preparation": {"commit": "0e50626f70107376e691df6dea7bfcfe06de5c0a", "tree": "fefc57cece8090941ad0ac16098e58a679a290ec", "state": "PASS — AUTHOR APPROVED", "authorizationRecord": {"commit": "bc7436e8d4eb8c35c9bec7ab107c7fc13f63f67c", "tree": "8df989d752f7cc3b640a40fb461f3f6a571bdccb"}},
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_a2_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-a2-closeout.json"
+  ],
+  "publication": {
+    "range": ["2941ddf2f2712340e831d292bdc2687b879850d6", "f467eb4563de7a7eb162da1b74954f9f847fa9d3", "0e50626f70107376e691df6dea7bfcfe06de5c0a", "bc7436e8d4eb8c35c9bec7ab107c7fc13f63f67c", "e3cbdc60743b9f91490f7bb6a80f789d87a8f814", "c1c08e9016c7c52446a3b6cd51856cdf7e67e20d", "06a2ea6b4523a71f9f84fefca39e7d3b2b717e64", "P_R6PLUS_A2 (this closeout commit)"],
+    "method": "one clean non-force fast-forward of main",
+    "precondition": "local main = origin/main = live remote main = P_R6PLUS_D1",
+    "tag": false,
+    "release": false
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-2": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-C": "NOT AUTHORIZED — NEXT OPERATIONAL SUBPHASE",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F3": "PLANNED — AUTHOR APPROVED — PUBLISHED; IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus GLOBAL CLOSEOUT",
+    "G9B": "NOT AUTHORIZED"
+  },
+  "operationalOrder": "P0 -> A-1 -> B -> D0 -> D1 -> A-2 -> C -> E1 -> E2 -> E3 -> F1 -> F2 -> F3 -> G"
+}
