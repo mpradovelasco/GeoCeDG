@@ -1,8 +1,27 @@
 # PRE-G9B-R6-plus-C — 2D export completion and semantic curve exporters
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-04. That
+The author's explicit instruction of 2026-10-04, confirmed by the author in
+writing in the session, approves the documentary preparation package of
+`PRE-G9B-R6-plus-C` (`T_R6PLUS_C_PROMPT` and its reconciliation
+`D_R6PLUS_C_PROMPT`) as `PASS — AUTHOR APPROVED`, names the reconciliation
+candidate as the exact start of the implementation branch, gives the author
+dispositions on `DQ-C1` to `DQ-C17`, disposes of
+`OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT`, freezes `INTEGRATED_PHASE` and
+authorizes the implementation of `C`. The instruction is recorded, versioned, in
+the [C preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_c_prompt_closeout_record.md).
+It requires this amendment, as the first tracked edit of the phase, so that the
+prompt becomes the executable contract of the phase. The amendment replaces the
+reconciled prompt of `D_R6PLUS_C_PROMPT` (blob
+`514dee31a64b55e648ed5a9c374ceb1dc1b28b1c`): it records the authorized branch
+start, integrates the `DQ-C` dispositions and replaces the pending and default
+language they supersede. Where the reconciled prompt and the record differ, the
+record prevails; this amendment carries that precedence into the text. Every
+other scope, forbidden-scope and stop rule is kept.
+
+History of this file. This prompt was prepared at the author's instruction of 2026-10-04. That
 instruction named the published base below, fixed the semantic inputs that `C`
 inherits from `B`, `D0`/`D1` and `A-2`, the planned verification class, the
 mandatory characterization (`C1`–`C18`), the invariants, the compatibility
@@ -15,7 +34,6 @@ are recorded, versioned, in the
 [C author-decision record](../../../docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md);
 the evidence behind the characterization below is in the
 [C preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_c_preparation_characterization_report.md).
-The existence of this file is not authorization.
 
 **Documentary reconciliation (author instruction of 2026-10-04).** The author
 reviewed the prepared candidate `T_R6PLUS_C_PROMPT`
@@ -35,11 +53,6 @@ is recorded in the
 [C author-decision record](../../../docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md)
 §1.1 and §3; the evidence is in the characterization report §11.
 
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-C` and the exact prepared candidate or base, and that disposes
-of the requested decisions `DQ-C1` to `DQ-C17`. That instruction may authorize,
-as the first tracked edit of the phase, an amendment of this prompt to the
-authorized state, following the `A-1`, `B`, `D0`, `D1` and `A-2` precedent.
 This file is an execution contract, not a second policy document: the unit
 rules are stated once in the
 [unit-system specification](../../../geocedg/specs/units/unit-system.md)
@@ -53,11 +66,11 @@ this prompt cites them and does not restate them differently.
 
 ```text
 PRE-G9B-R6-plus-C =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (C implementation and technical verification only)
 passClaimed              = false
 PHASE_KIND               = PRODUCT IMPLEMENTATION — ENGINEERING drawingScale, PHYSICAL
                            PICTURE SIZING, DXF UNIT HEADER, LaTeX ExportArea AND
@@ -71,16 +84,21 @@ DEPENDS_ON               = PRE-G9B-R6-plus-A-1 = PASS — AUTHOR APPROVED — PU
                            PRE-G9B-R6-plus-A-2 = PASS — AUTHOR APPROVED — PUBLISHED
                                                  (recommended predecessor; persistent
                                                  hidden layers)
-PRECONDITION             = author dispositions of DQ-C1 to DQ-C17 (DQ-C5 and DQ-C7
-                           carry author directions of 2026-10-04; the others are
-                           pending)
+DEPENDS_ON_PACKAGE       = C PREPARATION PACKAGE = PASS — AUTHOR APPROVED (not published)
+DISPOSITIONS             = DQ-C1 to DQ-C17 decided by the author (2026-10-04)
 NEXT_SUBPHASE            = PRE-G9B-R6-plus-E1    (operational order; not authorized)
+STOP_STATE               = PRE-G9B-R6-plus-C = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
 ```
 
-`authorApproved = false` means that no technical candidate of this phase has
-been author-approved. Technical verification never creates author approval.
-Once authorized, the phase stops with one exact technically verified candidate
-pending author review and author smoke.
+`implementationAuthorized = true` authorizes only the implementation and
+technical verification defined below. It authorizes no later subphase, neither
+observation `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` nor
+`OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`. `authorApproved =
+false` means that no technical candidate of this phase has been
+author-approved. Technical verification never creates author approval. The
+phase stops with one exact technically verified candidate pending author review
+and author smoke, with `selfApproved = false`, `authorApproved = false` and
+`passClaimed = false`. The agent does not perform or claim author smoke.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -92,12 +110,14 @@ Implement only:
    its lifecycle (C2, C16) and its engineering-scale user interface (C3);
 2. physical sizing of the picture and print exporters from the effective
    construction unit and `drawingScale` (unit-system §13 and §15.2), replacing
-   the zoom-derived `printingScale` as physical authority (C4), with the EMF
-   frame disposition of `DQ-C9` (C5);
+   the zoom-derived `printingScale` as physical authority (C4), with the
+   opt-in exact EMF frame of `DQ-C9` (C5);
 3. the DXF unit header, the neutral-model unit field, the `usm` warning and
-   mandatory sidecar, the sidecar unit metadata and the staleness fingerprint
-   (unit-system §15.2, §15.3; C6, C7), together with the DXF visibility policy
-   of `DQ-C2`/`DQ-C3` (C8) and the DXF export-area policy of `DQ-C13` (C9);
+   mandatory sidecar, the versioned sidecar unit metadata and the staleness
+   fingerprint (unit-system §15.2, §15.3; C6, C7), together with hidden GeoCeDG
+   layers emitted as OFF DXF layers and individually hidden objects kept with
+   `60 = 1` (`DQ-C2`, `DQ-C3`; C8) and `B1` participation in the explicit
+   `ExportArea` (`DQ-C13`; C9);
 4. the integration of PSTricks, PGF/TikZ and Asymptote with `B`'s single
    `ExportArea`, `A`'s effective visibility and the unit contract (C9, C17);
 5. read-only semantic `LocusV2`/`SplineV2` output in PSTricks, PGF/TikZ and
@@ -122,14 +142,14 @@ UNSPECIFIED_MODEL_UNIT = no engineering scale, no 1:n label, no cm inference,
                       DXF $INSUNITS = 0, neutral model UNITLESS      (AQ-U6, DQ-D0-11)
 effectiveVisible(g) = objectVisible(g) AND NOT layerHidden(g.layer)  (AQ-L3)
 ExportArea          = the single B authority, consumed by picture, LaTeX and DXF;
-                      LaTeX bound edits write MANUAL; the DXF consumption rule is
-                      DQ-C13 (pending)
+                      LaTeX bound edits write MANUAL; DXF consumes explicit areas
+                      by B1 participation, never by clipping            (DQ-C13)
 semantic curves     = kernel semantics, export adapter orchestrates
                       approximation, format writer formats; render tessellation
                       is never export authority
 local admissibility != global completeness: a certified valid component may be
                       emitted when global completeness is not established, never
-                      as a claim of completeness                  (DQ-C5, author)
+                      as a claim of completeness                  (DQ-C5)
 ```
 
 Model coordinates, the DAG, object identity, Locus V2 branch and component
@@ -140,12 +160,13 @@ and the specification, verifier and documentation text that describes them.
 
 ```text
 CHANGE_ROUTE         = ORDINARY
-VERIFICATION_CLASS   = INTEGRATED_PHASE        (planned by the mini-track plan §12 and the
-                                                C preparation instruction; re-characterized
-                                                below; frozen only at authorization)
-frozenAtPhaseStart   = true (at authorization)
+VERIFICATION_CLASS   = INTEGRATED_PHASE        (frozen by the author's authorization of
+                                                2026-10-04)
+frozenAtPhaseStart   = true
 PLANNED_ACCEPTANCE   = registered PHASE -Phase PRE-G9B-R6-plus-C + INTEGRATION,
-                       both on the same exact frozen clean commit and tree; no FINAL
+                       both ACCEPTED / COMPLETE on the same exact frozen clean commit
+                       and tree, with fresh log directories; no FINAL unless a stop
+                       condition forces reclassification
 ```
 
 Section 12.8 of `geocedg/specs/operations/verification-levels.md` maps
@@ -178,10 +199,12 @@ result model is export-layer reporting derived from existing outcomes; the
 GeoCeDG-gated `GgbAPID` marker; every `DQ-C13` alternative stays in the export
 package, the DXF controller and the sidecar. None serializes, touches the
 kernel, the parser, undo or the verifier architecture: `INTEGRATED_PHASE`
-holds. Alternatives A and C of `DQ-C13` would, in addition, amend accepted
-ADR 0005 decisions and the G5 exactness vocabulary, an author-level normative
-decision to be taken before authorization; they do not by themselves change the
-class.
+holds. The author chose `B1` for `DQ-C13` and accepted the limited opt-in
+FreeHEP EMF change of `DQ-C9` inside `INTEGRATED_PHASE`; the certified
+Locus V2 participation test (C9-DXF) adds one read-only kernel query over the
+existing ADR 0028 certified interval model and changes no semantics. The class
+is frozen; a stop condition that forces reclassification is reported to the
+author before any heavier campaign.
 
 ### Authorities and author decisions this prompt implements
 
@@ -211,7 +234,7 @@ No open decision of any other subphase is resolved here.
 | export result classification (`COMPLETE`, `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`, `REJECTED / NO_ADMISSIBLE_OUTPUT`) | the same package, computed from the per-component outcomes; each format applies its own admissibility policy | export reporting, never kernel state (C14) |
 | dialect formatting of semantic curves | GeoCeDG-owned writers; the upstream dialect classes only gain a host-identical dispatch hook (C10, C12) | format writers format; the kernel is not an export formatter |
 | DXF header, neutral-model unit, sidecar, fingerprint | shared GeoCeDG export package and the Desktop DXF controller and sidecar writer | already GeoCeDG-owned (G5/G9X1) |
-| kernel | no change | no new geometric semantics (`AGENTS.md` §4, §13) |
+| kernel | no semantic change; one read-only public query over the existing ADR 0028 certified interval model (C9-DXF) | no new geometric semantics (`AGENTS.md` §4, §13); the certified proof stays kernel authority |
 
 No geometry algorithm, command or construction element reads `drawingScale`,
 the unit state for export, the export area or the hidden-layer set. The
@@ -436,14 +459,16 @@ explicitly instead of becoming the B raster minimum of one pixel (`DQ-C6`).
 
 The physical contract of §13 is therefore not met by the base EMF route at any
 DPI; it is met within the format's own 0.01 mm quantization only if the frame
-is written from the exact physical size. This is a product-policy choice
-involving third-party source: `DQ-C9`, which stays pending. If the disposition
-modifies FreeHEP, the author fixed these constraints (2026-10-04): the change is
-opt-in for GeoCeDG; the default host and Classic behavior stays unchanged; the
-physical `rclFrame` derives directly from the requested physical output size;
-DPI does not determine the physical frame; each dimension is rounded to the
-nearest representable 0.01 mm, with the unavoidable quantization of at most
-0.005 mm per dimension documented; no wider FreeHEP redesign.
+is written from the exact physical size. Contract (`DQ-C9`, accepted): `C`
+corrects the frame through an explicit GeoCeDG opt-in in the FreeHEP EMF
+writer; the default FreeHEP and Classic behavior stays byte-identical; the
+physical `rclFrame` derives from the requested output size, never from DPI;
+each dimension is rounded to the nearest representable 0.01 mm, with the
+unavoidable quantization of at most 0.005 mm per dimension documented; no wider
+FreeHEP redesign; the physical metadata is tested apart from the device raster
+and path coordinates. In the unspecified-unit device mode the same opt-in
+writes the dialog's labelled device output size, so the frame never depends on
+the hidden DPI either. A global FreeHEP semantic change is a stop.
 
 `OBS-B-FREEHEP-PATH-COORDINATE-PRECISION` (finding): PDF and SVG path
 coordinates use five significant digits (`freehep/pdf/PDFUtil.java:80-85`;
@@ -642,8 +667,40 @@ Concrete examples, `R = [0, 10] × [0, 10]`:
 
 Every alternative records the consumed area (bounds, producer, view) in the
 report and, when written, in the sidecar, and adds the explicit area to the
-staleness fingerprint, because the DXF depends on it. The disposition and its
-test obligations are `DQ-C13`.
+staleness fingerprint, because the DXF depends on it.
+
+**Contract (`DQ-C13`, author choice `B1`).** DXF consumes `B`'s authoritative
+`ExportArea` through source and component participation, never rectangular
+clipping and never a family change:
+
+- Only `MANUAL`, `EXPORT_POINTS_EXPLICIT` and `EXPORT_POINTS_AUTOMATIC` define a
+  finite participation area `R` (closed). `VISIBLE_VIEWPORT` is explicitly no
+  DXF boundary: the export is the base model-space population, zoom-invariant.
+- A source, entity or component participates when its exported geometric
+  support meets `R`, and is then emitted whole. Complete-construction and
+  current-selection requests alike: the selection chooses the candidates, the
+  area applies the same rule.
+- Exact analytic predicates per neutral entity: point (closed inclusion);
+  segment and each polyline or polygon edge (parametric slab test); `RAY` and
+  `XLINE` (the same on a half-infinite or infinite parameter); circle (distance
+  from the centre to `R` at most the radius, and the radius at most the largest
+  distance to a corner); arc and ellipse or elliptic arc (an endpoint inside `R`
+  or a curve–edge intersection inside the angular or parameter range, by the
+  closed-form quadratic per edge); boundaries, never filled regions.
+- Locus V2 and Spline V2 certified components: excluded only when a
+  conservative certified test proves the component disjoint from `R`. The test
+  uses the kernel's existing ADR 0028 certified interval curve model (structural
+  Spline V2 and the certified construction class) through one new read-only
+  query: outward enclosures over a deterministic parameter bisection, with a
+  bounded budget, prove disjointness only if every sub-box enclosure misses `R`.
+  A component without a certified model, or whose proof does not close within
+  the budget, participates whole. Raw samples, the approximation polyline and
+  render tessellation never decide exclusion.
+- `OUTSIDE_EXPORT_AREA` is a population outcome, never `UNSUPPORTED` or
+  `INVALID` and never a fidelity reduction; it is counted in preflight and the
+  report, written to the sidecar when one exists, stated by a deterministic DXF
+  header comment, and the explicit area enters the staleness fingerprint. Area
+  filtering alone never makes the sidecar mandatory.
 
 #### C10. Semantic curve export adapter (contract)
 
@@ -814,8 +871,8 @@ accepted strict rule and its sidecar stay as they are.
 - Most likely route of the author's observation (inferred): File → Export →
   Graphics View as Picture… → Save, with a new file name (or a narrow chooser),
   which shows an empty preview area by design of the accepted `B` contract.
-- Proposed disposition: `NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED`, with an
-  optional enhancement for the author (`DQ-C10`).
+- Disposition (`DQ-C10`, accepted): `NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED`;
+  no new preview surface in `C`; the guides explain the conditions.
 
 #### C16. Non-native document replacement and `drawingScale` (contract)
 
@@ -878,41 +935,44 @@ unit is declared (unit-system §12: it has physical meaning only then).
 | user guides, developer guide, profile notes | LaTeX and DXF ignore the export area and hidden layers "until `C`" | true | updated by `C` |
 | this prompt as prepared in `5ad96304` (C2, `DQ-C7`) | reset `drawingScale` in the `clearConstruction` override and in `commitLoadedDocument`, including clearing `setXML` | those points also fire for the Open URL pre-clear and for tool-replacement reloads (probe `P-C7-TOOL-REPLACE`) | superseded by the author direction: events `E1`–`E6` only |
 | this prompt as prepared in `5ad96304` (C14, `DQ-C5`) | the DXF strict precedent blocks Generate on any failed component | erases local admissibility versus global completeness for LaTeX | superseded by the author direction and the C14 result model |
-| this prompt as prepared in `5ad96304` (`DQ-C13`) | DXF ignores `ExportArea` | contradicts the accepted convergence of every `C` exporter on one `ExportArea` | rejected by the author; C9-DXF re-characterizes it; still pending |
+| this prompt as prepared in `5ad96304` (`DQ-C13`) | DXF ignores `ExportArea` | contradicts the accepted convergence of every `C` exporter on one `ExportArea` | rejected by the author; `B1` participation chosen (C9-DXF) |
 
 A contradiction that would change scope, owner, serialization or class stops
 the phase.
 
-### Decisions requested before authorization
+### Author dispositions (2026-10-04)
 
-Each row fixes a default contract. None is an author decision until the
-author disposes of it; the authorizing instruction is expected to record the
-dispositions, which then prevail over these defaults. `DQ-C5` and `DQ-C7` carry
-the author directions of 2026-10-04 (their default contract is that direction,
-detailed in C14 and C2); every other row is `PENDING`. The evidence, the
-alternatives and the consequences of each row are in the
-[C author-decision record](../../../docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md)
+The author decided every question on 2026-10-04. The full text of each
+disposition is in the
+[C preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_c_prompt_closeout_record.md),
+which prevails over this summary; the earlier alternatives and evidence stay in
+the [C author-decision record](../../../docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md)
 §3.
 
-| ID | Question | Default contract | Main alternative |
-|---|---|---|---|
-| `DQ-C1` | exact Bézier output for `SplineV2` of degree ≤ 3 (`AQ-C1`) | none in `C`: every `LocusV2`, `SplineV2` included, uses the one certified approximation contract | exact cubic Bézier from the structural numerators for degree 3 |
-| `DQ-C2` | DXF policy for objects on hidden layers | emit them unchanged on their `GEOCEDG_L<n>`/`0` layer and write that layer off (negative `62`) in the `LAYER` table; preflight and report state the hidden layers; fingerprint includes the hidden set | omit them before preflight with a distinct, counted presentation diagnostic |
-| `DQ-C3` | individually hidden objects and `OBS-R6P-DXF-VISIBLE-CONTRACT` | keep the accepted include + `60 = 1` + report rule; rename the profile selection-contract reference to a truthful identifier and describe it | exclude invisible objects (amends G5 and the fidelity spec §7) |
-| `DQ-C4` | semantic-curve tolerance for LaTeX | one model-coordinate chord tolerance field per LaTeX dialog, default `0.001`, positive finite, not converted by units, budgets as the DXF defaults, not session state | one session tolerance shared with DXF; or a physical tolerance on the output |
-| `DQ-C5` | invalid, partial and incomplete semantic curves in LaTeX | **author direction (2026-10-04)**: certified valid unambiguous components may be emitted when completeness is not established, never as completeness; the C14 result model (`COMPLETE`, `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`, `REJECTED / NO_ADMISSIBLE_OUTPUT`), explicit failure classes, comments and a visible report; DXF unchanged | — (the prepared strict default is superseded) |
-| `DQ-C6` | `drawingScale` input range, normalization and extreme outputs | positive integers `1..2^31−1` (the Java `int` range, no arbitrary bound), normalized by gcd on acceptance, shown as `a:b`; editable presets `1:1 1:2 1:5 1:10 1:20 1:50 1:100 1:200 1:500 1:1000 2:1 5:1 10:1`; invalid input refused, value kept; outputs beyond a format limit or below one device unit fail explicitly | a fixed preset list; or a smaller bound |
-| `DQ-C7` | owner and lifecycle of `drawingScale` | **author direction (2026-10-04)**: `AppGeoCeDG` field, `1:1`, reset only at the successful-transition events `E1`–`E6` of C2 (completed New, native Open, non-native replacement, document text, API document replacement through one narrow `GgbAPID` marker, reset to a blank document); unchanged through tool replacement, macro editing, `.ggt`, preferences, merges, undo, redo, redefine, rollback and temporary clears | — (the prepared `clearConstruction`/`commitLoadedDocument` points are superseded); open detail: whether `E6` (reset icon or API `reset` without a file) counts as a transition |
-| `DQ-C8` | export UI per unit state | physical: `a:b` replaces *Scale in cm*, *Fixed size* removed, *Size in pixels* kept for PNG as an explicit non-physical device mode; unspecified: host controls relabelled as a non-physical device scale with a notice; LaTeX fields as non-physical device parameters | unspecified: disable physical-size modes until a unit is declared |
-| `DQ-C9` | EMF `rclFrame` | an opt-in exact frame in the FreeHEP EMF writer under the `B` provenance gate, with the author constraints of C5 (GeoCeDG opt-in; host and Classic unchanged; frame from the requested physical size, not DPI; nearest 0.01 mm, ≤ 0.005 mm per dimension documented; no wider redesign); device bounds on the 0.3125 mm reference | device-reference scaling only, documenting a frame error up to about 0.32 mm; or EMF declared device-only (no physical claim) |
-| `DQ-C10` | `OBS-R6PLUS-EXPORT-PREVIEW-ABSENT` | `NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED`; the guides explain the existing-target and 600 px conditions | `PRE_EXISTING_DEBT_WITH_C_OWNER`: preview a new target name too, GeoCeDG-gated |
-| `DQ-C11` | `usm` DXF warning and sidecar schema | sidecar `schema_version` 2 with a `units` object (`construction_unit` token or `unspecified`, `meters_per_unit` canonical string or `null`, `insunits` integer); `source_unit`/`target_unit` carry the token; warning as a preflight line plus the mandatory-sidecar confirmation; name and symbol not exported | additive fields in version 1 |
-| `DQ-C12` | form of the LaTeX disclosure | both mechanisms are required by the `DQ-C5` direction; default form: one header comment with the export classification, one comment per semantic source (fidelity, tolerance, guarantee, achieved estimate, components, coverage, failures) and a non-modal report area in the dialog | the report as a modal summary after Generate |
-| `DQ-C13` | how DXF consumes `ExportArea` | the prepared "DXF ignores `ExportArea`" is rejected by the author; recommended (pending): **B1 participation** — explicit producers only (`VISIBLE_VIEWPORT` = no area), sources and certified components whose geometry meets the closed area emitted whole and exact, others reported outside the area, both selection modes, area in report, sidecar and fingerprint (C9-DXF) | A geometric clipping; C typed hybrid; B2 bounding-box or B3 wholly-inside participation |
-| `DQ-C14` | FreeHEP five-significant-digit path coordinates | accepted writer limitation, distinct from page sizing; documented; no change in `C` | an opt-in path precision in the PDF writer |
-| `DQ-C15` | historical verifier pins (G9X1, G5) | frozen evidence and the G5 corpus pin unchanged; the live-document pins of `verify-g9x1-extended-dxf.ps1` re-pinned as recorded successors naming `C`; no registry change | leave the historical verifiers failing on the amended documents |
-| `DQ-C16` | non-dialog routes: CLI `--export`, `ExportImage`, JavaScript picture and LaTeX APIs | routes without an explicit scale follow the unit state and the session `drawingScale` (`1:1` in a fresh CLI application); explicit numeric arguments stay explicit device parameters; LaTeX API routes use the export area, effective visibility and semantic curves | keep the API and command routes as at the base, documented |
-| `DQ-C17` | ADR 0005 Decision 3 | a dated amendment section in ADR 0005 that keeps the original text and points to ADR 0032 Decision 8 and unit-system §15 | a new ADR superseding Decision 3 |
+| ID | Outcome | Contract for the implementation |
+|---|---|---|
+| `DQ-C1` | accepted | no exact Bézier special case, including degree ≤ 3; `SplineV2` follows the one certified approximation contract; no output claims exactness because of its degree; rounded spans never become coefficient authority |
+| `DQ-C2` | accepted | objects on persistently hidden GeoCeDG layers stay in DXF on their source layer; that DXF `LAYER` is emitted OFF (negative color `62`); the hidden set enters the layer table, the report and evidence, and the staleness fingerprint; an object both on a hidden layer and individually hidden carries both mechanisms |
+| `DQ-C3` | accepted | individually hidden objects keep `60 = 1`; object visibility is never read as hidden-layer state; the stale "visible geometry" wording (profile selection-contract reference and specifications) is reconciled to the exported population; Show/Hide semantics unchanged |
+| `DQ-C4` | accepted | LaTeX semantic tolerance in model coordinates, default `0.001`, an export-request/session input of each LaTeX dialog, validated positive finite, independent of `constructionUnit`, `presentationUnit` and `drawingScale`, never converted to a paper tolerance; approximation machinery and deterministic budgets of the shared adapter and G9X1 |
+| `DQ-C5` | accepted as reconciled | C14: certified valid deterministic unambiguous components may be emitted without established global completeness; `COMPLETE`, `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`, `NO_ADMISSIBLE_OUTPUT`, whole-export `REJECTED`; DXF keeps the strict G9X1 contract |
+| `DQ-C6` | accepted | `a:b` positive integers in a bounded `int` implementation, gcd normal form, default `1:1`, explicit rejection of invalid or overflowing input, no silent clamp; equivalent pairs identical; presets `1:1`, `1:2`, `1:5`, `1:10`, `2:1`, `5:1` (free entry stays possible); an unrepresentable output fails that export explicitly |
+| `DQ-C7` | accepted as reconciled | C2: `AppGeoCeDG` field per window; reset only at `E1`–`E6`; `E5` through the narrowest `GgbAPID` marker; `E6`: a reset that reloads the current file relies on the load commit (no second semantic reset), a successful reset to a blank document resets at the completed reset boundary; no reset because `clearConstruction` ran; never for undo, redo, redefine, rollback, preference reload, macro or tool processing, `.ggt`, tool replacement, `evalXML`, merge, paste, Insert File, Apply Template or temporary clears; `ExportArea` and paste-notice resets unchanged |
+| `DQ-C8` | accepted with precision | physical unit: `drawingScale = a:b` is the sole engineering sizing authority; physical size from `constructionUnit + drawingScale` only; DPI is resolution; pixel dimensions are derived, never a second authority; no fixed-physical-size control; `presentationUnit` never affects size. Unspecified: no `a:b` claim, no inferred cm, device-scale controls kept where needed and labelled non-physical |
+| `DQ-C9` | accepted | the EMF frame defect is corrected: explicit GeoCeDG opt-in in the FreeHEP EMF writer; default FreeHEP and Classic unchanged; no wider redesign; `rclFrame` from the requested physical output size, never from DPI; nearest representable 0.01 mm, ≤ 0.005 mm per dimension; physical metadata tested apart from device raster and path coordinates; stays `INTEGRATED_PHASE`; stop if a global FreeHEP semantic change would be needed |
+| `DQ-C10` | accepted | `OBS-R6PLUS-EXPORT-PREVIEW-ABSENT = NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED`; no new preview surface; the hidden-layer preview-content observation stays distinct |
+| `DQ-C11` | accepted | explicit, deterministic, versioned sidecar schema evolution carrying unit metadata; old sidecars never reinterpreted; built-in units: native `$INSUNITS` and coherent sidecar metadata; `usm`: `$INSUNITS = 0`, visible custom-unit warning, mandatory paired sidecar with the token `usm`, the canonical binary64 `metersPerUnit` and versioned unit metadata; unspecified: `$INSUNITS = 0`, `UNITLESS`, no invented factor; coordinates unchanged |
+| `DQ-C12` | accepted | deterministic comments with the export classification, requested tolerance, approximation status, per-source and per-component classification and evidence, and incomplete coverage, addressed semantically; a visible non-modal dialog report (status, approximate components, omitted or failed components with reasons, tolerance and work limits); comments never parsed back |
+| `DQ-C13` | **B1 chosen** | C9-DXF: explicit producers only, `VISIBLE_VIEWPORT` is no DXF boundary; participation when the exported support meets the closed area, then emitted whole; complete construction and current selection alike; exact analytic predicates per family, boundaries not regions; Locus V2/Spline V2 excluded only by a conservative certified disjointness proof, otherwise participating; `OUTSIDE_EXPORT_AREA` is population filtering, never a fidelity failure, recorded in preflight, report, metadata or comment, sidecar when present, and fingerprint; no sidecar made mandatory by area filtering alone; B2, B3, A and C rejected |
+| `DQ-C14` | accepted | the five-significant-digit path formatting is a documented writer limitation; no FreeHEP change for it; tests prove page and frame sizing are not affected |
+| `DQ-C15` | accepted | only the live pins that `C` supersedes are updated; frozen G9X1 evidence untouched; historical verifier pins of living specifications repinned with the supersession recorded; the unitless G5/G9X1 corpus stays a byte and semantic baseline |
+| `DQ-C16` | accepted with precision | routes without an explicit device/render scale use the unit contract and `drawingScale`; explicit device/render parameters stay device/render parameters, never mutate `drawingScale`, `constructionUnit` or physical meaning, and never become a second physical scale; stop before changing an API whose backward compatibility and this distinction cannot coexist |
+| `DQ-C17` | accepted | a dated, versioned amendment section in ADR 0005 records that Decision 3 governed the G5 experimental contract and is superseded for `C`-era GeoCeDG export by the `D0`/`C` unit contract; the original text stays; ADR 0014 unchanged unless a genuine contradiction appears |
+
+`OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` = `POST-A2 LIFECYCLE DEFECT /
+OBSERVATION — NOT C BLOCKING — IMPLEMENTATION NOT AUTHORIZED — MUST RECEIVE
+DISPOSITION BEFORE GLOBAL PRE-G9B-R6-plus CLOSEOUT`; preferred characterization
+point before or during `E1`. It is not fixed in `C`.
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
@@ -927,18 +987,24 @@ e613502831e3b412780d69424d4a1e433a4ae688          (the same commit; preparation 
                                                    phase/pre-g9b-r6-plus-c-prompt, local)
 
 IMPLEMENTATION_BRANCH_START =
-named by the authorizing instruction (the prepared candidate that carries this
-prompt, or a later published commit that contains it)
+6cb09d55e1ce9b18ef046f445da5494288fd8ecd          (D_R6PLUS_C_PROMPT, reconciled preparation
+                                                   candidate; tree
+                                                   00f80cc75db6de6542bb295cef813e70c9823b9c;
+                                                   not published)
+
+IMPLEMENTATION_BRANCH =
+phase/pre-g9b-r6-plus-c-2d-export-completion     (local; no rebase)
 ```
 
-A moving branch is not a base. Entry gate: local `main`, `origin/main` and the
-live remote `main` equal the published base the authorizing instruction names,
-its tree matches, the named branch start exists with its tree, and the worktree
-is clean. The phase works on a new local branch from the named commit and is
-not rebased onto any later commit without a new author instruction. Between
-`P_R6PLUS_A2` and the preparation candidate only documentation changes, so the
+A moving branch is not a base. Entry gate (passed on 2026-10-04 before this
+amendment): local `main`, `origin/main` and the live remote `main` equal
+`P_R6PLUS_A2` with its tree, the branch start exists with its tree, and the
+worktree is clean. The phase works on the implementation branch from the named
+commit and is not rebased onto any later commit without a new author
+instruction; if the remote `main` changes, the phase stops and reconciles.
+Between `P_R6PLUS_A2` and the branch start only documentation changes, so the
 citations above apply at both; the phase re-establishes every one it relies on
-before using it.
+before using it. Both preparation candidates stay immutable.
 
 ## Authority and evidence hierarchy
 
@@ -950,7 +1016,9 @@ before using it.
    `A-2` author-decision and closeout records; the accepted export
    specifications and ADR 0005 and 0014 (in force until amended by `C`); the
    [C author-decision record](../../../docs/validation/pre_g9b_r6_plus_c_author_decisions_record.md)
-   and the author's dispositions of `DQ-C1` to `DQ-C17`.
+   and the author's dispositions of `DQ-C1` to `DQ-C17` in the
+   [C preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_c_prompt_closeout_record.md),
+   which prevails over every earlier default.
 4. The accepted `A-1`, `B`, `D1` and `A-2` implementations.
 5. Evidence, re-established before use: the
    [C characterization report](../../../docs/validation/pre_g9b_r6_plus_c_preparation_characterization_report.md)
@@ -968,9 +1036,10 @@ before using it.
   returning per-component outcomes without writability.
 - The derived export classification of C14 (source and export levels) and the
   LaTeX admissibility policy; no kernel state.
-- The DXF area rule of the `DQ-C13` disposition: the participation predicate or
-  clipping it selects, an outside-area outcome or diagnostic distinct from
-  every fidelity failure, and the area record.
+- The DXF `B1` participation rule of `DQ-C13`: the exact predicates per neutral
+  entity, the conservative certified test for semantic components, an
+  `OUTSIDE_EXPORT_AREA` outcome distinct from every fidelity failure, and the
+  area record.
 - `GeometryExportModel`: the unit tokens, the effective construction unit and
   the `usm` factor (C6).
 - `DxfExporter`: the `$INSUNITS` code from the model unit; the `LAYER` table
@@ -981,6 +1050,16 @@ before using it.
 - Format-independent export computations needed by several exporters
   (`pPhysical`, the device-unit and overflow checks of C4).
 
+### Kernel (one read-only query)
+
+- In `org.geocedg.common.kernel.locus.intersection`, one public read-only query
+  over the existing package-private ADR 0028 `CertifiedIntervalCurveModel2D`
+  that answers whether a component of a captured `LocusDefinition2D` is proven
+  disjoint from a closed rectangle, with a deterministic bounded bisection
+  budget (C9-DXF). It adds no semantics, no state, no dependency and no
+  persistence, and never changes a certificate; any wider kernel change is a
+  stop.
+
 ### Shared upstream seams (host-identical defaults)
 
 - `common/export/pstricks/GeoGebraExport.java` and the three dialect classes:
@@ -990,8 +1069,8 @@ before using it.
   nothing else.
 - `common/main/App.java`: the narrowest seams those hooks need, with
   primitive, `String` or existing common types.
-- `common/plugin/GgbAPI.java` only if `DQ-C16` routes the LaTeX API through the
-  seams.
+- `common/plugin/GgbAPI.java` only where `DQ-C16` routes the LaTeX API through
+  the seams.
 
 ### Desktop
 
@@ -1002,7 +1081,7 @@ before using it.
 - `AppGeoCeDG`: the `drawingScale` holder and its reset at the events `E1`–`E6`
   of C2 (the completed-New branch of `fileNew`, the two transition hooks, the
   successful `runDocumentLoad`, the API-replacement marker observed in the
-  `setXML` override, and a `reset()` override for `E6` if the author keeps it),
+  `setXML` override, and a `reset()` override for `E6`),
   the seam answers, the LaTeX factory overrides. No change of any `A-2`,
   `ExportArea` or paste-notice reset.
 - `desktop/plugin/GgbAPID.java`: the GeoCeDG-gated marker of `E5` around
@@ -1013,8 +1092,8 @@ before using it.
   `desktop/plugin/GgbAPID.java`, `geocedg-desktop/export/PictureExportService.java`,
   `ExportViewport.java`, `PictureExportCommandLine.java`: the physical-scale and
   UI seams of C3, C4, C17 and `DQ-C16`, GeoCeDG-gated.
-- `freehep/emf/**`: only the opt-in of `DQ-C9`, if the author chooses it, under
-  the `B` provenance gate and records.
+- `freehep/emf/**`: only the explicit GeoCeDG opt-in exact frame of `DQ-C9`,
+  under the `B` provenance gate and records; default behavior byte-identical.
 - The DXF controller, preflight presentation and sidecar writer (C6, C8,
   `DQ-C11`, `DQ-C13`).
 - Profile: the export action notes and, under `DQ-C3`, the DXF selection-contract
@@ -1061,7 +1140,8 @@ before using it.
   (`DQ-C1`); an exact DXF `SPLINE`; implicit-curve contouring.
 - Kernel changes: Locus V2 or Spline V2 semantic identity, domains,
   certificates, DAG, persistence or evaluation; command semantics beyond
-  `DQ-C16`.
+  `DQ-C16`; any kernel addition beyond the one read-only certified-disjointness
+  query of C9-DXF.
 - The pre-existing upstream LaTeX defects outside `C` (the parametric warning
   without a newline, the warning flags never reset, the empty
   `getLineTemplate` of PSTricks and Asymptote) unless the author adds them.
@@ -1096,13 +1176,13 @@ describe delivered behavior:
 | Document | Amendment |
 |---|---|
 | `geocedg/specs/units/unit-system.md` | status and implementation markers of §0, §6.4 (export-model row), §9 (fingerprint row), §15 (heading, §15.1 "until `C`" wording) and §18.2; no semantic clause changes; a needed semantic change is a stop |
-| `geocedg/specs/export/geometry-export-foundation.md` | units section (`$INSUNITS` mapping, unit-bearing model, `usm`), removal of the pending-amendment note, the G5 PASS clause (`$INSUNITS = 0` for unspecified documents, the mapped code otherwise), the layer and visibility lines under `DQ-C2`/`DQ-C3`, the area rule under `DQ-C13` (for B: explicit producers only, the participation predicate, whole exact entities, outside-area reporting; for A or C the infinite-geometry, exactness and family rules as well, which also amends ADR 0005 Decisions 5–6); status stays `Experimental` unless the author decides otherwise |
+| `geocedg/specs/export/geometry-export-foundation.md` | units section (`$INSUNITS` mapping, unit-bearing model, `usm`), removal of the pending-amendment note, the G5 PASS clause (`$INSUNITS = 0` for unspecified documents, the mapped code otherwise), the layer and visibility lines (hidden GeoCeDG layers as OFF DXF layers, `60 = 1` for individually hidden objects, the truthful population wording), the `B1` area rule (explicit producers only, `VISIBLE_VIEWPORT` no boundary, participation by exact predicates and the conservative certified test, whole exact entities, `OUTSIDE_EXPORT_AREA` reporting; no clipping); status stays `Experimental` |
 | `geocedg/specs/export/dxf-curve-fidelity-and-approximation.md` | §2 unitless statement, §7 dialog units, hidden-source and hidden-layer rules and the area rule, §8 sidecar units, `usm` trigger, area record and schema; the strict DXF writability rule unchanged; version 1.1 |
 | LaTeX semantic-curve contract | the C14 result model, admissibility policy, comments and report, recorded in the developer guide and the candidate report on the `B` precedent (no new normative export specification unless the author asks) |
-| `docs/adr/0005-neutral-2d-geometry-export.md` | per `DQ-C17` |
-| sidecar contract | `DxfFidelityManifestWriter` and its spec section per `DQ-C11` |
-| verifier | `tools/agent/verify-g9x1-extended-dxf.ps1` live-document pins per `DQ-C15`; no other verifier file |
-| staleness fingerprint | `G9X1GeometryExportAdapter.constructionFingerprint` per C6 |
+| `docs/adr/0005-neutral-2d-geometry-export.md` | a dated, versioned amendment section: Decision 3 governed the G5 experimental contract and is superseded for `C`-era GeoCeDG export by the `D0`/`C` unit contract; the original text stays (`DQ-C17`) |
+| sidecar contract | `DxfFidelityManifestWriter` and the fidelity spec §8: an explicit `schema_version` evolution with versioned unit metadata, the area record, hidden layers and outside-area outcomes; old version-1 sidecars never reinterpreted (`DQ-C11`) |
+| verifier | `tools/agent/verify-g9x1-extended-dxf.ps1` live-document pins (living fidelity spec hash recorded as a successor naming `C`; guide literal), frozen G9X1 evidence untouched (`DQ-C15`); no other verifier file |
+| staleness fingerprint | `G9X1GeometryExportAdapter`: the unit state, the hidden-layer set and the explicit area enter the preflight currentness check |
 | living documentation | both user guides (export, units and DXF sections, the "until `C`" statements), the developer guide, `geocedg/specs/ui/cedg-workspaces.md`, the profile notes of the export actions |
 
 No preparation or intermediate commit may claim that the product implements
@@ -1126,7 +1206,7 @@ No preparation or intermediate commit may claim that the product implements
 | missing domain, invalid component, work limit, stale source | explicit outcome per C14 and `DQ-C5`; never silent |
 | export area disjoint from or larger than the viewport | complete output in picture (`B`) and LaTeX; the area never becomes a domain |
 | no explicit export area (`VISIBLE_VIEWPORT` fallback) | DXF exports model space as at the base, zoom-invariant (C9-DXF) |
-| explicit export area | DXF consumes it per the `DQ-C13` disposition; nothing outside is dropped silently |
+| explicit export area | DXF consumes it by `B1` participation; whole entities; nothing outside is dropped silently |
 | unspecified unit | no engineering scale; DXF 0; neutral `UNITLESS` |
 | identical document and export-session inputs | identical output bytes |
 
@@ -1174,7 +1254,7 @@ in `final.shared` or `final.desktop`:
 | `T-DXF-UNITS` | `$INSUNITS` 4, 5, 6, 0 read back by the test reader; neutral model unit; coordinates unchanged |
 | `T-DXF-USM` | `$INSUNITS = 0`, warning, mandatory sidecar, token and canonical `metersPerUnit` |
 | `T-DXF-SIDECAR` | the `DQ-C11` schema; header and sidecar agree |
-| `T-DXF-STALENESS` | a unit change, under `DQ-C2` a hidden-layer change, and under `DQ-C13` a change of the explicit area make a pending preflight stale |
+| `T-DXF-STALENESS` | a unit change, a hidden-layer change (`DQ-C2`) and a change of the explicit area (`DQ-C13`) make a pending preflight stale |
 | `T-DXF-VISIBILITY` | `DQ-C2`, `DQ-C3` |
 | `T-DXF-AREA` | the `DQ-C13` disposition: no explicit area (`VISIBLE_VIEWPORT`) gives the base bytes of the G5 and G9X1 corpora at every zoom; `MANUAL` and both `EXPORT_POINTS` producers; inside, crossing, outside and boundary-touching sources of every family, including infinite lines and rays, an area-enclosing circle and closed polygons; Locus V2 and Spline V2 components per component; complete-construction and current-selection modes; outside-area reporting, header comment and sidecar area record; area of the active Graphics view; determinism and handle order; a missing semantic domain never replaced by the area |
 | `T-G9X1-IDENTITY` | DXF bytes and sidecars of the G9X1 and G5 corpora identical for unspecified documents after the adapter extraction |
@@ -1189,7 +1269,24 @@ in `final.shared` or `final.desktop`:
 | `T-API-ROUTES` | `DQ-C16` |
 | `T-HISTORICAL-PINS` | `DQ-C15`: the live-document pins match the amended files; frozen evidence unchanged |
 | `T-GUIDE` | the guide suites and literals |
-| `T-SMOKE` | an explicit author-smoke checklist; the agent does not perform author smoke |
+| `T-SMOKE` | an explicit author-smoke checklist with prepared fixtures and inspection helpers (no hand-editing of DXF or XML); the agent does not perform author smoke |
+
+Author precisions (authorization of 2026-10-04), each mechanized inside the
+obligations above and named in the obligation-to-test map: tool and macro
+replacement does not reset `drawingScale`; API full-document `setXML` does; API
+`reset` (`E6`); equivalent-pair normalization; `presentationUnit` invariance; no
+physical authority from `printingScale`, zoom or DPI; physical PNG, PDF, SVG and
+EMF sizes; EMF `rclFrame` nearest 0.01 mm; Classic and default FreeHEP
+unchanged; hidden DXF layer OFF; individually hidden entity `60 = 1`; explicit
+area participation for every G5 entity family; participation in current
+selection; `VISIBLE_VIEWPORT` never makes DXF zoom-dependent; conservative
+certified Locus V2 participation near the boundary; `OUTSIDE_EXPORT_AREA` is not
+a fidelity error; G5 and G9X1 bytes unchanged without an explicit area or unit
+change; a locally certified incomplete Locus V2 is emitted and visibly reported
+incomplete; stale-revision and tolerance-guarantee failures reject; semantic
+gaps stay gaps; no Spline V2 exactness special case; mandatory `usm` sidecar;
+the unspecified-unit non-physical mode; an explicit API or CLI render scale
+never mutates `drawingScale` or physical meaning.
 
 Mandatory corpus (re-established at the implementation base): construction
 units `mm`, `cm`, `m`, a valid `usm` and unspecified; scales `1:1`, `1:2`,
@@ -1273,14 +1370,14 @@ exit codes, run ids, plan and result hashes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-This prompt authorizes nothing. Its existence records a prepared contract.
-Execution requires an explicit author instruction naming `PRE-G9B-R6-plus-C`,
-the exact branch start, the frozen class and the dispositions of `DQ-C1` to
-`DQ-C17`; that instruction may authorize local implementation, local commits,
-technical verification, the registered `PHASE` and `INTEGRATION` runs and one
-frozen technical candidate for author review and smoke. No instruction derived
-from this file authorizes self-approval, author smoke by the agent, a `FINAL`,
-or any change of the class.
+The author's instruction of 2026-10-04 authorizes exactly: local
+implementation on the implementation branch from the exact branch start, local
+commits, technical verification, the registration of the phase selection, the
+registered `PHASE` and `INTEGRATION` acceptance runs on one exact frozen clean
+candidate, and that candidate for author review and smoke. No instruction
+derived from this file authorizes self-approval, author smoke by the agent, a
+`FINAL` (unless a stop condition forces a reclassification the author then
+decides), or any change of the class.
 
 `C` authorizes nothing that follows it. The operational order is
 `P0 → A-1 → B → D0 → D1 → A-2 → C → E1 → E2 → E3 → F1 → F2 → F3 → G`; it is the
@@ -1375,14 +1472,21 @@ Stop and report rather than improvise when:
   interval, call a partial export complete, or drop failure evidence;
 - the DXF area rule would consume the `VISIBLE_VIEWPORT` fallback, make a DXF
   depend on the zoom, replace a missing semantic domain, derive component
-  identity from sampled coordinates, or (under A or C) proceed without the
-  ADR 0005 and fidelity-vocabulary amendments the author accepted;
+  identity from sampled coordinates, clip geometry, change an entity family, or
+  exclude a semantic component without a certified disjointness proof;
+- the certified participation test needs more than one read-only kernel query
+  over the existing certified model;
 - the DXF strict writability rule or the `A-2` document commit would change;
 - the work would absorb `F3`, `F2`, `E1`, `E2`, `E3` or other residual debt;
-- the global verifier architecture would change, or a FreeHEP family beyond the
-  `DQ-C9` disposition would change;
+- the global verifier architecture would change, or the EMF correction would
+  require a global FreeHEP semantic change affecting Classic or default
+  behavior, or a FreeHEP family other than the EMF opt-in would change;
+- an existing API or CLI route cannot keep backward compatibility together with
+  the `DQ-C16` distinction between device/render parameters and the physical
+  drawing scale;
 - the G9X1 adapter extraction changes a DXF byte of an unspecified document;
-- a `DQ-C` question is reached without an author disposition;
+- an implementation choice contradicts a `DQ-C` disposition of the
+  authorization record;
 - current governance requires a verification class other than
   `INTEGRATED_PHASE`;
 - the `PHASE` or `INTEGRATION` run is rejected for a cause attributable to the

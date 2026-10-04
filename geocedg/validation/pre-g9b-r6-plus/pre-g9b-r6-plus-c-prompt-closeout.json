@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C",
+  "recordKind": "PREPARATION_PACKAGE_CLOSEOUT_AND_AUTHORIZATION",
+  "record": "docs/validation/pre_g9b_r6_plus_c_prompt_closeout_record.md",
+  "authorDecisionDate": "2026-10-04",
+  "authorConfirmedInSession": true,
+  "preparationPackage": "PASS — AUTHOR APPROVED",
+  "phaseState": "AUTHORIZED FOR IMPLEMENTATION",
+  "selfApproved": false,
+  "authorApproved": "preparation package and reconciliation only",
+  "passClaimed": "preparation package only",
+  "implementationAuthorized": true,
+  "approvedCandidates": [
+    {
+      "name": "T_R6PLUS_C_PROMPT",
+      "commit": "5ad96304ae9718c296db753b4822130cf3d99b61",
+      "tree": "1596b5153681828c9c3206b98ca9ebd31505e765",
+      "promptBlob": "f798eab867608ba4eb824f7a0d8fb925fbbbff2e",
+      "static": "verification-8b483c2f07f14b1f9e18524d9d772207"
+    },
+    {
+      "name": "D_R6PLUS_C_PROMPT",
+      "commit": "6cb09d55e1ce9b18ef046f445da5494288fd8ecd",
+      "tree": "00f80cc75db6de6542bb295cef813e70c9823b9c",
+      "promptBlob": "514dee31a64b55e648ed5a9c374ceb1dc1b28b1c",
+      "static": "verification-b15f841a132c4be2bc6586d997363ebf"
+    }
+  ],
+  "authorization": {
+    "publishedBase": {"name": "P_R6PLUS_A2", "commit": "e613502831e3b412780d69424d4a1e433a4ae688", "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0"},
+    "branchStart": "6cb09d55e1ce9b18ef046f445da5494288fd8ecd",
+    "implementationBranch": "phase/pre-g9b-r6-plus-c-2d-export-completion",
+    "verificationClass": "INTEGRATED_PHASE",
+    "frozen": true,
+    "plannedAcceptance": ["PHASE -Phase PRE-G9B-R6-plus-C (registered)", "INTEGRATION"],
+    "sameCandidateAndTree": true,
+    "final": "NOT REQUIRED unless a stop condition forces reclassification",
+    "stopState": "PRE-G9B-R6-plus-C = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW"
+  },
+  "dispositions": {
+    "DQ-C1": "accepted: no exact Bezier special case; one certified approximation contract",
+    "DQ-C2": "accepted: hidden-layer objects retained; DXF LAYER emitted OFF; hidden set in layer table, report and fingerprint",
+    "DQ-C3": "accepted: 60=1 for individually hidden objects preserved; stale visible-geometry wording reconciled",
+    "DQ-C4": "accepted: model-coordinate tolerance, default 0.001, session input, positive finite, unit- and scale-independent",
+    "DQ-C5": "accepted as reconciled: COMPLETE, INCOMPLETE_WITH_CERTIFIED_COMPONENTS, NO_ADMISSIBLE_OUTPUT, REJECTED",
+    "DQ-C6": "accepted: bounded positive integer pair, gcd normal form, explicit rejection, presets, explicit export failure for unrepresentable output",
+    "DQ-C7": "accepted as reconciled: E1-E6 only; E6 reload relies on the load commit, blank reset resets at the reset boundary",
+    "DQ-C8": "accepted with precision: a:b sole physical sizing authority; no competing fixed-size control; unspecified device mode labelled non-physical",
+    "DQ-C9": "accepted: opt-in FreeHEP EMF exact frame from requested physical size, nearest 0.01 mm, Classic unchanged",
+    "DQ-C10": "accepted: NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED",
+    "DQ-C11": "accepted: explicit versioned sidecar schema evolution with unit metadata; usm mandatory sidecar",
+    "DQ-C12": "accepted: deterministic comments and a non-modal dialog report",
+    "DQ-C13": "B1 participation chosen; conservative certified Locus V2 test; OUTSIDE_EXPORT_AREA not a fidelity failure; VISIBLE_VIEWPORT no boundary",
+    "DQ-C14": "accepted: documented writer limitation",
+    "DQ-C15": "accepted: repin only live pins; frozen evidence untouched",
+    "DQ-C16": "accepted with precision: default routes physical; explicit device parameters stay device parameters",
+    "DQ-C17": "accepted: dated amendment section in ADR 0005; ADR 0014 unchanged"
+  },
+  "observation": {
+    "id": "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT",
+    "disposition": "POST-A2 LIFECYCLE DEFECT / OBSERVATION — NOT C BLOCKING — IMPLEMENTATION NOT AUTHORIZED — MUST RECEIVE DISPOSITION BEFORE GLOBAL PRE-G9B-R6-plus CLOSEOUT",
+    "preferredCharacterizationPoint": "before or during E1"
+  },
+  "notAuthorized": ["E1", "E2", "E3", "F1", "F2", "F3 implementation", "G", "PRE-G9B-R7", "G9B", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT", "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "push", "merge", "publication", "tag", "release"]
+}
