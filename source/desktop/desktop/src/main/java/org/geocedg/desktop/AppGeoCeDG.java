@@ -401,6 +401,19 @@ public final class AppGeoCeDG extends App3D {
 	}
 
 	/**
+	 * A successful full-document replacement outside the native transaction (Base64
+	 * archive, non-native file or URL stream): the document's own hidden set replaces
+	 * the workspace set (DQ-A2-6). Startup files commit in initializeLayerWorkspace;
+	 * inside runDocumentLoad this commit is the transition's only one.
+	 */
+	@Override
+	public void documentReplacementCommitted() {
+		if (layerWorkspaceActive) {
+			commitLoadedDocument();
+		}
+	}
+
+	/**
 	 * Runs a document-replacing load (DQ-A2-6). The reported set is cleared first;
 	 * after success the document's persisted hidden set replaces the workspace set,
 	 * which a failure leaves exactly as it was.

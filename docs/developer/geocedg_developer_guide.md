@@ -684,7 +684,10 @@ through `App.documentHiddenLayersParsed` only after the whole parse completed;
 a rollback restore validates without reporting. The parser never applies the
 set: `AppGeoCeDG` commits the last report only in a document transition (the
 `AppD.nativeDocumentLoadCommitted` hook of the native Open transaction,
-`loadXML(String)`, the clearing `setXML` and startup), so undo, redo, rebuilds,
+`loadXML(String)`, the clearing `setXML`, startup, and the
+`App.documentReplacementCommitted` hook that `App.loadXML(ZipFile)` and
+`GFileHandler.loadXML` call after a successful Base64 or non-native file or URL
+replacement), so undo, redo, rebuilds,
 rollbacks, merges, paste, Insert File and Apply Template never change it, and a
 failed load leaves the set and the working layer exactly as they were. A user
 edit of the set calls `setUnsaved` without storing an undo point; `App.isSaved`

@@ -757,6 +757,173 @@ class PreG9BR6PlusA2HiddenLayerPersistenceTest {
 				invariants(reopened, labels).subList(0, labels.size()), "redo");
 	}
 
+	// ------------------------- revision 2: non-native document replacement (DQ-A2-6)
+
+	@Test
+	void nonNativeDocumentReplacementsCommitTheDocumentSetWithItsUnitsOnce()
+			throws Exception {
+		final byte[] archiveA = Files.readAllBytes(sourceA("A.cedg", true));
+		final byte[] archiveA0 = Files.readAllBytes(sourceA("A0.cedg", false));
+		Path bin = temporary.resolve("A.bin");
+		Files.write(bin, archiveA);
+		Path html = temporary.resolve("A.html");
+		Files.write(html, ("<html><body><param name='ggbBase64' value='" + base64(archiveA)
+				+ "'/></body></html>").getBytes(StandardCharsets.UTF_8));
+		Object[][] routes = {
+			// route, replacement, expected set, expected working layer (DQ-A2-1)
+			{"setBase64(A)", (Route) app -> app.getGgbApi().setBase64(base64(archiveA)),
+					List.of(3, 7), 4},
+			{"setBase64(A0), legacy", (Route) app -> app.getGgbApi().setBase64(
+					base64(archiveA0)), List.of(), 7},
+			{"loadBase64File(html)", (Route) app -> app.loadBase64File(html.toFile()),
+					List.of(3, 7), 4},
+			{"openFile(file: non-native)", (Route) app -> app.getGgbApi().openFile(
+					bin.toUri().toString()), List.of(3, 7), 4},
+			{"loadXML(File non-native)", (Route) app -> app.loadXML(bin.toFile(), false),
+					List.of(3, 7), 4},
+			{"loadFile(non-native)", (Route) app -> app.loadFile(bin.toFile(), false),
+					List.of(3, 7), 4}
+		};
+		for (Object[] route : routes) {
+			AppGeoCeDG app = liveB();
+			int[] commits = commitCounter(app);
+			((Route) route[1]).replace(app);
+			String id = (String) route[0];
+			assertEquals(List.of("Pa", "Ra", "Ta"), labels(app), "replaced: " + id);
+			assertEquals(UnitState.of(UnitToken.MM, null, null),
+					app.getDocumentUnits().getState(), "D1 units of A: " + id);
+			assertEquals(route[2], app.getLayerWorkspace().getHiddenLayers(), "set: " + id);
+			assertEquals(route[3], app.getLayerWorkspace().getWorkingLayer(), "WL: " + id);
+			assertEquals(1, commits[0], "exactly one commit: " + id);
+			assertTrue(app.isSaved(), id);
+			String xml = app.getXML();
+			assertFalse(xml.contains(element("5")), "never B's set: " + id);
+			assertEquals(!((List<?>) route[2]).isEmpty(), xml.contains(element("3 7")),
+					"the next save writes A's own set: " + id);
+		}
+	}
+
+	@Test
+	void aRejectedNonNativeReplacementLeavesTheSetTheWorkingLayerAndTheUnits()
+			throws Exception {
+		String all = IntStream.rangeClosed(0, 99).mapToObj(Integer::toString)
+				.collect(Collectors.joining(" "));
+		String xml = documentXml(sourceA("A.cedg", true)).replace(element("3 7"),
+				element(all));
+		byte[] bad = archive("geogebra.xml", xml);
+		Path bin = temporary.resolve("bad.bin");
+		Files.write(bin, bad);
+		for (Route route : new Route[] {app -> app.getGgbApi().setBase64(base64(bad)),
+				app -> app.loadXML(bin.toFile(), false)}) {
+			AppGeoCeDG app = liveB();
+			int[] commits = commitCounter(app);
+			String construction = Archives.constructionSection(app.getXML());
+			route.replace(app);
+			assertEquals(List.of(5), app.getLayerWorkspace().getHiddenLayers());
+			assertEquals(6, app.getLayerWorkspace().getWorkingLayer());
+			assertEquals(UnitState.of(UnitToken.CM, null, null),
+					app.getDocumentUnits().getState());
+			assertEquals(construction, Archives.constructionSection(app.getXML()));
+			assertEquals(0, commits[0], "a failed load never reaches the hook");
+		}
+	}
+
+	@Test
+	void mergesStayNegativeAndNativeAndStartupLoadsCommitExactlyOnce() throws Exception {
+		Path a = sourceA("A.cedg", true);
+		final byte[] archiveA = Files.readAllBytes(a);
+		final byte[] archiveA0 = Files.readAllBytes(sourceA("A0.cedg", false));
+		AppGeoCeDG merged = liveB();
+		int[] none = commitCounter(merged);
+		merged.getGgbApi().evalXML("<element type=\"point\" label=\"Ea\"><coords x=\"9\""
+				+ " y=\"9\" z=\"1\"/></element>" + element("3 7"));
+		merged.setXML("<geogebra format=\"5.0\"><construction title=\"\" author=\"\""
+				+ " date=\"\"><element type=\"point\" label=\"Ma\"><coords x=\"8\" y=\"8\""
+				+ " z=\"1\"/></element></construction>\n" + element("3 7") + "\n</geogebra>",
+				false);
+		assertTrue(labels(merged).containsAll(List.of("Ea", "Ma", "Qb", "Rb")));
+		assertEquals(List.of(5), merged.getLayerWorkspace().getHiddenLayers(), "merges");
+		assertEquals(6, merged.getLayerWorkspace().getWorkingLayer());
+		assertEquals(0, none[0]);
+
+		for (Route route : new Route[] {app -> app.loadFile(a.toFile(), false),
+				app -> app.getGgbApi().openFile(a.toUri().toString())}) {
+			AppGeoCeDG app = liveB();
+			int[] commits = commitCounter(app);
+			route.replace(app);
+			assertEquals(List.of(3, 7), app.getLayerWorkspace().getHiddenLayers());
+			assertEquals(4, app.getLayerWorkspace().getWorkingLayer());
+			assertEquals(1, commits[0], "the native transaction commits once");
+		}
+
+		Object[][] startups = {{archiveA, List.of(3, 7), 4}, {archiveA0, List.of(), 7}};
+		for (Object[] startup : startups) {
+			AppGeoCeDG started = G9U1TestApp.withoutWindowDispatcher(new AppGeoCeDG(
+					new CommandLineArguments(new String[] {"--silent",
+						"base64://" + base64((byte[]) startup[0])}), new JPanel()));
+			started.setErrorDialogsActive(false);
+			assertEquals(List.of("Pa", "Ra", "Ta"), labels(started));
+			assertEquals(startup[1], started.getLayerWorkspace().getHiddenLayers());
+			assertEquals(startup[2], started.getLayerWorkspace().getWorkingLayer());
+			assertEquals(UnitState.of(UnitToken.MM, null, null),
+					started.getDocumentUnits().getState());
+		}
+	}
+
+	/** One document replacement applied to a live application. */
+	@FunctionalInterface
+	private interface Route {
+		void replace(AppGeoCeDG app) throws Exception;
+	}
+
+	/**
+	 * Source A: points on layers 3, 7 and 4, units mm; with or without the hidden set
+	 * {3, 7}. After a replacing load the working layer is 4 (7 without the set).
+	 */
+	private Path sourceA(String name, boolean hidden) {
+		AppGeoCeDG author = G9U1TestApp.create();
+		onLayer(author, 3, "Pa=(1,1)");
+		onLayer(author, 7, "Ra=(2,2)");
+		onLayer(author, 4, "Ta=(3,3)");
+		if (hidden) {
+			assertTrue(author.getLayerWorkspace().setLayerHidden(3, true));
+			assertTrue(author.getLayerWorkspace().setLayerHidden(7, true));
+		}
+		author.getDocumentUnits().replace(UnitState.of(UnitToken.MM, null, null));
+		return save(author, name);
+	}
+
+	/** Live document B: set {5}, working layer 6, units cm, saved to a file. */
+	private AppGeoCeDG liveB() {
+		AppGeoCeDG app = G9U1TestApp.create();
+		app.setLocale(Locale.ENGLISH);
+		onLayer(app, 5, "Qb=(-3,-3)");
+		onLayer(app, 6, "Rb=(-4,-2)");
+		assertTrue(app.getLayerWorkspace().setLayerHidden(5, true));
+		app.getDocumentUnits().replace(UnitState.of(UnitToken.CM, null, null));
+		save(app, "B-" + System.nanoTime() + ".cedg");
+		assertEquals(List.of(5), app.getLayerWorkspace().getHiddenLayers());
+		assertEquals(6, app.getLayerWorkspace().getWorkingLayer());
+		return app;
+	}
+
+	/** Counts workspace commits: each document commit notifies the workspace once. */
+	private static int[] commitCounter(AppGeoCeDG app) {
+		int[] commits = {0};
+		app.getLayerWorkspace().addListener(() -> commits[0]++);
+		return commits;
+	}
+
+	private static List<String> labels(AppGeoCeDG app) {
+		return app.getKernel().getConstruction().getGeoSetConstructionOrder().stream()
+				.filter(GeoElement::isLabelSet).map(GeoElement::getLabelSimple).sorted()
+				.toList();
+	}
+
+	private static String base64(byte[] bytes) {
+		return java.util.Base64.getEncoder().encodeToString(bytes);
+	}
+
 	// --------------------------------------------------------------------- helpers
 
 	/** A GeoCeDG-configured host whose next native undo-baseline commit fails late. */

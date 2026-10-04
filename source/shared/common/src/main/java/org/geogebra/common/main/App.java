@@ -4300,12 +4300,26 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 			updateCommandDictionary();
 
 			hideDockBarPopup();
+			// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-A-2 (DQ-A2-6) the archive replaced
+			// the whole document
+			documentReplacementCommitted();
 			return true;
 		} catch (Exception err) {
 			resetCurrentFile();
 			Log.debug(err);
 			return false;
 		}
+	}
+
+	/**
+	 * GeoCeDG (2026-10-04): PRE-G9B-R6-plus-A-2 (DQ-A2-6) called once a load outside
+	 * the native document transaction (a Base64 archive, a non-native file or URL
+	 * stream) has successfully replaced the whole document: construction, undo
+	 * baseline, saved state and current file. A failed load never reaches it. A
+	 * product may commit document presentation here.
+	 */
+	public void documentReplacementCommitted() {
+		// host: nothing
 	}
 
 	/**

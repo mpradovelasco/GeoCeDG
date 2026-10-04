@@ -1,8 +1,14 @@
 # PRE-G9B-R6-plus-A-2 — layer domain 0..99 and persistent hidden layers: candidate report
 
 ```text
-TECHNICAL_CANDIDATE_STATE = FROZEN
+TECHNICAL_CANDIDATE_STATE = FROZEN (revision 2: non-native document replacement
+                            commit, §17)
 AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
+PREVIOUS_CANDIDATE        = e3cbdc60743b9f91490f7bb6a80f789d87a8f814
+                            tree 235869d7c127dc9d90b104cbd10a5c461ee0690c
+                            FINAL verification-b7942a8be41c44728a1a6b6289ecf08a
+                            ACCEPTED / COMPLETE (historical evidence for that
+                            candidate only; superseded for acceptance)
 
 PHASE                     = PRE-G9B-R6-plus-A-2
 CHANGE_ROUTE              = ORDINARY
@@ -311,7 +317,7 @@ documentation changed. Chosen names: `AppConfig.getMaxLayer()`,
 | clearing `App.setXML` (API) | commit; a legacy document commits the empty set | `onlyDocumentTransitions…` |
 | non-clearing `setXML` (merge) | never read | `onlyDocumentTransitions…` |
 | `loadXML(URL)`/`loadXML(File)` (API `openFile`) | commit through the native transaction | `onlyDocumentTransitions…` |
-| Base64 archives, non-native URL documents | not a native transaction: no commit (residual, §12) | — |
+| Base64 archives, non-native URL documents | revision 1: no commit (a defect, §17); revision 2: commit through `App.documentReplacementCommitted` | §17 |
 | macro part of an archive, `.ggt`, `addMacroXML` | ignored with a log | `onlyDocumentTransitions…` (tool file), shared `mergeMacroAndPasteContextsIgnoreTheElement` |
 | Open preflight | validated in the GeoCeDG scratch app | `everyRejectedOpenRestoresTheSetAndTheWorkingLayerExactly` |
 | a report outside a transition | discarded by the next transition | `onlyDocumentTransitions…` |
@@ -461,10 +467,12 @@ item 4).
 1. **3D draw-order range (`DQ-A2-9`).** Layers 9..99 share the last 3D
    draw-order code; the model layer is unchanged. Hidden layers still do not
    apply in 3D (`OBS-A1-3D-VIEW`). Owner: author.
-2. **Non-transactional document routes (`OBS-A1-URL-OPEN` remainder).** Base64
-   archives (`App.loadXML(byte[])`) and non-native URL documents are not native
-   transactions and do not commit a set; a stale session set may remain after
-   them. A Base64 startup argument commits at startup.
+2. **Non-transactional document routes (`OBS-A1-URL-OPEN` remainder).**
+   Revision 1 recorded that Base64 archives and non-native URL documents commit
+   no set. The focal characterization showed that they are full-document
+   replacements, so this was a `DQ-A2-6` defect, not a residual; revision 2
+   corrects it (§17). The session-state part of these routes is the separate
+   `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` (§17.6).
 3. **An opened empty document is "started".** The host counts an opened
    document as started (`Construction.isStarted()`), so clearing the set of an
    opened set-only document prompts; a never-saved blank document whose set
@@ -633,3 +641,155 @@ schemas and `prompt-contracts.json`, `EuclidianStyleConstants.MAX_LAYERS`,
 `Construction`, the `A-1` hidden-layer predicate, `ShowLayer`/`HideLayer`
 semantics, every exporter and export specification, the unit system, the
 Insert File and Apply Template surfaces, and `artifacts/author-input/**`.
+
+## 17. Revision 2: commit on non-native document replacement
+
+### 17.1 Trigger and authorization
+
+A focal, read-only characterization of the frozen candidate `e3cbdc60` showed
+that the residual observation "Base64 and non-native URL loads do not commit
+the persistent hidden-layer set" was a `DQ-A2-6` defect, not a correct route
+classification (`A2_FOCAL_REMEDIATION_REQUIRED`). On 2026-10-04 the author
+accepted that conclusion and authorized a focal correction limited to this
+defect. The previous candidate and its `FINAL` stay historical evidence for
+that commit only (header).
+
+### 17.2 Characterization
+
+Scratch probe on a `git archive` of `e3cbdc60`. Live document B: hidden `{5}`,
+working layer 6, units cm, view scale 25, saved to a file. Source A: layers
+3, 7 and 4, hidden `{3, 7}`, units mm, view scale 40; legacy A0 without hidden
+layers.
+
+| Route | Revision 1 result |
+|---|---|
+| `GgbAPI.setBase64` (API; File → Open URL with a Base64 text), A and A0 | construction, `D1` units (mm), view settings, undo baseline, saved state and current file replaced; set `[5]` and working layer 6 kept; the next save wrote `{5}` into A |
+| `loadBase64File` / `loadFromHtml` with `ggbBase64` (opening or dragging an `.html` page) | the same |
+| `AppD.loadXML(File)` of a non-native extension; remote URL with a non-native path (API `openFile`) | the same |
+| native file and remote `.cedg`/`.ggb` (API, Open URL), `loadXML(String)`, clearing `setXML`, every startup route | correct: the document's set, the `DQ-A2-1` working layer |
+| `evalXML`, non-clearing merge | correct: set unchanged |
+| failures of the defective routes | construction, set, working layer and units restored |
+
+The `D1` units transitioned on the defective routes while the hidden set did
+not: an `A-2` lifecycle omission.
+
+### 17.3 Root cause
+
+The two host success endings that perform these replacements had no commit
+context: `App.loadXML(ZipFile)` (Base64 archives) and
+`GFileHandler.loadXML(App, InputStream, boolean)` (non-native file and URL
+streams). Their parse already reported the document's set; the report stayed
+uncommitted and the next transition discarded it.
+
+### 17.4 Correction and hook semantics
+
+- `App.documentReplacementCommitted()`: public, a no-op in the host. Called as
+  the last step of a successful `App.loadXML(ZipFile)` (after the new undo
+  baseline, the saved state, the current-file reset and the command
+  dictionary) and of a successful non-macro `GFileHandler.loadXML`. Failure
+  paths (the `catch` of `App.loadXML(ZipFile)`, the `MyError` branch of
+  `GFileHandler`, every exception propagating from the parse) never reach it;
+  macro and `.ggt` loads never call it; the native transaction parses through
+  `GFileHandler.loadPreflightedNativeXML`, which has no such ending, and keeps
+  `AppD.nativeDocumentLoadCommitted`; the Open preflight's scratch `AppDNoGui`
+  inherits the no-op.
+- `AppGeoCeDG.documentReplacementCommitted()`:
+  `if (layerWorkspaceActive) commitLoadedDocument();`, the same commit as every
+  other transition. During startup the workspace is not active yet, so
+  `initializeLayerWorkspace` stays the startup commit; inside `runDocumentLoad`
+  (File → Open of a non-native extension) the commit marks the transition
+  committed, so `runDocumentLoad` does not commit again.
+- Unchanged: the parser, the grammar, undo, the native Open transaction,
+  Insert File, Apply Template, `evalXML` and merges, macros and `.ggt`, `D1`.
+
+### 17.5 Regression tests
+
+Three tests in `PreG9BR6PlusA2HiddenLayerPersistenceTest`, each starting from a
+live B (`{5}`, working layer 6, cm); a workspace listener counts commits:
+
+| Test | Route | Result |
+|---|---|---|
+| `nonNativeDocumentReplacementsCommitTheDocumentSetWithItsUnitsOnce` | `setBase64(A)` | `[3, 7]`, working layer 4 |
+| | `setBase64(A0)`, legacy | `[]`, working layer 7 |
+| | `loadBase64File(html)` | `[3, 7]`, 4 |
+| | API `openFile(file:` non-native`)` | `[3, 7]`, 4 |
+| | `loadXML(File)` non-native | `[3, 7]`, 4 |
+| | `loadFile` non-native (`runDocumentLoad`) | `[3, 7]`, 4 |
+| | every route above | A's objects and mm units (the `D1` cross-check), saved, exactly one commit, the next save writes A's set and never B's |
+| `aRejectedNonNativeReplacementLeavesTheSetTheWorkingLayerAndTheUnits` | all-domain Base64; all-domain non-native file | load fails; `[5]`, 6, cm and B's construction unchanged; no commit |
+| `mergesStayNegativeAndNativeAndStartupLoadsCommitExactlyOnce` | `evalXML`, non-clearing `setXML` | `[5]`, 6; no commit |
+| | native `loadFile` and API `openFile` of A | `[3, 7]`, 4; exactly one commit |
+| | startup `base64://` A and A0 | `[3, 7]`, 4, mm; `[]`, 7 |
+
+On a scratch copy of `e3cbdc60` the revised class fails exactly at
+`setBase64(A)` ("expected: <[3, 7]> but was: <[5]>"); the other two new tests
+pass there, as the characterization predicted.
+
+### 17.6 New observation, recorded and not fixed
+
+`OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`: `AppGeoCeDG` resets
+the `B` export-area session (`ExportAreaSession.resetForDocument`) and clears
+the `D1` paste notice only in `clearConstruction`, `loadExistingFile` and
+`loadXML(String)`. The Base64 and non-native replacement routes keep the
+previous document's manual export area, explicit producer, overlay and any
+visible paste notice; by the same code, so do the routes that bypass
+`loadExistingFile` (API `openFile` of native files and URLs, the clearing
+`setXML`). This is outside the `A-2` correction and needs its own disposition
+before the global `PRE-G9B-R6-plus` closeout. Owner: author.
+
+### 17.7 Revised author-smoke checklist
+
+The checklist of §13 stays, with three additions:
+
+13. **Base64 document.** In a document with hidden layers, Ctrl+Shift+B copies
+    it as Base64; File → New with other hidden layers, then File → Open URL…
+    and paste the text: the copied document's hidden layers and working layer
+    come back, not the previous ones; save, reopen: they persist.
+14. **HTML page with an embedded document.** Open (or drag) an `.html` page
+    with a `ggbBase64` document that has hidden layers: they are restored; with
+    a page whose document has none, every layer is shown.
+15. **No carry-over.** Steps 13 and 14 started from a document with other
+    hidden layers never keep those layers, and the next save never writes them.
+
+### 17.8 Pre-freeze evidence of revision 2
+
+Development and inventory evidence, not acceptance; the single `FINAL` on the
+revised candidate is reported outside this file.
+
+| Run | Result |
+|---|---|
+| focal Desktop `PreG9BR6PlusA2*` and `PreG9BR6PlusA1*` | 4 classes, 59 tests (persistence class 18), 0 failures/errors |
+| revised persistence class on a scratch copy of `e3cbdc60` | 18 tests, 1 failure at `setBase64(A)`, as expected |
+| Checkstyle (`:shared:common:checkstyleMain`, `:shared:common-jre:checkstyleTest`, `:desktop:desktop:checkstyleMain`, `:desktop:desktop:checkstyleTest`) | no finding in a revision file; the pre-existing `PreG9BR6PlusA1HiddenLayerTest.java:188` only |
+| `Assert-GeoCeDGUpstreamBoundary -ExpectedBaseline 9b93256b7df401ff056c37b502d82df4d72b1522` | OK, 932 registered files (`App`, `GFileHandler`, `AppGeoCeDG` and the test were already registered; their purposes gained the revision text) |
+| producers `discovery.shared` / `discovery.desktop` (`--test-dry-run`) | 5 994 (unchanged) / 1 792 identities |
+| producer `final.shared` (executed) | 6 911 tests, 0 failures/errors, 10 skips (identities unchanged) |
+| producer `final.desktop` (executed) | 1 786 tests, 0 failures/errors, 1 skip |
+| updater (in-session, absolute paths) | `discovery.desktop` 1 789 → 1 792 (`8bff1f1e…`), `final.desktop` 1 783 → 1 786 (`2b2fbe7d…`); shared selections unchanged; `junit_inventory` pin `df9e65e1…` → `d06c3ea62a4b1d792350007f1d2ee3dbef64c257df2efd1f8449bd5f29b25b7b`, reproduced first; `static_contracts` unchanged |
+| `git diff --check` | clean; roadmap 2 912 and manifest 145 CR bytes preserved |
+| development `STATIC` and `INFRA_UNIT` on the staged revision | `ACCEPTED / COMPLETE` (`verification-53b2e17954254934a8cd103c2e7908b7`, 3/3; `verification-7feb870d5f66490e955ff9ebcf48bc92`, 22/22); the standing governance `DIAGNOSTIC_FINDING` and historical-consistency `DIAGNOSTIC_UNAVAILABLE` only |
+
+### 17.9 Impact and changed paths of revision 2
+
+```text
+PRODUCT CHANGE = YES (one host-identical App hook, its call in
+  GFileHandler, one AppGeoCeDG override)
+SERIALIZATION CHANGE relative to revision 1 = NONE
+GUIDE_IMPACT = UPDATED (developer guide only)
+BOOTSTRAP IMPACT = NO CHANGE REQUIRED
+VERIFICATION_INFRASTRUCTURE_IMPACT = INVENTORY_PIN (discovery.desktop and
+  final.desktop through the official updater; no selection, registry-shape or
+  static-contract change)
+```
+
+Changed paths: `source/shared/common/src/main/java/org/geogebra/common/main/App.java`,
+`source/desktop/desktop/src/main/java/org/geogebra/desktop/headless/GFileHandler.java`,
+`source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java`,
+`source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA2HiddenLayerPersistenceTest.java`,
+`docs/upstream/modified-files.yml`, `docs/developer/geocedg_developer_guide.md`,
+`geocedg/specs/operations/verification-junit-inventory.json`,
+`geocedg/specs/operations/verification-registry.json`,
+`docs/roadmap/geocedg_roadmap.md`,
+`docs/architecture/pre_g9b_r6_plus_minitrack_plan.md`, this report and its
+evidence mirror. Not changed: F3, C, the rollback Construction Protocol debt,
+other session-reset behavior, every other file of revision 1.

@@ -105,6 +105,11 @@ public class GFileHandler {
 
 			// command list may have changed due to macros
 			app.updateCommandDictionary();
+			if (!isMacroFile) {
+				// GeoCeDG (2026-10-04): PRE-G9B-R6-plus-A-2 (DQ-A2-6) the stream
+				// replaced the whole document
+				app.documentReplacementCommitted();
+			}
 			return true;
 		} catch (MyError err) {
 			app.resetCurrentFile();
