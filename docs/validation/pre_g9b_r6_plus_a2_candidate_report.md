@@ -1,14 +1,17 @@
 # PRE-G9B-R6-plus-A-2 — layer domain 0..99 and persistent hidden layers: candidate report
 
 ```text
-TECHNICAL_CANDIDATE_STATE = FROZEN (revision 2: non-native document replacement
-                            commit, §17)
+TECHNICAL_CANDIDATE_STATE = FROZEN (revision 3: saved baseline of a completed
+                            File > New, §18; revision 2, §17)
 AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
-PREVIOUS_CANDIDATE        = e3cbdc60743b9f91490f7bb6a80f789d87a8f814
+PREVIOUS_CANDIDATES       = e3cbdc60743b9f91490f7bb6a80f789d87a8f814
                             tree 235869d7c127dc9d90b104cbd10a5c461ee0690c
                             FINAL verification-b7942a8be41c44728a1a6b6289ecf08a
-                            ACCEPTED / COMPLETE (historical evidence for that
-                            candidate only; superseded for acceptance)
+                            c1c08e9016c7c52446a3b6cd51856cdf7e67e20d
+                            tree 1c824ce7399d23acedadf251832cfd01e7bf265c
+                            FINAL verification-e81bd96094fc47f080a3b234448834a9
+                            both ACCEPTED / COMPLETE (historical evidence for
+                            their own candidates only; superseded for acceptance)
 
 PHASE                     = PRE-G9B-R6-plus-A-2
 CHANGE_ROUTE              = ORDINARY
@@ -793,3 +796,143 @@ Changed paths: `source/shared/common/src/main/java/org/geogebra/common/main/App.
 `docs/architecture/pre_g9b_r6_plus_minitrack_plan.md`, this report and its
 evidence mirror. Not changed: F3, C, the rollback Construction Protocol debt,
 other session-reset behavior, every other file of revision 1.
+
+## 18. Revision 3: saved baseline of a completed File → New
+
+### 18.1 Classification and authorization
+
+`OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT` =
+`PRE-EXISTING — REPRODUCED ON P_R6PLUS_D1 2941ddf2 — NOT CAUSED BY A-2 —
+AUTHOR-AUTHORIZED FOCAL CORRECTION DURING A-2 REVIEW`.
+
+The author smoke of `c1c08e90` found that closing an untouched document right
+after File → New asked to save. The author authorized on 2026-10-04 a focal
+correction of the saved state of an untouched New only. It is not an `A-2`
+regression. The candidates `e3cbdc60` and `c1c08e90` and their `FINAL`s stay
+historical evidence for their own commits (header).
+
+### 18.2 Diagnosis
+
+All diagnosis ran on scratch copies (`git archive`) and on a read-only copy of
+the author's installed settings; the installed settings were never written.
+
+| Run | Candidate `c1c08e90` | Base `P_R6PLUS_D1` `2941ddf2` |
+|---|---|---|
+| embedded host, factory or installed Java preferences, with and without unit defaults | New saved | New saved |
+| real window (`GeoCeDG.main`), fresh settings file, File → New menu item | New saved | — |
+| real window, copy of the author's settings | **New unsaved: prompt** | **New unsaved: prompt** |
+
+Step-by-step replay of the host `AppD.fileNew` in the real window with the
+author's settings: every step leaves the document saved except the preference
+reload (`GeoGebraPortablePreferences.loadXMLPreferences`, a clearing
+`setXML` of the saved user preferences). Bisection of the author's user
+preferences found two independent effects of that reload:
+
+- `<consProtNavigationBar … consStep="2"/>` (any step ≥ 0): restoring a saved
+  construction-protocol step clears the raw saved flag;
+- `<tableview min="0" max="0" step="0"/>`: applying the table settings creates
+  a numeric, which registers a used type, so `Construction.isStarted()` is true
+  for an empty construction.
+
+Together they make `App.isSaved()` false. `A-2` plays no part: the hidden-layer
+save-relevance hook is `false`, the set is empty, the working layer is 0, and
+no unit metadata exists. The tests missed it because every harness used
+factory preferences, which save no construction step and no table view.
+
+### 18.3 Correction
+
+`AppGeoCeDG.fileNew()`: after `super.fileNew()` (which runs `clearConstruction`
+with its save prompt, the `A-1`/`A-2` workspace reset, the toolbar, spreadsheet,
+view and toolbar resets, the host preference reload, the toolbar definition,
+the unique id and the 3D plane views) and after the `D1` new-document unit
+defaults, a completed New calls `setSaved()`: the fully initialized blank
+document is the saved baseline. The call is reached only when
+`clearConstruction` actually cleared the document during this New
+(`clearedInFileNew`); a New cancelled at the save prompt
+(`AppD.clearConstruction` returns `false` and `AppD.fileNew` returns early) or
+one that throws never reaches it. It cannot hide later edits: it runs once, at
+the end of the New call, before control returns to the user; every later edit
+marks the document through its own route (`storeUndoInfo`, the unit operation,
+the hidden-layer edit listener). `App.isSaved()`, `Construction.isStarted()`, the
+`A-2` save-relevance hook, units, the parser, undo and the close dialog are
+unchanged. `D1`'s defaults path already ended with `setSaved()`; the baseline
+generalizes it to a New without defaults.
+
+### 18.4 Regression tests
+
+`PreG9BR6PlusA2NewDocumentBaselineTest` (5 tests). Its preference replay points
+the product's portable preference store at a scratch settings file whose user
+preferences contain a saved construction step and a table view, and restores
+every static of the store afterwards.
+
+| Invariant | Test | Result |
+|---|---|---|
+| N1 factory preferences | `anUntouchedNewIsSavedWithFactoryPreferences` | saved, blank |
+| N2 replayed author preferences | `anUntouchedNewIsSavedWithReplayedUserPreferences` | the construction is started by the replay, yet the New is saved |
+| N3 `D1` unit defaults | `newDocumentUnitDefaultsStayAppliedAndSaved` | cm applied, saved |
+| N4 `A-2` initial state | N1, N2 | set empty, working layer 0, no hidden-layer element, saved |
+| N5 first real edits | `theFirstRealEditAfterNewMakesTheDocumentUnsaved` | a new point (with its undo point), a unit change and a hidden-layer change each make the document unsaved |
+| N6 hidden layers | `aHiddenLayerChangeAfterNewIsUnsavedNeverAnUndoPointAndSaveClearsIt` | unsaved, no undo point in 2 s, Save makes it saved, reopen restores `[4]` |
+| N7 repeated New | `anUntouchedNewIsSavedWithFactoryPreferences` (accepted by saving the dirty document) | saved, blank |
+| N8 aborted New | source evidence above; real-window probe | Cancel leaves the dirty document unsaved |
+
+On a scratch copy of `c1c08e90` the class fails three tests (N2, N5, N6, each at
+the saved baseline after New); with the correction all pass. The real window
+with a copy of the author's settings, after the correction: New saved and still
+saved after the event queue settled, a second New saved, a new point makes it
+unsaved, New answered "Don't Save" gives a saved blank document, a hidden-layer
+change makes it unsaved, and New answered "Cancel" keeps it unsaved with its
+hidden layer.
+
+### 18.5 Observations recorded, not implemented
+
+| Id | Content | Disposition |
+|---|---|---|
+| `OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT` | §18.1–18.2 | `PRE-EXISTING — REPRODUCED ON P_R6PLUS_D1 2941ddf2 — NOT CAUSED BY A-2 — AUTHOR-AUTHORIZED FOCAL CORRECTION DURING A-2 REVIEW`; corrected in revision 3 |
+| `OBS-R6PLUS-EXPORT-PREVIEW-ABSENT` | author smoke: the picture export works, but the tested route presents no preview; provenance relative to `A-2` not established; distinct from `OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS`, which concerned wrong hidden-layer content in a preview | `NOT PROVEN A-2 REGRESSION — CHARACTERIZE BEFORE/DURING C — NOT A-2 BLOCKING` |
+| `ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY` | add a validated numeric entry field to the existing working-layer chooser, beside the list: the same authoritative working-layer state, the same configured `0..L_MAX` validation, no second mechanism; preferred owner `F2` | `ENHANCEMENT — NOT A-2 BLOCKING — IMPLEMENTATION NOT AUTHORIZED` |
+| `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` | §17.6 | unchanged |
+
+### 18.6 Revised author-smoke step
+
+16. **Untouched New.** With the installed settings: File → New, no action,
+    close the window: no save prompt. Hide a layer: closing asks to save. Save:
+    closing no longer asks.
+
+### 18.7 Pre-freeze evidence of revision 3
+
+Development and inventory evidence, not acceptance; the single `FINAL` on the
+revised candidate is reported outside this file.
+
+| Run | Result |
+|---|---|
+| `PreG9BR6PlusA2NewDocumentBaselineTest`, `PreG9BR6PlusA2*`, `PreG9BR6PlusA1*`, `PreG9BR6PlusD1*` | 11 classes, 98 tests, 0 failures/errors |
+| `PreG9BR6PlusA2NewDocumentBaselineTest` on a scratch copy of `c1c08e90` | 5 tests, 3 failures, as expected |
+| Checkstyle (`:desktop:desktop:checkstyleMain`, `:desktop:desktop:checkstyleTest`) | no finding in a revision file; the pre-existing `PreG9BR6PlusA1HiddenLayerTest.java:188` only |
+| `Assert-GeoCeDGUpstreamBoundary -ExpectedBaseline 9b93256b7df401ff056c37b502d82df4d72b1522` | OK, 933 registered files (the new test registered as added) |
+| producers `discovery.shared` / `discovery.desktop` (`--test-dry-run`) | 5 994 (unchanged) / 1 797 identities |
+| producer `final.desktop` (executed) | 1 791 tests, 0 failures/errors, 1 skip |
+| updater (in-session, absolute paths) | `discovery.desktop` 1 792 → 1 797 (`c4885601…`), `final.desktop` 1 786 → 1 791 (`c47aa95b…`); shared selections unchanged (no shared source changed); `junit_inventory` pin `d06c3ea6…` → `73d599622089e29ecda29f652115e04418be9d7677b5e3546b694e185e6fe0ca`, reproduced first |
+| `git diff --check` | clean; roadmap 2 912 and manifest 145 CR bytes preserved |
+| development `STATIC` and `INFRA_UNIT` on the staged revision | `ACCEPTED / COMPLETE` (`verification-817c29d998964376a858c6b7c07a78c6`, 3/3; `verification-14cca78ce70743ee879d9173bef00410`, 22/22); the standing governance and historical-consistency diagnostics only |
+
+### 18.8 Impact and changed paths of revision 3
+
+```text
+PRODUCT CHANGE = YES (one setSaved() at the end of a completed
+  AppGeoCeDG.fileNew)
+SERIALIZATION CHANGE relative to revision 2 = NONE
+GUIDE_IMPACT = NONE (no documented behavior changes)
+BOOTSTRAP IMPACT = NO CHANGE REQUIRED
+VERIFICATION_INFRASTRUCTURE_IMPACT = INVENTORY_PIN (discovery.desktop and
+  final.desktop through the official updater)
+```
+
+Changed paths: `source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java`,
+`source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA2NewDocumentBaselineTest.java`
+(new), `docs/upstream/modified-files.yml`,
+`geocedg/specs/operations/verification-junit-inventory.json`,
+`geocedg/specs/operations/verification-registry.json`,
+`docs/roadmap/geocedg_roadmap.md`,
+`docs/architecture/pre_g9b_r6_plus_minitrack_plan.md`, this report and its
+evidence mirror.

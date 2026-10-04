@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "cafcbd8ead46b62cf3410021e8723d95802f33f882bbc6a0029e3bd72c81b159",
+      "discovery_evidence_sha256": "9652d3745705710aea391c400110d2beb15048dbda6b206ffc7903fd971080f8",
       "discovered_identity_count": 5994,
       "discovered_identities_sha256": "7e215c6ecd82c92a5f2bb6bb3e2687390c5e57d305a14a964885a41144338bbc"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "153a2fb3d524ae56f8d4be825b521c841c969c4e2ce890d3d409b93bb347ec98",
-      "discovered_identity_count": 1792,
-      "discovered_identities_sha256": "8bff1f1ebf872fcb7664327991d417e792dd9c4efc861fc861d902c98c842add"
+      "discovery_evidence_sha256": "d9842f0f30918dfc59b926b8ce3a537e9af6fae473d639226061f1ac66a930f1",
+      "discovered_identity_count": 1797,
+      "discovered_identities_sha256": "c4885601e88a55620b8dcf9597e834201db498146e6ae0ef05d5108a4c557ed1"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1792,
-      "expected_identities_sha256": "8bff1f1ebf872fcb7664327991d417e792dd9c4efc861fc861d902c98c842add",
+      "expected_identity_count": 1797,
+      "expected_identities_sha256": "c4885601e88a55620b8dcf9597e834201db498146e6ae0ef05d5108a4c557ed1",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1786,
-      "expected_identities_sha256": "2b2fbe7de8e7c0abd80efbd17188e42487486ed5bac3a3ece53ca11161978c46",
+      "expected_identity_count": 1791,
+      "expected_identities_sha256": "c47aa95be23731d8f7bc8f43f4f8ab5644c04dd82bb62f88b99121499788e7da",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",

@@ -704,6 +704,13 @@ public final class AppGeoCeDG extends App3D {
 		// after the host reapplied the preferences XML, itself a clearing load
 		if (clearedInFileNew) {
 			applyNewDocumentUnitDefaults();
+			// The completed New - cleared construction, reset layer workspace, host
+			// preference reload, plane views and new-document defaults - is the saved
+			// baseline: automatic initialization is no user edit. The preference reload
+			// alone leaves the flag cleared and may register a used type, e.g. a saved
+			// <tableview> (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT,
+			// pre-existing). A cancelled or failed New never gets here.
+			setSaved();
 		}
 	}
 

@@ -3,7 +3,7 @@
   "phase": "PRE-G9B-R6-plus-A-2",
   "phaseKind": "PRODUCT_IMPLEMENTATION_LAYER_DOMAIN_AND_HIDDEN_LAYER_PERSISTENCE",
   "report": "docs/validation/pre_g9b_r6_plus_a2_candidate_report.md",
-  "technicalCandidateState": "FROZEN (revision 2, non-native document replacement commit)",
+  "technicalCandidateState": "FROZEN (revision 3, saved baseline of a completed File > New; revision 2, non-native document replacement commit)",
   "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
   "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
   "selfApproved": false,
@@ -156,7 +156,47 @@
   "closedObservations": [
     "OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS closed under persistent reopen (T-EFFECTIVE-REOPEN)"
   ],
-  "authorSmoke": "checklist in the report section 13 and the revision-2 additions in section 17.7; not performed or attributed by the agent",
+  "authorSmoke": "checklist in the report section 13, the revision-2 additions in section 17.7 and the revision-3 step in section 18.6; not performed or attributed by the agent",
+  "revision3": {
+    "defect": "OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT",
+    "classification": "PRE-EXISTING — REPRODUCED ON P_R6PLUS_D1 2941ddf2 — NOT CAUSED BY A-2 — AUTHOR-AUTHORIZED FOCAL CORRECTION DURING A-2 REVIEW",
+    "authorizedScope": "saved state of an untouched File > New only (author instruction of 2026-10-04)",
+    "previousCandidate": {"commit": "c1c08e9016c7c52446a3b6cd51856cdf7e67e20d", "tree": "1c824ce7399d23acedadf251832cfd01e7bf265c", "final": "verification-e81bd96094fc47f080a3b234448834a9", "finalVerdict": "ACCEPTED / COMPLETE", "receiptId": "1db2e4cd5b0d79faca5a8666cadfb9f524fb8c5f5b0310ba529f359c92b25fa5", "status": "historical evidence for that commit only; superseded for acceptance"},
+    "reproduction": {
+      "embeddedFactoryOrInstalled": {"candidate": "saved", "base2941ddf2": "saved"},
+      "realWindowFreshSettings": {"candidate": "saved"},
+      "realWindowAuthorSettingsCopy": {"candidate": "unsaved, prompt", "base2941ddf2": "unsaved, prompt"}
+    },
+    "rootCause": "the host preference reload of File > New (portable clearing setXML of the saved user preferences) restores a saved construction-protocol step (consStep >= 0), which clears the raw saved flag, and applies a saved table view, which creates a numeric and makes the empty construction started; A-2 hidden-layer relevance false, set empty, working layer 0, no units",
+    "fix": "AppGeoCeDG.fileNew: after super.fileNew (clearConstruction with its prompt, workspace reset, preference reload, toolbar, unique id, plane views) and the D1 new-document defaults, a completed New (clearedInFileNew) calls setSaved(); a cancelled or failed New never reaches it",
+    "unchanged": ["App.isSaved", "Construction.isStarted", "A-2 save-relevance hook", "units", "parser", "undo", "close dialog", "revision-2 hook"],
+    "productPaths": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java"],
+    "testPaths": ["source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA2NewDocumentBaselineTest.java"],
+    "newTestsOnPreviousCandidate": "3 of 5 fail (untouched New with replayed preferences, first real edits, hidden-layer change after New), each at the saved baseline after New",
+    "realWindowAfterFix": "author settings copy: New saved (also after the event queue settled and after a second New); a new point unsaved; New answered Don't Save gives a saved blank document; a hidden-layer change unsaved; New answered Cancel stays unsaved with its hidden layer",
+    "serializationChange": "NONE relative to revision 2",
+    "preFreeze": {
+      "focalAndLifecycle": {"classes": 11, "tests": 98, "failures": 0, "errors": 0},
+      "checkstyle": "no finding in revision files; PreG9BR6PlusA1HiddenLayerTest.java:188 pre-existing",
+      "upstreamBoundary": {"result": "OK", "registeredFiles": 933},
+      "inventory": {
+        "discovery.desktop": {"from": 1792, "to": 1797, "sha256": "c4885601e88a55620b8dcf9597e834201db498146e6ae0ef05d5108a4c557ed1"},
+        "final.desktop": {"from": 1786, "to": 1791, "sha256": "c47aa95be23731d8f7bc8f43f4f8ab5644c04dd82bb62f88b99121499788e7da", "executed": {"tests": 1791, "failures": 0, "errors": 0, "skipped": 1}},
+        "sharedSelectionsUnchanged": true,
+        "junitInventoryPin": {"from": "d06c3ea62a4b1d792350007f1d2ee3dbef64c257df2efd1f8449bd5f29b25b7b", "to": "73d599622089e29ecda29f652115e04418be9d7677b5e3546b694e185e6fe0ca"}
+      },
+      "gitDiffCheck": "clean",
+      "developmentStatic": {"runId": "verification-817c29d998964376a858c6b7c07a78c6", "verdict": "ACCEPTED / COMPLETE", "leaves": 3},
+      "developmentInfraUnit": {"runId": "verification-14cca78ce70743ee879d9173bef00410", "verdict": "ACCEPTED / COMPLETE", "leaves": 22},
+      "note": "development and inventory evidence, not acceptance"
+    }
+  },
+  "recordedObservations": [
+    {"id": "OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT", "disposition": "PRE-EXISTING — REPRODUCED ON P_R6PLUS_D1 2941ddf2 — NOT CAUSED BY A-2 — AUTHOR-AUTHORIZED FOCAL CORRECTION DURING A-2 REVIEW; corrected in revision 3"},
+    {"id": "OBS-R6PLUS-EXPORT-PREVIEW-ABSENT", "content": "author smoke: picture export works but the tested route presents no preview; provenance relative to A-2 not established; distinct from OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS", "disposition": "NOT PROVEN A-2 REGRESSION — CHARACTERIZE BEFORE/DURING C — NOT A-2 BLOCKING"},
+    {"id": "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY", "content": "validated numeric direct-entry field in the existing working-layer chooser beside the list; same authoritative state and 0..L_MAX validation; no second mechanism", "preferredOwner": "F2", "disposition": "ENHANCEMENT — NOT A-2 BLOCKING — IMPLEMENTATION NOT AUTHORIZED"},
+    {"id": "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "disposition": "recorded in revision 2, unchanged, disposition required before the global closeout"}
+  ],
   "revision2": {
     "trigger": "focal read-only characterization of e3cbdc60: A2_FOCAL_REMEDIATION_REQUIRED (Base64 and non-native URL loads are full-document replacements that did not commit the hidden set)",
     "authorizedScope": "focal correction of that defect only (author instruction of 2026-10-04)",
