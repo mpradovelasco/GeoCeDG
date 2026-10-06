@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C-X1",
+  "observation": "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT",
+  "recordKind": "PREPARATION_PACKAGE_CLOSEOUT_AND_AUTHORIZATION",
+  "record": "docs/validation/pre_g9b_r6_plus_c_x1_prompt_closeout_record.md",
+  "authorDecisionDate": "2026-10-06",
+  "authorConfirmedInSession": true,
+  "preparationPackage": "PASS — AUTHOR APPROVED",
+  "phaseState": "AUTHORIZED FOR IMPLEMENTATION",
+  "selfApproved": false,
+  "authorApproved": "preparation package only",
+  "passClaimed": "preparation package only",
+  "implementationAuthorized": true,
+  "approvedCandidates": [
+    {
+      "name": "T_R6PLUS_C_X1_PROMPT",
+      "commit": "50baef73e784f764e95c9faf33d50188986ec3ed",
+      "tree": "245a8a7a814dc7146a8c1cf32214019da6317999",
+      "parent": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+      "promptBlob": "3402b02ab73615b8d00880952116a61a70274d25",
+      "static": "verification-1d545d3142454ed38e8f898b94acddbc",
+      "staticResultHash": "ba193f8d6d5969985dbf713c63a668da43874ec8df0d64061cd75fdcc50c4943"
+    }
+  ],
+  "authorization": {
+    "publishedBase": {"name": "P_R6PLUS_C", "commit": "39eb05bc16a18ae48167383e90fcf38b12a681b6", "tree": "fc13f5f125a4e8d595dd450bfd47706be193e5cd"},
+    "branchStart": "50baef73e784f764e95c9faf33d50188986ec3ed",
+    "implementationBranch": "phase/pre-g9b-r6-plus-c-x1-classic-picture-dialog-edt",
+    "verificationClass": "BOUNDED_PHASE",
+    "frozen": true,
+    "plannedAcceptance": ["PHASE -Phase PRE-G9B-R6-plus-C-X1 (registered)"],
+    "sameCandidateAndTree": true,
+    "integration": "NOT REQUIRED",
+    "final": "NOT REQUIRED unless a stop condition forces reclassification",
+    "productFiles": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java"],
+    "stopState": "PRE-G9B-R6-plus-C-X1 = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW; AUTOMATED VERIFICATION = ACCEPTED / COMPLETE; AUTHOR_SMOKE = PENDING"
+  },
+  "frozenCharacterization": {
+    "cCausality": false,
+    "flatLafRootCause": false,
+    "proven": "the Classic launch violates Swing EDT ownership and the proposed EDT correction eliminates that race",
+    "notYetProven": "the race is the sole necessary cause of every manually observed empty-dialog/hang event"
+  },
+  "dispositions": {
+    "DQ-X1-1": "accepted: PRE-G9B-R6-plus-C-X1; registry PRE-G9B-R6-PLUS-C-X1",
+    "DQ-X1-2": "option A: caller-site removal of new Thread/start() in FileMenuD.exportGraphicAction; body, showGraphicExport behavior and clipboard fallback preserved; no marshalling in showGraphicExport; GeoCeDG v2 unchanged; stop if a supported route enters off the EDT",
+    "DQ-X1-3": "accepted, frozen: BOUNDED_PHASE; registered PHASE only; no INTEGRATION, no FINAL",
+    "DQ-X1-4": "out of scope: Classic startup off the EDT, Print Preview, dialog Save/Clipboard, other FileMenuD worker actions, toolbar/startup layout races; recorded as separate observations",
+    "DQ-X1-5": "accepted with precision: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW, AUTHOR_SMOKE = REQUIRED; smoke is the evidence for the severe symptom; finite repetition proves no absence of hangs",
+    "DQ-X1-6": "accepted: windowed process-level test if deterministic and bounded; primary assertion is ownership and lifecycle"
+  },
+  "unchangedSemantics": {
+    "serializationChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "outputFormatSchemaChange": "NONE"
+  },
+  "notAuthorized": ["E1", "E2", "E3", "F1", "F2", "F3 implementation", "G", "PRE-G9B-R7", "G9B", "OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION", "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT", "push", "merge", "publication", "tag", "release", "PASS — AUTHOR APPROVED"]
+}

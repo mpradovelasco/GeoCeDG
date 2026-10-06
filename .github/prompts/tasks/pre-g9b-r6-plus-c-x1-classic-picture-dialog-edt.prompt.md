@@ -1,49 +1,48 @@
 # PRE-G9B-R6-plus-C-X1 — Classic Graphics View as Picture launched on the EDT
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instruction of 2026-10-06. That
-instruction authorized a bounded post-`C` characterization, design and
-implementation-preparation activity for the accepted pre-existing debt
-`OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT`, named the published `C` baseline
-below, fixed the required probes, the architectural rule, the forbidden scope
-and the stop conditions, and authorized only documentary and diagnostic
-preparation: a characterization report, its machine-readable mirror, this
-prompt in the `PREPARED — NOT AUTHORIZED` state and the minimal roadmap and
-mini-track registration. It stated that it **does not authorize the product or
-upstream fix**. The evidence behind the characterization below, and the inputs
-fixed by that instruction, are in the
+The author's explicit instruction of 2026-10-06, confirmed in writing in the
+session, approves the documentary preparation package of `PRE-G9B-R6-plus-C-X1`
+(`T_R6PLUS_C_X1_PROMPT`), names it as the exact start of the implementation
+branch, accepts the identifier, gives the author dispositions on `DQ-X1-1` to
+`DQ-X1-6`, freezes `BOUNDED_PHASE`, and authorizes the bounded correction of
+`OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT`. The instruction is recorded,
+versioned, in the
+[C-X1 preparation closeout and authorization record](../../../docs/validation/pre_g9b_r6_plus_c_x1_prompt_closeout_record.md).
+It also requires this amendment, as the first tracked edit of the phase, so
+that the prompt becomes the executable contract of the phase. The amendment
+replaces the prepared prompt of `T_R6PLUS_C_X1_PROMPT` (blob
+`3402b02ab73615b8d00880952116a61a70274d25`): it records the authorized branch
+start, integrates the `DQ-X1` dispositions, replaces the pending and proposed
+language they supersede, and freezes the class. Where the prepared prompt and
+the record differ, the record prevails; this amendment carries that precedence
+into the text. Every other scope, forbidden-scope and stop rule of the prepared
+prompt is kept. The evidence behind the characterization below is in the
 [C-X1 preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_c_x1_preparation_characterization_report.md).
-The existence of this file is not authorization.
 
-The identifier `PRE-G9B-R6-plus-C-X1` is **proposed by the preparation, not
-author-approved** (`DQ-X1-1`). It follows the `PRE-G9B-R3-X1` precedent of an
-`X` activity that resolves debt left open by a closed phase, and avoids the
-`-R<n>` suffix, which this repository uses for revisions of the same phase
-(`T_R6PLUS_C` is itself revision 1 of `C`). If the author chooses another
-identifier, the authorizing instruction may rename this file and every
-reference in the same amendment.
-
-Execution requires a new explicit author instruction that names the activity
-and the exact prepared candidate or base, and that disposes of the requested
-decisions `DQ-X1-1` to `DQ-X1-6`. That instruction may authorize, as the first
-tracked edit of the phase, an amendment of this prompt to the authorized state,
-following the `A-1`, `B`, `D0`, `D1`, `A-2` and `C` precedent. This file is an
+`C` stays closed. Its technical acceptance and the historical classification of
+the observation (`PRE-EXISTING — NOT CAUSED BY C — ACCEPTED C DEBT — DEFERRED
+TO POST-C`) are not reopened, reinterpreted or amended by this activity.
+`C-X1` is a bounded post-`C` corrective activity; it does not replace `E1` and
+does not change the operational order of the mini-track. This file is an
 execution contract, not a second policy document: the verification classes are
 defined once in `geocedg/specs/operations/verification-levels.md` §12.8, the
 debt disposition once in the
 [C closeout record](../../../docs/validation/pre_g9b_r6_plus_c_closeout_record.md),
-and the probe evidence once in the characterization report; this prompt cites
-them and does not restate them differently.
+the dispositions once in the authorization record, and the probe evidence once
+in the characterization report; this prompt cites them and does not restate
+them differently.
 
 ```text
 PRE-G9B-R6-plus-C-X1 =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
-identifier               = PROPOSED — NOT AUTHOR APPROVED (DQ-X1-1)
+identifier               = PRE-G9B-R6-plus-C-X1 (author-accepted, DQ-X1-1)
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (C-X1 implementation and technical verification only)
 passClaimed              = false
 PHASE_KIND               = UPSTREAM DESKTOP LIFECYCLE CORRECTION — ONE CLASSIC MENU
                            ACTION; NO GEOMETRY, NO SERIALIZATION, NO EXPORT SEMANTICS
@@ -51,14 +50,23 @@ DEPENDS_ON               = PRE-G9B-R6-plus-C = PASS — AUTHOR APPROVED — PUBL
                            (P_R6PLUS_C 39eb05bc; the debt was accepted at its closeout)
 RESOLVES                 = OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT (launch lifecycle
                            only; final disposition is the author's, after smoke)
-PRECONDITION             = author dispositions of DQ-X1-1 to DQ-X1-6
+VERIFICATION_CLASS       = BOUNDED_PHASE (frozen; DQ-X1-3)
 NEXT_SUBPHASE            = none implied; E1, E2, E3, F1, F2, F3, G stay unauthorized
 ```
 
 `authorApproved = false` means that no technical candidate of this activity has
 been author-approved. Technical verification never creates author approval.
-Once authorized, the activity stops with one exact technically verified
-candidate pending author review and author smoke.
+The activity stops with one exact technically verified candidate pending
+author review and author smoke.
+
+The causal statement is frozen by the author and must not be strengthened:
+
+```text
+PROVEN         the Classic launch violates Swing EDT ownership, and the proposed
+               EDT correction eliminates that race
+NOT YET PROVEN the race is the sole necessary cause of every manually observed
+               empty-dialog/hang event
+```
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -111,6 +119,9 @@ after   exportGraphicAction.actionPerformed (EDT)
   characterization report §0): upstream Desktop lifecycle correction, smallest
   host-compatible fix, no GeoCeDG semantics in Classic, no export-semantic,
   serialization, kernel or dialog-design change.
+- The author's implementation authorization of 2026-10-06 and its dispositions
+  on `DQ-X1-1` to `DQ-X1-6`
+  ([authorization record](../../../docs/validation/pre_g9b_r6_plus_c_x1_prompt_closeout_record.md)).
 - `AGENTS.md` §3.1 (minimum necessary upstream changes, justified and
   recorded), §7 (modification marking) and §16.
 
@@ -125,14 +136,16 @@ of the defect is therefore the call site, and the fix belongs there.
 
 | Option | Shape | Disposition |
 |---|---|---|
-| **A — call site (recommended)** | remove `new Thread`/`start()` in `exportGraphicAction`; the body is unchanged | smallest; matches the actions of the same menu that open their UI directly on the EDT (Animated GIF, PSTricks, PGF/TikZ, Asymptote, Open, Save, Save As), the Classic `Ctrl+Shift+U` dispatcher route and the GeoCeDG v2 route to the same method; GeoCeDG v2 untouched |
+| **A — call site (author-selected, `DQ-X1-2`)** | remove `new Thread`/`start()` in `exportGraphicAction`; the body is unchanged | smallest; matches the actions of the same menu that open their UI directly on the EDT (Animated GIF, PSTricks, PGF/TikZ, Asymptote, Open, Save, Save As), the Classic `Ctrl+Shift+U` dispatcher route and the GeoCeDG v2 route to the same method; GeoCeDG v2 untouched |
 | B — callee self-marshal | `GuiManagerD.showGraphicExport()` re-posts itself to the EDT when called off it (`invokeAndWait` or `invokeLater`) | rejected: changes a shared host method that the GeoCeDG v2 route, the Classic dispatcher and `GuiManagerInterface` callers use, against "GeoCeDG unchanged"; `invokeAndWait` from a worker adds a lock-ordering hazard; `invokeLater` changes the synchronous contract and moves exceptions away from the existing `catch`; no other off-EDT caller exists (X1) |
 | C — worker plus `invokeLater` | keep the thread, post the body to the EDT | rejected: equivalent to A with an extra hop and a changed exception path |
 | D — dialog redesign or a Classic-specific abstraction | — | forbidden by the instruction |
 
-Option A is the only option compatible with every constraint of the
-instruction. `DQ-X1-2` asks the author to confirm it; the preparation does not
-select it on the author's behalf.
+The author selected option A (`DQ-X1-2`). No generic marshalling is added to
+`showGraphicExport()`, and the GeoCeDG v2 route is not modified to normalize
+both paths. If the implementation shows that a supported invocation
+legitimately enters `exportGraphicAction` off the EDT, the phase stops for
+author review instead of introducing a wider dispatcher abstraction.
 
 ### Characterization results at the base
 
@@ -226,30 +239,38 @@ dialog from `new Thread`; its post-baseline commits to these files are
 formatting and lint changes. No later upstream correction exists to adopt, so
 no upstream provenance conflicts with the pin.
 
-### Decisions requested before authorization
+### Author dispositions on `DQ-X1-1` to `DQ-X1-6`
 
-| ID | Question | Preparation recommendation |
+The [authorization record](../../../docs/validation/pre_g9b_r6_plus_c_x1_prompt_closeout_record.md)
+is the authority of these dispositions; this table summarizes it.
+
+| ID | Outcome | Disposition |
 |---|---|---|
-| `DQ-X1-1` | Canonical identifier of the activity | `PRE-G9B-R6-plus-C-X1`, registry phase id `PRE-G9B-R6-PLUS-C-X1` |
-| `DQ-X1-2` | Repair option | option A (call site), exactly as in *Objective* |
-| `DQ-X1-3` | Verification class | `BOUNDED_PHASE`, planned acceptance one registered `PHASE`; no `INTEGRATION`, no `FINAL` |
-| `DQ-X1-4` | Adjacent same-pattern sites stay out of scope: the dialog's own Save/Clipboard threads (shared with GeoCeDG); `GeoGebraMenuBar.showPrintPreview`, which builds and shows `PrintPreviewD` on a worker thread for Classic and for the GeoCeDG v2 `host.document.print-preview` action; the threaded `newWindowAction`, `drawingPadToClipboardAction`, `exportWorksheet` and `exportGeoGebraTubeAction` of `FileMenuD`; and the Classic application startup, which `GeoGebra3D` runs off the EDT through the upstream `GeoGebra.doMain` overload (`initializeOnEventDispatchThread = false`; GeoCeDG passes `true`), observed once by the probes as a startup layout failure | keep out of scope; record them as observed adjacent debt for a separate disposition |
-| `DQ-X1-5` | Closure rule for the observation | the candidate may record "launch race eliminated (automated)"; the observation becomes resolved only after an author smoke that no longer reproduces the empty dialog and hang |
-| `DQ-X1-6` | Status of the process-isolated windowed regression test | tracked, inside the registered phase selection, asserting the deterministic ownership invariant rather than the absence of a random exception |
+| `DQ-X1-1` | accepted | `PRE-G9B-R6-plus-C-X1`; registry phase id `PRE-G9B-R6-PLUS-C-X1` |
+| `DQ-X1-2` | option A | caller-site removal of the worker thread in `exportGraphicAction`; body, `showGraphicExport()` behavior, clipboard fallback and error handling preserved; no marshalling in `showGraphicExport()`; GeoCeDG v2 unchanged |
+| `DQ-X1-3` | accepted, frozen | `BOUNDED_PHASE`; one registered `PHASE` on the exact candidate; no `INTEGRATION`, no `FINAL` |
+| `DQ-X1-4` | out of scope | the dialog's Save/Clipboard threads; `GeoGebraMenuBar.showPrintPreview` (Classic and the GeoCeDG v2 `host.document.print-preview` action); the threaded `newWindowAction`, `drawingPadToClipboardAction`, `exportWorksheet` and `exportGeoGebraTubeAction` of `FileMenuD`; the Classic application startup that `GeoGebra3D` runs off the EDT through the upstream `GeoGebra.doMain` overload (`initializeOnEventDispatchThread = false`; GeoCeDG passes `true`); unrelated toolbar/startup layout races. Not fixed; recorded as separate observations. The occasional Classic startup failure does not authorize a startup redesign |
+| `DQ-X1-5` | accepted with precision | stop at `TECHNICAL CANDIDATE PENDING AUTHOR REVIEW`, `AUTHOR_SMOKE = REQUIRED`; the author smoke is the evidence for the manually observed severe symptom; finite repetition never proves the absence of all hangs |
+| `DQ-X1-6` | accepted | include a process-isolated windowed regression test of the real Swing path if it is deterministic and bounded; its primary assertion is thread ownership and lifecycle correctness |
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 ```text
-P_R6PLUS_C = 39eb05bc16a18ae48167383e90fcf38b12a681b6
-tree       = fc13f5f125a4e8d595dd450bfd47706be193e5cd
+PUBLISHED_BASE        = 39eb05bc16a18ae48167383e90fcf38b12a681b6   (P_R6PLUS_C;
+                        tree fc13f5f125a4e8d595dd450bfd47706be193e5cd)
+BRANCH_START          = 50baef73e784f764e95c9faf33d50188986ec3ed   (T_R6PLUS_C_X1_PROMPT;
+                        tree 245a8a7a814dc7146a8c1cf32214019da6317999; documentary
+                        only, no product delta; not published)
+IMPLEMENTATION_BRANCH = phase/pre-g9b-r6-plus-c-x1-classic-picture-dialog-edt
+                        (local; no rebase; the preparation candidate is kept as
+                        provenance and never amended)
 ```
 
-The implementation branch starts from the exact commit the authorizing
-instruction names: either `P_R6PLUS_C` or the preparation candidate that
-contains this prompt (documentary only, no product delta). Entry gate: local
-`main`, `origin/main` and the live remote `main` agree with the named base, the
-worktree is clean, and `C` is still `PASS — AUTHOR APPROVED — PUBLISHED`.
+Entry gate: local `main`, `origin/main` and the live remote `main` agree with
+`P_R6PLUS_C`, the worktree is clean, and `C` is still `PASS — AUTHOR APPROVED —
+PUBLISHED`. If the live remote `main` changed, the phase stops and reconciles
+instead of rebasing.
 
 ## Authority and evidence hierarchy
 
@@ -302,8 +323,13 @@ worktree is clean, and `C` is still `PASS — AUTHOR APPROVED — PUBLISHED`.
   installation.
 - Redesign of the export dialog, its layout, its modality or its ownership;
   disposal policy of hidden dialogs.
-- Any other Swing/EDT debt, Desktop heap work, `exportPDF` UTF-8, AutoColor,
-  verification architecture, packaging, DXF, units or export debt.
+- Any other Swing/EDT debt, Desktop test-heap pressure, the `exportPDF`
+  callback UTF-8 debt, the AutoColor JVM-global state, the historical G9X1
+  authority-scan debt, verification architecture, packaging, DXF, units or
+  export debt.
+- Any second production file (none is pre-authorized), any change of
+  `showGraphicExport()`, and any change of the operational order of the
+  mini-track.
 - `OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION`,
   `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`,
   `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT`.
@@ -370,7 +396,23 @@ Focal tests mechanize every obligation; they run in the phase selection:
 Deterministic assertions are the ownership invariant and its direct
 consequences; they never rely on the absence of a randomly timed failure. The
 absence of the author's empty-dialog-and-hang variant is established only by
-author smoke.
+author smoke. `T-X1-PROCESS` is included only if it is deterministic and
+bounded (`DQ-X1-6`); otherwise it is replaced by scratch repetition evidence
+and the candidate report says so.
+
+Repetition evidence (development evidence, recorded in the candidate report):
+the corrected Classic path repeated in separate JVMs through the real File menu
+until it establishes zero off-EDT dialog lifecycle operations, zero uncaught
+EDT exceptions attributable to the path, successful population and successful
+Cancel. Finite repetition is never claimed to prove the absence of all hangs.
+
+Required declarations of the candidate:
+
+```text
+SERIALIZATION CHANGE          = NONE
+GEOMETRIC SEMANTICS CHANGE    = NONE
+OUTPUT FORMAT / SCHEMA CHANGE = NONE
+```
 
 Harness rules: in `T-X1-PROCESS` the child JVM invokes `GeoGebra3D.main` from
 the EDT (`SwingUtilities.invokeAndWait`), so the independent Classic startup
@@ -425,14 +467,15 @@ result hashes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-This prompt authorizes nothing. Its existence records a prepared contract.
-Execution requires an explicit author instruction naming the activity, the
-exact branch start, the frozen class and the dispositions of `DQ-X1-1` to
-`DQ-X1-6`; that instruction may authorize local implementation, local commits,
-technical verification, the registered `PHASE` run and one frozen technical
-candidate for author review and smoke. No instruction derived from this file
-authorizes self-approval, author smoke by the agent, an `INTEGRATION` or
-`FINAL` run, or any change of the class.
+The author's instruction of 2026-10-06, recorded in the authorization record,
+authorizes: local implementation on the implementation branch from the branch
+start above; local commits; focused tests; the phase registration and its
+official catalog updates; development `INFRA_UNIT` and `STATIC` runs; the
+registered `PHASE` run on the frozen candidate; one frozen technical candidate
+for author review and author smoke. It does not authorize self-approval,
+author smoke by the agent, an `INTEGRATION` or `FINAL` run, or any change of
+the class; a proven inability of `BOUNDED_PHASE` to cover the change is
+reported as a reclassification proposal, never applied silently.
 
 This activity authorizes nothing that follows it. `E1`, `E2`, `E3`, `F1`, `F2`,
 `F3`, `G`, `PRE-G9B-R7` and `G9B` stay unauthorized, and so does every open
@@ -451,7 +494,16 @@ candidate SHA. Acceptance evidence never grants publication authority.
 ## Acceptance and closeout
 
 The activity stops with one technically verified candidate pending author
-review and author smoke, with `selfApproved = false`. Author approval is an
+review and author smoke:
+
+```text
+PRE-G9B-R6-plus-C-X1   = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+AUTOMATED VERIFICATION = ACCEPTED / COMPLETE
+AUTHOR_SMOKE           = PENDING (required)
+selfApproved = false, authorApproved = false, passClaimed = false
+```
+
+Author approval is an
 explicit decision naming the exact accepted commit. The candidate report and
 its evidence record `AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT`; a later
 closeout record is the sole authority for approval and for the disposition of
@@ -468,7 +520,11 @@ expected for this class.
   diff; the ownership trace before and after (route by route); the bytecode
   identity list; the obligation-to-test map; the adjacent debt of `DQ-X1-4`
   restated unchanged; residual risks; the author-smoke checklist.
-- The author-smoke checklist covers at least: the Classic diagnostic
+- The author-smoke checklist covers at least the author's expected result
+  (Classic diagnostic, File > Export > Graphics View as Picture: dialog
+  populated, application responsive, Cancel closes the dialog, no
+  empty-dialog/hang behavior; and a quick normal GeoCeDG Graphics View as
+  Picture regression), and also: the Classic diagnostic
   application from GeoCeDG, File > Export > Graphics View as Picture opened
   and cancelled repeatedly with the real mouse, including moving the pointer
   over the dialog while it appears; the same through `Ctrl+Shift+U` from the
@@ -499,8 +555,21 @@ Stop and report rather than improvise when:
   characterization did not record;
 - the windowed test cannot run deterministically on the supported Windows
   verification environment;
-- a `DQ-X1` question is reached without an author disposition;
+- removing the worker thread does not eliminate the demonstrated off-EDT
+  lifecycle, or the corrected isolated path still produces the same EDT race;
+- a supported route legitimately invokes `exportGraphicAction` off the EDT;
+- `showGraphicExport()` must change, or another production file must change;
+- the clipboard fallback cannot be preserved;
+- a different independent cause is required to explain basic dialog
+  corruption;
+- the current source materially differs from the characterized source;
+- a `DQ-X1` question is reached without an author disposition, or an issue
+  arises that the dispositions do not resolve;
 - current governance requires a verification class other than `BOUNDED_PHASE`;
 - the `PHASE` run is rejected for a cause attributable to the candidate, or its
   coverage is incomplete or untrusted;
 - product or test code would change after acceptance.
+
+The remaining inability to reproduce the author's severe hang automatically is
+not, by itself, a stop condition when the proven EDT violation is corrected and
+all deterministic acceptance evidence passes.
