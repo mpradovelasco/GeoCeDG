@@ -138,7 +138,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
       "change": "added",
-      "purpose": "Retain the exact G5 flow and coordinate the opt-in G9X1 request, preflight, acknowledgement, destination, sidecar, and safe paired-write flow outside the kernel. PRE-G9B-R6-plus-C: export context (construction unit, document hidden layers, explicit export area), units text, usm refusal on the disabled extended path and the result report lines. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
+      "purpose": "Retain the exact G5 flow and coordinate the opt-in G9X1 request, preflight, acknowledgement, destination, sidecar, and safe paired-write flow outside the kernel. PRE-G9B-R6-plus-C: export context (construction unit, document hidden layers, explicit export area), units text, usm refusal on the disabled extended path and the result report lines; the Save dialog proposes the document file name with the extension .dxf (C-UX-2). Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -5634,7 +5634,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExportScalePresentation.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-C export-scale presentation: drawing-scale control, device-mode statements and labels, print-scale title and LaTeX panel.",
+      "purpose": "PRE-G9B-R6-plus-C export-scale presentation: drawing-scale control, compact device-mode statements (full explanation as tooltip, C-UX-1) and labels, print-scale title and LaTeX panel.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
     },
     {

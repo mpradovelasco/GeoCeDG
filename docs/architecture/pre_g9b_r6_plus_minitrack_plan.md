@@ -219,7 +219,7 @@ No other boundary changed.
 | `B` | export surface and `ExportArea` authority | profile, Desktop, shared view export path | `INTEGRATED_PHASE` (author-proposed; frozen at authorization) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-02; `T_R6PLUS_B` `848206c4`; authorized 2026-10-02 on `f6194f09`; canonical prompt prepared on `d32ad608` and `AUTHORIZED`; author decisions `AQ-X1`–`AQ-X7` recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED` 2026-10-02, `T_R6PLUS_B_PROMPT` `7e00e451`, with the `DQ-B` dispositions) |
 | `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` (author-frozen 2026-10-02) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-02; `T_R6PLUS_D0` `8383a153`; ADR 0032 and unit-system v1.0 author-approved; authorized 2026-10-02 on `8814468`; canonical prompt prepared on `0ef616bb` and `AUTHORIZED`; author decisions `AQ-U2`–`AQ-U6` recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED` 2026-10-02, `T_R6PLUS_D0_PROMPT` `8814468`, with the `DQ-D0` dispositions) |
 | `D1` | unit-system implementation and status integration | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` (author-frozen 2026-10-02) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-03; `T_R6PLUS_D1` `6e1d8459`; `AUTHOR_SMOKE = PASS`; revision 2 after the author smoke of `b55aa817`; authorized 2026-10-03 on `3fb7542a`; canonical prompt prepared on `3268f9b9` and `AUTHORIZED`; preparation decisions recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED`) |
-| `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` (re-characterized and confirmed by the preparation; frozen at authorization) | `TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` — current operational subphase (preparation package `6cb09d55` `PASS — AUTHOR APPROVED` with the `DQ-C1`–`DQ-C17` dispositions; implementation authorized 2026-10-04; registered `PHASE` + `INTEGRATION`, no `FINAL`; [candidate report](../validation/pre_g9b_r6_plus_c_candidate_report.md)) |
+| `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` (re-characterized and confirmed by the preparation; frozen at authorization) | `REVISED TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` — current operational subphase (preparation package `6cb09d55` `PASS — AUTHOR APPROVED` with the `DQ-C1`–`DQ-C17` dispositions; implementation authorized 2026-10-04; registered `PHASE` + `INTEGRATION`, no `FINAL`; revision 1 of 2026-10-06 after the author smoke of `b981f8ea`: hidden-circle DXF finding clarified as expected by `DQ-C3`, Classic picture-dialog finding pre-existing and not caused by `C`, compact non-physical note and document-named DXF default; [candidate report](../validation/pre_g9b_r6_plus_c_candidate_report.md)) |
 | `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence) | `NOT AUTHORIZED` |
 | `E2` | native dimension tools | shared kernel commands, Desktop modes, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
@@ -1175,10 +1175,11 @@ PRE-G9B-R6-plus-A-2        = PASS — AUTHOR APPROVED — PUBLISHED
                              AUTHOR_SMOKE = PASS; FINAL verification-814f89fa;
                              revisions e3cbdc60 and c1c08e90 historical evidence)
 
-PRE-G9B-R6-plus-C          = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (preparation
+PRE-G9B-R6-plus-C          = REVISED TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (preparation
                              package 6cb09d55 PASS — AUTHOR APPROVED; implementation
                              authorized 2026-10-04; INTEGRATED_PHASE, PHASE +
-                             INTEGRATION, no FINAL)
+                             INTEGRATION, no FINAL; revision 1 after the author smoke
+                             of b981f8ea, whose runs stay historical evidence)
 
 PRE-G9B-R6-plus-E1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
@@ -1205,10 +1206,9 @@ OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT = PRE-EXISTING — REPROD
                              ON P_R6PLUS_D1 2941ddf2 — NOT CAUSED BY A-2 —
                              AUTHOR-AUTHORIZED FOCAL CORRECTION DURING A-2 REVIEW —
                              CLOSED
-OBS-R6PLUS-EXPORT-PREVIEW-ABSENT = NOT PROVEN A-2 REGRESSION — NOT A-2 BLOCKING —
-                             CHARACTERIZED BY THE C PREPARATION (proposed
-                             NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED) —
-                             AUTHOR DISPOSITION PENDING (DQ-C10)
+OBS-R6PLUS-EXPORT-PREVIEW-ABSENT = NOT_A_DEFECT / UI_EXPECTATION_CLARIFIED (author
+                             disposition DQ-C10, 2026-10-04; the guides state
+                             the Save-preview conditions)
 OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT = RECORDED BY THE C RECONCILIATION —
                              A tool replacement reloads the document with a
                              clearing setXML that A-2 commits as a document
@@ -1216,6 +1216,25 @@ OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT = RECORDED BY THE C RECONCILIATION —
                              BEHAVIOR — NOT C SCOPE — NOT FIXED — AUTHOR DISPOSITION
 ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY = ENHANCEMENT — NOT A-2 BLOCKING —
                              IMPLEMENTATION NOT AUTHORIZED (preferred owner F2)
+ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE = ENHANCEMENT — OWNER PRE-G9B-R6-plus-E3 —
+                             IMPLEMENTATION NOT AUTHORIZED (recorded by the C
+                             smoke remediation, 2026-10-06): a stable, exportable
+                             and hideable construction label such as "A3 — 1:50";
+                             a transient, non-exported coordination indicator
+                             comparing the scale captured by IsoABorder with the
+                             current session drawingScale; no geometric
+                             dependency on the live drawingScale
+OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT = PRE-EXISTING (upstream FileMenuD builds
+                             and shows GraphicExportDialog on a background
+                             thread; EDT layout NullPointerExceptions on the base
+                             e6135028 and on C alike; the author-observed empty
+                             dialog and blocked session were not reproduced) —
+                             NOT CAUSED BY C — NOT FIXED — AUTHOR DISPOSITION
+OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION = PRE-EXISTING SINCE G5 (AutoCAD 2024
+                             refuses the minimal AC1015 DXF container: "Error in
+                             APPID Table"; the entity encoding, including
+                             60 = 1, is honoured inside an accepted container) —
+                             NOT C SCOPE — NOT FIXED — AUTHOR DISPOSITION
 A-2 3D draw-order limitation = KNOWN PRESENTATION LIMITATION — NOT AUTHORITATIVE
                              LAYER SEMANTICS — NOT A-2 BLOCKING
 F3 Apply Template re-layering = OPEN F3 CHARACTERIZATION QUESTION —

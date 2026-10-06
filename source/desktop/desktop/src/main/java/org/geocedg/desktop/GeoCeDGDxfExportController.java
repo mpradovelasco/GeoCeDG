@@ -59,6 +59,7 @@ final class GeoCeDGDxfExportController {
 	private static final String COMPLETE = "Complete 2D geometric construction";
 	private static final String SELECTION = "Current selection";
 	private static final String DEFAULT_TOLERANCE = "0.001";
+	private static final String DEFAULT_DXF_FILE_NAME = "geocedg-export.dxf";
 	private final AppD app;
 	private final GeometryExportService service;
 	private final DxfFidelityManifestWriter manifestWriter;
@@ -178,6 +179,33 @@ final class GeoCeDGDxfExportController {
 	}
 
 	/**
+	 * PRE-G9B-R6-plus-C (C-UX-2): the file name the Save dialog proposes. It only
+	 * suggests a name; the document, its file and Save / Save As are untouched.
+	 *
+	 * @return proposed DXF file name for the current document
+	 */
+	String defaultDxfFileName() {
+		return defaultDxfFileName(app.getCurrentFile());
+	}
+
+	/**
+	 * @param documentFile file of the current document, or null
+	 * @return the document file name with the extension .dxf, or the generic
+	 *         name when the document has no usable file name
+	 */
+	static String defaultDxfFileName(File documentFile) {
+		if (documentFile != null) {
+			String name = documentFile.getName();
+			int dot = name.lastIndexOf('.');
+			String stem = dot > 0 ? name.substring(0, dot) : name;
+			if (!stem.isBlank()) {
+				return stem + ".dxf";
+			}
+		}
+		return DEFAULT_DXF_FILE_NAME;
+	}
+
+	/**
 	 * @param context export context
 	 * @return coordinate and unit statement of the dialogs and reports
 	 */
@@ -281,7 +309,7 @@ final class GeoCeDGDxfExportController {
 		chooser.setDialogTitle("Export GeoCeDG 2D geometry as DXF");
 		chooser.setFileFilter(new FileNameExtensionFilter("DXF drawing (*.dxf)",
 				"dxf"));
-		chooser.setSelectedFile(new File("geocedg-export.dxf"));
+		chooser.setSelectedFile(new File(defaultDxfFileName()));
 		if (chooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) {
 			return null;
 		}
@@ -647,7 +675,7 @@ final class GeoCeDGDxfExportController {
 			chooser.setDialogTitle("Export GeoCeDG 2D geometry as DXF");
 			chooser.setFileFilter(new FileNameExtensionFilter(
 					"DXF drawing (*.dxf)", "dxf"));
-			chooser.setSelectedFile(new File("geocedg-export.dxf"));
+			chooser.setSelectedFile(new File(defaultDxfFileName()));
 			if (chooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) {
 				return null;
 			}

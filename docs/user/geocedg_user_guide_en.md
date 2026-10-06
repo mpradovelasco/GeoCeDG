@@ -433,7 +433,8 @@ of pixels, and the presentation unit only changes how lengths are expressed. A
 size that a format cannot represent, for example below one pixel, is refused
 with a message instead of being clamped. In a document without a construction
 unit the dialogs keep their device scales, labelled as non-physical, and no
-engineering scale is offered.
+engineering scale is offered; the short note "Non-physical: no construction
+unit" shows the full explanation as its tooltip.
 
 **The same area elsewhere.** `ExportImage`, the scripting functions
 `writePNGtoFile`, `getPNGBase64`, `exportSVG` and `exportPDF`, and the command
@@ -1347,7 +1348,10 @@ English regardless of the product language.
 | Sidecar | request a manifest even for an all-exact export |
 
 The preflight report then lists the exact, approximate, unsupported, invalid and
-omitted component counts before you choose a destination.
+omitted component counts before you choose a destination. The Save dialog
+proposes the name of the open document with the extension `.dxf` (for example
+`MyConstruction.cedg` → `MyConstruction.dxf`), or `geocedg-export.dxf` for a
+document that has never been saved; the document itself is not renamed.
 
 For a complete-construction request the input is the typed geometric population.
 Lists, numeric parameters, rich intersection results and Text have no approved
@@ -1359,8 +1363,10 @@ rule.
 
 Partial component output is **disabled** by default: a request that cannot be
 satisfied completely is rejected rather than silently truncated. Hidden objects
-are included and visibly reported. Objects on a hidden layer (section 12.5) are
-included too, on their layer, which the DXF marks as off.
+are included and visibly reported; each carries the DXF visibility flag (group
+code 60 = 1), so a viewer that honours it does not draw the object, while a
+viewer that ignores the flag still shows it. Objects on a hidden layer (section
+12.5) are included too, on their layer, which the DXF marks as off.
 
 ### 11.9 Sidecar manifest
 

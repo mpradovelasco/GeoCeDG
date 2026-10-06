@@ -1,7 +1,9 @@
 # PRE-G9B-R6-plus-C — 2D export completion: candidate report
 
 ```text
-TECHNICAL_CANDIDATE_STATE = FROZEN
+TECHNICAL_CANDIDATE_STATE = FROZEN (revision 1 after the author smoke, section 21;
+                            T_R6PLUS_C_R1 b981f8ea and its PHASE and INTEGRATION
+                            runs are historical evidence of that tree only)
 AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
 
 PHASE                     = PRE-G9B-R6-plus-C
@@ -683,3 +685,200 @@ SERIALIZATION CHANGE = NONE
 - Verification registration: `geocedg/specs/operations/verification-junit-inventory.json`, `geocedg/specs/operations/verification-registry.json`, `tools/agent/tests/verification-final-coverage.Tests.ps1`.
 - Smoke package: `models/regression/pre-g9b-r6-plus-c-export-completion/` (`README.md`, `manifest.yml`, `inspect-export.ps1`, eight `fixtures/*.cedg`).
 - Documentation and evidence: `docs/architecture/pre_g9b_r6_plus_minitrack_plan.md`, `docs/developer/geocedg_developer_guide.md`, `docs/roadmap/geocedg_roadmap.md`, `docs/upstream/modified-files.yml`, `docs/user/geocedg_user_guide_en.md`, `docs/user/geocedg_user_guide_es.md`, `docs/validation/pre_g9b_r6_plus_c_candidate_report.md`, `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-candidate-evidence.json`.
+
+## 21. Revision 1 after the author smoke (2026-10-06)
+
+The author's smoke of `T_R6PLUS_C_R1` `b981f8eac9dd7b320376e07345b8c1c483de927a`
+(tree `a07159fc0e8e746d6a627b7107c07cc88cafc422`; `PHASE`
+`verification-6c51394a67ff478e80cbe85991fe46cd` and `INTEGRATION`
+`verification-da457f5a4c7d4c378077ca28b66de492`, both `ACCEPTED / COMPLETE`)
+reported two findings and authorized two UX improvements. Because revision 1
+changes tracked product and test code, those two runs remain historical evidence
+of that tree only. Revision 1 is one descendant commit; `b981f8ea` is not
+amended. Live remote `main` is still `e6135028` (checked 2026-10-06).
+
+### 21.1 C-SMOKE-1 — the hidden circle in the DXF
+
+Reproduction: `c-layers-and-area.cedg` opened, complete-construction DXF export
+with the controller's export context (scratch probe). The DXF text is
+byte-identical to the author's smoke file `c-layers.dxf` (SHA-256
+`33bdfca96dabbe95e8a330bee30c50fa20acb017249b08ab3265ad27db2db9f7`).
+
+| Fact | Evidence |
+|---|---|
+| source | `hiddenObject`, `Circle((2,4),0.5)`, DXF handle `103`, source id `geo-3-hiddenObject` |
+| layer | 0; hidden layers of the document `[3]`; layer 0 is shown |
+| visibility | `isEuclidianVisible() = false`, effective visibility false: hidden **individually**, not by a hidden layer |
+| DXF entity | `0 CIRCLE / 5 103 / 100 AcDbEntity / 8 0 / 420 0 / 999 GeoCeDG source geo-3-hiddenObject / 60 1 / 100 AcDbCircle / …`: group `60 = 1` inside the `AcDbEntity` common codes, before the `AcDbCircle` subclass |
+| LAYER table | `0` on (`62 = 7`), `GEOCEDG_L3` OFF (`62 = -7`), `GEOCEDG_L12` on |
+| hidden-layer object | `onHiddenLayer` on `GEOCEDG_L3`, no group 60 (a hidden layer is not object visibility) |
+| both mechanisms | an object hidden individually on layer 3 is written on `GEOCEDG_L3` (OFF) with `60 = 1` |
+| export area | `far` outside the `EXPORT_POINTS_AUTOMATIC` area, reported, not emitted; everything else unchanged |
+| sidecar | outcome `hiddenObject` `"visible": false`; `layers`: `hidden_geocedg_layers [3]`, `dxf_layers_off ["GEOCEDG_L3"]`; warnings `hidden_layer_off`, `outside_export_area`, `hidden_source_included` (three: the circle, `Export_1`, `Export_2`) |
+| `inspect-export.ps1` | `$INSUNITS = 5`, `GEOCEDG_L3` OFF, 3 entities with `60 = 1` |
+| base `e6135028` | the same circle is written with the same `60 = 1`; the hidden layer is on (OFF and the area are `C`) |
+
+Readers: AutoCAD 2024 (`accoreconsole`) writes an invisible circle itself as
+`100 AcDbEntity / 8 0 / 60 1 / 100 AcDbCircle` and, given that container with
+the GeoCeDG extras inserted before group 60 (`420 0`, a `999` comment), reads
+the entity back with `60 = 1`, that is invisible. AutoCAD refuses the GeoCeDG
+file as a whole ("Error in APPID Table … Invalid or incomplete DXF input"),
+identically for the base output: the minimal AC1015 container written since G5
+lacks the tables AutoCAD requires. Inkscape's DXF import ignores group 60 and
+negative layer colours (its own source states it); the FreeCAD 1.1 legacy
+importer reads no group 60. A viewer of that kind draws the circle.
+
+Disposition: `EXPECTED_BY_DQ-C3 / SMOKE_EXPECTATION_CLARIFIED`, with
+`EXTERNAL_READER_LIMITATION` for viewers that ignore group 60. No product change;
+the accepted policy (hidden individual object → retained entity with `60 = 1`)
+stays. Mechanized as `PreG9BR6PlusCDxfDesktopTest.theSmokeHiddenCircleStaysInvisibleWithGroup60`
+(the author's bytes, the entity groups, the OFF layer, the visible object and
+the sidecar); the shared `hiddenLayersAreOffDxfLayersAndHiddenObjectsKeepGroup60`
+keeps covering both mechanisms. New pre-existing observation:
+`OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION` (not `C` scope, not fixed).
+
+### 21.2 C-SMOKE-2 — Classic diagnostic "Graphics View as Picture"
+
+Reproduction: the Classic diagnostic entry point `org.geogebra.desktop.GeoGebra3D.main`
+(`--showSplash=false`, isolated settings or a copy of the author's
+`classic-diagnostic.properties`), Temurin 25.0.4 as the product, the real menu
+item "Graphics View as Picture (png, svg) ..." clicked, an EDT watchdog, a
+window inventory, a dialog capture and Cancel; once inside the Gradle test JVM
+and once as a separate process with the File menu opened first.
+
+| Run set | Candidate `b981f8ea` | Base `e6135028` |
+|---|---|---|
+| in-process, fresh and author settings | 4 runs: dialog shown and populated, Cancel closes it, EDT responsive; 2 uncaught EDT exceptions each | 4 runs: the same; 2, 2, 2 and 0 exceptions |
+| separate process, File menu opened | 5 runs: the same; 2, 2, 3, 2, 2 exceptions | 5 runs: the same; 2, 2, 2, 1, 2 exceptions |
+
+Call path: `FileMenuD.exportGraphicAction.actionPerformed` (EDT) starts a
+`new Thread` that calls `GuiManagerD.showGraphicExport()`, which constructs the
+non-modal `GraphicExportDialog` and calls `setVisible(true)` off the event
+thread. Meanwhile the EDT validates the half-built dialog and throws
+`NullPointerException` in `FlatComboBoxUI.getDisplaySize` /
+`DefaultListCellRenderer` (combo list not yet installed) and in
+`BoxLayout` / `SizeRequirements.calculateAlignedPositions`. This code is the
+upstream baseline (`9b93256b`); `C` does not touch `FileMenuD`. In Classic the
+`C` seams return the host values (`getExportScalePresentation()` `null`,
+`getPhysicalExportScale()` `NaN`); the dialog shows the host controls ("Scale in
+cm:", no drawing scale, no unit widget); no `C` frame appears in any stack.
+
+Root cause and attribution: a pre-existing upstream Swing threading defect
+(dialog built and shown off the EDT), present identically at the base;
+**not caused by `C`**. The author's empty dialog and blocked session are the
+plausible worst interleaving of the same race; they were not reproduced in 18
+runs. Disposition: `PRE-EXISTING — NOT CAUSED BY C — NOT FIXED`, recorded as
+`OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT` for the author. The authorized fix
+applied only if `C` caused the defect; a fix would change upstream Classic
+threading: build and show the dialog on the event thread, where the menu
+handler already runs (the other background-thread export actions of
+`FileMenuD` follow the same pattern). Of the requested Classic checks, the
+dialog opens, is populated, Cancel closes it and no deadlock occurred; the
+uncaught EDT exceptions remain, as at the base. The GeoCeDG Picture action
+calls `showGraphicExport()` on the event thread and is not affected.
+
+### 21.3 C-UX-1 — compact non-physical statement
+
+The device-mode statement was one `JLabel` in the `FlowLayout` row of
+`PrintScalePanel` (and in the LaTeX panel), so its whole sentence added to the
+dialog's minimum width. It is now a short visible note, "Non-physical: no
+construction unit" / "No física: sin unidad de construcción" (new profile text
+`ExportScale.DeviceShort`), whose tooltip and accessible description carry the
+full explanation; the device controls keep their "(non-physical)" labels; the
+physical dialog is unchanged (no statement). Test:
+`PreG9BR6PlusCPhysicalExportTest.theNonPhysicalStatementIsCompactAndKeepsItsFullMeaning`
+(full text in tooltip and accessible description, note narrower than half the
+full sentence and than the device-scale selector, LaTeX panel alike, physical
+panel without statement). Measured preferred width of the device-mode scale
+panel: 1 132 px with the one-line statement (`b981f8ea`) and 690 px now (note
+185 px instead of 627 px; the physical panel is 468 px).
+
+### 21.4 C-UX-2 — default DXF file name
+
+Both DXF Save dialogs propose the current document's file name with `.dxf`
+(`MyConstruction.cedg` → `MyConstruction.dxf`, `Example.ggb` → `Example.dxf`,
+`a.b.cedg` → `a.b.dxf`), and `geocedg-export.dxf` for a document without a
+file. The name is a relative suggestion, so the chooser keeps its directory
+behaviour; the document file, Save and Save As are untouched; overwrite and
+sidecar-collision prompts are unchanged. Test:
+`PreG9BR6PlusCDxfDesktopTest.theSaveDialogProposesTheDocumentName`.
+
+### 21.5 Records
+
+- `ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE` (owner `PRE-G9B-R6-plus-E3`,
+  implementation not authorized), recorded in the
+  [mini-track plan](../architecture/pre_g9b_r6_plus_minitrack_plan.md): a
+  stable, exportable and hideable construction label such as `A3 — 1:50`; a
+  transient, non-exported coordination indicator comparing the scale captured
+  by `IsoABorder` with the current session `drawingScale`; no geometric
+  dependency on the live `drawingScale`. Not implemented in `C`.
+- New pre-existing observations: `OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT`,
+  `OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION`.
+- Carried forward unchanged: `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`,
+  `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT`, the Desktop test-heap debt, the
+  `exportPDF` callback UTF-8 read, the `AutoColor` JVM state and the historical
+  G9X1 authority scan.
+- The author's smoke exports left untracked in the fixtures folder (`c-layers.dxf`,
+  `geoc-units.dxf`, five PDFs, two PNGs, one SVG) were moved unchanged, each
+  SHA-256 verified, to the ignored
+  `artifacts/pre-g9b-r6-plus-c/author-smoke-exports-2026-10-06/`.
+
+### 21.6 Verification of revision 1
+
+| Run | Result |
+|---|---|
+| focal: `PreG9BR6PlusCPhysicalExportTest`, `PreG9BR6PlusCDxfDesktopTest`, `PreG9BR6PlusCLatexExportTest`, `GeoCeDGProfileTest`, `G9U1ProfileCompilerTest` | 10, 7, 10, 5 and 32 tests, 0 failures/errors |
+| Classic probes (§21.2) | 18 runs, candidate and base alike |
+| producer `discovery.shared` (`--test-dry-run`) | 6 008 identities (unchanged) |
+| producer `discovery.desktop` (`--test-dry-run`) | 1 838 identities |
+| producer `pre-g9b-r6-plus-c.desktop` (executed) | 269 tests, 0 failures/errors |
+| producer `final.desktop` (executed) | 1 832 tests, 0 failures/errors, 1 skip (allowlisted) |
+| unchanged selections | `pre-g9b-r6-plus-c.shared` 101, `pre-g9b-r6-plus-a1.desktop` 173, `pre-g9b-r6-plus-b.desktop` 241 and `final.shared` 6 925 keep their identities (no shared code and none of their classes changed) |
+| JUnit inventory | official updater in session: Desktop discovery 1 835 → 1 838 (`3a7a3e53…`), `final.desktop` 1 829 → 1 832 (`f4c07f24…`), `pre-g9b-r6-plus-c.desktop` 266 → 269 (`548e6937…`); registry pin `junit_inventory` `8a0cf235…` → `3aa283ca…` (current pin reproduced first); registry-shape pin `pre-g9b-r6-plus-c.desktop` 269 |
+| Checkstyle (four tasks) | no finding in revision files; `PreG9BR6PlusA1HiddenLayerTest.java:188` pre-existing |
+| `Assert-GeoCeDGUpstreamBoundary -ExpectedBaseline 9b93256b…` | OK, 964 registered files |
+| `git diff --check` | clean |
+| development `STATIC` and `INFRA_UNIT` (staged tree) | `ACCEPTED / COMPLETE` (`verification-19878cc4578a413a8c202711ff72ba26`, 3/3; `verification-c541dad640a74a609e0046768cd5491f`, 22/22); the standing governance `DIAGNOSTIC_FINDING` and historical-consistency `DIAGNOSTIC_UNAVAILABLE`; documentation, guide-structure, style and whitespace diagnostics clear; not acceptance evidence |
+
+### 21.7 Changed paths in revision 1
+
+`apps/geocedg/application-profile.yml`,
+`docs/architecture/pre_g9b_r6_plus_minitrack_plan.md`,
+`docs/roadmap/geocedg_roadmap.md`,
+`docs/upstream/modified-files.yml`,
+`docs/user/geocedg_user_guide_en.md`, `docs/user/geocedg_user_guide_es.md`,
+`docs/validation/pre_g9b_r6_plus_c_candidate_report.md`,
+`geocedg/specs/operations/verification-junit-inventory.json`,
+`geocedg/specs/operations/verification-registry.json`,
+`geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-candidate-evidence.json`,
+`source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java`,
+`source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExportScalePresentation.java`,
+`source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCDxfDesktopTest.java`,
+`source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCPhysicalExportTest.java`,
+`tools/agent/tests/verification-final-coverage.Tests.ps1`.
+
+### 21.8 Minimal repeat smoke (not performed or attributed by the agent)
+
+The other `C` smoke results stay valid: revision 1 changes only the
+non-physical statement, the proposed DXF name and tests.
+
+1. **Classic diagnostic.** File → Open Classic diagnostic session; in the
+   Classic window, File → Export → Graphics View as Picture (png, svg) ...: the
+   dialog opens with the host controls and Cancel closes it. An empty dialog or
+   a blocked session is the pre-existing
+   `OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT` (§21.2), present at the base;
+   please report it with what you clicked.
+2. **Hidden circle.** Open `fixtures/c-layers-and-area.cedg`; File → Import and
+   export → Export 2D geometry as DXF, request *Complete 2D geometric
+   construction*; run `inspect-export.ps1` on the DXF: the circle is one of the
+   entities with `60 = 1` and `GEOCEDG_L3` is OFF. Raw inclusion is expected
+   (§21.1); a viewer that ignores group 60 still draws the circle.
+3. **Width.** Open `fixtures/c-unspecified.cedg`; File → Import and export →
+   Graphics View as Picture: the dialog has a normal width, and the note
+   "Non-physical: no construction unit" shows the full explanation as a
+   tooltip.
+4. **DXF name.** With `fixtures/c-units-mm.cedg` open, the DXF Save dialog
+   proposes `c-units-mm.dxf`; after File → New it proposes
+   `geocedg-export.dxf`.
+5. **Regression.** Open `fixtures/c-physical-cm.cedg`; Graphics View as Picture
+   at `1:2`, save a PDF: the page is 9 × 4 cm.

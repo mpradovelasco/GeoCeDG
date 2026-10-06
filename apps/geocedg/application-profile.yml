@@ -4466,6 +4466,7 @@
     "ExportScale.Unit": {"en": "Construction unit: %0", "es": "Unidad de construcción: %0"},
     "ExportScale.Invalid": {"en": "A drawing scale is two positive integers a:b, each at most 1000000000 after reduction, for example 1:2. The previous scale is kept.", "es": "Una escala de dibujo son dos enteros positivos a:b, cada uno como máximo 1000000000 tras simplificar, por ejemplo 1:2. Se conserva la escala anterior."},
     "ExportScale.DeviceStatement": {"en": "This document has no construction unit: the sizes below are a non-physical device scale, not an engineering scale.", "es": "Este documento no tiene unidad de construcción: los tamaños siguientes son una escala de dispositivo no física, no una escala técnica."},
+    "ExportScale.DeviceShort": {"en": "Non-physical: no construction unit", "es": "No física: sin unidad de construcción"},
     "ExportScale.DeviceCm": {"en": "Device scale (non-physical)", "es": "Escala de dispositivo (no física)"},
     "ExportScale.DeviceFixed": {"en": "Device scale from the screen (non-physical)", "es": "Escala de dispositivo según la pantalla (no física)"},
     "ExportScale.DevicePixels": {"en": "Size in pixels (device)", "es": "Tamaño en píxeles (dispositivo)"},

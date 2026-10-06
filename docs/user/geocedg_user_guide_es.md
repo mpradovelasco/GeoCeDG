@@ -451,7 +451,9 @@ píxeles, y la unidad de presentación solo cambia cómo se expresan las
 longitudes. Un tamaño que un formato no puede representar, por ejemplo menor
 que un píxel, se rechaza con un mensaje en lugar de recortarse. En un documento
 sin unidad de construcción los diálogos conservan sus escalas de dispositivo,
-rotuladas como no físicas, y no se ofrece ninguna escala técnica.
+rotuladas como no físicas, y no se ofrece ninguna escala técnica; la nota breve
+«No física: sin unidad de construcción» muestra la explicación completa como
+información emergente.
 
 **La misma área en otras rutas.** `ExportImage`, las funciones de guion
 `writePNGtoFile`, `getPNGBase64`, `exportSVG` y `exportPDF`, y la opción de
@@ -1398,7 +1400,11 @@ inglés con independencia del idioma de producto.
 | Sidecar | solicitar manifiesto incluso en una exportación totalmente exacta |
 
 El informe de preflight enumera después los recuentos de componentes exactos,
-aproximados, no soportados, inválidos y omitidos antes de que elija destino.
+aproximados, no soportados, inválidos y omitidos antes de que elija destino. El
+diálogo Guardar propone el nombre del documento abierto con la extensión `.dxf`
+(por ejemplo `MiConstruccion.cedg` → `MiConstruccion.dxf`), o
+`geocedg-export.dxf` para un documento que nunca se ha guardado; el documento no
+cambia de nombre.
 
 En una petición de construcción completa, la entrada es la población geométrica
 tipada. Las listas, los parámetros numéricos, los resultados ricos de
@@ -1410,9 +1416,11 @@ selección explícita vigente nunca se filtra por esta regla.
 
 La salida parcial por componentes está **desactivada** por defecto: una petición
 que no pueda satisfacerse íntegramente se rechaza en lugar de truncarse en
-silencio. Los objetos ocultos se incluyen y se notifican de forma visible. Los
-objetos de una capa oculta (sección 12.5) también se incluyen, en su capa, que
-el DXF marca como desactivada.
+silencio. Los objetos ocultos se incluyen y se notifican de forma visible; cada
+uno lleva el indicador de visibilidad del DXF (código de grupo 60 = 1), de modo
+que un visor que lo respeta no dibuja el objeto, mientras que un visor que lo
+ignora lo sigue mostrando. Los objetos de una capa oculta (sección 12.5) también
+se incluyen, en su capa, que el DXF marca como desactivada.
 
 ### 11.9 Manifiesto acompañante
 

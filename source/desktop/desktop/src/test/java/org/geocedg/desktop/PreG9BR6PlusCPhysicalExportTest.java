@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
@@ -246,6 +248,45 @@ class PreG9BR6PlusCPhysicalExportTest {
 		app.getDocumentUnits().replace(cm());
 		assertEquals(0.5, app.getPhysicalExportScale(), 0,
 				"the session value applies as soon as a unit is declared");
+	}
+
+	// ------------------------------------------------------------------ C-UX-1
+
+	@Test
+	void theNonPhysicalStatementIsCompactAndKeepsItsFullMeaning() throws Exception {
+		String name = "geocedg.exportScale.deviceStatement";
+		String full = "This document has no construction unit: the sizes below are a "
+				+ "non-physical device scale, not an engineering scale.";
+		AppGeoCeDG app = app(UnitState.EMPTY, DrawingScale.ONE_TO_ONE);
+		PrintScalePanel panel = new PrintScalePanel(app, app.getEuclidianView1());
+		JLabel statement = named(panel, name);
+		assertEquals("Non-physical: no construction unit", statement.getText());
+		assertEquals(full, statement.getToolTipText(), "the full meaning stays available");
+		assertEquals(full, statement.getAccessibleContext().getAccessibleDescription());
+		assertTrue(2 * statement.getPreferredSize().width
+				< new JLabel(full).getPreferredSize().width, "a compact note");
+		JComboBox<?> modes = components(panel, JComboBox.class).get(0);
+		assertTrue(statement.getPreferredSize().width <= modes.getPreferredSize().width,
+				"never wider than the device-scale selector");
+		JComponent latex = app.getExportScalePresentation().createLatexPanel(
+				PreG9BR6PlusCLatexExportTest.exporter(app, "pgf"), () -> { });
+		JLabel latexStatement = named(latex, name);
+		assertEquals("Non-physical: no construction unit", latexStatement.getText());
+		assertEquals("This document has no construction unit: the x and y units, width "
+				+ "and height are non-physical device parameters.",
+				latexStatement.getToolTipText());
+		AppGeoCeDG physical = app(cm(), DrawingScale.ONE_TO_ONE);
+		assertNull(named(new PrintScalePanel(physical, physical.getEuclidianView1()), name),
+				"the physical dialog has no device statement");
+	}
+
+	private static JLabel named(Container container, String name) {
+		for (JLabel label : components(container, JLabel.class)) {
+			if (name.equals(label.getName())) {
+				return label;
+			}
+		}
+		return null;
 	}
 
 	@Test

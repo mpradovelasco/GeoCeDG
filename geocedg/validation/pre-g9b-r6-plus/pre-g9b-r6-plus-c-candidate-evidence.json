@@ -3,7 +3,7 @@
   "phase": "PRE-G9B-R6-plus-C",
   "phaseKind": "PRODUCT_IMPLEMENTATION_2D_EXPORT_COMPLETION",
   "report": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md",
-  "technicalCandidateState": "FROZEN",
+  "technicalCandidateState": "FROZEN (revision 1 after the author smoke of b981f8ea)",
   "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
   "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
   "selfApproved": false,
@@ -149,8 +149,47 @@
     "developmentInfraUnit": {"runId": "verification-986357c88e8f43a886fee401402d720b", "verdict": "ACCEPTED / COMPLETE", "leaves": 22},
     "note": "development and inventory evidence, not acceptance"
   },
-  "authorizationState": {
-    "PRE-G9B-R6-plus-C": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+  "revision1": {
+    "date": "2026-10-06",
+    "supersededCandidate": {"name": "T_R6PLUS_C_R1", "commit": "b981f8eac9dd7b320376e07345b8c1c483de927a", "tree": "a07159fc0e8e746d6a627b7107c07cc88cafc422", "phase": "verification-6c51394a67ff478e80cbe85991fe46cd ACCEPTED / COMPLETE", "integration": "verification-da457f5a4c7d4c378077ca28b66de492 ACCEPTED / COMPLETE", "status": "historical evidence of that tree only"},
+    "amended": false,
+    "cSmoke1": {
+      "finding": "DXF respected the explicit ExportArea but a hidden circle was still included",
+      "reproduction": "c-layers-and-area.cedg, complete-construction DXF with the controller export context; DXF text byte-identical to the author's c-layers.dxf",
+      "authorFileSha256": "33bdfca96dabbe95e8a330bee30c50fa20acb017249b08ab3265ad27db2db9f7",
+      "source": {"label": "hiddenObject", "type": "Circle", "layer": 0, "documentHiddenLayers": [3], "euclidianVisible": false, "hiddenBy": "individual object visibility"},
+      "dxf": {"handle": "103", "layer": "0", "group60": "1, inside AcDbEntity before 100 AcDbCircle", "layerTable": {"0": 7, "GEOCEDG_L3": -7, "GEOCEDG_L12": 7}},
+      "sidecar": {"visible": false, "hidden_geocedg_layers": [3], "dxf_layers_off": ["GEOCEDG_L3"]},
+      "base": "e6135028 writes the same circle with the same 60 = 1; its hidden layer is on and it has no export area",
+      "readers": {
+        "AutoCAD 2024": "own DXFOUT of an invisible circle is 100 AcDbEntity / 8 0 / 60 1 / 100 AcDbCircle; with the GeoCeDG extras inserted it reads 60 = 1 back; the GeoCeDG file as a whole is refused (Error in APPID Table), identically for the base output",
+        "Inkscape dxf_input": "ignores group 60 and negative layer colours",
+        "FreeCAD 1.1 legacy importDXF": "reads no group 60"
+      },
+      "disposition": "EXPECTED_BY_DQ-C3 / SMOKE_EXPECTATION_CLARIFIED; EXTERNAL_READER_LIMITATION for viewers ignoring group 60",
+      "productChange": false,
+      "test": "PreG9BR6PlusCDxfDesktopTest.theSmokeHiddenCircleStaysInvisibleWithGroup60"
+    },
+    "cSmoke2": {
+      "finding": "Classic diagnostic Graphics View as Picture opened an empty dialog and the session blocked",
+      "reproduction": "GeoGebra3D.main (Classic diagnostic entry point), Temurin 25.0.4, real menu item, EDT watchdog, in-process and as a separate process with the File menu opened",
+      "runs": {"candidate": "9 runs: dialog shown and populated, Cancel closes it, EDT responsive, 2-3 uncaught EDT exceptions each", "base": "9 runs: the same, 0-2 uncaught EDT exceptions each"},
+      "callPath": "FileMenuD.exportGraphicAction starts a new Thread -> GuiManagerD.showGraphicExport -> new GraphicExportDialog + setVisible(true) off the EDT; EDT validation throws NullPointerException in FlatComboBoxUI.getDisplaySize and BoxLayout/SizeRequirements",
+      "classicSeams": {"getExportScalePresentation": "null", "getPhysicalExportScale": "NaN", "dialog": "host controls, no drawing scale or unit widget"},
+      "rootCause": "pre-existing upstream Swing threading defect (dialog built and shown off the EDT), baseline 9b93256b; no C frame on any stack",
+      "attribution": "PRE-EXISTING — NOT CAUSED BY C",
+      "disposition": "NOT FIXED (the authorized fix applied only to a C-caused defect); recorded as OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT; proposed fix: build and show the dialog on the event thread in FileMenuD",
+      "hangReproduced": false
+    },
+    "cUx1": {"change": "compact note ExportScale.DeviceShort with the full statement as tooltip and accessible description, picture/print and LaTeX", "test": "PreG9BR6PlusCPhysicalExportTest.theNonPhysicalStatementIsCompactAndKeepsItsFullMeaning", "width": {"devicePanelBefore": 1132, "devicePanelAfter": 690, "note": 185, "oneLineStatement": 627, "physicalPanel": 468, "unit": "preferred width in pixels"}},
+    "cUx2": {"change": "DXF Save dialogs propose <document stem>.dxf, fallback geocedg-export.dxf; relative suggestion, document untouched", "test": "PreG9BR6PlusCDxfDesktopTest.theSaveDialogProposesTheDocumentName"},
+    "records": ["ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE (owner PRE-G9B-R6-plus-E3, implementation not authorized)", "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT", "OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION"],
+    "authorExportsMoved": "untracked author smoke exports moved unchanged (SHA-256 verified) to artifacts/pre-g9b-r6-plus-c/author-smoke-exports-2026-10-06/",
+    "serializationChange": "NONE",
+    "outputFormatChange": "NONE",
+    "verification": {"focal": {"PreG9BR6PlusCPhysicalExportTest": 10, "PreG9BR6PlusCDxfDesktopTest": 7, "PreG9BR6PlusCLatexExportTest": 10, "GeoCeDGProfileTest": 5, "G9U1ProfileCompilerTest": 32, "failures": 0}, "producers": {"discovery.shared": 6008, "discovery.desktop": 1838, "pre-g9b-r6-plus-c.desktop": {"tests": 269, "failures": 0}, "final.desktop": {"tests": 1832, "failures": 0, "skipped": 1}}, "inventory": {"discovery.desktop": {"from": 1835, "to": 1838}, "final.desktop": {"from": 1829, "to": 1832}, "pre-g9b-r6-plus-c.desktop": {"from": 266, "to": 269}, "junitInventoryPin": {"from": "8a0cf23538f3f0b45099e0e7f3c1698dc6ff1a0789c40efeddc694b540c68491", "to": "3aa283caa008c06cd4a1bbb966c1c0f5cce38bb031a0ab66e0659141db41bbec"}}, "checkstyle": "no finding in revision files; PreG9BR6PlusA1HiddenLayerTest.java:188 pre-existing", "upstreamBoundary": {"result": "OK", "registeredFiles": 964}, "gitDiffCheck": "clean", "developmentStatic": {"runId": "verification-19878cc4578a413a8c202711ff72ba26", "verdict": "ACCEPTED / COMPLETE", "leaves": 3}, "developmentInfraUnit": {"runId": "verification-c541dad640a74a609e0046768cd5491f", "verdict": "ACCEPTED / COMPLETE", "leaves": 22}, "note": "development and inventory evidence; the PHASE and INTEGRATION runs on the revised candidate are reported outside this file"}
+  },  "authorizationState": {
+    "PRE-G9B-R6-plus-C": "REVISED TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
     "PRE-G9B-R6-plus-E1, E2, E3, F1, F2, F3 implementation, G": "NOT AUTHORIZED",
     "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED",
     "G9B": "NOT AUTHORIZED"

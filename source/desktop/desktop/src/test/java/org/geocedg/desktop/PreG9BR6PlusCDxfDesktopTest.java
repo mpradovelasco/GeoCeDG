@@ -246,4 +246,83 @@ class PreG9BR6PlusCDxfDesktopTest {
 		assertNull(view.getSelectionRectangle());
 		assertNotNull(reopened.getKernel().lookupLabel("h"));
 	}
+
+	// ------------------------------------------------- C-SMOKE-1 (author smoke)
+
+	/**
+	 * The author's smoke export of the smoke fixture, reproduced byte for byte: the
+	 * individually hidden circle stays in the DXF with group 60 = 1 inside
+	 * AcDbEntity, exactly where AutoCAD writes it for an invisible entity
+	 * (DQ-C3); the hidden layer 3 is an OFF layer (DQ-C2); the area leaves out
+	 * only far.
+	 */
+	@Test
+	void theSmokeHiddenCircleStaysInvisibleWithGroup60() throws Exception {
+		AppGeoCeDG app = G9U1TestApp.create();
+		Path fixture = PreG9BR6PlusCLatexExportTest.repositoryRoot().resolve(
+				"models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/"
+						+ "c-layers-and-area.cedg");
+		assertTrue(app.loadFile(fixture.toFile(), false));
+		GeoElement circle = app.getKernel().lookupLabel("hiddenObject");
+		assertFalse(circle.isEuclidianVisible(), "hidden individually");
+		assertEquals(0, circle.getLayer());
+		assertTrue(app.isLayerShown(0), "not by a hidden layer");
+		assertEquals(HiddenLayerSet.of(3), app.getDocumentHiddenLayers());
+		GeoCeDGDxfExportController controller = new GeoCeDGDxfExportController(app);
+		List<GeoElement> sources = new ArrayList<>(app.getKernel().getConstruction()
+				.getGeoSetConstructionOrder());
+		GeometryExportPreflight preflight = service.preflight(sources,
+				SelectionMode.COMPLETE_CONSTRUCTION, GeometryExportRequest.builder(0.001)
+						.allowApproximation(true).allowPartialOutput(false)
+						.requestSidecar(true).build(), controller::exportContext);
+		DxfEncodingResult encoding = service.encode(preflight);
+		String dxf = encoding.getDxfText();
+		assertEquals("33bdfca96dabbe95e8a330bee30c50fa20acb017249b08ab3265ad27db2db9f7",
+				PreG9BR6PlusCBaseIdentityTest.sha256(dxf), "the author's smoke file");
+		assertTrue(dxf.contains("0\r\nCIRCLE\r\n5\r\n103\r\n100\r\nAcDbEntity\r\n8\r\n0\r\n"
+				+ "420\r\n0\r\n999\r\nGeoCeDG source geo-3-hiddenObject\r\n60\r\n1\r\n"
+				+ "100\r\nAcDbCircle\r\n"), "60 = 1 within AcDbEntity, before AcDbCircle");
+		assertTrue(dxf.contains("0\r\nLAYER\r\n2\r\nGEOCEDG_L3\r\n70\r\n0\r\n62\r\n-7\r\n"),
+				"the hidden layer is OFF");
+		assertTrue(dxf.contains("8\r\nGEOCEDG_L3\r\n420\r\n0\r\n999\r\nGeoCeDG source "
+				+ "geo-1-onHiddenLayer\r\n100\r\nAcDbLine\r\n"),
+				"a hidden layer is not object visibility: no 60");
+		assertTrue(dxf.contains("8\r\n0\r\n420\r\n0\r\n999\r\nGeoCeDG source geo-0-inside"
+				+ "\r\n100\r\nAcDbLine\r\n"), "a visible object stays visible");
+		assertFalse(dxf.contains("geo-6-far"), "outside the explicit export area");
+		String manifest = new String(new DxfFidelityManifestWriter().prepare(preflight,
+				encoding).getManifest().getBytes(), StandardCharsets.UTF_8);
+		assertTrue(manifest.contains("\"source_label\":\"hiddenObject\""), manifest);
+		assertTrue(manifest.matches("(?s).*\"source_label\":\"hiddenObject\"[^}]*"
+				+ "\"visible\":false.*"), "the sidecar records the hidden object");
+		assertTrue(manifest.contains("\"hidden_geocedg_layers\":[3],"
+				+ "\"dxf_layers_off\":[\"GEOCEDG_L3\"]"), manifest);
+	}
+
+	// ------------------------------------------------------------- C-UX-2
+
+	@Test
+	void theSaveDialogProposesTheDocumentName() throws Exception {
+		assertEquals("MyConstruction.dxf", GeoCeDGDxfExportController.defaultDxfFileName(
+				new File("C:/work/MyConstruction.cedg")));
+		assertEquals("Example.dxf", GeoCeDGDxfExportController.defaultDxfFileName(
+				new File("Example.ggb")));
+		assertEquals("a.b.dxf", GeoCeDGDxfExportController.defaultDxfFileName(
+				new File("a.b.cedg")));
+		assertEquals("plain.dxf", GeoCeDGDxfExportController.defaultDxfFileName(
+				new File("plain")));
+		assertEquals("geocedg-export.dxf",
+				GeoCeDGDxfExportController.defaultDxfFileName(null), "untitled");
+		AppGeoCeDG app = G9U1TestApp.create();
+		assertEquals("geocedg-export.dxf",
+				new GeoCeDGDxfExportController(app).defaultDxfFileName(), "never saved");
+		Path fixture = PreG9BR6PlusCLatexExportTest.repositoryRoot().resolve(
+				"models/regression/pre-g9b-r6-plus-c-export-completion/fixtures/"
+						+ "c-units-mm.cedg");
+		assertTrue(app.loadFile(fixture.toFile(), false));
+		File document = app.getCurrentFile();
+		assertEquals("c-units-mm.dxf", new GeoCeDGDxfExportController(app)
+				.defaultDxfFileName());
+		assertEquals(document, app.getCurrentFile(), "the document file is unchanged");
+	}
 }

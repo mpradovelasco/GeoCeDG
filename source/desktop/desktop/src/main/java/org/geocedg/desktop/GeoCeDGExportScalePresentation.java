@@ -56,7 +56,22 @@ final class GeoCeDGExportScalePresentation implements ExportScalePresentation {
 
 	@Override
 	public JComponent createDeviceModeStatement() {
-		JLabel statement = new JLabel(app.layerText("ExportScale.DeviceStatement"));
+		return deviceStatement(app.layerText("ExportScale.DeviceStatement"));
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-C (C-UX-1): a short visible note whose tooltip and
+	 * accessible description carry the full explanation, so the statement never
+	 * sets the width of an export dialog; the device controls keep their
+	 * non-physical labels.
+	 *
+	 * @param explanation full non-physical statement
+	 * @return compact statement component
+	 */
+	private JLabel deviceStatement(String explanation) {
+		JLabel statement = new JLabel(app.layerText("ExportScale.DeviceShort"));
+		statement.setToolTipText(explanation);
+		statement.getAccessibleContext().setAccessibleDescription(explanation);
 		statement.setName("geocedg.exportScale.deviceStatement");
 		return statement;
 	}
@@ -88,9 +103,7 @@ final class GeoCeDGExportScalePresentation implements ExportScalePresentation {
 		if (isPhysical()) {
 			scale = createScaleControl(onScaleChange);
 		} else {
-			JLabel statement = new JLabel(app.layerText("ExportScale.LatexDevice"));
-			statement.setName("geocedg.exportScale.deviceStatement");
-			scale = statement;
+			scale = deviceStatement(app.layerText("ExportScale.LatexDevice"));
 		}
 		return new LatexExportPanel(scale, app.layerText("LatexExport.Tolerance"),
 				app.layerText("LatexExport.Report"),
