@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1",
+  "proposedDecomposition": {
+    "state": "PROPOSED — NOT AUTHOR APPROVED (DQ-E1-1)",
+    "subphases": [
+      { "id": "PRE-G9B-R6-plus-E1-L", "registryPhaseId": "PRE-G9B-R6-PLUS-E1-L", "scope": "curated library, curation, owned icons, read-only bundled catalog", "proposedClass": "BOUNDED_PHASE", "decision": "DQ-E1-2" },
+      { "id": "PRE-G9B-R6-plus-E1-P", "registryPhaseId": "PRE-G9B-R6-PLUS-E1-P", "scope": "packaging contract, staging, packaging checks, licensing records, distribution inclusion", "proposedClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE", "proposedImpact": "PHASE_LOCAL", "alternatives": ["GLOBAL_IMPACT", "INTEGRATED_PHASE"], "decision": "DQ-E1-3" }
+    ]
+  },
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_preparation_characterization_report.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-ggt-library-and-packaging.prompt.md",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "phaseState": "PREPARED — NOT AUTHORIZED — PENDING AUTHOR REVIEW",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "serializationChange": "NONE",
+  "legalConclusion": "NONE",
+  "publishedBase": {
+    "name": "P_R6PLUS_C_X1",
+    "commit": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "tree": "5f564c8391828dc781dee0b1be93ef223431af58"
+  },
+  "entryGate": {
+    "localMain": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "originMain": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "liveRemoteMain": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "worktreeClean": true,
+    "predecessorState": "PRE-G9B-R6-plus-C-X1 = PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "preparationBranch": {
+    "name": "phase/pre-g9b-r6-plus-e1-prompt",
+    "startCommit": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "method": {
+    "staticReading": "every cited seam re-read at P_R6PLUS_C_X1",
+    "probes": "scratch-only PowerShell 7.6.6 / .NET 10.0.12 probes on scratchpad copies of the author archives and Templatev7.ggb",
+    "probeArtifacts": {
+      "ggt_probe.ps1": "ad4d49a3042d86e988c7eb3cd91392092efec4e7305912deba5a4530a4b7b6b3",
+      "ggt_probe_result.json": "b8f6ce4006b8d07af66aa74c85e83e3700b6a30da4ae225aea9e21c8c4d0887f",
+      "ggt_style_probe.ps1": "87ee83297110b4ef8b2cd57f57d29f8a4a887bf70a200dadfc3e386eb859c347",
+      "ggt_style_probe.json": "2e44ec3bded3ef5b59f82fd2c75c2ca4dc219779758cf93a365aa36f56fdcf67"
+    },
+    "probeDefectsCorrected": ["helper H shadowed by alias h", "case-insensitive output-label matching"],
+    "notRun": ["PHASE", "INTEGRATION", "FINAL", "PACKAGING", "build", "product tests"],
+    "productOrTestFilesChanged": false
+  },
+  "authorInputs": {
+    "path": "artifacts/author-input/g9b-r6-plus/",
+    "tracked": false,
+    "files": 17,
+    "identicalToP0Inventory": "17/17"
+  },
+  "template": {
+    "path": "models/legacy/template-v7/original/Templatev7.ggb",
+    "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "macros": 24,
+    "reviewStatus": "blocked",
+    "spdx": null,
+    "containsJavaScript": true
+  },
+  "equivalence": {
+    "commandsInTemplate": "16/16",
+    "orderedInputsOutputsEqual": "16/16",
+    "constructionEqualIgnoringEqnStyle": "16/16",
+    "constructionRawEqual": "9/16",
+    "rawEqual": ["circArcbyAngle", "CirclebyD", "conj2mainAxesEllipse", "EllipseAxis", "ellipseLength12", "IFPositiveSelectPoint", "pointJump", "relCoor", "translationCoor"],
+    "noIconReference": ["EllipseAxis", "pointJump", "SquarebyDiagonal"],
+    "iconsEqualToTemplate": "13/13",
+    "stockNamedIcons": "12/13",
+    "distinctIconsByteEqualToTrackedSourcePng": "0/8",
+    "iconPixelProvenance": "UNKNOWN",
+    "templateMacrosOutOfScope": ["SplineLength", "PoliLineVisibility", "Perimeter", "listLength", "listLength12", "postLocus", "ellipseVisibility", "dummyRotate"],
+    "rightsEvidence": "NONE — geometric equivalence is not redistribution evidence"
+  },
+  "tools": [
+    { "file": "axisdimension.ggt", "command": "axisDimension", "sha256": "7989b4a87e1e10275627bc22ec3cb8f6783af7b05052dbbcc76610208b0d0936", "writer": "5.2.826.0", "proposedDisposition": "not curated, not shipped; E2 reference" },
+    { "file": "circarcbyangle.ggt", "command": "circArcbyAngle", "sha256": "640f0906749b2396c676e0b3ed1f7324599ef1ec3302704784f225ed22fa5348", "writer": "5.2.827.0", "proposedDisposition": "curate and ship" },
+    { "file": "circlebyD.ggt", "command": "CirclebyD", "sha256": "977d812d55d8a151f7ed8caa2983d0960daab72f7fc3010f5cccfe4b15bd76f8", "writer": "5.2.820.0", "proposedDisposition": "curate and ship" },
+    { "file": "directdimension.ggt", "command": "directDimension", "sha256": "228d54d7f08316cbed9c0a84bc5d62085ca59931e573908990c84d60cacf0a01", "writer": "5.2.820.0", "proposedDisposition": "not curated, not shipped; E2 reference" },
+    { "file": "ductsymbol.ggt", "command": "DuctSymbol", "sha256": "a2c1faa18d1727dd59bf590f998c360bb66d473174c605f4e127c96f5ea42890", "writer": "5.2.827.0", "proposedDisposition": "curate and ship (presentation symbol)" },
+    { "file": "ellipseaxisbyconjaxis.ggt", "command": "conj2mainAxesEllipse", "sha256": "7639c82aa2aad8b470f9f6ab9130e419c3e321f33f8d1ccc672326acf6c40539", "writer": "5.2.829.0", "proposedDisposition": "curate and ship" },
+    { "file": "ellipsebyaxis.ggt", "command": "EllipseAxis", "sha256": "01437a90761366b619178cde37a3ebb88bc7ac51b6de0b04e3369d38ac77040b", "writer": "5.2.820.0", "proposedDisposition": "curate and ship; documented validity domain" },
+    { "file": "ellipsepartiallength.ggt", "command": "ellipseLength12", "sha256": "35c20a5d35d7bce362d36f2ef10f8db4d1b719e1254566234268f20cd16eb293", "writer": "5.2.832.0", "proposedDisposition": "curate and ship" },
+    { "file": "IFpositivethenPoint.ggt", "command": "IFPositiveSelectPoint", "sha256": "c490e221a90e2acaeeaad3575ba172acc6cf0e82fcb765560bcafeb9cb7beb27", "writer": "5.2.836.0", "proposedDisposition": "curate and ship" },
+    { "file": "pointjump.ggt", "command": "pointJump", "sha256": "a350031eb98be790627dd15294550a07638d0b7968c64e783695976ef8ba76f1", "writer": "5.2.820.0", "proposedDisposition": "curate and ship; no frame or projection authority" },
+    { "file": "relcoor.ggt", "command": "relCoor", "sha256": "95ff380d56bb70fd07457b06b977fb27d03de22bfc0dfdd4850ea4bed8b7a0b2", "writer": "5.2.826.0", "proposedDisposition": "curate and ship; no frame or projection authority" },
+    { "file": "sheetISOland.ggt", "command": "sheetISOAnLand", "sha256": "d3b05cafb5d938ec4ddf096c0e1df60c7c0850ca6327cb8d42e0ca06c18e5c23", "writer": "5.2.820.0", "proposedDisposition": "curate with AQ-G3; shipped=false pending DQ-E1-7" },
+    { "file": "sheetISOvert.ggt", "command": "sheetISOAnVert", "sha256": "4412824a19da659900dc269924bddfc6f5f03981c3f39c9286b08ef5538e2015", "writer": "5.2.820.0", "proposedDisposition": "curate with AQ-G3; shipped=false pending DQ-E1-7" },
+    { "file": "squarebydiagonal.ggt", "command": "SquarebyDiagonal", "sha256": "29e2a3d88d926f75f9b7fc0e24290340a10f092da7e161dc19c3a83129e9470f", "writer": "5.2.820.0", "proposedDisposition": "curate and ship" },
+    { "file": "symmsymbol.ggt", "command": "SymmSymbol", "sha256": "491628c089749cd99b5759b0ed9259e530284529bedb3d2f8dc33d44b01fa74e", "writer": "5.2.827.0", "proposedDisposition": "curate and ship (presentation symbol)" },
+    { "file": "translationcoor.ggt", "command": "translationCoor", "sha256": "ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b", "writer": "5.2.829.0", "proposedDisposition": "curate and ship; no frame or projection authority" }
+  ],
+  "sheetTools": {
+    "inputs": ["D", "ISO216n", "CeDGScale", "CeDGMargin"],
+    "upperLeftCornerIsInput": true,
+    "landscape": { "outputs": 21, "trim": ["f", "g", "h", "i"], "cornerOutputs": ["E", "G", "F"] },
+    "portrait": { "outputs": 22, "trim": ["f'", "f''", "i''", "g''", "h''"], "duplicateTrim": { "h''": "f'" }, "cornerOutputs": ["F_2", "G_2", "H_2"] },
+    "aqG3HideList": { "sheetISOAnLand": ["f", "g", "h", "i", "E", "G", "F"], "sheetISOAnVert": ["f'", "f''", "i''", "g''", "h''", "F_2", "G_2", "H_2"] },
+    "blankScript": "<ggbscript onUpdate=\"&#xD;&#xA;\"/> on input ISO216n",
+    "modelUnitAssumption": "centimetre (A0 long side 100*2^(1/4) = 118.92 model units)",
+    "sizeSeries": "theoretical sqrt(2) series; max deviation from ISO 216 for A0-A6 = 0.65 mm",
+    "unitAwareUnderD1": false
+  },
+  "userLibrary": {
+    "storeFile": "<preferences>.user-tools-v1.json",
+    "storeVersion": 3,
+    "definitionDigestVersion": 1,
+    "packageIdentity": "SHA-256 of the whole .ggt",
+    "iconFileDefinitionBearing": true,
+    "archiveImagesLoaded": false,
+    "blankScriptsAccepted": true,
+    "nativeNameRule": "case-insensitive (Commands.lookupInternal)",
+    "bundledCatalog": false,
+    "firstRunSeed": false
+  },
+  "packaging": {
+    "contract": "geocedg/specs/packaging/windows-packaging.md:83-85",
+    "check": "tools/agent/checks/packaging-product.ps1:562-567 (packaging.portable-boundary)",
+    "jarContentsInspected": false,
+    "runsOnlyWithRequireArtifacts": true,
+    "fixtureTest": "tools/agent/tests/verification-contract-boundary.Tests.ps1:374-402 (infra.contract-boundary)",
+    "proposedAdmissionPath": "app/ggt-library/",
+    "proposedAdmission": "shipped manifest member + expected SHA-256 + author-approved rights disposition; fail-closed otherwise",
+    "state": "CANDIDATE — NOT AUTHOR APPROVED (DQ-E1-12)"
+  },
+  "verificationFacts": {
+    "packagingProduct": { "contractClass": "SEMANTIC", "semanticDomain": "PRODUCT", "profiles": ["PACKAGING", "INTEGRATION", "FINAL"] },
+    "infraContractBoundary": { "contractClass": "VERIFICATION_CORE", "profiles": ["INFRA_UNIT", "FINAL"] },
+    "profileCoverage": { "PACKAGING": "COMPLETE", "OPERATIONAL": "INCOMPLETE", "PHASE": "COMPLETE" },
+    "verifyLegacyRegistered": false
+  },
+  "decisionsRequested": ["DQ-E1-1", "DQ-E1-2", "DQ-E1-3", "DQ-E1-4", "DQ-E1-5", "DQ-E1-6", "DQ-E1-7", "DQ-E1-8", "DQ-E1-9", "DQ-E1-10", "DQ-E1-11", "DQ-E1-12", "DQ-E1-13", "DQ-E1-14", "DQ-E1-15", "DQ-E1-16"],
+  "p0QuestionMap": { "AQ-G1": "DQ-E1-4", "AQ-G2": ["DQ-E1-6", "DQ-E1-7"], "AQ-G3": "author-supplied requirement, preserved", "AQ-G3a": "DQ-E1-8", "AQ-G4": "DQ-E1-13", "AQ-G5": ["DQ-E1-1", "DQ-E1-12"], "AQ-G6": "DQ-E1-5", "AQ-G7": "DQ-E1-9" },
+  "proposedObservations": [
+    { "id": "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION", "owner": "PRE-G9B-R6-plus-E2", "state": "RECORDED BY THE E1 PREPARATION — NOT FIXED — AUTHOR DISPOSITION" }
+  ],
+  "preparationFiles": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-e1-ggt-library-and-packaging.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_e1_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e1-preparation-characterization.json",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md"
+  ],
+  "forbiddenScopeUntouched": ["E2", "E3", "F1", "F2", "F3", "G", "PRE-G9B-R7", "G9B", "models/legacy/**", "AGENTS.md", "CLAUDE.md"]
+}
