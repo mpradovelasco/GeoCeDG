@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C-X1",
+  "observation": "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_c_x1_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "candidateIdentity": "the commit that contains this artifact; reported outside it",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "authorSmoke": "REQUIRED — not performed or attributed by the agent",
+  "changeRoute": "ORDINARY",
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-C-X1",
+  "integration": "NOT RUN",
+  "final": "NOT RUN",
+  "declarations": {
+    "serializationChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "outputFormatSchemaChange": "NONE",
+    "guideImpact": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "verificationInfrastructureImpact": "PHASE_LOCAL"
+  },
+  "entry": {
+    "publishedBase": {"name": "P_R6PLUS_C", "commit": "39eb05bc16a18ae48167383e90fcf38b12a681b6", "tree": "fc13f5f125a4e8d595dd450bfd47706be193e5cd"},
+    "branchStart": {"name": "T_R6PLUS_C_X1_PROMPT", "commit": "50baef73e784f764e95c9faf33d50188986ec3ed", "tree": "245a8a7a814dc7146a8c1cf32214019da6317999"},
+    "authorizationCommit": {"commit": "7a88a491104ecd3c75809d0b84fd1e7dcb3c0968", "tree": "2034b225d3fe5f790f7459e44bc2cb998f3c6a59"},
+    "implementationBranch": "phase/pre-g9b-r6-plus-c-x1-classic-picture-dialog-edt",
+    "liveRemoteMain": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "characterizedSourceUnchanged": true
+  },
+  "productDelta": {
+    "files": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java"],
+    "fileMenuDBlob": {"original": "0acde7ceec84ac39c95a31dc65953dec033faa3b", "candidate": "db533f5d438388717ea87d77cd14843afa731554"},
+    "change": "exportGraphicAction.actionPerformed runs its unchanged body directly instead of in new Thread(...).start(); EUPL marker added",
+    "showGraphicExportChanged": false,
+    "clipboardFallbackPreserved": true,
+    "geocedgV2RouteChanged": false,
+    "invariant": "INV-X1: construction and presentation of the Classic Graphics View as Picture dialog occur on the Swing EDT, within the EDT dispatch of the menu action (menu item or Ctrl+Shift+U accelerator)"
+  },
+  "bytecode": {
+    "mainClassFiles": 1458,
+    "identical": 1447,
+    "differing": ["FileMenuD", "FileMenuD$12", "FileMenuD$13", "FileMenuD$14", "FileMenuD$15", "FileMenuD$16", "FileMenuD$17", "FileMenuD$18", "FileMenuD$19", "FileMenuD$20", "FileMenuD$21"],
+    "codeDiffering": ["FileMenuD$12"],
+    "lineNumbersOnly": ["FileMenuD", "FileMenuD$13", "FileMenuD$14", "FileMenuD$15", "FileMenuD$16", "FileMenuD$17", "FileMenuD$18", "FileMenuD$19", "FileMenuD$20", "FileMenuD$21"],
+    "hashListOriginalSha256": "e2859b2aeef48d85d51df86c0faecbf5b2a40a8689afd8a9feddd669973da589",
+    "hashListCandidateSha256": "3e902329d21e361dca542444509e27b1295f88f575ecc038877fb53e0feab45d",
+    "candidateRebuildReproduced": true
+  },
+  "tests": {
+    "newClasses": [
+      {"class": "org.geocedg.desktop.PreG9BR6PlusCX1ClassicPictureDialogTest", "tests": 3, "isolation": "one child JVM per scenario",
+       "covers": ["T-X1-OWNERSHIP", "T-X1-POPULATED", "T-X1-NO-EDT-EXCEPTION", "T-X1-CANCEL", "T-X1-REPEAT", "T-X1-ACCELERATOR", "T-X1-CLASSIC-NO-GEOCEDG-UI", "T-X1-NO-SERIALIZATION", "T-X1-FALLBACK", "T-X1-GEOCEDG"]},
+      {"class": "org.geocedg.desktop.PreG9BR6PlusCX1ClassicPictureProcessTest", "tests": 1, "isolation": "child JVM running GeoGebra3D.main", "covers": ["T-X1-PROCESS"], "openings": 8}
+    ],
+    "failOnOriginal": {"dialogTest": "2 of 3 fail (the two Classic scenarios); the GeoCeDG scenario passes", "processTest": "1 of 1 fails"},
+    "passOnCandidate": {"dialogTest": "3 of 3", "processTest": "1 of 1"},
+    "regressionsInSelection": ["org.geocedg.desktop.PreG9BR6PlusBExportSurfaceTest", "org.geocedg.desktop.PreG9BR6PlusCBaseIdentityTest", "org.geocedg.desktop.G9U1ActionRegistryTest"],
+    "bytecodeObligation": "delivered as pre-freeze evidence, not as a tracked class-hash fixture"
+  },
+  "heap": {
+    "inProcessVersion": "two complete Desktop runs ended with OutOfMemoryError in SvgLoadTest.testLoadSvgsGGB; the tree without the two new classes passed; ~4 MB retained by the in-process scenarios in full-suite context (402 -> 406 MB)",
+    "resolution": "scenarios moved to child JVMs; positional probes measure no retention in the test JVM (9 MB before and after)",
+    "attribution": "candidate tests (resolved); the underlying Desktop test-heap pressure is pre-existing and out of scope"
+  },
+  "repetition": {
+    "probeSourceSha256": "15b3bdd46218e7d3fce0a4be0eedf4892eef45b9b70ad8c4ce5b4e8d99ed95ad",
+    "campaignScriptSha256": "89fda26b59c1f83a94864afd1888972761a22ad4a4261639b7cc86748d4a684f",
+    "aggregateSha256": "dc665a953b01538a04f36b3157cd078f79b237c59b8e4e324a9793a215603b4b",
+    "runtime": "JDK 25.0.4",
+    "rows": [
+      {"batch": "natural", "mode": "CLASSIC_MENU", "jvms": 20, "opens": 100, "populated": 100, "cancelled": 100, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0},
+      {"batch": "stress", "mode": "CLASSIC_MENU", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0},
+      {"batch": "author settings", "mode": "CLASSIC_MENU", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0},
+      {"batch": "keys", "mode": "CLASSIC_KEY_TEXT", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0},
+      {"batch": "keys", "mode": "CLASSIC_KEY", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0},
+      {"batch": "metal", "mode": "CLASSIC_MENU_METAL", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0},
+      {"batch": "geocedg", "mode": "GEOCEDG_MENU", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "uncaught": 0, "offEdtDialogOperations": 0, "concurrentEdtEvents": 0, "hangs": 0}
+    ],
+    "recordsWithEdtFalse": 0,
+    "claim": "finite repetition does not prove the absence of every hang"
+  },
+  "causalStatement": {
+    "proven": "the Classic launch violated Swing EDT ownership, and the correction eliminates that race",
+    "notYetProven": "the race is the sole necessary cause of every manually observed empty-dialog/hang event"
+  },
+  "registration": {
+    "phaseSelection": {"phase_id": "PRE-G9B-R6-PLUS-C-X1", "required_check_ids": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-c-x1.semantic"]},
+    "junitSelection": {"selection_id": "pre-g9b-r6-plus-c-x1.desktop", "expected_identity_count": 41, "expected_identities_sha256": "c9723f966e00a87608793038adfec1e4763a5e1ecfd85e3a805226ae9b032a0c", "input_identity": "50baef73e784f764e95c9faf33d50188986ec3ed / 245a8a7a814dc7146a8c1cf32214019da6317999"},
+    "inventoryUpdates": {
+      "discoveryDesktop": {"from": 1838, "to": 1842, "sha256": "8de5d2f3a7b423a1689f484ab75f8f99d4bef4d337e3d43e610b5022651ac6cf"},
+      "discoveryShared": "identities unchanged (6008); discovery evidence hash refreshed",
+      "finalDesktop": {"from": 1832, "to": 1836, "sha256": "8c42236c754c157d415b236a5255d235cb5b8441b7cd5459b1e17fc60ed1ac9b"}
+    },
+    "inventoryPin": {"reproducedBefore": "3aa283caa008c06cd4a1bbb966c1c0f5cce38bb031a0ab66e0659141db41bbec", "after": "860d1fcd772c05dffd5c42403eaf7f7e539709ce657a7c04a98f9ab5e241515c"},
+    "pinTests": {"selections": 39, "phaseSelections": 46, "x1DesktopIdentities": 41}
+  },
+  "observations": {
+    "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT": "open until the author disposition after smoke",
+    "OBS-R6PLUS-DESKTOP-ADJACENT-OFF-EDT-SITES": "recorded in the mini-track plan section 14 (DQ-X1-4); not fixed",
+    "unchanged": ["OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION", "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT"]
+  },
+  "preFreeze": "see the report, section 11",
+  "changedPaths": [
+    "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java",
+    "docs/upstream/modified-files.yml",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCX1ClassicPictureDialogTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCX1ClassicPictureProcessTest.java",
+    "geocedg/specs/operations/verification-junit-inventory.json",
+    "geocedg/specs/operations/verification-registry.json",
+    "tools/agent/tests/verification-final-coverage.Tests.ps1",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/validation/pre_g9b_r6_plus_c_x1_candidate_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-x1-candidate-evidence.json"
+  ]
+}

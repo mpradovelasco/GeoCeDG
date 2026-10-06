@@ -5274,7 +5274,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R6-plus-B: the v1 fallback entries for worksheet and upload, Animated GIF, STL, Collada and HTML Collada are created only where the application offers them; the host offers all.",
+      "purpose": "PRE-G9B-R6-plus-B: the v1 fallback entries for worksheet and upload, Animated GIF, STL, Collada and HTML Collada are created only where the application offers them; the host offers all. PRE-G9B-R6-plus-C-X1 (OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT): the Graphics View as Picture action runs its unchanged body in its own EDT dispatch instead of a worker thread, so the export dialog is built and shown on the EDT; showGraphicExport and the clipboard fallback are unchanged. Authority: docs/validation/pre_g9b_r6_plus_c_x1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5732,6 +5732,18 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-C physical PNG, PDF, SVG, EMF, print, command-line and API sizing from the drawing scale and the construction unit, device mode and limits.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCX1ClassicPictureDialogTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C-X1 INV-X1: the Classic Graphics View as Picture menu action and its accelerator build and show the export dialog inside their EDT dispatch, populated and cancellable, with the unchanged clipboard fallback, the host scale UI and an unchanged GeoCeDG v2 route; each scenario in its own JVM.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_x1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusCX1ClassicPictureProcessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-C-X1 T-X1-PROCESS: the real Classic application (GeoGebra3D) in a separate windowed JVM; menu and Ctrl+Shift+U openings keep INV-X1; the clipboard fallback is sandboxed in the child.",
+      "authority": "docs/validation/pre_g9b_r6_plus_c_x1_candidate_report.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/export/PreG9BR6PlusCSharedExportTest.java",

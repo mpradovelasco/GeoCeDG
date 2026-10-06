@@ -361,21 +361,20 @@ class FileMenuD extends BaseMenu {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Thread runner = new Thread(() -> {
-					app.setWaitCursor();
-					try {
+				// GeoCeDG (2026-10-06): PRE-G9B-R6-plus-C-X1 the dialog is built and
+				// shown in this EDT dispatch, no longer on a worker thread
+				app.setWaitCursor();
+				try {
 
-						app.getGuiManager().showGraphicExport();
+					app.getGuiManager().showGraphicExport();
 
-					} catch (Exception e1) {
-						Log.debug(
-								"GraphicExportDialog not available for 3D view yet");
-						// for 3D View
-						app.copyGraphicsViewToClipboard();
-					}
-					app.setDefaultCursor();
-				});
-				runner.start();
+				} catch (Exception e1) {
+					Log.debug(
+							"GraphicExportDialog not available for 3D view yet");
+					// for 3D View
+					app.copyGraphicsViewToClipboard();
+				}
+				app.setDefaultCursor();
 			}
 		};
 
