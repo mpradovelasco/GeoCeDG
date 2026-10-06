@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C",
+  "recordKind": "AUTHOR_CLOSEOUT_DISPOSITION",
+  "status": "PRE-G9B-R6-plus-C — PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS WITH ACCEPTED PRE-EXISTING DEBT",
+  "record": "docs/validation/pre_g9b_r6_plus_c_closeout_record.md",
+  "authorDecisionDate": "2026-10-06",
+  "authorConfirmedDirectly": true,
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "PRE-G9B-R6-plus-C revision 1 technical candidate only",
+  "implementationAuthorized": false,
+  "additionalProductFixAuthorized": false,
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": "NONE",
+  "outputFormatOrSchemaChange": "NONE beyond the original C candidate",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "smokeVerified": [
+    {"item": "DXF hidden objects and hidden layers", "result": "PASS", "detail": "individually hidden object keeps group 60 = 1; hidden layer written OFF; no change to DQ-C3"},
+    {"item": "C-UX-1 compact non-physical statement", "result": "PASS", "detail": "accepted"},
+    {"item": "C-UX-2 default DXF file name", "result": "PASS", "detail": "document stem with .dxf; geocedg-export.dxf without a document file"},
+    {"item": "normal physical export", "result": "PASS", "detail": "regression accepted"},
+    {"item": "Classic diagnostic Graphics View as Picture", "result": "ACCEPTED PRE-EXISTING DEBT", "detail": "empty dialog and hang reproduced by the author"}
+  ],
+  "earlierSmokeFindings": "accepted evidence; not repeated",
+  "acceptedClassicDebt": {
+    "id": "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT",
+    "disposition": ["REPRODUCED BY AUTHOR", "PRE-EXISTING", "NOT CAUSED BY C", "ACCEPTED DEBT", "NOT C-BLOCKING", "DEFERRED TO POST-C"],
+    "reproducedByAuthor": true,
+    "observedByAuthor": "empty dialog and hang in the Classic diagnostic session (File -> Export -> Graphics View as Picture (png, svg) ...)",
+    "preExisting": true,
+    "causedByC": false,
+    "attributionEvidence": "candidate report section 21.2: 18 runs, 9 on the candidate and 9 on the base e613502831e3b412780d69424d4a1e433a4ae688; upstream FileMenuD builds and shows GraphicExportDialog on a background thread; the same EDT layout exceptions at the base and in C; no C frame in any stack",
+    "acceptedAsNonBlockingDebt": true,
+    "deferredTo": "separate post-C activity with its own characterization and author authorization",
+    "classicOrUpstreamCodeChanged": false,
+    "resolved": false,
+    "acceptanceImpliesResolution": false
+  },
+  "identities": {
+    "publicationBase": {"name": "P_R6PLUS_A2", "commit": "e613502831e3b412780d69424d4a1e433a4ae688", "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0"},
+    "preparation": {"name": "T_R6PLUS_C_PREP", "commit": "5ad96304ae9718c296db753b4822130cf3d99b61", "tree": "1596b5153681828c9c3206b98ca9ebd31505e765", "parent": "e613502831e3b412780d69424d4a1e433a4ae688", "status": "C preparation package; kept intact"},
+    "reconciledPreparation": {"name": "D_R6PLUS_C_PROMPT", "commit": "6cb09d55e1ce9b18ef046f445da5494288fd8ecd", "tree": "00f80cc75db6de6542bb295cef813e70c9823b9c", "parent": "5ad96304ae9718c296db753b4822130cf3d99b61", "status": "PASS — AUTHOR APPROVED"},
+    "authorization": {"name": "A_R6PLUS_C_PROMPT", "commit": "75a2cf06b62afbd20f6e3a3fc0e079579a3cab2a", "tree": "06a670f8812105a48db7ef57b081cc05f8943089", "parent": "6cb09d55e1ce9b18ef046f445da5494288fd8ecd", "status": "implementation authorization record"},
+    "candidateOriginal": {"name": "T_R6PLUS_C_R1", "commit": "b981f8eac9dd7b320376e07345b8c1c483de927a", "tree": "a07159fc0e8e746d6a627b7107c07cc88cafc422", "parent": "75a2cf06b62afbd20f6e3a3fc0e079579a3cab2a", "status": "historical evidence only"},
+    "technicalCandidate": {"name": "T_R6PLUS_C", "commit": "6248bf0fc4208540de09d26a7755d4163055ac76", "tree": "03038ae305716408aa404fd15dd40e71bf7f5f51", "parent": "b981f8eac9dd7b320376e07345b8c1c483de927a", "revision": 1, "status": "authoritative; author approved", "modifiedByCloseout": false},
+    "branch": "phase/pre-g9b-r6-plus-c-2d-export-completion"
+  },
+  "acceptedEvidence": [
+    {"profile": "PHASE", "command": "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-C -LogDirectory artifacts\\agent\\pre-g9b-r6-plus-c-r1-phase-6248bf0f", "run": "verification-a198a69b95cf4fb69e7f3c13818f19b3", "commit": "6248bf0fc4208540de09d26a7755d4163055ac76", "tree": "03038ae305716408aa404fd15dd40e71bf7f5f51", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "5/5", "executionPlanHash": "f820b8dee078e51fd3ac0e1db2be373b1cc51227690814ea47e581559f08c142", "resultHash": "ee066b3313d18c41c2cd471b75192dbfa88a61d52ebf017029be9dbf1c366949", "diagnosticFindings": 0},
+    {"profile": "INTEGRATION", "command": "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\pre-g9b-r6-plus-c-r1-integration-6248bf0f", "run": "verification-0bcf970971c74d1e9cb329b81b8aa0dc", "commit": "6248bf0fc4208540de09d26a7755d4163055ac76", "tree": "03038ae305716408aa404fd15dd40e71bf7f5f51", "exitCode": 0, "verdict": "ACCEPTED / COMPLETE", "acceptanceLeaves": "19/19", "executionPlanHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "resultHash": "6ee73bf06be9f24eca1ac91ac63e2b0a7e1af10eaa48df0382448f0d1fec496b", "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"]}
+  ],
+  "historicalEvidence": [
+    {"profile": "PHASE", "run": "verification-6c51394a67ff478e80cbe85991fe46cd", "commit": "b981f8eac9dd7b320376e07345b8c1c483de927a", "tree": "a07159fc0e8e746d6a627b7107c07cc88cafc422", "verdict": "ACCEPTED / COMPLETE", "resultHash": "0444d03597af750f0082c1f547296d4c93185e3af0ecaecc2a8031b7c5cab39b", "role": "original candidate; historical evidence only; not acceptance evidence for T_R6PLUS_C"},
+    {"profile": "INTEGRATION", "run": "verification-da457f5a4c7d4c378077ca28b66de492", "commit": "b981f8eac9dd7b320376e07345b8c1c483de927a", "tree": "a07159fc0e8e746d6a627b7107c07cc88cafc422", "verdict": "ACCEPTED / COMPLETE", "resultHash": "c3ec4b373cc3fccc31c251f37bbd35d9677fcb9dc4e270a43a2ebb9540102b33", "role": "original candidate; historical evidence only; not acceptance evidence for T_R6PLUS_C"}
+  ],
+  "smokeFindings": [
+    {"id": "C-SMOKE-1", "subject": "hidden circle in the DXF", "disposition": "EXPECTED_BY_DQ-C3 / SMOKE_EXPECTATION_CLARIFIED", "readerNote": "EXTERNAL_READER_LIMITATION for viewers that ignore group 60", "preserved": true},
+    {"id": "C-SMOKE-2", "subject": "Classic picture dialog", "disposition": "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT — REPRODUCED BY AUTHOR — PRE-EXISTING — NOT CAUSED BY C — ACCEPTED DEBT — NOT C-BLOCKING — DEFERRED TO POST-C"},
+    {"id": "C-UX-1", "subject": "compact non-physical statement", "disposition": "implemented in revision 1; accepted by the author"},
+    {"id": "C-UX-2", "subject": "default DXF file name", "disposition": "implemented in revision 1; accepted by the author"}
+  ],
+  "residualObservations": [
+    {"id": "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT", "disposition": "REPRODUCED BY AUTHOR — PRE-EXISTING — NOT CAUSED BY C — ACCEPTED DEBT — NOT C-BLOCKING — DEFERRED TO POST-C", "fixed": false},
+    {"id": "OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION", "disposition": "PRE-EXISTING SINCE G5 — NOT C SCOPE — NOT FIXED", "fixed": false},
+    {"id": "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "disposition": "OPEN — IMPLEMENTATION NOT AUTHORIZED — MUST RECEIVE DISPOSITION BEFORE GLOBAL PRE-G9B-R6-plus CLOSEOUT", "absorbedByC": false},
+    {"id": "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT", "disposition": "A-2 BEHAVIOR — NOT C SCOPE — NOT FIXED", "absorbedByC": false},
+    {"id": "ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE", "disposition": "ENHANCEMENT — DOCUMENTATION ONLY — OWNER PRE-G9B-R6-plus-E3 — IMPLEMENTATION NOT AUTHORIZED"},
+    {"id": "carried pre-existing debts", "items": ["Desktop test-heap pressure", "exportPDF callback UTF-8 read", "AutoColor JVM-global state", "historical G9X1 authority scan"], "disposition": "unchanged; not absorbed by C"}
+  ],
+  "postCIntent": {"documentationOnly": true, "next": "separate post-C activity addressing OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT with its own characterization and author authorization", "designed": false, "implemented": false, "started": false, "authorized": false},
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_r6_plus_c_closeout_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-closeout.json"
+  ],
+  "publication": {
+    "range": ["e613502831e3b412780d69424d4a1e433a4ae688", "5ad96304ae9718c296db753b4822130cf3d99b61", "6cb09d55e1ce9b18ef046f445da5494288fd8ecd", "75a2cf06b62afbd20f6e3a3fc0e079579a3cab2a", "b981f8eac9dd7b320376e07345b8c1c483de927a", "6248bf0fc4208540de09d26a7755d4163055ac76", "P_R6PLUS_C (this closeout commit)"],
+    "method": "one clean non-force fast-forward of main",
+    "precondition": "local main = origin/main = live remote main = P_R6PLUS_A2",
+    "tag": false,
+    "release": false
+  },
+  "authorizationState": {
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-B": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D0": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-D1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-2": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-C": "PASS — AUTHOR APPROVED — PUBLISHED; AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT",
+    "PRE-G9B-R6-plus-E1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-E3": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F3": "PLANNED — AUTHOR APPROVED — PUBLISHED; IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-G": "NOT AUTHORIZED",
+    "post-C Classic activity": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "DESIGNED — NOT AUTHORIZED; BLOCKED UNTIL PRE-G9B-R6-plus GLOBAL CLOSEOUT",
+    "G9B": "NOT AUTHORIZED"
+  },
+  "operationalOrder": "P0 -> A-1 -> B -> D0 -> D1 -> A-2 -> C -> E1 -> E2 -> E3 -> F1 -> F2 -> F3 -> G"
+}
