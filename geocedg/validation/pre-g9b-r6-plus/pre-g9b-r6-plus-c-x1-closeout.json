@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C-X1",
+  "recordKind": "PHASE_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_r6_plus_c_x1_closeout_record.md",
+  "authorDecisionDate": "2026-10-06",
+  "authorConfirmedInSession": true,
+  "phaseState": "PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "selfApproved": false,
+  "authorApproved": "C-X1 only",
+  "passClaimed": "C-X1 only",
+  "implementationAuthorized": false,
+  "approvedCandidate": {
+    "name": "T_R6PLUS_C_X1",
+    "commit": "eabe6368f9e012d8186aa668a68a5bcc48cdcc17",
+    "tree": "fc8dfb290594d62cfc5240490ad5e1ee38cbc321"
+  },
+  "provenanceChain": [
+    {"name": "P_R6PLUS_C", "commit": "39eb05bc16a18ae48167383e90fcf38b12a681b6", "tree": "fc13f5f125a4e8d595dd450bfd47706be193e5cd"},
+    {"name": "T_R6PLUS_C_X1_PROMPT", "commit": "50baef73e784f764e95c9faf33d50188986ec3ed", "tree": "245a8a7a814dc7146a8c1cf32214019da6317999"},
+    {"name": "authorization", "commit": "7a88a491104ecd3c75809d0b84fd1e7dcb3c0968", "tree": "2034b225d3fe5f790f7459e44bc2cb998f3c6a59"},
+    {"name": "T_R6PLUS_C_X1", "commit": "eabe6368f9e012d8186aa668a68a5bcc48cdcc17", "tree": "fc8dfb290594d62cfc5240490ad5e1ee38cbc321"}
+  ],
+  "acceptedEvidence": {
+    "verificationClass": "BOUNDED_PHASE",
+    "phase": {
+      "runId": "verification-f07334b6440446dea412df7dc82ed95e",
+      "verdict": "ACCEPTED / COMPLETE",
+      "satisfied": "3/3",
+      "exitCode": 0,
+      "executionPlanHash": "6f93ccadff901943de7e7281fe9bab137bafa7eb60067eb80649cd79e8d5403c",
+      "resultHash": "6aa9a5f09396b5de3f8bcfb808286f720cc41c1b90fc078e3ae1fae9e35275a0"
+    },
+    "development": {
+      "infraUnit": {"runId": "verification-cfaef23e25e44521b9603aab5615499b", "satisfied": "22/22"},
+      "static": {"runId": "verification-720f0d6c5cd44c0ab19614d86b3f05d2", "satisfied": "3/3"}
+    },
+    "repetition": {"jvms": 55, "openings": 275, "uncaught": 0, "offEdtDialogOperations": 0, "concurrencyFindings": 0, "hangs": 0, "allPopulated": true, "allCancelled": true},
+    "finalDesktopProducer": "passed after the application-creating scenarios were isolated in child JVMs",
+    "integration": "NOT REQUIRED, NOT RUN",
+    "final": "NOT REQUIRED, NOT RUN"
+  },
+  "acceptedImplementation": {
+    "productFiles": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java"],
+    "invariant": "INV-X1: construction and presentation of the Classic Graphics View as Picture dialog occur on the Swing EDT",
+    "unchanged": ["showGraphicExport()", "clipboard fallback", "error handling", "GeoCeDG v2 route"]
+  },
+  "declarations": {
+    "productChange": "YES (Desktop lifecycle/UI only)",
+    "serializationChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "outputFormatSchemaChange": "NONE"
+  },
+  "observations": {
+    "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT": "RESOLVED IN PRE-G9B-R6-plus-C-X1 — AUTHOR APPROVED (prospective; the C closeout stays historically unchanged)",
+    "preservedNotFixed": [
+      "OBS-R6PLUS-DESKTOP-ADJACENT-OFF-EDT-SITES",
+      "OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION",
+      "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET",
+      "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT",
+      "Desktop test-heap pressure",
+      "exportPDF callback UTF-8 debt",
+      "AutoColor JVM-global state",
+      "historical G9X1 authority-scan debt"
+    ]
+  },
+  "closeoutVerification": ["STATIC", "git diff --check"],
+  "publication": {
+    "authorized": true,
+    "mode": "ordinary non-force fast-forward of main",
+    "precondition": "live remote main = 39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "chain": ["39eb05bc", "50baef73", "7a88a491", "eabe6368", "closeout commit"],
+    "tag": "NONE",
+    "release": "NONE",
+    "result": "reported outside this artifact"
+  },
+  "notAuthorized": ["E1", "E2", "E3", "F1", "F2", "F3 implementation", "G", "PRE-G9B-R7", "G9B"],
+  "nextOperationalSubphase": "PRE-G9B-R6-plus-E1 (NOT AUTHORIZED; no canonical implementation prompt)"
+}
