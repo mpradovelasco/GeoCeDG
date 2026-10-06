@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-C-X1",
+  "phaseIdentifierState": "PROPOSED — NOT AUTHOR APPROVED (DQ-X1-1)",
+  "observation": "OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_c_x1_preparation_characterization_report.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-c-x1-classic-picture-dialog-edt.prompt.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "activityState": "CHARACTERIZED / IMPLEMENTATION PREPARED — IMPLEMENTATION NOT AUTHORIZED — PENDING AUTHOR REVIEW",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "serializationChange": "NONE",
+  "publishedBase": {
+    "name": "P_R6PLUS_C",
+    "commit": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "tree": "fc13f5f125a4e8d595dd450bfd47706be193e5cd"
+  },
+  "comparisonBases": {
+    "preC": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "upstreamPin": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "entryGate": {
+    "localMain": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "originMain": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "liveRemoteMain": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "worktreeClean": true
+  },
+  "preparationBase": {
+    "commit": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+    "branch": "phase/pre-g9b-r6-plus-c-x1-prompt",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "method": {
+    "staticReading": "every cited seam re-read at P_R6PLUS_C",
+    "baseIdentity": "launch blocks extracted with git show and hashed at 9b93256b, e6135028 and 39eb05bc",
+    "upstream": "GitHub API, read-only: commit history of FileMenuD.java and GraphicExportDialog.java on geogebra/geogebra main, FileMenuD.java at its head",
+    "probes": "one scratch-only Desktop probe class through a Gradle init script (JDK 25.0.4); every run a separate child JVM launching GeoGebra3D.main or GeoCeDG.main with an isolated settings file; ByteBuddy inline tracing advice, AWT container/hierarchy listener, thread-checking RepaintManager, EDT watchdog with lock-aware dump, clipboard fallback skipped inside the child JVM",
+    "notRun": ["PHASE", "INTEGRATION", "FINAL"],
+    "productOrTestFilesChanged": false
+  },
+  "probe": {
+    "class": "org.geocedg.desktop.PostCClassicPictureProbeTest",
+    "sourceSha256": "15b3bdd46218e7d3fce0a4be0eedf4892eef45b9b70ad8c4ce5b4e8d99ed95ad",
+    "initScriptSha256": "6f229eb0990e2d427637b5dfda0337f1459abe402d2b3d6415b766a0caea7aa1",
+    "campaignScriptSha256": "b17e640c513abb9271c26fbebd714da2ec4501b78db8785d27b6a77cbef5f29a",
+    "aggregatorSha256": "f77ad782ddb73cf14516ef8261d9fe6041d115a1d062b54921ef53bbec231e16",
+    "aggregateCurrentSha256": "43a55e2d8c8550fd7c1d298bfd6c8c79ce9e3a88c60903f0f048eaa49c7f34a5",
+    "summariesCurrentSha256": "168ed45f4ee6e0aab450e209eeb0e131b1287d7af7e92444fbd0c24c4e2fb004",
+    "gradleExitCodes": "0 for every batch",
+    "cyclesPerJvm": 5,
+    "childJvmsCurrent": 110,
+    "recordsCurrent": 109
+  },
+  "threadOwnership": {
+    "threadedRoutes": ["Classic File > Export > Graphics View as Picture", "Classic Ctrl+Shift+U from a text field (menu accelerator)", "GeoCeDG v1 legacy fallback menu (static reading)"],
+    "edtRoutes": ["Classic Ctrl+Shift+U from the graphics view (GlobalKeyDispatcher)", "GeoCeDG v2 host.export.picture", "scratch prototype of option A"],
+    "stagesOnWorkerWhenThreaded": ["showGraphicExport", "GraphicExportDialog constructor", "initGUI population", "pack", "setVisible", "loadPreferences", "format listener updateComponentTreeUI", "show"],
+    "stagesOnEdtAlways": ["menu action", "Cancel setVisible(false)", "savePreferences"],
+    "dialogModality": "MODELESS",
+    "dialogOwner": "main frame",
+    "nestedEventLoop": false
+  },
+  "campaignCurrent": [
+    {"batch": "natural", "mode": "CLASSIC_MENU", "jvms": 20, "opens": 100, "populated": 100, "cancelled": 100, "jvmsWithNpe": 19, "npes": 51, "offEdtDialogRepaints": 4100, "concurrentEdtEvents": 2425, "hangs": 0, "defective": 0},
+    {"batch": "natural", "mode": "CLASSIC_MENU_EDT", "jvms": 20, "opens": 100, "populated": 100, "cancelled": 100, "jvmsWithNpe": 0, "npes": 0, "offEdtDialogRepaints": 0, "concurrentEdtEvents": 0, "hangs": 0, "defective": 0},
+    {"batch": "author", "mode": "CLASSIC_MENU", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 6, "npes": 15, "offEdtDialogRepaints": 2050, "concurrentEdtEvents": 1200, "hangs": 0, "defective": 0},
+    {"batch": "keys", "mode": "CLASSIC_KEY", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "jvmsWithNpe": 0, "npes": 0, "offEdtDialogRepaints": 0, "concurrentEdtEvents": 0, "hangs": 0, "defective": 0},
+    {"batch": "keys", "mode": "CLASSIC_KEY_TEXT", "jvms": 5, "opens": 25, "populated": 25, "cancelled": 25, "jvmsWithNpe": 5, "npes": 18, "offEdtDialogRepaints": 975, "concurrentEdtEvents": 525, "hangs": 0, "defective": 0},
+    {"batch": "metal", "mode": "CLASSIC_MENU_METAL", "jvms": 9, "startupFailures": 1, "opens": 45, "populated": 45, "cancelled": 45, "jvmsWithNpe": 4, "npes": 7, "offEdtDialogRepaints": 1350, "concurrentEdtEvents": 1050, "hangs": 0, "defective": 0},
+    {"batch": "geocedg", "mode": "GEOCEDG_MENU", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 0, "npes": 0, "offEdtDialogRepaints": 0, "concurrentEdtEvents": 0, "hangs": 0, "defective": 0},
+    {"batch": "stress", "mode": "CLASSIC_MENU", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 10, "npes": 252, "offEdtDialogRepaints": 2050, "concurrentEdtEvents": 1345, "hangs": 0, "defective": 0},
+    {"batch": "stress", "mode": "CLASSIC_MENU_EDT", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 0, "npes": 0, "offEdtDialogRepaints": 0, "concurrentEdtEvents": 0, "hangs": 0, "defective": 0},
+    {"batch": "stress", "mode": "CLASSIC_MENU_METAL", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 10, "npes": 141, "offEdtDialogRepaints": 1500, "concurrentEdtEvents": 1380, "hangs": 0, "defective": 0}
+  ],
+  "uncaughtKindsCurrentCampaign": [
+    {"message": "\"list\" is null", "site": "DefaultListCellRenderer <- BasicComboBoxUI.getDisplaySize", "count": 150},
+    {"message": "\"total\" is null", "site": "SizeRequirements.calculateAlignedPositions <- BoxLayout.layoutContainer", "count": 325},
+    {"message": "\"this.paddingBorder\" is null", "site": "FlatComboBoxUI$CellPaddingBorder.uninstall", "count": 9}
+  ],
+  "uncaughtAllWhileWorkerInsideDialog": true,
+  "clipboardFallbackReached": 0,
+  "campaignBase": {
+    "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
+    "source": "git archive in the scratchpad, blob-identical for FileMenuD, GuiManagerD, GraphicExportDialog, PrintScalePanel and AppD",
+    "aggregateSha256": "d80259d9d526f8947f9712e8baffe1ce2156a74a38b0f318330e58c4068fc3ae",
+    "rows": [
+      {"batch": "natural", "mode": "CLASSIC_MENU", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 9, "npes": 24, "npesByKind": {"list": 15, "total": 8, "paddingBorder": 1}, "offEdtDialogRepaints": 2050, "concurrentEdtEvents": 1225, "hangs": 0, "defective": 0},
+      {"batch": "stress", "mode": "CLASSIC_MENU", "jvms": 10, "opens": 50, "populated": 50, "cancelled": 50, "jvmsWithNpe": 10, "npes": 265, "npesByKind": {"list": 43, "total": 216, "paddingBorder": 6}, "offEdtDialogRepaints": 2050, "concurrentEdtEvents": 1295, "hangs": 0, "defective": 0}
+    ],
+    "conclusion": "same ownership and exception kinds as P_R6PLUS_C; pre-existing; not altered by C"
+  },
+  "baseIdentity": {
+    "exportGraphicAction": "3727b2e6f6 at 9b93256b, e6135028, 39eb05bc",
+    "showGraphicExport": "3fb799f546 at all three",
+    "dialogConstructor": "799812c347 at all three",
+    "dialogSetVisible": "b3610100b0 at all three",
+    "dialogInitGUI": "e1d040f189 at all three",
+    "dialogLoadPreferences": "3c7bdf5667 at all three",
+    "classicTakesHostDefaultsOfCSeams": true
+  },
+  "upstream": {
+    "mainHead": "a9ad4789c45e14811ee704c0cf1b00ebb26638f7",
+    "postPinCommitsFileMenuD": ["fe033eaadf5585ce492d27f415564660771cb542", "22e32efaff5f5c3325d0823b7b25fac64f7340ee"],
+    "postPinCommitsGraphicExportDialog": ["8215b12039a6e7bd6c0112d4617408a662a1965f", "fe033eaadf5585ce492d27f415564660771cb542", "22e32efaff5f5c3325d0823b7b25fac64f7340ee"],
+    "laterUpstreamFix": false,
+    "exportGraphicActionAtHead": "new Thread around showGraphicExport (reformatted only)"
+  },
+  "conclusions": {
+    "rootCauseLaunchRace": "CONFIRMED",
+    "fixSufficiencyForRace": "CONFIRMED (single EDT dispatch; prototype runs)",
+    "flatLaf": "NOT CAUSAL (exposes the violation; reproduced under Metal)",
+    "causedByC": false,
+    "severeVariantReproducedAutomatically": false,
+    "severeVariantConnection": "INFERRED, NOT DEMONSTRATED; closed only by author smoke (DQ-X1-5)",
+    "edtConstructionCostMs": {"firstOpen": 220, "laterOpens": 20}
+  },
+  "proposal": {
+    "repairOption": "A — call site: remove new Thread/start() from FileMenuD.exportGraphicAction; body unchanged",
+    "rejectedOptions": ["B — callee self-marshal in GuiManagerD.showGraphicExport", "C — worker plus invokeLater", "D — dialog redesign or Classic-specific abstraction"],
+    "expectedChangedProductFiles": ["source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/menubar/FileMenuD.java"],
+    "invariant": "INV-X1",
+    "verificationClass": "BOUNDED_PHASE (proposed; DQ-X1-3)",
+    "plannedAcceptance": "one registered PHASE PRE-G9B-R6-PLUS-C-X1",
+    "phaseSelection": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-c-x1.semantic"],
+    "decisionsRequested": ["DQ-X1-1", "DQ-X1-2", "DQ-X1-3", "DQ-X1-4", "DQ-X1-5", "DQ-X1-6"]
+  },
+  "observationsNotActedOn": [
+    "GraphicExportDialog Save and Clipboard buttons run setVisible(false) and doExport on a worker thread (Classic and GeoCeDG)",
+    "GeoGebraMenuBar.showPrintPreview builds and shows PrintPreviewD on a worker thread (Classic and GeoCeDG v2)",
+    "FileMenuD newWindowAction, drawingPadToClipboardAction, exportWorksheet, exportGeoGebraTubeAction use worker threads",
+    "Classic startup: GeoGebra3D uses GeoGebra.doMain with initializeOnEventDispatchThread = false; 1 of 100 Classic launches failed at startup with a JToolBar layout NPE",
+    "each launch retains one hidden, undisposed GraphicExportDialog"
+  ],
+  "changedPaths": [
+    ".github/prompts/tasks/pre-g9b-r6-plus-c-x1-classic-picture-dialog-edt.prompt.md",
+    "docs/validation/pre_g9b_r6_plus_c_x1_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-c-x1-preparation-characterization.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
