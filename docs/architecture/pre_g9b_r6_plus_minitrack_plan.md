@@ -22,6 +22,7 @@
 - Preparation of `E1` (2026-10-06): after the `C-X1` closeout the author authorized characterization, design reconciliation, author-decision preparation and the canonical `E1` prompt, without authorizing implementation and without promoting the P0 recommendations. The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-ggt-library-and-packaging.prompt.md) is prepared on the published `P_R6PLUS_C_X1` `23b971f5a967958f93e745ca8c39fce1162706e6`, tree `5f564c8391828dc781dee0b1be93ef223431af58`, with its [characterization report](../validation/pre_g9b_r6_plus_e1_preparation_characterization_report.md): `PREPARED — NOT AUTHORIZED`; proposed split `E1-L` (`BOUNDED_PHASE`) / `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`), not author-approved; decisions `DQ-E1-1` to `DQ-E1-16` pending (covering `AQ-G1`–`AQ-G7`); implementation not authorized.
 - Author decisions and `E1-L` authorization (2026-10-07): on the frozen preparation candidate `T_R6PLUS_E1_PREP` `0ce52a965bcf8b9de37a1572738c0ad79db52354`, tree `e500e80fddf957078249383ae61e28e6f707d455`, the author resolved `DQ-E1-1` to `DQ-E1-16` ([E1 preparation closeout, author decisions and E1-L authorization record](../validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md)): `E1` split into `E1-L` (`BOUNDED_PHASE`, one registered `PHASE`; [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-l-curated-ggt-library.prompt.md) `AUTHORIZED FOR IMPLEMENTATION`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`; [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-p-ggt-library-packaging.prompt.md) `PREPARED — NOT AUTHORIZED`); twelve tools curated and shipped; dimension and sheet tools excluded (references for `E2`/`E3`; `AQ-G3`/`AQ-G3a` need no `E1` implementation); black at GeoGebra `lineThickness` 3; read-only installation-relative bundled catalog; [rights record version 1](../licensing/curated-ggt-library-rights-record.md) (author sole rights holder; `INTERNAL` and `NC` authorized, `COMMERCIAL` not authorized / pending); `AGENTS.md` §3.2 amendment for `models/curated/` authorized as its own commit; `G` keeps depending on `E1-P` unless the author re-plans it. Author-approved requirement `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` (owner `G`): product-owned About metadata and licensing route; visible version stays `1.0.0` during the mini-track and becomes `1.1.0` only at `G = PASS — AUTHOR APPROVED`, with its version date.
 - `E1-L` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_L` `5f34d181b4f03412acfbdbeedb3fd7931de02ed9` (revision 1 after the functional smoke of R0 `1aa05d67`; [E1-L closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md)); ADR 0033 `ACCEPTED — AUTHOR APPROVED`, curated-library specification `NORMATIVE / AUTHOR APPROVED`; `E1-P` stays `PREPARED — NOT AUTHORIZED`; no later subphase is authorized.
+- `E1-P` and aggregate `E1` closeout (2026-10-07): `E1-P` implementation authorized on `P_R6PLUS_E1_L` `47b39e5f` (`6bce8cf5`); technical candidate `T_R6PLUS_E1_P` `dcda4075843766e8c384c176007c5edb776357c2` ([candidate report](../validation/pre_g9b_r6_plus_e1_p_candidate_report.md)) `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT` ([E1-P and E1 closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md)); `INTERNAL` and `NC` package the same curated library at `app/ggt-library/`, `COMMERCIAL` excludes it; `PRE-G9B-R6-plus-E1 = PASS — AUTHOR APPROVED`; `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` registered as open pre-existing debt, only its focal characterization authorized next; `E2` not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -224,7 +225,7 @@ No other boundary changed.
 | `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` (author-frozen 2026-10-02) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-02; `T_R6PLUS_D0` `8383a153`; ADR 0032 and unit-system v1.0 author-approved; authorized 2026-10-02 on `8814468`; canonical prompt prepared on `0ef616bb` and `AUTHORIZED`; author decisions `AQ-U2`–`AQ-U6` recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED` 2026-10-02, `T_R6PLUS_D0_PROMPT` `8814468`, with the `DQ-D0` dispositions) |
 | `D1` | unit-system implementation and status integration | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` (author-frozen 2026-10-02) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-03; `T_R6PLUS_D1` `6e1d8459`; `AUTHOR_SMOKE = PASS`; revision 2 after the author smoke of `b55aa817`; authorized 2026-10-03 on `3fb7542a`; canonical prompt prepared on `3268f9b9` and `AUTHORIZED`; preparation decisions recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED`) |
 | `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` (re-characterized and confirmed by the preparation; frozen at authorization) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-06; `T_R6PLUS_C` `6248bf0f`, revision 1; `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`; `PHASE` `verification-a198a69b…` and `INTEGRATION` `verification-0bcf9709…` `ACCEPTED / COMPLETE`; `b981f8ea` and its runs historical evidence; hidden-circle DXF finding expected by `DQ-C3`; Classic picture-dialog empty dialog and hang reproduced by the author, pre-existing, not caused by `C`, accepted debt deferred to post-`C`; [closeout record](../validation/pre_g9b_r6_plus_c_closeout_record.md); [candidate report](../validation/pre_g9b_r6_plus_c_candidate_report.md)) |
-| `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence) | `NOT AUTHORIZED` |
+| `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence); split by the author into `E1-L` (`BOUNDED_PHASE`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`) | `PASS — AUTHOR APPROVED` (aggregate, 2026-10-07; `E1-L` `T_R6PLUS_E1_L` `5f34d181` `PASS — AUTHOR APPROVED — PUBLISHED`, [closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md); `E1-P` `T_R6PLUS_E1_P` `dcda4075` `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`, [closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` open, pre-existing) |
 | `E2` | native dimension tools | shared kernel commands, Desktop modes, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `F1` | direction visualization | view/drawables, Desktop option | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
@@ -1191,20 +1192,23 @@ PRE-G9B-R6-plus-C-X1       = PASS — AUTHOR APPROVED — PUBLISHED
                              PHASE verification-f07334b6; BOUNDED_PHASE; post-C
                              corrective activity, operational order unchanged)
 
-PRE-G9B-R6-plus-E1         = SPLIT INTO E1-L AND E1-P (author decision 2026-10-07 on
-                             T_R6PLUS_E1_PREP 0ce52a96; DQ-E1-1 to DQ-E1-16 decided)
+PRE-G9B-R6-plus-E1         = PASS — AUTHOR APPROVED (aggregate, 2026-10-07: E1-L and
+                             E1-P closed; split into E1-L and E1-P by the author on
+                             T_R6PLUS_E1_PREP 0ce52a96; DQ-E1-1 to DQ-E1-16 decided;
+                             not reopened by OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER)
 PRE-G9B-R6-plus-E1-L       = PASS — AUTHOR APPROVED — PUBLISHED
                              (2026-10-07; T_R6PLUS_E1_L 5f34d181, revision 1;
                              AUTHOR_SMOKE = PASS (R0 functional, R1 hover tips);
                              PHASE verification-1c7d88a3; BOUNDED_PHASE; R0 1aa05d67
                              historical evidence; ADR 0033 and the curated-library
-                             specification author-approved; E1 not complete: E1-P)
-PRE-G9B-R6-plus-E1-P       = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (authorized
-                             2026-10-07, base P_R6PLUS_E1_L 47b39e5f;
+                             specification author-approved)
+PRE-G9B-R6-plus-E1-P       = PASS — AUTHOR APPROVED
+                             (2026-10-07; T_R6PLUS_E1_P dcda4075; AUTHOR_SMOKE = PASS
+                             WITH ACCEPTED PRE-EXISTING DEBT; PHASE verification-81ffec9c,
+                             INFRA_UNIT verification-ace3de87, PACKAGING verification-e3c98ad1,
+                             -a40cda69 (INTERNAL), -ce43e964 (NC);
                              OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
-                             INTERNAL and NC include the library, COMMERCIAL
-                             excluded; AUTHOR_SMOKE PENDING; E1 not yet closed;
-                             G keeps depending on it)
+                             INTERNAL and NC include the library, COMMERCIAL excluded)
 PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
 PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
@@ -1282,6 +1286,17 @@ OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
                              native DirectDimension / AxisDimension would make the
                              user library reject the legacy macros directDimension /
                              axisDimension)
+OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
+                             CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
+                             closeout, 2026-10-07: reproduced by the author in a
+                             mid-September GeoCeDG build; not caused by E1-P or E1-L;
+                             not E1-P blocking; not resolved. Packaged "Open Classic
+                             diagnostic session" fails at child launch, CreateProcess
+                             error=2, attempted <packaged java.home>\bin\java;
+                             GeoCeDGActionRegistry.openDiagnostic derives the child
+                             launcher from java.home/bin/javaw.exe, fallback
+                             java.home/bin/java. Only a focal characterization after the
+                             E1 publication is authorized; no correction)
 ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA = AUTHOR APPROVED REQUIREMENT (2026-10-07) —
                              OWNER PRE-G9B-R6-plus-G — MANDATORY G INPUT —
                              IMPLEMENTATION NOT AUTHORIZED IN E1 (product-owned

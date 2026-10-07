@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-P",
+  "record": "docs/validation/pre_g9b_r6_plus_e1_p_closeout_record.md",
+  "decisionDate": "2026-10-07",
+  "state": "PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS WITH ACCEPTED PRE-EXISTING DEBT",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "chain": {
+    "publishedBase": { "name": "P_R6PLUS_E1_L", "commit": "47b39e5f6d51e51b8d08ec5622305f11c1dab10f", "tree": "d48c86c6f65b642a53609fb15f917bc587ff2ce7" },
+    "authorization": { "commit": "6bce8cf56f064f1e347c6362d5d6238ea1ae4782", "tree": "94198c3dd9a53b623c17c73997923eb48ad99581" },
+    "candidate": { "commit": "dcda4075843766e8c384c176007c5edb776357c2", "tree": "90eb1c73a11b423c6e08352f3b31702f627bfb18" }
+  },
+  "approvedCandidate": { "name": "T_R6PLUS_E1_P", "commit": "dcda4075843766e8c384c176007c5edb776357c2", "tree": "90eb1c73a11b423c6e08352f3b31702f627bfb18" },
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "verificationImpact": "PHASE_LOCAL",
+  "acceptance": [
+    { "profile": "PHASE", "phase": "PRE-G9B-R6-PLUS-E1-P", "run": "verification-81ffec9c231b4bc197d4c9ae964d59e9", "verdict": "ACCEPTED / COMPLETE", "checks": "2/2" },
+    { "profile": "INFRA_UNIT", "run": "verification-ace3de8716e74e2299c356b75c767141", "verdict": "ACCEPTED", "checks": "22/22" },
+    { "profile": "PACKAGING -CheckToolchain", "run": "verification-e3c98ad176ef41f089dd0539197e8600", "verdict": "ACCEPTED", "checks": "3/3" },
+    { "profile": "PACKAGING -VerifyPackagingArtifacts", "artifacts": "INTERNAL", "run": "verification-a40cda69fff14f6fb26027e67e71b176", "verdict": "ACCEPTED", "packagingProduct": "42/42" },
+    { "profile": "PACKAGING -VerifyPackagingArtifacts", "artifacts": "NC", "run": "verification-ce43e964f87d4531a67cf4bb64b86eb7", "verdict": "ACCEPTED", "packagingProduct": "42/42" }
+  ],
+  "technicalPackagingSmoke": "PASS",
+  "finalRequired": false,
+  "impact": { "packagingChange": "YES", "serializationChange": "NONE", "geometricSemanticsChange": "NONE", "documentFormatChange": "NONE", "e1lLibraryContentChange": "NONE", "actionCatalogChange": "NONE" },
+  "approvedPackagingContract": {
+    "INTERNAL": "curated GGT library included",
+    "NC": "same curated GGT library included",
+    "COMMERCIAL": "library excluded; profile remains not authorized",
+    "location": "app/ggt-library/",
+    "content": ["library-manifest.json", "12 approved .ggt tools"],
+    "failClosed": "every other .ggt, every .ggb and other forbidden payload",
+    "rightsRecordVersion": 1
+  },
+  "authorSmokeAccepted": ["INTERNAL library present and functional", "NC library present and functional", "exactly twelve approved tools", "icons and tooltips correct", "tool activation works", "pinning works", "save/reopen works", "no E1-L content regression observed"],
+  "registeredDebt": {
+    "id": "OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER",
+    "disposition": ["PRE-EXISTING", "REPRODUCED BY AUTHOR IN A MID-SEPTEMBER GEOCEDG BUILD", "NOT CAUSED BY E1-P", "NOT CAUSED BY E1-L", "NOT BLOCKING E1-P", "NOT RESOLVED"],
+    "state": "OPEN — PRE-EXISTING — CHARACTERIZATION AUTHORIZED NEXT",
+    "observed": "Open Classic diagnostic session -> child process launch fails -> CreateProcess error=2; attempted executable equivalent to <packaged java.home>\\bin\\java",
+    "sourceEvidence": "GeoCeDGActionRegistry.openDiagnostic derives the child launcher from java.home/bin/javaw.exe with fallback java.home/bin/java",
+    "nextActivity": "focal characterization only, after E1 publication",
+    "correctionAuthorized": false
+  },
+  "aggregateE1": {
+    "phase": "PRE-G9B-R6-plus-E1",
+    "state": "PASS — AUTHOR APPROVED",
+    "units": { "PRE-G9B-R6-plus-E1-L": "PASS — AUTHOR APPROVED — PUBLISHED", "PRE-G9B-R6-plus-E1-P": "PASS — AUTHOR APPROVED" },
+    "reopenedByDebt": false
+  },
+  "preserved": {
+    "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION": "E2-owned constraint",
+    "ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA": "owner G; visible version 1.0.0 until G = PASS — AUTHOR APPROVED, then 1.1.0",
+    "cedg.library.curated-ggt": "experimental"
+  },
+  "publication": { "authorized": true, "mode": "ordinary non-force fast-forward of main", "mergeCommit": false, "tag": false, "release": false, "binaryPublication": false, "verification": "reported outside this artifact" },
+  "notAuthorized": ["E2", "E3", "F1", "F2", "F3", "G", "PRE-G9B-R7", "G9B", "correction of OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER"]
+}
