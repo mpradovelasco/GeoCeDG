@@ -338,6 +338,14 @@ class PreG9BR6PlusE1LCuratedLibraryTest {
 		}
 	}
 
+	/**
+	 * E1-L boundary: no curated GGT in ordinary resources or Gradle builds, an
+	 * unchanged action catalog and the experimental curated-library feature. Its
+	 * original "no packaging route" clause was superseded by the author-approved
+	 * PRE-G9B-R6-plus-E1-P packaging contract; since PRE-G9B-R6-plus-E1-P-X1 the
+	 * method keeps its historical identifier and checks instead that the normative
+	 * packaging specification owns the only, controlled curated-library route.
+	 */
 	@Test
 	void e1l09NoPackagingRouteNoBuildChangeAndUnchangedActionCatalog() throws Exception {
 		try (Stream<Path> files = Files.walk(repository.resolve("source"))) {
@@ -352,10 +360,21 @@ class PreG9BR6PlusE1LCuratedLibraryTest {
 				}
 			}
 		}
-		assertFalse(Files.readString(repository.resolve(
-				"tools/release/build-windows-package.ps1")).contains("ggt-library"));
+		// PRE-G9B-R6-plus-E1-P-X1: the packaging specification, not this test, is the
+		// authority of the curated route; its enforcement lives in the packaging checks.
+		String packaging = Files.readString(repository.resolve(
+				"geocedg/specs/packaging/windows-packaging.md"), StandardCharsets.UTF_8)
+				.replaceAll("\\s+", " ");
+		for (String clause : List.of("`models/curated/ggt-library/`", "`app/ggt-library/`",
+				"directly below `app/ggt-library/tools/`", "membership:", "hash:", "rights:",
+				"every other `.ggt` anywhere in the app-image fails the build verification",
+				"any `.ggb` model", "`COMMERCIAL` excludes it")) {
+			assertTrue(packaging.contains(clause), clause);
+		}
+		// the builder reads the library only from its canonical repository authority
 		assertTrue(Files.readString(repository.resolve(
-				"geocedg/specs/packaging/windows-packaging.md")).contains("`.ggb`/`.ggt` models"));
+				"tools/release/build-windows-package.ps1"), StandardCharsets.UTF_8)
+				.replace('\\', '/').contains("models/curated/ggt-library"));
 		JSONObject profile = new JSONObject(Files.readString(repository.resolve(
 				"apps/geocedg/application-profile.yml"), StandardCharsets.UTF_8));
 		assertEquals(125, profile.getJSONArray("actions").length());
