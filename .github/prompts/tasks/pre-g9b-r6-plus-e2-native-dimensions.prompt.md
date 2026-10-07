@@ -1,30 +1,31 @@
 # PRE-G9B-R6-plus-E2 — native dimensions (`AlignedDimension`, `LinearDimension`)
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL VERIFICATION ONLY.**
+
+Amended as the first tracked edit of the phase at the author's instruction of
+2026-10-08 ("PRE-G9B-R6-plus-E2 — AUTHOR AUTHORIZATION AND IMPLEMENTATION"),
+recorded in the
+[E2 authorization record](../../../docs/validation/pre_g9b_r6_plus_e2_authorization_record.md),
+which approves the prepared design and authorizes the implementation and
+technical verification of `PRE-G9B-R6-plus-E2` on
+`B_R6PLUS_E2_IMPL` = `b1ee68c0f73b6c39fe8cd306e52f58bb66330c5b`. Where this file
+and the authorization record differ, the record prevails.
 
 This prompt was prepared at the author's instruction of 2026-10-07 (E2
 characterization and preparation, documentary candidate `T_R6PLUS_E2_PREP`
 `6ad853c618da8f07a279b266c83002c145c6292c`) and revised at the author's second
 instruction of the same day, which froze the decisions `DQ-E2-1` to `DQ-E2-11`
 and authorized one focal characterization of the dimension-value orientation
-(`DQ-E2-6`). Neither instruction authorizes product implementation. The
-decisions are recorded, as given, in the
-[E2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e2_author_decisions_record.md),
-which prevails over this file. The evidence is in the
+(`DQ-E2-6`). The decisions are recorded, as given, in the
+[E2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e2_author_decisions_record.md).
+The evidence is in the
 [E2 preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md)
 (`K1`–`K20`) and the
 [`DQ-E2-6` focal addendum](../../../docs/validation/pre_g9b_r6_plus_e2_dq6_aligned_text_addendum.md)
 (`A1`–`A10`); the design is in the
 [reconciled design candidate](../../../docs/architecture/pre_g9b_r6_plus_e2_native_dimensions_reconciled_design_candidate.md).
-The existence of this file is not authorization.
 
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-E2` and the exact prepared candidate or base, that accepts the
-`DQ-E2-6` focal result and the preparation resolutions of the author-decision
-record (or changes them), and that authorizes implementation. That instruction
-may authorize, as the first tracked edit of the phase, an amendment of this
-prompt to the authorized state, following the `A-1`, `B`, `D0`, `D1`, `A-2`,
-`C`, `C-X1`, `E1-L` and `E1-X1` precedent. This file is an execution contract,
+This file is an execution contract,
 not a second policy document: the unit rules are stated once in the
 [unit-system specification](../../../geocedg/specs/units/unit-system.md)
 (§5, §6, §14, §17, §18.3); the command-head rules once in
@@ -36,18 +37,18 @@ them differently.
 
 ```text
 PRE-G9B-R6-plus-E2 =
-PREPARED — AUTHOR DECISIONS FROZEN — IMPLEMENTATION NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION (2026-10-08)
 
 CHARACTERIZATION         = COMPLETE (P_R6PLUS_E1_P_X1, 2026-10-07)
-DQ-E2-6 FOCAL RESULT     = ALIGNED NORMATIVE-STYLE TEXT — FEASIBLE WITH β
-                           (bounded drawable seam; pending the author's review)
-DQ-E2-1                  = β — AUTHOR APPROVED FOR DESIGN
+DQ-E2-1                  = β — AUTHOR APPROVED
 DQ-E2-3                  = AUTHOR APPROVED
-VERIFICATION_CLASS       = INTEGRATED_PHASE — AUTHOR APPROVED FOR DESIGN
-IMPLEMENTATION           = NOT AUTHORIZED
+DQ-E2-6                  = ALIGNED NORMATIVE-STYLE DIMENSION VALUE — AUTHOR APPROVED
+                           (C4 drawing-time rotation)
+VERIFICATION_CLASS       = INTEGRATED_PHASE (frozen; registered PHASE + INTEGRATION)
+IMPLEMENTATION           = AUTHORIZED (E2 only)
 selfApproved             = false
 authorApproved           = false   (no technical candidate exists)
-implementationAuthorized = false
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = SHARED-KERNEL COMMANDS AND ALGORITHMS + ONE GATED
                            PRESENTATION DRAWABLE + DESKTOP TOOLS, DRAG, PROFILE,
@@ -61,7 +62,7 @@ DEPENDS_ON               = PRE-G9B-R6-plus-D1 = PASS — AUTHOR APPROVED — PUB
                                                 PUBLISHED (clean final.desktop)
                            NOT F1 (E2 executes before F1 and must not depend on it)
 GLOBAL GATE              = closeout in PRE-G9B-R6-plus-G
-PRECONDITION             = a separate author instruction authorizing implementation
+PRECONDITION             = satisfied by the authorization record of 2026-10-08
 NEXT_SUBPHASE            = none implied; E3, F1, F2, F3, G stay unauthorized
 ```
 
@@ -188,9 +189,10 @@ manifest and the icon review test give determinism.
 P_R6PLUS_E1_P_X1      = dc63b0e55f12eb96d3aea359db4476cbda6c89dc
 tree                  = 8b2b5027a2119f996de8ca5af91b03ce32731a8c
 T_R6PLUS_E2_PREP      = 6ad853c618da8f07a279b266c83002c145c6292c (documentary)
-decision candidate    = the local descendant of T_R6PLUS_E2_PREP on
-                        phase/pre-g9b-r6-plus-e2-prompt that contains this revision
-                        (documentation only)
+B_R6PLUS_E2_IMPL      = b1ee68c0f73b6c39fe8cd306e52f58bb66330c5b
+tree                  = 7eabf6892ab00c6adc3b510e9ffac204ae13c7a8
+                        (decisions + DQ-E2-6 focal characterization; documentation only)
+implementation branch = phase/pre-g9b-r6-plus-e2-native-dimensions (local)
 ```
 
 Before any tracked change the agent verifies that local `main`, `origin/main`
@@ -386,8 +388,9 @@ No `FINAL`. A run above the frozen class fails with
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing is authorized by this prompt. A future author instruction may authorize
-`E2` on an exact base; it then authorizes local implementation on a local
+The author instruction of 2026-10-08 authorizes `E2` on `B_R6PLUS_E2_IMPL`
+([authorization record](../../../docs/validation/pre_g9b_r6_plus_e2_authorization_record.md)):
+local implementation on a local
 branch, local commits, focused tests, the phase registration and its official
 catalog updates, development `INFRA_UNIT` and `STATIC` runs, the frozen
 acceptance runs, and one frozen technical candidate for author review and author
