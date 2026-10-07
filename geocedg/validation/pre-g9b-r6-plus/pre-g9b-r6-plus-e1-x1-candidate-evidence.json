@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-X1",
+  "registeredPhase": "PRE-G9B-R6-PLUS-E1-X1",
+  "observation": "OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_x1_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "authorSmoke": "REQUIRED",
+  "selectedDesign": "CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH",
+  "verificationClass": "BOUNDED_PHASE",
+  "impact": {
+    "productChange": "YES — DIAGNOSTIC LAUNCH ROUTE",
+    "packagingProductChange": "NONE",
+    "serializationChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "documentFormatChange": "NONE",
+    "kernelChange": "NONE",
+    "bootstrapImpact": "NO CHANGE REQUIRED",
+    "verificationInfrastructureImpact": "PHASE_LOCAL (phase registration only)",
+    "guideImpact": "NONE"
+  },
+  "history": {
+    "publishedBase": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "characterization": "b6172af4f319d297aa5780c9f516b310254d3e90",
+    "characterizationR1": "b3c78e6d6564b0400d1fea7cda55bb480778716c",
+    "implementationBase": "b3c78e6d6564b0400d1fea7cda55bb480778716c",
+    "authorization": {"commit": "51bb677e8b61c149dd3ae1e1c6a491e53732d5dc", "tree": "79e874af3668052f597a68ea38c2cb93d9dc962b"},
+    "implementation": {"commit": "7fd6adbbdc6dcf7cc34b795c0225522744ff7397", "tree": "fa259cd1377ee3f1672d7489df083dd1f6ec8835"},
+    "candidate": "the commit containing this file (reported outside it)"
+  },
+  "productionFiles": [
+    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java", "change": "modified", "lines": "+22"},
+    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java", "change": "modified", "lines": "+18/-22"},
+    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGClassicDiagnosticLaunch.java", "change": "added", "lines": "238"}
+  ],
+  "dispatch": {
+    "marker": "--classic-diagnostic",
+    "admissibility": "exact first argument only",
+    "removed": "the marker only; every other argument kept in order",
+    "defaultsOnlyWhenAbsent": ["--showSplash=false", "--settingsfile=<GeoCeDG preference directory>/classic-diagnostic.properties"],
+    "target": "unchanged org.geogebra.desktop.GeoGebra3D.main",
+    "geocedgStateBeforeDispatch": "none (GeoCeDG has no static initializer)"
+  },
+  "branching": {
+    "discriminator": "presence of jpackage.app-path",
+    "packaged": "[<app-path>, --classic-diagnostic, --showSplash=false, --settingsfile=<route file>, resource?]; blank, invalid, missing or non-regular path fails closed; no java.home, no PATH",
+    "development": "[javaw.exe|java.exe|java of java.home, module-access options, -cp, java.class.path, org.geogebra.desktop.GeoGebra3D, --showSplash=false, --settingsfile=<route file>, resource?]"
+  },
+  "jvmOptionFilter": {
+    "authority": "RuntimeMXBean.getInputArguments() of the running JVM",
+    "forwarded": ["--add-exports", "--add-opens", "--enable-native-access"],
+    "notForwarded": ["-javaagent", "-agentlib", "-X…", "-XX:…", "-D…", "-ea", "--add-modules", "--patch-module", "--add-reads", "look-alike prefixes"]
+  },
+  "streams": {
+    "stdout": "Redirect.DISCARD",
+    "stderr": "Redirect.DISCARD",
+    "redirectErrorStream": false,
+    "mutationWithDefaultPipes": "process test fails: no Laboratory report for Templatev7.ggb within 150 s"
+  },
+  "tests": {
+    "PreG9BR6PlusE1X1DiagnosticLaunchTest": 17,
+    "PreG9BR6PlusE1X1DiagnosticProcessTest": 2,
+    "G9U1ActionRegistryTestAdapted": 2,
+    "selection": {"id": "pre-g9b-r6-plus-e1-x1.desktop", "identities": 43, "executed": "43 passing"},
+    "processEvidence": {
+      "dispatch": {"testJvm": 18336, "classicJvm": 22268, "app": "App3D", "config": "AppConfigDefault", "settings": "classic-diagnostic.properties", "exitCode": 0, "geocedgPreferencesCreated": false},
+      "parent": {"pid": 20476, "app": "AppGeoCeDG", "laboratoryChild": 11364, "laboratoryExitedByItself": true, "classicChild": 30556, "classicSurvivedParent": true, "constructionUnchanged": true, "savedStateUnchanged": true, "currentFileUnchanged": true, "mainPreferencesUnchanged": true, "templatev7Steps": 23}
+    }
+  },
+  "registration": {
+    "phaseSelection": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-e1-x1.semantic"],
+    "inventory": {"discoveryDesktop": "1861 -> 1880", "discoveryShared": "count unchanged", "newSelection": 43, "finalDesktop": "unchanged base values (executed evidence has one pre-existing failure; updater refuses it)"},
+    "registryPin": {"junit_inventory": {"old": "3a63be8b6a6ad60bc09aa89a6f9a95b1b840928f9bf9e3049e1ca466a7d3c4dd", "new": "5de49549dd9d82b81ce75ff60b742e6e49c840231dfe627e5d67355edf7e5a55"}},
+    "registryShapePins": {"inventorySelections": 41, "phaseSelections": 49, "e1x1Selection": 43}
+  },
+  "verification": {
+    "finalDesktopExecuted": {"tests": 1874, "failures": 1, "failure": "PreG9BR6PlusE1LCuratedLibraryTest.e1l09NoPackagingRouteNoBuildChangeAndUnchangedActionCatalog (pre-existing since dcda4075)"},
+    "checkstyleTouchedFiles": 0,
+    "upstreamBoundary": "passed, 973 registered files",
+    "developmentInfraUnit": {"run": "verification-701a3e0a393f4cbf80b4573834d016ad", "verdict": "ACCEPTED / COMPLETE", "satisfied": "22/22", "note": "staged tree; result bound to HEAD 51bb677e"},
+    "phasePlanOnly": {"coverage": "COMPLETE", "planHash": "59ec02958e51287e927a7088d2db0f62a21493e0963b0ddb3eb05703e2595a74"},
+    "registeredPhaseOnCandidate": "reported outside this artifact"
+  },
+  "packagedSmoke": {
+    "builtFrom": "7fd6adbbdc6dcf7cc34b795c0225522744ff7397 (clean scratch worktree, unmodified builder, subst drive for WiX MAX_PATH)",
+    "candidateDeltaFromBuild": ["docs/validation/pre_g9b_r6_plus_e1_x1_candidate_report.md", "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e1-x1-candidate-evidence.json", "docs/roadmap/geocedg_roadmap.md", "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"],
+    "environments": [
+      {"environment": "INTERNAL app-image", "openClassic": "PASS", "laboratoryGgb": "PASS (Templatev7, 23 steps)", "laboratoryGgt": "PASS", "invalidMissing": "rejected", "independentExits": "PASS", "imageUnchanged": true},
+      {"environment": "INTERNAL ZIP", "openClassic": "PASS", "laboratoryGgb": "PASS", "laboratoryGgt": "PASS", "imageUnchanged": true},
+      {"environment": "NC app-image", "openClassic": "PASS", "laboratoryGgb": "PASS", "laboratoryGgt": "PASS", "invalidMissing": "rejected", "imageUnchanged": true},
+      {"environment": "NC ZIP", "openClassic": "PASS", "laboratoryGgb": "PASS", "laboratoryGgt": "PASS", "imageUnchanged": true}
+    ],
+    "authorPreferencesUnchanged": true,
+    "installersInstalled": false
+  },
+  "packagingInvariance": {
+    "contract": {"INTERNAL": "CONTRACT_SATISFIED 42/42", "NC": "CONTRACT_SATISFIED 42/42"},
+    "appImage": "432 files; GeoCeDG.exe, app/GeoCeDG.cfg, app/.jpackage.xml byte-identical to E1-P; one launcher",
+    "differingFiles": ["app/desktop.jar", "app/common-jre.jar (CR-only resources)", "app/legal/resolved-runtime-components.json"],
+    "installers": "432 files; GeoCeDG.exe, GeoCeDG.cfg, jvm.cfg; GeoCeDG desktop and Start-menu shortcuts only; EXE-embedded MSI at 568076",
+    "association": ".cedg verb on GeoCeDG.exe",
+    "sbom": "117 components, identity set identical to E1-P",
+    "noSecondLauncher": true
+  },
+  "observations": [
+    "OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION: PreG9BR6PlusE1LCuratedLibraryTest line 355 asserts the builder lacks ggt-library; E1-P dcda4075 added it; fails on fdc1ade6; outside every PHASE selection; author disposition",
+    "WiX MAX_PATH under the scratchpad; resolved with subst; not a product issue",
+    "a harness-started GeoCeDG.exe may host its JVM in a second GeoCeDG.exe; separate-process property holds",
+    "concurrent sessions of one route share that route's preference file (pre-existing)"
+  ]
+}
