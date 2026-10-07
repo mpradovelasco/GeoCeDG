@@ -1,6 +1,25 @@
 # PRE-G9B-R6-plus-E1-P — curated GGT library packaging and distribution inclusion
 
-**CANONICAL PROMPT — PREPARED — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
+
+**Authorization (2026-10-07).** The author's explicit typed instruction of
+2026-10-07 ("Autorizo el siguiente prompt") authorizes the implementation and
+technical verification of `PRE-G9B-R6-plus-E1-P` on the exact published base
+`P_R6PLUS_E1_L` `47b39e5f6d51e51b8d08ec5622305f11c1dab10f` (tree
+`d48c86c6f65b642a53609fb15f917bc587ff2ce7`), after `PRE-G9B-R6-plus-E1-L` became
+`PASS — AUTHOR APPROVED — PUBLISHED`. It freezes the class
+`OPERATIONAL_VERIFICATION_INFRASTRUCTURE` with impact `PHASE_LOCAL`, the
+`app/ggt-library/` payload contract, the profiles (`INTERNAL` and `NC` include
+the same library; `COMMERCIAL` excludes it and stays not authorized), the use of
+rights record version 1 unchanged, E1-L content as immutable input, and no
+`FINAL` unless a proven boundary widening is escalated. It authorizes local
+implementation, local commits, local packaging builds, technical verification,
+one frozen technical candidate and its report; it does not authorize
+self-approval, push, merge, publication, tag, release, distribution of built
+artifacts or commercial authorization. Everything below the following
+paragraph is the prepared contract, unchanged except for this authorization
+state and the exact base.
 
 The author's instruction of 2026-10-07 split `E1` into `E1-L` and `E1-P`,
 fixed the planned `E1-P` packaging contract, packaging profiles and
@@ -12,7 +31,8 @@ authorized**. The decisions are recorded in the
 (version 1). The existence of this file is not authorization. Execution needs
 a new explicit author instruction naming `E1-P`, its exact base and any
 remaining choice; that instruction may amend this prompt to the authorized
-state as its first tracked edit.
+state as its first tracked edit. That instruction was given on 2026-10-07
+(see above); this amendment is its first tracked edit.
 
 This file is an execution contract, not a second policy document: the
 verification classes are defined once in
@@ -23,16 +43,16 @@ deliverable), the rights once in the rights record.
 
 ```text
 PRE-G9B-R6-plus-E1-P =
-PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 
 identifier               = PRE-G9B-R6-plus-E1-P (author-accepted, DQ-E1-1)
 registry phase id        = PRE-G9B-R6-PLUS-E1-P
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (E1-P implementation and technical verification only)
 passClaimed              = false
-PLANNED_CLASS            = OPERATIONAL_VERIFICATION_INFRASTRUCTURE, impact PHASE_LOCAL
-                           (DQ-E1-3; frozen only by the authorizing instruction)
+VERIFICATION_CLASS       = OPERATIONAL_VERIFICATION_INFRASTRUCTURE, impact PHASE_LOCAL
+                           (DQ-E1-3; frozen by the author on 2026-10-07)
 PHASE_KIND               = PACKAGING / RELEASE LAYER; NO PRODUCT BEHAVIOR, NO GEOMETRY,
                            NO DOCUMENT FORMAT
 DEPENDS_ON               = PRE-G9B-R6-plus-E1-L = PASS — AUTHOR APPROVED (hard);
@@ -104,9 +124,13 @@ INV-E1P-1  The app-image contains a .ggt if and only if it is a shipped,
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-Named exactly by the authorizing instruction: the published `E1-L` closeout
-(`PRE-G9B-R6-plus-E1-L = PASS — AUTHOR APPROVED — PUBLISHED`), or a later
-published commit the author names. Entry gate: local `main`, `origin/main` and
+```text
+P_R6PLUS_E1_L         = 47b39e5f6d51e51b8d08ec5622305f11c1dab10f   (tree d48c86c6f65b642a53609fb15f917bc587ff2ce7;
+                        PRE-G9B-R6-plus-E1-L = PASS — AUTHOR APPROVED — PUBLISHED)
+IMPLEMENTATION_BRANCH = phase/pre-g9b-r6-plus-e1-p-ggt-library-packaging (local)
+```
+
+Entry gate: local `main`, `origin/main` and
 the live remote `main` agree with the named base; clean worktree; the rights
 record version named by the instruction exists unchanged.
 
@@ -193,7 +217,7 @@ stays within this boundary; a need for it is a
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing is authorized by this prompt. A future author instruction naming
+The author instruction of 2026-10-07 authorizes what the header lists. Beyond it, a future author instruction naming
 `E1-P` and its exact base may authorize local implementation, the planned
 verification and one frozen technical candidate for author review. It never
 authorizes self-approval, author smoke by the agent, a class change, a legal

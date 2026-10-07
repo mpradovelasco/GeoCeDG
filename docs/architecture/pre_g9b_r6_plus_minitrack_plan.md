@@ -1199,9 +1199,10 @@ PRE-G9B-R6-plus-E1-L       = PASS — AUTHOR APPROVED — PUBLISHED
                              PHASE verification-1c7d88a3; BOUNDED_PHASE; R0 1aa05d67
                              historical evidence; ADR 0033 and the curated-library
                              specification author-approved; E1 not complete: E1-P)
-PRE-G9B-R6-plus-E1-P       = PREPARED — NOT AUTHORIZED (planned
-                             OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
-                             G keeps depending on it unless the author re-plans)
+PRE-G9B-R6-plus-E1-P       = AUTHORIZED FOR IMPLEMENTATION (2026-10-07, base
+                             P_R6PLUS_E1_L 47b39e5f; OPERATIONAL_VERIFICATION_INFRASTRUCTURE,
+                             PHASE_LOCAL; INTERNAL and NC include the library,
+                             COMMERCIAL excluded; G keeps depending on it)
 PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
 PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
