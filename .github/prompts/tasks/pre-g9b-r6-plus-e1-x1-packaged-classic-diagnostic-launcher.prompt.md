@@ -2,48 +2,53 @@
 
 **CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
 
-This prompt was prepared at the author's instruction of 2026-10-07. That
-instruction authorized the focal characterization and design preparation of the
-registered pre-existing debt `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER`
-under the name `PRE-G9B-R6-plus-E1-X1`, named the published `E1` baseline below,
-fixed the questions X1-Q1 to X1-Q8, the semantic requirements, the
-architectural boundary and the stop conditions, and stated that **no product
-implementation is authorized**. The evidence behind the characterization below
-is in the
-[E1-X1 characterization report](../../../docs/validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md).
+This prompt was prepared at the author's instructions of 2026-10-07. The first
+authorized the focal characterization and design preparation of the registered
+pre-existing debt `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` under the
+name `PRE-G9B-R6-plus-E1-X1`; the second, `PRE-G9B-R6-plus-E1-X1-R1`, authorized
+a micro-characterization comparing a jpackage secondary launcher with an early
+Classic dispatch in the primary launcher, and the reconciliation of this prompt
+to the winning design. Neither authorizes any product implementation. The
+evidence is in the
+[E1-X1 characterization report](../../../docs/validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md)
+and the
+[E1-X1-R1 launcher comparison report](../../../docs/validation/pre_g9b_r6_plus_e1_x1_r1_launcher_comparison_report.md).
 The existence of this file is not authorization.
 
 Execution requires a new explicit author instruction that names the activity and
 the exact prepared candidate or base, and that disposes of the requested
-decisions `DQ-E1X1-1` to `DQ-E1X1-9`. That instruction may authorize, as the
+decisions `DQ-E1X1-1` to `DQ-E1X1-8`. That instruction may authorize, as the
 first tracked edit of the phase, an amendment of this prompt to the authorized
 state, following the `C-X1` and `E1-P` precedent. This file is an execution
 contract, not a second policy document: the verification classes are defined
-once in `geocedg/specs/operations/verification-levels.md` §12.8, the packaging
-contract once in `geocedg/specs/packaging/windows-packaging.md`, the
+once in `geocedg/specs/operations/verification-levels.md` §12.8, the Desktop
+launch contract once in `geocedg/specs/ui/application-profile.md`, the
 observation once in the
 [E1-P and E1 closeout record](../../../docs/validation/pre_g9b_r6_plus_e1_p_closeout_record.md),
-and the probe evidence once in the characterization report; this prompt cites
-them and does not restate them differently.
+and the probe evidence once in the two reports; this prompt cites them and does
+not restate them differently.
 
 ```text
 PRE-G9B-R6-plus-E1-X1 =
 CHARACTERIZED / IMPLEMENTATION PREPARED — PREPARED — NOT AUTHORIZED
+PRE-G9B-R6-plus-E1-X1-R1 = CHARACTERIZATION COMPLETE
 
 identifier               = named by the author for the characterization; its use for
                            the implementation PROPOSED — NOT AUTHOR APPROVED (DQ-E1X1-1)
+selected design          = Candidate C — primary launcher early Classic dispatch
+                           (recommended by R1; not an author decision, DQ-E1X1-2)
 selfApproved             = false
 authorApproved           = false
 implementationAuthorized = false
 passClaimed              = false
-PHASE_KIND               = DESKTOP FRONTEND LAUNCH ROUTE + PACKAGING LAUNCHER INTEGRATION;
-                           NO KERNEL, NO GEOMETRY, NO SERIALIZATION, NO DOCUMENT FORMAT
+PHASE_KIND               = DESKTOP FRONTEND LAUNCH ROUTE; NO PACKAGING, NO KERNEL,
+                           NO GEOMETRY, NO SERIALIZATION, NO DOCUMENT FORMAT
 DEPENDS_ON               = PRE-G9B-R6-plus-E1 = PASS — AUTHOR APPROVED — PUBLISHED
                            (P_R6PLUS_E1 fdc1ade6; E1-L and E1-P closed; not reopened)
-RESOLVES                 = OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER and, if
-                           DQ-E1X1-6 includes them, the same-seam findings X1-F2 and
-                           X1-F3; final disposition is the author's, after smoke
-PRECONDITION             = author dispositions of DQ-E1X1-1 to DQ-E1X1-9
+RESOLVES                 = OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER and the
+                           same-seam findings X1-F2 and X1-F3; final disposition is
+                           the author's, after smoke
+PRECONDITION             = author dispositions of DQ-E1X1-1 to DQ-E1X1-8
 NEXT_SUBPHASE            = none implied; E2, E3, F1, F2, F3, G stay unauthorized
 ```
 
@@ -60,53 +65,63 @@ Implement only, for the two users of the shared diagnostic route —
 `geocedg.classic`) and **Legacy laboratory** (`automation.legacy-laboratory`,
 target `cedg.laboratory.legacy`):
 
-1. a dedicated jpackage additional launcher for the Classic entry point
-   (`main-class org.geogebra.desktop.GeoGebra3D`, main JAR `desktop.jar`,
-   shared runtime and classpath, inherited JVM options and icon), declared in
-   the package profile and built by the packaging script for every built
-   profile;
-2. an explicit launch-environment seam in `openDiagnostic`: packaged mode when
-   `jpackage.app-path` is present (start the declared sibling launcher; fail
-   closed when it is absent), development mode otherwise (the Java fallback with
-   the declared JVM options);
-3. discarded child standard streams (`X1-F2`), and the declared JVM options in
-   the development fallback (`X1-F3`), as decided by `DQ-E1X1-6`/`DQ-E1X1-7`;
-4. the packaging verifier contract, the packaging specification amendment, the
-   tests, the phase registration and the evidence of its class.
+1. an early Classic dispatch in `org.geocedg.desktop.GeoCeDG.main`: when the
+   first argument is the private diagnostic token (`DQ-E1X1-3`), and before any
+   GeoCeDG preference, profile or frame initialization, remove that token,
+   apply the dispatch guarantees of `DQ-E1X1-4`, call the unchanged
+   `org.geogebra.desktop.GeoGebra3D.main` with the remaining arguments and
+   return;
+2. an explicit launch-environment seam in `GeoCeDGActionRegistry.openDiagnostic`:
+   packaged mode when `jpackage.app-path` is present (start that same
+   executable with the private token; fail closed when it is not a regular
+   file), development mode otherwise (the Java fallback with the running JVM's
+   module-access options, `DQ-E1X1-6`);
+3. discarded child standard output and error in both modes (`X1-F2`,
+   `DQ-E1X1-5`);
+4. the one-sentence launch-contract amendment of
+   `geocedg/specs/ui/application-profile.md`, the tests, the phase registration
+   and the evidence of its class.
 
 Invariants the candidate must establish and test:
 
 ```text
 INV-E1X1-1  In a jpackage launch (jpackage.app-path present), both routes start
-            exactly <dir(jpackage.app-path)>\<declared launcher>.exe with
-            --showSplash=false, --settingsfile=<route preferences> and, for the
-            Laboratory, the validated resource as the last argument; the command
+            exactly [<jpackage.app-path>, <token>, --showSplash=false,
+            --settingsfile=<route preferences>, <validated resource>?]; the command
             never names java.home, runtime\bin\java(w).exe, -cp or a main class.
-INV-E1X1-2  If the declared launcher is not a regular file in packaged mode, the
-            route fails with an explicit message and starts no process; it never
-            falls back to java.home.
+INV-E1X1-2  If jpackage.app-path does not name a regular file, the route fails with
+            an explicit message and starts no process; it never falls back to
+            java.home.
 INV-E1X1-3  Without jpackage.app-path, the route starts <java.home>\bin\javaw.exe,
-            java.exe or java (first regular file) with the declared JVM options,
-            -cp java.class.path and org.geogebra.desktop.GeoGebra3D.
-INV-E1X1-4  Open Classic uses classic-diagnostic.properties, the Laboratory
+            java.exe or java (first regular file) with the --add-exports,
+            --add-opens and --enable-native-access entries of the running JVM's
+            input arguments, -cp java.class.path and org.geogebra.desktop.GeoGebra3D.
+INV-E1X1-4  GeoCeDG.main with the token as first argument creates no GeoCeDG
+            preference, profile, frame or application state and reaches
+            GeoGebra3D.main with the remaining arguments (plus the DQ-E1X1-4
+            guarantees); the token in any other position, or its absence, leaves
+            the normal GeoCeDG start-up unchanged.
+INV-E1X1-5  Open Classic uses classic-diagnostic.properties, the Laboratory
             laboratory.properties, both beside GeoCeDG's default preferences file;
             neither is GeoCeDG's preference file; no document path or construction
             state of the active GeoCeDG document is passed or changed.
-INV-E1X1-5  The child's standard output and error never block it (discarded, per
-            DQ-E1X1-6).
-INV-E1X1-6  The resource is validated (existing regular file, .ggb or .ggt) before
+INV-E1X1-6  The child's standard output and error are discarded and can never block
+            it.
+INV-E1X1-7  The resource is validated (existing regular file, .ggb or .ggt) before
             any process is started; no canonical-legacy trust is created.
 ```
 
 ```text
 before  openDiagnostic: java = java.home\bin\javaw.exe | java.home\bin\java
           ProcessBuilder([java, -cp, java.class.path, GeoGebra3D, args…]).start()
-          (packaged: CreateProcess error=2; dev: pipes never drained)
+          (packaged: CreateProcess error=2; development: pipes never drained,
+           no JVM options)
 
-after   mode = jpackage.app-path present ? PACKAGED : DEVELOPMENT
-          PACKAGED     [<app dir>\<launcher>.exe, args…]
-          DEVELOPMENT  [javaw.exe|java.exe|java, <JVM options>, -cp, cp, GeoGebra3D, args…]
-          ProcessBuilder(command).redirectOutput(DISCARD).redirectError(DISCARD).start()
+after   PACKAGED     [<jpackage.app-path>, <token>, args…]
+                     → GeoCeDG.main: token first → GeoGebra3D.main(args…)
+        DEVELOPMENT  [javaw.exe|java.exe|java, <module-access options>, -cp, cp,
+                      GeoGebra3D, args…]
+        ProcessBuilder(command).redirectOutput(DISCARD).redirectError(DISCARD).start()
 ```
 
 ### Authorities and author decisions this prompt implements
@@ -114,244 +129,220 @@ after   mode = jpackage.app-path present ? PACKAGED : DEVELOPMENT
 - The author disposition at the `E1-P` closeout (2026-10-07):
   `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` = open, pre-existing,
   reproduced by the author in the `E1-P` smoke and in a mid-September build,
-  not caused by `E1-L`/`E1-P`, not `E1`-reopening; only its focal
-  characterization authorized next.
-- The author's characterization instruction of 2026-10-07 (report §0):
-  separate process, Classic entry point, isolated preferences, no silent
-  active-document transfer, legacy resource explicitly selected by the user, no
-  promotion of legacy semantics; Desktop frontend and packaging launcher
-  integration only; preferred hypothesis a jpackage additional launcher, to be
-  validated, not decided.
-- `AGENTS.md` §4 (installer and GUI concerns outside the kernel), §6 (optional
-  diagnostic Classic access), §7 (no upstream trademarks or installer), §14
-  (packaging smoke when packaging changes), §16.
+  not caused by `E1-L`/`E1-P`, not `E1`-reopening.
+- The author's `E1-X1` and `E1-X1-R1` instructions of 2026-10-07: separate
+  process, Classic entry point, isolated preferences, no silent active-document
+  transfer, legacy resource explicitly selected by the user, no promotion of
+  legacy semantics; Desktop frontend and launcher integration only; avoid
+  packaging or ADR 0004 changes unless necessary; the R1 decision rule `C1`–`C11`.
+- `AGENTS.md` §4 (GUI and launcher concerns outside the kernel), §6 (optional
+  diagnostic Classic access), §7 (no upstream splash or trademarks in the
+  product), §16; ADR 0001 (explicit diagnostic route to upstream Classic;
+  unchanged Classic launch path).
+
+### Characterization history
+
+The first characterization (`E1-X1`) established `X1-F1` (no `java(w).exe` in
+the jpackage runtime, by construction), `X1-F2` and `X1-F3`, proved preference
+isolation, and recommended **Candidate A**, a jpackage `--add-launcher` for
+`GeoGebra3D`, on the evidence then available; it found that the two-step
+app-image → MSI/EXE build of JDK 25.0.4 adds Classic desktop and Start-menu
+shortcuts that cannot be suppressed without changing the installer
+architecture, and it evaluated Candidate C statically only. `E1-X1-R1` built
+and ran a scratch prototype of **Candidate C** and met every decision-rule
+condition `C1`–`C11` without any packaging change. Candidate A remains the
+documented alternative; it is not the implementation plan.
 
 ### Architecture decision: where the fix lives
 
-The defect is an application-launcher problem: the Desktop route assumes a JDK
-filesystem layout that the jpackage runtime does not have, and starts the child
-with undrained pipes. The owner is the GeoCeDG Desktop launch route together
-with the packaging profile that defines which launchers exist.
-
 | Option | Shape | Disposition |
 |---|---|---|
-| **A — jpackage additional launcher (recommended)** | `--add-launcher` for `GeoGebra3D`, sibling discovery from `jpackage.app-path`, explicit development fallback | supported jpackage mechanism; shared runtime, classpath, options and icon; main launcher byte-identical; no general Java tool shipped; validated end to end on scratch `INTERNAL` and `NC` images (X3, X6) |
-| B — runtime with `java.exe`/`javaw.exe` | `--jlink-options` without `--strip-native-commands` | rejected: ships 21 general JDK executables for one diagnostic; child loses JVM options and `jpackage.app-path`; pipe defect remains (X7) |
-| C — relaunch `GeoCeDG.exe` with a mode argument | `GeoCeDG.main` dispatches to `GeoGebra3D.main` | rejected: widens the product entry point and the `.cedg` open-verb target with a Classic mode, shared executable identity, still needs the Java fallback (X7) |
-| D — other | in-process Classic, JNI, `PATH` discovery | rejected (X7) |
+| **C — primary launcher early Classic dispatch (recommended)** | `GeoCeDG.exe <token> …` → `GeoCeDG.main` → `GeoGebra3D.main`; development Java fallback | Desktop-only; packaged app-image, ZIP, MSI and EXE unchanged (432 files, one launcher, one `.cfg`, same shortcuts, same association, packaging contract 42/42 with the unmodified checker); separate process; genuine Classic; R1 §3–§14 |
+| A — jpackage additional launcher | `--add-launcher` for `GeoGebra3D`, sibling discovery | alternative: second executable and `.cfg`; unsuppressible Classic installer shortcuts in the current two-step build; packaging profile, builder, verifier and specification changes |
+| B — runtime with `java.exe`/`javaw.exe` | `--jlink-options` without `--strip-native-commands` | rejected (first characterization): 21 general JDK executables; JVM options and `jpackage.app-path` lost; `X1-F2` remains |
+| D — other | in-process Classic, JNI, `PATH` discovery | rejected |
 
-Option A is recommended. `DQ-E1X1-2` asks the author to confirm it; the
-preparation does not select it on the author's behalf.
+`DQ-E1X1-2` asks the author to confirm C; the preparation does not select it on
+the author's behalf.
 
 ### Characterization results at the base
 
-Evidence, commands and raw records are in the characterization report; this
-section states the conclusions the contract relies on.
+Evidence, commands and raw records are in the two reports; this section states
+the conclusions the contract relies on.
 
-#### X1. Runtime layout
+#### X1. Runtime and current route
 
-Development: `java.home` is the Gradle JDK 25.0.4 (with `bin\javaw.exe`),
-58 classpath entries, no `jpackage.app-path`. App-image, ZIP and installed
-image: `java.home = <root>\runtime`, 51 classpath entries from
-`app\GeoCeDG.cfg`, `jpackage.app-path = <root>\GeoCeDG.exe`, and **no
-executable in `runtime\bin`** — normal, because jpackage runs jlink with
-`--strip-native-commands` by default and the product passes no
-`--runtime-image`/`--jlink-options`. Product MSI: 432 files, no
-`java(w).exe`.
+Development: `java.home` is the Gradle JDK 25.0.4, no `jpackage.app-path`.
+App-image, ZIP and installed image: `java.home = <root>\runtime` with no
+executable in `runtime\bin`, `jpackage.app-path = <root>\GeoCeDG.exe`.
+`openDiagnostic` (`GeoCeDGActionRegistry.java:521-565`, since `b49219408`) fails
+in every packaged form with `CreateProcess error=2` on `<runtime>\bin\java`,
+for Open Classic and for the Laboratory.
 
-#### X2. Current route
+#### X2. Early dispatch
 
-`openDiagnostic` (`GeoCeDGActionRegistry.java:521-565`, introduced by
-`b49219408`, 2026-09-04) starts `<java.home>\bin\javaw.exe` or `…\java`.
-Packaged: `Cannot run program "<root>\runtime\bin\java": CreateProcess
-error=2` for Open Classic and for the Laboratory (`.ggb` and `.ggt`), in the
-`E1-P` `INTERNAL` app-image, its ZIP and an `NC`-metadata image; a `.txt` is
-rejected before launch. Further fragility, pre-existing: undrained child
-pipes block a verbose Classic session (`X1-F2`, reproduced in development with
-`Templatev7.ggb`); the development child gets none of the declared JVM options
-(`X1-F3`).
+`GeoCeDG` has no static initializer (compile-time constants only), so a branch
+placed first in `main` runs before any GeoCeDG state. In the prototype the
+Classic child had `App3D`, `GeoGebraFrame3D`, `GuiManager3D`, `AppConfigDefault`
+(`classic`), the Classic menu bar, AppUserModelID `geogebra.AppId`, and exactly
+the same 42 loaded `org.geocedg.*` classes as a child started directly on
+`GeoGebra3D`. All parents started normally through the patched `main`.
 
-#### X3. Supported secondary launcher
+#### X3. Separate process and discovery
 
-`--add-launcher <name>=<properties>` with `main-class
-org.geogebra.desktop.GeoGebra3D` creates `<root>\<name>.exe` and
-`app\<name>.cfg`, shares the runtime, copies the classpath, inherits the four
-JVM options and the icon, and leaves `GeoCeDG.exe`/`GeoCeDG.cfg` byte-identical.
-`description` replaces the inherited distribution marker in `FileDescription`
-(omit it). Runtime arguments are passed verbatim; default `arguments` apply
-only without arguments and expand `$APPDATA`. `--settingsfile` and a trailing
-`.ggb`/`.ggt` work. Present in app-image, ZIP, MSI and EXE (embedded MSI); the
-`.cedg` verb stays on `GeoCeDG.exe`.
+Every child PID differed from the parent JVM; a child closing by itself left
+the parent responsive and unchanged, and a child survived its parent's exit.
+`jpackage.app-path` named the running `GeoCeDG.exe` in `INTERNAL` and `NC`
+app-images and ZIPs; a missing path failed closed.
 
-#### X4. Installer shortcuts
+#### X4. Streams (`X1-F2`)
 
-In the two-step build (installers from `--app-image`, ADR 0004 decision 3)
-JDK 25.0.4 creates desktop and Start-menu shortcuts for **every** launcher when
-`--win-shortcut`/`--win-menu` are given: `.jpackage.xml` keeps only `name` and
-`service` per additional launcher, `--add-launcher` is invalid at the installer
-step, and the shortcuts come from the non-customizable `bundle.wxf`. A
-single-step installer from `--input` honors per-launcher
-`win-shortcut=false`/`win-menu=false`. See `DQ-E1X1-4`.
+With default pipes `Templatev7.ggb` blocks the child (main thread in
+`FileOutputStream.writeBytes`), whether GeoCeDG was started by a harness or by
+the Windows shell; `Redirect.DISCARD` starts it everywhere; `inheritIO` passes
+GeoCeDG's own handles on and is only as safe as they are; a log file works but
+truncates per session and stores user paths. Merged output: about 4.8 KB for an
+empty session with the 3D view, 11.3 KB for `Templatev7.ggb`.
 
-#### X5. Discovery
+#### X5. JVM options (`X1-F3`)
 
-Sibling of `jpackage.app-path` with a declared name is application-owned and
-already the repository's packaged-launch signal (`E1-L`); `java.home`
-inference and `PATH` discovery are rejected.
+Without options the development child logs JOGL `GLException: Unable to
+determine GraphicsConfiguration` and JNA restricted-method warnings; with the
+four declared options it is clean; without only the `java.base/java.lang`
+export nothing different was observed. No narrower set is proven safe. The
+running JVM's module-access input arguments are the single runtime authority:
+they equal `desktopJvmArgs` under Gradle, and the packaged child already gets
+the options from `GeoCeDG.cfg`.
 
-#### X6. Prototype (scratch only)
+#### X6. Packaging invariance
 
-From the packaged GeoCeDG, a scratch route `[<app dir>\GeoCeDG-Classic.exe,
---showSplash=false, --settingsfile=…, resource]` started Open Classic, a `.ggt`
-(1 macro) and `Templatev7.ggb` (23 steps, with discarded streams) as separate
-`App3D` processes with all JVM options and isolated preferences, in `INTERNAL`
-and `NC` images; the active construction digest and saved state stayed
-unchanged.
-
-#### X7. Rejected candidates
-
-Candidate B, exercised: the current route then starts, but without JVM options
-or `jpackage.app-path`, and still blocks on the pipe; 21 general executables
-(`javac`, `jshell`, `jwebserver`, `jrunscript`, `jdb`, `keytool`, …), +0.7 MB;
-jlink cannot keep only `java`/`javaw`. Candidate C, static: entry-point
-widening and identity sharing. No other viable candidate.
-
-#### X8. Upstream
-
-The pinned baseline `9b93256b` and current upstream `main` `325faee1` have no
-packaged-launcher abstraction, no jpackage configuration and no Classic
-relaunch path; `GeoGebra3D.main` and the `--showSplash`/`--settingsfile`/file
-argument handling are reused unchanged. No upstream file changes.
+With the unmodified builder and checker, the prototype's `INTERNAL` and `NC`
+sets kept the `E1-P` launcher inventory (`GeoCeDG.exe`, `GeoCeDG.cfg` and
+`.jpackage.xml` byte-identical), installer payloads, shortcuts, `.cedg`
+association and SBOM shape, and satisfied the packaging contract 42/42.
 
 ### Decisions requested before authorization
 
 | ID | Question | Preparation recommendation |
 |---|---|---|
 | `DQ-E1X1-1` | Identifier of the implementation activity | keep `PRE-G9B-R6-plus-E1-X1`, registry phase id `PRE-G9B-R6-PLUS-E1-X1`; `E1` stays closed |
-| `DQ-E1X1-2` | Repair candidate | option A, exactly as in *Objective* |
-| `DQ-E1X1-3` | Name of the secondary launcher (executable, `.cfg`, installer shortcut text if any) | `GeoCeDG-Classic-Diagnostic`; never a name containing `GeoGebra` |
-| `DQ-E1X1-4` | Installer shortcuts under the JDK 25.0.4 limitation (X4) | (a) keep the two-step build and accept a desktop and Start-menu entry for the secondary launcher, made safe by `DQ-E1X1-5`, with the exact shortcut set pinned by the MSI contract; alternatives: (b) single-step MSI/EXE from `--input` (amends ADR 0004 decision 3 and the specification; installer payload no longer derived from the ZIP's app-image); (c) custom WiX override — rejected (`bundle.wxf` is not customizable). Under (a), the visible upstream-Classic entry point is a branding question for the author |
-| `DQ-E1X1-5` | Default launcher arguments for a bare start (shortcut, double click) | `--showSplash=false --settingsfile=$APPDATA/GeoCeDG/5.4/classic-diagnostic.properties`; the product route always passes its complete explicit argument list |
-| `DQ-E1X1-6` | Scope and form of the child-stream fix (`X1-F2`) | in scope (same seam, both routes, pre-existing); `Redirect.DISCARD` for stdout and stderr; alternative: a per-route log file beside the preferences |
-| `DQ-E1X1-7` | JVM options of the development fallback (`X1-F3`) | in scope; one declared constant equal to `package.yml` `application.jvm_options`, pinned by a test; fallback order `javaw.exe`, `java.exe`, `java` |
-| `DQ-E1X1-8` | Verification class | `OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, impact `PHASE_LOCAL`, with the acceptance set of *Required tests and commands*; alternative `INTEGRATED_PHASE`; not inherited from `E1-P` |
-| `DQ-E1X1-9` | Governance artifacts and closure rule | amend `windows-packaging.md` (diagnostic launcher section); no ADR under `DQ-E1X1-4` (a), an ADR 0004 amendment under (b); the observation becomes resolved only after an author smoke of the packaged product (portable and installed) for both routes |
+| `DQ-E1X1-2` | Repair candidate | Candidate C, exactly as in *Objective*; Candidate A as the documented alternative |
+| `DQ-E1X1-3` | Private dispatch token and position | `--classic-diagnostic`, honored only as the first argument (an Explorer or `.cedg` association start passes an absolute document path first) |
+| `DQ-E1X1-4` | Dispatch guarantees for any caller of the token | the dispatch always passes `--showSplash=false`, and supplies `--settingsfile=<default preferences directory>\classic-diagnostic.properties` (creating its directory) when the caller gave no settings file, so a manual command-line use can reach neither the upstream splash nor default upstream preferences |
+| `DQ-E1X1-5` | Child stream policy (`X1-F2`) | `Redirect.DISCARD` for stdout and stderr in both modes; a diagnostic log is a later enhancement, not part of this fix |
+| `DQ-E1X1-6` | Development JVM options (`X1-F3`) | forward the `--add-exports`, `--add-opens` and `--enable-native-access` entries of the running JVM's `RuntimeMXBean.getInputArguments()`; no hard-coded duplicate list; packaged children take them from `GeoCeDG.cfg` |
+| `DQ-E1X1-7` | Verification class | `BOUNDED_PHASE` (registered `PHASE` sufficient) with the technical packaged smoke as phase evidence; alternative `INTEGRATED_PHASE`; `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` no longer applies (it was proposed for Candidate A, which changed the packaging contract) |
+| `DQ-E1X1-8` | Governance artifacts and closure rule | amend `geocedg/specs/ui/application-profile.md` "Launcher and configuration" with the private dispatch; no ADR change; the observation becomes resolved only after an author smoke of the packaged product (portable and installed) for both routes |
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 ```text
-P_R6PLUS_E1 = fdc1ade6e7ab707bbc919d337bc48d1abce90a1b
-tree        = cc613c0337d3d75fdf14e55d20db5cb896af2b52
+P_R6PLUS_E1         = fdc1ade6e7ab707bbc919d337bc48d1abce90a1b
+tree                = cc613c0337d3d75fdf14e55d20db5cb896af2b52
+T_R6PLUS_E1_X1_CHAR = b6172af4f319d297aa5780c9f516b310254d3e90   (documentary only)
 ```
 
 The implementation branch starts from the exact commit the authorizing
-instruction names: either `P_R6PLUS_E1` or the preparation candidate that
-contains this prompt (documentary only, no product delta). Entry gate: local
-`main`, `origin/main` and the live remote `main` agree with the named base, the
-worktree is clean, and `E1`, `E1-L`, `E1-P` are still `PASS — AUTHOR APPROVED
-— PUBLISHED`.
+instruction names: `P_R6PLUS_E1`, or the documentary R1 candidate that contains
+this prompt (a linear descendant of `b6172af4` with no product delta from
+`P_R6PLUS_E1`). Entry gate: local `main`, `origin/main` and the live remote
+`main` agree with `P_R6PLUS_E1`; the named start commit exists unchanged; the
+worktree is clean; `E1`, `E1-L`, `E1-P` are still `PASS — AUTHOR APPROVED —
+PUBLISHED`.
 
 ## Authority and evidence hierarchy
 
-1. `AGENTS.md`, then current code, build, packaging contracts and tests at the
-   base.
-2. `geocedg/specs/packaging/windows-packaging.md`, ADR 0004, ADR 0016,
+1. `AGENTS.md`, then current code, build and tests at the base.
+2. `geocedg/specs/ui/application-profile.md`, ADR 0001, ADR 0004,
+   `geocedg/specs/packaging/windows-packaging.md` (unchanged here),
    `geocedg/specs/operations/verification-levels.md` and the typed registry.
-3. The author instructions: the `E1-P` closeout disposition, the
-   characterization instruction and the authorizing instruction of this
-   activity.
-4. The characterization report and its JSON mirror (evidence, not authority).
-5. Scratch probe outputs, scratch images and session notes (lowest rank; never
-   a substitute for re-establishing a fact).
+3. The author instructions: the `E1-P` closeout disposition, the `E1-X1` and
+   `E1-X1-R1` instructions and the authorizing instruction of this activity.
+4. The two characterization reports and their JSON mirrors (evidence, not
+   authority).
+5. Scratch probe outputs, the scratch prototype patch, scratch packages and
+   session notes (lowest rank; never a substitute for re-establishing a fact).
 
 <!-- geocedg-field: allowed_scope -->
 ## Allowed scope
 
 ### Desktop (GeoCeDG-owned only)
 
+- `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java`: the
+  first-position dispatch, its token constant and the `DQ-E1X1-4` guarantees;
+  the rest of `main` unchanged.
 - `source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java`:
   `openDiagnostic` and `diagnosticCommand` only — the launch-environment seam,
   the packaged and development command construction, the fail-closed packaged
-  check, the stream redirection and an injectable process starter for tests.
-  The chooser, the confirmation text, the preference file names, the resource
-  validation and the message on failure keep their behavior.
-- One new package-private helper in `org.geocedg.desktop` if the seam is
-  clearer outside the registry (for example the launch environment and the
-  declared launcher name and JVM options).
+  check, the stream redirection, and injectable launch inputs (application
+  path, Java home, class path, input arguments, process starter) for tests. The
+  chooser, the confirmation text, the preference file names, the resource
+  validation and the failure message keep their behavior.
+- One new package-private helper in `org.geocedg.desktop` if the seam is clearer
+  outside the registry.
 
-### Packaging
+### Specification
 
-- `packaging/windows/package.yml`: one declaration of the diagnostic launcher
-  (name, main class, default arguments, shortcut intent per `DQ-E1X1-4`).
-- `geocedg/specs/operations/package-profile.schema.json`: admit exactly that
-  declaration.
-- `tools/release/build-windows-package.ps1`: generate the launcher properties
-  in the work directory from the profile, pass `--add-launcher` to the
-  app-image invocation for every built profile, assert the launcher and its
-  `.cfg`, record the launcher set in the build manifest; under `DQ-E1X1-4` (b)
-  only, the single-step installer invocation.
-- `tools/agent/checks/packaging-product.ps1`: `packaging.launcher-config`
-  reads `app\GeoCeDG.cfg` by exact name; a `packaging.diagnostic-launcher`
-  subcontract (executable, `.cfg` with `GeoGebra3D`, classpath and JVM options
-  equal to the main launcher, `.jpackage.xml` entry, no `runtime\bin\*.exe`);
-  MSI inspection of the launcher files and of the exact shortcut set decided by
-  `DQ-E1X1-4`; the `.cedg` verb still targets `GeoCeDG.exe` only.
-- `geocedg/specs/packaging/windows-packaging.md`: the diagnostic-launcher
-  amendment (`DQ-E1X1-9`).
+- `geocedg/specs/ui/application-profile.md`, section "Launcher and
+  configuration": record the private first-position dispatch and its
+  guarantees; the "Classic diagnostic route" section keeps its meaning.
 
 ### Supporting changes
 
 - New Desktop tests under `source/desktop/desktop/src/test/java/org/geocedg/desktop/`
   and the adjustment of the two existing `diagnosticCommand` tests of
   `G9U1ActionRegistryTest` to the new signature, without weakening them.
-- Packaging-check tests and verifier pins that the contract change moves.
 - The phase selection, the JUnit inventory update through the official
   mechanism, and the registry-shape pins that registration moves.
 - The candidate report, its machine-readable evidence, and the roadmap and
-  mini-track status lines; `GUIDE_IMPACT` per `DQ-E1X1-4` (a): a one-line
-  mention of the installed entry in the bilingual guides §14.1, otherwise none.
+  mini-track status lines. `GUIDE_IMPACT` expected `NONE` (the guides describe
+  a separate Classic process with isolated preferences, which stays true).
 
 <!-- geocedg-field: forbidden_scope -->
 ## Explicitly forbidden scope
 
-- Shared kernel, geometry, construction semantics, dependency graph,
-  serialization, document format, Locus V2, spatial semantics, export bytes.
+- Every packaging input and check: `packaging/windows/**`,
+  `tools/release/build-windows-package.ps1`, `tools/agent/checks/packaging-product.ps1`,
+  `tools/agent/verify-packaging.ps1`, `geocedg/specs/packaging/**`,
+  `geocedg/specs/operations/package-profile.schema.json`, ADR 0004; no
+  `--add-launcher`, `--runtime-image` or `--jlink-options` change (Candidates A
+  and B).
 - Any upstream file (`GeoGebra3D`, `GeoGebra`, `GeoGebraFrame`,
   `CommandLineArguments`, `LoggerD`, `AppD`, …) and `docs/upstream/modified-files.yml`.
-- `GeoCeDG.main` and the main launcher identity, main class, JVM options, icon,
-  association and `.cedg` verb target; any Classic mode in the product entry
-  point (Candidate C).
-- A general-purpose Java executable in the runtime, `--runtime-image`, or a
-  change of the default `--jlink-options` (Candidate B).
+- Shared kernel, geometry, construction semantics, dependency graph,
+  serialization, document format, Locus V2, spatial semantics, export bytes, the
+  curated GGT library.
+- Any GeoCeDG state, profile, frame, action catalog or workspace in the Classic
+  child; in-process profile switching; any other meaning of the token.
 - Discovery through `java.home` inference in packaged mode, `PATH`,
   environment variables, the working directory or an executable search.
 - Transferring the active document, its path or its construction to a child;
   promoting legacy semantics; canonical-legacy trust or hash authority in the
   GUI route; changes to `tools/legacy/open-laboratory.ps1`.
-- The preference file names and locations, and the isolation model, beyond
-  `DQ-E1X1-5`.
-- The feature-gating of `automation.legacy-laboratory` (report §14), the
-  sharing of one preference file by concurrent sessions of the same route, and
-  any other open observation or enhancement.
-- `COMMERCIAL` packaging, licensing records, distribution markers and notices.
+- The preference file names and locations and the isolation model, beyond
+  `DQ-E1X1-4`; a diagnostic log file (`DQ-E1X1-5`).
+- The feature-gating of `automation.legacy-laboratory`, the sharing of one
+  preference file by concurrent sessions of the same route, and every other open
+  observation or enhancement.
+- The visible version `1.0.0` and the future `1.1.0` target.
 - `PRE-G9B-R6-plus-E2`, `E3`, `F1`, `F2`, `F3` implementation, `G`,
   `PRE-G9B-R7`, `G9B`.
 
 ## Architectural placement
 
-Desktop frontend (GeoCeDG application layer: the diagnostic route) and
-packaging/release layer (the set of packaged launchers), per `AGENTS.md` §4
-"Own installer" and "GUI layout or product profile". Not kernel, not document
-model, not export service, not upstream.
+Desktop frontend: the GeoCeDG application entry point and its diagnostic route
+(`AGENTS.md` §4 "GUI layout or product profile"; ADR 0001 explicit diagnostic
+route to upstream Classic). Not packaging, not kernel, not document model, not
+export service, not upstream.
 
 ## Required design/specification
 
-The amendment of `geocedg/specs/packaging/windows-packaging.md` above. ADR 0004
-decision 3 ("one app-image; ZIP, MSI and EXE derived from it") is preserved by
-`DQ-E1X1-4` (a); option (b) requires an ADR 0004 amendment authorized by the
-author before editing. If the authorizing instruction requires another ADR, it
-names it; the agent does not create one.
+The "Launcher and configuration" amendment of
+`geocedg/specs/ui/application-profile.md` above. No ADR change: ADR 0001 keeps
+the explicit diagnostic route and the unchanged Classic launch path, and ADR
+0004 is untouched. If the authorizing instruction requires an ADR, it names it;
+the agent does not create one.
 
 ## Geometric invariants and degeneracies
 
@@ -364,13 +355,14 @@ read or changed.
 SERIALIZATION CHANGE      = NONE
 DOCUMENT FORMAT CHANGE    = NONE
 PREFERENCES CHANGE        = NONE (same files, same isolation)
-MAIN LAUNCHER CHANGE      = NONE (GeoCeDG.exe and app\GeoCeDG.cfg byte-identical in
-                            launch content; .cedg association unchanged)
-PACKAGE CONTENT CHANGE    = one launcher executable and its .cfg (app-image, ZIP,
-                            MSI, EXE); installer shortcuts per DQ-E1X1-4
-DEVELOPMENT BEHAVIOUR     = same route, now with the declared JVM options and
-                            discarded child streams
-CLASSIC BEHAVIOUR         = same GeoGebra3D entry point, arguments and preferences
+PACKAGING CHANGE          = NONE (package.yml, builder, jpackage invocation, launcher
+                            inventory, installers, shortcuts, association, SBOM shape
+                            and packaging contract unchanged)
+PRODUCT ENTRY POINT       = one private first-position token in GeoCeDG.main; every
+                            other invocation unchanged
+DEVELOPMENT BEHAVIOUR     = same route, now with the running JVM's module-access
+                            options and discarded child streams
+CLASSIC BEHAVIOUR         = unchanged GeoGebra3D entry point, arguments and preferences
 ```
 
 <!-- geocedg-field: required_checks -->
@@ -378,75 +370,66 @@ CLASSIC BEHAVIOUR         = same GeoGebra3D entry point, arguments and preferenc
 
 | ID | Obligation | Kind |
 |---|---|---|
-| `T-E1X1-DEV-COMMAND` | development command: Java path selection order, declared JVM options, `-cp`, `GeoGebra3D`, `--showSplash=false`, `--settingsfile`, resource last (`INV-E1X1-3`) | unit |
-| `T-E1X1-PACKAGED-COMMAND` | packaged command from a synthetic `jpackage.app-path`: sibling launcher first, no `java`, `-cp`, main class or `java.home` (`INV-E1X1-1`) | unit |
-| `T-E1X1-PACKAGED-MISSING` | packaged mode with an absent sibling fails explicitly and starts nothing, even when a `java.home\bin\javaw.exe` exists (`INV-E1X1-2`) | unit |
-| `T-E1X1-NO-RUNTIME-JAVA` | no packaged command references `runtime\bin\java(w)`; the packaging contract proves `runtime\bin` has no executable | unit + packaging |
-| `T-E1X1-PREFERENCES` | Classic and Laboratory use distinct files beside the default preference file; neither equals it (`INV-E1X1-4`) | unit |
+| `T-E1X1-DISPATCH` | the dispatch decision as a pure function: token first → Classic arguments without the token plus the `DQ-E1X1-4` guarantees; token elsewhere, absent, `null` or empty arguments → normal start-up; caller-supplied settings file kept (`INV-E1X1-4`) | unit |
+| `T-E1X1-DISPATCH-PROCESS` | process-isolated: a child JVM runs `GeoCeDG.main` with the token and an isolated settings file; the application is `App3D` with `AppConfigDefault`, the frame `GeoGebraFrame3D`; no GeoCeDG frame, profile or action-registry class is loaded; GeoCeDG's default preference file is not created or changed; the child halts itself on a bounded timeout | process |
+| `T-E1X1-PACKAGED-COMMAND` | packaged command from an injected `jpackage.app-path`: that path, the token, `--showSplash=false`, `--settingsfile`, resource last; no `java`, `-cp`, main class or `java.home` (`INV-E1X1-1`) | unit |
+| `T-E1X1-PACKAGED-MISSING` | packaged mode with a missing path fails explicitly and starts nothing, even when a `java.home\bin\javaw.exe` exists (`INV-E1X1-2`) | unit |
+| `T-E1X1-DEV-COMMAND` | development command: Java path order, forwarded module-access options from injected input arguments (other entries such as `-D`, `-X` and `-javaagent` not forwarded), `-cp`, `GeoGebra3D` (`INV-E1X1-3`) | unit |
+| `T-E1X1-PREFERENCES` | Classic and Laboratory use distinct files beside the default preference file; neither equals it (`INV-E1X1-5`) | unit |
 | `T-E1X1-RESOURCE` | `.ggb`/`.ggt` forwarded as the last argument in both modes | unit |
-| `T-E1X1-RESOURCE-INVALID` | missing file, directory and wrong extension rejected before the starter is called (`INV-E1X1-6`) | unit |
-| `T-E1X1-STREAMS` | the started builder discards stdout and stderr (`INV-E1X1-5`) | unit |
+| `T-E1X1-RESOURCE-INVALID` | missing file, directory and wrong extension rejected before the starter is called (`INV-E1X1-7`) | unit |
+| `T-E1X1-STREAMS` | the started builder discards stdout and stderr in both modes (`INV-E1X1-6`) | unit |
 | `T-E1X1-NO-TRANSFER` | both registry actions with a stub starter: construction XML and saved state unchanged, no document path in the command | Desktop (headless) |
-| `T-E1X1-DECLARATIONS` | product launcher name and development JVM options equal the `package.yml` declarations | unit |
-| `T-E1X1-PROCESS` | process-isolated: the development route starts a `GeoGebra3D` child with isolated settings and a verbose `.ggb` that reaches its window without blocking; the child halts itself, bounded timeout, never the author's `%APPDATA%` | process |
-| `PKG-E1X1-LAUNCHER` | built app-image: launcher executable and `.cfg`, `GeoGebra3D`, classpath and options equal to the main launcher, `.jpackage.xml` entry, exact `GeoCeDG.cfg` check, no runtime executable | packaging contract |
-| `PKG-E1X1-INSTALLER` | decompiled MSI: both executables in `INSTALLDIR`, `.cedg` verb only on `GeoCeDG.exe`, exact shortcut set per `DQ-E1X1-4`; EXE built by the same invocation family | packaging contract |
-| `PKG-E1X1-PROFILES` | `INTERNAL` and `NC` artifact sets both satisfy the launcher contract | packaging contract |
-| `SMOKE-E1X1-TECHNICAL` | unmodified built `INTERNAL` and `NC` app-image and ZIP: both routes from the real actions start a separate secondary-launcher process with `App3D`, isolated preferences and an unchanged GeoCeDG construction; app-image digest unchanged by the launches | packaged smoke (scratch agent) |
+| `T-E1X1-PROCESS` | process-isolated development route: a `GeoGebra3D` child with isolated settings and a verbose `.ggb` reaches its window without blocking; bounded timeout; never the author's `%APPDATA%` | process |
+| `SMOKE-E1X1-TECHNICAL` | `INTERNAL` and `NC` sets built from the exact candidate with the unmodified builder: app-image and extracted ZIP, both routes from the real actions start a separate `GeoCeDG.exe` Classic process with isolated preferences and an unchanged GeoCeDG construction; launcher inventory equal to `E1-P` (`GeoCeDG.exe`, `GeoCeDG.cfg`, `.jpackage.xml`); `packaging-product.ps1 -RequireArtifacts` satisfied on both sets | packaged smoke (scratch agent; phase evidence, not acceptance) |
 | `T-SMOKE` | author smoke (*Required artifacts*); the agent does not perform it | author |
 
-Harness rules: unit tests construct commands from injected values and never
-read the real `jpackage.app-path` or start a real process; the process test
-uses an isolated settings file, a scratch `APPDATA` and a bounded wait; never
-touch the author's `%APPDATA%\GeoCeDG`, never install or uninstall the MSI
-(it shares the author's upgrade code); follow the existing Desktop-test rules
-(per-test `LoggerD`, modal dialogs mocked, asynchronous undo store, heap budget
-of `final.desktop` — run app scenarios in child JVMs).
+Harness rules: unit tests construct commands from injected values and never read
+the real `jpackage.app-path` or start a real process; process tests use an
+isolated settings file, a scratch `APPDATA` and a bounded wait; never touch the
+author's `%APPDATA%\GeoCeDG`; never install or uninstall the MSI/EXE (they share
+the author's upgrade code); follow the existing Desktop-test rules (per-test
+`LoggerD`, modal dialogs mocked, asynchronous undo store, heap budget of
+`final.desktop` — run app scenarios in child JVMs). Scratch packaging builds
+need a short build path (WiX `MAX_PATH`).
 
 Adjacent regressions before freezing (development evidence, not acceptance):
 `G9U1ActionRegistryTest`, `GeoCeDGProfileTest`, `PreG9BR6PlusE1LBundledCatalogTest`,
-`PreG9BR6PlusCX1ClassicPictureProcessTest`; Checkstyle
-`:desktop:desktop:checkstyleMain` and `:desktop:desktop:checkstyleTest` (read
-the XML reports; ASCII escapes in non-test sources);
-`tools/agent/verify-packaging.ps1`; `Assert-GeoCeDGUpstreamBoundary
+`PreG9BR6PlusCX1ClassicPictureProcessTest`, `GeoCeDGSplashWindowTest`; Checkstyle
+`:desktop:desktop:checkstyleMain` and `:desktop:desktop:checkstyleTest` (read the
+XML reports; ASCII escapes in non-test sources); `Assert-GeoCeDGUpstreamBoundary
 -ExpectedBaseline 9b93256b7df401ff056c37b502d82df4d72b1522`; `git diff --check`.
 
 Registration and catalog: register the phase selection
 `PRE-G9B-R6-PLUS-E1-X1` with `compile.shared.semantic`,
-`compile.desktop.semantic`, `junit.desktop.pre-g9b-r6-plus-e1-x1.semantic`,
-`packaging.product` and, if the packaging-check change requires it,
-`infra.contract-boundary` (the `E1-L` and `E1-P` shapes). Discovery dry-run
-evidence and **executed** selection evidence through
+`compile.desktop.semantic` and `junit.desktop.pre-g9b-r6-plus-e1-x1.semantic`,
+following the `PRE-G9B-R6-PLUS-C-X1` shape (Desktop-only phase). Discovery
+dry-run evidence and **executed** selection evidence through
 `tools/agent/checks/gradle-test-evidence-producer.ps1`, then
 `tools/agent/update-verification-junit-inventory.ps1` in-session with
 `-DiscoveryEvidencePath` and `-SelectionEvidencePath`, the canonical pin
 reproduced with `Get-VerificationCanonicalTextSha256` before repinning, and
-absolute paths. No hash is entered by hand.
+absolute paths. No hash is entered by hand. When registry-shape pins change,
+run a development `INFRA_UNIT` on the staged tree before freezing.
 
-Acceptance (the proposed `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` /
-`PHASE_LOCAL` contract), on one clean immutable committed candidate, with fresh
-`INTERNAL` and `NC` artifact sets built from that exact candidate:
+Acceptance (the proposed `BOUNDED_PHASE` contract), on one clean immutable
+committed candidate:
 
 ```text
 tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-E1-X1 -PlanOnly
 tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-plus-E1-X1 -LogDirectory <log root>
-tools/agent/verify.ps1 -Profile INFRA_UNIT -LogDirectory <log root>
-tools/agent/verify.ps1 -Profile PACKAGING -CheckToolchain -LogDirectory <log root>
-tools/agent/verify.ps1 -Profile PACKAGING -CheckToolchain -VerifyPackagingArtifacts
-    -PackagingArtifactRoot <INTERNAL set> -LogDirectory <log root>
-tools/agent/verify.ps1 -Profile PACKAGING -CheckToolchain -VerifyPackagingArtifacts
-    -PackagingArtifactRoot <NC set> -LogDirectory <log root>
 ```
 
-Each run `ACCEPTED / COMPLETE` on the exact commit and tree; no further commit
-afterwards. `INTEGRATION` and `FINAL` are not required by this class and are
-not run; a request to run either is a `VERIFICATION_ESCALATION_REQUEST` for the
-author. If product, packaging or test code changes after acceptance, that
-candidate is no longer the accepted candidate: stop and report. The standing
-diagnostics are pre-existing and do not affect acceptance. A failure proven to
-predate the candidate and lie outside its delta is retained baseline debt per
-the task template, not phase scope. Report exact commands, exit codes, run ids,
-plan and result hashes and log paths.
+One `ACCEPTED / COMPLETE` run on the exact commit and tree; the technical
+packaged smoke on artifacts built from that same commit; no further commit
+afterwards. `INTEGRATION`, `FINAL` and `PACKAGING` acceptance runs are not
+required by this class and are not run; a request to run one is a
+`VERIFICATION_ESCALATION_REQUEST` for the author. If product or test code
+changes after acceptance, that candidate is no longer the accepted candidate:
+stop and report. The standing diagnostics are pre-existing and do not affect
+acceptance. A failure proven to predate the candidate and lie outside its delta
+is retained baseline debt per the task template, not phase scope. Report exact
+commands, exit codes, run ids, plan and result hashes and log paths.
 
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
@@ -454,12 +437,12 @@ plan and result hashes and log paths.
 This prompt authorizes nothing. Its existence records a prepared contract.
 Execution requires an explicit author instruction naming the activity, the
 exact branch start, the frozen class and the dispositions of `DQ-E1X1-1` to
-`DQ-E1X1-9`; that instruction may authorize local implementation, local
-commits, local scratch packaging builds, technical verification and one frozen
-technical candidate for author review and smoke. No instruction derived from
-this file authorizes self-approval, author smoke by the agent, installing or
-uninstalling the MSI/EXE, an `INTEGRATION` or `FINAL` run, or any change of the
-class.
+`DQ-E1X1-8`; that instruction may authorize local implementation, local
+commits, local scratch packaging builds for the technical smoke, technical
+verification and one frozen technical candidate for author review and smoke. No
+instruction derived from this file authorizes self-approval, author smoke by
+the agent, installing or uninstalling the MSI/EXE, an `INTEGRATION`, `FINAL` or
+`PACKAGING` acceptance run, or any change of the class.
 
 This activity authorizes nothing that follows it. `E2`, `E3`, `F1`, `F2`, `F3`,
 `G`, `PRE-G9B-R7` and `G9B` stay unauthorized, and so does every open
@@ -482,33 +465,33 @@ review and author smoke, with `selfApproved = false`. Author approval is an
 explicit decision naming the exact accepted commit. The candidate report and
 its evidence record `AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT`; a later
 closeout record is the sole authority for approval and for the disposition of
-`OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` (`DQ-E1X1-9`). Closeout and
+`OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` (`DQ-E1X1-8`). Closeout and
 publication are separately authorized documentary steps.
 
 ## Required artifacts
 
-- The Desktop and packaging delta, the tests, their registration and the
-  specification amendment.
-- A candidate report under `docs/validation/` with: entry-gate evidence; X1–X8
+- The Desktop delta, the tests, their registration and the specification
+  sentence.
+- A candidate report under `docs/validation/` with: entry-gate evidence; X1–X6
   re-established at the implementation base with every correction; the exact
   diff; the command before and after for both routes and both modes; the
-  packaged launcher layout of the built `INTERNAL` and `NC` sets; the decompiled
-  installer shortcut set; the obligation-to-test map; residual risks; the
-  author-smoke checklist.
-- The author-smoke checklist covers at least: from the portable ZIP and from
-  the installed MSI or EXE, **File → Open Classic diagnostic session** opens a
+  packaged smoke results and launcher-inventory comparison for the `INTERNAL`
+  and `NC` sets; the obligation-to-test map; residual risks; the author-smoke
+  checklist.
+- The author-smoke checklist covers at least: from the portable ZIP and from the
+  installed MSI or EXE, **File → Open Classic diagnostic session** opens a
   separate Classic window; **Automation → Legacy laboratory** with a `.ggb`
-  (including a large one such as a legacy model) and with a `.ggt`; the
-  GeoCeDG document and its saved state unchanged; the Classic window uses its
-  own preferences; repeated sessions; under `DQ-E1X1-4` (a) the installed
-  shortcut opens an isolated Classic session without the upstream splash.
+  (including a large one such as a legacy model) and with a `.ggt`; the GeoCeDG
+  document and its saved state unchanged; the Classic window uses its own
+  preferences and shows no upstream splash; closing Classic leaves GeoCeDG open
+  and closing GeoCeDG leaves Classic open; repeated sessions; no new Start-menu
+  or desktop entry after installation.
 - Machine-readable evidence beside it, following existing conventions.
-- The bootstrap-impact outcome and rationale (expected: no change; no new
-  workstation prerequisite — the same JDK 25.0.4 `jpackage` and WiX 5.0.2),
-  the verification-infrastructure-impact assessment (packaging-check contract
-  and phase registration, `PHASE_LOCAL`), `GUIDE_IMPACT` per `DQ-E1X1-4`,
-  `SERIALIZATION CHANGE = NONE`, and the exact commands, exit codes and log
-  paths.
+- The bootstrap-impact outcome and rationale (expected: no change; no
+  workstation prerequisite changes), the verification-infrastructure-impact
+  assessment (phase registration only), `GUIDE_IMPACT` (expected `NONE`),
+  `SERIALIZATION CHANGE = NONE`, `PACKAGING CHANGE = NONE`, and the exact
+  commands, exit codes and log paths.
 - Technical verification distinguished from author approval; incomplete gates
   reported explicitly.
 
@@ -517,20 +500,23 @@ publication are separately authorized documentary steps.
 Stop and report rather than improvise when:
 
 - the entry gate fails, or the base differs from the authorizing instruction;
-- re-establishing X1–X8 at the base contradicts the characterization;
-- the fix needs a kernel, serialization, document-format or upstream change;
-- Classic cannot be started as a separate packaged process through the
-  additional launcher, or the launcher cannot share the runtime, classpath or
-  JVM options;
+- re-establishing X1–X6 at the base contradicts the characterization;
+- the dispatch cannot run before every GeoCeDG preference, profile or frame
+  initialization, or the child is not genuine Classic (`App3D`,
+  `AppConfigDefault`, no GeoCeDG frame or profile);
+- the fix needs a packaging, kernel, serialization, document-format or upstream
+  change, or an ADR change;
+- `jpackage.app-path` does not name the running `GeoCeDG.exe` in any built set,
+  or the Classic child is not a separate process;
 - jpackage behavior differs between `INTERNAL` and `NC`;
 - preference isolation or the no-transfer invariant cannot be preserved;
 - the Laboratory would need a route different from Open Classic;
-- a general-purpose Java launcher becomes necessary;
-- the installer shortcut behavior differs from X4 or cannot be pinned as
-  decided by `DQ-E1X1-4`;
-- the packaging verifier change reaches beyond the packaging checks (global
-  verification infrastructure), which would change the class;
+- a general-purpose Java launcher or a secondary packaged launcher becomes
+  necessary;
+- the packaged launcher inventory, installers, shortcuts or packaging contract
+  of the smoke sets differ from `E1-P` beyond the expected Desktop classes,
+  build provenance and jlink modules;
 - a `DQ-E1X1` question is reached without an author disposition;
-- any acceptance run is rejected for a cause attributable to the candidate, or
-  its coverage is incomplete or untrusted;
-- product, packaging or test code would change after acceptance.
+- the `PHASE` run is rejected for a cause attributable to the candidate, or its
+  coverage is incomplete or untrusted;
+- product or test code would change after acceptance.

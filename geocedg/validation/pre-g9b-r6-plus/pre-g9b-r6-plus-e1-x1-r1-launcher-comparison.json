@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-X1-R1",
+  "continues": "PRE-G9B-R6-plus-E1-X1",
+  "observation": "OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_x1_r1_launcher_comparison_report.md",
+  "firstCharacterization": {
+    "report": "docs/validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md",
+    "evidence": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e1-x1-preparation-characterization.json",
+    "recommendationThen": "Candidate A (jpackage additional launcher), on the evidence then available",
+    "modified": false
+  },
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher.prompt.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "activityState": "CHARACTERIZATION COMPLETE",
+  "preferredImplementation": "CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH",
+  "observationState": "CHARACTERIZED — IMPLEMENTATION PREPARED",
+  "implementation": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "packagingChange": "NONE",
+  "serializationChange": "NONE",
+  "publishedBase": {
+    "name": "P_R6PLUS_E1",
+    "commit": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "tree": "cc613c0337d3d75fdf14e55d20db5cb896af2b52"
+  },
+  "characterizationBase": {
+    "name": "T_R6PLUS_E1_X1_CHAR",
+    "commit": "b6172af4f319d297aa5780c9f516b310254d3e90",
+    "tree": "0f98fe7a091c45c89ad97092215dbdfcfadecfab",
+    "parent": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "branch": "phase/pre-g9b-r6-plus-e1-x1-prompt",
+    "published": false
+  },
+  "entryGate": {
+    "liveRemoteMain": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "localMain": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "originMain": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "characterizationCommitUnchanged": true,
+    "linearParentage": true,
+    "worktreeClean": true
+  },
+  "prototype": {
+    "location": "temporary detached git worktree of b6172af4 in the session scratchpad; removed after the runs",
+    "patchedFiles": [
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java (+8)",
+      "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java (+56/-4, including scratch-only x1.streams and x1.jvmoptions selectors)"
+    ],
+    "patchSha256Prefix": "77A41EDF116A6F43",
+    "committed": false,
+    "productionTreeEdited": false,
+    "packagesBuiltWith": "unmodified tools/release/build-windows-package.ps1 -Target All, INTERNAL and NC, source_revision b6172af4",
+    "maxPathWorkaround": "subst W: of the worktree parent during builds (WiX WIX0001 0x80070003 on a 290-character payload path under the scratchpad); removed afterwards",
+    "probedGeoCeDGProcesses": 19,
+    "routeInvocations": 48,
+    "classicChildReports": 40
+  },
+  "cq1EarlyDispatch": {
+    "branchPosition": "first statement of GeoCeDG.main, before CommandLineArguments, preference selection and GeoGebra.doMain",
+    "staticInitializer": "none at base or prototype (javap -p): only compile-time constants",
+    "argumentHandling": "only the first-position --classic-diagnostic token is removed; the remaining arguments reach GeoGebra3D.main unchanged",
+    "loadedGeoCeDGClassesAtClassicReady": {"candidateCPackagedChild": 42, "developmentDirectGeoGebra3DChild": 42, "difference": []},
+    "geocedgProductStateInChild": "none: no GeoCeDGFrame, AppGeoCeDG, GeoCeDGProfile, GeoCeDGActionRegistry or workspace class",
+    "normalStartupAffected": false
+  },
+  "cq2ClassicIdentity": {
+    "application": "org.geogebra.desktop.geogebra3D.App3D",
+    "frame": "org.geogebra.desktop.gui.app.GeoGebraFrame3D",
+    "guiManager": "org.geogebra.desktop.geogebra3D.gui.GuiManager3D",
+    "config": "org.geogebra.common.main.settings.config.AppConfigDefault (app code classic)",
+    "menus": ["File", "Edit", "View", "Options", "Tools", "Window", "Help"],
+    "title": "GeoGebra Classic 5 (or the opened file name)",
+    "appUserModelId": {"child": "geogebra.AppId", "parent": "org.geocedg.desktop"},
+    "view3d": "shown without uncaught exception"
+  },
+  "cq3SeparateProcess": {
+    "distinctPids": true,
+    "childSelfExit": ["22156 exited by itself", "30532 exited by itself"],
+    "parentAfterChildExit": "responsive; document, construction, saved state and preferences.properties digest 7cda66e5…/89 unchanged",
+    "childAfterParentExit": "28452 still running after the parent JVM 30072 and its outer launcher exited; closed by the test",
+    "launcherObservation": "a GeoCeDG.exe started by the harness hosted the JVM in a second GeoCeDG.exe process (also without the probe); a GeoCeDG.exe started by GeoCeDG's ProcessBuilder ran the JVM in the started process"
+  },
+  "cq4Discovery": {
+    "property": "jpackage.app-path",
+    "observedAs": "the running GeoCeDG.exe in INTERNAL and NC app-images and extracted ZIPs",
+    "missingFileBehavior": "both routes fail closed: 'Packaged GeoCeDG launcher is missing: <path>'; no process started",
+    "absentPropertyBehavior": "development branch",
+    "notUsed": ["java.home", "working directory", "PATH", "repository location"]
+  },
+  "cq5DevelopmentFallback": {
+    "discriminator": "presence of jpackage.app-path",
+    "command": "[java.home/bin/javaw.exe|java.exe|java, <module-access options of the running JVM>, -cp, java.class.path, org.geogebra.desktop.GeoGebra3D, --showSplash=false, --settingsfile=<route file>, resource?]",
+    "verified": "Open Classic, Templatev7.ggb (23 steps) and CirclebyD.ggt (1 macro) in three Gradle runs"
+  },
+  "x1f2StreamPolicy": {
+    "defaultPipes": "blocks with Templatev7.ggb (child main RUNNABLE in FileOutputStream.writeBytes) from harness start and from shell start",
+    "discard": "starts in every environment",
+    "inheritIO": "starts when GeoCeDG's handles are drained or absent; transfers GeoCeDG's own handles, so an undrained launcher pipe would block both",
+    "logFile": "starts; per-session truncation (Redirect.to), shared file for concurrent sessions of one route, user paths stored under %APPDATA%\\GeoCeDG\\5.4",
+    "volumesBytes": {"emptySessionWith3DMerged": 4824, "templatev7Merged": 11342, "stderrEmpty": 0, "stderrGgt": 150, "stderrTemplatev7": 2814},
+    "recommendation": "Redirect.DISCARD for stdout and stderr"
+  },
+  "x1f3JvmOptions": {
+    "noOptions": "JOGL GLException 'Unable to determine GraphicsConfiguration' and JNA restricted-method warnings",
+    "allFour": "no warning or exception; empty stderr for an empty session",
+    "withoutJavaLangExport": "no warning or exception observed",
+    "narrowerSetProven": false,
+    "runtimeSingleAuthority": "none declared; the running GeoCeDG JVM's module-access input arguments mirror build.gradle.kts desktopJvmArgs in development and package.yml jvm_options when packaged",
+    "recommendation": "development fallback forwards the --add-exports, --add-opens and --enable-native-access entries of RuntimeMXBean.getInputArguments(); packaged children receive them from GeoCeDG.cfg"
+  },
+  "preferenceIsolation": {
+    "classicFile": "<APPDATA>/GeoCeDG/5.4/classic-diagnostic.properties",
+    "laboratoryFile": "<APPDATA>/GeoCeDG/5.4/laboratory.properties",
+    "mainPreferencesUntouched": true,
+    "routesIsolatedFromEachOther": true,
+    "savedStateUnchanged": "48/48",
+    "constructionXmlUnchanged": "40/40 (captured)",
+    "fullApplicationXmlUnchanged": "47/48",
+    "nonReproducedObservation": "one full-XML digest difference in the first development run (.ggt step, before construction-XML capture); not reproduced in seven later development steps (three repeating the sequence) nor in any packaged step"
+  },
+  "laboratory": {
+    "ggb": "Templatev7.ggb: 23 steps, 24 macros",
+    "ggt": "CirclebyD.ggt: 1 macro",
+    "invalidExtension": "rejected before launch",
+    "missingFile": "rejected before launch",
+    "canonicalLegacyTrustCreated": false
+  },
+  "packagedMatrix": [
+    {"environment": "Gradle/dev", "classic": true, "laboratory": true, "sameLauncher": "n/a", "isolatedPrefs": true, "noJavaExeDependency": "n/a"},
+    {"environment": "INTERNAL app-image", "classic": true, "laboratory": true, "sameLauncher": true, "isolatedPrefs": true, "noJavaExeDependency": true},
+    {"environment": "NC app-image", "classic": true, "laboratory": true, "sameLauncher": true, "isolatedPrefs": true, "noJavaExeDependency": true},
+    {"environment": "portable ZIP INTERNAL and NC", "classic": true, "laboratory": true, "sameLauncher": true, "isolatedPrefs": true, "noJavaExeDependency": true},
+    {"environment": "MSI/EXE (decompiled, not installed)", "classic": "not run", "laboratory": "not run", "sameLauncher": "single GeoCeDG.exe in payload", "isolatedPrefs": "n/a", "noJavaExeDependency": true}
+  ],
+  "packagingInvariance": {
+    "packageYml": "unchanged",
+    "builder": "unchanged",
+    "jpackageInvocation": "unchanged",
+    "appImageInventory": "432 files, same names as E1-P; GeoCeDG.exe, app/GeoCeDG.cfg, app/.jpackage.xml byte-identical",
+    "differingAppImageFiles": ["app/desktop.jar (prototype classes, build provenance, CR-only resource)", "app/common-jre.jar (CR-only command properties)", "app/legal/resolved-runtime-components.json", "runtime/lib/modules (jlink non-determinism)"],
+    "msiExeInventory": "432 files; GeoCeDG.exe, GeoCeDG.cfg, jvm.cfg; EXE-embedded MSI at 568076",
+    "fileAssociation": "unchanged; .cedg verb on GeoCeDG.exe",
+    "shortcuts": "unchanged; GeoCeDG desktop and Start-menu only",
+    "sbom": "117 components, identical identity set; no launcher component",
+    "packagingContract": {"INTERNAL": "CONTRACT_SATISFIED 42/42", "NC": "CONTRACT_SATISFIED 42/42", "checkerModified": false},
+    "adr0004": "unchanged",
+    "documentaryConsequence": "geocedg/specs/ui/application-profile.md 'Launcher and configuration' should record the private first-position dispatch"
+  },
+  "decisionRule": {
+    "C1": "met", "C2": "met", "C3": "met", "C4": "met", "C5": "met", "C6": "met",
+    "C7": "met", "C8": "met", "C9": "met", "C10": "met", "C11": "met"
+  },
+  "recommendation": {
+    "candidate": "C",
+    "alternative": "A (documented in the first characterization)",
+    "verificationClass": "BOUNDED_PHASE (registered PHASE) plus technical packaged smoke as phase evidence; not OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "decisionsRequested": ["DQ-E1X1-1", "DQ-E1X1-2", "DQ-E1X1-3", "DQ-E1X1-4", "DQ-E1X1-5", "DQ-E1X1-6", "DQ-E1X1-7", "DQ-E1X1-8"]
+  }
+}

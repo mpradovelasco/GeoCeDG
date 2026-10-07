@@ -24,6 +24,7 @@
 - `E1-L` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_L` `5f34d181b4f03412acfbdbeedb3fd7931de02ed9` (revision 1 after the functional smoke of R0 `1aa05d67`; [E1-L closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md)); ADR 0033 `ACCEPTED — AUTHOR APPROVED`, curated-library specification `NORMATIVE / AUTHOR APPROVED`; `E1-P` stays `PREPARED — NOT AUTHORIZED`; no later subphase is authorized.
 - `E1-P` and aggregate `E1` closeout (2026-10-07): `E1-P` implementation authorized on `P_R6PLUS_E1_L` `47b39e5f` (`6bce8cf5`); technical candidate `T_R6PLUS_E1_P` `dcda4075843766e8c384c176007c5edb776357c2` ([candidate report](../validation/pre_g9b_r6_plus_e1_p_candidate_report.md)) `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT` ([E1-P and E1 closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md)); `INTERNAL` and `NC` package the same curated library at `app/ggt-library/`, `COMMERCIAL` excludes it; `PRE-G9B-R6-plus-E1 = PASS — AUTHOR APPROVED`; `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` registered as open pre-existing debt, only its focal characterization authorized next; `E2` not authorized.
 - `E1-X1` focal characterization (2026-10-07): at the author's instruction, on the published `P_R6PLUS_E1` `fdc1ade6e7ab707bbc919d337bc48d1abce90a1b`, tree `cc613c0337d3d75fdf14e55d20db5cb896af2b52`, `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` is characterized for both users of the shared route ([characterization report](../validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md)): the jpackage runtime has no `java(w).exe` by construction (`--strip-native-commands`), so `openDiagnostic` fails in every packaged form; the same seam also leaves the child's pipes undrained (`X1-F2`) and drops the declared JVM options in development (`X1-F3`). The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher.prompt.md) is `PREPARED — NOT AUTHORIZED`: recommended jpackage additional launcher found as a sibling of `jpackage.app-path`, proposed class `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` (`PHASE_LOCAL`), decisions `DQ-E1X1-1` to `DQ-E1X1-9`; implementation not authorized; `E1` not reopened.
+- `E1-X1-R1` micro-characterization (2026-10-07): at the author's instruction, on the local characterization candidate `T_R6PLUS_E1_X1_CHAR` `b6172af4f319d297aa5780c9f516b310254d3e90`, a scratch prototype of an early Classic dispatch in `GeoCeDG.main` (Candidate C) was compared with the jpackage secondary launcher (Candidate A) ([launcher comparison report](../validation/pre_g9b_r6_plus_e1_x1_r1_launcher_comparison_report.md)): C met the decision rule `C1`–`C11` in development and in `INTERNAL`/`NC` app-images and ZIPs built by the unmodified builder, with the `E1-P` launcher inventory, installers and shortcuts and a 42/42 packaging contract; preferred implementation Candidate C (A kept as the documented alternative), proposed class `BOUNDED_PHASE`, decisions `DQ-E1X1-1` to `DQ-E1X1-8`; the canonical prompt is reconciled to C and stays `PREPARED — NOT AUTHORIZED`; implementation not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1216,6 +1217,11 @@ PRE-G9B-R6-plus-E1-X1      = CHARACTERIZED / IMPLEMENTATION PREPARED — PROMPT
                              recommended jpackage additional launcher; proposed
                              OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
                              DQ-E1X1-1 to DQ-E1X1-9 pending; E1 not reopened)
+PRE-G9B-R6-plus-E1-X1-R1   = CHARACTERIZATION COMPLETE (2026-10-07; A-versus-C
+                             micro-characterization; preferred implementation
+                             CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH;
+                             prompt reconciled, PREPARED — NOT AUTHORIZED; proposed
+                             BOUNDED_PHASE; DQ-E1X1-1 to DQ-E1X1-8 pending)
 PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
 PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
@@ -1310,6 +1316,9 @@ OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              same-seam pre-existing findings X1-F2 undrained child
                              pipes and X1-F3 dropped JVM options) — IMPLEMENTATION NOT
                              AUTHORIZED — PENDING AUTHOR REVIEW
+                             CHARACTERIZED — IMPLEMENTATION PREPARED (2026-10-07;
+                             PRE-G9B-R6-plus-E1-X1-R1: Candidate C preferred, no
+                             packaging change) — IMPLEMENTATION NOT AUTHORIZED
 ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA = AUTHOR APPROVED REQUIREMENT (2026-10-07) —
                              OWNER PRE-G9B-R6-plus-G — MANDATORY G INPUT —
                              IMPLEMENTATION NOT AUTHORIZED IN E1 (product-owned
