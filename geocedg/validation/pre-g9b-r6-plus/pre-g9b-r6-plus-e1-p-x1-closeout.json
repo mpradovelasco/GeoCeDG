@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-P-X1",
+  "artifactKind": "AUTHOR_CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e1_p_x1_closeout_record.md",
+  "authorInstruction": "2026-10-07, typed in the session",
+  "state": "PASS — AUTHOR APPROVED",
+  "authorReview": "PASS",
+  "authorSmoke": "NOT REQUIRED — NO PRODUCT BEHAVIOR CHANGE",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "implementationAuthorized": false,
+  "publishedBaseBeforeCloseout": {
+    "name": "P_R6PLUS_E1_X1",
+    "commit": "7d132ec5696535e18419e481b8306b5aecf3fef6",
+    "tree": "7509dcb05117eca87011e2bb82ac481592afbcad"
+  },
+  "history": [
+    {"commit": "85e0aa4a4442e2951013e76c75b3617752778654", "role": "test reconciliation"},
+    {"commit": "44b90156786bce4ec5fca0466e7b8f81ea5bb358", "role": "frozen candidate"}
+  ],
+  "approvedCandidate": {
+    "name": "T_R6PLUS_E1_P_X1",
+    "commit": "44b90156786bce4ec5fca0466e7b8f81ea5bb358",
+    "tree": "e02daecdd86e8d791e0f00fd6e49d684d2ca0fd6"
+  },
+  "observations": {
+    "OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION": "RESOLVED IN PRE-G9B-R6-plus-E1-P-X1 — AUTHOR APPROVED"
+  },
+  "historicalMeaning": [
+    "E1-L correctly asserted that E1-L itself did not own packaging",
+    "E1-P later and legitimately introduced the curated GGT packaging route",
+    "two E1-L assertions of e1l09 became stale",
+    "E1-P product behavior was correct; the stale test expectations were wrong"
+  ],
+  "reconciledContract": {
+    "E1-L": "curated GGT content and runtime catalog semantics",
+    "E1-P": "explicit controlled packaging admission route",
+    "route": "models/curated/ggt-library/ -> app/ggt-library/ under the manifest/hash/rights/profile contract",
+    "preserved": ["no .ggt in ordinary src/main/resources", "no Gradle ownership of models/curated", "no hidden alternate packaging authority"],
+    "testIdentityKept": true
+  },
+  "impact": {
+    "productChange": "NONE",
+    "packagingProductChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "serializationChange": "NONE",
+    "documentFormatChange": "NONE",
+    "kernelChange": "NONE"
+  },
+  "acceptedEvidence": {
+    "focal": {"PreG9BR6PlusE1LCuratedLibraryTest": "9/9", "PreG9BR6PlusE1LBundledCatalogTest": "10/10"},
+    "adjacentE1PPhase": {"run": "verification-ebf28a3edc8a45ca9f16cc9e2fc23945", "verdict": "ACCEPTED / COMPLETE", "checks": "2/2"},
+    "finalDesktop": {"commit": "85e0aa4a4442e2951013e76c75b3617752778654", "tests": 1874, "failures": 0, "allowedSkips": 1, "allowedSkip": "org.geogebra.CasValueExtractor.extractMockValues", "state": "CLEAN", "acceptedForCandidate": true},
+    "phase": {"run": "verification-1a8e1e045dc44fd2a979389710637e12", "verdict": "ACCEPTED / COMPLETE", "checks": "4/4", "plan": "9016d9f6022ee7ea6dc0d30537a89849172fb8cdaccf1393eb7970b37870aa8d", "result": "c2ec8beefadf25b4c6a14a8e23b2fc12a40819f0dbb670d29bd119944507a824"},
+    "infraUnit": {"run": "verification-3e6e9c68025c4d0989ad75936ae9786e", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "static": {"run": "verification-929e10a453db43129f210dccc3a2f850", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "diffCheck": "CLEAN"
+  },
+  "inventory": {
+    "finalDesktop": {"before": 1855, "after": 1874},
+    "discoveryDesktop": 1880,
+    "phaseSelection": {"id": "pre-g9b-r6-plus-e1-p-x1.desktop", "identities": 19},
+    "junitInventoryPin": {"old": "5de49549dd9d82b81ce75ff60b742e6e49c840231dfe627e5d67355edf7e5a55", "new": "eded218f82d1ae5d1df4456ec11c7794d0b522c65c7365452c65069f74c5ad79"},
+    "registryShape": {"selections": 42, "phaseSelections": 50},
+    "pinsMovedByCloseout": false
+  },
+  "historicalPhaseStates": {
+    "PRE-G9B-R6-plus-E1-L": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1-P": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1-X1": "PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "closeoutCommit": "the documentary descendant containing this file; reported outside it; not a replacement candidate",
+  "next": "PRE-G9B-R6-plus-E2 — NOT AUTHORIZED",
+  "e2Started": false
+}
