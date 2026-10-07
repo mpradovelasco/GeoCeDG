@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-L",
+  "record": "docs/validation/pre_g9b_r6_plus_e1_l_closeout_record.md",
+  "decisionDate": "2026-10-07",
+  "state": "PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "authorSmokeFunctional": "PASS",
+  "authorSmokeR1": "PASS",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "chain": {
+    "publishedBase": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "preparation": { "commit": "0ce52a965bcf8b9de37a1572738c0ad79db52354", "tree": "e500e80fddf957078249383ae61e28e6f707d455" },
+    "authorization": "904778b34704d1f395e70e27f265914dc3ffb500",
+    "governance": "942aebe0f9c83afb3952d62e87783e92a7125bd7",
+    "r0": { "commit": "1aa05d677910b2d88101f11958d3d15b5f21960b", "tree": "c2d6a0655d0ccd12c67ca00291da8dfd94e6fefd", "phase": "verification-5ab86499f50843f49c41cc3ab1aeb849", "state": "TECHNICALLY ACCEPTED — SUPERSEDED BY R1 — HISTORICAL EVIDENCE ONLY" },
+    "r1": { "commit": "5f34d181b4f03412acfbdbeedb3fd7931de02ed9", "tree": "f1f060703804ca99a7e8522de97a123becaabae6" }
+  },
+  "approvedCandidate": { "name": "T_R6PLUS_E1_L", "commit": "5f34d181b4f03412acfbdbeedb3fd7931de02ed9", "tree": "f1f060703804ca99a7e8522de97a123becaabae6" },
+  "acceptance": { "profile": "PHASE", "phase": "PRE-G9B-R6-PLUS-E1-L", "run": "verification-1c7d88a3c63f4b8aacd6ae29d5b3a32a", "verdict": "ACCEPTED / COMPLETE", "checks": "4/4", "verificationClass": "BOUNDED_PHASE" },
+  "finalDesktopRerunForR1": "NOT REQUIRED (author accepted)",
+  "impact": { "productChange": "YES", "r1ProductChange": "UX TEXT ONLY", "serializationChange": "NONE", "geometricSemanticsChange": "NONE", "documentFormatChange": "NONE", "actionCatalogChange": "NONE", "packagingChange": "NONE", "r1MacroDefinitionChange": "NONE" },
+  "tools": ["SquarebyDiagonal", "CirclebyD", "circArcbyAngle", "ellipseLength12", "IFPositiveSelectPoint", "EllipseAxis", "conj2mainAxesEllipse", "pointJump", "relCoor", "translationCoor", "DuctSymbol", "SymmSymbol"],
+  "excludedTools": ["directDimension", "axisDimension", "sheetISOAnLand", "sheetISOAnVert"],
+  "feature": { "id": "cedg.library.curated-ggt", "maturity": "experimental", "enabledByDefault": true },
+  "rightsRecordVersion": 1,
+  "promotedDocuments": {
+    "docs/adr/0033-curated-ggt-library-and-distribution-boundary.md": "ACCEPTED — AUTHOR APPROVED",
+    "geocedg/specs/legacy/curated-ggt-library.md": "NORMATIVE / AUTHOR APPROVED"
+  },
+  "preserved": {
+    "PRE-G9B-R6-plus-E1-P": "PREPARED — NOT AUTHORIZED",
+    "ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA": "owner G; visible version 1.0.0 until G = PASS — AUTHOR APPROVED, then 1.1.0",
+    "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION": "E2-owned constraint"
+  },
+  "publication": { "authorized": true, "mode": "ordinary non-force fast-forward of main", "tag": false, "release": false, "verification": "reported outside this artifact" },
+  "notAuthorized": ["E1-P", "E2", "E3", "F1", "F2", "F3", "G", "PRE-G9B-R7", "G9B"]
+}

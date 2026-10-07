@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — APPROVAL ONLY THROUGH THE `PRE-G9B-R6-plus-E1-L` AUTHOR CLOSEOUT** |
+| Status | **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-07 on the exact technical candidate `T_R6PLUS_E1_L` `5f34d181b4f03412acfbdbeedb3fd7931de02ed9`, tree `f1f060703804ca99a7e8522de97a123becaabae6`, revision 1; [E1-L closeout record](../../../docs/validation/pre_g9b_r6_plus_e1_l_closeout_record.md)) |
 | Version | `1.0` |
 | Owner phase | `PRE-G9B-R6-plus-E1-L` (library, curation, owned icons, read-only bundled catalog) |
 | Packaging | `PRE-G9B-R6-plus-E1-P` (`PREPARED — NOT AUTHORIZED`) |
