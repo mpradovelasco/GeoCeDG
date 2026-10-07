@@ -30,6 +30,19 @@ frame on Swing EDT. This keeps the Construction/metric owner on the same UI
 thread used by ordinary Algebra gestures; it does not relax kernel confinement.
 New windows and template helpers preserve the same profile.
 
+One internal diagnostic dispatch precedes all of this
+(PRE-G9B-R6-plus-E1-X1). When the first argument is exactly
+`--classic-diagnostic`, the entry point removes only that marker, keeps every
+other argument unchanged, adds `--showSplash=false` and the isolated
+`classic-diagnostic.properties` beside the GeoCeDG preference file only when
+the caller gave no splash or settings argument, starts the unchanged upstream
+`org.geogebra.desktop.GeoGebra3D.main` and returns without creating any GeoCeDG
+configuration, profile, preference selection or frame. The marker is launcher
+protocol of the separate diagnostic Classic process (a packaged GeoCeDG starts
+the executable named by `jpackage.app-path` with it); it is not a construction
+command, a document feature or a persisted setting, and it has no meaning in any
+other position.
+
 The config inherits Classic kernel availability and installs no command filter
 in G2. The explicit `createCommandFilter()` hook is the extension point for a
 future approved policy; no command or geometric behavior is changed here.

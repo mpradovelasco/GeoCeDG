@@ -535,33 +535,29 @@ public final class GeoCeDGActionRegistry {
 				return;
 			}
 		}
+		launchDiagnostic(laboratory, resource);
+	}
+
+	/**
+	 * Starts the separate diagnostic Classic process (PRE-G9B-R6-plus-E1-X1). The
+	 * active document is never passed; the only resource is the explicit file of
+	 * the Laboratory, validated before anything is started.
+	 *
+	 * @param laboratory true for the Legacy laboratory, false for Open Classic
+	 * @param resource explicit user-selected GGB/GGT file, or null
+	 */
+	void launchDiagnostic(boolean laboratory, File resource) {
 		try {
-			Path preferences = GeoCeDG.getDefaultPreferencesFile().resolveSibling(
-					laboratory ? "laboratory.properties" : "classic-diagnostic.properties");
+			Path preferences = GeoCeDGClassicDiagnosticLaunch.preferences(
+					GeoCeDG.getDefaultPreferencesFile().getParent(), laboratory);
 			Files.createDirectories(preferences.getParent());
-			Path java = Path.of(System.getProperty("java.home"), "bin", "javaw.exe");
-			if (!Files.isRegularFile(java)) {
-				java = Path.of(System.getProperty("java.home"), "bin", "java");
-			}
-			new ProcessBuilder(diagnosticCommand(java, preferences, resource)).start();
+			GeoCeDGClassicDiagnosticLaunch.processBuilder(
+					GeoCeDGClassicDiagnosticLaunch.command(
+							GeoCeDGClassicDiagnosticLaunch.Environment.current(),
+							preferences, resource)).start();
 		} catch (IOException exception) {
 			message(text("Action.Unavailable.Failed") + "\n" + exception.getMessage());
 		}
-	}
-
-	static List<String> diagnosticCommand(Path java, Path preferences, File resource)
-			throws IOException {
-		List<String> arguments = new ArrayList<>(List.of(java.toString(), "-cp",
-				System.getProperty("java.class.path"), "org.geogebra.desktop.GeoGebra3D",
-				"--showSplash=false", "--settingsfile=" + preferences));
-		if (resource != null) {
-			String name = resource.getName().toLowerCase(Locale.ROOT);
-			if (!resource.isFile() || !(name.endsWith(".ggb") || name.endsWith(".ggt"))) {
-				throw new IOException("Diagnostic resource must be an existing GGB/GGT file");
-			}
-			arguments.add(resource.getAbsolutePath());
-		}
-		return List.copyOf(arguments);
 	}
 
 	/**

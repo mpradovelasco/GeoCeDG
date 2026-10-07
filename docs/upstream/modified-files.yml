@@ -72,7 +72,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDG.java",
       "change": "added",
-      "purpose": "Provide the explicit GeoCeDG Desktop process entry point, isolated preferences path and product-owned splash supplier; use the product-specific launch overload to create/init the frame and application synchronously on Swing EDT after splash preparation while preserving the Classic launcher contract.",
+      "purpose": "Provide the explicit GeoCeDG Desktop process entry point, isolated preferences path and product-owned splash supplier; use the product-specific launch overload to create/init the frame and application synchronously on Swing EDT after splash preparation while preserving the Classic launcher contract. PRE-G9B-R6-plus-E1-X1: a first-position --classic-diagnostic marker dispatches, before any GeoCeDG preference, profile or frame, to the unchanged GeoGebra3D.main with only the marker removed (isolated Classic preferences and no splash added only when absent).",
       "authority": "geocedg/specs/ui/application-profile.md"
     },
     {
@@ -3738,7 +3738,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9. PRE-G9B-R6-plus-B: execute the Picture, PSTricks, PGF/TikZ and Asymptote export actions and the four export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: execute the document.units action. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9. PRE-G9B-R6-plus-B: execute the Picture, PSTricks, PGF/TikZ and Asymptote export actions and the four export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: execute the document.units action. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E1-X1: the Open Classic and Legacy laboratory routes start the separate diagnostic Classic process through GeoCeDGClassicDiagnosticLaunch (packaged launcher or development Java, discarded streams).",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -5822,6 +5822,24 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-E1-L: absent and staged catalogs, whole-catalog fail-closed integrity, activation and style, user and document precedence, user-store byte stability, sidecar pins, native round trip and the manager/menu presentation; R1 pins the twelve bilingual hover tips.",
       "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGClassicDiagnosticLaunch.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-X1: separate-process launch of the diagnostic Classic session; packaged (jpackage.app-path with the first-position dispatch marker, fail closed) or development (Java of the running JVM with only its module-access options) command, discarded child streams, isolated preference files and the GGB/GGT admission rule.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_x1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1X1DiagnosticLaunchTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-X1: dispatch-marker admissibility, packaged and development commands, fail-closed packaged launcher, module-access filter, discarded streams, isolated preferences and Laboratory resources, as pure functions.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_x1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1X1DiagnosticProcessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-X1: real JVMs; the dispatched entry point is genuine Classic with isolated defaults; a real GeoCeDG parent starts separate Classic children (Templatev7 Laboratory without blocking, independent exits, unchanged parent, distinct preference files).",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_x1_candidate_report.md"
     }
   ]
 }

@@ -221,9 +221,13 @@ class G9U1ActionRegistryTest {
 	void diagnosticLaunchUsesSeparateHostAndExplicitFileWithoutChangingWorkspace(
 			@TempDir Path directory) throws Exception {
 		Path resource = Files.createFile(directory.resolve("explicit diagnostic.ggb"));
-		Path preferences = directory.resolve("laboratory.properties");
-		List<String> arguments = GeoCeDGActionRegistry.diagnosticCommand(
-				directory.resolve("javaw.exe"), preferences, resource.toFile());
+		Path preferences = GeoCeDGClassicDiagnosticLaunch.preferences(directory, true);
+		Files.createDirectories(directory.resolve("bin"));
+		Files.createFile(directory.resolve("bin").resolve("javaw.exe"));
+		// PRE-G9B-R6-plus-E1-X1: the development route of the shared launch
+		List<String> arguments = GeoCeDGClassicDiagnosticLaunch.command(
+				new GeoCeDGClassicDiagnosticLaunch.Environment(null, directory, "class-path",
+						List.of()), preferences, resource.toFile());
 		assertTrue(arguments.contains("org.geogebra.desktop.GeoGebra3D"));
 		assertTrue(arguments.contains("--settingsfile=" + preferences));
 		assertEquals(resource.toString(), arguments.get(arguments.size() - 1));
@@ -233,8 +237,11 @@ class G9U1ActionRegistryTest {
 	@Test
 	void diagnosticLaunchRejectsUnsupportedResource(@TempDir Path directory) throws Exception {
 		Path resource = Files.createFile(directory.resolve("not-a-model.txt"));
-		assertThrows(IOException.class, () -> GeoCeDGActionRegistry.diagnosticCommand(
-				directory.resolve("java"), directory.resolve("prefs"), resource.toFile()));
+		Files.createDirectories(directory.resolve("bin"));
+		Files.createFile(directory.resolve("bin").resolve("java"));
+		assertThrows(IOException.class, () -> GeoCeDGClassicDiagnosticLaunch.command(
+				new GeoCeDGClassicDiagnosticLaunch.Environment(null, directory, "class-path",
+						List.of()), directory.resolve("prefs"), resource.toFile()));
 	}
 
 	private static String constructionXml(AppGeoCeDG app) {
