@@ -23,6 +23,7 @@
 - Author decisions and `E1-L` authorization (2026-10-07): on the frozen preparation candidate `T_R6PLUS_E1_PREP` `0ce52a965bcf8b9de37a1572738c0ad79db52354`, tree `e500e80fddf957078249383ae61e28e6f707d455`, the author resolved `DQ-E1-1` to `DQ-E1-16` ([E1 preparation closeout, author decisions and E1-L authorization record](../validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md)): `E1` split into `E1-L` (`BOUNDED_PHASE`, one registered `PHASE`; [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-l-curated-ggt-library.prompt.md) `AUTHORIZED FOR IMPLEMENTATION`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`; [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-p-ggt-library-packaging.prompt.md) `PREPARED — NOT AUTHORIZED`); twelve tools curated and shipped; dimension and sheet tools excluded (references for `E2`/`E3`; `AQ-G3`/`AQ-G3a` need no `E1` implementation); black at GeoGebra `lineThickness` 3; read-only installation-relative bundled catalog; [rights record version 1](../licensing/curated-ggt-library-rights-record.md) (author sole rights holder; `INTERNAL` and `NC` authorized, `COMMERCIAL` not authorized / pending); `AGENTS.md` §3.2 amendment for `models/curated/` authorized as its own commit; `G` keeps depending on `E1-P` unless the author re-plans it. Author-approved requirement `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` (owner `G`): product-owned About metadata and licensing route; visible version stays `1.0.0` during the mini-track and becomes `1.1.0` only at `G = PASS — AUTHOR APPROVED`, with its version date.
 - `E1-L` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_L` `5f34d181b4f03412acfbdbeedb3fd7931de02ed9` (revision 1 after the functional smoke of R0 `1aa05d67`; [E1-L closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md)); ADR 0033 `ACCEPTED — AUTHOR APPROVED`, curated-library specification `NORMATIVE / AUTHOR APPROVED`; `E1-P` stays `PREPARED — NOT AUTHORIZED`; no later subphase is authorized.
 - `E1-P` and aggregate `E1` closeout (2026-10-07): `E1-P` implementation authorized on `P_R6PLUS_E1_L` `47b39e5f` (`6bce8cf5`); technical candidate `T_R6PLUS_E1_P` `dcda4075843766e8c384c176007c5edb776357c2` ([candidate report](../validation/pre_g9b_r6_plus_e1_p_candidate_report.md)) `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT` ([E1-P and E1 closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md)); `INTERNAL` and `NC` package the same curated library at `app/ggt-library/`, `COMMERCIAL` excludes it; `PRE-G9B-R6-plus-E1 = PASS — AUTHOR APPROVED`; `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` registered as open pre-existing debt, only its focal characterization authorized next; `E2` not authorized.
+- `E1-X1` focal characterization (2026-10-07): at the author's instruction, on the published `P_R6PLUS_E1` `fdc1ade6e7ab707bbc919d337bc48d1abce90a1b`, tree `cc613c0337d3d75fdf14e55d20db5cb896af2b52`, `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` is characterized for both users of the shared route ([characterization report](../validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md)): the jpackage runtime has no `java(w).exe` by construction (`--strip-native-commands`), so `openDiagnostic` fails in every packaged form; the same seam also leaves the child's pipes undrained (`X1-F2`) and drops the declared JVM options in development (`X1-F3`). The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher.prompt.md) is `PREPARED — NOT AUTHORIZED`: recommended jpackage additional launcher found as a sibling of `jpackage.app-path`, proposed class `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` (`PHASE_LOCAL`), decisions `DQ-E1X1-1` to `DQ-E1X1-9`; implementation not authorized; `E1` not reopened.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1209,6 +1210,12 @@ PRE-G9B-R6-plus-E1-P       = PASS — AUTHOR APPROVED
                              -a40cda69 (INTERNAL), -ce43e964 (NC);
                              OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
                              INTERNAL and NC include the library, COMMERCIAL excluded)
+PRE-G9B-R6-plus-E1-X1      = CHARACTERIZED / IMPLEMENTATION PREPARED — PROMPT
+                             PREPARED — NOT AUTHORIZED (2026-10-07; post-E1 focal
+                             activity for OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER;
+                             recommended jpackage additional launcher; proposed
+                             OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
+                             DQ-E1X1-1 to DQ-E1X1-9 pending; E1 not reopened)
 PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
 PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
@@ -1297,6 +1304,12 @@ OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              launcher from java.home/bin/javaw.exe, fallback
                              java.home/bin/java. Only a focal characterization after the
                              E1 publication is authorized; no correction)
+                             CHARACTERIZED — UNRESOLVED (2026-10-07; PRE-G9B-R6-plus-E1-X1:
+                             jpackage runtime without java(w).exe by construction;
+                             both routes fail in app-image, ZIP and NC-metadata image;
+                             same-seam pre-existing findings X1-F2 undrained child
+                             pipes and X1-F3 dropped JVM options) — IMPLEMENTATION NOT
+                             AUTHORIZED — PENDING AUTHOR REVIEW
 ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA = AUTHOR APPROVED REQUIREMENT (2026-10-07) —
                              OWNER PRE-G9B-R6-plus-G — MANDATORY G INPUT —
                              IMPLEMENTATION NOT AUTHORIZED IN E1 (product-owned

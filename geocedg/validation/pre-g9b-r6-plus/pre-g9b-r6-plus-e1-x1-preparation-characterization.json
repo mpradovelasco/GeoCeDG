@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-X1",
+  "phaseIdentifierState": "NAMED BY THE AUTHOR INSTRUCTION OF 2026-10-07 FOR THE CHARACTERIZATION; ITS USE FOR THE IMPLEMENTATION IS PROPOSED — NOT AUTHOR APPROVED (DQ-E1X1-1)",
+  "observation": "OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher.prompt.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "activityState": "CHARACTERIZED / IMPLEMENTATION PREPARED",
+  "observationState": "CHARACTERIZED — UNRESOLVED",
+  "implementation": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "packagingChange": "NONE",
+  "serializationChange": "NONE",
+  "publishedBase": {
+    "name": "P_R6PLUS_E1",
+    "commit": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "tree": "cc613c0337d3d75fdf14e55d20db5cb896af2b52"
+  },
+  "entryGate": {
+    "localMain": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "originMain": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "liveRemoteMain": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "worktreeClean": true
+  },
+  "preparationBase": {
+    "commit": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "branch": "phase/pre-g9b-r6-plus-e1-x1-prompt",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "preservedDispositions": {
+    "PRE-G9B-R6-plus-E1-L": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1-P": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "e1Reopened": false
+  },
+  "toolchain": {
+    "java": "Temurin 25.0.4+7 (~/.gradle/jdks/eclipse_adoptium-25-amd64-windows.2)",
+    "jpackage": "25.0.4",
+    "wix": "5.0.2+aa65968c",
+    "jpackageDefaultJlinkOptions": "--strip-native-commands --strip-debug --no-man-pages --no-header-files"
+  },
+  "inputs": {
+    "packagedArtifacts": {
+      "location": "artifacts/packaging/windows (ignored; read-only use)",
+      "sourceRevision": "dcda4075843766e8c384c176007c5edb776357c2",
+      "distributionProfile": "INTERNAL",
+      "productDeltaToBase": "NONE (dcda4075..fdc1ade6 changes only closeout documents)",
+      "appImageTreeDigestBeforeAfterProbe": "1C40EF4BAB4B4A69D3C2EA257967155B8C6035506978BF4FF684C1BF4A8DC079 (unchanged)",
+      "zipSha256": "E0E213ACAE85E0E4852EC902EB145808B64D23082203111D1F356B8D8743AFE7"
+    },
+    "scratchImages": "built in the session scratchpad with jpackage 25.0.4 from the JARs of the E1-P app-image; never published, never installed",
+    "authorPreferencesDigestBeforeAfter": "153FB6FCC08D3C840BE38A2D035F29539C5C22FEA22E9B76EA4DC2DB095A3F31 (unchanged; every run used a scratch APPDATA and --settingsfile)"
+  },
+  "method": {
+    "staticReading": "GeoCeDGActionRegistry, GeoCeDG, GeoCeDGBundledToolCatalog, LocusV2Laboratory, build.gradle.kts, build-windows-package.ps1, package.yml and its schema, packaging-product.ps1, windows-packaging.md, ADR 0004, all at P_R6PLUS_E1",
+    "probe": "one scratch javaagent (JAVA_TOOL_OPTIONS for jpackage launchers; a Gradle init script for :desktop:desktop:runGeoCeDG) that records the JVM environment, invokes the real registry actions diagnostic.open-classic and automation.legacy-laboratory on the EDT, drives the real JFileChooser and confirmation dialog, reads the resulting message dialog, records new child processes, the construction-XML digest and the saved state; in a child the same agent records application class, frame class, preferences file, current file, construction steps, macro count and window title; on start-up timeout it dumps the main and EDT stacks",
+    "jpackageInspection": "jpackage --help, the JDK 25 jpackage man page, javap of jdk.jpackage.internal.AppImageFile, --verbose installer build, WiX 5 msi decompile of product and scratch MSIs and of the MSI embedded in a scratch EXE",
+    "upstream": "pinned baseline 9b93256b in-tree; GitHub geogebra/geogebra main 325faee1 (2026-10-06) read-only"
+  },
+  "runtimeLayout": [
+    {
+      "environment": "Gradle/dev (:desktop:desktop:runGeoCeDG)",
+      "javaHome": "~/.gradle/jdks/eclipse_adoptium-25-amd64-windows.2 (a full JDK)",
+      "classPathEntries": 58,
+      "jpackageAppPath": null,
+      "launcher": "<javaHome>/bin/java.exe started by Gradle JavaExec",
+      "binJavawExe": true,
+      "binJavaExe": true
+    },
+    {
+      "environment": "jpackage app-image (E1-P INTERNAL artifact)",
+      "javaHome": "<app-image>/runtime",
+      "classPathEntries": 51,
+      "classPath": "<app-image>/app/*.jar from app/GeoCeDG.cfg",
+      "jpackageAppPath": "<app-image>/GeoCeDG.exe",
+      "launcher": "<app-image>/GeoCeDG.exe",
+      "binExeFiles": [],
+      "binJavawExe": false,
+      "binJavaExe": false,
+      "absenceNormal": "yes: jpackage runs jlink with --strip-native-commands by default; the product runtime is that default image"
+    },
+    {
+      "environment": "portable ZIP (E1-P INTERNAL artifact, extracted to scratch)",
+      "javaHome": "<extract>/GeoCeDG/runtime",
+      "jpackageAppPath": "<extract>/GeoCeDG/GeoCeDG.exe",
+      "binJavawExe": false,
+      "binJavaExe": false
+    },
+    {
+      "environment": "MSI / EXE payload (decompiled, not installed)",
+      "productMsiFiles": 432,
+      "productMsiJavaExe": false,
+      "installDirectory": "INSTALLDIR = %LOCALAPPDATA%\\GeoCeDG (per-user)",
+      "launcherLayout": "GeoCeDG.exe at INSTALLDIR, runtime\\ beside it: same relative layout as the app-image"
+    }
+  ],
+  "reproductionMatrix": [
+    {
+      "environment": "Gradle/dev",
+      "openClassic": "STARTS — separate javaw.exe process, App3D / GeoGebraFrame3D, title 'GeoGebra Classic 5'",
+      "legacyLaboratory": "GGT STARTS (1 macro); GGB Templatev7.ggb HANGS at start-up (child main thread blocked in FileOutputStream.writeBytes from LoggerD.print: undrained pipe)",
+      "launcherObserved": "<JDK>/bin/javaw.exe -cp <58 entries> org.geogebra.desktop.GeoGebra3D --showSplash=false --settingsfile=<APPDATA>/GeoCeDG/5.4/<route>.properties [resource]",
+      "childJvmOptions": "none of the four declared JVM options",
+      "preferencesIsolated": true
+    },
+    {
+      "environment": "jpackage app-image INTERNAL",
+      "openClassic": "FAILS — Cannot run program \"<app-image>\\runtime\\bin\\java\": CreateProcess error=2",
+      "legacyLaboratory": "FAILS identically for .ggb and .ggt; .txt rejected before launch by diagnosticCommand",
+      "launcherObserved": "none (no child process)",
+      "preferencesIsolated": "not reached; no GeoCeDG preference file touched"
+    },
+    {
+      "environment": "portable ZIP INTERNAL",
+      "openClassic": "FAILS — CreateProcess error=2 on <extract>\\GeoCeDG\\runtime\\bin\\java",
+      "legacyLaboratory": "FAILS identically",
+      "launcherObserved": "none",
+      "preferencesIsolated": "not reached"
+    },
+    {
+      "environment": "packaged INTERNAL/NC equivalence",
+      "openClassic": "FAILS identically in a scratch NC-metadata image (NC marker and notice, same JARs, same jpackage options)",
+      "legacyLaboratory": "FAILS identically in the NC-metadata image",
+      "launcherObserved": "the main GeoCeDG.cfg is byte-identical to the product cfg; the profiles differ only in --description/--copyright, the notice file and the installer association metadata",
+      "preferencesIsolated": "not reached"
+    },
+    {
+      "environment": "MSI/EXE",
+      "openClassic": "NOT RUN (not installed); payload has no runtime\\bin\\java(w).exe, so the route resolves to the same missing file",
+      "legacyLaboratory": "NOT RUN; same inference",
+      "launcherObserved": "not applicable",
+      "preferencesIsolated": "not reached"
+    }
+  ],
+  "rootCause": {
+    "primary": "GeoCeDGActionRegistry.openDiagnostic assumes a JDK/JRE filesystem contract (<java.home>/bin/javaw.exe or java). It holds for a Gradle/IDE JDK and never for the jpackage runtime, which jlink builds with --strip-native-commands; the fallback name 'java' does not exist there either.",
+    "introducedBy": "b49219408 (2026-09-04, G9U1); every packaged build since then carries it; consistent with the author's mid-September reproduction",
+    "notCausedBy": ["PRE-G9B-R6-plus-E1-L", "PRE-G9B-R6-plus-E1-P"]
+  },
+  "additionalFindingsInTheSameSeam": [
+    {
+      "id": "X1-F2",
+      "summary": "the child is started with ProcessBuilder defaults (stdout/stderr pipes) and the parent never reads them; Classic logs to the console through LoggerD, fills the pipe and blocks before showing its window",
+      "evidence": "dev route, unmodified product code: Laboratory with Templatev7.ggb blocks (main thread in FileOutputStream.writeBytes <- LoggerD.print:168); scratch packaged secondary launcher: same file blocks with pipes and loads (23 construction steps) with Redirect.DISCARD",
+      "preExisting": true,
+      "affects": ["Open Classic diagnostic session (any session that logs enough)", "Legacy laboratory"]
+    },
+    {
+      "id": "X1-F3",
+      "summary": "the development child receives none of the four declared JVM options (--add-exports x3, --enable-native-access) that runGeoCeDG and package.yml declare; a packaged general java route would lose them too and would also lose jpackage.app-path",
+      "preExisting": true
+    }
+  ],
+  "candidateA": {
+    "name": "jpackage additional launcher (--add-launcher)",
+    "experiment": "scratch app-images INTERNAL and NC with --add-launcher GeoCeDG-Classic=<properties> (main-class org.geogebra.desktop.GeoGebra3D, main-jar inherited)",
+    "results": {
+      "mainLauncherUnchanged": "GeoCeDG.exe and app/GeoCeDG.cfg byte-identical to the product artifacts",
+      "secondaryFiles": ["<image>/GeoCeDG-Classic.exe", "<image>/app/GeoCeDG-Classic.cfg", "app/.jpackage.xml add-launcher entry"],
+      "sharedRuntime": "one runtime/ (release MODULES identical to the product; no java.exe added)",
+      "classPath": "identical app.classpath lines to the main launcher",
+      "javaOptionsInherited": "yes: all four declared options and -Djpackage.app-version; -Djpackage.app-path names the secondary launcher",
+      "icon": "inherited from --icon (identical icon bitmap)",
+      "versionInfo": "FileDescription inherits the distribution marker unless the properties set 'description'; LegalCopyright always inherits it",
+      "runtimeArguments": "appended verbatim; default 'arguments' from the properties apply only when no argument is given (verified both ways)",
+      "envExpansionInDefaultArguments": "$APPDATA expanded at launch (verified)",
+      "dynamicSettingsFile": "yes: --settingsfile=<per-user path> passed at launch is honored",
+      "resourceArgument": "yes: .ggb (23 steps) and .ggt (1 macro) passed after the options are opened",
+      "prototypeFromPackagedGeoCeDG": "Open Classic, .ggb and .ggt start as separate GeoCeDG-Classic.exe processes; App3D; isolated preferences; active construction digest and saved state unchanged; with Redirect.DISCARD the .ggb loads, with pipes it blocks (X1-F2)",
+      "ncEquivalence": "identical behavior in the NC-metadata image",
+      "msi": "two-step build (installer from --app-image): GeoCeDG-Classic.exe and its cfg present at INSTALLDIR; .cedg association still targets GeoCeDG.exe only; Classic desktop and Start-menu shortcuts CREATED although the properties set win-shortcut=false and win-menu=false",
+      "exe": "embedded MSI (offset 568076) decompiled: same files and the same Classic shortcuts",
+      "shortcutCause": "jdk.jpackage.internal.AppImageFile (25.0.4) persists only name and service per add-launcher in .jpackage.xml; --add-launcher is rejected with --app-image for msi; shortcuts are generated in bundle.wxf, which is not a --resource-dir resource",
+      "singleStepMsi": "an MSI built directly from --input with --add-launcher honors win-shortcut=false/win-menu=false (no Classic shortcut), but is no longer derived from the same app-image (ADR 0004 decision 3)"
+    }
+  },
+  "candidateB": {
+    "name": "runtime image with java.exe/javaw.exe",
+    "experiment": "scratch image with --jlink-options '--strip-debug --no-man-pages --no-header-files'",
+    "results": {
+      "addedExecutables": ["jabswitch", "jaccessinspector", "jaccesswalker", "jar", "jarsigner", "java", "javac", "javadoc", "javaw", "jconsole", "jdb", "jfr", "jrunscript", "jshell", "jwebserver", "keytool", "kinit", "klist", "ktab", "rmiregistry", "serialver"],
+      "runtimeSizeMB": {"product": 122.1, "candidateA": 122.1, "candidateB": 122.8},
+      "currentRouteOutcome": "Classic and .ggt start; child has no JVM options and no jpackage.app-path; Templatev7.ggb still blocks (X1-F2)",
+      "selectiveKeep": "not available: --strip-native-commands is all-or-nothing; deleting files from a linked image is not a supported jlink/jpackage operation"
+    }
+  },
+  "candidateC": {
+    "name": "relaunch GeoCeDG.exe with an explicit mode argument",
+    "analysis": "feasible in principle (GeoCeDG.main parses arguments before any profile initialization), but it widens the product entry point and the .cedg open-verb target with a Classic mode, gives both processes the same executable identity, still needs the development fallback, and needs product code in the entry point; no packaging change",
+    "experimentallyExercised": false
+  },
+  "candidateD": {
+    "result": "no further viable candidate found: in-process Classic violates the separate-process requirement; JNI/jvm.dll launching is not a supported contract; PATH/environment discovery would select an arbitrary JVM"
+  },
+  "upstream": {
+    "pinnedBaseline": "9b93256b: no jpackage/install4j/launcher abstraction; GeoGebra3D.main = GeoGebra.doMain(args, GeoGebraFrame3D::new); --settingsfile handled in GeoGebraFrame.init",
+    "currentMain": "325faee17884c7ced41d360d0f08ae919a38a955 (2026-10-06): GeoGebra3D.java unchanged in launch semantics; no jpackage or desktop ProcessBuilder (code search)",
+    "reusable": "only the existing --showSplash, --settingsfile and file-argument handling"
+  },
+  "preferenceIsolation": {
+    "classicFile": "<APPDATA>/GeoCeDG/5.4/classic-diagnostic.properties",
+    "laboratoryFile": "<APPDATA>/GeoCeDG/5.4/laboratory.properties",
+    "mainPreferencesReused": false,
+    "routesShareEachOther": false,
+    "activeConstructionMutated": false,
+    "routeInvocationsCompared": 23,
+    "note": "two concurrent sessions of the same route share that route's file (pre-existing, unchanged by every candidate); LocusV2Laboratory uses a temporary laboratory.properties in its own temporary directory, not this file"
+  },
+  "observationsNotActedOn": [
+    "automation.legacy-laboratory requires feature cedg.laboratory.legacy (enabled_by_default false) but GeoCeDGActionRegistry only gates Locus V2 features, so the action stays available; pre-existing, out of scope",
+    "packaging-product.ps1 packaging.launcher-config reads the first *.cfg of app/; with a second launcher named GeoCeDG-*.cfg it would read that file and fail; any Candidate A implementation must make the check exact"
+  ],
+  "recommendation": {
+    "candidate": "A",
+    "productSeam": "pure command construction selected by an explicit launch environment: packaged when jpackage.app-path is present (sibling secondary launcher, fail closed if absent, never java.home); development otherwise (java.home javaw.exe/java.exe with the declared JVM options); child standard streams discarded",
+    "decisionsRequested": ["DQ-E1X1-1", "DQ-E1X1-2", "DQ-E1X1-3", "DQ-E1X1-4", "DQ-E1X1-5", "DQ-E1X1-6", "DQ-E1X1-7", "DQ-E1X1-8", "DQ-E1X1-9"],
+    "proposedVerificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE, impact PHASE_LOCAL (not inherited from E1-P; alternative INTEGRATED_PHASE recorded)"
+  },
+  "stopConditionsEvaluated": {
+    "kernelOrDocumentFormatChange": false,
+    "architecturalRedesignRequired": false,
+    "internalNcDivergence": false,
+    "preferenceIsolationLost": false,
+    "laboratoryNeedsDifferentArchitecture": false,
+    "generalJavaLauncherRequired": false,
+    "notTheRegisteredObservation": false
+  }
+}
