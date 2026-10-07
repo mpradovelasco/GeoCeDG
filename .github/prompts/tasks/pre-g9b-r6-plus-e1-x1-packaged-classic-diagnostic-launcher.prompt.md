@@ -1,26 +1,28 @@
 # PRE-G9B-R6-plus-E1-X1 — packaged Classic diagnostic launcher
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED AND NOT AUTHORIZED.**
+**CANONICAL EXECUTION PROMPT — AUTHORIZED FOR IMPLEMENTATION AND TECHNICAL
+VERIFICATION ONLY.**
 
-This prompt was prepared at the author's instructions of 2026-10-07. The first
-authorized the focal characterization and design preparation of the registered
-pre-existing debt `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` under the
-name `PRE-G9B-R6-plus-E1-X1`; the second, `PRE-G9B-R6-plus-E1-X1-R1`, authorized
-a micro-characterization comparing a jpackage secondary launcher with an early
-Classic dispatch in the primary launcher, and the reconciliation of this prompt
-to the winning design. Neither authorizes any product implementation. The
-evidence is in the
+This prompt was prepared at the author's instructions of 2026-10-07 for the
+focal characterization (`PRE-G9B-R6-plus-E1-X1`) and the A-versus-C
+micro-characterization (`PRE-G9B-R6-plus-E1-X1-R1`) of the registered
+pre-existing debt `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER`. The
+author's explicit instruction of 2026-10-07, typed in the session, accepts the
+R1 recommendation, selects Candidate C, names `b3c78e6d` as the exact
+implementation base, freezes `BOUNDED_PHASE` and authorizes the implementation
+and technical verification of the correction. It is recorded, versioned, in
+the [E1-X1 authorization record](../../../docs/validation/pre_g9b_r6_plus_e1_x1_authorization_record.md),
+and requires this amendment, as the first tracked edit of the phase, so that
+the prompt becomes the executable contract of the phase. Where the prepared
+prompt (blob `fb2c245e679fdd3fcd6082d5c6ecd722c561608f`) and the record differ,
+the record prevails; every other scope, forbidden-scope and stop rule of the
+prepared prompt is kept. The evidence is in the
 [E1-X1 characterization report](../../../docs/validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md)
 and the
 [E1-X1-R1 launcher comparison report](../../../docs/validation/pre_g9b_r6_plus_e1_x1_r1_launcher_comparison_report.md).
-The existence of this file is not authorization.
 
-Execution requires a new explicit author instruction that names the activity and
-the exact prepared candidate or base, and that disposes of the requested
-decisions `DQ-E1X1-1` to `DQ-E1X1-8`. That instruction may authorize, as the
-first tracked edit of the phase, an amendment of this prompt to the authorized
-state, following the `C-X1` and `E1-P` precedent. This file is an execution
-contract, not a second policy document: the verification classes are defined
+`E1`, `E1-L` and `E1-P` stay closed and are not reopened. This file is an
+execution contract, not a second policy document: the verification classes are defined
 once in `geocedg/specs/operations/verification-levels.md` §12.8, the Desktop
 launch contract once in `geocedg/specs/ui/application-profile.md`, the
 observation once in the
@@ -30,16 +32,17 @@ not restate them differently.
 
 ```text
 PRE-G9B-R6-plus-E1-X1 =
-CHARACTERIZED / IMPLEMENTATION PREPARED — PREPARED — NOT AUTHORIZED
+AUTHORIZED FOR IMPLEMENTATION
 PRE-G9B-R6-plus-E1-X1-R1 = CHARACTERIZATION COMPLETE
 
-identifier               = named by the author for the characterization; its use for
-                           the implementation PROPOSED — NOT AUTHOR APPROVED (DQ-E1X1-1)
-selected design          = Candidate C — primary launcher early Classic dispatch
-                           (recommended by R1; not an author decision, DQ-E1X1-2)
+identifier               = PRE-G9B-R6-plus-E1-X1, registered phase
+                           PRE-G9B-R6-PLUS-E1-X1 (author decision, DQ-E1X1-1)
+selected design          = CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH
+                           (author decision, DQ-E1X1-2); Candidate A history only
+VERIFICATION_CLASS       = BOUNDED_PHASE (frozen; DQ-E1X1-7)
 selfApproved             = false
 authorApproved           = false
-implementationAuthorized = false
+implementationAuthorized = true    (E1-X1 implementation and technical verification only)
 passClaimed              = false
 PHASE_KIND               = DESKTOP FRONTEND LAUNCH ROUTE; NO PACKAGING, NO KERNEL,
                            NO GEOMETRY, NO SERIALIZATION, NO DOCUMENT FORMAT
@@ -48,14 +51,13 @@ DEPENDS_ON               = PRE-G9B-R6-plus-E1 = PASS — AUTHOR APPROVED — PUB
 RESOLVES                 = OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER and the
                            same-seam findings X1-F2 and X1-F3; final disposition is
                            the author's, after smoke
-PRECONDITION             = author dispositions of DQ-E1X1-1 to DQ-E1X1-8
 NEXT_SUBPHASE            = none implied; E2, E3, F1, F2, F3, G stay unauthorized
 ```
 
 `authorApproved = false` means that no technical candidate of this activity has
 been author-approved. Technical verification never creates author approval.
-Once authorized, the activity stops with one exact technically verified
-candidate pending author review and author smoke.
+The activity stops with one exact technically verified candidate pending
+author review and author smoke.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -67,10 +69,12 @@ target `cedg.laboratory.legacy`):
 
 1. an early Classic dispatch in `org.geocedg.desktop.GeoCeDG.main`: when the
    first argument is the private diagnostic token (`DQ-E1X1-3`), and before any
-   GeoCeDG preference, profile or frame initialization, remove that token,
-   apply the dispatch guarantees of `DQ-E1X1-4`, call the unchanged
-   `org.geogebra.desktop.GeoGebra3D.main` with the remaining arguments and
-   return;
+   GeoCeDG preference, profile or frame initialization, remove only that
+   token, keep every remaining argument unchanged, add `--showSplash=false`
+   and the isolated `classic-diagnostic.properties` only when the caller gave
+   no splash or settings argument (`DQ-E1X1-4`, narrow reading of the
+   authorization record), call the unchanged
+   `org.geogebra.desktop.GeoGebra3D.main` and return;
 2. an explicit launch-environment seam in `GeoCeDGActionRegistry.openDiagnostic`:
    packaged mode when `jpackage.app-path` is present (start that same
    executable with the private token; fail closed when it is not a regular
@@ -98,9 +102,10 @@ INV-E1X1-3  Without jpackage.app-path, the route starts <java.home>\bin\javaw.ex
             input arguments, -cp java.class.path and org.geogebra.desktop.GeoGebra3D.
 INV-E1X1-4  GeoCeDG.main with the token as first argument creates no GeoCeDG
             preference, profile, frame or application state and reaches
-            GeoGebra3D.main with the remaining arguments (plus the DQ-E1X1-4
-            guarantees); the token in any other position, or its absence, leaves
-            the normal GeoCeDG start-up unchanged.
+            GeoGebra3D.main with the remaining arguments unchanged (plus the
+            only-when-absent defaults of DQ-E1X1-4); the token in any other
+            position, or its absence, leaves the normal GeoCeDG start-up
+            unchanged.
 INV-E1X1-5  Open Classic uses classic-diagnostic.properties, the Laboratory
             laboratory.properties, both beside GeoCeDG's default preferences file;
             neither is GeoCeDG's preference file; no document path or construction
@@ -135,6 +140,8 @@ after   PACKAGED     [<jpackage.app-path>, <token>, args…]
   transfer, legacy resource explicitly selected by the user, no promotion of
   legacy semantics; Desktop frontend and launcher integration only; avoid
   packaging or ADR 0004 changes unless necessary; the R1 decision rule `C1`–`C11`.
+- The author's implementation authorization of 2026-10-07 and its dispositions
+  ([authorization record](../../../docs/validation/pre_g9b_r6_plus_e1_x1_authorization_record.md)).
 - `AGENTS.md` §4 (GUI and launcher concerns outside the kernel), §6 (optional
   diagnostic Classic access), §7 (no upstream splash or trademarks in the
   product), §16; ADR 0001 (explicit diagnostic route to upstream Classic;
@@ -157,13 +164,13 @@ documented alternative; it is not the implementation plan.
 
 | Option | Shape | Disposition |
 |---|---|---|
-| **C — primary launcher early Classic dispatch (recommended)** | `GeoCeDG.exe <token> …` → `GeoCeDG.main` → `GeoGebra3D.main`; development Java fallback | Desktop-only; packaged app-image, ZIP, MSI and EXE unchanged (432 files, one launcher, one `.cfg`, same shortcuts, same association, packaging contract 42/42 with the unmodified checker); separate process; genuine Classic; R1 §3–§14 |
+| **C — primary launcher early Classic dispatch (selected by the author)** | `GeoCeDG.exe <token> …` → `GeoCeDG.main` → `GeoGebra3D.main`; development Java fallback | Desktop-only; packaged app-image, ZIP, MSI and EXE unchanged (432 files, one launcher, one `.cfg`, same shortcuts, same association, packaging contract 42/42 with the unmodified checker); separate process; genuine Classic; R1 §3–§14 |
 | A — jpackage additional launcher | `--add-launcher` for `GeoGebra3D`, sibling discovery | alternative: second executable and `.cfg`; unsuppressible Classic installer shortcuts in the current two-step build; packaging profile, builder, verifier and specification changes |
 | B — runtime with `java.exe`/`javaw.exe` | `--jlink-options` without `--strip-native-commands` | rejected (first characterization): 21 general JDK executables; JVM options and `jpackage.app-path` lost; `X1-F2` remains |
 | D — other | in-process Classic, JNI, `PATH` discovery | rejected |
 
-`DQ-E1X1-2` asks the author to confirm C; the preparation does not select it on
-the author's behalf.
+The author selected C (`DQ-E1X1-2`). Candidate A is not implemented; switching
+to it is a stop condition.
 
 ### Characterization results at the base
 
@@ -221,35 +228,40 @@ sets kept the `E1-P` launcher inventory (`GeoCeDG.exe`, `GeoCeDG.cfg` and
 `.jpackage.xml` byte-identical), installer payloads, shortcuts, `.cedg`
 association and SBOM shape, and satisfied the packaging contract 42/42.
 
-### Decisions requested before authorization
+### Author dispositions
 
-| ID | Question | Preparation recommendation |
+The [authorization record](../../../docs/validation/pre_g9b_r6_plus_e1_x1_authorization_record.md)
+is the authority; this table restates it for execution.
+
+| ID | Question | Disposition |
 |---|---|---|
-| `DQ-E1X1-1` | Identifier of the implementation activity | keep `PRE-G9B-R6-plus-E1-X1`, registry phase id `PRE-G9B-R6-PLUS-E1-X1`; `E1` stays closed |
-| `DQ-E1X1-2` | Repair candidate | Candidate C, exactly as in *Objective*; Candidate A as the documented alternative |
-| `DQ-E1X1-3` | Private dispatch token and position | `--classic-diagnostic`, honored only as the first argument (an Explorer or `.cedg` association start passes an absolute document path first) |
-| `DQ-E1X1-4` | Dispatch guarantees for any caller of the token | the dispatch always passes `--showSplash=false`, and supplies `--settingsfile=<default preferences directory>\classic-diagnostic.properties` (creating its directory) when the caller gave no settings file, so a manual command-line use can reach neither the upstream splash nor default upstream preferences |
-| `DQ-E1X1-5` | Child stream policy (`X1-F2`) | `Redirect.DISCARD` for stdout and stderr in both modes; a diagnostic log is a later enhancement, not part of this fix |
-| `DQ-E1X1-6` | Development JVM options (`X1-F3`) | forward the `--add-exports`, `--add-opens` and `--enable-native-access` entries of the running JVM's `RuntimeMXBean.getInputArguments()`; no hard-coded duplicate list; packaged children take them from `GeoCeDG.cfg` |
-| `DQ-E1X1-7` | Verification class | `BOUNDED_PHASE` (registered `PHASE` sufficient) with the technical packaged smoke as phase evidence; alternative `INTEGRATED_PHASE`; `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` no longer applies (it was proposed for Candidate A, which changed the packaging contract) |
-| `DQ-E1X1-8` | Governance artifacts and closure rule | amend `geocedg/specs/ui/application-profile.md` "Launcher and configuration" with the private dispatch; no ADR change; the observation becomes resolved only after an author smoke of the packaged product (portable and installed) for both routes |
+| `DQ-E1X1-1` | Identifier | `PRE-G9B-R6-plus-E1-X1`, registered phase `PRE-G9B-R6-PLUS-E1-X1`; `E1` stays closed |
+| `DQ-E1X1-2` | Repair candidate | Candidate C, exactly as in *Objective*; Candidate A characterization history only |
+| `DQ-E1X1-3` | Private dispatch marker and position | `--classic-diagnostic`, honored only as the first argument; internal launcher protocol, not a public command or document feature |
+| `DQ-E1X1-4` | Dispatch defaults | not stated separately by the author; narrow reading recorded for author review: no caller argument is removed or altered; `--showSplash=false` and `--settingsfile=<default preferences directory>\classic-diagnostic.properties` (creating its directory) are added only when the caller supplied no splash or settings argument |
+| `DQ-E1X1-5` | Child stream policy (`X1-F2`) | `Redirect.DISCARD` for stdout and stderr in both modes; no default pipes, no `inheritIO`, no persistent log file |
+| `DQ-E1X1-6` | Development JVM options (`X1-F3`) | the running JVM is the authority; only the `--add-exports`, `--add-opens` and `--enable-native-access` families of `RuntimeMXBean.getInputArguments()` are forwarded; agents, heap sizing, harness options, arbitrary `-D` properties and unrelated flags are not; packaged children take the options from `GeoCeDG.cfg` |
+| `DQ-E1X1-7` | Verification class | `BOUNDED_PHASE` (frozen): one registered `PHASE` plus the focused, process and packaged technical-smoke evidence; no `FINAL`; `INTEGRATION` only after a `VERIFICATION_ESCALATION_REQUEST` |
+| `DQ-E1X1-8` | Documentation and closure | the minimum `geocedg/specs/ui/application-profile.md` wording for the internal dispatch; no ADR change; the observation is resolved only with the author's approval after author smoke |
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 ```text
-P_R6PLUS_E1         = fdc1ade6e7ab707bbc919d337bc48d1abce90a1b
-tree                = cc613c0337d3d75fdf14e55d20db5cb896af2b52
-T_R6PLUS_E1_X1_CHAR = b6172af4f319d297aa5780c9f516b310254d3e90   (documentary only)
+P_R6PLUS_E1           = fdc1ade6e7ab707bbc919d337bc48d1abce90a1b
+tree                  = cc613c0337d3d75fdf14e55d20db5cb896af2b52
+T_R6PLUS_E1_X1_CHAR   = b6172af4f319d297aa5780c9f516b310254d3e90   (documentary only)
+IMPLEMENTATION_BASE   = b3c78e6d6564b0400d1fea7cda55bb480778716c   (E1-X1-R1; documentary)
+                        tree dca7daaa27f9aca392c8c84a80db61b369fc3d68
+IMPLEMENTATION_BRANCH = phase/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher
+                        (local; no rebase)
 ```
 
-The implementation branch starts from the exact commit the authorizing
-instruction names: `P_R6PLUS_E1`, or the documentary R1 candidate that contains
-this prompt (a linear descendant of `b6172af4` with no product delta from
-`P_R6PLUS_E1`). Entry gate: local `main`, `origin/main` and the live remote
-`main` agree with `P_R6PLUS_E1`; the named start commit exists unchanged; the
-worktree is clean; `E1`, `E1-L`, `E1-P` are still `PASS — AUTHOR APPROVED —
-PUBLISHED`.
+The implementation candidate is a linear descendant of `b3c78e6d`; neither
+characterization commit is amended. Entry gate: local `main`, `origin/main`
+and the live remote `main` agree with `P_R6PLUS_E1`; `fdc1ade6 → b6172af4 →
+b3c78e6d` is linear; the worktree is clean; `E1`, `E1-L`, `E1-P` are still
+`PASS — AUTHOR APPROVED — PUBLISHED`.
 
 ## Authority and evidence hierarchy
 
@@ -380,7 +392,7 @@ CLASSIC BEHAVIOUR         = unchanged GeoGebra3D entry point, arguments and pref
 | `T-E1X1-RESOURCE-INVALID` | missing file, directory and wrong extension rejected before the starter is called (`INV-E1X1-7`) | unit |
 | `T-E1X1-STREAMS` | the started builder discards stdout and stderr in both modes (`INV-E1X1-6`) | unit |
 | `T-E1X1-NO-TRANSFER` | both registry actions with a stub starter: construction XML and saved state unchanged, no document path in the command | Desktop (headless) |
-| `T-E1X1-PROCESS` | process-isolated development route: a `GeoGebra3D` child with isolated settings and a verbose `.ggb` reaches its window without blocking; bounded timeout; never the author's `%APPDATA%` | process |
+| `T-E1X1-PROCESS` | a real GeoCeDG parent in a child JVM launches the routes: parent PID differs from the Classic child PID; the child is genuine Classic; `Templatev7.ggb` through the Laboratory reaches its window without blocking; the child can close while the parent survives and the parent can close while the child survives; the parent construction and saved state are unchanged; the three preference files are distinct; no orphan process is left; bounded timeouts; never the author's `%APPDATA%` | process |
 | `SMOKE-E1X1-TECHNICAL` | `INTERNAL` and `NC` sets built from the exact candidate with the unmodified builder: app-image and extracted ZIP, both routes from the real actions start a separate `GeoCeDG.exe` Classic process with isolated preferences and an unchanged GeoCeDG construction; launcher inventory equal to `E1-P` (`GeoCeDG.exe`, `GeoCeDG.cfg`, `.jpackage.xml`); `packaging-product.ps1 -RequireArtifacts` satisfied on both sets | packaged smoke (scratch agent; phase evidence, not acceptance) |
 | `T-SMOKE` | author smoke (*Required artifacts*); the agent does not perform it | author |
 
@@ -412,7 +424,7 @@ reproduced with `Get-VerificationCanonicalTextSha256` before repinning, and
 absolute paths. No hash is entered by hand. When registry-shape pins change,
 run a development `INFRA_UNIT` on the staged tree before freezing.
 
-Acceptance (the proposed `BOUNDED_PHASE` contract), on one clean immutable
+Acceptance (the frozen `BOUNDED_PHASE` contract), on one clean immutable
 committed candidate:
 
 ```text
@@ -434,15 +446,14 @@ commands, exit codes, run ids, plan and result hashes and log paths.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-This prompt authorizes nothing. Its existence records a prepared contract.
-Execution requires an explicit author instruction naming the activity, the
-exact branch start, the frozen class and the dispositions of `DQ-E1X1-1` to
-`DQ-E1X1-8`; that instruction may authorize local implementation, local
-commits, local scratch packaging builds for the technical smoke, technical
-verification and one frozen technical candidate for author review and smoke. No
-instruction derived from this file authorizes self-approval, author smoke by
-the agent, installing or uninstalling the MSI/EXE, an `INTEGRATION`, `FINAL` or
-`PACKAGING` acceptance run, or any change of the class.
+The author's instruction of 2026-10-07 authorizes: local implementation on the
+implementation branch from `b3c78e6d`, local commits, tests, local packaged
+artifacts built with the unchanged pipeline for the technical smoke, technical
+verification and one frozen technical candidate with its candidate report, for
+author review and smoke. It does not authorize self-approval, author smoke by
+the agent, installing or uninstalling the MSI/EXE or overwriting the author's
+installation, an `INTEGRATION`, `FINAL` or `PACKAGING` acceptance run, or any
+change of the class.
 
 This activity authorizes nothing that follows it. `E2`, `E3`, `F1`, `F2`, `F3`,
 `G`, `PRE-G9B-R7` and `G9B` stay unauthorized, and so does every open
@@ -516,7 +527,12 @@ Stop and report rather than improvise when:
 - the packaged launcher inventory, installers, shortcuts or packaging contract
   of the smoke sets differ from `E1-P` beyond the expected Desktop classes,
   build provenance and jlink modules;
-- a `DQ-E1X1` question is reached without an author disposition;
+- the narrow reading of `DQ-E1X1-4` conflicts with any other requirement;
+- the implementation needs a persistent log file, in-process Classic or a
+  profile switch, a silent fallback from an invalid packaged launcher to the
+  development Java, or a return to Candidate A;
+- the bounded class proves insufficient (stop with
+  `VERIFICATION_ESCALATION_REQUEST`);
 - the `PHASE` run is rejected for a cause attributable to the candidate, or its
   coverage is incomplete or untrusted;
 - product or test code would change after acceptance.

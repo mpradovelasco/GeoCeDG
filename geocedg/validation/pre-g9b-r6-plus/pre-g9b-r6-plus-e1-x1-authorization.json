@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-X1",
+  "registeredPhase": "PRE-G9B-R6-PLUS-E1-X1",
+  "observation": "OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER",
+  "artifactKind": "AUTHOR_AUTHORIZATION_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e1_x1_authorization_record.md",
+  "authorInstruction": "2026-10-07, typed in the session",
+  "state": "AUTHORIZED FOR IMPLEMENTATION",
+  "selectedDesign": "CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH",
+  "candidateA": "characterization history only; not implemented",
+  "verificationClass": "BOUNDED_PHASE",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "implementationAuthorized": true,
+  "publishedBase": {
+    "commit": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "tree": "cc613c0337d3d75fdf14e55d20db5cb896af2b52"
+  },
+  "characterizationChain": [
+    {"commit": "b6172af4f319d297aa5780c9f516b310254d3e90", "activity": "PRE-G9B-R6-plus-E1-X1", "recommendation": "Candidate A"},
+    {"commit": "b3c78e6d6564b0400d1fea7cda55bb480778716c", "tree": "dca7daaa27f9aca392c8c84a80db61b369fc3d68", "activity": "PRE-G9B-R6-plus-E1-X1-R1", "recommendation": "Candidate C"}
+  ],
+  "implementationBase": "b3c78e6d6564b0400d1fea7cda55bb480778716c",
+  "implementationBranch": "phase/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher",
+  "dispositions": {
+    "DQ-E1X1-1": "PRE-G9B-R6-plus-E1-X1; registered phase PRE-G9B-R6-PLUS-E1-X1",
+    "DQ-E1X1-2": "Candidate C",
+    "DQ-E1X1-3": "--classic-diagnostic, first argument only",
+    "DQ-E1X1-4": "not stated separately; implemented narrowly: no caller argument removed or altered; --showSplash=false and the isolated classic-diagnostic.properties added only when absent; recorded for author review",
+    "DQ-E1X1-5": "Redirect.DISCARD for stdout and stderr; no pipes, no inheritIO, no log file",
+    "DQ-E1X1-6": "running JVM authority; only --add-exports, --add-opens, --enable-native-access",
+    "DQ-E1X1-7": "BOUNDED_PHASE; one registered PHASE plus focused, process and packaged-smoke evidence; no FINAL",
+    "DQ-E1X1-8": "minimal application-profile.md wording; no ADR change; closure after author smoke and approval"
+  },
+  "packagingProductChange": "NONE",
+  "e1Reopened": false
+}
