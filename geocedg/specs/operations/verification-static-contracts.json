@@ -7,7 +7,7 @@
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"packaging/windows/package.yml","sha256":"e791e951188d36d44bae3c20a7b9b4dd1b3e49c4a6aa9a2f9bca7fc7b5ee6888"},
       {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"804c599c54fcf0525f07eaf25ac3f5a4e5cb90da3b45ace6574b0ff61ebef444"},
-      {"path":"geocedg/resources/assets-manifest.yml","sha256":"c3c80f30943b3179e76ee2a417cfa0f739d18099ec46a649f38160b447202ee8"},
+      {"path":"geocedg/resources/assets-manifest.yml","sha256":"b8f9860da273cea0c703d263657f02bfdab7c0d38637d854724553dd72fe249c"},
       {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
       {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"794923825afa1e5f3f1cbaa0d3ccd8a0d819ab948368adc6154d191069ef2355"},

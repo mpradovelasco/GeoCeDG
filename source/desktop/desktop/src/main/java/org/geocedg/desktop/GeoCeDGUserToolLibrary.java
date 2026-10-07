@@ -89,9 +89,15 @@ final class GeoCeDGUserToolLibrary {
 			"line", "segment", "ray", "vector", "conic", "conicpart", "polygon", "polyline",
 			"list", "function", "functionnvar", "curvecartesian", "text", "boolean",
 			"implicitpoly");
+	private static final int BUNDLED_PIN_VERSION = 1;
 	private final AppD app;
 	private final Path storage;
+	private final Path bundledPinStorage;
 	private final Map<String, Package> packages = new LinkedHashMap<>();
+	private final Map<String, Package> bundled = new LinkedHashMap<>();
+	private final List<JSONObject> dormantBundledPins = new ArrayList<>();
+	private String bundledFailure;
+	private boolean bundledPinsReadable = true;
 	private final Map<Macro, String> activated = new IdentityHashMap<>();
 	private final List<Runnable> listeners = new ArrayList<>();
 
@@ -104,17 +110,35 @@ final class GeoCeDGUserToolLibrary {
 		private final List<String> commands;
 		private final Map<String, String> definitionDigests = new LinkedHashMap<>();
 		private final Map<String, PinLayout> pinned = new LinkedHashMap<>();
+		private final boolean bundled;
+		private final Map<String, PinIcon> bundledIcons = new LinkedHashMap<>();
 
 		Package(String name, byte[] bytes, String xml, List<String> commands) {
+			this(name, bytes, xml, commands, false);
+		}
+
+		private Package(String name, byte[] bytes, String xml, List<String> commands,
+				boolean bundled) {
 			this.id = digest(bytes);
 			this.name = name;
 			this.bytes = bytes.clone();
 			this.xml = xml;
 			this.commands = List.copyOf(commands);
+			this.bundled = bundled;
 		}
 
 		String id() {
 			return id;
+		}
+
+		/** @return true for a read-only entry of the installation-relative curated library */
+		boolean isBundled() {
+			return bundled;
+		}
+
+		/** @return owned icon carried by a bundled archive, or null */
+		PinIcon bundledIcon(String command) {
+			return bundledIcons.get(command);
 		}
 
 		String name() {
@@ -273,11 +297,26 @@ final class GeoCeDGUserToolLibrary {
 	}
 
 	GeoCeDGUserToolLibrary(AppD app, Path storage) throws IOException {
+		this(app, storage, null, null);
+	}
+
+	/**
+	 * @param app GeoCeDG product app
+	 * @param storage user-tool store
+	 * @param bundledDirectory read-only installation-relative curated library, or null
+	 * @param bundledPinStorage user-side pin store for bundled entries, or null
+	 */
+	GeoCeDGUserToolLibrary(AppD app, Path storage, Path bundledDirectory,
+			Path bundledPinStorage) throws IOException {
 		if (!(app.getConfig() instanceof AppConfigGeoCeDG)) {
 			throw new IllegalArgumentException("GeoCeDG profile required");
 		}
 		this.app = app;
 		this.storage = storage.toAbsolutePath();
+		this.bundledPinStorage = bundledPinStorage == null ? null
+				: bundledPinStorage.toAbsolutePath();
+		// The installation directory is read once and never written.
+		loadBundled(bundledDirectory);
 		refresh();
 	}
 
@@ -285,13 +324,89 @@ final class GeoCeDGUserToolLibrary {
 		return List.copyOf(packages.values());
 	}
 
+	/** @return verified read-only curated entries; empty when absent or unavailable */
+	List<Package> bundledPackages() {
+		return List.copyOf(bundled.values());
+	}
+
+	/** @return message key when an existing bundled library failed integrity, or null */
+	String bundledFailure() {
+		return bundledFailure;
+	}
+
 	Package packageById(String id) {
-		return packages.get(id);
+		Package tool = packages.get(id);
+		return tool != null ? tool : bundled.get(id);
+	}
+
+	/**
+	 * Definition digests of one archive through the same validation as an install.
+	 * @param name archive file name
+	 * @param bytes archive bytes
+	 * @return command to user-library definition digest (version 1)
+	 * @throws IOException when the archive is not an admissible user-tool package
+	 */
+	Map<String, String> definitionDigests(String name, byte[] bytes) throws IOException {
+		Package tool = inspect(name, bytes);
+		verifyDefinitionDigests(tool, null);
+		return Collections.unmodifiableMap(new LinkedHashMap<>(tool.definitionDigests));
+	}
+
+	private void loadBundled(Path directory) {
+		Map<String, Package> verified = new LinkedHashMap<>();
+		try {
+			Set<String> keys = new HashSet<>();
+			for (GeoCeDGBundledToolCatalog.Entry entry
+					: GeoCeDGBundledToolCatalog.read(directory)) {
+				byte[] bytes = entry.bytes();
+				Package inspected = inspect(entry.fileName(), bytes);
+				Package tool = new Package(inspected.name, bytes, inspected.xml,
+						inspected.commands, true);
+				if (!List.of(entry.command()).equals(tool.commands)
+						|| !keys.add(key(entry.command()))) {
+					throw new IOException("UserTools.BundledUnavailable");
+				}
+				verifyDefinitionDigests(tool,
+						Map.of(entry.command(), entry.definitionDigest()));
+				tool.bundledIcons.put(entry.command(), readBundledIcon(bytes, tool.xml));
+				if (verified.put(tool.id, tool) != null) {
+					throw new IOException("UserTools.BundledUnavailable");
+				}
+			}
+			bundled.putAll(verified);
+		} catch (IOException | RuntimeException exception) {
+			// Whole-catalog fail-closed: one defect hides every bundled entry.
+			bundled.clear();
+			bundledFailure = "UserTools.BundledUnavailable";
+		}
+	}
+
+	private static PinIcon readBundledIcon(byte[] bytes, String xml) throws IOException {
+		Matcher icon = Pattern.compile("<macro\\b[^>]*\\biconFile=\"([^\"]+)\"").matcher(xml);
+		if (!icon.find()) {
+			throw new IOException("UserTools.BundledUnavailable");
+		}
+		String iconFile = icon.group(1);
+		byte[] png = null;
+		Set<String> names = new HashSet<>();
+		try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(bytes))) {
+			ZipEntry entry;
+			while ((entry = zip.getNextEntry()) != null) {
+				names.add(entry.getName());
+				if (iconFile.equals(entry.getName())) {
+					png = zip.readAllBytes();
+				}
+			}
+		}
+		if (png == null || !names.equals(Set.of("geogebra_macro.xml", iconFile))) {
+			throw new IOException("UserTools.BundledUnavailable");
+		}
+		return createPinIconForSource(iconFile.substring(iconFile.lastIndexOf('/') + 1), png);
 	}
 
 	List<PinnedCommand> pinnedCommands() {
 		List<PinnedCommand> result = new ArrayList<>();
-		for (Package tool : packages.values()) {
+		for (Package tool : allPackages()) {
 			for (String command : tool.commands) {
 				PinLayout layout = tool.pinned.get(command);
 				if (layout != null) {
@@ -345,7 +460,10 @@ final class GeoCeDGUserToolLibrary {
 
 	void remove(String id) throws IOException {
 		editStore(() -> {
-			requirePackage(id);
+			if (!packages.containsKey(id)) {
+				throw new IOException(bundled.containsKey(id) ? "UserTools.BundledReadOnly"
+						: "UserTools.Unknown");
+			}
 			Map<String, Package> next = new LinkedHashMap<>(packages);
 			next.remove(id);
 			persist(next);
@@ -377,6 +495,9 @@ final class GeoCeDGUserToolLibrary {
 		PinIcon icon = iconBytes == null ? null : createPinIcon(iconName, iconBytes);
 		editStore(() -> {
 			Package tool = requirePinned(id, command);
+			if (tool.bundled) {
+				throw new IOException("UserTools.BundledReadOnly");
+			}
 			PinLayout previous = tool.pinned.get(command);
 			tool.pinned.put(command, new PinLayout(previous.group, previous.order, icon));
 			try {
@@ -395,6 +516,13 @@ final class GeoCeDGUserToolLibrary {
 		if (!tool.commands.contains(command)) {
 			throw new IOException("UserTools.Unknown");
 		}
+		if (tool.bundled) {
+			// Bundled archives are read-only; only the user-side placement is stored.
+			requireBundledPinsWritable();
+			if (icon != null) {
+				throw new IOException("UserTools.BundledReadOnly");
+			}
+		}
 		PinLayout previous = tool.pinned.get(command);
 		if (pinned) {
 			if (previous == null) {
@@ -407,7 +535,11 @@ final class GeoCeDGUserToolLibrary {
 			tool.pinned.remove(command);
 		}
 		try {
-			persist(packages);
+			if (tool.bundled) {
+				persistBundledPins();
+			} else {
+				persist(packages);
+			}
 		} catch (IOException exception) {
 			if (previous != null) {
 				tool.pinned.put(command, previous);
@@ -427,7 +559,7 @@ final class GeoCeDGUserToolLibrary {
 			tool.pinned.put(command, new PinLayout(validated, layout.order, layout.icon));
 			normalizeGroupBlocks();
 			try {
-				persist(packages);
+				persistChangedPins(previous);
 			} catch (IOException exception) {
 				restorePinLayouts(previous);
 				throw exception;
@@ -472,7 +604,7 @@ final class GeoCeDGUserToolLibrary {
 			}
 			applyPinOrder(ordered);
 			try {
-				persist(packages);
+				persistChangedPins(previous);
 			} catch (IOException exception) {
 				restorePinLayouts(previous);
 				throw exception;
@@ -532,10 +664,44 @@ final class GeoCeDGUserToolLibrary {
 
 	private Map<Package, Map<String, PinLayout>> snapshotPinLayouts() {
 		Map<Package, Map<String, PinLayout>> snapshot = new IdentityHashMap<>();
-		for (Package tool : packages.values()) {
+		for (Package tool : allPackages()) {
 			snapshot.put(tool, new LinkedHashMap<>(tool.pinned));
 		}
 		return snapshot;
+	}
+
+	private List<Package> allPackages() {
+		List<Package> all = new ArrayList<>(packages.values());
+		all.addAll(bundled.values());
+		return all;
+	}
+
+	/** Write only the store(s) whose pins changed; the user store never for bundled pins. */
+	private void persistChangedPins(Map<Package, Map<String, PinLayout>> previous)
+			throws IOException {
+		boolean userChanged = false;
+		boolean bundledChanged = false;
+		for (Map.Entry<Package, Map<String, PinLayout>> entry : previous.entrySet()) {
+			if (!entry.getKey().pinned.equals(entry.getValue())) {
+				if (entry.getKey().bundled) {
+					bundledChanged = true;
+				} else {
+					userChanged = true;
+				}
+			}
+		}
+		if (bundledChanged) {
+			persistBundledPins();
+		}
+		if (userChanged) {
+			persist(packages);
+		}
+	}
+
+	private void requireBundledPinsWritable() throws IOException {
+		if (bundledPinStorage == null || !bundledPinsReadable) {
+			throw new IOException("UserTools.BundledReadOnly");
+		}
 	}
 
 	private static void restorePinLayouts(
@@ -557,11 +723,16 @@ final class GeoCeDGUserToolLibrary {
 	private int nextPinOrder() throws IOException {
 		int maximum = -1;
 		Set<Integer> occupied = new HashSet<>();
-		for (Package tool : packages.values()) {
+		for (Package tool : allPackages()) {
 			for (PinLayout layout : tool.pinned.values()) {
 				maximum = Math.max(maximum, layout.order);
 				occupied.add(layout.order);
 			}
+		}
+		for (JSONObject dormant : dormantBundledPins) {
+			int order = dormant.optInt("order", -1);
+			maximum = Math.max(maximum, order);
+			occupied.add(order);
 		}
 		if (maximum < MAX_PIN_ORDER) {
 			return maximum + 1;
@@ -613,6 +784,10 @@ final class GeoCeDGUserToolLibrary {
 		Package tool = requirePackage(id);
 		if (!tool.commands.contains(command)) {
 			throw new IOException("UserTools.Unknown");
+		}
+		if (tool.bundled && shadowed(tool)) {
+			// User data wins: an installed package with the same command keeps precedence.
+			throw new IOException("UserTools.BundledShadowed");
 		}
 		// Reinspect current policy; a file-load preservation flag is never creation authority.
 		inspect(tool.name, tool.bytes);
@@ -675,7 +850,8 @@ final class GeoCeDGUserToolLibrary {
 			Macro macro = entry.getKey();
 			return macro.getKernel() != app.getKernel()
 					|| app.getKernel().getMacro(macro.getCommandName()) != macro
-					|| !packages.containsKey(entry.getValue());
+					|| !packages.containsKey(entry.getValue())
+							&& !bundled.containsKey(entry.getValue());
 		});
 	}
 
@@ -735,6 +911,9 @@ final class GeoCeDGUserToolLibrary {
 	}
 
 	String unavailableReason(Package tool) {
+		if (tool.bundled && shadowed(tool)) {
+			return "UserTools.BundledShadowed";
+		}
 		try {
 			inspect(tool.name, tool.bytes);
 			registeredCount(tool, false);
@@ -744,8 +923,18 @@ final class GeoCeDGUserToolLibrary {
 		}
 	}
 
+	private boolean shadowed(Package bundledTool) {
+		Set<String> installed = installedCommands();
+		for (String command : bundledTool.commands) {
+			if (installed.contains(key(command))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private Package requirePackage(String id) throws IOException {
-		Package tool = packages.get(id);
+		Package tool = packageById(id);
 		if (tool == null) {
 			throw new IOException("UserTools.Unknown");
 		}
@@ -1078,6 +1267,107 @@ final class GeoCeDGUserToolLibrary {
 	}
 
 	void refresh() throws IOException {
+		refreshUserPackages();
+		refreshBundledPins();
+	}
+
+	/** Bundled placement only; an unreadable sidecar disables bundled pins, never the library. */
+	private void refreshBundledPins() {
+		for (Package tool : bundled.values()) {
+			tool.pinned.clear();
+		}
+		dormantBundledPins.clear();
+		bundledPinsReadable = true;
+		if (bundledPinStorage == null || !Files.exists(bundledPinStorage)) {
+			return;
+		}
+		Map<Package, Map<String, PinLayout>> parsed = new IdentityHashMap<>();
+		List<JSONObject> dormant = new ArrayList<>();
+		try {
+			if (Files.size(bundledPinStorage) > MAX_ICON_BYTES) {
+				throw new IOException("UserTools.Limit");
+			}
+			JSONObject root = new JSONObject(Files.readString(bundledPinStorage,
+					StandardCharsets.UTF_8));
+			if (root.length() != 3 || root.getInt("version") != BUNDLED_PIN_VERSION
+					|| !GeoCeDGBundledToolCatalog.LIBRARY_ID.equals(
+							root.getString("libraryId"))) {
+				throw new IOException("UserTools.InvalidArchive");
+			}
+			JSONArray pins = root.getJSONArray("pinned");
+			Set<String> commands = new HashSet<>();
+			Set<Integer> orders = new HashSet<>();
+			for (int i = 0; i < pins.length(); i++) {
+				JSONObject pin = pins.getJSONObject(i);
+				String command = pin.getString("command");
+				String group = validateGroup(pin.getString("group"));
+				int order = pin.getInt("order");
+				if (pin.length() != 3 || order < 0 || order > MAX_PIN_ORDER
+						|| !commands.add(key(command)) || !orders.add(order)) {
+					throw new IOException("UserTools.InvalidArchive");
+				}
+				Package owner = null;
+				for (Package tool : bundled.values()) {
+					if (tool.commands.contains(command)) {
+						owner = tool;
+					}
+				}
+				if (owner == null) {
+					// Kept verbatim for a later product version that offers this command.
+					dormant.add(pin);
+				} else {
+					parsed.computeIfAbsent(owner, ignored -> new LinkedHashMap<>())
+							.put(command, new PinLayout(group, order));
+				}
+			}
+		} catch (IOException | JSONException | IllegalArgumentException exception) {
+			bundledPinsReadable = false;
+			return;
+		}
+		for (Map.Entry<Package, Map<String, PinLayout>> entry : parsed.entrySet()) {
+			entry.getKey().pinned.putAll(entry.getValue());
+		}
+		dormantBundledPins.addAll(dormant);
+	}
+
+	private void persistBundledPins() throws IOException {
+		requireBundledPinsWritable();
+		String json;
+		try {
+			JSONArray pins = new JSONArray();
+			for (Package tool : bundled.values()) {
+				for (Map.Entry<String, PinLayout> pin : tool.pinned.entrySet()) {
+					pins.put(new JSONObject().put("command", pin.getKey())
+							.put("group", pin.getValue().group)
+							.put("order", pin.getValue().order));
+				}
+			}
+			for (JSONObject dormant : dormantBundledPins) {
+				pins.put(dormant);
+			}
+			json = new JSONObject().put("version", BUNDLED_PIN_VERSION)
+					.put("libraryId", GeoCeDGBundledToolCatalog.LIBRARY_ID)
+					.put("pinned", pins).toString();
+		} catch (JSONException exception) {
+			throw new IOException("UserTools.InvalidArchive", exception);
+		}
+		writeAtomically(bundledPinStorage, json, "bundled-tools-");
+	}
+
+	private static void writeAtomically(Path target, String json, String prefix)
+			throws IOException {
+		Files.createDirectories(target.getParent());
+		Path temporary = Files.createTempFile(target.getParent(), prefix, ".tmp");
+		try {
+			Files.writeString(temporary, json, StandardCharsets.UTF_8);
+			Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE,
+					StandardCopyOption.REPLACE_EXISTING);
+		} finally {
+			Files.deleteIfExists(temporary);
+		}
+	}
+
+	private void refreshUserPackages() throws IOException {
 		Map<String, Package> validated = readStored();
 		boolean changed = !packages.keySet().equals(validated.keySet());
 		for (Package fresh : validated.values()) {
@@ -1258,15 +1548,7 @@ final class GeoCeDGUserToolLibrary {
 		if (json.getBytes(StandardCharsets.UTF_8).length > 2L * MAX_BYTES) {
 			throw new IOException("UserTools.Limit");
 		}
-		Files.createDirectories(storage.getParent());
-		Path temporary = Files.createTempFile(storage.getParent(), "user-tools-", ".tmp");
-		try {
-			Files.writeString(temporary, json, StandardCharsets.UTF_8);
-			Files.move(temporary, storage, StandardCopyOption.ATOMIC_MOVE,
-					StandardCopyOption.REPLACE_EXISTING);
-		} finally {
-			Files.deleteIfExists(temporary);
-		}
+		writeAtomically(storage, json, "user-tools-");
 	}
 
 	private static JSONObject iconJson(PinIcon icon) throws JSONException {

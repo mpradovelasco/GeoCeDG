@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "library_id": "geocedg.curated-ggt-library",
+  "library_version": 1,
+  "feature": "cedg.library.curated-ggt",
+  "provenance_source": {
+    "path": "models/legacy/template-v7/original/Templatev7.ggb",
+    "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "macro_xml_sha256": "f3744e131a627ba5e9bef092427930e6e7c1526a6d527b43c3b4f30e04fc94f4"
+  },
+  "rights_record": "docs/licensing/curated-ggt-library-rights-record.md",
+  "rights_record_version": 1,
+  "recorded_toolchain": {
+    "java_runtime_version": "17.0.10+7-LTS",
+    "java_vendor": "Amazon.com Inc."
+  },
+  "style_policy": {
+    "id": "E1-BLACK-LINE-THICKNESS-3",
+    "color_rgb": [0, 0, 0],
+    "line_thickness": 3,
+    "line_types": "preserved",
+    "styled_output_types": ["line", "segment", "ray", "vector", "conic", "conicpart", "polygon", "polyline"]
+  },
+  "tools": [
+    {
+      "command": "SquarebyDiagonal",
+      "source_command": "SquarebyDiagonal",
+      "source_macro_sha256": "1f01fd91b942dc268813499a3b0b0f15364005b3ff62403eba1dc43861513269",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/SquarebyDiagonal.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "squarebydiagonal.ggt",
+        "bytes": 1400,
+        "sha256": "29e2a3d88d926f75f9b7fc0e24290340a10f092da7e161dc19c3a83129e9470f",
+        "writer": "5.2.820.0",
+        "date": "2024-02-05",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "CirclebyD",
+      "source_command": "CirclebyD",
+      "source_macro_sha256": "888db63faa586cc89a7f6fc54d1de11690a3cbd57f08f1ee5c8696e20cb05825",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/CirclebyD.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "circlebyD.ggt",
+        "bytes": 2143,
+        "sha256": "977d812d55d8a151f7ed8caa2983d0960daab72f7fc3010f5cccfe4b15bd76f8",
+        "writer": "5.2.820.0",
+        "date": "2024-02-05",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "circArcbyAngle",
+      "source_command": "circArcbyAngle",
+      "source_macro_sha256": "6c788b66cafe9554f84cad18f976222bfa071efbda01575256e1136768ac84e6",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/circArcbyAngle.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "circarcbyangle.ggt",
+        "bytes": 2308,
+        "sha256": "640f0906749b2396c676e0b3ed1f7324599ef1ec3302704784f225ed22fa5348",
+        "writer": "5.2.827.0",
+        "date": "2024-03-06",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "ellipseLength12",
+      "source_command": "ellipseLength12",
+      "source_macro_sha256": "1195f89860881fc48cd481dcac75e912573ded8403d4c968db17dc0a79ede4fe",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/ellipseLength12.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "ellipsepartiallength.ggt",
+        "bytes": 2495,
+        "sha256": "35c20a5d35d7bce362d36f2ef10f8db4d1b719e1254566234268f20cd16eb293",
+        "writer": "5.2.832.0",
+        "date": "2024-04-02",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "IFPositiveSelectPoint",
+      "source_command": "IFPositiveSelectPoint",
+      "source_macro_sha256": "3d6d2b10ba018ee0a488c1d6fa2a5a2fb466165d16b78d5cf3ea8f3d16eaef96",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/IFPositiveSelectPoint.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "IFpositivethenPoint.ggt",
+        "bytes": 1263,
+        "sha256": "c490e221a90e2acaeeaad3575ba172acc6cf0e82fcb765560bcafeb9cb7beb27",
+        "writer": "5.2.836.0",
+        "date": "2024-04-22",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "EllipseAxis",
+      "source_command": "EllipseAxis",
+      "source_macro_sha256": "d00f2527877516f7c8858c6750ae284bbe92e39f402e5d1380694a74cccdd481",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/EllipseAxis.svg",
+      "statement": "Valid only when C lies on the axis through the centre O perpendicular to OB; otherwise the result is not the intended ellipse.",
+      "provenance_evidence": {
+        "archive": "ellipsebyaxis.ggt",
+        "bytes": 1490,
+        "sha256": "01437a90761366b619178cde37a3ebb88bc7ac51b6de0b04e3369d38ac77040b",
+        "writer": "5.2.820.0",
+        "date": "2024-02-05",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "conj2mainAxesEllipse",
+      "source_command": "conj2mainAxesEllipse",
+      "source_macro_sha256": "01e3f585aa78cf0d9780ce8e922f9889e92998b6cdab61833a8de5cacb643c87",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/conj2mainAxesEllipse.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "ellipseaxisbyconjaxis.ggt",
+        "bytes": 3747,
+        "sha256": "7639c82aa2aad8b470f9f6ab9130e419c3e321f33f8d1ccc672326acf6c40539",
+        "writer": "5.2.829.0",
+        "date": "2024-03-11",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "pointJump",
+      "source_command": "pointJump",
+      "source_macro_sha256": "ee2ab641ee97d8bb712069048b5e788df253eeeb527c7ab1386b42df6fcb7765",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/pointJump.svg",
+      "statement": "Planar transport convenience only: carries no spatial-frame, projection or spatial-identity authority.",
+      "provenance_evidence": {
+        "archive": "pointjump.ggt",
+        "bytes": 988,
+        "sha256": "a350031eb98be790627dd15294550a07638d0b7968c64e783695976ef8ba76f1",
+        "writer": "5.2.820.0",
+        "date": "2024-02-04",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "relCoor",
+      "source_command": "relCoor",
+      "source_macro_sha256": "744b49c8cd9169c294e40e3dc5175815ebd7ceb2b5c922cdda1d1a0916d579ea",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/relCoor.svg",
+      "statement": "Planar measurement convenience only: carries no spatial-frame, projection or spatial-identity authority.",
+      "provenance_evidence": {
+        "archive": "relcoor.ggt",
+        "bytes": 2327,
+        "sha256": "95ff380d56bb70fd07457b06b977fb27d03de22bfc0dfdd4850ea4bed8b7a0b2",
+        "writer": "5.2.826.0",
+        "date": "2024-02-26",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "translationCoor",
+      "source_command": "translationCoor",
+      "source_macro_sha256": "304d0d87992de461456ab11c70252a45fba9b4b9cb10606fbcb570cabdef20ea",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/translationCoor.svg",
+      "statement": "Planar transport convenience only: carries no spatial-frame, projection or spatial-identity authority.",
+      "provenance_evidence": {
+        "archive": "translationcoor.ggt",
+        "bytes": 2553,
+        "sha256": "ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b",
+        "writer": "5.2.829.0",
+        "date": "2024-03-05",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "DuctSymbol",
+      "source_command": "DuctSymbol",
+      "source_macro_sha256": "acf782297f721c02a0ffe5eee45bfe23e2039a7dfcc29c0d47ac43a8fb853dff",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/DuctSymbol.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "ductsymbol.ggt",
+        "bytes": 3000,
+        "sha256": "a2c1faa18d1727dd59bf590f998c360bb66d473174c605f4e127c96f5ea42890",
+        "writer": "5.2.827.0",
+        "date": "2024-02-28",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    },
+    {
+      "command": "SymmSymbol",
+      "source_command": "SymmSymbol",
+      "source_macro_sha256": "0289320da131fdd040384d13887ae0d99483548607020265d5acb3e0b9b2a236",
+      "shipped": true,
+      "maturity": "experimental",
+      "rights_state": "AUTHOR_APPROVED_INTERNAL_NC; COMMERCIAL_NOT_AUTHORIZED",
+      "license_class": "geocedg-software",
+      "icon_source": "geocedg/resources/icons/ggt-library/SymmSymbol.svg",
+      "statement": null,
+      "provenance_evidence": {
+        "archive": "symmsymbol.ggt",
+        "bytes": 2219,
+        "sha256": "491628c089749cd99b5759b0ed9259e530284529bedb3d2f8dc33d44b01fa74e",
+        "writer": "5.2.827.0",
+        "date": "2024-02-28",
+        "equivalence": "ordered inputs and outputs equal; construction equal to the template macro once eqnStyle tags are ignored"
+      }
+    }
+  ]
+}

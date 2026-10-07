@@ -4997,6 +4997,35 @@
       "en": "This tool needs unsupported scripts, semantic objects or non-planar operations; use the explicit Laboratory route.",
       "es": "Esta herramienta requiere scripts, objetos semánticos u operaciones no planas no admitidas; utilice Laboratorio explícitamente."
     },
+    "UserTools.Bundled": { "en": "GeoCeDG library", "es": "Biblioteca GeoCeDG" },
+    "UserTools.BundledUnavailable": {
+      "en": "The GeoCeDG tool library of this installation failed its integrity check and is not available.",
+      "es": "La biblioteca de herramientas GeoCeDG de esta instalación no superó su comprobación de integridad y no está disponible."
+    },
+    "UserTools.BundledShadowed": {
+      "en": "An installed user package already provides this command and keeps precedence.",
+      "es": "Un paquete de usuario instalado ya proporciona este comando y conserva la prioridad."
+    },
+    "UserTools.BundledReadOnly": {
+      "en": "GeoCeDG library tools are read-only; only their toolbar placement can change.",
+      "es": "Las herramientas de la biblioteca GeoCeDG son de solo lectura; solo puede cambiar su posición en la barra."
+    },
+    "UserTools.BundledNote.EllipseAxis": {
+      "en": "Valid only when C lies on the axis through O perpendicular to OB.",
+      "es": "Válida solo si C está en el eje que pasa por O perpendicular a OB."
+    },
+    "UserTools.BundledNote.pointJump": {
+      "en": "Planar convenience: no spatial-frame or projection authority.",
+      "es": "Utilidad plana: sin autoridad de sistema espacial ni de proyección."
+    },
+    "UserTools.BundledNote.relCoor": {
+      "en": "Planar convenience: no spatial-frame or projection authority.",
+      "es": "Utilidad plana: sin autoridad de sistema espacial ni de proyección."
+    },
+    "UserTools.BundledNote.translationCoor": {
+      "en": "Planar convenience: no spatial-frame or projection authority.",
+      "es": "Utilidad plana: sin autoridad de sistema espacial ni de proyección."
+    },
     "Menu.Construction": {
       "en": "Construction",
       "es": "Construcción"

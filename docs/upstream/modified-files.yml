@@ -3948,13 +3948,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools. Round 3: migrate to store v3 with complete normalized per-command definition digests, adopt only equivalent embedded document Macro objects for installed presentation ownership, and persist optional bounded PNG pin icons entirely outside document state.",
+      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools. Round 3: migrate to store v3 with complete normalized per-command definition digests, adopt only equivalent embedded document Macro objects for installed presentation ownership, and persist optional bounded PNG pin icons entirely outside document state. PRE-G9B-R6-plus-E1-L: load the read-only installation-relative curated GGT catalog once with whole-catalog fail-closed validation, keep user-package and document precedence, store bundled pins only in a separate user-side sidecar and never write the version-3 user store for bundled-only actions.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display. PRE-G9B-S4: apply the independent menu font to user-tool menu and popup entries. PRE-G9B-S4-R1: mirror the native BoxLayout axis/alignment and rendered logical icon size so persistent buttons align at supported and scaled toolbar sizes.",
+      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display. PRE-G9B-S4: apply the independent menu font to user-tool menu and popup entries. PRE-G9B-S4-R1: mirror the native BoxLayout axis/alignment and rendered logical icon size so persistent buttons align at supported and scaled toolbar sizes. PRE-G9B-R6-plus-E1-L: present the read-only GeoCeDG library section with owned icons and statements in the existing manager and user-tools menu, without remove or custom-icon controls for bundled entries.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4488,7 +4488,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BP1PublicSurfaceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-P1: Verify the approved default public surfaces, independent feature overrides and package-profile/version contracts.",
+      "purpose": "PRE-G9B-P1: Verify the approved default public surfaces, independent feature overrides and package-profile/version contracts. PRE-G9B-R6-plus-E1-L: the experimental feature-set pin admits the author-approved default-enabled cedg.library.curated-ggt (DQ-E1-14), which is not a stable promotion.",
       "authority": "docs/validation/pre_g9b_p1_public_surface_and_nc_packaging_candidate_report.md"
     },
     {
@@ -5798,6 +5798,30 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-C read-only certified disjointness of a LocusV2 component and a closed rectangle (DQ-C13); disjointness is proven only by certified enclosures.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGBundledToolCatalog.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-L: resolve <launcher dir>/app/ggt-library from jpackage.app-path and read its manifest and shipped archives read-only, all-or-nothing.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/CuratedGgtLibraryGenerator.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-L: deterministic test-source generator of the curated GGT library from Templatev7.ggb, curation.yml and the owned SVG icons (T-EXTRACT, T-ICON, T-STYLE; EchoSVG rasterization; STORED archives).",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LCuratedLibraryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-L: golden reproducibility, exact selection, manifest and rights-record hashes, source equivalence, style policy, owned assets, icon subset and the no-packaging boundary.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LBundledCatalogTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E1-L: absent and staged catalogs, whole-catalog fail-closed integrity, activation and style, user and document precedence, user-store byte stability, sidecar pins, native round trip and the manager/menu presentation.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
     }
   ]
 }

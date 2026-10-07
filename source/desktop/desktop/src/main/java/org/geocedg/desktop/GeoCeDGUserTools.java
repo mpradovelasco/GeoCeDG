@@ -32,6 +32,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -76,7 +77,9 @@ public final class GeoCeDGUserTools {
 		GeoCeDGUserToolLibrary loaded = null;
 		String failure = null;
 		try {
-			loaded = new GeoCeDGUserToolLibrary(app, storagePath());
+			Path storage = storagePath();
+			loaded = new GeoCeDGUserToolLibrary(app, storage,
+					GeoCeDGBundledToolCatalog.defaultDirectory(), bundledPinPath(storage));
 		} catch (IOException exception) {
 			failure = exception.getMessage();
 		}
@@ -101,6 +104,15 @@ public final class GeoCeDGUserTools {
 			preferences = GeoCeDG.getDefaultPreferencesFile();
 		}
 		return preferences.resolveSibling(preferences.getFileName() + ".user-tools-v1.json");
+	}
+
+	/** User-side placement of bundled entries; never inside the installation directory. */
+	static Path bundledPinPath(Path userToolStorage) {
+		String name = userToolStorage.getFileName().toString();
+		String suffix = ".user-tools-v1.json";
+		String base = name.endsWith(suffix) ? name.substring(0, name.length() - suffix.length())
+				: name;
+		return userToolStorage.resolveSibling(base + ".bundled-tools-v1.json");
 	}
 
 	private static synchronized GeoCeDGUserTools get(AppD app) {
@@ -204,17 +216,58 @@ public final class GeoCeDGUserTools {
 			menu.add(empty);
 		}
 		for (Package tool : library.packages()) {
-			String reason = library.unavailableReason(tool);
-			for (String command : tool.commands()) {
-				JMenuItem item = new JMenuItem(command);
-				item.setFont(app.getMenuFont());
-				item.setToolTipText(reason == null ? tool.name() : explain(reason));
-				item.setEnabled(reason == null);
-				item.getAccessibleContext().setAccessibleDescription(item.getToolTipText());
-				item.addActionListener(event -> invoke(tool, command));
-				menu.add(item);
-			}
+			addCommandItems(menu, tool);
 		}
+		populateBundled(menu);
+	}
+
+	private void addCommandItems(JMenu menu, Package tool) {
+		String reason = library.unavailableReason(tool);
+		for (String command : tool.commands()) {
+			JMenuItem item = new JMenuItem(command);
+			item.setFont(app.getMenuFont());
+			if (tool.isBundled() && tool.bundledIcon(command) != null) {
+				item.setIcon(new ImageIcon(new ImageIcon(tool.bundledIcon(command).toolbarBytes())
+						.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+			}
+			item.setToolTipText(reason == null ? describe(tool, command) : explain(reason));
+			item.setEnabled(reason == null);
+			item.getAccessibleContext().setAccessibleDescription(item.getToolTipText());
+			item.addActionListener(event -> invoke(tool, command));
+			menu.add(item);
+		}
+	}
+
+	/** Read-only curated section; absent installation library shows nothing. */
+	private void populateBundled(JMenu menu) {
+		if (library.bundledFailure() != null) {
+			menu.addSeparator();
+			JMenuItem failure = new JMenuItem(text(library.bundledFailure()));
+			failure.setFont(app.getMenuFont());
+			failure.setEnabled(false);
+			menu.add(failure);
+			return;
+		}
+		if (library.bundledPackages().isEmpty()) {
+			return;
+		}
+		menu.addSeparator();
+		JMenuItem header = new JMenuItem(text("UserTools.Bundled"));
+		header.setFont(app.getMenuFont());
+		header.setEnabled(false);
+		menu.add(header);
+		for (Package tool : library.bundledPackages()) {
+			addCommandItems(menu, tool);
+		}
+	}
+
+	private String describe(Package tool, String command) {
+		if (!tool.isBundled()) {
+			return tool.name();
+		}
+		String note = optionalText("UserTools.BundledNote." + command);
+		return note == null ? text("UserTools.Bundled") : text("UserTools.Bundled") + " \u2014 "
+				+ note;
 	}
 
 	void populatePins(JPanel panel) {
@@ -325,16 +378,24 @@ public final class GeoCeDGUserTools {
 		Icon icon = pinnedIcon(pin);
 		button.setIcon(dropdown ? new DropdownIcon(icon) : icon);
 		button.setText(null);
-		button.putClientProperty("geocedg.userTool.icon.source",
-				pin.icon() == null ? "monogram" : "custom");
+		String source = pin.icon() != null ? "custom" : bundledIcon(pin) != null ? "bundled"
+				: "monogram";
+		button.putClientProperty("geocedg.userTool.icon.source", source);
 		button.putClientProperty("geocedg.userTool.monogram",
-				pin.icon() == null ? monogram(pin.command()) : null);
+				"monogram".equals(source) ? monogram(pin.command()) : null);
 	}
 
 	private Icon pinnedIcon(PinnedCommand pin) {
-		return pin.icon() == null
-				? new MonogramIcon(monogram(pin.command()), renderedToolbarIconSize())
-				: toolbarIcon(pin.icon());
+		if (pin.icon() != null) {
+			return toolbarIcon(pin.icon());
+		}
+		GeoCeDGUserToolLibrary.PinIcon owned = bundledIcon(pin);
+		return owned != null ? toolbarIcon(owned)
+				: new MonogramIcon(monogram(pin.command()), renderedToolbarIconSize());
+	}
+
+	private static GeoCeDGUserToolLibrary.PinIcon bundledIcon(PinnedCommand pin) {
+		return pin.tool().isBundled() ? pin.tool().bundledIcon(pin.command()) : null;
 	}
 
 	private int renderedToolbarIconSize() {
@@ -460,8 +521,24 @@ public final class GeoCeDGUserTools {
 		content.add(scope, BorderLayout.NORTH);
 		JList<Package> list = new JList<>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setListData(library.packages().toArray(new Package[0]));
+		list.setListData(managedPackages());
+		list.setCellRenderer(new DefaultListCellRenderer() {
+			@Override
+			public java.awt.Component getListCellRendererComponent(JList<?> owner,
+					Object value, int index, boolean selected, boolean focused) {
+				Object label = value;
+				if (value instanceof Package && ((Package) value).isBundled()) {
+					label = text("UserTools.Bundled") + ": " + value;
+				}
+				return super.getListCellRendererComponent(owner, label, index, selected,
+						focused);
+			}
+		});
 		list.getAccessibleContext().setAccessibleName(text("UserTools.Installed"));
+		if (library.bundledFailure() != null) {
+			scope.append("\n" + text(library.bundledFailure()));
+			scope.setRows(4);
+		}
 		JScrollPane scroll = new JScrollPane(list);
 		scroll.setPreferredSize(new Dimension(620, 180));
 		content.add(scroll, BorderLayout.CENTER);
@@ -481,7 +558,8 @@ public final class GeoCeDGUserTools {
 		content.add(south, BorderLayout.SOUTH);
 		list.addListSelectionListener(event -> {
 			Package tool = list.getSelectedValue();
-			remove.setEnabled(tool != null);
+			// The installation library is read-only; only its user-side pins change.
+			remove.setEnabled(tool != null && !tool.isBundled());
 			populateManagerPins(pins, tool);
 		});
 		remove.setEnabled(false);
@@ -496,7 +574,7 @@ public final class GeoCeDGUserTools {
 						throw new IOException("UserTools.Limit");
 					}
 					library.install(file.getFileName().toString(), Files.readAllBytes(file));
-					list.setListData(library.packages().toArray(new Package[0]));
+					list.setListData(managedPackages());
 				} catch (IOException exception) {
 					failure(exception.getMessage());
 				}
@@ -509,7 +587,7 @@ public final class GeoCeDGUserTools {
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				try {
 					library.remove(selected.id());
-					list.setListData(library.packages().toArray(new Package[0]));
+					list.setListData(managedPackages());
 				} catch (IOException exception) {
 					failure(exception.getMessage());
 				}
@@ -526,6 +604,13 @@ public final class GeoCeDGUserTools {
 		dialog.pack();
 		dialog.setLocationRelativeTo(app.getMainComponent());
 		dialog.setVisible(true);
+	}
+
+	/** @return user packages first, then the read-only installation library */
+	Package[] managedPackages() {
+		List<Package> all = new ArrayList<>(library.packages());
+		all.addAll(library.bundledPackages());
+		return all.toArray(new Package[0]);
 	}
 
 	void populateManagerPins(JPanel panel, Package selected) {
@@ -566,7 +651,8 @@ public final class GeoCeDGUserTools {
 				JButton icon = new JButton(text("UserTools.Icon"));
 				up.setEnabled(position > 0);
 				down.setEnabled(position >= 0 && position + 1 < ordered.size());
-				icon.setEnabled(position >= 0);
+				// Bundled entries keep their owned icon; a custom icon is user-package only.
+				icon.setEnabled(position >= 0 && !tool.isBundled());
 				icon.setToolTipText(text("UserTools.IconHelp"));
 				icon.getAccessibleContext().setAccessibleName(text("UserTools.Icon"));
 				icon.getAccessibleContext().setAccessibleDescription(icon.getToolTipText());
@@ -574,7 +660,14 @@ public final class GeoCeDGUserTools {
 				down.addActionListener(action -> move(tool, command, 1, panel));
 				icon.addActionListener(action -> choosePinIcon(tool, command, panel, false));
 				pin.addActionListener(action -> {
-					if (pin.isSelected()) {
+					if (pin.isSelected() && tool.isBundled()) {
+						try {
+							library.pin(tool.id(), command, true);
+						} catch (IOException exception) {
+							failure(exception.getMessage());
+						}
+						populateManagerPins(panel, tool);
+					} else if (pin.isSelected()) {
 						choosePinIcon(tool, command, panel, true);
 					} else {
 						try {
@@ -663,6 +756,14 @@ public final class GeoCeDGUserTools {
 			return registry.text(key);
 		} catch (IllegalArgumentException missingProfileText) {
 			return app.getLocalization().getMenu(key);
+		}
+	}
+
+	private String optionalText(String key) {
+		try {
+			return registry.text(key);
+		} catch (IllegalArgumentException missingProfileText) {
+			return null;
 		}
 	}
 

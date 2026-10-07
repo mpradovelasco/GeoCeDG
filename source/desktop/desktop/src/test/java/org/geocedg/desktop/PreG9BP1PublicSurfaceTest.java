@@ -121,7 +121,10 @@ class PreG9BP1PublicSurfaceTest {
 		// Everything else keeps its gate; P1 is not "enable every experiment".
 		assertEquals(Boolean.FALSE, defaults.get("cedg.laboratory.legacy"));
 		assertEquals(Boolean.FALSE, defaults.get("cedg.spatial.semantics"));
-		assertEquals(4, defaults.values().stream().filter(value -> !value).count()
+		// PRE-G9B-R6-plus-E1-L (author decision DQ-E1-14, 2026-10-07): the curated GGT
+		// library is experimental and enabled by default; it is not a stable promotion.
+		assertEquals(Boolean.TRUE, defaults.get("cedg.library.curated-ggt"));
+		assertEquals(5, defaults.values().stream().filter(value -> !value).count()
 				+ defaults.values().stream().filter(value -> value).count() - 1);
 	}
 

@@ -32,6 +32,15 @@
       ]
     },
     {
+      "id": "cedg.library.curated-ggt",
+      "maturity": "experimental",
+      "specification": "geocedg/specs/legacy/curated-ggt-library.md",
+      "enabled_by_default": true,
+      "depends_on": [
+        "cedg.frontend.profile"
+      ]
+    },
+    {
       "id": "cedg.locus.v2",
       "maturity": "experimental",
       "specification": "geocedg/specs/locus/locus-v2-public-surface.md",

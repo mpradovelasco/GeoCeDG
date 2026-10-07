@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "c7af5ac68f0d0fe9aa2bc8cf4f40afc2736d634e912a88792082b663693b4bfa",
+      "discovery_evidence_sha256": "b37ec025b98a7d21a9492b01c06a73cff1227ee63d6405b827b9f15e8df1a4b4",
       "discovered_identity_count": 6008,
       "discovered_identities_sha256": "af1d80f8c9330bc3b5e9524290514ad821e6bcab8276508371114f4a5dbef311"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "01ecd1feeeeebc74ea8625b37b24fe3efd6299702f2c63fc9d6e93cd71029772",
-      "discovered_identity_count": 1842,
-      "discovered_identities_sha256": "8de5d2f3a7b423a1689f484ab75f8f99d4bef4d337e3d43e610b5022651ac6cf"
+      "discovery_evidence_sha256": "4a1d14f11053f6db046998d68a8e3c654fbd671248303f2520f0c66331561589",
+      "discovered_identity_count": 1861,
+      "discovered_identities_sha256": "fa9613d8e75e340251ebdec28edc48741e56d002388866e60d47307c5f27915c"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1842,
-      "expected_identities_sha256": "8de5d2f3a7b423a1689f484ab75f8f99d4bef4d337e3d43e610b5022651ac6cf",
+      "expected_identity_count": 1861,
+      "expected_identities_sha256": "fa9613d8e75e340251ebdec28edc48741e56d002388866e60d47307c5f27915c",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1836,
-      "expected_identities_sha256": "8c42236c754c157d415b236a5255d235cb5b8441b7cd5459b1e17fc60ed1ac9b",
+      "expected_identity_count": 1855,
+      "expected_identities_sha256": "81899ab1e6b8e3f6924eeded9bac1a394b7e240e6dafb48d2cf1aea10a17cce9",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -1765,6 +1765,53 @@
         {
           "commit": "50baef73e784f764e95c9faf33d50188986ec3ed",
           "tree": "245a8a7a814dc7146a8c1cf32214019da6317999"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-r6-plus-e1-l.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
+        "org.geocedg.desktop.PreG9BR6PlusE1LBundledCatalogTest",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest",
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest",
+        "org.geocedg.desktop.PreG9BP1PublicSurfaceTest",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "org.geocedg.desktop.G9U1ActionRegistryTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE1LBundledCatalogTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1UserToolLibraryTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1MacroNativeArchivePersistenceTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BP1PublicSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 96,
+      "expected_identities_sha256": "da7106596db2af96847d615b135b2e710bc354dcc78aaca8022ef30486419b00",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "942aebe0f9c83afb3952d62e87783e92a7125bd7",
+          "tree": "eaf9e828c6070078b1f8b486ec1581b760d2d796"
         }
       ]
     },

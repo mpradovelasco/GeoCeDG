@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-L",
+  "registryPhaseId": "PRE-G9B-R6-PLUS-E1-L",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md",
+  "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-l-curated-ggt-library.prompt.md",
+  "state": "TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+  "authorSmoke": "PENDING",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAtPhaseStart": true,
+  "plannedAcceptance": "one registered PHASE on the exact candidate",
+  "verificationInfrastructureImpact": "PHASE_LOCAL",
+  "productChange": "YES (GeoCeDG Desktop application layer only)",
+  "serializationChange": "NONE (documents)",
+  "geometricSemanticsChange": "NONE",
+  "newApplicationFiles": ["<preferences>.bundled-tools-v1.json (written only by an explicit bundled pin action)"],
+  "identities": {
+    "publishedBase": { "name": "P_R6PLUS_C_X1", "commit": "23b971f5a967958f93e745ca8c39fce1162706e6", "tree": "5f564c8391828dc781dee0b1be93ef223431af58" },
+    "preparation": { "name": "T_R6PLUS_E1_PREP", "commit": "0ce52a965bcf8b9de37a1572738c0ad79db52354", "tree": "e500e80fddf957078249383ae61e28e6f707d455" },
+    "authorization": { "commit": "904778b34704d1f395e70e27f265914dc3ffb500", "tree": "41484cb39c4d2d39628c8622fa01e018cfb8b943" },
+    "branchStart": { "commit": "942aebe0f9c83afb3952d62e87783e92a7125bd7", "tree": "eaf9e828c6070078b1f8b486ec1581b760d2d796", "change": "AGENTS.md section 3.2 models/curated/ amendment only" },
+    "implementationBranch": "phase/pre-g9b-r6-plus-e1-l-curated-ggt-library",
+    "candidate": "recorded outside this artifact (this file is part of the candidate)"
+  },
+  "library": {
+    "manifest": "models/curated/ggt-library/library-manifest.json",
+    "tools": ["SquarebyDiagonal", "CirclebyD", "circArcbyAngle", "ellipseLength12", "IFPositiveSelectPoint", "EllipseAxis", "conj2mainAxesEllipse", "pointJump", "relCoor", "translationCoor", "DuctSymbol", "SymmSymbol"],
+    "excluded": ["directDimension", "axisDimension", "sheetISOAnLand", "sheetISOAnVert"],
+    "transformations": ["T-EXTRACT", "T-ICON", "T-STYLE"],
+    "styledTools": ["SquarebyDiagonal", "CirclebyD", "circArcbyAngle", "ellipseLength12", "EllipseAxis", "DuctSymbol", "SymmSymbol"],
+    "recordedToolchain": { "javaRuntimeVersion": "17.0.10+7-LTS", "javaVendor": "Amazon.com Inc." },
+    "templateSha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "rightsRecordVersion": 1
+  },
+  "tests": {
+    "PreG9BR6PlusE1LCuratedLibraryTest": 9,
+    "PreG9BR6PlusE1LBundledCatalogTest": 10,
+    "changedExistingTests": ["PreG9BP1PublicSurfaceTest.onlyTheTwoAuthorizedFeaturesArePromoted (experimental feature-set pin 4 -> 5; DQ-E1-14)"]
+  },
+  "preFreezeEvidence": {
+    "producers": {
+      "discovery.shared": { "identities": 6008, "changed": false },
+      "discovery.desktop": { "identities": 1861, "previous": 1842 },
+      "pre-g9b-r6-plus-e1-l.desktop": { "tests": 96, "failures": 0, "sha256": "da7106596db2af96847d615b135b2e710bc354dcc78aaca8022ef30486419b00" },
+      "final.desktop": { "cases": 1855, "previous": 1836, "failures": 0, "skipped": 1, "sha256": "81899ab1e6b8e3f6924eeded9bac1a394b7e240e6dafb48d2cf1aea10a17cce9", "outOfMemory": false }
+    },
+    "pins": {
+      "junit_inventory": { "from": "860d1fcd772c05dffd5c42403eaf7f7e539709ce657a7c04a98f9ab5e241515c", "to": "3a63be8b6a6ad60bc09aa89a6f9a95b1b840928f9bf9e3049e1ca466a7d3c4dd" },
+      "static_contracts": { "from": "e51b2f18a5870e6d100eec93e5bc44a2d399bce4e1a0f3f88d05a43a76d7237d", "to": "9b733a967bccd35ec2184f9bbce35a7abc8b17c5f842864e7382ec26169314f4" },
+      "assetsManifestStaticInput": { "from": "c3c80f30943b3179e76ee2a417cfa0f739d18099ec46a649f38160b447202ee8", "to": "b8f9860da273cea0c703d263657f02bfdab7c0d38637d854724553dd72fe249c" },
+      "registryShape": { "selections": 40, "phaseSelections": 47, "e1lSelectionCount": 96 }
+    },
+    "developmentRuns": {
+      "INFRA_UNIT_first": { "run": "verification-7c0b76e6bc2840608ab3813c93e89bf4", "verdict": "REJECTED_VERIFICATION_CORE", "cause": "static-contract input pin not yet moved" },
+      "INFRA_UNIT": { "run": "verification-e983c78dccd24e7daf49fd95129bc1fe", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22" },
+      "STATIC": { "run": "verification-22e40f637d32435ab5e3c2f32a621bca", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3" },
+      "PHASE_PlanOnly": { "coverage": "COMPLETE", "planHash": "f3f8c969b9b8221fdd7248c60736200958cec87a4c2f20333c97f6c759e7f572" }
+    },
+    "upstreamBoundary": "OK, 970 registered files",
+    "verifyLegacy": "passed (standalone diagnostic)",
+    "checkstyle": "main clean; test only pre-existing PreG9BR6PlusA1HiddenLayerTest.java:188"
+  },
+  "notRun": ["INTEGRATION", "FINAL", "PACKAGING"],
+  "notAuthorized": ["PRE-G9B-R6-plus-E1-P", "E2", "E3", "F1", "F2", "F3", "G", "PRE-G9B-R7", "G9B", "publication"]
+}

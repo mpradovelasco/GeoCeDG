@@ -481,6 +481,272 @@
       "media_type": "image/png"
     }
   ],
+  "ggt_library_assets": [
+    {
+      "id": "geocedg.ggt-library.SquarebyDiagonal-icon",
+      "command": "SquarebyDiagonal",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for SquarebyDiagonal",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/SquarebyDiagonal.svg",
+        "canonical_lf_sha256": "23958b5baf74e71c4ed89039f09bc768f87607e330ad219d3ac508076c3edb2e"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/SquarebyDiagonal.ggt",
+        "entry": "7ea767eb6e9bf860bbee5c2c8841d17f/geocedg-ggt-SquarebyDiagonal.png",
+        "raw_sha256": "13e33ca6233435b42608d03faff87d1656bea7d67e63f7a639b0085741b6894b",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.CirclebyD-icon",
+      "command": "CirclebyD",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for CirclebyD",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/CirclebyD.svg",
+        "canonical_lf_sha256": "5ca6e713c6f5489ecaff24d5532acc18cc82a3defa7c6d4145b84cc7f7cc8d78"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/CirclebyD.ggt",
+        "entry": "7ed25fd7b51efda2935e00d5cdfb55b2/geocedg-ggt-CirclebyD.png",
+        "raw_sha256": "0b0dd0ff730dfee13ce814119fe4b3ec1198b7037729a89538f5c14ce32402c8",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.circArcbyAngle-icon",
+      "command": "circArcbyAngle",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for circArcbyAngle",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/circArcbyAngle.svg",
+        "canonical_lf_sha256": "c6aaff6aa465570de450f4bca8ff0ae17580ca8a754f88aa0ae7393f3ee2ec79"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/circArcbyAngle.ggt",
+        "entry": "d6d778fc011dabff60503f5032d68f1c/geocedg-ggt-circArcbyAngle.png",
+        "raw_sha256": "9fb468c16d20cd6d93963374ae07979c65902566ed2b63034a4ce952d5e6a698",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.ellipseLength12-icon",
+      "command": "ellipseLength12",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for ellipseLength12",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/ellipseLength12.svg",
+        "canonical_lf_sha256": "ba1bcfb1acb3fc0bfa05b2ea2ff8bf5118008902b98868c13f96cf9e9e69481a"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/ellipseLength12.ggt",
+        "entry": "48d6530c454bb4797dd8301aef96e50e/geocedg-ggt-ellipseLength12.png",
+        "raw_sha256": "ac1044e15c820f00b377239e4798b2066cd3154460e06d85db89875b456fd253",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.IFPositiveSelectPoint-icon",
+      "command": "IFPositiveSelectPoint",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for IFPositiveSelectPoint",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/IFPositiveSelectPoint.svg",
+        "canonical_lf_sha256": "19991428cc32846f6434a9d9c278709e1e7b7ea3db2dce9480397107a070b65d"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/IFPositiveSelectPoint.ggt",
+        "entry": "046ec5d8b64fb34c77caa4503c9f3e59/geocedg-ggt-IFPositiveSelectPoint.png",
+        "raw_sha256": "0b14c2cdad40964cc4d355ac252aff2960f53a05607df2196cb5f2eda7780923",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.EllipseAxis-icon",
+      "command": "EllipseAxis",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for EllipseAxis",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/EllipseAxis.svg",
+        "canonical_lf_sha256": "89e92558ab6858b395493d9d0068de1303554bd1e36beee39148886f29606f1a"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/EllipseAxis.ggt",
+        "entry": "67b8ee3d9e41a992dce623dd85787e22/geocedg-ggt-EllipseAxis.png",
+        "raw_sha256": "fb6789cf2d607c8d98aaf859ef63af8c4051c94a2ce0a93518d8d8bb77561028",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.conj2mainAxesEllipse-icon",
+      "command": "conj2mainAxesEllipse",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for conj2mainAxesEllipse",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/conj2mainAxesEllipse.svg",
+        "canonical_lf_sha256": "18a4b01ebba30e0c6755a67512fb73687e9c6a800e06b187307741b66f3fd1f2"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/conj2mainAxesEllipse.ggt",
+        "entry": "daedbaacfd9617c8de234ce141312074/geocedg-ggt-conj2mainAxesEllipse.png",
+        "raw_sha256": "e74ddbc81e1e0fc458b88356013d3b7240de272243311901f08719f482600179",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.pointJump-icon",
+      "command": "pointJump",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for pointJump",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/pointJump.svg",
+        "canonical_lf_sha256": "11f212bb451f16f5e5891cfb9ad7f0e705cf4b47adcec0bf98b9fa5ad154c280"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/pointJump.ggt",
+        "entry": "7f70048feb622dbcd3cf91ca566a24ce/geocedg-ggt-pointJump.png",
+        "raw_sha256": "4307eb0958be9e0f8fcaa9e3e98992c2ef393c0b7bad099fa8f9074fcb403766",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.relCoor-icon",
+      "command": "relCoor",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for relCoor",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/relCoor.svg",
+        "canonical_lf_sha256": "1a17295bae9ad8a0659d94bd33ce4b5587d3281ba0ccbb1e6e19b4cb17c21c63"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/relCoor.ggt",
+        "entry": "7a66f7fb8ac3a58c9a019746d8a0fd65/geocedg-ggt-relCoor.png",
+        "raw_sha256": "20ceb31cb4215b5473f13d020caf6e52d040d0c9cdcf85c7ebd01e2a46d9e28f",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.translationCoor-icon",
+      "command": "translationCoor",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for translationCoor",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/translationCoor.svg",
+        "canonical_lf_sha256": "e8f1abc36885ddb61d3c9fc2d414cc801092b0059e9690cfb0803b887784b175"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/translationCoor.ggt",
+        "entry": "828cf5d6340a8967ab6fc1cb3ae8d33a/geocedg-ggt-translationCoor.png",
+        "raw_sha256": "c73ad0d9b453aa9d36418ee784f7b8088a05f63b99cb3359b7f42458cd754fe5",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.DuctSymbol-icon",
+      "command": "DuctSymbol",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for DuctSymbol",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/DuctSymbol.svg",
+        "canonical_lf_sha256": "2ce32abf6bde41110dd5712a2a6749857add69917af10133d82666ed637db1c1"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/DuctSymbol.ggt",
+        "entry": "5d5747ac6fd1fcbecd86d85590d33d7e/geocedg-ggt-DuctSymbol.png",
+        "raw_sha256": "6ea1d706c7dbf27a4e56d26acd343385497081a6e9cd8fc3ff6ac74739a170fe",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    },
+    {
+      "id": "geocedg.ggt-library.SymmSymbol-icon",
+      "command": "SymmSymbol",
+      "asset_version": 1,
+      "semantic_role": "GeoCeDG curated GGT library tool icon for SymmSymbol",
+      "svg_source": {
+        "path": "geocedg/resources/icons/ggt-library/SymmSymbol.svg",
+        "canonical_lf_sha256": "4399cfa344925cfae1cba9d435aa5efceda49f8a019f3bfdd957a9459093edc8"
+      },
+      "png_derivative": {
+        "container": "models/curated/ggt-library/tools/SymmSymbol.ggt",
+        "entry": "e8f3673d549d078e566fbd9c7c9327f9/geocedg-ggt-SymmSymbol.png",
+        "raw_sha256": "730145e0632e9104477418afcf51399a6b789357d126bb896852b6996e091c5c",
+        "width": 32,
+        "height": 32
+      },
+      "derivation": "CuratedGgtLibraryGenerator v1 through tools/legacy/curate-ggt-library.ps1; EchoSVG route JSVGImageBuilder/SVGImage, 32 x 32 TYPE_INT_ARGB, javax.imageio PNG; reproduction claimed on the recorded Desktop test JVM 17.0.10+7-LTS (Amazon.com Inc.)",
+      "provenance": "GeoCeDG-authored E1-L GGT library icon drawn from the tool construction; no GeoGebra stock or template pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "author rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md): CC-BY-4.0 ordinary artwork; packaging inclusion only through PRE-G9B-R6-plus-E1-P (not authorized)"
+    }
+  ],
   "package_icon": {
     "asset_id": "geocedg.brand.topbar.windows-ico-v1",
     "path": "source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico",
