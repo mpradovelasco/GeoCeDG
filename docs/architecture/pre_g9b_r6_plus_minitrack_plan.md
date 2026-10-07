@@ -29,6 +29,7 @@
 - `E1-X1` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_X1` `b12ab32c3a4dcf42941617e95d06a92bfb3b2955` (`AUTHOR_SMOKE = PASS`, `DQ-E1X1-4` accepted, [E1-X1 closeout record](../validation/pre_g9b_r6_plus_e1_x1_closeout_record.md)); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` resolved with `X1-F2` and `X1-F3`; `OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION` stays open and must be resolved before `E2`; the only next authorized activity is `PRE-G9B-R6-plus-E1-P-X1`, whose implementation is not yet authorized; `E2` not started.
 - `E1-P-X1` reconciliation (2026-10-07): at the author's authorization, a test-only verification reconciliation on `P_R6PLUS_E1_X1` `7d132ec5` replaces the superseded packaging-negation clauses of `PreG9BR6PlusE1LCuratedLibraryTest.e1l09` with the controlled route owned by the packaging specification (test identity kept), restores a clean `final.desktop` and refreshes the official inventory; `BOUNDED_PHASE` with one registered `PHASE` `PRE-G9B-R6-PLUS-E1-P-X1`; `PRODUCT CHANGE = NONE`; the technical / verification candidate ([candidate report](../validation/pre_g9b_r6_plus_e1_p_x1_candidate_report.md)) is pending author review; `E2` not started.
 - `E1-P-X1` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_P_X1` `44b90156786bce4ec5fca0466e7b8f81ea5bb358` (`AUTHOR_REVIEW = PASS`, `AUTHOR_SMOKE = NOT REQUIRED — NO PRODUCT BEHAVIOR CHANGE`, [E1-P-X1 closeout record](../validation/pre_g9b_r6_plus_e1_p_x1_closeout_record.md)); `OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION` resolved; `final.desktop` clean; `E1-L`, `E1-P`, `E1` and `E1-X1` unchanged; the verification baseline is clean and the next phase, `PRE-G9B-R6-plus-E2`, may proceed only under a separate explicit author instruction; `E2` not started.
+- Preparation of `E2` (2026-10-07): at the author's instruction, characterization, design reconciliation and preparation only, on the published `P_R6PLUS_E1_P_X1` `dc63b0e55f12eb96d3aea359db4476cbda6c89dc`, tree `8b2b5027a2119f996de8ca5af91b03ce32731a8c` ([characterization report](../validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md); [reconciled design candidate](pre_g9b_r6_plus_e2_native_dimensions_reconciled_design_candidate.md), which supersedes the stale facts of §8.5 — 125 actions, not 115; `construction-metrics` at `application-profile.yml:3475-3480`; no `F1` dependency). The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e2-native-dimensions.prompt.md) is `PREPARED — NOT AUTHORIZED`: representation β, presentation seam, side rule, direction authority, text orientation, legacy macro collision, verification class (`INTEGRATED_PHASE` proposed, not frozen), export fidelity, names and placement, and tool capture are pending author decisions `DQ-E2-1` to `DQ-E2-11`; `OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION` re-characterized (macros resolve before native commands, case-insensitively, in documents; a stored legacy package disables the whole user library); implementation not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1235,9 +1236,13 @@ PRE-G9B-R6-plus-E1-X1-R1   = CHARACTERIZATION COMPLETE (2026-10-07; A-versus-C
                              CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH;
                              prompt reconciled, PREPARED — NOT AUTHORIZED; proposed
                              BOUNDED_PHASE; DQ-E1X1-1 to DQ-E1X1-8 pending)
-PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
-                             (NEXT after E1-P-X1, verification baseline clean; requires a
-                             separate explicit author instruction)
+PRE-G9B-R6-plus-E2         = PREPARED — NOT AUTHORIZED
+                             (2026-10-07; characterization COMPLETE on P_R6PLUS_E1_P_X1
+                             dc63b0e5; canonical prompt prepared; DQ-E2-1 to DQ-E2-11
+                             pending; proposed INTEGRATED_PHASE not frozen;
+                             implementation NOT AUTHORIZED)
+                             earlier: NOT AUTHORIZED (NEXT after E1-P-X1, verification
+                             baseline clean; requires a separate explicit author instruction)
 PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
@@ -1314,6 +1319,11 @@ OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
                              native DirectDimension / AxisDimension would make the
                              user library reject the legacy macros directDimension /
                              axisDimension)
+                             RE-CHARACTERIZED BY THE E2 PREPARATION (2026-10-07):
+                             document macros resolve before native commands,
+                             case-insensitively, in USER, SCRIPT and XML; a stored
+                             legacy package makes the whole user library unreadable;
+                             disposition pending DQ-E2-7 — NOT FIXED
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a

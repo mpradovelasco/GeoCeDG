@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E2",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md",
+  "reconciledDesignCandidate": "docs/architecture/pre_g9b_r6_plus_e2_native_dimensions_reconciled_design_candidate.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-e2-native-dimensions.prompt.md",
+  "supersededEvidence": "docs/architecture/pre_g9b_r6_plus_e2_native_dimensions_design_candidate.md (P0; unchanged)",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "phaseState": "PREPARED — NOT AUTHORIZED",
+  "characterization": "COMPLETE",
+  "implementation": "NOT AUTHORIZED",
+  "finalDesktopBaseline": "CLEAN",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "serializationChange": "NONE",
+  "authorInstruction": {
+    "date": "2026-10-07",
+    "authorizes": "characterization, design reconciliation and preparation of PRE-G9B-R6-plus-E2 only",
+    "frozenPremise": "DirectDimension and AxisDimension semantics belong to the shared Java kernel; Desktop owns tool orchestration, initial capture, drag, placement, icons and help",
+    "forbidden": [
+      "product implementation of any kind",
+      "push, merge, publication, tag, release",
+      "starting E3, F1, F2, F3 or G"
+    ]
+  },
+  "preservedDispositions": {
+    "PRE-G9B-R6-plus-E1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1-X1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E1-P-X1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "FINAL.DESKTOP": "CLEAN"
+  },
+  "publishedBase": {
+    "name": "P_R6PLUS_E1_P_X1",
+    "commit": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+    "tree": "8b2b5027a2119f996de8ca5af91b03ce32731a8c"
+  },
+  "entryGate": {
+    "localMain": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+    "originMain": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+    "liveRemoteMain": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+    "worktreeClean": true
+  },
+  "preparationBase": {
+    "commit": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+    "branch": "phase/pre-g9b-r6-plus-e2-prompt",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "probes": {
+    "route": "scratch JUnit classes compiled into the Desktop test source set through a Gradle init script; never in a tracked path; build leftovers removed after the runs",
+    "command": "gradlew.bat -p <repo> :desktop:desktop:test --tests org.geocedg.desktop.<Probe> --init-script <scratchpad>/probe.gradle --console=plain",
+    "runs": [
+      {"id": "P1", "class": "E2PrepKernelProbeTest", "exit": 0, "purpose": "Dimension, name lookups, directions, text alignment and rotation, document-macro shadowing"},
+      {"id": "P2", "class": "E2PrepBetaFigureProbeTest", "exit": 0, "purpose": "beta figure from existing commands; anchoring under zoom; XML round trip; SVG, PGF, PSTricks, Asymptote, DXF"},
+      {"id": "P3", "class": "E2PrepAxisProbeTest", "exit": 1, "purpose": "axis and Ray(A,v) directions; recorded before a trailing NullPointerException on the reserved label z, which carries no evidence"},
+      {"id": "P4", "class": "E2PrepUserLibraryProbeTest", "exit": 0, "purpose": "stored user tool whose name becomes a native command name"},
+      {"id": "P5", "class": "E2PrepUnknownCommandProbeTest", "exit": 0, "purpose": "a build that does not know a command loading a document that uses it"}
+    ]
+  },
+  "findings": {
+    "dimensionCommand": {
+      "constant": "Commands.Dimension (TABLE_VECTOR)",
+      "semantics": "cardinality: list size; matrix {rows, cols}; 2D point or vector 2; 3D 3; undefined input undefined",
+      "probe": {"Dimension({1,2,3})": "3", "Dimension({{1,2,3},{4,5,6}})": "{2, 3}", "Dimension((1,2))": "2", "Dimension((1,2,3))": "3", "Dimension(Vector((3,4)))": "2", "Dimension({})": "0", "Dimension(\"abc\")": "Illegal argument"},
+      "aliases": {"en": "Dimension", "es": "Dimensión"},
+      "relationToDrawingDimensions": "UNRELATED — not reused, not overloaded; regression coverage required"
+    },
+    "nameAvailability": {
+      "free": ["DirectDimension", "AxisDimension", "AlignedDimension", "LinearDimension", "CotaDirecta", "CotaAxial", "CotaEjes", "CotaEje", "CotaSegunEje", "CotaAlineada", "CotaLineal", "CotaHorizontal", "Cota", "DimensionDirecta", "DimensionAxial", "AcotacionDirecta"],
+      "legacyMacroCollision": {"DirectDimension": "directDimension", "AxisDimension": "axisDimension"}
+    },
+    "inventoryPins": {
+      "commandsConstants": {"current": 564, "afterTwoVisibleCommands": 566},
+      "withEnglishName": {"current": 513, "after": 515},
+      "displayed": {"current": 486, "after": 488},
+      "fingerprintFixture": "pre-g9b-r5-b-base-fingerprints.json must be regenerated by its documented route",
+      "selfTestMethods": ["cmdDirectDimension", "cmdAxisDimension"]
+    },
+    "ggbscriptMatrix": {
+      "rows": 168,
+      "lookupProbes": 152,
+      "derivedInventoryCommands": 11,
+      "rowsPerSyntaxLine": 6,
+      "recommendedForms": {"DirectDimension": 2, "AxisDimension": 4},
+      "addedRowsRecommended": 36,
+      "addedProbesWithDistinctSpanishAliases": 28,
+      "addedRowsWithShortForms": 54,
+      "gate": "PreG9BR6CapabilityMatrixTest completeness fails MISSING_COVERAGE until both commands are covered"
+    },
+    "applicationProfile": {
+      "actions": 125,
+      "staleP0Pin": 115,
+      "constructionMetricsLines": "application-profile.yml:3475-3480",
+      "nextModeIds": [142, 143],
+      "actionsAfterE2": 127
+    },
+    "directions": {
+      "Line(A,B)": {"getDirection": "B-A", "getDirectionInD3": "B-A"},
+      "parallel Line(P,l)": {"getDirection": "as l", "getDirectionInD3": "opposite"},
+      "PerpendicularLine(P,l)": {"getDirection": "l rotated +90", "getDirectionInD3": "opposite"},
+      "Line(P,v)": {"getDirection": "v", "getDirectionInD3": "opposite"},
+      "Ray(P,v)": {"getDirection": "v", "getDirectionInD3": "opposite"},
+      "xAxis": {"getDirection": "(1,0)"},
+      "yAxis": {"getDirection": "(0,1)"},
+      "e2LocalContract": "getDirection or vector coordinates only; never getDirectionInD3; no F1 dependency"
+    },
+    "unitSeam": {
+      "listener": "DocumentUnitSystem.addListener (presentation only, no recompute)",
+      "displayCallersInProduction": 0,
+      "textRefreshOutsideRecomputePrecedent": "NONE",
+      "dependentTextStringSerialized": false
+    },
+    "text": {
+      "centredHorizontalModelAnchor": "SUPPORTED (P2: centre 182.5 px for anchor 181.8 px; 314.5 for 313.6 after zoom)",
+      "rotatedText": "LaTeX rotatebox only, no start point; Rotate(text, angle, point) ignores the point",
+      "recommendedRecord": "KNOWN LIMITATION — horizontal centred text"
+    },
+    "segmentArrowEndings": {
+      "xml": "<startStyle val=…/> <endStyle val=…/> element style",
+      "roundTrip": "identical (P2)"
+    },
+    "exporters": {
+      "picture": {"segments": true, "arrowEndings": true, "text": "centred"},
+      "pstricks": {"segments": true, "arrowEndings": false, "text": "rput[tl] at anchor, not centred"},
+      "pgf": {"segments": true, "arrowEndings": false, "text": "node[anchor=north west], not centred"},
+      "asymptote": {"segments": true, "arrowEndings": false, "text": "label SE, not centred"},
+      "dxf": {"segments": true, "arrowEndings": false, "text": "excluded with non-blocking OUTSIDE_GEOMETRIC_POPULATION diagnostic; a selection containing text is not writable"}
+    },
+    "drag": {
+      "inheritedDependentMove": "moves the free input points A and B",
+      "changeableParent": "3D only (viewDirection null in 2D)",
+      "seam": "GeoCeDGEuclidianController press/drag/release interception (semantic point precedent)"
+    },
+    "icons": {
+      "ownedToolIconRoute": "SVG under common/icons/svg/web/toolIcons, assets-manifest owned_runtime_assets, GeoCeDGToolImageResource, rendered at run time",
+      "storedRasterDerivativeNeeded": false,
+      "artworkInPreparationPackage": false
+    },
+    "legacyMacroCollision": {
+      "macroLookup": "case-insensitive",
+      "dispatchOrder": "macro before native command, every regime (USER, SCRIPT, Execute/XML)",
+      "probeP1": "with macro midpoint: Midpoint(Q1,Q2) -> macro arity error; Midpoint(Q1,Q2,1) -> 8 macro outputs; Execute and evalXML native -> nothing",
+      "templateV7": "embeds directDimension and axisDimension (and Perimeter, which already shadows the native Perimeter)",
+      "userLibraryProbeP4": "a stored package that becomes a native name makes the whole library unreadable (IOException UserTools.CommandConflict); store bytes unchanged",
+      "nativeWinsHazard": "USER input normalizes directDimension to DirectDimension before dispatch; native-first would reinterpret kconversion as an offset"
+    },
+    "olderReaderProbeP5": {
+      "loadResult": "true, with a LoadFileFailed error list (Unknown command; processing of command)",
+      "commandOutputs": "absent",
+      "dependents": "absent",
+      "unrelatedObjects": "loaded",
+      "reSave": "loses the dimension and its dependents"
+    }
+  },
+  "decisionsRequested": [
+    {"id": "DQ-E2-1", "topic": "representation", "recommendation": "beta", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-2", "topic": "signatures and output contract", "recommendation": "offset mandatory; overshoot = gap = 0 when omitted; outputs [value, dimension line, extension A, extension B, text]; A = B value 0 figure undefined; extension only when |t| > gap", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-3", "topic": "presentation-text seam", "recommendation": "S1a: presentation step outside compute, driven by the D1 listener; failure marker '?' plus suffix; macro limitation recorded", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-4", "topic": "side rule", "recommendation": "B1: pinned by explicit inputs; canonical rule applied once by the tool", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-5", "topic": "AxisDimension direction authority", "recommendation": "E2-local: getDirection or vector coordinates; never getDirectionInD3; no F1", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-6", "topic": "text orientation", "recommendation": "KNOWN LIMITATION — horizontal centred text", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-7", "topic": "legacy macro collision", "recommendation": "B: collision-free heads AlignedDimension / LinearDimension; if the names are kept, C: explicit per-package and per-document conflict handling, rename only by explicit user action", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-8", "topic": "verification class", "recommendation": "INTEGRATED_PHASE (registered PHASE + INTEGRATION); GLOBAL_IMPACT for alpha, DQ-E2-7 A, or any new element type, attribute or dispatch semantics", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-9", "topic": "export fidelity", "recommendation": "X1: GeoCeDG-profile LaTeX arrow endings and text alignment; DXF gaps recorded", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-10", "topic": "names, aliases, product placement", "recommendation": "ES aliases CotaDirecta / CotaAxial (or CotaAlineada / CotaLineal); measure.* ids; modes 142 and 143; construction-metrics toolbar after distance-length; Construction menu", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E2-11", "topic": "tool flow and creation-time capture", "recommendation": "placement click for the offset; overshoot 2 mm and gap 1 mm on paper for a physical unit, else 8 px and 4 px from the view; one-shot; free hidden auxiliary numbers", "state": "PROPOSED — PENDING AUTHOR DECISION"}
+  ],
+  "proposedVerificationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozen": false,
+    "plannedAcceptance": "registered PHASE -Phase PRE-G9B-R6-PLUS-E2 + INTEGRATION on the same frozen commit",
+    "escalatesTo": "GLOBAL_IMPACT on a new GeoElement type, XML element type or attribute, global serialization or dispatch semantics"
+  },
+  "observationsProposed": [
+    "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION (re-characterized)",
+    "OBS-R6PLUS-E2-USER-LIBRARY-LOCALE-DEPENDENT-NATIVE-COLLISION",
+    "OBS-R6PLUS-E2-TEMPLATE-V7-PERIMETER-MACRO-SHADOWS-NATIVE",
+    "OBS-R6PLUS-E2-LATEX-DXF-DIMENSION-FIDELITY",
+    "OBS-R6PLUS-E2-DEPENDENT-DRAG-MOVES-MEASURED-POINTS",
+    "OBS-R6PLUS-E2-ALIGNDRAWTEXT-HASCHANGED",
+    "OBS-R6PLUS-E2-UPSTREAM-MANIFEST-SPLINEV2-PURPOSE"
+  ],
+  "trackedDelta": [
+    "A .github/prompts/tasks/pre-g9b-r6-plus-e2-native-dimensions.prompt.md",
+    "A docs/architecture/pre_g9b_r6_plus_e2_native_dimensions_reconciled_design_candidate.md",
+    "A docs/validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md",
+    "A geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e2-preparation-characterization.json",
+    "M docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "M docs/roadmap/geocedg_roadmap.md"
+  ]
+}
