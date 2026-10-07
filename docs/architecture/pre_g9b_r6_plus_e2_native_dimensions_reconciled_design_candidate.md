@@ -1,282 +1,281 @@
 # PRE-G9B-R6-plus-E2 — native dimensions: reconciled design candidate
 
-- Status: **PROPOSED — CANDIDATE — NOT AUTHOR APPROVED**; every choice below
-  that a `DQ-E2` row names stays **PROPOSED — PENDING AUTHOR DECISION**
+- Status: **PROPOSED — CANDIDATE — NOT AUTHOR APPROVED AS A WHOLE.** The author
+  decisions `DQ-E2-1` to `DQ-E2-11` of 2026-10-07 are recorded in the
+  [E2 author-decision record](../validation/pre_g9b_r6_plus_e2_author_decisions_record.md),
+  which is their authority and prevails over this file; the design below
+  applies them. Details the decisions delegated to the preparation are marked
+  *preparation resolution*.
 - Produced by: the `PRE-G9B-R6-plus-E2` characterization and preparation
-  (author instruction of 2026-10-07; characterization and preparation only, no
-  implementation)
-- Base: `P_R6PLUS_E1_P_X1` = `dc63b0e55f12eb96d3aea359db4476cbda6c89dc`, tree
-  `8b2b5027a2119f996de8ca5af91b03ce32731a8c`
+  (2026-10-07), revised by the author-decision freeze and the `DQ-E2-6` focal
+  characterization of the same day; no implementation
+- Bases: `P_R6PLUS_E1_P_X1` = `dc63b0e55f12eb96d3aea359db4476cbda6c89dc`
+  (tree `8b2b5027a2119f996de8ca5af91b03ce32731a8c`); documentary base
+  `T_R6PLUS_E2_PREP` = `6ad853c618da8f07a279b266c83002c145c6292c`
 - Supersedes, where they differ: the `P0`
   [design candidate](pre_g9b_r6_plus_e2_native_dimensions_design_candidate.md)
   (kept unchanged as `P0` evidence) and the stale facts of the
-  [mini-track plan](pre_g9b_r6_plus_minitrack_plan.md) §8.5 listed in §10
-- Evidence: [E2 preparation characterization report](../validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md)
-  (sections `K1`–`K20`) and its JSON mirror
+  [mini-track plan](pre_g9b_r6_plus_minitrack_plan.md) §8.5 listed in §11
+- Evidence: [characterization report](../validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md)
+  (`K1`–`K20`) and the
+  [`DQ-E2-6` focal addendum](../validation/pre_g9b_r6_plus_e2_dq6_aligned_text_addendum.md)
+  (`A1`–`A10`), with their JSON mirrors
 - Execution contract when authorized: [canonical `E2` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e2-native-dimensions.prompt.md)
 - Normative inputs it implements, not restates: [unit-system specification](../../geocedg/specs/units/unit-system.md)
   §5, §6, §14, §17, §18.3; [ADR 0031](../adr/0031-canonical-english-command-surface-compatibility.md)
   decisions 5–7, 10–12; [ADR 0032](../adr/0032-unit-system-semantics-and-persistence-ownership.md)
   decision 2; `AGENTS.md` §4 and §10
 
-This file is a design candidate. It creates no normative contract; the
-implementing phase turns the author-approved parts into the durable
-specification named in the prompt (*Required design/specification*).
+This file creates no normative contract; the implementing phase turns it into
+the durable specification named in the prompt.
 
-## 1. Placement (frozen premise of the characterization)
+## 1. Placement
 
-`DirectDimension` and `AxisDimension` need DAG dependencies, dynamic
+`AlignedDimension` and `LinearDimension` need DAG dependencies, dynamic
 recomputation, persistence, command and script access and coherent consumption
 by every frontend, so their **semantics live in the shared Java kernel**
-(`AGENTS.md` §4). The Desktop frontend owns only interactive tool orchestration,
-initial parameter capture, the drag gesture, product placement, icons and help.
-No geometry is computed in a Desktop helper, an exporter or a script.
+(`AGENTS.md` §4). The Desktop frontend owns tool orchestration, initial
+parameter capture, the drag gesture, product placement, icons and help. The
+upstream `Dimension(<Object>)` (cardinality of lists, matrices, points and
+vectors) is unrelated and is neither reused nor overloaded (`K2`).
 
-The existing upstream command `Dimension(<Object>)` is unrelated: it returns the
-cardinality of a list, `{rows, cols}` of a matrix, and 2 or 3 for a point or
-vector (report `K2`). It is neither reused nor overloaded.
-
-## 2. Command names (`DQ-E2-2`, `DQ-E2-7`, `DQ-E2-10`)
-
-The default candidates stay `DirectDimension` and `AxisDimension`. They are free
-in every command table, bundle and parser-function table at the base (`K3`), but
-they collide case-insensitively with the legacy macros `directDimension` and
-`axisDimension`, which every `Templatev7.ggb`-derived document embeds and which
-users may hold in their personal tool store (`K15`). Because macros are resolved
-**before** native commands and case-insensitively, keeping these names makes the
-native commands unreachable in such documents and makes a stored legacy package
-disable the whole user library. The collision-free alternative pair
-`AlignedDimension` / `LinearDimension` (ES `CotaAlineada` / `CotaLineal`) is
-also free at the base. The choice is `DQ-E2-7`; the rest of this file is written
-with the default names, and every statement holds unchanged for the alternative
-pair.
-
-## 3. Representation (`DQ-E2-1`)
-
-**Recommended: β — one shared-kernel algorithm per command whose outputs are
-existing object types.** α (a composite `GeoDimension` with its own drawable,
-XML element type and export adapters) is the documented alternative; it is
-`GLOBAL_IMPACT`. The A-versus-B table is in the prompt (`DQ-E2-1`) and the
-evidence in `K10`–`K12`.
-
-### 3.1 Signatures (`DQ-E2-2`)
-
-Recommended (offset mandatory; scale-free defaults for the rest):
+## 2. Names (`DQ-E2-7`, `DQ-E2-10`, decided)
 
 ```text
-DirectDimension( <Point A>, <Point B>, <Offset> [, <Overshoot>, <Gap>] )
-AxisDimension  ( <Point A>, <Point B>, <Direction>, <Offset> [, <Overshoot>, <Gap>] )
-
-Direction  = 2D line (GeoLine, including segment, ray and the axes) | 2D vector
-Overshoot  = 0 and Gap = 0 when omitted (scale-free constants, no hidden factor)
+canonical heads   AlignedDimension, LinearDimension
+Spanish aliases   CotaAlineada, CotaLineal
+never registered  DirectDimension, AxisDimension, directDimension, axisDimension
+action ids        measure.aligned-dimension, measure.linear-dimension
+modes             142, 143
+placement         construction-metrics group; Construction menu
 ```
 
-The alternative keeps the 2-argument `DirectDimension(A, B)` and the
-3-argument `AxisDimension(A, B, Direction)` with `Offset = 0`; it is the only
-scale-free default for the offset and it yields a dimension line on `AB` with no
-extension lines (§4.4).
+The legacy macro names stay in historical and user macro space; no macro is
+renamed, deleted, migrated or reinterpreted. The new heads collide with no
+command, alias, parser function, `Templatev7.ggb` macro or curated tool at the
+base (`K3`, `K15`); coexistence is still validated in `E2`.
 
-### 3.2 Arguments
+## 3. Representation and contract
 
-| Argument | Type | Meaning | Default | Persistence | Dependency | Visibility | Command input or tool state |
-|---|---|---|---|---|---|---|---|
-| `A`, `B` | 2D point | measured points | — | ordinary inputs | DAG input | as created by the user | command input |
-| `Direction` | 2D line or 2D vector | measurement axis of `AxisDimension` | — | ordinary input | DAG input | the user's object | command input |
-| `Offset` | number, model units, signed | distance from the measured feature to the dimension line along `n̂` (§4) | none (recommended) or `0` (alternative) | ordinary construction input; `DOCUMENT_SEMANTIC` | DAG input | a free hidden auxiliary `GeoNumeric` when created by the tool | command input; the tool captures its initial value once from the placement click |
-| `Overshoot` | number, model units, `≥ 0` | extension-line extension beyond the dimension line | `0` | ordinary input | DAG input | free hidden auxiliary `GeoNumeric` when created by the tool | command input; the tool captures its value once (`DQ-E2-11`) |
-| `Gap` | number, model units, `≥ 0` | gap between the measured point and the start of the extension line | `0` | ordinary input | DAG input | as `Overshoot` | as `Overshoot` |
+### 3.1 Representation (`DQ-E2-1`, decided: β)
+
+One shared-kernel algorithm per command whose outputs are existing object types.
+No `GeoDimension` type; a new `GeoElement` type or XML element type is an
+escalation condition (`DQ-E2-8`).
+
+### 3.2 Signatures (`DQ-E2-2`, decided)
+
+```text
+AlignedDimension( <Point A>, <Point B>, <Offset> [, <Overshoot>, <Gap>] )
+LinearDimension ( <Point A>, <Point B>, <Direction>, <Offset> [, <Overshoot>, <Gap>] )
+
+Offset     mandatory, signed, model units
+Overshoot  model units, ≥ 0, 0 when omitted
+Gap        model units, ≥ 0, 0 when omitted
+Direction  2D line (GeoLine, including segment, ray and axes) | 2D vector
+```
+
+Syntax lines (*preparation resolution*): `AlignedDimension` has two
+(`[A, B, Offset]`, `[A, B, Offset, Overshoot, Gap]`); `LinearDimension` has four
+(line or vector, each with and without `Overshoot, Gap`).
+
+### 3.3 Arguments
+
+| Argument | Meaning | Persistence | Visibility when created by the tool | Command input or tool state |
+|---|---|---|---|---|
+| `A`, `B` | measured points; their order fixes the normal of `AlignedDimension` (§7) | ordinary inputs | the user's points | command input |
+| `Direction` | measurement axis of `LinearDimension` | ordinary input | the user's object | command input |
+| `Offset` | signed distance of the dimension line along `n̂` (§4) | ordinary construction input, `DOCUMENT_SEMANTIC` | free hidden auxiliary `GeoNumeric` | command input; the tool captures it once from the placement click |
+| `Overshoot` | extension beyond the dimension line | ordinary input | free hidden auxiliary `GeoNumeric` | command input; captured once by the tool (`DQ-E2-11`) |
+| `Gap` | gap between a measured point and its extension line | ordinary input | as `Overshoot` | as `Overshoot` |
 
 No argument, default or output reads `constructionUnit`, `presentationUnit`,
-the `usm` factor, `drawingScale`, the viewport, the zoom or the DPI. No input is
-a unit multiplier. The offset never derives from the screen inside the command
-(`AGENTS.md` §10).
+the `usm` factor, `drawingScale`, the viewport, the zoom or the DPI; there is no
+unit multiplier; the command never reads the screen (`AGENTS.md` §10).
 
-### 3.3 Output contract (order fixed for XML and labels)
+### 3.4 Output order (*preparation resolution*, frozen for XML and labels)
 
-| # | Output | Type | Role | Visible by default |
-|---|---|---|---|---|
-| 0 | value | `GeoNumeric` | the stable model-unit measure `L` (semantic) | Algebra View; not drawn |
-| 1 | dimension line | `GeoSegment` with start and end arrow endings | figure | yes |
-| 2 | extension line at `A` | `GeoSegment` | figure | yes |
-| 3 | extension line at `B` | `GeoSegment` | figure | yes |
-| 4 | presentation text | `GeoText`, horizontal, centred | presentation (`DERIVED_TRANSIENT` string) | yes |
+| # | Output | Type | Role |
+|---|---|---|---|
+| 0 | value | `GeoNumeric` | the stable model-unit measure `L` (semantic) |
+| 1 | dimension line | `GeoSegment`, arrow endings at both ends | figure |
+| 2 | extension line at `A` | `GeoSegment` | figure |
+| 3 | extension line at `B` | `GeoSegment` | figure |
+| 4 | presentation text | `GeoText`, plain value string, aligned by the §6 seam | presentation (`DERIVED_TRANSIENT` string) |
 
-All five are children of the one algorithm; it alone owns their dependencies.
-Each output keeps its own ordinary element style (colour, thickness, line type,
-arrow endings, font, layer), so style ownership, layers, hiding and hit testing
-are the existing ones. Deleting any output deletes the algorithm and all
-outputs, as for every multi-output command.
+Each output keeps its own ordinary element style; deleting any output deletes
+the algorithm and all outputs.
 
 ## 4. Geometry
 
 ### 4.1 Common frame
 
-For an axis direction `d̂` (unit vector) let `n̂ = rot90(d̂) = (−d̂y, d̂x)`, the left
-normal. The dimension line is the line `{X : ⟨X − A, n̂⟩ = s}` where `s` is the
-offset. For a measured point `P ∈ {A, B}`:
+For a unit axis direction `d̂` let `n̂ = rot90(d̂) = (−d̂y, d̂x)`. The dimension line
+is `{X : ⟨X − A, n̂⟩ = s}` for the offset `s`. For `P ∈ {A, B}`:
 
 ```text
-t_P  = s − ⟨P − A, n̂⟩          signed distance from P to the dimension line
-P'   = P + t_P · n̂              foot on the dimension line
-σ_P  = sign(t_P)
-ext_P = Segment(P + σ_P·g·n̂,  P' + σ_P·o·n̂)     defined only when |t_P| > g
+t_P   = s − ⟨P − A, n̂⟩            signed distance from P to the dimension line
+P'    = P + t_P · n̂               foot on the dimension line
+σ_P   = sign(t_P)
+ext_P = Segment(P + σ_P·g·n̂, P' + σ_P·o·n̂)     defined only when |t_P| > g
 ```
 
-The dimension line is `Segment(A', B')` with arrow endings at both ends. The text
-anchor is `Midpoint(A', B')`; the text is horizontal, horizontally centred, and
-placed above the anchor by the existing screen-space text alignment (a
-presentation rule of the drawable, never authoritative state; `K9`).
+The dimension line is `Segment(A', B')`; the text anchor is `Midpoint(A', B')`.
 
-### 4.2 `DirectDimension`
+### 4.2 `AlignedDimension`
 
-`v = B − A`, `L = |v|`, `d̂ = v / L` (input order `A → B`). Then `t_A = t_B = s`,
-`A' = A + s·n̂`, `B' = B + s·n̂`. A positive offset places the dimension line on
-the left of `A → B`.
+`v = B − A`, `L = |v|`, `d̂ = v / L` (ordered pair `A → B`); `t_A = t_B = s`.
 
-### 4.3 `AxisDimension`
+### 4.3 `LinearDimension`
 
-`d̂ = dir / |dir|` with `dir` the **kernel direction of the input** (§5):
-`GeoLine.getDirection()` = `(y, −x)` of the line coefficients for a line, segment,
-ray or axis; the coordinates for a vector. `L = |⟨B − A, d̂⟩|`. The sign of `d̂`
-never changes `L`; it only fixes which side a positive offset denotes (left of
-`d̂`: above for `xAxis`, left for `yAxis`; `K7`).
+`d̂ = dir / |dir|` with `dir` = `GeoLine.getDirection()` (line, segment, ray,
+axis) or the vector coordinates; never `getDirectionInD3` (`DQ-E2-5`).
+`L = |⟨B − A, d̂⟩|`; the sign of `d̂` never changes `L`.
 
 ### 4.4 Degeneracies (no tolerance, no silent approximation)
 
-| Case | Value (output 0) | Dimension line | Extension lines | Text |
+| Case | Value | Dimension line | Extension lines | Text |
 |---|---|---|---|---|
 | `A` or `B` undefined or non-finite | undefined | undefined | undefined | undefined |
-| `A = B` (exact binary64 equality), direct | defined, `0` | undefined (no direction) | undefined | undefined |
-| `Direction` undefined, non-finite or zero (`|dir| = 0`) | undefined | undefined | undefined | undefined |
-| axis measure `L = 0` (exact), including `A = B` | defined, `0` | undefined (zero length) | each by its own rule | defined, shows the zero value at the foot |
-| `s`, `o` or `g` non-finite, or `o < 0`, or `g < 0` | defined (does not depend on them) | undefined | undefined | undefined |
-| `s = 0` | defined | defined (on the measured feature) | undefined (`|t_P| = 0 ≤ g`) | defined |
-| `0 < |t_P| ≤ g` | defined | defined | `ext_P` undefined, the other by its rule | defined |
-| unit state `UNSPECIFIED_MODEL_UNIT` | defined | defined | defined | bare value, no suffix (§6) |
-| unit conversion not finite | defined | defined | defined | presentation failure marker (`DQ-E2-3`) |
+| `A = B` (exact), aligned | `0` | undefined | undefined | undefined |
+| `Direction` undefined, non-finite or zero | undefined | undefined | undefined | undefined |
+| linear measure `L = 0` (exact) | `0` | undefined (zero length) | each by its rule | shows `0` at the foot |
+| `s`, `o` or `g` non-finite, `o < 0` or `g < 0` | defined | undefined | undefined | undefined |
+| `s = 0` | defined | defined | undefined | defined |
+| `0 < |t_P| ≤ g` | defined | defined | `ext_P` undefined | defined |
+| `UNSPECIFIED_MODEL_UNIT` | defined | defined | defined | bare value, no suffix |
+| non-finite `display(L)` | defined | defined | defined | failure marker (§5) |
 
-A partially defined dimension keeps every defined output valid; auxiliary
-inputs (offset, overshoot, gap) stay ordinary free numbers in every state. No
-case retains stale geometry: an output that becomes undefined is set undefined
-in the same computation.
+A partially defined dimension keeps every defined output valid; the auxiliary
+inputs stay ordinary free numbers; an output that becomes undefined is set
+undefined in the same computation.
 
-## 5. Direction authority for `AxisDimension` (`DQ-E2-5`)
-
-`E2` executes before `F1` and must not depend on it. The minimal `E2`-local
-contract is: **the measurement axis is the unoriented line spanned by the
-input's kernel direction; the placement side uses that direction's existing
-kernel orientation.** At the base (`K7`, probe P1/P3):
-
-| Construction | `getDirection` | `getDirectionInD3` |
-|---|---|---|
-| `Line(A,B)`, `Segment(A,B)`, `Ray(A,B)` | `B − A` | `B − A` |
-| parallel `Line(P, l)` | as `l` | **opposite** |
-| `PerpendicularLine(P, l)` | `l` rotated +90° | **opposite** |
-| `Line(P, v)`, `Ray(P, v)` | `v` | **opposite** |
-| `xAxis`, `yAxis` | `(1, 0)`, `(0, 1)` | same |
-
-`E2` uses `getDirection` (or the vector coordinates) only and never
-`getDirectionInD3`. It adds no user-visible orientation cue, no orientation
-option and no accessor; `F1` keeps that scope.
-
-## 6. Presentation text and units (`DQ-E2-3`)
+## 5. Value and presentation string (`DQ-E2-3`, decided)
 
 ```text
-numeric value (output 0)     = L, model units — stable, never unit-dependent
-presentation string (output 4) = format(display(L)) + " " + suffix(effP)   physical effC
-                               = format(L)                                UNSPECIFIED
-display(L) = L · fb(effC) / fb(effP)                (unit-system §5.3, UnitState.display)
+numeric output 0 = L  (model units; never depends on units, drawingScale, viewport, zoom, DPI)
+text string      = format(display(L)) + " " + suffix(effP)      physical effC
+                 = format(L)                                    UNSPECIFIED_MODEL_UNIT
+display(L)       = L · metresPerUnit(effC) / metresPerUnit(effP)
+example          = cm / mm, L = 12  →  12 and "120 mm";  presentation m  →  12 and "0.12 m"
 ```
 
-`format` is the text's ordinary kernel number formatting (global rounding or the
-text's own decimals). The unit system adds no rounding rule and the text is
-never parsed back.
+Seam (S1a, consistent with the decision): `compute()` computes geometry and the
+value only and never reads `UnitState`; a separate presentation step writes
+only the string of output 4, after `compute()`, at construction and from the
+`D1` presentation listener on every unit change, with no geometric recompute
+and no DAG input. The string holds the plain value, never LaTeX markup, is not
+written to XML and is never parsed back. Failure marker for a non-finite
+`display(L)` (*preparation resolution*, proposed): `?` followed by the suffix.
+A dimension inside a user macro presents the bare value (macro unit state is
+`EMPTY`), recorded as a known limitation.
 
-**Recommended seam (S1a).** The algorithm separates two steps:
+## 6. Aligned dimension value (`DQ-E2-6`, author requirement; seam characterized)
 
-1. `compute()` — geometry and the value only; a pure function of the geometric
-   inputs; it never reads the unit state;
-2. a presentation step that reads `cons.getUnitSystem().getState()` and the
-   kernel number format and writes **only** the string of output 4.
+Required: parallel to the dimension line; centred longitudinally; never upside
+down; not crossed by the dimension or extension lines; follows the dimension
+figure, not screen axes; zoom, DPI and viewport never semantic authority;
+preserved by save and reopen; explicit validated export behavior.
 
-The presentation step runs after `compute()` in the algorithm's ordinary update
-and at construction, and on every unit-state change through the existing
-`DocumentUnitSystem` presentation listener (`K8`), which iterates the
-construction's dimension algorithms, runs only their presentation step and
-notifies the text outputs. No geometry is recomputed, no DAG input is added, and
-the unit state never becomes a dependency of any geometric output. This is the
-only unit-state reader `unit-system.md` §6.2 item 1 and §14.2 permit; it keeps
-§6.1 literally (no read inside `compute()`, no recompute because of a unit
-change). The text string is not written to XML (dependent text), so a unit
-change changes no construction XML except `geocedgUnits`.
+Characterized seam (addendum `A7`, `A8`; C4, feasible with β):
 
-Consequences (recorded, not hidden): a dimension inside a user macro computes in
-a macro construction whose unit state is always `EMPTY` (`unit-system.md` §8.8),
-so it presents the bare value; a script or object that explicitly reads the text
-sees the new string after a unit change (a presentation dependency, §6.2).
+1. The two algorithms implement a GeoCeDG kernel interface that exposes the
+   dimension-line end points of their text output (model coordinates) and the
+   overshoot side. No new geo type, no XML.
+2. `EuclidianDraw` routes a text to a GeoCeDG `DrawDimensionText extends
+   DrawText` only when its parent algorithm implements that interface; every
+   other text keeps `DrawText`.
+3. The drawable takes the screen angle of the projected dimension line, applies
+   the reading rule `θ = φ − 180·⌈(φ − 90)/180⌉ ∈ (−90°, 90°]` (order-independent;
+   vertical reads bottom to top), rotates about the screen anchor and lifts the
+   value by half its height plus a fixed clearance along "text up"; when the
+   projected value is longer than the dimension line the lift also clears the
+   overshoot tips. Hit testing, highlight, background and `Corner` bounds use
+   the rotated rectangle.
+4. Nothing of this is stored: the orientation is re-derived from the geometry
+   at every draw, so save, reopen, undo and redo reproduce it.
 
-## 7. Deterministic side (`DQ-E2-4`)
+Measured (addendum `A5`): parallel within 2.4°, centred within 1.9 px, never
+crossed, readable in every case, including reversed input order, zoom,
+resizing, value width and suffix changes, both offset sides, anisotropic axes,
+moves of `A` and `B`, an offset change, an XML round trip and a value change.
+The reading direction, and the side on which the value sits, change by 180° at
+the vertical; that is presentation only.
 
-The `P0` rule (canonical `t̂` flipped to `+x` when `|tx| ≥ |ty|`, else to `+y`)
-is order-independent but **discontinuous at `|tx| = |ty|`**: dragging `A` or `B`
-across 45° moves a positive-offset dimension line to the other side, and the
-exact tie needs its own rule.
+## 7. Pinned side (`DQ-E2-4`, decided: B1)
 
-Recommended (**B1 — pinned by explicit inputs**): the geometry uses the input
-order (`DirectDimension`) or the kernel direction (`AxisDimension`) and the
-signed offset; it is continuous for every non-degenerate configuration and
-never flips. The tool applies the canonical above/left rule **once, at
-creation**, by choosing the sign of the captured offset (or the placement click
-fixes it). Alternatives: A (live canonical rule, documented flip) and B2 (an
-extra explicit reference-axis input; its flip moves to 90° from the pin).
+*Preparation resolution* of the minimal exact representation: no extra input.
 
-## 8. Interaction (Desktop)
+```text
+AlignedDimension  n̂ = rot90((B − A)/|B − A|)    left normal of the ordered pair A → B
+LinearDimension   n̂ = rot90(d̂)                  d̂ from getDirection() or the vector
+side              = sign(Offset) relative to n̂
+```
 
-- Tool flow (`DQ-E2-11`): `DirectDimension` = point, point, placement click;
-  `AxisDimension` = point, point, line or vector, placement click. Existing
-  points are selected or new free points created by the host rules.
-- At the placement click `C` the tool computes once, in model units, the signed
-  offset `s = ⟨C − A, n̂⟩` with the `n̂` of §4.2 or §4.3, and creates three free
-  hidden auxiliary numbers (offset, overshoot, gap) whose values are then
-  ordinary construction parameters.
-- Drag: pressing on output 1 (or 2–4) in Move mode and dragging writes exactly
-  one value, the free offset number, `s := ⟨C − A, n̂⟩` for the current pointer
-  `C`, using a kernel helper of the algorithm (pure geometry); one undo point
-  on release, through the existing GeoCeDG press/drag/release interception
-  (`K13`). When the offset is not a free independent number nothing is dragged.
-- No route — mouse, arrow keys or multi-selection — may move `A` or `B`
-  through a dimension output: the inherited dependent-move rule would translate
-  the free measured points (`K13`).
+Input order and `Offset` are explicit, serialized command inputs, so the side is
+construction state. The normal is continuous in `A`, `B` and the direction, so
+dragging geometry never flips the side; the only singular configurations are the
+degeneracies of §4.4. The tool chooses the sign of the captured offset once,
+from the placement click. No classification is re-evaluated after creation.
+
+## 8. Interaction (Desktop; `DQ-E2-11`, decided)
+
+- `AlignedDimension`: point, point, placement click. `LinearDimension`: point,
+  point, line or vector, placement click.
+- At the placement click `C`: `Offset = ⟨C − A, n̂⟩` in model units, stored at once
+  as a free hidden auxiliary number.
+- `Overshoot` and `Gap`: captured once; with a physical unit and the session
+  `drawingScale`, from paper magnitudes (proposed 2 mm and 1 mm); with
+  `UNSPECIFIED_MODEL_UNIT`, a view-derived fallback (proposed 8 px and 4 px)
+  materialized at once in model units; no millimetre relation pretended.
+  After creation no live viewport, DPI, `drawingScale` or geometric `UnitState`
+  dependency.
+- Drag: pressing on a dimension output in Move mode and dragging writes only the
+  free offset number, `s := ⟨C − A, n̂⟩`, through a pure kernel helper; one undo
+  point on release (GeoCeDG press/drag/release interception, `K13`). Nothing is
+  dragged when the offset is not a free independent number. No route moves `A`
+  or `B` through a dimension output.
 
 ## 9. Persistence, compatibility, export
 
-- XML: an additive `<command name="DirectDimension">` (or `AxisDimension`) with
-  existing output element types; arrow endings are ordinary element style
-  (`startStyle`/`endStyle`); the offset, overshoot and gap are ordinary free
-  numerics. No new element type, no new attribute, no change to any reader.
-- Older readers (GeoCeDG before `E2`, Classic, the pinned upstream baseline):
-  the unknown command is reported as a load error, the rest of the document
-  loads, and the command's outputs **and every object that depends on them** are
-  missing; a re-save loses them (`K16`, probe P5). This is the expected boundary
-  of any new command and must be stated in the guides.
-- Export (`K12`): picture formats (PNG, SVG, PDF, EMF, print) draw the complete
-  figure through the shared drawables. PSTricks, PGF/TikZ and Asymptote draw the
-  segments but drop the arrow endings and place the text top-left at its anchor
-  (no centring). DXF writes the three segments only: arrowheads are absent and
-  the text is excluded from the geometric population with a non-blocking
-  diagnostic (a selection that includes the text is not writable). `DQ-E2-9`
-  decides whether `E2` closes these gaps.
+- XML: additive `<command name="AlignedDimension">` / `"LinearDimension"` with
+  existing output element types; arrow endings as element style; offset,
+  overshoot and gap as ordinary numerics. No new element type or attribute; no
+  reader change.
+- Older readers (GeoCeDG before `E2`, Classic, the pinned baseline): the
+  unknown command is reported as a load error, the rest loads, the outputs and
+  every dependent are missing and lost on re-save (`K16`); stated in the guides.
+- Export (`DQ-E2-9`, decided):
+  - picture formats (PNG, SVG, PDF, EMF, print): the complete figure through
+    the drawables, including the aligned value of §6;
+  - PSTricks, PGF/TikZ, Asymptote: a bounded GeoCeDG adaptation, for dimension
+    outputs only, emits the arrow endings, the rotation, the centred anchoring
+    and the lift; other segments and texts keep their current output;
+  - DXF: no `DIMENSION` entity; the existing path writes the dimension line and
+    the two extension lines as `LINE` and excludes the value with its existing
+    diagnostic; recorded as the durable limitation
+    `OBS-R6PLUS-E2-DXF-DIMENSION-SUBSET`; no claim of DXF dimension semantics.
 
-## 10. Stale facts superseded
+## 10. Verification class (`DQ-E2-8`, decided)
 
-| Source | Stale statement | Current base |
+`INTEGRATED_PHASE`: registered `PHASE` plus `INTEGRATION`. The §6 renderer
+seam is gated to dimension outputs and changes no serialization, reader, undo
+snapshot or kernel semantics, so it stays within the class. A new `GeoElement`,
+a new XML element type, materially new global serialization semantics, or a
+change to how any non-dimension text is drawn, hit or exported → stop and
+request a `GLOBAL_IMPACT` review.
+
+## 11. Stale facts superseded
+
+| Source | Stale statement | Current |
 |---|---|---|
-| `P0` candidate §5, plan §8.5 | catalog pin 115 actions; group at `application-profile.yml:3276-3280` | 125 actions (`GeoCeDGProfile.java:340-345` and eight test pins); `construction-metrics` at `:3475-3480` |
-| `P0` candidate §3 | direction "from the orientation authority of `F1`" | `E2`-local contract of §5; no `F1` dependency |
-| `P0` candidate §3 | `A = B` gives an undefined dimension | value `0` defined, figure undefined (§4.4; `DQ-E2-2`) |
-| `P0` candidate §3 | positive offset canonical side recomputed live | B1 pinned by explicit inputs (§7; `DQ-E2-4`) |
-| `P0` candidate §4 | exporters "work at once" for segments and text | picture only; LaTeX and DXF lose arrow endings, text centring and DXF text (§9) |
-| `P0` candidate §4 | the text "updates when either unit changes (`D1`)" through the kernel graph | presentation step outside `compute()` driven by the `D1` listener (§6) |
-| `P0` candidate §6 | a drag edits the offset (mechanism unspecified) | no 2D kernel mechanism exists (`ChangeableParent` is 3D-only); Desktop interception (§8) |
-| plan §8.5, `P0` §5 | `X.Tool` / `X.Help` keys | confirmed for `upstream-mode` actions; status and error text need tool-owned keys (prompt) |
-| `E1` observation | collision affects the user library only | it also affects every document that embeds the legacy macros, and the library fails as a whole (§2) |
+| `P0` candidate, plan §8.5 | heads `DirectDimension` / `AxisDimension` | `AlignedDimension` / `LinearDimension` (`DQ-E2-7`) |
+| `P0` candidate §5, plan §8.5 | 115 actions; group at `application-profile.yml:3276-3280` | 125 actions at the base; `:3475-3480` |
+| `P0` candidate §3 | optional offset | offset mandatory (`DQ-E2-2`) |
+| `P0` candidate §3 | direction from `F1` | `E2`-local (`DQ-E2-5`) |
+| `P0` candidate §3 | `A = B` undefined dimension | value `0`, figure undefined (§4.4) |
+| `P0` candidate §3 | canonical side recomputed live | B1 pinned by explicit inputs (§7) |
+| `P0` candidate §4 | parallel text not sustainable; horizontal text | aligned value through the §6 seam (`DQ-E2-6`) |
+| `P0` candidate §4 | exporters work at once | picture yes; LaTeX by adaptation; DXF subset (§9) |
+| `P0` candidate §6 | drag mechanism unspecified | Desktop interception (§8); `ChangeableParent` is 3D-only |
+| first version of this file | `KNOWN LIMITATION — horizontal centred text` recommended | rejected by the author; superseded by §6 |

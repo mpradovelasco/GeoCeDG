@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E2",
+  "artifactKind": "AUTHOR_DECISION_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e2_author_decisions_record.md",
+  "authorInstruction": {
+    "date": "2026-10-07",
+    "title": "FREEZE AUTHOR DECISIONS AND FOCAL CHARACTERIZATION OF NORMATIVE DIMENSION TEXT",
+    "authorizes": "recording DQ-E2-1 to DQ-E2-11 and one focal characterization of the dimension-value orientation (DQ-E2-6); documentation only",
+    "doesNotAuthorize": ["E2 implementation", "push", "merge", "publication", "tag", "release", "E3", "F1", "F2", "F3", "G"]
+  },
+  "publishedBase": {"name": "P_R6PLUS_E1_P_X1", "commit": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc", "tree": "8b2b5027a2119f996de8ca5af91b03ce32731a8c"},
+  "documentaryBase": {
+    "name": "T_R6PLUS_E2_PREP",
+    "commit": "6ad853c618da8f07a279b266c83002c145c6292c",
+    "tree": "8fb6517b2519a6fa636b473a95432e5af7036483",
+    "static": "verification-b355b147258849beb498a541293a4fd9 ACCEPTED / COMPLETE 3/3",
+    "amended": false
+  },
+  "phaseState": "PREPARED — AUTHOR DECISIONS FROZEN — IMPLEMENTATION NOT AUTHORIZED",
+  "implementation": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "passClaimed": false,
+  "decisions": {
+    "DQ-E2-1": {"decision": "β — COMPOSITION OF EXISTING OUTPUT TYPES — AUTHOR APPROVED FOR E2 DESIGN", "escalation": "new GeoElement type or XML element type"},
+    "DQ-E2-2": {
+      "decision": "Offset mandatory; Overshoot and Gap optional, 0 when omitted; no hidden viewport-, DPI-, unit- or length-dependent default",
+      "signatures": [
+        "AlignedDimension(<Point A>, <Point B>, <Offset> [, <Overshoot>, <Gap>])",
+        "LinearDimension(<Point A>, <Point B>, <Direction>, <Offset> [, <Overshoot>, <Gap>])"
+      ],
+      "outputOrderPreparationResolution": ["value GeoNumeric", "dimension line GeoSegment (arrow endings)", "extension line at A GeoSegment", "extension line at B GeoSegment", "presentation text GeoText"]
+    },
+    "DQ-E2-3": {
+      "decision": "AUTHOR APPROVED",
+      "numericValue": "model-unit measure, independent of constructionUnit, presentationUnit, drawingScale, viewport, zoom, DPI",
+      "displayedValue": "format(display(L)) + suffix(effP); display(L) = L * metresPerUnit(effC) / metresPerUnit(effP); UNSPECIFIED_MODEL_UNIT -> format(L), no suffix",
+      "example": {"constructionUnit": "cm", "presentationUnit": "mm", "L": 12, "numeric": 12, "text": "120 mm", "afterPresentationUnitM": {"numeric": 12, "text": "0.12 m"}},
+      "constraints": ["no UnitState read in geometric compute()", "unit changes refresh presentation only", "no presentation string parsed back into geometry"]
+    },
+    "DQ-E2-4": {
+      "decision": "B1 — PIN THE SIDE / ORIENTATION CHOICE EXPLICITLY",
+      "preparationResolution": "side = sign(Offset) relative to n = rot90 of the ordered pair A -> B (AlignedDimension) or of getDirection / vector coordinates (LinearDimension); input order and Offset are explicit serialized command inputs; no extra input; the tool fixes the sign once from the placement click"
+    },
+    "DQ-E2-5": {"decision": "E2-LOCAL DIRECTION AUTHORITY", "authority": "GeoLine.getDirection and vector coordinates", "forbidden": "getDirectionInD3 as semantic authority; any F1 dependency"},
+    "DQ-E2-6": {
+      "decision": "NORMATIVE-STYLE ALIGNED DIMENSION VALUE — AUTHOR REQUIREMENT — IMPLEMENTATION SEAM TO BE CHARACTERIZED",
+      "rejectedProposal": "KNOWN LIMITATION — horizontal centred text",
+      "requirements": ["parallel to the dimension line", "centred longitudinally", "never upside down", "not crossed by the dimension or extension lines", "follows the dimension figure, not screen axes", "zoom, DPI and viewport are not semantic authority", "save/reopen preserves the semantics", "export behavior explicit and validated"],
+      "focalResult": "ALIGNED NORMATIVE-STYLE TEXT — FEASIBLE WITH β (C4 bounded drawable seam)",
+      "evidence": "docs/validation/pre_g9b_r6_plus_e2_dq6_aligned_text_addendum.md"
+    },
+    "DQ-E2-7": {
+      "decision": "canonical AlignedDimension and LinearDimension; Spanish aliases CotaAlineada and CotaLineal",
+      "notRegistered": ["DirectDimension", "AxisDimension", "directDimension", "axisDimension"],
+      "userMacros": "never silently renamed, deleted, migrated or reinterpreted",
+      "resolves": "native-naming side of OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION; coexistence still validated in E2"
+    },
+    "DQ-E2-8": {"decision": "INTEGRATED_PHASE", "acceptance": "registered PHASE + INTEGRATION", "escalation": "new GeoElement, new XML element type or materially new global serialization semantics -> STOP, request GLOBAL_IMPACT review"},
+    "DQ-E2-9": {
+      "picture": "complete figure",
+      "latex": "PSTricks, PGF/TikZ, Asymptote preserve arrows, text positioning and orientation through a bounded GeoCeDG export adaptation; no silent loss",
+      "dxf": "no DIMENSION entity in E2; segment subset recorded as a durable E2 export limitation; no claim of full DXF dimension semantics"
+    },
+    "DQ-E2-10": {
+      "commands": ["AlignedDimension", "LinearDimension"],
+      "aliasesEs": ["CotaAlineada", "CotaLineal"],
+      "actionIds": ["measure.aligned-dimension", "measure.linear-dimension"],
+      "modes": [142, 143],
+      "group": "construction-metrics",
+      "menu": "Construction",
+      "pins": "current-base counts only (125 actions at the base)"
+    },
+    "DQ-E2-11": {
+      "offset": "from the placement click, converted at once into the explicit model-space Offset",
+      "commandDefaults": {"Overshoot": 0, "Gap": 0},
+      "toolCapture": "once at creation; physical unit + drawingScale may derive paper magnitudes; UNSPECIFIED_MODEL_UNIT never pretends a millimetre relation; view fallback materialized at once",
+      "afterCreation": "no live viewport, DPI, drawingScale or geometric UnitState dependency",
+      "proposedMagnitudes": {"paperOvershootMm": 2, "paperGapMm": 1, "viewOvershootPx": 8, "viewGapPx": 4, "state": "PROPOSED — to confirm at authorization"}
+    }
+  }
+}

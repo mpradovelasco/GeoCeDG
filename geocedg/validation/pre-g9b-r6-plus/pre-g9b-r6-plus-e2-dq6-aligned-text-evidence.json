@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E2",
+  "decision": "DQ-E2-6",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "addendum": "docs/validation/pre_g9b_r6_plus_e2_dq6_aligned_text_addendum.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "documentaryBase": {"commit": "6ad853c618da8f07a279b266c83002c145c6292c", "tree": "8fb6517b2519a6fa636b473a95432e5af7036483"},
+  "result": "ALIGNED NORMATIVE-STYLE TEXT — FEASIBLE WITH β (C4 bounded drawable seam)",
+  "representationEscalationRequired": false,
+  "implementation": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "passClaimed": false,
+  "probe": {
+    "id": "P6",
+    "class": "E2PrepAlignedTextProbeTest",
+    "runs": [
+      {"run": 1, "exit": 1, "modes": ["C1", "C2", "C4"], "note": "C4 emulation drew nothing (the hidden text's drawable had been made invisible) and one SetValue statement returned no result; C1 and C2 measurements valid"},
+      {"run": 2, "exit": 0, "modes": ["C2b", "C4"], "note": "C4 emulation corrected; C2b pixel-identical to C2"}
+    ],
+    "view": {"widthPx": 800, "heightPx": 600, "pxPerUnit": 50, "axes": false, "grid": false},
+    "metrics": ["par: principal-axis angle of the value pixels versus the screen line (mod 180)", "lon: centroid offset along the line (px)", "crossLine / crossExt: value pixels on the dimension / extension segments", "upMin: lowest value pixel along text-up (px)", "reading: overlap with the 0-degree reference rotated by theta versus theta+180"],
+    "parallelNoiseBaseline": {"C4": -1.27, "C2": -2.22, "acceptance": "|par| <= 3.5 deg read as parallel"},
+    "cleanup": "probe class only in the scratchpad; Desktop test classes recompiled without it; probe classes and results removed from source/desktop/desktop/build"
+  },
+  "readingRule": {
+    "phi": "atan2(P2y - P1y, P2x - P1x) of the screen projection, degrees",
+    "theta": "phi - 180 * ceil((phi - 90) / 180), in (-90, 90]",
+    "orderIndependent": true,
+    "vertical": "theta = 90, bottom to top",
+    "presentationDiscontinuity": "180-degree change of reading direction and value side at the vertical; no construction state changes"
+  },
+  "sweepAngles": [0, 30, 44, 45, 46, 89, 90, 91, 135, 179],
+  "results": {
+    "C1": {"parAbsMaxDeg": 3.20, "lonAbsMaxPx": 4.71, "crossLinePx": "84-113 every angle", "verdict": "REJECTED — centred on the line"},
+    "C2": {"parAbsMaxDeg": 3.24, "anisotropicParDeg": -21.03, "lonAbsMaxPx": 4.74, "crossLinePx": "12-46 over the sweep, up to 51 anisotropic, 0-1 near the vertical, 0 at zoom 100", "upMinPx": "0.83-2.67 against half-width 2.5", "valueString": "LaTeX markup", "verdict": "REJECTED — clearance, anisotropy, value string, LaTeX packages"},
+    "C2b": {"identicalToC2": true, "note": "row gap \\\\[0.5em] not honoured by the renderer"},
+    "C4": {"parAbsMaxDeg": 2.36, "anisotropicParDeg": -1.14, "lonAbsMaxPx": 1.91, "crossLinePx": 0, "crossExtPx": 0, "upMinPxMin": 12.09, "readable": "every scored case (1.00 versus <= 0.77)", "casesMeasured": 37, "valueString": "plain value", "verdict": "SATISFIES DQ-E2-6 MEASURED PROPERTIES"}
+  },
+  "c4Dynamic": {
+    "moveA": "theta 41.86, par -1.68, lon 1.71, no crossing",
+    "moveBPastVertical": "theta -63.43, par -2.24, lon -1.30, no crossing",
+    "offsetMinus2": "theta -63.43, par -0.64, lon -1.19, no crossing",
+    "xmlRoundTrip": "theta and string identical; text string not in XML",
+    "valueChange": "120 mm -> 0.12 m: lon 0.28, par 0.11, no crossing"
+  },
+  "exports": {
+    "C2": {"pgf": "node[anchor=north west] {$\\rotatebox{30}{...}$}: rotation kept, centring lost, amsmath absent", "pstricks": "\\rput[tl](...){$\\red{\\rotatebox{30}{...}}$}: rotation kept, centring lost, amsmath absent", "asymptote": "label(\"$\\rotatebox{30}{...}$\", ..., SE...): rotation kept, centring lost, amsmath loaded"},
+    "C4AtBase": {"pgf": "node[anchor=north west] {120 mm}", "pstricks": "\\rput[tl](...){\\red{120 mm}}", "asymptote": "label(\"120 mm\", ..., SE...)", "note": "no rotation, no centring until the bounded GeoCeDG export adaptation"},
+    "valueAndSuffixPreserved": true,
+    "arrowEndingsInLatex": "lost at the base (K12)",
+    "dxf": "DQ-E2-9 limitation: segments only"
+  },
+  "seam": {
+    "kernel": "GeoCeDG interface implemented by the two dimension algorithms giving the dimension-line end points of their text output; no new geo type, no XML",
+    "renderer": "one routing change in EuclidianDraw case TEXT to a GeoCeDG DrawDimensionText (extends DrawText) only for texts whose parent implements the interface",
+    "drawable": "screen angle from projected end points, reading rule, rotation about the anchor, typographic lift (half label height + clearance px; also clears overshoot tips when the value is longer than the line), rotated hit test, highlight, background and Corner bounds",
+    "latex": "GeoCeDG exporters override drawText and drawGeoSegment for dimension outputs only: rotation, centred anchoring with lift, arrow endings",
+    "unexecutedObligations": ["picture export at several DPI and scales", "hit testing and selection of the rotated value", "Corner bounding box", "undo and redo", "LaTeX output compiled or syntax-checked per dialect"],
+    "verificationClass": "INTEGRATED_PHASE unchanged; any change to non-dimension texts is an escalation condition"
+  },
+  "observations": [
+    "OBS-R6PLUS-E2-READING-FLIP-AT-VERTICAL",
+    "OBS-R6PLUS-E2-VALUE-LONGER-THAN-DIMENSION-LINE",
+    "OBS-R6PLUS-E2-LATEX-TEXT-PACKAGE",
+    "OBS-R6PLUS-E2-DXF-DIMENSION-SUBSET"
+  ]
+}
