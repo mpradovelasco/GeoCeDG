@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "recordKind": "AUTHOR_RIGHTS_AND_PROVENANCE_DECLARATION",
+  "recordVersion": 1,
+  "record": "docs/licensing/curated-ggt-library-rights-record.md",
+  "recordedOn": "2026-10-07",
+  "decisionDate": "2026-10-07",
+  "decisionSource": "author instruction of 2026-10-07 resolving DQ-E1-1 to DQ-E1-16 (docs/validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md)",
+  "legalConclusion": false,
+  "notLegalAdvice": true,
+  "rightsHolder": "Manuel Prado-Velasco",
+  "rightsHolderRole": "author and sole rights holder of the selected macro definitions",
+  "authorizations": {
+    "modificationIntoCuratedDerivatives": "AUTHORIZED",
+    "inclusionInGeoCeDG": "AUTHORIZED",
+    "profileInternal": "AUTHORIZED",
+    "profileNcRedistribution": "AUTHORIZED",
+    "profileCommercial": "NOT AUTHORIZED / PENDING"
+  },
+  "licensingClasses": {
+    "curatedDefinitions": { "class": "geocedg-software", "license": "EUPL-1.2" },
+    "ownedIcons": { "class": "geocedg-documentation-or-ordinary-art", "license": "CC-BY-4.0" }
+  },
+  "provenanceSource": {
+    "path": "models/legacy/template-v7/original/Templatev7.ggb",
+    "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "macroXmlSha256": "f3744e131a627ba5e9bef092427930e6e7c1526a6d527b43c3b4f30e04fc94f4",
+    "sourceMacroHashRule": "SHA-256 of the UTF-8 bytes of the exact <macro ...>...</macro> element in geogebra_macro.xml"
+  },
+  "macros": [
+    { "command": "SquarebyDiagonal", "sourceMacroSha256": "1f01fd91b942dc268813499a3b0b0f15364005b3ff62403eba1dc43861513269", "archive": { "name": "squarebydiagonal.ggt", "bytes": 1400, "sha256": "29e2a3d88d926f75f9b7fc0e24290340a10f092da7e161dc19c3a83129e9470f", "writer": "5.2.820.0", "date": "2024-02-05" } },
+    { "command": "CirclebyD", "sourceMacroSha256": "888db63faa586cc89a7f6fc54d1de11690a3cbd57f08f1ee5c8696e20cb05825", "archive": { "name": "circlebyD.ggt", "bytes": 2143, "sha256": "977d812d55d8a151f7ed8caa2983d0960daab72f7fc3010f5cccfe4b15bd76f8", "writer": "5.2.820.0", "date": "2024-02-05" } },
+    { "command": "circArcbyAngle", "sourceMacroSha256": "6c788b66cafe9554f84cad18f976222bfa071efbda01575256e1136768ac84e6", "archive": { "name": "circarcbyangle.ggt", "bytes": 2308, "sha256": "640f0906749b2396c676e0b3ed1f7324599ef1ec3302704784f225ed22fa5348", "writer": "5.2.827.0", "date": "2024-03-06" } },
+    { "command": "ellipseLength12", "sourceMacroSha256": "1195f89860881fc48cd481dcac75e912573ded8403d4c968db17dc0a79ede4fe", "archive": { "name": "ellipsepartiallength.ggt", "bytes": 2495, "sha256": "35c20a5d35d7bce362d36f2ef10f8db4d1b719e1254566234268f20cd16eb293", "writer": "5.2.832.0", "date": "2024-04-02" } },
+    { "command": "IFPositiveSelectPoint", "sourceMacroSha256": "3d6d2b10ba018ee0a488c1d6fa2a5a2fb466165d16b78d5cf3ea8f3d16eaef96", "archive": { "name": "IFpositivethenPoint.ggt", "bytes": 1263, "sha256": "c490e221a90e2acaeeaad3575ba172acc6cf0e82fcb765560bcafeb9cb7beb27", "writer": "5.2.836.0", "date": "2024-04-22" } },
+    { "command": "EllipseAxis", "sourceMacroSha256": "d00f2527877516f7c8858c6750ae284bbe92e39f402e5d1380694a74cccdd481", "archive": { "name": "ellipsebyaxis.ggt", "bytes": 1490, "sha256": "01437a90761366b619178cde37a3ebb88bc7ac51b6de0b04e3369d38ac77040b", "writer": "5.2.820.0", "date": "2024-02-05" } },
+    { "command": "conj2mainAxesEllipse", "sourceMacroSha256": "01e3f585aa78cf0d9780ce8e922f9889e92998b6cdab61833a8de5cacb643c87", "archive": { "name": "ellipseaxisbyconjaxis.ggt", "bytes": 3747, "sha256": "7639c82aa2aad8b470f9f6ab9130e419c3e321f33f8d1ccc672326acf6c40539", "writer": "5.2.829.0", "date": "2024-03-11" } },
+    { "command": "pointJump", "sourceMacroSha256": "ee2ab641ee97d8bb712069048b5e788df253eeeb527c7ab1386b42df6fcb7765", "archive": { "name": "pointjump.ggt", "bytes": 988, "sha256": "a350031eb98be790627dd15294550a07638d0b7968c64e783695976ef8ba76f1", "writer": "5.2.820.0", "date": "2024-02-04" } },
+    { "command": "relCoor", "sourceMacroSha256": "744b49c8cd9169c294e40e3dc5175815ebd7ceb2b5c922cdda1d1a0916d579ea", "archive": { "name": "relcoor.ggt", "bytes": 2327, "sha256": "95ff380d56bb70fd07457b06b977fb27d03de22bfc0dfdd4850ea4bed8b7a0b2", "writer": "5.2.826.0", "date": "2024-02-26" } },
+    { "command": "translationCoor", "sourceMacroSha256": "304d0d87992de461456ab11c70252a45fba9b4b9cb10606fbcb570cabdef20ea", "archive": { "name": "translationcoor.ggt", "bytes": 2553, "sha256": "ef05762d7e1847185374d737d929f868616e6c8a8d270483bd4b9c91ed47b42b", "writer": "5.2.829.0", "date": "2024-03-05" } },
+    { "command": "DuctSymbol", "sourceMacroSha256": "acf782297f721c02a0ffe5eee45bfe23e2039a7dfcc29c0d47ac43a8fb853dff", "archive": { "name": "ductsymbol.ggt", "bytes": 3000, "sha256": "a2c1faa18d1727dd59bf590f998c360bb66d473174c605f4e127c96f5ea42890", "writer": "5.2.827.0", "date": "2024-02-28" } },
+    { "command": "SymmSymbol", "sourceMacroSha256": "0289320da131fdd040384d13887ae0d99483548607020265d5acb3e0b9b2a236", "archive": { "name": "symmsymbol.ggt", "bytes": 2219, "sha256": "491628c089749cd99b5759b0ed9259e530284529bedb3d2f8dc33d44b01fa74e", "writer": "5.2.827.0", "date": "2024-02-28" } }
+  ],
+  "perMacroDisposition": {
+    "rightsHolder": "Manuel Prado-Velasco",
+    "modificationAuthorized": true,
+    "inclusionAuthorized": true,
+    "profiles": { "INTERNAL": "AUTHORIZED", "NC": "AUTHORIZED", "COMMERCIAL": "NOT AUTHORIZED / PENDING" },
+    "licensingClass": "geocedg-software"
+  },
+  "curatedArtifactIdentity": "generated evidence in models/curated/ggt-library/library-manifest.json (E1-L); not repeated here",
+  "exclusions": {
+    "notSelectedTools": ["directDimension", "axisDimension", "sheetISOAnLand", "sheetISOAnVert"],
+    "otherTemplateMacros": ["SplineLength", "PoliLineVisibility", "Perimeter", "listLength", "listLength12", "postLocus", "ellipseVisibility", "dummyRotate"],
+    "materialsWithoutGrant": ["GeoGebra stock icons", "embedded third-party UI artwork", "GeoGebra software", "every image carried by Templatev7.ggb or the 2024 archives", "geogebra_javascript.js", "geogebra.xml", "defaults and thumbnail of Templatev7.ggb"],
+    "templateReviewStatusUnchanged": "blocked"
+  }
+}

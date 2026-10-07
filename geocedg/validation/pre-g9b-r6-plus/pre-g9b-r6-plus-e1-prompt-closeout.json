@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1",
+  "record": "docs/validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md",
+  "decisionDate": "2026-10-07",
+  "preparationCandidate": {
+    "name": "T_R6PLUS_E1_PREP",
+    "commit": "0ce52a965bcf8b9de37a1572738c0ad79db52354",
+    "tree": "e500e80fddf957078249383ae61e28e6f707d455",
+    "base": "23b971f5a967958f93e745ca8c39fce1162706e6",
+    "static": "verification-91ade0eb295449a6aa95d69289aad6ba"
+  },
+  "states": {
+    "preparation": "AUTHOR REVIEWED — DECISIONS RECORDED",
+    "E1": "SPLIT INTO E1-L AND E1-P",
+    "E1-L": "AUTHORIZED FOR IMPLEMENTATION",
+    "E1-P": "PREPARED — NOT AUTHORIZED"
+  },
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "implementationAuthorized": { "E1-L": true, "E1-P": false, "E2": false, "E3": false, "F1": false, "F2": false, "F3": false, "G": false, "PRE-G9B-R7": false, "G9B": false },
+  "publicationAuthorized": false,
+  "subphases": [
+    { "id": "PRE-G9B-R6-plus-E1-L", "registryPhaseId": "PRE-G9B-R6-PLUS-E1-L", "verificationClass": "BOUNDED_PHASE", "frozenAtPhaseStart": true, "acceptance": "one registered PHASE", "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-l-curated-ggt-library.prompt.md" },
+    { "id": "PRE-G9B-R6-plus-E1-P", "registryPhaseId": "PRE-G9B-R6-PLUS-E1-P", "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE", "impact": "PHASE_LOCAL", "expectedEvidence": ["registered PHASE", "INFRA_UNIT", "PACKAGING -CheckToolchain", "PACKAGING -VerifyPackagingArtifacts", "packaging smoke"], "finalPlanned": false, "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-p-ggt-library-packaging.prompt.md" }
+  ],
+  "dispositions": {
+    "DQ-E1-1": "split accepted; identifiers accepted",
+    "DQ-E1-2": "E1-L BOUNDED_PHASE, one registered PHASE, JUnit-only checks; escalation on verifier/build/kernel/document-format/action-catalog need",
+    "DQ-E1-3": "E1-P OPERATIONAL_VERIFICATION_INFRASTRUCTURE PHASE_LOCAL, prepared only",
+    "DQ-E1-4": "models/legacy/template-v7 + models/curated/ggt-library + geocedg/resources/icons/ggt-library + tools/; tools/ggtfiles rejected; AGENTS.md 3.2 amendment authorized",
+    "DQ-E1-5": "curate from Templatev7.ggb; no ingest; archive hashes as provenance evidence; verify-legacy pins unchanged",
+    "DQ-E1-6": ["SquarebyDiagonal", "CirclebyD", "circArcbyAngle", "ellipseLength12", "IFPositiveSelectPoint", "EllipseAxis", "conj2mainAxesEllipse", "pointJump", "relCoor", "translationCoor", "DuctSymbol", "SymmSymbol"],
+    "DQ-E1-7": "sheet tools neither curated nor shipped; no curated-but-unshipped copies; E3 references",
+    "DQ-E1-8": "AQ-G3 and AQ-G3a require no E1 implementation; E3 reference evidence",
+    "DQ-E1-9": "black, GeoGebra lineThickness 3, role line types preserved, points and texts unchanged; no remembered style",
+    "DQ-E1-10": "read-only installation-relative bundled catalog; no seed; user precedence; user-side pins; whole-catalog fail-closed",
+    "DQ-E1-11": "owned SVG sources; deterministic 32x32 PNG via the Java renderer on the recorded JDK; CC-BY-4.0 ordinary art",
+    "DQ-E1-12": "planned E1-P admission below app/ggt-library only; INTERNAL and NC include; COMMERCIAL excludes",
+    "DQ-E1-13": "rights record version 1 (docs/licensing/curated-ggt-library-rights-record.md)",
+    "DQ-E1-14": "cedg.library.curated-ggt experimental, enabled by default; spec and ADR 0033 approved at E1-L closeout; no stable",
+    "DQ-E1-15": "names and help texts verbatim",
+    "DQ-E1-16": "G keeps depending on E1-P unless a separate author decision re-plans it"
+  },
+  "excludedTools": ["directDimension", "axisDimension", "sheetISOAnLand", "sheetISOAnVert"],
+  "crossPhaseConstraint": { "id": "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION", "owner": "PRE-G9B-R6-plus-E2", "solvedInE1": false },
+  "additionalRequirement": {
+    "id": "ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA",
+    "owner": "PRE-G9B-R6-plus-G",
+    "status": "AUTHOR APPROVED REQUIREMENT",
+    "implementationInE1": false,
+    "currentVisibleVersion": "1.0.0",
+    "nextVisibleVersion": "1.1.0",
+    "promotionCondition": "PRE-G9B-R6-plus-G = PASS — AUTHOR APPROVED",
+    "versionDateIsBuildDate": false,
+    "promotionAuthorizesTagReleasePublication": false
+  },
+  "corrections": [
+    "JSVGIcon/JSVGImageBuilder render through the existing EchoSVG dependency (frozen report K6 said no external SVG library)",
+    "E1-L transformation set is T-EXTRACT, T-ICON, T-STYLE (T-HIDE and T-NOSCRIPT have no target)",
+    "feature registered in geocedg/features/experimental.yml only; profile features list unchanged"
+  ]
+}

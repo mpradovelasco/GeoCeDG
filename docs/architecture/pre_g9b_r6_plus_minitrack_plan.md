@@ -20,6 +20,7 @@
 - Mini-track debt `DEBT-R6PLUS-FILE-INSERT-SURFACE` (recorded 2026-10-03, [D1 closeout record](../validation/pre_g9b_r6_plus_d1_closeout_record.md)): a File → Insert surface holding Insert File and Apply Template, both accepting `.cedg` and `.ggb` with their own semantics (Insert File imports into the current document; Apply Template applies defaults and styles and never replaces the `UnitState` or imports geometry); OFF files are not presented in the GeoCeDG UI, internal upstream OFF support stays. Assigned by the author's planning decision of 2026-10-03 to the new subphase `F3` — File / Insert surface and document insertion compatibility ([F3 author-decision record](../validation/pre_g9b_r6_plus_f3_author_decisions_record.md)): `PLANNED — NOT AUTHORIZED`, planned class `INTEGRATED_PHASE` (registered `PHASE` + `INTEGRATION`), hard dependency `D1 → F3`; it must be closed before the global closeout of `PRE-G9B-R6-plus`, and its implementation prompt is not prepared
 - Post-`C` preparation (2026-10-06): the author authorized a bounded characterization, design and implementation preparation for `OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT`, outside the subphase sequence and without authorizing the fix. The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-c-x1-classic-picture-dialog-edt.prompt.md) is prepared on `P_R6PLUS_C` `39eb05bc16a18ae48167383e90fcf38b12a681b6`, tree `fc13f5f125a4e8d595dd450bfd47706be193e5cd`, with its [characterization report](../validation/pre_g9b_r6_plus_c_x1_preparation_characterization_report.md). Authorization of 2026-10-06 ([C-X1 preparation closeout and authorization record](../validation/pre_g9b_r6_plus_c_x1_prompt_closeout_record.md), recorded in `7a88a491`): preparation package `50baef73` `PASS — AUTHOR APPROVED`, identifier `PRE-G9B-R6-plus-C-X1` accepted, `DQ-X1-1`–`DQ-X1-6` decided, `BOUNDED_PHASE` frozen (one registered `PHASE`), implementation authorized; the [C-X1 candidate report](../validation/pre_g9b_r6_plus_c_x1_candidate_report.md) records the technical candidate `eabe6368`. Author closeout of 2026-10-06 ([C-X1 closeout record](../validation/pre_g9b_r6_plus_c_x1_closeout_record.md)): `T_R6PLUS_C_X1` `eabe6368` `PASS — AUTHOR APPROVED — PUBLISHED`, `AUTHOR_SMOKE = PASS`, `PHASE` `verification-f07334b6` `ACCEPTED / COMPLETE`; `OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT` resolved in `C-X1`. `C-X1` does not replace `E1` and does not change the operational order.
 - Preparation of `E1` (2026-10-06): after the `C-X1` closeout the author authorized characterization, design reconciliation, author-decision preparation and the canonical `E1` prompt, without authorizing implementation and without promoting the P0 recommendations. The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-ggt-library-and-packaging.prompt.md) is prepared on the published `P_R6PLUS_C_X1` `23b971f5a967958f93e745ca8c39fce1162706e6`, tree `5f564c8391828dc781dee0b1be93ef223431af58`, with its [characterization report](../validation/pre_g9b_r6_plus_e1_preparation_characterization_report.md): `PREPARED — NOT AUTHORIZED`; proposed split `E1-L` (`BOUNDED_PHASE`) / `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`), not author-approved; decisions `DQ-E1-1` to `DQ-E1-16` pending (covering `AQ-G1`–`AQ-G7`); implementation not authorized.
+- Author decisions and `E1-L` authorization (2026-10-07): on the frozen preparation candidate `T_R6PLUS_E1_PREP` `0ce52a965bcf8b9de37a1572738c0ad79db52354`, tree `e500e80fddf957078249383ae61e28e6f707d455`, the author resolved `DQ-E1-1` to `DQ-E1-16` ([E1 preparation closeout, author decisions and E1-L authorization record](../validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md)): `E1` split into `E1-L` (`BOUNDED_PHASE`, one registered `PHASE`; [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-l-curated-ggt-library.prompt.md) `AUTHORIZED FOR IMPLEMENTATION`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`; [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-p-ggt-library-packaging.prompt.md) `PREPARED — NOT AUTHORIZED`); twelve tools curated and shipped; dimension and sheet tools excluded (references for `E2`/`E3`; `AQ-G3`/`AQ-G3a` need no `E1` implementation); black at GeoGebra `lineThickness` 3; read-only installation-relative bundled catalog; [rights record version 1](../licensing/curated-ggt-library-rights-record.md) (author sole rights holder; `INTERNAL` and `NC` authorized, `COMMERCIAL` not authorized / pending); `AGENTS.md` §3.2 amendment for `models/curated/` authorized as its own commit; `G` keeps depending on `E1-P` unless the author re-plans it. Author-approved requirement `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` (owner `G`): product-owned About metadata and licensing route; visible version stays `1.0.0` during the mini-track and becomes `1.1.0` only at `G = PASS — AUTHOR APPROVED`, with its version date.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1189,10 +1190,13 @@ PRE-G9B-R6-plus-C-X1       = PASS — AUTHOR APPROVED — PUBLISHED
                              PHASE verification-f07334b6; BOUNDED_PHASE; post-C
                              corrective activity, operational order unchanged)
 
-PRE-G9B-R6-plus-E1         = PREPARED — NOT AUTHORIZED — PENDING AUTHOR REVIEW
-                             (2026-10-06; canonical prompt on P_R6PLUS_C_X1 23b971f5;
-                             proposed split E1-L / E1-P not author-approved;
-                             DQ-E1-1 to DQ-E1-16 pending)
+PRE-G9B-R6-plus-E1         = SPLIT INTO E1-L AND E1-P (author decision 2026-10-07 on
+                             T_R6PLUS_E1_PREP 0ce52a96; DQ-E1-1 to DQ-E1-16 decided)
+PRE-G9B-R6-plus-E1-L       = AUTHORIZED FOR IMPLEMENTATION (2026-10-07;
+                             BOUNDED_PHASE, one registered PHASE)
+PRE-G9B-R6-plus-E1-P       = PREPARED — NOT AUTHORIZED (planned
+                             OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
+                             G keeps depending on it unless the author re-plans)
 PRE-G9B-R6-plus-E2         = NOT AUTHORIZED
 PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
@@ -1264,11 +1268,23 @@ OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION = PRE-EXISTING SINCE G5 (AutoCAD 2024
                              60 = 1, is honoured inside an accepted container) —
                              NOT C SCOPE — NOT FIXED — AUTHOR DISPOSITION
 OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
-                             PREPARATION (2026-10-06) — PROPOSED OWNER E2 — NOT
-                             FIXED — AUTHOR DISPOSITION (Commands.lookupInternal
-                             is case-insensitive: native DirectDimension /
-                             AxisDimension would make the user library reject the
-                             legacy macros directDimension / axisDimension)
+                             PREPARATION (2026-10-06) — E2-OWNED CROSS-PHASE
+                             CONSTRAINT (author decision 2026-10-07) — NOT SOLVED
+                             IN E1 (Commands.lookupInternal is case-insensitive:
+                             native DirectDimension / AxisDimension would make the
+                             user library reject the legacy macros directDimension /
+                             axisDimension)
+ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA = AUTHOR APPROVED REQUIREMENT (2026-10-07) —
+                             OWNER PRE-G9B-R6-plus-G — MANDATORY G INPUT —
+                             IMPLEMENTATION NOT AUTHORIZED IN E1 (product-owned
+                             About: name, canonical version, version date (not the
+                             build date), licensing route distinguishing EUPL-1.2
+                             software, CC BY 4.0 documentation and ordinary art,
+                             inherited component terms and the INTERNAL / NC /
+                             COMMERCIAL distribution condition; Classic About
+                             unchanged; visible version 1.0.0 until G = PASS —
+                             AUTHOR APPROVED, then 1.1.0 with its version date; no
+                             tag, release or publication implied)
 A-2 3D draw-order limitation = KNOWN PRESENTATION LIMITATION — NOT AUTHORITATIVE
                              LAYER SEMANTICS — NOT A-2 BLOCKING
 F3 Apply Template re-layering = OPEN F3 CHARACTERIZATION QUESTION —
