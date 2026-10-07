@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-X1",
+  "artifactKind": "AUTHOR_CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e1_x1_closeout_record.md",
+  "authorInstruction": "2026-10-07, typed in the session",
+  "state": "PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "implementationAuthorized": false,
+  "publishedBaseBeforeCloseout": {
+    "commit": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+    "tree": "cc613c0337d3d75fdf14e55d20db5cb896af2b52"
+  },
+  "history": [
+    {"commit": "b6172af4f319d297aa5780c9f516b310254d3e90", "role": "initial characterization (Candidate A preferred then)"},
+    {"commit": "b3c78e6d6564b0400d1fea7cda55bb480778716c", "role": "A-versus-C micro-characterization"},
+    {"commit": "51bb677e8b61c149dd3ae1e1c6a491e53732d5dc", "role": "author authorization"},
+    {"commit": "7fd6adbbdc6dcf7cc34b795c0225522744ff7397", "role": "implementation"},
+    {"commit": "b12ab32c3a4dcf42941617e95d06a92bfb3b2955", "role": "frozen technical candidate"}
+  ],
+  "approvedCandidate": {
+    "name": "T_R6PLUS_E1_X1",
+    "commit": "b12ab32c3a4dcf42941617e95d06a92bfb3b2955",
+    "tree": "34fa96d9ddb37ea5a3a8addeb04e4b920d322b43"
+  },
+  "selectedDesign": "CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH",
+  "authorSmokeConfirmations": [
+    "Open Classic diagnostic session works from the packaged product",
+    "genuine Classic in a separate process",
+    "GeoCeDG remains usable",
+    "Legacy laboratory opens Templatev7.ggb without hanging",
+    "diagnostic preference isolation preserved",
+    "no active GeoCeDG construction silently transferred or reassigned"
+  ],
+  "dqE1X1_4": {
+    "marker": "--classic-diagnostic",
+    "nature": "internal launcher protocol, not a public construction command",
+    "admissibility": "exact first argument only",
+    "markerRemoved": true,
+    "remainingArgumentsPreserved": true,
+    "ensuredOnlyWhenAbsent": ["--showSplash=false", "isolated settings file"],
+    "broaderCommandLineApi": false
+  },
+  "approvedSemantics": {
+    "packaged": "jpackage.app-path launcher; no java.home, PATH, working directory or repository fallback; invalid path fails explicitly",
+    "development": "explicit Java route to org.geogebra.desktop.GeoGebra3D; only --add-exports, --add-opens, --enable-native-access propagated",
+    "streams": {"stdout": "Redirect.DISCARD", "stderr": "Redirect.DISCARD"},
+    "preferences": {"openClassic": "classic-diagnostic.properties", "legacyLaboratory": "laboratory.properties", "geocedg": "preferences.properties"}
+  },
+  "observations": {
+    "OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER": "RESOLVED IN PRE-G9B-R6-plus-E1-X1 — AUTHOR APPROVED (pre-existing since b49219408; not caused by E1)",
+    "X1-F2": "RESOLVED IN E1-X1",
+    "X1-F3": "RESOLVED IN E1-X1",
+    "OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION": "OPEN — PRE-EXISTING AT X1 BASE — INTRODUCED BY E1-P dcda4075 — NOT CAUSED BY E1-X1 — NOT BLOCKING E1-X1 — MUST BE RESOLVED BEFORE E2"
+  },
+  "finalDesktop": "KNOWN RED AT X1 BASE DUE TO THE STALE ASSERTION; no global clean verification claimed",
+  "impact": {
+    "productChange": "YES — DIAGNOSTIC LAUNCH ROUTE",
+    "packagingProductChange": "NONE",
+    "serializationChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "documentFormatChange": "NONE",
+    "kernelChange": "NONE"
+  },
+  "acceptedEvidence": {
+    "phase": {"run": "verification-1286494a11e74e87be799868dc2bfcd3", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "plan": "59ec02958e51287e927a7088d2db0f62a21493e0963b0ddb3eb05703e2595a74", "result": "64cae5b555b522361f185599704b2f33fd5333c227f8cbb6b38c6f7e08b5314f"},
+    "static": {"run": "verification-4be6d668dcd540cbbb3b1f638e73f1de", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "developmentInfraUnit": {"run": "verification-701a3e0a393f4cbf80b4573834d016ad", "checks": "22/22"},
+    "focalUnitTests": "17/17",
+    "processTests": "2/2",
+    "phaseSelection": "43/43",
+    "packagedTechnicalSmoke": "PASS",
+    "packagingContract": {"INTERNAL": "42/42", "NC": "42/42"}
+  },
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "closeoutCommit": "the documentary descendant containing this file; reported outside it; not a replacement technical candidate",
+  "nextAuthorizedActivity": "PRE-G9B-R6-plus-E1-P-X1 (implementation not yet authorized)",
+  "e2Started": false
+}

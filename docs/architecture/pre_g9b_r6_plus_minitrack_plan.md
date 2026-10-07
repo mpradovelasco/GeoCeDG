@@ -26,6 +26,7 @@
 - `E1-X1` focal characterization (2026-10-07): at the author's instruction, on the published `P_R6PLUS_E1` `fdc1ade6e7ab707bbc919d337bc48d1abce90a1b`, tree `cc613c0337d3d75fdf14e55d20db5cb896af2b52`, `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` is characterized for both users of the shared route ([characterization report](../validation/pre_g9b_r6_plus_e1_x1_preparation_characterization_report.md)): the jpackage runtime has no `java(w).exe` by construction (`--strip-native-commands`), so `openDiagnostic` fails in every packaged form; the same seam also leaves the child's pipes undrained (`X1-F2`) and drops the declared JVM options in development (`X1-F3`). The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e1-x1-packaged-classic-diagnostic-launcher.prompt.md) is `PREPARED — NOT AUTHORIZED`: recommended jpackage additional launcher found as a sibling of `jpackage.app-path`, proposed class `OPERATIONAL_VERIFICATION_INFRASTRUCTURE` (`PHASE_LOCAL`), decisions `DQ-E1X1-1` to `DQ-E1X1-9`; implementation not authorized; `E1` not reopened.
 - `E1-X1-R1` micro-characterization (2026-10-07): at the author's instruction, on the local characterization candidate `T_R6PLUS_E1_X1_CHAR` `b6172af4f319d297aa5780c9f516b310254d3e90`, a scratch prototype of an early Classic dispatch in `GeoCeDG.main` (Candidate C) was compared with the jpackage secondary launcher (Candidate A) ([launcher comparison report](../validation/pre_g9b_r6_plus_e1_x1_r1_launcher_comparison_report.md)): C met the decision rule `C1`–`C11` in development and in `INTERNAL`/`NC` app-images and ZIPs built by the unmodified builder, with the `E1-P` launcher inventory, installers and shortcuts and a 42/42 packaging contract; preferred implementation Candidate C (A kept as the documented alternative), proposed class `BOUNDED_PHASE`, decisions `DQ-E1X1-1` to `DQ-E1X1-8`; the canonical prompt is reconciled to C and stays `PREPARED — NOT AUTHORIZED`; implementation not authorized.
 - `E1-X1` implementation (2026-10-07): the author accepted the R1 recommendation and authorized the implementation and technical verification with Candidate C ([authorization record](../validation/pre_g9b_r6_plus_e1_x1_authorization_record.md), `51bb677e`), on the implementation branch from `b3c78e6d`, `BOUNDED_PHASE` frozen with one registered `PHASE` `PRE-G9B-R6-PLUS-E1-X1`. The technical candidate ([candidate report](../validation/pre_g9b_r6_plus_e1_x1_candidate_report.md)) is pending author review and author smoke; packaging product change none.
+- `E1-X1` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_X1` `b12ab32c3a4dcf42941617e95d06a92bfb3b2955` (`AUTHOR_SMOKE = PASS`, `DQ-E1X1-4` accepted, [E1-X1 closeout record](../validation/pre_g9b_r6_plus_e1_x1_closeout_record.md)); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` resolved with `X1-F2` and `X1-F3`; `OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION` stays open and must be resolved before `E2`; the only next authorized activity is `PRE-G9B-R6-plus-E1-P-X1`, whose implementation is not yet authorized; `E2` not started.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1212,7 +1213,11 @@ PRE-G9B-R6-plus-E1-P       = PASS — AUTHOR APPROVED
                              -a40cda69 (INTERNAL), -ce43e964 (NC);
                              OPERATIONAL_VERIFICATION_INFRASTRUCTURE, PHASE_LOCAL;
                              INTERNAL and NC include the library, COMMERCIAL excluded)
-PRE-G9B-R6-plus-E1-X1      = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R6-plus-E1-X1      = PASS — AUTHOR APPROVED — PUBLISHED
+                             (2026-10-07; T_R6PLUS_E1_X1 b12ab32c; AUTHOR_SMOKE = PASS;
+                             PHASE verification-1286494a; BOUNDED_PHASE; DQ-E1X1-4
+                             accepted; packaging product change none)
+                             earlier: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              (implementation authorized 2026-10-07, 51bb677e; CANDIDATE C —
                              PRIMARY LAUNCHER EARLY CLASSIC DISPATCH; BOUNDED_PHASE, one
                              registered PHASE, no INTEGRATION, no FINAL; AUTHOR_SMOKE =
@@ -1329,6 +1334,9 @@ OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              IN CANDIDATE / PENDING AUTHOR APPROVAL — AUTHOR_SMOKE =
                              PENDING; the observation stays open until the author
                              disposition after smoke
+                             RESOLVED IN PRE-G9B-R6-plus-E1-X1 — AUTHOR APPROVED
+                             (2026-10-07; not caused by E1; X1-F2 and X1-F3 RESOLVED IN
+                             E1-X1; E1-X1 closeout record)
 OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION = RECORDED BY E1-X1 — PRE-EXISTING SINCE
                              E1-P dcda4075 — NOT FIXED — AUTHOR DISPOSITION
                              (PreG9BR6PlusE1LCuratedLibraryTest.e1l09 still asserts that
@@ -1336,6 +1344,15 @@ OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION = RECORDED BY E1-X1 — PRE-EXISTING
                              E1-P added; it fails in final.desktop on the published base,
                              outside every PHASE selection; the official inventory updater
                              therefore cannot refresh final.desktop)
+                             OPEN — PRE-EXISTING AT X1 BASE — INTRODUCED BY THE LEGITIMATE
+                             E1-P PACKAGING EVOLUTION — NOT CAUSED BY E1-X1 — NOT BLOCKING
+                             E1-X1 — MUST BE RESOLVED BEFORE E2 (author disposition at the
+                             E1-X1 closeout, 2026-10-07; final.desktop KNOWN RED AT X1
+                             BASE; next authorized activity PRE-G9B-R6-plus-E1-P-X1,
+                             implementation not yet authorized)
+PRE-G9B-R6-plus-E1-P-X1    = NEXT AUTHORIZED ACTIVITY — IMPLEMENTATION NOT AUTHORIZED
+                             (reconcile the stale E1-L packaging-negation assertion and
+                             restore final.desktop to a clean baseline)
 ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA = AUTHOR APPROVED REQUIREMENT (2026-10-07) —
                              OWNER PRE-G9B-R6-plus-G — MANDATORY G INPUT —
                              IMPLEMENTATION NOT AUTHORIZED IN E1 (product-owned
