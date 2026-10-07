@@ -261,13 +261,16 @@ public final class GeoCeDGUserTools {
 		}
 	}
 
+	/**
+	 * Short hover tip: what the tool constructs or computes. Bundled tools use the
+	 * GeoCeDG-owned bilingual UserTools.BundledTip texts; caveats stay in extended help.
+	 */
 	private String describe(Package tool, String command) {
 		if (!tool.isBundled()) {
 			return tool.name();
 		}
-		String note = optionalText("UserTools.BundledNote." + command);
-		return note == null ? text("UserTools.Bundled") : text("UserTools.Bundled") + " \u2014 "
-				+ note;
+		String tip = optionalText("UserTools.BundledTip." + command);
+		return tip == null ? tool.name() : tip;
 	}
 
 	void populatePins(JPanel panel) {
@@ -316,7 +319,8 @@ public final class GeoCeDGUserTools {
 		JToggleButton button = new JToggleButton();
 		applyPinnedIcon(button, pin, false);
 		configurePinnedButton(button, reason == null
-				? pin.command() + " \u2014 " + pin.tool().name() : explain(reason));
+				? pin.command() + " \u2014 " + describe(pin.tool(), pin.command())
+				: explain(reason));
 		button.setEnabled(reason == null);
 		button.getAccessibleContext().setAccessibleName(pin.command());
 		button.putClientProperty("geocedg.userTool.command", pin.command());

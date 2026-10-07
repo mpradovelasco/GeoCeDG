@@ -54,6 +54,27 @@ import org.junit.jupiter.api.io.TempDir;
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class PreG9BR6PlusE1LBundledCatalogTest {
 
+	/** Pinned meaning of each short hover tip (EN, ES lower-case fragments). */
+	private static final Map<String, String[]> TIP_MEANING = new LinkedHashMap<>();
+
+	static {
+		TIP_MEANING.put("SquarebyDiagonal", new String[] {"square", "cuadrado"});
+		TIP_MEANING.put("CirclebyD", new String[] {"circle from its center and diameter",
+				"circunferencia"});
+		TIP_MEANING.put("circArcbyAngle", new String[] {"circular arc", "arco de circunferencia"});
+		TIP_MEANING.put("ellipseLength12", new String[] {"elliptic arc", "arco de elipse"});
+		TIP_MEANING.put("IFPositiveSelectPoint", new String[] {"sign of a value", "signo"});
+		TIP_MEANING.put("EllipseAxis", new String[] {"perpendicular semiaxes",
+				"semiejes perpendiculares"});
+		TIP_MEANING.put("conj2mainAxesEllipse", new String[] {"rytz", "rytz"});
+		TIP_MEANING.put("pointJump", new String[] {"signed distance", "distancia con signo"});
+		TIP_MEANING.put("relCoor", new String[] {"signed coordinate", "coordenada con signo"});
+		TIP_MEANING.put("translationCoor", new String[] {"transfers a signed coordinate",
+				"transfiere una coordenada"});
+		TIP_MEANING.put("DuctSymbol", new String[] {"duct or tube symbol", "conducto o tubo"});
+		TIP_MEANING.put("SymmSymbol", new String[] {"symmetry mark", "marca de simetr"});
+	}
+
 	@TempDir
 	Path temporary;
 	private Path repository;
@@ -407,15 +428,49 @@ class PreG9BR6PlusE1LBundledCatalogTest {
 		assertFalse(menu.getItem(header).isEnabled());
 		assertEquals(PreG9BR6PlusE1LCuratedLibraryTest.SELECTION,
 				items.subList(header + 1, items.size()));
+		// R1 (author UX rule): the hover tip says what the tool constructs or computes,
+		// from the GeoCeDG-owned bilingual profile texts; caveats stay in extended help.
+		JSONObject texts = new JSONObject(Files.readString(repository.resolve(
+				"apps/geocedg/application-profile.yml"), StandardCharsets.UTF_8))
+				.getJSONObject("localized_text");
 		for (int i = header + 1; i < menu.getItemCount(); i++) {
-			assertNotNull(menu.getItem(i).getIcon());
-			assertTrue(menu.getItem(i).isEnabled());
-			assertTrue(menu.getItem(i).getToolTipText().startsWith(section));
+			JMenuItem item = menu.getItem(i);
+			String command = item.getText();
+			assertNotNull(item.getIcon());
+			assertTrue(item.isEnabled());
+			JSONObject tip = texts.getJSONObject("UserTools.BundledTip." + command);
+			String english = tip.getString("en").strip();
+			String spanish = tip.getString("es").strip();
+			assertFalse(english.isEmpty() || spanish.isEmpty() || english.equals(spanish),
+					command);
+			assertEquals(registry.text("UserTools.BundledTip." + command), item.getToolTipText());
+			assertTrue(item.getToolTipText().equals(english)
+					|| item.getToolTipText().equals(spanish), command);
+			for (String generic : List.of("GeoCeDG tool", "Utility tool", "Planar convenience",
+					section, "GeoCeDG")) {
+				assertFalse(english.contains(generic) || spanish.contains(generic)
+						|| item.getToolTipText().contains(generic), command + " " + generic);
+			}
+			String[] meaning = TIP_MEANING.get(command);
+			assertTrue(english.toLowerCase(java.util.Locale.ROOT).contains(meaning[0]),
+					command + " en");
+			assertTrue(spanish.toLowerCase(java.util.Locale.ROOT).contains(meaning[1]),
+					command + " es");
 		}
-		assertTrue(menu.getItem(items.indexOf("pointJump")).getToolTipText()
-				.contains(registry.text("UserTools.BundledNote.pointJump")));
-		assertTrue(menu.getItem(items.indexOf("EllipseAxis")).getToolTipText()
-				.contains(registry.text("UserTools.BundledNote.EllipseAxis")));
+		assertEquals(PreG9BR6PlusE1LCuratedLibraryTest.SELECTION,
+				new ArrayList<>(TIP_MEANING.keySet()));
+		for (String command : List.of("pointJump", "relCoor", "translationCoor")) {
+			String hover = menu.getItem(items.indexOf(command)).getToolTipText();
+			for (String heavy : List.of("projection", "authority", "frame", "proyecci",
+					"autoridad", "sistema de referencia")) {
+				assertFalse(hover.contains(heavy), command + " " + heavy);
+			}
+			JSONObject caveat = texts.getJSONObject("UserTools.BundledNote." + command);
+			assertTrue(caveat.getString("en").contains("does not establish a spatial projection"));
+			assertTrue(caveat.getString("es").contains("no establece"));
+		}
+		assertTrue(texts.getJSONObject("UserTools.BundledNote.EllipseAxis").getString("en")
+				.contains("perpendicular to OB"));
 		assertEquals(12, presentation.managedPackages().length);
 
 		Package ellipse = bundled(library, "EllipseAxis");
@@ -425,6 +480,8 @@ class PreG9BR6PlusE1LBundledCatalogTest {
 		assertEquals(1, pins.getComponentCount());
 		assertEquals("bundled", ((JToggleButton) pins.getComponent(0))
 				.getClientProperty("geocedg.userTool.icon.source"));
+		assertTrue(((JToggleButton) pins.getComponent(0)).getToolTipText()
+				.endsWith(registry.text("UserTools.BundledTip.EllipseAxis")));
 		JPanel manager = new JPanel();
 		presentation.populateManagerPins(manager, ellipse);
 		JComponent row = (JComponent) manager.getComponent(0);

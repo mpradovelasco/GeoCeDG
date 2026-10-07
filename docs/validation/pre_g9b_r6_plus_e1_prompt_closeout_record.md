@@ -157,6 +157,30 @@ Not authorized: `E1-P` implementation or any packaging admission (no curated
 `PRE-G9B-R7`, `G9B`, the E2 name collision, publication, merge, tag, release.
 `FINAL` is not run merely because another phase used it.
 
+## 8. Author refinement of `DQ-E1-15` (2026-10-07, after the `E1-L` smoke)
+
+After the functional author smoke of `E1-L` R0 (`AUTHOR_SMOKE_FUNCTIONAL = PASS`
+on `1aa05d677910b2d88101f11958d3d15b5f21960b`), the author authorized the focal
+UX revision `PRE-G9B-R6-plus-E1-L-R1` (hover-tip wording only) and refined
+`DQ-E1-15`:
+
+```text
+tool names        = UNCHANGED
+macro identity    = UNCHANGED
+short hover tips  = GeoCeDG-owned bilingual UX text describing actual tool behavior
+extended help     = may include validity-domain and CeDG semantic qualifications
+geometry / macro semantics = UNCHANGED
+```
+
+UX rule: a library-tool hover tip briefly tells the user what the tool
+constructs or computes and, where useful, its principal conceptual input;
+short, specific, user-facing, bilingual and truthful; never generic. The
+spatial caveat of `pointJump`, `relCoor` and `translationCoor` ("This is a 2D
+construction helper and does not establish a spatial projection or reference
+frame.") and the `EllipseAxis` validity condition belong to extended help. The
+author supplied the twelve English and Spanish tips. R0 stays technically
+accepted and is superseded by R1; it is not author-approved or published.
+
 Required stop state after implementation and the registered `PHASE`:
 
 ```text

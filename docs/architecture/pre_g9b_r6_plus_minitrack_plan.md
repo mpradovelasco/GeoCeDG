@@ -1192,7 +1192,10 @@ PRE-G9B-R6-plus-C-X1       = PASS — AUTHOR APPROVED — PUBLISHED
 
 PRE-G9B-R6-plus-E1         = SPLIT INTO E1-L AND E1-P (author decision 2026-10-07 on
                              T_R6PLUS_E1_PREP 0ce52a96; DQ-E1-1 to DQ-E1-16 decided)
-PRE-G9B-R6-plus-E1-L       = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW —
+PRE-G9B-R6-plus-E1-L       = R1 TECHNICAL CANDIDATE PENDING AUTHOR REVIEW —
+                             AUTHOR_SMOKE_R1 = PENDING (R0 1aa05d67: functional
+                             smoke PASS, superseded by the authorized hover-tip
+                             revision R1; DQ-E1-15 refined) —
                              AUTHOR_SMOKE = PENDING (authorized 2026-10-07;
                              BOUNDED_PHASE, one registered PHASE; local branch
                              phase/pre-g9b-r6-plus-e1-l-curated-ggt-library from

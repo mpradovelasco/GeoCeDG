@@ -95,6 +95,13 @@ test regenerates the library and compares bytes.
 - Bundled entries pass the same validation as a user install, appear after the
   user packages in the manager and the `user-tools` menu with their owned icon,
   cannot be removed and do not take custom icons.
+- Hover tips (R1, author UX rule of 2026-10-07): each bundled tool's short tip
+  (`UserTools.BundledTip.<command>`, English and Spanish profile texts) briefly
+  says what the tool constructs or computes and, where useful, its principal
+  input; it is never generic (no "GeoCeDG tool", "Utility tool" or "Planar
+  convenience"). Validity-domain and CeDG semantic caveats are extended help
+  (`UserTools.BundledNote.<command>` and §3), not hover text. Tool names, macro
+  identity and macro definitions are unchanged by the tips.
 - Precedence: a stored user package with a case-insensitively colliding command
   wins (`UserTools.BundledShadowed`); a document macro wins over both (existing
   adoption, `DefinitionMismatch` and `DocumentConflict` rules).

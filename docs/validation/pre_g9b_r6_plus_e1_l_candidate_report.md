@@ -1,10 +1,13 @@
 # PRE-G9B-R6-plus-E1-L technical candidate report
 
 ```text
-PRE-G9B-R6-plus-E1-L      = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R6-plus-E1-L-R1   = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (revision 1, §0)
+E1-L R0                   = TECHNICALLY ACCEPTED — SUPERSEDED BY THE AUTHORIZED FOCAL UX
+                            REVISION — NOT AUTHOR-APPROVED / NOT PUBLISHED
 VERIFICATION_CLASS        = BOUNDED_PHASE (frozen by the author, DQ-E1-2)
 PLANNED ACCEPTANCE        = one registered PHASE PRE-G9B-R6-PLUS-E1-L on the exact candidate
-AUTHOR_SMOKE              = PENDING (required)
+AUTHOR_SMOKE_FUNCTIONAL   = PASS (R0, author smoke of 2026-10-07)
+AUTHOR_SMOKE_R1           = PENDING (reduced hover-tip smoke, §0)
 AUTHOR_DECISION           = NOT_RECORDED_IN_THIS_ARTIFACT
 PRE-G9B-R6-plus-E1-P      = PREPARED — NOT AUTHORIZED
 selfApproved              = false
@@ -28,6 +31,69 @@ frozen candidate is reported with the candidate, outside this file, because
 this file is part of that candidate. Its machine-readable mirror is
 [`pre-g9b-r6-plus-e1-l-candidate-evidence.json`](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e1-l-candidate-evidence.json).
 
+## 0. Revision 1 — author-authorized focal UX correction
+
+```text
+R0 = 1aa05d677910b2d88101f11958d3d15b5f21960b  tree c2d6a0655d0ccd12c67ca00291da8dfd94e6fefd
+     TECHNICALLY ACCEPTED (PHASE verification-5ab86499f50843f49c41cc3ab1aeb849,
+     historical evidence for R0 only)
+     SUPERSEDED AFTER AUTHOR SMOKE BY FOCAL UX REVISION
+R1 = linear child of R0; exact commit, tree and PHASE run are reported outside
+     this artifact (this file is part of R1)
+
+PRODUCT CHANGE           = UX TEXT ONLY
+SERIALIZATION CHANGE     = NONE
+GEOMETRIC SEMANTICS CHANGE = NONE
+MACRO DEFINITION CHANGE  = NONE
+PACKAGING CHANGE         = NONE
+```
+
+The author smoke of R0 passed functionally and found the bundled hover tips too
+generic ("GeoCeDG library" prefix, and `pointJump` showing the
+architecture-heavy caveat). The author authorized a hover-tip-only revision and
+refined `DQ-E1-15` (authorization record §8).
+
+- **Profile texts.** Twelve `UserTools.BundledTip.<command>` entries, English
+  and Spanish, with the author-supplied wording (what the tool constructs or
+  computes). The extended-help entries `UserTools.BundledNote.pointJump`,
+  `relCoor` and `translationCoor` now carry the author's caveat ("This is a 2D
+  construction helper and does not establish a spatial projection or reference
+  frame." / "Es una herramienta auxiliar 2D…"); `UserTools.BundledNote.EllipseAxis`
+  keeps the validity condition. No profile action, group, toolbar or feature
+  changes (125 actions).
+- **UI.** `GeoCeDGUserTools.describe` returns the bundled tip alone (menu items),
+  and pinned bundled buttons show `command — tip`; user-package tooltips are
+  unchanged. The product has no separate extended-help field in the user-tool
+  menu; the caveats stay as profile extended-help texts and in the
+  specification.
+- **Test.** `e1lCatalog10` (no new method, so the JUnit identities are
+  unchanged) now proves for all twelve tools: non-empty English and Spanish
+  tips; the displayed tip equals the profile authority; no generic wording; the
+  pinned meaning of each tip; no projection/frame/authority wording in the
+  `pointJump`, `relCoor` and `translationCoor` hover tips; the caveats present
+  in extended help; tool names unchanged. `e1l02` (golden), `e1l09` (125
+  actions) and the rest of both classes pass unchanged, so curated `.ggt`
+  bytes, manifest, macro definitions and catalog identity are identical to R0.
+- **Specification.** `curated-ggt-library.md` §6 records the hover-tip rule.
+
+Regression scope: focal `PreG9BR6PlusE1LCuratedLibraryTest` (9) and
+`PreG9BR6PlusE1LBundledCatalogTest` (10), adjacent `G9U1UserToolLibraryTest`
+(38), `G9U1MacroNativeArchivePersistenceTest` (2), `GeoCeDGProfileTest` (5),
+`G9U1ActionRegistryTest` (14), `PreG9BP1PublicSurfaceTest` (18),
+`G9U0LocalizationHelpTest` (4): all pass; Checkstyle main clean, test only the
+pre-existing `PreG9BR6PlusA1HiddenLayerTest.java:188`.
+
+**`final.desktop` was not rerun.** No test method was added, removed or
+renamed, so the discovery and executed JUnit identities and the inventory pins
+are unchanged; the delta is profile texts, one presentation method and
+assertions inside an existing method; no registry, selection or verifier input
+changed. The registered `PHASE` re-executes the E1-L selection on the exact R1
+commit and checks its identities against the unchanged inventory.
+
+Reduced R1 author smoke: open Automation → User tools; hover `CirclebyD`,
+`pointJump`, `EllipseAxis`, `translationCoor` and `DuctSymbol` or `SymmSymbol`
+and confirm the tips describe the tools; optionally switch the product language
+to Spanish and repeat; activate one tool once.
 ## 1. Identities and entry gate
 
 ```text

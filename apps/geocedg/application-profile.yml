@@ -5015,16 +5015,64 @@
       "es": "Válida solo si C está en el eje que pasa por O perpendicular a OB."
     },
     "UserTools.BundledNote.pointJump": {
-      "en": "Planar convenience: no spatial-frame or projection authority.",
-      "es": "Utilidad plana: sin autoridad de sistema espacial ni de proyección."
+      "en": "This is a 2D construction helper and does not establish a spatial projection or reference frame.",
+      "es": "Es una herramienta auxiliar 2D y no establece por sí misma una proyección espacial ni un sistema de referencia."
     },
     "UserTools.BundledNote.relCoor": {
-      "en": "Planar convenience: no spatial-frame or projection authority.",
-      "es": "Utilidad plana: sin autoridad de sistema espacial ni de proyección."
+      "en": "This is a 2D construction helper and does not establish a spatial projection or reference frame.",
+      "es": "Es una herramienta auxiliar 2D y no establece por sí misma una proyección espacial ni un sistema de referencia."
     },
     "UserTools.BundledNote.translationCoor": {
-      "en": "Planar convenience: no spatial-frame or projection authority.",
-      "es": "Utilidad plana: sin autoridad de sistema espacial ni de proyección."
+      "en": "This is a 2D construction helper and does not establish a spatial projection or reference frame.",
+      "es": "Es una herramienta auxiliar 2D y no establece por sí misma una proyección espacial ni un sistema de referencia."
+    },
+    "UserTools.BundledTip.SquarebyDiagonal": {
+      "en": "Creates a square from the endpoints of one diagonal.",
+      "es": "Crea un cuadrado a partir de los extremos de una diagonal."
+    },
+    "UserTools.BundledTip.CirclebyD": {
+      "en": "Creates a circle from its center and diameter.",
+      "es": "Crea una circunferencia a partir de su centro y diámetro."
+    },
+    "UserTools.BundledTip.circArcbyAngle": {
+      "en": "Creates a circular arc from a center, start point and signed angle.",
+      "es": "Crea un arco de circunferencia a partir de un centro, un punto inicial y un ángulo con signo."
+    },
+    "UserTools.BundledTip.ellipseLength12": {
+      "en": "Creates an elliptic arc between two points and returns its length.",
+      "es": "Crea un arco de elipse entre dos puntos y obtiene su longitud."
+    },
+    "UserTools.BundledTip.IFPositiveSelectPoint": {
+      "en": "Selects one of two points according to the sign of a value.",
+      "es": "Selecciona uno de dos puntos según el signo de un valor."
+    },
+    "UserTools.BundledTip.EllipseAxis": {
+      "en": "Creates an ellipse from its center and the endpoints of two perpendicular semiaxes.",
+      "es": "Crea una elipse a partir de su centro y los extremos de dos semiejes perpendiculares."
+    },
+    "UserTools.BundledTip.conj2mainAxesEllipse": {
+      "en": "Constructs the principal-axis vertices of an ellipse using the Rytz construction.",
+      "es": "Construye los vértices de los ejes principales de una elipse mediante la construcción de Rytz."
+    },
+    "UserTools.BundledTip.pointJump": {
+      "en": "Creates a point at a signed distance from another point along a line direction.",
+      "es": "Crea un punto a una distancia con signo de otro punto según la dirección de una recta."
+    },
+    "UserTools.BundledTip.relCoor": {
+      "en": "Returns the signed coordinate of a point along a line, measured from a reference point.",
+      "es": "Obtiene la coordenada con signo de un punto sobre una recta, medida desde un punto de referencia."
+    },
+    "UserTools.BundledTip.translationCoor": {
+      "en": "Transfers a signed coordinate from one reference line to another.",
+      "es": "Transfiere una coordenada con signo de una recta de referencia a otra."
+    },
+    "UserTools.BundledTip.DuctSymbol": {
+      "en": "Creates a duct or tube symbol between two points.",
+      "es": "Crea un símbolo de conducto o tubo entre dos puntos."
+    },
+    "UserTools.BundledTip.SymmSymbol": {
+      "en": "Creates a symmetry mark oriented by a reference line.",
+      "es": "Crea una marca de simetría orientada mediante una recta de referencia."
     },
     "Menu.Construction": {
       "en": "Construction",
