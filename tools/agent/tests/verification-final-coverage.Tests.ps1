@@ -157,8 +157,8 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case (($excluded -join "`n") -ceq ($retained -join "`n")) `
         'Desktop partition suppresses or duplicates an excluded JUnit filter.'
 }
-Invoke-Case 'all 47 PHASE selections resolve as complete pure plans' {
-    Assert-Case (@($registry.phase_selections).Count -eq 47) 'PHASE selection count changed.'
+Invoke-Case 'all 48 PHASE selections resolve as complete pure plans' {
+    Assert-Case (@($registry.phase_selections).Count -eq 48) 'PHASE selection count changed.'
     foreach($phase in $registry.phase_selections){
         $plan=Resolve-VerificationRegistryPlan $registry PHASE $phase.phase_id WINDOWS
         Assert-Case ($plan.coverage_state -ceq 'COMPLETE') "PHASE is incomplete: $($phase.phase_id)"

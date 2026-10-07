@@ -55,6 +55,10 @@ $ComponentDispositionPath = Join-Path $RepositoryRoot `
     "geocedg\validation\pre-g9b-d1\component-disposition.json"
 $SourceAccessPath = Join-Path $RepositoryRoot `
     "geocedg\resources\source-access-manifest.json"
+$CuratedLibraryRoot = Join-Path $RepositoryRoot "models\curated\ggt-library"
+$CuratedRightsPath = Join-Path $RepositoryRoot `
+    "geocedg\validation\pre-g9b-r6-plus\curated-ggt-library-rights-record.json"
+$CuratedLibraryId = "geocedg.curated-ggt-library"
 $InternalMarker = "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION"
 # Resolved from the selected distribution profile once package.yml is parsed.
 $ExpectedMarker = $InternalMarker
@@ -206,6 +210,66 @@ function Get-FileEvidence {
         path = [IO.Path]::GetRelativePath($RelativeTo, $Path).Replace("\", "/")
         size = (Get-Item -LiteralPath $Path).Length
         sha256 = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+}
+
+function Get-CuratedGgtLibraryPayload {
+    # PRE-G9B-R6-plus-E1-P: the curated library is admitted only for a profile that
+    # the author rights record authorizes, only for shipped members of the
+    # canonical E1-L manifest and only with their exact hashes. Anything else
+    # fails closed before staging. A profile without that authorization gets
+    # no library ($null): exclusion, never a partial or unrighted payload.
+    param([Parameter(Mandatory)] [string]$ProfileId)
+
+    $manifestPath = Join-Path $CuratedLibraryRoot "library-manifest.json"
+    Assert-Condition -Condition (
+        (Test-Path -LiteralPath $manifestPath -PathType Leaf) -and
+        (Test-Path -LiteralPath $CuratedRightsPath -PathType Leaf)) `
+        -Message "The curated GGT library manifest or its rights record is missing."
+    $library = Get-Content -Raw -LiteralPath $manifestPath |
+        ConvertFrom-Json -Depth 50 -NoEnumerate
+    $rights = Get-Content -Raw -LiteralPath $CuratedRightsPath |
+        ConvertFrom-Json -Depth 50 -NoEnumerate
+    Assert-Condition -Condition (
+        $library.schemaVersion -eq 1 -and
+        [string]$library.libraryId -ceq $CuratedLibraryId -and
+        [int]$rights.recordVersion -eq [int]$library.rightsRecord.version) `
+        -Message "The curated GGT library manifest or rights record version differs."
+    $profileRights = $rights.perMacroDisposition.profiles
+    if (-not ($profileRights.PSObject.Properties.Name -ccontains $ProfileId -and
+            [string]$profileRights.$ProfileId -ceq "AUTHORIZED")) {
+        return $null
+    }
+    $rightsCommands = @($rights.macros | ForEach-Object { [string]$_.command })
+    $shipped = @($library.tools | Where-Object { [bool]$_.shipped })
+    Assert-Condition -Condition ($shipped.Count -gt 0) `
+        -Message "The curated GGT library ships no tool."
+    $expectedFiles = [Collections.Generic.List[string]]::new()
+    foreach ($tool in $shipped) {
+        $command = [string]$tool.command
+        Assert-Condition -Condition ($rightsCommands -ccontains $command) `
+            -Message "Curated tool $command has no rights disposition."
+        Assert-Condition -Condition ([string]$tool.file -ceq "tools/$command.ggt") `
+            -Message "Curated tool $command has an unexpected path."
+        $source = Join-Path $CuratedLibraryRoot ("tools\$command.ggt")
+        Assert-Condition -Condition (Test-Path -LiteralPath $source -PathType Leaf) `
+            -Message "Shipped curated tool is missing: $command"
+        Assert-Condition -Condition (
+            (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant() -ceq
+            [string]$tool.sha256) `
+            -Message "Curated tool hash differs from the canonical manifest: $command"
+        $expectedFiles.Add("$command.ggt")
+    }
+    $present = @(Get-ChildItem -LiteralPath (Join-Path $CuratedLibraryRoot "tools") -File |
+        ForEach-Object Name | Sort-Object)
+    Assert-Condition -Condition (
+        ($present -join "`n") -ceq (@($expectedFiles | Sort-Object) -join "`n")) `
+        -Message "The curated tools directory differs from the shipped manifest set."
+    return [pscustomobject]@{
+        ManifestPath = $manifestPath
+        Library = $library
+        Shipped = $shipped
+        RightsVersion = [int]$rights.recordVersion
     }
 }
 
@@ -570,7 +634,23 @@ try {
     Copy-Item -LiteralPath $ComponentDispositionPath -Destination $legalRoot
     Copy-Item -LiteralPath $ResolvedComponentsBuildPath `
         -Destination (Join-Path $legalRoot "resolved-runtime-components.json")
+
+    # PRE-G9B-R6-plus-E1-P: stage exactly the admitted curated library with the
+    # E1-L layout; the launcher reads it from app/ggt-library.
+    $curated = Get-CuratedGgtLibraryPayload -ProfileId ([string]$selected.id)
+    $curatedShipped = @()
+    if ($null -ne $curated) {
+        $curatedShipped = @($curated.Shipped)
+        $stagedLibrary = Join-Path $inputRoot "ggt-library"
+        [void](New-Item -ItemType Directory -Path (Join-Path $stagedLibrary "tools") -Force)
+        Copy-Item -LiteralPath $curated.ManifestPath -Destination $stagedLibrary
+        foreach ($tool in $curatedShipped) {
+            Copy-Item -LiteralPath (Join-Path $CuratedLibraryRoot ("tools\$($tool.command).ggt")) `
+                -Destination (Join-Path $stagedLibrary "tools")
+        }
+    }
     Write-Host "Included runtime JARs: $($included.Count)"
+    Write-Host "Included curated GGT tools: $($curatedShipped.Count)"
     Write-Host "Excluded non-Windows native JARs: $($excluded.Count)"
 
     Write-Step "jpackage app-image"
@@ -869,6 +949,23 @@ try {
         }
     }
 
+    $libraryComponents = [Collections.Generic.List[object]]::new()
+    foreach ($tool in $curatedShipped) {
+        $libraryComponents.Add([ordered]@{
+            type = "file"
+            name = "geocedg.ggt-library.$($tool.command)"
+            version = "library-v$($curated.Library.libraryVersion)"
+            "bom-ref" = "ggt:$($tool.command):$($tool.sha256)"
+            hashes = @([ordered]@{ alg = "SHA-256"; content = [string]$tool.sha256 })
+            licenses = @([ordered]@{ license = [ordered]@{ name = "EUPL-1.2" } })
+            properties = @(
+                [ordered]@{ name = "geocedg.packaging.path"; value = "app/ggt-library/$($tool.file)" },
+                [ordered]@{ name = "geocedg.ggt.source-macro-sha256"; value = [string]$tool.sourceMacro.sha256 },
+                [ordered]@{ name = "geocedg.ggt.rights-record"; value = "docs/licensing/curated-ggt-library-rights-record.md v$($curated.RightsVersion)" },
+                [ordered]@{ name = "geocedg.ggt.embedded-icon"; value = "$($tool.icon.entry) (GeoCeDG-owned, CC-BY-4.0)" }
+            )
+        })
+    }
     $runtimeComponent = [ordered]@{
         type = "framework"
         name = "Eclipse Temurin OpenJDK runtime"
@@ -888,6 +985,7 @@ try {
     foreach ($component in $jarComponents) { $components.Add($component) }
     foreach ($component in $fontComponents) { $components.Add($component) }
     foreach ($component in $assetComponents) { $components.Add($component) }
+    foreach ($component in $libraryComponents) { $components.Add($component) }
     $components.Add($runtimeComponent)
     if ($Target -in @("Msi", "Exe", "All")) {
         $components.Add([ordered]@{
@@ -1034,15 +1132,35 @@ try {
             join = "Gradle resolved artifact SHA-256 -> staged app JAR SHA-256"
             versions_inferred_from_filenames = $false
         }
+        ggt_library = $(if ($null -ne $curated) {
+            [ordered]@{
+                path = "app/ggt-library"
+                library_id = [string]$curated.Library.libraryId
+                library_version = [int]$curated.Library.libraryVersion
+                manifest_sha256 = (Get-FileHash -LiteralPath $curated.ManifestPath `
+                    -Algorithm SHA256).Hash.ToLowerInvariant()
+                tool_count = $curatedShipped.Count
+                tools = @($curatedShipped | ForEach-Object {
+                    [ordered]@{ command = [string]$_.command; sha256 = [string]$_.sha256 }
+                })
+                rights_record = [ordered]@{
+                    path = "docs/licensing/curated-ggt-library-rights-record.md"
+                    version = $curated.RightsVersion
+                }
+                profile_admitted = [string]$selected.id
+            }
+        })
         deliberate_exclusions = @(
             "scientific PDFs",
             "Templatev7.ggb and models/legacy",
+            "every .ggb and every .ggt outside the admitted curated library",
             "repository documentation and knowledge sources",
             "upstream installers and explicit upstream branding assets",
             "Linux and macOS native JARs"
         )
         artifacts = $packageEvidence
     }
+    if ($null -eq $curated) { $manifest.Remove("ggt_library") }
     $manifestPath = Join-Path $ArtifactRoot "build-manifest.json"
     Write-JsonFile -Value $manifest -Path $manifestPath
 

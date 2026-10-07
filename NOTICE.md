@@ -27,6 +27,15 @@ No upstream installer, scientific PDF under `docs/references/cedg/`,
 `Templatev7.ggb`, author inbox, knowledge bundle, or legacy/research model is an
 intentional package input.
 
+The curated GeoCeDG GGT library (`models/curated/ggt-library/`: its manifest and
+the twelve shipped tool definitions, which carry GeoCeDG-owned icons) is an
+intentional package input at `app/ggt-library/` of the PROFILE INTERNAL and
+PROFILE NC compositions only, as recorded by the curated GGT library rights
+record version 1 (`docs/licensing/curated-ggt-library-rights-record.md`). The
+tool definitions are recorded as EUPL-1.2 and their icons as CC BY 4.0;
+PROFILE COMMERCIAL excludes the library. No other `.ggt` and no `.ggb` is a
+package input.
+
 The former six-item exact-payload docket is closed for PROFILE NC by versioned
 primary evidence. Giac `70501` is retained under GPL-3.0-or-later with recorded
 GMP, MPFR, LLVM and MinGW runtime composition and source access.

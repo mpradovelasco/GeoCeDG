@@ -4,7 +4,7 @@
   "registry_id": "geocedg.verification.v2",
   "catalogs": [
     { "catalog_id": "junit_inventory", "path": "geocedg/specs/operations/verification-junit-inventory.json", "sha256": "3a63be8b6a6ad60bc09aa89a6f9a95b1b840928f9bf9e3049e1ca466a7d3c4dd" },
-    { "catalog_id": "static_contracts", "path": "geocedg/specs/operations/verification-static-contracts.json", "sha256": "9b733a967bccd35ec2184f9bbce35a7abc8b17c5f842864e7382ec26169314f4" }
+    { "catalog_id": "static_contracts", "path": "geocedg/specs/operations/verification-static-contracts.json", "sha256": "31fa0b3b04b77076e7999d601d463e09f06c6f3f5838302dfe036fee95cd1947" }
   ],
   "profiles": [
     { "profile_id": "STATIC", "coverage_state": "COMPLETE", "missing_check_ids": [] },
@@ -71,6 +71,7 @@
     { "phase_id": "PRE-G9B-R6-PLUS-C", "coverage_state": "COMPLETE", "missing_check_ids": [], "required_check_ids": ["compile.shared.semantic", "compile.desktop.semantic", "workspace-profile.product", "junit.shared.pre-g9b-r6-plus-c.semantic", "junit.desktop.pre-g9b-r6-plus-c.semantic"] },
     { "phase_id": "PRE-G9B-R6-PLUS-C-X1", "coverage_state": "COMPLETE", "missing_check_ids": [], "required_check_ids": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-c-x1.semantic"] },
     { "phase_id": "PRE-G9B-R6-PLUS-E1-L", "coverage_state": "COMPLETE", "missing_check_ids": [], "required_check_ids": ["compile.shared.semantic", "compile.desktop.semantic", "workspace-profile.product", "junit.desktop.pre-g9b-r6-plus-e1-l.semantic"] },
+    { "phase_id": "PRE-G9B-R6-PLUS-E1-P", "coverage_state": "COMPLETE", "missing_check_ids": [], "required_check_ids": ["packaging.product", "infra.contract-boundary"] },
     { "phase_id": "VERIFICATION-INFRASTRUCTURE", "coverage_state": "COMPLETE", "missing_check_ids": [], "required_check_ids": ["compile.shared.semantic", "compile.desktop.semantic", "junit.shared.final.semantic", "junit.desktop.final.semantic", "junit.desktop.g9u1-isolated.semantic", "python.g7a.semantic", "python.g8a.semantic", "python.g8c.semantic", "python.g8c1.semantic", "python.g8c2.semantic", "python.g9a2-reference.semantic", "python.g9a2-model.semantic", "static.scientific-inputs.semantic"] }
   ],
   "nodes": [

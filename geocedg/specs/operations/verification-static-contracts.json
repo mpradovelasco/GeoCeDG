@@ -7,12 +7,12 @@
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"packaging/windows/package.yml","sha256":"e791e951188d36d44bae3c20a7b9b4dd1b3e49c4a6aa9a2f9bca7fc7b5ee6888"},
       {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"804c599c54fcf0525f07eaf25ac3f5a4e5cb90da3b45ace6574b0ff61ebef444"},
-      {"path":"geocedg/resources/assets-manifest.yml","sha256":"b8f9860da273cea0c703d263657f02bfdab7c0d38637d854724553dd72fe249c"},
+      {"path":"geocedg/resources/assets-manifest.yml","sha256":"d8375884a3ecb29793744e653b13e09c5a1c1b4fc340789e1da52e24ed6b9f58"},
       {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
       {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"794923825afa1e5f3f1cbaa0d3ccd8a0d819ab948368adc6154d191069ef2355"},
       {"path":"LICENSES/manifest.json","sha256":"405c8eddd9f2e4714d3f32c6f2837fcbbf271740213962c392cf34ac44fa12be"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"2b158b0fe433ff8b27fce4f711435256e430ad4021ecb9bdf2f285e087ac0281"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"0743edff8cb99c378c450287e0f086f4476d34f76973f28614d37b73e3dc785d"},
       {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[

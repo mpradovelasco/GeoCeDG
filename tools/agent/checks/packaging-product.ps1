@@ -4,7 +4,11 @@ param(
     [Parameter(Mandatory)] [string]$ResultPath,
     [string]$RepositoryRoot = (Join-Path $PSScriptRoot '../../..'),
     [switch]$RequireArtifacts,
-    [string]$ArtifactRoot
+    [string]$ArtifactRoot,
+    # PRE-G9B-R6-plus-E1-P: canonical curated-library and rights authorities;
+    # overridden only by verification fixtures.
+    [string]$CuratedLibraryRoot,
+    [string]$RightsRecordPath
 )
 
 Set-StrictMode -Version Latest
@@ -24,6 +28,15 @@ if ([string]::IsNullOrWhiteSpace($ArtifactRoot)) {
     $ArtifactRoot = Join-Path $repository 'artifacts/packaging/windows'
 }
 $ArtifactRoot = [IO.Path]::GetFullPath($ArtifactRoot)
+if ([string]::IsNullOrWhiteSpace($CuratedLibraryRoot)) {
+    $CuratedLibraryRoot = Join-Path $repository 'models/curated/ggt-library'
+}
+if ([string]::IsNullOrWhiteSpace($RightsRecordPath)) {
+    $RightsRecordPath = Join-Path $repository `
+        'geocedg/validation/pre-g9b-r6-plus/curated-ggt-library-rights-record.json'
+}
+$CuratedLibraryRoot = [IO.Path]::GetFullPath($CuratedLibraryRoot)
+$RightsRecordPath = [IO.Path]::GetFullPath($RightsRecordPath)
 
 $marker = 'INTERNAL EVALUATION — NOT FOR REDISTRIBUTION'
 $ncMarker = 'NON-COMMERCIAL DISTRIBUTION — PROFILE NC'
@@ -296,7 +309,10 @@ try {
         'geocedg/resources/source-access-manifest.json',
         'geocedg/validation/pre-g9b-d1/component-audit.json',
         'geocedg/validation/pre-g9b-d1/component-disposition.json',
-        'tools/resources/generate-geocedg-branding.ps1', $iconPath)
+        'tools/resources/generate-geocedg-branding.ps1', $iconPath,
+        'models/curated/ggt-library/library-manifest.json',
+        'docs/licensing/curated-ggt-library-rights-record.md',
+        'geocedg/validation/pre-g9b-r6-plus/curated-ggt-library-rights-record.json')
     $missing = @($required | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $repository $_) -PathType Leaf)
     })
@@ -559,12 +575,105 @@ try {
             Add-Contract 'packaging.artifact-marker' `
                 ([IO.File]::ReadAllText($evidence[1]).Contains($builtMarker)) `
                 $builtMarker $evidence[1] 'Generated app-image marker differs.'
+            # PRE-G9B-R6-plus-E1-P location rule: a .ggt is admissible by location only
+            # directly below app/ggt-library/tools/; its membership, hash and rights are
+            # separate subcontracts below. .ggb and PDFs stay forbidden everywhere.
             $forbidden = @(Get-ChildItem $appImage -Recurse -File | Where-Object {
-                $_.Extension -in @('.pdf', '.ggb', '.ggt') -or $_.Name -eq 'Templatev7.ggb' -or
-                $_.Name -match '(?i)-natives-(linux|macosx)-'
+                $relative = [IO.Path]::GetRelativePath($appImage, $_.FullName).Replace('\', '/')
+                $_.Extension -in @('.pdf', '.ggb') -or $_.Name -eq 'Templatev7.ggb' -or
+                $_.Name -match '(?i)-natives-(linux|macosx)-' -or
+                ($_.Extension -ieq '.ggt' -and
+                    $relative -cnotmatch '^app/ggt-library/tools/[^/]+\.ggt$')
             })
             Add-Contract 'packaging.portable-boundary' ($forbidden.Count -eq 0) `
                 'no forbidden files' @($forbidden | ForEach-Object { $_.FullName }) 'Forbidden app-image content exists.'
+
+            # PRE-G9B-R6-plus-E1-P: curated GGT library admission. The built profile
+            # comes from the generated manifest; INTERNAL remains the default.
+            $builtProfileId = 'INTERNAL'
+            $builtLibrary = $null
+            if (Test-Path -LiteralPath $builtManifestPath -PathType Leaf) {
+                $libraryManifestDocument = Read-JsonDocument $builtManifestPath
+                if ($libraryManifestDocument.PSObject.Properties.Name -contains
+                        'distribution_profile') {
+                    $builtProfileId = [string]$libraryManifestDocument.distribution_profile.id
+                }
+                if ($libraryManifestDocument.PSObject.Properties.Name -contains 'ggt_library') {
+                    $builtLibrary = $libraryManifestDocument.ggt_library
+                }
+            }
+            $canonicalManifestPath = Join-Path $CuratedLibraryRoot 'library-manifest.json'
+            $canonical = Read-JsonDocument $canonicalManifestPath
+            $canonicalSha = (Get-FileHash -LiteralPath $canonicalManifestPath `
+                -Algorithm SHA256).Hash.ToLowerInvariant()
+            $rights = Read-JsonDocument $RightsRecordPath
+            $shippedTools = @($canonical.tools | Where-Object { [bool]$_.shipped })
+            $rightsCommands = @($rights.macros | ForEach-Object { [string]$_.command })
+            $profileRights = $rights.perMacroDisposition.profiles
+            $profileAdmitted = $profileRights.PSObject.Properties.Name -ccontains
+                $builtProfileId -and [string]$profileRights.$builtProfileId -ceq 'AUTHORIZED'
+            $unrightedTools = @($shippedTools | Where-Object {
+                $rightsCommands -cnotcontains [string]$_.command
+            } | ForEach-Object { [string]$_.command })
+            $libraryRoot = Join-Path $appImage 'app/ggt-library'
+            $stagedFiles = @(if (Test-Path -LiteralPath $libraryRoot) {
+                Get-ChildItem -LiteralPath $libraryRoot -Recurse -File | ForEach-Object {
+                    [IO.Path]::GetRelativePath($libraryRoot, $_.FullName).Replace('\', '/')
+                } | Sort-Object
+            })
+            $libraryPresent = $stagedFiles.Count -gt 0
+            $rightsValid = $canonical.libraryId -ceq 'geocedg.curated-ggt-library' -and
+                [int]$rights.recordVersion -eq [int]$canonical.rightsRecord.version -and
+                $(if ($profileAdmitted) {
+                    $unrightedTools.Count -eq 0
+                } else { -not $libraryPresent })
+            Add-Contract 'packaging.ggt-library.rights' $rightsValid `
+                ([ordered]@{ profile = $builtProfileId; admitted = $profileAdmitted
+                    library_allowed = $profileAdmitted }) `
+                ([ordered]@{ library_present = $libraryPresent
+                    tools_without_rights = $unrightedTools }) `
+                'The curated GGT library is not admissible for the built profile.'
+            $expectedFiles = @()
+            if ($profileAdmitted) {
+                $expectedFiles = @(@('library-manifest.json') + @($shippedTools |
+                    ForEach-Object { [string]$_.file }) | Sort-Object)
+            }
+            $stagedManifestPath = Join-Path $libraryRoot 'library-manifest.json'
+            $stagedManifestEqual = -not $profileAdmitted -or (
+                (Test-Path -LiteralPath $stagedManifestPath -PathType Leaf) -and
+                (Get-FileHash -LiteralPath $stagedManifestPath -Algorithm SHA256).Hash.ToLowerInvariant() -ceq
+                    $canonicalSha)
+            $membershipValid = $stagedManifestEqual -and
+                ($stagedFiles -join "`n") -ceq ($expectedFiles -join "`n")
+            Add-Contract 'packaging.ggt-library.membership' $membershipValid `
+                @($expectedFiles) @($stagedFiles) `
+                'Staged curated GGT files or manifest differ from the shipped canonical set.'
+            $hashErrorsGgt = [Collections.Generic.List[string]]::new()
+            foreach ($tool in $shippedTools) {
+                $stagedTool = Join-Path $libraryRoot ([string]$tool.file)
+                if ((Test-Path -LiteralPath $stagedTool -PathType Leaf) -and
+                        (Get-FileHash -LiteralPath $stagedTool -Algorithm SHA256).Hash.ToLowerInvariant() -cne
+                            [string]$tool.sha256) {
+                    $hashErrorsGgt.Add([string]$tool.file)
+                }
+            }
+            Add-Contract 'packaging.ggt-library.hashes' ($hashErrorsGgt.Count -eq 0) `
+                'every staged shipped tool has its canonical SHA-256' @($hashErrorsGgt) `
+                'A staged curated GGT tool differs from its canonical hash.'
+            $builtLibraryValid = if ($profileAdmitted) {
+                $null -ne $builtLibrary -and
+                    [string]$builtLibrary.path -ceq 'app/ggt-library' -and
+                    [string]$builtLibrary.manifest_sha256 -ceq $canonicalSha -and
+                    [int]$builtLibrary.tool_count -eq $shippedTools.Count -and
+                    [string]$builtLibrary.profile_admitted -ceq $builtProfileId -and
+                    ((@($builtLibrary.tools | ForEach-Object {
+                        "$($_.command)=$($_.sha256)" }) -join "`n") -ceq
+                     (@($shippedTools | ForEach-Object {
+                        "$($_.command)=$($_.sha256)" }) -join "`n"))
+            } else { $null -eq $builtLibrary }
+            Add-Contract 'packaging.ggt-library.build-manifest' $builtLibraryValid `
+                'build manifest records exactly the admitted curated library' $builtLibrary `
+                'The build manifest does not record the admitted curated library.'
             $packagedLegal = @(
                 'app/legal/LICENSE', 'app/legal/NOTICE.md',
                 'app/legal/THIRD_PARTY.md',

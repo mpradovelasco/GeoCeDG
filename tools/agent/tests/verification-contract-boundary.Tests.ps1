@@ -160,7 +160,35 @@ function New-PackagingArtifactFixture {
             'app/legal/resolved-runtime-components.json')) {
         Write-FixtureText (Join-Path $app $legalPath) 'fixture legal evidence'
     }
+    # PRE-G9B-R6-plus-E1-P: an admitted build stages the real canonical curated
+    # library at app/ggt-library and records it in the build manifest.
+    $libraryRoot = Join-Path $repositoryRoot 'models/curated/ggt-library'
+    $libraryManifest = Join-Path $libraryRoot 'library-manifest.json'
+    $canonical = Read-VerificationJson $libraryManifest
+    $stagedLibrary = Join-Path $app 'app/ggt-library'
+    [void][IO.Directory]::CreateDirectory((Join-Path $stagedLibrary 'tools'))
+    Copy-Item -LiteralPath $libraryManifest -Destination $stagedLibrary
+    $shipped = @($canonical.tools | Where-Object { [bool]$_.shipped })
+    foreach ($tool in $shipped) {
+        Copy-Item -LiteralPath (Join-Path $libraryRoot ([string]$tool.file)) `
+            -Destination (Join-Path $stagedLibrary 'tools')
+    }
+    $ggtLibrary = [ordered]@{
+        path = 'app/ggt-library'
+        library_id = [string]$canonical.libraryId
+        library_version = [int]$canonical.libraryVersion
+        manifest_sha256 = (Get-FileHash -LiteralPath $libraryManifest -Algorithm SHA256).Hash.ToLowerInvariant()
+        tool_count = $shipped.Count
+        tools = @($shipped | ForEach-Object {
+            [ordered]@{ command = [string]$_.command; sha256 = [string]$_.sha256 }
+        })
+        rights_record = [ordered]@{
+            path = 'docs/licensing/curated-ggt-library-rights-record.md'; version = 1
+        }
+        profile_admitted = 'INTERNAL'
+    }
     $manifest = [ordered]@{
+        ggt_library = $ggtLibrary
         schema_version = 2
         target = 'All'
         distribution_marker = $marker
@@ -432,6 +460,165 @@ Invoke-Case 'packaging product projection accepts valid artifacts and detects mi
                     $_.contract_id -ceq 'packaging.artifacts-present' -and
                     $_.status -ceq 'VIOLATED'
                 }).Count -eq 1) 'Missing packaging evidence was not detected exactly once.'
+    } finally {
+        $env:PATH = $savedPath
+        $env:GEOCEDG_WIX_FIXTURE_XML = $savedXml
+        $resolved = [IO.Path]::GetFullPath($root)
+        $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
+        if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
+                (Test-Path -LiteralPath $marker) -and
+                [IO.File]::ReadAllText($marker) -ceq 'verification-contract-boundary') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force
+        } else { throw "Fixture cleanup refused unexpected path: $resolved" }
+    }
+}
+
+Invoke-Case 'curated GGT library admission separates location, membership, hash and rights' {
+    # PRE-G9B-R6-plus-E1-P: each rule is its own subcontract; no extension-only exception.
+    $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $root = Join-Path $tempBase ('geocedg-ggt-library-' + [guid]::NewGuid().ToString('N'))
+    $fakeBin = Join-Path $root 'bin'
+    $marker = Join-Path $root '.fixture-owner'
+    [void][IO.Directory]::CreateDirectory($root)
+    Write-FixtureText $marker 'verification-contract-boundary'
+    $xml = New-FakeWix $fakeBin $true
+    $savedPath = $env:PATH
+    $savedXml = $env:GEOCEDG_WIX_FIXTURE_XML
+    $checker = Join-Path $repositoryRoot 'tools/agent/checks/packaging-product.ps1'
+    $ids = @('packaging.portable-boundary', 'packaging.ggt-library.rights',
+        'packaging.ggt-library.membership', 'packaging.ggt-library.hashes',
+        'packaging.ggt-library.build-manifest')
+    $script:LibraryCase = 0
+    function Invoke-LibraryCase {
+        param([scriptblock]$Mutate, [string[]]$Extra = @())
+        $script:LibraryCase++
+        $caseRoot = Join-Path $root ("case-$script:LibraryCase")
+        $artifacts = Join-Path $caseRoot 'artifacts'
+        New-PackagingArtifactFixture $artifacts
+        & $Mutate $artifacts $caseRoot
+        $resultPath = Join-Path $caseRoot 'result.json'
+        $run = Invoke-PowerShellCapture $checker (@('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $resultPath, '-RequireArtifacts', '-ArtifactRoot', $artifacts) + $Extra)
+        $json = Read-VerificationJson $resultPath
+        $status = @{}
+        foreach ($id in $ids) {
+            $matching = @($json.subcontracts | Where-Object contract_id -CEQ $id)
+            $status[$id] = $(if ($matching.Count -eq 1) { [string]$matching[0].status } else {
+                "MISSING:$($json.outcome):$($json.cause)" })
+        }
+        return [pscustomobject]@{ exit_code = $run.exit_code; status = $status }
+    }
+    function Set-BuiltProfile {
+        param([string]$Artifacts, [string]$ProfileId, [bool]$KeepLibraryRecord)
+        $path = Join-Path $Artifacts 'build-manifest.json'
+        $document = Read-VerificationJson $path
+        $document | Add-Member -NotePropertyName distribution_profile -NotePropertyValue (
+            [ordered]@{ id = $ProfileId; artifact_tag = 'internal' }) -Force
+        if ($KeepLibraryRecord) {
+            $document.ggt_library.profile_admitted = $ProfileId
+        } else {
+            $document.PSObject.Properties.Remove('ggt_library')
+        }
+        # A non-INTERNAL composition carries its own notice; only the library
+        # subcontracts are asserted for these profiles.
+        Write-FixtureText (Join-Path $Artifacts 'app-image/GeoCeDG/app/NC_DISTRIBUTION_NOTICE.txt') `
+            ([string]$document.distribution_marker)
+        Write-FixtureText $path ((ConvertTo-Json $document -Depth 20 -Compress) + "`n")
+    }
+    $stagedTools = { param($artifacts) Join-Path $artifacts 'app-image/GeoCeDG/app/ggt-library/tools' }
+    try {
+        $env:PATH = $fakeBin + [IO.Path]::PathSeparator + $savedPath
+        $env:GEOCEDG_WIX_FIXTURE_XML = $xml
+
+        $internal = Invoke-LibraryCase { param($a, $c) }
+        foreach ($id in $ids) {
+            Assert-Case ($internal.status[$id] -ceq 'SATISFIED') "INTERNAL exact library rejected by $id."
+        }
+        Assert-Case ($internal.exit_code -eq 0) 'INTERNAL exact library build was not accepted.'
+
+        $nc = Invoke-LibraryCase { param($a, $c) Set-BuiltProfile $a 'NC' $true }
+        foreach ($id in $ids) {
+            Assert-Case ($nc.status[$id] -ceq 'SATISFIED') "NC exact library rejected by $id."
+        }
+
+        $commercial = Invoke-LibraryCase { param($a, $c) Set-BuiltProfile $a 'COMMERCIAL' $true }
+        Assert-Case ($commercial.exit_code -eq 1 -and
+            $commercial.status['packaging.ggt-library.rights'] -ceq 'VIOLATED') `
+            'COMMERCIAL accidental library inclusion was not rejected by rights.'
+        $commercialClean = Invoke-LibraryCase { param($a, $c)
+            Set-BuiltProfile $a 'COMMERCIAL' $false
+            Remove-Item -LiteralPath (Join-Path $a 'app-image/GeoCeDG/app/ggt-library') -Recurse -Force }
+        foreach ($id in $ids) {
+            Assert-Case ($commercialClean.status[$id] -ceq 'SATISFIED') `
+                "A COMMERCIAL composition without the library was rejected by $id."
+        }
+
+        $unlisted = Invoke-LibraryCase { param($a, $c)
+            Write-FixtureText (Join-Path (& $stagedTools $a) 'Unlisted.ggt') 'not a curated tool' }
+        Assert-Case ($unlisted.status['packaging.ggt-library.membership'] -ceq 'VIOLATED' -and
+            $unlisted.status['packaging.ggt-library.hashes'] -ceq 'SATISFIED' -and
+            $unlisted.status['packaging.portable-boundary'] -ceq 'SATISFIED' -and
+            $unlisted.status['packaging.ggt-library.rights'] -ceq 'SATISFIED') `
+            'An unlisted .ggt was not isolated as a membership violation.'
+
+        $tampered = Invoke-LibraryCase { param($a, $c)
+            $file = Join-Path (& $stagedTools $a) 'CirclebyD.ggt'
+            $bytes = [IO.File]::ReadAllBytes($file)
+            $bytes[$bytes.Length - 40] = $bytes[$bytes.Length - 40] -bxor 1
+            [IO.File]::WriteAllBytes($file, $bytes) }
+        Assert-Case ($tampered.status['packaging.ggt-library.hashes'] -ceq 'VIOLATED' -and
+            $tampered.status['packaging.ggt-library.membership'] -ceq 'SATISFIED' -and
+            $tampered.status['packaging.portable-boundary'] -ceq 'SATISFIED') `
+            'A hash-mismatched .ggt was not isolated as a hash violation.'
+
+        $outside = Invoke-LibraryCase { param($a, $c)
+            Copy-Item -LiteralPath (Join-Path (& $stagedTools $a) 'CirclebyD.ggt') `
+                -Destination (Join-Path $a 'app-image/GeoCeDG/app/CirclebyD.ggt') }
+        Assert-Case ($outside.status['packaging.portable-boundary'] -ceq 'VIOLATED' -and
+            $outside.status['packaging.ggt-library.membership'] -ceq 'SATISFIED') `
+            'A .ggt outside app/ggt-library/tools was not isolated as a location violation.'
+
+        $unshipped = Invoke-LibraryCase { param($a, $c)
+            $override = Join-Path $c 'curated'
+            Copy-Item -LiteralPath (Join-Path $repositoryRoot 'models/curated/ggt-library') `
+                -Destination $override -Recurse
+            $manifestPath = Join-Path $override 'library-manifest.json'
+            $document = Read-VerificationJson $manifestPath
+            @($document.tools | Where-Object command -CEQ 'relCoor')[0].shipped = $false
+            Write-FixtureText $manifestPath ((ConvertTo-Json $document -Depth 20) + "`n")
+            Copy-Item -LiteralPath $manifestPath `
+                -Destination (Join-Path $a 'app-image/GeoCeDG/app/ggt-library') -Force
+        } -Extra @('-CuratedLibraryRoot', (Join-Path $root "case-$($script:LibraryCase + 1)/curated"))
+        Assert-Case ($unshipped.status['packaging.ggt-library.membership'] -ceq 'VIOLATED' -and
+            $unshipped.status['packaging.ggt-library.rights'] -ceq 'SATISFIED') `
+            'A manifest-listed but unshipped tool was not isolated as a membership violation.'
+
+        $unrighted = Invoke-LibraryCase { param($a, $c)
+            $rightsPath = Join-Path $c 'rights.json'
+            $document = Read-VerificationJson (Join-Path $repositoryRoot `
+                'geocedg/validation/pre-g9b-r6-plus/curated-ggt-library-rights-record.json')
+            $document.macros = @($document.macros | Where-Object command -CNE 'pointJump')
+            Write-FixtureText $rightsPath ((ConvertTo-Json $document -Depth 20) + "`n")
+        } -Extra @('-RightsRecordPath', (Join-Path $root "case-$($script:LibraryCase + 1)/rights.json"))
+        Assert-Case ($unrighted.status['packaging.ggt-library.rights'] -ceq 'VIOLATED' -and
+            $unrighted.status['packaging.ggt-library.membership'] -ceq 'SATISFIED' -and
+            $unrighted.status['packaging.ggt-library.hashes'] -ceq 'SATISFIED') `
+            'A tool without rights for the built profile was not isolated as a rights violation.'
+
+        $ggb = Invoke-LibraryCase { param($a, $c)
+            Write-FixtureText (Join-Path $a 'app-image/GeoCeDG/app/ggt-library/tools/model.ggb') 'ggb' }
+        Assert-Case ($ggb.status['packaging.portable-boundary'] -ceq 'VIOLATED') `
+            'A .ggb inside the library directory was admitted.'
+
+        $pdf = Invoke-LibraryCase { param($a, $c)
+            Write-FixtureText (Join-Path $a 'app-image/GeoCeDG/app/reference.pdf') 'pdf' }
+        Assert-Case ($pdf.status['packaging.portable-boundary'] -ceq 'VIOLATED') `
+            'A forbidden PDF reference payload was admitted.'
+
+        $missingLibrary = Invoke-LibraryCase { param($a, $c)
+            Remove-Item -LiteralPath (Join-Path $a 'app-image/GeoCeDG/app/ggt-library') -Recurse -Force }
+        Assert-Case ($missingLibrary.status['packaging.ggt-library.membership'] -ceq 'VIOLATED') `
+            'An admitted INTERNAL build without the curated library was accepted.'
     } finally {
         $env:PATH = $savedPath
         $env:GEOCEDG_WIX_FIXTURE_XML = $savedXml

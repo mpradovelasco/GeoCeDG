@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-P",
+  "registryPhaseId": "PRE-G9B-R6-PLUS-E1-P",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_p_candidate_report.md",
+  "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-e1-p-ggt-library-packaging.prompt.md",
+  "state": "PRE-G9B-R6-plus-E1-P = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+  "e1State": "PRE-G9B-R6-plus-E1 = NOT YET CLOSED",
+  "authorSmoke": "PENDING",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "verificationImpact": "PHASE_LOCAL",
+  "frozenByAuthor": "2026-10-07",
+  "plannedAcceptance": ["PHASE PRE-G9B-R6-PLUS-E1-P", "INFRA_UNIT", "PACKAGING -CheckToolchain", "PACKAGING -CheckToolchain -VerifyPackagingArtifacts (INTERNAL)", "PACKAGING -CheckToolchain -VerifyPackagingArtifacts (NC)", "technical packaging smoke"],
+  "finalPlanned": false,
+  "frozenCandidateEvidence": "candidate commit, tree, acceptance run ids and the technical smoke on the frozen candidate are recorded outside this artifact",
+  "statements": {
+    "serializationChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "documentFormatChange": "NONE",
+    "e1lLibraryContentChange": "NONE",
+    "packagingChange": "YES"
+  },
+  "identities": {
+    "publishedBase": { "name": "P_R6PLUS_E1_L", "commit": "47b39e5f6d51e51b8d08ec5622305f11c1dab10f", "tree": "d48c86c6f65b642a53609fb15f917bc587ff2ce7" },
+    "authorization": { "commit": "6bce8cf56f064f1e347c6362d5d6238ea1ae4782", "tree": "94198c3dd9a53b623c17c73997923eb48ad99581" },
+    "branch": "phase/pre-g9b-r6-plus-e1-p-ggt-library-packaging",
+    "rightsRecord": { "version": 1, "markdownBlob": "e9f4c1189c477b2dd91b0fd77bff7a8d420a2c04", "jsonBlob": "6f0df1bdfccfc60cbd3245b56c4bd51ec698ed5c", "changed": false }
+  },
+  "contract": {
+    "payloadLocation": "app/ggt-library/{library-manifest.json, tools/<command>.ggt}",
+    "invariant": "INV-E1P-1",
+    "subcontracts": {
+      "location": "packaging.portable-boundary",
+      "membership": "packaging.ggt-library.membership",
+      "hash": "packaging.ggt-library.hashes",
+      "rightsProfile": "packaging.ggt-library.rights",
+      "record": "packaging.ggt-library.build-manifest"
+    },
+    "ggbAdmitted": false,
+    "jarInspection": false,
+    "profiles": { "INTERNAL": "library included", "NC": "library included", "COMMERCIAL": "library excluded; profile fails closed before build work" }
+  },
+  "payload": {
+    "canonicalManifest": { "path": "models/curated/ggt-library/library-manifest.json", "sha256": "1b304be27ea2c90ea21e824bae25e663949039f60cd772a801ffb1886c281fcb", "libraryVersion": 1 },
+    "stagedFiles": {
+      "library-manifest.json": "1b304be27ea2c90ea21e824bae25e663949039f60cd772a801ffb1886c281fcb",
+      "tools/SquarebyDiagonal.ggt": "96d07292989c5b939ce9fd444f8f73cb8bb54196fa1dfcae5a207c46b8077ca7",
+      "tools/CirclebyD.ggt": "fb3bee9f9e1e584b38200205ed4f7e62a5de0e86600ff14c43e15b249362d5fb",
+      "tools/circArcbyAngle.ggt": "b7503305388aa0b91e2febd2b83b9199829eb26f82f7c436f97d12f6dc6733ef",
+      "tools/ellipseLength12.ggt": "7d49518c528e6b6bcf2e0ada25accc93400417c4d960c3107eab7a5790c45ed8",
+      "tools/IFPositiveSelectPoint.ggt": "cff4496b0428a28e5e860656b412b5d1443c3ae3a95730c1f1a43ff940bdaf26",
+      "tools/EllipseAxis.ggt": "3cb1a996474aaf52925b5cf7edfe1778b574ad3ab367b799d505e655e04a48bf",
+      "tools/conj2mainAxesEllipse.ggt": "977afd80364c40203b19535dbb8abaaa4cb9c32ab7589b5de839974542734d71",
+      "tools/pointJump.ggt": "dcb815708f8c957833ffbe6564f10c52518fb49c01414129409ccb1f4c0680e8",
+      "tools/relCoor.ggt": "5e7bdbf5f8736ceabf1af3ffdecabbe42b3e72b0e9bc952c5428b720c691a53e",
+      "tools/translationCoor.ggt": "2b3fd3787951eb3cd41fd4bafc26f3f75c84abc95041f38bb9fdb65e0c0775f0",
+      "tools/DuctSymbol.ggt": "b1146d5c75ae40f3eb5510a424d024e8435a856a752f67dfc03e2029c4def2aa",
+      "tools/SymmSymbol.ggt": "4efa9f8e7c44c40acd3d818d236ead9443afe7388b8bb4c47a0860de1a7cac89"
+    },
+    "internalEqualsNc": true,
+    "otherGgt": 0,
+    "ggb": 0,
+    "pdf": 0
+  },
+  "rights": {
+    "recordVersion": 1,
+    "macrosListed": 12,
+    "profiles": { "INTERNAL": "AUTHORIZED", "NC": "AUTHORIZED", "COMMERCIAL": "NOT AUTHORIZED / PENDING" },
+    "licensingClasses": { "toolDefinitions": "geocedg-software (EUPL-1.2)", "ownedIcons": "geocedg-documentation-or-ordinary-art (CC-BY-4.0)" },
+    "legalConclusion": "NONE"
+  },
+  "tests": {
+    "file": "tools/agent/tests/verification-contract-boundary.Tests.ps1",
+    "case": "curated GGT library admission separates location, membership, hash and rights",
+    "subCases": ["positive INTERNAL", "positive NC", "COMMERCIAL accidental inclusion", "COMMERCIAL without library", "unlisted .ggt", "hash mismatch", ".ggt outside app/ggt-library", "listed but shipped=false", "tool without rights for the profile", "any .ggb", "forbidden PDF payload", "admitted build missing the library"]
+  },
+  "registration": {
+    "phaseSelection": { "phase_id": "PRE-G9B-R6-PLUS-E1-P", "required_check_ids": ["packaging.product", "infra.contract-boundary"] },
+    "registryShapePin": "47 -> 48 PHASE selections",
+    "staticContractInputs": {
+      "tools/release/build-windows-package.ps1": "0743edff8cb99c378c450287e0f086f4476d34f76973f28614d37b73e3dc785d",
+      "geocedg/resources/assets-manifest.yml": "d8375884a3ecb29793744e653b13e09c5a1c1b4fc340789e1da52e24ed6b9f58"
+    },
+    "registryStaticContractsPin": "31fa0b3b04b77076e7999d601d463e09f06c6f3f5838302dfe036fee95cd1947"
+  },
+  "smoke": {
+    "kind": "TECHNICAL PACKAGING SMOKE (agent; not AUTHOR_SMOKE)",
+    "route": "unmodified app-image launcher GeoCeDG.exe, isolated --settingsfile, scratch JAVA_TOOL_OPTIONS agent outside the repository",
+    "checks": ["bundled directory from jpackage.app-path", "menu header and exactly the twelve tools in manifest order", "owned icons equal the manifest", "real menu activation of SquarebyDiagonal", "two-click use, four black thickness-3 segments", "bundled pin writes only the sidecar", ".cedg save", "relaunch reopen adopts the curated macro", "app-image tree unchanged"],
+    "installUninstall": "NOT EXECUTED: not part of the governing smoke rule; structural evidence INSTALLDIR=%LOCALAPPDATA%\\GeoCeDG (only uninstall RemoveFolderEx target) versus stores under %APPDATA%\\GeoCeDG\\5.4",
+    "development": "NC worktree build: both launches exit 0"
+  },
+  "preFreezeEvidence": {
+    "contractBoundaryTests": "6 cases, 63 assertions, 0 failures",
+    "finalCoverageTests": "8 cases, 384 assertions, 0 failures",
+    "static": { "runId": "verification-b1d4dbbdf2fd48d5aa35713b9f1122b7", "verdict": "ACCEPTED / COMPLETE", "acceptance": "3/3" },
+    "infraUnit": { "runId": "verification-08a8b5cb21de47549362d2c90383c7e5", "verdict": "ACCEPTED / COMPLETE", "acceptance": "22/22" },
+    "stagedTreeStatic": { "runId": "verification-de6e7b954bd346b2b0873b728cb24300", "verdict": "ACCEPTED / COMPLETE", "acceptance": "3/3" },
+    "stagedTreeInfraUnit": { "runId": "verification-c4ad7ff5c5844bda99a5ce4e16b6c9ba", "verdict": "ACCEPTED / COMPLETE", "acceptance": "22/22" },
+    "phasePlan": { "state": "COMPLETE", "executionPlanHash": "175dbb6b3c7f87b800133d8ea170119e9126d50602f7602234141bf09799eee6", "nodes": ["infra.contract-boundary", "packaging.repository-baseline.producer", "packaging.product"] },
+    "devBuilds": { "NC": "exit 0; packaging-product 42/42; MSI 432 File rows, 12 .ggt", "INTERNAL": "exit 0; packaging-product 42/42; MSI 432 File rows, 12 .ggt", "COMMERCIAL": "exit 1 after 0.5 s, output root unchanged" },
+    "sourceRevisionNote": "worktree builds record source_revision = HEAD; acceptance sets are rebuilt from the frozen candidate"
+  },
+  "observations": ["OBS-E1P-SMOKE-READER-LOG (pre-existing)", "OBS-E1P-USERSTORE-LOCK (pre-existing)", "OBS-E1P-SOURCE-REVISION (pre-existing)"]
+}

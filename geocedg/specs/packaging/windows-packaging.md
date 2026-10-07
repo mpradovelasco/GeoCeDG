@@ -32,6 +32,16 @@ container directly and does not rerun a platform image encoder. Exact derivative
 regeneration is a separate provenance check restricted to the accepted
 PowerShell/.NET/System.Drawing/Windows runtime recorded in the asset manifest.
 
+`PRE-G9B-R6-plus-E1-P` adds one declared non-JAR input: the curated GGT
+library of `models/curated/ggt-library/` (`library-manifest.json` and the
+`tools/<command>.ggt` files it marks `shipped`; contract in
+`geocedg/specs/legacy/curated-ggt-library.md`). Its admission authority is the
+curated GGT library rights record
+(`geocedg/validation/pre-g9b-r6-plus/curated-ggt-library-rights-record.json`,
+mirror of `docs/licensing/curated-ggt-library-rights-record.md`), whose
+version must equal the manifest's `rightsRecord.version`. The library is read
+as-is: packaging never regenerates, rewrites or filters its content.
+
 ## Pipeline
 
 `tools/release/build-windows-package.ps1` performs these reproducible stages:
@@ -41,7 +51,10 @@ PowerShell/.NET/System.Drawing/Windows runtime recorded in the asset manifest.
    told to reuse a previously validated layout;
 3. copy runtime JARs to an isolated staging directory while rejecting all
    non-Windows native variants;
-4. add internal-evaluation and legal-status records;
+4. add internal-evaluation and legal-status records and, after the `legal/`
+   copy, the curated GGT library at `ggt-library/` (app-image path
+   `app/ggt-library/`, the location the bundled tool catalog reads) when the
+   rights record authorizes the selected profile;
 5. create a self-contained `app-image` with JDK 25 `jpackage`;
 6. derive a ZIP with normalized entry ordering and timestamps when requested;
 7. derive MSI and/or EXE through pinned WiX 5.0.2 and its pinned Util/UI
@@ -80,10 +93,29 @@ verb to `GeoCeDG.exe`, together with the absence of a `.ggb` claim.
 
 ## Required exclusions
 
-The pipeline fails if the result contains PDFs, `.ggb`/`.ggt` models,
+The pipeline fails if the result contains PDFs, any `.ggb` model,
 `Templatev7.ggb`, repository documentation, or non-Windows native JARs. It
-does not traverse `docs/`, `models/`, or other repository knowledge stores.
-The stable G2 toolbar and the G3 Laboratory are not modified by packaging.
+does not traverse `docs/`, `models/`, or other repository knowledge stores;
+the only exception is the declared curated GGT library input above, read from
+its fixed path.
+
+A `.ggt` file is admitted only if all of the following hold, and every other
+`.ggt` anywhere in the app-image fails the build verification:
+
+1. location: it lies directly below `app/ggt-library/tools/`;
+2. membership: it is a `shipped` member of the staged `library-manifest.json`,
+   which is byte-identical to the canonical repository manifest, and the staged
+   library contains exactly that manifest and those shipped files;
+3. hash: its SHA-256 equals the canonical manifest value;
+4. rights: the rights record lists its command and authorizes the built
+   distribution profile.
+
+Profiles: `INTERNAL` and `NC` include the same library; `COMMERCIAL` excludes
+it (the builder stages nothing for a profile the rights record does not
+authorize, and `COMMERCIAL` additionally fails closed before any build work).
+GGT content is never placed or searched inside a JAR; JAR entries are not
+inspected for it. The stable G2 toolbar and the G3 Laboratory are not modified
+by packaging.
 
 ## Verification
 
@@ -94,6 +126,15 @@ its internal marker, exclusions, SBOM, build manifest, hashes, and the
 decompiled MSI association. Static verification also proves that the package
 profile, schema and Java properties agree and that association arguments occur
 only in the installer path.
+
+The packaging product leaf (`tools/agent/checks/packaging-product.ps1`) checks
+the four `.ggt` admission rules as separate subcontracts so that a failure
+names its rule: `packaging.portable-boundary` (location and every `.ggb`/PDF),
+`packaging.ggt-library.membership`, `packaging.ggt-library.hashes` and
+`packaging.ggt-library.rights`; `packaging.ggt-library.build-manifest`
+verifies the `ggt_library` record of `build-manifest.json`, which is present
+exactly when the built profile admits the library. The SBOM lists each staged
+tool as a file component with its SHA-256.
 
 The composed authority always runs the static packaging gate. Use
 `tools/agent/verify.ps1 -VerifyPackagingArtifacts` after generating all
