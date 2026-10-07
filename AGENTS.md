@@ -70,7 +70,7 @@ GeoCeDG-specific durable sources belong in:
 - `docs/adr/`: accepted decisions and alternatives.
 - `docs/research/`: research-to-requirement traceability.
 - `docs/roadmap/`: phase gates and status.
-- `models/`: canonical, research, legacy, and regression `.ggb`, `.ggt`, scripts, and manifests.
+- `models/`: canonical, research, legacy, and regression `.ggb`, `.ggt`, scripts, and manifests; `models/curated/` holds only author-approved curated product artifacts generated deterministically from immutable `models/legacy/` originals plus recorded curation metadata, each with a manifest and a provenance and rights record; they are never hand-edited and never replace or redefine the legacy originals.
 - `tools/agent/`: deterministic agent entry points and validation orchestration.
 - `tools/build/`: reproducible build helpers.
 - `tools/release/`: packaging and release helpers.
