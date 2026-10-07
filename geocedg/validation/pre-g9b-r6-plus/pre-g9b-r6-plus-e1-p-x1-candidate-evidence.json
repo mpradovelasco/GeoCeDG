@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E1-P-X1",
+  "registeredPhase": "PRE-G9B-R6-PLUS-E1-P-X1",
+  "observation": "OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION",
+  "artifactKind": "TECHNICAL_VERIFICATION_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e1_p_x1_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "passClaimed": false,
+  "verificationClass": "BOUNDED_PHASE",
+  "publishedBase": {"name": "P_R6PLUS_E1_X1", "commit": "7d132ec5696535e18419e481b8306b5aecf3fef6", "tree": "7509dcb05117eca87011e2bb82ac481592afbcad"},
+  "testCorrectionCommit": {"commit": "85e0aa4a4442e2951013e76c75b3617752778654", "tree": "0c0f7964933243f06f6eaf77d9588578ed47891d"},
+  "impact": {
+    "productChange": "NONE",
+    "packagingProductChange": "NONE",
+    "geometricSemanticsChange": "NONE",
+    "serializationChange": "NONE",
+    "documentFormatChange": "NONE",
+    "kernelChange": "NONE",
+    "productionCodeDelta": "NONE"
+  },
+  "changedFiles": [
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LCuratedLibraryTest.java",
+    "geocedg/specs/operations/verification-junit-inventory.json",
+    "geocedg/specs/operations/verification-registry.json",
+    "tools/agent/tests/verification-final-coverage.Tests.ps1",
+    "docs/validation/pre_g9b_r6_plus_e1_p_x1_candidate_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e1-p-x1-candidate-evidence.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ],
+  "staleAssertions": [
+    "assertFalse(build-windows-package.ps1 contains \"ggt-library\")  (line 355, reported by JUnit)",
+    "assertTrue(windows-packaging.md contains \"`.ggb`/`.ggt` models\")  (also failing on the base; same superseded clause)"
+  ],
+  "supersededBy": "E1-P packaging contract: models/curated/ggt-library/ -> app/ggt-library/ under manifest membership, exact hash and rights/profile admissibility; every other .ggt rejected; .ggb forbidden",
+  "reconciledTest": {
+    "method": "e1l09NoPackagingRouteNoBuildChangeAndUnchangedActionCatalog",
+    "identityKept": true,
+    "kept": ["no .ggt below src/main/resources", "no Gradle build script mentions models/curated", "125 actions", "experimental curated-library feature, not stable"],
+    "newClauses": ["`models/curated/ggt-library/`", "`app/ggt-library/`", "directly below `app/ggt-library/tools/`", "membership:", "hash:", "rights:", "every other `.ggt` anywhere in the app-image fails the build verification", "any `.ggb` model", "`COMMERCIAL` excludes it", "builder names models/curated/ggt-library"]
+  },
+  "verification": {
+    "focal": {"PreG9BR6PlusE1LCuratedLibraryTest": "9/9", "PreG9BR6PlusE1LBundledCatalogTest": "10/10"},
+    "adjacentE1PPhase": {"run": "verification-ebf28a3edc8a45ca9f16cc9e2fc23945", "verdict": "ACCEPTED / COMPLETE", "checks": "2/2"},
+    "finalDesktop": {"commit": "85e0aa4a4442e2951013e76c75b3617752778654", "tests": 1874, "failures": 0, "errors": 0, "skipped": 1, "skippedIdentity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1] (allowlisted)", "state": "CLEAN"},
+    "developmentInfraUnit": {"run": "verification-896164d2286246429abfbf174bd4eb2f", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "phasePlanOnly": {"coverage": "COMPLETE", "planHash": "9016d9f6022ee7ea6dc0d30537a89849172fb8cdaccf1393eb7970b37870aa8d"},
+    "candidateRuns": "reported outside this artifact"
+  },
+  "inventory": {
+    "finalDesktop": {"before": 1855, "after": 1874},
+    "discoveryDesktop": {"before": 1880, "after": 1880},
+    "newSelection": {"id": "pre-g9b-r6-plus-e1-p-x1.desktop", "identities": 19},
+    "registryPin": {"old": "5de49549dd9d82b81ce75ff60b742e6e49c840231dfe627e5d67355edf7e5a55", "new": "eded218f82d1ae5d1df4456ec11c7794d0b522c65c7365452c65069f74c5ad79"},
+    "registryShapePins": {"inventorySelections": 42, "phaseSelections": 50, "e1px1Selection": 19},
+    "handEditedHashes": false
+  },
+  "phaseSelection": ["compile.shared.semantic", "compile.desktop.semantic", "packaging.product", "junit.desktop.pre-g9b-r6-plus-e1-p-x1.semantic"],
+  "proposedDisposition": "OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION = RESOLVED IN PRE-G9B-R6-plus-E1-P-X1 (pending author approval)",
+  "e2Started": false
+}

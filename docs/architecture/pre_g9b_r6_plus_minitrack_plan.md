@@ -27,6 +27,7 @@
 - `E1-X1-R1` micro-characterization (2026-10-07): at the author's instruction, on the local characterization candidate `T_R6PLUS_E1_X1_CHAR` `b6172af4f319d297aa5780c9f516b310254d3e90`, a scratch prototype of an early Classic dispatch in `GeoCeDG.main` (Candidate C) was compared with the jpackage secondary launcher (Candidate A) ([launcher comparison report](../validation/pre_g9b_r6_plus_e1_x1_r1_launcher_comparison_report.md)): C met the decision rule `C1`–`C11` in development and in `INTERNAL`/`NC` app-images and ZIPs built by the unmodified builder, with the `E1-P` launcher inventory, installers and shortcuts and a 42/42 packaging contract; preferred implementation Candidate C (A kept as the documented alternative), proposed class `BOUNDED_PHASE`, decisions `DQ-E1X1-1` to `DQ-E1X1-8`; the canonical prompt is reconciled to C and stays `PREPARED — NOT AUTHORIZED`; implementation not authorized.
 - `E1-X1` implementation (2026-10-07): the author accepted the R1 recommendation and authorized the implementation and technical verification with Candidate C ([authorization record](../validation/pre_g9b_r6_plus_e1_x1_authorization_record.md), `51bb677e`), on the implementation branch from `b3c78e6d`, `BOUNDED_PHASE` frozen with one registered `PHASE` `PRE-G9B-R6-PLUS-E1-X1`. The technical candidate ([candidate report](../validation/pre_g9b_r6_plus_e1_x1_candidate_report.md)) is pending author review and author smoke; packaging product change none.
 - `E1-X1` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_X1` `b12ab32c3a4dcf42941617e95d06a92bfb3b2955` (`AUTHOR_SMOKE = PASS`, `DQ-E1X1-4` accepted, [E1-X1 closeout record](../validation/pre_g9b_r6_plus_e1_x1_closeout_record.md)); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` resolved with `X1-F2` and `X1-F3`; `OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION` stays open and must be resolved before `E2`; the only next authorized activity is `PRE-G9B-R6-plus-E1-P-X1`, whose implementation is not yet authorized; `E2` not started.
+- `E1-P-X1` reconciliation (2026-10-07): at the author's authorization, a test-only verification reconciliation on `P_R6PLUS_E1_X1` `7d132ec5` replaces the superseded packaging-negation clauses of `PreG9BR6PlusE1LCuratedLibraryTest.e1l09` with the controlled route owned by the packaging specification (test identity kept), restores a clean `final.desktop` and refreshes the official inventory; `BOUNDED_PHASE` with one registered `PHASE` `PRE-G9B-R6-PLUS-E1-P-X1`; `PRODUCT CHANGE = NONE`; the technical / verification candidate ([candidate report](../validation/pre_g9b_r6_plus_e1_p_x1_candidate_report.md)) is pending author review; `E2` not started.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1350,9 +1351,14 @@ OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION = RECORDED BY E1-X1 — PRE-EXISTING
                              E1-X1 closeout, 2026-10-07; final.desktop KNOWN RED AT X1
                              BASE; next authorized activity PRE-G9B-R6-plus-E1-P-X1,
                              implementation not yet authorized)
+                             TECHNICALLY RESOLVED / PENDING AUTHOR APPROVAL (2026-10-07;
+                             PRE-G9B-R6-plus-E1-P-X1 test-only candidate, PRODUCT CHANGE =
+                             NONE, final.desktop CLEAN; candidate report)
 PRE-G9B-R6-plus-E1-P-X1    = NEXT AUTHORIZED ACTIVITY — IMPLEMENTATION NOT AUTHORIZED
                              (reconcile the stale E1-L packaging-negation assertion and
                              restore final.desktop to a clean baseline)
+                             IMPLEMENTATION AUTHORIZED 2026-10-07 (test-only) — TECHNICAL
+                             / VERIFICATION CANDIDATE PENDING AUTHOR REVIEW
 ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA = AUTHOR APPROVED REQUIREMENT (2026-10-07) —
                              OWNER PRE-G9B-R6-plus-G — MANDATORY G INPUT —
                              IMPLEMENTATION NOT AUTHORIZED IN E1 (product-owned
