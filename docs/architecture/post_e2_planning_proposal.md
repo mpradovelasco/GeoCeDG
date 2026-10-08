@@ -5,10 +5,11 @@ ARTIFACT_KIND            = PLANNING PROPOSAL (documentary; no product change)
 BASE                     = P_R6PLUS_E2 86fdc9086d68f21ea67f360ff104679dace74223
                            (E2 PASS — AUTHOR APPROVED — PUBLISHED, 2026-10-08)
 SOURCE                   = E2 closeout record, accepted observations OBS-E2-1 to OBS-E2-4
-STATE                    = PROPOSED — NOT AUTHORIZED
+STATE                    = PUBLISHED — PENDING AUTHOR REVIEW (publication of this
+                           planning document only; designs not approved)
 implementationAuthorized = false
 selfApproved             = false
-PRIORITY                 = P1, P2 first; P3, P4 afterwards
+PRIORITY                 = P1 → P2 → P3 → P4 (P1 and P2 first)
 ```
 
 Every workstream below is independent and starts with characterization only.
@@ -94,6 +95,30 @@ dimensions are never rewritten.
 **Observation.** Starting to type a command in Algebra Input sometimes zooms the
 Graphics view far out; seen in earlier phases; not attributed to `E2`.
 
+**Author observation (2026-10-08, final planning amendment).** The zoom-out
+occurs precisely when the first argument of a command is introduced in Algebra
+Input. This is reproducible author-observed behavior, not a confirmed root
+cause. The characterization therefore centres on the transition between
+command-name recognition and first-argument processing, and treats every
+mechanism below — including the keyboard-routing candidates — as an unproven
+hypothesis:
+
+- record the view scale (`xscale`, `yscale`), origin (`xZero`, `yZero`) and
+  visible real-world bounds (`xmin`, `xmax`, `ymin`, `ymax`) immediately before
+  and after that transition, for each keystroke of the reproducing sequence;
+- instrument the operations that actually change the view (at least
+  `EuclidianView.setCoordSystem`, `setRealWorldCoordSystem`, `setStandardView`,
+  the animated zoomers and `EuclidianSettings` coordinate-system updates) with
+  stack traces, so the responsible call path is observed rather than inferred;
+- examine, without assuming any of them is responsible: argument resolution and
+  label lookup of the typed argument, input handling and key routing from the
+  field, object highlighting or selection of the referenced object, input-help
+  and autocompletion callbacks, preview-related callbacks
+  (`notifyUpdatePreviewFromInputBar`, `updatePreviewFromInputBar`), and viewport
+  or settings updates.
+
+The code-reading notes below remain leads only.
+
 **What code reading excludes.** The product input preview evaluates nothing:
 `ScheduledPreviewFromInputBar.run()` clears preview objects for
 `AppConfigGeoCeDG`
@@ -121,13 +146,16 @@ the scale; no GeoCeDG listener changes the view on construction changes.
    unlikely while typing.
 
 **Reproduction.** Windowed product with an isolated settings copy and with the
-author's settings copy; type command names with and without Shift, Ctrl+Z,
-Ctrl+-, Ctrl+M in the field; instrument `EuclidianView.setCoordSystem` with a
+author's settings copy; type a command name, then its opening bracket and the
+first argument (an existing object label, a number and a new point), keystroke
+by keystroke, recording the view state above at each step; also type Shift,
+Ctrl+Z, Ctrl+-, Ctrl+M in the field; instrument `EuclidianView.setCoordSystem` with a
 stack trace from a scratch probe; repeat on the published bases `dc63b0e5`
 and `86fdc908` and on Classic.
 
-**Acceptance criteria.** The exact call stack of the zoom change for the
-author's sequence, the owning layer, and whether Classic behaves the same;
+**Acceptance criteria.** The view state before and after the
+command-name-to-first-argument transition for the author's sequence, the exact
+call stack of the zoom change, the owning layer, and whether Classic behaves the same;
 then a test that types the reproducing sequence and asserts the view scale is
 unchanged.
 
@@ -187,7 +215,7 @@ point, save/reopen stable, no change for expressions or locked numbers.
 1. P1 characterization (BOUNDED_PHASE, documentary + scratch probes)
 2. P2 characterization (BOUNDED_PHASE, documentary + scratch probes)
 3. author decisions on P1/P2; then bounded fixes if authorized
-4. P3 and P4 designs (DOCUMENTATION_STATUS_ONLY), then author decisions
+4. P3 design, then P4 design (DOCUMENTATION_STATUS_ONLY), then author decisions
 ```
 
 No step is authorized by this proposal.
