@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1",
+  "registeredPhaseId": "POST-E2-P1",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p1_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-08", "title": "POST-E2-P1 — Author Approval, Publication and P1-R1 PDF Stroke-Width Characterization"},
+  "state": "PASS — AUTHOR APPROVED",
+  "meaning": "characterization approved, not implementation completed",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {"commit": "02d84945e08c54883683110c2664e5174f76bd96", "tree": "b918d96ca174c92f66ea25e0461a72df9c501b60", "mutated": false},
+  "acceptedEvidence": {
+    "phase": {"run": "verification-0f33ef67bda04e9e913a267169bc9ad3", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "static": {"run": "verification-5ff0fe3bdfe140b3b7addc09a887f6db", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"}
+  },
+  "classification": ["P1-INTENDED-PHYSICAL-CAPTURE", "P1-DEFAULT-UX-LIMITATION"],
+  "designDisposition": {
+    "optionA": "APPROVED AND APPLIED (user guide 9.5 EN/ES)",
+    "optionB": "RETAINED AS PREFERRED FUTURE ENHANCEMENT — NOT AUTHORIZED",
+    "optionBPrinciples": ["application-level creation preferences", "explicit paper-space sizes", "one-time conversion into model units", "no live viewport dependency", "existing dimensions unchanged", "no new command arguments"],
+    "optionBNumericRangeNormative": false,
+    "optionC": "NOT ADOPTED",
+    "physicalZoomAid": "FUTURE DESIGN POSSIBILITY — NOT AUTHORIZED"
+  },
+  "registeredObservation": {"id": "OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM", "owner": "POST-E2-P1-R1", "rootCauseEstablished": false},
+  "closeoutChanges": ["closeout record and JSON", "user guide 9.5 sentence EN/ES", "planning status", "roadmap and mini-track status"],
+  "publication": {"authorized": true, "method": "ordinary non-force fast-forward of main", "tagsOrReleases": false},
+  "next": {"phase": "POST-E2-P1-R1", "activity": "characterization and design only", "productCorrectionAuthorized": false},
+  "notAuthorized": ["Option B implementation", "P1-R1 correction", "P2", "P3", "P4", "E3", "F1", "F2", "F3", "G", "tag", "release", "binary publication"]
+}

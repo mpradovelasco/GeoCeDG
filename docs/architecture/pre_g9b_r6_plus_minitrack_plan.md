@@ -35,6 +35,7 @@
 - Author smoke follow-up of `E2` (2026-10-08): `AUTHOR_SMOKE = PASS WITH OBSERVATIONS` on the original candidate `878ff66b` (unchanged); legacy document macros classified `A-INTENTIONAL-PROFILE-BEHAVIOR`; dimension line thickness and the unit suffix policy (unit-system amendment `1.1` §20, `PROPOSED`) delivered in a revised technical candidate pending author review ([author decisions](../validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md); [follow-up report](../validation/pre_g9b_r6_plus_e2_smoke_followup_report.md)).
 - `E2` closeout (2026-10-08): `PASS — AUTHOR APPROVED — PUBLISHED` on the revised `T_R6PLUS_E2` `3a7246614a6ef040d84a1440c4c10b3f93be5776` (`AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING OBSERVATIONS`, [E2 closeout record](../validation/pre_g9b_r6_plus_e2_closeout_record.md)); `OBS-E2-1` to `OBS-E2-4` registered for a POST-E2 planning and characterization proposal; POST-E2 implementation not authorized.
 - POST-E2 planning (2026-10-08): `PLANNING PASS — AUTHOR APPROVED` ([planning proposal](post_e2_planning_proposal.md); [author decision record](../validation/post_e2_planning_author_decision_record.md)); `POST-E2-P1` characterization authorized (`BOUNDED_PHASE`); P1 implementation and P2–P4 execution not authorized.
+- `POST-E2-P1` (2026-10-08): `PASS — AUTHOR APPROVED` as a characterization ([P1 closeout record](../validation/post_e2_p1_closeout_record.md)); `OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM` registered, characterization owner `POST-E2-P1-R1` (authorized; correction not authorized).
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1391,6 +1392,15 @@ OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING 
                              closeout 2026-10-08): large unexpected zoom-out when
                              starting algebra input, also seen in earlier phases,
                              not attributed to E2 — POST-E2 P2
+OBS-E2-1 disposition       = POST-E2-P1 PASS — AUTHOR APPROVED (2026-10-08):
+                             P1-INTENDED-PHYSICAL-CAPTURE + P1-DEFAULT-UX-LIMITATION;
+                             guide clarified (Option A); Option B retained, not
+                             authorized
+OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM = REGISTERED (2026-10-08):
+                             PDF stroke width appears to follow the view zoom at
+                             export while geometry stays correct; root cause and
+                             population not established — characterization owner
+                             POST-E2-P1-R1 (correction NOT AUTHORIZED)
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a

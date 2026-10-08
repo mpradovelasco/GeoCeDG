@@ -11,7 +11,12 @@ STATE                    = PLANNING PASS — AUTHOR APPROVED (2026-10-08; scope,
                            stay candidates; author decision record
                            docs/validation/post_e2_planning_author_decision_record.md)
                            earlier: PUBLISHED — PENDING AUTHOR REVIEW (694354e8)
-P1 CHARACTERIZATION      = AUTHORIZED (P1 implementation NOT AUTHORIZED)
+P1 CHARACTERIZATION      = PASS — AUTHOR APPROVED (2026-10-08; P1 closeout record
+                           docs/validation/post_e2_p1_closeout_record.md; Option A
+                           applied; Option B retained, not authorized; Option C not
+                           adopted; P1 implementation NOT AUTHORIZED)
+P1-R1 (PDF stroke width)  = CHARACTERIZATION AND DESIGN AUTHORIZED (correction NOT
+                           AUTHORIZED)
 P2–P4 EXECUTION          = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false

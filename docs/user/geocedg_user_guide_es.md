@@ -1261,8 +1261,11 @@ puntos, una recta o un vector y después el clic de colocación. Las herramienta
 crean números ocultos para el desplazamiento, la prolongación y la separación;
 la prolongación y la separación son 2 mm y 1 mm sobre el papel cuando el
 documento tiene una unidad física y una escala de dibujo, y si no unos pocos
-píxeles de la vista actual, fijados al crear la cota. Un paso de deshacer por
-cota.
+píxeles de la vista actual, fijados al crear la cota. Con una unidad física son
+longitudes sobre el papel tomadas una sola vez, no distancias en pantalla: con
+un zoom que amplía el dibujo, como es habitual en los documentos en milímetros,
+parecen grandes en pantalla pero se imprimen con 2 mm y 1 mm. Un paso de
+deshacer por cota.
 
 **Grosor de línea y preferencias.** La línea de cota y las dos líneas de
 referencia empiezan con grosor de línea 2; cada una conserva su propio estilo,

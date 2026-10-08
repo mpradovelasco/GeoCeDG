@@ -1208,7 +1208,10 @@ dimension**: two points, a line or vector, then the placement click. The tools
 create hidden numbers for the offset, the overshoot and the gap; the overshoot
 and the gap are 2 mm and 1 mm on paper when the document has a physical unit and
 a drawing scale, otherwise a few pixels of the current view, fixed when the
-dimension is created. One undo step per dimension.
+dimension is created. With a physical unit they are paper lengths captured once,
+not screen distances: at a zoom that enlarges the drawing, as is usual for
+millimetre documents, they look large on screen but print at 2 mm and 1 mm.
+One undo step per dimension.
 
 **Line thickness and preferences.** The dimension line and the two extension
 lines start with line thickness 2; each keeps its own style, which you can change
