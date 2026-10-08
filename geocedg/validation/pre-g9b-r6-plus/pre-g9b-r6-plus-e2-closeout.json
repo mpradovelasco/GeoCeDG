@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E2",
+  "registeredPhaseId": "PRE-G9B-R6-PLUS-E2",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e2_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-08", "title": "PRE-G9B-R6-plus-E2 — Author Approval, Publication and POST-E2 Follow-up"},
+  "state": "PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS WITH ACCEPTED NON-BLOCKING OBSERVATIONS",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {
+    "name": "T_R6PLUS_E2 (revised)",
+    "commit": "3a7246614a6ef040d84a1440c4c10b3f93be5776",
+    "tree": "00b5230d19debea5598299906f846f52b4d6e9d7",
+    "mutated": false
+  },
+  "acceptedEvidence": {
+    "phase": {"run": "verification-ca5dd07b67854be5ad2115671a1bc1c9", "verdict": "ACCEPTED / COMPLETE", "checks": "7/7"},
+    "integration": {"run": "verification-48829d5691c4408f83f6b0dc07f4310f", "verdict": "ACCEPTED / COMPLETE", "checks": "19/19"},
+    "finalRequired": false
+  },
+  "historicalEvidence": {
+    "originalCandidate": {"commit": "878ff66b8839aeee44dfe1e557ac37b7c349f74b", "tree": "e096b857e1ce7e1e959c0c637f3e8b3b87cd82fe"},
+    "originalPhase": "verification-47c1a96df96440e59db84dd5098f1b66",
+    "originalIntegration": "verification-e1d28044ba814ed8ab216b676e1cbe06",
+    "originalAuthorSmoke": "PASS WITH OBSERVATIONS",
+    "smokeFollowUpDecisions": "5a55ba241c7f37f6b2e39a1784cd857d11198c66"
+  },
+  "normativeStatus": {
+    "geocedg/specs/dimensions/native-dimensions.md": "1.1 NORMATIVE / AUTHOR APPROVED",
+    "docs/adr/0034-native-dimension-representation-and-presentation-seams.md": "ACCEPTED — AUTHOR APPROVED",
+    "geocedg/specs/units/unit-system.md": "1.0 unchanged; amendment 1.1 (section 20) NORMATIVE / AUTHOR APPROVED",
+    "docs/adr/0032-unit-system-semantics-and-persistence-ownership.md": "decision unchanged; amendment note author approved"
+  },
+  "observations": [
+    {"id": "OBS-E2-1", "title": "extension-line gap and overshoot under mm construction units", "state": "ACCEPTED NON-BLOCKING", "next": "POST-E2 P1"},
+    {"id": "OBS-E2-2", "title": "typed native dimensions are not dragged like tool-created ones", "state": "ACCEPTED NON-BLOCKING — DOCUMENTED", "next": "POST-E2 P4"},
+    {"id": "OBS-E2-3", "title": "unexpected zoom-out when starting algebra input", "state": "ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING", "next": "POST-E2 P2"},
+    {"id": "OBS-E2-4", "title": "interactive access to embedded document macros", "state": "OPEN as OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX", "next": "POST-E2 P3"}
+  ],
+  "closeoutChanges": ["closeout record and JSON", "status markers of approved normative documents", "user guide 9.5 sentence for OBS-E2-2", "roadmap and mini-track status"],
+  "publication": {"authorized": true, "method": "ordinary non-force fast-forward of main", "tagsOrReleases": false},
+  "postE2": {"state": "OBSERVATIONS REGISTERED", "implementationAuthorized": false, "workstreams": ["P1", "P2", "P3", "P4"], "priority": ["P1", "P2"]},
+  "notAuthorized": ["POST-E2 implementation", "E3", "F1", "F2", "F3", "G", "PRE-G9B-R7", "G9B", "tag", "release", "binary publication"]
+}

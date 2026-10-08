@@ -1220,7 +1220,11 @@ preferences never change existing dimensions or an opened document.
 
 **Moving the dimension line.** With Move, drag the dimension line, an extension
 line or the value: only the offset changes and the measured points never move.
-One undo step on release.
+One undo step on release. This works when the offset is a free, named, unlocked
+number, as the tools create it or as in `s=1` followed by
+`AlignedDimension(A,B,s)`; a dimension typed with a literal or computed offset,
+such as `AlignedDimension(A,B,1)`, cannot be dragged — change its offset by
+redefining it.
 
 **Export.** Pictures (PNG, PDF, SVG, EMF and print) show the complete dimension.
 PSTricks, PGF/TikZ and Asymptote write the arrows and the rotated, centred value.

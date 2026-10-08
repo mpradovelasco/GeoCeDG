@@ -1275,7 +1275,12 @@ existentes ni un documento abierto.
 
 **Mover la línea de cota.** Con Mover, arrastre la línea de cota, una línea de
 referencia o el valor: solo cambia el desplazamiento y los puntos medidos nunca
-se mueven. Un paso de deshacer al soltar.
+se mueven. Un paso de deshacer al soltar. Esto funciona cuando el
+desplazamiento es un número libre, con nombre y sin bloquear, como el que crean
+las herramientas o como en `s=1` seguido de `AlignedDimension(A,B,s)`; una cota
+escrita con un desplazamiento literal o calculado, como
+`AlignedDimension(A,B,1)`, no se puede arrastrar: cambie su desplazamiento
+redefiniéndola.
 
 **Exportación.** Las imágenes (PNG, PDF, SVG, EMF e impresión) muestran la cota
 completa. PSTricks, PGF/TikZ y Asymptote escriben las flechas y el valor girado

@@ -137,7 +137,7 @@ geometric dependency.
   units silently. Users must be told; the living guides record it (`D1` or `G`).
 - The spatial frame `units` token stays unrelated to `constructionUnit`.
 
-## Amendment note (2026-10-08, proposed; not author approved)
+## Amendment note (2026-10-08, author approved)
 
 This ADR and its decision stay as approved on 2026-10-02. The author decision of
 the `E2` author smoke follow-up
@@ -148,7 +148,9 @@ dimension unit suffix policy (`dimensionUnitSuffix`, written only when hidden).
 The owner, the placement, the fail-closed reading, the ignored contexts and the
 byte identity of documents without the hidden policy are unchanged; no new
 element family, `GeoElement` or command signature is introduced. The amended
-rules are the unit-system specification §20 (amendment `1.1`), proposed in the
-revised `E2` technical candidate and pending author review. One consequence
+rules are the unit-system specification §20 (amendment `1.1`), approved by the
+author with `E2` on the exact candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`
+([E2 closeout record](../validation/pre_g9b_r6_plus_e2_closeout_record.md)); only this note's status words changed
+at acceptance. One consequence
 above changes for documents with the hidden policy: builds that implement only
 version 1 refuse them instead of opening them (§20.3).

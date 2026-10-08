@@ -33,6 +33,7 @@
 - Author decisions for `E2` (2026-10-07): on the documentary candidate `T_R6PLUS_E2_PREP` `6ad853c618da8f07a279b266c83002c145c6292c` (STATIC `verification-b355b147258849beb498a541293a4fd9` `ACCEPTED / COMPLETE`), the author froze `DQ-E2-1` to `DQ-E2-11` ([E2 author-decision record](../validation/pre_g9b_r6_plus_e2_author_decisions_record.md)): β approved for design; commands `AlignedDimension` / `LinearDimension` with ES aliases `CotaAlineada` / `CotaLineal` (the legacy `DirectDimension` / `AxisDimension` / `directDimension` / `axisDimension` are not registered, which resolves the naming side of `OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION`); mandatory offset; side pinned by explicit inputs (B1); model-unit value with unit-sensitive presentation text; `INTEGRATED_PHASE` approved for design; DXF segment subset as a durable limitation. The author rejected the horizontal-text limitation and required a normative-style aligned value (`DQ-E2-6`); the authorized focal characterization ([addendum](../validation/pre_g9b_r6_plus_e2_dq6_aligned_text_addendum.md)) found it **feasible with β** through one bounded drawable seam (no new `GeoElement`, no XML), pending author review. The reconciled design candidate and the canonical prompt are updated; `E2` = `PREPARED — AUTHOR DECISIONS FROZEN — IMPLEMENTATION NOT AUTHORIZED`.
 - Implementation of `E2` (2026-10-08): authorized by the author ([E2 authorization record](../validation/pre_g9b_r6_plus_e2_authorization_record.md)); technical candidate pending author review ([candidate report](../validation/pre_g9b_r6_plus_e2_candidate_report.md); [specification](../../geocedg/specs/dimensions/native-dimensions.md); [ADR 0034](../adr/0034-native-dimension-representation-and-presentation-seams.md) `PROPOSED`).
 - Author smoke follow-up of `E2` (2026-10-08): `AUTHOR_SMOKE = PASS WITH OBSERVATIONS` on the original candidate `878ff66b` (unchanged); legacy document macros classified `A-INTENTIONAL-PROFILE-BEHAVIOR`; dimension line thickness and the unit suffix policy (unit-system amendment `1.1` §20, `PROPOSED`) delivered in a revised technical candidate pending author review ([author decisions](../validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md); [follow-up report](../validation/pre_g9b_r6_plus_e2_smoke_followup_report.md)).
+- `E2` closeout (2026-10-08): `PASS — AUTHOR APPROVED — PUBLISHED` on the revised `T_R6PLUS_E2` `3a7246614a6ef040d84a1440c4c10b3f93be5776` (`AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING OBSERVATIONS`, [E2 closeout record](../validation/pre_g9b_r6_plus_e2_closeout_record.md)); `OBS-E2-1` to `OBS-E2-4` registered for a POST-E2 planning and characterization proposal; POST-E2 implementation not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1239,7 +1240,16 @@ PRE-G9B-R6-plus-E1-X1-R1   = CHARACTERIZATION COMPLETE (2026-10-07; A-versus-C
                              CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH;
                              prompt reconciled, PREPARED — NOT AUTHORIZED; proposed
                              BOUNDED_PHASE; DQ-E1X1-1 to DQ-E1X1-8 pending)
-PRE-G9B-R6-plus-E2         = REVISED TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R6-plus-E2         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-08 author
+                             decision on the revised T_R6PLUS_E2 3a724661, tree
+                             00b5230d; AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING
+                             OBSERVATIONS; PHASE verification-ca5dd07b 7/7 and
+                             INTEGRATION verification-48829d56 19/19 ACCEPTED /
+                             COMPLETE; native-dimensions 1.1 and unit-system
+                             amendment 1.1 NORMATIVE / AUTHOR APPROVED, ADR 0034
+                             ACCEPTED; OBS-E2-1 to OBS-E2-4 registered for POST-E2,
+                             implementation NOT AUTHORIZED; selfApproved = false)
+                             earlier: REVISED TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              (2026-10-08 author smoke follow-up: AUTHOR_SMOKE = PASS
                              WITH OBSERVATIONS on 878ff66b, kept as historical
                              evidence; decisions 5a55ba24; B1 dimension segment
@@ -1366,7 +1376,20 @@ OBS-R6PLUS-E2-SMOKE-LEGACY-DOCUMENT-MACROS = A-INTENTIONAL-PROFILE-BEHAVIOR
 OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX = OPEN (2026-10-08: embedded macros
                              cannot be chosen interactively as tools; an interactive
                              document-tool entry needs a separate author
-                             authorization)
+                             authorization); accepted as OBS-E2-4 at the E2 closeout
+                             (2026-10-08) — POST-E2 P3
+OBS-E2-1                   = ACCEPTED NON-BLOCKING (E2 closeout 2026-10-08):
+                             extension-line gap and overshoot look excessive with
+                             constructionUnit = mm only; E2 captures Gap/Overshoot
+                             once in model space (semantics unchanged) — POST-E2 P1
+OBS-E2-2                   = ACCEPTED NON-BLOCKING — DOCUMENTED (E2 closeout
+                             2026-10-08): typed dimensions with a literal or
+                             computed offset are not dragged; command signatures
+                             and Offset semantics unchanged — POST-E2 P4
+OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING (E2
+                             closeout 2026-10-08): large unexpected zoom-out when
+                             starting algebra input, also seen in earlier phases,
+                             not attributed to E2 — POST-E2 P2
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a

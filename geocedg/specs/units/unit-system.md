@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-02 on the exact documentary candidate `T_R6PLUS_D0` `8383a153dc2228fc08b4e00a0c92ef8025608916`, tree `442e27fcafea223af426b4ee65102a8a5d90be8c`; [D0 closeout record](../../../docs/validation/pre_g9b_r6_plus_d0_closeout_record.md)); implementation not authorized |
-| Version | `1.0` (author approved); amendment `1.1` (§20, dimension unit suffix policy) **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW** |
+| Version | `1.0` (author approved); amendment `1.1` (§20, dimension unit suffix policy) **AUTHOR APPROVED** (decision of 2026-10-08 on the exact candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`; [E2 closeout record](../../../docs/validation/pre_g9b_r6_plus_e2_closeout_record.md)) |
 | Owner phase | `PRE-G9B-R6-plus-D0` (normative design; no implementation) |
 | Implementing phases | `D1` (document state, persistence, undo, defaults, paste notice, status), `C` (export), `E2` (native dimensions), `E3` (`IsoABorder`) |
 | Decision | [ADR 0032](../../../docs/adr/0032-unit-system-semantics-and-persistence-ownership.md) (`ACCEPTED — AUTHOR APPROVED`) |
@@ -22,11 +22,13 @@ pending author review (§15).
 Amendment marker (2026-10-08): the author decision of the `E2` author smoke
 follow-up ([record](../../../docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md))
 authorizes a bounded versioned extension of the unit state, specified in §20 as
-amendment `1.1`. §20 is a proposed amendment bound to the revised `E2` technical
-candidate and is not author approved. The clauses §1–§19 keep their approved
+amendment `1.1`. Status marker (2026-10-08): the author approved amendment `1.1`
+with `E2` on the exact candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`
+([E2 closeout record](../../../docs/validation/pre_g9b_r6_plus_e2_closeout_record.md)); §20 is normative and its text
+is unchanged from that candidate. The clauses §1–§19 keep their approved
 `1.0` text unchanged as the historical evidence of the 2026-10-02 decision;
-each clause that §20 amends carries an amendment pointer, and for the revised
-candidate §20 prevails over the clause it amends.
+each clause that §20 amends carries an amendment pointer, and §20 prevails over
+the clause it amends.
 
 `MUST`, `MUST NOT`, `SHOULD` and `MAY` have their usual normative meaning. Each
 numbered clause is cited as `§n.m`. The author decisions listed in the header
@@ -905,13 +907,15 @@ author review (2026-10-04).
 
 ## 20. Amendment 1.1 — dimension unit suffix policy
 
-Status: **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**. Source: the
+Status: **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-08 on the exact
+candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`;
+[E2 closeout record](../../../docs/validation/pre_g9b_r6_plus_e2_closeout_record.md); acceptance changed only the status
+markers). Source: the
 author decision of 2026-10-08 on the `E2` author smoke follow-up
 ([record](../../../docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md),
 part B2), which authorizes the bounded versioned Boolean extension of
 `geocedgUnits` stated here and nothing broader. Version `1.0` (§1–§19) stays the
-approved historical text; this section binds the revised `E2` candidate only
-and becomes normative only through an author closeout record.
+approved historical text of the 2026-10-02 decision; this section amends it.
 
 ### 20.1 State
 

@@ -1,6 +1,9 @@
 # ADR 0034 — Native dimension representation and presentation seams
 
-- Status: **PROPOSED** (technical candidate pending author review; not author approved)
+- Status: **ACCEPTED — AUTHOR APPROVED** (decision of 2026-10-08 on the exact
+  candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`; recorded in the
+  [E2 closeout record](../validation/pre_g9b_r6_plus_e2_closeout_record.md); the decision text is unchanged from that
+  candidate, only the status line changed)
 - Date: 2026-10-08
 - Phase: `PRE-G9B-R6-plus-E2`
 - Author decisions: [E2 author-decision record](../validation/pre_g9b_r6_plus_e2_author_decisions_record.md); [E2 authorization record](../validation/pre_g9b_r6_plus_e2_authorization_record.md)

@@ -2,19 +2,19 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
+| Status | **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-08 on the exact candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`; [E2 closeout record](../../../docs/validation/pre_g9b_r6_plus_e2_closeout_record.md)) |
 | Version | `1.1` (revised candidate of the author smoke follow-up, [record](../../../docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md): §4.2, §6, §8.5, §9.1); `1.0` is the text of the original candidate `878ff66b` |
 | Owner phase | `PRE-G9B-R6-plus-E2` (native dimensions) |
-| Decision | [ADR 0034](../../../docs/adr/0034-native-dimension-representation-and-presentation-seams.md) (`PROPOSED`) |
+| Decision | [ADR 0034](../../../docs/adr/0034-native-dimension-representation-and-presentation-seams.md) (`ACCEPTED — AUTHOR APPROVED`) |
 | Governing author decisions | [E2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e2_author_decisions_record.md) (`DQ-E2-1` to `DQ-E2-11`); [E2 authorization record](../../../docs/validation/pre_g9b_r6_plus_e2_authorization_record.md) |
 | Normative inputs used, not restated | [unit-system specification](../units/unit-system.md) §5, §6, §14, §17, §18.3; [ADR 0031](../../../docs/adr/0031-canonical-english-command-surface-compatibility.md); [DXF curve fidelity](../export/dxf-curve-fidelity-and-approximation.md) |
 | Serialization effect | additive `<command>` names with existing output element types; no new element type, attribute or reader change |
 
 ## 0. Status and normative language
 
-This specification is the durable contract of the `E2` technical candidate. It
-becomes normative only through an author closeout record; until then it binds
-the candidate and nothing else. `MUST`, `MUST NOT`, `SHOULD` and `MAY` have
+This specification is the durable contract of `E2`. The author accepted it on
+2026-10-08 with the exact candidate `T_R6PLUS_E2` revised `3a7246614a6ef040d84a1440c4c10b3f93be5776`, tree `00b5230d19debea5598299906f846f52b4d6e9d7`; it is normative, its clauses are
+unchanged from that candidate, and acceptance changed only the status markers. `MUST`, `MUST NOT`, `SHOULD` and `MAY` have
 their usual meaning. Where an author decision and this text differ, the
 decision prevails and this text is defective.
 
