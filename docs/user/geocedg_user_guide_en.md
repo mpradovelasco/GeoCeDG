@@ -116,8 +116,9 @@ edition of this guide **Help → GeoCeDG user guide** opens.
 select an object.
 
 The **Layout & Presentation** tab holds the GeoCeDG presentation settings: the
-presentation theme and the presentation sizes described below, and the
-**New document units** group (section 4.6).
+presentation theme and the presentation sizes described below, the
+**New document units** group (section 4.6) and the **Dimension presentation**
+group (section 9.5).
 
 ### 2.5 Presentation themes
 
@@ -509,6 +510,17 @@ presentation units of new blank documents: at startup without a file, after
 never changes the current document, and a presentation default without a
 construction default has no effect. Applying the defaults is not an undo step,
 and an untouched new document stays saved.
+
+**Unit on dimension values.** The Document units dialog also has **Show the
+unit on dimension values**. It decides whether dimension texts (section 9.5) end
+with the unit, as in `120 mm`, or show the number alone, `120`; it never changes
+a number, the geometry or the units. Changing it is one undo step, and the
+choice is saved with the document. New blank documents start with the choice of
+the **Dimension presentation** group under Preferences, which is off unless you
+turn it on; an opened document keeps its own choice, and a document saved
+without one, such as a document from an earlier GeoCeDG version, keeps showing
+the unit. A document that hides the unit is saved in a newer form of the unit
+metadata, which earlier GeoCeDG versions refuse to open.
 
 **Open and save.** An opened document always keeps its own units; the
 preferences never apply to it. A document without unit metadata stays without
@@ -1177,7 +1189,8 @@ along the dimension line.
   construction unit `cm` and presentation unit `mm`, a length of `12` reads
   `120 mm`. Changing the units changes only the text. Without physical units the
   text is the bare number; a value that cannot be converted reads `?` followed by
-  the unit.
+  the unit. When the document hides the unit on dimension values (section 4.6),
+  the default for new documents, the text is the number alone, `120`, or `?`.
 - `Offset` is the signed distance from the measured points to the dimension
   line: positive on the left of `A → B` (aligned) or of the direction (linear),
   negative on the right. `Overshoot` extends the extension lines beyond the
@@ -1196,6 +1209,14 @@ create hidden numbers for the offset, the overshoot and the gap; the overshoot
 and the gap are 2 mm and 1 mm on paper when the document has a physical unit and
 a drawing scale, otherwise a few pixels of the current view, fixed when the
 dimension is created. One undo step per dimension.
+
+**Line thickness and preferences.** The dimension line and the two extension
+lines start with line thickness 2; each keeps its own style, which you can change
+in its properties and which is saved with it. The **Dimension presentation**
+group under **Options → Preferences… → Layout & Presentation** sets the
+**Initial line thickness** of dimensions created afterwards with the tools, and
+whether new documents show the unit on dimension values (section 4.6). These
+preferences never change existing dimensions or an opened document.
 
 **Moving the dimension line.** With Move, drag the dimension line, an extension
 line or the value: only the offset changes and the measured points never move.
@@ -1618,6 +1639,16 @@ only. No association is ever decided by name, load order or toolbar position.
 
 With no package installed, **Document tools (local only)…** still lets you
 manage the portable definition.
+
+**Macros embedded in an opened document.** GeoCeDG does not reproduce the
+toolbar or the tools of an opened document: the toolbar and the **User tools**
+menu come from the GeoCeDG profile and the installed library, so a macro
+embedded in a `.cedg` or a `.ggb` (for example a legacy template) appears in
+neither. The macro is still loaded with the document, keeps rebuilding its
+results and is saved with it. Run it by typing its command name with its inputs
+in Algebra Input, like any command; **Automation → User tools → Manage user
+tools… → Document tools (local only)…** lists the macros of the document.
+Choosing a document macro interactively as a toolbar tool is not available.
 
 ### 13.3 Limits
 

@@ -152,7 +152,7 @@ class PreG9BR6PlusD1UnitXmlTest extends BaseUnitTest {
 		String original = getApp().getXML();
 		String base = original.replaceAll("\\s*<geocedgUnits[^>]*/>", "");
 		Object[][] cases = {
-			{"<geocedgUnits version=\"2\" construction=\"mm\"/>",
+			{"<geocedgUnits version=\"3\" construction=\"mm\"/>",
 				UnitMetadataException.Code.UNSUPPORTED_VERSION},
 			{"<geocedgUnits version=\"99\" future=\"x\" construction=\"km\"/>",
 				UnitMetadataException.Code.UNSUPPORTED_VERSION},

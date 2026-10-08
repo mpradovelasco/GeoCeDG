@@ -17,30 +17,51 @@ import java.util.Objects;
  * single effective-unit function of section 5.2; every consumer derives its units from
  * them. Every instance satisfies both state constraints: a presentation selection
  * requires a construction selection, and a selected {@code usm} requires a definition.
+ *
+ * <p>Unit-system v1.1 (PRE-G9B-R6-plus-E2 smoke follow-up B2) adds one document
+ * presentation policy, the dimension unit suffix (section 14.2): shown, the historical
+ * behavior of a document without the policy, or hidden. It changes no unit and no
+ * effective-unit function.
  */
 public final class UnitState {
 	/** No unit metadata: {@code UNSPECIFIED_MODEL_UNIT}, nothing serialized. */
-	public static final UnitState EMPTY = new UnitState(null, null, null);
+	public static final UnitState EMPTY = new UnitState(null, null, null, true);
 
 	private final UnitToken construction;
 	private final UnitToken presentation;
 	private final UsmDefinition usm;
+	private final boolean dimensionUnitSuffixShown;
 
-	private UnitState(UnitToken construction, UnitToken presentation, UsmDefinition usm) {
+	private UnitState(UnitToken construction, UnitToken presentation, UsmDefinition usm,
+			boolean dimensionUnitSuffixShown) {
 		this.construction = construction;
 		this.presentation = presentation;
 		this.usm = usm;
+		this.dimensionUnitSuffixShown = dimensionUnitSuffixShown;
 	}
 
 	/**
 	 * @param construction explicit construction-unit selection, or {@code null}
 	 * @param presentation explicit presentation-unit selection, or {@code null}
 	 * @param usm the usm definition, or {@code null} for {@code NONE}
-	 * @return the state
+	 * @return the state, with the dimension unit suffix shown
 	 * @throws IllegalArgumentException when a state constraint of section 5.1 fails
 	 */
 	public static UnitState of(UnitToken construction, UnitToken presentation,
 			UsmDefinition usm) {
+		return of(construction, presentation, usm, true);
+	}
+
+	/**
+	 * @param construction explicit construction-unit selection, or {@code null}
+	 * @param presentation explicit presentation-unit selection, or {@code null}
+	 * @param usm the usm definition, or {@code null} for {@code NONE}
+	 * @param dimensionUnitSuffixShown dimension unit suffix policy (section 14.2)
+	 * @return the state
+	 * @throws IllegalArgumentException when a state constraint of section 5.1 fails
+	 */
+	public static UnitState of(UnitToken construction, UnitToken presentation,
+			UsmDefinition usm, boolean dimensionUnitSuffixShown) {
 		if (presentation != null && construction == null) {
 			throw new IllegalArgumentException(
 					"A presentation unit requires a construction unit");
@@ -49,17 +70,46 @@ public final class UnitState {
 				&& usm == null) {
 			throw new IllegalArgumentException("usm is selected but not defined");
 		}
-		if (construction == null && usm == null) {
+		if (construction == null && usm == null && dimensionUnitSuffixShown) {
 			return EMPTY;
 		}
-		return new UnitState(construction, presentation, usm);
+		return new UnitState(construction, presentation, usm, dimensionUnitSuffixShown);
 	}
 
 	/**
 	 * @return whether no unit metadata exists (nothing is serialized)
 	 */
 	public boolean isEmpty() {
-		return construction == null && presentation == null && usm == null;
+		return construction == null && presentation == null && usm == null
+				&& dimensionUnitSuffixShown;
+	}
+
+	/**
+	 * @return whether a construction or presentation unit is selected or the usm is
+	 *         defined, the unit metadata of version 1 (section 5.1)
+	 */
+	public boolean hasUnitMetadata() {
+		return construction != null || presentation != null || usm != null;
+	}
+
+	/**
+	 * Section 14.2 dimension unit suffix policy; {@code true} also for a document that
+	 * carries no policy (the historical behavior).
+	 *
+	 * @return whether native dimension texts show the presentation-unit suffix
+	 */
+	public boolean isDimensionUnitSuffixShown() {
+		return dimensionUnitSuffixShown;
+	}
+
+	/**
+	 * Section 7.1a: set the dimension unit suffix policy; units are unchanged.
+	 *
+	 * @param shown whether native dimension texts show the suffix
+	 * @return the new state
+	 */
+	public UnitState withDimensionUnitSuffixShown(boolean shown) {
+		return of(construction, presentation, usm, shown);
 	}
 
 	/**
@@ -197,7 +247,7 @@ public final class UnitState {
 	 * @throws IllegalArgumentException when usm is selected but not defined
 	 */
 	public UnitState withConstructionUnit(UnitToken unit) {
-		return of(unit, unit == null ? null : presentation, usm);
+		return of(unit, unit == null ? null : presentation, usm, dimensionUnitSuffixShown);
 	}
 
 	/**
@@ -209,7 +259,7 @@ public final class UnitState {
 	 *         unit is given, or when usm is selected but not defined
 	 */
 	public UnitState withPresentationUnit(UnitToken unit) {
-		return of(construction, unit, usm);
+		return of(construction, unit, usm, dimensionUnitSuffixShown);
 	}
 
 	/**
@@ -219,7 +269,8 @@ public final class UnitState {
 	 * @return the new state
 	 */
 	public UnitState withUsm(UsmDefinition definition) {
-		return of(construction, presentation, Objects.requireNonNull(definition));
+		return of(construction, presentation, Objects.requireNonNull(definition),
+				dimensionUnitSuffixShown);
 	}
 
 	/**
@@ -229,7 +280,7 @@ public final class UnitState {
 	 * @throws IllegalArgumentException while a stored unit selects usm
 	 */
 	public UnitState withoutUsm() {
-		return of(construction, presentation, null);
+		return of(construction, presentation, null, dimensionUnitSuffixShown);
 	}
 
 	@Override
@@ -242,18 +293,20 @@ public final class UnitState {
 		}
 		UnitState state = (UnitState) other;
 		return construction == state.construction && presentation == state.presentation
-				&& Objects.equals(usm, state.usm);
+				&& Objects.equals(usm, state.usm)
+				&& dimensionUnitSuffixShown == state.dimensionUnitSuffixShown;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(construction, presentation, usm);
+		return Objects.hash(construction, presentation, usm, dimensionUnitSuffixShown);
 	}
 
 	@Override
 	public String toString() {
 		return "UnitState[c=" + (construction == null ? "-" : construction.token())
 				+ ", p=" + (presentation == null ? "-" : presentation.token()) + ", usm="
-				+ (usm == null ? "NONE" : usm) + "]";
+				+ (usm == null ? "NONE" : usm)
+				+ (dimensionUnitSuffixShown ? "" : ", dimensionUnitSuffix=hidden") + "]";
 	}
 }

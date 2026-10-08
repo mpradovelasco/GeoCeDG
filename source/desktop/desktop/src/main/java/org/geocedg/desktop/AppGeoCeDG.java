@@ -196,7 +196,9 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	/**
 	 * Applies the new-document defaults to a new blank document (section 10): no undo
 	 * point, the document stays saved and the undo baseline includes them. With an
-	 * unspecified construction default the state stays EMPTY and nothing else happens.
+	 * unspecified construction default and the dimension unit suffix shown the state
+	 * stays EMPTY and nothing else happens; since unit-system v1.1 the default "suffix
+	 * hidden" policy of new documents is applied in the same way.
 	 */
 	void applyNewDocumentUnitDefaults() {
 		if (!documentUnitsActive) {
@@ -369,6 +371,12 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	public OptionPanelD newProductNewDocumentUnitsPanel() {
 		return new GeoCeDGNewDocumentUnitsPanel(this, new GeoCeDGUnitPreferences());
+	}
+
+	@Override
+	public OptionPanelD newProductDimensionPresentationPanel() {
+		return new GeoCeDGDimensionPresentationPanel(this, new GeoCeDGDimensionPreferences(),
+				new GeoCeDGUnitPreferences());
 	}
 
 	private void initializeLayerWorkspace() {

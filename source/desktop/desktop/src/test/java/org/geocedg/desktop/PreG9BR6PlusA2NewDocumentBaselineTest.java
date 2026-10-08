@@ -87,7 +87,7 @@ class PreG9BR6PlusA2NewDocumentBaselineTest {
 				AutoCloseable units = GeoCeDGUnitPreferences.useStoreForTesting(store)) {
 			AppGeoCeDG app = G9U1TestApp.create();
 			app.fileNew();
-			assertEquals(UnitState.of(UnitToken.CM, null, null),
+			assertEquals(UnitState.of(UnitToken.CM, null, null, false),
 					app.getDocumentUnits().getState(), "D1 defaults are applied");
 			assertTrue(app.isSaved(), "and the initialized document is saved");
 		}

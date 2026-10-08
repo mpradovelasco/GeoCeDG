@@ -42,7 +42,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/AppD.java",
       "change": "modified",
-      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title. PRE-G9B-R6-plus-B: add the host-default seams getPictureExportRoute (none), getSavePreviewImage (the host thumbnail) and isUpstreamExportEntryAvailable (every entry). Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: record whether the startup document is blank, route preflight and live document-load failures through a protected diagnostic seam whose default keeps the Classic message, and offer a null-returning new-document units options hook. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: one protected nativeDocumentLoadCommitted hook, a no-op by default, called once a native document load transaction has committed; a failed load never reaches it. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: add the null getExportScalePresentation() seam and the runApiDocumentReplacement(Runnable) marker seam; the host only runs the replacement. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
+      "purpose": "Preserve profile bootstrap hooks and add fail-closed one-read .cedg preflight, prepared and atomic undo-baseline commit with full rollback on live-parse or commit failure, product-window routing and current-document preservation without changing ZIP/XML internals. G9U1: capture native transaction UI state before hiding navigation, so rollback can restore the prior presentation; non-native ordering and formats are unchanged. G9U1 review round 1: preflight the temporary native save archive with the existing disposable reader before atomic replacement, preserving the previous target and unsaved state on failure; no schema or loader repair. PRE-G9B-S2: make Desktop font listeners and toolbar icon scaling consume GUI font ownership rather than the construction-object base font; Classic fallback remains unchanged. PRE-G9B-S4: expose behavior-neutral product hooks for menu, Algebra, Construction Protocol and product-specific presentation options. PRE-G9B-S4-R1: expose a toolbar-specific icon-size hook so main-toolbar sizing no longer controls general dialog icons; Classic delegates to the former scaled-icon value. PRE-G9B-P0: add null-returning product hooks for the presentation-theme panel, presentation-sizing ownership and a localized preferences-tab title. PRE-G9B-R6-plus-B: add the host-default seams getPictureExportRoute (none), getSavePreviewImage (the host thumbnail) and isUpstreamExportEntryAvailable (every entry). Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: record whether the startup document is blank, route preflight and live document-load failures through a protected diagnostic seam whose default keeps the Classic message, and offer a null-returning new-document units options hook. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: one protected nativeDocumentLoadCommitted hook, a no-op by default, called once a native document load transaction has committed; a failed load never reaches it. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: add the null getExportScalePresentation() seam and the runApiDocumentReplacement(Runnable) marker seam; the host only runs the replacement. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. PRE-G9B-R6-plus-E2 smoke follow-up: a null-returning product dimension presentation options hook. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -66,7 +66,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: own the Document Units action, dialog and status refresh, apply the new-document defaults to blank documents only and inside the undo baseline, track clipboard provenance, show the paste notice and localize unit load errors. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the document hidden-layer hooks, the commit of a parsed set in document transitions only (native Open, loadXML(String), clearing setXML, startup), the save relevance of a non-empty set and the localized fail-closed diagnostics. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: Base64 and non-native file or URL replacements commit the document hidden-layer set through the same commit logic. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 3 (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT, pre-existing): a completed File > New, after the host preference reload and the new-document defaults, is the saved baseline. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: own the per-window drawing scale and reset it at the document-replacement boundaries E1-E6 only, the export-scale presentation, the physical export scale, the export-area seams of the LaTeX exporters and of the DXF export context, and the GeoCeDG LaTeX exporters. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: own the Document Units action, dialog and status refresh, apply the new-document defaults to blank documents only and inside the undo baseline, track clipboard provenance, show the paste notice and localize unit load errors. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the document hidden-layer hooks, the commit of a parsed set in document transitions only (native Open, loadXML(String), clearing setXML, startup), the save relevance of a non-empty set and the localized fail-closed diagnostics. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: Base64 and non-native file or URL replacements commit the document hidden-layer set through the same commit logic. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 3 (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT, pre-existing): a completed File > New, after the host preference reload and the new-document defaults, is the saved baseline. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: own the per-window drawing scale and reset it at the document-replacement boundaries E1-E6 only, the export-scale presentation, the physical export scale, the export-area seams of the LaTeX exporters and of the DXF export context, and the GeoCeDG LaTeX exporters. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. PRE-G9B-R6-plus-E2 smoke follow-up: provide the Dimension presentation preferences panel; new-document defaults include the suffix policy. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -3792,7 +3792,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsLayoutD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-P0: host the product presentation-size and presentation-theme groups in the consolidated Layout & Presentation tab through null-returning product hooks; Classic keeps the inherited layout tab unchanged. PRE-G9B-R6-plus-D1: host the product new-document units group through a null-returning hook; Classic keeps the inherited tab. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "PRE-G9B-P0: host the product presentation-size and presentation-theme groups in the consolidated Layout & Presentation tab through null-returning product hooks; Classic keeps the inherited layout tab unchanged. PRE-G9B-R6-plus-D1: host the product new-document units group through a null-returning hook; Classic keeps the inherited tab. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2 smoke follow-up: host the product dimension presentation group through a null-returning hook, exactly like the new-document units group; Classic keeps the inherited tab. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "geocedg/specs/ui/application-presentation-theme.md"
     },
     {
@@ -5370,7 +5370,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/units/DocumentUnitSystem.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 per-construction owner of the immutable unit state with change listeners; refused for macro constructions. PRE-G9B-R6-plus-E2: keyed idempotent listener registration (addListenerOnce) for the native dimension presentation refresh; unit state, persistence and semantics are unchanged.",
+      "purpose": "PRE-G9B-R6-plus-D1 per-construction owner of the immutable unit state with change listeners; refused for macro constructions. PRE-G9B-R6-plus-E2: keyed idempotent listener registration (addListenerOnce) for the native dimension presentation refresh; unit state, persistence and semantics are unchanged. PRE-G9B-R6-plus-E2 smoke follow-up: only unit metadata is save-relevant (DQ-D1-5); the suffix policy alone is not. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5394,13 +5394,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/units/UnitState.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 immutable document unit state with its effective units and physical meaning.",
+      "purpose": "PRE-G9B-R6-plus-D1 immutable document unit state with its effective units and physical meaning. PRE-G9B-R6-plus-E2 smoke follow-up (unit-system 1.1 proposed): the dimension unit suffix policy (shown or hidden), kept by every unit operation; EMPTY means no unit metadata and the shown policy; hasUnitMetadata separates the unit metadata from the policy. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/units/UnitStateXml.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 geocedgUnits version 1 writer and validating attribute reader.",
+      "purpose": "PRE-G9B-R6-plus-D1 geocedgUnits version 1 writer and validating attribute reader. PRE-G9B-R6-plus-E2 smoke follow-up (unit-system 1.1 proposed): version 2 adds the mandatory dimensionUnitSuffix attribute, written only for the hidden policy; the shown policy keeps the exact version-1 element; version-2 malformations and version 3 fail closed. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5436,7 +5436,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/units/PreG9BR6PlusD1UnitXmlTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 geocedgUnits writer grammar, round trips, fail-closed matrix, ignored contexts, macros, undo and redo, rollback and the saved-state seam.",
+      "purpose": "PRE-G9B-R6-plus-D1 geocedgUnits writer grammar, round trips, fail-closed matrix, ignored contexts, macros, undo and redo, rollback and the saved-state seam. PRE-G9B-R6-plus-E2 smoke follow-up: the unsupported-version case uses version 3 now that version 2 exists; assertions unchanged. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5448,13 +5448,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentUnits.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 Document Units request validation with localized refusal keys.",
+      "purpose": "PRE-G9B-R6-plus-D1 Document Units request validation with localized refusal keys. PRE-G9B-R6-plus-E2 smoke follow-up: the dialog request carries the suffix policy, committed with the units as one undo point. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentUnitsPrompt.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 Document Units dialog seam and its Swing implementation.",
+      "purpose": "PRE-G9B-R6-plus-D1 Document Units dialog seam and its Swing implementation. PRE-G9B-R6-plus-E2 smoke follow-up: Show the unit on dimension values check box. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5466,13 +5466,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUnitPreferences.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 the two new-document unit preference keys and their value sets.",
+      "purpose": "PRE-G9B-R6-plus-D1 the two new-document unit preference keys and their value sets. PRE-G9B-R6-plus-E2 smoke follow-up: new-document dimension unit suffix default (hidden unless shown). Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1DocumentUnitsTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 undo points, saved state, dialog, usm lifecycle, status segments, preferences and New and Open defaults on the real host.",
+      "purpose": "PRE-G9B-R6-plus-D1 undo points, saved state, dialog, usm lifecycle, status segments, preferences and New and Open defaults on the real host. PRE-G9B-R6-plus-E2 smoke follow-up: new-document expectations include the hidden suffix default; the undo-point test pins the shown default so its subject stays the unit operations. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5502,7 +5502,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1UnitLoadTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 save and open round trips, macro archives, fail-closed rejection with localized messages, startup documents and Classic diagnostic preservation.",
+      "purpose": "PRE-G9B-R6-plus-D1 save and open round trips, macro archives, fail-closed rejection with localized messages, startup documents and Classic diagnostic preservation. PRE-G9B-R6-plus-E2 smoke follow-up: newer-version cases use version 3; startup defaults include the hidden suffix policy. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5592,13 +5592,13 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA2HiddenLayerPersistenceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-2 persistent, non-undoable hidden layers: saved state, undo, save and Open, the working-layer rule, fail-closed Open, routes, effective visibility after reopen, unit independence and geometric invariants. PRE-G9B-R6-plus-A-2 revision 2: Base64, HTML and non-native stream replacements commit the set with the D1 units exactly once; failures, merges, native Open and startup stay correct. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-A-2 persistent, non-undoable hidden layers: saved state, undo, save and Open, the working-layer rule, fail-closed Open, routes, effective visibility after reopen, unit independence and geometric invariants. PRE-G9B-R6-plus-A-2 revision 2: Base64, HTML and non-native stream replacements commit the set with the D1 units exactly once; failures, merges, native Open and startup stay correct. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-E2 smoke follow-up: the unit round-trip test pins the shown suffix default; the unit-defect case uses version 3. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a2_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA2NewDocumentBaselineTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-2 revision 3: a completed File > New is the saved baseline with factory preferences, with user preferences that restore a construction step and a table view, and with new-document unit defaults; the first real edit still makes the document unsaved.",
+      "purpose": "PRE-G9B-R6-plus-A-2 revision 3: a completed File > New is the saved baseline with factory preferences, with user preferences that restore a construction step and a table view, and with new-document unit defaults; the first real edit still makes the document unsaved. PRE-G9B-R6-plus-E2 smoke follow-up: the applied D1 defaults include the hidden suffix policy. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a2_candidate_report.md"
     },
     {
@@ -5844,7 +5844,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoNativeDimension.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E2 shared base of the native dimension algorithms: five outputs (value, dimension line, two extension lines, text) of existing GeoElement types, geometry-only compute in model units and a presentation step outside compute.",
+      "purpose": "PRE-G9B-R6-plus-E2 shared base of the native dimension algorithms: five outputs (value, dimension line, two extension lines, text) of existing GeoElement types, geometry-only compute in model units and a presentation step outside compute. PRE-G9B-R6-plus-E2 smoke follow-up: initial line thickness 2 of the dimension line and both extension lines, an ordinary element style like the arrow endings. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
     },
     {
@@ -5868,7 +5868,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionPresentation.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E2 value text from the document presentation unit, the failure marker and the D1 listener refresh; never read by geometric compute.",
+      "purpose": "PRE-G9B-R6-plus-E2 value text from the document presentation unit, the failure marker and the D1 listener refresh; never read by geometric compute. PRE-G9B-R6-plus-E2 smoke follow-up: the unit suffix and the failure-marker suffix follow the document suffix policy; the number and the unspecified case are unchanged. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
     },
     {
@@ -5916,7 +5916,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionTools.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E2 Desktop creation of native dimensions from tool clicks: hidden labelled Offset, Overshoot and Gap numbers, the processed command, the placement Offset and the invalid-placement notice; 2 mm / 1 mm on paper or 8 px / 4 px capture.",
+      "purpose": "PRE-G9B-R6-plus-E2 Desktop creation of native dimensions from tool clicks: hidden labelled Offset, Overshoot and Gap numbers, the processed command, the placement Offset and the invalid-placement notice; 2 mm / 1 mm on paper or 8 px / 4 px capture. PRE-G9B-R6-plus-E2 smoke follow-up: the tools apply the initial line thickness creation preference to the three segments once. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
     },
     {
@@ -5936,6 +5936,30 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-E2 Desktop tests in child JVMs: profile, tools, drag, rendering sweep, hit testing, picture, LaTeX, DXF, persistence and legacy names; it also hosts the child-JVM execution of the E2 GGBScript matrix rows.",
       "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionPreferences.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 smoke follow-up: initial line thickness creation preference of the dimension tools in the GeoCeDG properties store (default 2; invalid values act as unset).",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionPresentationPanel.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 smoke follow-up: Layout & Presentation group with the initial line thickness and the new-document unit suffix default; stores preferences only.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/dimension/PreG9BR6PlusE2PresentationFollowUpTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 smoke follow-up kernel tests: initial thickness and serialized styles, suffix presentation for every unit and failure, policy preservation and undo, version-2 writer and reader, version-1 byte identity, fail-closed malformations and save relevance.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE2PresentationFollowUpDesktopTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 smoke follow-up Desktop tests: thickness preference on the tools, existing dimensions unchanged, saved style precedence, hidden default for new documents, dialog toggle as one undo step, persistence, historical documents and PGF export text.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md"
     }
   ]
 }

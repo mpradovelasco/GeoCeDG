@@ -122,7 +122,8 @@ ningún objeto.
 
 La pestaña **Disposición y presentación** reúne los ajustes de presentación de
 GeoCeDG: el tema de presentación y los tamaños de presentación descritos a
-continuación, y el grupo **Unidades de los documentos nuevos** (sección 4.6).
+continuación, el grupo **Unidades de los documentos nuevos** (sección 4.6) y el
+grupo **Presentación de cotas** (sección 9.5).
 
 ### 2.5 Temas de presentación
 
@@ -534,6 +535,18 @@ perfil GeoCeDG; nunca cambia el documento actual, y una unidad de presentación
 por defecto sin unidad de construcción por defecto no tiene efecto. Aplicar las
 unidades por defecto no es un paso de deshacer, y un documento nuevo sin tocar
 sigue guardado.
+
+**Unidad en los valores de las cotas.** El diálogo Unidades del documento tiene
+también **Mostrar la unidad en los valores de las cotas**. Decide si los textos de
+las cotas (sección 9.5) terminan con la unidad, como en `120 mm`, o muestran solo
+el número, `120`; nunca cambia un número, la geometría ni las unidades.
+Cambiarlo es un paso de deshacer, y la elección se guarda con el documento. Los
+documentos nuevos en blanco empiezan con la elección del grupo **Presentación de
+cotas** de Preferencias, desactivada salvo que usted la active; un documento
+abierto conserva su propia elección, y un documento guardado sin ella, como un
+documento de una versión anterior de GeoCeDG, sigue mostrando la unidad. Un
+documento que oculta la unidad se guarda con una forma más nueva de los
+metadatos de unidades, que las versiones anteriores de GeoCeDG se niegan a abrir.
 
 **Abrir y guardar.** Un documento abierto conserva siempre sus propias unidades;
 las preferencias nunca se le aplican. Un documento sin metadatos de unidades
@@ -1227,7 +1240,9 @@ el valor escrito a lo largo de la línea de cota. En español también se escrib
   unidad de construcción `cm` y unidad de presentación `mm`, una longitud de `12`
   se lee `120 mm`. Cambiar las unidades cambia solo el texto. Sin unidades
   físicas el texto es el número sin unidad; un valor que no puede convertirse se
-  lee `?` seguido de la unidad.
+  lee `?` seguido de la unidad. Cuando el documento oculta la unidad en los
+  valores de las cotas (sección 4.6), lo predeterminado en los documentos nuevos,
+  el texto es solo el número, `120`, o `?`.
 - `Offset` (desplazamiento) es la distancia con signo de los puntos medidos a la
   línea de cota: positiva a la izquierda de `A → B` (alineada) o de la dirección
   (lineal), negativa a la derecha. `Overshoot` (prolongación) alarga las líneas
@@ -1248,6 +1263,15 @@ la prolongación y la separación son 2 mm y 1 mm sobre el papel cuando el
 documento tiene una unidad física y una escala de dibujo, y si no unos pocos
 píxeles de la vista actual, fijados al crear la cota. Un paso de deshacer por
 cota.
+
+**Grosor de línea y preferencias.** La línea de cota y las dos líneas de
+referencia empiezan con grosor de línea 2; cada una conserva su propio estilo,
+que puede cambiar en sus propiedades y que se guarda con ella. El grupo
+**Presentación de cotas** de **Opciones → Preferencias… → Disposición y
+presentación** fija el **Grosor inicial de línea** de las cotas creadas después
+con las herramientas, y si los documentos nuevos muestran la unidad en los
+valores de las cotas (sección 4.6). Estas preferencias nunca cambian las cotas
+existentes ni un documento abierto.
 
 **Mover la línea de cota.** Con Mover, arrastre la línea de cota, una línea de
 referencia o el valor: solo cambia el desplazamiento y los puntos medidos nunca
@@ -1688,6 +1712,18 @@ nombre, orden de carga o posición en la barra.
 
 Sin paquete instalado, **Herramientas del documento (solo locales)…** permite de
 todos modos gestionar la definición portable.
+
+**Macros embebidas en un documento abierto.** GeoCeDG no reproduce la barra de
+herramientas ni las herramientas de un documento abierto: la barra y el menú
+**Herramientas de usuario** proceden del perfil GeoCeDG y de la biblioteca
+instalada, de modo que una macro embebida en un `.cedg` o en un `.ggb` (por
+ejemplo, una plantilla heredada) no aparece en ninguno de los dos. La macro se
+carga igualmente con el documento, sigue reconstruyendo sus resultados y se
+guarda con él. Ejecútela escribiendo su nombre de comando con sus entradas en la
+Entrada algebraica, como cualquier comando; **Automatización → Herramientas de
+usuario → Gestionar herramientas de usuario… → Herramientas del documento (solo
+locales)…** enumera las macros del documento. No es posible elegir una macro del
+documento de forma interactiva como herramienta de la barra.
 
 ### 13.3 Límites
 

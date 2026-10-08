@@ -43,11 +43,13 @@ public final class DocumentUnitSystem {
 	}
 
 	/**
-	 * @return whether the state is persistent document metadata, so a document with it
-	 *         has save-relevant content (DQ-D1-5)
+	 * @return whether the state holds unit metadata, so a document with it has
+	 *         save-relevant content (DQ-D1-5); the dimension unit suffix policy of
+	 *         unit-system v1.1 is presentation and, alone, never makes a document
+	 *         save-relevant, although a saved document always carries it
 	 */
 	public boolean hasPersistentMetadata() {
-		return !state.isEmpty();
+		return state.hasUnitMetadata();
 	}
 
 	/**

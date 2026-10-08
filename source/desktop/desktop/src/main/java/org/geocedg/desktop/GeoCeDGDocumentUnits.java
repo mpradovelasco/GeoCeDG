@@ -33,14 +33,23 @@ final class GeoCeDGDocumentUnits {
 		final String name;
 		final String symbol;
 
+		/** dimension unit suffix policy, or {@code null} to keep the document policy */
+		final Boolean dimensionUnitSuffixShown;
+
 		Request(UnitToken construction, UnitToken presentation, boolean usmDefined,
 				String factor, String name, String symbol) {
+			this(construction, presentation, usmDefined, factor, name, symbol, null);
+		}
+
+		Request(UnitToken construction, UnitToken presentation, boolean usmDefined,
+				String factor, String name, String symbol, Boolean dimensionUnitSuffixShown) {
 			this.construction = construction;
 			this.presentation = presentation;
 			this.usmDefined = usmDefined;
 			this.factor = factor == null ? "" : factor;
 			this.name = name == null ? "" : name;
 			this.symbol = symbol == null ? "" : symbol;
+			this.dimensionUnitSuffixShown = dimensionUnitSuffixShown;
 		}
 	}
 
@@ -65,7 +74,8 @@ final class GeoCeDGDocumentUnits {
 				state.getPresentationSelection(), usm != null,
 				usm == null ? "" : usm.canonicalFactor(),
 				usm == null || usm.getName() == null ? "" : usm.getName(),
-				usm == null || usm.getSymbol() == null ? "" : usm.getSymbol());
+				usm == null || usm.getSymbol() == null ? "" : usm.getSymbol(),
+				state.isDimensionUnitSuffixShown());
 	}
 
 	static Result validate(Request request, UnitState current) {
@@ -95,8 +105,10 @@ final class GeoCeDGDocumentUnits {
 			return error(current.getUsm() != null ? "Units.Error.UsmInUse"
 					: "Units.Error.UsmUndefined");
 		}
-		return new Result(UnitState.of(request.construction, request.presentation, usm),
-				null);
+		boolean suffixShown = request.dimensionUnitSuffixShown == null
+				? current.isDimensionUnitSuffixShown() : request.dimensionUnitSuffixShown;
+		return new Result(UnitState.of(request.construction, request.presentation, usm,
+				suffixShown), null);
 	}
 
 	private static Result error(String key) {

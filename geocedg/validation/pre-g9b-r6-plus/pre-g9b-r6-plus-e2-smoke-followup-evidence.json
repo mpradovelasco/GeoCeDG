@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E2",
+  "registeredPhaseId": "PRE-G9B-R6-PLUS-E2",
+  "phaseKind": "AUTHOR_SMOKE_FOLLOW_UP_REVISED_CANDIDATE",
+  "report": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md",
+  "authorDecisions": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md",
+  "authorDecisionsCommit": "5a55ba241",
+  "technicalCandidateState": "REVISED CANDIDATE, FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false,
+  "originalCandidate": {
+    "name": "T_R6PLUS_E2",
+    "commit": "878ff66b8839aeee44dfe1e557ac37b7c349f74b",
+    "tree": "e096b857e1ce7e1e959c0c637f3e8b3b87cd82fe",
+    "phase": "verification-47c1a96df96440e59db84dd5098f1b66",
+    "integration": "verification-e1d28044ba814ed8ab216b676e1cbe06",
+    "authorSmoke": "PASS WITH OBSERVATIONS",
+    "preserved": true
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-E2 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "acceptanceRule": "PHASE and INTEGRATION both on the same exact revised commit and tree; FINAL not required and not run",
+  "partA": {
+    "observation": "OBS-R6PLUS-E2-SMOKE-LEGACY-DOCUMENT-MACROS",
+    "classification": "A-INTENTIONAL-PROFILE-BEHAVIOR",
+    "acceptedByAuthor": true,
+    "input": {
+      "path": "models/legacy/template-v7/original/Templatev7.ggb",
+      "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113"
+    },
+    "compared": ["Classic", "P_R6PLUS_E1_P_X1 dc63b0e55f12eb96d3aea359db4476cbda6c89dc", "T_R6PLUS_E2 878ff66b8839aeee44dfe1e557ac37b7c349f74b"],
+    "evidence": {
+      "macrosRegistered": 24,
+      "commandAuthorityBound": 24,
+      "invokedByCommand": ["CirclebyD", "SquarebyDiagonal", "directDimension", "axisDimension"],
+      "productToolbarMacroButtons": 0,
+      "classicToolbarMacroButtons": 7,
+      "productUserToolsMenu": ["Manage user tools…", "No installed user tools"],
+      "productDocumentToolsDialogEntries": 24,
+      "classicManageToolsEntries": 24,
+      "savedCedgMacros": 24,
+      "reopenDigestDifferences": ["SplineLength", "circArcbyAngle", "dummyRotate", "listLength12", "postLocus"],
+      "reopenDigestCause": "serializer normalization (labelMode val=2, opacity=100), identical on the base",
+      "sameOnBaseAndCandidate": true
+    },
+    "rootCause": "profile-compiled toolbar (ADR 0012, cedg-workspaces.md) and library-only User tools menu",
+    "affectedLayer": "product presentation policy",
+    "e2Regression": false,
+    "productCorrection": "NONE",
+    "documentaryCorrection": "user guide EN/ES 13.2",
+    "separateObservation": {"id": "OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX", "state": "OPEN"},
+    "recommendedCorrection": "interactive document-tool entry; requires separate authorization"
+  },
+  "partB1": {
+    "defaultLineThickness": 2,
+    "segments": ["dimension line", "extension at A", "extension at B"],
+    "typedCommands": "algorithm default 2",
+    "toolPreference": {"key": "geocedg.dimensions.initial-line-thickness.v1", "range": "1..GeoElement.MAX_LINE_WIDTH", "default": 2, "invalid": "default"},
+    "existingDimensions": "unchanged; each segment serializes its own lineStyle",
+    "geometryChange": false,
+    "commandSignatureChange": false
+  },
+  "partB2": {
+    "state": "UnitState dimension unit suffix policy (shown | hidden)",
+    "newDocumentDefault": "hidden",
+    "documentsWithoutPolicy": "shown",
+    "preference": {"key": "geocedg.units.new-document-dimension-unit-suffix.v1", "values": ["shown", "hidden"], "unset": "hidden"},
+    "documentControl": "Document units dialog check box; one undo point",
+    "serialization": {
+      "element": "geocedgUnits",
+      "version": 2,
+      "attribute": "dimensionUnitSuffix",
+      "writtenWhen": "hidden only",
+      "shownPolicyBytes": "exact version-1 element",
+      "readerVersion1": "shown",
+      "malformed": ["version 1 with dimensionUnitSuffix", "version 2 without dimensionUnitSuffix", "version 2 with another value"],
+      "unsupported": "version 3 or higher"
+    },
+    "saveRelevant": false,
+    "unitConversion": "UNCHANGED",
+    "numericSemantics": "UNCHANGED",
+    "geometryAndDag": "UNCHANGED",
+    "forwardCompatibility": "builds implementing only geocedgUnits version 1 (D1 through 878ff66b) refuse version-2 documents; new documents are version 2 by default",
+    "notIntroduced": ["new GeoElement", "new XML element family", "dimension command signature change", "global GeoText change", "geometric-unit dependency"]
+  },
+  "normativeAmendments": [
+    "geocedg/specs/units/unit-system.md amendment 1.1 section 20 (PROPOSED); 1.0 text unchanged",
+    "docs/adr/0032-unit-system-semantics-and-persistence-ownership.md amendment note",
+    "geocedg/specs/dimensions/native-dimensions.md 1.1 (PROPOSED)",
+    "docs/adr/0034-native-dimension-representation-and-presentation-seams.md revision note (PROPOSED)"
+  ],
+  "tests": {
+    "new": {
+      "org.geocedg.common.dimension.PreG9BR6PlusE2PresentationFollowUpTest": 12,
+      "org.geocedg.desktop.PreG9BR6PlusE2PresentationFollowUpDesktopTest": 8
+    },
+    "expectationsUpdated": [
+      "PreG9BR6PlusD1UnitXmlTest", "PreG9BR6PlusD1UnitLoadTest", "PreG9BR6PlusA2HiddenLayerPersistenceTest",
+      "PreG9BR6PlusD1DocumentUnitsTest", "PreG9BR6PlusA2NewDocumentBaselineTest"
+    ],
+    "fullSuites": {
+      "shared": {"tests": 6963, "failures": 0, "errors": 0, "skipped": 10},
+      "desktop": {"tests": 1904, "failures": 0, "errors": 0, "skipped": 1, "maxHeap": "512m", "outOfMemory": false}
+    }
+  },
+  "inventory": {
+    "producer": "tools/agent/checks/gradle-test-evidence-producer.ps1",
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 (in-session)",
+    "discovery": {"shared": 6046, "desktop": 1904, "testDryRun": true},
+    "executedSelections": {
+      "final.shared": {"before": 6951, "after": 6963, "sha256": "510e51f224b4132125baf343c201e111cee030dc3d03b102167ee49d6a9f63ea"},
+      "final.desktop": {"before": 1890, "after": 1898, "sha256": "82f947717ed04338a8dc64c8286fa2d1bd11be4e1e4c3b91a766264fb9afff88"},
+      "pre-g9b-r6-plus-e2.shared": {"before": 63, "after": 75, "sha256": "cf44324ea32430893aee5c809be89ea1a41c2eac40c0dfcb8e7704abdfa48d11"},
+      "pre-g9b-r6-plus-e2.desktop": {"before": 242, "after": 282, "sha256": "6cea9281ced6ce21035d76fb0c4916d0c9bd1b6deca2910991c650268bf368a8"}
+    },
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "eb1d061cec5feff1502fad1b838ba93fddf171c90ed9cab298daebac0760348e", "after": "e8d1f1220f8f1205311ededc49f087cfb7a33f02a2af3aa1693c3da8b9d4a48b"},
+    "coveragePins": "tools/agent/tests/verification-final-coverage.Tests.ps1: E2 shared 75, E2 desktop 282; selection and phase counts unchanged (44, 51)"
+  },
+  "authorSmoke": "PASS WITH OBSERVATIONS — ORIGINAL E2",
+  "authorReview": "PENDING — REVISED CANDIDATE"
+}

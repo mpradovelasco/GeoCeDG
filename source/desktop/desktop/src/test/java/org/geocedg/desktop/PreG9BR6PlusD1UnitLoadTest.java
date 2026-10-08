@@ -216,7 +216,7 @@ class PreG9BR6PlusD1UnitLoadTest {
 		int history = undo.getHistorySize();
 		String base = withUnitLine(live.getXML(), "");
 		Object[][] defects = {
-			{"<geocedgUnits version=\"2\" construction=\"mm\"/>",
+			{"<geocedgUnits version=\"3\" construction=\"mm\"/>",
 				UnitMetadataException.Code.UNSUPPORTED_VERSION},
 			{"<geocedgUnits version=\"1\" construction=\"mm\" scale=\"2\"/>",
 				UnitMetadataException.Code.MALFORMED_ELEMENT},
@@ -332,7 +332,7 @@ class PreG9BR6PlusD1UnitLoadTest {
 		AppGeoCeDG author = G9U1TestApp.create();
 		Path defect = temporaryDirectory.resolve("startup-defect.cedg");
 		Files.write(defect, archive("geogebra.xml", withUnitLine(author.getXML(),
-				"<geocedgUnits version=\"2\" construction=\"mm\"/>")));
+				"<geocedgUnits version=\"3\" construction=\"mm\"/>")));
 		PreG9BR6PlusD1DocumentUnitsTest.MemoryStore store =
 				new PreG9BR6PlusD1DocumentUnitsTest.MemoryStore();
 		store.values.put(GeoCeDGUnitPreferences.CONSTRUCTION_KEY, "cm");
@@ -354,7 +354,7 @@ class PreG9BR6PlusD1UnitLoadTest {
 					new JPanel()));
 			started.setErrorDialogsActive(false);
 			SwingUtilities.invokeAndWait(() -> { });
-			assertEquals(UnitState.of(UnitToken.CM, null, null),
+			assertEquals(UnitState.of(UnitToken.CM, null, null, false),
 					started.getDocumentUnits().getState(),
 					"a failed startup load ends in a blank document with the defaults");
 			assertTrue(started.getKernel().getConstruction().getGeoSetConstructionOrder()

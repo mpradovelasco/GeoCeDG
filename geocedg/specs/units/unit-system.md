@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-02 on the exact documentary candidate `T_R6PLUS_D0` `8383a153dc2228fc08b4e00a0c92ef8025608916`, tree `442e27fcafea223af426b4ee65102a8a5d90be8c`; [D0 closeout record](../../../docs/validation/pre_g9b_r6_plus_d0_closeout_record.md)); implementation not authorized |
-| Version | `1.0` |
+| Version | `1.0` (author approved); amendment `1.1` (§20, dimension unit suffix policy) **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW** |
 | Owner phase | `PRE-G9B-R6-plus-D0` (normative design; no implementation) |
 | Implementing phases | `D1` (document state, persistence, undo, defaults, paste notice, status), `C` (export), `E2` (native dimensions), `E3` (`IsoABorder`) |
 | Decision | [ADR 0032](../../../docs/adr/0032-unit-system-semantics-and-persistence-ownership.md) (`ACCEPTED — AUTHOR APPROVED`) |
@@ -19,6 +19,14 @@ product behavior may be claimed against it until the implementing phases
 deliver it, and the in-force export rules of §15.1 stay unchanged until `C`.
 Status marker (2026-10-04): `C` delivers §13 and §15 in a technical candidate
 pending author review (§15).
+Amendment marker (2026-10-08): the author decision of the `E2` author smoke
+follow-up ([record](../../../docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md))
+authorizes a bounded versioned extension of the unit state, specified in §20 as
+amendment `1.1`. §20 is a proposed amendment bound to the revised `E2` technical
+candidate and is not author approved. The clauses §1–§19 keep their approved
+`1.0` text unchanged as the historical evidence of the 2026-10-02 decision;
+each clause that §20 amends carries an amendment pointer, and for the revised
+candidate §20 prevails over the clause it amends.
 
 `MUST`, `MUST NOT`, `SHOULD` and `MAY` have their usual normative meaning. Each
 numbered clause is cited as `§n.m`. The author decisions listed in the header
@@ -389,6 +397,9 @@ The last line is a document whose construction unit was set back to
 `UNSPECIFIED_MODEL_UNIT` while a `usm` definition is kept (`DQ-D0-3`,
 `DQ-D0-4`).
 
+Amendment `1.1`: §20.3 adds version 2, which is this grammar plus the
+`dimensionUnitSuffix` attribute.
+
 ### 8.3 Omission rule and legacy byte identity
 
 The element is written exactly when `S ≠ EMPTY`, that is when `S.c` is present
@@ -397,6 +408,11 @@ construction XML of a document that never acquired unit metadata is
 byte-identical to the base build. The absence of a construction-unit
 selection means `UNSPECIFIED_MODEL_UNIT`; it does not imply that the element
 is absent.
+
+Amendment `1.1`: `EMPTY` additionally requires the shown suffix policy, so a
+document with the hidden policy writes the element (§20.1, §20.3); a document
+that never acquired unit metadata or the hidden policy keeps this byte
+identity.
 
 ### 8.4 Factor lexical form
 
@@ -468,6 +484,9 @@ restore precedent of `common/io/MyXMLio.java:425-447`, which `D1`
 characterizes and extends. The element is accepted at any child position of
 the document `<construction>`; its position carries no meaning for a reader.
 
+Amendment `1.1`: the highest supported version becomes 2, and §20.3 states the
+version-2 malformations.
+
 ### 8.8 Ignored contexts
 
 - In a **macro** construction (a `MacroKernel` parse, `common/io/MyXMLHandler.java:2575` precedent) the element is never written and, if present, is
@@ -487,6 +506,9 @@ such a build therefore **loses its unit metadata silently**. This is an
 accepted, explicit limitation of version 1 (`AQ-U3`, `DQ-D0-7`). The element
 is flat so that such readers see no misplaced child content. Unit metadata is
 never moved into `<geocedgSpatial>` to make old readers fail closed.
+
+Amendment `1.1`: builds that implement only version 1 fail closed on a
+version-2 element (§20.3).
 
 ## 9. Construction-XML routes
 
@@ -534,6 +556,8 @@ finds; a route that cannot keep these rules is a `D1` stop condition.
   (`geocedg-desktop/GeoCeDGPresentationPreferences.java:23-29`); `D1` fixes
   their names. They live in the GeoCeDG properties store, never in the
   preferences XML or in a document.
+- Amendment `1.1`: a third default, the dimension unit suffix policy of new
+  blank documents, follows the same rules (§20.5).
 
 ## 11. Copy and paste
 
@@ -637,6 +661,9 @@ settings; the unit system adds no rounding rule, no input parsing and none of
 the other effects of `angleUnit`. The text updates when the effective units
 or `k` change, without recomputing any geometry.
 
+Amendment `1.1`: the suffix is subject to the document's dimension unit
+suffix policy (§20.2); the text above is the shown policy.
+
 ### 14.3 Failure state
 
 When `display(L)` is not finite, the text shows a defined presentation failure
@@ -720,6 +747,8 @@ stays an independent view presentation facility. It is not
 not an export-unit authority; neither `D0` nor `D1` synchronizes it.
 
 ## 17. Matrices
+
+Amendment `1.1`: §20.6 adds the rows of the dimension unit suffix policy.
 
 ### 17.1 Invariant matrix
 
@@ -821,6 +850,7 @@ author review (2026-10-04).
   inputs (§6.3, `AQ-E4`).
 - Evidence: numbers unchanged and texts updated across every operation of
   §17.1; undo and redo coherence; serialization of the captured inputs.
+- Amendment `1.1`: the revised `E2` candidate also implements §20 (§20.7).
 
 ### 18.4 `E3` — `IsoABorder`
 
@@ -872,3 +902,140 @@ author review (2026-10-04).
 | `DQ-D0-11` export with unspecified unit | §13, §15.2 |
 | `DQ-D0-12` `drawingScale` pair | §12, §13 |
 | `DQ-D0-13` axis unit labels | §16.3 |
+
+## 20. Amendment 1.1 — dimension unit suffix policy
+
+Status: **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**. Source: the
+author decision of 2026-10-08 on the `E2` author smoke follow-up
+([record](../../../docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md),
+part B2), which authorizes the bounded versioned Boolean extension of
+`geocedgUnits` stated here and nothing broader. Version `1.0` (§1–§19) stays the
+approved historical text; this section binds the revised `E2` candidate only
+and becomes normative only through an author closeout record.
+
+### 20.1 State
+
+- The unit state `S` gains one field, the **dimension unit suffix policy**
+  `σ ∈ { shown, hidden }`, of class `DOCUMENT_PRESENTATION`. It is not unit
+  metadata: it changes no effective unit (§5.2), no conversion (§5.3), no
+  number, no geometry, no export size and none of the properties of §6.1.
+- *Unit metadata* means `S.c` present, `S.p` present or `usm` `DEFINED`.
+  `EMPTY` is the state with no unit metadata and `σ = shown`; §5.1 and §7.1
+  apply to the unit metadata unchanged, and every unit operation keeps `σ`.
+- Changing `σ` is a document operation with exactly one undo point (§7.3);
+  when the document units dialog changes `σ` together with unit metadata, the
+  whole dialog commit is one undo point.
+- `σ` alone never makes a document save-relevant (the `DQ-D1-5` rule applies
+  to unit metadata only): an untouched new document is not modified because
+  of its policy, while every saved document carries its policy.
+
+### 20.2 Presentation (amends §14.2 and §14.3)
+
+```text
+effC physical,    σ = shown  : format(display(L)) + " " + suffix(effP)   (§14.2)
+effC physical,    σ = hidden : format(display(L))
+effC unspecified, either σ   : format(L)                                 (§14.2)
+failure (§14.3),  σ = shown  : marker + " " + suffix(effP)
+failure (§14.3),  σ = hidden : marker
+```
+
+The number shown stays `display(L)` in the effective presentation unit; the
+stable numeric output stays the model-unit measure `L`. A change of `σ`
+refreshes the dimension texts through the presentation notification of §18.1
+without recomputing any geometry. Picture and supported LaTeX exports show the
+same text as the view.
+
+### 20.3 Persistence (amends §8.2, §8.3, §8.7 and §8.9)
+
+```text
+units-element-v2 = "<geocedgUnits" SP 'version="2"'
+                   [ SP construction-attr [ SP presentation-attr ] ]
+                   [ SP factor-attr [ SP name-attr ] [ SP symbol-attr ] ]
+                   SP suffix-attr "/>"
+
+suffix-attr      = 'dimensionUnitSuffix="' ( "hidden" / "shown" ) '"'
+```
+
+- **Writer.** The element is written exactly when `S ≠ EMPTY` (§20.1). With
+  `σ = hidden` it is version 2 with `dimensionUnitSuffix="hidden"` as the last
+  attribute; with `σ = shown` it is exactly the version-1 element of §8.2. The
+  writer never emits `"shown"`. Examples:
+  `<geocedgUnits version="2" construction="mm" dimensionUnitSuffix="hidden"/>`
+  and, for a document without unit metadata,
+  `<geocedgUnits version="2" dimensionUnitSuffix="hidden"/>`.
+- **No migration.** A document read with `σ = shown` (no element, or a
+  version-1 element) is written with the same bytes as under version `1.0`;
+  nothing upgrades a version-1 element or a legacy document on load or re-save.
+- **Reader.** A missing element in a clearing load yields `EMPTY`, hence
+  `σ = shown`, the historical suffix-visible behavior of documents that carry
+  no policy. A version-1 element yields `σ = shown`; a version-1 element with
+  `dimensionUnitSuffix` is malformed. A version-2 element requires
+  `dimensionUnitSuffix` with the value `hidden` or `shown`; otherwise it is
+  malformed. Every other rule of §8.2–§8.8 applies to version 2 unchanged;
+  version 3 or higher fails closed (§8.7 item 1).
+- **Older readers.** A build that implements only version 1 (`D1` up to and
+  including the original `E2` candidate `878ff66b`) fails closed on a
+  version-2 element as a newer version (§8.7 item 1), so a document with the
+  hidden policy, which by §20.5 includes new documents by default, is not
+  opened by such a build. Builds before `D1` and Classic GeoGebra ignore the
+  element as in §8.9 and lose the unit metadata and the policy on re-save.
+  This is an explicit forward-compatibility limitation of the amendment,
+  submitted for author review.
+
+### 20.4 Routes
+
+Every route of §9 carries `σ` with the element: undo and redo, redefine
+rebuild and rollback restore it exactly; the ignored contexts of §8.8 (macro
+constructions, paste, `evalXML`) never write, read or change it; the
+preferences XML never contains it; `clearConstruction` resets it to `shown`
+with the rest of the state.
+
+### 20.5 Defaults (amends §10)
+
+- The preference `geocedg.units.new-document-dimension-unit-suffix.v1` with
+  the values `shown` and `hidden` sets `σ` of new blank documents; unset or
+  any other value means `hidden`.
+- It is applied with the other §10 defaults, only to new blank documents,
+  never to an opened document or on undo, redo, redefine, rollback, paste or
+  insertion; with an unspecified construction default the state is "no unit
+  metadata, `σ` = the default". Applying it creates no undo point and does not
+  mark the document modified. Changing the preference affects only documents
+  created afterwards.
+
+### 20.6 Matrix rows (amend §17)
+
+| §17.1 operation | coordinates and numeric geometry | DAG, dependencies, order | identities | Locus V2, Spline V2 | dimension numbers | dimension texts | status UI | export interpretation | unit state |
+|---|---|---|---|---|---|---|---|---|---|
+| change dimension unit suffix policy | = | = | = | = | = | ↻ (suffix only) | = | = (size); texts as in the view | `σ` changed |
+
+| §17.2 state | Class | Owner | Written by | Read by | Reset | Undo | Preference |
+|---|---|---|---|---|---|---|---|
+| dimension unit suffix policy `σ` | `DOCUMENT_PRESENTATION` | shared document | `geocedgUnits@dimensionUnitSuffix` (version 2, hidden only) | clearing loads | `clearConstruction` (to shown) | one point per change | default for new documents only |
+
+| §17.3 case | Behavior |
+|---|---|
+| document without the element, or with a version-1 element | `σ = shown`; version-1 bytes on re-save |
+| version-2 element read by a build implementing `1.1` | state and `σ` read exactly |
+| version-2 element read by a build implementing only `1.0` | fail closed (§8.7 item 1) |
+| version-1 element with `dimensionUnitSuffix`; version 2 without it or with another value | fail closed (§8.7 item 2) |
+
+### 20.7 Consumer contract
+
+The revised `E2` candidate implements §20.1–§20.6 in the `D1` state,
+persistence and defaults seams and in the `E2` dimension presentation.
+Evidence: the presentation cases of §20.2 for every effective unit, `usm` with
+and without a symbol, the unspecified unit and the failure marker; the writer
+and reader cases of §20.3, including version-1 byte identity and the version-2
+malformations; undo and redo of a policy change; save and reopen with and
+without unit metadata; an opened document without a policy keeping the suffix;
+defaults applied only to new blank documents and not save-relevant; equal texts
+in the view and in a LaTeX export.
+
+### 20.8 Traceability
+
+| Decision | Clauses |
+|---|---|
+| author decision of 2026-10-08, part B2 (default hidden for new documents, per-document policy, application preference for new documents only, historical behavior without a policy, no silent migration, invariants and exports preserved) | §20.1–§20.7 |
+| `DQ-D1-5` save relevance | §20.1 |
+| `DQ-D0-7` fail closed | §20.3 |
+| `DQ-D0-9` dimension text as presentation | §20.2 |

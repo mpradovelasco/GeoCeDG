@@ -17,12 +17,19 @@ import org.geogebra.common.io.XMLStringBuilder;
  * 8.2 and the factor in its canonical form; it cannot fail for a valid state. The
  * reader validates a recognized element completely or throws
  * {@link UnitMetadataException}.
+ *
+ * <p>Unit-system v1.1: version 2 is version 1 plus the mandatory
+ * {@code dimensionUnitSuffix} attribute (section 14.2). The writer emits version 2 only
+ * for a hidden suffix and otherwise exactly the version-1 element, so every document
+ * without the hidden policy keeps its version-1 bytes.
  */
 public final class UnitStateXml {
 	/** Element name. */
 	public static final String ELEMENT = "geocedgUnits";
 	/** Highest supported version. */
-	public static final int VERSION = 1;
+	public static final int VERSION = 2;
+	/** Version of an element without the dimension unit suffix policy. */
+	public static final int VERSION_1 = 1;
 
 	static final String VERSION_ATTRIBUTE = "version";
 	static final String CONSTRUCTION_ATTRIBUTE = "construction";
@@ -30,6 +37,9 @@ public final class UnitStateXml {
 	static final String FACTOR_ATTRIBUTE = "usmMetersPerUnit";
 	static final String NAME_ATTRIBUTE = "usmName";
 	static final String SYMBOL_ATTRIBUTE = "usmSymbol";
+	static final String SUFFIX_ATTRIBUTE = "dimensionUnitSuffix";
+	static final String SUFFIX_HIDDEN = "hidden";
+	static final String SUFFIX_SHOWN = "shown";
 
 	private UnitStateXml() {
 	}
@@ -44,8 +54,9 @@ public final class UnitStateXml {
 		if (state.isEmpty()) {
 			return;
 		}
+		boolean hidden = !state.isDimensionUnitSuffixShown();
 		sb.startTag(ELEMENT);
-		sb.attr(VERSION_ATTRIBUTE, VERSION);
+		sb.attr(VERSION_ATTRIBUTE, hidden ? VERSION : VERSION_1);
 		if (state.getConstructionSelection() != null) {
 			sb.attr(CONSTRUCTION_ATTRIBUTE, state.getConstructionSelection().token());
 			if (state.getPresentationSelection() != null) {
@@ -61,6 +72,9 @@ public final class UnitStateXml {
 			if (usm.getSymbol() != null) {
 				sb.attr(SYMBOL_ATTRIBUTE, usm.getSymbol());
 			}
+		}
+		if (hidden) {
+			sb.attr(SUFFIX_ATTRIBUTE, SUFFIX_HIDDEN);
 		}
 		sb.endTag();
 	}
@@ -81,9 +95,20 @@ public final class UnitStateXml {
 							+ VERSION);
 		}
 		for (String name : attributes.keySet()) {
-			if (!isKnownAttribute(name)) {
+			if (!isKnownAttribute(name, version)) {
 				throw new UnitMetadataException(Code.MALFORMED_ELEMENT,
 						"unknown attribute " + name);
+			}
+		}
+		boolean suffixShown = true;
+		if (version >= VERSION) {
+			String suffix = attributes.get(SUFFIX_ATTRIBUTE);
+			if (SUFFIX_HIDDEN.equals(suffix)) {
+				suffixShown = false;
+			} else if (!SUFFIX_SHOWN.equals(suffix)) {
+				throw new UnitMetadataException(Code.MALFORMED_ELEMENT,
+						suffix == null ? "version 2 without " + SUFFIX_ATTRIBUTE
+								: SUFFIX_ATTRIBUTE + " is not hidden or shown: " + suffix);
 			}
 		}
 		UnitToken construction = readToken(attributes, CONSTRUCTION_ATTRIBUTE);
@@ -120,7 +145,7 @@ public final class UnitStateXml {
 					"usm is selected without usmMetersPerUnit");
 		}
 		// A bare version-1 element is grammatical and denotes EMPTY (section 8.2).
-		return UnitState.of(construction, presentation, usm);
+		return UnitState.of(construction, presentation, usm, suffixShown);
 	}
 
 	private static int readVersion(String text) {
@@ -142,10 +167,11 @@ public final class UnitStateXml {
 		return (int) value;
 	}
 
-	private static boolean isKnownAttribute(String name) {
+	private static boolean isKnownAttribute(String name, int version) {
 		return VERSION_ATTRIBUTE.equals(name) || CONSTRUCTION_ATTRIBUTE.equals(name)
 				|| PRESENTATION_ATTRIBUTE.equals(name) || FACTOR_ATTRIBUTE.equals(name)
-				|| NAME_ATTRIBUTE.equals(name) || SYMBOL_ATTRIBUTE.equals(name);
+				|| NAME_ATTRIBUTE.equals(name) || SYMBOL_ATTRIBUTE.equals(name)
+				|| (version >= VERSION && SUFFIX_ATTRIBUTE.equals(name));
 	}
 
 	private static UnitToken readToken(Map<String, String> attributes, String attribute) {

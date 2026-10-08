@@ -136,3 +136,19 @@ geometric dependency.
 - Documents saved by a `D1` build and re-saved by an older build lose their
   units silently. Users must be told; the living guides record it (`D1` or `G`).
 - The spatial frame `units` token stays unrelated to `constructionUnit`.
+
+## Amendment note (2026-10-08, proposed; not author approved)
+
+This ADR and its decision stay as approved on 2026-10-02. The author decision of
+the `E2` author smoke follow-up
+([record](../validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md),
+part B2) authorizes one bounded extension inside the owner this ADR chose: the
+`geocedgUnits` element gains version 2, which adds the per-document Boolean
+dimension unit suffix policy (`dimensionUnitSuffix`, written only when hidden).
+The owner, the placement, the fail-closed reading, the ignored contexts and the
+byte identity of documents without the hidden policy are unchanged; no new
+element family, `GeoElement` or command signature is introduced. The amended
+rules are the unit-system specification §20 (amendment `1.1`), proposed in the
+revised `E2` technical candidate and pending author review. One consequence
+above changes for documents with the hidden policy: builds that implement only
+version 1 refuse them instead of opening them (§20.3).

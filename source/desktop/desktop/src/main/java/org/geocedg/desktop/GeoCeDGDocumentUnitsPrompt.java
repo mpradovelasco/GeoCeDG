@@ -64,6 +64,9 @@ interface GeoCeDGDocumentUnitsPrompt {
 			JTextField factor = new JTextField(initial.factor, 16);
 			JTextField name = new JTextField(initial.name, 16);
 			JTextField symbol = new JTextField(initial.symbol, 16);
+			final JCheckBox suffix = new JCheckBox(
+					GeoCeDGProfile.getText("Units.Dialog.DimensionSuffix", language),
+					initial.dimensionUnitSuffixShown == null || initial.dimensionUnitSuffixShown);
 			Runnable enable = () -> {
 				presentation.setEnabled(construction.getSelectedIndex() != 0);
 				factor.setEnabled(define.isSelected());
@@ -86,7 +89,8 @@ interface GeoCeDGDocumentUnitsPrompt {
 					language)), name);
 			row(panel, 5, new JLabel(GeoCeDGProfile.getText("Units.Dialog.UsmSymbol",
 					language)), symbol);
-			row(panel, 6, new JLabel(GeoCeDGProfile.getText("Units.Dialog.Hint", language)),
+			row(panel, 6, suffix, null);
+			row(panel, 7, new JLabel(GeoCeDGProfile.getText("Units.Dialog.Hint", language)),
 					null);
 			int choice = JOptionPane.showConfirmDialog(app.getMainComponent(), panel,
 					GeoCeDGProfile.getText("Units.Dialog.Title", language),
@@ -99,7 +103,8 @@ interface GeoCeDGDocumentUnitsPrompt {
 			UnitToken presentationUnit = constructionUnit == null ? null
 					: PRESENTATION_CHOICES[presentation.getSelectedIndex()];
 			return new GeoCeDGDocumentUnits.Request(constructionUnit, presentationUnit,
-					define.isSelected(), factor.getText(), name.getText(), symbol.getText());
+					define.isSelected(), factor.getText(), name.getText(), symbol.getText(),
+					suffix.isSelected());
 		};
 	}
 

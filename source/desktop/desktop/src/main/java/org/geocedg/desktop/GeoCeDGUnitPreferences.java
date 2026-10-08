@@ -10,7 +10,8 @@ import org.geocedg.common.kernel.units.UnitToken;
 
 /**
  * PRE-G9B-R6-plus-D1 portable user defaults for new blank documents (unit-system v1.0,
- * section 10; DQ-D1-2, DQ-D1-6). They live in the GeoCeDG properties store, never in
+ * section 10; DQ-D1-2, DQ-D1-6), and since unit-system v1.1 the dimension unit suffix
+ * policy of new documents. They live in the GeoCeDG properties store, never in
  * the preferences XML or a document, are never {@code usm}, and reach a document only
  * through the new-document lifecycle. Reading never writes; an invalid stored value
  * behaves as unset.
@@ -18,6 +19,11 @@ import org.geocedg.common.kernel.units.UnitToken;
 final class GeoCeDGUnitPreferences {
 	static final String CONSTRUCTION_KEY = "geocedg.units.new-document-construction.v1";
 	static final String PRESENTATION_KEY = "geocedg.units.new-document-presentation.v1";
+	/** Unit-system v1.1 (E2 smoke follow-up B2): dimension unit suffix of new documents. */
+	static final String DIMENSION_SUFFIX_KEY =
+			"geocedg.units.new-document-dimension-unit-suffix.v1";
+	static final String SUFFIX_SHOWN = "shown";
+	static final String SUFFIX_HIDDEN = "hidden";
 
 	/** Construction default: unspecified or a built-in unit. */
 	enum ConstructionDefault {
@@ -102,15 +108,29 @@ final class GeoCeDGUnitPreferences {
 	}
 
 	/**
+	 * @return whether new documents show the dimension unit suffix; hidden unless the
+	 *         stored value is exactly {@code shown} (author decision, section 14.2)
+	 */
+	boolean dimensionUnitSuffixShown() {
+		return SUFFIX_SHOWN.equals(store.load(DIMENSION_SUFFIX_KEY));
+	}
+
+	void setDimensionUnitSuffixShown(boolean shown) {
+		store.save(DIMENSION_SUFFIX_KEY, shown ? SUFFIX_SHOWN : SUFFIX_HIDDEN);
+	}
+
+	/**
 	 * @return the state of a new blank document: a physical construction default with
-	 *         the presentation default, or {@code EMPTY} (an unspecified construction
-	 *         default leaves any presentation default inert, DQ-D0-1)
+	 *         the presentation default, or no unit (an unspecified construction default
+	 *         leaves any presentation default inert, DQ-D0-1), with the dimension unit
+	 *         suffix policy of new documents (unit-system v1.1, section 14.2)
 	 */
 	UnitState newDocumentState() {
 		ConstructionDefault construction = construction();
+		boolean suffixShown = dimensionUnitSuffixShown();
 		if (construction.unit == null) {
-			return UnitState.EMPTY;
+			return UnitState.of(null, null, null, suffixShown);
 		}
-		return UnitState.of(construction.unit, presentation().unit, null);
+		return UnitState.of(construction.unit, presentation().unit, null, suffixShown);
 	}
 }

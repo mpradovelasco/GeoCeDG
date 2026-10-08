@@ -5282,6 +5282,10 @@
       "en": "Changing a unit reinterprets the model; coordinates are never converted.",
       "es": "Cambiar una unidad reinterpreta el modelo; las coordenadas nunca se convierten."
     },
+    "Units.Dialog.DimensionSuffix": {
+      "en": "Show the unit on dimension values",
+      "es": "Mostrar la unidad en los valores de las cotas"
+    },
     "Units.Error.FactorComma": {
       "en": "Use \".\" as the decimal separator.",
       "es": "Usa \".\" como separador decimal."
@@ -5345,6 +5349,22 @@
     "Units.Preferences.Hint": {
       "en": "Applied only to new blank documents; opened documents keep their own units.",
       "es": "Solo se aplican a los documentos nuevos en blanco; los documentos abiertos conservan sus propias unidades."
+    },
+    "Dimensions.Preferences.Group": {
+      "en": "Dimension presentation",
+      "es": "Presentación de cotas"
+    },
+    "Dimensions.Preferences.LineThickness": {
+      "en": "Initial line thickness:",
+      "es": "Grosor inicial de línea:"
+    },
+    "Dimensions.Preferences.UnitSuffix": {
+      "en": "Show the unit on dimension values in new documents",
+      "es": "Mostrar la unidad en los valores de las cotas en los documentos nuevos"
+    },
+    "Dimensions.Preferences.Hint": {
+      "en": "Applied only to dimensions created with the tools and to new documents; existing dimensions and opened documents keep their own style and policy.",
+      "es": "Solo se aplica a las cotas creadas con las herramientas y a los documentos nuevos; las cotas existentes y los documentos abiertos conservan su propio estilo y su propia opción."
     },
     "Workspace.Layer.Status": {
       "en": "Layer: %0",

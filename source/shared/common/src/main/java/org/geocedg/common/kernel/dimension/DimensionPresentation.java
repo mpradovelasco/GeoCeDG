@@ -39,7 +39,9 @@ public final class DimensionPresentation {
 	 * @param tpl string template of the text output
 	 * @return {@code format(display(L)) + " " + suffix(effP)}, the bare {@code format(L)}
 	 *         when the construction unit is unspecified, or the failure marker plus the
-	 *         suffix when the conversion is not finite
+	 *         suffix when the conversion is not finite; with the document policy "suffix
+	 *         hidden" (unit-system v1.1, section 14.2) the same text without
+	 *         {@code " " + suffix(effP)}
 	 */
 	public static String format(double length, UnitState state, Kernel kernel,
 			StringTemplate tpl) {
@@ -47,12 +49,15 @@ public final class DimensionPresentation {
 		if (quantity.getStatus() == UnitQuantity.Status.UNSPECIFIED) {
 			return kernel.format(length, tpl);
 		}
-		UnitToken unit = state.effectivePresentationUnit();
-		String suffix = state.symbolOf(unit);
-		if (quantity.getStatus() == UnitQuantity.Status.NOT_FINITE) {
-			return FAILURE_MARKER + " " + suffix;
+		String suffix = "";
+		if (state.isDimensionUnitSuffixShown()) {
+			UnitToken unit = state.effectivePresentationUnit();
+			suffix = " " + state.symbolOf(unit);
 		}
-		return kernel.format(quantity.getValue(), tpl) + " " + suffix;
+		if (quantity.getStatus() == UnitQuantity.Status.NOT_FINITE) {
+			return FAILURE_MARKER + suffix;
+		}
+		return kernel.format(quantity.getValue(), tpl) + suffix;
 	}
 
 	/**

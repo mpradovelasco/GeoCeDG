@@ -56,6 +56,12 @@ public abstract class AlgoNativeDimension extends AlgoElement
 	public static final int TEXT = 4;
 	/** Arrow ending of the dimension line at both ends. */
 	public static final SegmentStyle ARROW_ENDING = SegmentStyle.ARROW_FILLED;
+	/**
+	 * Initial GeoGebra line thickness of the dimension line and both extension lines
+	 * (PRE-G9B-R6-plus-E2 smoke follow-up B1); a presentation default like the arrow
+	 * endings. Each segment then keeps and serializes its own style.
+	 */
+	public static final int INITIAL_LINE_THICKNESS = 2;
 
 	private final GeoPointND pointA;
 	private final GeoPointND pointB;
@@ -140,6 +146,7 @@ public abstract class AlgoNativeDimension extends AlgoElement
 		for (GeoSegment segment : new GeoSegment[] {dimensionLine, extensionA,
 				extensionB}) {
 			segment.setLabelVisible(false);
+			segment.setLineThickness(INITIAL_LINE_THICKNESS);
 		}
 	}
 

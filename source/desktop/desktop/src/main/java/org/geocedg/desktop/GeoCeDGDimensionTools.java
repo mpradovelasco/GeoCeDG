@@ -15,8 +15,10 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.commands.EvalInfo;
+import org.geogebra.common.kernel.geos.GProperty;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.main.MyError;
 import org.geogebra.desktop.main.AppD;
@@ -143,6 +145,14 @@ final class GeoCeDGDimensionTools {
 		}
 		offset.setValue(placed);
 		offset.updateCascade();
+		// B1: the creation preference initializes the segment styles once; each segment
+		// then keeps and serializes its own style
+		int thickness = new GeoCeDGDimensionPreferences().initialLineThickness();
+		for (GeoSegment segment : new GeoSegment[] {algo.getDimensionLine(),
+				algo.getExtensionA(), algo.getExtensionB()}) {
+			segment.setLineThickness(thickness);
+			segment.updateVisualStyleRepaint(GProperty.LINE_STYLE);
+		}
 		return created;
 	}
 

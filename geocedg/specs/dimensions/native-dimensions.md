@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
-| Version | `1.0` |
+| Version | `1.1` (revised candidate of the author smoke follow-up, [record](../../../docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md): §4.2, §6, §8.5, §9.1); `1.0` is the text of the original candidate `878ff66b` |
 | Owner phase | `PRE-G9B-R6-plus-E2` (native dimensions) |
 | Decision | [ADR 0034](../../../docs/adr/0034-native-dimension-representation-and-presentation-seams.md) (`PROPOSED`) |
 | Governing author decisions | [E2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e2_author_decisions_record.md) (`DQ-E2-1` to `DQ-E2-11`); [E2 authorization record](../../../docs/validation/pre_g9b_r6_plus_e2_authorization_record.md) |
@@ -88,6 +88,12 @@ default labels; several labels (XML) name the outputs in order. The labels of
 outputs 1 to 3 are hidden. Each output keeps its ordinary element style;
 deleting any output deletes the algorithm and all its outputs.
 
+4.2 Initial line thickness (`1.1`). At creation, outputs 1 to 3 receive the
+GeoGebra line thickness `2`, like the arrow endings a presentation default of
+the algorithm; the tools then apply the creation preference of §8.5. Afterwards
+each segment keeps and serializes its own style, which a load restores over the
+default; no argument, geometric rule or dependency is involved.
+
 ## 5. Geometry
 
 5.1 Common frame. For a unit direction `d̂` let `n̂ = rot90(d̂) = (−d̂y, d̂x)`.
@@ -145,6 +151,12 @@ text string  = format(display(L)) + " " + suffix(effP)   physical construction u
 specification §5, §6 and §14; `format` is the kernel number format of the text.
 Example: construction unit `cm`, presentation unit `mm`, `L = 12` → value `12`,
 text `120 mm`; presentation unit `m` → value `12`, text `0.12 m`.
+
+6.4 Unit suffix policy (`1.1`). The strings above are those of the shown
+policy. With the document's hidden policy (unit-system §20.2) the
+`" " + suffix(effP)` part is omitted: `120`, and `?` when not finite; the value
+and the unspecified case are unchanged. A policy change runs only the
+presentation step of §6.2.
 
 6.2 Seam. `compute()` computes geometry and the value only and MUST NOT read the
 unit state. A separate presentation step writes only the string of output 4:
@@ -204,12 +216,23 @@ dragging writes only the free offset number, `s := ⟨C − A, n̂⟩`; one undo
 on release. Nothing is dragged when the offset is not an independent, labelled,
 unlocked number. No route moves `A` or `B` through a dimension output.
 
+8.5 Creation preferences (`1.1`). Preferences → Layout & Presentation →
+Dimension presentation holds, in the GeoCeDG properties store, the initial line
+thickness of the three segments of dimensions created with the tools
+(`geocedg.dimensions.initial-line-thickness.v1`, `1` to the GeoGebra maximum,
+default `2`; an invalid value means the default) and the unit suffix policy of
+new documents (unit-system §20.5). A preference change affects only dimensions
+or documents created afterwards; it is not a document operation. The unit suffix
+policy of the current document is set in Options → Document units.
+
 ## 9. Persistence and compatibility
 
 9.1 XML: `<command name="AlignedDimension">` or `"LinearDimension"` with
 existing output element types; arrow endings as element style; offset,
 overshoot and gap as ordinary numerics. Documents without dimensions re-save
-byte-identically.
+byte-identically. (`1.1`) The segment thickness is ordinary element style; the
+suffix policy belongs to the unit state (unit-system §20.3), not to the
+dimension.
 
 9.2 Save and reopen, undo and redo, copy and paste (with the hidden inputs) and
 redefine preserve value, geometry, style and the derived orientation.

@@ -73,3 +73,14 @@ object.
 - Adds two commands to the ADR 0031 inventory (566 stored names, 515 with an
   English name, 488 displayed) and two commands (36 rows, 28 lookup probes) to
   the `PRE-G9B-R6` GGBScript capability matrix.
+
+## Revision note (2026-10-08, author smoke follow-up)
+
+The revised candidate adds, under the author decision of the smoke follow-up
+([record](../validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md)):
+an initial line thickness `2` of the dimension line and both extension lines,
+with a tool creation preference, as ordinary element style (specification §4.2,
+§8.5); and the document's dimension unit suffix policy, applied by the existing
+presentation step of output 4 and persisted in the unit state (specification
+§6.4; unit-system §20). The representation and the seams of this decision are
+unchanged: no new output, argument, element type or dependency.

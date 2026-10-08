@@ -2857,6 +2857,15 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	}
 
 	/**
+	 * Product hook for the dimension presentation preferences
+	 * (PRE-G9B-R6-plus-E2 smoke follow-up B1/B2).
+	 * @return product dimension presentation options, or {@code null}
+	 */
+	public OptionPanelD newProductDimensionPresentationPanel() {
+		return null;
+	}
+
+	/**
 	 * @return whether the product profile owns application presentation sizing, so the
 	 *         inherited mixed GUI-font row must not be offered a second time
 	 */

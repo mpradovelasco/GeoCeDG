@@ -657,7 +657,10 @@ class PreG9BR6PlusA2HiddenLayerPersistenceTest {
 
 	@Test
 	void unitsAndTheSetRoundTripAndUndoIndependently() throws Exception {
-		AppGeoCeDG app = G9U1TestApp.create();
+		AppGeoCeDG app;
+		try (AutoCloseable shown = PreG9BR6PlusD1DocumentUnitsTest.suffixShownDefaults()) {
+			app = G9U1TestApp.create();
+		}
 		onLayer(app, 3, "A=(1,2)");
 		app.getLayerWorkspace().setWorkingLayer(0);
 		UndoManagerD undo = undo(app);
@@ -704,7 +707,7 @@ class PreG9BR6PlusA2HiddenLayerPersistenceTest {
 		List<String> messages = new ArrayList<>();
 		live.setUnitLoadErrorSink(messages::add);
 		Path unitDefect = write("unit-defect.cedg",
-				xml.replaceAll("<geocedgUnits[^>]*/>", "<geocedgUnits version=\"2\"/>"));
+				xml.replaceAll("<geocedgUnits[^>]*/>", "<geocedgUnits version=\"3\"/>"));
 		assertFalse(live.loadFile(unitDefect.toFile(), false));
 		Path layerDefect = write("layer-defect.cedg", xml.replace(element("3"),
 				"<geocedgHiddenLayers version=\"2\" layers=\"3\"/>"));

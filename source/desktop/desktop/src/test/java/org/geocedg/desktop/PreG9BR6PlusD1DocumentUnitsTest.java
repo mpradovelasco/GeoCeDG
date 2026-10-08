@@ -60,6 +60,17 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 	@TempDir
 	Path temporaryDirectory;
 
+	/**
+	 * Unit-system v1.1: new documents whose suffix default is "shown" start EMPTY as in
+	 * v1.0, for tests whose subject is not the dimension unit suffix policy.
+	 */
+	static AutoCloseable suffixShownDefaults() {
+		MemoryStore store = new MemoryStore();
+		store.values.put(GeoCeDGUnitPreferences.DIMENSION_SUFFIX_KEY,
+				GeoCeDGUnitPreferences.SUFFIX_SHOWN);
+		return GeoCeDGUnitPreferences.useStoreForTesting(store);
+	}
+
 	/** In-memory preference store; counts writes. */
 	static final class MemoryStore implements GeoCeDGPresentationPreferences.Store {
 		final Map<String, String> values = new HashMap<>();
@@ -158,7 +169,10 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 
 	@Test
 	void eachUnitOperationIsExactlyOneDesktopUndoPoint() throws Exception {
-		AppGeoCeDG app = G9U1TestApp.create();
+		AppGeoCeDG app;
+		try (AutoCloseable shown = suffixShownDefaults()) {
+			app = G9U1TestApp.create();
+		}
 		G9U1TestApp.eval(app, "A=(1,2)");
 		UndoManagerD undo = baseline(app);
 		Deque<GeoCeDGDocumentUnits.Request> requests = new ArrayDeque<>();
@@ -447,7 +461,8 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 		assertSame(GeoCeDGUnitPreferences.ConstructionDefault.UNSPECIFIED,
 				preferences.construction());
 		assertSame(GeoCeDGUnitPreferences.PresentationDefault.NONE, preferences.presentation());
-		assertTrue(preferences.newDocumentState().isEmpty());
+		assertEquals(UnitState.of(null, null, null, false), preferences.newDocumentState(),
+				"unit-system v1.1: new documents hide the dimension unit suffix");
 		for (String invalid : new String[] {"usm", "km", "", "MM", " mm"}) {
 			store.values.put(GeoCeDGUnitPreferences.CONSTRUCTION_KEY, invalid);
 			store.values.put(GeoCeDGUnitPreferences.PRESENTATION_KEY, invalid);
@@ -459,10 +474,10 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 		assertEquals(0, store.saves, "reading never writes");
 		store.values.put(GeoCeDGUnitPreferences.PRESENTATION_KEY, "cm");
 		store.values.put(GeoCeDGUnitPreferences.CONSTRUCTION_KEY, "unspecified");
-		assertTrue(preferences.newDocumentState().isEmpty(),
+		assertFalse(preferences.newDocumentState().hasUnitMetadata(),
 				"a presentation default is inert without a physical construction default");
 		store.values.put(GeoCeDGUnitPreferences.CONSTRUCTION_KEY, "mm");
-		assertEquals(UnitState.of(UnitToken.MM, UnitToken.CM, null),
+		assertEquals(UnitState.of(UnitToken.MM, UnitToken.CM, null, false),
 				preferences.newDocumentState());
 		preferences.setConstruction(GeoCeDGUnitPreferences.ConstructionDefault.M);
 		preferences.setPresentation(GeoCeDGUnitPreferences.PresentationDefault.NONE);
@@ -502,7 +517,7 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 		MemoryStore store = new MemoryStore();
 		store.values.put(GeoCeDGUnitPreferences.CONSTRUCTION_KEY, "mm");
 		store.values.put(GeoCeDGUnitPreferences.PRESENTATION_KEY, "cm");
-		UnitState defaults = UnitState.of(UnitToken.MM, UnitToken.CM, null);
+		UnitState defaults = UnitState.of(UnitToken.MM, UnitToken.CM, null, false);
 		try (AutoCloseable override = GeoCeDGUnitPreferences.useStoreForTesting(store)) {
 			AppGeoCeDG app = G9U1TestApp.create();
 			assertEquals(defaults, state(app), "startup without a file");
@@ -563,7 +578,9 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 		inert.values.put(GeoCeDGUnitPreferences.PRESENTATION_KEY, "cm");
 		try (AutoCloseable override = GeoCeDGUnitPreferences.useStoreForTesting(inert)) {
 			AppGeoCeDG app = G9U1TestApp.create();
-			assertTrue(state(app).isEmpty(), "unspecified default: EMPTY");
+			assertFalse(state(app).hasUnitMetadata(), "unspecified default: no unit metadata");
+			assertFalse(state(app).isDimensionUnitSuffixShown(),
+					"unit-system v1.1: the suffix policy of new documents still applies");
 		}
 	}
 }
