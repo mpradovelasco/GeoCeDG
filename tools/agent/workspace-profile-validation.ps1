@@ -71,12 +71,18 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     $preG9BR6PlusD1ActionIds = @(
         "document.units"
     )
+    # PRE-G9B-R6-plus-E2 native dimension tools, authorized for implementation on
+    # 2026-10-08; its canonical prompt and the E2 authorization record own their contract.
+    $preG9BR6PlusE2ActionIds = @(
+        "measure.aligned-dimension",
+        "measure.linear-dimension"
+    )
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
-        $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds |
-        Sort-Object -CaseSensitive)
+        $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
+        $preG9BR6PlusE2ActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4, R6-plus-A-1, R6-plus-B and R6-plus-D1 amendments."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4, R6-plus-A-1, R6-plus-B, R6-plus-D1 and R6-plus-E2 amendments."
     }
     $featureIds = @($profile.features.id)
     if ($featureIds.Count -ne @($candidate.features).Count -or

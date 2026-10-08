@@ -377,7 +377,7 @@ class PreG9BR6PlusE1LCuratedLibraryTest {
 				.replace('\\', '/').contains("models/curated/ggt-library"));
 		JSONObject profile = new JSONObject(Files.readString(repository.resolve(
 				"apps/geocedg/application-profile.yml"), StandardCharsets.UTF_8));
-		assertEquals(125, profile.getJSONArray("actions").length());
+		assertEquals(127, profile.getJSONArray("actions").length());
 		String experimental = Files.readString(repository.resolve(
 				"geocedg/features/experimental.yml"), StandardCharsets.UTF_8);
 		int feature = experimental.indexOf("\"id\": \"cedg.library.curated-ggt\"");

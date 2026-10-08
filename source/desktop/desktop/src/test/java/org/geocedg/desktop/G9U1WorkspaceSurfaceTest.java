@@ -121,7 +121,7 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collect(component, ids);
 		}
-		assertEquals(125, ids.size());
+		assertEquals(127, ids.size());
 		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
 		assertTrue(ids.contains("navigation.zoom-factor-in"));
@@ -394,7 +394,8 @@ class G9U1WorkspaceSurfaceTest {
 				"semantic.spline-v2.create", "semantic.spline-v2.create-degree",
 				"semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit"));
 		expected.put("construction-metrics", List.of("measure.angle",
-				"measure.distance-length", "measure.locus-v2-total-length",
+				"measure.distance-length", "measure.aligned-dimension",
+				"measure.linear-dimension", "measure.locus-v2-total-length",
 				"measure.locus-v2-partial-length"));
 		expected.put("construction-transforms", List.of("transform.reflect-point",
 				"transform.reflect-line", "transform.translate-vector",
@@ -698,8 +699,8 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(57, toolbarIds.size());
-		assertEquals(125, menuIds.size());
+		assertEquals(59, toolbarIds.size());
+		assertEquals(127, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();

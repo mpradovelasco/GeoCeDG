@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -32,6 +33,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
@@ -52,6 +54,8 @@ public final class GeoCeDGEuclidianController
 	private final GeoCeDGPointInteraction pointInteraction;
 	private final GeoCeDGSimilarityTools similarityTools;
 	private final GeoCeDGSplineV2Authoring splineAuthoring;
+	private final GeoCeDGDimensionTools dimensionTools;
+	private AlgoNativeDimension dimensionDrag;
 	private GeoPoint interactionDragPoint;
 	private boolean interactionGesture;
 	private boolean interactionChanged;
@@ -73,6 +77,7 @@ public final class GeoCeDGEuclidianController
 		pointInteraction = new GeoCeDGPointInteraction((AppD) kernel.getApplication());
 		similarityTools = new GeoCeDGSimilarityTools((AppD) kernel.getApplication());
 		splineAuthoring = new GeoCeDGSplineV2Authoring((AppD) kernel.getApplication());
+		dimensionTools = new GeoCeDGDimensionTools((AppD) kernel.getApplication());
 		locusV2Dialogs = new GeoCeDGLocusV2Dialogs(
 				(AppD) kernel.getApplication(), intersectionSession);
 	}
@@ -100,6 +105,11 @@ public final class GeoCeDGEuclidianController
 		interactionGesture = false;
 		interactionChanged = false;
 		interactionDragPoint = null;
+		dimensionDrag = null;
+		if (mode == EuclidianConstants.MODE_MOVE && !event.isRightClick()
+				&& !event.isControlDown() && startDimensionDrag(event)) {
+			return;
+		}
 		if (!event.isRightClick() && !event.isControlDown()
 				&& RuntimeFeatureService.mayCreateLocusV2(kernel.getConstruction())
 				&& (mode == EuclidianConstants.MODE_POINT
@@ -204,6 +214,10 @@ public final class GeoCeDGEuclidianController
 			super.wrapMouseDragged(event, startCapture);
 			return;
 		}
+		if (dimensionDrag != null) {
+			dragDimension(event);
+			return;
+		}
 		if (interactionDragPoint != null) {
 			try {
 				boolean moved = pointInteraction.move(interactionDragPoint,
@@ -248,12 +262,118 @@ public final class GeoCeDGEuclidianController
 		if (interactionChanged) {
 			app.storeUndoInfo();
 		}
+		dimensionDrag = null;
 		interactionGesture = false;
 		interactionChanged = false;
 		interactionDragPoint = null;
 		getView().setToolTipText(null);
 		getView().setCursor(EuclidianCursor.DEFAULT);
 		kernel.notifyRepaint();
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E2: a press in Move mode on the line, an extension line or the
+	 * value of a native dimension, with no point under the pointer, starts a gesture that
+	 * edits only the dimension's explicit offset. A dimension whose offset is not a free
+	 * number is not dragged; its measured points are never moved through it.
+	 */
+	private boolean startDimensionDrag(AbstractEvent event) {
+		setMouseLocation(event);
+		setViewHits(event.getType());
+		Hits hits = getView().getHits();
+		AlgoNativeDimension owner = null;
+		GeoElement target = null;
+		for (GeoElement hit : hits) {
+			if (hit.isGeoPoint()) {
+				return false;
+			}
+			AlgoNativeDimension hitOwner = AlgoNativeDimension.ownerOf(hit);
+			if (hitOwner != null && (owner == null || hitOwner == owner)) {
+				owner = hitOwner;
+				// the value text the user sees wins over a line under the same pointer
+				if (target == null || hit == owner.getPresentationText()) {
+					target = hit;
+				}
+			}
+		}
+		if (owner == null) {
+			return false;
+		}
+		interactionGesture = true;
+		app.getSelectionManager().clearSelectedGeos();
+		app.getSelectionManager().addSelectedGeo(target);
+		if (isDraggableOffset(owner)) {
+			dimensionDrag = owner;
+			getView().setCursor(EuclidianCursor.DRAG);
+		}
+		return true;
+	}
+
+	static boolean isDraggableOffset(AlgoNativeDimension owner) {
+		GeoElement offset = owner.getOffsetInput().toGeoElement();
+		return offset instanceof GeoNumeric && offset.isIndependent()
+				&& offset.isLabelSet() && !offset.isLocked();
+	}
+
+	private void dragDimension(AbstractEvent event) {
+		double value = dimensionDrag.offsetThrough(
+				getView().toRealWorldCoordX(event.getX()),
+				getView().toRealWorldCoordY(event.getY()));
+		if (Double.isFinite(value)) {
+			GeoNumeric offset = (GeoNumeric) dimensionDrag.getOffsetInput();
+			offset.setValue(value);
+			offset.updateCascade();
+			interactionChanged = true;
+			kernel.notifyRepaint();
+		}
+	}
+
+	@Override
+	protected void switchModeForMousePressed(AbstractEvent e) {
+		if (GeoCeDGDimensionTools.handles(mode) && selPoints() < 2) {
+			// Native dimension tools: the first two clicks select or create the points.
+			setViewHits(e.getType());
+			Hits hits = getView().getHits();
+			hits.removePolygons();
+			createNewPointForModeOther(hits);
+		}
+		super.switchModeForMousePressed(e);
+	}
+
+	/**
+	 * Native dimension tools (PRE-G9B-R6-plus-E2): point, point (and a line or vector
+	 * for the linear tool), then the placement click, whose model position becomes the
+	 * explicit offset at once.
+	 */
+	private GeoElementND[] createDimension(Hits hits, boolean selectionPreview) {
+		boolean linear = mode == EuclidianConstants.MODE_LINEAR_DIMENSION;
+		if (selPoints() < 2) {
+			addSelectedPoint(hits, 2, false, selectionPreview);
+			return null;
+		}
+		if (linear && selLines() + selVectors() == 0) {
+			if (addSelectedLine(hits, 1, false, selectionPreview) == 0) {
+				addSelectedVector(hits, 1, false, selectionPreview);
+			}
+			return null;
+		}
+		if (selectionPreview || mouseLoc == null) {
+			return null;
+		}
+		GeoPointND[] points = getSelectedPointsND();
+		GeoElement direction = null;
+		if (linear) {
+			direction = selLines() > 0 ? getSelectedLines()[0] : getSelectedVectors()[0];
+		}
+		GeoElement[] created = dimensionTools.create(mode, points[0], points[1], direction,
+				getView().toRealWorldCoordX(mouseLoc.x),
+				getView().toRealWorldCoordY(mouseLoc.y), getView());
+		clearSelections();
+		return created;
+	}
+
+	GeoCeDGDimensionTools getDimensionTools() {
+		return dimensionTools;
 	}
 
 	private double interactionRadius(AbstractEvent event) {
@@ -435,6 +555,7 @@ public final class GeoCeDGEuclidianController
 			}
 			interactionGesture = false;
 			interactionChanged = false;
+			dimensionDrag = null;
 			interactionDragPoint = null;
 			// Discard the remaining events from this press after a tool change.
 			// They must not drive either the old semantic point or the new tool.
@@ -491,6 +612,10 @@ public final class GeoCeDGEuclidianController
 			}
 			return endOfSwitchModeForProcessMode(image == null ? null
 					: new GeoElementND[] {image}, false, callback, selectionPreview);
+		}
+		if (GeoCeDGDimensionTools.handles(mode)) {
+			return endOfSwitchModeForProcessMode(createDimension(hits, selectionPreview),
+					false, callback, selectionPreview);
 		}
 		if (mode == EuclidianConstants.MODE_ORDERED_LIST) {
 			return endOfSwitchModeForProcessMode(

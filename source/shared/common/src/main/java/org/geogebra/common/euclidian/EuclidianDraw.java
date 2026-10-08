@@ -16,7 +16,9 @@
 
 package org.geogebra.common.euclidian;
 
+import org.geocedg.common.euclidian.draw.DrawDimensionText;
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.kernel.dimension.DimensionTextSource;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.euclidian.draw.DrawAudio;
@@ -330,7 +332,15 @@ public class EuclidianDraw {
 			break;
 		case TEXT:
 			GeoText text = (GeoText) geo;
-			d = new DrawText(ev, text);
+			if (text.getParentAlgorithm() instanceof DimensionTextSource
+					&& ((DimensionTextSource) text.getParentAlgorithm())
+							.isDimensionPresentationText(text)) {
+				// GeoCeDG PRE-G9B-R6-plus-E2: aligned value of a native dimension only
+				d = new DrawDimensionText(ev, text,
+						(DimensionTextSource) text.getParentAlgorithm());
+			} else {
+				d = new DrawText(ev, text);
+			}
 			break;
 
 		case IMAGE:

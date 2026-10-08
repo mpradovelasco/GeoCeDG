@@ -17,6 +17,8 @@ import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.junit.jupiter.api.Test;
 
 /** Executable public command coverage included by the inherited command SelfTest. */
@@ -66,6 +68,26 @@ public class GeoCeDGCommandsTest extends BaseUnitTest {
 		GeoLocusMetricResult metric = add("M=LocusLength(S)");
 		assertEquals(4, metric.getMetricResult().getMetricValue().getFiniteValue()
 				.orElseThrow(), 1E-10);
+	}
+
+	@Test
+	void cmdAlignedDimension() {
+		add("A=(0,0)");
+		add("B=(3,4)");
+		GeoElementND[] out = getElements("AlignedDimension(A,B,1)");
+		assertEquals(5, out.length);
+		assertEquals(Commands.AlignedDimension, out[0].getParentAlgorithm().getClassName());
+		assertEquals(5, ((GeoNumeric) out[0]).getDouble(), 1E-10);
+	}
+
+	@Test
+	void cmdLinearDimension() {
+		add("A=(0,0)");
+		add("B=(3,4)");
+		GeoElementND[] out = getElements("LinearDimension(A,B,xAxis,1)");
+		assertEquals(5, out.length);
+		assertEquals(Commands.LinearDimension, out[0].getParentAlgorithm().getClassName());
+		assertEquals(3, ((GeoNumeric) out[0]).getDouble(), 1E-10);
 	}
 
 	private GeoLocusV2 createLine() {

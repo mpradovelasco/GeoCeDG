@@ -1,0 +1,10 @@
+<!-- GeoCeDG-authored; SPDX-License-Identifier: EUPL-1.2 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <path d="M6 17.4V5.8M18 11.4V5.8" fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M8.4 7H15.6" fill="none" stroke="#111" stroke-width="1.4"/>
+  <path d="M6 7L8.7 5.8V8.2ZM18 7L15.3 5.8V8.2Z" fill="#111" stroke="#111" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M9.6 4H14.4" fill="none" stroke="#4b6fff" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M2.5 22.5H7.6" fill="none" stroke="#4b6fff" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M9.6 22.5L7.6 21.5V23.5Z" fill="#4b6fff"/>
+  <g fill="#fff" stroke="#111" stroke-width="1.2"><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="13" r="1.6"/></g>
+</svg>

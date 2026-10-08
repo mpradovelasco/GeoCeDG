@@ -466,6 +466,10 @@ public final class EuclidianConstants {
 	public static final int MODE_ORDERED_LIST = 140;
 	/** GeoCeDG one-shot choice of the session working layer (PRE-G9B-R6-plus-A-1). */
 	public static final int MODE_WORKING_LAYER = 141;
+	/** GeoCeDG native aligned dimension tool (PRE-G9B-R6-plus-E2). */
+	public static final int MODE_ALIGNED_DIMENSION = 142;
+	/** GeoCeDG native linear dimension tool (PRE-G9B-R6-plus-E2). */
+	public static final int MODE_LINEAR_DIMENSION = 143;
 
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
@@ -810,6 +814,12 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_WORKING_LAYER:
 			return "WorkingLayer.Tool";
+
+		case EuclidianConstants.MODE_ALIGNED_DIMENSION:
+			return "AlignedDimension.Tool";
+
+		case EuclidianConstants.MODE_LINEAR_DIMENSION:
+			return "LinearDimension.Tool";
 
 		case EuclidianConstants.MODE_AREA:
 			return "Area";

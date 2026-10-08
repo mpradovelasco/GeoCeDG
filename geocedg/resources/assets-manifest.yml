@@ -98,6 +98,30 @@
       "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
+      "id": "geocedg.aligned-dimension-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_aligneddimension.svg",
+      "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "native aligned dimension tool icon",
+      "canonical_lf_sha256": "237153d5508e0304a059437ffd5805b83a47c97e80f831d644c0527779bccb5e",
+      "provenance": "GeoCeDG-authored PRE-G9B-R6-plus-E2 vector source: two measured points, extension strokes with gaps, an offset dimension line with filled arrowheads and a value accent; no inherited icon pixels or paths",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "GeoCeDG-authored ordinary artwork under the CC-BY-4.0 class of the owned tool icons; PRE-G9B-R6-plus-E2 technical candidate pending author review"
+    },
+    {
+      "id": "geocedg.linear-dimension-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_lineardimension.svg",
+      "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "native linear dimension tool icon",
+      "canonical_lf_sha256": "dca5598c4c4aea6383160b1612de7cb3cd16d7d44b54b8f1d211a0718eccaf4e",
+      "provenance": "GeoCeDG-authored PRE-G9B-R6-plus-E2 vector source: two measured points, vertical extension strokes with gaps, a horizontal dimension line with filled arrowheads, a value accent and a direction arrow; no inherited icon pixels or paths",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "GeoCeDG-authored ordinary artwork under the CC-BY-4.0 class of the owned tool icons; PRE-G9B-R6-plus-E2 technical candidate pending author review"
+    },
+    {
       "id": "geocedg.semantic-point-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_semanticpoint.svg",
       "kind": "svg-tool-icon",

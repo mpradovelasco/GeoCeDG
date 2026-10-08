@@ -42,9 +42,10 @@ class PreG9BR6CapabilityMatrixTest {
 		Matrix matrix = PreG9BR6CapabilityMatrix.load();
 		Inventory inventory = inventory();
 
-		assertEquals(PreG9BR6CapabilityMatrix.setOf("Dilate", "ExportImage", "Intersect",
-				"Length", "LocusLength", "LocusV2", "Mirror", "Point", "Rotate", "SplineV2",
-				"Translate"), inventory.roles().keySet(), "derived inventory changed");
+		assertEquals(PreG9BR6CapabilityMatrix.setOf("AlignedDimension", "Dilate",
+				"ExportImage", "Intersect", "Length", "LinearDimension", "LocusLength", "LocusV2",
+				"Mirror", "Point", "Rotate", "SplineV2", "Translate"), inventory.roles().keySet(),
+				"derived inventory changed");
 		assertEquals(List.of(), PreG9BR6CapabilityMatrix.violations(inventory, matrix,
 				junitMethods()));
 	}
@@ -130,6 +131,26 @@ class PreG9BR6CapabilityMatrixTest {
 		executeRows(test, directory);
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-E2: the two forms of the native aligned dimension, executed in a
+	 * fresh JVM so that the complete Desktop suite retains none of its hosts.
+	 */
+	@Test
+	void alignedDimensionRows(TestInfo test, @TempDir Path directory) throws Exception {
+		PreG9BR6PlusE2NativeDimensionDesktopTest.isolated(directory,
+				PreG9BR6PlusE2NativeDimensionDesktopTest.MATRIX_ROWS + method(test));
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E2: the four forms of the native linear dimension, executed in a
+	 * fresh JVM so that the complete Desktop suite retains none of its hosts.
+	 */
+	@Test
+	void linearDimensionRows(TestInfo test, @TempDir Path directory) throws Exception {
+		PreG9BR6PlusE2NativeDimensionDesktopTest.isolated(directory,
+				PreG9BR6PlusE2NativeDimensionDesktopTest.MATRIX_ROWS + method(test));
+	}
+
 	@Test
 	void lookupProbesEnglish(TestInfo test, @TempDir Path directory) throws Exception {
 		executeProbes(test, directory, "en");
@@ -141,9 +162,20 @@ class PreG9BR6CapabilityMatrixTest {
 	}
 
 	private static void executeRows(TestInfo test, Path directory) throws Exception {
+		executeRows(method(test), directory);
+	}
+
+	/**
+	 * Executes every row that names the given method of this class.
+	 *
+	 * @param method JUnit method named by the rows
+	 * @param directory temporary document directory
+	 * @throws Exception on host failure
+	 */
+	static void executeRows(String method, Path directory) throws Exception {
 		Matrix matrix = PreG9BR6CapabilityMatrix.load();
-		List<Row> rows = PreG9BR6CapabilityMatrix.rowsOf(matrix.rows(), method(test));
-		assertFalse(rows.isEmpty(), method(test));
+		List<Row> rows = PreG9BR6CapabilityMatrix.rowsOf(matrix.rows(), method);
+		assertFalse(rows.isEmpty(), method);
 		List<String> failures = new ArrayList<>();
 		for (String locale : PreG9BR6CapabilityMatrix.LOCALES) {
 			try (Host host = new Host(locale, directory)) {

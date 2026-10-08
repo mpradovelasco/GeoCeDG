@@ -36,7 +36,11 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 	 * (PRE-G9B-R6-plus-A-1): it takes a property from a clicked object. No new
 	 * asset is introduced, so no asset-manifest entry changes.
 	 */
-	WORKING_LAYER("mode_copyvisualstyle");
+	WORKING_LAYER("mode_copyvisualstyle"),
+	/** GeoCeDG-owned artwork of the native aligned dimension tool (PRE-G9B-R6-plus-E2). */
+	ALIGNED_DIMENSION("mode_geocedg_aligneddimension"),
+	/** GeoCeDG-owned artwork of the native linear dimension tool (PRE-G9B-R6-plus-E2). */
+	LINEAR_DIMENSION("mode_geocedg_lineardimension");
 
 	private static final int RASTER_SIZE = 64;
 	private final String filename;
@@ -64,6 +68,10 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return ORDERED_LIST;
 		case "geocedg.action.WorkingLayer":
 			return WORKING_LAYER;
+		case "geocedg.action.AlignedDimension":
+			return ALIGNED_DIMENSION;
+		case "geocedg.action.LinearDimension":
+			return LINEAR_DIMENSION;
 		case "geocedg.action.LocusV2Point":
 			return SEMANTIC_POINT;
 		case "geocedg.action.LocusV2Create":
@@ -106,6 +114,10 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return ORDERED_LIST;
 		case "workinglayer":
 			return WORKING_LAYER;
+		case "aligneddimension":
+			return ALIGNED_DIMENSION;
+		case "lineardimension":
+			return LINEAR_DIMENSION;
 		default:
 			return null;
 		}

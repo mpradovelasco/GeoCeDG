@@ -151,6 +151,12 @@ public enum Commands implements CommandsConstants,
 
 	LocusLength(TABLE_GEOMETRY),
 
+	/** GeoCeDG native aligned dimension (PRE-G9B-R6-plus-E2). */
+	AlignedDimension(TABLE_GEOMETRY),
+
+	/** GeoCeDG native linear dimension (PRE-G9B-R6-plus-E2). */
+	LinearDimension(TABLE_GEOMETRY),
+
 	Centroid(TABLE_GEOMETRY),
 
 	TriangleCenter(TABLE_GEOMETRY),

@@ -448,7 +448,7 @@ Symbolic action IDs remain the manifest authority.
 | Relations and intersections | general Intersect, tangent, relation; rich-result inspector; separate exact-token point materialization | modes `5`, `13`, `14`; V2 actions after G9U0 | V2 actions require `cedg.locus.v2` |
 | Circles and conics | circle, arc, sector, ellipse, parabola, hyperbola and conic families | modes `10`, `11`, `12`, `55` and inherited commands | inherited stable; semantic curves are not placed here |
 | Semantic curves | create Locus V2 or Spline V2; create an explicit-address semantic point; inspect semantic branches/components/preimages | symbolic actions; legacy mode `47` and generic `Path` are not reused | G9U0/G9S1/R6 authority; experimental flag until promotion |
-| Metrics and validation | distance, angle, area, authoritative rich Locus length plus guarded standard scalar, semantic status/certificates | modes `38`, `36`, `49`; command/result actions | inherited plus G9U0 result inspectors/adapters |
+| Metrics and validation | distance, angle, area, native aligned and linear dimensions, authoritative rich Locus length plus guarded standard scalar, semantic status/certificates | modes `38`, `36`, `49`, `142`, `143`; command/result actions | inherited plus G9U0 result inspectors/adapters |
 | Transformations and manual projections | reflect in line, translate, rotate; ordinary manual auxiliary construction | modes `30`, `31`, `32` | inherited; no spatial claim |
 | CeDG procedures and developments | projection change, fold, true magnitude, section, development procedure | no productive target yet | disabled until approved G9 procedure phase |
 | Presentation and document | style/visibility via Properties, layers when available, Protocol controls, sheet setup | view/product actions | presentation only; no geometric visibility inference |
@@ -456,7 +456,7 @@ Symbolic action IDs remain the manifest authority.
 
 These eleven groups remain the professional Construction design; R1 is consumed
 through existing actions and does not change the 110 stable action IDs.
-Current live catalog (2026-10-03): 125 actions. The 110-action figure in this
+Current live catalog (2026-10-08): 127 actions. The 110-action figure in this
 section is the G9U1 baseline; POST-G9U1-A7 added two navigation actions,
 PRE-G9B-R4 three authoring tools, PRE-G9B-R6-plus-A-1 the one-shot
 `construction.working-layer` mode, placed in the Move group (`edit-selection`)
@@ -489,6 +489,11 @@ the semantic-curve tolerance and a non-modal export report; the DXF action
 reports units, hidden layers written off and the explicit export area. The DXF
 action's selection contract is `geocedg.dxf-exportable-geometry-population`
 (individually hidden objects and hidden-layer objects included).
+PRE-G9B-R6-plus-E2 added `measure.aligned-dimension` and
+`measure.linear-dimension` (modes `142` and `143`) to the construction-metrics
+group after Distance or Length and to the metrics-validation toolbar cluster;
+their values are model-unit measures and only their texts follow the document
+units (`geocedg/specs/dimensions/native-dimensions.md`).
 The main toolbar should expose groups, not one permanent button per action.
 Actions the author explicitly does not need as direct buttons—such as Delete,
 Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and

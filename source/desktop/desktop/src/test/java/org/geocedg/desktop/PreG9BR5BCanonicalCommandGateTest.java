@@ -64,10 +64,11 @@ class PreG9BR5BCanonicalCommandGateTest {
 			assertEquals(List.of(), gate.findings(), language.toString());
 			assertTrue(gate.getHeads().keySet().containsAll(gate.getDisplayed()),
 					language.toString());
-			// complete inventory: 564 stored names, 513 with E(k), 486 displayed (3D included)
-			assertEquals(564, Commands.values().length);
-			assertEquals(513, gate.getHeads().size(), language.toString());
-			assertEquals(486, gate.getDisplayed().size(), language.toString());
+			// complete inventory: 566 stored names, 515 with E(k), 488 displayed (3D included;
+			// PRE-G9B-R6-plus-E2 adds AlignedDimension and LinearDimension)
+			assertEquals(566, Commands.values().length);
+			assertEquals(515, gate.getHeads().size(), language.toString());
+			assertEquals(488, gate.getDisplayed().size(), language.toString());
 			for (String name : List.of("LocusV2", "LocusLength", "SplineV2", "Length",
 					"OrthogonalLine", "Mirror", "LaTeX", "Defined", "PolyLine")) {
 				assertTrue(gate.getDisplayed().contains(name), name);

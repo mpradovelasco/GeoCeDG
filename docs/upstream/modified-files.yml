@@ -84,13 +84,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
       "change": "added",
-      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: require the 116-action catalog with the working-layer mode. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: require the 124-action catalog with the export surface and the export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: require the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Load the maintainable profile manifest and compile its toolbar and perspective contracts. G9U1: Strictly compile live schema v2 and preserve explicit historical v1 fallback compatibility. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: validate and compile reduced primary toolbar placements and six ordinary menu sections while retaining 110 action IDs. G9U1 review round 3: distinguish the 11-family/18-cluster taxonomy from the sole profile-owned presentation projection and validate 28 presentation groups. Final presentation polish: compile 11 toolbar groups, permit two explicitly typed profile flyouts for mixed registered actions, and support a product-only presentation-name override without changing inherited command semantics. PRE-G9B-R4: require the 115-action catalog with the three authorized authoring tools. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: require the 116-action catalog with the working-layer mode. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: require the 124-action catalog with the export surface and the export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: require the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the 127-action catalog with the measure.aligned-dimension and measure.linear-dimension actions.",
       "authority": "apps/geocedg/application-profile.yml"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
       "change": "added",
-      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Round 3 verifies the product frame icon/startup resource bindings without upstream fallback. Final presentation polish verifies the deterministic 361x480 startup derivative binding and the nine native toolbar groups remaining after the two declared mixed-action flyouts. PRE-G9B-R4 corrective: the dedicated List tools group makes ten native toolbar groups. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-B: the 124-action catalog. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Verify profile identity/layout, the explicit experimental DXF action, and detection of native Locus V2 data at the GeoCeDG save boundary. G9U1: Retain historical test names while validating live v2 and explicit v1 migration. Round 3 verifies the product frame icon/startup resource bindings without upstream fallback. Final presentation polish verifies the deterministic 361x480 startup derivative binding and the nine native toolbar groups remaining after the two declared mixed-action flyouts. PRE-G9B-R4 corrective: the dedicated List tools group makes ten native toolbar groups. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-B: the 124-action catalog. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the 127-action catalog with the measure.aligned-dimension and measure.linear-dimension actions.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -168,7 +168,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java",
       "change": "modified",
-      "purpose": "Dispatch only LOCUS_V2 to its dedicated semantic drawable without changing the legacy LOCUS drawable path.",
+      "purpose": "Dispatch only LOCUS_V2 to its dedicated semantic drawable without changing the legacy LOCUS drawable path. PRE-G9B-R6-plus-E2: route the presentation text of a native dimension to DrawDimensionText; every other text keeps DrawText.",
       "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     },
     {
@@ -2598,19 +2598,19 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java",
       "change": "modified",
-      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus.",
+      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/BasicCommandProcessorFactory.java",
       "change": "modified",
-      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture.",
+      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
       "change": "modified",
-      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction.",
+      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2658,13 +2658,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
       "change": "modified",
-      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47. PRE-G9B-R4: allocate the SplineV2 authoring modes 137-139 and the ordered-list mode 140 with their mode-text keys. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: add MODE_WORKING_LAYER 141 and its WorkingLayer.Tool text key. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "Allocate GeoCeDG experimental Locus V2 creation, semantic-point and rich-metric modes without changing legacy Locus mode 47. PRE-G9B-R4: allocate the SplineV2 authoring modes 137-139 and the ordered-list mode 140 with their mode-text keys. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: add MODE_WORKING_LAYER 141 and its WorkingLayer.Tool text key. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-E2: MODE_ALIGNED_DIMENSION (142) and MODE_LINEAR_DIMENSION (143) with their tool texts.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
       "change": "added",
-      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: dispatch the one-shot working-layer mode 141. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: dispatch the one-shot working-layer mode 141. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-E2: Aligned Dimension and Linear Dimension tool modes (two points, a line or vector direction for Linear, a placement click that sets only the Offset) and the Move-mode drag of a dimension that edits only its independent Offset, stored through the existing undo path.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2682,37 +2682,37 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: CotaAlineada and CotaLineal aliases and Spanish syntax.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3570,7 +3570,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/commands/GeoCeDGCommandsTest.java",
       "change": "added",
-      "purpose": "Provide executable LocusV2, LocusLength and SplineV2 command cases discoverable by the inherited command-coverage inventory and the composed GeoCeDG test selection.",
+      "purpose": "Provide executable LocusV2, LocusLength and SplineV2 command cases discoverable by the inherited command-coverage inventory and the composed GeoCeDG test selection. PRE-G9B-R6-plus-E2: SelfTest coverage cmdAlignedDimension and cmdLinearDimension.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -3588,7 +3588,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
       "change": "added",
-      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying. PRE-G9B-R4: reuse the owned SplineV2 artwork for the SplineV2 tool variants and the inherited host list artwork for the ordered list tool. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: reuse the inherited host copy-visual-style artwork explicitly for the working-layer mode; no new asset. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md.",
+      "purpose": "Decode the existing registered owned Locus V2 SVG into a fresh loaded 64-pixel Toolkit image using the existing Desktop SVG decoder, without new assets or shared mutable raster state. G9U1 review round 1: map four newly registered owned semantic-point, spline, rich-result and materialization SVGs through the existing decoder; no upstream asset copying. PRE-G9B-R4: reuse the owned SplineV2 artwork for the SplineV2 tool variants and the inherited host list artwork for the ordered list tool. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: reuse the inherited host copy-visual-style artwork explicitly for the working-layer mode; no new asset. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-E2: the Aligned Dimension and Linear Dimension tool icons by icon key and mode.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -3852,7 +3852,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Round 3 verifies view-specific construction-navigation state and zero Construction/undo mutation. Final presentation polish verifies symmetric English/Spanish Locus V2 and Spline V2 labels while the inherited Classic label remains unchanged. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R6-plus-B: the 124-action catalog with the export surface. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Exercise G9U1ActionRegistry workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 author review: release unused global keyboard dispatcher references for embedded windowless fixtures; all behavioral assertions and native product keyboard registration remain unchanged. Round 3 verifies view-specific construction-navigation state and zero Construction/undo mutation. Final presentation polish verifies symmetric English/Spanish Locus V2 and Spline V2 labels while the inherited Classic label remains unchanged. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R6-plus-B: the 124-action catalog with the export surface. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the 127-action catalog with the measure.aligned-dimension and measure.linear-dimension actions.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3882,7 +3882,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1 asserted the unchanged 110-action taxonomy and reduced toolbar. Round 3 verifies 28 presentation groups and seven typed menu sections. Final presentation polish verifies 11 toolbar groups, 52 projected stable actions, 44 native modes, two mixed-action profile flyouts, exact catalog coverage and fail-closed rendering/duplicate/unknown/unreachable references. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R4 corrective: the List tools group is second in the toolbar order and Polygons no longer contains the list tool. PRE-G9B-R6-plus-B: the 124-action catalog with the export surface. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Exercise G9U1ProfileCompiler workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 1 asserted the unchanged 110-action taxonomy and reduced toolbar. Round 3 verifies 28 presentation groups and seven typed menu sections. Final presentation polish verifies 11 toolbar groups, 52 projected stable actions, 44 native modes, two mixed-action profile flyouts, exact catalog coverage and fail-closed rendering/duplicate/unknown/unreachable references. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-R4 corrective: the List tools group is second in the toolbar order and Polygons no longer contains the list tool. PRE-G9B-R6-plus-B: the 124-action catalog with the export surface. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the 127-action catalog, 49 native toolbar modes and 73 mode-carrying actions.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -3906,7 +3906,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
       "change": "added",
-      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state and one stable menu occurrence. Final presentation polish verifies the two registry-backed mixed flyouts, their exact shared action identity, 52-action toolbar projection and absence of a detached Spline V2 button. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-S4-R2 verifies the persistent adjunct has native toolbar membership without becoming a profile group or changing group order. PRE-G9B-R4 corrective: verifies the List tools group second in the toolbar and in the Construction menu. PRE-G9B-R6-plus-B: the 124-action catalog and the File export surface order. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Exercise G9U1WorkspaceSurface workspace consumption and lifecycle through real test-host assertions; no replacement numerical or identity authority. G9U1 review round 3 verifies flattened File/Edit separators, Construction semantic grouping, Text/Image placement, host View/Options state and one stable menu occurrence. Final presentation polish verifies the two registry-backed mixed flyouts, their exact shared action identity, 52-action toolbar projection and absence of a detached Spline V2 button. Review fixture isolation preserves preexisting Swing roots and native runtime behavior. PRE-G9B-S4-R2 verifies the persistent adjunct has native toolbar membership without becoming a profile group or changing group order. PRE-G9B-R4 corrective: verifies the List tools group second in the toolbar and in the Construction menu. PRE-G9B-R6-plus-B: the 124-action catalog and the File export surface order. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog with Document Units. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the 127-action menu projection, 59 toolbar actions and the construction-metrics group with the two dimension tools.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4920,7 +4920,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the outline with guide section 4.6 Document units (102 entries, 85 of level 3). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the outline with guide section 4.6 Document units (102 entries, 85 of level 3). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the guide outline with section 9.5, Engineering dimensions (103 entries).",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
     },
     {
@@ -5100,7 +5100,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalCommandGateTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-B T-GATE, T-INPUT, T-COLLISION: the complete-inventory gate with the French negative control, the English-bundle authority and lookups and reverse tables identical to P_DOTXML.",
+      "purpose": "PRE-G9B-R5-B T-GATE, T-INPUT, T-COLLISION: the complete-inventory gate with the French negative control, the English-bundle authority and lookups and reverse tables identical to P_DOTXML. PRE-G9B-R6-plus-E2: ADR 0031 complete-inventory pins 566/515/488 with AlignedDimension and LinearDimension.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -5130,7 +5130,7 @@
     {
       "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json",
       "change": "added",
-      "purpose": "PRE-G9B-R5-B test data: command-name surface fingerprints computed on the unchanged P_DOTXML tree by a scratch probe; not runtime authority.",
+      "purpose": "PRE-G9B-R5-B test data: command-name surface fingerprints computed on the unchanged P_DOTXML tree by a scratch probe; not runtime authority. PRE-G9B-R6-plus-E2: regenerated with the original R5-B probe; differs from the P_DOTXML fixture only by the additive AlignedDimension and LinearDimension entries: every regime-independent summary equals its P_DOTXML value once the E2 lines are removed, the P_DOTXML-regime Spanish blocks are retained and the Spanish E2 syntax lines come from the Classic alias-head regime.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -5178,7 +5178,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrixTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES. PRE-G9B-R6-plus-B: execute the ExportImage rows and pin the derived inventory with ExportImage. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
+      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES. PRE-G9B-R6-plus-B: execute the ExportImage rows and pin the derived inventory with ExportImage. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E2: the derived inventory with AlignedDimension and LinearDimension and their row methods, executed in a fresh JVM so that the complete Desktop suite retains none of their hosts.",
       "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
     },
     {
@@ -5232,7 +5232,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1LayerWorkspaceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-A-1 working layer on every interactive route, rebuild and lifecycle rules, paste, the one-shot mode, the profile delta, the status bar and the Algebra View groups. PRE-G9B-R6-plus-B: the 124-action catalog. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the configured domain in the chooser and paste, and the configured cap rule. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-A-1 working layer on every interactive route, rebuild and lifecycle rules, paste, the one-shot mode, the profile delta, the status bar and the Algebra View groups. PRE-G9B-R6-plus-B: the 124-action catalog. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the 125-action catalog. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the configured domain in the chooser and paste, and the configured cap rule. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-E2: the 127-action catalog with the measure.aligned-dimension and measure.linear-dimension actions.",
       "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
     },
     {
@@ -5370,7 +5370,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/units/DocumentUnitSystem.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-D1 per-construction owner of the immutable unit state with change listeners; refused for macro constructions.",
+      "purpose": "PRE-G9B-R6-plus-D1 per-construction owner of the immutable unit state with change listeners; refused for macro constructions. PRE-G9B-R6-plus-E2: keyed idempotent listener registration (addListenerOnce) for the native dimension presentation refresh; unit state, persistence and semantics are unchanged.",
       "authority": "docs/validation/pre_g9b_r6_plus_d1_candidate_report.md"
     },
     {
@@ -5664,19 +5664,19 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToAsymptote.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-C Asymptote exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments.",
+      "purpose": "PRE-G9B-R6-plus-C Asymptote exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments. PRE-G9B-R6-plus-E2: native dimension outputs only: the dimension line with both arrow endings and the value written parallel to it, centred on it and lifted to its reading-up side; every other segment and text keeps the host output.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPgf.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-C PGF/TikZ exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments.",
+      "purpose": "PRE-G9B-R6-plus-C PGF/TikZ exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments. PRE-G9B-R6-plus-E2: native dimension outputs only: the dimension line with both arrow endings and the value written parallel to it, centred on it and lifted to its reading-up side; every other segment and text keeps the host output.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPstricks.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-C PSTricks exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments.",
+      "purpose": "PRE-G9B-R6-plus-C PSTricks exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments. PRE-G9B-R6-plus-E2: native dimension outputs only: the dimension line with both arrow endings and the value written parallel to it, centred on it and lifted to its reading-up side; every other segment and text keeps the host output.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
     },
     {
@@ -5814,7 +5814,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LCuratedLibraryTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E1-L: golden reproducibility, exact selection, manifest and rights-record hashes, source equivalence, style policy, owned assets, icon subset and the no-packaging boundary.",
+      "purpose": "PRE-G9B-R6-plus-E1-L: golden reproducibility, exact selection, manifest and rights-record hashes, source equivalence, style policy, owned assets, icon subset and the no-packaging boundary. PRE-G9B-R6-plus-E2: the 127-action catalog with the measure.aligned-dimension and measure.linear-dimension actions.",
       "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
     },
     {
@@ -5840,6 +5840,102 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-E1-X1: real JVMs; the dispatched entry point is genuine Classic with isolated defaults; a real GeoCeDG parent starts separate Classic children (Templatev7 Laboratory without blocking, independent exits, unchanged parent, distinct preference files).",
       "authority": "docs/validation/pre_g9b_r6_plus_e1_x1_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoNativeDimension.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 shared base of the native dimension algorithms: five outputs (value, dimension line, two extension lines, text) of existing GeoElement types, geometry-only compute in model units and a presentation step outside compute.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoAlignedDimension.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 AlignedDimension(A, B, Offset[, Overshoot, Gap]): the distance |AB| measured along A to B.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoLinearDimension.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 LinearDimension(A, B, Direction, Offset[, Overshoot, Gap]): the absolute projection of AB on the getDirection of a line or vector.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionFigure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 pure dimension geometry: value, dimension line, extension lines, text frame and the degeneracy contract.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionPresentation.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 value text from the document presentation unit, the failure marker and the D1 listener refresh; never read by geometric compute.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionTextSource.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 drawing seam that exposes the dimension text frame to the view.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/package-info.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 native dimensions package documentation.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawDimensionText.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 view drawable of a dimension value: the delegate DrawText painted parallel to the dimension line at the readable angle, with rotated hit testing and bounds; Classic and every other text are unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdAlignedDimension.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 processor of the 3- and 5-argument AlignedDimension forms.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLinearDimension.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 processor of the 4- and 6-argument LinearDimension forms with a line or vector direction.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_aligneddimension.svg",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2: GeoCeDG-owned Aligned Dimension tool icon, independently authored and registered in the asset manifest; presentation only.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_lineardimension.svg",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2: GeoCeDG-owned Linear Dimension tool icon, independently authored and registered in the asset manifest; presentation only.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionTools.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 Desktop creation of native dimensions from tool clicks: hidden labelled Offset, Overshoot and Gap numbers, the processed command, the placement Offset and the invalid-placement notice; 2 mm / 1 mm on paper or 8 px / 4 px capture.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DimensionLatexExport.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 shared LaTeX placement and escaping of native dimension outputs for PSTricks, PGF and Asymptote.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/dimension/PreG9BR6PlusE2NativeDimensionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 kernel tests: contract, values, side, degeneracy, presentation units, refresh, persistence, undo and Classic.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE2NativeDimensionDesktopTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-E2 Desktop tests in child JVMs: profile, tools, drag, rendering sweep, hit testing, picture, LaTeX, DXF, persistence and legacy names; it also hosts the child-JVM execution of the E2 GGBScript matrix rows.",
+      "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
     }
   ]
 }

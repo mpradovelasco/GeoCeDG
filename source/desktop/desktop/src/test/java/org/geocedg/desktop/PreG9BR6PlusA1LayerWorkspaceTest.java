@@ -447,7 +447,7 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		assertEquals(List.of("construction.move", "construction.move-rotate", ACTION), toolbar);
 		assertEquals(List.of("construction.move", "construction.move-rotate", ACTION,
 				"construction.select", "construction.attach-detach"), actions);
-		assertEquals(125, GeoCeDGProfile.getActions().size());
+		assertEquals(127, GeoCeDGProfile.getActions().size());
 		String classicTools = ToolBar.getAllToolsNoMacros(false, false, false);
 		for (String token : classicTools.split("[ |,]+")) {
 			assertNotEquals("141", token, "the Classic toolbar never offers mode 141");

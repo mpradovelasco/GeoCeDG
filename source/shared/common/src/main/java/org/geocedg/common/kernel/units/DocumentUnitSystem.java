@@ -6,8 +6,10 @@
 package org.geocedg.common.kernel.units;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.geogebra.common.util.debug.Log;
 
@@ -22,6 +24,7 @@ import org.geogebra.common.util.debug.Log;
 public final class DocumentUnitSystem {
 	private final boolean macroConstruction;
 	private final List<Runnable> listeners = new ArrayList<>();
+	private final Set<String> keyedListeners = new HashSet<>();
 	private UnitState state = UnitState.EMPTY;
 
 	/**
@@ -52,6 +55,19 @@ public final class DocumentUnitSystem {
 	 */
 	public void addListener(Runnable listener) {
 		listeners.add(Objects.requireNonNull(listener));
+	}
+
+	/**
+	 * Registers a presentation listener at most once per key, for consumers that serve a
+	 * whole construction (PRE-G9B-R6-plus-E2 native dimension texts).
+	 *
+	 * @param key stable consumer key
+	 * @param listener presentation listener, called after every change
+	 */
+	public void addListenerOnce(String key, Runnable listener) {
+		if (keyedListeners.add(Objects.requireNonNull(key))) {
+			addListener(listener);
+		}
 	}
 
 	/**

@@ -194,7 +194,7 @@ appears once.
 | Relations and intersections | Intersect, Tangents, Relation, Polar/diameter line, Inspect rich result, and the three materialization actions |
 | Circles and conics | Circle (two points, three points, centre+radius), Arc, Conic through five points, Ellipse, Parabola, Hyperbola, Compass, Semicircle, Circumcircular arc, Sector, Circumcircular sector |
 | Semantic curves | Locus V2, Point on semantic curve, Spline V2, Inspect semantic curve definition… |
-| Metrics and validation | Angle, Distance or length, Locus V2 total length, Locus V2 partial length, Area, Slope |
+| Metrics and validation | Angle, Distance or length, Aligned dimension, Linear dimension, Locus V2 total length, Locus V2 partial length, Area, Slope |
 | Similarity transformations | Reflect about point, Reflect about line, Translate by vector, Rotate by angle, Dilate from point |
 | Annotations and media | Image |
 | Manual projection procedures | CeDG dihedral procedures (not authorized) |
@@ -1157,6 +1157,65 @@ coordinates. In practice:
 A self-intersection `Intersect(S,S)` produces no materializable point, so it
 cannot supply an endpoint.
 
+### 9.5 Engineering dimensions
+
+```text
+AlignedDimension( <Point>, <Point>, <Offset> [, <Overshoot>, <Gap>] )
+LinearDimension( <Point>, <Point>, <Line or Vector>, <Offset> [, <Overshoot>, <Gap>] )
+```
+
+An **aligned dimension** measures the true distance between two points; a
+**linear dimension** measures it along a direction given by a line, segment,
+ray, axis or vector. Both draw an engineering dimension: a dimension line with
+an arrow at each end, an extension line at each point and the value written
+along the dimension line.
+
+- The value is the first output, an ordinary number in model units:
+  `d=AlignedDimension(A,B,1)` names the value `d`. It never depends on the
+  document units, the drawing scale, the zoom or the screen.
+- The text shows the value in the presentation unit (section 4.6): with
+  construction unit `cm` and presentation unit `mm`, a length of `12` reads
+  `120 mm`. Changing the units changes only the text. Without physical units the
+  text is the bare number; a value that cannot be converted reads `?` followed by
+  the unit.
+- `Offset` is the signed distance from the measured points to the dimension
+  line: positive on the left of `A → B` (aligned) or of the direction (linear),
+  negative on the right. `Overshoot` extends the extension lines beyond the
+  dimension line and `Gap` leaves a space at the points; both are `0` when
+  omitted. Moving the points never flips the dimension to the other side.
+- The value reads parallel to the dimension line and is never upside down. When
+  the line passes through the vertical, the reading direction turns by 180° and
+  the value moves to the other side of the line; that is presentation only.
+  When the value is longer than the dimension line, it is lifted beyond the ends
+  of the extension lines so that no line crosses it.
+
+**Tools.** Construction → Metrics and validation → **Aligned dimension**: click
+two points, then click where the dimension line should go. **Linear
+dimension**: two points, a line or vector, then the placement click. The tools
+create hidden numbers for the offset, the overshoot and the gap; the overshoot
+and the gap are 2 mm and 1 mm on paper when the document has a physical unit and
+a drawing scale, otherwise a few pixels of the current view, fixed when the
+dimension is created. One undo step per dimension.
+
+**Moving the dimension line.** With Move, drag the dimension line, an extension
+line or the value: only the offset changes and the measured points never move.
+One undo step on release.
+
+**Export.** Pictures (PNG, PDF, SVG, EMF and print) show the complete dimension.
+PSTricks, PGF/TikZ and Asymptote write the arrows and the rotated, centred value.
+DXF writes only the dimension line and the two extension lines as `LINE`
+entities: the value is not exported and the export reports it; there is no DXF
+`DIMENSION` entity.
+
+**Older versions.** A GeoCeDG version without these commands, Classic and the
+pinned upstream baseline report a load error for each dimension. The other
+objects load; the dimension value is kept as a fixed number, its lines and text
+are undefined, and objects built on them become undefined. Saving from such a
+version drops the dimensions.
+
+`Dimension( <Object> )` is a different, inherited command: the size of a list,
+matrix, point or vector.
+
 ---
 
 <!-- geocedg-guide-section: transformations -->
@@ -1701,6 +1760,8 @@ These are the limitations that affect what you can do in the application today.
 | Total length | Construction → Metrics and validation | `Length(S)` | number | scalar adapter over the rich metric result |
 | Partial length | Construction → Metrics and validation | `Length(S,P,Q)` | number | both endpoints need admissible semantic provenance |
 | Rich metric evidence | Construction → Metrics and validation | `LocusLength(S)` / `LocusLength(S,P,Q)` | rich result | status, coverage, error estimate, diagnostics |
+| Aligned dimension | Construction → Metrics and validation → Aligned dimension | `AlignedDimension(A,B,1)` | number, lines and text | the value is in model units; the text follows the document units |
+| Linear dimension | Construction → Metrics and validation → Linear dimension | `LinearDimension(A,B,g,1)` | number, lines and text | measured along a line or vector; the offset side is fixed by `A → B` or the direction |
 | Intersect semantic curve and object | Construction → Relations and intersections → Intersect | `Intersect(S,c)` | rich intersection result | not a list of points |
 | Intersect two semantic curves | same | `Intersect(S,T)` | rich intersection result | several roots may each be admissible |
 | Materialize solutions | Inspect rich result → Create one / Create selected / Create all eligible | `Intersect(R,"<token>")` | point | recompute never creates points; do not transcribe tokens |
@@ -1737,6 +1798,13 @@ LocusLength( <Locus V2> )
 LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
 LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point>,
              <Direction>, <Boundary Policy>, <Same-position Policy> )
+
+AlignedDimension( <Point>, <Point>, <Offset> )
+AlignedDimension( <Point>, <Point>, <Offset>, <Overshoot>, <Gap> )
+LinearDimension( <Point>, <Point>, <Line>, <Offset> )
+LinearDimension( <Point>, <Point>, <Vector>, <Offset> )
+LinearDimension( <Point>, <Point>, <Line>, <Offset>, <Overshoot>, <Gap> )
+LinearDimension( <Point>, <Point>, <Vector>, <Offset>, <Overshoot>, <Gap> )
 
 Intersect( <Locus V2>, <Supported Object> )
 Intersect( <Locus V2>, <Locus V2> )

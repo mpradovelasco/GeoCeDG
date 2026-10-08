@@ -1582,6 +1582,44 @@
       "implementation_state": "existing"
     },
     {
+      "id": "measure.aligned-dimension",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ALIGNED_DIMENSION",
+        "audited_numeric_id": 142
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.aligned-dimension-two-points-placement",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.AlignedDimension",
+      "icon_ref": "geocedg.action.AlignedDimension",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-E2: point, point and a placement click issue AlignedDimension with the explicit offset of the click and the overshoot and gap captured once; the value is the model-unit distance and only its aligned text follows the units."
+    },
+    {
+      "id": "measure.linear-dimension",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LINEAR_DIMENSION",
+        "audited_numeric_id": 143
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.linear-dimension-two-points-direction-placement",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.LinearDimension",
+      "icon_ref": "geocedg.action.LinearDimension",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-E2: point, point, a line or vector and a placement click issue LinearDimension with the explicit offset of the click and the overshoot and gap captured once; the value is the model-unit projection on the direction."
+    },
+    {
       "id": "measure.area",
       "kind": "upstream-mode",
       "target": {
@@ -2855,6 +2893,8 @@
       "toolbar_action_ids": [
         "measure.angle",
         "measure.distance-length",
+        "measure.aligned-dimension",
+        "measure.linear-dimension",
         "measure.locus-v2-total-length",
         "measure.locus-v2-partial-length"
       ],
@@ -3475,8 +3515,8 @@
     {
       "id": "construction-metrics",
       "name_key": "Group.Construction.Metrics",
-      "action_ids": ["measure.angle", "measure.distance-length", "measure.locus-v2-total-length", "measure.locus-v2-partial-length", "measure.area", "measure.slope"],
-      "toolbar_action_ids": ["measure.angle", "measure.distance-length", "measure.locus-v2-total-length", "measure.locus-v2-partial-length"]
+      "action_ids": ["measure.angle", "measure.distance-length", "measure.aligned-dimension", "measure.linear-dimension", "measure.locus-v2-total-length", "measure.locus-v2-partial-length", "measure.area", "measure.slope"],
+      "toolbar_action_ids": ["measure.angle", "measure.distance-length", "measure.aligned-dimension", "measure.linear-dimension", "measure.locus-v2-total-length", "measure.locus-v2-partial-length"]
     },
     {
       "id": "construction-transforms",

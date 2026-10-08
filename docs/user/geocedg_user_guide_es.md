@@ -201,7 +201,7 @@ grupos aparece una sola vez.
 | Relaciones e intersecciones | Intersección, Tangentes, Relación, Polar o diámetro, Inspeccionar resultado rico y las tres acciones de materialización |
 | Círculos y cónicas | Circunferencia (dos puntos, tres puntos, centro y radio), Arco, Cónica por cinco puntos, Elipse, Parábola, Hipérbola, Compás, Semicircunferencia, Arco de circunferencia circunscrita, Sector, Sector circunscrito |
 | Curvas semánticas | Locus V2, Punto sobre curva semántica, Spline V2, Inspeccionar definición de curva semántica… |
-| Métricas y validación | Ángulo, Distancia o longitud, Longitud total de Locus V2, Longitud parcial de Locus V2, Área, Pendiente |
+| Métricas y validación | Ángulo, Distancia o longitud, Cota alineada, Cota lineal, Longitud total de Locus V2, Longitud parcial de Locus V2, Área, Pendiente |
 | Transformaciones de semejanza | Reflejar respecto a un punto, Reflejar respecto a una recta, Trasladar por vector, Rotar un ángulo, Homotecia desde un punto |
 | Anotaciones y medios | Imagen |
 | Procedimientos de proyección manual | Procedimientos diédricos CeDG (no autorizados) |
@@ -1206,6 +1206,68 @@ sus coordenadas. En la práctica:
 Una autointersección `Intersect(S,S)` no produce puntos materializables, por lo
 que no puede aportar un extremo.
 
+### 9.5 Cotas
+
+```text
+AlignedDimension( <Point>, <Point>, <Offset> [, <Overshoot>, <Gap>] )
+LinearDimension( <Point>, <Point>, <Line or Vector>, <Offset> [, <Overshoot>, <Gap>] )
+```
+
+Una **cota alineada** mide la distancia verdadera entre dos puntos; una **cota
+lineal** la mide según una dirección dada por una recta, un segmento, una
+semirrecta, un eje o un vector. Ambas dibujan una cota de ingeniería: una línea
+de cota con una flecha en cada extremo, una línea de referencia en cada punto y
+el valor escrito a lo largo de la línea de cota. En español también se escriben
+`CotaAlineada` y `CotaLineal`.
+
+- El valor es la primera salida, un número ordinario en unidades del modelo:
+  `d=AlignedDimension(A,B,1)` da al valor el nombre `d`. Nunca depende de las
+  unidades del documento, de la escala de dibujo, del zoom ni de la pantalla.
+- El texto muestra el valor en la unidad de presentación (sección 4.6): con
+  unidad de construcción `cm` y unidad de presentación `mm`, una longitud de `12`
+  se lee `120 mm`. Cambiar las unidades cambia solo el texto. Sin unidades
+  físicas el texto es el número sin unidad; un valor que no puede convertirse se
+  lee `?` seguido de la unidad.
+- `Offset` (desplazamiento) es la distancia con signo de los puntos medidos a la
+  línea de cota: positiva a la izquierda de `A → B` (alineada) o de la dirección
+  (lineal), negativa a la derecha. `Overshoot` (prolongación) alarga las líneas
+  de referencia más allá de la línea de cota y `Gap` (separación) deja un hueco
+  junto a los puntos; ambas valen `0` si se omiten. Mover los puntos nunca hace
+  saltar la cota al otro lado.
+- El valor se lee paralelo a la línea de cota y nunca aparece invertido. Cuando
+  la línea pasa por la vertical, el sentido de lectura gira 180° y el valor pasa
+  al otro lado de la línea; es solo presentación. Cuando el valor es más largo que
+  la línea de cota, se eleva más allá de los extremos de las líneas de referencia
+  para que ninguna línea lo cruce.
+
+**Herramientas.** Construcción → Métricas y validación → **Cota alineada**: haga
+clic en dos puntos y después donde debe ir la línea de cota. **Cota lineal**: dos
+puntos, una recta o un vector y después el clic de colocación. Las herramientas
+crean números ocultos para el desplazamiento, la prolongación y la separación;
+la prolongación y la separación son 2 mm y 1 mm sobre el papel cuando el
+documento tiene una unidad física y una escala de dibujo, y si no unos pocos
+píxeles de la vista actual, fijados al crear la cota. Un paso de deshacer por
+cota.
+
+**Mover la línea de cota.** Con Mover, arrastre la línea de cota, una línea de
+referencia o el valor: solo cambia el desplazamiento y los puntos medidos nunca
+se mueven. Un paso de deshacer al soltar.
+
+**Exportación.** Las imágenes (PNG, PDF, SVG, EMF e impresión) muestran la cota
+completa. PSTricks, PGF/TikZ y Asymptote escriben las flechas y el valor girado
+y centrado. DXF escribe solo la línea de cota y las dos líneas de referencia
+como entidades `LINE`: el valor no se exporta y la exportación lo informa; no
+hay entidad DXF `DIMENSION`.
+
+**Versiones anteriores.** Una versión de GeoCeDG sin estos comandos, Classic y
+la versión base upstream fijada informan de un error de carga por cada cota. Los
+demás objetos se cargan; el valor de la cota se conserva como un número fijo, sus
+líneas y su texto quedan indefinidos, y los objetos construidos sobre ellos
+quedan indefinidos. Guardar desde esa versión elimina las cotas.
+
+`Dimension( <Objeto> )` es un comando heredado distinto: el tamaño de una lista,
+una matriz, un punto o un vector.
+
 ---
 
 <!-- geocedg-guide-section: transformations -->
@@ -1774,6 +1836,8 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Longitud total | Construcción → Métricas y validación | `Length(S)` | número | adaptador escalar sobre el resultado métrico rico |
 | Longitud parcial | Construcción → Métricas y validación | `Length(S,P,Q)` | número | ambos extremos necesitan proveniencia semántica admisible |
 | Evidencia métrica rica | Construcción → Métricas y validación | `LocusLength(S)` / `LocusLength(S,P,Q)` | resultado rico | estado, cobertura, estimación de error, diagnósticos |
+| Cota alineada | Construcción → Métricas y validación → Cota alineada | `AlignedDimension(A,B,1)` | número, líneas y texto | el valor está en unidades del modelo; el texto sigue las unidades del documento |
+| Cota lineal | Construcción → Métricas y validación → Cota lineal | `LinearDimension(A,B,g,1)` | número, líneas y texto | medida según una recta o un vector; el lado del desplazamiento lo fija `A → B` o la dirección |
 | Intersecar curva semántica y objeto | Construcción → Relaciones e intersecciones → Intersección | `Intersect(S,c)` | resultado rico de intersección | no es una lista de puntos |
 | Intersecar dos curvas semánticas | ídem | `Intersect(S,T)` | resultado rico de intersección | varias raíces pueden ser admisibles cada una |
 | Materializar soluciones | Inspeccionar resultado rico → Crear uno / Crear seleccionados / Crear todos los admisibles | `Intersect(R,"<token>")` | punto | recalcular nunca crea puntos; no transcriba tokens |
@@ -1810,6 +1874,13 @@ LocusLength( <Locus V2> )
 LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
 LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point>,
              <Direction>, <Boundary Policy>, <Same-position Policy> )
+
+AlignedDimension( <Point>, <Point>, <Offset> )
+AlignedDimension( <Point>, <Point>, <Offset>, <Overshoot>, <Gap> )
+LinearDimension( <Point>, <Point>, <Line>, <Offset> )
+LinearDimension( <Point>, <Point>, <Vector>, <Offset> )
+LinearDimension( <Point>, <Point>, <Line>, <Offset>, <Overshoot>, <Gap> )
+LinearDimension( <Point>, <Point>, <Vector>, <Offset>, <Overshoot>, <Gap> )
 
 Intersect( <Locus V2>, <Supported Object> )
 Intersect( <Locus V2>, <Locus V2> )
