@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "artifactKind": "AUTHOR_DECISION_RECORD",
+  "record": "docs/validation/post_e2_planning_author_decision_record.md",
+  "authorInstruction": {"date": "2026-10-08", "title": "POST-E2 — Author Approval of Planning and Authorization of P1 Characterization"},
+  "planningState": "PLANNING PASS — AUTHOR APPROVED",
+  "planningDocument": "docs/architecture/post_e2_planning_proposal.md",
+  "planningCommits": {"initial": "5c4a1879f78bba7aaca8f4dbbb52b4d49ca9aad5", "published": "694354e86971e2a6335d249dd92aca1039becf5e", "publishedTree": "b6e0dee747611fa89367f0e6af92130c197f3417"},
+  "e2Baseline": {"closeout": "86fdc9086d68f21ea67f360ff104679dace74223", "candidate": "3a7246614a6ef040d84a1440c4c10b3f93be5776", "candidateTree": "00b5230d19debea5598299906f846f52b4d6e9d7"},
+  "workstreams": ["P1", "P2", "P3", "P4"],
+  "order": ["P1", "P2", "P3", "P4"],
+  "hypothesesAreFindings": false,
+  "designOptionsAreNormative": false,
+  "p1Amendment": ["Experiment A identical numerical geometry", "Experiment B physically equivalent geometry", "normalized viewport for screen comparison", "1:1 and 1:10 drawing scales", "three zoom levels"],
+  "p1Characterization": {"authorized": true, "phase": "POST-E2-P1", "verificationClass": "BOUNDED_PHASE", "acceptance": "PHASE", "publication": false},
+  "p1Implementation": false,
+  "p2p4Execution": false,
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "notAuthorized": ["P1 implementation", "P2", "P3", "P4", "E3", "F1", "F2", "F3", "G", "tag", "release", "binary publication"]
+}

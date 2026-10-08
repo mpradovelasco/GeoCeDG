@@ -5,8 +5,14 @@ ARTIFACT_KIND            = PLANNING PROPOSAL (documentary; no product change)
 BASE                     = P_R6PLUS_E2 86fdc9086d68f21ea67f360ff104679dace74223
                            (E2 PASS — AUTHOR APPROVED — PUBLISHED, 2026-10-08)
 SOURCE                   = E2 closeout record, accepted observations OBS-E2-1 to OBS-E2-4
-STATE                    = PUBLISHED — PENDING AUTHOR REVIEW (publication of this
-                           planning document only; designs not approved)
+STATE                    = PLANNING PASS — AUTHOR APPROVED (2026-10-08; scope,
+                           workstream separation, order and characterization-first
+                           method; hypotheses stay hypotheses and design options
+                           stay candidates; author decision record
+                           docs/validation/post_e2_planning_author_decision_record.md)
+                           earlier: PUBLISHED — PENDING AUTHOR REVIEW (694354e8)
+P1 CHARACTERIZATION      = AUTHORIZED (P1 implementation NOT AUTHORIZED)
+P2–P4 EXECUTION          = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false
 PRIORITY                 = P1 → P2 → P3 → P4 (P1 and P2 first)
@@ -73,6 +79,21 @@ Dimension tool at three zoom levels. Record the captured `Overshoot`/`Gap`
 values, on-screen pixels, and exported PDF and TikZ sizes. Compare the published
 `E2` base with the original `E2` candidate (`878ff66b`) to exclude a regression
 from the follow-up revision.
+
+**Approved amendment (author decision 2026-10-08): two experiment families.**
+
+- *Experiment A — identical numerical geometry.* `A=(0,0)`, `B=(40,0)` under
+  `mm`, `cm`, `m` (and unspecified): measures the effect of changing the
+  physical interpretation of fixed numerical geometry (40 mm, 40 cm, 40 m).
+- *Experiment B — physically equivalent geometry.* 40 mm represented as
+  `B=(40,0)` in `mm`, `B=(4,0)` in `cm` and `B=(0.04,0)` in `m`: establishes
+  whether the paper-space sizes of `Gap` and `Overshoot` stay equivalent under
+  unit changes. Screen appearance is compared under a viewport normalized so that
+  physically equivalent objects are displayed at comparable screen sizes; raw
+  pixels per model unit are never compared as if they were identical physical
+  viewing conditions.
+
+Both families keep the `1:1` and `1:10` drawing scales and three zoom levels.
 
 **Acceptance criteria for the characterization.** A table of captured values
 versus the formula for every unit/scale/zoom case; exported paper sizes within
