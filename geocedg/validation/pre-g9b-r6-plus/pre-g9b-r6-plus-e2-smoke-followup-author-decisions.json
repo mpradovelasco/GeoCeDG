@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E2",
+  "registeredPhaseId": "PRE-G9B-R6-PLUS-E2",
+  "artifactKind": "AUTHOR_DECISIONS_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_author_decisions_record.md",
+  "authorInstruction": {"date": "2026-10-08", "title": "PRE-G9B-R6-plus-E2 — Author Smoke Follow-up: Legacy Document Macros and Dimension Presentation"},
+  "implementationBranch": "phase/pre-g9b-r6-plus-e2-smoke-followup",
+  "originalCandidate": {
+    "name": "T_R6PLUS_E2",
+    "commit": "878ff66b8839aeee44dfe1e557ac37b7c349f74b",
+    "tree": "e096b857e1ce7e1e959c0c637f3e8b3b87cd82fe",
+    "phase": "verification-47c1a96df96440e59db84dd5098f1b66",
+    "integration": "verification-e1d28044ba814ed8ab216b676e1cbe06",
+    "preserved": true
+  },
+  "authorSmoke": "PASS WITH OBSERVATIONS — ORIGINAL E2",
+  "partA": {
+    "observation": "OBS-R6PLUS-E2-SMOKE-LEGACY-DOCUMENT-MACROS",
+    "classification": "A-INTENTIONAL-PROFILE-BEHAVIOR",
+    "separateObservation": "OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX",
+    "authorized": "user-guide discrepancy correction only",
+    "notAuthorized": ["macro registration change", "command resolution change", "toolbar policy change", "kernel change", "interactive exposure of document macros"]
+  },
+  "partB1": {
+    "authorized": true,
+    "defaultLineThickness": 2,
+    "preference": "application preferences store; new dimensions only",
+    "segmentStyle": "serialized per segment"
+  },
+  "partB2": {
+    "authorized": "bounded versioned Boolean extension of geocedgUnits",
+    "newDocumentDefault": "suffix hidden",
+    "documentsWithoutPolicy": "suffix shown (historical)",
+    "applicationPreference": "initial policy of new documents only",
+    "notAuthorized": ["new GeoElement", "new XML element family", "dimension command signature change", "global GeoText change", "geometric-unit dependency"]
+  },
+  "agentInterpretation": "B1 typed commands also start at thickness 2 (algorithm default); tools apply the preference",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "notAuthorized": ["push", "merge", "publication", "tag", "release", "E3", "F1", "F2", "F3", "G", "ADR 0034 ACCEPTED", "E2 PASS — AUTHOR APPROVED"],
+  "requiredFinalState": "REVISED TECHNICAL CANDIDATE PENDING AUTHOR REVIEW"
+}
