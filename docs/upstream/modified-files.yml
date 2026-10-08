@@ -5966,6 +5966,12 @@
       "change": "added",
       "purpose": "POST-E2-P1 focal characterization of the native dimension Gap/Overshoot capture through the real tool route: analytical formula for every unit and drawing scale, the same numerical geometry and physically equivalent geometry under normalized viewports, captured-once persistence, and PDF/PGF paper measurements with their resolution; no product change.",
       "authority": "docs/validation/post_e2_p1_characterization_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1R1PdfStrokeWidthCharacterizationTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P1-R1 characterization of the physical PDF stroke width: an interpreter of the produced PDF graphics state (q/Q, cm, w, J, j, paths, strokes, fills) measures segments, lines, circles, dimension segments, arrowheads and point markers across thickness, zoom, unit, drawing scale, export-area mode and the upstream Classic route, with the PGF control; no product change.",
+      "authority": "docs/validation/post_e2_p1_r1_characterization_report.md"
     }
   ]
 }

@@ -1,0 +1,242 @@
+[
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 13,
+    "inkMm": 0.5503,
+    "pdfInterpretedMm": 0.5,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 11,
+    "inkMm": 0.4657,
+    "pdfInterpretedMm": 0.5,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 25,
+    "inkMm": 0.5292,
+    "pdfInterpretedMm": 0.5,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 24,
+    "inkMm": 0.508,
+    "pdfInterpretedMm": 0.5,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 4,
+    "inkMm": 0.1693,
+    "pdfInterpretedMm": 0.125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 3,
+    "inkMm": 0.127,
+    "pdfInterpretedMm": 0.125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 7,
+    "inkMm": 0.1482,
+    "pdfInterpretedMm": 0.125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 6,
+    "inkMm": 0.127,
+    "pdfInterpretedMm": 0.125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 1,
+    "inkMm": 0.0423,
+    "pdfInterpretedMm": 0.03125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 1,
+    "inkMm": 0.0423,
+    "pdfInterpretedMm": 0.03125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 3,
+    "inkMm": 0.0635,
+    "pdfInterpretedMm": 0.03125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 2,
+    "inkMm": 0.0423,
+    "pdfInterpretedMm": 0.03125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 30,
+    "inkMm": 1.27,
+    "pdfInterpretedMm": 1.25,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 29,
+    "inkMm": 1.2277,
+    "pdfInterpretedMm": 1.25,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 60,
+    "inkMm": 1.27,
+    "pdfInterpretedMm": 1.25,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 59,
+    "inkMm": 1.2488,
+    "pdfInterpretedMm": 1.25,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 8,
+    "inkMm": 0.3387,
+    "pdfInterpretedMm": 0.3125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 7,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.3125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 15,
+    "inkMm": 0.3175,
+    "pdfInterpretedMm": 0.3125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 14,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.3125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 3,
+    "inkMm": 0.127,
+    "pdfInterpretedMm": 0.078125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 1,
+    "inkMm": 0.0423,
+    "pdfInterpretedMm": 0.078125,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 5,
+    "inkMm": 0.1058,
+    "pdfInterpretedMm": 0.078125,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 4,
+    "inkMm": 0.0847,
+    "pdfInterpretedMm": 0.078125,
+    "pixelMm": 0.0212
+  }
+]

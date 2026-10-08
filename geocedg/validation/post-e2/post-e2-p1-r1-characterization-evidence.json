@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1-R1",
+  "registeredPhaseId": "POST-E2-P1-R1",
+  "artifactKind": "CHARACTERIZATION_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p1_r1_characterization_report.md",
+  "measurements": "geocedg/validation/post-e2/post-e2-p1-r1-measurements.json",
+  "rasterCrossCheck": "geocedg/validation/post-e2/post-e2-p1-r1-raster-crosscheck.json",
+  "technicalCandidateState": "CHARACTERIZATION CANDIDATE, FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_p1_closeout_record.md",
+  "baseline": {"commit": "64d25ba88703372c7c83e1c2fbdd59cbdc4d9aaa", "tree": "50f0f7ccb84b441d7c7584454459f0f01d7c4b02"},
+  "observation": "OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM",
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P1-R1 -LogDirectory artifacts\\agent\\<fresh-name>",
+  "productChange": false,
+  "implementationAuthorized": false,
+  "selfApproved": false,
+  "passClaimed": false,
+  "classification": "REAL PDF STROKE-WIDTH VARIATION",
+  "policy": "inherited upstream screen-relative style sizes; not governed by the GeoCeDG physical-output contract (contract gap)",
+  "law": "width_mm = (lineThickness / 2) * printingScale_cm * 10 / xscale",
+  "rootCause": {
+    "presentation": "Drawable.updateStrokes: stroke width = lineThickness / 2 view pixels",
+    "exportAdapter": "PictureExportService.pdfPointsPerPixel = printingScale * 72 / (2.54 * xscale); ExportViewport.printingScaleOf = physical export scale for physical documents (C4)",
+    "upstream": "GraphicExportDialog.exportPDF upstream body: exportPaint(g, printingScale / (xscale * 2.54 / 72)) with FreeHEP default margins and fit-to-page"
+  },
+  "primaryMatrix": {
+    "unit": "mm", "drawingScale": "1:1", "exportArea": "explicit 60 x 30 mm",
+    "widthsMm": {"t1": [0.25, 0.0625, 0.015625], "t2": [0.5, 0.125, 0.03125], "t3": [0.75, 0.1875, 0.046875], "t5": [1.25, 0.3125, 0.078125]},
+    "xscale": [2, 8, 32],
+    "objects": ["segment", "line", "circle", "extension A", "extension B", "dimension line body (filled)"],
+    "geometryAndPageUnchanged": true
+  },
+  "decorations": {"arrowheadsFollowRule": true, "pointMarkersFollowRule": true, "textFollowsRule": false, "dimensionTextEqualsPlainText": true},
+  "units": {"actOnlyThrough": "physical mm per view pixel", "normalizedEqual": true, "rawZoom8": {"mm": 0.125, "cm": 1.25, "m": 125.0}, "drawingScale1to10": "width / 10 with the geometry"},
+  "unspecified": "legacy power-of-ten printing scale from the zoom; same rule; width varies within a decade; page changes by decades",
+  "viewportFallback": "page follows the zoom; same rule",
+  "upstream": {"behavior": "SAME", "classicFitFactor": [0.540, 0.529, 0.529], "widthToLengthExact": true},
+  "geocedgBehavior": "SAME rule; exact page; fixed physical printing scale makes the zoom dependence direct",
+  "pgfControl": {"lineWidthPt": "0.4 * lineThickness", "zoomIndependent": true},
+  "rasterCrossCheck": {"renderers": ["Ghostscript 10.02.1", "poppler pdftoppm"], "dpi": [600, 1200], "agreement": "within 1-2 device pixels"},
+  "recommendation": {
+    "option": "B",
+    "scope": "GeoCeDG physical PDF route only; unspecified legacy mode and Classic unchanged",
+    "mapping": "0.4 * lineThickness pt (as PGF), independent of zoom; drawing-scale policy and point markers to be decided by the author",
+    "owner": "GeoCeDG Desktop picture export (PictureExportService, ExportViewport)",
+    "implementationVerificationClass": "INTEGRATED_PHASE",
+    "notRecommended": ["global change in Drawable", "change of the upstream body"]
+  },
+  "proposedObservations": [
+    "OBS-POST-E2-P1-R1-PDF-TEXT-SIZE",
+    "OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS"
+  ],
+  "openQuestions": [
+    "accept the diagnosis",
+    "Option A, B or C; mapping, drawing-scale policy, point markers",
+    "PDF only or all picture routes",
+    "register the text-size observation",
+    "register the embedded-fonts observation"
+  ],
+  "tests": {"class": "org.geocedg.desktop.PostE2P1R1PdfStrokeWidthCharacterizationTest", "methods": 7, "failures": 0},
+  "registration": {"phase": "POST-E2-P1-R1", "requiredChecks": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.post-e2-p1-r1.semantic"], "selection": "post-e2-p1-r1.desktop"},
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1917, "testDryRun": true},
+    "executedSelections": {
+      "post-e2-p1-r1.desktop": {"after": 7, "sha256": "b48d0522ed963784116eca693f52c1ad591617766306a4252574f994feca58a5"},
+      "final.desktop": {"before": 1904, "after": 1911, "sha256": "e7fd6fe7a8406f55311d50b12584ba69210d8fe20fed9e6b1af43cc71b032334"}
+    },
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "f11e9c7260380fc4657e59b890c537874a284a9b9f26c38fd853e78f4e37af5a", "after": "e5c6a0f077888952767cc81a7b5a926e8045d617ba155a80f93d0e939b58e9f1"},
+    "coveragePins": "46 selections, 53 PHASE selections, post-e2-p1-r1.desktop 7"
+  }
+}
