@@ -39,9 +39,11 @@ import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Actual native archives, not an XML-only proxy for pair token persistence. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9S1R1NativeArchivePersistenceTest {
 
 	@BeforeAll

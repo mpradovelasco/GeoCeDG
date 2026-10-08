@@ -2736,7 +2736,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/G9U0ToolSurfaceTest.java",
       "change": "added",
-      "purpose": "Verify the exact T4 GeoCeDG-only creation, explicit-preimage point, general-intersection, and keyboard-accessible rich-result inspection tools.",
+      "purpose": "Verify the exact T4 GeoCeDG-only creation, explicit-preimage point, general-intersection, and keyboard-accessible rich-result inspection tools. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2958,7 +2958,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
       "change": "added",
-      "purpose": "Reproduce GeoCeDG Desktop bootstrap-to-EDT scheduled preview and definitive public Locus V2 creation without making the frontend semantic authority. G9U1: require null syntax-only product preview output while preserving the existing EDT callback and zero registry/reservation/geometry/algorithm/error invariants. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Reproduce GeoCeDG Desktop bootstrap-to-EDT scheduled preview and definitive public Locus V2 creation without making the frontend semantic authority. G9U1: require null syntax-only product preview output while preserving the existing EDT callback and zero registry/reservation/geometry/algorithm/error invariants. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3228,19 +3228,19 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
       "change": "added",
-      "purpose": "Verify R2-D01 through R2-D16 across native Save/Save As, reopen, direct/recent/drop/URL input, compatibility preservation, corrupt-preflight rejection, transactional second-live-parse and injected undo-commit rollback, and unchanged ZIP/XML identity. G9U1: preserve exact whole-XML rollback equality and assert the existing navigation-view ID before and after rollback; no tolerance or geometric assertion is relaxed.",
+      "purpose": "Verify R2-D01 through R2-D16 across native Save/Save As, reopen, direct/recent/drop/URL input, compatibility preservation, corrupt-preflight rejection, transactional second-live-parse and injected undo-commit rollback, and unchanged ZIP/XML identity. G9U1: preserve exact whole-XML rollback equality and assert the existing navigation-view ID before and after rollback; no tolerance or geometric assertion is relaxed. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
       "change": "added",
-      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy. G9U1 adapts only menu discovery to the same stable action ID in the schema-v2 projection; original lifecycle assertions remain. G9U1 author review: retain all six R3 lifecycle assertions while reading top-level menu cardinality from the current validated profile and releasing the windowless fixture's unused global keyboard dispatcher.",
+      "purpose": "Verify R3-M01 through R3-M06 for initial/full rebuild, repeated font and localization refresh, the sole Locus V2 opt-in and the approved feature-off menu policy. G9U1 adapts only menu discovery to the same stable action ID in the schema-v2 projection; original lifecycle assertions remain. G9U1 author review: retain all six R3 lifecycle assertions while reading top-level menu cardinality from the current validated profile and releasing the windowless fixture's unused global keyboard dispatcher. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
       "change": "added",
-      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries; R4 confirms the descendant two-root result follows that same public dialog path. G9U1 adapts menu discovery through the declared action identity while preserving the original selected-token and lifecycle assertions.",
+      "purpose": "Exercise the real product-menu inspector route, deterministic rich-result choice, bounded accessible labels over long exact tokens, unchanged token materialization/persistence, cancel/recompute/undo/redo, hidden token copy, and R3 no-marker/no-automatic-point boundaries; R4 confirms the descendant two-root result follows that same public dialog path. G9U1 adapts menu discovery through the declared action identity while preserving the original selected-token and lifecycle assertions. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": ".github/prompts/tasks/g9u0-r3-public-locus-ui-hardening.prompt.md"
     },
     {
@@ -3282,7 +3282,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R4NativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "Verify three real native .cedg cases: Save As/reopen for both midpoint/circle token points with canonical ledger-v4 dependencies and compatible imports; path-independent final deterministic binding after reopen versus direct motion; and the nonperiodic 2-to-4-to-2 dormant/reactivated lifecycle across native reopen without creating replacement GeoPoints.",
+      "purpose": "Verify three real native .cedg cases: Save As/reopen for both midpoint/circle token points with canonical ledger-v4 dependencies and compatible imports; path-independent final deterministic binding after reopen versus direct motion; and the nonperiodic 2-to-4-to-2 dormant/reactivated lifecycle across native reopen without creating replacement GeoPoints. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": ".github/prompts/tasks/g9u0-r4-intersection-admissibility-continuation.prompt.md"
     },
     {
@@ -3330,7 +3330,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R5NativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "Verify four native .cedg R5 cases: every similarity family reopens with stable new identity and exact dependencies; downstream points, metrics and transformed-intersection token bindings remain deterministic across an intermediate save/reopen path; feature-off plus GeoCeDG Classic preserve supported transformed documents without gaining creation authority; and the byte-exact author dynamic-dilation fixture retains one live parent through slider/existing-object edits, k=0 collapse/recovery and save/reopen while unsupported free-input redefine is rejected atomically by the existing G9A contract.",
+      "purpose": "Verify four native .cedg R5 cases: every similarity family reopens with stable new identity and exact dependencies; downstream points, metrics and transformed-intersection token bindings remain deterministic across an intermediate save/reopen path; feature-off plus GeoCeDG Classic preserve supported transformed documents without gaining creation authority; and the byte-exact author dynamic-dilation fixture retains one live parent through slider/existing-object edits, k=0 collapse/recovery and save/reopen while unsupported free-input redefine is rejected atomically by the existing G9A contract. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": ".github/prompts/tasks/g9u0-r5-locus-v2-similarity-transformations.prompt.md"
     },
     {
@@ -3420,7 +3420,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1NativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "Exercise native .cedg reconstruction of the SplineV2 command/provider, total rich metric, exact-endpoint partial rich-parent/scalar DAG and one-sided exact-token point dependencies, together with feature-off Classic preservation boundaries.",
+      "purpose": "Exercise native .cedg reconstruction of the SplineV2 command/provider, total rich metric, exact-endpoint partial rich-parent/scalar DAG and one-sided exact-token point dependencies, together with feature-off Classic preservation boundaries. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": ".github/prompts/tasks/g9s1-semantic-spline-2d-capability.prompt.md"
     },
     {
@@ -3540,7 +3540,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R6NativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "Verify native .cedg round-trip of an interaction-owned point on an R5-transformed SplineV2, stable-role plus structural auxiliary ownership restored after identity attachment, exact component/address dependencies, post-reopen movement and feature-off/Classic preservation.",
+      "purpose": "Verify native .cedg round-trip of an interaction-owned point on an R5-transformed SplineV2, stable-role plus structural auxiliary ownership restored after identity attachment, exact component/address dependencies, post-reopen movement and feature-off/Classic preservation. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": ".github/prompts/tasks/g9u0-r6-semantic-locus-point-interaction-support.prompt.md"
     },
     {
@@ -3702,7 +3702,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "Exercise actual native .cedg archives for active/dormant/reactivated pair point ownership and current recomputation, distinct from host XML-only or ledger codec evidence.",
+      "purpose": "Exercise actual native .cedg archives for active/dormant/reactivated pair point ownership and current recomputation, distinct from host XML-only or ledger codec evidence. PRE-G9B-R6-plus-E2 test lifecycle: the embedded AppGeoCeDG hosts of each test are released by the existing G9U1TestApp.Lifecycle owner (key-event dispatcher, DockManagerD AWT listener, GeoGebraFrame registry); assertions unchanged.",
       "authority": "geocedg/specs/curves/spline-v2-pair-materialization.md"
     },
     {
@@ -3900,7 +3900,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
       "change": "added",
-      "purpose": "Provide isolated Desktop setup and ordinary command helpers for workspace consumer tests. G9U1 author review: unregister only unused global keyboard dispatchers of verified embedded windowless fixtures, preventing retained test kernels without changing native windowed application lifecycle. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior.",
+      "purpose": "Provide isolated Desktop setup and ordinary command helpers for workspace consumer tests. G9U1 author review: unregister only unused global keyboard dispatchers of verified embedded windowless fixtures, preventing retained test kernels without changing native windowed application lifecycle. Review fixture isolation: per-test Swing-root snapshots release only newly registered embedded-host dock listeners and nonvisible/non-displayable lazy frames, preserving preexisting roots and native runtime behavior. PRE-G9B-R6-plus-E2 test lifecycle: the helper and its Lifecycle extension are public so that test classes outside the package can use the same owner; behavior unchanged.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {

@@ -26,6 +26,7 @@ import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.desktop.AppGeoCeDG;
+import org.geocedg.desktop.G9U1TestApp;
 import org.geocedg.desktop.GeoCeDGEuclidianController;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -39,8 +40,10 @@ import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /** Exact T4 GeoCeDG-only creation and result-inspection tool scenarios. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U0ToolSurfaceTest {
 	private static final String BRANCH =
 			SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY;

@@ -23,8 +23,10 @@ import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /** G9U0-R3 public product-menu lifecycle scenarios R3-M01--R3-M06. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U0R3MenuLifecycleTest {
 
 	private static final List<String> LOCUS_ACTION_KEYS = List.of(

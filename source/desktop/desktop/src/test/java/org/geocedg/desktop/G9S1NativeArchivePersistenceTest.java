@@ -63,9 +63,11 @@ import org.geogebra.desktop.util.LoggerD;
 import org.geogebra.test.commands.ErrorAccumulator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Native SplineV2 persistence and preservation boundary authority. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9S1NativeArchivePersistenceTest {
 
 	private static final String SPLINE_BRANCH = "spline-v2/main";

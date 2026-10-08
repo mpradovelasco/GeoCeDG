@@ -54,8 +54,10 @@ import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.LocalizationD;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class GeoCeDGDocumentLifecycleTest {
 
 	private static final String EMPTY_DOCUMENT_XML =

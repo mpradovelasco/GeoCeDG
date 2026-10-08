@@ -31,6 +31,7 @@
 - `E1-P-X1` closeout (2026-10-07): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_R6PLUS_E1_P_X1` `44b90156786bce4ec5fca0466e7b8f81ea5bb358` (`AUTHOR_REVIEW = PASS`, `AUTHOR_SMOKE = NOT REQUIRED — NO PRODUCT BEHAVIOR CHANGE`, [E1-P-X1 closeout record](../validation/pre_g9b_r6_plus_e1_p_x1_closeout_record.md)); `OBS-R6PLUS-E1L-STALE-NO-PACKAGING-ASSERTION` resolved; `final.desktop` clean; `E1-L`, `E1-P`, `E1` and `E1-X1` unchanged; the verification baseline is clean and the next phase, `PRE-G9B-R6-plus-E2`, may proceed only under a separate explicit author instruction; `E2` not started.
 - Preparation of `E2` (2026-10-07): at the author's instruction, characterization, design reconciliation and preparation only, on the published `P_R6PLUS_E1_P_X1` `dc63b0e55f12eb96d3aea359db4476cbda6c89dc`, tree `8b2b5027a2119f996de8ca5af91b03ce32731a8c` ([characterization report](../validation/pre_g9b_r6_plus_e2_preparation_characterization_report.md); [reconciled design candidate](pre_g9b_r6_plus_e2_native_dimensions_reconciled_design_candidate.md), which supersedes the stale facts of §8.5 — 125 actions, not 115; `construction-metrics` at `application-profile.yml:3475-3480`; no `F1` dependency). The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e2-native-dimensions.prompt.md) is `PREPARED — NOT AUTHORIZED`: representation β, presentation seam, side rule, direction authority, text orientation, legacy macro collision, verification class (`INTEGRATED_PHASE` proposed, not frozen), export fidelity, names and placement, and tool capture are pending author decisions `DQ-E2-1` to `DQ-E2-11`; `OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION` re-characterized (macros resolve before native commands, case-insensitively, in documents; a stored legacy package disables the whole user library); implementation not authorized.
 - Author decisions for `E2` (2026-10-07): on the documentary candidate `T_R6PLUS_E2_PREP` `6ad853c618da8f07a279b266c83002c145c6292c` (STATIC `verification-b355b147258849beb498a541293a4fd9` `ACCEPTED / COMPLETE`), the author froze `DQ-E2-1` to `DQ-E2-11` ([E2 author-decision record](../validation/pre_g9b_r6_plus_e2_author_decisions_record.md)): β approved for design; commands `AlignedDimension` / `LinearDimension` with ES aliases `CotaAlineada` / `CotaLineal` (the legacy `DirectDimension` / `AxisDimension` / `directDimension` / `axisDimension` are not registered, which resolves the naming side of `OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION`); mandatory offset; side pinned by explicit inputs (B1); model-unit value with unit-sensitive presentation text; `INTEGRATED_PHASE` approved for design; DXF segment subset as a durable limitation. The author rejected the horizontal-text limitation and required a normative-style aligned value (`DQ-E2-6`); the authorized focal characterization ([addendum](../validation/pre_g9b_r6_plus_e2_dq6_aligned_text_addendum.md)) found it **feasible with β** through one bounded drawable seam (no new `GeoElement`, no XML), pending author review. The reconciled design candidate and the canonical prompt are updated; `E2` = `PREPARED — AUTHOR DECISIONS FROZEN — IMPLEMENTATION NOT AUTHORIZED`.
+- Implementation of `E2` (2026-10-08): authorized by the author ([E2 authorization record](../validation/pre_g9b_r6_plus_e2_authorization_record.md)); technical candidate pending author review ([candidate report](../validation/pre_g9b_r6_plus_e2_candidate_report.md); [specification](../../geocedg/specs/dimensions/native-dimensions.md); [ADR 0034](../adr/0034-native-dimension-representation-and-presentation-seams.md) `PROPOSED`).
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1237,7 +1238,13 @@ PRE-G9B-R6-plus-E1-X1-R1   = CHARACTERIZATION COMPLETE (2026-10-07; A-versus-C
                              CANDIDATE C — PRIMARY LAUNCHER EARLY CLASSIC DISPATCH;
                              prompt reconciled, PREPARED — NOT AUTHORIZED; proposed
                              BOUNDED_PHASE; DQ-E1X1-1 to DQ-E1X1-8 pending)
-PRE-G9B-R6-plus-E2         = PREPARED — AUTHOR DECISIONS FROZEN — IMPLEMENTATION
+PRE-G9B-R6-plus-E2         = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (2026-10-08;
+                             implementation authorized 4a7043f2 on B_R6PLUS_E2_IMPL
+                             b1ee68c0; β with existing types; AlignedDimension /
+                             LinearDimension; DQ-E2-6 aligned value implemented;
+                             INTEGRATED_PHASE: PHASE + INTEGRATION on the candidate
+                             commit; author smoke pending; selfApproved = false)
+                             earlier: PREPARED — AUTHOR DECISIONS FROZEN — IMPLEMENTATION
                              NOT AUTHORIZED (2026-10-07; DQ-E2-1 to DQ-E2-11 frozen on
                              T_R6PLUS_E2_PREP 6ad853c6; AlignedDimension / LinearDimension;
                              β and INTEGRATED_PHASE approved for design; DQ-E2-6 aligned
@@ -1336,6 +1343,10 @@ OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
                              spellings never registered); coexistence to be validated
                              in E2; the whole-library failure mode on a future native
                              collision stays pre-existing
+                             COEXISTENCE VALIDATED IN THE E2 TECHNICAL CANDIDATE
+                             (2026-10-08: Templatev7.ggb and a user store with the
+                             legacy macros keep working next to the new commands, no
+                             byte change) — PENDING AUTHOR REVIEW
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a

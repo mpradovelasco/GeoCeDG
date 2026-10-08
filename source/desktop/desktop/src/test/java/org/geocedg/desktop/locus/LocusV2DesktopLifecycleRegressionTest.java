@@ -27,6 +27,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.desktop.AppGeoCeDG;
+import org.geocedg.desktop.G9U1TestApp;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.kernel.View;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -38,8 +39,10 @@ import org.geogebra.desktop.util.LoggerD;
 import org.geogebra.test.commands.ErrorAccumulator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /** Desktop bootstrap-to-EDT regression for public Locus V2 creation. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class LocusV2DesktopLifecycleRegressionTest {
 
 	@BeforeAll

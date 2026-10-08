@@ -54,10 +54,12 @@ import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
 /** G9U0-R3 inspector, exact-token and negative-scope scenarios. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U0R3InspectorWorkflowTest {
 
 	@BeforeAll

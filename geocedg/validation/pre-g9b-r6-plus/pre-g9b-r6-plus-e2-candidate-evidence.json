@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-E2",
+  "phaseKind": "PRODUCT_IMPLEMENTATION_NATIVE_DIMENSIONS",
+  "report": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md",
+  "technicalCandidateState": "FROZEN with the candidate commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-E2 -PlanOnly",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -PlanOnly",
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-E2 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "acceptanceRule": "PHASE and INTEGRATION both on the same exact commit and tree; no commit afterwards; FINAL not required and not run",
+  "finalRequired": false,
+  "representation": "beta: existing GeoElement types only",
+  "commands": {
+    "canonical": [
+      "AlignedDimension",
+      "LinearDimension"
+    ],
+    "spanishAliases": [
+      "CotaAlineada",
+      "CotaLineal"
+    ],
+    "notRegistered": [
+      "DirectDimension",
+      "AxisDimension",
+      "directDimension",
+      "axisDimension"
+    ],
+    "dimensionUnchanged": true
+  },
+  "dq6": "ALIGNED NORMATIVE-STYLE TEXT IMPLEMENTED",
+  "productChange": true,
+  "serializationChange": "ADDITIVE_COMMAND_NAMES_ONLY",
+  "guideImpact": "UPDATED",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "entry": {
+    "publishedBase": {
+      "name": "P_R6PLUS_E1_P_X1",
+      "commit": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+      "tree": "8b2b5027a2119f996de8ca5af91b03ce32731a8c"
+    },
+    "implementationBase": {
+      "name": "B_R6PLUS_E2_IMPL",
+      "commit": "b1ee68c0f73b6c39fe8cd306e52f58bb66330c5b",
+      "tree": "7eabf6892ab00c6adc3b510e9ffac204ae13c7a8"
+    },
+    "authorizationRecord": {
+      "commit": "4a7043f2b5f3dd7f5ac15433060a1a69835cb8d5",
+      "tree": "82b2eff291c02c0413e37ce470dec18704ca461a"
+    },
+    "memoryCharacterizationImplementationState": {
+      "commit": "8cfb201158d5d12c3e1a4391505e36ee2fcc054a",
+      "tree": "e4b89153a2fe9d8c2bdf4fb5ce799348f1bb57c3",
+      "isCandidate": false
+    },
+    "implementationBranch": "phase/pre-g9b-r6-plus-e2-native-dimensions",
+    "branchPublished": false,
+    "preparationCandidatesModified": false
+  },
+  "adr0031Gate": {
+    "storedNames": 566,
+    "withEnglishName": 515,
+    "displayed": 488,
+    "previous": "564/513/486"
+  },
+  "fingerprintFixture": {
+    "route": "original R5-B probe rerun on the candidate tree, spliced",
+    "regimeIndependentSummariesEqualToP_DOTXMLWithoutE2Lines": true,
+    "pDotxmlRegimeSpanishBlocksRetained": [
+      "display.es",
+      "argumentNumberErrors.es",
+      "scripts.es",
+      "historicalDocument"
+    ],
+    "spanishE2SyntaxFrom": "Classic alias-head regime (Classic Spanish syntax without E2 lines equals the P_DOTXML es.text)",
+    "historicalCedgUnchanged": true
+  },
+  "ggbscriptMatrix": {
+    "rowsAdded": 36,
+    "probesAdded": 28,
+    "fixture": "native-dimension",
+    "derivedInventory": "11 -> 13",
+    "instanceSha256": [
+      "91906cd7c79f24886f2deb829888fd463fe0a8501ae6726e028ddeedb30ada23",
+      "6cdecdedda69ef23a1d93079c1c4982447f2ad0e6c0c80aef6532605be910558"
+    ],
+    "e2RowsInChildJvm": true
+  },
+  "profile": {
+    "actions": "125 -> 127",
+    "nativeToolbarModes": "47 -> 49",
+    "modeCarryingActions": "71 -> 73",
+    "toolbarActions": "57 -> 59",
+    "allowListAmendment": "tools/agent/workspace-profile-validation.ps1 (reported for author review)"
+  },
+  "staticContractPins": {
+    "geocedg/resources/assets-manifest.yml": [
+      "d8375884a3ecb29793744e653b13e09c5a1c1b4fc340789e1da52e24ed6b9f58",
+      "a4c4f98be92c67813200dace793cd03a056e0364b379be49ad901a7f50b5c21a"
+    ],
+    "tools/agent/workspace-profile-validation.ps1": [
+      "92c61af0bbae85f6a6c581c550deecddd7d07aac1bfdc5ad37ded9b5a2fde8f8",
+      "75c900b1bbd5f0c143b5e4a8e12beaa7b27fb89b94db38a475413da68c713227"
+    ],
+    "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json": [
+      "91906cd7c79f24886f2deb829888fd463fe0a8501ae6726e028ddeedb30ada23",
+      "6cdecdedda69ef23a1d93079c1c4982447f2ad0e6c0c80aef6532605be910558"
+    ]
+  },
+  "registryCatalogPins": {
+    "static_contracts": [
+      "31fa0b3b04b77076e7999d601d463e09f06c6f3f5838302dfe036fee95cd1947",
+      "a640822ba2b45f3cc111c7049a11d304f448c843bdd6147d985a4de8ea85cd92"
+    ],
+    "junit_inventory": [
+      "eded218f82d1ae5d1df4456ec11c7794d0b522c65c7365452c65069f74c5ad79",
+      "eb1d061cec5feff1502fad1b838ba93fddf171c90ed9cab298daebac0760348e"
+    ],
+    "oldPinsReproducedFrom": "4a7043f2 with Get-VerificationCanonicalTextSha256"
+  },
+  "registryShape": {
+    "selections": "42 -> 44",
+    "phaseSelections": "50 -> 51"
+  },
+  "junitInventory": {
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 (in-session, executed passing evidence, dry-run discovery)",
+    "selections": {
+      "discovery.shared": {
+        "expectedIdentityCount": 6034,
+        "expectedIdentitiesSha256": "d3608ad73683bc7295b04f6f6220924e7dc24e65eb70a486d05a2a158fd9ff10",
+        "producerEvidenceSha256": "1302144af734631a563f29351a25401b690cb266989daa9e05faf73aebcdd0b2"
+      },
+      "discovery.desktop": {
+        "expectedIdentityCount": 1896,
+        "expectedIdentitiesSha256": "47dfff23d91dde10a7ed4852c32c4ff9f659458ee06d9d5d109e1246386f5bea",
+        "producerEvidenceSha256": "93acc73f478241a3b13fc6a7accba3b999a18c5b623257e61b7f15d8ee744446"
+      },
+      "final.shared": {
+        "expectedIdentityCount": 6951,
+        "expectedIdentitiesSha256": "5ea047ffe843bef83d3aafa1531efe04b4ebcbe28d67e43de2440b527227d3b7",
+        "producerEvidenceSha256": "499aaa486d7473a3fc21928f636938a68c863f188dc79c5c2eafa371ea9dee48"
+      },
+      "final.desktop": {
+        "expectedIdentityCount": 1890,
+        "expectedIdentitiesSha256": "25085a01d8f7e70b6a662c256ef41877648be6bfdc3dc2d61dc006562e188028",
+        "producerEvidenceSha256": "b1a3fc71faf05bd4e496e011b863322ecee98b602a8bb36c66c89232aa501020"
+      },
+      "pre-g9b-r4.shared": {
+        "expectedIdentityCount": 7,
+        "expectedIdentitiesSha256": "9f3429eefed737e3288b0ea8f65918c76a582f696939c210843dbdd0b20e411f",
+        "producerEvidenceSha256": "bf76bd0dbb56e1af1ce7eb181d78fe9ffb77e3839397c2751daac843de570eb2"
+      },
+      "pre-g9b-r6.shared": {
+        "expectedIdentityCount": 13,
+        "expectedIdentitiesSha256": "e2033bd35a09f8bbdb5e0d814915ffdbfbd8ec42814eef24bd8e464d8ecbab56",
+        "producerEvidenceSha256": "cf069d5e1af5711ce60aad4b1a9c7e4a808e0b54919a7aa0e0beb8c9e86a4762"
+      },
+      "pre-g9b-r6.desktop": {
+        "expectedIdentityCount": 56,
+        "expectedIdentitiesSha256": "df103befd728353a75a2c935d2dbc58828e53ae0732f44f5ede7cb8f33886b9b",
+        "producerEvidenceSha256": "769f692baa701f4301a56d89939e3a9cd4d1441d5464125069ac4d4740ca6bec"
+      },
+      "pre-g9b-r6-plus-a1.shared": {
+        "expectedIdentityCount": 19,
+        "expectedIdentitiesSha256": "a3f8104c0754516e1cd28f58cd621a4cce22bbb35269103454e55446c5028b43",
+        "producerEvidenceSha256": "840cdf95fcc70449c6847b9c0be813e9a563231d40ab8100ba92bc78f1b64cc1"
+      },
+      "pre-g9b-r6-plus-b.desktop": {
+        "expectedIdentityCount": 243,
+        "expectedIdentitiesSha256": "5592d0c68380e0912495a768ee8e19ce1b1823c606bc915c01a7b26937fad776",
+        "producerEvidenceSha256": "a0a4150420267e87282cd62e15fce7fa16f9ed375bf86baf4ba693bdc121b607"
+      },
+      "pre-g9b-r6-plus-c.desktop": {
+        "expectedIdentityCount": 271,
+        "expectedIdentitiesSha256": "e4077ef6fa3c2b154c4f9c08d007954fda8ffd5379e5f8bae502f205d79f910f",
+        "producerEvidenceSha256": "831a93d31ec1821b2c28fd2e532aa1cbfffd0895c228bd4c48ea2f5c1e43492d"
+      },
+      "pre-g9b-r6-plus-e2.shared": {
+        "expectedIdentityCount": 63,
+        "expectedIdentitiesSha256": "7d55ff7ddf6341d14ffe4135711d4b1b3c445189bb72d2093c35c8bc5396cb48",
+        "producerEvidenceSha256": "59bb8006da087c1015c19996dd8e33c81ddffe1354b7dd29990739570a3f6f8f"
+      },
+      "pre-g9b-r6-plus-e2.desktop": {
+        "expectedIdentityCount": 242,
+        "expectedIdentitiesSha256": "6c6abb90deacac87fc45890c841942a555a44fa56d528dffd7953c83e89a319b",
+        "producerEvidenceSha256": "e7bef6a6f3385d1788e8a5aab1f9e35e46eb043d184f48ffc9ea5c408cef4c5d"
+      }
+    }
+  },
+  "olderReaders": {
+    "method": "scratch probe on a git archive of B_R6PLUS_E2_IMPL; GeoCeDG and Classic configurations",
+    "loadErrors": [
+      "processing of command: AlignedDimension(A, B, 1)",
+      "processing of command: LinearDimension(A, B, g, -1)"
+    ],
+    "values": "kept as independent numbers",
+    "segmentsAndTexts": "present, undefined",
+    "dependents": "undefined",
+    "resaveKeepsCommands": false,
+    "candidateReadsWithoutErrors": true
+  },
+  "alignedValueSweep": {
+    "cases": 40,
+    "worstParallelDegrees": 2.29,
+    "worstCentringPx": 1.82,
+    "crossings": 0,
+    "thresholds": "parallel <= 3.5 deg, centring <= 3 px"
+  },
+  "latexCompilation": {
+    "pgf": "pdflatex exit 0",
+    "pstricks": "latex exit 0",
+    "asymptote": "asy exit 0"
+  },
+  "memoryCharacterization": {
+    "authority": "author instruction of 2026-10-08 (focal Desktop memory / test-lifecycle characterization)",
+    "conditions": "same JDK and Gradle invocation, default 512 MB test heap, sequential runs, base in a detached scratch git worktree (removed)",
+    "checkpointsLiveMB": {
+      "base": {
+        "start": 14,
+        "afterMatrixTest": 409,
+        "beforeSvgLoadTest": 468,
+        "hostsBeforeSvgLoadTest": 95
+      },
+      "candidateBeforeCorrection": {
+        "start": 14,
+        "afterMatrixTest": 419,
+        "afterE2DesktopTest": 422,
+        "beforeSvgLoadTest": 480,
+        "hostsBeforeSvgLoadTest": 96
+      },
+      "candidateAfterCorrection": {
+        "start": 14,
+        "afterMatrixTest": 119,
+        "afterE2DesktopTest": 114,
+        "beforeSvgLoadTest": 163,
+        "hostsBeforeSvgLoadTest": 17
+      }
+    },
+    "singleAppLiveKB": {
+      "base": 6288,
+      "candidate": 6368,
+      "delta": 80
+    },
+    "droppedHelperHostCollectible": true,
+    "rawHostWithoutLifecycle": {
+      "collectible": false,
+      "roots": [
+        "KeyboardFocusManager keyEventDispatchers",
+        "DockManagerD Toolkit AWT listener",
+        "GeoGebraFrame instances registry"
+      ],
+      "strongPath": "static GeoGebraFrame.activeInstance -> GeoGebraFrame.app -> AppGeoCeDG"
+    },
+    "rawHostWithLifecycleCollectible": true,
+    "verdict": "M1 - TEST LIFECYCLE (pre-existing); E2 test classes retain no host",
+    "retainingClasses": {
+      "G9U0R3InspectorWorkflowTest": 18,
+      "G9S1R1NativeArchivePersistenceTest": 12,
+      "GeoCeDGDocumentLifecycleTest": 10,
+      "G9U0R5NativeArchivePersistenceTest": 9,
+      "G9U0R4NativeArchivePersistenceTest": 9,
+      "G9U0R6NativeArchivePersistenceTest": 6,
+      "G9U0R3MenuLifecycleTest": 6,
+      "G9S1NativeArchivePersistenceTest": 4,
+      "locus.G9U0ToolSurfaceTest": 4,
+      "locus.LocusV2DesktopLifecycleRegressionTest": 2
+    },
+    "correction": "existing G9U1TestApp.Lifecycle on the ten classes; G9U1TestApp and Lifecycle public; test-only",
+    "desktopTestHeap": "UNCHANGED (512 MB)",
+    "productMemoryOptimizationRequired": false,
+    "consecutiveCleanFinalDesktopRuns": [
+      "run1 exit=0 tests=1890 failures=0 skipped=1 minutes=12.6 | 1\tC-BEFORE org.geogebra.desktop.gui.util.SvgLoadTest\t158\t481\tAppGeoCeDG=16\tAppDNoGui=11\tAppD=1\tGeoGebraFrame=14\tDockManagerD=14\tJMenuItem=3712\tImageIcon=5924\tBufferedImage=7707\tKernel=2\tint[]MB=70",
+      "run2 exit=0 tests=1890 failures=0 skipped=1 minutes=9.1 | 1\tC-BEFORE org.geogebra.desktop.gui.util.SvgLoadTest\t162\t470\tAppGeoCeDG=17\tAppDNoGui=11\tAppD=1\tGeoGebraFrame=15\tDockManagerD=15\tJMenuItem=3886\tImageIcon=6245\tBufferedImage=8119\tKernel=2\tint[]MB=72",
+      "run3 exit=0 tests=1890 failures=0 skipped=1 minutes=9 | 1\tC-BEFORE org.geogebra.desktop.gui.util.SvgLoadTest\t158\t497\tAppGeoCeDG=16\tAppDNoGui=11\tAppD=1\tGeoGebraFrame=14\tDockManagerD=14\tJMenuItem=3712\tImageIcon=5924\tBufferedImage=7708\tKernel=2\tint[]MB=70"
+    ],
+    "preCorrectionFullRuns": "3 of 5 ended with OutOfMemoryError in SvgLoadTest.testLoadSvgsGGB"
+  },
+  "checks": {
+    "checkstyle": "exit 0; one pre-existing warning in untouched PreG9BR6PlusA1HiddenLayerTest.java:188",
+    "upstreamBoundary": "passes, 989 registered files",
+    "gitDiffCheck": "clean"
+  },
+  "preFreeze": {
+    "INFRA_UNIT": "verification-da5d1157e7f643058e7428d06212cd69 ACCEPTED / COMPLETE 22/22 (development, final source tree before the candidate commit)",
+    "STATIC": "verification-d713dd60332d4942a8468accee76f1cd ACCEPTED / COMPLETE 3/3 (development; reports HEAD as candidate; standing governance diagnostic only)",
+    "sharedSuite": ":shared:common-jre:test 6951 tests, 0 failures, 10 skipped",
+    "phasePlan": "PHASE -PlanOnly COMPLETE, 11 nodes",
+    "integrationPlan": "INTEGRATION -PlanOnly COMPLETE"
+  },
+  "observations": {
+    "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION": "naming side resolved by DQ-E2-7; coexistence validated; pending author review",
+    "OBS-R6PLUS-E2-DXF-DIMENSION-SUBSET": "durable limitation, recorded",
+    "OBS-R6PLUS-E2-DEPENDENT-DRAG-MOVES-MEASURED-POINTS": "resolved by the Desktop drag interception",
+    "OBS-R6PLUS-E2-OLDER-READER-OUTPUTS-SURVIVE": "new; measured behavior documented",
+    "OBS-R6PLUS-E2-DESKTOP-TEST-HOST-RETENTION": "new; corrected test-only; pending author review"
+  },
+  "authorSmoke": "PENDING (required)",
+  "changedPaths": [
+    "M apps/geocedg/application-profile.yml",
+    "A docs/adr/0034-native-dimension-representation-and-presentation-seams.md",
+    "M docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "M docs/roadmap/geocedg_roadmap.md",
+    "M docs/upstream/modified-files.yml",
+    "M docs/user/geocedg_user_guide_en.md",
+    "M docs/user/geocedg_user_guide_es.md",
+    "A docs/validation/pre_g9b_r6_plus_e2_candidate_report.md",
+    "M geocedg/resources/assets-manifest.yml",
+    "A geocedg/specs/dimensions/native-dimensions.md",
+    "M geocedg/specs/operations/verification-junit-inventory.json",
+    "M geocedg/specs/operations/verification-registry.json",
+    "M geocedg/specs/operations/verification-static-contracts.json",
+    "M geocedg/specs/ui/cedg-workspaces.md",
+    "A geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e2-candidate-evidence.json",
+    "M geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json",
+    "A source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DimensionLatexExport.java",
+    "M source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToAsymptote.java",
+    "M source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPgf.java",
+    "M source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPstricks.java",
+    "A source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionTools.java",
+    "M source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
+    "M source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+    "M source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1NativeArchivePersistenceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9S1R1NativeArchivePersistenceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3InspectorWorkflowTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R3MenuLifecycleTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R4NativeArchivePersistenceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R5NativeArchivePersistenceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U0R6NativeArchivePersistenceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1TestApp.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGDocumentLifecycleTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/G9U0ToolSurfaceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/locus/LocusV2DesktopLifecycleRegressionTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalCommandGateTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrixTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1LayerWorkspaceTest.java",
+    "M source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LCuratedLibraryTest.java",
+    "A source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE2NativeDimensionDesktopTest.java",
+    "M source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json",
+    "M source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
+    "M source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
+    "M source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+    "M source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+    "M source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+    "M source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
+    "A source/shared/common-jre/src/test/java/org/geocedg/common/dimension/PreG9BR6PlusE2NativeDimensionTest.java",
+    "M source/shared/common-jre/src/test/java/org/geocedg/common/kernel/commands/GeoCeDGCommandsTest.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/DrawDimensionText.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoAlignedDimension.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoLinearDimension.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/AlgoNativeDimension.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionFigure2D.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionPresentation.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/DimensionTextSource.java",
+    "A source/shared/common/src/main/java/org/geocedg/common/kernel/dimension/package-info.java",
+    "M source/shared/common/src/main/java/org/geocedg/common/kernel/units/DocumentUnitSystem.java",
+    "M source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
+    "M source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianDraw.java",
+    "M source/shared/common/src/main/java/org/geogebra/common/kernel/commands/BasicCommandProcessorFactory.java",
+    "A source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdAlignedDimension.java",
+    "A source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLinearDimension.java",
+    "M source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
+    "M source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java",
+    "A source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_aligneddimension.svg",
+    "A source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_lineardimension.svg",
+    "M tools/agent/tests/verification-final-coverage.Tests.ps1",
+    "M tools/agent/workspace-profile-validation.ps1"
+  ]
+}

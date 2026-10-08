@@ -37,9 +37,11 @@ import org.geogebra.desktop.awt.AwtFactoryD;
 import org.geogebra.desktop.util.LoggerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /** G9U0-R4 native archive persistence for newly admitted public roots. */
+@ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U0R4NativeArchivePersistenceTest {
 
 	private static final String FIXTURE =

@@ -35,13 +35,13 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /** Shared desktop test host; commands still use the real application dispatcher. */
-final class G9U1TestApp {
+public final class G9U1TestApp {
 
 	private G9U1TestApp() {
 	}
 
 	/** Retire only the global registrations created by an embedded test host. */
-	static final class Lifecycle implements BeforeEachCallback, AfterEachCallback {
+	public static final class Lifecycle implements BeforeEachCallback, AfterEachCallback {
 		private static final ExtensionContext.Namespace NAMESPACE =
 				ExtensionContext.Namespace.create(Lifecycle.class);
 
