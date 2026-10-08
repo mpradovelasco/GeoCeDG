@@ -1401,6 +1401,15 @@ OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM = REGISTERED (2026-10-08):
                              export while geometry stays correct; root cause and
                              population not established — characterization owner
                              POST-E2-P1-R1 (correction NOT AUTHORIZED)
+                             CHARACTERIZED — POST-E2-P1-R1 PASS — AUTHOR APPROVED
+                             (2026-10-08): real variation, upstream-inherited,
+                             physical-output contract gap; correction owner
+                             POST-E2-P1-R2 (authorized; approval pending)
+OBS-POST-E2-P1-R1-PDF-TEXT-SIZE = TD-PDF-1 — OPEN — CHARACTERIZATION REQUIRED —
+                             NOT AUTHORIZED (planned after P2–P4)
+OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS = TD-PDF-2 — OPEN — UNCONFIRMED IN
+                             PRODUCT — HEADLESS TEST ENVIRONMENT OBSERVATION — NOT
+                             AUTHORIZED (planned after P2–P4)
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a

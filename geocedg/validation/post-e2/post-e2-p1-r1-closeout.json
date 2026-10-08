@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1-R1",
+  "registeredPhaseId": "POST-E2-P1-R1",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p1_r1_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-08", "title": "POST-E2-P1-R1 / P1-R2 — Author Approval, Publication, Physical PDF Stroke Design and Bounded Implementation"},
+  "state": "PASS — AUTHOR APPROVED",
+  "meaning": "characterization and evidence approved; no product correction",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {"commit": "2237df0aad20eea9ad38831c9a5ad2bbf2d5f345", "tree": "e3526e3323bac94e825c52853b9dfc35641b847d", "mutated": false},
+  "acceptedEvidence": {
+    "static": {"run": "verification-d7057531ab114ede8d964c23c7c3e2e2", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "phase": {"run": "verification-34bb6e57a6d94d439c86e3181aa03b4a", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"}
+  },
+  "findings": ["REAL PDF STROKE-WIDTH VARIATION", "UPSTREAM-INHERITED BEHAVIOR", "PHYSICAL-OUTPUT CONTRACT GAP", "GEOMETRIC SEMANTICS UNAFFECTED"],
+  "registeredDebts": [
+    {"id": "OBS-POST-E2-P1-R1-PDF-TEXT-SIZE", "alias": "TD-PDF-1", "state": "OPEN — CHARACTERIZATION REQUIRED", "authorized": false},
+    {"id": "OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS", "alias": "TD-PDF-2", "state": "OPEN — UNCONFIRMED IN PRODUCT — HEADLESS TEST ENVIRONMENT OBSERVATION", "authorized": false}
+  ],
+  "plannedSequence": ["POST-E2-P1-R2", "POST-E2-P2", "POST-E2-P3", "POST-E2-P4", "TD-PDF-1", "TD-PDF-2"],
+  "sequenceIsAuthorization": false,
+  "next": {"phase": "POST-E2-P1-R2", "design": "AUTHORIZED", "boundedImplementation": "AUTHORIZED WITH DESIGN GATE", "verificationClass": "INTEGRATED_PHASE", "authorApproval": "PENDING", "publication": "NOT AUTHORIZED"},
+  "notAuthorized": ["P1-R2 normative approval", "P1-R2 publication", "P2", "P3", "P4", "TD-PDF-1 correction", "TD-PDF-2 correction", "E3", "F1", "F2", "F3", "G", "G9B", "tag", "release", "binary publication"]
+}

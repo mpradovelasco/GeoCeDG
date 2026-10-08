@@ -15,9 +15,12 @@ P1 CHARACTERIZATION      = PASS — AUTHOR APPROVED (2026-10-08; P1 closeout rec
                            docs/validation/post_e2_p1_closeout_record.md; Option A
                            applied; Option B retained, not authorized; Option C not
                            adopted; P1 implementation NOT AUTHORIZED)
-P1-R1 (PDF stroke width)  = TECHNICAL CHARACTERIZATION CANDIDATE PENDING AUTHOR
-                           REVIEW (docs/validation/post_e2_p1_r1_characterization_report.md;
-                           correction NOT AUTHORIZED)
+P1-R1 (PDF stroke width)  = PASS — AUTHOR APPROVED (2026-10-08; closeout record
+                           docs/validation/post_e2_p1_r1_closeout_record.md)
+P1-R2 (physical PDF width) = DESIGN AND BOUNDED IMPLEMENTATION AUTHORIZED
+                           (INTEGRATED_PHASE; author approval and publication pending)
+PDF debts                 = TD-PDF-1 text size, TD-PDF-2 embedded fonts: REGISTERED,
+                           NOT AUTHORIZED; planned after P2–P4
 P2–P4 EXECUTION          = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false
