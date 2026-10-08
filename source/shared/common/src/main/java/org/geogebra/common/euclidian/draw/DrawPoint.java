@@ -193,8 +193,11 @@ public final class DrawPoint extends SetDrawable {
 			updateDiameter();
 		}
 
-		double xUL = coords[0] - pointSize;
-		double yUL = coords[1] - pointSize;
+		// GeoCeDG (POST-E2-P1-R2): marker sizes in style pixels, 1 except in
+		// physical PDF
+		double size = pointSize * physicalStyleScale();
+		double xUL = coords[0] - size;
+		double yUL = coords[1] - size;
 
 		int pointStyle = P.getPointStyle();
 
@@ -206,8 +209,8 @@ public final class DrawPoint extends SetDrawable {
 
 		switch (pointStyle) {
 		case EuclidianStyleConstants.POINT_STYLE_FILLED_DIAMOND:
-			double xR = coords[0] + pointSize;
-			double yB = coords[1] + pointSize;
+			double xR = coords[0] + size;
+			double yB = coords[1] + size;
 
 			if (gp == null) {
 				gp = AwtFactory.getPrototype().newGeneralPath();
@@ -231,12 +234,12 @@ public final class DrawPoint extends SetDrawable {
 				gp = AwtFactory.getPrototype().newGeneralPath();
 			}
 			root3over2 = Math.sqrt(3.0) / 2.0;
-			gp.moveTo(coords[0], coords[1] + direction * pointSize);
-			gp.lineTo(coords[0] + pointSize * root3over2,
-					coords[1] - direction * pointSize / 2);
-			gp.lineTo(coords[0] - pointSize * root3over2,
-					coords[1] - direction * pointSize / 2);
-			gp.lineTo(coords[0], coords[1] + direction * pointSize);
+			gp.moveTo(coords[0], coords[1] + direction * size);
+			gp.lineTo(coords[0] + size * root3over2,
+					coords[1] - direction * size / 2);
+			gp.lineTo(coords[0] - size * root3over2,
+					coords[1] - direction * size / 2);
+			gp.lineTo(coords[0], coords[1] + direction * size);
 			gp.closePath();
 			break;
 
@@ -252,18 +255,18 @@ public final class DrawPoint extends SetDrawable {
 				gp = AwtFactory.getPrototype().newGeneralPath();
 			}
 			root3over2 = Math.sqrt(3.0) / 2.0;
-			gp.moveTo(coords[0] + direction * pointSize, coords[1]);
-			gp.lineTo(coords[0] - direction * pointSize / 2,
-					coords[1] + pointSize * root3over2);
-			gp.lineTo(coords[0] - direction * pointSize / 2,
-					coords[1] - pointSize * root3over2);
-			gp.lineTo(coords[0] + direction * pointSize, coords[1]);
+			gp.moveTo(coords[0] + direction * size, coords[1]);
+			gp.lineTo(coords[0] - direction * size / 2,
+					coords[1] + size * root3over2);
+			gp.lineTo(coords[0] - direction * size / 2,
+					coords[1] - size * root3over2);
+			gp.lineTo(coords[0] + direction * size, coords[1]);
 			gp.closePath();
 			break;
 
 		case EuclidianStyleConstants.POINT_STYLE_EMPTY_DIAMOND:
-			xR = coords[0] + pointSize;
-			yB = coords[1] + pointSize;
+			xR = coords[0] + size;
+			yB = coords[1] + size;
 
 			if (line1 == null) {
 				line1 = AwtFactory.getPrototype().newLine2D();
@@ -280,8 +283,8 @@ public final class DrawPoint extends SetDrawable {
 			break;
 
 		case EuclidianStyleConstants.POINT_STYLE_PLUS:
-			xR = coords[0] + pointSize;
-			yB = coords[1] + pointSize;
+			xR = coords[0] + size;
+			yB = coords[1] + size;
 
 			if (line1 == null) {
 				line1 = AwtFactory.getPrototype().newLine2D();
@@ -292,8 +295,8 @@ public final class DrawPoint extends SetDrawable {
 			break;
 
 		case EuclidianStyleConstants.POINT_STYLE_CROSS:
-			xR = coords[0] + pointSize;
-			yB = coords[1] + pointSize;
+			xR = coords[0] + size;
+			yB = coords[1] + size;
 
 			if (line1 == null) {
 				line1 = AwtFactory.getPrototype().newLine2D();
@@ -311,7 +314,8 @@ public final class DrawPoint extends SetDrawable {
 		}
 
 		// circle might be needed at least for tracing
-		circle.setFrame(xUL, yUL, diameter, diameter);
+		circle.setFrame(xUL, yUL, diameter * physicalStyleScale(),
+				diameter * physicalStyleScale());
 
 		// selection area
 		circleHighlight.setFrame(xUL - HIGHLIGHT_OFFSET, yUL - HIGHLIGHT_OFFSET,
@@ -322,7 +326,8 @@ public final class DrawPoint extends SetDrawable {
 		if (isVisible && labelVisible) {
 			labelDesc = getTopLevelGeo().getLabelDescription();
 			xLabel = (int) Math.round(coords[0] + 4);
-			yLabel = (int) Math.round(yUL - pointSize);
+			// the label keeps its style-pixel offset from the point
+			yLabel = (int) Math.round((coords[1] - pointSize) - pointSize);
 			addLabelOffsetEnsureOnScreen(view.getFontPoint());
 		}
 	}
@@ -392,7 +397,8 @@ public final class DrawPoint extends SetDrawable {
 			case EuclidianStyleConstants.POINT_STYLE_CROSS:
 				// draw cross like: X or +
 				g2.setPaint(geo.getObjectColor());
-				g2.setStroke(getEmptyStroke(pointSize));
+				g2.setStroke(EuclidianStatic.scaleStroke(getEmptyStroke(pointSize),
+						physicalStyleScale()));
 				g2.draw(line1);
 				g2.draw(line2);
 				break;
@@ -400,7 +406,8 @@ public final class DrawPoint extends SetDrawable {
 			case EuclidianStyleConstants.POINT_STYLE_EMPTY_DIAMOND:
 				// draw diamond
 				g2.setPaint(geo.getObjectColor());
-				g2.setStroke(getEmptyStroke(pointSize));
+				g2.setStroke(EuclidianStatic.scaleStroke(getEmptyStroke(pointSize),
+						physicalStyleScale()));
 				g2.draw(line1);
 				g2.draw(line2);
 				g2.draw(line3);
@@ -414,7 +421,8 @@ public final class DrawPoint extends SetDrawable {
 			case EuclidianStyleConstants.POINT_STYLE_TRIANGLE_WEST:
 				// draw diamond
 				g2.setPaint(geo.getObjectColor());
-				g2.setStroke(getFillStroke(pointSize));
+				g2.setStroke(EuclidianStatic.scaleStroke(getFillStroke(pointSize),
+						physicalStyleScale()));
 				g2.draw(gp);
 				g2.fill(gp);
 				break;
@@ -422,7 +430,8 @@ public final class DrawPoint extends SetDrawable {
 			case EuclidianStyleConstants.POINT_STYLE_CIRCLE:
 				// draw a circle
 				g2.setPaint(geo.getObjectColor());
-				g2.setStroke(getEmptyStroke(pointSize));
+				g2.setStroke(EuclidianStatic.scaleStroke(getEmptyStroke(pointSize),
+						physicalStyleScale()));
 				g2.draw(circle);
 				break;
 
@@ -438,7 +447,8 @@ public final class DrawPoint extends SetDrawable {
 
 				// black stroke
 				g2.setPaint(geo.getShowHideColor(GColor.BLACK));
-				g2.setStroke(borderStroke);
+				g2.setStroke(EuclidianStatic.scaleStroke(borderStroke,
+						physicalStyleScale()));
 				g2.draw(circle);
 			}
 

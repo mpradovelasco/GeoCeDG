@@ -3049,6 +3049,17 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	}
 
 	/**
+	 * GeoCeDG (POST-E2-P1-R2): view pixels per style pixel. Drawables multiply the
+	 * sizes they derive from line thickness and point size by this value. It is 1
+	 * for every view except GeoCeDG's physical PDF export viewport.
+	 *
+	 * @return physical presentation scale of style sizes
+	 */
+	public double getPhysicalStyleScale() {
+		return 1;
+	}
+
+	/**
 	 * @return scale factor for print
 	 */
 	public final double getPrintingScale() {

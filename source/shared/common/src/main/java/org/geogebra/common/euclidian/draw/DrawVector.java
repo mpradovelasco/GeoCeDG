@@ -135,7 +135,7 @@ public class DrawVector extends Drawable implements Previewable, DrawableVisibil
 	}
 
 	private void updateShape() {
-		model.update(v.getLineThickness(), objStroke);
+		model.update(v.getLineThickness(), objStroke, physicalStyleScale());
 		drawStyledVector.update(vectorShape());
 	}
 

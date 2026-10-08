@@ -156,6 +156,31 @@ public class EuclidianStatic {
 				dash);
 	}
 
+	/**
+	 * GeoCeDG (POST-E2-P1-R2): the same stroke with its width and dash pattern in
+	 * another unit of style pixels; cap, join and miter limit are kept.
+	 *
+	 * @param stroke stroke in style pixels
+	 * @param scale view pixels per style pixel
+	 * @return the stroke itself when the scale is 1, else the scaled stroke
+	 */
+	public static GBasicStroke scaleStroke(GBasicStroke stroke, double scale) {
+		if (scale == 1 || stroke == null) {
+			return stroke;
+		}
+		double[] dash = stroke.getDashArray();
+		double[] scaledDash = null;
+		if (dash != null) {
+			scaledDash = new double[dash.length];
+			for (int i = 0; i < dash.length; i++) {
+				scaledDash[i] = dash[i] * scale;
+			}
+		}
+		return AwtFactory.getPrototype().newBasicStroke(stroke.getLineWidth() * scale,
+				stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(),
+				scaledDash);
+	}
+
 	/*
 	 * public abstract float textWidth(String str, Font font, FontRenderContext
 	 * frc);

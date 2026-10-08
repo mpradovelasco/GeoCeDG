@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1-R2",
+  "registeredPhaseId": "POST-E2-P1-R2",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p1_r2_candidate_report.md",
+  "design": "docs/architecture/post_e2_p1_r2_physical_pdf_stroke_design.md",
+  "specification": {"path": "geocedg/specs/export/physical-pdf-style-sizes.md", "status": "PROPOSED"},
+  "adr": {"path": "docs/adr/0035-physical-pdf-style-sizes.md", "status": "PROPOSED"},
+  "measurements": "geocedg/validation/post-e2/post-e2-p1-r2-measurements.json",
+  "rasterCrossCheck": "geocedg/validation/post-e2/post-e2-p1-r2-raster-crosscheck.json",
+  "baseFingerprints": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/post-e2-p1-r2/base-fingerprints.json",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_p1_r1_closeout_record.md",
+  "baseline": {"commit": "0bb34739168e71eb62ca099273a9920e8a61673a", "tree": "6bd46e7a7dea44d5d18ad3beeee5cd7134984b03"},
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P1-R2 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "designGate": "PASSED",
+  "mapping": {"ptPerStylePixel": 0.8, "strokePt": "0.4 * lineThickness", "normative": false, "authorSmoke": "PENDING"},
+  "transform": "sigma = 0.8 pt / pdfPointsPerPixel on GeoCeDG's physical PDF ExportViewport; 1 elsewhere",
+  "coveredSizes": ["stroke width", "dash pattern", "filled line bodies", "segment end styles and arrowheads", "segment middle decorations", "vector arrowheads", "point markers"],
+  "notCovered": ["text and labels (placement unchanged)", "angle arc radii", "hatching", "images", "axes and grid", "widgets"],
+  "results": {
+    "strokeMm": {"t1": 0.1411, "t2": 0.2822, "t3": 0.4233, "t5": 0.7056},
+    "dimensionArrowheadPt": "2 * t (2.5 t style px, 5 x the line)",
+    "pointMarkerPt": "1.6 * pointSize",
+    "dashPtAtT2": [7.2, 6.4],
+    "zooms": [2, 8, 32],
+    "drawingScales": ["1:1", "1:2", "1:10", "2:1"],
+    "units": ["mm", "cm", "m", "usm (inch)"],
+    "presentationUnitByteIdentical": true,
+    "viewportFallback": "stroke constant; page follows the view",
+    "documentUnchanged": true,
+    "baseFingerprintsEqual": ["classic.pdf", "classic.pgf", "product.unspecified.pdf", "product.physical.png", "product.physical.svg", "product.physical.emf", "product.physical.pgf"],
+    "rasterCrossCheck": "Ghostscript and poppler at 600 / 1200 dpi: same ink at every zoom, within 1-2 device pixels of the interpreted widths"
+  },
+  "reconciledTests": ["PostE2P1DimensionCaptureCharacterizationTest (PDF zoom sweep)", "PostE2P1R1PdfStrokeWidthCharacterizationTest (physical-route assertions)"],
+  "fullSuites": {
+    "shared": {"tests": 6963, "failures": 0, "errors": 0, "skipped": 10},
+    "desktop": {"tests": 1925, "failures": 0, "errors": 0, "skipped": 1, "maxHeap": "512m", "outOfMemory": false}
+  },
+  "authorSmokePoints": ["line weights 0.14 / 0.28 / 0.42 / 0.71 mm", "point markers 1.6 x pointSize pt (PGF uses pointSize pt); point labels keep their offset", "arrowheads 5 x the line width", "text unchanged (TD-PDF-1 open)", "Classic and other formats unchanged"],
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false,
+  "registration": {"phase": "POST-E2-P1-R2", "requiredChecks": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.post-e2-p1-r2.semantic"], "selection": "post-e2-p1-r2.desktop"},
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1925, "testDryRun": true},
+    "executedSelections": {
+      "post-e2-p1-r2.desktop": {"after": 83, "sha256": "9db7d90f8913b513b418f0a3bbf3d5128fc93b363730279056af8e8b7454c601"},
+      "post-e2-p1-r1.desktop": {"after": 7, "sha256": "e8db08afa29c2fee7cf9c15a83e403a7b2abb516b317128fad35d32cfe3a2f1c"},
+      "post-e2-p1.desktop": {"after": 6, "sha256": "fb8e1f91e924b408e7b8961e5be8233125f63f35eccb0da5f5d98727f90624bc"},
+      "final.shared": {"after": 6963, "sha256": "510e51f224b4132125baf343c201e111cee030dc3d03b102167ee49d6a9f63ea"},
+      "final.desktop": {"before": 1911, "after": 1919, "sha256": "181314dc29a5a6a111c433a6e7bd24886b70daa2b48eadcf04240d971489d175"}
+    },
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "e5c6a0f077888952767cc81a7b5a926e8045d617ba155a80f93d0e939b58e9f1", "after": "cc3e23a38a50560b4e4928ce9364ee53f16491c49d31b5a02ce8b06498491291"},
+    "coveragePins": "47 selections, 54 PHASE selections, post-e2-p1-r2.desktop 83"
+  }
+}

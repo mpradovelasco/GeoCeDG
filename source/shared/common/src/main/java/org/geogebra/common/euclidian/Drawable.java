@@ -632,6 +632,7 @@ public abstract class Drawable extends DrawableND {
 					!isShape(fromGeo) ? 2 * Math.max(width, 1) + 2
 									: width + EuclidianStyleConstants.SELECTION_ADD,
 					EuclidianStyleConstants.LINE_TYPE_FULL);
+			applyPhysicalStyleScale(true);
 		} else if (lineType != fromGeo.getLineType()) {
 			if (!forcedLineType) {
 				lineType = fromGeo.getLineType();
@@ -639,7 +640,31 @@ public abstract class Drawable extends DrawableND {
 
 			double width = lineThickness / 2.0;
 			objStroke = EuclidianStatic.getStroke(width, lineType);
+			applyPhysicalStyleScale(false);
 		}
+	}
+
+	/**
+	 * GeoCeDG (POST-E2-P1-R2): on GeoCeDG's physical PDF export viewport, sizes the
+	 * strokes in physical style pixels; elsewhere the scale is 1 and nothing changes.
+	 */
+	private void applyPhysicalStyleScale(boolean decoration) {
+		double scale = physicalStyleScale();
+		if (scale == 1) {
+			return;
+		}
+		objStroke = EuclidianStatic.scaleStroke(objStroke, scale);
+		if (decoration) {
+			decoStroke = EuclidianStatic.scaleStroke(decoStroke, scale);
+		}
+	}
+
+	/**
+	 * @return view pixels per style pixel of this drawable's view (1 except on
+	 *         GeoCeDG's physical PDF export viewport)
+	 */
+	protected final double physicalStyleScale() {
+		return view == null ? 1 : view.getPhysicalStyleScale();
 	}
 
 	protected boolean isShape(GeoElementND fromGeo) {
@@ -660,6 +685,9 @@ public abstract class Drawable extends DrawableND {
 
 		if (lineThickness != fromGeo.getLineThickness()) {
 			lineThickness = fromGeo.getLineThickness();
+			// GeoCeDG (POST-E2-P1-R2): rebuild from style-pixel strokes
+			objStroke = EuclidianStatic.scaleStroke(objStroke, 1 / physicalStyleScale());
+			decoStroke = EuclidianStatic.scaleStroke(decoStroke, 1 / physicalStyleScale());
 
 			double width = lineThickness / 2.0;
 			objStroke = AwtFactory.getPrototype().newBasicStroke(width,
@@ -672,7 +700,7 @@ public abstract class Drawable extends DrawableND {
 					2 * width + 2,
 					objStroke.getEndCap(), objStroke.getLineJoin(),
 					objStroke.getMiterLimit(), selStroke.getDashArray());
-
+			applyPhysicalStyleScale(true);
 		}
 	}
 

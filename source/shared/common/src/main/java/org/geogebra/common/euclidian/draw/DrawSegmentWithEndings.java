@@ -36,9 +36,11 @@ public class DrawSegmentWithEndings {
 	//private GLine2D line;
 	//private final Drawable drawSegment;
 	private final EndDecoratedDrawable drawable;
-	private int lineThickness;
-	private int posX;
-	private int posY;
+	private double lineThickness;
+	private double posX;
+	private double posY;
+	/** GeoCeDG (POST-E2-P1-R2): view pixels per style pixel; 1 except in physical PDF */
+	private double styleScale = 1;
 	private boolean isStartStyle;
 	private @CheckForNull GShape solidStart;
 	private @CheckForNull GShape solidEnd;
@@ -58,6 +60,18 @@ public class DrawSegmentWithEndings {
 	 * Update all parts of the drawn shape
 	 */
 	public void update(GBasicStroke objStroke) {
+		update(objStroke, 1);
+	}
+
+	/**
+	 * GeoCeDG (POST-E2-P1-R2): update with the style sizes in another unit of style
+	 * pixels (1 except on GeoCeDG's physical PDF export viewport).
+	 *
+	 * @param objStroke object stroke, already in view pixels
+	 * @param scale view pixels per style pixel
+	 */
+	public void update(GBasicStroke objStroke, double scale) {
+		styleScale = scale;
 		SegmentStyle startStyle = segment.getStartStyle();
 		SegmentStyle endStyle = segment.getEndStyle();
 
@@ -181,8 +195,14 @@ public class DrawSegmentWithEndings {
 	}
 
 	private GShape getSolidSquare(GAffineTransform t) {
-		GRectangle2D r = AwtFactory.getPrototype().newRectangle(posX, posY,
-				lineThickness * 2, lineThickness * 2);
+		GRectangle2D r;
+		if (styleScale == 1) {
+			r = AwtFactory.getPrototype().newRectangle((int) posX, (int) posY,
+					(int) lineThickness * 2, (int) lineThickness * 2);
+		} else {
+			r = AwtFactory.getPrototype().newRectangle2D();
+			r.setRect(posX, posY, lineThickness * 2, lineThickness * 2);
+		}
 		return t.createTransformedShape(r);
 	}
 
@@ -218,7 +238,8 @@ public class DrawSegmentWithEndings {
 		diamondPath.lineTo(x, y + lineThickness);
 		diamondPath.closePath();
 
-		GShape strokedDiamond = AwtFactory.getPrototype().newMyBasicStroke(0.5f)
+		GShape strokedDiamond = AwtFactory.getPrototype()
+				.newMyBasicStroke(0.5 * styleScale)
 				.createStrokedShape(diamondPath, 255);
 		GShape transformedDiamond = t.createTransformedShape(strokedDiamond);
 		GArea area = GCompositeShape.toArea(transformedDiamond);
@@ -231,7 +252,7 @@ public class DrawSegmentWithEndings {
 	}
 
 	private void calculatePositions() {
-		lineThickness = segment.getLineThickness();
+		lineThickness = segment.getLineThickness() * styleScale;
 		posX = isStartStyle ? (int) getX1() - lineThickness
 				: (int) getX2() - lineThickness;
 		posY = isStartStyle ? (int) getY1() - lineThickness
@@ -279,7 +300,7 @@ public class DrawSegmentWithEndings {
 			arrowPath.lineTo(x, y);
 		}
 
-		GShape strokedArrow = outlined ? AwtFactory.getPrototype().newBasicStroke(0.5f)
+		GShape strokedArrow = outlined ? AwtFactory.getPrototype().newBasicStroke(0.5 * styleScale)
 				.createStrokedShape(arrowPath, 255) : createStrokedShape(arrowPath);
 		GShape transformedArrow = t.createTransformedShape(strokedArrow);
 		if (filled || outlined) {

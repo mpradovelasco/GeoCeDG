@@ -126,7 +126,7 @@ public class DrawPolyLine extends Drawable implements Previewable, EndDecoratedD
 				}
 			}
 			if (segmentWithEndings != null && poly.hasStyledEndpoint()) {
-				segmentWithEndings.update(objStroke);
+				segmentWithEndings.update(objStroke, physicalStyleScale());
 			}
 		}
 	}

@@ -1,0 +1,242 @@
+[
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 8,
+    "inkMm": 0.3387,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 7,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 15,
+    "inkMm": 0.3175,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 14,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 8,
+    "inkMm": 0.3387,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 7,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 15,
+    "inkMm": 0.3175,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 14,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 8,
+    "inkMm": 0.3387,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 7,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 15,
+    "inkMm": 0.3175,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 2,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 14,
+    "inkMm": 0.2963,
+    "pdfInterpretedMm": 0.2822222222222222,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 18,
+    "inkMm": 0.762,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 17,
+    "inkMm": 0.7197,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 35,
+    "inkMm": 0.7408,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 2.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 34,
+    "inkMm": 0.7197,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 18,
+    "inkMm": 0.762,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 17,
+    "inkMm": 0.7197,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 35,
+    "inkMm": 0.7408,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 8.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 34,
+    "inkMm": 0.7197,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "gs",
+    "inkPx": 18,
+    "inkMm": 0.762,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 600,
+    "renderer": "pdftoppm",
+    "inkPx": 17,
+    "inkMm": 0.7197,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0423
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "gs",
+    "inkPx": 35,
+    "inkMm": 0.7408,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0212
+  },
+  {
+    "thickness": 5,
+    "xscale": 32.0,
+    "dpi": 1200,
+    "renderer": "pdftoppm",
+    "inkPx": 34,
+    "inkMm": 0.7197,
+    "pdfInterpretedMm": 0.7055555555555555,
+    "pixelMm": 0.0212
+  }
+]

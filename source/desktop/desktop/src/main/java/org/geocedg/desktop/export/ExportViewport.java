@@ -41,6 +41,7 @@ public final class ExportViewport extends EuclidianViewD {
 	private int canvasHeight;
 	private double outputScaleX = 1;
 	private double outputScaleY = 1;
+	private double physicalStyleScale;
 
 	private ExportViewport(EuclidianView source) {
 		super(new EuclidianControllerD(source.getKernel()), new boolean[] { false, false },
@@ -53,9 +54,34 @@ public final class ExportViewport extends EuclidianViewD {
 	 * @return a populated viewport for this area
 	 */
 	public static ExportViewport create(EuclidianView source, ExportArea area) {
+		return create(source, area, 1);
+	}
+
+	/**
+	 * POST-E2-P1-R2: a viewport whose drawables size their styles with the given
+	 * physical presentation scale (view pixels per style pixel). It is set before
+	 * the drawables are created.
+	 *
+	 * @param source live 2D view whose presentation is copied
+	 * @param area export area of that view
+	 * @param styleScale view pixels per style pixel; 1 keeps the host sizes
+	 * @return a populated viewport for this area
+	 */
+	public static ExportViewport create(EuclidianView source, ExportArea area,
+			double styleScale) {
+		if (!(styleScale > 0) || !Double.isFinite(styleScale)) {
+			throw new IllegalArgumentException("invalid style scale " + styleScale);
+		}
 		ExportViewport viewport = new ExportViewport(source);
+		viewport.physicalStyleScale = styleScale;
 		viewport.bind(source, area);
 		return viewport;
+	}
+
+	@Override
+	public double getPhysicalStyleScale() {
+		// 0 only while the host constructor runs, before this class is initialized
+		return physicalStyleScale > 0 ? physicalStyleScale : 1;
 	}
 
 	private void bind(EuclidianView src, ExportArea area) {

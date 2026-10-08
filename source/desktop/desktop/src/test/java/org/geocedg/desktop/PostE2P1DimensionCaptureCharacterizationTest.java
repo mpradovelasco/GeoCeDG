@@ -345,7 +345,7 @@ class PostE2P1DimensionCaptureCharacterizationTest {
 	}
 
 	@Test
-	void theExportZoomChangesThePdfStrokeWidthButNeverThePaperGeometry() throws Exception {
+	void thePdfStrokeWidthIsPhysicalAndThePaperGeometryNeverMoves() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		app.getDocumentUnits().replace(UnitState.of(UnitToken.MM, null, null));
 		app.setDrawingScale(DrawingScale.ONE_TO_ONE);
@@ -374,10 +374,12 @@ class PostE2P1DimensionCaptureCharacterizationTest {
 			assertEquals(PAPER_OVERSHOOT_MM, pdf[1], 0.01);
 			widths[i] = pdf[3];
 		}
-		// characterized, not specified by E2: the stroke is one device unit, so its paper
-		// width is inversely proportional to the zoom at export time
-		assertEquals(widths[0] * PX_PER_MODEL_MM[0], widths[2] * PX_PER_MODEL_MM[2],
-				widths[0] * 1E-6);
+		// P1 characterized a stroke of one device unit, inversely proportional to the zoom
+		// (OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM); POST-E2-P1-R2 makes it
+		// 0.4 t pt on a physical PDF whatever the zoom (physical-pdf-style-sizes)
+		for (double width : widths) {
+			assertEquals(0.4 * 2 * 25.4 / 72, width, 0.4 * 2 * 25.4 / 72 * 1E-3);
+		}
 	}
 
 	@AfterAll

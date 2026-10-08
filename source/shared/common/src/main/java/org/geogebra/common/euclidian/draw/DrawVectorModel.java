@@ -27,10 +27,17 @@ public class DrawVectorModel {
 	private final double[] coordsV = new double[2];
 	private int lineThickness;
 	private GBasicStroke objStroke;
+	/** GeoCeDG (POST-E2-P1-R2): view pixels per style pixel; 1 except in physical PDF */
+	private double styleScale = 1;
 
 	void update(int lineThickness, GBasicStroke objStroke) {
+		update(lineThickness, objStroke, 1);
+	}
+
+	void update(int lineThickness, GBasicStroke objStroke, double styleScale) {
 		this.lineThickness = lineThickness;
 		this.objStroke = objStroke;
+		this.styleScale = styleScale;
 	}
 
 	void setStartCoords(double x, double y) {
@@ -76,7 +83,7 @@ public class DrawVectorModel {
 	}
 
 	double getLineThickness() {
-		return lineThickness;
+		return lineThickness * styleScale;
 	}
 
 	double length() {
@@ -102,7 +109,7 @@ public class DrawVectorModel {
 	void update() {
 		normalize();
 
-		double factor = DrawVector.getFactor(lineThickness);
+		double factor = DrawVector.getFactor(lineThickness) * styleScale;
 		double length = length();
 
 		if (length < factor) {
@@ -116,8 +123,9 @@ public class DrawVectorModel {
 	}
 
 	void updateLabelPosition(Drawable drawable) {
-		drawable.xLabel = (int) (xMiddle() + (coordsV[1] / 4.0));
-		drawable.yLabel = (int) (yMiddle() - (coordsV[0] / 4.0));
+		// GeoCeDG (POST-E2-P1-R2): the label offset keeps its style-pixel size
+		drawable.xLabel = (int) (xMiddle() + (coordsV[1] / (4.0 * styleScale)));
+		drawable.yLabel = (int) (yMiddle() - (coordsV[0] / (4.0 * styleScale)));
 	}
 
 	private double yMiddle() {

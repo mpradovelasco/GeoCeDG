@@ -162,7 +162,7 @@ public class DrawSegment extends SetDrawable implements Previewable, EndDecorate
 		}
 
 		if (segmentWithEndings != null) {
-			segmentWithEndings.update(objStroke);
+			segmentWithEndings.update(objStroke, physicalStyleScale());
 		}
 		drawAndUpdateTraceIfNeeded(segment.getTrace());
 
@@ -206,9 +206,11 @@ public class DrawSegment extends SetDrawable implements Previewable, EndDecorate
 			}
 
 			// tick spacing and length.
-			double tickSpacing = 2.5 + geo.getLineThickness() / 2d;
-			double tickLength = tickSpacing + 1;
-			double arrowlength = 1.5;
+			// GeoCeDG (POST-E2-P1-R2): style pixels, 1 except in physical PDF
+			double styleScale = physicalStyleScale();
+			double tickSpacing = (2.5 + geo.getLineThickness() / 2d) * styleScale;
+			double tickLength = tickSpacing + 1 * styleScale;
+			double arrowlength = 1.5 * styleScale;
 			double vx, vy, factor;
 
 			switch (geo.getDecorationType()) {

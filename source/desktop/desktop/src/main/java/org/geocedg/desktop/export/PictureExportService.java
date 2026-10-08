@@ -63,6 +63,8 @@ import org.geogebra.desktop.io.MyImageIO;
 public final class PictureExportService implements PictureExportRoute {
 	/** Creator written into vector outputs. */
 	public static final String CREATOR = "GeoCeDG / FreeHEP Graphics2D Driver";
+	/** POST-E2-P1-R2: PDF points per style pixel on a physical PDF (0.4 t pt strokes). */
+	public static final double PHYSICAL_POINTS_PER_STYLE_PIXEL = 0.8;
 	private static final double CLIPBOARD_PIXEL_BUDGET = 500000;
 	private static final double CLIPBOARD_SCALE = 2;
 
@@ -181,10 +183,24 @@ public final class PictureExportService implements PictureExportRoute {
 		graphics.setProperties(properties);
 		graphics.setExactPageSize(pageWidth, pageHeight);
 		graphics.startExport();
+		// POST-E2-P1-R2: a physical document gets physical style sizes
+		double styleScale = isPhysical(app) ? physicalStyleScale(pointsPerPixel) : 1;
 		paint(view, area, new GGraphics2DD(graphics), pointsPerPixel, pointsPerPixel,
-				pointsPerPixel, false, textAsShapes ? ExportType.PDF_TEXTASSHAPES
-						: ExportType.PDF_EMBEDFONTS);
+				pointsPerPixel, styleScale, false, textAsShapes
+						? ExportType.PDF_TEXTASSHAPES : ExportType.PDF_EMBEDFONTS);
 		graphics.endExport();
+	}
+
+	/**
+	 * POST-E2-P1-R2 (physical-pdf-style-sizes section 2): one style pixel is
+	 * {@value #PHYSICAL_POINTS_PER_STYLE_PIXEL} pt on a physical PDF, so a stroke of
+	 * line thickness t is 0.4 t pt whatever the zoom, unit and drawing scale.
+	 *
+	 * @param pointsPerPixel PDF points per viewport pixel of the page
+	 * @return viewport pixels per style pixel
+	 */
+	public static double physicalStyleScale(double pointsPerPixel) {
+		return PHYSICAL_POINTS_PER_STYLE_PIXEL / pointsPerPixel;
 	}
 
 	/**
@@ -375,7 +391,13 @@ public final class PictureExportService implements PictureExportRoute {
 	private void paint(EuclidianView view, ExportArea area, GGraphics2D graphics,
 			double scaleX, double scaleY, double exportScale, boolean transparent,
 			ExportType type) {
-		ExportViewport viewport = ExportViewport.create(view, area);
+		paint(view, area, graphics, scaleX, scaleY, exportScale, 1, transparent, type);
+	}
+
+	private void paint(EuclidianView view, ExportArea area, GGraphics2D graphics,
+			double scaleX, double scaleY, double exportScale, double styleScale,
+			boolean transparent, ExportType type) {
+		ExportViewport viewport = ExportViewport.create(view, area, styleScale);
 		viewport.setOutputScale(scaleX, scaleY);
 		viewport.exportPaint(graphics, exportScale, transparent, type);
 	}

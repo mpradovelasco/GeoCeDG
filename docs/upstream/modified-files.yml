@@ -4236,7 +4236,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianView.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged. PRE-G9B-R6-plus-A-1: skip objects on hidden layers in the painting of the geometric, action, mask and measurement passes and in label, bounding-box-handle and input-box hits; a direct drawActionObjects call and the background pass keep host behavior; the host shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: expose drawActionObjectsOnShownLayers for the SVG groups of the export viewport; drawObjects uses it with identical behavior. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md.",
+      "purpose": "PRE-G9B-S4: obtain view-interface typography through an application ownership seam while preserving the Classic default. PRE-G9B-P0: consult the application presentation background when clearing the painted canvas only; getXML keeps writing the document background unchanged. PRE-G9B-R6-plus-A-1: skip objects on hidden layers in the painting of the geometric, action, mask and measurement passes and in label, bounding-box-handle and input-box hits; a direct drawActionObjects call and the background pass keep host behavior; the host shows every layer. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: expose drawActionObjectsOnShownLayers for the SVG groups of the export viewport; drawObjects uses it with identical behavior. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. POST-E2-P1-R2: getPhysicalStyleScale() returns 1; only GeoCeDG's physical PDF export viewport overrides it. Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED).",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {
@@ -5328,7 +5328,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportViewport.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip. PRE-G9B-R6-plus-C: the printing scale follows the application physical export scale. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip. PRE-G9B-R6-plus-C: the printing scale follows the application physical export scale. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. POST-E2-P1-R2: create(view, area, styleScale) sets the physical presentation scale before the drawables are created and reports it through getPhysicalStyleScale (1 by default). Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED).",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5346,7 +5346,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportService.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea. PRE-G9B-R6-plus-C: physical sizing from the drawing scale and the construction unit, the opt-in exact EMF frame, PDF page limits and physical SVG size. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea. PRE-G9B-R6-plus-C: physical sizing from the drawing scale and the construction unit, the opt-in exact EMF frame, PDF page limits and physical SVG size. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. POST-E2-P1-R2: a physical PDF is painted with the style scale 0.8 pt / pdfPointsPerPixel, so one style pixel is 0.8 pt and a stroke of thickness t is 0.4 t pt; every other route keeps 1. Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED).",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5964,14 +5964,80 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1DimensionCaptureCharacterizationTest.java",
       "change": "added",
-      "purpose": "POST-E2-P1 focal characterization of the native dimension Gap/Overshoot capture through the real tool route: analytical formula for every unit and drawing scale, the same numerical geometry and physically equivalent geometry under normalized viewports, captured-once persistence, and PDF/PGF paper measurements with their resolution; no product change.",
+      "purpose": "POST-E2-P1 focal characterization of the native dimension Gap/Overshoot capture through the real tool route: analytical formula for every unit and drawing scale, the same numerical geometry and physically equivalent geometry under normalized viewports, captured-once persistence, and PDF/PGF paper measurements with their resolution; no product change. POST-E2-P1-R2 reconciliation: the PDF zoom sweep now asserts the physical stroke 0.4 t pt; the paper geometry assertions are unchanged.",
       "authority": "docs/validation/post_e2_p1_characterization_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1R1PdfStrokeWidthCharacterizationTest.java",
       "change": "added",
-      "purpose": "POST-E2-P1-R1 characterization of the physical PDF stroke width: an interpreter of the produced PDF graphics state (q/Q, cm, w, J, j, paths, strokes, fills) measures segments, lines, circles, dimension segments, arrowheads and point markers across thickness, zoom, unit, drawing scale, export-area mode and the upstream Classic route, with the PGF control; no product change.",
+      "purpose": "POST-E2-P1-R1 characterization of the physical PDF stroke width: an interpreter of the produced PDF graphics state (q/Q, cm, w, J, j, paths, strokes, fills) measures segments, lines, circles, dimension segments, arrowheads and point markers across thickness, zoom, unit, drawing scale, export-area mode and the upstream Classic route, with the PGF control; no product change. POST-E2-P1-R2 reconciliation: the physical-route assertions now check the R2 mapping (0.4 t pt, zoom-independent arrowheads and markers); the unspecified, viewport, Classic, PGF and text characterizations are unchanged; the interpreter also reads dash arrays. The P1-R1 report and measurements stay historical evidence.",
       "authority": "docs/validation/post_e2_p1_r1_characterization_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/Drawable.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: updateStrokes and updateStrokesJustLineThickness size objStroke and decoStroke in physical style pixels when the view's physical style scale is not 1 (only GeoCeDG's physical PDF export viewport); with 1 every stroke is unchanged.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianStatic.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: scaleStroke(stroke, scale) scales width and dash pattern, keeping cap, join and miter limit; returns the stroke itself for 1.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawPoint.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: point marker geometry and marker strokes in physical style pixels (scale 1 except in physical PDF); the label offset keeps its style-pixel size.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawPolyLine.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: passes the physical style scale to the end-style shapes.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawSegment.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: middle decorations (ticks, arrows) and end styles in physical style pixels (scale 1 except in physical PDF).",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawSegmentWithEndings.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: update(stroke, scale) sizes end styles (arrows, squares, circles, diamonds, crow's feet, lines) and their outlines in physical style pixels; update(stroke) and scale 1 keep the previous integer geometry.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawVector.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: passes the physical style scale to the vector model.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/draw/DrawVectorModel.java",
+      "change": "modified",
+      "purpose": "GeoCeDG POST-E2-P1-R2: arrowhead factor and head thickness in physical style pixels; the label offset keeps its style-pixel size; scale 1 unchanged.",
+      "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1R2PhysicalPdfStyleTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P1-R2 physical PDF style sizes: strokes 0.4 t pt for segments, lines, circles, curves, polygon edges, dimension extensions and the filled dimension body; dash patterns; arrowheads 2.5 t style px; point markers 1.6 s pt; drawing scales 1:1, 1:2, 1:10, 2:1; mm, cm, m and usm; presentation unit; explicit and viewport export areas; document and live view untouched.",
+      "authority": "docs/validation/post_e2_p1_r2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1R2BaseFingerprintTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P1-R2 compatibility: digests of Classic PDF and PGF, unspecified PDF, physical PNG, SVG, EMF and PGF equal the base-tree fixture.",
+      "authority": "docs/validation/post_e2_p1_r2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/post-e2-p1-r2/base-fingerprints.json",
+      "change": "added",
+      "purpose": "POST-E2-P1-R2 base-tree fixture (0bb34739) of the compatibility digests, produced by PostE2P1R2BaseFingerprintTest on the base tree.",
+      "authority": "docs/validation/post_e2_p1_r2_candidate_report.md"
     }
   ]
 }

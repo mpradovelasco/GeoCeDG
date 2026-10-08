@@ -81,9 +81,12 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 	Path temporary;
 
 	// ------------------------------------------- primary: explicit area, mm 1:1
+	// POST-E2-P1-R2 reconciliation: P1-R1 characterized the physical route before
+	// POST-E2-P1-R2 (report and measurements kept as historical evidence); the route now
+	// renders one style pixel as 0.8 pt (physical-pdf-style-sizes)
 
 	@Test
-	void physicalWidthFollowsTheZoomForEveryStrokedObject() throws Exception {
+	void physicalPdfStrokesFollowTheR2MappingAtEveryZoom() throws Exception {
 		for (int thickness : THICKNESSES) {
 			AppGeoCeDG app = scene(UnitToken.MM, DrawingScale.ONE_TO_ONE, 1, thickness);
 			double p = app.getPhysicalExportScale();
@@ -93,7 +96,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 				Pdf pdf = interpret(pdf(app, "explicit-mm-t" + thickness + "-z" + ZOOMS[z]));
 				Map<String, Object> row = base("explicit", "mm", "1:1", thickness, ZOOMS[z], app,
 						pdf);
-				double expected = thickness / 2.0 * p * 10 / ZOOMS[z];
+				double expected = 0.4 * thickness * MM_PER_PT;
 				row.put("expectedWidthMm", expected);
 				for (Object[] tag : tags()) {
 					Stroke stroke = pdf.stroke((GColor) tag[1]);
@@ -109,7 +112,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 				Box body = pdf.widestFill(DIMENSION_LINE);
 				assertNotNull(body, "dimension line body");
 				row.put("dimensionLineFilledBodyMm", body.height() * MM_PER_PT);
-				assertEquals(expected, body.height() * MM_PER_PT, expected * 2E-3,
+				assertEquals(expected, body.height() * MM_PER_PT, Math.max(expected * 2E-3, 0.006),
 						"dimension line body t=" + thickness + " zoom " + ZOOMS[z]);
 				// the centreline geometry and the page never depend on the zoom
 				Stroke segment = pdf.stroke(SEGMENT);
@@ -127,14 +130,14 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 				record("explicitArea", row);
 				segmentWidths[z] = segment.effectivePt * MM_PER_PT;
 			}
-			assertEquals(ZOOMS[ZOOMS.length - 1] / ZOOMS[0],
+			assertEquals(1,
 					segmentWidths[0] / segmentWidths[ZOOMS.length - 1], 1E-3,
 					"width inversely proportional to the zoom at export");
 		}
 	}
 
 	@Test
-	void arrowheadsAndPointMarkersFollowTheStrokeRuleButTextDoesNot() throws Exception {
+	void arrowheadsAndPointMarkersAreZoomIndependentAndTextIsUnchanged() throws Exception {
 		AppGeoCeDG app = scene(UnitToken.MM, DrawingScale.ONE_TO_ONE, 1, 2);
 		double[] arrow = new double[ZOOMS.length];
 		double[] marker = new double[ZOOMS.length];
@@ -149,9 +152,10 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 			plain[z] = pdf.fillBox(PLAIN_TEXT).height();
 		}
 		for (int z = 1; z < ZOOMS.length; z++) {
-			double ratio = ZOOMS[0] / ZOOMS[z];
-			assertEquals(ratio, arrow[z] / arrow[0], 1E-3, "arrowhead size");
-			assertEquals(ratio, marker[z] / marker[0], 1E-3, "point marker size");
+			final double ratio = ZOOMS[0] / ZOOMS[z];
+			// filled sizes: printed-coordinate resolution, below 2 % here
+			assertEquals(1, arrow[z] / arrow[0], 2E-2, "arrowhead size");
+			assertEquals(1, marker[z] / marker[0], 2E-2, "point marker size");
 			Map<String, Object> row = new LinkedHashMap<>();
 			row.put("xscale", ZOOMS[z]);
 			row.put("arrowRatio", arrow[z] / arrow[0]);
@@ -171,7 +175,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 	// ------------------------------------------------ units and drawing scale
 
 	@Test
-	void unitsAndDrawingScaleActOnlyThroughPhysicalMillimetresPerPixel() throws Exception {
+	void unitsAndDrawingScaleNoLongerChangeThePhysicalPdfWidth() throws Exception {
 		UnitToken[] units = {UnitToken.MM, UnitToken.CM, UnitToken.M};
 		for (DrawingScale scale : new DrawingScale[] {DrawingScale.ONE_TO_ONE,
 				DrawingScale.of(1, 10)}) {
@@ -189,7 +193,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 					Stroke segment = pdf.stroke(SEGMENT);
 					Map<String, Object> row = base(mode, units[u].token(), scale.toString(), 2,
 							zoom, app, pdf);
-					double expected = 1.0 * app.getPhysicalExportScale() * 10 / zoom;
+					double expected = 0.4 * 2 * MM_PER_PT;
 					row.put("expectedWidthMm", expected);
 					row.put("segmentWidthMm", segment.effectivePt * MM_PER_PT);
 					row.put("segmentLengthMm", segment.length() * MM_PER_PT);
@@ -205,7 +209,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 				assertEquals(normalized[0], normalized[u], normalized[0] * 1E-4,
 						"the same pixels per physical millimetre give the same width");
 			}
-			assertEquals(1.0 / 8 * ratio, normalized[0], 1E-6,
+			assertEquals(0.4 * 2 * MM_PER_PT, normalized[0], 0.4 * 2 * MM_PER_PT * 1E-4,
 					"t=2: 1 px at 8 px per model mm, times the drawing scale");
 		}
 	}
@@ -234,7 +238,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 	// ----------------------------------------------- viewport-derived export area
 
 	@Test
-	void theViewportFallbackChangesThePageWithTheZoomButKeepsTheSameWidthRule()
+	void theViewportFallbackChangesThePageButNotThePhysicalWidth()
 			throws Exception {
 		AppGeoCeDG app = scene(UnitToken.MM, DrawingScale.ONE_TO_ONE, 1, 2);
 		app.getExportAreaSession().clear();
@@ -250,8 +254,8 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 			assertEquals(800 / zoom * app.getPhysicalExportScale() * 10,
 					pdf.width() * MM_PER_PT, 0.01);
 			if (segment != null) {
-				assertEquals(app.getPhysicalExportScale() * 10 / zoom,
-						segment.effectivePt * MM_PER_PT, 1E-6);
+				assertEquals(0.4 * 2 * MM_PER_PT,
+						segment.effectivePt * MM_PER_PT, 0.4 * 2 * MM_PER_PT * 1E-4);
 			}
 		}
 	}
@@ -508,6 +512,8 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 		final int cap;
 		final int join;
 		final List<double[]> points;
+		/** effective dash lengths in points, or null for a solid stroke */
+		double[] dashPt;
 
 		Stroke(double userWidth, double effectivePt, int cap, int join, List<double[]> points) {
 			this.userWidth = userWidth;
@@ -622,6 +628,8 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 		int join = 0;
 		String stroke = "0/0/0";
 		String fill = "0/0/0";
+		double[] dash = null;
+		Deque<double[]> dashStack = new ArrayDeque<>();
 		double fontSize = 0;
 		double[] textMatrix = {1, 0, 0, 1, 0, 0};
 		List<double[]> path = new ArrayList<>();
@@ -639,6 +647,7 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 			case "q":
 				stack.push(new double[] {ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5], width,
 					cap, join});
+				dashStack.push(dash == null ? new double[0] : dash);
 				break;
 			case "Q":
 				double[] saved = stack.pop();
@@ -646,6 +655,20 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 				width = saved[6];
 				cap = (int) saved[7];
 				join = (int) saved[8];
+				double[] savedDash = dashStack.pop();
+				dash = savedDash.length == 0 ? null : savedDash;
+				break;
+			case "d":
+				String array = operands.get(0).replace("[", "").replace("]", "").trim();
+				if (array.isEmpty()) {
+					dash = null;
+				} else {
+					String[] parts = array.split("\\s+");
+					dash = new double[parts.length];
+					for (int i = 0; i < parts.length; i++) {
+						dash[i] = Double.parseDouble(parts[i]);
+					}
+				}
 				break;
 			case "cm":
 				ctm = multiply(numbers(operands, 6), ctm);
@@ -699,8 +722,14 @@ class PostE2P1R1PdfStrokeWidthCharacterizationTest {
 					}
 				}
 				double scale = Math.sqrt(Math.abs(ctm[0] * ctm[3] - ctm[1] * ctm[2]));
-				pdf.strokes.computeIfAbsent(stroke, k -> new ArrayList<>())
-						.add(new Stroke(width, width * scale, cap, join, points));
+				Stroke drawn = new Stroke(width, width * scale, cap, join, points);
+				if (dash != null) {
+					drawn.dashPt = new double[dash.length];
+					for (int i = 0; i < dash.length; i++) {
+						drawn.dashPt[i] = dash[i] * scale;
+					}
+				}
+				pdf.strokes.computeIfAbsent(stroke, k -> new ArrayList<>()).add(drawn);
 				path.clear();
 				break;
 			case "f":
