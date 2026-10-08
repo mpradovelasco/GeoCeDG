@@ -5960,6 +5960,12 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-E2 smoke follow-up Desktop tests: thickness preference on the tools, existing dimensions unchanged, saved style precedence, hidden default for new documents, dialog toggle as one undo step, persistence, historical documents and PGF export text.",
       "authority": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1DimensionCaptureCharacterizationTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P1 focal characterization of the native dimension Gap/Overshoot capture through the real tool route: analytical formula for every unit and drawing scale, the same numerical geometry and physically equivalent geometry under normalized viewports, captured-once persistence, and PDF/PGF paper measurements with their resolution; no product change.",
+      "authority": "docs/validation/post_e2_p1_characterization_report.md"
     }
   ]
 }

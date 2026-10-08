@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1",
+  "registeredPhaseId": "POST-E2-P1",
+  "artifactKind": "CHARACTERIZATION_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p1_characterization_report.md",
+  "measurements": "geocedg/validation/post-e2/post-e2-p1-measurements.json",
+  "technicalCandidateState": "CHARACTERIZATION CANDIDATE, FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_planning_author_decision_record.md",
+  "baseline": {"commit": "ed3332b5f06c83e63788b32a79fe703b13aa4375", "tree": "582c87ea843f5d375eb7ba6d0db2b72828edb711"},
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P1 -LogDirectory artifacts\\agent\\<fresh-name>",
+  "productChange": false,
+  "serializationChange": false,
+  "implementationAuthorized": false,
+  "selfApproved": false,
+  "passClaimed": false,
+  "analytical": {
+    "gapModel": "0.001 / (f(c) * a / b)",
+    "overshootModel": "0.002 / (f(c) * a / b)",
+    "drawingScale": "a:b = paper / physical model",
+    "implementationMatches": true,
+    "relativeTolerance": 1e-12
+  },
+  "codeIdentity": "captureMagnitudes, DrawingScale and DimensionFigure2D unchanged from 878ff66b to ed3332b5",
+  "experimentA": {
+    "geometry": "A=(0,0), B=(40,0)",
+    "finding": "paper sizes exactly 1 mm / 2 mm in every physical case; same numbers mean 10x (cm) and 1000x (m) larger objects, so mm marks are relatively larger; zoom never enters the capture",
+    "defaultZoomScreenPx": {"mm 1:1": [50, 100], "mm 1:10": [500, 1000], "cm 1:1": [5, 10], "m 1:1": [0.05, 0.1]}
+  },
+  "experimentB": {
+    "geometry": "40 mm as (40,0) mm, (4,0) cm, (0.04,0) m",
+    "cases": 36,
+    "paperGapMm": 1,
+    "paperOvershootMm": 2,
+    "screenEqualAcrossUnitsUnderNormalizedViewport": true,
+    "linearEqualsAligned": true
+  },
+  "unspecifiedFallback": {"gapPx": 4, "overshootPx": 8, "capturedAtCreationZoom": true},
+  "persistence": {"zoom": "unchanged", "presentationUnit": "unchanged", "constructionUnit": "unchanged, no retroactive conversion", "drawingScale": "unchanged", "saveReopen": "unchanged", "independentNumbers": true},
+  "export": {
+    "pdf": {"gapMm": 1.0, "overshootMm": 2.0, "maxDeviationMm": 1e-8, "resolutionMm": 0.00025, "supportsTolerance": true},
+    "pgf": {"gapMm": 1.0, "overshootMm": 2.0, "maxDeviationMm": 1e-12, "resolutionMm": 5.5e-11, "supportsTolerance": true},
+    "toleranceMm": 0.01,
+    "separateObservation": {"id": "OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM", "pdfStrokeWidthMmAtPxPerUnit": {"1": 1.0, "4": 0.25, "10": 0.1}, "pgfStrokeWidthMm": 0.282, "paperGeometryUnchanged": true, "proposed": true}
+  },
+  "classification": ["P1-INTENDED-PHYSICAL-CAPTURE", "P1-DEFAULT-UX-LIMITATION"],
+  "notFound": ["P1-CONVERSION-DEFECT", "P1-EXPORT-OR-VIEW-DISCREPANCY (Gap/Overshoot geometry)"],
+  "rootCause": "paper-space capture (1 mm / 2 mm at the drawing scale, zoom-independent by contract) shown through GeoGebra's unit-agnostic default view scale of 50 px per model unit, which magnifies mm documents about 13x on screen",
+  "affectedLayer": "GeoCeDG Desktop creation defaults versus the inherited default view scale",
+  "recommendation": {"now": "Option A: user-guide sentence", "ifControlWanted": "Option B: configurable paper Gap/Overshoot creation preferences, captured once; native-dimensions 8.3 amendment", "notRecommended": "Option C", "owner": "GeoCeDG Desktop", "verificationClass": "BOUNDED_PHASE"},
+  "openQuestions": [
+    "accept the classification",
+    "Option A only or Option B (range, step, application preference)",
+    "register OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM",
+    "physical-zoom view aid in a separate workstream",
+    "proceed to P2"
+  ],
+  "tests": {"class": "org.geocedg.desktop.PostE2P1DimensionCaptureCharacterizationTest", "methods": 6, "failures": 0},
+  "registration": {"phase": "POST-E2-P1", "requiredChecks": ["compile.shared.semantic", "compile.desktop.semantic", "junit.desktop.post-e2-p1.semantic"], "selection": "post-e2-p1.desktop"},
+  "inventory": {
+    "producer": "tools/agent/checks/gradle-test-evidence-producer.ps1",
+    "updater": "tools/agent/update-verification-junit-inventory.ps1 (in-session)",
+    "discovery": {"shared": 6046, "desktop": 1910, "testDryRun": true},
+    "executedSelections": {
+      "post-e2-p1.desktop": {"after": 6, "sha256": "9a9efe67a198fe04e810e620ae02cdc478019b2004a40f2896689ec772dc5499"},
+      "final.desktop": {"before": 1898, "after": 1904, "sha256": "d8bf0578a0a35d7b88598013491109cf6c8db69ed2293d353b2cdd7e1d1733d6"}
+    },
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "e8d1f1220f8f1205311ededc49f087cfb7a33f02a2af3aa1693c3da8b9d4a48b", "after": "f11e9c7260380fc4657e59b890c537874a284a9b9f26c38fd853e78f4e37af5a"},
+    "coveragePins": "45 selections, 52 PHASE selections, post-e2-p1.desktop 6"
+  }
+}
