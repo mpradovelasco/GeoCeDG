@@ -3,9 +3,12 @@
 - Status: **DESIGN — AUTHOR APPROVED** (author decision of 2026-10-10 on
   `DQ-E3-1` to `DQ-E3-16`,
   [E3 author-decision record](../validation/pre_g9b_r6_plus_e3_author_decisions_record.md),
-  which is their authority and prevails over this file). The approval concerns
-  this reconciled design, **not its implementation**: implementation is
-  `NOT AUTHORIZED` and needs a separate explicit author authorization.
+  which is their authority and prevails over this file), **reconciled** by the
+  author decision of 2026-10-10 that resolves `OTQ-E3-1` and corrects the
+  numerical-accuracy contract (record §5). Implementation is **AUTHORIZED**
+  (2026-10-10, `PRE-G9B-R6-plus-E3-IMPLEMENTATION`) on
+  `ff56099184544e5988c63e0ea3339e3d0fe01fac`; publication of the
+  implementation is `NOT AUTHORIZED`.
 - Produced by: `PRE-G9B-R6-plus-E3-PREP` (2026-10-09), reconciled and promoted
   by `PRE-G9B-R6-plus-E3-PREP-CLOSEOUT` (2026-10-10); no implementation
 - Bases: `P_R6PLUS_POST_E2_P4` = `13e08ac1fe1c6c931a88985b97df93d8445812b9`
@@ -20,7 +23,7 @@
 - Evidence: [characterization report](../validation/pre_g9b_r6_plus_e3_preparation_characterization_report.md)
   (`K0`–`K21`, frozen) and its JSON mirror
 - Execution contract when authorized: [canonical `E3` prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e3-iso-a-border-and-export-area.prompt.md)
-  (`PREPARED — NOT AUTHORIZED`)
+  (`AUTHORIZED FOR IMPLEMENTATION`, 2026-10-10)
 - Normative inputs it implements, not restates: [unit-system specification](../../geocedg/specs/units/unit-system.md)
   §3.2, §3.3, §5.3, §6, §7.2, §7.3, §12, §13, §17, §18.4;
   [ADR 0032](../adr/0032-unit-system-semantics-and-persistence-ownership.md);
@@ -195,29 +198,116 @@ conv(L) = ((L · b) / a) · u             binary64, exactly this order  [AD]
 ```
 
 - Mathematically `L_model = (L/1000) / (f(c) · a/b) = L · u · b/a` [NI].
-- Domain [ID]: `L` ∈ the ISO and margin integers (≤ 1189); `a, b` integers in
-  `1 … 10^9`; `u` finite and `> 0`. `L · b ≤ 1.189 · 10^12 < 2^53` is exact;
-  `(L·b)/a` is one correctly rounded division; `· u` one more rounding.
-- Equivalent pairs give **bit-identical** results (`2:100` and `1:50`): the
-  division of exactly represented integers is correctly rounded, so only the
-  rational value `b/a` matters [ID]. The label still shows the normal form.
-- Overflow and underflow [ID]: if `conv(W_p)`, `conv(H_p)` (or the frame
-  values) is not finite or `≤ 0`, or a computed coordinate is not finite, or
-  the addition is absorbed (`x_P + W == x_P`, `y_P − H == y_P`, and the same
-  for the frame), the affected outputs are undefined (§14); no silent rounding
-  or approximation of the paper size [AD].
-- Tolerances [ID]: implementation tests compare `conv()` **bit for bit** with
-  this expression; against the exact value (exact SI factor, or the stored `k`
-  for `usm`) the relative error is ≤ `2^-50` (rounding budget of five
-  operations of ≤ `2^-53`); measured: ≤ 1 ulp, 536 of 624 cases correctly
-  rounded [CE `K6`]. Physical page checks use ≤ 0.001 pt for PDF and 0.01 mm
-  for EMF, as the `C` tests do. The characterization does not prove correct
-  rounding for every admissible input, and no such claim is made [AD].
+- Amended by the author decision of 2026-10-10 (numerical-accuracy contract
+  correction, author-decision record §5): the expression and its evaluation
+  order are unchanged; the earlier unconditional `2^-50` claim is replaced by
+  the three obligations below. `ε = 2^-53` is the binary64 unit roundoff;
+  "normal" means a magnitude in `[2^-1022, Double.MAX_VALUE]`.
+
+### 7.1 Domain [ID]
+
+`L` is a nominal millimetre integer of the construction: an ISO side, a margin,
+a frame side `W_f`/`H_f`, or a label offset `W_p − m_R`, `H_p − m_B`; always
+`1 ≤ L ≤ 1189`. `a, b` are integers in `1 … 10^9`; `u` is finite and `> 0`
+(normal or subnormal).
+
+### 7.2 Obligation A — deterministic evaluation [AD]
+
+For the same binary64 inputs the command evaluates exactly
+`((L·b)/a)·u` and produces bit-identical results. The build targets Java 17,
+whose floating-point semantics are strict IEEE 754 (JEP 306), so the result is
+independent of the supported JVM and platform. Tests compare against this
+expression bit for bit; this obligation holds whatever accuracy is achieved.
+Save/reopen reproduces every input bit-exactly [CE P4], hence every
+coordinate. Equivalent pairs give bit-identical results (`2:100` and `1:50`):
+`L·b` and `a` are exact, and IEEE division is correctly rounded, so only the
+rational value `L·b/a` matters [ID].
+
+### 7.3 Obligation B — error relative to the captured factor [ID, derivation]
+
+Reference: the exact real value `X = L · (b/a) · u` with `u` taken as the
+captured binary64 input.
+
+1. `p = L·b` is **exact**: `p ≤ 1189 · 10^9 < 2^53`.
+2. `q = fl(p/a)`: `p/a ∈ [10^-9, 1.189 · 10^12]` is always normal, so
+   `q = (p/a)(1 + δ₁)`, `|δ₁| ≤ ε`.
+3. `r = fl(q·u)`:
+   - if `q·u` is normal and finite: `r = q·u(1 + δ₂)`, `|δ₂| ≤ ε`, hence
+     `|r/X − 1| ≤ (1+ε)² − 1 = 2ε + ε² < 2^-51.99`;
+   - if `0 < q·u < 2^-1022` (subnormal): only the absolute bound
+     `|r − q·u| ≤ 2^-1075` holds; **no relative bound is claimed**;
+   - if `r = 0` (underflow) or `r` is infinite (overflow): the geometry is
+     not representable (§7.6).
+
+So the conventional bound `|r/X − 1| < 2^-51.99` holds **exactly when
+`fl(q·u)` is normal and finite**; a subnormal `u` alone does not break it.
+
+### 7.4 Obligation C — error relative to the physical unit definition [ID, derivation]
+
+Reference: `X* = L · (b/a) · 10^-3 / f(c)` with `f(c)` the exact SI value
+(`mm`, `cm`, `m`) or, for `usm`, the stored binary64 `k`, which *is* the
+definition (`unit-system.md` §4.1). The tool captures
+`u = fl(fl(10^-3) / fb(c))`:
+
+| Unit | Rounding events in `u` | Capture error `|u/u* − 1|` (when `10^-3/fb(c)` is normal) |
+|---|---|---|
+| `mm` | none: `fl(10^-3)` and `fb(mm)` are the same binary64, `u = 1` exactly | `0` |
+| `m` | `fl(10^-3)` | `≤ ε` |
+| `cm` | `fl(10^-3)`, `fb(cm)`, division | `≤ (1+ε)²/(1−ε) − 1 < 3.0001 ε` |
+| `usm` (`k` exact by definition) | `fl(10^-3)`, division | `≤ (1+ε)² − 1 < 2.0001 ε` |
+
+Combined with B, when **both** `u` and `fl(q·u)` are normal and finite:
+`|r/X* − 1| ≤ (1+ε)⁴/(1−ε) − 1 < 5.001 ε < 2^-50` (worst case `cm`). This is the only
+statement of the `2^-50` bound, and it holds unconditionally for `mm`, `cm`
+and `m` (there `u ∈ {1, fl(0.1), fl(0.001)}` and `q·u ∈ [10^-12, 1.2 · 10^12]`).
+For `usm`:
+
+| `k` (stored binary64) | `10^-3 / k` | Behavior |
+|---|---|---|
+| `≈ 5.6 · 10^-312 ≤ k ≤ ≈ 4.5 · 10^304` (`10^-3/k` within `[2^-1022, MAX]`) | normal | bound `< 2^-50` when `fl(q·u)` is normal |
+| `k > ≈ 4.5 · 10^304` | subnormal | `u` captured, sheet constructed; **no accuracy guarantee** (reliability `UNGUARANTEED`) |
+| `k < ≈ 5.6 · 10^-312` | overflows to `∞` | **capture impossible**: the tool refuses creation with the explicit reason "unit factor not representable"; nothing is clamped |
+
+### 7.5 Coordinates and absorption [ID, derivation]
+
+Corner coordinates are `fl(x_P + W)`, `fl(y_P − H)` and the frame analogues;
+each rounding has absolute error `≤ ε · |result|`. A realized edge, the
+difference of its two corner coordinates `c₁`, `c₂`, therefore deviates from
+the converted dimension by at most `ε(|c₁| + |c₂|)`. If an addition is fully
+absorbed (`x_P + W == x_P`, `y_P − H == y_P`, frame alike), the rectangle
+collapses and is not representable (§7.6). A large `|P|` that is not fully
+absorbed keeps a defined sheet, but its realized edges carry the coordinate
+term above, which the reliability classification includes.
+
+### 7.6 Validity versus reliability [AD policy, ID mechanism]
+
+Two separate classifications, never confused:
+
+| Classification | Condition | Effect |
+|---|---|---|
+| **not representable** (invalid) | an input outside §2; `u` not finite or `≤ 0`; `conv()` result `0` or infinite; a coordinate infinite; an absorbed addition | the affected outputs are **undefined** (§15) — never clamped, rounded or replaced by an approximate sheet |
+| **defined, `GUARANTEED`** | representable, `u` normal, every `fl(q·u)` normal | the bounds of §7.3–§7.4 hold |
+| **defined, `UNGUARANTEED`** | representable, but `u` or a `fl(q·u)` is subnormal | the sheet exists exactly as computed; no accuracy guarantee is claimed; physical coherence is `NOT_DETERMINABLE` (§9) |
+
+A failure to establish the conventional bound is **not** mathematical
+invalidity. The reliability classification is a pure kernel helper over the
+inputs (shared, used by the coherence computation and the tests); it adds no
+output, no serialization and no live dependency.
+
+### 7.7 Physical page checks and evidence
+
+- Implementation tests: bit identity with the canonical expression (A); the
+  bounds of B and C against **independent exact references** computed with
+  `BigDecimal` from the exact binary64 values and exact SI decimals — never by
+  re-evaluating the binary64 expression; page checks at ≤ 0.001 pt (PDF) and
+  0.01 mm (EMF), as the `C` tests do.
+- Historical evidence, unchanged: the preparation measured ≤ 1 ulp and 536 of
+  624 correctly rounded cases for built-in units [CE `K6`]; that measurement
+  did not establish the corrected contract, which rests on the derivations
+  above.
 - Reference case: A3 landscape, `mm` (`u = 1`), 1:50 → `21000 × 14850`
   exactly; with `cm` (`u = 0.1`) → `2100 × 1485.0000000000002`, still a
   420 × 297 mm page at 1:50 [CE `K12`].
-- Save/reopen reproduces every input and therefore every coordinate
-  bit-exactly [CE P4].
 
 ## 8. Unit reinterpretation after creation (`DQ-E3-6`)
 
@@ -239,9 +329,16 @@ current:   effC (unit state), a_n:b_n (session drawingScale)
 
 physical-size coherence   (f_n / f_c) · (s_n / s_c) = 1     s = a/b
   computed directly [ID]: E_i = conv_c(P_i) · fb(effC) · (a_n / b_n) · 1000   mm,  i ∈ {W_p, H_p}
-  COHERENT          |E_i − P_i| ≤ 1e-6 mm for both sides
-  INCOHERENT        otherwise
-  NOT_DETERMINABLE  effC unspecified or invalid, or PAPER undefined         (never "coherent")
+  uncertainty [ID, amended 2026-10-10]:
+                    U_i = E_i · 2^-50 + ε(|c₁| + |c₂|)_i · fb(effC) · (a_n / b_n) · 1000   mm
+                    (E_i arithmetic: fb representation and four operations, five
+                    roundings, (1+ε)⁵ − 1 < 2^-50; plus the realized-edge
+                    coordinate term of §7.5 converted to millimetres)
+  NOT_DETERMINABLE  effC unspecified or invalid; PAPER undefined; reliability
+                    UNGUARANTEED (§7.6); any intermediate of E_i or U_i not
+                    finite or subnormal; or U_i > 1e-6 mm on either side
+  COHERENT          otherwise, and |E_i − P_i| ≤ 1e-6 mm on both sides
+  INCOHERENT        otherwise                                 (never a false "coherent")
 
 scale-label coherence
   MATCH             gcd-normal (a_c:b_c) == gcd-normal (a_n:b_n), exactly
@@ -249,8 +346,10 @@ scale-label coherence
   NOT_APPLICABLE    effC unspecified (drawingScale has no engineering meaning, §12)
 ```
 
-- `E_i` is computed from the captured inputs, never from coordinates, so it is
-  independent of `P`. The `1e-6 mm` criterion lies below every output
+- `E_i` is computed from the captured inputs, never from coordinates; the
+  coordinate term enters only through `U_i`, so a sheet far from the origin
+  whose corners can no longer realize the nominal size within the criterion is
+  `NOT_DETERMINABLE`, not `COHERENT`. The `1e-6 mm` criterion lies below every output
   quantization (0.001 pt ≈ 3.5 · 10^-4 mm in PDF; 0.01 mm in EMF) and far above
   the binary64 rounding of these magnitudes (≈ 10^-12 mm for 1189 mm) [ID].
 - Examples: A3 `mm` 1:50 at session 1:50 → `COHERENT` / `MATCH`; at 1:100 →
@@ -389,7 +488,16 @@ Catalog [AD; re-verified at the base]: 127 → **130** actions —
 catalog action. Names: `IsoABorder`, Spanish alias `MarcoISOA`; tool text
 "ISO A Border" / "Marco ISO A" through the existing `X.Tool`/`X.Help` keys;
 both names are free of built-in commands, aliases and the 24 `Templatev7`
-macros [CE `K16`; re-verified]. Classic surface: OTQ-E3-1.
+macros [CE `K16`; re-verified].
+
+**Classic surface** [AD 2026-10-10, `OTQ-E3-1` resolved]: `IsoABorder` is a
+shared-kernel command available in GeoCeDG and in the Classic profile built
+from this fork, as the `E2` commands are; no feature gate, no flag, no
+parallel Classic implementation; its semantics do not depend on the profile.
+The menu action, tool, dialog, `ISO_A_SELECTION`, `ISO_A_BORDER` as a
+session producer, the coherence indicators, "Use sheet scale" and the
+activation workflow and notices are **GeoCeDG Desktop only**; Classic gains no
+GUI. Verified by `T-CLASSIC` (§16).
 
 ## 13. Persistence classes
 
@@ -428,6 +536,8 @@ replaced; valid inputs restore them with the same identities.
 | `n` not an integer in `0 … 10` (`3.5`, `−1`, `11`, NaN) | undefined | undefined | undefined |
 | `a` or `b` not an integer in `1 … 10^9` | undefined | undefined | undefined |
 | `u ≤ 0`, NaN or infinite | undefined | undefined | undefined |
+| `conv()` result `0` (underflow) or infinite (overflow) for a paper side | undefined | undefined | undefined |
+| defined but `u` or a `fl(q·u)` subnormal (§7.6) | defined, `UNGUARANTEED` | as the other rows, `UNGUARANTEED` | defined |
 | `conv(W_p)`, `conv(H_p)` non-finite or `≤ 0`; paper coordinates non-finite or absorbed | undefined | undefined | undefined |
 | `InnerFrame = false` | defined | undefined | defined |
 | frame impossible (`W_f ≤ 0` or `H_f ≤ 0`, A10 portrait) | defined | undefined | defined |
@@ -444,7 +554,16 @@ The tool never creates an impossible frame; a typed command with
 | `T-ISO-TABLE` | 11 sizes × 2 orientations, `mm`, 1:1 | paper `W`, `H` equal the ISO integers exactly |
 | `T-FRAME` | every size × orientation, `InnerFrame` on/off | frame per §5–§6; A10 portrait impossible; no zero or negative frame; paper unaffected |
 | `T-MARGINS` | A3, A4 | frame offsets `conv(20)`, `conv(10)`, size `conv(W_f) × conv(H_f)` bit-identical; no conversion other than `conv()` |
-| `T-CONVERSION` | `mm`, `cm`, `m`, `usm` (inch; `k = fb(mm)`) × 1:1, 1:2, 1:10, 2:1, 1:50; `2:100` against `1:50` | bit identity with §7; relative error ≤ `2^-50`; equivalent pairs bit-identical |
+| `T-CONVERSION` | `mm`, `cm`, `m`, `usm` (inch; `k = fb(mm)`) × 1:1, 1:2, 1:10, 2:1, 1:50; `2:100` against `1:50` | bit identity with §7.2; bounds of §7.3–§7.4 against `BigDecimal` references; equivalent pairs bit-identical |
+| `T-E3-NUMERIC-NORMAL` | all ISO sides, margins, frame sides × built-in units × scales incl. `1:10^9` and `10^9:1` | `GUARANTEED`; B `< 2^-51.99` and C `< 2^-50` against exact references |
+| `T-E3-NUMERIC-SUBNORMAL` | typed `u` subnormal with a normal product, and a normal `u` with a subnormal product | sheet defined exactly as computed; `UNGUARANTEED`; no relative bound asserted |
+| `T-E3-NUMERIC-EXTREME-USM` | `usm` `k` = `10^300`, `10^305`, `10^-300`, `10^-311`, `10^-313` | capture normal / subnormal (`UNGUARANTEED`) / refused (`∞`) exactly per §7.4; nothing clamped |
+| `T-E3-NUMERIC-OVERFLOW` | `u` large enough that `fl(q·u) = ∞` | outputs undefined; recovery on valid `u` |
+| `T-E3-NUMERIC-UNDERFLOW` | `u = Double.MIN_VALUE` with small `q` (`fl(q·u) = 0`) | outputs undefined |
+| `T-E3-NUMERIC-COORDINATE-ABSORPTION` | `P` = `(10^20, 0)` with a small sheet; `P` = `(10^15, 10^15)` | absorbed: undefined; not absorbed but large: defined, physical coherence `NOT_DETERMINABLE` when `U_i > 10^-6 mm` |
+| `T-E3-NUMERIC-CAPTURE-ERROR` | tool capture for `mm`, `cm`, `m`, `usm` | `u` equals `fl(fl(10^-3)/fb(c))` bit for bit; capture error within §7.4 against exact decimals |
+| `T-E3-NUMERIC-REPRODUCIBILITY` | same inputs twice, after save/reopen, after undo/redo, `2:100` vs `1:50` | bit-identical coordinates |
+| `T-E3-NUMERIC-COHERENCE-UNDETERMINABLE` | `UNGUARANTEED` sheets; non-finite `E_i`; `U_i > 10^-6 mm` | physical state `NOT_DETERMINABLE`, never `COHERENT` |
 | `T-REFERENCE-CASE` | A3 landscape, `mm`, 1:50 | `21000 × 14850` exactly; label `A3 — 1:50` |
 | `T-REFERENCE-POINT` | `P` = (0,0), (−1234.5, 987.25), (10^6, −10^6) | corners per §4; vertex order; axis-aligned |
 | `T-ORIENTATION` | landscape / portrait | width long / short; `P` upper-left; no rotation |
@@ -467,6 +586,7 @@ The tool never creates an impossible frame; a typed command with
 | `T-LABEL` | `2:100` typed; EN/ES; unit change; frame on/off | `A3 — 1:50`; language- and unit-independent; anchor per §10; DXF without text |
 | `T-TOOL` | dialog defaults per size; frame checkbox disabled for A10 portrait; cancel | defaults per §12; no invalid frame; cleanup on cancel |
 | `T-GATES` | ADR 0031 pins, GGBScript matrix (6 rows per syntax line, 14 probes), R5-B fingerprints, `SelfTest`, profile pins 127 → 130 | pins moved exactly as declared; negative controls still fail closed |
+| `T-CLASSIC` | command typed in GeoCeDG and in Classic (EN canonical, ES `MarcoISOA`), GGBScript, save/reopen in both; Classic menus and toolbar | the same construction in both profiles; no new Classic GUI; no other command changes |
 | `T-LEGACY` | `Templatev7.ggb`; g9p documents with `sheetISOAnLand` | hash unchanged; documents load and round-trip unchanged |
 | `T-DETERMINISM` | the same border twice in fresh documents | identical XML |
 
@@ -488,10 +608,10 @@ documentary closeout itself is `DOCUMENTATION_STATUS_ONLY`.
 
 | Id | Detail | Blocks implementation authorization |
 |---|---|---|
-| `OTQ-E3-1` | Classic surface of the command: follow the `E2` precedent (ungated shared command; no Classic menu, tool, producer or indicator) or gate it out of Classic | **yes** — the author chooses at implementation authorization (recommended default: the `E2` precedent) |
-| `OTQ-E3-2` | Algebra View presentation of an undefined `FRAME` (shown as undefined, or marked auxiliary by the tool) | no |
-| `OTQ-E3-3` | coherence presentation for an `ISO_A_SELECTION` rectangle after a later scale change | no; none in `E3` without a further decision |
-| `OTQ-E3-4` | a frameless sheet (default for A5–A10) shows only its label; with `PAPER` and a tool-created `P` hidden there is no visible draggable output, so it is moved by editing `P` or by showing `PAPER` (a consequence of `DQ-E3-2`, `DQ-E3-3` and `DQ-E3-13`, not a new rule) | no; the author may revisit it at implementation authorization |
+| `OTQ-E3-1` | Classic surface of the command | **RESOLVED — AUTHOR APPROVED (2026-10-10)**: shared kernel command available in GeoCeDG and Classic; GeoCeDG-specific GUI and export-area orchestration remain exclusive to GeoCeDG Desktop (§12). Implementation authorization: **UNBLOCKED** |
+| `OTQ-E3-2` | Algebra View presentation of an undefined `FRAME` | retained implementation-design disposition (2026-10-10): the tool may mark an undefined `FRAME` auxiliary; its mathematical undefined state stays explicit |
+| `OTQ-E3-3` | coherence presentation for an `ISO_A_SELECTION` rectangle after a later scale change | retained implementation-design disposition (2026-10-10): no indicator for `ISO_A_SELECTION` without separate authorization |
+| `OTQ-E3-4` | a frameless sheet (default for A5–A10) shows only its label; with `PAPER` and a tool-created `P` hidden there is no visible draggable output, so it is moved by editing `P` or by showing `PAPER` (a consequence of `DQ-E3-2`, `DQ-E3-3` and `DQ-E3-13`, not a new rule) | retained implementation-design disposition (2026-10-10): moved through its reference point or by temporarily showing `PAPER`; no new dragging mechanism |
 
 ## 19. Decision traceability and superseded statements
 
@@ -513,6 +633,8 @@ documentary closeout itself is `DOCUMENTATION_STATUS_ONLY`.
 | `DQ-E3-14` | `IsoABorder` / `MarcoISOA`; 127 → 130 | §12 |
 | `DQ-E3-15` | no migration | §14 |
 | `DQ-E3-16` | `INTEGRATED_PHASE` | §17 |
+| `OTQ-E3-1` (amendment 2026-10-10) | shared command in GeoCeDG and Classic; GUI and export orchestration GeoCeDG-only | §12, §16 `T-CLASSIC` |
+| numerical contract (amendment 2026-10-10) | obligations A/B/C; validity versus reliability; `NOT_DETERMINABLE` on unreliable or uncertain physical results | §7, §9, §15, §16 |
 
 Not selected (kept only as the record of the preparation alternatives): R1
 segments, R3 polygon, B dedicated type; trim-only and title-block sheet

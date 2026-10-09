@@ -1,26 +1,24 @@
 # PRE-G9B-R6-plus-E3 — native `IsoABorder` and `ExportArea` integration
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — AUTHORIZED FOR IMPLEMENTATION (author authorization of 2026-10-10) — IMPLEMENTATION PUBLICATION NOT AUTHORIZED.**
 
 This prompt was prepared by `PRE-G9B-R6-plus-E3-PREP` (author instruction of
-2026-10-09) and reconciled by `PRE-G9B-R6-plus-E3-PREP-CLOSEOUT` with the
-author decisions of 2026-10-10 on `DQ-E3-1` to `DQ-E3-16`
-([E3 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e3_author_decisions_record.md)).
-The author approved the
+2026-10-09), reconciled by `PRE-G9B-R6-plus-E3-PREP-CLOSEOUT` with the author
+decisions of 2026-10-10 on `DQ-E3-1` to `DQ-E3-16`, and amended to the
+authorized state by `PRE-G9B-R6-plus-E3-IMPLEMENTATION` with the author
+instruction of 2026-10-10 that resolves `OTQ-E3-1`, corrects the
+numerical-accuracy contract and **authorizes the implementation**
+([E3 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e3_author_decisions_record.md)
+§5). The governing design is the
 [reconciled design](../../../docs/architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md)
-(`DESIGN — AUTHOR APPROVED`) and authorized the publication of this
-documentary package. **The author did not authorize implementation.** The
-existence or publication of this file is not authorization, and nothing in it
-may be read as permission to start coding.
+(`DESIGN — AUTHOR APPROVED — RECONCILED`). The authorization covers the
+complete `E3` implementation specified here, on the exact base below, up to one
+frozen local technical candidate for author review and author smoke. It does
+not authorize publication, author approval of the implementation, or any later
+subphase.
 
-Execution requires a new, separate, explicit author instruction that names
-`PRE-G9B-R6-plus-E3` and the exact published base, given after the author's
-review of the published design package, and that disposes of the blocking
-technical detail `OTQ-E3-1` (design §18). That instruction may authorize, as
-the first tracked edit of the phase, an amendment of this prompt to the
-authorized state, following the `A-1`, `B`, `D0`, `D1`, `A-2`, `C`, `C-X1`,
-`E1-L`, `E1-X1` and `E2` precedent. This file is an execution contract, not a
-second policy document: the unit and scale rules are stated once in the
+This file is an execution contract, not a second policy document: the unit and
+scale rules are stated once in the
 [unit-system specification](../../../geocedg/specs/units/unit-system.md)
 (§3.3, §5.3, §6, §7.2, §7.3, §12, §13, §17, §18.4); the `ExportArea`
 authority once in the
@@ -37,15 +35,21 @@ specification named under *Required design/specification*.
 
 ```text
 PRE-G9B-R6-plus-E3 =
-DESIGN — AUTHOR APPROVED (2026-10-10)
-CANONICAL PROMPT — PREPARED — NOT AUTHORIZED
+DESIGN — AUTHOR APPROVED — RECONCILED (2026-10-10)
+CANONICAL PROMPT — AUTHORIZED FOR IMPLEMENTATION
 
+AUTHOR AUTHORIZATION     = 2026-10-10 (PRE-G9B-R6-plus-E3-IMPLEMENTATION)
+IMPLEMENTATION BASE      = ff56099184544e5988c63e0ea3339e3d0fe01fac
+                           tree 1cdd1e986df785f5f16e7887300d9034e5e4a677
 CHARACTERIZATION         = COMPLETE (2026-10-09, on P_R6PLUS_POST_E2_P4 13e08ac1)
-AUTHOR DECISIONS         = DQ-E3-1 to DQ-E3-16 RECORDED (2026-10-10)
-IMPLEMENTATION           = NOT AUTHORIZED
+AUTHOR DECISIONS         = DQ-E3-1 to DQ-E3-16 (2026-10-10); OTQ-E3-1 RESOLVED and
+                           numerical contract corrected (2026-10-10)
+IMPLEMENTATION           = AUTHORIZED
+IMPLEMENTATION PUBLICATION = NOT AUTHORIZED
 selfApproved             = false
-authorApproved (design)  = true    (the reconciled design only; no technical candidate exists)
-implementationAuthorized = false
+authorApproved (design)  = true    (the reconciled design only)
+authorApproved (implementation) = false   (pending author review and smoke)
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = SHARED-KERNEL COMMAND AND ALGORITHM + DESKTOP MODE,
                            DIALOG, PROFILE AND HELP + TWO SESSION PRODUCERS OF
@@ -54,16 +58,14 @@ PHASE_KIND               = SHARED-KERNEL COMMAND AND ALGORITHM + DESKTOP MODE,
                            TYPES (R2, DQ-E3-1)
 DEPENDS_ON               = PRE-G9B-R6-plus-D1, B, C, E1, E2 = PASS — AUTHOR APPROVED — PUBLISHED
 GLOBAL GATE              = closeout in PRE-G9B-R6-plus-G
-VERIFICATION CLASS       = INTEGRATED_PHASE (author-approved, DQ-E3-16; frozen at authorization)
-PRECONDITIONS            = separate explicit implementation authorization;
-                           disposition of OTQ-E3-1
+VERIFICATION CLASS       = INTEGRATED_PHASE — FROZEN (PHASE + INTEGRATION)
 NEXT_SUBPHASE            = none implied; F1, F2, F3, F4, G stay unauthorized
 ```
 
 <!-- geocedg-field: objective -->
 ## Objective
 
-Implement, once authorized, the approved `IsoABorder` design:
+Implement the approved `IsoABorder` design (authorized 2026-10-10):
 
 1. **Kernel command** `IsoABorder` (Spanish alias `MarcoISOA`) with the single
    seven-argument signature of design §2 —
@@ -90,10 +92,13 @@ Implement, once authorized, the approved `IsoABorder` design:
 ## Implementation base
 
 ```text
-published design base = the main commit that publishes the PRE-G9B-R6-plus-E3-PREP-CLOSEOUT
-                        documentary package (child of e063a8a27450cded0655afb6abc1e78f89f9ac6f,
-                        itself a child of 13e08ac1fe1c6c931a88985b97df93d8445812b9);
-                        its exact SHA and tree are named by the authorizing instruction
+P_R6PLUS_E3_DESIGN = ff56099184544e5988c63e0ea3339e3d0fe01fac
+tree               = 1cdd1e986df785f5f16e7887300d9034e5e4a677
+                     (child of e063a8a27450cded0655afb6abc1e78f89f9ac6f, itself a child of
+                     13e08ac1fe1c6c931a88985b97df93d8445812b9)
+first tracked edit = the documentary reconciliation and authorization commit of
+                     PRE-G9B-R6-plus-E3-IMPLEMENTATION (Stage A), the immediate
+                     predecessor of the implementation
 ```
 
 Before any tracked change the agent verifies that local `main`, `origin/main`
@@ -133,7 +138,7 @@ base.
 - `command.properties` / `command_en` / `command_es` name, alias `MarcoISOA`
   and `.Syntax`; `menu.properties` / `menu_en` / `menu_es` tool keys;
   `EuclidianConstants.MODE_ISO_A_BORDER = 144` with its mode text.
-- The Classic surface as disposed by the author for `OTQ-E3-1`.
+- The Classic surface of `OTQ-E3-1` (resolved): the shared command is available in Classic through the ordinary command infrastructure, with no feature gate, flag or parallel implementation, and no Classic GUI.
 - Shared tests of the matrix below.
 
 **Desktop (`source/desktop/desktop`).**
@@ -224,8 +229,12 @@ First deliverables of the phase, before product code:
 - Nominal ISO 216 integer sizes; A3 landscape = 420 × 297 mm (design §6).
 - `P` upper-left in model coordinates; axis-aligned; orientation swaps width
   and height only (§4).
-- `conv(L) = ((L·b)/a)·u` bit-identical everywhere; relative error ≤ `2^-50`;
-  equivalent scale pairs bit-identical (§7).
+- `conv(L) = ((L·b)/a)·u` bit-identical everywhere (obligation A); relative
+  bounds only under the stated normality conditions (B: `< 2^-51.99` against
+  the captured `u` when `fl(q·u)` is normal; C: `< 2^-50` against the physical
+  definition when `u` and `fl(q·u)` are normal); not representable results are
+  undefined, subnormal ones `UNGUARANTEED`; equivalent scale pairs
+  bit-identical (§7).
 - Frame from `W_f = W_p − 30`, `H_f = H_p − 20` (mm) through `conv()`; valid
   iff `W_f > 0` and `H_f > 0`; A10 portrait impossible (§5–§6).
 - Unit and scale independence: for every operation of `unit-system.md` §17.1
@@ -251,6 +260,10 @@ First deliverables of the phase, before product code:
 - `ExportArea`, the link and the coherence states are `SESSION` or derived:
   reset on New and Open, untouched by undo, never serialized.
 - Legacy documents and macros unchanged; no migration (§14).
+- Classic (`OTQ-E3-1`, design §12): the command parses, evaluates, persists and
+  reopens identically in GeoCeDG and in the Classic profile of this fork; Classic
+  gains no menu, tool, dialog, producer, indicator or notice; no other command
+  changes; ADR 0031 head and alias rules hold in both profiles.
 
 <!-- geocedg-field: required_checks -->
 ## Required tests and commands
@@ -262,6 +275,8 @@ The cases of every obligation are those of design §16; all are required.
 | `T-E3-GEOMETRY` | `T-ISO-TABLE` (all sizes, both orientations), `T-REFERENCE-CASE`, `T-REFERENCE-POINT`, `T-ORIENTATION` |
 | `T-E3-FRAME` | `T-FRAME` (optional and invalid frames), `T-MARGINS` (20/10/10/10 mm) |
 | `T-E3-CONVERSION` | `T-CONVERSION` (captured units and scales, `usm`, equivalent pairs) |
+| `T-E3-NUMERIC` | `T-E3-NUMERIC-NORMAL`, `-SUBNORMAL`, `-EXTREME-USM`, `-OVERFLOW`, `-UNDERFLOW`, `-COORDINATE-ABSORPTION`, `-CAPTURE-ERROR`, `-REPRODUCIBILITY`, `-COHERENCE-UNDETERMINABLE` (design §7, §16): obligations A, B and C against `BigDecimal` references independent of the binary64 expression; validity versus reliability |
+| `T-E3-CLASSIC` | `T-CLASSIC`: command parsing in GeoCeDG and Classic, canonical English identity, alias `MarcoISOA`, GGBScript, persistence and reopening, no Classic GUI change, no other command changed |
 | `T-E3-SIGNATURE` | `T-SIGNATURE` |
 | `T-E3-DYNAMICS` | `T-MOVE-DAG` (dragging the reference point, DAG propagation), `T-UNDO-REDO`, `T-DETERMINISM` |
 | `T-E3-UNITS` | `T-UNIT-CHANGE`, `T-NO-UNIT`, `T-USM` (invalid and unspecified units) |
@@ -303,13 +318,13 @@ class fails with `VERIFICATION_ESCALATION_REQUEST` and waits for the author.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing is authorized by this prompt or by its publication. A future,
-separate author instruction may authorize `E3` on the exact published base,
-after review of the published design package and with a disposition of
-`OTQ-E3-1`; it then authorizes local implementation on a local branch, local
-commits, focused tests, the phase registration and its official catalog
-updates, development `INFRA_UNIT` and `STATIC` runs, the frozen acceptance
-runs, and one frozen technical candidate for author review and author smoke.
+The author instruction of 2026-10-10 authorizes `E3` on the exact base above:
+local implementation on a local branch, local commits, focused tests, the
+phase registration and its official catalog updates, development
+`INFRA_UNIT` and `STATIC` runs, the frozen `PHASE` and `INTEGRATION` runs, and
+one frozen technical candidate for author review and author smoke. A
+necessary correction after acceptance is a new candidate with its own
+acceptance runs; an accepted candidate is never amended.
 It never authorizes self-approval, author smoke by the agent, a run above the
 frozen class, or a change of the class; a proven inability of the frozen
 class to cover the change is reported as a reclassification proposal, never
@@ -369,8 +384,12 @@ authorized documentary steps.
 
 Stop and report, without guessing, when:
 
-- the base or the entry gate differs from *Implementation base*, or
-  `OTQ-E3-1` has not been disposed of;
+- the base or the entry gate differs from *Implementation base*;
+- the numerical contract of design §7 cannot be implemented reproducibly, or a
+  representability failure could only be hidden by clamping, rounding or an
+  approximate sheet;
+- the shared command in Classic would need a material, unplanned compatibility
+  redesign, or GeoCeDG-only GUI would leak into Classic;
 - R2 cannot express a required output with existing types, or correctness
   needs a new `GeoElement` type, structural XML element or attribute, a reader
   change or a new identity mechanism (reclassification, author decision);

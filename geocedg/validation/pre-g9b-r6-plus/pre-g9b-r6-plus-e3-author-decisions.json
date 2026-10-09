@@ -47,7 +47,7 @@
     "DQ-E3-16": {"previous": "INTEGRATED_PHASE", "decision": "APPROVE INTEGRATED_PHASE (PHASE + INTEGRATION), conditional on the reconciled scope; this documentary task DOCUMENTATION_STATUS_ONLY", "designSections": ["17"]}
   },
   "openTechnicalDetails": [
-    {"id": "OTQ-E3-1", "detail": "Classic surface of the command (E2 precedent: ungated) or gating", "blocksImplementationAuthorization": true},
+    {"id": "OTQ-E3-1", "detail": "Classic surface of the command (E2 precedent: ungated) or gating", "blocksImplementationAuthorization": true, "resolution": "RESOLVED — AUTHOR APPROVED 2026-10-10 (amendments[0]); UNBLOCKED"},
     {"id": "OTQ-E3-2", "detail": "Algebra View presentation of an undefined FRAME", "blocksImplementationAuthorization": false},
     {"id": "OTQ-E3-3", "detail": "coherence presentation for ISO_A_SELECTION after a later scale change", "blocksImplementationAuthorization": false},
     {"id": "OTQ-E3-4", "detail": "frameless sheet with hidden paper and hidden tool-created point has no visible draggable output", "blocksImplementationAuthorization": false}
@@ -60,5 +60,31 @@
     "OBS-R6PLUS-E3-UNIT-FACTOR-ORDER": "RECORDED — E2 unchanged",
     "OBS-R6PLUS-E3-NO-UNIT-GATE-PATTERN": "OPEN — gate designed (DQ-E3-7) — NOT RESOLVED"
   },
-  "nextGate": "author review of the published design package, then an explicit implementation authorization naming the exact base and disposing of OTQ-E3-1"
+  "nextGate": "author review of the published design package, then an explicit implementation authorization naming the exact base and disposing of OTQ-E3-1",
+  "amendments": [
+    {
+      "date": "2026-10-10",
+      "task": "PRE-G9B-R6-plus-E3-IMPLEMENTATION",
+      "recordSection": "5",
+      "authorization": "AUTHOR APPROVED — FINAL DESIGN RECONCILIATION AND E3 IMPLEMENTATION",
+      "implementationBase": {"name": "P_R6PLUS_E3_DESIGN", "commit": "ff56099184544e5988c63e0ea3339e3d0fe01fac", "tree": "1cdd1e986df785f5f16e7887300d9034e5e4a677"},
+      "decisions": {
+        "OTQ-E3-1": {"state": "RESOLVED — AUTHOR APPROVED", "disposition": "shared kernel command available in GeoCeDG and Classic; GeoCeDG-specific GUI and export-area orchestration exclusive to GeoCeDG Desktop; no feature gate, no flag, no parallel Classic implementation", "implementationAuthorization": "UNBLOCKED"},
+        "NUMERICAL-CONTRACT": {"state": "AUTHOR APPROVED CORRECTION", "disposition": "expression and order unchanged; obligations A (bit-exact determinism), B (error vs captured u under normality of fl(q*u)), C (error vs physical definition under normality of u and fl(q*u)); 2^-50 only where derived; validity (undefined) separated from reliability (GUARANTEED / UNGUARANTEED); NOT_DETERMINABLE coherence when unreliable, non-finite or uncertainty above 1e-6 mm", "additionalTests": ["T-E3-NUMERIC-NORMAL", "T-E3-NUMERIC-SUBNORMAL", "T-E3-NUMERIC-EXTREME-USM", "T-E3-NUMERIC-OVERFLOW", "T-E3-NUMERIC-UNDERFLOW", "T-E3-NUMERIC-COORDINATE-ABSORPTION", "T-E3-NUMERIC-CAPTURE-ERROR", "T-E3-NUMERIC-REPRODUCIBILITY", "T-E3-NUMERIC-COHERENCE-UNDETERMINABLE"]}
+      },
+      "retainedImplementationDesign": {
+        "OTQ-E3-2": "an undefined FRAME may be auxiliary in the Algebra View; undefined state explicit",
+        "OTQ-E3-3": "no coherence indicator for ISO_A_SELECTION without separate authorization",
+        "OTQ-E3-4": "frameless sheet moved through its reference point or by temporarily showing PAPER; no new dragging mechanism"
+      },
+      "designState": "DESIGN — AUTHOR APPROVED — RECONCILED",
+      "promptState": "AUTHORIZED FOR IMPLEMENTATION",
+      "implementation": "AUTHORIZED",
+      "verificationClass": "INTEGRATED_PHASE",
+      "implementationPublication": "NOT AUTHORIZED",
+      "authorSmoke": "PENDING",
+      "authorApprovalOfImplementation": "PENDING",
+      "selfApproved": false
+    }
+  ]
 }

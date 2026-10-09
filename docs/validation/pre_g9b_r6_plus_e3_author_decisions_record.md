@@ -17,8 +17,11 @@ RECONCILIATION CANDIDATE  = the commit that contains this record (direct child o
                             e063a8a2); its STATIC and publication are reported with
                             the publication, because a commit cannot contain its own
                             verification identity
-PRE-G9B-R6-plus-E3        = DESIGN — AUTHOR APPROVED; CANONICAL PROMPT PREPARED — NOT AUTHORIZED
-IMPLEMENTATION            = NOT AUTHORIZED
+PRE-G9B-R6-plus-E3        = DESIGN — AUTHOR APPROVED — RECONCILED (amendment 2026-10-10, §5)
+CANONICAL PROMPT          = AUTHORIZED FOR IMPLEMENTATION (2026-10-10, §5)
+IMPLEMENTATION            = AUTHORIZED (2026-10-10, PRE-G9B-R6-plus-E3-IMPLEMENTATION;
+                            base ff56099184544e5988c63e0ea3339e3d0fe01fac; publication of
+                            the implementation NOT AUTHORIZED)
 PUBLICATION (this package)= AUTHORIZED by the same instruction (documentation only)
 selfApproved              = false
 passClaimed               = false   (no product claim of any kind)
@@ -384,7 +387,7 @@ No agent recommendation is recorded here as an author approval.
 
 | Id | Detail | Blocks implementation authorization? |
 |---|---|---|
-| `OTQ-E3-1` | Classic surface: `E2`'s commands are not feature-gated, so they are available in the Classic diagnostic profile; no approved contract states this explicitly for GeoCeDG commands. `IsoABorder` either follows that precedent (command available in Classic, no Classic menu, tool, producer or indicator) or is gated out of Classic (a new, `RuntimeFeatureService`-like predicate). | **Yes — the author must choose at implementation authorization.** Recommended default for that decision: follow the `E2` precedent. |
+| `OTQ-E3-1` | Classic surface: `E2`'s commands are not feature-gated, so they are available in the Classic diagnostic profile; no approved contract stated this explicitly for GeoCeDG commands. | **RESOLVED — AUTHOR APPROVED (2026-10-10, §5.1); implementation authorization UNBLOCKED.** |
 | `OTQ-E3-2` | Algebra View presentation of `FRAME` while it is undefined (frame disabled or impossible): shown as an undefined object, or marked auxiliary by the tool. Presentation only. | No; the implementation reports its choice in the candidate. |
 | `OTQ-E3-3` | Coherence presentation for an `ISO_A_SELECTION` rectangle after a later session-scale change; `DQ-E3-12` covers `ISO_A_BORDER` only. | No; without a further author decision, `E3` shows no indicator for `ISO_A_SELECTION`. |
 | `OTQ-E3-4` | A frameless sheet (the default for A5–A10) shows only its label; with the paper boundary and a tool-created reference point hidden, it has no visible draggable output and is moved by editing the point or by showing the paper boundary. A consequence of `DQ-E3-2`, `DQ-E3-3` and `DQ-E3-13`, not a new rule. | No; the author may revisit it at implementation authorization. |
@@ -401,4 +404,95 @@ NEXT GATE                            = author review of the published design pac
 F1, F2, F3, F4, G                    = unchanged (NOT AUTHORIZED; F3 PLANNED; F4
                                        PLANNING INTENT RECORDED)
 selfApproved                         = false
+```
+
+## 5. Amendment of 2026-10-10 — final design reconciliation and implementation authorization
+
+```text
+AUTHOR_DECISION_SOURCE     = author instruction of 2026-10-10 ("Final Design Reconciliation
+                             and Authorized Implementation", task
+                             PRE-G9B-R6-plus-E3-IMPLEMENTATION)
+AUTHORIZATION              = AUTHOR APPROVED — FINAL DESIGN RECONCILIATION AND E3 IMPLEMENTATION
+IMPLEMENTATION BASE        = P_R6PLUS_E3_DESIGN ff56099184544e5988c63e0ea3339e3d0fe01fac
+                             tree 1cdd1e986df785f5f16e7887300d9034e5e4a677
+VERIFICATION CLASS         = INTEGRATED_PHASE (PHASE + INTEGRATION on one frozen candidate)
+IMPLEMENTATION PUBLICATION = NOT AUTHORIZED
+AUTHOR_SMOKE               = PENDING
+AUTHOR APPROVAL (implementation) = PENDING
+```
+
+The decisions of §1 are preserved unchanged; `DQ-E3-1` to `DQ-E3-16` are not
+reopened. This amendment adds two author decisions and records the
+implementation authorization that the canonical prompt requires.
+
+### 5.1 `OTQ-E3-1` — Classic availability (**AUTHOR DECISION**)
+
+Follow the `E2` precedent. `IsoABorder` is a shared Java-kernel command
+available in GeoCeDG and in the Classic profile built from this fork, with no
+GeoCeDG-only feature gate, no new flag and no parallel Classic implementation;
+its semantics are independent of the profile.
+
+- Shared kernel: the command, argument validation, the algorithm, the ISO A
+  table and conversion helper, dynamic dependencies, existing output types,
+  serialization and reconstruction, validity and degeneration handling.
+- GeoCeDG Desktop only: `Construction → Annotations and media → ISO A Border`,
+  the tool and dialog, `ISO_A_SELECTION`, `ISO_A_BORDER` as a session
+  producer, the coherence indicators, "Use sheet scale", the activation
+  workflow and its notices.
+- Required characterization and verification: parsing in GeoCeDG and in
+  Classic, canonical English identity, the alias `MarcoISOA`, GGBScript
+  compatibility, persistence and reopening, absence of unintended Classic GUI
+  changes and of changes to other commands; ADR 0031 preserved. Design §12,
+  §16 `T-CLASSIC`.
+
+### 5.2 Numerical-accuracy contract correction (**AUTHOR DECISION**)
+
+The expression `u = 10^-3 / fb(c)`, `conv(L) = ((L·b)/a)·u` and its evaluation
+order are unchanged and part of the reproducibility contract. The
+unconditional `2^-50` claim recorded in §1 under `DQ-E3-5` (IMPLEMENTATION
+DESIGN) was too strong: a positive finite `usm` factor can yield a subnormal
+`u`. The design now:
+
+- distinguishes (A) deterministic bit-exact evaluation, (B) error relative to
+  the captured `u`, and (C) error relative to the physical unit definition;
+- states the conditions of every relative bound and separates capture error
+  from evaluation error (`2^-50` only where derived, under stated normality);
+- classifies results as not representable (undefined) or defined with
+  `GUARANTEED` / `UNGUARANTEED` reliability; never clamps, rounds or replaces
+  geometry;
+- makes physical coherence `NOT_DETERMINABLE` whenever reliability, finiteness
+  or the `10^-6 mm` criterion cannot be established (design §7, §9, §15).
+
+The normative meaning of `constructionUnit`, `usm` and `drawingScale` is
+unchanged. Additional tests: `T-E3-NUMERIC-NORMAL`, `T-E3-NUMERIC-SUBNORMAL`,
+`T-E3-NUMERIC-EXTREME-USM`, `T-E3-NUMERIC-OVERFLOW`, `T-E3-NUMERIC-UNDERFLOW`,
+`T-E3-NUMERIC-COORDINATE-ABSORPTION`, `T-E3-NUMERIC-CAPTURE-ERROR`,
+`T-E3-NUMERIC-REPRODUCIBILITY`, `T-E3-NUMERIC-COHERENCE-UNDETERMINABLE`, with
+independent high-precision references. The characterization measurements of
+`K6` stay historical evidence and are not rewritten.
+
+### 5.3 Retained implementation-design dispositions
+
+Recorded as **IMPLEMENTATION DESIGN** retained by the author's instruction, not
+as new independent normative decisions:
+
+- `OTQ-E3-2`: an undefined `FRAME` may be auxiliary in the Algebra View; its
+  mathematical undefined state stays explicit.
+- `OTQ-E3-3`: no coherence indicator for `ISO_A_SELECTION` without separate
+  authorization.
+- `OTQ-E3-4`: a frameless sheet is moved through its reference point or by
+  temporarily showing `PAPER`; no new dragging mechanism.
+
+No broader GUI redesign is authorized.
+
+### 5.4 Status after the amendment
+
+```text
+PRE-G9B-R6-plus-E3 DESIGN         = DESIGN — AUTHOR APPROVED — RECONCILED
+CANONICAL PROMPT                  = AUTHORIZED FOR IMPLEMENTATION (2026-10-10)
+IMPLEMENTATION                    = AUTHORIZED — local branch, local commits, focused tests,
+                                    PHASE and INTEGRATION; one frozen technical candidate
+PUBLICATION OF THE IMPLEMENTATION = NOT AUTHORIZED
+F1, F2, F3, F4, G                 = unchanged
+selfApproved                      = false
 ```
