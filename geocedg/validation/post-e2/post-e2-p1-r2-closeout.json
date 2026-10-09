@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1-R2",
+  "registeredPhaseId": "POST-E2-P1-R2",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p1_r2_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-09", "title": "GeoCeDG — POST-E2-P1-R2 Author Approval, Publication and Authorization of POST-E2-P2 Characterization"},
+  "state": "PASS — AUTHOR APPROVED",
+  "meaning": "physical PDF style sizes and smoke follow-up refinements A, B, C approved",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {"commit": "6dde194eba240ed7bcc249df323a3ca6173b8a0e", "tree": "83d265149745e457063bb9efb23dfd66b55e8cfa", "mutated": false},
+  "acceptedEvidence": {
+    "static": {"run": "verification-6fc51faabe804a4b9c76ea6d76655b7a", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "infraUnit": {"run": "verification-6c04a1c2e22e4202872923d3f095479c", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "phase": {"run": "verification-fbc06228e7d14ef6ae8a56e6b7f322bb", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "integration": {"run": "verification-a9139fffc2e5497ab4508f8c82dc2815", "verdict": "ACCEPTED / COMPLETE", "checks": "19/19"}
+  },
+  "authorSmoke": "PASS WITH ACCEPTED NON-BLOCKING OBSERVATION",
+  "productChange": "YES — BOUNDED PRESENTATION",
+  "geometricSemanticsChange": "NONE",
+  "serializationSchemaChange": "NONE",
+  "acceptedResidualDifferences": ["PDF/PGF marker triangles", "PDF/PGF marker outlines"],
+  "historicalCandidates": [
+    {"commit": "542a5adc7e4be15fb05985ed0a8e84817d22f795", "role": "original R2 candidate"},
+    {"commit": "27388d60a300d0b44173ed8fbf912643c049f3af", "role": "smoke follow-up first freeze", "integration": "verification-1247ac65be8f4c35a6572b00fd447a31 REJECTED_SEMANTIC"}
+  ],
+  "normativePromotion": {
+    "specification": {"path": "geocedg/specs/export/physical-pdf-style-sizes.md", "status": "NORMATIVE / AUTHOR APPROVED", "version": "1.0"},
+    "adr": {"path": "docs/adr/0035-physical-pdf-style-sizes.md", "status": "ACCEPTED — AUTHOR APPROVED"}
+  },
+  "registeredObservations": [
+    {"id": "OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT", "classification": "ENHANCEMENT — ACCEPTED NON-BLOCKING", "authorized": false}
+  ],
+  "next": {"phase": "POST-E2-P2", "activity": "CHARACTERIZATION ONLY", "verificationClass": "BOUNDED_PHASE", "acceptance": "PHASE", "implementation": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "notAuthorized": ["P2 implementation", "P2 publication", "P3", "P4", "TD-PDF-1", "TD-PDF-2", "compact style-bar thickness input", "E3", "F1", "F2", "F3", "G", "G9B", "tag", "release", "binary publication"]
+}

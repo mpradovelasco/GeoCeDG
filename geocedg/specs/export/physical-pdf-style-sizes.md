@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
-| Version | `0.2` (smoke follow-up amendment of §2.3, §2.5, S7 and §5.3; version `0.1` is in the history of the R2 candidate `542a5adc`) |
+| Status | **NORMATIVE / AUTHOR APPROVED** (decision of 2026-10-09 on the exact candidate `6dde194eba240ed7bcc249df323a3ca6173b8a0e`, tree `83d265149745e457063bb9efb23dfd66b55e8cfa`; [R2 closeout record](../../../docs/validation/post_e2_p1_r2_closeout_record.md)) |
+| Version | `1.0` (the approved text of version `0.2`: smoke follow-up amendment of §2.3, §2.5, S7 and §5.3; version `0.1` is in the history of the R2 candidate `542a5adc`) |
 | Owner phase | `POST-E2-P1-R2` |
-| Decision | [ADR 0035](../../../docs/adr/0035-physical-pdf-style-sizes.md) (`PROPOSED`) |
+| Decision | [ADR 0035](../../../docs/adr/0035-physical-pdf-style-sizes.md) (`ACCEPTED — AUTHOR APPROVED`) |
 | Governing author decisions | [P1-R1 closeout record](../../../docs/validation/post_e2_p1_r1_closeout_record.md) (`D-R2-1` to `D-R2-7` in the author instruction of 2026-10-08) |
 | Normative inputs used, not restated | [unit-system specification](../units/unit-system.md) §13 (physical output of model lengths), §15 |
 | Serialization effect | none |
@@ -16,7 +16,8 @@ This specification fills the physical-output contract gap registered by
 `POST-E2-P1-R1`: unit-system §13 defines the physical size of model lengths, not
 of graphical style sizes. It binds the `POST-E2-P1-R2` technical candidate only;
 the mapping of §2 is the author's initial implementation and validation mapping
-and becomes normative only through a later author decision after a visual smoke.
+and became normative through the author decision of 2026-10-09 after the visual
+smoke and re-smoke (R2 closeout record); the approved text is unchanged.
 
 ## 1. Scope
 

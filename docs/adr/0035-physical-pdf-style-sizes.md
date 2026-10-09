@@ -1,6 +1,9 @@
 # ADR 0035 — Physical style sizes in the GeoCeDG PDF route
 
-- Status: **PROPOSED** (technical candidate pending author review; not author approved)
+- Status: **ACCEPTED — AUTHOR APPROVED** (decision of 2026-10-09 on the exact
+  candidate `6dde194eba240ed7bcc249df323a3ca6173b8a0e`, tree `83d265149745e457063bb9efb23dfd66b55e8cfa`; recorded in the
+  [R2 closeout record](../validation/post_e2_p1_r2_closeout_record.md); the decision text and its amendment are unchanged
+  from that candidate, only the status lines changed)
 - Date: 2026-10-08
 - Phase: `POST-E2-P1-R2`
 - Author decisions: [P1-R1 closeout record](../validation/post_e2_p1_r1_closeout_record.md); author instruction of 2026-10-08 (`D-R2-1` to `D-R2-7`)
@@ -58,7 +61,7 @@ no GeoCeDG contract governs them. Text uses another mechanism and is excluded.
 - Excluded sizes (text, angle arcs, hatching, axes, widgets) remain
   zoom-dependent in physical PDFs; known limitation.
 
-## Amendment — author smoke follow-up A (2026-10-09, PROPOSED)
+## Amendment — author smoke follow-up A (2026-10-09, accepted with this ADR)
 
 The author smoke of the R2 candidate `542a5adc` passed with a requested
 refinement: physical PDF point markers should match the PGF/TikZ marker size.

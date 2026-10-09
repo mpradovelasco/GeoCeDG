@@ -36,6 +36,8 @@
 - `E2` closeout (2026-10-08): `PASS — AUTHOR APPROVED — PUBLISHED` on the revised `T_R6PLUS_E2` `3a7246614a6ef040d84a1440c4c10b3f93be5776` (`AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING OBSERVATIONS`, [E2 closeout record](../validation/pre_g9b_r6_plus_e2_closeout_record.md)); `OBS-E2-1` to `OBS-E2-4` registered for a POST-E2 planning and characterization proposal; POST-E2 implementation not authorized.
 - POST-E2 planning (2026-10-08): `PLANNING PASS — AUTHOR APPROVED` ([planning proposal](post_e2_planning_proposal.md); [author decision record](../validation/post_e2_planning_author_decision_record.md)); `POST-E2-P1` characterization authorized (`BOUNDED_PHASE`); P1 implementation and P2–P4 execution not authorized.
 - `POST-E2-P1` (2026-10-08): `PASS — AUTHOR APPROVED` as a characterization ([P1 closeout record](../validation/post_e2_p1_closeout_record.md)); `OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM` registered, characterization owner `POST-E2-P1-R1` (authorized; correction not authorized).
+- `POST-E2-P1-R1` (2026-10-08): `PASS — AUTHOR APPROVED` as a characterization ([P1-R1 closeout record](../validation/post_e2_p1_r1_closeout_record.md)).
+- `POST-E2-P1-R2` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` on `6dde194eba240ed7bcc249df323a3ca6173b8a0e` ([R2 closeout record](../validation/post_e2_p1_r2_closeout_record.md)); physical PDF style sizes, marker sizes, Properties thickness field and status-bar drawing scale; `OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT` registered (not authorized); `POST-E2-P2` characterization authorized (`BOUNDED_PHASE`), implementation not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1405,6 +1407,14 @@ OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM = REGISTERED (2026-10-08):
                              (2026-10-08): real variation, upstream-inherited,
                              physical-output contract gap; correction owner
                              POST-E2-P1-R2 (authorized; approval pending)
+                             CORRECTED — POST-E2-P1-R2 PASS — AUTHOR APPROVED —
+                             PUBLISHED (2026-10-09): 0.4 t pt strokes, s pt markers
+OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT = ENHANCEMENT — ACCEPTED
+                             NON-BLOCKING — IMPLEMENTATION NOT AUTHORIZED (2026-10-09):
+                             numeric thickness entry also in the compact style-bar
+                             selector; keep the slider, synchronized field, same
+                             property and range, undo/redo and serialization kept, no
+                             independent mechanism
 OBS-POST-E2-P1-R1-PDF-TEXT-SIZE = TD-PDF-1 — OPEN — CHARACTERIZATION REQUIRED —
                              NOT AUTHORIZED (planned after P2–P4)
 OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS = TD-PDF-2 — OPEN — UNCONFIRMED IN

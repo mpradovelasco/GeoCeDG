@@ -17,13 +17,16 @@ P1 CHARACTERIZATION      = PASS — AUTHOR APPROVED (2026-10-08; P1 closeout rec
                            adopted; P1 implementation NOT AUTHORIZED)
 P1-R1 (PDF stroke width)  = PASS — AUTHOR APPROVED (2026-10-08; closeout record
                            docs/validation/post_e2_p1_r1_closeout_record.md)
-P1-R2 (physical PDF width) = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (design and
-                           implementation; docs/validation/post_e2_p1_r2_candidate_report.md;
-                           INTEGRATED_PHASE; author visual smoke, approval and publication
-                           pending)
+P1-R2 (physical PDF width) = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09; closeout
+                           record docs/validation/post_e2_p1_r2_closeout_record.md;
+                           physical-pdf-style-sizes 1.0 NORMATIVE, ADR 0035 ACCEPTED;
+                           OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT registered,
+                           not authorized)
 PDF debts                 = TD-PDF-1 text size, TD-PDF-2 embedded fonts: REGISTERED,
                            NOT AUTHORIZED; planned after P2–P4
-P2–P4 EXECUTION          = NOT AUTHORIZED
+P2 (Algebra Input zoom)   = CHARACTERIZATION AUTHORIZED (2026-10-09; BOUNDED_PHASE,
+                           PHASE); implementation and publication NOT AUTHORIZED
+P3–P4 EXECUTION          = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false
 PRIORITY                 = P1 → P2 → P3 → P4 (P1 and P2 first)
