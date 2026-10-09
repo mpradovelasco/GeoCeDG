@@ -225,8 +225,9 @@ new documents (unit-system §20.5). A preference change affects only dimensions
 or documents created afterwards; it is not a document operation. The unit suffix
 policy of the current document is set in Options → Document units.
 
-**POST-E2-P4 amendment (2026-10-09, PROPOSED — technical candidate pending author
-review, [design record](../../../docs/architecture/post_e2_p4_offset_conversion_design.md);
+**POST-E2-P4 amendment (2026-10-09, NORMATIVE / AUTHOR APPROVED — conditional
+author approval of `06835fdf`, [P4 closeout record](../../../docs/validation/post_e2_p4_closeout_record.md);
+[design record](../../../docs/architecture/post_e2_p4_offset_conversion_design.md);
 §8.4 and the clauses above are unchanged).**
 8.6 Explicit offset conversion. The object context menu of one native dimension
 (any of its outputs), in the Algebra View and in the Graphics View object chooser

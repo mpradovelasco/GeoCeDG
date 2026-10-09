@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P4",
+  "registeredPhaseId": "POST-E2-P4",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p4_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-09", "title": "GeoCeDG — POST-E2-P4 — Graphical Context Menu Follow-up, Conditional Author Approval and Publication"},
+  "state": "PASS — AUTHOR APPROVED",
+  "approvalBasis": "conditional author approval, outcome A (bounded Graphics View follow-up implemented); all eight conditions verified",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "originalCandidate": {"commit": "af927bcb7d078888020c95781f781af214c82c20", "tree": "73d1b12cde285a323c42a40965f83d8c6cbb5030", "authorSmoke": "PASS WITH ONE ACCEPTED FOLLOW-UP REQUEST", "static": "verification-59a5ec1295f143b2a5a0dcc6836305b0", "infraUnit": "verification-13377d2a740e4c749677b99ea68b9f93", "phase": "verification-0fddcf97000e4a84a41e4fbda32df810", "mutated": false},
+  "approvedSuccessor": {"commit": "06835fdf477d23ade9694c952c84191b7f2ebe07", "tree": "0732299a9117bceaca1b1f239179944dd9726c00", "parent": "af927bcb7d078888020c95781f781af214c82c20", "mutated": false},
+  "acceptedEvidence": {
+    "static": {"run": "verification-d4561ab4be6643dab5a0fc413cb4c539", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "infraUnit": {"run": "verification-8a008e1351f74f1ebbe2e467d4e6d243", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "phase": {"run": "verification-18de071eb986411fb0ea1979670585ac", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"}
+  },
+  "verificationClass": "BOUNDED_PHASE",
+  "graphicalContextMenu": {"gate": "A", "state": "IMPLEMENTED", "changedProductFiles": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java"]},
+  "conditions": {
+    "1_gateA": true,
+    "2_onlyContextMenuAdaptation": true,
+    "3_conversionLogicUnchanged": "GeoCeDGDimensionOffsetConversion and PostE2P4OffsetConversionTest byte-identical to af927bcb",
+    "4_verificationPasses": true,
+    "5_sameSemanticsBothViews": "caseIJBothRoutesProduceTheSameTransaction",
+    "6_noNewUnresolvedIssue": true,
+    "7_smokeConclusionsValid": true,
+    "8_cleanDescendantOfAf927bcb": true
+  },
+  "unchanged": ["identity", "DAG", "serialization", "undo/redo", "native dimension mathematics", "GeoGebra Classic"],
+  "normativePromotion": {"path": "geocedg/specs/dimensions/native-dimensions.md", "section": "8.6 POST-E2-P4 amendment", "status": "NORMATIVE / AUTHOR APPROVED"},
+  "observationResolved": "OBS-E2-2",
+  "next": {
+    "PRE-G9B-R6-plus-E3": "documentary readiness preparation only; implementation NOT AUTHORIZED",
+    "PRE-G9B-R6-plus-F4": {"state": "PLANNING INTENT RECORDED", "implementation": "NOT AUTHORIZED", "position": "between F3 and G", "intendedOwnership": ["compact style-bar numeric line-thickness entry", "DXF compatibility recheck with AutoCAD 2026", "TD-PDF-1 physical text size", "TD-PDF-2 embedded-font PDF behaviour"]},
+    "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY": "F2"
+  },
+  "notAuthorized": ["E3 implementation", "F1", "F2", "F3", "F4", "G", "TD-PDF-1", "TD-PDF-2", "tag", "release", "binary publication"]
+}

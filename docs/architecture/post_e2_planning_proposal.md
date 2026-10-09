@@ -23,7 +23,8 @@ P1-R2 (physical PDF width) = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09;
                            OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT registered,
                            not authorized)
 PDF debts                 = TD-PDF-1 text size, TD-PDF-2 embedded fonts: REGISTERED,
-                           NOT AUTHORIZED; planned after P2–P4
+                           NOT AUTHORIZED; intended owner PRE-G9B-R6-plus-F4 (planning
+                           intent recorded 2026-10-09, P4 closeout record)
 P2 (Algebra Input zoom)   = CHARACTERIZATION PASS — AUTHOR APPROVED — PUBLISHED
                            (2026-10-09; closeout record
                            docs/validation/post_e2_p2_closeout_record.md: printable
@@ -36,12 +37,11 @@ P3 (document macros)      = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09; 
                            smoke PASS; docs/validation/post_e2_p3_closeout_record.md:
                            User tools → Document tools activates the document macros'
                            tool modes)
-P4 (typed-dimension drag) = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (BOUNDED_PHASE;
-                           readiness gate A; author-selected Option A: explicit "Make
-                           offset draggable" conversion of a literal offset into a named
-                           independent number, identities kept;
-                           docs/validation/post_e2_p4_candidate_report.md); Option B NOT
-                           AUTHORIZED; approval and publication PENDING
+P4 (typed-dimension drag) = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09; conditional
+                           author approval of the Graphics View follow-up successor
+                           06835fdf; docs/validation/post_e2_p4_closeout_record.md:
+                           explicit "Make offset draggable" in the Algebra View and
+                           Graphics View menus)
 implementationAuthorized = false
 selfApproved             = false
 PRIORITY                 = P1 → P2 → P3 → P4 (P1 and P2 first)

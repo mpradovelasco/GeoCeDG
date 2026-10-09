@@ -41,6 +41,7 @@
 - `POST-E2-P2` (2026-10-09): characterization `PASS — AUTHOR APPROVED — PUBLISHED` on `216964dc4ce8512e7b2be9587c8f93ca1d5a4355` ([P2 closeout record](../validation/post_e2_p2_closeout_record.md)); global menu-accelerator conflict from a text-producing user-assigned shortcut; correction `POST-E2-P2-R1` (Option A, `BOUNDED_PHASE`) authorized, approval and publication pending.
 - `POST-E2-P2-R1` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` by conditional author approval of the D1 successor `38647c796e6499a10d5435844866d2144fdfbe24` ([P2-R1 closeout record](../validation/post_e2_p2_r1_closeout_record.md)); `POST-E2-P3` design and bounded implementation authorized after a readiness gate (`INTEGRATED_PHASE`).
 - `POST-E2-P3` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` on `1e8714a968b7def9697d67bf056fc77f48da0fc8` ([P3 closeout record](../validation/post_e2_p3_closeout_record.md)); User tools → Document tools; `POST-E2-P4` readiness/design gate authorized with the author-selected Option A (explicit offset conversion), bounded implementation only on gate outcome A.
+- `POST-E2-P4` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` by conditional author approval of the Graphics View follow-up successor `06835fdf477d23ade9694c952c84191b7f2ebe07` of `af927bcb` ([P4 closeout record](../validation/post_e2_p4_closeout_record.md)); explicit Make offset draggable conversion (Algebra View and Graphics View menus); `PRE-G9B-R6-plus-E3` documentary readiness only; `PRE-G9B-R6-plus-F4` planning intent recorded (between `F3` and `G`), not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1291,6 +1292,15 @@ PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F3         = PLANNED — AUTHOR APPROVED — PUBLISHED
                              IMPLEMENTATION NOT AUTHORIZED
                              (2026-10-03; takes DEBT-R6PLUS-FILE-INSERT-SURFACE)
+PRE-G9B-R6-plus-F4         = PLANNING INTENT RECORDED — IMPLEMENTATION NOT AUTHORIZED
+                             (author planning decision recorded at the POST-E2-P4
+                             closeout, 2026-10-09: to be proposed between F3 and G;
+                             intended ownership: OBS-POST-E2-R2-COMPACT-STYLEBAR-
+                             THICKNESS-INPUT, DXF compatibility recheck with AutoCAD
+                             2026, TD-PDF-1, TD-PDF-2; no implementation contract or
+                             verification class defined; direct working-layer entry
+                             stays with F2; G later reconciles the remaining
+                             historical debts into a structured register)
 DEBT-R6PLUS-FILE-INSERT-SURFACE = ASSIGNED TO PRE-G9B-R6-plus-F3 — NOT AUTHORIZED
 
 PRE-G9B-R6-plus-G          = NOT AUTHORIZED
@@ -1405,6 +1415,9 @@ OBS-E2-2                   = ACCEPTED NON-BLOCKING — DOCUMENTED (E2 closeout
                              ADDRESSED BY CANDIDATE — POST-E2-P4 technical candidate
                              (2026-10-09, pending author review): the literal offset
                              is labelled offsetN in place and becomes draggable
+                             RESOLVED — POST-E2-P4 PASS — AUTHOR APPROVED —
+                             PUBLISHED (2026-10-09, conditional approval of the
+                             successor 06835fdf; Algebra View and Graphics View menus)
 OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING (E2
                              closeout 2026-10-08): large unexpected zoom-out when
                              starting algebra input, also seen in earlier phases,
@@ -1443,12 +1456,15 @@ OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT = ENHANCEMENT — ACCEPTED
                              numeric thickness entry also in the compact style-bar
                              selector; keep the slider, synchronized field, same
                              property and range, undo/redo and serialization kept, no
-                             independent mechanism
+                             independent mechanism; intended owner
+                             PRE-G9B-R6-plus-F4 (planning intent, 2026-10-09)
 OBS-POST-E2-P1-R1-PDF-TEXT-SIZE = TD-PDF-1 — OPEN — CHARACTERIZATION REQUIRED —
-                             NOT AUTHORIZED (planned after P2–P4)
+                             NOT AUTHORIZED (planned after P2–P4; intended owner
+                             PRE-G9B-R6-plus-F4, planning intent 2026-10-09)
 OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS = TD-PDF-2 — OPEN — UNCONFIRMED IN
                              PRODUCT — HEADLESS TEST ENVIRONMENT OBSERVATION — NOT
-                             AUTHORIZED (planned after P2–P4)
+                             AUTHORIZED (planned after P2–P4; intended owner
+                             PRE-G9B-R6-plus-F4, planning intent 2026-10-09)
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a
