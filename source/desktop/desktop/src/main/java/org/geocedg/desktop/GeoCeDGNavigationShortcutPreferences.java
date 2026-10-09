@@ -46,7 +46,9 @@ final class GeoCeDGNavigationShortcutPreferences {
 	}
 
 	enum ShortcutStatus {
-		AVAILABLE, UNASSIGNED, INVALID, CONFLICT
+		AVAILABLE, UNASSIGNED, INVALID, CONFLICT,
+		/** POST-E2-P2-R1: the chord types or edits text in a text field. */
+		TEXT_ENTRY
 	}
 
 	record Configuration(double factor, KeyStroke zoomIn, KeyStroke zoomOut) {
@@ -58,21 +60,27 @@ final class GeoCeDGNavigationShortcutPreferences {
 	record DraftValidation(boolean factorValid, ShortcutValidation zoomIn,
 			ShortcutValidation zoomOut, Configuration configuration) {
 		boolean isValid() {
-			return factorValid && zoomIn.status() != ShortcutStatus.INVALID
-					&& zoomIn.status() != ShortcutStatus.CONFLICT
-					&& zoomOut.status() != ShortcutStatus.INVALID
-					&& zoomOut.status() != ShortcutStatus.CONFLICT;
+			return factorValid && admissible(zoomIn) && admissible(zoomOut);
+		}
+
+		private static boolean admissible(ShortcutValidation validation) {
+			return validation.status() == ShortcutStatus.AVAILABLE
+					|| validation.status() == ShortcutStatus.UNASSIGNED;
 		}
 
 		Result result() {
 			if (!factorValid) {
 				return Result.INVALID_FACTOR;
 			}
-			if (zoomIn.status() == ShortcutStatus.INVALID
-					|| zoomOut.status() == ShortcutStatus.INVALID) {
+			if (rejected(zoomIn) || rejected(zoomOut)) {
 				return Result.INVALID_SHORTCUT;
 			}
 			return isValid() ? Result.ACCEPTED : Result.CONFLICT;
+		}
+
+		private static boolean rejected(ShortcutValidation validation) {
+			return validation.status() == ShortcutStatus.INVALID
+					|| validation.status() == ShortcutStatus.TEXT_ENTRY;
 		}
 	}
 
@@ -169,8 +177,11 @@ final class GeoCeDGNavigationShortcutPreferences {
 		if (proposed == null) {
 			return new ShortcutValidation(ShortcutStatus.UNASSIGNED, null);
 		}
-		if (!valid(normalized)) {
+		if (!wellFormed(normalized)) {
 			return new ShortcutValidation(ShortcutStatus.INVALID, null);
+		}
+		if (entersText(normalized)) {
+			return new ShortcutValidation(ShortcutStatus.TEXT_ENTRY, null);
 		}
 		String conflict = conflictingAction(normalized);
 		return conflict == null
@@ -229,7 +240,39 @@ final class GeoCeDGNavigationShortcutPreferences {
 		return DEFAULT_FACTOR;
 	}
 
+	/** A well-formed chord that cannot type or edit text in a text field. */
 	private static boolean valid(KeyStroke proposed) {
+		return wellFormed(proposed) && !entersText(proposed);
+	}
+
+	/**
+	 * POST-E2-P2-R1 (Option A): a factor-zoom chord is a window-wide menu accelerator,
+	 * so it also fires while the user types in Algebra Input or any other text field
+	 * of the window. A normalized chord whose only modifier is Shift types or edits
+	 * text unless its key is a function key F1-F24; Alt with a numeric-keypad digit
+	 * enters a character code on Windows. The key code is the physical key: its
+	 * character depends on the layout, so every character key counts, whatever it
+	 * types. Chords with Ctrl or Meta, and Alt on other keys, keep the existing rules.
+	 *
+	 * @param stroke normalized well-formed chord
+	 * @return whether the chord would also be text entry
+	 */
+	static boolean entersText(KeyStroke stroke) {
+		int modifiers = stroke.getModifiers() & ALLOWED_MODIFIERS;
+		int key = stroke.getKeyCode();
+		if ((modifiers & ~InputEvent.SHIFT_DOWN_MASK) == 0) {
+			return !isFunctionKey(key);
+		}
+		return modifiers == InputEvent.ALT_DOWN_MASK
+				&& key >= KeyEvent.VK_NUMPAD0 && key <= KeyEvent.VK_NUMPAD9;
+	}
+
+	private static boolean isFunctionKey(int key) {
+		return (key >= KeyEvent.VK_F1 && key <= KeyEvent.VK_F12)
+				|| (key >= KeyEvent.VK_F13 && key <= KeyEvent.VK_F24);
+	}
+
+	private static boolean wellFormed(KeyStroke proposed) {
 		return proposed != null && proposed.getKeyEventType() == KeyEvent.KEY_PRESSED
 				&& proposed.getKeyCode() != KeyEvent.VK_UNDEFINED
 				&& proposed.getKeyCode() != KeyEvent.VK_CONTROL

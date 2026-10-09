@@ -34,10 +34,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * POST-E2-P2 characterization (no product change): the links of the observed chain
- * from typing a capital letter in Algebra Input to a factor zoom of the Graphics view
- * when that letter's Shift chord is assigned to a GeoCeDG factor-zoom action. It pins
- * the current behavior; it is not an acceptance criterion of a correction.
+ * POST-E2-P2 characterization, reconciled by POST-E2-P2-R1: the links of the observed
+ * chain from typing a capital letter in Algebra Input to a factor zoom of the Graphics
+ * view when that letter's Shift chord is assigned to a GeoCeDG factor-zoom action.
+ * The characterization candidate {@code 216964dc} pinned the defect (links 1, 2 and 4
+ * asserted that Shift+A was accepted, bound and zoomed); its report, evidence and the
+ * windowed baseline runs of the R1 evidence keep that history. Since R1 the chain is
+ * cut at its source: the chord is refused and never bound. Link 3 (the field leaves the
+ * press to the window bindings) is inherited Swing behavior and stays as it was.
  *
  * <p>The windowed end-to-end path (Swing fires window-scope bindings only for showing
  * components) is evidenced by the scratch probe of the characterization report:
@@ -65,29 +69,35 @@ class PostE2P2AlgebraInputZoomCharacterizationTest {
 		clearPreferences();
 	}
 
-	/** Link 1: a printable Shift chord is accepted as an available shortcut. */
+	/** Link 1 (R1): a printable Shift chord is refused as text entry. */
 	@Test
-	void aShiftLetterChordIsAcceptedForAFactorZoomAction() {
+	void aShiftLetterChordIsRefusedForAFactorZoomAction() {
 		GeoCeDGNavigationShortcutPreferences preferences = registry().getNavigationShortcuts();
 		GeoCeDGNavigationShortcutPreferences.DraftValidation draft =
 				preferences.validateConfiguration("10", null, SHIFT_A);
-		assertEquals(GeoCeDGNavigationShortcutPreferences.ShortcutStatus.AVAILABLE,
+		assertEquals(GeoCeDGNavigationShortcutPreferences.ShortcutStatus.TEXT_ENTRY,
 				draft.zoomOut().status());
-		assertTrue(draft.isValid());
-		assertEquals(GeoCeDGNavigationShortcutPreferences.Result.ACCEPTED,
+		assertFalse(draft.isValid());
+		assertEquals(GeoCeDGNavigationShortcutPreferences.Result.INVALID_SHORTCUT,
 				preferences.setConfiguration(10, null, SHIFT_A));
-		assertEquals(SHIFT_A, preferences.getConfiguration().zoomOut());
+		assertNull(preferences.getConfiguration().zoomOut());
 	}
 
-	/** Link 2: the real menu item binds that chord in the window scope. */
+	/**
+	 * Link 2 (R1): a stored Shift chord (the author's encoding) is read as unassigned,
+	 * so the real menu item binds nothing in the window scope.
+	 */
 	@Test
-	void theRealMenuItemBindsTheChordForTheWholeWindow() {
-		assertEquals(GeoCeDGNavigationShortcutPreferences.Result.ACCEPTED,
-				registry().getNavigationShortcuts().setConfiguration(10, null, SHIFT_A));
+	void aStoredShiftChordBindsNoMenuAccelerator() {
+		GeoGebraPreferencesD.getPref().savePreference(
+				GeoCeDGNavigationShortcutPreferences.ZOOM_OUT_PREFERENCE_KEY, "v1:65:64");
+		GeoCeDGNavigationShortcutPreferences reloaded =
+				new GeoCeDGNavigationShortcutPreferences(registry());
+		assertNull(reloaded.getConfiguration().zoomOut());
 		JMenuItem item = zoomOutItem();
-		assertEquals(SHIFT_A, item.getAccelerator());
-		assertNotNull(item.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).get(SHIFT_A),
-				"menu accelerators are window-scope bindings");
+		assertNull(item.getAccelerator());
+		assertNull(item.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).get(SHIFT_A),
+				"no window-scope binding for Shift+A");
 	}
 
 	/** Link 3: the Algebra Input field types the letter and leaves the press unconsumed. */
@@ -120,12 +130,19 @@ class PostE2P2AlgebraInputZoomCharacterizationTest {
 		assertEquals("Segment(", field.getText(), "the press itself edits nothing");
 	}
 
-	/** Link 4: the accelerator's activation of the item zooms the view by the factor. */
+	/**
+	 * Link 4 (R1): a legitimate chord that cannot type text is still bound, and the
+	 * accelerator's activation of the item still zooms the view by the factor.
+	 */
 	@Test
-	void activatingTheBoundItemZoomsTheViewOutByTheFactor() throws Exception {
+	void aLegitimateChordStillBindsAndZoomsTheViewOutByTheFactor() throws Exception {
+		KeyStroke legitimate = KeyStroke.getKeyStroke(KeyEvent.VK_F7,
+				InputEvent.SHIFT_DOWN_MASK);
 		assertEquals(GeoCeDGNavigationShortcutPreferences.Result.ACCEPTED,
-				registry().getNavigationShortcuts().setConfiguration(10, null, SHIFT_A));
+				registry().getNavigationShortcuts().setConfiguration(10, null, legitimate));
 		JMenuItem item = zoomOutItem();
+		assertEquals(legitimate, item.getAccelerator());
+		assertNotNull(item.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).get(legitimate));
 		EuclidianView view = app.getEuclidianView1();
 		double before = view.getXscale();
 		// BasicMenuItemUI's accelerator action calls doClick on the item

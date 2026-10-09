@@ -177,6 +177,9 @@ final class GeoCeDGNavigationSettingsPanel extends JPanel {
 		case INVALID:
 			label.setText(registry.text("Navigation.Shortcut.Invalid"));
 			break;
+		case TEXT_ENTRY:
+			label.setText(registry.text("Navigation.Shortcut.TextEntry"));
+			break;
 		case CONFLICT:
 			label.setText(registry.text("Navigation.Shortcut.ConflictWith") + " "
 					+ conflictPresentation(validation.conflictingActionId()));

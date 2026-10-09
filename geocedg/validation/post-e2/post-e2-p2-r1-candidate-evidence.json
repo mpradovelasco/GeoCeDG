@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P2-R1",
+  "registeredPhaseId": "POST-E2-P2-R1",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p2_r1_candidate_report.md",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_p2_closeout_record.md",
+  "baseline": {"commit": "32c3efc4a3ab9119d66b5b63f5e56a8394318b9e", "tree": "4d97967e5079ca187762e077dd12a7ebdda73ddc"},
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P2-R1 -LogDirectory artifacts\\agent\\<fresh-name>",
+  "rootCause": "GLOBAL TEXT-PRODUCING ACCELERATOR CONFLICT",
+  "selectedDesign": "OPTION A",
+  "productChange": "YES — KEYBOARD SHORTCUT VALIDATION",
+  "geometricSemanticsChange": "NONE",
+  "serializationChange": "NONE",
+  "classicChange": "NONE",
+  "changedProductFiles": [
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationShortcutPreferences.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationSettingsPanel.java",
+    "apps/geocedg/application-profile.yml"
+  ],
+  "rule": {
+    "refused": ["modifiers within {Shift} on any key except F1-F24 (letters, digits, punctuation, dead keys, extended character codes, space, numeric keypad, editing and navigation keys)", "Alt alone with a numeric-keypad digit (Windows character code)"],
+    "status": "TEXT_ENTRY -> Result.INVALID_SHORTCUT; nothing committed",
+    "retained": ["Shift+F1-F24", "chords with Ctrl or Meta", "Alt or Alt+Shift on non-keypad keys", "all subject to the unchanged A7 reserved-key and conflict rules"],
+    "beyondInstructionExamples": ["Shift with editing/navigation keys", "Alt with keypad digits"]
+  },
+  "storedPreferences": {
+    "behavior": "an inadmissible stored chord decodes as unassigned and binds no accelerator; the factor and a valid other chord are kept; loading writes nothing",
+    "authorEncodings": {"zoomIn": "v1:90:64", "zoomOut": "v1:65:64"},
+    "windowedReadOnlyCheck": "settings copy byte-identical after a candidate session (SHA-256 ab02841d9ae273d714e48265f24f862007b9bcc04a676f6ce11217898658ee83)",
+    "authorRealFileWritten": false
+  },
+  "altGr": {
+    "existingHandling": "wellFormed refuses ALT_GRAPH_DOWN_MASK; normalize keeps it",
+    "jdkEvidence": "SunToolkit.isPrintableCharacterModifiersMask: on Windows ctrl + alt enters extended characters; Swing DefaultKeyTypedAction uses it",
+    "runtimeAttempt": "java.awt.Robot into the active probe window, Spanish layout: mouse injection worked, no keyboard event reached the JVM; no further keyboard injection",
+    "notEstablished": "whether AltGr KEY_PRESSED events carry ALT_GRAPH_DOWN_MASK in addition to Ctrl+Alt",
+    "r1Treatment": "Ctrl+Alt chords unchanged (already accepted by A7); no new case introduced",
+    "openDecision": {"D1": "refuse Ctrl+Alt (+/- Shift) with character keys", "D2": "keep and add a manual Windows AltGr smoke", "D3": "keep and document the residual risk"}
+  },
+  "windowed": {
+    "probe": "scratch windowed JUnit probe (GeoCeDG.main, Temurin 25, ByteBuddy coordinate traces), Spanish layout, fresh copy of the author's preferences per run",
+    "sequences": ["Segment(A,B)", "Circle(A,2)", "Angle(A,B,C)", "Segment(B,A)", "Polygon(B,C,Z)", "ZA=(1,2)", "Text(\"AZ\")"],
+    "runs": {
+      "baselineAuthor": {"commit": "32c3efc4", "keystrokes": 79, "unexpectedViewChanges": 10, "textsIntended": "7/7", "legitimateShiftF7": "zooms in view and field", "menuZoomIn": "zooms"},
+      "candidateAuthor": {"keystrokes": 79, "unexpectedViewChanges": 0, "textsIntended": "7/7", "legitimateShiftF7": "zooms in view and field", "menuZoomIn": "zooms"},
+      "candidateClassic": {"keystrokes": 35, "unexpectedViewChanges": 0, "textsIntended": "3/3"},
+      "candidateAuthorReadOnly": {"keystrokes": 12, "unexpectedViewChanges": 0, "settingsCopyUnchanged": true}
+    }
+  },
+  "focusedTests": {"PostE2P2R1ShortcutValidationTest": 6, "PostE2P2AlgebraInputZoomCharacterizationTest": 4, "PostG9U1A7NavigationTest": 7, "G9U0R3MenuLifecycleTest": 6},
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1943},
+    "post-e2-p2-r1.desktop": 23,
+    "post-e2-p2.desktop": {"count": 11, "identitiesChanged": "reconciled method names"},
+    "final.shared": 6963,
+    "final.desktop": {"before": 1931, "after": 1937},
+    "selections": 49,
+    "phaseSelections": 56,
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "c0a363827443dafbcc6ed8aef3515061a8dc37f3b170655c6855752616d46e24", "after": "8cb1d4aed495a36cc8a87f1195e441a05fbf019ea55ffe4b3d2041e1adfd4dec"}
+  },
+  "normativeAmendment": {"path": "geocedg/specs/ui/cedg-workspaces.md", "section": "POST-E2-P2-R1 amendment after the A7 navigation paragraph", "status": "PROPOSED"},
+  "guides": ["docs/user/geocedg_user_guide_en.md 12.4", "docs/user/geocedg_user_guide_es.md 12.4"],
+  "authorSmoke": "PENDING",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false
+}

@@ -4356,13 +4356,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationSettingsPanel.java",
       "change": "added",
-      "purpose": "POST-G9U1-A7: Expose the approved application-local navigation and shortcut preferences without changing construction semantics.",
+      "purpose": "POST-G9U1-A7: Expose the approved application-local navigation and shortcut preferences without changing construction semantics. POST-E2-P2-R1: explanatory feedback for a text-entry chord. Authority: docs/validation/post_e2_p2_r1_candidate_report.md.",
       "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationShortcutPreferences.java",
       "change": "added",
-      "purpose": "POST-G9U1-A7: Persist and validate the bounded navigation shortcut policy as application preference state only.",
+      "purpose": "POST-G9U1-A7: Persist and validate the bounded navigation shortcut policy as application preference state only. POST-E2-P2-R1: a factor chord that types or edits text (Shift alone except F1-F24, Alt with a keypad digit) is refused as TEXT_ENTRY; stored ones are read as unassigned without rewriting the store. Authority: docs/validation/post_e2_p2_r1_candidate_report.md.",
       "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
     },
     {
@@ -6054,8 +6054,14 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P2AlgebraInputZoomCharacterizationTest.java",
       "change": "added",
-      "purpose": "POST-E2-P2 characterization (no product change): a Shift-letter factor-zoom chord is accepted, the real menu item binds it in the window scope, the Algebra Input field leaves the press unconsumed, and activating the item zooms the view by the factor.",
+      "purpose": "POST-E2-P2 characterization (no product change): a Shift-letter factor-zoom chord is accepted, the real menu item binds it in the window scope, the Algebra Input field leaves the press unconsumed, and activating the item zooms the view by the factor. POST-E2-P2-R1 reconciliation: links 1, 2 and 4 assert the corrected behavior (Shift+A refused, a stored Shift+A binds nothing, a legitimate chord still zooms); the defect stays evidenced by 216964dc and the R1 windowed baseline runs. Authority: docs/validation/post_e2_p2_r1_candidate_report.md.",
       "authority": "docs/validation/post_e2_p2_characterization_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P2R1ShortcutValidationTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P2-R1 validation matrix (Shift with letters, digits, punctuation, keypad, editing keys; Alt with keypad digits; function keys, Ctrl, Alt and Meta chords; reserved keys and conflicts), refused drafts committing nothing with EN/ES feedback, and stored inadmissible chords read as unassigned without rewriting the store while the factor and a valid second chord survive.",
+      "authority": "docs/validation/post_e2_p2_r1_candidate_report.md"
     }
   ]
 }

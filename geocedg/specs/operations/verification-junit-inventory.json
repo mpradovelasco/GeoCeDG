@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "eb958f6af7967b6c8459b53b7ca7fd05c909434135225a5989c043f61c716495",
+      "discovery_evidence_sha256": "f25ec8c29532331c6daaf4c6a11e537f628aee23edf7f3aebbfc995a2762c57d",
       "discovered_identity_count": 6046,
       "discovered_identities_sha256": "60dd37a7b249dd886cc4fd31e84efe4df24bd977e44c85958a7c2cca954ecbef"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "b534a0ceb94fd6f2778f604276dae6bbff5a6caf62525df52d3100ef8c286f3f",
-      "discovered_identity_count": 1937,
-      "discovered_identities_sha256": "6e9da192ab9973e2615f11b4542617e671277281202b2f0799ba9bcaf90fd9a5"
+      "discovery_evidence_sha256": "0a4d667c302018600b39dfee72a1314c7e3437af5b2967e701f5b391cb3487ab",
+      "discovered_identity_count": 1943,
+      "discovered_identities_sha256": "096d7f13e6883f8073ee693175cf226ca45344c8ca9baefa9f447c8d11dd0fc1"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1937,
-      "expected_identities_sha256": "6e9da192ab9973e2615f11b4542617e671277281202b2f0799ba9bcaf90fd9a5",
+      "expected_identity_count": 1943,
+      "expected_identities_sha256": "096d7f13e6883f8073ee693175cf226ca45344c8ca9baefa9f447c8d11dd0fc1",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1931,
-      "expected_identities_sha256": "9e3608cffc96f37a371db2c4468cf9327f72cbea568398845515cecce07adfa1",
+      "expected_identity_count": 1937,
+      "expected_identities_sha256": "4ed12dcb822ff69c00931f4ffdbb94f139adacd33bd71a0652643f11ca74d59d",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -2205,12 +2205,50 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 11,
-      "expected_identities_sha256": "36661544a26fcd5e62795208c9b1f3f55b01254b6745b953d1df107cd7b8462f",
+      "expected_identities_sha256": "93073adad1ae88d708114cd2528b671d4686289d5275fe0d2b8d833888fde3bd",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "b6747a1bf829051ff95a29c281558e00d3f82459",
           "tree": "b525a285e1b5b1552b0c7c48922b9834c41df79b"
+        }
+      ]
+    },
+    {
+      "selection_id": "post-e2-p2-r1.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PostE2P2R1ShortcutValidationTest",
+        "org.geocedg.desktop.PostE2P2AlgebraInputZoomCharacterizationTest",
+        "org.geocedg.desktop.PostG9U1A7NavigationTest",
+        "org.geocedg.desktop.G9U0R3MenuLifecycleTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PostE2P2R1ShortcutValidationTest",
+        "--tests",
+        "org.geocedg.desktop.PostE2P2AlgebraInputZoomCharacterizationTest",
+        "--tests",
+        "org.geocedg.desktop.PostG9U1A7NavigationTest",
+        "--tests",
+        "org.geocedg.desktop.G9U0R3MenuLifecycleTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 23,
+      "expected_identities_sha256": "1bebef08135fd6f5adac5f0e1e194a5f1f103316d48345289548daf43e1df90a",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "32c3efc4a3ab9119d66b5b63f5e56a8394318b9e",
+          "tree": "4d97967e5079ca187762e077dd12a7ebdda73ddc"
         }
       ]
     }

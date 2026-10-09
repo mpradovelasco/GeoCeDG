@@ -186,6 +186,23 @@ Construction XML, identity, provenance, metrics or DAG semantics. Secondary
 views, 3D, Web, ZoomPrevious, FitSelection, FitLayer, named views and general or
 printing scales remain deferred to broader G12.
 
+**POST-E2-P2-R1 amendment (2026-10-09, PROPOSED — pending author approval of the
+corrected candidate; the A7 text above and its approval evidence are unchanged).**
+The factor chords are window-wide menu accelerators, so a chord also fires while
+the user types in Algebra Input or any other text field of the window
+(characterized in POST-E2-P2). A factor chord is therefore admissible only if it
+cannot type or edit text: a chord whose only modifier is Shift is refused unless
+its key is a function key F1–F24 (every other key — letters, digits, punctuation,
+space, numeric keypad, editing and navigation keys — types or edits text whatever
+the keyboard layout), and Alt with a numeric-keypad digit is refused as a Windows
+character code. The validation reports such a chord as a distinct text-entry
+result with an explanation; Apply stays disabled and nothing is committed. A
+stored chord that is no longer admissible is read as unassigned, binds no menu
+accelerator and is not rewritten; the factor and the other chord, if admissible,
+are kept. Chords with Ctrl or Meta, and Alt on other keys, keep the A7 rules;
+Ctrl+Alt chords on character keys, which Windows also uses for AltGr characters,
+are an open author decision.
+
 ## G9U1 final presentation-polish successor
 
 The bounded successor is **PASS — AUTHOR APPROVED** by an explicit exact-SHA

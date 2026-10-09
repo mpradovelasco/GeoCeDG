@@ -29,8 +29,10 @@ P2 (Algebra Input zoom)   = CHARACTERIZATION PASS — AUTHOR APPROVED — PUBLIS
                            docs/validation/post_e2_p2_closeout_record.md: printable
                            user-assigned factor-zoom chord fired as a menu accelerator;
                            GeoCeDG-specific since POST-G9U1-A7)
-P2-R1 (shortcut validation) = CORRECTION AUTHORIZED FOR IMPLEMENTATION (Option A,
-                           BOUNDED_PHASE, PHASE); approval and publication PENDING
+P2-R1 (shortcut validation) = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (Option A,
+                           BOUNDED_PHASE; docs/validation/post_e2_p2_r1_candidate_report.md;
+                           Ctrl+Alt / AltGr chords an open author decision); approval
+                           and publication PENDING
 P3–P4 EXECUTION          = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false

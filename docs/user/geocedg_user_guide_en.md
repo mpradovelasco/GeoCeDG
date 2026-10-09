@@ -1554,6 +1554,15 @@ you edit a shortcut, the dialog immediately reports *Available*, *Unassigned
 (valid)*, *Invalid*, or the action it collides with; **Apply** stays disabled
 until the whole draft is valid, and **Cancel** keeps the previous configuration.
 
+These shortcuts work in the whole window, also while you type in Input, so a key
+that types text cannot be one of them: **Shift** with a letter, a digit, a
+punctuation or editing key (for example `Shift`+`A`) is refused with an
+explanation, because typing the capital letter would zoom. Choose a combination
+with `Ctrl`, `Alt` or a function key, such as `Ctrl`+`Alt`+`Shift`+`F11` or
+`Shift`+`F7`. A shortcut of that kind saved by an earlier version is ignored: it
+shows as unassigned until you choose another, and the zoom factor and the other
+shortcut are kept.
+
 From the keyboard, click an empty area of the Graphics view to give it focus and
 use `Ctrl`+`+` and `Ctrl`+`-`. Do not type those into Algebra Input.
 
