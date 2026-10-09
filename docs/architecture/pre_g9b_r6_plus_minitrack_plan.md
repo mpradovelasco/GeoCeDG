@@ -42,6 +42,7 @@
 - `POST-E2-P2-R1` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` by conditional author approval of the D1 successor `38647c796e6499a10d5435844866d2144fdfbe24` ([P2-R1 closeout record](../validation/post_e2_p2_r1_closeout_record.md)); `POST-E2-P3` design and bounded implementation authorized after a readiness gate (`INTEGRATED_PHASE`).
 - `POST-E2-P3` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` on `1e8714a968b7def9697d67bf056fc77f48da0fc8` ([P3 closeout record](../validation/post_e2_p3_closeout_record.md)); User tools → Document tools; `POST-E2-P4` readiness/design gate authorized with the author-selected Option A (explicit offset conversion), bounded implementation only on gate outcome A.
 - `POST-E2-P4` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` by conditional author approval of the Graphics View follow-up successor `06835fdf477d23ade9694c952c84191b7f2ebe07` of `af927bcb` ([P4 closeout record](../validation/post_e2_p4_closeout_record.md)); explicit Make offset draggable conversion (Algebra View and Graphics View menus); `PRE-G9B-R6-plus-E3` documentary readiness only; `PRE-G9B-R6-plus-F4` planning intent recorded (between `F3` and `G`), not authorized.
+- Preparation of `E3` (`PRE-G9B-R6-plus-E3-PREP`, 2026-10-09): at the author's instruction, characterization, design reconciliation, author-decision preparation and the canonical prompt only, on the published `P_R6PLUS_POST_E2_P4` `13e08ac1fe1c6c931a88985b97df93d8445812b9`, tree `dd2ba17c483a18b8931e1848f38616edfa98b06a` ([characterization report](../validation/pre_g9b_r6_plus_e3_preparation_characterization_report.md); [reconciled design candidate](pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md), which supersedes the §8.6 conversion wording by `unit-system.md` §18.4 and the stale `P0` profile line numbers and catalog delta — 127 actions; `construction-annotations-media` at `application-profile.yml:3527-3532`). The [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e3-iso-a-border-and-export-area.prompt.md) is `PREPARED — NOT AUTHORIZED`: representation, sheet content against the legacy hide requirement, size set, input forms, canonical binary64 expression, `AQ-E3c`, the unspecified-unit gate, `ExportArea` participation and link lifecycle (`AQ-E3b`), `ISO_A_SELECTION`, the label and the coherence indicator, workflow, names and catalog, legacy relation and verification class (`INTEGRATED_PHASE` proposed, not frozen) are pending author decisions `DQ-E3-1` to `DQ-E3-16`; preparation class `DOCUMENTATION_STATUS_ONLY`; implementation and publication not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1285,7 +1286,15 @@ PRE-G9B-R6-plus-E2         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-08 
                              implementation NOT AUTHORIZED)
                              earlier: NOT AUTHORIZED (NEXT after E1-P-X1, verification
                              baseline clean; requires a separate explicit author instruction)
-PRE-G9B-R6-plus-E3         = NOT AUTHORIZED
+PRE-G9B-R6-plus-E3         = PREPARED — NOT AUTHORIZED
+                             (2026-10-09; PRE-G9B-R6-plus-E3-PREP; characterization
+                             COMPLETE on P_R6PLUS_POST_E2_P4 13e08ac1; canonical prompt
+                             prepared; DQ-E3-1 to DQ-E3-16 pending; proposed
+                             INTEGRATED_PHASE not frozen; preparation class
+                             DOCUMENTATION_STATUS_ONLY; implementation and
+                             publication NOT AUTHORIZED; selfApproved = false)
+                             earlier: NOT AUTHORIZED (documentary readiness only,
+                             POST-E2-P4 closeout)
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
 
@@ -1335,6 +1344,10 @@ ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE = ENHANCEMENT — OWNER PRE-G9B-R6-plus
                              comparing the scale captured by IsoABorder with the
                              current session drawingScale; no geometric
                              dependency on the live drawingScale
+                             CHARACTERIZED BY THE E3 PREPARATION (2026-10-09):
+                             at the base a scale mismatch changes the exported
+                             page silently; label and indicator designs are
+                             DQ-E3-11 and DQ-E3-12, pending — NOT IMPLEMENTED
 OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT = REPRODUCED BY AUTHOR — PRE-EXISTING —
                              NOT CAUSED BY C — ACCEPTED DEBT — NOT C-BLOCKING —
                              DEFERRED TO POST-C (author disposition at the C

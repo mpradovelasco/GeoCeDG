@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E3",
+  "activity": "PRE-G9B-R6-plus-E3-PREP",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_e3_preparation_characterization_report.md",
+  "reconciledDesignCandidate": "docs/architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-e3-iso-a-border-and-export-area.prompt.md",
+  "supersededEvidence": "docs/architecture/pre_g9b_r6_plus_e3_iso_a_border_design_candidate.md (P0; unchanged)",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "phaseState": "PREPARED — NOT AUTHORIZED",
+  "preparationState": "TECHNICAL CANDIDATE — PENDING AUTHOR REVIEW",
+  "characterization": "COMPLETE",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "preparationClass": {
+    "class": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "supplementaryCheck": "Test-PromptContractDocument on the phase prompt (profile task); STATIC does not cover uncatalogued phase prompts",
+    "impactFacts": "documentation, one JSON evidence mirror, one uncatalogued phase prompt, two status files; no product, test, build, registry, verifier, profile, schema or serialization path"
+  },
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "authorInstruction": {
+    "date": "2026-10-09",
+    "authorizes": "baseline inspection; characterization of GeoGebra/GeoCeDG mechanisms and of the legacy ISO sheet macros; reconciliation with the unit and export contracts; DQ-E3 questions; the canonical prompt; documentary registration and the preparation verification",
+    "forbidden": [
+      "IsoABorder, new kernel commands, XML serialization changes, menu actions, ExportArea producer changes",
+      "legacy macro or Templatev7.ggb modifications",
+      "new drawing-scale behavior, page-layout features",
+      "marking any candidate or recommendation author-approved",
+      "push, merge, publication, tag, release",
+      "starting F1, F2, F3, F4 or G"
+    ]
+  },
+  "preservedDispositions": {
+    "POST-E2-P1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "POST-E2-P1-R1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "POST-E2-P1-R2": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "POST-E2-P2": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "POST-E2-P2-R1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "POST-E2-P3": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "POST-E2-P4": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E2": "PASS — AUTHOR APPROVED — PUBLISHED"
+  },
+  "publishedBase": {
+    "name": "P_R6PLUS_POST_E2_P4",
+    "commit": "13e08ac1fe1c6c931a88985b97df93d8445812b9",
+    "tree": "dd2ba17c483a18b8931e1848f38616edfa98b06a"
+  },
+  "entryGate": {
+    "localHead": "13e08ac1fe1c6c931a88985b97df93d8445812b9",
+    "originMain": "13e08ac1fe1c6c931a88985b97df93d8445812b9",
+    "liveRemoteMain": "13e08ac1fe1c6c931a88985b97df93d8445812b9",
+    "worktreeClean": true
+  },
+  "preparationBase": {
+    "commit": "13e08ac1fe1c6c931a88985b97df93d8445812b9",
+    "branch": "phase/pre-g9b-r6-plus-e3-prompt",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "probes": {
+    "route": "scratch JUnit class compiled into the Desktop test source set through a Gradle init script, and scratch PowerShell scripts; never in a tracked path; build leftovers removed after the run",
+    "items": [
+      {"id": "P1", "class": "E3PrepBorderProbeTest.p1DragPredicatesPerOutputType", "exit": 0, "purpose": "inherited drag predicates per output type; polygon fill, area, region; polyline value and XML"},
+      {"id": "P2", "class": "E3PrepBorderProbeTest.p2PaperSpaceConsistency", "exit": 0, "purpose": "PDF page of a model-space ISO rectangle through MANUAL ExportArea and session drawingScale, 11 cases"},
+      {"id": "P3", "class": "E3PrepBorderProbeTest.p3DxfEntityPerRepresentation", "exit": 0, "purpose": "DXF entity per representation"},
+      {"id": "P4", "class": "E3PrepBorderProbeTest.p4LiteralInputPrecisionRoundTrip", "exit": 0, "purpose": "double literals as command inputs and named numerics round-trip bit-exactly through .cedg save and reopen (shortest round-trip decimal)"},
+      {"id": "S1", "script": "e3-binary64.ps1", "exit": 0, "purpose": "u per unit; four evaluation orders over 616 cases; legacy series against ISO 216"},
+      {"id": "S2", "script": "e3-binary64-orders.ps1", "exit": 0, "purpose": "six evaluation orders against the binary64 nearest to the exact value, 624 cases"},
+      {"id": "S3", "kind": "read-only extraction of Templatev7.ggb into the scratchpad", "purpose": "legacy macro XML; SHA-256 identical before and after"}
+    ],
+    "probeResultSha256": {"P1-P3": "258251ba69bc4814b6f13fa76c8f3859b5aeba723bc4f2472b328619447c42e4", "P4": "413d3a281e92051c3f5f3d993eeb4a5a7f03fc9c1140289b20edd9033d17277a"},
+    "literalRoundTripBitExact": true
+  },
+  "legacyReference": {
+    "file": "models/legacy/template-v7/original/Templatev7.ggb",
+    "sha256": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "unchanged": true,
+    "macros": {
+      "sheetISOAnLand": {"inputs": ["D point", "ISO216n", "CeDGScale", "CeDGMargin"], "outputs": 21, "reference": "upper-left D, y downward", "outerRectangle": "dotted type 20, thickness 2", "frame": "uniform margin, solid thickness 3", "titleBlock": "lower-right, scaled from A3 constants", "createsExportPoints": false},
+      "sheetISOAnVert": {"inputs": ["D point", "ISO216n", "CeDGScale", "CeDGMargin"], "outputs": 22, "construction": "landscape rotated -90 degrees about D and translated; title block translated, not rotated", "createsExportPoints": false}
+    },
+    "sizeFormula": "unrounded series 100*2^(1/4)*2^(-n/2) and 100*2^(-1/4)*2^(-n/2) cm; n rounded; A3 = 297.30 x 420.45 mm",
+    "authorRequirement": "outer dotted rectangle and all corner points hidden in the final sheet presentation (AQ-G3, DQ-E1-8 reference evidence)"
+  },
+  "iso216Mm": {"A0": [841, 1189], "A1": [594, 841], "A2": [420, 594], "A3": [297, 420], "A4": [210, 297], "A5": [148, 210], "A6": [105, 148], "A7": [74, 105], "A8": [52, 74], "A9": [37, 52], "A10": [26, 37]},
+  "conversion": {
+    "normativeCapture": "u = 1e-3 / fb(effC); drawingScale pair a:b; unit-system.md 18.4",
+    "mathematicalForm": "L_model = (P/1000) / (f(c) * (a/b)) = P * b / a * u",
+    "orderMatters": {"cases": 616, "disagreeingAcrossFourOrders": 247},
+    "ordersAgainstNearestExact": {"cases": 624, "((L*b)/a)*u": {"exact": 536, "maxUlp": 1}, "((L*u)*b)/a": {"exact": 478, "maxUlp": 1}, "(L*u)*(b/a)": {"exact": 479, "maxUlp": 2}, "((L/1000)*b)/(f*a)": {"exact": 410, "maxUlp": 2}, "(L*b)/(a*(1000*f))": {"exact": 511, "maxUlp": 2}, "((L*b)/a)/(1000*f)": {"exact": 515, "maxUlp": 2}},
+    "referenceCase": {"case": "A3 landscape, mm, 1:50", "model": [21000, 14850]},
+    "e2CaptureExpressionDiffers": "mm * 1e-3 / (fb(effC) * a / b) in GeoCeDGDimensionTools.java:70-81"
+  },
+  "paperSpaceConsistency": [
+    {"case": "A3L mm 1:50", "session": "1:50", "pageMm": [420.0, 297.0]},
+    {"case": "A3L mm 1:50", "session": "1:100", "pageMm": [210.0, 148.5]},
+    {"case": "A3L mm 1:50", "session": "1:1", "pageMm": [21000.0, 14850.0]},
+    {"case": "A3L cm 1:50", "session": "1:50", "pageMm": [420.0, 297.0], "model": ["2100.0", "1485.0000000000002"]},
+    {"case": "A3L m 1:50", "session": "1:50", "pageMm": [420.0, 297.0]},
+    {"case": "A4P cm 1:1", "session": "1:1", "pageMm": [210.0, 297.0]},
+    {"case": "A4P mm 2:1", "session": "2:1", "pageMm": [210.0, 297.0]},
+    {"case": "A4P mm 1:10", "session": "1:10", "pageMm": [210.0, 297.0]},
+    {"case": "A4P inch-usm 1:2", "session": "1:2", "pageMm": [210.0, 297.0]},
+    {"case": "A0P mm 1:1", "session": "1:1", "pageMm": [841.0, 1189.0]},
+    {"case": "A10L m 1:100", "session": "1:100", "pageMm": [37.0, 26.0]}
+  ],
+  "dragPredicates": [
+    {"object": "Segment(P,w)", "type": "SEGMENT", "hasMoveableInputPoints": false},
+    {"object": "Segment(P,P+(w,0))", "type": "SEGMENT", "hasMoveableInputPoints": false},
+    {"object": "Polygon(P,P+..)", "type": "POLYGON", "hasMoveableInputPoints": true, "defaultAlpha": 0.1, "isRegion": true, "value": "area 3.1185E8"},
+    {"object": "Polyline(P,..,P)", "type": "POLYLINE", "hasMoveableInputPoints": true, "isRegion": false, "value": "length 71700"},
+    {"object": "Text(..,P+(w,-h))", "type": "TEXT", "hasMoveableInputPoints": false}
+  ],
+  "dxfEntities": {"polygon": "1 closed LWPOLYLINE, 4 vertices", "closedPolyline": "1 open LWPOLYLINE, 5 vertices", "segment": "1 LINE", "text": "excluded"},
+  "baseFacts": {
+    "exportAreaProducers": ["EXPORT_POINTS", "MANUAL"],
+    "isoProducersInCode": false,
+    "exportAreaHoldsGeoElement": false,
+    "exportAreaRebuildSignal": false,
+    "drawingScalePresets": ["1:1", "1:2", "1:5", "1:10", "2:1", "5:1"],
+    "drawingScaleMaximumTerm": 1000000000,
+    "unitGatedActionPattern": false,
+    "actionCatalog": 127,
+    "lastModeId": 143,
+    "adr0031Pins": [566, 515, 488],
+    "phaseSelections": 58,
+    "junitSelections": 51,
+    "candidateNamesFree": ["IsoABorder", "MarcoISOA", "BordeISOA", "HojaISOA"]
+  },
+  "decisionsRequested": [
+    {"id": "DQ-E3-1", "topic": "representation", "recommendation": "R2: closed GeoPolyLine outputs with existing types; no new GeoElement or XML element type", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-2", "topic": "sheet content (AQ-E2 against AQ-G3)", "recommendation": "(b) trim hidden and dotted + frame visible; margin (b1) uniform input in paper mm, default 10; no title block (G15)", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-3", "topic": "ISO size set", "recommendation": "A0-A10, ISO 216 integer table", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-4", "topic": "input forms (AQ-E3a)", "recommendation": "integer index, Boolean landscape, integer scale pair, tool writes literals", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-5", "topic": "canonical binary64 expression", "recommendation": "((L*b)/a)*u; bit-identical tests; 1 ulp bound (2 for usm)", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-6", "topic": "later construction-unit change (AQ-E3c)", "recommendation": "(a) keep model geometry; no automatic re-capture; indicator reports the unit-factor mismatch", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-7", "topic": "unspecified unit", "recommendation": "reason-gated action offering Document Units; typed command stays pure", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-8", "topic": "ExportArea participation", "recommendation": "(B) explicit only: yes/no after creation and a File action; precedence unchanged", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-9", "topic": "ISO_A_BORDER link lifecycle (AQ-E3b)", "recommendation": "(b1) live link, dropped when stale by an identity-only test, fallback by the B rule, notice and re-link", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-10", "topic": "ISO_A_SELECTION design", "recommendation": "File action; corner copied, never linked; session drawingScale and current unit; computed once with the shared helper", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-11", "topic": "construction label", "recommendation": "(a) GeoText output 'A<n> — a:b' (normal form), locale- and unit-independent, visible by default, hideable", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-12", "topic": "transient coherence indicator", "recommendation": "status-bar marker + export-dialog notice with an explicit 'use sheet scale' button; linked border only", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-13", "topic": "user workflow", "recommendation": "menu-only one-shot mode, point pick (tool-created point hidden), dialog with local presets prefilled from the session scale, one undo point, yes/no linkage", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-14", "topic": "names and catalog", "recommendation": "IsoABorder / MarcoISOA; presentation.iso-a-border, export.area.iso-a, export.area.use-iso-a-border; mode 144; catalog 127 -> 130", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-15", "topic": "legacy relation", "recommendation": "legacy sheet tools stay unshipped references (DQ-E1-7); no migration; Templatev7.ggb untouched", "state": "PROPOSED — PENDING AUTHOR DECISION"},
+    {"id": "DQ-E3-16", "topic": "verification class", "recommendation": "INTEGRATED_PHASE (registered PHASE + INTEGRATION); GLOBAL_IMPACT on a new element type, attribute, ExportArea serialization or parser/dispatch change", "state": "PROPOSED — PENDING AUTHOR DECISION"}
+  ],
+  "proposedVerificationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozen": false,
+    "plannedAcceptance": "registered PHASE -Phase PRE-G9B-R6-PLUS-E3 + INTEGRATION on the same frozen commit",
+    "escalatesTo": "GLOBAL_IMPACT on a new GeoElement type, XML element type or attribute, ExportArea serialization, or a shared parser or dispatch change"
+  },
+  "observationsProposed": [
+    "OBS-R6PLUS-E3-SILENT-SCALE-MISMATCH",
+    "OBS-R6PLUS-E3-EXPORT-AREA-NO-REBUILD-SIGNAL",
+    "OBS-R6PLUS-E3-LEGACY-HIDE-REQUIREMENT-VERSUS-BORDER-ONLY",
+    "OBS-R6PLUS-E3-UNIT-FACTOR-ORDER",
+    "OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES",
+    "OBS-R6PLUS-E3-NO-UNIT-GATE-PATTERN"
+  ],
+  "trackedDelta": [
+    "A .github/prompts/tasks/pre-g9b-r6-plus-e3-iso-a-border-and-export-area.prompt.md",
+    "A docs/architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md",
+    "A docs/validation/pre_g9b_r6_plus_e3_preparation_characterization_report.md",
+    "A geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e3-preparation-characterization.json",
+    "M docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "M docs/roadmap/geocedg_roadmap.md"
+  ]
+}
