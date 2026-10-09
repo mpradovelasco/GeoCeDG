@@ -38,6 +38,7 @@
 - `POST-E2-P1` (2026-10-08): `PASS — AUTHOR APPROVED` as a characterization ([P1 closeout record](../validation/post_e2_p1_closeout_record.md)); `OBS-POST-E2-P1-PDF-STROKE-WIDTH-FOLLOWS-EXPORT-ZOOM` registered, characterization owner `POST-E2-P1-R1` (authorized; correction not authorized).
 - `POST-E2-P1-R1` (2026-10-08): `PASS — AUTHOR APPROVED` as a characterization ([P1-R1 closeout record](../validation/post_e2_p1_r1_closeout_record.md)).
 - `POST-E2-P1-R2` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` on `6dde194eba240ed7bcc249df323a3ca6173b8a0e` ([R2 closeout record](../validation/post_e2_p1_r2_closeout_record.md)); physical PDF style sizes, marker sizes, Properties thickness field and status-bar drawing scale; `OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT` registered (not authorized); `POST-E2-P2` characterization authorized (`BOUNDED_PHASE`), implementation not authorized.
+- `POST-E2-P2` (2026-10-09): characterization `PASS — AUTHOR APPROVED — PUBLISHED` on `216964dc4ce8512e7b2be9587c8f93ca1d5a4355` ([P2 closeout record](../validation/post_e2_p2_closeout_record.md)); global menu-accelerator conflict from a text-producing user-assigned shortcut; correction `POST-E2-P2-R1` (Option A, `BOUNDED_PHASE`) authorized, approval and publication pending.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1401,6 +1402,9 @@ OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING 
                              accelerator from the focused input field; GeoCeDG-
                              specific since POST-G9U1-A7, configuration-dependent;
                              correction NOT AUTHORIZED
+                             CHARACTERIZATION PASS — AUTHOR APPROVED — PUBLISHED
+                             (2026-10-09, P2 closeout record); correction owner
+                             POST-E2-P2-R1, Option A (authorized; approval pending)
 OBS-E2-1 disposition       = POST-E2-P1 PASS — AUTHOR APPROVED (2026-10-08):
                              P1-INTENDED-PHYSICAL-CAPTURE + P1-DEFAULT-UX-LIMITATION;
                              guide clarified (Option A); Option B retained, not

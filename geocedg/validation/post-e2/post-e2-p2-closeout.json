@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P2",
+  "registeredPhaseId": "POST-E2-P2",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p2_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-09", "title": "GeoCeDG — POST-E2-P2 Author Approval, Publication and Bounded Correction of Algebra Input Zoom Shortcuts"},
+  "state": "PASS — AUTHOR APPROVED",
+  "meaning": "characterization and evidence approved; no product correction",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {"commit": "216964dc4ce8512e7b2be9587c8f93ca1d5a4355", "tree": "2ae1e51952c444abbadb2030dedc79142ad3f8eb", "mutated": false},
+  "acceptedEvidence": {
+    "static": {"run": "verification-f41470f4be54400ca5c0318dc47cefda", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "infraUnit": {"run": "verification-470baece3a484d2891e0d0877c00df65", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "phase": {"run": "verification-051515eb8e174681bd0a64ddacc6f66a", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"}
+  },
+  "classification": {"rootCause": "GLOBAL MENU ACCELERATOR CONFLICT", "trigger": "TEXT-PRODUCING USER-ASSIGNED SHORTCUT", "affectedLayer": "GEOCEDG DESKTOP", "geometricSemantics": "UNCHANGED", "upstreamGeoGebra": "NOT RESPONSIBLE FOR THE GEOCEDG-SPECIFIC BINDING"},
+  "selectedCorrection": {"phase": "POST-E2-P2-R1", "option": "A", "policy": "reject printable keys with no modifier or Shift only; stored inadmissible bindings read as unassigned; factor and valid independent binding preserved; AltGr to be characterized", "owner": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationShortcutPreferences.java", "verificationClass": "BOUNDED_PHASE", "acceptance": "PHASE", "implementation": "AUTHORIZED", "authorApproval": "PENDING", "publication": "NOT AUTHORIZED"},
+  "notAuthorized": ["P2-R1 approval", "P2-R1 publication", "Algebra Input, kernel, preview or viewport changes", "P3", "P4", "TD-PDF-1", "TD-PDF-2", "E3", "F1", "F2", "F3", "G", "G9B", "tag", "release", "binary publication"]
+}
