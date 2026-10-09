@@ -24,8 +24,12 @@ P1-R2 (physical PDF width) = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09;
                            not authorized)
 PDF debts                 = TD-PDF-1 text size, TD-PDF-2 embedded fonts: REGISTERED,
                            NOT AUTHORIZED; planned after P2–P4
-P2 (Algebra Input zoom)   = CHARACTERIZATION AUTHORIZED (2026-10-09; BOUNDED_PHASE,
-                           PHASE); implementation and publication NOT AUTHORIZED
+P2 (Algebra Input zoom)   = TECHNICAL CHARACTERIZATION CANDIDATE PENDING AUTHOR
+                           REVIEW (2026-10-09; docs/validation/post_e2_p2_characterization_report.md:
+                           printable user-assigned factor-zoom chord fired as a menu
+                           accelerator; GeoCeDG-specific since POST-G9U1-A7;
+                           recommended correction A, BOUNDED_PHASE); implementation
+                           and publication NOT AUTHORIZED
 P3–P4 EXECUTION          = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false

@@ -6050,6 +6050,12 @@
       "change": "added",
       "purpose": "POST-E2-P1-R2 smoke follow-up B and C: thickness field synchronization, range, refusal, undo and redo, Classic absence; status-bar drawing scale, non-physical statement, New and Open resets, localization, one-row layout and listener lifecycle.",
       "authority": "docs/validation/post_e2_p1_r2_smoke_followup_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P2AlgebraInputZoomCharacterizationTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P2 characterization (no product change): a Shift-letter factor-zoom chord is accepted, the real menu item binds it in the window scope, the Algebra Input field leaves the press unconsumed, and activating the item zooms the view by the factor.",
+      "authority": "docs/validation/post_e2_p2_characterization_report.md"
     }
   ]
 }

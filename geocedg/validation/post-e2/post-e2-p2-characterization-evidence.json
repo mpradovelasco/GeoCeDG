@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P2",
+  "registeredPhaseId": "POST-E2-P2",
+  "artifactKind": "CHARACTERIZATION_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p2_characterization_report.md",
+  "technicalCandidateState": "CHARACTERIZATION CANDIDATE, FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_p1_r2_closeout_record.md",
+  "baseline": {"commit": "b6747a1bf829051ff95a29c281558e00d3f82459", "tree": "b525a285e1b5b1552b0c7c48922b9834c41df79b"},
+  "observation": "OBS-E2-3",
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAcceptance": "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P2 -LogDirectory artifacts\\agent\\<fresh-name>",
+  "productChange": false,
+  "implementationAuthorized": false,
+  "selfApproved": false,
+  "passClaimed": false,
+  "classification": "GEOCEDG-SPECIFIC, CONFIGURATION-DEPENDENT",
+  "reproduction": {
+    "sequence": "Algebra Input focused; type Segment(A,B) (or Circle(A,2), Segment(B,A), Polygon(B,C,Z), Angle(...)) with the author's preferences",
+    "trigger": "KEY_PRESSED Shift+A (zoom-out x1/10) or Shift+Z (zoom-in x10) while typing; argument position incidental",
+    "deterministic": true,
+    "authorRun": {"keystrokes": 98, "boundPresses": 4, "viewChanges": 4, "otherKeystrokesChangingView": 0},
+    "viewChange": {"xscale": "50 -> 5", "xZero": "215 -> 289.7", "yZero": "315 -> 221.4", "visibleX": "[-4.30, 7.64] -> [-57.94, 61.46]"}
+  },
+  "rootCause": {
+    "policy": "GeoCeDGNavigationShortcutPreferences.valid() accepts SHIFT_DOWN_MASK as the only modifier, so printable chords (Shift+letter) are valid factor-zoom shortcuts",
+    "binding": "applyAccelerators() sets ACCELERATOR_KEY on the registry action; GeoCeDGMenuBar new JMenuItem(action); BasicMenuItemUI registers a WHEN_IN_FOCUSED_WINDOW binding",
+    "routing": "MyTextFieldD.processKeyEvent (upstream, unchanged) -> JComponent.processKeyBindings -> KeyboardManager -> JMenuBar -> BasicMenuItemUI accelerator -> AbstractButton.doClick",
+    "action": "GeoCeDGActionRegistry.execute -> GeoCeDGEuclidianController.zoomByFactor -> EuclidianController.zoomInOut -> EuclidianView.setAnimatedCoordSystem -> zoom; applied by CoordSystemAnimation.stopAnimation -> setCoordSystem",
+    "authorPreferences": {"zoom-factor-out": "v1:65:64 (Shift+A)", "zoom-factor-in": "v1:90:64 (Shift+Z)", "factor": 10.0, "obsoleteIgnoredKey": "geocedg.navigation.zoom-window.shortcut.v1"}
+  },
+  "affectedLayer": "GeoCeDG Desktop navigation-shortcut policy (POST-G9U1-A7)",
+  "introducedBy": {"commit": "b249a62aa", "phase": "POST-G9U1-A7", "date": "2026-09-12"},
+  "comparison": {
+    "r2Published": {"commit": "b6747a1b", "author": "REPRODUCED", "fresh": "NOT REPRODUCED", "authorWithoutChords": "NOT REPRODUCED", "onlyShiftA": "REPRODUCED"},
+    "e2Published": {"commit": "86fdc908", "author": "REPRODUCED"},
+    "preA7Published": {"commit": "71483011", "author": "NOT REPRODUCED (feature absent)"},
+    "classicInTree": "NOT REPRODUCED (GeoGebra3D, fresh settings)",
+    "upstreamPinned": {"commit": "9b93256b7df401ff056c37b502d82df4d72b1522", "factorZoomActions": "absent", "textFieldRouting": "identical (MyTextFieldD.processKeyEvent)"}
+  },
+  "hypothesesRejected": ["Ctrl+Z/Ctrl+Y undo from the field", "Ctrl+-/Ctrl+M forwarded from the field", "Zoom Window gesture", "command recognition and first-argument resolution", "autocompletion and Input Help", "input preview", "resize, keepCenter, EuclidianSettings"],
+  "invariant": "entering or resolving command arguments must not change the Graphics view scale or origin; explicit navigation (menu, toolbar, wheel, non-printing or Ctrl/Alt/Meta chords) stays legitimate",
+  "alternatives": {
+    "A": "reject printable chords in validation; stored printable chords load as unassigned (recommended)",
+    "B": "ignore factor-zoom activations while an editable text component has the focus",
+    "C": "dispatch the chords from the Graphics view only"
+  },
+  "openCheckForImplementation": "AltGr may arrive as Ctrl+Alt on Windows; Ctrl+Alt chords on character-producing AltGr keys must be shown not to fire while typing (hypothesis, not tested)",
+  "recommendedImplementationClass": "BOUNDED_PHASE",
+  "probe": {"kind": "scratch windowed JUnit probe outside the tree", "jdk": "Temurin 25", "instrumentation": "ByteBuddy agent, EuclidianView coordinate mutators and zoom starts", "events": "KEY_PRESSED/KEY_TYPED/KEY_RELEASED through the keyboard focus manager, Spanish layout", "authorSettingsSha256": "ab02841d9ae273d714e48265f24f862007b9bcc04a676f6ce11217898658ee83", "authorFileWritten": false},
+  "committedTest": {"class": "PostE2P2AlgebraInputZoomCharacterizationTest", "tests": 4, "selection": "post-e2-p2.desktop", "selectionAlso": ["PostG9U1A7NavigationTest"]},
+  "inventory": {"discovery": {"shared": 6046, "desktop": 1937}, "post-e2-p2.desktop": 11, "final.shared": 6963, "final.desktop": {"before": 1927, "after": 1931}, "selections": 48, "phaseSelections": 55, "registryJunitInventoryPin": {"before": "fc712b3ef1e73e92593246bbc764b2b132503075ba7095f07f2b4ec555267963", "after": "c0a363827443dafbcc6ed8aef3515061a8dc37f3b170655c6855752616d46e24"}}
+}

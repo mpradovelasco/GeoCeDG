@@ -1394,6 +1394,13 @@ OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING 
                              closeout 2026-10-08): large unexpected zoom-out when
                              starting algebra input, also seen in earlier phases,
                              not attributed to E2 — POST-E2 P2
+                             CHARACTERIZED — POST-E2-P2 technical characterization
+                             candidate (2026-10-09, pending author review): a
+                             user-assigned printable factor-zoom chord (author file:
+                             Shift+A out, Shift+Z in) fires as a window menu
+                             accelerator from the focused input field; GeoCeDG-
+                             specific since POST-G9U1-A7, configuration-dependent;
+                             correction NOT AUTHORIZED
 OBS-E2-1 disposition       = POST-E2-P1 PASS — AUTHOR APPROVED (2026-10-08):
                              P1-INTENDED-PHYSICAL-CAPTURE + P1-DEFAULT-UX-LIMITATION;
                              guide clarified (Option A); Option B retained, not
