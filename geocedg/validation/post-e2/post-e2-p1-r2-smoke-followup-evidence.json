@@ -67,6 +67,13 @@
     "registryJunitInventoryPin": {"before": "cc3e23a38a50560b4e4928ce9364ee53f16491c49d31b5a02ce8b06498491291", "after": "fc712b3ef1e73e92593246bbc764b2b132503075ba7095f07f2b4ec555267963"},
     "coveragePins": "47 selections, 54 PHASE selections, post-e2-p1-r2.desktop 107"
   },
+  "correctiveHistory": {
+    "firstFreeze": {"commit": "27388d60a300d0b44173ed8fbf912643c049f3af", "tree": "707b04f9e89c872b5b2fc47eb85954a1d1dae39b"},
+    "runs": {"STATIC": "verification-1897d1a7bdf84cccbf9cd5bc5cbaf20c ACCEPTED", "INFRA_UNIT": "verification-3f1ee6b711eb487b8a25a17ccc22db53 ACCEPTED", "PHASE": "verification-0495a9aec48d4dab977645bc094f0740 ACCEPTED", "INTEGRATION": "verification-1247ac65be8f4c35a6572b00fd447a31 REJECTED_SEMANTIC 18/19"},
+    "failure": "PreG9BR6PlusCDrawingScaleTest.e6AResetToABlankDocumentResetsAndAFileResetRelyOnTheLoad: NullPointerException in Component.getMaximumSize during an off-EDT reset racing the deferred status-bar refresh",
+    "correction": "the drawing-scale listener refreshes the bar on the changing thread; nothing is queued on the event thread",
+    "evidenceReuse": "none"
+  },
   "preservedDebts": ["TD-PDF-1", "TD-PDF-2"],
   "selfApproved": false,
   "authorApproved": false,

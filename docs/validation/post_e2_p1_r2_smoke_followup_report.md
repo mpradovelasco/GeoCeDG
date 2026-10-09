@@ -116,7 +116,10 @@ unit `Scale: non-physical` / `Escala: no física` with an explanatory tooltip
 (unit-system §13). `AppGeoCeDG.getStatusBar()` registers one
 `addDrawingScaleListener` callback when the bar is created; the bar lives as long
 as its window and panel rebuilds reattach the same bar, so there is one listener
-per window and none per rebuild. The callback reuses the bar's EDT-safe refresh.
+per window and none per rebuild. The callback refreshes the bar on the thread that
+changed the scale, like the layer-workspace listener (in the product that is the
+event thread); it never queues a deferred refresh that could run concurrently with
+a reset or load on another thread (§6).
 New, Open and the other transition events reset the scale through the existing
 `resetDrawingScale`; unit changes and language changes refresh the bar as before.
 No undo point, no modified flag, no serialization.
@@ -191,6 +194,26 @@ Before the freeze, on the candidate worktree:
 | inventory (in-session updater) | discovery 6046 / 1933; `post-e2-p1-r2.desktop` 83 → 107; `final.desktop` 1919 → 1927; `final.shared` 6963; 47 selections |
 | registry `junit_inventory` pin | `cc3e23a3…` → `fc712b3ef1e73e92593246bbc764b2b132503075ba7095f07f2b4ec555267963` |
 | coverage literals | `post-e2-p1-r2.desktop` 107; 47 selections and 54 PHASE selections unchanged |
+
+**Corrective history.** A first freeze of this follow-up,
+`27388d60a300d0b44173ed8fbf912643c049f3af` (tree
+`707b04f9e89c872b5b2fc47eb85954a1d1dae39b`), was accepted by STATIC
+(`verification-1897d1a7bdf84cccbf9cd5bc5cbaf20c`), INFRA_UNIT
+(`verification-3f1ee6b711eb487b8a25a17ccc22db53`) and PHASE
+(`verification-0495a9aec48d4dab977645bc094f0740`), and rejected by INTEGRATION
+(`verification-1247ac65be8f4c35a6572b00fd447a31`, `REJECTED_SEMANTIC`, 18/19):
+`junit.desktop.final` failed one case,
+`PreG9BR6PlusCDrawingScaleTest.e6AResetToABlankDocumentResetsAndAFileResetRelyOnTheLoad`,
+with a `NullPointerException` in `Component.getMaximumSize` while the toolbar was
+rebuilt. Cause: that test calls `reset()` off the event thread; the reload resets
+the drawing scale, and the first freeze's status-bar listener queued the refresh on
+the event thread, where `JLabel.setText` invalidated the shared ancestors while the
+test thread was rebuilding the toolbar under them. The same test had passed in the
+full Desktop run and in the official `final.desktop` producer run. The corrective
+refreshes on the changing thread (layer-workspace precedent), so no Swing work is
+queued concurrently; `PostE2P1R2SmokeFollowUpTest` now asserts the refresh before
+any event-thread turn. The first freeze and its runs stay as historical evidence;
+no evidence is reused across commits.
 
 STATIC, INFRA_UNIT, PHASE `POST-E2-P1-R2` and INTEGRATION run on the frozen
 commit; their identities and results are reported outside this artifact.

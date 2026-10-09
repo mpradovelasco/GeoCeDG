@@ -885,9 +885,20 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			statusBar = new GeoCeDGStatusBar(this);
 			// POST-E2-P1-R2 smoke follow-up C: one registration for the bar's lifetime,
 			// which is this window's; panel rebuilds reattach the same bar
-			addDrawingScaleListener(this::unitStateChanged);
+			addDrawingScaleListener(this::drawingScaleChanged);
 		}
 		return statusBar;
+	}
+
+	/**
+	 * Presentation only, on the thread that changed the scale, like the layer
+	 * workspace listener: a reset or load that changes it refreshes the bar in order
+	 * with the rest of its own GUI update, never concurrently on another thread.
+	 */
+	private void drawingScaleChanged() {
+		if (statusBar != null) {
+			statusBar.updateText();
+		}
 	}
 
 	/** @return registered drawing-scale presentation listeners (lifecycle tests) */

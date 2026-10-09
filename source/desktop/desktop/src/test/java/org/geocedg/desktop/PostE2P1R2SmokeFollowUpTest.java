@@ -294,12 +294,13 @@ class PostE2P1R2SmokeFollowUpTest {
 		assertEquals("Escala: 2:1", scale(app).getText());
 		assertEquals(GeoCeDGProfile.getText("Units.Status.ScaleTooltip", "es"),
 				scale(app).getToolTipText());
-		// an off-thread scale change is presented on the event thread
+		// a scale change refreshes the bar on the changing thread, in order with that
+		// thread's own GUI work; nothing is queued on the event thread (a reset or load
+		// off the event thread must not race a deferred refresh)
 		Thread worker = new Thread(() -> app.setDrawingScale(DrawingScale.of(1, 50)));
 		worker.start();
 		worker.join();
-		onEdt(() -> { });
-		assertEquals("Escala: 1:50", scale(app).getText());
+		assertEquals("Escala: 1:50", scale(app).getText(), "refreshed before any EDT turn");
 	}
 
 	@Test
