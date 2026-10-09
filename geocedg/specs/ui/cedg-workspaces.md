@@ -199,9 +199,10 @@ character code. The validation reports such a chord as a distinct text-entry
 result with an explanation; Apply stays disabled and nothing is committed. A
 stored chord that is no longer admissible is read as unassigned, binds no menu
 accelerator and is not rewritten; the factor and the other chord, if admissible,
-are kept. Chords with Ctrl or Meta, and Alt on other keys, keep the A7 rules;
-Ctrl+Alt chords on character keys, which Windows also uses for AltGr characters,
-are an open author decision.
+are kept. Author decision D1: Ctrl+Alt, with or without Shift, is the modifier set
+Windows uses for AltGr characters, so it is refused on every key except F1–F24 as
+well; chords carrying AltGraph itself remain not well formed. Chords with Meta,
+Ctrl without Alt, and Alt without Ctrl on other keys keep the A7 rules.
 
 ## G9U1 final presentation-polish successor
 

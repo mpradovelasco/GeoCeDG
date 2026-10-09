@@ -3734,7 +3734,7 @@
     "Navigation.Shortcut.Available": {"en": "Available", "es": "Disponible"},
     "Navigation.Shortcut.Unassigned": {"en": "Unassigned (valid)", "es": "Sin asignar (válido)"},
     "Navigation.Shortcut.Invalid": {"en": "Press a key with an explicit supported modifier.", "es": "Pulse una tecla con un modificador compatible explícito."},
-    "Navigation.Shortcut.TextEntry": {"en": "This key types text (for example a capital letter) and would zoom while you type in Input. Use Ctrl, Alt or a function key.", "es": "Esta tecla escribe texto (por ejemplo, una mayúscula) y haría zoom mientras escribe en Entrada. Use Ctrl, Alt o una tecla de función."},
+    "Navigation.Shortcut.TextEntry": {"en": "This combination types text (a capital letter, or an AltGr character with Ctrl+Alt) and would zoom while you type in Input. Use Ctrl or Alt without the other, Meta, or a function key.", "es": "Esta combinación escribe texto (una mayúscula, o un carácter AltGr con Ctrl+Alt) y haría zoom mientras escribe en Entrada. Use Ctrl o Alt sin el otro, Meta o una tecla de función."},
     "Navigation.ZoomFactor.Valid": {"en": "Valid factor", "es": "Factor válido"},
     "Navigation.ZoomFactor.Invalid": {"en": "The zoom factor must be finite and greater than 1.", "es": "El factor de zoom debe ser finito y mayor que 1."},
     "Action.Unavailable.PrimaryView": {"en": "This navigation action is available in the primary 2D Graphics view.", "es": "Esta acción de navegación está disponible en la Vista Gráfica 2D principal."},

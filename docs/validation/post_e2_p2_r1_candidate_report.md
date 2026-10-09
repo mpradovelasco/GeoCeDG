@@ -164,3 +164,48 @@ artifact.
    zooms from the Graphics view; typing capitals in Input still does not zoom.
 4. Optional (decision §4): bind Ctrl+Alt+E, type `€` with AltGr+E in Input and
    note whether the view zooms.
+
+## 7. D1 successor (author decision of 2026-10-09)
+
+Sections 1–6 describe the first R1 candidate `422dca03696fc6cae9b03a3a45c365daffbc74fe`
+(tree `4fe0186e45b6c1ac91d1319d9caba8d2fbf8e043`; STATIC
+`verification-83ad5726`, INFRA_UNIT `verification-a8986804`, PHASE
+`verification-695904a3`, all accepted), whose author smoke passed. The author
+resolved §4 with **D1**, implemented in the descendant that contains this section:
+
+- `entersText` also treats Ctrl+Alt, with or without Shift (without Meta), as text
+  entry on every key except F1–F24: on Windows that modifier set types the AltGr
+  characters (JDK `SunToolkit.isPrintableCharacterModifiersMask`), and the key code
+  alone cannot tell which keys of the active layout carry an AltGr character, so
+  every non-function key is treated conservatively as one (letters, digits,
+  punctuation, dead and international keys such as `ñ` and `ç`, space, keypad,
+  editing and navigation keys). Chords carrying `ALT_GRAPH_DOWN_MASK` stay refused
+  as not well formed (unchanged A7 handling).
+- Eligible under the existing reserved-key and conflict rules: Ctrl+Alt(+Shift)
+  with F1–F24 (Ctrl+Alt+F11), Shift+F1–F24 (Shift+F7), Ctrl without Alt
+  (Ctrl+Shift+K), Alt without Ctrl on non-keypad keys (Alt+Shift+K), any chord with
+  Meta.
+- Stored Ctrl+Alt+E (`v1:69:640`) and Ctrl+Alt+Shift+E (`v1:69:704`) load as
+  unassigned and the stored text is not rewritten; a new Ctrl+Alt+E is refused.
+- Dialog message (EN/ES), the `cedg-workspaces.md` amendment and guide §12.4 name
+  the Ctrl+Alt case.
+
+Test: `PostE2P2R1ShortcutValidationTest.ctrlAltWithOrWithoutShiftOnACharacterKeyIsRefusedAsAltGrTextEntry`
+(60 keys × {Ctrl+Alt, Ctrl+Alt+Shift} refused; Ctrl+Alt+F1–F12 and
+Ctrl+Alt+Shift+F11 eligible; AltGraph chords not well formed; stored chords);
+`chordsThatCannotTypeTextStayAvailableUnderTheExistingRules` now asserts Ctrl+Alt+F11,
+Shift+F7 and Ctrl+Alt+Meta+E eligible.
+
+**AltGr evidence boundary.** The guarantee is established by code and tests on
+the `KeyStroke` representation: no Ctrl+Alt(+Shift) chord on a non-function key and
+no AltGraph chord can be stored or bound, so whichever of those representations
+Windows delivers for an AltGr character, no factor-zoom accelerator matches it. A
+physical-keyboard AltGr smoke did **not** occur: keyboard injection is unavailable
+in this session (§4).
+
+Inventory of the D1 successor: `post-e2-p2-r1.desktop` 23 → 24, `final.desktop`
+1937 → 1938, discovery Desktop 1944, `junit_inventory` pin
+`8b812660d77b66f1ace1a07ddb5373bc59e85c0d1371beecdf32e741560f79db`; all producers
+`COMPLETED`, exit 0 (`post-e2-p2.desktop` re-executed on the D1 tree after an
+unrelated scratch edit had overlapped its first run). STATIC, INFRA_UNIT and PHASE
+run on the D1 commit and are reported outside this artifact.

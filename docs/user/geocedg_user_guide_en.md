@@ -1557,8 +1557,10 @@ until the whole draft is valid, and **Cancel** keeps the previous configuration.
 These shortcuts work in the whole window, also while you type in Input, so a key
 that types text cannot be one of them: **Shift** with a letter, a digit, a
 punctuation or editing key (for example `Shift`+`A`) is refused with an
-explanation, because typing the capital letter would zoom. Choose a combination
-with `Ctrl`, `Alt` or a function key, such as `Ctrl`+`Alt`+`Shift`+`F11` or
+explanation, because typing the capital letter would zoom; so is `Ctrl`+`Alt`
+(with or without `Shift`) with such a key, because on Windows it types the
+`AltGr` characters (`@`, `€`, `[` …). Choose `Ctrl` or `Alt` without the other,
+or a function key, such as `Ctrl`+`Shift`+`K`, `Ctrl`+`Alt`+`F11` or
 `Shift`+`F7`. A shortcut of that kind saved by an earlier version is ignored: it
 shows as unassigned until you choose another, and the zoom factor and the other
 shortcut are kept.

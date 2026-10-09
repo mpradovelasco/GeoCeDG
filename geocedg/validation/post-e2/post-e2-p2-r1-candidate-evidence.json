@@ -66,6 +66,7 @@
   },
   "normativeAmendment": {"path": "geocedg/specs/ui/cedg-workspaces.md", "section": "POST-E2-P2-R1 amendment after the A7 navigation paragraph", "status": "PROPOSED"},
   "guides": ["docs/user/geocedg_user_guide_en.md 12.4", "docs/user/geocedg_user_guide_es.md 12.4"],
+  "d1Successor": {"decision": "D1 (author, 2026-10-09)", "rule": "Ctrl+Alt with or without Shift (no Meta) is text entry on every key except F1-F24; AltGraph chords stay not well formed", "test": "PostE2P2R1ShortcutValidationTest.ctrlAltWithOrWithoutShiftOnACharacterKeyIsRefusedAsAltGrTextEntry", "storedCtrlAlt": "v1:69:640 and v1:69:704 load as unassigned, store unchanged", "physicalAltGrSmoke": "NOT PERFORMED (keyboard injection unavailable in the session)", "inventory": {"post-e2-p2-r1.desktop": {"before": 23, "after": 24}, "final.desktop": {"before": 1937, "after": 1938}, "discoveryDesktop": 1944, "registryJunitInventoryPin": {"before": "8cb1d4aed495a36cc8a87f1195e441a05fbf019ea55ffe4b3d2041e1adfd4dec", "after": "8b812660d77b66f1ace1a07ddb5373bc59e85c0d1371beecdf32e741560f79db"}, "producerNote": "post-e2-p2.desktop re-executed after an unrelated scratch edit overlapped its first run; all evidence from the D1 tree"}},
   "authorSmoke": "PENDING",
   "selfApproved": false,
   "authorApproved": false,

@@ -252,7 +252,12 @@ final class GeoCeDGNavigationShortcutPreferences {
 	 * text unless its key is a function key F1-F24; Alt with a numeric-keypad digit
 	 * enters a character code on Windows. The key code is the physical key: its
 	 * character depends on the layout, so every character key counts, whatever it
-	 * types. Chords with Ctrl or Meta, and Alt on other keys, keep the existing rules.
+	 * types. Author decision D1: Ctrl+Alt, with or without Shift, is how Windows
+	 * types AltGr characters (the JDK's printable-modifier rule,
+	 * SunToolkit.isPrintableCharacterModifiersMask), so it is text entry on every key
+	 * but F1-F24 as well; chords carrying AltGraph itself are already not well formed.
+	 * Chords with Meta, Ctrl without Alt, and Alt without Ctrl on other keys keep the
+	 * existing rules.
 	 *
 	 * @param stroke normalized well-formed chord
 	 * @return whether the chord would also be text entry
@@ -260,7 +265,9 @@ final class GeoCeDGNavigationShortcutPreferences {
 	static boolean entersText(KeyStroke stroke) {
 		int modifiers = stroke.getModifiers() & ALLOWED_MODIFIERS;
 		int key = stroke.getKeyCode();
-		if ((modifiers & ~InputEvent.SHIFT_DOWN_MASK) == 0) {
+		int textModifiers = modifiers & ~InputEvent.SHIFT_DOWN_MASK;
+		if (textModifiers == 0
+				|| textModifiers == (InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)) {
 			return !isFunctionKey(key);
 		}
 		return modifiers == InputEvent.ALT_DOWN_MASK

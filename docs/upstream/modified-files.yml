@@ -4362,7 +4362,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGNavigationShortcutPreferences.java",
       "change": "added",
-      "purpose": "POST-G9U1-A7: Persist and validate the bounded navigation shortcut policy as application preference state only. POST-E2-P2-R1: a factor chord that types or edits text (Shift alone except F1-F24, Alt with a keypad digit) is refused as TEXT_ENTRY; stored ones are read as unassigned without rewriting the store. Authority: docs/validation/post_e2_p2_r1_candidate_report.md.",
+      "purpose": "POST-G9U1-A7: Persist and validate the bounded navigation shortcut policy as application preference state only. POST-E2-P2-R1: a factor chord that types or edits text (Shift alone except F1-F24, Alt with a keypad digit) is refused as TEXT_ENTRY; stored ones are read as unassigned without rewriting the store. Authority: docs/validation/post_e2_p2_r1_candidate_report.md. D1: Ctrl+Alt with or without Shift is text entry on every key but F1-F24.",
       "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
     },
     {
@@ -6060,7 +6060,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P2R1ShortcutValidationTest.java",
       "change": "added",
-      "purpose": "POST-E2-P2-R1 validation matrix (Shift with letters, digits, punctuation, keypad, editing keys; Alt with keypad digits; function keys, Ctrl, Alt and Meta chords; reserved keys and conflicts), refused drafts committing nothing with EN/ES feedback, and stored inadmissible chords read as unassigned without rewriting the store while the factor and a valid second chord survive.",
+      "purpose": "POST-E2-P2-R1 validation matrix (Shift with letters, digits, punctuation, keypad, editing keys; Alt with keypad digits; function keys, Ctrl, Alt and Meta chords; reserved keys and conflicts), refused drafts committing nothing with EN/ES feedback, and stored inadmissible chords read as unassigned without rewriting the store while the factor and a valid second chord survive. D1: Ctrl+Alt(+Shift) character chords refused, Ctrl+Alt+F-keys eligible, AltGraph chords not well formed, stored Ctrl+Alt chords unassigned.",
       "authority": "docs/validation/post_e2_p2_r1_candidate_report.md"
     }
   ]

@@ -1625,8 +1625,10 @@ Estos atajos actúan en toda la ventana, también mientras escribe en la Entrada
 así que una tecla que escribe texto no puede ser uno de ellos: **Mayús** con una
 letra, un dígito, un signo de puntuación o una tecla de edición (por ejemplo
 `Mayús`+`A`) se rechaza con una explicación, porque al escribir la mayúscula se
-haría zoom. Elija una combinación con `Ctrl`, `Alt` o una tecla de función, como
-`Ctrl`+`Alt`+`Mayús`+`F11` o `Mayús`+`F7`. Un atajo de ese tipo guardado por una
+haría zoom; también `Ctrl`+`Alt` (con o sin `Mayús`) con esas teclas, porque en
+Windows escribe los caracteres de `AltGr` (`@`, `€`, `[` …). Elija `Ctrl` o `Alt`
+sin el otro, o una tecla de función, como `Ctrl`+`Mayús`+`K`, `Ctrl`+`Alt`+`F11` o
+`Mayús`+`F7`. Un atajo de ese tipo guardado por una
 versión anterior se ignora: aparece sin asignar hasta que elija otro, y se
 conservan el factor de zoom y el otro atajo.
 

@@ -104,6 +104,60 @@ class PostE2P2R1ShortcutValidationTest {
 		assertEquals(ShortcutStatus.TEXT_ENTRY, status(oldMask));
 	}
 
+	/**
+	 * Author decision D1: Ctrl+Alt, with or without Shift, is the Windows AltGr
+	 * modifier set, so it is text entry on every key but F1-F24; a chord carrying
+	 * AltGraph itself is not well formed.
+	 */
+	@Test
+	void ctrlAltWithOrWithoutShiftOnACharacterKeyIsRefusedAsAltGrTextEntry() {
+		List<Integer> keys = new ArrayList<>();
+		for (int k = KeyEvent.VK_A; k <= KeyEvent.VK_Z; k++) {
+			keys.add(k);
+		}
+		for (int k = KeyEvent.VK_0; k <= KeyEvent.VK_9; k++) {
+			keys.add(k);
+		}
+		for (int k : new int[] {KeyEvent.VK_COMMA, KeyEvent.VK_PERIOD, KeyEvent.VK_MINUS,
+			KeyEvent.VK_SLASH, KeyEvent.VK_SEMICOLON, KeyEvent.VK_EQUALS,
+			KeyEvent.VK_OPEN_BRACKET, KeyEvent.VK_CLOSE_BRACKET, KeyEvent.VK_BACK_SLASH,
+			KeyEvent.VK_QUOTE, KeyEvent.VK_BACK_QUOTE, KeyEvent.VK_PLUS, KeyEvent.VK_LESS,
+			KeyEvent.VK_NUMBER_SIGN, KeyEvent.VK_DEAD_ACUTE, KeyEvent.VK_DEAD_GRAVE,
+			KeyEvent.VK_DEAD_CIRCUMFLEX, KeyEvent.VK_DEAD_DIAERESIS, KeyEvent.VK_SPACE,
+			KeyEvent.VK_NUMPAD5, KeyEvent.VK_HOME, KeyEvent.VK_LEFT, 0x10000 + 'ñ',
+			0x10000 + 'ç'}) {
+			keys.add(k);
+		}
+		for (int k : keys) {
+			for (int modifiers : new int[] {CTRL | ALT, CTRL | ALT | SHIFT}) {
+				KeyStroke chord = key(k, modifiers);
+				assertEquals(ShortcutStatus.TEXT_ENTRY, status(chord), chord.toString());
+			}
+		}
+		for (int k = KeyEvent.VK_F1; k <= KeyEvent.VK_F12; k++) {
+			assertEquals(ShortcutStatus.AVAILABLE, status(key(k, CTRL | ALT)), "Ctrl+Alt+F" + k);
+		}
+		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_F11, CTRL | ALT)));
+		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_F11, CTRL | ALT | SHIFT)));
+		// AltGraph chords (the AltGr key reported as such) are refused as not well formed
+		for (int modifiers : new int[] {InputEvent.ALT_GRAPH_DOWN_MASK,
+			CTRL | ALT | InputEvent.ALT_GRAPH_DOWN_MASK}) {
+			assertEquals(ShortcutStatus.INVALID, status(key(KeyEvent.VK_E, modifiers)));
+			assertEquals(ShortcutStatus.INVALID, status(key(KeyEvent.VK_F11, modifiers)));
+		}
+		// a stored Ctrl+Alt+E / Ctrl+Alt+Shift+E loads as unassigned, store untouched
+		save(GeoCeDGNavigationShortcutPreferences.ZOOM_IN_PREFERENCE_KEY, "v1:69:640");
+		save(GeoCeDGNavigationShortcutPreferences.ZOOM_OUT_PREFERENCE_KEY, "v1:69:704");
+		assertEquals(new Configuration(10, null, null),
+				new GeoCeDGNavigationShortcutPreferences(registry()).getConfiguration());
+		assertEquals("v1:69:640",
+				load(GeoCeDGNavigationShortcutPreferences.ZOOM_IN_PREFERENCE_KEY));
+		assertEquals("v1:69:704",
+				load(GeoCeDGNavigationShortcutPreferences.ZOOM_OUT_PREFERENCE_KEY));
+		assertEquals(Result.INVALID_SHORTCUT, registry().getNavigationShortcuts()
+				.setConfiguration(10, key(KeyEvent.VK_E, CTRL | ALT), null));
+	}
+
 	@Test
 	void altWithANumericKeypadDigitIsRefusedAsACharacterCode() {
 		for (int k = KeyEvent.VK_NUMPAD0; k <= KeyEvent.VK_NUMPAD9; k++) {
@@ -123,8 +177,10 @@ class PostE2P2R1ShortcutValidationTest {
 		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_K, ALT | SHIFT)));
 		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_K, META)));
 		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_NUMPAD5, CTRL)));
-		// Ctrl+Alt on a character key: unchanged by R1, an open author decision (AltGr)
-		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_E, CTRL | ALT)));
+		// D1: Ctrl+Alt (+ Shift) stays eligible only with function keys
+		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_F11, CTRL | ALT)));
+		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_F7, SHIFT)));
+		assertEquals(ShortcutStatus.AVAILABLE, status(key(KeyEvent.VK_E, CTRL | ALT | META)));
 		// existing rules are untouched: a plain key, a modifier key, reserved Ctrl keys
 		assertEquals(ShortcutStatus.INVALID, status(key(KeyEvent.VK_F8, 0)));
 		assertEquals(ShortcutStatus.INVALID, status(key(KeyEvent.VK_K, 0)));
