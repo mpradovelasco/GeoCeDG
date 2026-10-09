@@ -40,6 +40,7 @@
 - `POST-E2-P1-R2` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` on `6dde194eba240ed7bcc249df323a3ca6173b8a0e` ([R2 closeout record](../validation/post_e2_p1_r2_closeout_record.md)); physical PDF style sizes, marker sizes, Properties thickness field and status-bar drawing scale; `OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT` registered (not authorized); `POST-E2-P2` characterization authorized (`BOUNDED_PHASE`), implementation not authorized.
 - `POST-E2-P2` (2026-10-09): characterization `PASS — AUTHOR APPROVED — PUBLISHED` on `216964dc4ce8512e7b2be9587c8f93ca1d5a4355` ([P2 closeout record](../validation/post_e2_p2_closeout_record.md)); global menu-accelerator conflict from a text-producing user-assigned shortcut; correction `POST-E2-P2-R1` (Option A, `BOUNDED_PHASE`) authorized, approval and publication pending.
 - `POST-E2-P2-R1` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` by conditional author approval of the D1 successor `38647c796e6499a10d5435844866d2144fdfbe24` ([P2-R1 closeout record](../validation/post_e2_p2_r1_closeout_record.md)); `POST-E2-P3` design and bounded implementation authorized after a readiness gate (`INTEGRATED_PHASE`).
+- `POST-E2-P3` (2026-10-09): `PASS — AUTHOR APPROVED — PUBLISHED` on `1e8714a968b7def9697d67bf056fc77f48da0fc8` ([P3 closeout record](../validation/post_e2_p3_closeout_record.md)); User tools → Document tools; `POST-E2-P4` readiness/design gate authorized with the author-selected Option A (explicit offset conversion), bounded implementation only on gate outcome A.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1388,6 +1389,8 @@ OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX = OPEN (2026-10-08: embedded macros
                              (2026-10-09, pending author review): User tools →
                              Document tools activates the document macros' existing
                              tool modes
+                             RESOLVED — POST-E2-P3 PASS — AUTHOR APPROVED —
+                             PUBLISHED (2026-10-09, author smoke PASS)
 OBS-E2-1                   = ACCEPTED NON-BLOCKING (E2 closeout 2026-10-08):
                              extension-line gap and overshoot look excessive with
                              constructionUnit = mm only; E2 captures Gap/Overshoot
@@ -1396,6 +1399,9 @@ OBS-E2-2                   = ACCEPTED NON-BLOCKING — DOCUMENTED (E2 closeout
                              2026-10-08): typed dimensions with a literal or
                              computed offset are not dragged; command signatures
                              and Offset semantics unchanged — POST-E2 P4
+                             POST-E2-P4 readiness/design gate authorized (2026-10-09,
+                             author-selected Option A: explicit "Make offset
+                             draggable" conversion; Option B not authorized)
 OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING (E2
                              closeout 2026-10-08): large unexpected zoom-out when
                              starting algebra input, also seen in earlier phases,

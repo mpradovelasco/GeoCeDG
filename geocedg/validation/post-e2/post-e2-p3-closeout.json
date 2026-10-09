@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P3",
+  "registeredPhaseId": "POST-E2-P3",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p3_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-09", "title": "GeoCeDG — POST-E2-P3 / POST-E2-P4 — Author Approval, Publication and Typed-Dimension Drag Enhancement"},
+  "state": "PASS — AUTHOR APPROVED",
+  "authorSmoke": "PASS (including installed-library coexistence)",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "baseline": {"commit": "9bdcdf834814ce7eeb16ba189283208415fd1e7d", "tree": "06831f900e728900c5fc92b48d4f85e3c10fe759"},
+  "approvedCandidate": {"commit": "1e8714a968b7def9697d67bf056fc77f48da0fc8", "tree": "157fd06d25cf0db301c9c7f2407ed9ff6aeb1e07", "mutated": false},
+  "acceptedEvidence": {
+    "static": {"run": "verification-feb30ea1ff9843189741a4d5f453040d", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "infraUnit": {"run": "verification-0878ce82f65c4904afbc512a57824b7c", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "phase": {"run": "verification-a47c5be5828e4b67ba51439c09f48c6a", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "integration": {"run": "verification-3a74964be7e842cfae09ad0b83c9fa46", "verdict": "ACCEPTED / COMPLETE", "checks": "19/19"}
+  },
+  "approvedBehavior": [
+    "all 24 Templatev7.ggb macros reachable through User tools -> Document tools",
+    "activation through the existing ModeMacro",
+    "macro registration, persistence and command resolution preserved",
+    "installed-library precedence for equivalent macros",
+    "product toolbar, bundled and pinned tools preserved",
+    "stale entries fail safely",
+    "File -> New keeps the current macros; Open replaces them (accepted, unchanged)"
+  ],
+  "observationResolved": "OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX (OBS-E2-4)",
+  "next": {
+    "phase": "POST-E2-P4",
+    "baseline": "the published POST-E2-P3 closeout",
+    "readinessGate": "AUTHORIZED (focused; E2 characterization and P4 planning evidence reused)",
+    "selectedDesign": "Option A — explicit conversion of a literal dimension offset into a named independent number",
+    "implementation": "AUTHORIZED ONLY ON GATE OUTCOME A",
+    "optionB": "NOT AUTHORIZED",
+    "authorApproval": "PENDING",
+    "publication": "NOT AUTHORIZED"
+  },
+  "notAuthorized": ["P4 approval", "P4 publication", "P4 Option B", "TD-PDF-1", "TD-PDF-2", "tag", "release", "binary publication"]
+}
