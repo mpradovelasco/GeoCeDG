@@ -229,7 +229,9 @@ policy of the current document is set in Options → Document units.
 review, [design record](../../../docs/architecture/post_e2_p4_offset_conversion_design.md);
 §8.4 and the clauses above are unchanged).**
 8.6 Explicit offset conversion. The object context menu of one native dimension
-(any of its outputs) offers **Make offset draggable**. It applies only when the
+(any of its outputs), in the Algebra View and in the Graphics View object chooser
+menu, offers **Make offset draggable**; the outputs are resolved to their dimension
+only through their parent algorithm. It applies only when the
 offset is an unlabelled, independent, unlocked number whose definition is a plain
 decimal literal and the dimension is defined, in the open construction shown at
 its last step. The action gives that same number a free label `offsetN` (the

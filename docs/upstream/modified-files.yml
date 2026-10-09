@@ -126,7 +126,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
       "change": "added",
-      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. POST-E2-P4: the object context menu of one native dimension offers the explicit Make offset draggable action. Authority: docs/architecture/post_e2_p4_offset_conversion_design.md.",
+      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. POST-E2-P4: the object context menu of one native dimension offers the explicit Make offset draggable action. Authority: docs/architecture/post_e2_p4_offset_conversion_design.md. Follow-up: the Graphics View chooser menu opened for outputs of one native dimension carries the same action; every other context keeps the inherited chooser.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -6079,6 +6079,12 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P4OffsetConversionTest.java",
       "change": "added",
       "purpose": "POST-E2-P4: aligned and linear literal offsets converted in place with identical identities, value, geometry and dependents; dragging afterwards; one undo and redo step; deterministic save and reopen; label collisions; repeated action; refused expressions, named, locked, undefined, earlier-step and macro cases; rollback after an injected failure; context menu EN/ES; Classic unchanged.",
+      "authority": "docs/architecture/post_e2_p4_offset_conversion_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P4GraphicsContextMenuTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P4 follow-up: a real Graphics View right click on aligned and linear dimension lines, extension lines and value text offers the action through the chooser menu; ineligible offsets disabled with their reason; ordinary segments and overlapping objects keep the inherited chooser and its rerouting; Graphics View and Algebra View routes give the same transaction, undo, redo and saved document; stale menus after New or Open convert nothing; Spanish label.",
       "authority": "docs/architecture/post_e2_p4_offset_conversion_design.md"
     }
   ]

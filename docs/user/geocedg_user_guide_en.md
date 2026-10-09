@@ -1245,9 +1245,11 @@ can be dragged as above. Dragging alone never converts a literal offset; the
 action is always explicit. An offset written as an expression (such as `2*3`, `pi` or
 `s+1`), a named offset that is locked or dependent, or an undefined dimension is
 left unchanged: the entry is disabled and its tooltip says why. When the offset
-is already a free number, the entry is disabled too. The entry appears when the
-context menu is opened for the dimension alone; if several objects lie under
-the pointer, select the dimension first.
+is already a free number, the entry is disabled too. In the Graphics View the
+entry appears in the menu opened for the dimension line, an extension line or
+the value; when several objects lie under the pointer and the menu opens for
+another object, choose the dimension line in its object chooser and the menu
+reopens with the entry.
 
 **Export.** Pictures (PNG, PDF, SVG, EMF and print) show the complete dimension.
 PSTricks, PGF/TikZ and Asymptote write the arrows and the rotated, centred value.

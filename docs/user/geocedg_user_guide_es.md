@@ -1303,9 +1303,11 @@ desplazamiento literal; la acción siempre es explícita. Un desplazamiento escr
 `2*3`, `pi` o `s+1`), un desplazamiento con nombre bloqueado o dependiente, o
 una cota no definida no cambian: la entrada aparece desactivada y su ayuda
 emergente explica el motivo. Cuando el desplazamiento ya es un número libre, la
-entrada también aparece desactivada. La entrada aparece cuando el menú
-contextual se abre solo para la cota; si hay varios objetos bajo el puntero,
-seleccione antes la cota.
+entrada también aparece desactivada. En la Vista Gráfica la entrada aparece en
+el menú abierto para la línea de cota, una línea de referencia o el valor;
+cuando hay varios objetos bajo el puntero y el menú se abre para otro objeto,
+elija la línea de cota en su selector de objetos y el menú se vuelve a abrir
+con la entrada.
 
 **Exportación.** Las imágenes (PNG, PDF, SVG, EMF e impresión) muestran la cota
 completa. PSTricks, PGF/TikZ y Asymptote escriben las flechas y el valor girado

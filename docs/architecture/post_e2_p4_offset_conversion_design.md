@@ -94,3 +94,24 @@ uses existing kernel operations without changing redefine, DAG or persistence
 semantics, and leaves Classic untouched. Acceptance: PHASE `POST-E2-P4` on the
 frozen commit (with STATIC and INFRA_UNIT as for every candidate); the official
 `final.shared` and `final.desktop` producers run for the inventory update.
+
+## 5. Follow-up: Graphics View context menu (successor of `af927bcb`)
+
+The author smoke of `af927bcb` passed with one request: the action must also be
+offered when the dimension line is right-clicked in the Graphics View. Cause
+(source and runtime evidence, [follow-up report](../validation/post_e2_p4_graphics_menu_followup_report.md)):
+the Graphics View right click always opens the inherited **chooser** menu
+(`EuclidianController.processRightReleased` → `showPopupChooseGeo`), even for one
+hit, and `GuiManager3D.showPopupChooseGeo` never calls the product decoration;
+the Algebra View uses `showPopupMenu`, which is decorated. The object handed to the
+chooser is the dimension-line output itself, whose parent algorithm is the native
+dimension.
+
+Gate A: `GuiManagerGeoCeDG` overrides `showPopupChooseGeo` only for a context made
+of outputs of one native dimension, builds the same inherited
+`ContextMenuChooseGeoD` and appends the same action from
+`GeoCeDGDimensionOffsetConversion.menuItem`; every other context goes to the
+inherited chooser unchanged. No selection, hit-testing, chooser, kernel, conversion
+or persistence change. The §2 statement that the chooser menu is not decorated is
+superseded by this section for the offset action only; the *GeoCeDG* submenu stays
+absent from the chooser as before.

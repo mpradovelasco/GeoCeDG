@@ -6,6 +6,7 @@
 package org.geocedg.desktop;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +17,13 @@ import javax.swing.JPopupMenu;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.GPoint;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.util.FileExtensions;
+import org.geogebra.desktop.euclidianND.EuclidianViewInterfaceD;
 import org.geogebra.desktop.geogebra3D.gui.GuiManager3D;
+import org.geogebra.desktop.gui.ContextMenuChooseGeoD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.gui.view.algebra.AlgebraControllerD;
@@ -123,6 +127,52 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 			menu.add(offset);
 		}
 		menu.add(product);
+	}
+
+	/**
+	 * POST-E2-P4 follow-up: a right click in the Graphics View always opens the inherited
+	 * chooser menu, even for a single object, and that menu is not decorated. When the
+	 * menu is opened for outputs of one native dimension it gains the same offset action
+	 * as the object menu; every other context keeps the inherited chooser unchanged.
+	 */
+	@Override
+	public void showPopupChooseGeo(ArrayList<GeoElement> selectedGeos,
+			ArrayList<GeoElement> geos, EuclidianView view, GPoint p) {
+		JMenuItem offset = chooseGeoOffsetItem(selectedGeos);
+		if (offset == null) {
+			super.showPopupChooseGeo(selectedGeos, geos, view, p);
+			return;
+		}
+		getApp().getActiveEuclidianView().resetMode();
+		Component invoker = ((EuclidianViewInterfaceD) view).getJPanel();
+		Point screenPos = invoker.isShowing() ? invoker.getLocationOnScreen()
+				: new Point(0, 0);
+		screenPos.translate(p.x, p.y);
+		JPopupMenu menu = new ContextMenuChooseGeoD(getApp(), view, selectedGeos, geos,
+				screenPos, p).getWrappedPopup();
+		menu.addSeparator();
+		menu.add(offset);
+		showContextMenu(menu, invoker, p);
+	}
+
+	/**
+	 * @param selectedGeos objects the Graphics View menu is opened for
+	 * @return the offset action of their native dimension, or null
+	 */
+	JMenuItem chooseGeoOffsetItem(Collection<GeoElement> selectedGeos) {
+		if (GeoCeDGProfile.isLegacyFallback()) {
+			return null;
+		}
+		return new GeoCeDGDimensionOffsetConversion(getApp()).menuItem(selectedGeos);
+	}
+
+	/**
+	 * @param menu menu to show
+	 * @param invoker Graphics View panel
+	 * @param p position in the panel
+	 */
+	void showContextMenu(JPopupMenu menu, Component invoker, GPoint p) {
+		menu.show(invoker, p.x, p.y);
 	}
 
 	@Override

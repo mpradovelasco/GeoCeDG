@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P4",
+  "registeredPhaseId": "POST-E2-P4",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p4_graphics_menu_followup_report.md",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "author instruction of 2026-10-09: POST-E2-P4 Graphical Context Menu Follow-up, Conditional Author Approval and Publication",
+  "originalCandidate": {"commit": "af927bcb7d078888020c95781f781af214c82c20", "tree": "73d1b12cde285a323c42a40965f83d8c6cbb5030", "mutated": false, "authorSmoke": "PASS WITH ONE ACCEPTED FOLLOW-UP REQUEST"},
+  "followUpGate": "A — BOUNDED DESKTOP FOLLOW-UP",
+  "verificationClass": "BOUNDED_PHASE",
+  "rootCause": "Graphics View right click always routes to showPopupChooseGeo (also for one hit); GuiManager3D.showPopupChooseGeo does not call the product decoration; the Algebra View uses the decorated showPopupMenu",
+  "runtimeEvidence": "probe on af927bcb: dimension line -> showPopupChooseGeo(selected=[output #1, parent AlgoAlignedDimension]); extension line -> output #2; value text -> output #4; showPopupMenu never called",
+  "modifiedProductionFiles": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java"],
+  "conversionLogicChanged": false,
+  "unchanged": ["GeoCeDGDimensionOffsetConversion", "eligibility", "selection and hit testing", "inherited chooser and its rerouting", "kernel", "DAG", "serialization", "undo/redo", "GeoGebra Classic"],
+  "tests": {
+    "PostE2P4GraphicsContextMenuTest": 9,
+    "regression": {"PostE2P4OffsetConversionTest": 11, "PreG9BR6PlusE2NativeDimensionDesktopTest": 14, "PreG9BR6PlusE2PresentationFollowUpDesktopTest": 8, "G9U1WorkspaceSurfaceTest": 25, "G9U1ProductPolicyTest": 8, "G9U0R3MenuLifecycleTest": 6, "GeoCeDGDocumentLifecycleTest": 16},
+    "checkstyle": "no new violation",
+    "upstreamBoundary": "1014 registered files, PASS"
+  },
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1971},
+    "post-e2-p4.desktop": {"before": 50, "after": 59},
+    "final.shared": 6963,
+    "final.desktop": {"before": 1956, "after": 1965},
+    "selections": 51,
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "e8e0ba5f075fdaf0ec2c8fb70647fe96c9a0be2c2a414b66fee2762733740dbd", "after": "87ddfa36d992b8d55ce9f52f8ba4f3362a5201fd947a7a76d79ef8464c663589"}
+  },
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}
