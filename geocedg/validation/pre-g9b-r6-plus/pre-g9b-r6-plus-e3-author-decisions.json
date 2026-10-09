@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E3",
+  "task": "PRE-G9B-R6-plus-E3-PREP-CLOSEOUT",
+  "artifactKind": "AUTHOR_DECISION_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e3_author_decisions_record.md",
+  "reconciledDesign": "docs/architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-e3-iso-a-border-and-export-area.prompt.md",
+  "authorInstruction": {
+    "date": "2026-10-10",
+    "title": "Author Decision Reconciliation, Design Promotion and Canonical Prompt Publication",
+    "authorizes": "recording DQ-E3-1 to DQ-E3-16; reconciling and promoting the design to DESIGN — AUTHOR APPROVED; updating the canonical prompt, planning and roadmap records; documentary verification; publication of the documentary package to main",
+    "doesNotAuthorize": ["E3 implementation", "Java product code", "command registrations", "GUI", "ISO_A_SELECTION or ISO_A_BORDER implementation", "ExportArea changes", "serialization changes", "verification infrastructure or registry changes", "release, tag or distribution artifact", "F1", "F2", "F3", "F4", "G"]
+  },
+  "publishedBase": {"name": "P_R6PLUS_POST_E2_P4", "commit": "13e08ac1fe1c6c931a88985b97df93d8445812b9", "tree": "dd2ba17c483a18b8931e1848f38616edfa98b06a"},
+  "preparationCandidate": {
+    "name": "T_R6PLUS_E3_PREP",
+    "commit": "e063a8a27450cded0655afb6abc1e78f89f9ac6f",
+    "tree": "00549e5bf803eb0c7afd35502d18a30396a75f32",
+    "static": "verification-ae183de8b275467a876526563627f35b ACCEPTED / COMPLETE 3/3",
+    "amended": false
+  },
+  "reconciliationCandidate": "the direct child of e063a8a2 containing this file; identity, STATIC and publication reported with the publication",
+  "designState": "DESIGN — AUTHOR APPROVED",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "implementation": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "passClaimed": false,
+  "classificationVocabulary": ["AUTHOR DECISION", "NORMATIVE INHERITANCE", "CHARACTERIZATION EVIDENCE", "IMPLEMENTATION DESIGN", "UNRESOLVED TECHNICAL DETAIL"],
+  "decisions": {
+    "DQ-E3-1": {"previous": "R2 closed polylines", "decision": "APPROVE R2: existing types, closed polylines; no new GeoElement; no new durable identity mechanism", "implementationDesign": "outputs associated by parent algorithm and fixed output index (PAPER 0, FRAME 1, LABEL 2), serialized as ordered <output>", "designSections": ["3"]},
+    "DQ-E3-2": {"previous": "trim hidden + frame, uniform 10 mm", "decision": "APPROVE INNER FRAME: paper boundary nominal ISO 216, hidden, authoritative, export rectangle; optional visible inner frame, margins left 20, right 10, top 10, bottom 10 mm (ISO 5457-style, no compliance claim); W_f = W_p - m_L - m_R > 0, H_f = H_p - m_T - m_B > 0; same conversion; no title block, sheet sets, paper space, viewports, G15", "designSections": ["4", "5"]},
+    "DQ-E3-3": {"previous": "A0-A10", "decision": "A0-A10 supported; frame default enabled A0-A4, disabled A5-A10; no silent margin reduction; impossible frame rejected with reason; paper valid independently; ISO 216 integers; A3 landscape 420 x 297 mm", "implementationDesign": "only A10 portrait makes the frame impossible", "designSections": ["6"]},
+    "DQ-E3-4": {"previous": "index, Boolean, integer pair, literals; optional margin", "decision": "explicit ordinary inputs; no live unit or scale read; explicit frame state; reproducible without GUI; no invented overloads", "signature": "IsoABorder(<Point>, <ISO A index>, <Landscape>, <Scale numerator>, <Scale denominator>, <Model units per millimetre>, <Inner frame>)", "designSections": ["2"]},
+    "DQ-E3-5": {"previous": "((L*b)/a)*u", "decision": "ACCEPT subject to validation; u = 1e-3/fb(c); L = ((P*b)/a)*u", "implementationDesign": "domains; exact integer pair; equivalent pairs bit-identical; absorption and non-finite results undefined; bit identity in tests; relative error <= 2^-50; PDF 0.001 pt, EMF 0.01 mm", "designSections": ["7"]},
+    "DQ-E3-6": {"previous": "keep geometry", "decision": "GEOMETRY UNCHANGED; informed when physically inconsistent; condition (f_n/f_c)(s_n/s_c) = 1 within an explicit criterion; no persisted original-unit identifier; physical-size and scale-label coherence independent; no claim with unspecified unit; derived state only", "implementationDesign": "f_c = 1e-3/u; E_i computed from captured inputs; COHERENT iff |E_i - P_i| <= 1e-6 mm; scale MATCH by exact normal-form equality", "designSections": ["8", "9"]},
+    "DQ-E3-7": {"previous": "reason-gated", "decision": "BLOCK CREATION with UNSPECIFIED_MODEL_UNIT; offer document units; no implicit mm or cm; valid usm supported", "designSections": ["12"]},
+    "DQ-E3-8": {"previous": "explicit only", "decision": "EXPLICIT PARTICIPATION ONLY; consent required; AQ-X2 precedence preserved; area = physical outer boundary, never the frame; hidden state does not prevent use; no second mechanism; no serialization", "designSections": ["11.1", "11.2"]},
+    "DQ-E3-9": {"previous": "(b1) live link dropped when stale", "decision": "LIVE, EXPLICIT, SESSION-SCOPED LINKAGE; never labels or positions; validity rules for every lifecycle event; stale reference never activates another object; fallback rules apply; no persistent association; stop if a substantially wider change is needed", "implementationDesign": "identity (==) scan of the live construction; no wider change needed", "designSections": ["11.3"]},
+    "DQ-E3-10": {"previous": "File action, session scale, computed once", "decision": "PRESERVE THE SEPARATE PRODUCER CONTRACT; never merged; AQ-X2 unchanged; candidate 7.5 for unchanged details", "designSections": ["11.5"]},
+    "DQ-E3-11": {"previous": "GeoText output", "decision": "CONSTRUCTIVE TEXT OUTPUT; captured size and scale; never the session scale; language-independent; placement accounts for the optional frame; no DXF text claim", "implementationDesign": "anchor at the paper point m_R from the right and m_B from the bottom", "designSections": ["10"]},
+    "DQ-E3-12": {"previous": "status bar + dialogs + explicit button", "decision": "APPROVE AND EXTEND: captured vs current scale and nominal vs effective physical size; status bar and export dialogs; DERIVED_TRANSIENT; explicit Use sheet scale; activation warning; no automatic geometry scaling", "designSections": ["9"]},
+    "DQ-E3-13": {"previous": "mode + dialog", "decision": "APPROVE THE CHARACTERIZED WORKFLOW: Construction > Annotations and media > ISO A Border; no toolbar button; frame option in the dialog (on A0-A4, off A5-A10); one undo point; optional explicit activation", "designSections": ["12"]},
+    "DQ-E3-14": {"previous": "IsoABorder / MarcoISOA; 127 -> 130", "decision": "APPROVE NAMING: IsoABorder, alias MarcoISOA; verify catalog against the base; no collision; preserve Classic behavior unless the compatibility contract requires otherwise", "reverifiedAtBase": {"actions": 127, "newActions": ["presentation.iso-a-border", "export.area.iso-a", "export.area.use-iso-a-border"], "catalogAfter": 130, "mode": 144, "namesFree": true}, "openDetail": "OTQ-E3-1", "designSections": ["12"]},
+    "DQ-E3-15": {"previous": "no migration", "decision": "NO MIGRATION; macros stay behavioral references; Templatev7.ggb and baselines unchanged", "designSections": ["14"]},
+    "DQ-E3-16": {"previous": "INTEGRATED_PHASE", "decision": "APPROVE INTEGRATED_PHASE (PHASE + INTEGRATION), conditional on the reconciled scope; this documentary task DOCUMENTATION_STATUS_ONLY", "designSections": ["17"]}
+  },
+  "openTechnicalDetails": [
+    {"id": "OTQ-E3-1", "detail": "Classic surface of the command (E2 precedent: ungated) or gating", "blocksImplementationAuthorization": true},
+    {"id": "OTQ-E3-2", "detail": "Algebra View presentation of an undefined FRAME", "blocksImplementationAuthorization": false},
+    {"id": "OTQ-E3-3", "detail": "coherence presentation for ISO_A_SELECTION after a later scale change", "blocksImplementationAuthorization": false},
+    {"id": "OTQ-E3-4", "detail": "frameless sheet with hidden paper and hidden tool-created point has no visible draggable output", "blocksImplementationAuthorization": false}
+  ],
+  "observations": {
+    "OBS-R6PLUS-E3-SILENT-SCALE-MISMATCH": "OPEN — correction designed (DQ-E3-12) — NOT RESOLVED",
+    "OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES": "OPEN — OUTSIDE E3 — NOT FIXED",
+    "OBS-R6PLUS-E3-EXPORT-AREA-NO-REBUILD-SIGNAL": "OPEN — addressed in design (DQ-E3-9) — NOT RESOLVED",
+    "OBS-R6PLUS-E3-LEGACY-HIDE-REQUIREMENT-VERSUS-BORDER-ONLY": "DISPOSITIONED BY DQ-E3-2",
+    "OBS-R6PLUS-E3-UNIT-FACTOR-ORDER": "RECORDED — E2 unchanged",
+    "OBS-R6PLUS-E3-NO-UNIT-GATE-PATTERN": "OPEN — gate designed (DQ-E3-7) — NOT RESOLVED"
+  },
+  "nextGate": "author review of the published design package, then an explicit implementation authorization naming the exact base and disposing of OTQ-E3-1"
+}
