@@ -1402,6 +1402,9 @@ OBS-E2-2                   = ACCEPTED NON-BLOCKING — DOCUMENTED (E2 closeout
                              POST-E2-P4 readiness/design gate authorized (2026-10-09,
                              author-selected Option A: explicit "Make offset
                              draggable" conversion; Option B not authorized)
+                             ADDRESSED BY CANDIDATE — POST-E2-P4 technical candidate
+                             (2026-10-09, pending author review): the literal offset
+                             is labelled offsetN in place and becomes draggable
 OBS-E2-3                   = ACCEPTED NON-BLOCKING — POTENTIALLY PRE-EXISTING (E2
                              closeout 2026-10-08): large unexpected zoom-out when
                              starting algebra input, also seen in earlier phases,

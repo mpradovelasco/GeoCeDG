@@ -36,11 +36,12 @@ P3 (document macros)      = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09; 
                            smoke PASS; docs/validation/post_e2_p3_closeout_record.md:
                            User tools → Document tools activates the document macros'
                            tool modes)
-P4 (typed-dimension drag) = READINESS/DESIGN GATE AUTHORIZED (2026-10-09); author-selected
-                           design Option A (explicit conversion of a literal offset into
-                           a named independent number); bounded implementation only on
-                           gate outcome A; Option B NOT AUTHORIZED; approval and
-                           publication PENDING
+P4 (typed-dimension drag) = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (BOUNDED_PHASE;
+                           readiness gate A; author-selected Option A: explicit "Make
+                           offset draggable" conversion of a literal offset into a named
+                           independent number, identities kept;
+                           docs/validation/post_e2_p4_candidate_report.md); Option B NOT
+                           AUTHORIZED; approval and publication PENDING
 implementationAuthorized = false
 selfApproved             = false
 PRIORITY                 = P1 → P2 → P3 → P4 (P1 and P2 first)

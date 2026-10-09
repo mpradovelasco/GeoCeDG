@@ -5391,6 +5391,38 @@
       "en": "Applied only to dimensions created with the tools and to new documents; existing dimensions and opened documents keep their own style and policy.",
       "es": "Solo se aplica a las cotas creadas con las herramientas y a los documentos nuevos; las cotas existentes y los documentos abiertos conservan su propio estilo y su propia opción."
     },
+    "Dimensions.Offset.MakeDraggable": {
+      "en": "Make offset draggable",
+      "es": "Hacer desplazamiento arrastrable"
+    },
+    "Dimensions.Offset.MakeDraggableTip": {
+      "en": "Gives the literal offset of this dimension a name (offset1, offset2, ...) as a free number, so the dimension line can be dragged in Move mode. Value and position do not change; one undo step.",
+      "es": "Da un nombre (offset1, offset2, ...) al desplazamiento literal de esta cota como número libre, para poder arrastrar la línea de cota con Mover. El valor y la posición no cambian; un solo paso de deshacer."
+    },
+    "Dimensions.Offset.AlreadyDraggable": {
+      "en": "The offset of this dimension is already a free number: drag the dimension line in Move mode.",
+      "es": "El desplazamiento de esta cota ya es un número libre: arrastra la línea de cota con Mover."
+    },
+    "Dimensions.Offset.Named": {
+      "en": "The offset of this dimension is a named object that is not a free, unlocked number. Edit or unlock that object instead.",
+      "es": "El desplazamiento de esta cota es un objeto con nombre que no es un número libre y desbloqueado. Edita o desbloquea ese objeto."
+    },
+    "Dimensions.Offset.Expression": {
+      "en": "The offset of this dimension is an expression, not a literal number, and is not converted.",
+      "es": "El desplazamiento de esta cota es una expresión, no un número literal, y no se convierte."
+    },
+    "Dimensions.Offset.Undefined": {
+      "en": "This dimension is undefined; its offset is not converted.",
+      "es": "Esta cota no está definida; su desplazamiento no se convierte."
+    },
+    "Dimensions.Offset.Unavailable": {
+      "en": "This dimension is not available for conversion in the open construction.",
+      "es": "Esta cota no está disponible para la conversión en la construcción abierta."
+    },
+    "Dimensions.Offset.Failed": {
+      "en": "The offset could not be made draggable; the construction is unchanged.",
+      "es": "No se pudo hacer arrastrable el desplazamiento; la construcción no ha cambiado."
+    },
     "Workspace.Layer.Status": {
       "en": "Layer: %0",
       "es": "Capa: %0"

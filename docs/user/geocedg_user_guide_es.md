@@ -1288,8 +1288,24 @@ se mueven. Un paso de deshacer al soltar. Esto funciona cuando el
 desplazamiento es un número libre, con nombre y sin bloquear, como el que crean
 las herramientas o como en `s=1` seguido de `AlignedDimension(A,B,s)`; una cota
 escrita con un desplazamiento literal o calculado, como
-`AlignedDimension(A,B,1)`, no se puede arrastrar: cambie su desplazamiento
-redefiniéndola.
+`AlignedDimension(A,B,1)`, no se puede arrastrar directamente.
+
+**Hacer arrastrable un desplazamiento escrito.** Haga clic derecho en la línea
+de cota, en una línea de referencia, en el valor o en el valor de la cota en la
+Vista Algebraica, y elija **Hacer desplazamiento arrastrable**. Un
+desplazamiento literal pasa a ser un número libre, oculto y con nombre, situado
+justo antes de la cota: `AlignedDimension(A,B,1)` se convierte en `offset1 = 1`
+y `AlignedDimension(A,B,offset1)` (o en el siguiente nombre libre, `offset2`,
+…). El valor, el dibujo y los objetos construidos sobre la cota no cambian, y
+un paso de deshacer revierte la acción; después la línea de cota se puede
+arrastrar como se ha descrito. Arrastrar por sí solo nunca convierte un
+desplazamiento literal; la acción siempre es explícita. Un desplazamiento escrito como expresión (como
+`2*3`, `pi` o `s+1`), un desplazamiento con nombre bloqueado o dependiente, o
+una cota no definida no cambian: la entrada aparece desactivada y su ayuda
+emergente explica el motivo. Cuando el desplazamiento ya es un número libre, la
+entrada también aparece desactivada. La entrada aparece cuando el menú
+contextual se abre solo para la cota; si hay varios objetos bajo el puntero,
+seleccione antes la cota.
 
 **Exportación.** Las imágenes (PNG, PDF, SVG, EMF e impresión) muestran la cota
 completa. PSTricks, PGF/TikZ y Asymptote escriben las flechas y el valor girado

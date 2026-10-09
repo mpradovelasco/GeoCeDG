@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P4",
+  "registeredPhaseId": "POST-E2-P4",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p4_candidate_report.md",
+  "design": "docs/architecture/post_e2_p4_offset_conversion_design.md",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_p3_closeout_record.md",
+  "baseline": {"commit": "2b3fafe3ee8d4b29af57e826983ac0201e124ceb", "tree": "df24c5f380887a78c1905791f590b6b6bf990ecd"},
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P4 -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "observation": "OBS-E2-2",
+  "readinessGate": {
+    "outcome": "A — SUFFICIENT",
+    "literalRepresentation": "unlabelled independent GeoNumeric held by the algorithm, definition NO_OPERATION of a MySpecialDouble literal, not in the construction list, algorithm list = the dimension",
+    "mechanism": "existing GeoElement.setLabel on the same object plus Construction.moveInConstructionList to just before the dimension; no redefine, no replaced object, no DAG edge change",
+    "identity": "number, algorithm, five outputs and dependents keep object identity",
+    "undo": "one storeUndoInfo; exact in-memory inverse on failure",
+    "persistence": "numeric element before the command, input a2=\"offsetN\"; reopen XML equal to in-memory XML",
+    "ui": "existing product decoration of the object context menu (GuiManagerGeoCeDG); Classic undecorated"
+  },
+  "selectedDesign": "EXPLICIT OFFSET CONVERSION — OPTION A (author-selected); Option B not implemented",
+  "modifiedProductionFiles": [
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionOffsetConversion.java (added)",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
+    "apps/geocedg/application-profile.yml (8 EN/ES texts)"
+  ],
+  "eligible": ["AlignedDimension literal offset", "LinearDimension (line or vector) literal offset", "five-argument forms (overshoot and gap untouched)"],
+  "excluded": ["expressions and constants", "computed offsets", "named locked or dependent offsets", "already draggable offsets (redundant)", "undefined dimensions", "construction shown at an earlier step", "macro-produced dimensions (no entry)"],
+  "unchanged": ["native dimension mathematics", "Gap and Overshoot", "command signatures", "Offset semantics", "serialization format", "redefine contracts", "construction DAG semantics", "shared kernel", "drawing scale", "PDF export", "macro registration", "GeoGebra Classic"],
+  "specAmendment": {"path": "geocedg/specs/dimensions/native-dimensions.md", "section": "8.6 POST-E2-P4 amendment", "status": "PROPOSED"},
+  "tests": {
+    "PostE2P4OffsetConversionTest": 11,
+    "PreG9BR6PlusE2NativeDimensionDesktopTest": 14,
+    "G9U1WorkspaceSurfaceTest": 25,
+    "alsoRunFocused": {"PreG9BR6PlusE2PresentationFollowUpDesktopTest": 8, "G9U1ProductPolicyTest": 8},
+    "checkstyle": "no new violation"
+  },
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1962},
+    "post-e2-p4.desktop": 50,
+    "final.shared": 6963,
+    "final.desktop": {"before": 1945, "after": 1956},
+    "selections": 51,
+    "phaseSelections": 58,
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "c25eca38af9569c022be7060c3210402bcb8f9f15936820dca18d9d0b120bcee", "after": "e8e0ba5f075fdaf0ec2c8fb70647fe96c9a0be2c2a414b66fee2762733740dbd"}
+  },
+  "guides": ["docs/user/geocedg_user_guide_en.md 9.5", "docs/user/geocedg_user_guide_es.md 9.5"],
+  "authorSmoke": "PENDING",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false
+}

@@ -126,7 +126,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
       "change": "added",
-      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md.",
+      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. POST-E2-P4: the object context menu of one native dimension offers the explicit Make offset draggable action. Authority: docs/architecture/post_e2_p4_offset_conversion_design.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -6068,6 +6068,18 @@
       "change": "added",
       "purpose": "POST-E2-P3: all 24 Templatev7 macros listed and activating their own tool mode, graphical creation through a chosen document tool, New and Open lifecycle with stale entries failing safely, duplicate tool names, unreadable library, installed-library equivalence and same-name precedence, save and reopen.",
       "authority": "docs/architecture/post_e2_p3_document_tools_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionOffsetConversion.java",
+      "change": "added",
+      "purpose": "POST-E2-P4: explicit Make offset draggable action of a native dimension typed with a literal offset; labels the literal number in place with a collision-safe offsetN name and orders it before the dimension, one undo point, exact restore on failure; expressions, named, locked and undefined offsets are refused without change.",
+      "authority": "docs/architecture/post_e2_p4_offset_conversion_design.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P4OffsetConversionTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P4: aligned and linear literal offsets converted in place with identical identities, value, geometry and dependents; dragging afterwards; one undo and redo step; deterministic save and reopen; label collisions; repeated action; refused expressions, named, locked, undefined, earlier-step and macro cases; rollback after an injected failure; context menu EN/ES; Classic unchanged.",
+      "authority": "docs/architecture/post_e2_p4_offset_conversion_design.md"
     }
   ]
 }

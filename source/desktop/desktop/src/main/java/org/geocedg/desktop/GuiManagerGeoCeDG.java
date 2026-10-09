@@ -5,12 +5,18 @@
 
 package org.geocedg.desktop;
 
+import java.awt.Component;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.awt.GPoint;
+import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.geogebra3D.gui.GuiManager3D;
@@ -24,6 +30,7 @@ import org.geogebra.desktop.main.AppD;
 final class GuiManagerGeoCeDG extends GuiManager3D {
 	private GeoCeDGActionRegistry actionRegistry;
 	private GeoCeDGWorkspaceController workspaceController;
+	private ArrayList<GeoElement> contextGeos;
 
 	GuiManagerGeoCeDG(AppD app) {
 		super(app);
@@ -80,7 +87,25 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 	}
 
 	@Override
+	public void showPopupMenu(ArrayList<GeoElement> geos, Component invoker, GPoint p) {
+		contextGeos = geos;
+		try {
+			super.showPopupMenu(geos, invoker, p);
+		} finally {
+			contextGeos = null;
+		}
+	}
+
+	@Override
 	protected void decorateProductContextMenu(JPopupMenu menu) {
+		decorateProductContextMenu(menu, contextGeos);
+	}
+
+	/**
+	 * @param menu already constructed host popup
+	 * @param geos the objects the popup was opened for, or null
+	 */
+	void decorateProductContextMenu(JPopupMenu menu, Collection<GeoElement> geos) {
 		if (GeoCeDGProfile.isLegacyFallback()) {
 			return;
 		}
@@ -90,6 +115,13 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 			product.add(projection.getComponent(0));
 		}
 		menu.addSeparator();
+		// POST-E2-P4: the explicit offset conversion of the semantic dimension whose
+		// outputs the object context menu was opened for
+		JMenuItem offset = new GeoCeDGDimensionOffsetConversion(getApp())
+				.menuItem(geos);
+		if (offset != null) {
+			menu.add(offset);
+		}
 		menu.add(product);
 	}
 

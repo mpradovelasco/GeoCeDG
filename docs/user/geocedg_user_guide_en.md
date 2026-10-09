@@ -1232,8 +1232,22 @@ line or the value: only the offset changes and the measured points never move.
 One undo step on release. This works when the offset is a free, named, unlocked
 number, as the tools create it or as in `s=1` followed by
 `AlignedDimension(A,B,s)`; a dimension typed with a literal or computed offset,
-such as `AlignedDimension(A,B,1)`, cannot be dragged — change its offset by
-redefining it.
+such as `AlignedDimension(A,B,1)`, cannot be dragged directly.
+
+**Making a typed offset draggable.** Right-click the dimension line, an
+extension line, the value, or the dimension's value in the Algebra view, and
+choose **Make offset draggable**. A literal offset becomes a free, hidden,
+named number placed just before the dimension: `AlignedDimension(A,B,1)` becomes
+`offset1 = 1` and `AlignedDimension(A,B,offset1)` (or the next free name,
+`offset2`, …). The value, the drawing and the objects built on the dimension do
+not change, and one undo step reverts the action; afterwards the dimension line
+can be dragged as above. Dragging alone never converts a literal offset; the
+action is always explicit. An offset written as an expression (such as `2*3`, `pi` or
+`s+1`), a named offset that is locked or dependent, or an undefined dimension is
+left unchanged: the entry is disabled and its tooltip says why. When the offset
+is already a free number, the entry is disabled too. The entry appears when the
+context menu is opened for the dimension alone; if several objects lie under
+the pointer, select the dimension first.
 
 **Export.** Pictures (PNG, PDF, SVG, EMF and print) show the complete dimension.
 PSTricks, PGF/TikZ and Asymptote write the arrows and the rotated, centred value.

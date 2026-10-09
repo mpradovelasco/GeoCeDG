@@ -225,6 +225,26 @@ new documents (unit-system §20.5). A preference change affects only dimensions
 or documents created afterwards; it is not a document operation. The unit suffix
 policy of the current document is set in Options → Document units.
 
+**POST-E2-P4 amendment (2026-10-09, PROPOSED — technical candidate pending author
+review, [design record](../../../docs/architecture/post_e2_p4_offset_conversion_design.md);
+§8.4 and the clauses above are unchanged).**
+8.6 Explicit offset conversion. The object context menu of one native dimension
+(any of its outputs) offers **Make offset draggable**. It applies only when the
+offset is an unlabelled, independent, unlocked number whose definition is a plain
+decimal literal and the dimension is defined, in the open construction shown at
+its last step. The action gives that same number a free label `offsetN` (the
+first free `N ≥ 1`), makes it auxiliary and hidden like a tool-created offset
+(§8.2) and orders it immediately before the dimension, so that
+`AlignedDimension(A, B, 1)` persists as `offset1 = 1` and
+`AlignedDimension(A, B, offset1)`. No object is replaced or recreated, no
+dependency changes, the value, geometry and outputs keep their identity, and the
+command signature, `Offset` semantics and serialization (§9.1) are unchanged. One
+undo point; a failure restores the literal exactly. Expressions, constants,
+computed or named offsets, locked numbers, undefined dimensions and dimensions
+produced inside macros are never converted; the entry is then disabled with its
+reason, and it is disabled when the offset is already draggable. Dragging never
+converts a literal implicitly (§8.4).
+
 ## 9. Persistence and compatibility
 
 9.1 XML: `<command name="AlignedDimension">` or `"LinearDimension"` with
