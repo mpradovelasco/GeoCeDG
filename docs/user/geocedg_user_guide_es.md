@@ -444,7 +444,8 @@ tamaño real, `1:2` mitad, `2:1` doble). Elija una escala predefinida (`1:1`,
 positivos; se muestra simplificada (`2:4` pasa a `1:2`), y una entrada no válida
 se rechaza y deja la escala sin cambios. La escala de dibujo pertenece a la
 sesión de la ventana: no se guarda, no es un paso de deshacer y no marca el
-documento como modificado. Nuevo, Abrir y toda sustitución del documento
+documento como modificado; la barra de estado la muestra como **Escala: a:b**.
+Nuevo, Abrir y toda sustitución del documento
 completo la devuelven a `1:1`; deshacer, rehacer, editar o reemplazar una
 herramienta y acciones parecidas la conservan. El zoom, la ventana y la
 resolución nunca cambian un tamaño físico: la resolución solo fija el número de
@@ -522,7 +523,9 @@ mientras una unidad del documento la use. Una entrada rechazada muestra un aviso
 y deja el documento sin cambios.
 
 **Barra de estado.** Junto a **Capa: n** la barra de estado muestra
-**Unidad de construcción: …** y **Unidad de presentación: …**. Una unidad
+**Unidad de construcción: …**, **Unidad de presentación: …** y **Escala: a:b**, la
+escala de dibujo de la ventana (sección 4.5); en un documento sin unidad de
+construcción muestra **Escala: no física**. Una unidad
 personalizada se muestra por su símbolo, o como `usm`; las descripciones
 emergentes explican cada unidad y dan el factor de la unidad personalizada. Un
 clic en cualquiera de las dos unidades abre Unidades del documento.
@@ -1269,7 +1272,10 @@ deshacer por cota.
 
 **Grosor de línea y preferencias.** La línea de cota y las dos líneas de
 referencia empiezan con grosor de línea 2; cada una conserva su propio estilo,
-que puede cambiar en sus propiedades y que se guarda con ella. El grupo
+que puede cambiar en sus propiedades y que se guarda con ella. En la pestaña
+Estilo de las propiedades, junto al deslizador de grosor, también puede escribir
+el grosor como número entero dentro del rango del deslizador y pulsar `Intro`; un
+valor fuera del rango se rechaza y deja el estilo sin cambios. El grupo
 **Presentación de cotas** de **Opciones → Preferencias… → Disposición y
 presentación** fija el **Grosor inicial de línea** de las cotas creadas después
 con las herramientas, y si los documentos nuevos muestran la unidad en los

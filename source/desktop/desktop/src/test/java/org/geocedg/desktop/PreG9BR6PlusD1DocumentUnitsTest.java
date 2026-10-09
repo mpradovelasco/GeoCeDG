@@ -349,6 +349,8 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 		assertEquals(List.of("geocedg.status-bar.layer", "geocedg.status-bar.separator",
 				"geocedg.status-bar.construction-unit", "geocedg.status-bar.separator",
 				"geocedg.status-bar.presentation-unit", "geocedg.status-bar.separator",
+				// POST-E2-P1-R2 smoke follow-up C adds the drawing-scale segment
+				"geocedg.status-bar.drawing-scale", "geocedg.status-bar.separator",
 				"geocedg.status-bar.paste-notice"), names);
 		JLabel construction = bar.getSegment(GeoCeDGStatusBar.CONSTRUCTION_UNIT_SEGMENT);
 		JLabel presentation = bar.getSegment(GeoCeDGStatusBar.PRESENTATION_UNIT_SEGMENT);

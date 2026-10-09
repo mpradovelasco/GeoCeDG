@@ -42,6 +42,7 @@ public final class ExportViewport extends EuclidianViewD {
 	private double outputScaleX = 1;
 	private double outputScaleY = 1;
 	private double physicalStyleScale;
+	private double physicalMarkerScale;
 
 	private ExportViewport(EuclidianView source) {
 		super(new EuclidianControllerD(source.getKernel()), new boolean[] { false, false },
@@ -54,26 +55,33 @@ public final class ExportViewport extends EuclidianViewD {
 	 * @return a populated viewport for this area
 	 */
 	public static ExportViewport create(EuclidianView source, ExportArea area) {
-		return create(source, area, 1);
+		return create(source, area, 1, 1);
 	}
 
 	/**
 	 * POST-E2-P1-R2: a viewport whose drawables size their styles with the given
-	 * physical presentation scale (view pixels per style pixel). It is set before
-	 * the drawables are created.
+	 * physical presentation scales (view pixels per style pixel). They are set
+	 * before the drawables are created. Smoke follow-up A: point markers have
+	 * their own scale.
 	 *
 	 * @param source live 2D view whose presentation is copied
 	 * @param area export area of that view
 	 * @param styleScale view pixels per style pixel; 1 keeps the host sizes
+	 * @param markerScale view pixels per point-marker style pixel; 1 keeps the
+	 *        host sizes
 	 * @return a populated viewport for this area
 	 */
 	public static ExportViewport create(EuclidianView source, ExportArea area,
-			double styleScale) {
+			double styleScale, double markerScale) {
 		if (!(styleScale > 0) || !Double.isFinite(styleScale)) {
 			throw new IllegalArgumentException("invalid style scale " + styleScale);
 		}
+		if (!(markerScale > 0) || !Double.isFinite(markerScale)) {
+			throw new IllegalArgumentException("invalid marker scale " + markerScale);
+		}
 		ExportViewport viewport = new ExportViewport(source);
 		viewport.physicalStyleScale = styleScale;
+		viewport.physicalMarkerScale = markerScale;
 		viewport.bind(source, area);
 		return viewport;
 	}
@@ -82,6 +90,12 @@ public final class ExportViewport extends EuclidianViewD {
 	public double getPhysicalStyleScale() {
 		// 0 only while the host constructor runs, before this class is initialized
 		return physicalStyleScale > 0 ? physicalStyleScale : 1;
+	}
+
+	@Override
+	public double getPhysicalMarkerScale() {
+		// 0 only while the host constructor runs, before this class is initialized
+		return physicalMarkerScale > 0 ? physicalMarkerScale : 1;
 	}
 
 	private void bind(EuclidianView src, ExportArea area) {

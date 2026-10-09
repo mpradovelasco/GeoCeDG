@@ -57,3 +57,25 @@ no GeoCeDG contract governs them. Text uses another mechanism and is excluded.
   before.
 - Excluded sizes (text, angle arcs, hatching, axes, widgets) remain
   zoom-dependent in physical PDFs; known limitation.
+
+## Amendment — author smoke follow-up A (2026-10-09, PROPOSED)
+
+The author smoke of the R2 candidate `542a5adc` passed with a requested
+refinement: physical PDF point markers should match the PGF/TikZ marker size.
+Decision 2 is amended for point markers only (specification 0.2, §2.5):
+
+- Point markers get their own view property, `EuclidianView.getPhysicalMarkerScale()`
+  (`1` by default), overridden only by `ExportViewport` with
+  `μ = 0.5 / pdfPointsPerPixel` on the physical PDF route. One marker style pixel
+  is `0.5 pt`, so a marker of point size `s` spans `s` pt, the PGF geometric
+  extent, for the dot, circle, cross, plus and both diamond styles.
+- The whole marker, its outline included, follows `μ`: the marker keeps the
+  screen's internal proportions (outline `s/4` pt, dot border `0.5` pt). PGF draws
+  its outlines with TikZ's `0.4 pt` default and its triangles with a circumradius of
+  `3s/4` pt; both are documented differences, not copied.
+- Strokes and every other covered size keep `σ` and `0.4 · t pt`; point labels
+  keep their offset.
+
+Rejected for the markers: keeping `1.6 · s` pt (the smoke found it larger than
+PGF); copying PGF's fixed `0.4 pt` outline and triangle size (a second, per-style
+rule that changes GeoGebra's marker proportions).

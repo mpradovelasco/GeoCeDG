@@ -5242,6 +5242,26 @@
       "en": "Custom unit %0: 1 usm = %1 m.",
       "es": "Unidad personalizada %0: 1 usm = %1 m."
     },
+    "Units.Status.Scale": {
+      "en": "Scale: %0",
+      "es": "Escala: %0"
+    },
+    "Units.Status.ScaleNonPhysical": {
+      "en": "non-physical",
+      "es": "no física"
+    },
+    "Units.Status.ScaleTooltip": {
+      "en": "Engineering drawing scale (drawing : real) of this window, used by physical exports. It is session presentation and is not saved in the document.",
+      "es": "Escala técnica (dibujo : real) de esta ventana, usada por las exportaciones físicas. Es presentación de la sesión y no se guarda en el documento."
+    },
+    "Units.Status.ScaleTooltipNonPhysical": {
+      "en": "This document has no construction unit, so it has no physical drawing scale: exports use a non-physical device scale.",
+      "es": "Este documento no tiene unidad de construcción, así que no tiene escala de dibujo física: las exportaciones usan una escala de dispositivo no física."
+    },
+    "Properties.LineThickness.Field": {
+      "en": "Line thickness: type a whole number within the slider range and press Enter",
+      "es": "Grosor de línea: escribe un número entero dentro del rango del deslizador y pulsa Intro"
+    },
     "Units.PasteNotice": {
       "en": "Pasted from a document in %0 into a document in %1; coordinates were not converted.",
       "es": "Pegado desde un documento en %0 a un documento en %1; las coordenadas no se han convertido."

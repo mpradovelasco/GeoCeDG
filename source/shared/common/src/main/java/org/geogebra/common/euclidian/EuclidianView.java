@@ -3060,6 +3060,17 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	}
 
 	/**
+	 * GeoCeDG (POST-E2-P1-R2 smoke follow-up A): view pixels per point-marker style
+	 * pixel. Point markers multiply the sizes they derive from point size by this
+	 * value. It is 1 for every view except GeoCeDG's physical PDF export viewport.
+	 *
+	 * @return physical presentation scale of point markers
+	 */
+	public double getPhysicalMarkerScale() {
+		return 1;
+	}
+
+	/**
 	 * @return scale factor for print
 	 */
 	public final double getPrintingScale() {

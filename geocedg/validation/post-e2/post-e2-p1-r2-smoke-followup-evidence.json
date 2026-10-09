@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P1-R2",
+  "registeredPhaseId": "POST-E2-P1-R2",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "subject": "author smoke follow-up and final presentation refinements A, B, C",
+  "report": "docs/validation/post_e2_p1_r2_smoke_followup_report.md",
+  "originalCandidate": {"commit": "542a5adc7e4be15fb05985ed0a8e84817d22f795", "tree": "06a98e3a51dd0a539753f855d48518a85378acf4", "evidence": "geocedg/validation/post-e2/post-e2-p1-r2-candidate-evidence.json", "state": "HISTORICAL EVIDENCE, unchanged"},
+  "authorSmoke": "PASS WITH THREE REQUESTED REFINEMENTS (author instruction of 2026-10-09)",
+  "design": "docs/architecture/post_e2_p1_r2_physical_pdf_stroke_design.md#9-author-smoke-follow-up-amendment-2026-10-09",
+  "specification": {"path": "geocedg/specs/export/physical-pdf-style-sizes.md", "version": "0.2", "status": "PROPOSED"},
+  "adr": {"path": "docs/adr/0035-physical-pdf-style-sizes.md", "status": "PROPOSED (amended)"},
+  "markerMeasurements": "geocedg/validation/post-e2/post-e2-p1-r2-smoke-followup-markers.json",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P1-R2 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "productChange": "YES — BOUNDED PRESENTATION",
+  "geometricSemanticsChange": "NONE",
+  "serializationSchemaChange": "NONE",
+  "refinements": {
+    "A": {
+      "subject": "physical PDF point markers",
+      "rule": "mu = 0.5 pt / pdfPointsPerPixel per marker style pixel on the GeoCeDG physical PDF route; 1 elsewhere",
+      "result": "marker geometry s pt as in PGF/TikZ for dot, circle, cross, plus and both diamonds; triangles 2/3 of PGF; outline s/4 pt (dot border 0.5 pt) against PGF 0.4 pt",
+      "strokesUnchanged": "0.4 * lineThickness pt",
+      "zooms": [2, 8, 32],
+      "sizes": [3, 5, 9],
+      "styles": 10
+    },
+    "B": {
+      "subject": "numeric line-thickness field beside the object Properties thickness slider",
+      "owner": "GeoCeDGLineThicknessField; PropertiesPanelD.LineStylePanel (profile-gated)",
+      "range": "host slider range 1..13, 0 for polygons",
+      "undo": "one point per accepted entry",
+      "classic": "unchanged (no field)"
+    },
+    "C": {
+      "subject": "session drawing scale in the status bar",
+      "segment": "drawing-scale: Scale: a:b / Escala: a:b; Scale: non-physical / Escala: no física without a construction unit",
+      "listeners": "one per window for the bar's lifetime",
+      "undoModifiedSerialization": "none"
+    }
+  },
+  "fullSuites": {
+    "shared": {"tests": 6963, "failures": 0, "errors": 0, "skipped": 10},
+    "desktop": {"tests": 1933, "failures": 0, "errors": 0, "skipped": 1, "maxHeap": "512m", "outOfMemory": false}
+  },
+  "focused": {"post-e2-p1-r2.desktop": {"tests": 107, "failures": 0}},
+  "checkstyle": "no new violation (one pre-existing LineLength warning in PreG9BR6PlusA1HiddenLayerTest)",
+  "upstreamBoundary": "PASS (Assert-GeoCeDGUpstreamBoundary, baseline 9b93256b7df401ff056c37b502d82df4d72b1522, 1008 registered files)",
+  "registration": {"phase": "POST-E2-P1-R2", "selection": "post-e2-p1-r2.desktop", "addedTestClasses": ["PostE2P1R2SmokeFollowUpTest", "PreG9BR6PlusD1DocumentUnitsTest", "PreG9BR6PlusD1PasteNoticeVisibilityTest"]},
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1933, "testDryRun": true},
+    "executedSelections": {
+      "post-e2-p1-r2.desktop": {"before": 83, "after": 107, "sha256": "b2f687b8f23aae487b82aa010dd634334a6bbb564417e8365905e72779e763c2"},
+      "pre-g9b-r6-plus-c.desktop": {"after": 271, "sha256": "e4077ef6fa3c2b154c4f9c08d007954fda8ffd5379e5f8bae502f205d79f910f"},
+      "pre-g9b-r6-plus-e2.desktop": {"after": 282, "sha256": "6cea9281ced6ce21035d76fb0c4916d0c9bd1b6deca2910991c650268bf368a8"},
+      "final.shared": {"after": 6963, "sha256": "510e51f224b4132125baf343c201e111cee030dc3d03b102167ee49d6a9f63ea"},
+      "final.desktop": {"before": 1919, "after": 1927, "sha256": "97d21aba4edfcb21194668a56a3a56a6b3362b0ad43dbae78dcf24fb8628f663"}
+    },
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "cc3e23a38a50560b4e4928ce9364ee53f16491c49d31b5a02ce8b06498491291", "after": "fc712b3ef1e73e92593246bbc764b2b132503075ba7095f07f2b4ec555267963"},
+    "coveragePins": "47 selections, 54 PHASE selections, post-e2-p1-r2.desktop 107"
+  },
+  "preservedDebts": ["TD-PDF-1", "TD-PDF-2"],
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false
+}

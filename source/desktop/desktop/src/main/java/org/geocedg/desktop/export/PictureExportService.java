@@ -65,6 +65,11 @@ public final class PictureExportService implements PictureExportRoute {
 	public static final String CREATOR = "GeoCeDG / FreeHEP Graphics2D Driver";
 	/** POST-E2-P1-R2: PDF points per style pixel on a physical PDF (0.4 t pt strokes). */
 	public static final double PHYSICAL_POINTS_PER_STYLE_PIXEL = 0.8;
+	/**
+	 * POST-E2-P1-R2 smoke follow-up A: PDF points per point-marker style pixel on a
+	 * physical PDF, so a marker of point size s spans s pt as in PGF/TikZ.
+	 */
+	public static final double PHYSICAL_POINTS_PER_MARKER_PIXEL = 0.5;
 	private static final double CLIPBOARD_PIXEL_BUDGET = 500000;
 	private static final double CLIPBOARD_SCALE = 2;
 
@@ -185,8 +190,9 @@ public final class PictureExportService implements PictureExportRoute {
 		graphics.startExport();
 		// POST-E2-P1-R2: a physical document gets physical style sizes
 		double styleScale = isPhysical(app) ? physicalStyleScale(pointsPerPixel) : 1;
+		double markerScale = isPhysical(app) ? physicalMarkerScale(pointsPerPixel) : 1;
 		paint(view, area, new GGraphics2DD(graphics), pointsPerPixel, pointsPerPixel,
-				pointsPerPixel, styleScale, false, textAsShapes
+				pointsPerPixel, styleScale, markerScale, false, textAsShapes
 						? ExportType.PDF_TEXTASSHAPES : ExportType.PDF_EMBEDFONTS);
 		graphics.endExport();
 	}
@@ -201,6 +207,19 @@ public final class PictureExportService implements PictureExportRoute {
 	 */
 	public static double physicalStyleScale(double pointsPerPixel) {
 		return PHYSICAL_POINTS_PER_STYLE_PIXEL / pointsPerPixel;
+	}
+
+	/**
+	 * POST-E2-P1-R2 smoke follow-up A (physical-pdf-style-sizes section 2.3): one
+	 * point-marker style pixel is {@value #PHYSICAL_POINTS_PER_MARKER_PIXEL} pt on a
+	 * physical PDF, so a marker of point size s spans s pt whatever the zoom, unit
+	 * and drawing scale.
+	 *
+	 * @param pointsPerPixel PDF points per viewport pixel of the page
+	 * @return viewport pixels per marker style pixel
+	 */
+	public static double physicalMarkerScale(double pointsPerPixel) {
+		return PHYSICAL_POINTS_PER_MARKER_PIXEL / pointsPerPixel;
 	}
 
 	/**
@@ -391,13 +410,13 @@ public final class PictureExportService implements PictureExportRoute {
 	private void paint(EuclidianView view, ExportArea area, GGraphics2D graphics,
 			double scaleX, double scaleY, double exportScale, boolean transparent,
 			ExportType type) {
-		paint(view, area, graphics, scaleX, scaleY, exportScale, 1, transparent, type);
+		paint(view, area, graphics, scaleX, scaleY, exportScale, 1, 1, transparent, type);
 	}
 
 	private void paint(EuclidianView view, ExportArea area, GGraphics2D graphics,
 			double scaleX, double scaleY, double exportScale, double styleScale,
-			boolean transparent, ExportType type) {
-		ExportViewport viewport = ExportViewport.create(view, area, styleScale);
+			double markerScale, boolean transparent, ExportType type) {
+		ExportViewport viewport = ExportViewport.create(view, area, styleScale, markerScale);
 		viewport.setOutputScale(scaleX, scaleY);
 		viewport.exportPaint(graphics, exportScale, transparent, type);
 	}

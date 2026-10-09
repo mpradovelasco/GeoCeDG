@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
-| Version | `0.1` |
+| Version | `0.2` (smoke follow-up amendment of §2.3, §2.5, S7 and §5.3; version `0.1` is in the history of the R2 candidate `542a5adc`) |
 | Owner phase | `POST-E2-P1-R2` |
 | Decision | [ADR 0035](../../../docs/adr/0035-physical-pdf-style-sizes.md) (`PROPOSED`) |
 | Governing author decisions | [P1-R1 closeout record](../../../docs/validation/post_e2_p1_r1_closeout_record.md) (`D-R2-1` to `D-R2-7` in the author instruction of 2026-10-08) |
@@ -52,15 +52,42 @@ w_PDF(t) = (t / 2) · 0.8 pt = 0.4 · t pt
 t = 1 → 0.1411 mm   t = 2 → 0.2822 mm   t = 3 → 0.4233 mm   t = 5 → 0.7056 mm
 ```
 
-2.3 Every other style size of §3 keeps GeoGebra's own proportion to the stroke:
-it is its style-pixel size times `σ_phys`. No separate physical size is defined
-for any decoration. Resulting examples: the end-style arrow of a segment of
-thickness `t` has a half-width of `t` style pixels, i.e. `0.8 · t` pt; a point of
-`pointSize` `s` has a marker diameter of `2 · s` style pixels, i.e. `1.6 · s` pt
-(5 → 8 pt ≈ 2.82 mm).
+2.3 Every other style size of §3 except the point markers keeps GeoGebra's own
+proportion to the stroke: it is its style-pixel size times `σ_phys`. No separate
+physical size is defined for any decoration. Example: the end-style arrow of a
+segment of thickness `t` has a half-width of `t` style pixels, i.e. `0.8 · t` pt.
+Point markers follow §2.5 (amendment 0.2; version 0.1 sized them with `σ_phys`,
+`1.6 · s` pt).
 
 2.4 Drawing scale (`D-R2-3`): style sizes are not multiplied by the drawing
 scale. Geometry keeps unit-system §13: `output(L) = L · fb(c) · a / b`.
+
+2.5 Point markers (amendment 0.2, author smoke follow-up A, PGF/TikZ reference).
+In both exporters `pointSize` `s` is a marker size, not a stroke: GeoGebra's
+screen draws every marker style with a half-size (circumradius for triangles) of
+`s` style pixels, and the PGF/TikZ exporter writes a geometric extent of `s` pt
+(`circle (s/2 pt)` for the dot and circle styles, `±s/2 pt` for cross, plus and
+both diamonds, circumradius `3s/4 pt` for triangles) stroked with TikZ's default
+`0.4 pt` line. On the physical PDF route one **marker style pixel** is rendered as
+
+```text
+μ_phys = 0.5 pt
+```
+
+so the whole marker, outline included, is the screen marker scaled uniformly:
+
+| Quantity | Physical PDF | PGF/TikZ |
+|---|---|---|
+| geometric extent, dot, circle, cross, plus, both diamonds | `s` pt | `s` pt |
+| geometric extent, triangles (circumradius) | `s/2` pt (`2/3` of PGF) | `3s/4` pt |
+| outline of cross, plus, circle, diamonds, triangles | `s/4` pt, square caps and mitre joins (GeoGebra `s/2` style px) | `0.4` pt, round caps |
+| dot border | `0.5` pt (GeoGebra 1 style px) | `0.4` pt |
+
+Marker centres, the point, its style and its stored `pointSize` are unchanged;
+`μ_phys` does not depend on the zoom, unit or drawing scale. The ink extent
+therefore differs from PGF only by the outline convention (for example a circle
+marker of `s = 5`: 6.25 pt against 5.4 pt) and, for triangles, by PGF's own
+triangle size. Point labels keep their present offset.
 
 ## 3. Covered style sizes
 
@@ -72,7 +99,7 @@ scale. Geometry keeps unit-system §13: `output(L) = L · fb(c) · a / b`.
 | S4 | segment end styles: arrows, squares, circles, diamonds, crow's feet, lines, and their 0.5 px outline strokes | `DrawSegmentWithEndings` |
 | S5 | segment middle decorations (ticks and arrows) | `DrawSegment` |
 | S6 | vector arrowheads | `DrawVector`, `DrawVectorModel` |
-| S7 | point markers of every point style, including their outline and fill strokes | `DrawPoint` |
+| S7 | point markers of every point style, including their outline and fill strokes, at `μ_phys` (§2.5) | `DrawPoint` |
 
 ## 4. Not covered (existing rule kept)
 
@@ -93,7 +120,8 @@ at every zoom, unit, drawing scale and export-area mode.
 without the scale (unit-system §13 and the `B`/`C` export contracts).
 
 5.3 Proportions: each covered size divided by the stroke width equals the
-GeoGebra screen proportion.
+GeoGebra screen proportion; point markers keep the screen proportions among their
+own sizes (§2.5).
 
 5.4 Outside the physical PDF route every output is byte-identical to the route
 before `POST-E2-P1-R2` (`σ = 1` exactly).

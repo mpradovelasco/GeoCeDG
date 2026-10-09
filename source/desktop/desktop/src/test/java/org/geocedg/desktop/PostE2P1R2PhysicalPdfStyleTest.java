@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 
@@ -48,14 +50,16 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * POST-E2-P1-R2 (physical-pdf-style-sizes, ADR 0035, PROPOSED): on GeoCeDG's physical
  * PDF route one style pixel is 0.8 pt, so a stroke of line thickness t is 0.4 t pt and
- * every lineThickness- and pointSize-derived size keeps GeoGebra's proportion to it,
+ * every lineThickness-derived size keeps GeoGebra's proportion to it; smoke follow-up A:
+ * point markers follow 0.5 pt per marker style pixel (PGF/TikZ marker geometry);
  * whatever the zoom, unit, presentation unit, drawing scale and export-area mode. The
  * produced PDF is interpreted (P1-R1 interpreter: graphics-state stack, CTM, w, caps,
  * joins, dash, paths, strokes, fills; colour-attributed objects).
  *
  * <p>With {@code GEOCEDG_POST_E2_P1_R2_REPORT=<file>} the measured rows are written as
- * JSON and with {@code GEOCEDG_POST_E2_P1_R2_PDF_DIR=<dir>} the PDFs are kept for an
- * independent rasterization; assertions never depend on them.
+ * JSON and with {@code GEOCEDG_POST_E2_P1_R2_PDF_DIR=<dir>} the PDFs (and the PGF code of
+ * the marker comparison) are kept for an independent rasterization; assertions never
+ * depend on them.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -63,6 +67,10 @@ import org.junit.jupiter.api.io.TempDir;
 class PostE2P1R2PhysicalPdfStyleTest {
 	private static final double MM_PER_PT = 25.4 / 72;
 	private static final double PT_PER_STYLE_PX = 0.8;
+	/** Smoke follow-up A: PDF points per point-marker style pixel. */
+	private static final double PT_PER_MARKER_PX = 0.5;
+	/** TikZ's default line width, used by the PGF exporter for marker outlines. */
+	private static final double PGF_DEFAULT_LINE_PT = 0.4;
 	/** PDF numbers have five significant figures: a relative tolerance of 1e-3. */
 	private static final double RELATIVE = 1E-3;
 	private static final int[] THICKNESSES = {1, 2, 3, 5};
@@ -174,19 +182,23 @@ class PostE2P1R2PhysicalPdfStyleTest {
 
 	// ---------------------------------------------------- §8.3 point markers
 
+	/**
+	 * Smoke follow-up A (amends the R2 expectation of 1.6 s pt, kept in the history of
+	 * 542a5adc): the whole marker follows 0.5 pt per marker style pixel, so the marker
+	 * geometry spans the point size s in points, as in PGF/TikZ, and its outline keeps
+	 * GeoGebra's s / 2 style px, i.e. s / 4 pt.
+	 */
 	@Test
-	void pointMarkersAreOnePointSixTimesThePointSizeAtEveryZoom() throws Exception {
+	void pointMarkersSpanThePointSizeInPointsAtEveryZoom() throws Exception {
 		int[] styles = {EuclidianStyleConstants.POINT_STYLE_DOT,
 			EuclidianStyleConstants.POINT_STYLE_FILLED_DIAMOND,
+			EuclidianStyleConstants.POINT_STYLE_EMPTY_DIAMOND,
 			EuclidianStyleConstants.POINT_STYLE_CROSS,
+			EuclidianStyleConstants.POINT_STYLE_PLUS,
 			EuclidianStyleConstants.POINT_STYLE_CIRCLE};
 		for (int style : styles) {
 			for (int size : new int[] {3, 5, 9}) {
-				AppGeoCeDG app = scene(UnitToken.MM, DrawingScale.ONE_TO_ONE, 1, 2);
-				GeoPoint point = (GeoPoint) app.getKernel().lookupLabel("P");
-				point.setPointStyle(style);
-				point.setPointSize(size);
-				point.updateVisualStyleRepaint(GProperty.POINT_STYLE);
+				AppGeoCeDG app = pointScene(style, size);
 				double[] centre = null;
 				for (double zoom : ZOOMS) {
 					zoom(app, zoom);
@@ -194,20 +206,26 @@ class PostE2P1R2PhysicalPdfStyleTest {
 					Box box = markerBox(pdf);
 					assertNotNull(box, "marker drawn");
 					double extent = box.width();
-					boolean filled = style == EuclidianStyleConstants.POINT_STYLE_DOT
-							|| style == EuclidianStyleConstants.POINT_STYLE_FILLED_DIAMOND;
 					Map<String, Object> row = row("points", "mm", "1:1", "explicit", 2, zoom,
 							app, pdf);
 					row.put("pointStyle", style);
 					row.put("pointSize", size);
 					row.put("markerExtentMm", extent * MM_PER_PT);
 					record("points", row);
-					// filled markers: the fill spans 2 s style px; stroked markers: the path
-					// spans 2 s style px (centrelines)
+					// filled markers: the fill spans 2 s marker px; stroked markers: the path
+					// spans 2 s marker px (centrelines)
 					row.put("fillResolutionMm", resolutionPt(app, pdf) * MM_PER_PT);
-					assertEquals(2 * size * PT_PER_STYLE_PX, extent, resolutionPt(app, pdf)
-							+ 2 * size * PT_PER_STYLE_PX * (filled ? RELATIVE : 0.02),
+					assertEquals(2 * size * PT_PER_MARKER_PX, extent, resolutionPt(app, pdf)
+							+ 2 * size * PT_PER_MARKER_PX * (filled(style) ? RELATIVE : 0.02),
 							"style " + style + " size " + size + " zoom " + zoom);
+					assertEquals(extent, box.height(), resolutionPt(app, pdf)
+							+ extent * (filled(style) ? RELATIVE : 0.02), "square extent");
+					double outline = outlinePt(pdf, style);
+					row.put("markerOutlineMm", outline * MM_PER_PT);
+					double expectedOutline = style == EuclidianStyleConstants.POINT_STYLE_DOT
+							? PT_PER_MARKER_PX : size / 2.0 * PT_PER_MARKER_PX;
+					assertEquals(expectedOutline, outline, expectedOutline * RELATIVE,
+							"outline of style " + style + " size " + size);
 					double[] c = {(box.minX + box.maxX) / 2, (box.minY + box.maxY) / 2};
 					if (centre == null) {
 						centre = c;
@@ -215,8 +233,135 @@ class PostE2P1R2PhysicalPdfStyleTest {
 						assertArrayEquals(centre, c, 0.01 / MM_PER_PT, "the point position");
 					}
 				}
+				GeoPoint point = (GeoPoint) app.getKernel().lookupLabel("P");
+				assertEquals(size, point.getPointSize(), "the stored point size");
+				assertEquals(style, point.getPointStyle(), "the stored point style");
 			}
 		}
+	}
+
+	/**
+	 * Smoke follow-up A: the PDF marker geometry measured in the exported PDF equals the
+	 * PGF/TikZ marker geometry written for the same point, for every style whose shape
+	 * GeoGebra's screen and the PGF exporter share, at every zoom. Two shape-related
+	 * differences are measured and reported: PGF triangles have a circumradius of 3 s / 4
+	 * pt against s / 2 pt (the screen proportion of every marker), and PGF strokes every
+	 * outline with TikZ's default 0.4 pt line and round caps, against GeoGebra's s / 2
+	 * style px (dot border 1 style px) with square caps and mitre joins.
+	 */
+	@Test
+	void pointMarkersMatchThePgfMarkerGeometry() throws Exception {
+		for (int style = EuclidianStyleConstants.POINT_STYLE_DOT;
+				style <= EuclidianStyleConstants.POINT_STYLE_TRIANGLE_WEST; style++) {
+			for (int size : new int[] {3, 5, 9}) {
+				AppGeoCeDG app = pointScene(style, size);
+				double[] pgfFirst = null;
+				for (double zoom : ZOOMS) {
+					zoom(app, zoom);
+					Pdf pdf = pdf(app, "pgf-point-s" + style + "-" + size + "-z" + zoom);
+					Box box = markerBox(pdf);
+					assertNotNull(box, "PDF marker drawn");
+					String pgf = PreG9BR6PlusCLatexExportTest.generate(
+							PreG9BR6PlusCLatexExportTest.exporter(app, "pgf"),
+							app.getEuclidianView1());
+					keepPgf(pgf, "pgf-point-s" + style + "-" + size + "-z" + zoom);
+					double[] pgfExtent = pgfMarkerExtent(pgf, POINT);
+					if (pgfFirst == null) {
+						pgfFirst = pgfExtent;
+					} else {
+						assertArrayEquals(pgfFirst, pgfExtent, 0, "PGF marker and zoom");
+					}
+					boolean triangle = style >= EuclidianStyleConstants.POINT_STYLE_TRIANGLE_NORTH;
+					final double ratio = triangle ? 2 / 3.0 : 1;
+					final double tolerance = resolutionPt(app, pdf)
+							+ pgfExtent[0] * (filled(style) ? 0.01 : 0.03);
+					Map<String, Object> row = row("pointsPgf", "mm", "1:1", "explicit", 2, zoom,
+							app, pdf);
+					row.put("pointStyle", style);
+					row.put("pointSize", size);
+					row.put("pdfWidthPt", box.width());
+					row.put("pdfHeightPt", box.height());
+					row.put("pgfWidthPt", pgfExtent[0]);
+					row.put("pgfHeightPt", pgfExtent[1]);
+					row.put("pdfOutlinePt", outlinePt(pdf, style));
+					row.put("pgfOutlinePt", PGF_DEFAULT_LINE_PT);
+					row.put("pdfToPgfGeometry", box.width() / pgfExtent[0]);
+					record("pointsPgf", row);
+					assertEquals(ratio * pgfExtent[0], box.width(), tolerance,
+							"width of style " + style + " size " + size + " zoom " + zoom);
+					assertEquals(ratio * pgfExtent[1], box.height(), tolerance,
+							"height of style " + style + " size " + size + " zoom " + zoom);
+				}
+			}
+		}
+	}
+
+	private AppGeoCeDG pointScene(int style, int size) throws Exception {
+		AppGeoCeDG app = scene(UnitToken.MM, DrawingScale.ONE_TO_ONE, 1, 2);
+		GeoPoint point = (GeoPoint) app.getKernel().lookupLabel("P");
+		point.setPointStyle(style);
+		point.setPointSize(size);
+		point.updateVisualStyleRepaint(GProperty.POINT_STYLE);
+		return app;
+	}
+
+	private static boolean filled(int style) {
+		return style == EuclidianStyleConstants.POINT_STYLE_DOT
+				|| style == EuclidianStyleConstants.POINT_STYLE_FILLED_DIAMOND
+				|| style >= EuclidianStyleConstants.POINT_STYLE_TRIANGLE_NORTH;
+	}
+
+	/** @return the outline width of the marker: the black dot border or its own stroke */
+	private static double outlinePt(Pdf pdf, int style) {
+		Stroke stroke = pdf.stroke(style == EuclidianStyleConstants.POINT_STYLE_DOT
+				? GColor.BLACK : POINT);
+		assertNotNull(stroke, "marker outline of style " + style);
+		return stroke.effectivePt;
+	}
+
+	/**
+	 * @return width and height in points of the PGF marker path of the given colour:
+	 *         {@code circle (r pt)} or the relative {@code ++(x pt,y pt)} steps, rotated
+	 *         by the TikZ {@code rotate} option
+	 */
+	static double[] pgfMarkerExtent(String pgf, GColor color) {
+		Matcher definition = Pattern.compile("\\\\definecolor\\{([^}]*)\\}\\{rgb\\}\\{"
+				+ pgfComponent(color.getRed()) + "," + pgfComponent(color.getGreen()) + ","
+				+ pgfComponent(color.getBlue()) + "\\}").matcher(pgf);
+		assertTrue(definition.find(), pgf);
+		String name = Pattern.quote(definition.group(1));
+		Matcher line = Pattern.compile("\\\\draw \\[(?:fill|color)=" + name + "[^\\n]*")
+				.matcher(pgf);
+		assertTrue(line.find(), "PGF marker of " + definition.group(1) + "\n" + pgf);
+		String code = line.group();
+		Matcher circle = Pattern.compile("circle \\(([-0-9.E]+)pt\\)").matcher(code);
+		if (circle.find()) {
+			double radius = Double.parseDouble(circle.group(1));
+			return new double[] {2 * radius, 2 * radius};
+		}
+		Matcher rotate = Pattern.compile("rotate=([-0-9.]+)").matcher(code);
+		double angle = rotate.find() ? Math.toRadians(Double.parseDouble(rotate.group(1))) : 0;
+		Box box = new Box();
+		double x = 0;
+		double y = 0;
+		box.add(new double[] {0, 0});
+		Matcher step = Pattern.compile(
+				"\\+\\+\\(\\s*([-0-9.E]+)\\s*(?:pt)?\\s*,\\s*([-0-9.E]+)\\s*(?:pt)?\\s*\\)")
+				.matcher(code);
+		boolean any = false;
+		while (step.find()) {
+			x += Double.parseDouble(step.group(1));
+			y += Double.parseDouble(step.group(2));
+			box.add(new double[] {x * Math.cos(angle) - y * Math.sin(angle),
+				x * Math.sin(angle) + y * Math.cos(angle)});
+			any = true;
+		}
+		assertTrue(any, code);
+		return new double[] {box.width(), box.height()};
+	}
+
+	private static String pgfComponent(int value) {
+		return value == 255 ? "1\\.?" : value == 0 ? "0\\.?" : "[0-9.]+";
 	}
 
 	// ------------------------------------------------------- §8.4 drawing scales
@@ -311,6 +456,9 @@ class PostE2P1R2PhysicalPdfStyleTest {
 		assertEquals(1, app.getEuclidianView1().getPhysicalStyleScale(), 0);
 		assertEquals(1, PictureExportService.physicalStyleScale(0.8), 0,
 				"0.8 pt per view pixel needs no style scale");
+		assertEquals(1, app.getEuclidianView1().getPhysicalMarkerScale(), 0);
+		assertEquals(1, PictureExportService.physicalMarkerScale(0.5), 0,
+				"0.5 pt per view pixel needs no marker scale");
 	}
 
 	@AfterAll
@@ -482,6 +630,8 @@ class PostE2P1R2PhysicalPdfStyleTest {
 				PictureExportService.pdfPointsPerPixel(app.getEuclidianView1()));
 		row.put("styleScale", PictureExportService.physicalStyleScale(
 				PictureExportService.pdfPointsPerPixel(app.getEuclidianView1())));
+		row.put("markerScale", PictureExportService.physicalMarkerScale(
+				PictureExportService.pdfPointsPerPixel(app.getEuclidianView1())));
 		row.put("pageWidthMm", pdf.width() * MM_PER_PT);
 		row.put("pageHeightMm", pdf.height() * MM_PER_PT);
 		return row;
@@ -492,6 +642,16 @@ class PostE2P1R2PhysicalPdfStyleTest {
 		Path dir = keep == null || keep.isEmpty() ? temporary : Paths.get(keep);
 		Files.createDirectories(dir);
 		return dir.resolve(name + ".pdf").toFile();
+	}
+
+	/** Keeps the PGF code beside the kept PDFs for an independent rasterization. */
+	private static void keepPgf(String pgf, String name) throws Exception {
+		String keep = System.getenv("GEOCEDG_POST_E2_P1_R2_PDF_DIR");
+		if (keep != null && !keep.isEmpty()) {
+			Files.createDirectories(Paths.get(keep));
+			Files.writeString(Paths.get(keep).resolve(name + ".tex"), pgf,
+					StandardCharsets.UTF_8);
+		}
 	}
 
 	private String raw(AppGeoCeDG app, String name) throws Exception {

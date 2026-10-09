@@ -135,3 +135,31 @@ remains. Two consequences are reported for the author's visual smoke, not
 decided silently: point markers of `1.6 · pointSize pt` (PGF uses
 `pointSize pt`), and point labels that keep their present offset while the
 marker size changes.
+
+## 9. Author smoke follow-up amendment (2026-10-09)
+
+The author smoke of `542a5adc` passed with three requested refinements, authorized
+as an R2 smoke follow-up in the same verification class (`INTEGRATED_PHASE`).
+Sections 1 to 8 stay the design of the original candidate; this section adds the
+follow-up. Report: [`post_e2_p1_r2_smoke_followup_report.md`](../validation/post_e2_p1_r2_smoke_followup_report.md).
+
+| Refinement | Owner | Change |
+|---|---|---|
+| A, point markers | `EuclidianView.getPhysicalMarkerScale()` (upstream seam, `1`); `ExportViewport`; `PictureExportService`; `DrawPoint` | markers use `μ = 0.5 pt / pdfPointsPerPixel` instead of `σ` (specification 0.2, §2.5); strokes unchanged |
+| B, thickness field | `GeoCeDGLineThicknessField` (GeoCeDG); `PropertiesPanelD.LineStylePanel` (upstream, profile-gated) | a spinner beside the existing thickness slider; the slider remains the only style writer |
+| C, status-bar scale | `GeoCeDGStatusBar`, `AppGeoCeDG.getStatusBar()` | a permanent drawing-scale segment fed by the existing session scale and listener |
+
+Refinement B ownership: the slider is the `LineStylePanel` of the object
+Properties (`PropertiesPanelD`), shared by the Object Properties and the
+Defaults dialog through the same class; it drives `LineStyleModel.applyThickness`
+and stores undo on mouse release (`SliderUtil`). The field mirrors the slider's
+`BoundedRangeModel` (value, minimum 0 for polygons, maximum
+`GeoElement.MAX_LINE_WIDTH`) under a guard, applies an accepted integer by
+`slider.setValue`, so the existing listener applies it, and then calls
+`LineStyleModel.storeUndoInfo()` once. The style-bar line popup is not changed.
+
+Refinement C: `getStatusBar()` registers one `addDrawingScaleListener` callback
+for the bar's lifetime (the window's); panel rebuilds reattach the same bar. The
+segment reads `getDrawingScale()` and the unit state at refresh time; without a
+construction unit it says the scale is non-physical (unit-system §13). New, Open
+and the other transition events already reset the scale and notify listeners.

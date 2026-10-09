@@ -35,6 +35,10 @@ import org.geocedg.common.kernel.units.UsmDefinition;
  * construction-unit and presentation-unit segments, derived from the shared document
  * unit state at refresh time, and the transient paste-notice segment. A click on a unit
  * segment opens the Document Units dialog; the bar edits nothing itself.
+ * POST-E2-P1-R2 smoke follow-up C adds the permanent drawing-scale segment: the
+ * window's session {@link AppGeoCeDG#getDrawingScale() drawing scale} a:b, or an
+ * explicit non-physical statement when the document has no construction unit. It is
+ * read at refresh time and is never a scale authority or control.
  */
 final class GeoCeDGStatusBar extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +48,8 @@ final class GeoCeDGStatusBar extends JPanel {
 	static final String CONSTRUCTION_UNIT_SEGMENT = "construction-unit";
 	/** Stable id of the presentation-unit segment. */
 	static final String PRESENTATION_UNIT_SEGMENT = "presentation-unit";
+	/** Stable id of the session drawing-scale segment (POST-E2-P1-R2 follow-up C). */
+	static final String DRAWING_SCALE_SEGMENT = "drawing-scale";
 	/** Stable id of the transient unit-mismatch paste notice (DQ-D1-9). */
 	static final String PASTE_NOTICE_SEGMENT = "paste-notice";
 	/** Lifetime of the paste notice. */
@@ -163,6 +169,8 @@ final class GeoCeDGStatusBar extends JPanel {
 		unitSegment(CONSTRUCTION_UNIT_SEGMENT);
 		add(separator());
 		unitSegment(PRESENTATION_UNIT_SEGMENT);
+		add(separator());
+		addSegment(DRAWING_SCALE_SEGMENT);
 		noticeSeparator = separator();
 		noticeSeparator.setVisible(false);
 		add(noticeSeparator);
@@ -235,6 +243,13 @@ final class GeoCeDGStatusBar extends JPanel {
 				state.getPresentationSelection() != null
 						? "Units.Status.PresentationTooltipExplicit"
 						: "Units.Status.PresentationTooltipFollows") + usmLine);
+		JLabel scaleLabel = segments.get(DRAWING_SCALE_SEGMENT);
+		boolean physical = state.isPhysical();
+		scaleLabel.setText(app.layerText("Units.Status.Scale", physical
+				? app.getDrawingScale().toString()
+				: app.layerText("Units.Status.ScaleNonPhysical")));
+		scaleLabel.setToolTipText(app.layerText(physical ? "Units.Status.ScaleTooltip"
+				: "Units.Status.ScaleTooltipNonPhysical"));
 	}
 
 	private String usmLine(UsmDefinition usm) {

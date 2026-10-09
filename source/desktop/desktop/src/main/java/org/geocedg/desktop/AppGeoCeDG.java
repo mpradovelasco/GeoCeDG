@@ -883,8 +883,16 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	GeoCeDGStatusBar getStatusBar() {
 		if (statusBar == null) {
 			statusBar = new GeoCeDGStatusBar(this);
+			// POST-E2-P1-R2 smoke follow-up C: one registration for the bar's lifetime,
+			// which is this window's; panel rebuilds reattach the same bar
+			addDrawingScaleListener(this::unitStateChanged);
 		}
 		return statusBar;
+	}
+
+	/** @return registered drawing-scale presentation listeners (lifecycle tests) */
+	int getDrawingScaleListenerCount() {
+		return drawingScaleListeners == null ? 0 : drawingScaleListeners.size();
 	}
 
 	/**

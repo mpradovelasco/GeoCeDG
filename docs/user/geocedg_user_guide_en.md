@@ -426,7 +426,8 @@ size). Choose a preset (`1:1`, `1:2`, `1:5`, `1:10`, `2:1`, `5:1`) or type
 another pair of positive whole numbers; it is shown reduced (`2:4` becomes
 `1:2`), and an invalid entry is refused and leaves the scale unchanged. The
 drawing scale belongs to the window session: it is not saved, is not an undo
-step and does not mark the document as modified. New, Open and every
+step and does not mark the document as modified; the status bar shows it as
+**Scale: a:b**. New, Open and every
 replacement of the whole document set it back to `1:1`; undo, redo, editing or
 replacing a tool and similar actions keep it. Zoom, the window and the
 resolution never change a physical size: the resolution only sets the number
@@ -499,7 +500,9 @@ defined, and the custom unit cannot be removed while a document unit uses it. A
 refused entry shows a warning and leaves the document unchanged.
 
 **Status bar.** Beside **Layer: n** the status bar shows
-**Construction unit: …** and **Presentation unit: …**. A custom unit is shown by
+**Construction unit: …**, **Presentation unit: …** and **Scale: a:b**, the drawing
+scale of the window (section 4.5); in a document without a construction unit it
+shows **Scale: non-physical**. A custom unit is shown by
 its symbol, or as `usm`; the tooltips explain each unit and give the custom-unit
 factor. Clicking either unit opens Document units.
 
@@ -1215,7 +1218,10 @@ One undo step per dimension.
 
 **Line thickness and preferences.** The dimension line and the two extension
 lines start with line thickness 2; each keeps its own style, which you can change
-in its properties and which is saved with it. The **Dimension presentation**
+in its properties and which is saved with it. In the Style tab of the properties,
+beside the thickness slider, you can also type the thickness as a whole number in
+the slider's range and press `Enter`; a value outside the range is refused and
+leaves the style unchanged. The **Dimension presentation**
 group under **Options → Preferences… → Layout & Presentation** sets the
 **Initial line thickness** of dimensions created afterwards with the tools, and
 whether new documents show the unit on dimension values (section 4.6). These

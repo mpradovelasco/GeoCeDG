@@ -54,6 +54,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.geocedg.desktop.GeoCeDGLineThicknessField;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.gui.UpdateFonts;
@@ -2084,6 +2085,7 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 		private final JComboBox dashCB;
 		private final LineStyleModel model;
 		private final JPanel dashPanel;
+		private final GeoCeDGLineThicknessField thicknessField;
 
 		public LineStylePanel() {
 			model = new LineStyleModel(app);
@@ -2147,6 +2149,12 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 			 * thicknessPanel.add(thicknessLabel);
 			 */
 			thicknessPanel.add(thicknessSlider);
+			// GeoCeDG (POST-E2-P1-R2 smoke follow-up B): numeric entry beside the slider
+			thicknessField = GeoCeDGLineThicknessField.forProduct(app, thicknessSlider,
+					model::storeUndoInfo);
+			if (thicknessField != null) {
+				thicknessPanel.add(thicknessField.getComponent());
+			}
 			opacityPanel.add(opacitySlider);
 
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -2167,6 +2175,9 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 					.createTitledBorder(loc1.getMenu("LineOpacity")));
 
 			dashLabel.setText(loc1.getMenu("LineStyle") + ":");
+			if (thicknessField != null) {
+				thicknessField.setLabels(app.getLocale().getLanguage());
+			}
 		}
 
 		@Override
@@ -2225,6 +2236,9 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 			thicknessPanel.setFont(font);
 			opacityPanel.setFont(font);
 			dashLabel.setFont(font);
+			if (thicknessField != null) {
+				thicknessField.setFont(font);
+			}
 
 			updateSliderFonts();
 		}

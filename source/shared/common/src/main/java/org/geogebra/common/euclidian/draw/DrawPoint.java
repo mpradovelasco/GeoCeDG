@@ -193,9 +193,9 @@ public final class DrawPoint extends SetDrawable {
 			updateDiameter();
 		}
 
-		// GeoCeDG (POST-E2-P1-R2): marker sizes in style pixels, 1 except in
-		// physical PDF
-		double size = pointSize * physicalStyleScale();
+		// GeoCeDG (POST-E2-P1-R2): marker sizes in marker pixels (smoke follow-up A), 1
+		// except in physical PDF
+		double size = pointSize * physicalMarkerScale();
 		double xUL = coords[0] - size;
 		double yUL = coords[1] - size;
 
@@ -314,8 +314,8 @@ public final class DrawPoint extends SetDrawable {
 		}
 
 		// circle might be needed at least for tracing
-		circle.setFrame(xUL, yUL, diameter * physicalStyleScale(),
-				diameter * physicalStyleScale());
+		circle.setFrame(xUL, yUL, diameter * physicalMarkerScale(),
+				diameter * physicalMarkerScale());
 
 		// selection area
 		circleHighlight.setFrame(xUL - HIGHLIGHT_OFFSET, yUL - HIGHLIGHT_OFFSET,
@@ -398,7 +398,7 @@ public final class DrawPoint extends SetDrawable {
 				// draw cross like: X or +
 				g2.setPaint(geo.getObjectColor());
 				g2.setStroke(EuclidianStatic.scaleStroke(getEmptyStroke(pointSize),
-						physicalStyleScale()));
+						physicalMarkerScale()));
 				g2.draw(line1);
 				g2.draw(line2);
 				break;
@@ -407,7 +407,7 @@ public final class DrawPoint extends SetDrawable {
 				// draw diamond
 				g2.setPaint(geo.getObjectColor());
 				g2.setStroke(EuclidianStatic.scaleStroke(getEmptyStroke(pointSize),
-						physicalStyleScale()));
+						physicalMarkerScale()));
 				g2.draw(line1);
 				g2.draw(line2);
 				g2.draw(line3);
@@ -422,7 +422,7 @@ public final class DrawPoint extends SetDrawable {
 				// draw diamond
 				g2.setPaint(geo.getObjectColor());
 				g2.setStroke(EuclidianStatic.scaleStroke(getFillStroke(pointSize),
-						physicalStyleScale()));
+						physicalMarkerScale()));
 				g2.draw(gp);
 				g2.fill(gp);
 				break;
@@ -431,7 +431,7 @@ public final class DrawPoint extends SetDrawable {
 				// draw a circle
 				g2.setPaint(geo.getObjectColor());
 				g2.setStroke(EuclidianStatic.scaleStroke(getEmptyStroke(pointSize),
-						physicalStyleScale()));
+						physicalMarkerScale()));
 				g2.draw(circle);
 				break;
 
@@ -448,7 +448,7 @@ public final class DrawPoint extends SetDrawable {
 				// black stroke
 				g2.setPaint(geo.getShowHideColor(GColor.BLACK));
 				g2.setStroke(EuclidianStatic.scaleStroke(borderStroke,
-						physicalStyleScale()));
+						physicalMarkerScale()));
 				g2.draw(circle);
 			}
 
@@ -542,6 +542,16 @@ public final class DrawPoint extends SetDrawable {
 	@Override
 	public void setGeoElement(GeoElement geo) {
 		this.geo = geo;
+	}
+
+	/**
+	 * GeoCeDG (POST-E2-P1-R2 smoke follow-up A): the whole marker, its strokes
+	 * included, follows one marker scale.
+	 *
+	 * @return view pixels per marker style pixel of this drawable's view
+	 */
+	private double physicalMarkerScale() {
+		return view == null ? 1 : view.getPhysicalMarkerScale();
 	}
 
 	/*
