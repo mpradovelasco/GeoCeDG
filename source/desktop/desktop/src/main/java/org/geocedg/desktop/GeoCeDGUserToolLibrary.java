@@ -99,6 +99,8 @@ final class GeoCeDGUserToolLibrary {
 	private String bundledFailure;
 	private boolean bundledPinsReadable = true;
 	private final Map<Macro, String> activated = new IdentityHashMap<>();
+	/** POST-E2-P3: macros this library registered itself, not adopted document ones. */
+	private final Set<Macro> hostRegistered = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Runnable> listeners = new ArrayList<>();
 
 	/** Original exchange bytes plus application-only pin preferences. */
@@ -853,6 +855,48 @@ final class GeoCeDGUserToolLibrary {
 					|| !packages.containsKey(entry.getValue())
 							&& !bundled.containsKey(entry.getValue());
 		});
+		hostRegistered.removeIf(macro -> !activated.containsKey(macro));
+	}
+
+	/**
+	 * POST-E2-P3: whether the live macro was registered by this library for one of its
+	 * current installed or bundled tools in this session. Document macros, including
+	 * those adopted as equivalent to a library tool, are not.
+	 *
+	 * @param macro registered macro
+	 * @return whether the library registered it
+	 */
+	boolean isLibraryRegistered(Macro macro) {
+		pruneActivated();
+		return hostRegistered.contains(macro);
+	}
+
+	/**
+	 * POST-E2-P3: whether an installed or bundled entry presents this live macro, so
+	 * that entry stays the only visible choice for it: the library registered it, or
+	 * an available entry (same command, equivalent definition by the existing digest
+	 * rule, not shadowed) names it. A same-name entry with a different definition is
+	 * unavailable and presents nothing.
+	 *
+	 * @param macro registered macro
+	 * @return whether the library presents it
+	 */
+	boolean presents(Macro macro) {
+		if (isLibraryRegistered(macro)) {
+			return true;
+		}
+		if (app.getKernel().getMacro(macro.getCommandName()) != macro) {
+			return false;
+		}
+		List<Package> entries = new ArrayList<>(packages());
+		entries.addAll(bundledPackages());
+		for (Package tool : entries) {
+			if (tool.commands().contains(macro.getCommandName())
+					&& unavailableReason(tool) == null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void registerWithHost(Package tool) throws IOException {
@@ -881,6 +925,7 @@ final class GeoCeDGUserToolLibrary {
 				macro.setShowInToolBar(false);
 				app.getKernel().bindMacroCommandAuthority(macro);
 				activated.put(macro, tool.id);
+				hostRegistered.add(macro);
 			}
 			app.updateCommandDictionary();
 			complete = true;
@@ -892,6 +937,7 @@ final class GeoCeDGUserToolLibrary {
 					if (!previous.contains(macro)) {
 						app.getKernel().removeMacro(macro);
 						activated.remove(macro);
+						hostRegistered.remove(macro);
 					}
 				}
 				app.updateCommandDictionary();

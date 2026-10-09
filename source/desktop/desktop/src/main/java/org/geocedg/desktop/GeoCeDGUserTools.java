@@ -56,12 +56,19 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geocedg.desktop.GeoCeDGUserToolLibrary.Package;
 import org.geocedg.desktop.GeoCeDGUserToolLibrary.PinnedCommand;
+import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.Macro;
 import org.geogebra.desktop.gui.dialog.ToolManagerDialogD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
 
 /** Dynamic application tools are separate from the immutable product action catalog. */
 public final class GeoCeDGUserTools {
+	/** Component name of the POST-E2-P3 document tools submenu. */
+	static final String DOCUMENT_TOOLS_MENU = "geocedg.userTools.documentTools";
+	/** Client property holding the command name of a document tool entry. */
+	static final String DOCUMENT_MACRO_COMMAND = "geocedg.userTools.documentMacro";
 
 	private static final Map<AppD, WeakReference<GeoCeDGUserTools>> INSTANCES =
 			new WeakHashMap<>();
@@ -207,18 +214,116 @@ public final class GeoCeDGUserTools {
 			failure.setFont(app.getMenuFont());
 			failure.setEnabled(false);
 			menu.add(failure);
-			return;
+		} else {
+			if (library.packages().isEmpty()) {
+				JMenuItem empty = new JMenuItem(text("UserTools.Empty"));
+				empty.setFont(app.getMenuFont());
+				empty.setEnabled(false);
+				menu.add(empty);
+			}
+			for (Package tool : library.packages()) {
+				addCommandItems(menu, tool);
+			}
+			populateBundled(menu);
 		}
-		if (library.packages().isEmpty()) {
-			JMenuItem empty = new JMenuItem(text("UserTools.Empty"));
+		// POST-E2-P3: the open document's tools never depend on the installed library
+		menu.addSeparator();
+		menu.add(createDocumentToolsMenu());
+	}
+
+	/**
+	 * POST-E2-P3: the macros of the open document as interactive tools, read from the
+	 * live kernel each time the menu opens. An entry keeps its live {@link Macro}; it
+	 * activates that object's existing macro tool mode, never a command text and never
+	 * a remembered mode number. A macro the installed or bundled library presents
+	 * (registered by it, or equivalent to an available entry) stays listed only there,
+	 * as the existing precedence rule requires.
+	 *
+	 * @return document tools submenu
+	 */
+	JMenu createDocumentToolsMenu() {
+		JMenu documentMenu = new JMenu(text("UserTools.DocumentTools"));
+		documentMenu.setName(DOCUMENT_TOOLS_MENU);
+		documentMenu.setFont(app.getMenuFont());
+		documentMenu.setToolTipText(text("UserTools.DocumentToolsTip"));
+		documentMenu.getAccessibleContext().setAccessibleName(documentMenu.getText());
+		documentMenu.getAccessibleContext().setAccessibleDescription(
+				documentMenu.getToolTipText());
+		List<Macro> macros = documentMacros();
+		if (macros.isEmpty()) {
+			JMenuItem empty = new JMenuItem(text("UserTools.DocumentEmpty"));
 			empty.setFont(app.getMenuFont());
 			empty.setEnabled(false);
-			menu.add(empty);
+			documentMenu.add(empty);
+			return documentMenu;
 		}
-		for (Package tool : library.packages()) {
-			addCommandItems(menu, tool);
+		Map<String, Integer> labels = new LinkedHashMap<>();
+		for (Macro macro : macros) {
+			labels.merge(documentLabel(macro), 1, Integer::sum);
 		}
-		populateBundled(menu);
+		for (Macro macro : macros) {
+			String label = documentLabel(macro);
+			JMenuItem item = new JMenuItem(labels.get(label) > 1
+					? label + " (" + macro.getCommandName() + ")" : label);
+			item.setFont(app.getMenuFont());
+			String help = macro.getToolHelp() == null ? "" : macro.getToolHelp().trim();
+			item.setToolTipText(help.isEmpty() ? macro.getCommandName()
+					: macro.getCommandName() + ": " + help);
+			item.getAccessibleContext().setAccessibleDescription(item.getToolTipText());
+			item.putClientProperty(DOCUMENT_MACRO_COMMAND, macro.getCommandName());
+			item.addActionListener(event -> activateDocumentMacro(macro));
+			documentMenu.add(item);
+		}
+		return documentMenu;
+	}
+
+	private static String documentLabel(Macro macro) {
+		String label = macro.getToolOrCommandName();
+		return label == null || label.trim().isEmpty() ? macro.getCommandName()
+				: label.trim();
+	}
+
+	/** @return live document macros of the current kernel, in kernel order */
+	List<Macro> documentMacros() {
+		Kernel kernel = app.getKernel();
+		List<Macro> all = kernel.getAllMacros();
+		List<Macro> result = new ArrayList<>();
+		if (all == null) {
+			return result;
+		}
+		for (Macro macro : all) {
+			if (isLiveDocumentMacro(macro)) {
+				result.add(macro);
+			}
+		}
+		return result;
+	}
+
+	private boolean isLiveDocumentMacro(Macro macro) {
+		Kernel kernel = app.getKernel();
+		return macro != null && macro.getKernel() == kernel
+				&& kernel.getMacro(macro.getCommandName()) == macro
+				&& kernel.getMacroID(macro) >= 0
+				&& (library == null || !library.presents(macro));
+	}
+
+	/**
+	 * Activates the existing tool mode of a document macro chosen in the menu. A macro
+	 * that is no longer the live one of its command name (document replaced, macro
+	 * removed or taken over by the library) fails explicitly and leaves the mode.
+	 *
+	 * @param macro macro of the menu entry
+	 * @return whether its tool mode is now active
+	 */
+	boolean activateDocumentMacro(Macro macro) {
+		if (!isLiveDocumentMacro(macro)) {
+			failure("UserTools.DocumentToolStale");
+			return false;
+		}
+		int mode = EuclidianConstants.MACRO_MODE_ID_OFFSET
+				+ app.getKernel().getMacroID(macro);
+		app.setMode(mode);
+		return app.getMode() == mode;
 	}
 
 	private void addCommandItems(JMenu menu, Package tool) {

@@ -1665,14 +1665,20 @@ With no package installed, **Document tools (local only)…** still lets you
 manage the portable definition.
 
 **Macros embedded in an opened document.** GeoCeDG does not reproduce the
-toolbar or the tools of an opened document: the toolbar and the **User tools**
-menu come from the GeoCeDG profile and the installed library, so a macro
-embedded in a `.cedg` or a `.ggb` (for example a legacy template) appears in
-neither. The macro is still loaded with the document, keeps rebuilding its
-results and is saved with it. Run it by typing its command name with its inputs
-in Algebra Input, like any command; **Automation → User tools → Manage user
-tools… → Document tools (local only)…** lists the macros of the document.
-Choosing a document macro interactively as a toolbar tool is not available.
+toolbar of an opened document: the toolbar comes from the GeoCeDG profile. The
+macros embedded in a `.cedg` or a `.ggb` (for example a legacy template) are
+offered in **Automation → User tools → Document tools**, separate from your
+installed tools and from the bundled GeoCeDG library. Choose one to use it as an
+interactive tool: select its inputs in the Graphics or Algebra view, as with any
+tool (a point can also be created by clicking an empty place; a number or an
+angle is asked for in a dialog). The list always shows the macros of the current
+document: opening another document replaces them; **File → New** keeps them, as
+GeoGebra does, and they are saved with the new document. A macro equivalent to
+an installed tool is offered only by its installed entry; a document macro whose
+name is used by a *different* installed definition stays in Document tools,
+where it runs the document's own definition. Typing the command name in Algebra
+Input still works, and **Manage user tools… → Document tools (local only)…**
+still lists and manages the macros.
 
 ### 13.3 Limits
 

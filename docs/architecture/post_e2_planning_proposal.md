@@ -32,9 +32,11 @@ P2 (Algebra Input zoom)   = CHARACTERIZATION PASS — AUTHOR APPROVED — PUBLIS
 P2-R1 (shortcut validation) = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-09;
                            conditional author approval of the D1 successor 38647c79;
                            docs/validation/post_e2_p2_r1_closeout_record.md)
-P3 (document macros)      = DESIGN AND BOUNDED IMPLEMENTATION AUTHORIZED after a
-                           readiness gate (INTEGRATED_PHASE); approval and publication
-                           PENDING
+P3 (document macros)      = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (INTEGRATED_PHASE;
+                           readiness gate A, E2 evidence reused;
+                           docs/validation/post_e2_p3_candidate_report.md: User tools →
+                           Document tools activates the document macros' tool modes);
+                           approval and publication PENDING
 P4 EXECUTION             = NOT AUTHORIZED
 implementationAuthorized = false
 selfApproved             = false

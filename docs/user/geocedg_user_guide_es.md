@@ -1739,16 +1739,22 @@ Sin paquete instalado, **Herramientas del documento (solo locales)…** permite 
 todos modos gestionar la definición portable.
 
 **Macros embebidas en un documento abierto.** GeoCeDG no reproduce la barra de
-herramientas ni las herramientas de un documento abierto: la barra y el menú
-**Herramientas de usuario** proceden del perfil GeoCeDG y de la biblioteca
-instalada, de modo que una macro embebida en un `.cedg` o en un `.ggb` (por
-ejemplo, una plantilla heredada) no aparece en ninguno de los dos. La macro se
-carga igualmente con el documento, sigue reconstruyendo sus resultados y se
-guarda con él. Ejecútela escribiendo su nombre de comando con sus entradas en la
-Entrada algebraica, como cualquier comando; **Automatización → Herramientas de
-usuario → Gestionar herramientas de usuario… → Herramientas del documento (solo
-locales)…** enumera las macros del documento. No es posible elegir una macro del
-documento de forma interactiva como herramienta de la barra.
+herramientas de un documento abierto: la barra procede del perfil GeoCeDG. Las
+macros embebidas en un `.cedg` o en un `.ggb` (por ejemplo, una plantilla
+heredada) se ofrecen en **Automatización → Herramientas de usuario →
+Herramientas del documento**, separadas de sus herramientas instaladas y de la
+biblioteca GeoCeDG incluida. Elija una para usarla como herramienta interactiva:
+seleccione sus entradas en la vista Gráfica o Algebraica, como con cualquier
+herramienta (un punto también puede crearse haciendo clic en un lugar vacío; un
+número o un ángulo se pide en un diálogo). La lista muestra siempre las macros
+del documento actual: abrir otro documento las sustituye; **Archivo → Nuevo** las
+conserva, como hace GeoGebra, y se guardan con el documento nuevo. Una macro
+equivalente a una herramienta instalada solo se ofrece en su entrada instalada;
+una macro del documento cuyo nombre usa una definición instalada *distinta* sigue
+en Herramientas del documento, donde ejecuta la definición propia del documento.
+Escribir el nombre del comando en la Entrada algebraica sigue funcionando, y
+**Gestionar herramientas de usuario… → Herramientas del documento (solo
+locales)…** sigue enumerando y gestionando las macros.
 
 ### 13.3 Límites
 

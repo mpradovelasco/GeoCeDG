@@ -3948,13 +3948,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools. Round 3: migrate to store v3 with complete normalized per-command definition digests, adopt only equivalent embedded document Macro objects for installed presentation ownership, and persist optional bounded PNG pin icons entirely outside document state. PRE-G9B-R6-plus-E1-L: load the read-only installation-relative curated GGT catalog once with whole-catalog fail-closed validation, keep user-package and document precedence, store bundled pins only in a separate user-side sidecar and never write the version-3 user store for bundled-only actions.",
+      "purpose": "G9U1 author-review round 1: Store explicitly installed bounded validated user GGT packages and digests in isolated application preferences; reuse the native macro engine, reject collisions/unsupported content and never auto-install document or Template tools. Round 3: migrate to store v3 with complete normalized per-command definition digests, adopt only equivalent embedded document Macro objects for installed presentation ownership, and persist optional bounded PNG pin icons entirely outside document state. PRE-G9B-R6-plus-E1-L: load the read-only installation-relative curated GGT catalog once with whole-catalog fail-closed validation, keep user-package and document precedence, store bundled pins only in a separate user-side sidecar and never write the version-3 user store for bundled-only actions. POST-E2-P3: identity set of library-registered macros and the presents query (registered, or equivalent to an available entry), so document tools never duplicate an installed entry. Authority: docs/architecture/post_e2_p3_document_tools_design.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display. PRE-G9B-S4: apply the independent menu font to user-tool menu and popup entries. PRE-G9B-S4-R1: mirror the native BoxLayout axis/alignment and rendered logical icon size so persistent buttons align at supported and scaled toolbar sizes. PRE-G9B-R6-plus-E1-L: present the read-only GeoCeDG library section with owned icons and statements in the existing manager and user-tools menu, without remove or custom-icon controls for bundled entries. PRE-G9B-R6-plus-E1-L-R1: bundled hover tips use the GeoCeDG-owned bilingual UserTools.BundledTip texts.",
+      "purpose": "G9U1 author-review round 1: Expose explicit persistent user-tool install/remove/pin/activate controls and distinguish installed tools from document-local host management through the existing action. Round 3: offer optional validated PNG selection at pin/presentation edit time, render normalized native-footprint icons or compact accessible initials, and preserve grouped dropdown/order semantics without registering a macro for display. PRE-G9B-S4: apply the independent menu font to user-tool menu and popup entries. PRE-G9B-S4-R1: mirror the native BoxLayout axis/alignment and rendered logical icon size so persistent buttons align at supported and scaled toolbar sizes. PRE-G9B-R6-plus-E1-L: present the read-only GeoCeDG library section with owned icons and statements in the existing manager and user-tools menu, without remove or custom-icon controls for bundled entries. PRE-G9B-R6-plus-E1-L-R1: bundled hover tips use the GeoCeDG-owned bilingual UserTools.BundledTip texts. POST-E2-P3: a Document tools submenu offers the live macros of the open document (not those the library presents) and activates their existing macro tool mode, failing explicitly for a stale entry; shown also when the installed library cannot be read. Authority: docs/architecture/post_e2_p3_document_tools_design.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4056,7 +4056,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection. Round 3 verifies that a definition-digest-equivalent installed package remains the sole user-facing entry while the embedded Macro remains portable, and that unequal/partial definitions fail closed.",
+      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection. Round 3 verifies that a definition-digest-equivalent installed package remains the sole user-facing entry while the embedded Macro remains portable, and that unequal/partial definitions fail closed. POST-E2-P3 reconciliation: the User tools menu now ends with a separator and the Document tools submenu; an equivalent embedded macro is not repeated there. Authority: docs/architecture/post_e2_p3_document_tools_design.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -5820,7 +5820,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LBundledCatalogTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E1-L: absent and staged catalogs, whole-catalog fail-closed integrity, activation and style, user and document precedence, user-store byte stability, sidecar pins, native round trip and the manager/menu presentation; R1 pins the twelve bilingual hover tips.",
+      "purpose": "PRE-G9B-R6-plus-E1-L: absent and staged catalogs, whole-catalog fail-closed integrity, activation and style, user and document precedence, user-store byte stability, sidecar pins, native round trip and the manager/menu presentation; R1 pins the twelve bilingual hover tips. POST-E2-P3 reconciliation: the User tools menu now ends with a separator and the Document tools submenu; an equivalent embedded macro is not repeated there. Authority: docs/architecture/post_e2_p3_document_tools_design.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_e1_l_candidate_report.md"
     },
     {
@@ -6062,6 +6062,12 @@
       "change": "added",
       "purpose": "POST-E2-P2-R1 validation matrix (Shift with letters, digits, punctuation, keypad, editing keys; Alt with keypad digits; function keys, Ctrl, Alt and Meta chords; reserved keys and conflicts), refused drafts committing nothing with EN/ES feedback, and stored inadmissible chords read as unassigned without rewriting the store while the factor and a valid second chord survive. D1: Ctrl+Alt(+Shift) character chords refused, Ctrl+Alt+F-keys eligible, AltGraph chords not well formed, stored Ctrl+Alt chords unassigned.",
       "authority": "docs/validation/post_e2_p2_r1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P3DocumentToolsTest.java",
+      "change": "added",
+      "purpose": "POST-E2-P3: all 24 Templatev7 macros listed and activating their own tool mode, graphical creation through a chosen document tool, New and Open lifecycle with stale entries failing safely, duplicate tool names, unreadable library, installed-library equivalence and same-name precedence, save and reopen.",
+      "authority": "docs/architecture/post_e2_p3_document_tools_design.md"
     }
   ]
 }

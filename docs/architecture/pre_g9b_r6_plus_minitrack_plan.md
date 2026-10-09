@@ -1384,6 +1384,10 @@ OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX = OPEN (2026-10-08: embedded macros
                              document-tool entry needs a separate author
                              authorization); accepted as OBS-E2-4 at the E2 closeout
                              (2026-10-08) — POST-E2 P3
+                             ADDRESSED BY CANDIDATE — POST-E2-P3 technical candidate
+                             (2026-10-09, pending author review): User tools →
+                             Document tools activates the document macros' existing
+                             tool modes
 OBS-E2-1                   = ACCEPTED NON-BLOCKING (E2 closeout 2026-10-08):
                              extension-line gap and overshoot look excessive with
                              constructionUnit = mm only; E2 captures Gap/Overshoot

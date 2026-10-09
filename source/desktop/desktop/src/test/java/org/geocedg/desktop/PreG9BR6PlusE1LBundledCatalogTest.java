@@ -426,14 +426,18 @@ class PreG9BR6PlusE1LBundledCatalogTest {
 		int header = items.indexOf(section);
 		assertTrue(header > 0, items.toString());
 		assertFalse(menu.getItem(header).isEnabled());
+		// POST-E2-P3: the menu ends with a separator and the Document tools submenu
+		int end = items.size() - 2;
+		assertEquals("|", items.get(end));
+		assertEquals(registry.text("UserTools.DocumentTools"), items.get(end + 1));
 		assertEquals(PreG9BR6PlusE1LCuratedLibraryTest.SELECTION,
-				items.subList(header + 1, items.size()));
+				items.subList(header + 1, end));
 		// R1 (author UX rule): the hover tip says what the tool constructs or computes,
 		// from the GeoCeDG-owned bilingual profile texts; caveats stay in extended help.
 		JSONObject texts = new JSONObject(Files.readString(repository.resolve(
 				"apps/geocedg/application-profile.yml"), StandardCharsets.UTF_8))
 				.getJSONObject("localized_text");
-		for (int i = header + 1; i < menu.getItemCount(); i++) {
+		for (int i = header + 1; i < end; i++) {
 			JMenuItem item = menu.getItem(i);
 			String command = item.getText();
 			assertNotNull(item.getIcon());
@@ -492,7 +496,10 @@ class PreG9BR6PlusE1LBundledCatalogTest {
 		Files.delete(broken.resolve("tools/DuctSymbol.ggt"));
 		JMenu failed = new JMenu();
 		new GeoCeDGUserTools(app, open(app, broken)).populate(failed);
-		JMenuItem last = failed.getItem(failed.getItemCount() - 1);
+		// POST-E2-P3: the separator and Document tools follow the bundled section
+		assertEquals(registry.text("UserTools.DocumentTools"),
+				failed.getItem(failed.getItemCount() - 1).getText());
+		JMenuItem last = failed.getItem(failed.getItemCount() - 3);
 		assertFalse(last.isEnabled());
 		assertEquals(registry.text("UserTools.BundledUnavailable"), last.getText());
 	}

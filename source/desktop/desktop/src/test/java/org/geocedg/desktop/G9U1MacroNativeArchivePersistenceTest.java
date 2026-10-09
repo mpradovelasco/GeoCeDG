@@ -6,6 +6,7 @@
 package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -99,7 +100,14 @@ class G9U1MacroNativeArchivePersistenceTest {
 		new GeoCeDGUserTools(installedReopen, installedLibrary).populate(installedMenu);
 		assertEquals("EllipseAxis", installedMenu.getItem(2).getText());
 		assertTrue(installedMenu.getItem(2).isEnabled());
-		assertEquals(3, installedMenu.getItemCount());
+		// POST-E2-P3: separator and Document tools close the menu; the equivalent
+		// embedded macro is not repeated there (the installed entry stays the only choice)
+		assertEquals(5, installedMenu.getItemCount());
+		JMenu documentTools = (JMenu) installedMenu.getItem(4);
+		assertEquals(1, documentTools.getItemCount());
+		assertFalse(documentTools.getItem(0).isEnabled());
+		assertNull(documentTools.getItem(0)
+				.getClientProperty(GeoCeDGUserTools.DOCUMENT_MACRO_COMMAND));
 		assertPersistentMacroResult(installedReopen, splineId);
 
 		// The document must now own everything needed by AlgoMacro.

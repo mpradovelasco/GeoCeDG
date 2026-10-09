@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P3",
+  "registeredPhaseId": "POST-E2-P3",
+  "artifactKind": "TECHNICAL_CANDIDATE_EVIDENCE",
+  "report": "docs/validation/post_e2_p3_candidate_report.md",
+  "design": "docs/architecture/post_e2_p3_document_tools_design.md",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authority": "docs/validation/post_e2_p2_r1_closeout_record.md",
+  "baseline": {"commit": "9bdcdf834814ce7eeb16ba189283208415fd1e7d", "tree": "06831f900e728900c5fc92b48d4f85e3c10fe759"},
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase POST-E2-P3 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "observation": "OBS-R6PLUS-E2-DOCUMENT-MACRO-DISCOVERY-UX",
+  "readinessGate": {
+    "outcome": "A — EXISTING EVIDENCE SUFFICIENT",
+    "reusedEvidence": "docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md part A",
+    "separateCharacterizationPhase": "NOT REQUIRED",
+    "focusedChecks": {
+      "templateActivation": "24/24 macros: setMode(MACRO_MODE_ID_OFFSET + getMacroID(macro)) puts ModeMacro on the identical Macro; kernel-owned; command authority bound; inputs GEOPOINT, GEOLINE, GEOCONIC, GEOLIST, GEOLOCUS, GEONUMERIC, GEOANGLE all within the ModeMacro contract",
+      "kernelMacroLifetime": "File > New keeps the macros and a save writes them; Open replaces them (0 or 1 in the probe); reset and clearConstruction keep them"
+    }
+  },
+  "selectedDesign": "User tools ends with a Document tools submenu of the live document macros not presented by the library; an entry activates its own macro tool mode",
+  "modifiedProductionFiles": [
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserToolLibrary.java",
+    "apps/geocedg/application-profile.yml"
+  ],
+  "activationMechanism": "live Macro object re-checked on choice, then app.setMode(MACRO_MODE_ID_OFFSET + kernel.getMacroID(macro)); stale entry -> warning, no mode change",
+  "coexistence": "equivalent document macro offered only by its available installed or bundled entry; same-name different definition: installed entry unavailable, document entry runs the document macro; library-registered macros are library tools",
+  "unchanged": ["macro loading", "macro registration", "macro execution", "command resolution", "macro serialization", "construction DAG", "kernel tool algorithms", "product toolbar", "installed, bundled and pinned tools", "GeoGebra Classic", "native dimensions"],
+  "tests": {
+    "PostE2P3DocumentToolsTest": 7,
+    "G9U1UserToolLibraryTest": 38,
+    "G9U0R3MenuLifecycleTest": 6,
+    "PreG9BR6PlusE1LBundledCatalogTest": {"tests": 10, "reconciled": "e1lCatalog10 menu tail"},
+    "G9U1MacroNativeArchivePersistenceTest": {"tests": 2, "reconciled": "menu count and no duplicate of the equivalent EllipseAxis"}
+  },
+  "producerHistory": "first final.desktop run failed the two menu pins (exact item lists); reconciled, all producers re-run",
+  "inventory": {
+    "discovery": {"shared": 6046, "desktop": 1951},
+    "post-e2-p3.desktop": 63,
+    "final.shared": 6963,
+    "final.desktop": {"before": 1938, "after": 1945},
+    "selections": 50,
+    "phaseSelections": 57,
+    "allProducersPassed": true,
+    "registryJunitInventoryPin": {"before": "8b812660d77b66f1ace1a07ddb5373bc59e85c0d1371beecdf32e741560f79db", "after": "c25eca38af9569c022be7060c3210402bcb8f9f15936820dca18d9d0b120bcee"}
+  },
+  "guides": ["docs/user/geocedg_user_guide_en.md 13.2", "docs/user/geocedg_user_guide_es.md 13.2"],
+  "authorSmoke": "PENDING",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false
+}
