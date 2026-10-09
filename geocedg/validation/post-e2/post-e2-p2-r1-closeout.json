@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-E2",
+  "phase": "POST-E2-P2-R1",
+  "registeredPhaseId": "POST-E2-P2-R1",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e2_p2_r1_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-09", "title": "GeoCeDG — POST-E2-P2-R1 / POST-E2-P3 — Conditional Author Approval, D1 Completion, Publication and P3 Execution"},
+  "state": "PASS — AUTHOR APPROVED",
+  "approvalBasis": "conditional author authorization of the D1 successor; all eight conditions verified",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "firstCandidate": {"commit": "422dca03696fc6cae9b03a3a45c365daffbc74fe", "tree": "4fe0186e45b6c1ac91d1319d9caba8d2fbf8e043", "authorSmoke": "PASS", "static": "verification-83ad5726da01452482dbd9a8ceff2c1a", "infraUnit": "verification-a8986804c19c49159ae35e87b31472e1", "phase": "verification-695904a30a644ceb8cd3ee856bd69c6f"},
+  "approvedCandidate": {"commit": "38647c796e6499a10d5435844866d2144fdfbe24", "tree": "ebcb853e7d947b792029db1d1fde8518be96e04a", "mutated": false},
+  "acceptedEvidence": {
+    "static": {"run": "verification-82ab76b6e1af4d9da66cc8a750510a45", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"},
+    "infraUnit": {"run": "verification-873273517d724a3e96d28387520b5923", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22"},
+    "phase": {"run": "verification-475f9c9e124345c6831e19a91bf098a4", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3"}
+  },
+  "policy": {
+    "refused": ["Shift only on any key except F1-F24", "Ctrl+Alt with or without Shift (no Meta) on any key except F1-F24 (D1)", "Alt only with a numeric-keypad digit"],
+    "notWellFormed": "chords carrying AltGraph",
+    "storedInadmissible": "unassigned; not rewritten; factor and valid chords kept",
+    "physicalAltGrSmoke": "NOT PERFORMED"
+  },
+  "conditions": {
+    "1_scopeRestrictedToD1": true,
+    "2_verificationPasses": true,
+    "3_smokeBehaviorIntact": "windowed probe on 38647c79: 0 unexpected view changes in 79 keystrokes, 7/7 texts, legitimate Shift+F7 and menu zoom work",
+    "4_noNewUnresolvedIssue": true,
+    "5_noIncompatibleMigration": true,
+    "6_classicUnchanged": true,
+    "7_workingTreeClean": true,
+    "8_descendantOf422dca03": true
+  },
+  "normativePromotion": {"path": "geocedg/specs/ui/cedg-workspaces.md", "section": "POST-E2-P2-R1 amendment", "status": "NORMATIVE / AUTHOR APPROVED"},
+  "next": {"phase": "POST-E2-P3", "design": "AUTHORIZED", "implementation": "AUTHORIZED AFTER READINESS GATE", "verificationClass": "INTEGRATED_PHASE", "authorApproval": "PENDING", "publication": "NOT AUTHORIZED"},
+  "notAuthorized": ["P3 approval", "P3 publication", "P4", "TD-PDF-1", "TD-PDF-2", "tag", "release", "binary publication"]
+}

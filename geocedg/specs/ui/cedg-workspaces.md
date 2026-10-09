@@ -186,8 +186,9 @@ Construction XML, identity, provenance, metrics or DAG semantics. Secondary
 views, 3D, Web, ZoomPrevious, FitSelection, FitLayer, named views and general or
 printing scales remain deferred to broader G12.
 
-**POST-E2-P2-R1 amendment (2026-10-09, PROPOSED — pending author approval of the
-corrected candidate; the A7 text above and its approval evidence are unchanged).**
+**POST-E2-P2-R1 amendment (2026-10-09, NORMATIVE / AUTHOR APPROVED — conditional
+author approval of `38647c79`, [P2-R1 closeout record](../../../docs/validation/post_e2_p2_r1_closeout_record.md);
+the A7 text above and its approval evidence are unchanged).**
 The factor chords are window-wide menu accelerators, so a chord also fires while
 the user types in Algebra Input or any other text field of the window
 (characterized in POST-E2-P2). A factor chord is therefore admissible only if it
