@@ -8,6 +8,10 @@
   author review): units, hidden layers, the explicit export area and the G5
   PASS clause below, under the author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`,
   `DQ-C13` and `DQ-C17`
+- Amended by `PRE-G9B-R6-plus-E3-R1` (2026-10-10), localized to the AC1015
+  container paragraph below: `AUTHOR APPROVED — IMPLEMENTED AND VERIFIED`. The
+  global status above stays `Experimental`; this does not promote the
+  specification or dispose of the `PRE-G9B-R6-plus-C` amendment
 
 ## Boundary
 
@@ -176,8 +180,11 @@ polygon-side suppression. Layer declarations and handles are deterministic.
 The DXF contains no timestamps. Validation compares parsed entities and their
 geometry, not only bytes.
 
-Proposed amendment of the `PRE-G9B-R6-plus-E3-R1` corrective candidate (not
-author approved; [candidate report](../../../docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md)):
+Amendment of the `PRE-G9B-R6-plus-E3-R1` corrective candidate, `AUTHOR APPROVED —
+IMPLEMENTED AND VERIFIED` for this paragraph only (author decision of 2026-10-10,
+[closeout record](../../../docs/validation/pre_g9b_r6_plus_e3_closeout_record.md);
+[candidate report](../../../docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md);
+the corrected file opens in AutoCAD 2026, author smoke):
 the AC1015 container is complete enough for AutoCAD to read it. The header
 carries `$HANDSEED`; TABLES holds the nine symbol tables (VPORT, LTYPE with
 `ByBlock`, `ByLayer` and `CONTINUOUS`, LAYER, STYLE `Standard`, VIEW, UCS, APPID

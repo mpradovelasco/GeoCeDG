@@ -47,6 +47,7 @@
 - `E3` implementation authorization (`PRE-G9B-R6-plus-E3-IMPLEMENTATION`, 2026-10-10): after reviewing the published design package (`P_R6PLUS_E3_DESIGN` `ff56099184544e5988c63e0ea3339e3d0fe01fac`, tree `1cdd1e986df785f5f16e7887300d9034e5e4a677`), the author resolved `OTQ-E3-1` (shared command available in GeoCeDG and Classic; GUI and export-area orchestration GeoCeDG-only), corrected the numerical-accuracy contract (deterministic evaluation, conditional error bounds, validity versus reliability, `NOT_DETERMINABLE` coherence) and authorized the implementation, class `INTEGRATED_PHASE` frozen ([author-decision record](../validation/pre_g9b_r6_plus_e3_author_decisions_record.md) §5); the [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-e3-iso-a-border-and-export-area.prompt.md) is `AUTHORIZED FOR IMPLEMENTATION`; publication of the implementation `NOT AUTHORIZED`.
 - `E3` technical candidate (`PRE-G9B-R6-plus-E3-IMPLEMENTATION` Stage B, 2026-10-10): native `IsoABorder` (R2: two closed `GeoPolyLine` and one `GeoText`, seven arguments, `MarcoISOA`), the menu-only tool with its unit gate, the `ISO_A_SELECTION` and `ISO_A_BORDER` export-area producers with the identity-only link, the physical-size and scale-label coherence indicators and "Use sheet scale", catalog 127 → 130, the shared command available in GeoCeDG and Classic; [candidate report](../validation/pre_g9b_r6_plus_e3_candidate_report.md), [specification](../../geocedg/specs/sheets/iso-a-border.md) and [ADR 0036](../adr/0036-iso-a-border-representation-and-export-area-producers.md) `PROPOSED`; `TECHNICAL CANDIDATE PENDING AUTHOR REVIEW`; `PHASE` and `INTEGRATION` on the candidate commit reported outside the report; author smoke pending; publication `NOT AUTHORIZED`; `selfApproved = false`.
 - `E3-R1` corrective candidate (`PRE-G9B-R6-plus-E3-R1`, 2026-10-10): after the author smoke of `257c854a` (`PASS WITH TWO BLOCKING EXPORT OBSERVATIONS`), the bounded correction completes the AC1015 DXF container (entities unchanged; AutoCAD 2026 opens it in the agent-side check, author re-smoke pending) and fixes the LaTeX export of the sheet (label with `\textemdash{}` inside the frame; physical page equal to the export area in PGF/TikZ, PSTricks and Asymptote); [candidate report](../validation/pre_g9b_r6_plus_e3_r1_candidate_report.md); `INTEGRATED_PHASE`; publication `NOT AUTHORIZED`; `selfApproved = false`.
+- `E3` and `E3-R1` author closeout (`PRE-G9B-R6-plus-E3-AUTHOR-CLOSEOUT`, 2026-10-10): `PRE-G9B-R6-plus-E3-R1` and `PRE-G9B-R6-plus-E3` = `PASS — AUTHOR APPROVED` on the corrective successor `T_R6PLUS_E3_R1` `7cd501167c856eef356888ca87ed3a0c97cea55c`, tree `3c51c9d3635c22939df6cab60259521f885eff92` (the original candidate `257c854a` stays historical evidence); `AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION` (Asymptote with label `UNAVAILABLE — NOT CLAIMED PASS`); ISO A specification `1.0` with §14.1a `NORMATIVE / AUTHOR APPROVED`, ADR 0036 `ACCEPTED — AUTHOR APPROVED`, the `E3-R1` G5 container amendment `AUTHOR APPROVED — IMPLEMENTED AND VERIFIED` (G5 stays `Experimental`); three POST-E3 activities authorized with bounded scopes and prepared, not executed; [closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md); publication `NOT AUTHORIZED`; `selfApproved = false`.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -251,7 +252,7 @@ No other boundary changed.
 | `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` (re-characterized and confirmed by the preparation; frozen at authorization) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-06; `T_R6PLUS_C` `6248bf0f`, revision 1; `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`; `PHASE` `verification-a198a69b…` and `INTEGRATION` `verification-0bcf9709…` `ACCEPTED / COMPLETE`; `b981f8ea` and its runs historical evidence; hidden-circle DXF finding expected by `DQ-C3`; Classic picture-dialog empty dialog and hang reproduced by the author, pre-existing, not caused by `C`, accepted debt deferred to post-`C`; [closeout record](../validation/pre_g9b_r6_plus_c_closeout_record.md); [candidate report](../validation/pre_g9b_r6_plus_c_candidate_report.md)) |
 | `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence); split by the author into `E1-L` (`BOUNDED_PHASE`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`) | `PASS — AUTHOR APPROVED` (aggregate, 2026-10-07; `E1-L` `T_R6PLUS_E1_L` `5f34d181` `PASS — AUTHOR APPROVED — PUBLISHED`, [closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md); `E1-P` `T_R6PLUS_E1_P` `dcda4075` `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`, [closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` open, pre-existing) |
 | `E2` | native dimension tools | shared kernel commands, Desktop modes, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
-| `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
+| `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `PASS — AUTHOR APPROVED` (2026-10-10; `T_R6PLUS_E3_R1` `7cd50116`, corrective successor of `257c854a`; `AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION`; `PHASE` `verification-c4853de4…` and `INTEGRATION` `verification-cf79b0af…` `ACCEPTED / COMPLETE`; publication `NOT AUTHORIZED`; [closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md)) |
 | `F1` | direction visualization | view/drawables, Desktop option | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
 | `F2` | authoring-memory refinements | Desktop mode orchestration | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
 | `F3` | File / Insert surface and document insertion compatibility (`DEBT-R6PLUS-FILE-INSERT-SURFACE`) | profile, Desktop file surface and chooser routes, minimal upstream-identical seams | `INTEGRATED_PHASE` (author planning assignment 2026-10-03; frozen at authorization) | `PLANNED — AUTHOR APPROVED — PUBLISHED — IMPLEMENTATION NOT AUTHORIZED` (planning approved 2026-10-03, published with the `A-2` chain on 2026-10-04; implementation prompt not prepared) |
@@ -1290,7 +1291,13 @@ PRE-G9B-R6-plus-E2         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-08 
                              implementation NOT AUTHORIZED)
                              earlier: NOT AUTHORIZED (NEXT after E1-P-X1, verification
                              baseline clean; requires a separate explicit author instruction)
-PRE-G9B-R6-plus-E3         = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R6-plus-E3         = PASS — AUTHOR APPROVED (with PRE-G9B-R6-plus-E3-R1)
+                             (2026-10-10; approved candidate T_R6PLUS_E3_R1 7cd50116,
+                             corrective successor of 257c854a; AUTHOR_SMOKE = PASS WITH
+                             ACCEPTED NON-BLOCKING VERIFICATION LIMITATION; Asymptote with
+                             label UNAVAILABLE — NOT CLAIMED PASS; publication NOT
+                             AUTHORIZED; selfApproved = false)
+                             earlier: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              with corrective candidate PRE-G9B-R6-plus-E3-R1
                              (2026-10-10; DXF container and LaTeX export; INTEGRATED_PHASE;
                              focused author smoke PENDING; publication NOT AUTHORIZED)
@@ -1321,6 +1328,15 @@ PRE-G9B-R6-plus-E3         = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              publication NOT AUTHORIZED; selfApproved = false)
                              earlier: NOT AUTHORIZED (documentary readiness only,
                              POST-E2-P4 closeout)
+POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = PREPARED — CHARACTERIZATION AND DESIGN
+                             AUTHORIZED — CORRECTION NOT AUTHORIZED (2026-10-10, E3/E3-R1
+                             closeout; order 1; not started)
+POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = PREPARED — CHARACTERIZATION AND CORRECTIVE DESIGN
+                             AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED (2026-10-10; order 2;
+                             not started)
+POST-E3-LEGACY-INVENTORY-CASE-FIX = PREPARED — BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT
+                             TO CHARACTERIZATION AND READINESS GATE — NO AUTOMATIC
+                             PUBLICATION (2026-10-10; order 3; not started)
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
 
@@ -1378,16 +1394,37 @@ ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE = ENHANCEMENT — OWNER PRE-G9B-R6-plus
                              DQ-E3-12: constructive label; physical-size and
                              scale-label coherence, "Use sheet scale", activation
                              warning) — IMPLEMENTATION NOT AUTHORIZED
+                             IMPLEMENTED BY E3 — APPROVED WITH E3 (2026-10-10, E3/E3-R1 closeout)
 OBS-R6PLUS-E3-SILENT-SCALE-MISMATCH = OPEN — CORRECTION DESIGNED (DQ-E3-12, 2026-10-10)
                              — NOT RESOLVED (at the base a model-space sheet exported
                              at another session scale changes page size silently;
                              resolved only by an accepted E3 implementation)
+                             RESOLVED — E3 PASS — AUTHOR APPROVED (2026-10-10)
 OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES = OPEN — OUTSIDE E3 — NOT FIXED
                              (recorded by the E3 preparation, 2026-10-09:
                              tools/legacy/ingest.ps1 keys a case-insensitive map by
                              label, so models/legacy/template-v7/derived/tool-inventory.yml
                              records e.g. D as conic; neither file is changed by E3;
                              needs its own characterization and authorization)
+                             BOUNDED CORRECTION AUTHORIZED (2026-10-10, E3/E3-R1 closeout) as
+                             POST-E3-LEGACY-INVENTORY-CASE-FIX — NOT STARTED
+OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP = OPEN — OUTSIDE E3 — RETAINED (E3 candidate report
+                             §12: after loadXML of Templatev7.ggb and setLanguage("es") no
+                             Spanish command name resolves in the Desktop test harness)
+                             CHARACTERIZATION AUTHORIZED (2026-10-10) as
+                             POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION — CORRECTION NOT
+                             AUTHORIZED — NOT STARTED
+OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE = OPEN — PRE-EXISTING ON 257c854a — NOT ATTRIBUTED
+                             TO E3-R1 (E3-R1 report §4.5: 14-decimal \rput rotation of an E2
+                             dimension value; latex "Number too big")
+                             CHARACTERIZATION AUTHORIZED (2026-10-10) as
+                             POST-E3-E2-PSTRICKS-DIMENSION-ANGLE — IMPLEMENTATION NOT
+                             AUTHORIZED — NOT STARTED
+OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED = ACCEPTED NON-BLOCKING
+                             VERIFICATION LIMITATION (2026-10-10, E3/E3-R1 closeout):
+                             Asymptote with label UNAVAILABLE in the agent environment —
+                             NOT CLAIMED PASS; independent tracking required; no owner
+                             authorized
 OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT = REPRODUCED BY AUTHOR — PRE-EXISTING —
                              NOT CAUSED BY C — ACCEPTED DEBT — NOT C-BLOCKING —
                              DEFERRED TO POST-C (author disposition at the C
@@ -1416,6 +1453,9 @@ OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION = PRE-EXISTING SINCE G5 (AutoCAD 2024
                              APPID Table"; the entity encoding, including
                              60 = 1, is honoured inside an accepted container) —
                              NOT C SCOPE — NOT FIXED — AUTHOR DISPOSITION
+                             RESOLVED BY E3-R1 FOR AUTOCAD 2026 — AUTHOR CONFIRMED
+                             (2026-10-10, E3/E3-R1 closeout); other AutoCAD versions not
+                             rechecked; F4 planning intent unchanged
 OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
                              PREPARATION (2026-10-06) — E2-OWNED CROSS-PHASE
                              CONSTRAINT (author decision 2026-10-07) — NOT SOLVED

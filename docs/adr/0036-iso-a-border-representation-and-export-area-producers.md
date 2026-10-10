@@ -1,11 +1,11 @@
 # ADR 0036 — ISO A border representation and export-area producers
 
-- Status: **PROPOSED** (technical candidate pending author review; not author approved)
+- Status: **ACCEPTED — AUTHOR APPROVED** (author decision of 2026-10-10, [E3 and E3-R1 closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md); approved candidate `T_R6PLUS_E3_R1` `7cd501167c856eef356888ca87ed3a0c97cea55c`, tree `3c51c9d3635c22939df6cab60259521f885eff92`, corrective successor of `257c854aa65fe82d316968109b9d084deefd2a49`; the acceptance authorizes no further architectural extension); earlier: `PROPOSED`
 - Date: 2026-10-10
 - Phase: `PRE-G9B-R6-plus-E3`
 - Author decisions: [E3 author-decision record](../validation/pre_g9b_r6_plus_e3_author_decisions_record.md) (`DQ-E3-1` to `DQ-E3-16`; §5 amendment of 2026-10-10)
 - Specification: [`geocedg/specs/sheets/iso-a-border.md`](../../geocedg/specs/sheets/iso-a-border.md)
-- Evidence: [characterization report](../validation/pre_g9b_r6_plus_e3_preparation_characterization_report.md) (`K0`–`K21`), [reconciled design](../architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md) (`DESIGN — AUTHOR APPROVED`), [candidate report](../validation/pre_g9b_r6_plus_e3_candidate_report.md)
+- Evidence: [characterization report](../validation/pre_g9b_r6_plus_e3_preparation_characterization_report.md) (`K0`–`K21`), [reconciled design](../architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md) (`DESIGN — AUTHOR APPROVED`), [candidate report](../validation/pre_g9b_r6_plus_e3_candidate_report.md), [E3-R1 corrective candidate report](../validation/pre_g9b_r6_plus_e3_r1_candidate_report.md)
 
 ## Context
 

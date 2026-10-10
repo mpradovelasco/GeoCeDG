@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
+| Status | **NORMATIVE / AUTHOR APPROVED** (author decision of 2026-10-10, [E3 and E3-R1 closeout record](../../../docs/validation/pre_g9b_r6_plus_e3_closeout_record.md)); approved candidate `T_R6PLUS_E3_R1` `7cd501167c856eef356888ca87ed3a0c97cea55c`, tree `3c51c9d3635c22939df6cab60259521f885eff92`, corrective successor of the original `E3` candidate `257c854aa65fe82d316968109b9d084deefd2a49`, tree `b3cedf15b42c3a4dc5925744e83d510ea2dd4850` (historical evidence); earlier: `PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` |
 | Version | `1.0` |
 | Owner phase | `PRE-G9B-R6-plus-E3` (native `IsoABorder` and `ExportArea` integration) |
-| Decision | [ADR 0036](../../../docs/adr/0036-iso-a-border-representation-and-export-area-producers.md) (`PROPOSED`) |
+| Decision | [ADR 0036](../../../docs/adr/0036-iso-a-border-representation-and-export-area-producers.md) (`ACCEPTED — AUTHOR APPROVED`) |
 | Governing author decisions | [E3 author-decision record](../../../docs/validation/pre_g9b_r6_plus_e3_author_decisions_record.md) (`DQ-E3-1` to `DQ-E3-16`, with the 2026-10-10 amendment of §5: `OTQ-E3-1` resolved and the numerical-accuracy contract corrected) |
 | Approved design transcribed | [E3 reconciled design](../../../docs/architecture/pre_g9b_r6_plus_e3_iso_a_border_reconciled_design_candidate.md) §2–§15 (`DESIGN — AUTHOR APPROVED`) |
 | Normative inputs used, not restated | [unit-system specification](../units/unit-system.md) §3.2, §3.3, §5.3, §6, §7.2, §7.3, §12, §13, §17, §18.4; [ADR 0032](../../../docs/adr/0032-unit-system-semantics-and-persistence-ownership.md); [B author decisions](../../../docs/validation/pre_g9b_r6_plus_b_author_decisions_record.md) `AQ-X2`, `AQ-X7`; [ADR 0031](../../../docs/adr/0031-canonical-english-command-surface-compatibility.md); [ADR 0034](../../../docs/adr/0034-native-dimension-representation-and-presentation-seams.md) (β precedent) |
@@ -13,9 +13,10 @@
 
 ## 0. Status and normative language
 
-This specification is the durable contract of the `E3` technical candidate. It
-becomes normative only through an author closeout record; until then it binds
-the candidate and nothing else. It transcribes the approved design §2–§15
+This specification is the durable normative contract of `E3`. The author
+closeout record of 2026-10-10 promoted it to `NORMATIVE / AUTHOR APPROVED`,
+including the `E3-R1` amendment §14.1a; the promotion changed status markers
+only and added no requirement. It transcribes the approved design §2–§15
 without semantic change; §16 records how the candidate implements it. `MUST`,
 `MUST NOT`, `SHOULD` and `MAY` have their usual meaning. Where an author
 decision and this text differ, the decision prevails and this text is
@@ -510,8 +511,8 @@ outputs through the shared drawables; LaTeX through polylines and text; DXF
 writes each polyline as an open `LWPOLYLINE` with the closing vertex repeated,
 and no text (durable limitation).
 
-14.1a Proposed amendment of the `PRE-G9B-R6-plus-E3-R1` corrective candidate
-(not author approved): the LaTeX exporters write the label in text mode with the
+14.1a Amendment of the `PRE-G9B-R6-plus-E3-R1` corrective candidate
+(author approved with this specification, 2026-10-10): the LaTeX exporters write the label in text mode with the
 em dash as `\textemdash{}` and the label's lower-right corner at its anchor
 (PGF/TikZ `anchor=south east`, PSTricks `\rput[br]`, Asymptote `NW`), as on
 screen. A physical LaTeX export has the export area as its page: PGF/TikZ and

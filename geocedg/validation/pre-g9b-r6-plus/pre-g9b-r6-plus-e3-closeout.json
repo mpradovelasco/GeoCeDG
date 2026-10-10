@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-E3",
+  "correctiveSuccessor": "PRE-G9B-R6-plus-E3-R1",
+  "registeredPhaseIds": ["PRE-G9B-R6-PLUS-E3", "PRE-G9B-R6-PLUS-E3-R1"],
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_e3_closeout_record.md",
+  "authorInstruction": {
+    "date": "2026-10-10",
+    "title": "GeoCeDG — E3 / E3-R1 Author Closeout and Follow-up Authorization",
+    "task": "PRE-G9B-R6-plus-E3-AUTHOR-CLOSEOUT",
+    "clarification": "normative promotions and follow-up scope, same day"
+  },
+  "state": {
+    "PRE-G9B-R6-plus-E3-R1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-E3": "PASS — AUTHOR APPROVED"
+  },
+  "authorSmoke": "PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION",
+  "authorSmokeDetail": {
+    "originalCandidate": "PASS WITH TWO BLOCKING EXPORT OBSERVATIONS",
+    "correctiveCandidate": "corrected DXF opens in AutoCAD 2026; ISO A geometry and margins correct; remaining manual checks satisfactory; corrected LaTeX compiles and shows the complete drawing"
+  },
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {
+    "name": "T_R6PLUS_E3_R1",
+    "commit": "7cd501167c856eef356888ca87ed3a0c97cea55c",
+    "tree": "3c51c9d3635c22939df6cab60259521f885eff92",
+    "parent": "257c854aa65fe82d316968109b9d084deefd2a49",
+    "mutated": false
+  },
+  "acceptedEvidence": {
+    "phase": {"run": "verification-c4853de46301459bafd4801a98dd6365", "selection": "PRE-G9B-R6-PLUS-E3-R1", "verdict": "ACCEPTED / COMPLETE", "checks": "4/4", "diagnostics": 0, "resultHash": "90b3a3596f6eb99fa5b17ab01701ade6b10592a55cd4f82a89c50f2b0507899b"},
+    "integration": {"run": "verification-cf79b0af0a244c5f9bf8f1f4be5d2c0f", "verdict": "ACCEPTED / COMPLETE", "checks": "19/19", "diagnostics": {"clear": 8, "findings": 1, "unavailable": 1}, "resultHash": "ffdb1112fbb5f46144ee72c8ec1c642a15751859ada6495fc601730a0a1dc17c"},
+    "verificationClass": "INTEGRATED_PHASE",
+    "finalRequired": false
+  },
+  "historicalEvidence": {
+    "originalCandidate": {"name": "T_R6PLUS_E3", "commit": "257c854aa65fe82d316968109b9d084deefd2a49", "tree": "b3cedf15b42c3a4dc5925744e83d510ea2dd4850"},
+    "originalPhase": {"run": "verification-a243082e9be1444f910aa3d7cab15e47", "verdict": "ACCEPTED / COMPLETE", "checks": "7/7"},
+    "originalIntegration": {"run": "verification-d0e9c1b892f34061a29e4d41fb6aa0b5", "verdict": "ACCEPTED / COMPLETE", "checks": "19/19"},
+    "substitutedForSuccessor": false
+  },
+  "publishedBaseline": {"commit": "ff56099184544e5988c63e0ea3339e3d0fe01fac", "tree": "1cdd1e986df785f5f16e7887300d9034e5e4a677"},
+  "resolvedObservations": [
+    {"id": "OBS-E3-DXF-INVALID-OUTPUT", "state": "RESOLVED BY E3-R1 — AUTHOR CONFIRMED", "origin": "incomplete AC1015 container written since G5 (OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION); DxfExporter byte-identical in ff560991 and 257c854a; not introduced by E3"},
+    {"id": "OBS-E3-LATEX-EXPORT", "state": "RESOLVED BY E3-R1 — AUTHOR CONFIRMED"}
+  ],
+  "verificationLimitation": {
+    "id": "OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED",
+    "pgfTikz": "VERIFIED",
+    "pstricksE3Sheet": "VERIFIED",
+    "asymptoteWithoutLabel": "VERIFIED",
+    "asymptoteWithLabel": "UNAVAILABLE — NOT CLAIMED PASS",
+    "disposition": "ACCEPTED NON-BLOCKING VERIFICATION LIMITATION; independent tracking required; Asymptote unchanged"
+  },
+  "normativeStatus": {
+    "geocedg/specs/sheets/iso-a-border.md": "1.0 NORMATIVE / AUTHOR APPROVED, including the E3-R1 amendment 14.1a",
+    "docs/adr/0036-iso-a-border-representation-and-export-area-producers.md": "ACCEPTED — AUTHOR APPROVED",
+    "geocedg/specs/export/geometry-export-foundation.md": "global status Experimental (unchanged); E3-R1 AC1015 container paragraph AUTHOR APPROVED — IMPLEMENTED AND VERIFIED; C amendment not disposed of"
+  },
+  "observations": [
+    {"id": "ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE", "state": "IMPLEMENTED BY E3 — APPROVED WITH E3"},
+    {"id": "OBS-R6PLUS-E3-SILENT-SCALE-MISMATCH", "state": "RESOLVED BY THE APPROVED E3 IMPLEMENTATION"},
+    {"id": "OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION", "state": "RESOLVED BY E3-R1 FOR AUTOCAD 2026 (author smoke); other versions not rechecked; F4 planning intent unchanged"},
+    {"id": "OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP", "state": "RETAINED", "next": "POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION"},
+    {"id": "OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE", "state": "RETAINED — PRE-EXISTING ON 257c854a", "next": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE"},
+    {"id": "OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES", "state": "RETAINED", "next": "POST-E3-LEGACY-INVENTORY-CASE-FIX"},
+    {"id": "OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED", "state": "ACCEPTED NON-BLOCKING VERIFICATION LIMITATION"}
+  ],
+  "followUps": [
+    {"order": 1, "id": "POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION", "observation": "OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP", "authorization": "CHARACTERIZATION AND DESIGN AUTHORIZED — CORRECTION NOT AUTHORIZED", "prompt": ".github/prompts/tasks/post-e3-es-command-lookup-characterization.prompt.md", "state": "PREPARED — NOT STARTED"},
+    {"order": 2, "id": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE", "observation": "OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE", "authorization": "CHARACTERIZATION AND CORRECTIVE DESIGN AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED", "prompt": ".github/prompts/tasks/post-e3-e2-pstricks-dimension-angle.prompt.md", "state": "PREPARED — NOT STARTED"},
+    {"order": 3, "id": "POST-E3-LEGACY-INVENTORY-CASE-FIX", "observation": "OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES", "authorization": "BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT TO CHARACTERIZATION AND READINESS GATE — NO AUTOMATIC PUBLICATION", "prompt": ".github/prompts/tasks/post-e3-legacy-inventory-case-fix.prompt.md", "state": "PREPARED — NOT STARTED"}
+  ],
+  "closeoutChanges": ["closeout record and JSON", "status markers of iso-a-border.md, ADR 0036 and the localized G5 amendment", "three prepared POST-E3 task prompts", "roadmap and mini-track status"],
+  "closeoutVerificationClass": "DOCUMENTATION_STATUS_ONLY",
+  "publication": {"authorized": false, "requires": "separate explicit author instruction after confirmation of the exact closeout commit and tree", "tagsOrReleases": false},
+  "notAuthorized": ["publication", "F1", "F2", "F3", "F4", "G", "product version change", "tag", "release", "binary publication", "correction of OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP", "implementation of OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE"]
+}
