@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "task": "POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION",
+  "observation": "OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP",
+  "artifactKind": "CHARACTERIZATION_REPORT",
+  "report": "docs/validation/post_e3_es_command_lookup_characterization_report.md",
+  "prompt": ".github/prompts/tasks/post-e3-es-command-lookup-characterization.prompt.md",
+  "authorization": "CHARACTERIZATION AND DESIGN AUTHORIZED — CORRECTION NOT AUTHORIZED",
+  "baseline": {"commit": "31286a2355cabebc69c3937442e7f15636da12ba", "tree": "d223d7400b2eabacddafba874b49eae581c5c6c4"},
+  "reproductionBaselines": {
+    "preE3": {"commit": "ff56099184544e5988c63e0ea3339e3d0fe01fac", "tree": "1cdd1e986df785f5f16e7887300d9034e5e4a677"},
+    "e3": {"commit": "31286a2355cabebc69c3937442e7f15636da12ba", "productTreeOf": "7cd501167c856eef356888ca87ed3a0c97cea55c"}
+  },
+  "branch": "phase/post-e3-es-command-lookup-characterization",
+  "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+  "frozenAtPhaseStart": true,
+  "productPhaseEffect": "NONE",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "findings": {
+    "reproducible": true,
+    "legacyLoadSpecific": false,
+    "preExisting": true,
+    "introducedByPhase": null,
+    "testHarnessArtifact": "YES for the recorded observation (AppD.setLanguage(String))",
+    "userVisible": "NOT via product language routes; YES via the scripting language API (GgbAPI.setLanguage, JavaScript ggbApplet.setLanguage)",
+    "dataLoss": false,
+    "appVsLocalizationReverseCommand": "always equal",
+    "geocedgVsClassic": "same mechanism",
+    "e2E3Commands": "same behaviour as other commands",
+    "reachabilityFromOrdinaryDocuments": "NOT CHARACTERIZED (document-script execution policy)"
+  },
+  "rootCause": {
+    "state": "CONFIRMED",
+    "summary": "lazy reverse-table refill: App.getReverseCommand/initTranslatedCommands refills only a missing table; AppD.setLanguage(String), AppD.setLocale and GgbAPI.setLanguage swap the command bundle without refilling a filled table; AppD.setLanguage(Locale) refreshes through setLabels/updateCommandDictionary",
+    "owner": "upstream localization / command-dictionary lifecycle",
+    "upstreamCode": "App.getReverseCommand last changed by the upstream Copybara import; no GeoCeDG marker in the implicated methods",
+    "relatedRecord": "PRE-G9B-R5-B-R1 corrective candidate report section 8.2"
+  },
+  "scenarios": {
+    "harness": "S1-S19 (G9U1TestApp host)",
+    "childJvm": "C1-C5 (plain main, isolated preferences)",
+    "windowed": "W1-W7 (GeoCeDG.main, isolated settings, JDK 25, real menu and Algebra Input)",
+    "windowedResults": {
+      "W1 menu-es then open": "Spanish commands created",
+      "W2 open then menu-es": "Spanish commands created",
+      "W3 start es then open": "Spanish commands created",
+      "W4 api-es then open": "Spanish commands created (open refills)",
+      "W5 open then api-es": "Comando desconocido",
+      "W6 api-es": "Comando desconocido",
+      "W7 open then JavaScript setLanguage": "Comando desconocido"
+    },
+    "baselineIdentical": true
+  },
+  "correction": {
+    "required": false,
+    "recommended": "D0 — no product change; test convention: switch language with setLanguage(Locale)",
+    "alternatives": ["D1 — AppD.setLanguage(String) delegates to setLanguage(Locale)", "D2 — initTranslatedCommands refills when isCommandChanged()"],
+    "promptPrepared": false,
+    "implementationAuthorized": false
+  },
+  "scratchEvidenceSha256": {
+    "PostE3EsLookupProbeTest.java": "1af97d49b05a97c1a819e3170e7cdc789c101b2a75341efd51c13f858a0b8da3",
+    "PostE3EsWindowedProbeTest.java": "886dcad9249993c61d0b8b13789db15724a91096eb56899f46e278b4a4e4a23f",
+    "probe-e3.txt": "994d3becf11fa81d622cb5bcb39ff34a4c05ec9d58f34aa5d0c512da1996bb90",
+    "probe-base.txt": "c0f6e4e66ff499c280335c2b657dce2cc1c7132799a8344070a8e20b67812d72",
+    "child-e3.txt": "89cc63299f60366b53e359076651a1cd044714e40e0928027cb92bc376ebfb48",
+    "child-base.txt": "fca0c2706f1e747ce60b524f3c925ad994ab81b500827dbc0a47a7b8b6b8dfc6",
+    "windowed-e3-W1.txt": "8d06fbef5f38c9ea2665df8776e86015e80d113d2245c5e89ed7670eb2e321f3",
+    "windowed-e3-W2.txt": "6488c60227b71c3e2722cfffbce35d6874aae237892ebd5dd3a2726d35d797d5",
+    "windowed-e3-W3.txt": "28261e361ca6d32946cafc8cf9110dd0246425855d0c2d78f61190e2cc5eb2a1",
+    "windowed-e3-W4.txt": "4b2c03723ebdb000c9614481b02a2e6db2479463e5ec09f9549fc4f05f1d02b6",
+    "windowed-e3-W5.txt": "e05290893dec0fed24b4111e3d56da7aa8636041a1a5cff039412cd5041a8931",
+    "windowed-e3-W6.txt": "e3309fa42c639814ea202ddd4a7fd88aceddfad8b92e19144876d20b0b53b2e8",
+    "windowed-e3-W7.txt": "43695de032cb712e3bf9de7473f68efa0efe3ea4a0e4a4f6739491e144e62c54",
+    "windowed-base-W1.txt": "5dd62dbf4aa1f4e337d062794406ed9158562e1ef0fa19ad884f6917f87ea01b",
+    "windowed-base-W2.txt": "a49b0a00b518e808c52a9b94226d4b4bd51c01b280fc305430174f714f19e488",
+    "windowed-base-W3.txt": "e682ae8e3f9b6b415651d28e01dc73a263f5b1104043fc7bb461322ea00915f0",
+    "windowed-base-W4.txt": "acad57e4abccd8337896677b6572bbeda6e82f761ad62d6e383530f044eebbc2",
+    "windowed-base-W5.txt": "b26ca7ea9b9e9f74533983bed7e683c8f0116c9e25d14d4e0fdd2a939fe2b31c",
+    "windowed-base-W6.txt": "e51eddd0146f7dd8c21ad5e513603c0ac706407429f4ae8ee56fa70aeee079da",
+    "windowed-base-W7.txt": "e0b9e57ab74bfc06bab358ed7082c09b3ad10935330c5dbb0d86e52f9e08367b"
+  },
+  "publicationAuthorized": false
+}

@@ -1328,9 +1328,14 @@ PRE-G9B-R6-plus-E3         = PASS — AUTHOR APPROVED (with PRE-G9B-R6-plus-E3-R
                              publication NOT AUTHORIZED; selfApproved = false)
                              earlier: NOT AUTHORIZED (documentary readiness only,
                              POST-E2-P4 closeout)
-POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = PREPARED — CHARACTERIZATION AND DESIGN
-                             AUTHORIZED — CORRECTION NOT AUTHORIZED (2026-10-10, E3/E3-R1
-                             closeout; order 1; not started)
+POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = CHARACTERIZATION COMPLETE — PENDING AUTHOR
+                             REVIEW (2026-10-10; on P_R6PLUS_E3 31286a23; pre-existing
+                             upstream lazy reverse-table refill, not legacy-load specific;
+                             user-visible only via the scripting language API; correction
+                             NOT REQUIRED, D0 recommended, NOT AUTHORIZED;
+                             docs/validation/post_e3_es_command_lookup_characterization_report.md)
+                             earlier: PREPARED — CHARACTERIZATION AND DESIGN AUTHORIZED —
+                             CORRECTION NOT AUTHORIZED (2026-10-10, E3/E3-R1 closeout; order 1)
 POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = PREPARED — CHARACTERIZATION AND CORRECTIVE DESIGN
                              AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED (2026-10-10; order 2;
                              not started)
