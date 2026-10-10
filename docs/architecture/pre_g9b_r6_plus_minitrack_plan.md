@@ -1336,9 +1336,14 @@ POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = CHARACTERIZATION COMPLETE — PENDI
                              docs/validation/post_e3_es_command_lookup_characterization_report.md)
                              earlier: PREPARED — CHARACTERIZATION AND DESIGN AUTHORIZED —
                              CORRECTION NOT AUTHORIZED (2026-10-10, E3/E3-R1 closeout; order 1)
-POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = PREPARED — CHARACTERIZATION AND CORRECTIVE DESIGN
-                             AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED (2026-10-10; order 2;
-                             not started)
+POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = CHARACTERIZATION COMPLETE — PENDING AUTHOR REVIEW
+                             (2026-10-10; on P_R6PLUS_E3 31286a23; pre-existing since E2:
+                             unbounded upstream formatter vs the PSTricks 9-digit limit;
+                             correction C1 designed, BOUNDED_PHASE, prompt PREPARED — NOT
+                             AUTHORIZED; new OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION
+                             recorded; docs/validation/post_e3_e2_pstricks_dimension_angle_characterization_report.md)
+                             earlier: PREPARED — CHARACTERIZATION AND CORRECTIVE DESIGN
+                             AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED (2026-10-10; order 2)
 POST-E3-LEGACY-INVENTORY-CASE-FIX = PREPARED — BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT
                              TO CHARACTERIZATION AND READINESS GATE — NO AUTOMATIC
                              PUBLICATION (2026-10-10; order 3; not started)

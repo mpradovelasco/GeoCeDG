@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "task": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE",
+  "observation": "OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE",
+  "artifactKind": "CHARACTERIZATION_REPORT",
+  "report": "docs/validation/post_e3_e2_pstricks_dimension_angle_characterization_report.md",
+  "prompt": ".github/prompts/tasks/post-e3-e2-pstricks-dimension-angle.prompt.md",
+  "correctivePrompt": {"path": ".github/prompts/tasks/post-e3-e2-pstricks-dimension-angle-correction.prompt.md", "state": "PREPARED — NOT AUTHORIZED"},
+  "authorization": "CHARACTERIZATION AND CORRECTIVE DESIGN AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED",
+  "baseline": {"commit": "31286a2355cabebc69c3937442e7f15636da12ba", "tree": "d223d7400b2eabacddafba874b49eae581c5c6c4"},
+  "reproductionBaseline": {"commit": "ff56099184544e5988c63e0ea3339e3d0fe01fac", "tree": "1cdd1e986df785f5f16e7887300d9034e5e4a677"},
+  "branch": "phase/post-e3-e2-pstricks-dimension-angle",
+  "verificationClass": "DOCUMENTATION_STATUS_ONLY",
+  "frozenAtPhaseStart": true,
+  "productPhaseEffect": "NONE",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "findings": {
+    "generatedExpression": "\\rput[b]{<format(theta)>}(<x>,<y>){\\raisebox{0.5ex}{<value>}}",
+    "formatter": "shared upstream GeoGebraExport.format(double): up to 17 significant digits or exponent notation",
+    "texLimit": "PSTricks reads the fractional digits as a TeX integer (max 2147483647): up to 9 digits compile, 10 or more fail; exponent notation fails",
+    "pstricksFailingCases": ["oblique", "reversed", "near-horizontal", "near-vertical", "very short", "Linear (1,2)", "host ellipse (control)"],
+    "pstricksPassingCases": ["horizontal", "vertical", "30 degrees", "45 degrees", "135 degrees", "Linear (1,0)"],
+    "pgfTikz": "all cases compile, including exponent notation",
+    "asymptote": "numeric rotation compiles (label-free check; labels UNAVAILABLE in this environment); exporter writes lowercase e",
+    "preExisting": true,
+    "sinceE2": true,
+    "baselineIdentical": true,
+    "widerThanE2": "host PSTricks rotations (rotated ellipse) fail the same way",
+    "silentRiskWithoutHalt": "TeX continues with a clamped value when not halting on error"
+  },
+  "rootCause": {"state": "CONFIRMED", "summary": "unbounded binary64 serialization of the reading angle by the shared upstream formatter vs the PSTricks 9-fractional-digit limit; kernel angle correct"},
+  "orientationError": {
+    "rule": "round half to even to six fractional digits, plain decimal, -0 -> 0, locale-independent",
+    "bound": "|dtheta| <= 5e-7 degrees",
+    "measuredWorst": "4.86e-7 degrees (21.80140948635181 -> 21.801409); 8.5e-7 mm over a 100 mm value"
+  },
+  "correction": {
+    "recommended": "C1 — PSTricks dimension branch of GeoCeDGGeoGebraToPstricks, six fractional digits",
+    "alternatives": ["C2 — every GeoCeDG PSTricks rotation (changes host output)", "C3 — shared upstream formatter"],
+    "proposedVerificationClass": "BOUNDED_PHASE",
+    "implementationAuthorized": false
+  },
+  "newObservations": [
+    {"id": "OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION", "state": "OPEN — PRE-EXISTING — UPSTREAM — RECORDED — NOT AUTHORIZED"}
+  ],
+  "scratchEvidenceSha256": {
+    "PostE3PstAngleProbeTest.java": "57084c09e30f1ed5e8e48964e6a62b87e6a6f84badc520fbddfb7ff745665c9a",
+    "post-e3-pst-domain.ps1": "c41c4d80a04f81e425b66da67875dcc40e7fd615d04313758ebce05936cc154a",
+    "post-e3-pst-generated.ps1": "d85019c278690bb07ffff9e3fbb9c750ba195ce41b167d49688ae0a5ba51c4af",
+    "domain.txt": "c6b9bd5a7fe58708edd63422596406d563dc7b8f7f2ff95bfdfdc8e13010ca52",
+    "angles e3 = angles base": "2686036f39b80acf2988e11414537689d91f5ef6b9858e87cb992d4e148b990f",
+    "generated-e3 = generated-base": "38992d7096cbab95384bdf806b4603396ca1cf28b27743a5179df97722f8df60"
+  },
+  "toolchain": "MiKTeX latex and pdflatex; asy 3.06 (label typesetting UNAVAILABLE)",
+  "publicationAuthorized": false
+}
