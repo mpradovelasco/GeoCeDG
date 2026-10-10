@@ -3,7 +3,7 @@
   "schema_version": 1,
   "generator": {
     "path": "tools/legacy/ingest.ps1",
-    "sha256": "77987a23d463e4479ec4f9d13554c0860915bafa6b06032378adfb6faf89de80",
+    "sha256": "941ee177ae8744eb0cf886a6f3fba545c5756708c6ce9912a5a0763c0380a21b",
     "curation_path": "models/legacy/template-v7/curation.yml",
     "curation_sha256": "259759951beb5c3b08407ab239de919a34289420a8a2f545339e5334281093c6"
   },
@@ -303,7 +303,7 @@
       "inputs": [
         {
           "label": "D",
-          "type": "conic"
+          "type": "point"
         },
         {
           "label": "ISO216n",
@@ -333,7 +333,7 @@
         },
         {
           "label": "i",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "n",
@@ -341,7 +341,7 @@
         },
         {
           "label": "p",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "q",
@@ -349,7 +349,7 @@
         },
         {
           "label": "r",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "b",
@@ -357,19 +357,19 @@
         },
         {
           "label": "f_1",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "j_1",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "l_1",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "m_1",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "a_1",
@@ -393,15 +393,15 @@
         },
         {
           "label": "E",
-          "type": "conic"
+          "type": "point"
         },
         {
           "label": "G",
-          "type": "segment"
+          "type": "point"
         },
         {
           "label": "F",
-          "type": "segment"
+          "type": "point"
         }
       ],
       "dependencies": {
@@ -437,7 +437,7 @@
       "inputs": [
         {
           "label": "D",
-          "type": "conic"
+          "type": "point"
         },
         {
           "label": "ISO216n",
@@ -455,7 +455,7 @@
       "outputs": [
         {
           "label": "f'",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "q''",
@@ -463,19 +463,19 @@
         },
         {
           "label": "n''",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "p''",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "r''",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "f''",
-          "type": "point"
+          "type": "segment"
         },
         {
           "label": "i''",
@@ -612,7 +612,7 @@
         },
         {
           "label": "g",
-          "type": "point"
+          "type": "line"
         },
         {
           "label": "distanceDE",
@@ -777,7 +777,7 @@
         },
         {
           "label": "C",
-          "type": "conic"
+          "type": "point"
         }
       ],
       "outputs": [
@@ -874,7 +874,7 @@
         },
         {
           "label": "F",
-          "type": "segment"
+          "type": "point"
         }
       ],
       "outputs": [
@@ -966,7 +966,7 @@
         },
         {
           "label": "f",
-          "type": "point"
+          "type": "line"
         },
         {
           "label": "kconversion",
@@ -1127,7 +1127,7 @@
         },
         {
           "label": "f",
-          "type": "point"
+          "type": "segment"
         }
       ],
       "dependencies": {
@@ -1416,7 +1416,7 @@
         },
         {
           "label": "f",
-          "type": "point"
+          "type": "line"
         },
         {
           "label": "F",
@@ -1424,7 +1424,7 @@
         },
         {
           "label": "i",
-          "type": "point"
+          "type": "line"
         }
       ],
       "outputs": [

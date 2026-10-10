@@ -1344,9 +1344,14 @@ POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = CHARACTERIZATION COMPLETE — PENDING AUTH
                              recorded; docs/validation/post_e3_e2_pstricks_dimension_angle_characterization_report.md)
                              earlier: PREPARED — CHARACTERIZATION AND CORRECTIVE DESIGN
                              AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED (2026-10-10; order 2)
-POST-E3-LEGACY-INVENTORY-CASE-FIX = PREPARED — BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT
-                             TO CHARACTERIZATION AND READINESS GATE — NO AUTOMATIC
-                             PUBLICATION (2026-10-10; order 3; not started)
+POST-E3-LEGACY-INVENTORY-CASE-FIX = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (2026-10-10;
+                             on P_R6PLUS_E3 31286a23; readiness gate passed; class
+                             OPERATIONAL_VERIFICATION_INFRASTRUCTURE; ordinal label map in
+                             tools/legacy/ingest.ps1; 24 of 169 template-v7 I/O types
+                             corrected, originals unchanged; publication NOT AUTHORIZED;
+                             docs/validation/post_e3_legacy_inventory_case_fix_candidate_report.md)
+                             earlier: PREPARED — BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT
+                             TO CHARACTERIZATION AND READINESS GATE (2026-10-10; order 3)
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
 
@@ -1417,7 +1422,8 @@ OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES = OPEN — OUTSIDE E3 — NOT F
                              records e.g. D as conic; neither file is changed by E3;
                              needs its own characterization and authorization)
                              BOUNDED CORRECTION AUTHORIZED (2026-10-10, E3/E3-R1 closeout) as
-                             POST-E3-LEGACY-INVENTORY-CASE-FIX — NOT STARTED
+                             POST-E3-LEGACY-INVENTORY-CASE-FIX — CORRECTED IN THE LOCAL
+                             TECHNICAL CANDIDATE (2026-10-10) — AUTHOR REVIEW PENDING
 OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP = OPEN — OUTSIDE E3 — RETAINED (E3 candidate report
                              §12: after loadXML of Templatev7.ggb and setLanguage("es") no
                              Spanish command name resolves in the Desktop test harness)

@@ -280,7 +280,8 @@ function New-Inventory {
                     $modeId = 100001 + $index
                     $commandName = [string]$macro.cmdName
                     $toolId = "$ResourceId.tool.$(ConvertTo-StableSlug $commandName)"
-                    $elementTypes = @{}
+                    # labels are case-sensitive in GeoGebra (D and d are different objects)
+                    $elementTypes = [hashtable]::new([StringComparer]::Ordinal)
                     foreach ($element in @($macro.construction.element)) {
                         $elementTypes[[string]$element.label] = [string]$element.type
                     }

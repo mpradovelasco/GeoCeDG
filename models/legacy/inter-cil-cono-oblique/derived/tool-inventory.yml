@@ -3,7 +3,7 @@
   "schema_version": 1,
   "generator": {
     "path": "tools/legacy/ingest.ps1",
-    "sha256": "77987a23d463e4479ec4f9d13554c0860915bafa6b06032378adfb6faf89de80",
+    "sha256": "941ee177ae8744eb0cf886a6f3fba545c5756708c6ce9912a5a0763c0380a21b",
     "curation_path": null,
     "curation_sha256": null
   },

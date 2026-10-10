@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "task": "POST-E3-LEGACY-INVENTORY-CASE-FIX",
+  "observation": "OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES",
+  "artifactKind": "TECHNICAL_CANDIDATE_REPORT",
+  "report": "docs/validation/post_e3_legacy_inventory_case_fix_candidate_report.md",
+  "prompt": ".github/prompts/tasks/post-e3-legacy-inventory-case-fix.prompt.md",
+  "authorization": "BOUNDED CORRECTIVE IMPLEMENTATION AUTHORIZED — SUBJECT TO READINESS GATE",
+  "baseline": {"commit": "31286a2355cabebc69c3937442e7f15636da12ba", "tree": "d223d7400b2eabacddafba874b49eae581c5c6c4"},
+  "branch": "phase/post-e3-legacy-inventory-case-fix",
+  "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+  "frozenAtPhaseStart": true,
+  "frozenAt": "readiness gate, before the first productive edit",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "readinessGate": {
+    "collisionsCharacterized": true,
+    "affectedRecords": {"inventory": "models/legacy/template-v7/derived/tool-inventory.yml", "ioRecords": 169, "wrongTypes": 24, "tools": ["sheetISOAnLand (11)", "sheetISOAnVert (6)", "directDimension (1)", "EllipseAxis (1)", "PoliLineVisibility (1)", "axisDimension (1)", "DuctSymbol (1)", "translationCoor (2)"]},
+    "scientificModels": "no macros; generator.sha256 only",
+    "otherCaseInsensitiveConstructs": "zip-entry map, Sort-Object -Unique of command names, -contains for tool dependencies, tool-id map: no effect on the registered originals; recorded, not changed",
+    "comparedWithHistoricalSource": true,
+    "immutableOriginalsUntouched": true,
+    "confinedToIngestAndDerivedMetadata": true,
+    "externalPins": "none",
+    "classFrozen": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "classRationale": "operational legacy-ingest tool and derived data; no product, test, registry or verifier change; global verification infrastructure unchanged (no FULL); BOUNDED_PHASE would need a new registered phase selection"
+  },
+  "correction": {
+    "path": "tools/legacy/ingest.ps1",
+    "before": "$elementTypes = @{}",
+    "after": "$elementTypes = [hashtable]::new([StringComparer]::Ordinal)",
+    "mechanism": "case-sensitive hashtable with an ordinal comparer"
+  },
+  "originalsSha256": {
+    "models/legacy/template-v7/original/Templatev7.ggb": "f62e5b7a92bcd95f10b8afda348763a57ccbd0c10dbc0c2bccc7049831ed4113",
+    "models/legacy/inter-cil-cono-oblique/original/InterCilConoOblique.ggb": "b1cb614f1a4c414144fbff29349ddebda92d1026acb4c535990a2895c589fa27",
+    "models/legacy/inter-cil-cono-oblique-two-levels/original/InterCilConoObliqueTwoLevels.ggb": "587328a8e5b6474aee3169bb6af2fe2a711e98e000a423a96bba6e38274fb2b6",
+    "unchanged": true
+  },
+  "inventoriesNormalizedSha256": {
+    "template-v7": {"before": "e6d9b751f3da9a0736213a1cbf26266fd3756872aff7397fd8db4d237a27c060", "after": "5eaa164ca96de365f8e2c0f37cb00c3f17cd170fe8fdebe3b19442d565437bdb"},
+    "inter-cil-cono-oblique": {"before": "dc038c86154c70a51c38bf673814bb016360bb009d12e7f98f1982a61972f31b", "after": "bfb766ac3d6af50822b77ecbe7c9deb410d8e283d76e633b21350838dcc0baec"},
+    "inter-cil-cono-oblique-two-levels": {"before": "7ec9659ba9c4ec4e930075c1199b86bb89479e0a3ccbc8a0a43aed90b9fe9c05", "after": "7f54ed007c18bdee71542eaeaa0d3df5ffbb1967ec58a75f7b4e79e4b4c78696"},
+    "generator": {"before": "77987a23d463e4479ec4f9d13554c0860915bafa6b06032378adfb6faf89de80", "after": "941ee177ae8744eb0cf886a6f3fba545c5756708c6ce9912a5a0763c0380a21b"}
+  },
+  "verification": {
+    "importCheckReimport": "exit 0/0/0 for all three resources",
+    "idempotent": true,
+    "typesVsSourceBefore": "24 mismatches of 169",
+    "typesVsSourceAfter": "0 mismatches of 169",
+    "recordDiff": "template-v7: 24 type lines + generator.sha256; scientific models: generator.sha256 only; no label, tool, order or other metadata changed",
+    "dVersusLowercaseD": "sheetISOAnLand input D = point (was conic); d stays a distinct conic element",
+    "canonicalLegacyRoute": {"command": "pwsh -File tools/agent/verify-legacy.ps1", "before": 0, "after": 0},
+    "staticAndInfraUnit": "run on the candidate commit; reported outside this file"
+  },
+  "scratchEvidenceSha256": {
+    "post-e3-legacy-collisions.ps1": "c9a3fcfa420542352fb98d7efc7d829c7d36b182e829be24e4979bfa633457ec",
+    "post-e3-legacy-compare.ps1": "676bfbc160ebe08d9ba12647a8eab0418fa729537da1a6a8e272ed44eac0ae56",
+    "post-e3-legacy-regenerate.ps1": "02ae814a7e45847e310585c08b3ad4a625aa007e893722fb8deabbdc835bbd99",
+    "collisions.txt": "514d4ea63799bc6e1f4eff43c79d0043888c0147a56194b9318f5b963eff9a14",
+    "compare-before.txt": "8cdf060337d98bf1ef958a4c2100bb885971c81d4b805880e39be35b7634cfae",
+    "compare-after.txt": "9e16ed04eaf3c8e92fcdc8f75257872cba637b66ce471c31a51c992169ca601c",
+    "regenerate.txt": "211135dfeb99e3417bcbf222eec8dfff1685583846ef23f1a98259e7a8147d32",
+    "verify-legacy-before.log = verify-legacy-after.log": "8621cb6e63c5dee84ffb883836ac2db8b82bd1233419ad4d6bc79800211b87da"
+  },
+  "publicationAuthorized": false
+}
