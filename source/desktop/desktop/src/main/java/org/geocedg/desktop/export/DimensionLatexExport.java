@@ -5,6 +5,9 @@
 
 package org.geocedg.desktop.export;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.geocedg.common.euclidian.draw.DrawDimensionText;
 import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -54,6 +57,21 @@ final class DimensionLatexExport {
 		}
 		double phi = Math.toDegrees(Math.atan2(frame[3] * yUnit, frame[2] * xUnit));
 		return new double[] {frame[0], frame[1], DrawDimensionText.readableAngle(phi)};
+	}
+
+	/**
+	 * POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1: PSTricks reads the fractional digits of a
+	 * rotation as a TeX integer and refuses ten or more ("Number too big"). The reading
+	 * angle is written with at most six fractional digits, rounded half to even from its
+	 * exact binary64 value (at most 5e-7 degrees away), as a plain decimal without
+	 * exponent, trailing zeros or negative zero, independent of the locale.
+	 *
+	 * @param degrees finite reading angle in degrees
+	 * @return the PSTricks rotation argument
+	 */
+	static String pstricksAngle(double degrees) {
+		BigDecimal rounded = new BigDecimal(degrees).setScale(6, RoundingMode.HALF_EVEN);
+		return rounded.signum() == 0 ? "0" : rounded.stripTrailingZeros().toPlainString();
 	}
 
 	/**

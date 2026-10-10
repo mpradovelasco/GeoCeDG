@@ -256,3 +256,17 @@ No tag, release, application-version change or installer publication is
 authorized. The integration is not marked `PASS — AUTHOR APPROVED — PUBLISHED`.
 The author has approved the original task outcomes, and the integrated
 successor stays pending review until it is explicitly accepted.
+
+## 11. Amendment — C1 implementation authorization (2026-10-10)
+
+After the publication of the POST-E3 integration (`main` =
+`00b525fda64968efdf973504a6426e8565931fff`, tree
+`23abd1ca06e30e07a9ed00a43522ea116180379d`), the author authorized in writing in the
+session ("POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 — Bounded implementation") the
+implementation and technical verification of the approved design C1 on that exact
+base, with `VERIFICATION_CLASS = BOUNDED_PHASE`. The canonical prompt now reads
+`AUTHORIZED FOR IMPLEMENTATION`, with its technical scope unchanged. Publication,
+self-approval, other PSTricks corrections (`OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION`
+stays open), the scripting-language API observation and F1, F2, F3, F4 and G stay
+unauthorized. The resulting technical candidate is reported in the
+[C1 candidate report](post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md).

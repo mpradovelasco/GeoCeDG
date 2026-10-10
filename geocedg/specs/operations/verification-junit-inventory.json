@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "4e8d59443d7cb92a44549e97cd09c19093b3e37781b3c1a3b7bcf97652da9180",
+      "discovery_evidence_sha256": "b57f487c4e3fba78de26ba4d8092392585bf8eb77cc1573086fd77d6b5108530",
       "discovered_identity_count": 6075,
       "discovered_identities_sha256": "69dba6242d81bf292dd37fb6e75513e97ab239e34ca8deacd5cde8305f83643e"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "da2ea05fdf59c98992e80a96bea31baaa134381677496c39cea4842ecd3426ba",
-      "discovered_identity_count": 1991,
-      "discovered_identities_sha256": "301741b1b0d522a592223b03379e8c3e28a4b63b4054e21beb6aeb191a85f6f2"
+      "discovery_evidence_sha256": "93ae92cbbf347c7070605d505e567d2f811c78ca2da29109e10dc57d23a8db2e",
+      "discovered_identity_count": 1996,
+      "discovered_identities_sha256": "3ab650a8ab4cafd486e2c161d6ac9eeafc5ec1daa02978956e5e39781da89acc"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1991,
-      "expected_identities_sha256": "301741b1b0d522a592223b03379e8c3e28a4b63b4054e21beb6aeb191a85f6f2",
+      "expected_identity_count": 1996,
+      "expected_identities_sha256": "3ab650a8ab4cafd486e2c161d6ac9eeafc5ec1daa02978956e5e39781da89acc",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 1985,
-      "expected_identities_sha256": "a832c1bd08ae9744f6cfbb85d720f3efb68b8bcaedb0610203f7e13c419b0ee8",
+      "expected_identity_count": 1990,
+      "expected_identities_sha256": "805d4d9812dd17cbbcca745e0ba8d3e75ec6647c1405ed7cc0154e8df223872c",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -2594,6 +2594,50 @@
         {
           "commit": "257c854aa65fe82d316968109b9d084deefd2a49",
           "tree": "b3cedf15b42c3a4dc5925744e83d510ea2dd4850"
+        }
+      ]
+    },
+    {
+      "selection_id": "post-e3-c1.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PostE3C1PstricksDimensionAngleTest",
+        "org.geocedg.desktop.PreG9BR6PlusE2NativeDimensionDesktopTest",
+        "org.geocedg.desktop.PreG9BR6PlusCLatexExportTest",
+        "org.geocedg.desktop.PreG9BR6PlusCBaseIdentityTest",
+        "org.geocedg.desktop.PreG9BR6PlusE3R1ExportInteroperabilityTest",
+        "org.geocedg.desktop.PreG9BR6PlusE3IsoABorderDesktopTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PostE3C1PstricksDimensionAngleTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE2NativeDimensionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusCLatexExportTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusCBaseIdentityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE3R1ExportInteroperabilityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE3IsoABorderDesktopTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 51,
+      "expected_identities_sha256": "f1ad0a24d6728c3a9e25478550cfb0d6a8620f7b7c5f9867daaa2851414fb533",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "00b525fda64968efdf973504a6426e8565931fff",
+          "tree": "23abd1ca06e30e07a9ed00a43522ea116180379d"
         }
       ]
     }

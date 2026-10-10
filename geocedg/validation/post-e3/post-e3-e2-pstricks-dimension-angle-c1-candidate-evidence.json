@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "task": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1",
+  "observation": "OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE",
+  "artifactKind": "TECHNICAL_CANDIDATE_REPORT",
+  "report": "docs/validation/post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md",
+  "prompt": ".github/prompts/tasks/post-e3-e2-pstricks-dimension-angle-correction.prompt.md",
+  "authorization": "AUTHOR AUTHORIZED — BOUNDED IMPLEMENTATION AND TECHNICAL VERIFICATION (2026-10-10; reconciliation record section 11)",
+  "implementationBase": {"commit": "00b525fda64968efdf973504a6426e8565931fff", "tree": "23abd1ca06e30e07a9ed00a43522ea116180379d"},
+  "branch": "phase/post-e3-e2-pstricks-dimension-angle-c1",
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAtPhaseStart": true,
+  "registeredPhase": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1",
+  "technicalCandidateState": "FROZEN with the commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "implementation": {
+    "DimensionLatexExport.pstricksAngle": "exact binary64 reading angle rounded half to even to six fractional digits (BigDecimal), plain notation, no trailing zeros, no negative zero, locale-independent",
+    "GeoCeDGGeoGebraToPstricks.drawText": "dimension branch writes \\rput[b]{pstricksAngle(theta)}; non-finite angle keeps the previous formatting; host rotations unchanged",
+    "unchanged": ["GeoGebraExport.format", "kernel", "AlgoNativeDimension", "DrawDimensionText.readableAngle", "placement and orientation", "construction DAG", "serialization", "PGF/TikZ", "Asymptote", "E3-R1 sheet label and physical page", "host PSTricks rotations"]
+  },
+  "evidence": {
+    "serialization": {"horizontal": "0", "vertical": "90", "oblique": "21.801409", "reversed": "21.801409", "degrees45": "45", "degrees135": "-45", "degrees30": "30", "nearHorizontal": "0", "nearVertical": "90", "veryShort": "26.565051", "linearOblique": "63.434949", "linearHorizontal": "0"},
+    "angularAccuracy": {"bound": "5e-7 degrees", "maxOnDimensionCases": "4.8635e-7 degrees (oblique, reversed)", "maxOverSweep": "5.0e-7 degrees (20000 angles incl. rounding transitions)"},
+    "compilation": {"commands": ["latex -interaction=nonstopmode -halt-on-error d.tex", "dvips -q d.dvi -o d.ps", "ps2pdf d.ps d.pdf", "pdfinfo d.pdf"], "result": "12 of 12 cases exit 0; PDF present, %PDF- header, 2977-2987 bytes; previously refused cases compile unedited", "pages": "2 (host article page; identical at the base)"},
+    "byteIdentityAgainstBase": {"pgf": "5b4c91057df858600c65e6292880df052f175b78eabcaeae75ded2739dae9fd8", "asymptote": "2318b3d3d8b9b5014c975ec7b524e92384f1b8bffb8b4a59b1ebf12c02501cfd", "pstricksWithDimensionRotationNormalized": "027c75e5f04861d6dfc621f8a498e45f50dc6460f21a835d2fd05e33bae9ef5b", "recordedOn": "00b525fd before the edit"},
+    "hostRotation": "ellipse still \\rput{18.434948822922014} — OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION OPEN, unchanged",
+    "regressionClasses": {"PreG9BR6PlusE2NativeDimensionDesktopTest": 14, "PreG9BR6PlusCLatexExportTest": 10, "PreG9BR6PlusCBaseIdentityTest": 3, "PreG9BR6PlusE3R1ExportInteroperabilityTest": 6, "PreG9BR6PlusE3IsoABorderDesktopTest": 13, "PostE3C1PstricksDimensionAngleTest": 5}
+  },
+  "junitInventory": {"post-e3-c1.desktop": 51, "discovery.desktop": 1996, "final.desktop": 1990, "discovery.shared": 6075, "final.shared": 6992, "selections": 56, "phaseSelections": 61, "catalogSha256": "21bfda2e567774d7bdb7fe9167e41b58ca941632af268c65e517d38ee5d7adf5"},
+  "checks": {"focusedClasses": "51 tests, 0 failures", "checkstyle": "no C1 finding; pre-existing PreG9BR6PlusA1HiddenLayerTest warning", "infraUnitDevelopment": "ACCEPTED / COMPLETE", "staticDevelopment": "ACCEPTED / COMPLETE (standing diagnostics)", "diffCheck": "clean", "phaseOnCandidate": "reported outside this file"},
+  "publicationAuthorized": false
+}

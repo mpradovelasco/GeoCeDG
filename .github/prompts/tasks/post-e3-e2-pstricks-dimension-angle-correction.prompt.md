@@ -1,7 +1,15 @@
 # POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 — bounded PSTricks precision of the dimension value rotation
 
-**CANONICAL CORRECTIVE PROMPT — PREPARED — DESIGN AUTHOR APPROVED —
-IMPLEMENTATION NOT AUTHORIZED.**
+**CANONICAL CORRECTIVE PROMPT — DESIGN AUTHOR APPROVED — AUTHORIZED FOR
+IMPLEMENTATION AND TECHNICAL VERIFICATION ONLY.**
+
+The author's instruction of 2026-10-10 ("POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 —
+Bounded implementation") authorizes the implementation of C1 on the published
+POST-E3 integration `00b525fda64968efdf973504a6426e8565931fff` (tree
+`23abd1ca06e30e07a9ed00a43522ea116180379d`) with `BOUNDED_PHASE`. It is recorded in
+the [reconciliation record](../../../docs/validation/post_e3_followups_author_reconciliation_record.md)
+§11. The technical scope below is unchanged. Publication and every other PSTricks
+correction stay unauthorized.
 
 Prepared by `POST-E3-E2-PSTRICKS-DIMENSION-ANGLE` (characterization and
 corrective design only) from the evidence in the
@@ -18,19 +26,20 @@ commit as implementation base and confirms the readiness and verification
 requirements. Where this prompt and the record differ, the record prevails.
 
 ```text
-POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 = PREPARED — DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED
+POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 = AUTHORIZED FOR IMPLEMENTATION
 
 observation              = OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE
 selfApproved             = false
-authorApproved           = false   (no implementation candidate exists)
+authorApproved           = false   (no implementation candidate is author approved)
 designAuthorApproved     = true    (C1, 2026-10-10)
-implementationAuthorized = false
+implementationAuthorized = true    (bounded C1 implementation and technical verification only)
 passClaimed              = false
 PHASE_KIND               = EXPORT ADAPTER SERIALIZATION CORRECTION — PSTRICKS DIMENSION VALUE ONLY
 CHANGE_ROUTE             = ORDINARY
-VERIFICATION_CLASS       = BOUNDED_PHASE (author-accepted plan; freeze at the entry gate after
-                           confirming the change stays in the PSTricks dimension-text adapter and
-                           its tests; stop and request author disposition if broader)
+IMPLEMENTATION_BASE      = 00b525fda64968efdf973504a6426e8565931fff (tree 23abd1ca06e30e07a9ed00a43522ea116180379d)
+VERIFICATION_CLASS       = BOUNDED_PHASE (frozen at the entry gate: the change stays in the PSTricks
+                           dimension-text adapter and its tests; stop and request author
+                           disposition if broader)
 RETAINED DEBT            = OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION (outside C1; not repaired)
 ```
 
@@ -128,9 +137,11 @@ changes; every other output stays byte-identical.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this prompt is authorized until the author authorizes it explicitly
-for an exact base. When authorized: the bounded correction, its tests and its
-verification; no self-approval.
+Authorized on 2026-10-10 for the base above: the bounded correction, its tests,
+the minimal phase registration, provenance, candidate documentation, local
+commits and the registered `PHASE` verification. Not authorized: self-approval,
+any other PSTricks correction (including `OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION`),
+the scripting-language API observation, and F1, F2, F3, F4 and G.
 
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary

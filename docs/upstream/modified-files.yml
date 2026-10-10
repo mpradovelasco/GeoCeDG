@@ -5676,7 +5676,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGGeoGebraToPstricks.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-C PSTricks exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments. PRE-G9B-R6-plus-E2: native dimension outputs only: the dimension line with both arrow endings and the value written parallel to it, centred on it and lifted to its reading-up side; every other segment and text keeps the host output. PRE-G9B-R6-plus-E3-R1: the ISO A sheet label in text mode, anchored bottom right with node clearance; the physical page composition. Authority: docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md.",
+      "purpose": "PRE-G9B-R6-plus-C PSTricks exporter: physical units, export area, hidden layers and certified LocusV2 and SplineV2 paths with deterministic comments. PRE-G9B-R6-plus-E2: native dimension outputs only: the dimension line with both arrow endings and the value written parallel to it, centred on it and lifted to its reading-up side; every other segment and text keeps the host output. PRE-G9B-R6-plus-E3-R1: the ISO A sheet label in text mode, anchored bottom right with node clearance; the physical page composition. Authority: docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md. POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1: the dimension value rotation is written with the bounded PSTricks angle; host rotations unchanged. Authority: docs/validation/post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_c_candidate_report.md"
     },
     {
@@ -5922,7 +5922,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/DimensionLatexExport.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E2 shared LaTeX placement and escaping of native dimension outputs for PSTricks, PGF and Asymptote.",
+      "purpose": "PRE-G9B-R6-plus-E2 shared LaTeX placement and escaping of native dimension outputs for PSTricks, PGF and Asymptote. POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1: the PSTricks rotation of a dimension value with at most six fractional digits, rounded half to even, as a plain locale-independent decimal. Authority: docs/validation/post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_e2_candidate_report.md"
     },
     {
@@ -6164,6 +6164,12 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-E3-R1 Desktop export of the ISO A sheet: the E3 sample DXF with the linked paper as export area, the layer handle bound, the LaTeX label in EN and ES, the physical page composition, and compilation with page measurement and rasterized frame and label checks.",
       "authority": "docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE3C1PstricksDimensionAngleTest.java",
+      "change": "added",
+      "purpose": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 PSTricks dimension-value rotation: bounded plain decimals for every dimension family, the 5e-7 degree bound over a domain sweep, locale independence, real latex/dvips/ps2pdf compilation, byte identity of PGF/TikZ, Asymptote and the rest of PSTricks against the base, and the unchanged host rotation.",
+      "authority": "docs/validation/post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md"
     }
   ]
 }

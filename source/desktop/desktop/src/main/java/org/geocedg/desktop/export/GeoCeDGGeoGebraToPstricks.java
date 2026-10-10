@@ -112,7 +112,10 @@ public final class GeoCeDGGeoGebraToPstricks extends GeoGebraToPstricks
 			value = "\\textcolor{" + name + "}{" + value + "}";
 		}
 		startBeamer(code);
-		code.append("\\rput[b]{").append(format(place[2])).append("}(")
+		// POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1: a rotation PSTricks can read
+		String angle = Double.isFinite(place[2]) ? DimensionLatexExport.pstricksAngle(place[2])
+				: format(place[2]);
+		code.append("\\rput[b]{").append(angle).append("}(")
 				.append(format(place[0])).append(',').append(format(place[1]))
 				.append("){\\raisebox{0.5ex}{").append(value).append("}}\n");
 		endBeamer(code);

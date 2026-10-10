@@ -1363,10 +1363,18 @@ POST-E3-LEGACY-INVENTORY-CASE-FIX = PASS — AUTHOR APPROVED (2026-10-10, origin
                              docs/validation/post_e3_legacy_inventory_case_fix_candidate_report.md)
                              earlier: PREPARED — BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT
                              TO CHARACTERIZATION AND READINESS GATE (2026-10-10; order 3)
-POST-E3-INTEGRATION        = LOCAL INTEGRATION CANDIDATE — PENDING AUTHOR REVIEW (2026-10-10;
+POST-E3-INTEGRATION        = AUTHOR APPROVED — PUBLISHED (2026-10-10; main = 00b525fd,
+                             tree 23abd1ca; the three POST-E3 outcomes PASS — AUTHOR
+                             APPROVED — PUBLISHED)
+                             earlier: LOCAL INTEGRATION CANDIDATE — PENDING AUTHOR REVIEW (2026-10-10;
                              phase/post-e3-followups-author-integration on P_POST_E3 31286a23;
                              publication NOT AUTHORIZED; next after publication:
                              POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1; F1 NOT AUTHORIZED)
+POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+                             (2026-10-10; implementation authorized on 00b525fd; BOUNDED_PHASE;
+                             PSTricks dimension rotation with at most six decimals,
+                             |dtheta| <= 5e-7 deg; host rotations unchanged; publication NOT
+                             AUTHORIZED; docs/validation/post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md)
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
 
