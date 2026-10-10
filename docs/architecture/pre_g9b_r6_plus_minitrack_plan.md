@@ -1370,7 +1370,11 @@ POST-E3-INTEGRATION        = AUTHOR APPROVED — PUBLISHED (2026-10-10; main = 0
                              phase/post-e3-followups-author-integration on P_POST_E3 31286a23;
                              publication NOT AUTHORIZED; next after publication:
                              POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1; F1 NOT AUTHORIZED)
-POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-11;
+                             AUTHOR_SMOKE = PASS; candidate 22a215d8 on 00b525fd; PHASE
+                             verification-6fc36073 3/3; docs/validation/post_e3_e2_pstricks_dimension_angle_c1_closeout_record.md;
+                             next: PRE-G9B-R6-plus-F1 readiness review, F1 NOT AUTHORIZED)
+                             earlier: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              (2026-10-10; implementation authorized on 00b525fd; BOUNDED_PHASE;
                              PSTricks dimension rotation with at most six decimals,
                              |dtheta| <= 5e-7 deg; host rotations unchanged; publication NOT
@@ -1473,6 +1477,8 @@ OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE = OPEN — PRE-EXISTING ON 257c854a — N
                              CHARACTERIZATION PASS — AUTHOR APPROVED; C1 DESIGN AUTHOR
                              APPROVED (2026-10-10); C1 implementation a separate task —
                              NOT AUTHORIZED YET
+                             RESOLVED BY C1 — PASS — AUTHOR APPROVED — PUBLISHED (2026-10-11,
+                             22a215d8; six-decimal PSTricks dimension rotation)
 OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION = OPEN — PRE-EXISTING — OUTSIDE C1 —
                              IMPLEMENTATION NOT AUTHORIZED (registered 2026-10-10: inherited
                              PSTricks rotations of other objects, e.g. a rotated ellipse, fail

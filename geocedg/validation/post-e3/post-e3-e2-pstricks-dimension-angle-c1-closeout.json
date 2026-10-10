@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "phase": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1",
+  "registeredPhaseId": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/post_e3_e2_pstricks_dimension_angle_c1_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-11", "title": "GeoCeDG — C1 Author Closeout and Publication", "task": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1-CLOSEOUT"},
+  "state": "PASS — AUTHOR APPROVED — PUBLISHED",
+  "authorSmoke": {"state": "PASS", "authorConfirmation": "Confirmo el éxito del smoke compilando pstricks exportación con acotación oblicua"},
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvedCandidate": {"commit": "22a215d8bcf5bf9a43ce881e992e37dbf0eb070b", "tree": "2f49c8872d26bfc1b7abf648b47240e8f8dacb20", "parent": "00b525fda64968efdf973504a6426e8565931fff", "mutated": false},
+  "approvedBehaviour": "six-decimal deterministic serialization of native-dimension text rotation in PSTricks (exact binary64 rounded half to even, plain locale-independent notation)",
+  "precisionContract": {"bound": "|dtheta| <= 5e-7 degrees", "measuredOnDimensionCases": "4.86e-7 degrees", "sweepMaximum": "5.0e-7 degrees"},
+  "acceptedEvidence": {
+    "phase": {"run": "verification-6fc3607353814ce49b22c15e0ed451d2", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "tests": 51, "resultHash": "7e57448867e92e35e555dd5db6f33ab896725afb39f0180a297b122a063dc4c3"},
+    "static": {"run": "verification-2d52b4606a46493982571f1e0dca7bc0", "verdict": "ACCEPTED / COMPLETE", "resultHash": "4a14c187005d44e325af66e4c5d9f0028cd5a11b2131322aa98181c62a1a61fd"},
+    "verificationClass": "BOUNDED_PHASE"
+  },
+  "observations": [
+    {"id": "OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE", "state": "RESOLVED BY C1"},
+    {"id": "OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION", "state": "OPEN — OUTSIDE C1"},
+    {"id": "OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP", "state": "OPEN — CORRECTION NOT AUTHORIZED"}
+  ],
+  "articleTwoPageOutput": "pre-existing host layout of non-physical PSTricks exports; unchanged by C1; not a C1 failure",
+  "publication": {"authorized": true, "method": "ordinary non-force fast-forward of main", "range": ["00b525fda64968efdf973504a6426e8565931fff", "22a215d8bcf5bf9a43ce881e992e37dbf0eb070b", "closeout commit"], "tagsOrReleases": false},
+  "next": {"activity": "readiness review of PRE-G9B-R6-plus-F1", "f1Implementation": "NOT AUTHORIZED"},
+  "notAuthorized": ["F1", "F2", "F3", "F4", "G", "tag", "release", "installer publication", "version change", "host PSTricks rotation correction", "scripting language API correction"]
+}
