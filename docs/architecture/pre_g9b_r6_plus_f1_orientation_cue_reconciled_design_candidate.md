@@ -1,261 +1,275 @@
-# PRE-G9B-R6-plus-F1 — orientation cue: reconciled design candidate
+# PRE-G9B-R6-plus-F1 — orientation cue: reconciled design
 
-- Status: **PROPOSED — RECONCILED CANDIDATE — NOT AUTHOR APPROVED — NOT NORMATIVE**
-- Produced by: `PRE-G9B-R6-plus-F1-PREP` (author instruction of 2026-10-11;
-  characterization and design preparation only)
-- Base: published `main` `bde2827bb21e4a28e080db6a65b4abc892071cf8`, tree
-  `1b74102cea5151b8a6c571cb36b96b33af6fb3c8`
+- Status: **DESIGN — AUTHOR APPROVED** (author decisions of 2026-10-11 on
+  `DQ-F1-1` to `DQ-F1-9`,
+  [F1 author-decision record](../validation/pre_g9b_r6_plus_f1_author_decisions_record.md)
+  v1.0, which is their authority and prevails over this file). The approval
+  concerns this design, **not its implementation**: implementation is
+  `NOT AUTHORIZED` and needs a separate explicit author authorization.
+  Publication is `NOT AUTHORIZED`.
+- Not a specification and not an ADR: the durable specification is the first
+  deliverable of an authorized F1 (canonical prompt, *Required
+  design/specification*).
+- Produced by: `PRE-G9B-R6-plus-F1-PREP` (2026-10-11), reconciled and approved
+  by `PRE-G9B-R6-plus-F1-PREP-CLOSEOUT` (2026-10-11); no implementation
+- Bases: `P_C1` = `bde2827bb21e4a28e080db6a65b4abc892071cf8` (tree
+  `1b74102cea5151b8a6c571cb36b96b33af6fb3c8`); preparation candidate
+  `T_R6PLUS_F1_PREP` = `732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b` (tree
+  `0839dd764ffceefc2fb009155b25f6495becaae1`), whose version of this file is
+  the proposal the author decided on
 - Evidence: [F1 preparation characterization report](../validation/pre_g9b_r6_plus_f1_preparation_characterization_report.md)
-  (sections `K0`–`K17`) and its JSON mirror
-- Decisions: [F1 author-decision preparation record](../validation/pre_g9b_r6_plus_f1_author_decision_preparation_record.md)
-  (`DQ-F1-1` to `DQ-F1-9`, all **pending**)
+  (`K0`–`K17`, frozen; corrections `ER-1`, `ER-2` in the decision record §4)
 - Supersedes as working design, without modifying it: the `P0`
   [F1 design candidate](pre_g9b_r6_plus_f1_orientation_design_candidate.md),
-  which stays historical evidence
-- Claim vocabulary: **proposed**. Every value below that is not marked
-  AUTHOR-FIXED or INHERITED is a proposal until the author disposes of the
-  matching `DQ-F1-*`. This document is not a specification; the first
-  deliverable of an authorized `F1` turns the approved parts into one.
+  historical evidence
+- Execution contract when authorized: [canonical F1 prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-f1-orientation-cue.prompt.md)
+  (`PREPARED — NOT AUTHORIZED`)
 
-Path abbreviations as in the characterization report.
+Path abbreviations as in the characterization report. Tags: **AUTHOR
+DECISION**, **NORMATIVE INHERITANCE**, **IMPLEMENTATION DESIGN** (reviewable,
+not an author decision), as in the decision record.
 
-## 1. Author-fixed scope and inherited contracts
+## 1. Scope
 
 AUTHOR-FIXED (mini-track plan §2): an optional, discreet presentation cue,
 preferably a hollow arrow, for the actual direction the kernel uses for a
 line, segment or ray; derived from kernel semantics, never from the viewport;
 no change of geometry or command behavior.
 
-INHERITED: `AGENTS.md` §4 (presentation belongs outside the kernel unless
-semantics require otherwise), §17 (object existence, geometric visibility and
-layer/UI visibility are not conflated); `unit-system.md` §17.2 state classes;
-`verification-levels.md` §12.8 classes; the `A-2` layer workspace (hidden
-layers are not painted or hittable).
+AUTHOR DECISION (`DQ-F1-1`, `DQ-F1-2`, `DQ-F1-3`, `DQ-F1-8`): one global
+application presentation option; Graphics View 1 only; screen-only; a
+presentation-only overlay in GeoCeDG Desktop Graphics View 1.
 
-## 2. Invariants (proposed, every option)
+NORMATIVE INHERITANCE: `AGENTS.md` §4, §17; `unit-system.md` §17.2;
+`verification-levels.md` §12.8; the `A-2` layer workspace.
+
+## 2. Invariants
 
 ```text
 Construction geometry   : unchanged
-DAG                     : unchanged (no new algorithm, input or output)
-Object identity         : unchanged (no GeoElement is created, replaced or relabelled)
-Serialization           : unchanged (document XML, macro XML and preferences XML byte-identical)
+DAG                     : unchanged (no new algorithm, input, output or dependency)
+Object identity         : unchanged (no GeoElement created, replaced or relabelled)
+Serialization           : unchanged (document, macro and preferences XML byte-identical)
 Geometric algorithms    : unchanged
 Command behavior        : unchanged (no command, alias or syntax)
+Shared drawables        : unchanged
 Hit testing, selection  : unchanged
-Undo / redo             : no undo point; cue state is never in an undo snapshot
-Screen presentation     : optional derived cue, recomputed from current state at paint time
-Classic / upstream      : unchanged behavior (GeoCeDG-owned Desktop code only)
+Undo / redo             : no undo point; the cue and the option are never in a snapshot
+Exports                 : unchanged (print, clipboard, image, LaTeX, DXF, CLI)
+Classic / upstream      : unchanged behavior
+Screen presentation     : optional derived cue in GV1, recomputed at every paint
 ```
 
-## 3. Semantic direction
+## 3. Semantic direction and eligibility
 
-**3.1 Accessor.** The only source of the sense is `GeoLine.getDirection`
-(`(y, −x)`, `common/kernel/geos/GeoLine.java:444-457`), which every kernel
-consumer shares (path parameters, `UnitVector`/`Direction`, oriented `Angle`;
-report §K3). `getDirectionInD3`, `DrawLine`'s screen point order, endpoints
-order on screen, labels, indices and screen coordinates are never used to
-choose the sense.
+**3.1 Authority (AUTHOR DECISION, `DQ-F1-5`).** The sense is
+`GeoLine.getDirection` = `(y, −x)` (`common/kernel/geos/GeoLine.java:444-457`),
+validated against kernel path parametrization (report `K3.4`) and the
+construction semantics of each admitted route (report `K5`).
+`getDirectionInD3`, `DrawLine`'s screen point order, labels, names, captions,
+definition text, coordinates, construction indices and visual proximity are
+never used to choose or classify the sense.
 
-**3.2 Route classes.** The report §K6 classifies routes as `O-CONSTRUCTIVE`,
-`O-INHERITED`, `O-CONFIGURATION`, `O-REPRESENTATION` and `O-UNKNOWN`. The
-classification is computed from the **identity of the parent algorithm class**
-(and, for `AlgoMacro`, of the macro-internal algorithm that produced the
-corresponding output by position in the macro definition; for an affine
-transform, of the source object), never from labels, names, definitions as
-text, coordinates or construction indices.
+**3.2 Kernel orientation versus intrinsic sense.** A line as a point set has
+no sense. The kernel nevertheless uses one sense for every line (path
+parameters, `UnitVector`, oriented `Angle`). The cue displays that kernel sense
+only where it is **constructively oriented** (the user's ordered inputs define
+it) or **demonstrably inherited** (a fixed, source-proven rule carries an
+admitted orientation over). Elsewhere the kernel sense exists and is
+documented (report `K4`, `K6`), but it may depend on how an equation was typed
+or how a conic is normalized, and the cue is suppressed.
 
-| Class | Algorithms (at the base) |
-|---|---|
-| `O-CONSTRUCTIVE` | `AlgoJoinPoints`, `AlgoJoinPointsSegment` (incl. polygon edges and segment images), `AlgoJoinPointsRay`, `AlgoRayPointVector`, `AlgoLinePointVector` |
-| `O-INHERITED` | `AlgoLinePointLine` (reference not a `GeoFunction`), `AlgoOrthoLinePointLine` (same condition), `AlgoOrthoLinePointVector`, `AlgoLineBisector`, `AlgoLineBisectorSegment`, `AlgoAngularBisectorLines`, `AlgoTangentLine`, `AlgoMirror`, `AlgoRotate*`, `AlgoTranslate`, `AlgoDilate` (class of the source) |
-| `O-CONFIGURATION` | `AlgoAngularBisectorPoints`, `AlgoTangentPoint` with the point off the conic |
-| `O-REPRESENTATION` | independent `GeoLine`, `AlgoDependentLine`, `AlgoTangentPoint` with the point on the conic, `AlgoTangentFunctionNumber`, `AlgoTangentFunctionPoint`, `AlgoLinePointLine`/`AlgoOrthoLinePointLine` with a `GeoFunction` reference, `AlgoAsymptote`, `AlgoPolarLine` |
-| `O-UNKNOWN` | everything else, including 3D line types, lines inside lists and projective transforms |
+**3.3 Eligibility matrix v1 (IMPLEMENTATION DESIGN applying `DQ-F1-5`).**
+Classification is by the identity of the geo's class and parent-algorithm
+class, and of its orienting inputs, read through existing public API.
+"Admitted input" means: a `GeoPoint` (as an ordered input), a `GeoVector`
+(oriented by definition), or a `GeoLine`/`GeoSegment`/`GeoRay` that is itself
+admitted by this matrix (recursive over the acyclic construction graph,
+fail-closed).
 
-`AlgoTangentPoint` changes class with the configuration (polar route on the
-conic, two-point route off it). Under the recommended option it is excluded in
-both branches. If the author admits `O-CONFIGURATION` (option E-C), the branch
-has to come from the kernel's own incidence predicate through existing public
-API, never from coordinates compared by the overlay; if that needs a change in
-shared code, the route stays excluded and the change is reported as an
-escalation.
+Admitted:
 
-The segment midpoint decorations are `DECORATION_SEGMENT_ONE_ARROW`,
-`DECORATION_SEGMENT_TWO_ARROWS` and `DECORATION_SEGMENT_THREE_ARROWS`
-(`common/kernel/kernelND/GeoElementND.java:123-127`).
+| Id | Parent algorithm | Route | Displayed sense | Kind | Evidence |
+|---|---|---|---|---|---|
+| `A1` | `AlgoJoinPoints` | `Line(A,B)` | `B − A` | constructive | `K4` R01/R02, `K5` |
+| `A2` | `AlgoJoinPointsSegment` | `Segment(A,B)`, polygon edges, segment images | start → end | constructive | R03/R04, R17, R18f |
+| `A3` | `AlgoJoinPointsRay` | `Ray(A,B)` | `B − A` | constructive | R05 |
+| `A4` | `AlgoRayPointVector` | `Ray(A,v)` | `v` | constructive | R06 |
+| `A5` | `AlgoLinePointVector` | `Line(P,v)` | `v` | constructive | R07 |
+| `A6` | `AlgoLinePointLine`, reference an admitted line/segment/ray | parallel through a point | reference sense | inherited | R08, R19 |
+| `A7` | `AlgoOrthoLinePointLine`, reference an admitted line/segment/ray | perpendicular through a point | reference sense rotated +90° | inherited | R09 |
+| `A8` | `AlgoOrthoLinePointVector` | `PerpendicularLine(P,v)` | `v` rotated +90° | inherited | R09c |
+| `A9` | `AlgoLineBisector` | `PerpendicularBisector(A,B)` | `B − A` rotated +90° | inherited | R10 |
+| `A10` | `AlgoLineBisectorSegment`, admitted segment | `PerpendicularBisector(s)` | (end − start) rotated +90° | inherited | R10c |
+| `A11` | `AlgoAngularBisectorLines`, both inputs admitted | `AngleBisector(g,h)` | kernel rule from both senses (output 1 = output 0 rotated +90°) | inherited | R11c/d |
+| `A12` | `AlgoTangentLine`, admitted line | `Tangent(g, conic)` | sense of `g` | inherited | R12g |
+| `A13` | `AlgoMirror` at a point or a line, admitted source | `Reflect` | image of the source sense | inherited | R18, R18b, R18g, `ER-1` |
+| `A14` | `AlgoRotatePoint`, `AlgoRotate`, admitted source | `Rotate` | rotated source sense | inherited | R18c, `ER-1` |
+| `A15` | `AlgoTranslate`, admitted source | `Translate` | source sense | inherited | R18d, `ER-1` |
+| `A16` | `AlgoDilate`, admitted source | `Dilate` | source sense times the sign of the factor | inherited | R18e, `ER-1` |
+| `A17` | `AlgoMacro` | macro output | sense of the inner route, only if that route is admitted and resolvable (`OTQ-F1-1`) | inherited | R23, R23b |
 
-**3.3 Admissibility (`DQ-F1-5`).** Options:
+Excluded initially (kernel facts retained; no cue until separately admitted):
 
-- **E-A — every defined line.** Show the kernel sense on every admitted type.
-  Truthful about what the kernel does, but an arrow on `2x − y + 1 = 0` points
-  the other way from the same line typed `y = 2x + 1`, which a user can read
-  as geometric meaning that does not exist.
-- **E-B — constructive and inherited only (recommended).** Fail-closed
-  allow-list: `O-CONSTRUCTIVE` and `O-INHERITED` whose sources are themselves
-  admitted. `O-CONFIGURATION`, `O-REPRESENTATION` and `O-UNKNOWN`: no cue.
-- **E-C — E-B plus configuration.** Adds `O-CONFIGURATION`, accepting the jumps
-  at the straight angle and at the conic (report §K7 D12–D18).
-- **E-D — E-B plus an explicit parametric exception.** Treats independent lines
-  entered in parametric form as constructive. Not recommended: only the display
-  form records it and the user can change that form without changing the
-  sense (report §K6 (b)).
+| Id | Routes | Reason | Evidence |
+|---|---|---|---|
+| `X1` | independent `GeoLine` (implicit, explicit or parametric input) | sense from equation sides or stored coefficients; a directed parametrization does not make it constructive | R15–R15h, `K6` (b) |
+| `X2` | `AlgoDependentLine` | as `X1` | D09 |
+| `X3` | `AlgoTangentPoint` (point on the conic, and external point) | conic-equation sign; configuration jump at the conic | R12–R12f, D12–D15 |
+| `X4` | `AlgoAngularBisectorPoints` | configuration-defined; jumps through the straight angle | R11, D16–D18 |
+| `X5` | `AlgoTangentFunctionNumber`, `AlgoTangentFunctionPoint` | graph convention (+x) | R13 |
+| `X6` | `AlgoLinePointLine` / `AlgoOrthoLinePointLine` with a `GeoFunction` reference | function-as-line convention (−x) | R14, R14b |
+| `X7` | `AlgoAsymptote`, `AlgoPolarLine` | conic-coefficient convention | R21, R22 |
+| `X8` | any admitted-kind route whose orienting input is excluded or unknown | inherits an unadmitted sense | `K6` (d) |
+| `X9` | `AlgoShearOrStretch`, `AlgoAttachCopyToView`, `AlgoMirror` at a conic, other transforms | not verified | `ER-1` |
+| `X10` | every other algorithm (GeoCeDG dimension outputs, 3D line types, list members, axes, unresolved macros) | unknown | `K10`, `K11` |
 
-Macro outputs inherit the class of their inner route under every option.
+Every admitted row needs its own `T-F1-SENSE` test at implementation; a row
+whose test fails is excluded and reported, never patched by guessing.
 
-## 4. Eligibility predicate (proposed, evaluated per view at paint time)
+## 4. Eligibility predicate and degenerations (`DQ-F1-7`)
 
-A cue is drawn for a geo `g` in view `V` only if all hold:
+AUTHOR DECISION: suppress for undefined, non-finite or degenerate objects,
+effectively hidden objects, insufficient visible extent and redundant
+directional decorations; never draw for an invisible or inadmissible object;
+dynamic inversions stay faithful to the kernel.
 
-1. `g` is a 2D `GeoLine`, `GeoSegment` or `GeoRay` (not `GeoAxis`, not a 3D
-   type, not a list member) with a top-level drawable in `V`
-   (`V.getDrawableFor(g) != null`);
-2. `g.isDefined()`, `g.isEuclidianVisible()`, `g.isVisibleInView(V)`,
-   `app.isLayerShown(g.getLayer())` and line thickness > 0;
-3. the coefficients are finite and `getDirection` is finite with
-   `|(x, y)|` not zero by `DoubleUtil.isZero` (rejects the zero-length segment
-   and infinite coefficients, report §K7 D02, D09);
-4. the route class is admitted (§3.3);
-5. neither axis of `V` is logarithmic;
-6. the visible chord (§5) is at least `4·L` long on screen, `L` the arrow
-   length;
-7. for a segment, none of the three midpoint arrow decorations of §3.2 is set
-   — `DQ-F1-7`.
+IMPLEMENTATION DESIGN — a cue is drawn for `g` in Graphics View 1 only if all
+hold:
 
-Undefined, degenerate, non-finite, hidden, hidden-layer and not-drawn objects
-therefore show nothing. The predicate never changes the object.
+1. `g` is a 2D `GeoLine`, `GeoSegment` or `GeoRay`, not `GeoAxis`, with a
+   top-level drawable in GV1;
+2. `g.isDefined()`, `g.isEuclidianVisible()`, `g.isVisibleInView(GV1)`,
+   `app.isLayerShown(g.getLayer())`, line thickness > 0;
+3. finite coefficients, finite `getDirection`, `|(x, y)|` not zero by
+   `DoubleUtil.isZero`;
+4. admitted by §3.3;
+5. no logarithmic axis in GV1;
+6. visible chord ≥ `4L` on screen;
+7. for a segment, none of `DECORATION_SEGMENT_ONE_ARROW`, `TWO_ARROWS`,
+   `THREE_ARROWS` (`common/kernel/kernelND/GeoElementND.java:123-127`); arrow
+   ending styles do not suppress (`OTQ-F1-2`).
 
-## 5. Placement (presentation only; `DQ-F1-4`)
+| Degeneration | Kernel fact (report) | Cue |
+|---|---|---|
+| coincident defining points (`A1`, `A3`, `A9`) | undefined (D02) | none |
+| zero-length segment (`A2`) | defined, direction (0, 0) (D02) | none (rule 3) |
+| near-coincidence below `10⁻⁸` | line undefined (D03b) | none |
+| zero vector (`A4`, `A5`, `A8`) | undefined (D06) | none |
+| infinite coefficient | `isDefined() = true` (D09) | none (rule 3) |
+| `NaN` coefficient | undefined (D10) | none |
+| undefined orienting input | output undefined or input inadmissible | none |
+| parallel inputs of `A11` | one output undefined | none on that output; the other follows the kernel |
+| dilation factor 0 (`A16`) | zero coefficients | none |
+| tangent parallel to `g` absent (`A12`) | undefined | none |
+| reversal by motion (B through A, v through −v) | sense follows the kernel (D04, D07) | follows at the next paint; no smoothing |
+| redefinition | new object, same label (D08) | derived from the new object |
+| temporary invalidity and recovery | same identity (D05) | hidden, then shown with the current sense |
+| hidden object, hidden layer, not visible in GV1, thickness 0, not drawn | no drawable or not painted (`K11`) | none |
+| off-screen or short visible part, log axis | — | none |
+
+## 5. Placement (IMPLEMENTATION DESIGN, `DQ-F1-4`)
 
 Let `s = normalize(dx·xscale, −dy·yscale)` be the screen image of
-`(dx, dy) = getDirection` (the mapping `DrawRay` already uses,
-`DrawRay.java:116-142`). `s` places and rotates the arrowhead; it never decides
-its sense. All geometry is in screen pixels of `V`; the "visible chord" is the
-part of the object inside the view rectangle inset by `L`.
+`(dx, dy) = getDirection` (as `DrawRay.java:116-142`). `s` places and rotates
+the arrowhead and never decides its sense. All geometry is in GV1 screen
+pixels; the visible chord is the part inside the view rectangle inset by `L`.
 
-| Object | Anchor (arrow centroid) | Notes |
-|---|---|---|
-| segment | screen midpoint of the segment if it lies on the visible chord; otherwise the midpoint of the visible chord | P0 proposal kept; the segment label sits 16 px off the midpoint on one side (`DrawSegment.java:178-195`); an overlap is possible and accepted (alternative: the 2/3 point) |
-| ray | start point + `3L` along `s` if that point is on the visible chord; otherwise the point of the visible chord nearest the view centre | P0 "near the start" made total for off-screen starts |
-| line | the point of the visible chord nearest the view centre (screen-space projection, clamped to the chord) | P0 "visible point nearest the view centre", made exact: the unclamped foot can fall outside the view when the line cuts a corner |
+| Object | Anchor (arrow centroid) |
+|---|---|
+| segment | screen midpoint if on the visible chord; otherwise the midpoint of the visible chord |
+| ray | start point + `3L` along `s` if on the visible chord; otherwise the point of the visible chord nearest the view centre |
+| line | the point of the visible chord nearest the view centre (screen projection clamped to the chord) |
 
-Determinism: the anchor is a pure function of the object's current
-coefficients/endpoints, the view transform and size, and `L`. Pan, zoom and
-resize move or suppress the cue but never reverse it; non-uniform axis scales
-change only the screen angle (report §K12).
+The anchor is a pure function of the current object state, the GV1 transform
+and size, and `L`. Pan, zoom, resize and non-uniform axis ratios move, rotate
+on screen or suppress the cue; they never reverse it. Label overlap is
+accepted.
 
-## 6. Rendering (`DQ-F1-4`)
+## 6. Rendering (AUTHOR DECISION `DQ-F1-4`; values IMPLEMENTATION DESIGN)
 
-- Shape: isosceles triangle, tip forward along `s`, length `L`, half-width `W`,
-  in device pixels, independent of zoom (proposed `L = 10 px`, `W = 4 px`,
-  multiplied by the view's style scale for HiDPI, like the existing endings).
-- Hollow: 1 px outline in the object's colour and line opacity; interior
-  filled with the view background colour so the line does not show through
-  (alternative: outline only, line visible inside).
-- Geometry family: the same triangle as the `ARROW_OUTLINE` ending
-  (`DrawSegmentWithEndings.java:282-312`), but that method is `private`, sized
-  by line thickness and tied to segment endpoints. Proposed: a small
-  GeoCeDG-owned Desktop helper that builds the triangle path; no change to the
-  shared drawables. Rejected for `BOUNDED_PHASE`: making the upstream helper
-  public.
-- No label, no selection highlight of its own, no hit area.
+- Discreet hollow isosceles triangle, tip forward along `s`; length `L = 10`,
+  half-width `W = 4` device pixels at style scale 1, scaled by the view's style
+  scale (`OTQ-F1-3`).
+- 1 px outline in the object's colour and line opacity; interior filled with
+  the view background so the line does not show through.
+- Built by a small GeoCeDG-owned Desktop path builder (same triangle family as
+  the private `ARROW_OUTLINE` ending, `DrawSegmentWithEndings.java:282-312`); no
+  shared drawable is changed.
+- No label, no own highlight, no hit area.
 
-## 7. Architecture seams (`DQ-F1-8`, `DQ-F1-2`, `DQ-F1-3`)
+## 7. Seam (AUTHOR DECISION `DQ-F1-8`)
 
-| Seam | Description | Reaches exports | Views | Shared/upstream change | Fit |
-|---|---|---|---|---|---|
-| **S1 (recommended)** | GV1 overlay in `GeoCeDGEuclidianView.paint` after `super.paint` (`geocedg/GeoCeDGEuclidianView.java:69-112`), iterating the view's drawables | no — no export, print or clipboard route calls `paint` (report §K8) | GV1 | none | `BOUNDED_PHASE` |
-| S2 | S1 plus a GeoCeDG GV2 class: `GuiManagerGeoCeDG` overrides `GuiManager3D.newEuclidianView(…, viewId)` | no | GV1, GV2 | none in shared code; GV2 class identity changes (a new Desktop class and its own regression) | bounded, larger test surface |
-| S3 | cue inside `DrawLine`, `DrawRay`, `DrawSegment` | **yes** (picture, print, clipboard, CLI); not LaTeX or DXF | every 2D view | shared drawables, upstream files, `modified-files.yml`, Classic gating | escalates (`INTEGRATED_PHASE` at least) |
-| S4 | kernel object or command producing arrows | n/a | n/a | kernel, serialization, DAG | **rejected** (violates §2 invariants and the author scope) |
+The overlay runs in `GeoCeDGEuclidianView.paint` after `super.paint`
+(`geocedg/GeoCeDGEuclidianView.java:69-112`), iterating GV1's drawables and
+reading kernel state only. It is screen-only by construction: no print,
+clipboard, image, LaTeX, DXF or CLI route calls that method, and
+`ExportViewport` is not a `GeoCeDGEuclidianView` (report `K8`). Graphics View 2
+(`EuclidianViewFor3DD`) is not touched. Rejected: a GeoCeDG GV2 class, the
+shared drawables, any kernel object or command.
 
-S1 needs no kernel change: the sense is already shared semantics
-(`AGENTS.md` §4 does not require a kernel change for a read-only consumer).
+## 8. Option and user interface (AUTHOR DECISIONS `DQ-F1-6`, `DQ-F1-9`)
 
-## 8. Option state and lifecycle (`DQ-F1-6`, `DQ-F1-9`)
+- `USER_PREFERENCE` `geocedg.view.orientation-cue.v1`, default OFF, values
+  `shown` / `hidden` (anything else reads OFF, never written back), survives
+  restart through the portable GeoCeDG properties, not part of document, macro
+  or preferences XML, not an undo step, unchanged by New, Open, document
+  replacement, undo, redo and redefinition; one value per process store; a
+  change repaints every GeoCeDG window; never read by Classic.
+- One declarative menu action (catalog 130 → 131). IMPLEMENTATION DESIGN:
+  `presentation.orientation-cue`, `product-action`, target
+  `geocedg.presentation.orientation-cue`, `preference-only`, `product-only`,
+  `action-only`, maturity `experimental`, checkbox state from the preference,
+  View menu group `view-visibility-style`.
+- One synchronized control in Layout & Presentation. IMPLEMENTATION DESIGN: a
+  row in an existing GeoCeDG-owned panel (`OTQ-F1-4`), no `AppD` or
+  `OptionsLayoutD` change; menu checkbox and row read and write the same
+  preference owner in `AppGeoCeDG` and refresh each other.
+- Stop for author review if either control needs an unexpected inherited-class
+  modification or broadens the product contract.
 
-Proposed (P0 key retained as a proposal):
+## 9. Lifecycle
 
-- `USER_PREFERENCE` key `geocedg.view.orientation-cue.v1` in the portable
-  GeoCeDG properties, values `shown` / `hidden` (precedent
-  `GeoCeDGUnitPreferences`), anything else read as the default, read never
-  writes back; a test seam like `useStoreForTesting`.
-- Initial default: **hidden** (the cue is optional; existing documents and
-  author smoke baselines look unchanged until the user enables it).
-- Persists across restarts through the store's normal write on window close or
-  Save Settings; not written to document XML, macro XML or preferences XML; not
-  an undo step; unaffected by New, Open, document replacement, undo, redo and
-  redefinition; shared by all windows of the process (a change repaints every
-  `AppGeoCeDG` window).
-- UI surface (`DQ-F1-9`): a checkbox action in a menu (catalog 130 → 131 and
-  its pins, report §K14), a row in an existing GeoCeDG-owned Layout &
-  Presentation panel (no catalog change, no upstream hook), or both.
+The overlay keeps no object reference between paints. Moving inputs,
+reversal, redefinition, undo, redo, New, Open and document replacement need no
+handling: each paint re-reads GV1's drawables and the objects' current state.
+Identity is never touched.
 
-Rejected: per-object document style (changes documents; `GLOBAL_IMPACT`);
-`SESSION` (lost on restart for a preference-like setting) — unless the author
-prefers it under `DQ-F1-6`.
-
-## 9. Lifecycle and dynamics
-
-The overlay holds no object reference between paints. On every repaint it
-re-reads the view's current drawables and each object's current state, so:
-moving inputs, reversing order, redefinition (new object, same label), undo,
-redo, New, Open and document replacement need no handling; temporary
-invalidity hides the cue and recovery shows it again with the then-current
-sense; identity is never touched (report §K7 D05, D08). Repaint triggers are
-those of the view; a preference change requests a repaint.
-
-## 10. Validation design (proposed test matrix)
+## 10. Validation design
 
 | ID | Obligation |
 |---|---|
-| `T-F1-SENSE` | every admitted route of report §K4: the cue's world sense equals `getDirection` (positive dot product), via a pure read-only cue model, not pixels |
-| `T-F1-REVERSAL` | `Line/Segment/Ray(A,B)` vs `(B,A)`, `Line(P,v)` vs `Line(P,−v)`, parallel to a reversed reference: cue reverses |
-| `T-F1-DYNAMIC` | move inputs through the reversal and back; same object identities; no cue while undefined |
-| `T-F1-DEGENERATE` | coincident points, zero vector, zero-length segment, `±∞` and `NaN` coefficients, near-zero direction: no cue, no exception |
-| `T-F1-DISCONTINUITY` | angle bisector through the straight angle, tangent point crossing the conic: behavior per `DQ-F1-5` |
-| `T-F1-ELIGIBILITY` | each class of §3.2 admitted or excluded per `DQ-F1-5`; unknown algorithm excluded; macro inherits; transform inherits |
-| `T-F1-VISIBILITY` | hidden object, hidden layer, thickness 0 (polygon edge), not visible in view, auxiliary object, list member, axis: as §4 |
-| `T-F1-PLACEMENT` | deterministic anchor for segment/ray/line; pan, zoom, resize, non-uniform scale, off-screen start, corner-cutting line, short chord, log axis |
-| `T-F1-VIEWS` | GV1 cue; GV2 per `DQ-F1-2` |
-| `T-F1-EXPORT` | with the cue on: PNG, PDF, SVG, EMF, print, clipboard, CLI, PGF/PSTricks/Asymptote and DXF byte-identical to cue off (screen-only) |
-| `T-F1-NO-MUTATION` | document XML, undo state, construction order, object styles, layers, labels and selection identical with the cue on and off |
-| `T-F1-PREFERENCE` | default, `shown`/`hidden` round trip, invalid value, persistence across a new app instance with the same store, New/Open unaffected, not in document or preferences XML |
-| `T-F1-HIT` | hit testing and selection results identical with the cue on and off |
-| `T-F1-CLASSIC` | Classic/upstream application: no cue, no preference read |
-| `T-F1-PROFILE` | catalog pins per `DQ-F1-9` |
+| `T-F1-SENSE` | each admitted row `A1`–`A17` of §3.3: cue world sense has a positive dot product with `getDirection` and agrees with the path parameter; assertions on the read-only cue model, not on pixels alone |
+| `T-F1-REVERSAL` | `(A,B)` versus `(B,A)`; `v` versus `−v`; reversed references for `A6`, `A7`, `A11`, `A12`; reversed sources for `A13`–`A16` |
+| `T-F1-ELIGIBILITY` | each `X1`–`X10` route shows no cue; recursive exclusion (`X8`); unknown algorithm; macro per `OTQ-F1-1` |
+| `T-F1-DYNAMIC` | inversions by motion follow the kernel with no smoothing; identity kept through invalidity |
+| `T-F1-DEGENERATE` | every row of the §4 degeneration table: no cue, no exception |
+| `T-F1-VISIBILITY` | hidden object, hidden layer, thickness 0, not visible in GV1, auxiliary object drawn normally, list member, axis |
+| `T-F1-PLACEMENT` | deterministic anchors; pan, zoom, resize, non-uniform ratio, off-screen start, corner-cutting line, short chord, log axis |
+| `T-F1-RENDERING` | 10 × 4 hollow triangle, object colour, background interior, style scale; midpoint-decoration suppression |
+| `T-F1-VIEWS` | cue in GV1; never in GV2 |
+| `T-F1-EXPORT` | with the option on: PNG, PDF, SVG, EMF, print, clipboard, CLI, PGF, PSTricks, Asymptote and DXF byte-identical to option off |
+| `T-F1-NO-MUTATION` | document XML, undo state, construction order, styles, layers, labels, selection identical with the option on and off |
+| `T-F1-HIT` | hit testing and selection identical with the option on and off |
+| `T-F1-PREFERENCE` | default OFF; `shown`/`hidden`; invalid value; persistence across a new app on the same store; New/Open unchanged; absent from document and preferences XML; Classic never reads it |
+| `T-F1-UI-SYNC` | menu checkbox and Layout & Presentation row stay synchronized; repaint of every window |
+| `T-F1-PROFILE` | catalog completeness 131, stable IDs, projections (menus, groups, clusters), status synchronization, every pin of report `K14` |
 | `T-SMOKE` | author smoke (not by the agent) |
 
-## 11. Verification class (proposal, `DQ-F1-8`)
+## 11. Verification class (AUTHOR DECISION `DQ-F1-8`)
 
-`BOUNDED_PHASE`, one registered `PHASE` (`PRE-G9B-R6-PLUS-F1`), for S1 with
-the screen-only answer of `DQ-F1-3`, a Desktop preference and its UI surface,
-no kernel, serialization, export or shared-drawable change. Escalation
-triggers, each requiring an author disposition before work continues: S3 or
-any export participation; GV2 through S2 (bounded but with a new view class);
-a new `AppD`/`OptionsLayoutD` hook (upstream files); per-object persistence
-(`GLOBAL_IMPACT`); any kernel change.
+`BOUNDED_PHASE`, one registered `PHASE` `PRE-G9B-R6-PLUS-F1`, conditioned on
+the entry gate confirming the approved scope. The catalog delta alone does not
+imply `INTEGRATED_PHASE` (`DQ-F1-9`). Any shared-code, export, persistence,
+GV2, kernel or inherited-class change outside this design stops the work for
+author review.
 
 ## 12. Rejected alternatives
 
-- A kernel arrow object or command (violates the invariants and the author
-  scope).
-- `getDirectionInD3` or any screen order as the sense (report §K3.3, §K9).
-- Inferring the sense or the route from labels, names, captions, definitions as
-  text, coordinates, construction indices or visual proximity.
-- Reusing `DECORATION_SEGMENT_ONE_ARROW` (document style, serialized, segment
-  only).
-- Exporting through drawables in a bounded phase.
-
-## 13. Decision table (all pending)
-
-| Id | Topic | Recommendation |
-|---|---|---|
-| `DQ-F1-1` | global option or per-object | global |
-| `DQ-F1-2` | GV1 only or GV1 + GV2 | GV1 only |
-| `DQ-F1-3` | screen-only or exported | screen-only |
-| `DQ-F1-4` | style, size, colour, placement | §5, §6 |
-| `DQ-F1-5` | eligibility per route class | E-B |
-| `DQ-F1-6` | preference class, key, default, lifecycle | §8, default hidden |
-| `DQ-F1-7` | suppression and overlap rules | §4 |
-| `DQ-F1-8` | seam and verification class | S1, `BOUNDED_PHASE` |
-| `DQ-F1-9` | UI surface and catalog | see the decision record |
+- Per-object attribute; GV2 coverage; export participation (author decisions).
+- Admitting equation-defined, convention-dependent or configuration-defined
+  routes in v1 (author decision `DQ-F1-5`).
+- `getDirectionInD3` or any screen order as the sense.
+- A kernel arrow object, command or dependency; a shared drawable change.
+- Reusing `DECORATION_SEGMENT_ONE_ARROW` (document style, serialized).
+- A new Layout & Presentation panel through `AppD`/`OptionsLayoutD` hooks.

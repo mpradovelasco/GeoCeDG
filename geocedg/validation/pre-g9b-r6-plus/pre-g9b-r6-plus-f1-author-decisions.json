@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "recordVersion": "1.0",
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F1",
+  "task": "PRE-G9B-R6-plus-F1-PREP-CLOSEOUT",
+  "artifactKind": "AUTHOR_DECISION_RECORD_AND_DOCUMENTARY_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_r6_plus_f1_author_decisions_record.md",
+  "reconciledDesign": "docs/architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f1-orientation-cue.prompt.md",
+  "frozenPreparationEvidence": [
+    "docs/validation/pre_g9b_r6_plus_f1_preparation_characterization_report.md",
+    "docs/validation/pre_g9b_r6_plus_f1_author_decision_preparation_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f1-preparation-characterization.json"
+  ],
+  "historicalEvidence": "docs/architecture/pre_g9b_r6_plus_f1_orientation_design_candidate.md (P0; unchanged)",
+  "authorInstruction": {
+    "date": "2026-10-11",
+    "title": "Author decisions and documentary closeout",
+    "authorizes": "recording DQ-F1-1 to DQ-F1-9; reconciling the design and the canonical prompt; the documentary closeout and its mirror; roadmap and mini-track updates; documentary validation; one local documentary commit and its STATIC",
+    "doesNotAuthorize": ["F1 implementation", "orientation-cue rendering code", "action catalog change", "preference change", "publication to main", "F2", "F3", "F4", "G"]
+  },
+  "publishedBase": {"name": "P_C1", "commit": "bde2827bb21e4a28e080db6a65b4abc892071cf8", "tree": "1b74102cea5151b8a6c571cb36b96b33af6fb3c8"},
+  "preparationCandidate": {
+    "name": "T_R6PLUS_F1_PREP",
+    "commit": "732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b",
+    "tree": "0839dd764ffceefc2fb009155b25f6495becaae1",
+    "parent": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+    "files": 7,
+    "static": "verification-38ff592383c64c3fbac46cb3c5023dd3 ACCEPTED / COMPLETE",
+    "p0CandidateUnchanged": true,
+    "amended": false
+  },
+  "closeoutCandidate": "the direct child of 732292e6 containing this file; identity and STATIC reported outside the record",
+  "designState": "DESIGN — AUTHOR APPROVED",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "specificationOrAdrPromoted": false,
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "passClaimed": false,
+  "classificationVocabulary": ["AUTHOR DECISION", "NORMATIVE INHERITANCE", "CHARACTERIZATION EVIDENCE", "IMPLEMENTATION DESIGN", "OPEN TECHNICAL ITEM"],
+  "decisions": {
+    "DQ-F1-1": {"previous": "global", "decision": "one global application presentation option; no per-object attribute"},
+    "DQ-F1-2": {"previous": "GV1 only", "decision": "Graphics View 1 only; GV2 outside the authorized implementation design"},
+    "DQ-F1-3": {"previous": "screen-only", "decision": "screen-only; never in print, clipboard, image, LaTeX, DXF or other exports"},
+    "DQ-F1-4": {"previous": "hollow triangle L=10 px W=4 px, object colour", "decision": "discreet hollow triangular arrowhead, nominal 10 x 4 device pixels, object colour; geometry and placement presentation-only", "implementationDesign": "L=10, half-width W=4 at style scale 1; 1 px outline, background interior; anchors of design section 5", "openItem": "OTQ-F1-3"},
+    "DQ-F1-5": {"previous": "E-B", "decision": "positive eligibility matrix of constructively oriented or demonstrably inherited orientations; authority GeoLine.getDirection validated against path parametrization and construction semantics; not getDirectionInD3; no constructive sense from a directed parametrization of equation coefficients; excluded equation-defined or convention-dependent routes documented and suppressed until separately admitted; unknown or unverified orientations not guessed", "implementationDesign": "eligibility matrix v1: admitted A1-A17, excluded X1-X10, recursive fail-closed admission of orienting inputs", "openItem": "OTQ-F1-1"},
+    "DQ-F1-6": {"previous": "USER_PREFERENCE geocedg.view.orientation-cue.v1, default hidden", "decision": "global preference geocedg.view.orientation-cue.v1, default OFF, survives restart, not serialized, New/Open do not modify it", "implementationDesign": "values shown/hidden, invalid reads OFF without write-back, portable store, no undo, repaint of every window, never read by Classic"},
+    "DQ-F1-7": {"previous": "design section 4", "decision": "suppress undefined, non-finite or degenerate, effectively hidden, insufficient visible extent, redundant directional decorations; never an arrow for an invisible or inadmissible object; inversions faithful to the kernel, never smoothed or reassigned", "implementationDesign": "predicate and degeneration table of design section 4; redundant decorations = the three segment midpoint arrow decorations", "openItem": "OTQ-F1-2"},
+    "DQ-F1-8": {"previous": "S1, BOUNDED_PHASE", "decision": "presentation-only overlay in GeoCeDG Desktop Graphics View 1; no new GeoElement, kernel algorithm, persistence attribute, construction dependency or shared drawable change; BOUNDED_PHASE conditioned on the entry gate; registered PHASE covers admissibility, direction, rendering, lifecycle, visibility, preferences, product-profile regressions"},
+    "DQ-F1-9": {"previous": "U3", "decision": "one declarative menu action and a synchronized Layout & Presentation control; catalog 130 -> 131; the delta alone does not imply INTEGRATED_PHASE; prove catalog completeness, stable IDs, projections, status synchronization and profile pins; stop on unexpected inherited-class modifications or a broader product contract", "implementationDesign": "action presentation.orientation-cue, product-action, preference-only, product-only, action-only, experimental, View group view-visibility-style; row in an existing GeoCeDG-owned panel", "openItem": "OTQ-F1-4"}
+  },
+  "eligibilityMatrixV1": {
+    "admitted": {
+      "A1": "AlgoJoinPoints Line(A,B): B - A",
+      "A2": "AlgoJoinPointsSegment Segment(A,B), polygon edges, segment images: start -> end",
+      "A3": "AlgoJoinPointsRay Ray(A,B): B - A",
+      "A4": "AlgoRayPointVector Ray(A,v): v",
+      "A5": "AlgoLinePointVector Line(P,v): v",
+      "A6": "AlgoLinePointLine with an admitted line/segment/ray reference: reference sense",
+      "A7": "AlgoOrthoLinePointLine with an admitted line/segment/ray reference: reference rotated +90 deg",
+      "A8": "AlgoOrthoLinePointVector: v rotated +90 deg",
+      "A9": "AlgoLineBisector: (B - A) rotated +90 deg",
+      "A10": "AlgoLineBisectorSegment with an admitted segment: (end - start) rotated +90 deg",
+      "A11": "AlgoAngularBisectorLines with both inputs admitted: kernel rule",
+      "A12": "AlgoTangentLine with an admitted line: sense of the line",
+      "A13": "AlgoMirror at a point or a line, admitted source: image sense",
+      "A14": "AlgoRotatePoint, AlgoRotate, admitted source: rotated sense",
+      "A15": "AlgoTranslate, admitted source: source sense",
+      "A16": "AlgoDilate, admitted source: source sense times sign of factor",
+      "A17": "AlgoMacro: inner route sense only if admitted and resolvable (OTQ-F1-1)"
+    },
+    "excluded": {
+      "X1": "independent GeoLine (implicit, explicit, parametric input)",
+      "X2": "AlgoDependentLine",
+      "X3": "AlgoTangentPoint (point on the conic and external point)",
+      "X4": "AlgoAngularBisectorPoints",
+      "X5": "AlgoTangentFunctionNumber, AlgoTangentFunctionPoint",
+      "X6": "AlgoLinePointLine / AlgoOrthoLinePointLine with a GeoFunction reference",
+      "X7": "AlgoAsymptote, AlgoPolarLine",
+      "X8": "admitted-kind route with an excluded or unknown orienting input",
+      "X9": "AlgoShearOrStretch, AlgoAttachCopyToView, AlgoMirror at a conic, other transforms",
+      "X10": "every other algorithm, 3D line types, list members, axes, unresolved macros"
+    },
+    "admittedInputs": "GeoPoint (ordered), GeoVector, or a GeoLine/GeoSegment/GeoRay admitted by the matrix"
+  },
+  "openTechnicalItems": {
+    "OTQ-F1-1": {"item": "macro inner-route resolution through existing public API; otherwise macros excluded", "blocking": false},
+    "OTQ-F1-2": {"item": "redundant directional decorations = three midpoint arrow decorations, not ending styles; author may widen", "blocking": false},
+    "OTQ-F1-3": {"item": "10 x 4 read as length 10 and half-width 4 device pixels", "blocking": false},
+    "OTQ-F1-4": {"item": "host panel of the Layout & Presentation row chosen at the entry gate without inherited-class change", "blocking": false}
+  },
+  "corrections": {
+    "ER-1": "report K5 affine paragraph: probed transforms use GeoLine translate/dilate/rotate/mirror (GeoLine.java:750-751, 763-770, 777-800, 804-811, 817-), not matrixTransform; matrixTransform users (AlgoShearOrStretch, AlgoAttachCopyToView) stay excluded",
+    "ER-2": "preparation design AlgoRotate* replaced by explicit AlgoRotate and AlgoRotatePoint rows"
+  },
+  "plannedImplementationClass": {"class": "BOUNDED_PHASE", "authorAccepted": true, "condition": "entry gate confirms the approved scope", "phase": "PRE-G9B-R6-PLUS-F1", "catalogDelta": "130 -> 131"},
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"},
+  "filesChanged": [
+    "A docs/validation/pre_g9b_r6_plus_f1_author_decisions_record.md",
+    "A geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f1-author-decisions.json",
+    "M docs/architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md",
+    "M .github/prompts/tasks/pre-g9b-r6-plus-f1-orientation-cue.prompt.md",
+    "M docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "M docs/roadmap/geocedg_roadmap.md"
+  ],
+  "nextDecision": "whether to authorize and publish the F1 preparation package, then whether to authorize F1 implementation on an exact published base"
+}
