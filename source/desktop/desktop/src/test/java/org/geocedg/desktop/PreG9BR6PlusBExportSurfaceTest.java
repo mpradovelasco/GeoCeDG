@@ -436,12 +436,15 @@ class PreG9BR6PlusBExportSurfaceTest {
 		for (String id : new String[] {"export.picture", "export.dxf-2d", "export.pstricks",
 				"export.pgf", "export.asymptote", "document.print-preview",
 				"export.area.define-rectangle", "export.area.use-export-points",
-				"export.area.show", "export.area.clear"}) {
+				"export.area.show", "export.area.clear", "export.area.iso-a",
+				"export.area.use-iso-a-border"}) {
 			assertTrue(ids.contains(id), id);
 		}
+		// PRE-G9B-R6-plus-E3 adds the two ISO A export-area actions
 		Set<String> authorized = Set.of("export.picture", "export.dxf-2d", "export.pstricks",
 				"export.pgf", "export.asymptote", "export.area.define-rectangle",
-				"export.area.use-export-points", "export.area.show", "export.area.clear");
+				"export.area.use-export-points", "export.area.show", "export.area.clear",
+				"export.area.iso-a", "export.area.use-iso-a-border");
 		for (String id : ids) {
 			assertTrue(!id.startsWith("export.") || authorized.contains(id), id);
 			String lower = id.toLowerCase(java.util.Locale.ROOT);

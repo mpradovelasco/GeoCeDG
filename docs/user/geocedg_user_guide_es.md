@@ -204,7 +204,7 @@ grupos aparece una sola vez.
 | Curvas semánticas | Locus V2, Punto sobre curva semántica, Spline V2, Inspeccionar definición de curva semántica… |
 | Métricas y validación | Ángulo, Distancia o longitud, Cota alineada, Cota lineal, Longitud total de Locus V2, Longitud parcial de Locus V2, Área, Pendiente |
 | Transformaciones de semejanza | Reflejar respecto a un punto, Reflejar respecto a una recta, Trasladar por vector, Rotar un ángulo, Homotecia desde un punto |
-| Anotaciones y medios | Imagen |
+| Anotaciones y medios | Imagen, Marco ISO A (sección 4.7) |
 | Procedimientos de proyección manual | Procedimientos diédricos CeDG (no autorizados) |
 
 La última entrada está visible pero no disponible: el espacio de procedimientos
@@ -399,7 +399,8 @@ orden:
 
 1. el área que elija en **Archivo → Área de exportación**: **Definir área de
    exportación…** (cuatro límites en coordenadas del mundo, partiendo del área
-   actual o de la vista visible) o **Usar Export_1 y Export_2**;
+   actual o de la vista visible), **Usar Export_1 y Export_2**, o una lámina ISO A
+   o un área ISO A (sección 4.7);
 2. si no, los puntos `Export_1` y `Export_2` del documento, cuando existen ambos
    y definen un rectángulo;
 3. si no, la parte visible de la vista.
@@ -574,6 +575,102 @@ registra la unidad en su cabecera (`mm`, `cm`, `m`) o, para una unidad
 personalizada, en su manifiesto acompañante obligatorio (sección 11). Las
 coordenadas nunca se convierten. Sin unidad de construcción ninguna exportación
 afirma una escala física, y DXF sigue sin unidades.
+
+### 4.7 Láminas ISO A
+
+```text
+IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denominator>, <Model Units per Millimetre>, <Inner Frame> )
+```
+
+Una **lámina ISO A** dibuja el papel de una lámina de la serie A de ISO 216
+(A0 a A10) a una escala de dibujo, con un marco interior opcional y una
+etiqueta como `A3 — 1:50`. Es una construcción ordinaria que depende del punto
+de su esquina superior izquierda. En español el comando también se escribe
+`MarcoISOA`.
+
+- Los tamaños son los nominales de ISO 216 en milímetros; A3 horizontal mide
+  420 × 297 mm. Horizontal pone el lado largo en horizontal; nada se gira y el
+  punto sigue siendo la esquina superior izquierda.
+- La primera salida es el **borde del papel**: oculto por defecto (punteado si
+  lo muestra), es la lámina y el rectángulo que se usa como área de
+  exportación. La segunda es el **marco interior**, a 20 mm del borde
+  izquierdo y a 10 mm de los demás, dibujado continuo; cuando el marco está
+  desactivado, o es imposible (A10 vertical), sigue existiendo pero queda
+  indefinido. La tercera es la **etiqueta**, en la esquina inferior derecha
+  del marco (dentro del papel si no hay marco); se oculta como cualquier
+  texto. Las esquinas se obtienen con `Vertex(lámina, k)`.
+- El tamaño en unidades del modelo es el tamaño del papel convertido una vez:
+  milímetros × denominador ÷ numerador × unidades del modelo por milímetro.
+  Con unidad de construcción `mm` a 1:50 una lámina A3 horizontal mide
+  21000 × 14850. La escala y el factor de unidad son entradas escritas al
+  crear la lámina: cambiar después la escala de dibujo o las unidades del
+  documento nunca cambia la lámina.
+- Un índice ISO que no sea un entero de 0 a 10, un término de escala que no
+  sea un entero de 1 a 10^9, un factor no positivo o un tamaño que el
+  ordenador no puede representar dejan las salidas indefinidas; corregir la
+  entrada restituye los mismos objetos.
+
+**Herramienta.** Construcción → Anotaciones y medios → **Marco ISO A** (solo
+en el menú; no hay botón en la barra de herramientas). El documento necesita
+una unidad de construcción física (sección 4.6): sin ella la acción no está
+disponible y su motivo remite a **Unidades del documento…**; no se supone
+ninguna unidad. Haga clic en un punto, o en un lugar vacío para crear un punto
+de esquina oculto; un único punto seleccionado se usa directamente. El diálogo
+ofrece el tamaño (A3 por defecto), la orientación (horizontal por defecto), la
+escala de dibujo (partiendo de la escala de la sesión, con valores
+predefinidos o un `a:b` libre), **Marco interior** (activado para A0–A4,
+desactivado para A5–A10, no disponible para A10 vertical) y **Mostrar la
+etiqueta de la lámina**. Aceptar crea la lámina en un solo paso de deshacer;
+Cancelar elimina el punto creado por el clic. Una unidad personalizada cuyo
+factor hace que la conversión a milímetros no sea representable se rechaza con
+su motivo. Una lámina se mueve arrastrando su marco (o su papel si se muestra);
+una lámina sin marco se mueve editando su punto o mostrando su papel.
+
+**Área de exportación.** Una lámina nueva nunca sustituye el área de
+exportación. Tras crearla GeoCeDG pregunta **¿Usar esta lámina como área de
+exportación?**; **Archivo → Área de exportación → Usar el marco ISO A
+seleccionado** enlaza una lámina existente (seleccione cualquiera de sus
+objetos). Una lámina enlazada es el área de exportación de la sección 4.5: el
+borde de su papel, también mientras está oculto, nunca el marco, y sigue a la
+lámina cuando se mueve. El enlace pertenece a la sesión: no se guarda, Nuevo y
+Abrir lo borran, y deshacer, rehacer, borrar o reconstruir la lámina lo
+liberan; la exportación usa entonces la regla siguiente de la sección 4.5, la
+barra de estado indica que el enlace se liberó y la misma acción vuelve a
+enlazar la lámina. **Definir área de exportación ISO A…** fija una vez un área
+de exportación del tamaño ISO, a partir de una esquina superior izquierda, un
+tamaño y una orientación, a la escala de dibujo y la unidad actuales, sin crear
+objetos.
+
+**Tamaño físico y escala.** Para una lámina enlazada la barra de estado
+muestra la lámina y el tamaño de página con que se exportaría con la unidad y
+la escala de dibujo actuales, y los diálogos de imagen, impresión y LaTeX
+muestran el mismo aviso. Las dos comprobaciones son independientes: si ese
+tamaño de página es el tamaño nominal del papel y si la escala de la sesión es
+la de la etiqueta. **Usar escala de la lámina** (en el aviso, en la
+advertencia de activación o con un clic en el segmento de la barra de estado)
+pone la escala de dibujo de la sesión a la escala de la lámina; nunca cambia la
+geometría. Si la unidad de construcción ha cambiado desde que se creó la
+lámina, la escala sola no puede restituir el tamaño nominal y el mensaje lo
+dice. Si el tamaño no puede determinarse de forma fiable —sin unidad, con una
+unidad personalizada extrema o con una lámina muy alejada del origen—, GeoCeDG
+lo indica en lugar de afirmar que coincide. Enlazar una lámina cuyo tamaño de
+página no es el nominal muestra esta advertencia en el acto; la escala nunca
+cambia sin su acción.
+
+**Exportación.** Las imágenes, la impresión, el portapapeles y LaTeX dibujan
+el marco, la etiqueta y el borde del papel si se muestra; una lámina A3 1:50
+enlazada en `mm` exporta una página PDF de 420 × 297 mm con escala de sesión
+1:50. DXF escribe el borde del papel y el marco como entidades `LWPOLYLINE`
+cuyo último vértice repite el primero, no escribe el texto de la etiqueta e
+indica `iso_a_border` como productor del área de exportación.
+
+**Classic y versiones anteriores.** La sesión de diagnóstico Classic de esta
+versión de GeoCeDG entiende el comando pero no ofrece la herramienta, el
+diálogo ni el enlace al área de exportación. Una versión anterior de GeoCeDG o
+GeoGebra de origen informan de un error de carga por cada lámina; sus salidas
+y los objetos construidos sobre ellas se pierden al guardar desde esa versión.
+Las macros heredadas `sheetISOAnLand` y `sheetISOAnVert` de la plantilla
+histórica no cambian y siguen funcionando; ningún documento se migra.
 
 ---
 
@@ -1884,6 +1981,10 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 
 **No disponible**
 
+- Las láminas ISO A no tienen cajetín, juegos de láminas, espacio papel ni
+  ventanas gráficas; DXF escribe su marco y su papel sin el texto de la
+  etiqueta, y una versión que no conoce `IsoABorder` pierde las láminas al
+  guardar (sección 4.7).
 - La semántica espacial —identidad de objetos tridimensionales, marcos de
   proyección y certificados de proyección canónica— no está disponible en el
   producto. El espacio **Procedimientos diédricos CeDG** es visible pero no está
@@ -1923,6 +2024,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Evidencia métrica rica | Construcción → Métricas y validación | `LocusLength(S)` / `LocusLength(S,P,Q)` | resultado rico | estado, cobertura, estimación de error, diagnósticos |
 | Cota alineada | Construcción → Métricas y validación → Cota alineada | `AlignedDimension(A,B,1)` | número, líneas y texto | el valor está en unidades del modelo; el texto sigue las unidades del documento |
 | Cota lineal | Construcción → Métricas y validación → Cota lineal | `LinearDimension(A,B,g,1)` | número, líneas y texto | medida según una recta o un vector; el lado del desplazamiento lo fija `A → B` o la dirección |
+| Crear una lámina ISO A | Construcción → Anotaciones y medios → Marco ISO A | `IsoABorder(P,3,true,1,50,1,true)` | dos poligonales y un texto | necesita una unidad de construcción física; escala y factor de unidad capturados una vez; solo en el menú (sección 4.7) |
 | Intersecar curva semántica y objeto | Construcción → Relaciones e intersecciones → Intersección | `Intersect(S,c)` | resultado rico de intersección | no es una lista de puntos |
 | Intersecar dos curvas semánticas | ídem | `Intersect(S,T)` | resultado rico de intersección | varias raíces pueden ser admisibles cada una |
 | Materializar soluciones | Inspeccionar resultado rico → Crear uno / Crear seleccionados / Crear todos los admisibles | `Intersect(R,"<token>")` | punto | recalcular nunca crea puntos; no transcriba tokens |
@@ -1933,6 +2035,8 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Exportar DXF | Archivo → Importar y exportar → Exportar geometría 2D como DXF (experimental)… | — | archivo DXF (+ manifiesto) | preflight primero; petición completa estricta por defecto |
 | Exportar una imagen | Archivo → Importar y exportar → Vista gráfica como imagen… | `ExportImage` | archivo PNG, PDF, SVG, EMF/EMF+ | área de exportación exacta (sección 4.5) |
 | Elegir el área de exportación | Archivo → Área de exportación | — | — | solo de sesión; el contorno nunca se exporta |
+| Usar una lámina como área de exportación | Archivo → Área de exportación → Usar el marco ISO A seleccionado | — | estado de sesión | el borde del papel, en vivo, nunca el marco; deshacer, rehacer y borrar lo liberan |
+| Área de exportación ISO A | Archivo → Área de exportación → Definir área de exportación ISO A… | — | estado de sesión | calculada una vez a la escala de dibujo y la unidad de la sesión |
 | Abrir un documento | Archivo → Abrir… | — | — | `.cedg` nativo, `.ggb` entrada de compatibilidad |
 | Guardar un documento | Archivo → Guardar / Guardar como… | — | — | guarde el trabajo nativo como `.cedg` |
 | Inspeccionar una definición | menú contextual → Inspeccionar definición… | — | — | solo lectura; no cambia el modo de presentación de Álgebra |
@@ -1966,6 +2070,7 @@ LinearDimension( <Point>, <Point>, <Line>, <Offset> )
 LinearDimension( <Point>, <Point>, <Vector>, <Offset> )
 LinearDimension( <Point>, <Point>, <Line>, <Offset>, <Overshoot>, <Gap> )
 LinearDimension( <Point>, <Point>, <Vector>, <Offset>, <Overshoot>, <Gap> )
+IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denominator>, <Model Units per Millimetre>, <Inner Frame> )
 
 Intersect( <Locus V2>, <Supported Object> )
 Intersect( <Locus V2>, <Locus V2> )

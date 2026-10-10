@@ -56,6 +56,7 @@ public final class GeoCeDGEuclidianController
 	private final GeoCeDGSplineV2Authoring splineAuthoring;
 	private final GeoCeDGDimensionTools dimensionTools;
 	private AlgoNativeDimension dimensionDrag;
+	private GeoPointND isoABorderClickPoint;
 	private GeoPoint interactionDragPoint;
 	private boolean interactionGesture;
 	private boolean interactionChanged;
@@ -330,6 +331,13 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	protected void switchModeForMousePressed(AbstractEvent e) {
+		if (GeoCeDGIsoABorderTool.handles(mode) && selPoints() < 1) {
+			// ISO A sheet tool: the click selects a point or creates a free one
+			setViewHits(e.getType());
+			Hits hits = getView().getHits();
+			hits.removePolygons();
+			isoABorderClickPoint = createNewPointForModeOther(hits);
+		}
 		if (GeoCeDGDimensionTools.handles(mode) && selPoints() < 2) {
 			// Native dimension tools: the first two clicks select or create the points.
 			setViewHits(e.getType());
@@ -374,6 +382,33 @@ public final class GeoCeDGEuclidianController
 
 	GeoCeDGDimensionTools getDimensionTools() {
 		return dimensionTools;
+	}
+
+	/**
+	 * ISO A sheet tool (PRE-G9B-R6-plus-E3): one point, then the dialog; one-shot, back
+	 * to Move afterwards. The host stores one undo point for the created construction.
+	 */
+	private boolean processIsoABorder(Hits hits, AsyncOperation<Boolean> callback,
+			boolean selectionPreview) {
+		if (selPoints() < 1) {
+			addSelectedPoint(hits, 1, false, selectionPreview);
+		}
+		if (selectionPreview || selPoints() < 1) {
+			return endOfSwitchModeForProcessMode(null, false, callback, selectionPreview);
+		}
+		GeoPointND point = getSelectedPointsND()[0];
+		boolean createdByClick = point == isoABorderClickPoint;
+		isoABorderClickPoint = null;
+		clearSelections();
+		AppGeoCeDG geoCeDG = (AppGeoCeDG) kernel.getApplication();
+		GeoElement[] created = geoCeDG.getIsoABorderTool().create(point, createdByClick);
+		boolean changed = endOfSwitchModeForProcessMode(created, false, callback,
+				selectionPreview);
+		// The sheet is a finished creation: renew the mode-start state before leaving
+		// the mode, or the mode change would remove it as an unfinished tool use.
+		kernel.storeStateForModeStarting();
+		geoCeDG.setMoveMode();
+		return changed;
 	}
 
 	private double interactionRadius(AbstractEvent event) {
@@ -616,6 +651,9 @@ public final class GeoCeDGEuclidianController
 		if (GeoCeDGDimensionTools.handles(mode)) {
 			return endOfSwitchModeForProcessMode(createDimension(hits, selectionPreview),
 					false, callback, selectionPreview);
+		}
+		if (GeoCeDGIsoABorderTool.handles(mode)) {
+			return processIsoABorder(hits, callback, selectionPreview);
 		}
 		if (mode == EuclidianConstants.MODE_ORDERED_LIST) {
 			return endOfSwitchModeForProcessMode(

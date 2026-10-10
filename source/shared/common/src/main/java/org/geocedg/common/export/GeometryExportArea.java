@@ -11,8 +11,9 @@ package org.geocedg.common.export;
  * single PRE-G9B-R6-plus-B {@code ExportArea} authority of the active 2D
  * Graphics view.
  *
- * <p>Only the explicit producers ({@code MANUAL}, {@code EXPORT_POINTS_EXPLICIT}
- * and {@code EXPORT_POINTS_AUTOMATIC}) define a closed participation boundary.
+ * <p>Only the explicit producers ({@code MANUAL}, {@code ISO_A_SELECTION},
+ * {@code ISO_A_BORDER}, {@code EXPORT_POINTS_EXPLICIT} and
+ * {@code EXPORT_POINTS_AUTOMATIC}) define a closed participation boundary.
  * The {@code VISIBLE_VIEWPORT} fallback is explicitly no boundary: the export
  * keeps its model-space population and never depends on the zoom, so its record
  * carries neither bounds nor a view. An area is session state: it is never
@@ -27,6 +28,10 @@ public final class GeometryExportArea {
 	public enum Producer {
 		/** explicitly activated stored world rectangle */
 		MANUAL,
+		/** explicitly activated ISO A sized area, computed once (PRE-G9B-R6-plus-E3) */
+		ISO_A_SELECTION,
+		/** explicitly linked IsoABorder paper boundary, live (PRE-G9B-R6-plus-E3) */
+		ISO_A_BORDER,
 		/** explicitly activated Export_1/Export_2 producer */
 		EXPORT_POINTS_EXPLICIT,
 		/** Export_1/Export_2 used automatically */

@@ -43,9 +43,9 @@ class PreG9BR6CapabilityMatrixTest {
 		Inventory inventory = inventory();
 
 		assertEquals(PreG9BR6CapabilityMatrix.setOf("AlignedDimension", "Dilate",
-				"ExportImage", "Intersect", "Length", "LinearDimension", "LocusLength", "LocusV2",
-				"Mirror", "Point", "Rotate", "SplineV2", "Translate"), inventory.roles().keySet(),
-				"derived inventory changed");
+				"ExportImage", "Intersect", "IsoABorder", "Length", "LinearDimension",
+				"LocusLength", "LocusV2", "Mirror", "Point", "Rotate", "SplineV2", "Translate"),
+				inventory.roles().keySet(), "derived inventory changed");
 		assertEquals(List.of(), PreG9BR6CapabilityMatrix.violations(inventory, matrix,
 				junitMethods()));
 	}
@@ -149,6 +149,16 @@ class PreG9BR6CapabilityMatrixTest {
 	void linearDimensionRows(TestInfo test, @TempDir Path directory) throws Exception {
 		PreG9BR6PlusE2NativeDimensionDesktopTest.isolated(directory,
 				PreG9BR6PlusE2NativeDimensionDesktopTest.MATRIX_ROWS + method(test));
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E3: the single form of the ISO A sheet, executed in a fresh JVM so
+	 * that the complete Desktop suite retains none of its hosts.
+	 */
+	@Test
+	void isoABorderRows(TestInfo test, @TempDir Path directory) throws Exception {
+		PreG9BR6PlusE3IsoABorderDesktopTest.isolated(directory,
+				PreG9BR6PlusE3IsoABorderDesktopTest.MATRIX_ROWS + method(test));
 	}
 
 	@Test

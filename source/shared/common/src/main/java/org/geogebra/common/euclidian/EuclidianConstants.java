@@ -470,6 +470,8 @@ public final class EuclidianConstants {
 	public static final int MODE_ALIGNED_DIMENSION = 142;
 	/** GeoCeDG native linear dimension tool (PRE-G9B-R6-plus-E2). */
 	public static final int MODE_LINEAR_DIMENSION = 143;
+	/** GeoCeDG native ISO A sheet border tool, menu only (PRE-G9B-R6-plus-E3). */
+	public static final int MODE_ISO_A_BORDER = 144;
 
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
@@ -820,6 +822,9 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_LINEAR_DIMENSION:
 			return "LinearDimension.Tool";
+
+		case EuclidianConstants.MODE_ISO_A_BORDER:
+			return "IsoABorder.Tool";
 
 		case EuclidianConstants.MODE_AREA:
 			return "Area";

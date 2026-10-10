@@ -41,7 +41,7 @@ class G9U1ProfileCompilerTest {
 		assertEquals(2, profile.getInt("schema_version"));
 		assertEquals(11, profile.getJSONObject("taxonomy").getJSONArray("broad_families").length());
 		assertEquals(18, profile.getJSONArray("clusters").length());
-		assertEquals(127, GeoCeDGProfile.getActions().size());
+		assertEquals(130, GeoCeDGProfile.getActions().size());
 		assertEquals(GeoCeDGProfile.getToolbarDefinition(),
 				GeoCeDGProfile.compileProfile(profile.toString()));
 	}
@@ -50,10 +50,11 @@ class G9U1ProfileCompilerTest {
 	void nativeToolbarContainsFortyFiveCuratedModesWhileCatalogRetainsAllSixtySix() {
 		String[] modes = GeoCeDGProfile.getToolbarDefinition().split("[ |]+");
 		// Identity-stable name; PRE-G9B-R4 adds the ordered list mode and three SplineV2 modes;
-		// PRE-G9B-R6-plus-A-1 adds the working-layer mode.
+		// PRE-G9B-R6-plus-A-1 adds the working-layer mode; the menu-only ISO A sheet mode of
+		// PRE-G9B-R6-plus-E3 adds a catalog mode but no toolbar entry.
 		assertEquals(49, modes.length);
 		assertEquals(49, new HashSet<>(Arrays.asList(modes)).size());
-		assertEquals(73, GeoCeDGProfile.getActions().stream()
+		assertEquals(74, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
 		assertFalse(Arrays.asList(modes).contains("54"));
@@ -208,7 +209,7 @@ class G9U1ProfileCompilerTest {
 				assertTrue(ids.add(id), id);
 			}
 		}
-		assertEquals(127, ids.size());
+		assertEquals(130, ids.size());
 		assertEquals(List.of("edit-selection", "construction-lists",
 				"construction-relations", "construction-lines-vectors",
 				"construction-polygons",
@@ -380,7 +381,7 @@ class G9U1ProfileCompilerTest {
 	void validV2DoesNotUseFallback() {
 		var selected = GeoCeDGProfile.loadDefinition(GeoCeDGProfile.getCatalog().toString(), "");
 		assertFalse(selected.legacyFallback);
-		assertEquals(127, selected.actionCount());
+		assertEquals(130, selected.actionCount());
 	}
 
 	@Test

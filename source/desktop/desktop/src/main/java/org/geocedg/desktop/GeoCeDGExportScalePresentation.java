@@ -5,9 +5,16 @@
 
 package org.geocedg.desktop;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
+import org.geocedg.common.kernel.sheet.AlgoIsoABorder;
+import org.geocedg.common.kernel.sheet.IsoASheet;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.common.kernel.units.UnitToken;
 import org.geocedg.common.kernel.units.UsmDefinition;
@@ -49,9 +56,73 @@ final class GeoCeDGExportScalePresentation implements ExportScalePresentation {
 
 	@Override
 	public JComponent createScaleControl(Runnable onChange) {
-		return new DrawingScaleControl(app, app.layerText("ExportScale.Engineering"),
+		DrawingScaleControl control = new DrawingScaleControl(app,
+				app.layerText("ExportScale.Engineering"),
 				app.layerText("ExportScale.Unit", constructionUnitText()),
 				app.layerText("ExportScale.Invalid"), onChange);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setOpaque(false);
+		panel.add(control, BorderLayout.CENTER);
+		panel.add(new SheetNotice(app), BorderLayout.SOUTH);
+		return panel;
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E3 transient notice of the linked ISO A sheet in the picture,
+	 * print and LaTeX dialogs (DQ-E3-12): both coherence states as a short line whose
+	 * tooltip holds the full message, and the explicit "Use sheet scale" action. It is
+	 * hidden without a linked sheet and is never exported or stored.
+	 */
+	static final class SheetNotice extends JPanel {
+		private static final long serialVersionUID = 1L;
+		private final transient AppGeoCeDG app;
+		private final JLabel line = new JLabel();
+		private final JButton useScale;
+		private final transient Runnable refresh = this::refresh;
+
+		SheetNotice(AppGeoCeDG app) {
+			super(new FlowLayout(FlowLayout.LEFT, 4, 0));
+			this.app = app;
+			setOpaque(false);
+			setName("geocedg.exportScale.sheetNotice");
+			useScale = new JButton(app.layerText("IsoA.Coherence.UseScale"));
+			useScale.setName("geocedg.exportScale.useSheetScale");
+			useScale.addActionListener(event -> app.useSheetScale());
+			add(line);
+			add(useScale);
+			refresh();
+		}
+
+		@Override
+		public void addNotify() {
+			super.addNotify();
+			app.addDrawingScaleListener(refresh);
+			refresh();
+		}
+
+		@Override
+		public void removeNotify() {
+			app.removeDrawingScaleListener(refresh);
+			super.removeNotify();
+		}
+
+		void refresh() {
+			AlgoIsoABorder border = app.getLinkedIsoABorder();
+			if (border == null) {
+				setVisible(false);
+				return;
+			}
+			IsoASheet.Coherence coherence = app.sheetCoherence(border);
+			String name = border.getLabelText().isDefined()
+					? border.getLabelText().getTextString() : "?";
+			line.setText(app.layerText(coherence.getPhysical()
+					== IsoASheet.PhysicalCoherence.COHERENT ? "IsoA.Notice.Coherent"
+					: "IsoA.Notice.Check", name));
+			line.setToolTipText(app.sheetCoherenceMessage(border, coherence));
+			useScale.setVisible(coherence.getScale() == IsoASheet.ScaleCoherence.DIFFERENT);
+			setVisible(true);
+			revalidate();
+		}
 	}
 
 	@Override

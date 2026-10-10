@@ -161,6 +161,14 @@ final class GeoCeDGDxfExportController {
 			return GeometryExportArea.explicit(GeometryExportArea.Producer.MANUAL,
 					area.getXmin(), area.getXmax(), area.getYmin(), area.getYmax(),
 					area.getSourceViewId());
+		case ISO_A_SELECTION:
+			return GeometryExportArea.explicit(GeometryExportArea.Producer.ISO_A_SELECTION,
+					area.getXmin(), area.getXmax(), area.getYmin(), area.getYmax(),
+					area.getSourceViewId());
+		case ISO_A_BORDER:
+			return GeometryExportArea.explicit(GeometryExportArea.Producer.ISO_A_BORDER,
+					area.getXmin(), area.getXmax(), area.getYmin(), area.getYmax(),
+					area.getSourceViewId());
 		case EXPORT_POINTS_EXPLICIT:
 			return GeometryExportArea.explicit(
 					GeometryExportArea.Producer.EXPORT_POINTS_EXPLICIT, area.getXmin(),

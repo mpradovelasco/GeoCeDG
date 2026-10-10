@@ -157,6 +157,9 @@ public enum Commands implements CommandsConstants,
 	/** GeoCeDG native linear dimension (PRE-G9B-R6-plus-E2). */
 	LinearDimension(TABLE_GEOMETRY),
 
+	/** GeoCeDG native ISO A sheet border (PRE-G9B-R6-plus-E3). */
+	IsoABorder(TABLE_GEOMETRY),
+
 	Centroid(TABLE_GEOMETRY),
 
 	TriangleCenter(TABLE_GEOMETRY),

@@ -197,7 +197,7 @@ appears once.
 | Semantic curves | Locus V2, Point on semantic curve, Spline V2, Inspect semantic curve definition… |
 | Metrics and validation | Angle, Distance or length, Aligned dimension, Linear dimension, Locus V2 total length, Locus V2 partial length, Area, Slope |
 | Similarity transformations | Reflect about point, Reflect about line, Translate by vector, Rotate by angle, Dilate from point |
-| Annotations and media | Image |
+| Annotations and media | Image, ISO A Border (section 4.7) |
 | Manual projection procedures | CeDG dihedral procedures (not authorized) |
 
 The last entry is visible but unavailable: the dihedral-procedure workspace is
@@ -385,7 +385,7 @@ Graphics 2, its *export area*, chosen in this order:
 
 1. the area you choose under **File → Export area**: **Define export area…**
    (four world bounds, starting from the current area, or the visible view) or
-   **Use Export_1 and Export_2**;
+   **Use Export_1 and Export_2**, or an ISO A sheet or ISO A area (section 4.7);
 2. otherwise the points `Export_1` and `Export_2` of the document, when both
    exist and span a rectangle;
 3. otherwise the visible part of the view.
@@ -546,6 +546,95 @@ physical size and drawing scale of section 4.5, and DXF records the unit in its
 header (`mm`, `cm`, `m`) or, for a custom unit, in its mandatory sidecar
 (section 11). Coordinates are never converted. Without a construction unit no
 export claims a physical scale, and DXF stays unitless.
+
+### 4.7 ISO A sheets
+
+```text
+IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denominator>, <Model Units per Millimetre>, <Inner Frame> )
+```
+
+An **ISO A sheet** draws the paper of an ISO 216 A-series sheet (A0 to A10)
+at a drawing scale, with an optional inner frame and a label such as
+`A3 — 1:50`. It is an ordinary construction that depends on the point at its
+upper-left corner.
+
+- Sizes are the nominal ISO 216 sizes in millimetres; A3 landscape is
+  420 × 297 mm. Landscape puts the long side horizontally; nothing is rotated
+  and the point stays the upper-left corner.
+- The first output is the **paper boundary**: hidden by default (dotted when
+  you show it), it is the sheet and the rectangle used as export area. The
+  second is the **inner frame**, 20 mm from the left edge and 10 mm from the
+  other edges, drawn solid; when the frame is off, or impossible (A10
+  portrait), it still exists but is undefined. The third is the **label**, at
+  the lower-right corner of the frame (inside the paper when there is no
+  frame); hide it like any text. Corners are available as
+  `Vertex(sheet, k)`.
+- The size in model units is the paper size converted once:
+  millimetres × denominator ÷ numerator × model units per millimetre. With
+  construction unit `mm` at 1:50 an A3 landscape sheet measures
+  21000 × 14850. The scale and the unit factor are inputs written when the
+  sheet is created: changing the drawing scale or the document units later
+  never changes the sheet.
+- An ISO index that is not a whole number from 0 to 10, a scale term that is
+  not a whole number from 1 to 10^9, a factor that is not positive, or a size
+  the computer cannot represent makes the outputs undefined; correcting the
+  input restores the same objects.
+
+**Tool.** Construction → Annotations and media → **ISO A Border** (menu only;
+there is no toolbar button). The document needs a physical construction unit
+(section 4.6): without one the action is unavailable and its reason points to
+**Document units…**; no unit is assumed. Click a point, or an empty position to
+create a hidden corner point; a single selected point is used at once. The
+dialog offers the size (A3 by default), the orientation (landscape by
+default), the drawing scale (starting from the session scale, with presets or
+a free `a:b`), **Inner frame** (on for A0–A4, off for A5–A10, unavailable for
+A10 portrait) and **Show the sheet label**. OK creates the sheet in one undo
+step; Cancel removes a point the click created. A custom unit whose factor
+makes the millimetre conversion not representable is refused with its reason.
+Move a sheet by dragging its frame (or its paper when shown); a sheet without
+frame is moved by editing its point or by showing its paper.
+
+**Export area.** A new sheet never replaces the export area. After creating
+it GeoCeDG asks **Use this sheet as the export area?**; **File → Export area →
+Use selected ISO A border** links an existing sheet (select any of its
+objects). A linked sheet is the export area of section 4.5: its paper
+boundary, also while hidden, never the frame, and it follows the sheet when
+it moves. The link belongs to the session: it is not saved, New and Open clear
+it, and undo, redo, deleting or rebuilding the sheet releases it; the export
+then uses the next rule of section 4.5, the status bar says that the link was
+released, and the same action links the sheet again. **Define ISO A export
+area…** sets an ISO-sized export area once, from an upper-left corner, a size
+and an orientation, at the current drawing scale and unit, without creating
+objects.
+
+**Physical size and scale.** For a linked sheet the status bar shows the
+sheet and the page size it would export at with the current unit and drawing
+scale, and the picture, print and LaTeX dialogs show the same notice. Two
+checks are independent: whether that page size is the nominal paper size, and
+whether the session scale is the scale of the label. **Use sheet scale** (in
+the notice, in the activation warning, or by clicking the status-bar segment)
+sets the session drawing scale to the sheet's scale; it never changes
+geometry. When the construction unit has changed since the sheet was created,
+the scale alone cannot restore the nominal size and the message says so. When
+the size cannot be determined reliably — no unit, an extreme custom unit, a
+sheet very far from the origin — GeoCeDG says so instead of claiming a match.
+Linking a sheet whose page size is not nominal shows this warning at once;
+the scale never changes without your action.
+
+**Export.** Pictures, printing, the clipboard and LaTeX draw the frame, the
+label and the paper boundary when shown; a linked A3 1:50 sheet in `mm`
+exports a 420 × 297 mm PDF page at session scale 1:50. DXF writes the paper
+boundary and the frame as `LWPOLYLINE` entities whose last vertex repeats the
+first, writes no label text, and reports `iso_a_border` as the export-area
+producer.
+
+**Classic and older versions.** The Classic diagnostic session of this
+GeoCeDG version understands the command but offers no sheet tool, dialog or
+export-area link. An older GeoCeDG version or upstream GeoGebra reports a load
+error for each sheet; its outputs and the objects built on them are lost when
+saving from such a version. The legacy macros `sheetISOAnLand` and
+`sheetISOAnVert` of the historical template are unchanged and keep working;
+no document is migrated.
 
 ---
 
@@ -1801,6 +1890,10 @@ These are the limitations that affect what you can do in the application today.
 
 **Not available**
 
+- ISO A sheets have no title block, drawing-sheet set, paper space or
+  viewport; DXF writes their frame and paper without the label text, and a
+  version that does not know `IsoABorder` loses the sheets when it saves
+  (section 4.7).
 - Spatial semantics — three-dimensional object identity, projection frames and
   canonical projection certificates — is not available in the product. The
   **CeDG dihedral procedures** workspace is visible but not authorized.
@@ -1839,6 +1932,7 @@ These are the limitations that affect what you can do in the application today.
 | Rich metric evidence | Construction → Metrics and validation | `LocusLength(S)` / `LocusLength(S,P,Q)` | rich result | status, coverage, error estimate, diagnostics |
 | Aligned dimension | Construction → Metrics and validation → Aligned dimension | `AlignedDimension(A,B,1)` | number, lines and text | the value is in model units; the text follows the document units |
 | Linear dimension | Construction → Metrics and validation → Linear dimension | `LinearDimension(A,B,g,1)` | number, lines and text | measured along a line or vector; the offset side is fixed by `A → B` or the direction |
+| Create an ISO A sheet | Construction → Annotations and media → ISO A Border | `IsoABorder(P,3,true,1,50,1,true)` | two polylines and a text | needs a physical construction unit; scale and unit factor captured once; menu only (section 4.7) |
 | Intersect semantic curve and object | Construction → Relations and intersections → Intersect | `Intersect(S,c)` | rich intersection result | not a list of points |
 | Intersect two semantic curves | same | `Intersect(S,T)` | rich intersection result | several roots may each be admissible |
 | Materialize solutions | Inspect rich result → Create one / Create selected / Create all eligible | `Intersect(R,"<token>")` | point | recompute never creates points; do not transcribe tokens |
@@ -1849,6 +1943,8 @@ These are the limitations that affect what you can do in the application today.
 | Export DXF | File → Import and export → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
 | Export a picture | File → Import and export → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
 | Choose the export area | File → Export area | — | — | session only; the outline is never exported |
+| Use a sheet as the export area | File → Export area → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
+| ISO A export area | File → Export area → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
 | Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
 | Save a document | File → Save / Save as… | — | — | save native work as `.cedg` |
 | Inspect a definition | context menu → Inspect definition… | — | — | read-only; does not change Algebra display mode |
@@ -1882,6 +1978,7 @@ LinearDimension( <Point>, <Point>, <Line>, <Offset> )
 LinearDimension( <Point>, <Point>, <Vector>, <Offset> )
 LinearDimension( <Point>, <Point>, <Line>, <Offset>, <Overshoot>, <Gap> )
 LinearDimension( <Point>, <Point>, <Vector>, <Offset>, <Overshoot>, <Gap> )
+IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denominator>, <Model Units per Millimetre>, <Inner Frame> )
 
 Intersect( <Locus V2>, <Supported Object> )
 Intersect( <Locus V2>, <Locus V2> )

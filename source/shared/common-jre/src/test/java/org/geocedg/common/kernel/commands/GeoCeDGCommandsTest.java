@@ -18,6 +18,7 @@ import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPolyLine;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.junit.jupiter.api.Test;
 
@@ -88,6 +89,15 @@ public class GeoCeDGCommandsTest extends BaseUnitTest {
 		assertEquals(5, out.length);
 		assertEquals(Commands.LinearDimension, out[0].getParentAlgorithm().getClassName());
 		assertEquals(3, ((GeoNumeric) out[0]).getDouble(), 1E-10);
+	}
+
+	@Test
+	void cmdIsoABorder() {
+		add("P=(0,0)");
+		GeoElementND[] out = getElements("IsoABorder(P,3,true,1,50,1,true)");
+		assertEquals(3, out.length);
+		assertEquals(Commands.IsoABorder, out[0].getParentAlgorithm().getClassName());
+		assertEquals(420 * 50 + 297 * 50, ((GeoPolyLine) out[0]).getLength() / 2, 1E-9);
 	}
 
 	private GeoLocusV2 createLine() {

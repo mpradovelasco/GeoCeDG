@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-E3",
+  "phaseKind": "PRODUCT_IMPLEMENTATION_ISO_A_BORDER_AND_EXPORT_AREA",
+  "report": "docs/validation/pre_g9b_r6_plus_e3_candidate_report.md",
+  "technicalCandidateState": "FROZEN with the candidate commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDecisionAuthority": "a later explicit author decision naming the exact technical commit is the sole authority for approval",
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": true,
+  "passClaimed": false,
+  "publicationAuthorized": false,
+  "changeRoute": "ORDINARY",
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-E3 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "acceptanceRule": "PHASE and INTEGRATION both on the same exact commit and tree; no commit afterwards; FINAL not required and not run",
+  "finalRequired": false,
+  "representation": "R2: existing GeoElement types only (GeoPolyLine PAPER, GeoPolyLine FRAME, GeoText LABEL)",
+  "command": {
+    "canonical": "IsoABorder",
+    "spanishAlias": "MarcoISOA",
+    "arguments": 7,
+    "overloads": 0,
+    "table": "TABLE_GEOMETRY",
+    "mode": 144,
+    "classicSurface": "shared command available in GeoCeDG and Classic; GUI and export-area orchestration GeoCeDG Desktop only (OTQ-E3-1)"
+  },
+  "numericalContract": {
+    "expression": "((L*b)/a)*u",
+    "obligationA": "bit-exact deterministic evaluation",
+    "obligationB": "relative error < 2^-51.99 against the captured u when fl(q*u) is normal",
+    "obligationC": "relative error < 2^-50 against the physical unit definition when u and fl(q*u) are normal",
+    "validityVersusReliability": "not representable -> undefined; subnormal u or product -> defined, UNGUARANTEED",
+    "referenceCase": "A3 landscape mm 1:50 -> 21000 x 14850 exactly"
+  },
+  "productChange": true,
+  "serializationChange": "ADDITIVE_COMMAND_NAME_ONLY",
+  "guideImpact": "UPDATED",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "entry": {
+    "publishedImplementationBase": {
+      "name": "P_R6PLUS_E3_DESIGN",
+      "commit": "ff56099184544e5988c63e0ea3339e3d0fe01fac",
+      "tree": "1cdd1e986df785f5f16e7887300d9034e5e4a677"
+    },
+    "stageA": {
+      "commit": "3a577ea44a0bc93492a0d74c6f6c68b561b3ff63",
+      "tree": "1cc021a3d9e26850c5e0546e4ee89b036332525a",
+      "static": "verification-08557d0523e64bef9ee92e9a6448f291 ACCEPTED / COMPLETE"
+    },
+    "branch": "phase/pre-g9b-r6-plus-e3-iso-a-border"
+  },
+  "implementationDecisions": [
+    "return to Move only after the tool step and storeStateForModeStarting, so the mode change never removes the finished sheet",
+    "unit gate through GeoCeDGActionRegistry.unavailableReason (disabled with reason) plus the Document Units route on invocation",
+    "u written as its shortest round-trip decimal, plain notation when that form has an exponent",
+    "both polylines carry visibleInView3D = false at creation for a byte-stable reopen",
+    "Classic test compares the command block and the XML stability after the first reload",
+    "ISO_A_BORDER link validated by an identity scan at every resolve and on every Graphics 1 paint",
+    "explicit reuse of the inherited mode_shaperectangle artwork for mode 144"
+  ],
+  "adr0031Gate": {
+    "storedNames": [566, 567],
+    "withEnglishHead": [515, 516],
+    "displayed": [488, 489],
+    "negativeControl": "still fails closed"
+  },
+  "fingerprintFixture": {
+    "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json",
+    "route": "reconstruction of the uncommitted R5-B scratch probe with the canonical serializations of PreG9BR5BFingerprints, run outside the tree on the candidate source",
+    "additiveProof": "every summary and dictionaries.en.algebra equal the committed E2 values once the IsoABorder and MarcoISOA lines are removed; the Classic Spanish syntax without IsoABorder equals the committed syntax.es.text",
+    "summaries": {
+      "tokenUniverse": [1047, "df304f3cbca41411e83bfb169ba9f6b0ebfe84d7afa90b5243359bd080dce8c0"],
+      "scriptResolution": [1047, "017831b95127f267600982e4048bf107d0c46b93d331ccd23dddee559781246f"],
+      "xmlExactResolution": [1047, "017831b95127f267600982e4048bf107d0c46b93d331ccd23dddee559781246f"],
+      "reverseTables.en.fresh": [535, "93040975e9e8c7db41747b655f77b99ad545b759bac490ae3c72eef2774ee694"],
+      "reverseTables.en.casFilled": [560, "d5307b211d567557449e10b6f381f0b529026e0c4b32b76e0d52d4f9125d89fd"],
+      "reverseTables.es.fresh": [989, "13ab00104725f4107be663f5358127aa7f826c13bf9e3c463816b1b1ee902ef5"],
+      "reverseTables.es.casFilled": [1035, "ca707d605b6c8c06344ab051fe65070c53c244fbadbba5d121a958317991b856"],
+      "userResolution.en.fresh": [1047, "1907557ae975b496479e24446790009e1dd4271b63d97dc3e94b8349b2ce45fc"],
+      "userResolution.en.casFilled": [1047, "017831b95127f267600982e4048bf107d0c46b93d331ccd23dddee559781246f"],
+      "userResolution.es.fresh": [1047, "08115c27cea254faa34150febe79bbc3690dec881ce1fbfb5fd1725d2b252a06"],
+      "userResolution.es.casFilled": [1047, "fc440cbb6b1e195797177924b695d23cbeb7f524aaa5bf620f474960322d3bb5"],
+      "syntax.en.full": [1386, "ca87979142e7071b077da2f99c569d56da8b0bc91b924671d09f1209f5c21430"],
+      "syntax.es.full": [1386, "088b2aff306bc581c400fdc5b3cb37902921fe70afc497a379b287df314e9c32"]
+    }
+  },
+  "ggbscriptMatrix": {
+    "fixture": "iso-a-border",
+    "rows": 6,
+    "probes": 14,
+    "junitMethod": "isoABorderRows",
+    "inventoryCommandsAdded": ["IsoABorder"]
+  },
+  "profile": {
+    "actions": [127, 130],
+    "addedActions": ["presentation.iso-a-border", "export.area.iso-a", "export.area.use-iso-a-border"],
+    "catalogModes": [73, 74],
+    "toolbarModes": [49, 49],
+    "toolbarButton": false
+  },
+  "staticContractPins": {
+    "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json": "f167fa71f6db207f07af6cbc41fe3373654f8557373059646dc5278169c9b4a3",
+    "tools/agent/workspace-profile-validation.ps1": "8cf3a777b7f5cdeee47cbd23cd1b7390bd3ff2e2b16aa97beaef91086cbce2de"
+  },
+  "registryCatalogPins": {
+    "static_contracts": "0688909e98f812eba3b307419a80197ce33add843011b188eca7fed876398ef9",
+    "junit_inventory": "c6fcbaa6a1b13bdc0cc5e1e19a77bc0cda02900bdb222bb9b4f8e219c0a21c07"
+  },
+  "registryShape": {
+    "phaseSelections": [58, 59],
+    "addedNodes": [
+      "junit.shared.pre-g9b-r6-plus-e3.producer",
+      "junit.shared.pre-g9b-r6-plus-e3.semantic",
+      "junit.desktop.pre-g9b-r6-plus-e3.producer",
+      "junit.desktop.pre-g9b-r6-plus-e3.semantic"
+    ]
+  },
+  "junitInventory": {"refreshedFromExecutedEvidence": true, "updater": "tools/agent/update-verification-junit-inventory.ps1", "selections": {"discovery.shared": 6071, "discovery.desktop": 1985, "final.shared": 6988, "final.desktop": 1979, "pre-g9b-r4.shared": 8, "pre-g9b-r6.shared": 14, "pre-g9b-r6.desktop": 57, "pre-g9b-r6-plus-a1.shared": 20, "pre-g9b-r6-plus-b.desktop": 244, "pre-g9b-r6-plus-c.desktop": 272, "pre-g9b-r6-plus-e2.shared": 76, "pre-g9b-r6-plus-e2.desktop": 283, "pre-g9b-r6-plus-e3.shared": 39, "pre-g9b-r6-plus-e3.desktop": 325}, "selectionCount": [51, 53], "pinsUpdatedDuringRefresh": ["PostE2P1R2SmokeFollowUpTest status-bar order", "PreG9BR6PlusD1DocumentUnitsTest status-bar order", "PreG9BR6PlusBExportSurfaceTest File export surface"]},
+  "checks": {
+    "sharedCompleteSuite": "6988 tests, 0 failures, 10 skipped",
+    "checkstyle": "no finding in an E3 file; one pre-existing warning in PreG9BR6PlusA1HiddenLayerTest",
+    "developmentStatic": "ACCEPTED / COMPLETE (uncommitted; standing governance diagnostic)",
+    "infraUnit": "ACCEPTED / COMPLETE, 0 diagnostic findings (verification-bea096aab82e4737982cf1193863f387, uncommitted)",
+    "gitDiffCheck": "clean"
+  },
+  "observations": [
+    {
+      "id": "OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP",
+      "state": "OPEN — OUTSIDE E3 — NOT CHARACTERIZED FURTHER",
+      "fact": "in the Desktop test harness, after loadXML of Templatev7.ggb and setLanguage(es), no Spanish command name resolves (Punto, CotaAlineada, MarcoISOA alike); a fresh application resolves them"
+    }
+  ],
+  "authorSmoke": "PENDING (required; report section 15)",
+  "changedPaths": {
+  "sharedKernel": [
+    "source/shared/common/src/main/java/org/geocedg/common/export/GeometryExportArea.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/sheet/AlgoIsoABorder.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/sheet/IsoASheet.java",
+    "source/shared/common/src/main/java/org/geocedg/common/kernel/sheet/package-info.java",
+    "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianConstants.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/BasicCommandProcessorFactory.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdIsoABorder.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
+    "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java"
+  ],
+  "sharedTests": [
+    "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/commands/GeoCeDGCommandsTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/sheet/PreG9BR6PlusE3IsoABorderClassicTest.java",
+    "source/shared/common-jre/src/test/java/org/geocedg/common/sheet/PreG9BR6PlusE3IsoABorderTest.java"
+  ],
+  "desktopMain": [
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportArea.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportAreaSession.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfExportController.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExportScalePresentation.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGIsoABorderPrompt.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGIsoABorderTool.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStatusBar.java",
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/resources/GeoCeDGToolImageResource.java"
+  ],
+  "desktopTests": [
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ActionRegistryTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1ProfileCompilerTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1WorkspaceSurfaceTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGProfileTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostE2P1R2SmokeFollowUpTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalCommandGateTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrixTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusA1LayerWorkspaceTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusBExportSurfaceTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusD1DocumentUnitsTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE1LCuratedLibraryTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE2NativeDimensionDesktopTest.java",
+    "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE3IsoABorderDesktopTest.java",
+    "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json"
+  ],
+  "profileAndBundles": [
+    "apps/geocedg/application-profile.yml",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
+    "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties"
+  ],
+  "verificationData": [
+    "geocedg/specs/operations/verification-junit-inventory.json",
+    "geocedg/specs/operations/verification-registry.json",
+    "geocedg/specs/operations/verification-static-contracts.json",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-e3-candidate-evidence.json",
+    "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json",
+    "tools/agent/tests/verification-final-coverage.Tests.ps1",
+    "tools/agent/workspace-profile-validation.ps1"
+  ],
+  "documents": [
+    "docs/adr/0036-iso-a-border-representation-and-export-area-producers.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/upstream/modified-files.yml",
+    "docs/user/geocedg_user_guide_en.md",
+    "docs/user/geocedg_user_guide_es.md",
+    "docs/validation/pre_g9b_r6_plus_e3_candidate_report.md",
+    "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md",
+    "geocedg/specs/export/geometry-export-foundation.md",
+    "geocedg/specs/sheets/iso-a-border.md",
+    "geocedg/specs/ui/cedg-workspaces.md"
+  ]
+}
+}

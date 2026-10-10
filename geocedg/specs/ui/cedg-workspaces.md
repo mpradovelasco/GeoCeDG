@@ -475,7 +475,8 @@ Symbolic action IDs remain the manifest authority.
 
 These eleven groups remain the professional Construction design; R1 is consumed
 through existing actions and does not change the 110 stable action IDs.
-Current live catalog (2026-10-08): 127 actions. The 110-action figure in this
+Current live catalog (2026-10-10, `PRE-G9B-R6-plus-E3` technical candidate):
+130 actions. The 110-action figure in this
 section is the G9U1 baseline; POST-G9U1-A7 added two navigation actions,
 PRE-G9B-R4 three authoring tools, PRE-G9B-R6-plus-A-1 the one-shot
 `construction.working-layer` mode, placed in the Move group (`edit-selection`)
@@ -513,6 +514,14 @@ PRE-G9B-R6-plus-E2 added `measure.aligned-dimension` and
 group after Distance or Length and to the metrics-validation toolbar cluster;
 their values are model-unit measures and only their texts follow the document
 units (`geocedg/specs/dimensions/native-dimensions.md`).
+PRE-G9B-R6-plus-E3 (technical candidate pending author review; contract
+`geocedg/specs/sheets/iso-a-border.md`, `PROPOSED`) added the menu-only
+`presentation.iso-a-border` tool (mode `144`) after Image in the
+construction-annotations-media group, with no toolbar entry, and the File
+export-area actions `export.area.iso-a` and `export.area.use-iso-a-border`.
+The tool and `export.area.iso-a` are unavailable, with their reason, while the
+document has no physical construction unit. The sheet coherence indicator and
+"Use sheet scale" are session presentation, never document or geometric state.
 The main toolbar should expose groups, not one permanent button per action.
 Actions the author explicitly does not need as direct buttons—such as Delete,
 Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and

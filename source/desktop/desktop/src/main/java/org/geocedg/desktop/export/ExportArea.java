@@ -19,6 +19,10 @@ public final class ExportArea {
 	public enum Source {
 		/** explicitly activated MANUAL producer */
 		MANUAL,
+		/** explicitly activated ISO A sized area, computed once (PRE-G9B-R6-plus-E3) */
+		ISO_A_SELECTION,
+		/** explicitly linked IsoABorder paper boundary, live (PRE-G9B-R6-plus-E3) */
+		ISO_A_BORDER,
 		/** explicitly activated EXPORT_POINTS producer */
 		EXPORT_POINTS_EXPLICIT,
 		/** Export_1/Export_2 used automatically */

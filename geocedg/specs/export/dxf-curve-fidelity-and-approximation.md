@@ -179,7 +179,12 @@ unsupported, invalid, and omitted component counts. The approved defaults are:
 An explicit export area (`MANUAL`, `EXPORT_POINTS_EXPLICIT`,
 `EXPORT_POINTS_AUTOMATIC`) selects whole sources and certified components by
 the `B1` participation rule of the geometry export foundation (version 1.1,
-`DQ-C13`); the `VISIBLE_VIEWPORT` fallback is no boundary. A non-participating
+`DQ-C13`); the `VISIBLE_VIEWPORT` fallback is no boundary. Proposed amendment
+of the `PRE-G9B-R6-plus-E3` technical candidate (not author approved;
+`geocedg/specs/sheets/iso-a-border.md` §11): the explicit producers
+`ISO_A_SELECTION` and `ISO_A_BORDER` (the linked sheet's paper boundary) are
+explicit export areas under the same rule, reported as `iso_a_selection` and
+`iso_a_border`. A non-participating
 source or component is an `OUTSIDE_EXPORT_AREA` population outcome: it is
 neither unsupported nor invalid, is never a fidelity reduction, never blocks
 the strict request and never makes the sidecar mandatory by itself. The strict

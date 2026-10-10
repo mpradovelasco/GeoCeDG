@@ -16,7 +16,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -28,6 +31,8 @@ import javax.swing.SwingUtilities;
 import org.geocedg.common.export.PhysicalExportScale;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
+import org.geocedg.common.kernel.sheet.AlgoIsoABorder;
+import org.geocedg.common.kernel.sheet.IsoASheet;
 import org.geocedg.common.kernel.units.DocumentUnitSystem;
 import org.geocedg.common.kernel.units.UnitDocumentOperations;
 import org.geocedg.common.kernel.units.UnitMetadataException;
@@ -57,6 +62,8 @@ import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
@@ -115,6 +122,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private ExportAreaSession exportAreaSession;
 	private PictureExportService pictureExportService;
 	private GeoCeDGExportAreaPrompt exportAreaPrompt = GeoCeDGExportAreaPrompt.dialog();
+	private GeoCeDGIsoABorderPrompt isoABorderPrompt = GeoCeDGIsoABorderPrompt.swing();
+	private GeoCeDGIsoABorderTool isoABorderTool;
 	private Runnable dxfShortcutAction = () -> runProfileAction("export.dxf-2d");
 	/**
 	 * PRE-G9B-R6-plus-D1: whether the host constructor left a blank document. It is set
@@ -630,6 +639,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			exportAreaSession = new ExportAreaSession(getKernel());
 			// presentation only: the overlay repaints, the document never changes
 			exportAreaSession.addListener(() -> getKernel().notifyRepaint());
+			// PRE-G9B-R6-plus-E3: the sheet segment follows links, losses and choices
+			exportAreaSession.addListener(this::updateSheetStatus);
 		}
 		return exportAreaSession;
 	}
@@ -840,6 +851,232 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 
 	void setExportAreaPrompt(GeoCeDGExportAreaPrompt prompt) {
 		exportAreaPrompt = prompt;
+	}
+
+	// ------------------------------------------------ PRE-G9B-R6-plus-E3 ISO A sheets
+
+	/** @return the interaction of the ISO A sheet tool (injectable in tests) */
+	GeoCeDGIsoABorderPrompt getIsoABorderPrompt() {
+		return isoABorderPrompt;
+	}
+
+	void setIsoABorderPrompt(GeoCeDGIsoABorderPrompt prompt) {
+		isoABorderPrompt = prompt;
+	}
+
+	/** @return the ISO A sheet tool orchestrator of this window */
+	GeoCeDGIsoABorderTool getIsoABorderTool() {
+		if (isoABorderTool == null) {
+			isoABorderTool = new GeoCeDGIsoABorderTool(this);
+		}
+		return isoABorderTool;
+	}
+
+	/** @return the construction unit as shown in dialogs */
+	String getExportScalePresentationText() {
+		return new GeoCeDGExportScalePresentation(this).constructionUnitText();
+	}
+
+	/**
+	 * Derived, never stored (DQ-E3-6, DQ-E3-12): the sheet against the current unit and
+	 * this window's session drawing scale.
+	 *
+	 * @param border sheet
+	 * @return both coherence states
+	 */
+	IsoASheet.Coherence sheetCoherence(AlgoIsoABorder border) {
+		UnitState state = getDocumentUnits().getState();
+		DrawingScale scale = getDrawingScale();
+		return border.coherence(state.effectiveConstructionMetresPerUnit(),
+				scale.getNumerator(), scale.getDenominator());
+	}
+
+	/**
+	 * @param border sheet
+	 * @param coherence its coherence
+	 * @return the localized discrepancy message in the current unit and scale
+	 */
+	String sheetCoherenceMessage(AlgoIsoABorder border, IsoASheet.Coherence coherence) {
+		String sheet = sheetName(border);
+		StringBuilder message = new StringBuilder();
+		switch (coherence.getPhysical()) {
+		case COHERENT:
+			message.append(layerText("IsoA.Coherence.Coherent", sheet,
+					millimetres(coherence.getNominalWidthMm()),
+					millimetres(coherence.getNominalHeightMm())));
+			break;
+		case INCOHERENT:
+			message.append(layerText("IsoA.Coherence.Incoherent", sheet,
+					millimetres(coherence.getNominalWidthMm()),
+					millimetres(coherence.getNominalHeightMm()),
+					millimetres(coherence.getEffectiveWidthMm()),
+					millimetres(coherence.getEffectiveHeightMm())));
+			break;
+		case NOT_DETERMINABLE:
+		default:
+			message.append(layerText("IsoA.Coherence.NotDeterminable", sheet));
+			break;
+		}
+		if (coherence.getScale() == IsoASheet.ScaleCoherence.DIFFERENT) {
+			message.append('\n').append(layerText("IsoA.Coherence.ScaleDifferent",
+					sheetScale(border), getDrawingScale().toString()));
+		} else if (coherence.getScale() == IsoASheet.ScaleCoherence.MATCH
+				&& coherence.getPhysical() == IsoASheet.PhysicalCoherence.INCOHERENT) {
+			message.append('\n').append(layerText("IsoA.Coherence.UnitCause"));
+		}
+		return message.toString();
+	}
+
+	/** @return the captured gcd-normal scale of a sheet, or "?" */
+	static String sheetScale(AlgoIsoABorder border) {
+		double a = border.getScaleNumerator();
+		double b = border.getScaleDenominator();
+		if (!IsoASheet.isScaleTerm(a) || !IsoASheet.isScaleTerm(b)) {
+			return "?";
+		}
+		return DrawingScale.of((long) a, (long) b).toString();
+	}
+
+	private static String sheetName(AlgoIsoABorder border) {
+		return border.getLabelText().isDefined() ? border.getLabelText().getTextString()
+				: "?";
+	}
+
+	/**
+	 * @param value millimetres
+	 * @return an integer, or up to three decimals, locale-independent
+	 */
+	static String millimetres(double value) {
+		if (!Double.isFinite(value)) {
+			return "?";
+		}
+		if (Math.abs(value - Math.rint(value)) < 1E-9) {
+			return Long.toString((long) Math.rint(value));
+		}
+		return new BigDecimal(value).setScale(3, RoundingMode.HALF_EVEN)
+				.stripTrailingZeros().toPlainString();
+	}
+
+	/**
+	 * Explicit activation of a sheet as the ISO_A_BORDER producer (DQ-E3-8), followed
+	 * at once by the activation warning when the page is not the nominal ISO size
+	 * (DQ-E3-12). Never changes the scale without the user's choice.
+	 *
+	 * @param border sheet
+	 * @return whether it became the export area
+	 */
+	boolean activateIsoABorder(AlgoIsoABorder border) {
+		if (!getExportAreaSession().useIsoABorder(getEuclidianView1().getViewID(), border)) {
+			isoABorderPrompt.inform(this, layerText("IsoA.Use.Undefined"),
+					layerText("IsoA.Activate.Title"), null);
+			return false;
+		}
+		IsoASheet.Coherence coherence = sheetCoherence(border);
+		if (coherence.getPhysical() != IsoASheet.PhysicalCoherence.COHERENT) {
+			boolean applicable = coherence.getScale() == IsoASheet.ScaleCoherence.DIFFERENT;
+			if (isoABorderPrompt.inform(this, sheetCoherenceMessage(border, coherence),
+					layerText("IsoA.Coherence.Title"),
+					applicable ? layerText("IsoA.Coherence.UseScale") : null)) {
+				useSheetScale();
+			}
+		}
+		updateSheetStatus();
+		return true;
+	}
+
+	/**
+	 * "Use sheet scale" (DQ-E3-12): sets only the session drawing scale to the linked
+	 * sheet's captured scale, after explicit activation; geometry is unchanged. Both
+	 * coherence states are re-evaluated and a remaining mismatch is reported.
+	 *
+	 * @return whether the scale was changed
+	 */
+	boolean useSheetScale() {
+		AlgoIsoABorder border = getExportAreaSession().getLinkedBorder();
+		if (border == null || sheetCoherence(border).getScale()
+				!= IsoASheet.ScaleCoherence.DIFFERENT) {
+			return false;
+		}
+		setDrawingScale(DrawingScale.of((long) border.getScaleNumerator(),
+				(long) border.getScaleDenominator()));
+		IsoASheet.Coherence after = sheetCoherence(border);
+		if (after.getPhysical() != IsoASheet.PhysicalCoherence.COHERENT) {
+			isoABorderPrompt.inform(this, sheetCoherenceMessage(border, after),
+					layerText("IsoA.Coherence.Title"), null);
+		}
+		updateSheetStatus();
+		return true;
+	}
+
+	/** File action: links the sheet of the single selected object (any output). */
+	void useSelectedIsoABorder() {
+		List<GeoElement> selected = getSelectionManager().getSelectedGeos();
+		AlgoIsoABorder border = selected.size() == 1
+				? AlgoIsoABorder.ownerOf(selected.get(0)) : null;
+		if (border == null) {
+			isoABorderPrompt.inform(this, layerText("IsoA.Use.NoBorder"),
+					layerText("IsoA.Activate.Title"), null);
+			return;
+		}
+		activateIsoABorder(border);
+	}
+
+	/**
+	 * File action {@code export.area.iso-a} (DQ-E3-10): an ISO A sized area at the
+	 * current session scale and unit, computed once with the shared helper; the corner
+	 * is copied from a single selected point, never linked.
+	 *
+	 * @return whether an area was defined
+	 */
+	boolean defineIsoASelection() {
+		if (!getIsoABorderTool().checkUnit()) {
+			return false;
+		}
+		double x = 0;
+		double y = 0;
+		List<GeoElement> selected = getSelectionManager().getSelectedGeos();
+		if (selected.size() == 1 && selected.get(0) instanceof GeoPoint point
+				&& point.isDefined() && point.isFinite()) {
+			x = point.getInhomX();
+			y = point.getInhomY();
+		}
+		GeoCeDGIsoABorderPrompt.SelectionRequest request = isoABorderPrompt.askSelection(this,
+				new GeoCeDGIsoABorderPrompt.SelectionRequest(x, y,
+						GeoCeDGIsoABorderTool.DEFAULT_INDEX, true));
+		if (request == null) {
+			return false;
+		}
+		double u = IsoASheet.captureUnitFactor(
+				getDocumentUnits().getState().effectiveConstructionMetresPerUnit());
+		DrawingScale scale = getDrawingScale();
+		boolean valid = IsoASheet.isIndex(request.index()) && Double.isFinite(request.x())
+				&& Double.isFinite(request.y());
+		if (valid) {
+			double width = IsoASheet.conv(IsoASheet.paperWidthMm(request.index(),
+					request.landscape()), scale.getNumerator(), scale.getDenominator(), u);
+			double height = IsoASheet.conv(IsoASheet.paperHeightMm(request.index(),
+					request.landscape()), scale.getNumerator(), scale.getDenominator(), u);
+			valid = getExportAreaSession().defineIsoASelection(
+					getEuclidianView1().getViewID(), request.x(), request.x() + width,
+					request.y() - height, request.y());
+		}
+		if (!valid) {
+			isoABorderPrompt.inform(this, layerText("IsoA.Selection.Invalid"),
+					layerText("IsoA.Selection.Title"), null);
+		}
+		updateSheetStatus();
+		return valid;
+	}
+
+	/** @return the linked sheet while its link is live, else null */
+	AlgoIsoABorder getLinkedIsoABorder() {
+		return getExportAreaSession().getLinkedBorder();
+	}
+
+	private void updateSheetStatus() {
+		if (statusBar != null) {
+			statusBar.updateText();
+		}
 	}
 
 	void setDxfShortcutAction(Runnable action) {

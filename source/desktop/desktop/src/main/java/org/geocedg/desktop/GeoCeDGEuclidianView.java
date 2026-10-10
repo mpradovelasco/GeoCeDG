@@ -69,6 +69,11 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 	@Override
 	public void paint(GGraphics2D graphics) {
 		super.paint(graphics);
+		if (getApplication() instanceof AppGeoCeDG app) {
+			// PRE-G9B-R6-plus-E3: every rebuild repaints, so a stale ISO_A_BORDER link
+			// (undo, redo, deletion, reload) is dropped here by its identity test
+			app.getExportAreaSession().validateLink();
+		}
 		paintExportAreaOverlay(graphics);
 		if (!(getEuclidianController() instanceof GeoCeDGEuclidianController)) {
 			return;

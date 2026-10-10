@@ -565,6 +565,7 @@ public abstract class CommandDispatcher {
 			case LocusLength:
 			case AlignedDimension:
 			case LinearDimension:
+			case IsoABorder:
 			case UnitPerpendicularVector:
 			case UnitOrthogonalVector:
 			case Surface:

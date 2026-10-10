@@ -40,7 +40,13 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 	/** GeoCeDG-owned artwork of the native aligned dimension tool (PRE-G9B-R6-plus-E2). */
 	ALIGNED_DIMENSION("mode_geocedg_aligneddimension"),
 	/** GeoCeDG-owned artwork of the native linear dimension tool (PRE-G9B-R6-plus-E2). */
-	LINEAR_DIMENSION("mode_geocedg_lineardimension");
+	LINEAR_DIMENSION("mode_geocedg_lineardimension"),
+	/**
+	 * Inherited host rectangle artwork, reused explicitly for the ISO A sheet tool
+	 * (PRE-G9B-R6-plus-E3). No new asset is introduced, so no asset-manifest entry
+	 * changes.
+	 */
+	ISO_A_BORDER("mode_shaperectangle");
 
 	private static final int RASTER_SIZE = 64;
 	private final String filename;
@@ -70,6 +76,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return WORKING_LAYER;
 		case "geocedg.action.AlignedDimension":
 			return ALIGNED_DIMENSION;
+		case "geocedg.action.IsoABorder":
+			return ISO_A_BORDER;
 		case "geocedg.action.LinearDimension":
 			return LINEAR_DIMENSION;
 		case "geocedg.action.LocusV2Point":
@@ -116,6 +124,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return WORKING_LAYER;
 		case "aligneddimension":
 			return ALIGNED_DIMENSION;
+		case "isoaborder":
+			return ISO_A_BORDER;
 		case "lineardimension":
 			return LINEAR_DIMENSION;
 		default:

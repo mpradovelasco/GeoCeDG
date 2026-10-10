@@ -33,6 +33,7 @@ import org.geocedg.desktop.GeoCeDGProfile.ActionDefinition;
 import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
 import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.AlgebraStyle;
@@ -75,6 +76,7 @@ public final class GeoCeDGActionRegistry {
 			"host.export.pstricks", "host.export.pgf", "host.export.asymptote",
 			"geocedg.export.area.define-rectangle", "geocedg.export.area.use-export-points",
 			"geocedg.export.area.show", "geocedg.export.area.clear",
+			"geocedg.export.area.iso-a", "geocedg.export.area.use-iso-a-border",
 			"geocedg.document.units");
 
 	private final AppD app;
@@ -214,7 +216,17 @@ public final class GeoCeDGActionRegistry {
 		if ("host.document.open-recent".equals(target) && AppD.getFileListSize() == 0) {
 			return text("Action.Unavailable.NoFiles");
 		}
+		if (isIsoAUnitGated(definition) && app instanceof AppGeoCeDG geoCeDG) {
+			return geoCeDG.getIsoABorderTool().unavailableReason();
+		}
 		return null;
+	}
+
+	/** The PRE-G9B-R6-plus-E3 actions behind the document-unit gate (DQ-E3-7). */
+	private static boolean isIsoAUnitGated(ActionDefinition definition) {
+		return "geocedg.export.area.iso-a".equals(definition.target())
+				|| (definition.mode() != null
+						&& GeoCeDGIsoABorderTool.handles(definition.mode()));
 	}
 
 	/**
@@ -225,16 +237,48 @@ public final class GeoCeDGActionRegistry {
 		ActionDefinition definition = GeoCeDGProfile.getAction(id);
 		String reason = unavailableReason(definition);
 		if (reason != null) {
-			message(reason);
+			if (isIsoAUnitGated(definition) && app instanceof AppGeoCeDG geoCeDG) {
+				// the reason with the Document Units route of design section 12
+				geoCeDG.getIsoABorderTool().checkUnit();
+			} else {
+				message(reason);
+			}
 			return;
 		}
 		if (definition.mode() != null) {
+			if (GeoCeDGIsoABorderTool.handles(definition.mode())
+					&& app instanceof AppGeoCeDG geoCeDG && startIsoABorder(geoCeDG)) {
+				return;
+			}
 			app.setActiveView(App.VIEW_EUCLIDIAN);
 			app.setMode(definition.mode());
 			return;
 		}
 		execute(definition.target(), event);
 		refresh();
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E3 ISO A Border menu action: the unit gate first (DQ-E3-7); a
+	 * single preselected point is used at once with one undo point, otherwise the
+	 * one-shot mode starts and waits for the click.
+	 *
+	 * @param geoCeDG application
+	 * @return whether the action is complete without entering the mode
+	 */
+	private static boolean startIsoABorder(AppGeoCeDG geoCeDG) {
+		if (!geoCeDG.getIsoABorderTool().checkUnit()) {
+			return true;
+		}
+		List<GeoElement> selected = geoCeDG.getSelectionManager().getSelectedGeos();
+		if (selected.size() == 1 && selected.get(0) instanceof GeoPoint point) {
+			geoCeDG.getSelectionManager().clearSelectedGeos();
+			if (geoCeDG.getIsoABorderTool().create(point, false) != null) {
+				geoCeDG.storeUndoInfo();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private void execute(String target, ActionEvent event) {
@@ -358,6 +402,12 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.export.area.clear":
 			((AppGeoCeDG) app).clearExportArea();
+			break;
+		case "geocedg.export.area.iso-a":
+			((AppGeoCeDG) app).defineIsoASelection();
+			break;
+		case "geocedg.export.area.use-iso-a-border":
+			((AppGeoCeDG) app).useSelectedIsoABorder();
 			break;
 		case "geocedg.document.units":
 			((AppGeoCeDG) app).editDocumentUnits();

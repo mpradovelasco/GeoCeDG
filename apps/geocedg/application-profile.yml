@@ -1894,6 +1894,25 @@
       "implementation_state": "existing"
     },
     {
+      "id": "presentation.iso-a-border",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_ISO_A_BORDER",
+        "audited_numeric_id": 144
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.iso-a-border-reference-point-dialog",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.IsoABorder",
+      "icon_ref": "geocedg.action.IsoABorder",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "semantic-command",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-E3: menu only (Construction > Annotations and media), no toolbar button; blocked without a physical construction unit; a point (clicked, created hidden, or preselected) and a dialog issue one IsoABorder with u = 1e-3 / fb(effC) and the drawing scale captured once; one undo point; then an explicit yes/no activation as the ISO_A_BORDER export area."
+    },
+    {
       "id": "presentation.axes-toggle",
       "kind": "view-toggle",
       "target": {
@@ -2415,6 +2434,42 @@
       "planning_disposition": "must",
       "implementation_state": "existing",
       "notes": "PRE-G9B-R6-plus-B back to the automatic resolution: Export_1/Export_2 when valid, otherwise the visible viewport."
+    },
+    {
+      "id": "export.area.iso-a",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.area.iso-a"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ExportAreaIsoA",
+      "icon_ref": "geocedg.action.ExportAreaIsoA",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-E3 ISO_A_SELECTION producer: an ISO A sized rectangle at the current session drawing scale and construction unit, computed once with the shared helper; the corner is copied, never linked; SESSION state, no construction change, no undo point, no serialization."
+    },
+    {
+      "id": "export.area.use-iso-a-border",
+      "kind": "product-action",
+      "target": {
+        "symbol": "geocedg.export.area.use-iso-a-border"
+      },
+      "maturity": "experimental",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.iso-a-border-output",
+      "effect_profile_id": "preference-only",
+      "localization_ref": "geocedg.action.ExportAreaUseIsoABorder",
+      "icon_ref": "geocedg.action.ExportAreaUseIsoABorder",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "PRE-G9B-R6-plus-E3 ISO_A_BORDER producer: links the paper boundary of the sheet that owns the selected output (through its parent algorithm), live while valid and dropped when stale; SESSION state, no undo point, no serialization."
     },
 
     {
@@ -2964,6 +3019,7 @@
         "presentation.image"
       ],
       "menu_action_ids": [
+        "presentation.iso-a-border",
         "presentation.axes-toggle",
         "presentation.grid-toggle",
         "view.properties"
@@ -3054,7 +3110,9 @@
         "export.area.define-rectangle",
         "export.area.use-export-points",
         "export.area.show",
-        "export.area.clear"
+        "export.area.clear",
+        "export.area.iso-a",
+        "export.area.use-iso-a-border"
       ],
       "context_action_ids": [],
       "inspector_action_ids": [],
@@ -3411,7 +3469,8 @@
       "id": "file-export-area",
       "name_key": "Group.File.ExportArea",
       "action_ids": ["export.area.define-rectangle", "export.area.use-export-points",
-        "export.area.show", "export.area.clear"],
+        "export.area.show", "export.area.clear", "export.area.iso-a",
+        "export.area.use-iso-a-border"],
       "toolbar_action_ids": []
     },
     {
@@ -3527,7 +3586,7 @@
     {
       "id": "construction-annotations-media",
       "name_key": "Group.Construction.AnnotationsMedia",
-      "action_ids": ["presentation.image"],
+      "action_ids": ["presentation.image", "presentation.iso-a-border"],
       "toolbar_action_ids": []
     },
     {
@@ -5263,6 +5322,83 @@
       "en": "This document has no construction unit, so it has no physical drawing scale: exports use a non-physical device scale.",
       "es": "Este documento no tiene unidad de construcción, así que no tiene escala de dibujo física: las exportaciones usan una escala de dispositivo no física."
     },
+    "geocedg.action.ExportAreaIsoA.name": {
+      "en": "Define ISO A export area…",
+      "es": "Definir área de exportación ISO A…"
+    },
+    "geocedg.action.ExportAreaIsoA.short_help": {
+      "en": "An ISO A sized export area at the current drawing scale.",
+      "es": "Un área de exportación del tamaño ISO A a la escala de dibujo actual."
+    },
+    "geocedg.action.ExportAreaIsoA.long_help": {
+      "en": "Enter the upper-left corner in world coordinates and choose the ISO A size and orientation. The area is the nominal ISO paper rectangle at the current session drawing scale and construction unit, computed once. It is session state: it is not saved with the document and creates no undo step.",
+      "es": "Introduzca la esquina superior izquierda en coordenadas mundo y elija el tamaño ISO A y la orientación. El área es el rectángulo nominal del papel ISO a la escala de dibujo de la sesión y la unidad de construcción actuales, calculado una vez. Es estado de sesión: no se guarda con el documento ni crea un paso de deshacer."
+    },
+    "geocedg.action.ExportAreaIsoA.status": {
+      "en": "Ready: Define ISO A export area…",
+      "es": "Disponible: Definir área de exportación ISO A…"
+    },
+    "geocedg.action.ExportAreaIsoA.error": {
+      "en": "Cannot perform Define ISO A export area… in the current context.",
+      "es": "No se puede ejecutar Definir área de exportación ISO A… en el contexto actual."
+    },
+    "geocedg.action.ExportAreaUseIsoABorder.name": {
+      "en": "Use selected ISO A border",
+      "es": "Usar el marco ISO A seleccionado"
+    },
+    "geocedg.action.ExportAreaUseIsoABorder.short_help": {
+      "en": "Use the paper boundary of the selected ISO A border as the export area.",
+      "es": "Usar el borde del papel del marco ISO A seleccionado como área de exportación."
+    },
+    "geocedg.action.ExportAreaUseIsoABorder.long_help": {
+      "en": "Select any object of an ISO A border. Its nominal paper boundary, never the inner frame, becomes the active export area of this session and follows the sheet while it exists; undo, redo, deletion or reopening release the link and the export area falls back. It is not saved and creates no undo step.",
+      "es": "Seleccione cualquier objeto de un marco ISO A. El borde nominal de su papel, nunca el marco interior, pasa a ser el área de exportación activa de la sesión y sigue a la lámina mientras exista; deshacer, rehacer, borrar o reabrir liberan el enlace y el área de exportación vuelve a la regla por defecto. No se guarda ni crea un paso de deshacer."
+    },
+    "geocedg.action.ExportAreaUseIsoABorder.status": {
+      "en": "Ready: Use selected ISO A border",
+      "es": "Disponible: Usar el marco ISO A seleccionado"
+    },
+    "geocedg.action.ExportAreaUseIsoABorder.error": {
+      "en": "Cannot perform Use selected ISO A border in the current context.",
+      "es": "No se puede ejecutar Usar el marco ISO A seleccionado en el contexto actual."
+    },
+    "IsoA.Dialog.Title": {"en": "ISO A Border", "es": "Marco ISO A"},
+    "IsoA.Dialog.Size": {"en": "ISO A size:", "es": "Tamaño ISO A:"},
+    "IsoA.Dialog.Landscape": {"en": "Landscape", "es": "Horizontal"},
+    "IsoA.Dialog.Portrait": {"en": "Portrait", "es": "Vertical"},
+    "IsoA.Dialog.Scale": {"en": "Drawing scale (drawing : real):", "es": "Escala de dibujo (dibujo : real):"},
+    "IsoA.Dialog.Frame": {"en": "Inner frame (margins left 20, right 10, top 10, bottom 10 mm)", "es": "Marco interior (márgenes izquierda 20, derecha 10, arriba 10, abajo 10 mm)"},
+    "IsoA.Dialog.FrameImpossible": {"en": "These margins leave no inner frame for this size and orientation.", "es": "Estos márgenes no dejan marco interior para este tamaño y orientación."},
+    "IsoA.Dialog.Label": {"en": "Show the sheet label", "es": "Mostrar la etiqueta de la lámina"},
+    "IsoA.Dialog.Unit": {"en": "Construction unit: %0. The unit and the scale are captured once; the sheet does not follow later changes.", "es": "Unidad de construcción: %0. La unidad y la escala se capturan una vez; la lámina no sigue los cambios posteriores."},
+    "IsoA.Dialog.InvalidScale": {"en": "The drawing scale must be a:b with positive integers up to 1000000000.", "es": "La escala de dibujo debe ser a:b con enteros positivos de hasta 1000000000."},
+    "IsoA.Dialog.Close": {"en": "Close", "es": "Cerrar"},
+    "IsoA.Unavailable.Unit": {"en": "An ISO A sheet needs a physical construction unit. Declare one in Document Units first; no unit is assumed.", "es": "Una lámina ISO A necesita una unidad de construcción física. Declare una antes en Unidades del documento; no se supone ninguna unidad."},
+    "IsoA.Unavailable.UnitAction": {"en": "Open Document Units…", "es": "Abrir Unidades del documento…"},
+    "IsoA.Unavailable.Factor": {"en": "The custom unit factor makes the millimetre conversion not representable; no sheet is created.", "es": "El factor de la unidad personalizada hace que la conversión a milímetros no sea representable; no se crea ninguna lámina."},
+    "IsoA.Activate.Question": {"en": "Use this sheet as the export area?", "es": "¿Usar esta lámina como área de exportación?"},
+    "IsoA.Activate.Title": {"en": "Export area", "es": "Área de exportación"},
+    "IsoA.Selection.Title": {"en": "ISO A export area", "es": "Área de exportación ISO A"},
+    "IsoA.Selection.Corner": {"en": "Upper-left corner x, y (world):", "es": "Esquina superior izquierda x, y (mundo):"},
+    "IsoA.Selection.Note": {"en": "Computed once at the session scale %0 and the unit %1.", "es": "Se calcula una vez a la escala de la sesión %0 y la unidad %1."},
+    "IsoA.Selection.Invalid": {"en": "The corner must be two finite numbers that give a representable rectangle; the previous export area is kept.", "es": "La esquina debe ser dos números finitos que den un rectángulo representable; se conserva el área de exportación anterior."},
+    "IsoA.Use.NoBorder": {"en": "Select one object of an ISO A border first.", "es": "Seleccione antes un objeto de un marco ISO A."},
+    "IsoA.Use.Undefined": {"en": "The ISO A border is undefined or no longer part of the construction; the export area is unchanged.", "es": "El marco ISO A no está definido o ya no forma parte de la construcción; el área de exportación no cambia."},
+    "IsoA.Coherence.Title": {"en": "ISO A sheet", "es": "Lámina ISO A"},
+    "IsoA.Coherence.Coherent": {"en": "Sheet %0: the export page is the nominal %1 × %2 mm.", "es": "Lámina %0: la página exportada es la nominal de %1 × %2 mm."},
+    "IsoA.Coherence.Incoherent": {"en": "Sheet %0: the export page would be %3 × %4 mm instead of the nominal %1 × %2 mm.", "es": "Lámina %0: la página exportada sería de %3 × %4 mm en lugar de la nominal de %1 × %2 mm."},
+    "IsoA.Coherence.NotDeterminable": {"en": "Sheet %0: the physical page size cannot be determined reliably (unit, numerical range or position of the sheet).", "es": "Lámina %0: el tamaño físico de la página no se puede determinar con fiabilidad (unidad, rango numérico o posición de la lámina)."},
+    "IsoA.Coherence.ScaleDifferent": {"en": "The sheet was drawn at %0; the session export scale is %1.", "es": "La lámina se dibujó a %0; la escala de exportación de la sesión es %1."},
+    "IsoA.Coherence.UnitCause": {"en": "The session scale already equals the sheet scale: the difference comes from a later change of the construction unit, which a scale change cannot correct. The geometry is unchanged.", "es": "La escala de la sesión ya es la de la lámina: la diferencia procede de un cambio posterior de la unidad de construcción, que un cambio de escala no corrige. La geometría no cambia."},
+    "IsoA.Coherence.UseScale": {"en": "Use sheet scale", "es": "Usar escala de la lámina"},
+    "IsoA.Notice.Coherent": {"en": "Sheet %0: nominal page size", "es": "Lámina %0: tamaño nominal de página"},
+    "IsoA.Notice.Check": {"en": "Sheet %0: page size differs (see tooltip)", "es": "Lámina %0: el tamaño de página difiere (ver ayuda)"},
+    "IsoA.Status.Sheet": {"en": "Sheet %0", "es": "Lámina %0"},
+    "IsoA.Status.Page": {"en": "page %0 × %1 mm", "es": "página %0 × %1 mm"},
+    "IsoA.Status.NotDeterminable": {"en": "page size not determinable", "es": "tamaño de página no determinable"},
+    "IsoA.Status.ScaleDifferent": {"en": "scale %0 ≠ sheet %1", "es": "escala %0 ≠ lámina %1"},
+    "IsoA.Status.LinkLost": {"en": "ISO A sheet link released: the export area fell back", "es": "Enlace a la lámina ISO A liberado: el área de exportación volvió a la regla por defecto"},
+    "IsoA.Status.Tooltip": {"en": "Presentation only, compared with the current unit and session scale; never saved or exported. Click to use the sheet scale.", "es": "Solo presentación, comparada con la unidad y la escala de la sesión actuales; nunca se guarda ni se exporta. Haga clic para usar la escala de la lámina."},
     "Properties.LineThickness.Field": {
       "en": "Line thickness: type a whole number within the slider range and press Enter",
       "es": "Grosor de línea: escribe un número entero dentro del rango del deslizador y pulsa Intro"

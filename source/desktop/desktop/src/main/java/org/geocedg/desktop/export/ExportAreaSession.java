@@ -8,11 +8,13 @@ package org.geocedg.desktop.export;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geocedg.common.kernel.sheet.AlgoIsoABorder;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoPolyLine;
 import org.geogebra.common.main.settings.EuclidianSettings;
 
 /**
@@ -26,14 +28,26 @@ import org.geogebra.common.main.settings.EuclidianSettings;
  * and Open reset it, after which {@code Export_1}/{@code Export_2} apply again
  * automatically. Every area keeps an explicit source view id; only the initial
  * MANUAL user interface is limited to Graphics 1 (DQ-B5).
+ *
+ * <p>PRE-G9B-R6-plus-E3 adds two explicit producers of the same authority:
+ * {@code ISO_A_SELECTION}, an ISO A sized rectangle computed once and stored as
+ * values, and {@code ISO_A_BORDER}, a live link to the paper boundary of one
+ * {@code IsoABorder} (DQ-E3-8 to DQ-E3-10). The link is valid only while an
+ * identity scan of the live construction still finds the linked paper boundary
+ * as output 0 of the linked algorithm; a stale link is dropped, never re-resolved
+ * by label, index, coordinate or position, and the B fallback applies.
  */
 public final class ExportAreaSession {
-	/** Producers implemented by B; ISO A producers belong to E3. */
+	/** Explicit producers of the single export-area authority. */
 	public enum Producer {
 		/** live from the document points Export_1 and Export_2 */
 		EXPORT_POINTS,
 		/** a stored world rectangle */
-		MANUAL
+		MANUAL,
+		/** an ISO A sized world rectangle computed once (PRE-G9B-R6-plus-E3) */
+		ISO_A_SELECTION,
+		/** the live paper boundary of one IsoABorder (PRE-G9B-R6-plus-E3) */
+		ISO_A_BORDER
 	}
 
 	private final Kernel kernel;
@@ -41,6 +55,10 @@ public final class ExportAreaSession {
 	private Producer explicitProducer;
 	private ExportArea manualArea;
 	private boolean overlayShown;
+	private AlgoIsoABorder linkedBorder;
+	private GeoPolyLine linkedPaper;
+	private int linkedViewId;
+	private boolean linkLost;
 
 	/**
 	 * @param kernel kernel whose construction holds Export_1 and Export_2
@@ -64,9 +82,16 @@ public final class ExportAreaSession {
 	 */
 	public ExportArea resolve(EuclidianView view) {
 		int viewId = view.getViewID();
-		if (explicitProducer == Producer.MANUAL && manualArea != null
+		if ((explicitProducer == Producer.MANUAL
+				|| explicitProducer == Producer.ISO_A_SELECTION) && manualArea != null
 				&& manualArea.getSourceViewId() == viewId) {
 			return manualArea;
+		}
+		if (explicitProducer == Producer.ISO_A_BORDER && linkedViewId == viewId) {
+			ExportArea border = borderArea();
+			if (border != null) {
+				return border;
+			}
 		}
 		ExportArea points = exportPoints(viewId,
 				explicitProducer == Producer.EXPORT_POINTS
@@ -88,9 +113,17 @@ public final class ExportAreaSession {
 			return false;
 		}
 		ExportArea.Source source = resolveSource(view);
-		return explicitProducer == Producer.MANUAL
-				? source != ExportArea.Source.MANUAL
-				: source != ExportArea.Source.EXPORT_POINTS_EXPLICIT;
+		switch (explicitProducer) {
+		case MANUAL:
+			return source != ExportArea.Source.MANUAL;
+		case ISO_A_SELECTION:
+			return source != ExportArea.Source.ISO_A_SELECTION;
+		case ISO_A_BORDER:
+			return source != ExportArea.Source.ISO_A_BORDER;
+		case EXPORT_POINTS:
+		default:
+			return source != ExportArea.Source.EXPORT_POINTS_EXPLICIT;
+		}
 	}
 
 	private ExportArea.Source resolveSource(EuclidianView view) {
@@ -112,13 +145,37 @@ public final class ExportAreaSession {
 	 */
 	public boolean defineManual(int sourceViewId, double x1, double x2,
 			double y1, double y2) {
-		ExportArea area = ExportArea.of(x1, x2, y1, y2, sourceViewId,
-				ExportArea.Source.MANUAL);
+		return defineStored(Producer.MANUAL, ExportArea.Source.MANUAL, sourceViewId, x1,
+				x2, y1, y2);
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E3: defines and activates the {@code ISO_A_SELECTION} producer
+	 * from a rectangle the caller computed once; refused like
+	 * {@link #defineManual}.
+	 *
+	 * @param sourceViewId view id of the 2D source view
+	 * @param x1 first world x
+	 * @param x2 second world x
+	 * @param y1 first world y
+	 * @param y2 second world y
+	 * @return whether the area was accepted
+	 */
+	public boolean defineIsoASelection(int sourceViewId, double x1, double x2, double y1,
+			double y2) {
+		return defineStored(Producer.ISO_A_SELECTION, ExportArea.Source.ISO_A_SELECTION,
+				sourceViewId, x1, x2, y1, y2);
+	}
+
+	private boolean defineStored(Producer producer, ExportArea.Source source,
+			int sourceViewId, double x1, double x2, double y1, double y2) {
+		ExportArea area = ExportArea.of(x1, x2, y1, y2, sourceViewId, source);
 		if (area == null) {
 			return false;
 		}
+		releaseLink();
 		manualArea = area;
-		explicitProducer = Producer.MANUAL;
+		explicitProducer = producer;
 		changed();
 		return true;
 	}
@@ -135,14 +192,95 @@ public final class ExportAreaSession {
 		if (exportPoints(sourceViewId, ExportArea.Source.EXPORT_POINTS_EXPLICIT) == null) {
 			return false;
 		}
+		releaseLink();
 		manualArea = null;
 		explicitProducer = Producer.EXPORT_POINTS;
 		changed();
 		return true;
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-E3: links the paper boundary of one sheet as the explicit
+	 * producer, after the user's explicit consent. Refused while the paper boundary is
+	 * undefined or the sheet is not part of the live construction.
+	 *
+	 * @param sourceViewId view id of the 2D source view
+	 * @param border the sheet
+	 * @return whether the link was activated
+	 */
+	public boolean useIsoABorder(int sourceViewId, AlgoIsoABorder border) {
+		if (border == null || !isLive(border, border.getPaper())
+				|| border.getPaperBounds() == null) {
+			return false;
+		}
+		manualArea = null;
+		explicitProducer = Producer.ISO_A_BORDER;
+		linkedBorder = border;
+		linkedPaper = border.getPaper();
+		linkedViewId = sourceViewId;
+		linkLost = false;
+		changed();
+		return true;
+	}
+
+	/**
+	 * Drops a stale {@code ISO_A_BORDER} link (deleted, rebuilt by undo, redo or a
+	 * rebuilding redefinition, reloaded or replaced): the explicit producer is cleared,
+	 * the B fallback applies and {@link #isLinkLost()} reports it until the next
+	 * explicit choice. An undefined but live sheet keeps its link.
+	 *
+	 * @return whether a stale link was dropped
+	 */
+	public boolean validateLink() {
+		if (explicitProducer != Producer.ISO_A_BORDER || isLive(linkedBorder, linkedPaper)) {
+			return false;
+		}
+		releaseLink();
+		explicitProducer = null;
+		linkLost = true;
+		changed();
+		return true;
+	}
+
+	private ExportArea borderArea() {
+		if (validateLink()) {
+			return null;
+		}
+		double[] bounds = linkedBorder.getPaperBounds();
+		return bounds == null ? null : ExportArea.of(bounds[0], bounds[1], bounds[2],
+				bounds[3], linkedViewId, ExportArea.Source.ISO_A_BORDER);
+	}
+
+	/**
+	 * Identity test only: the paper boundary must still be output 0 of the algorithm,
+	 * that algorithm its parent, and the very same Java object a member of the live
+	 * construction (an identity scan; {@code isInConstructionList} answers true for
+	 * replaced objects and a sorted-set lookup would compare construction indices).
+	 */
+	private boolean isLive(AlgoIsoABorder border, GeoPolyLine paper) {
+		if (border == null || paper == null || border.getOutputLength() == 0
+				|| border.getOutput(AlgoIsoABorder.PAPER) != paper
+				|| paper.getParentAlgorithm() != border) {
+			return false;
+		}
+		for (GeoElement geo : kernel.getConstruction().getGeoSetConstructionOrder()) {
+			if (geo == paper) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void releaseLink() {
+		linkedBorder = null;
+		linkedPaper = null;
+		linkedViewId = 0;
+		linkLost = false;
+	}
+
 	/** Back to the automatic resolution; the MANUAL rectangle is discarded. */
 	public void clear() {
+		releaseLink();
 		explicitProducer = null;
 		manualArea = null;
 		changed();
@@ -150,6 +288,7 @@ public final class ExportAreaSession {
 
 	/** New and Open: no explicit producer, no MANUAL rectangle, overlay hidden. */
 	public void resetForDocument() {
+		releaseLink();
 		explicitProducer = null;
 		manualArea = null;
 		overlayShown = false;
@@ -174,9 +313,23 @@ public final class ExportAreaSession {
 		return explicitProducer;
 	}
 
-	/** @return stored MANUAL rectangle, or null */
+	/** @return stored MANUAL or ISO_A_SELECTION rectangle, or null */
 	public ExportArea getManualArea() {
 		return manualArea;
+	}
+
+	/**
+	 * @return the linked sheet while its link is live, or null (a stale link is
+	 *         dropped first)
+	 */
+	public AlgoIsoABorder getLinkedBorder() {
+		validateLink();
+		return explicitProducer == Producer.ISO_A_BORDER ? linkedBorder : null;
+	}
+
+	/** @return whether the last ISO_A_BORDER link was dropped as stale */
+	public boolean isLinkLost() {
+		return linkLost;
 	}
 
 	/**

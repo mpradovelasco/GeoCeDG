@@ -42,7 +42,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case $inventoryRejected 'JUnit inventory accepted a missing selection fingerprint.'
     Assert-Case (@($inventory.modules).Count -eq 2) 'Module discovery count changed.'
     Assert-Case (@($inventory.modules|Where-Object{$_.PSObject.Properties.Name -ccontains 'identities'}).Count -eq 0) 'Per-method inventory was tracked.'
-    Assert-Case (@($inventory.selections).Count -eq 51) 'Selection inventory count changed.'
+    Assert-Case (@($inventory.selections).Count -eq 53) 'Selection inventory count changed.'
     foreach($selection in $inventory.selections){
         Assert-Case ($selection.expected_identity_count -gt 0) "Selection has zero inventory: $($selection.selection_id)"
         Assert-Case ([string]$selection.expected_identities_sha256 -cmatch '^[0-9a-f]{64}$') "Selection fingerprint is invalid: $($selection.selection_id)"
@@ -109,7 +109,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-p1.desktop')[0].expected_identity_count -eq 41) `
         'PRE-G9B-P1 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r4.shared')[0].expected_identity_count -eq 7) `
+        'pre-g9b-r4.shared')[0].expected_identity_count -eq 8) `
         'PRE-G9B-R4 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r4.desktop')[0].expected_identity_count -eq 158) `
@@ -118,13 +118,13 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-r5-a.desktop')[0].expected_identity_count -eq 79) `
         'PRE-G9B-R5-A Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6.shared')[0].expected_identity_count -eq 13) `
+        'pre-g9b-r6.shared')[0].expected_identity_count -eq 14) `
         'PRE-G9B-R6 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6.desktop')[0].expected_identity_count -eq 56) `
+        'pre-g9b-r6.desktop')[0].expected_identity_count -eq 57) `
         'PRE-G9B-R6 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-a1.shared')[0].expected_identity_count -eq 19) `
+        'pre-g9b-r6-plus-a1.shared')[0].expected_identity_count -eq 20) `
         'PRE-G9B-R6-plus-A-1 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-a1.desktop')[0].expected_identity_count -eq 173) `
@@ -133,13 +133,13 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-r6-plus-b.shared')[0].expected_identity_count -eq 21) `
         'PRE-G9B-R6-plus-B shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-b.desktop')[0].expected_identity_count -eq 243) `
+        'pre-g9b-r6-plus-b.desktop')[0].expected_identity_count -eq 244) `
         'PRE-G9B-R6-plus-B Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-c.shared')[0].expected_identity_count -eq 101) `
         'PRE-G9B-R6-plus-C shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-c.desktop')[0].expected_identity_count -eq 271) `
+        'pre-g9b-r6-plus-c.desktop')[0].expected_identity_count -eq 272) `
         'PRE-G9B-R6-plus-C Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-c-x1.desktop')[0].expected_identity_count -eq 41) `
@@ -154,10 +154,10 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-r6-plus-e1-p-x1.desktop')[0].expected_identity_count -eq 19) `
         'PRE-G9B-R6-plus-E1-P-X1 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-e2.shared')[0].expected_identity_count -eq 75) `
+        'pre-g9b-r6-plus-e2.shared')[0].expected_identity_count -eq 76) `
         'PRE-G9B-R6-plus-E2 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-e2.desktop')[0].expected_identity_count -eq 282) `
+        'pre-g9b-r6-plus-e2.desktop')[0].expected_identity_count -eq 283) `
         'PRE-G9B-R6-plus-E2 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'post-e2-p1.desktop')[0].expected_identity_count -eq 6) `
@@ -180,6 +180,12 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'post-e2-p4.desktop')[0].expected_identity_count -eq 59) `
         'POST-E2-P4 Desktop inventory changed.'
+    Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
+        'pre-g9b-r6-plus-e3.shared')[0].expected_identity_count -eq 39) `
+        'PRE-G9B-R6-plus-E3 shared inventory changed.'
+    Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
+        'pre-g9b-r6-plus-e3.desktop')[0].expected_identity_count -eq 325) `
+        'PRE-G9B-R6-plus-E3 Desktop inventory changed.'
     $desktopBroad=@($inventory.selections|Where-Object selection_id -CEQ 'final.desktop')[0]
     $desktopSemantic=@($inventory.selections|Where-Object selection_id -CEQ `
         'final.desktop.g9u1-isolated')[0]
@@ -190,8 +196,8 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case (($excluded -join "`n") -ceq ($retained -join "`n")) `
         'Desktop partition suppresses or duplicates an excluded JUnit filter.'
 }
-Invoke-Case 'all 58 PHASE selections resolve as complete pure plans' {
-    Assert-Case (@($registry.phase_selections).Count -eq 58) 'PHASE selection count changed.'
+Invoke-Case 'all 59 PHASE selections resolve as complete pure plans' {
+    Assert-Case (@($registry.phase_selections).Count -eq 59) 'PHASE selection count changed.'
     foreach($phase in $registry.phase_selections){
         $plan=Resolve-VerificationRegistryPlan $registry PHASE $phase.phase_id WINDOWS
         Assert-Case ($plan.coverage_state -ceq 'COMPLETE') "PHASE is incomplete: $($phase.phase_id)"

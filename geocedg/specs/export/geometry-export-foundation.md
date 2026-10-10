@@ -84,7 +84,10 @@ rule `geocedg-export-area-participation-b1/v1`:
 - only the explicit producers `MANUAL`, `EXPORT_POINTS_EXPLICIT` and
   `EXPORT_POINTS_AUTOMATIC` define a closed participation area `R`; the
   `VISIBLE_VIEWPORT` fallback is no DXF boundary, so the export keeps its
-  model-space population and never depends on the zoom;
+  model-space population and never depends on the zoom; proposed amendment of
+  the `PRE-G9B-R6-plus-E3` technical candidate (not author approved;
+  `geocedg/specs/sheets/iso-a-border.md` §11): `ISO_A_SELECTION` and
+  `ISO_A_BORDER` are explicit producers that define `R` in the same way;
 - a source, entity or certified component participates when its exported
   geometric support meets `R` and is then emitted whole, with its exact entity
   family and parameters; complete-construction and current-selection requests

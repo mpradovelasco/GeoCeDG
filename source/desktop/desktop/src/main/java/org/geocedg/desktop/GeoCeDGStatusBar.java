@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.geocedg.common.kernel.sheet.AlgoIsoABorder;
+import org.geocedg.common.kernel.sheet.IsoASheet;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.common.kernel.units.UnitToken;
 import org.geocedg.common.kernel.units.UsmDefinition;
@@ -50,6 +52,14 @@ final class GeoCeDGStatusBar extends JPanel {
 	static final String PRESENTATION_UNIT_SEGMENT = "presentation-unit";
 	/** Stable id of the session drawing-scale segment (POST-E2-P1-R2 follow-up C). */
 	static final String DRAWING_SCALE_SEGMENT = "drawing-scale";
+	/**
+	 * Stable id of the PRE-G9B-R6-plus-E3 sheet-coherence segment: the linked ISO A
+	 * sheet against the current unit and session scale, or a lost link. Derived and
+	 * transient; a click is the explicit "Use sheet scale" action.
+	 */
+	static final String SHEET_SEGMENT = "sheet-coherence";
+	/** Middle-dot separator inside the sheet segment. */
+	private static final String SEPARATOR = " " + (char) 0xb7 + " ";
 	/** Stable id of the transient unit-mismatch paste notice (DQ-D1-9). */
 	static final String PASTE_NOTICE_SEGMENT = "paste-notice";
 	/** Lifetime of the paste notice. */
@@ -63,6 +73,7 @@ final class GeoCeDGStatusBar extends JPanel {
 	private final Map<String, JLabel> segments = new LinkedHashMap<>();
 	private final transient AppGeoCeDG app;
 	private final JLabel noticeSeparator;
+	private final JLabel sheetSeparator;
 	private transient NoticeTimer noticeTimer = GeoCeDGStatusBar::swingTimer;
 	private transient Runnable cancelNotice;
 
@@ -171,6 +182,18 @@ final class GeoCeDGStatusBar extends JPanel {
 		unitSegment(PRESENTATION_UNIT_SEGMENT);
 		add(separator());
 		addSegment(DRAWING_SCALE_SEGMENT);
+		sheetSeparator = separator();
+		sheetSeparator.setVisible(false);
+		add(sheetSeparator);
+		JLabel sheet = addSegment(SHEET_SEGMENT);
+		sheet.setVisible(false);
+		sheet.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		sheet.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent event) {
+				app.useSheetScale();
+			}
+		});
 		noticeSeparator = separator();
 		noticeSeparator.setVisible(false);
 		add(noticeSeparator);
@@ -250,6 +273,41 @@ final class GeoCeDGStatusBar extends JPanel {
 				: app.layerText("Units.Status.ScaleNonPhysical")));
 		scaleLabel.setToolTipText(app.layerText(physical ? "Units.Status.ScaleTooltip"
 				: "Units.Status.ScaleTooltipNonPhysical"));
+		updateSheetSegment();
+	}
+
+	/** PRE-G9B-R6-plus-E3: derived each refresh; never stored, exported or in undo. */
+	private void updateSheetSegment() {
+		JLabel sheet = segments.get(SHEET_SEGMENT);
+		AlgoIsoABorder border = app.getLinkedIsoABorder();
+		String text = null;
+		if (border != null) {
+			IsoASheet.Coherence coherence = app.sheetCoherence(border);
+			String name = border.getLabelText().isDefined()
+					? border.getLabelText().getTextString() : "?";
+			StringBuilder line = new StringBuilder(app.layerText("IsoA.Status.Sheet", name));
+			line.append(SEPARATOR);
+			if (coherence.getPhysical() == IsoASheet.PhysicalCoherence.NOT_DETERMINABLE) {
+				line.append(app.layerText("IsoA.Status.NotDeterminable"));
+			} else {
+				line.append(app.layerText("IsoA.Status.Page",
+						AppGeoCeDG.millimetres(coherence.getEffectiveWidthMm()),
+						AppGeoCeDG.millimetres(coherence.getEffectiveHeightMm())));
+			}
+			if (coherence.getScale() == IsoASheet.ScaleCoherence.DIFFERENT) {
+				line.append(SEPARATOR).append(app.layerText("IsoA.Status.ScaleDifferent",
+						app.getDrawingScale().toString(), AppGeoCeDG.sheetScale(border)));
+			}
+			text = line.toString();
+			sheet.setToolTipText(app.sheetCoherenceMessage(border, coherence) + "\n"
+					+ app.layerText("IsoA.Status.Tooltip"));
+		} else if (app.getExportAreaSession().isLinkLost()) {
+			text = app.layerText("IsoA.Status.LinkLost");
+			sheet.setToolTipText(text);
+		}
+		sheet.setVisible(text != null);
+		sheetSeparator.setVisible(text != null);
+		sheet.setText(text == null ? "" : text);
 	}
 
 	private String usmLine(UsmDefinition usm) {

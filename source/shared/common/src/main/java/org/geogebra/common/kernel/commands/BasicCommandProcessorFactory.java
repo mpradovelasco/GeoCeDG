@@ -161,6 +161,8 @@ public class BasicCommandProcessorFactory implements CommandProcessorFactory {
 			return new CmdAlignedDimension(kernel);
 		case LinearDimension:
 			return new CmdLinearDimension(kernel);
+		case IsoABorder:
+			return new CmdIsoABorder(kernel);
 		case Vertex:
 			return new CmdVertex(kernel);
 		case If:
