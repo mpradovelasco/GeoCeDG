@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F1",
+  "activity": "PRE-G9B-R6-plus-F1-PREP",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_f1_preparation_characterization_report.md",
+  "reconciledDesignCandidate": "docs/architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md",
+  "authorDecisionPreparationRecord": "docs/validation/pre_g9b_r6_plus_f1_author_decision_preparation_record.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f1-orientation-cue.prompt.md",
+  "supersededEvidence": "docs/architecture/pre_g9b_r6_plus_f1_orientation_design_candidate.md (P0; unchanged; PROPOSED — CANDIDATE — NOT AUTHOR APPROVED)",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "phaseState": "PREPARED — NOT AUTHORIZED",
+  "preparationState": "TECHNICAL CANDIDATE — PENDING AUTHOR REVIEW",
+  "characterization": "COMPLETE",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "preparationClass": {
+    "class": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "supplementaryCheck": "Test-PromptContractDocument on the phase prompt (profile task); STATIC does not cover uncatalogued phase prompts",
+    "impactFacts": "documentation, one JSON evidence mirror, one uncatalogued phase prompt, two status files; no product, test, build, registry, verifier, profile, inventory, schema or serialization path"
+  },
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "authorInstruction": {
+    "date": "2026-10-11",
+    "authorizes": "baseline and prerequisite verification; characterization of orientation semantics, accessors, rendering, visibility and preference architecture; reconciliation of the P0 F1 candidate; DQ-F1 questions; the canonical F1 prompt; scratch probes outside tracked source; documentary validation; one local preparation candidate and its STATIC verification",
+    "forbidden": [
+      "F1 product implementation, a new rendering feature, kernel modifications, preference implementation",
+      "F1 author approval or marking any decision resolved",
+      "push, merge to main, tag, release",
+      "F2, F3, F4 or G implementation"
+    ]
+  },
+  "preservedDispositions": {
+    "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-E3": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-F1": "NOT AUTHORIZED before this preparation"
+  },
+  "publishedBase": {
+    "name": "P_C1",
+    "commit": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+    "tree": "1b74102cea5151b8a6c571cb36b96b33af6fb3c8",
+    "c1Candidate": "22a215d8bcf5bf9a43ce881e992e37dbf0eb070b"
+  },
+  "entryGate": {
+    "localHead": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+    "originMain": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+    "liveRemoteMain": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+    "worktreeClean": true,
+    "f1AlreadyImplemented": false
+  },
+  "preparationBase": {
+    "commit": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+    "branch": "phase/pre-g9b-r6-plus-f1-prep",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "probes": {
+    "route": "scratch JUnit class F1PrepOrientationProbeTest compiled into the Desktop test source set through a Gradle init script; never in a tracked path; compileTestJava rerun without the init script, probe test-result XML and compile-stash copy removed",
+    "items": [
+      {"id": "P1", "method": "constructionMatrix", "exit": 0, "outputLines": 74, "outputSha256": "0af30feadc884c1f874a194e1007114bbc3bd4cb237157e1de0f5ae7dcb34d74"},
+      {"id": "P2", "method": "dynamicBehaviour", "exit": 0, "outputLines": 37, "outputSha256": "b292e2f8ce6640ce673877ede69a4354595da45d327d8f00dc285560ed9a00c5", "note": "a first attempt blocked on a modal command-error dialog of SetCoords on a free vector; the scratch JVM was stopped, the step replaced by GeoVector.setCoords + updateCascade, and JOptionPane mocked"}
+    ],
+    "probeSourceSha256": "eaa08d2ecc26508c6a050478560b9b13c8108d88b0447e9bddba867d0948051f",
+    "environment": {"kernelContinuous": false, "usePathAndRegionParameters": true}
+  },
+  "accessors": {
+    "authority": "GeoLine.getDirection = (y, -x)",
+    "authorityEvidence": ["common/kernel/geos/GeoLine.java:444-457"],
+    "agreeingConsumers": ["path parameter (GeoLine.java:1140-1162; GeoSegment.java:401-452; GeoRay.java:168-243)", "UnitVector/Direction (AlgoUnitVectorLine.java:38-41; BasicCommandProcessorFactory.java:64-67)", "Angle(g,h) (AlgoAngleLines.java:106-118)"],
+    "notAnAuthority": "getDirectionInD3 = (-y, x) without end point, else end - start (GeoLine.java:1402-1409)",
+    "matrixDefinedObjects": 64,
+    "pathAgreesInMatrix": 64,
+    "directionInD3EqualInMatrix": 13,
+    "directionInD3OppositeInMatrix": 51
+  },
+  "orientationClasses": {
+    "O-CONSTRUCTIVE": ["Line(A,B)", "Segment(A,B)", "Ray(A,B)", "Ray(A,v)", "Line(P,v)", "polygon edges", "segment images (AlgoJoinPointsSegment)"],
+    "O-INHERITED": ["parallel Line(P,l)", "PerpendicularLine(P,l)", "PerpendicularLine(P,v)", "PerpendicularBisector", "AngleBisector(g,h)", "Tangent(g,conic)", "affine images (Reflect, Rotate, Translate, Dilate)", "parallel through a dependent point"],
+    "O-CONFIGURATION": ["AngleBisector(A,B,C)", "Tangent(P,conic) with P off the conic"],
+    "O-REPRESENTATION": ["independent equation lines", "AlgoDependentLine", "Tangent(P,conic) with P on the conic", "Tangent(a,f)", "Line(P,f) and PerpendicularLine(P,f) with f a function", "Asymptote", "Polar"],
+    "O-UNKNOWN": ["every other algorithm", "3D line types", "lines inside lists", "projective transforms"],
+    "macroOutputs": "class of the inner route",
+    "classification": "HYPOTHESIS — admissibility is DQ-F1-5"
+  },
+  "matrix": [
+    {"id": "R01", "route": "Line(A,B)", "algorithm": "AlgoJoinPoints", "direction": [3, 2], "d3": "same", "class": "O-CONSTRUCTIVE"},
+    {"id": "R02", "route": "Line(B,A)", "algorithm": "AlgoJoinPoints", "direction": [-3, -2], "d3": "same", "class": "O-CONSTRUCTIVE"},
+    {"id": "R03", "route": "Segment(A,B)", "algorithm": "AlgoJoinPointsSegment", "direction": [3, 2], "d3": "same", "class": "O-CONSTRUCTIVE"},
+    {"id": "R04", "route": "Segment(B,A)", "algorithm": "AlgoJoinPointsSegment", "direction": [-3, -2], "d3": "same", "class": "O-CONSTRUCTIVE"},
+    {"id": "R05", "route": "Ray(A,B)", "algorithm": "AlgoJoinPointsRay", "direction": [3, 2], "d3": "same", "class": "O-CONSTRUCTIVE"},
+    {"id": "R06", "route": "Ray(A,v)", "algorithm": "AlgoRayPointVector", "direction": [2, 1], "d3": "opposite", "class": "O-CONSTRUCTIVE"},
+    {"id": "R07", "route": "Line(P,v)", "algorithm": "AlgoLinePointVector", "direction": [2, 1], "d3": "opposite", "class": "O-CONSTRUCTIVE"},
+    {"id": "R08", "route": "Line(P,lAB) parallel", "algorithm": "AlgoLinePointLine", "direction": [3, 2], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R08b", "route": "Line(P,lBA) parallel", "algorithm": "AlgoLinePointLine", "direction": [-3, -2], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R09", "route": "PerpendicularLine(P,lAB)", "algorithm": "AlgoOrthoLinePointLine", "direction": [-2, 3], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R09c", "route": "PerpendicularLine(P,v)", "algorithm": "AlgoOrthoLinePointVector", "direction": [-1, 2], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R10", "route": "PerpendicularBisector(A,B)", "algorithm": "AlgoLineBisector", "direction": [-2, 3], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R10b", "route": "PerpendicularBisector(B,A)", "algorithm": "AlgoLineBisector", "direction": [2, -3], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R11", "route": "AngleBisector(A,B,C) and (C,B,A)", "algorithm": "AlgoAngularBisectorPoints", "direction": [-0.794707, 0.606994], "d3": "opposite", "class": "O-CONFIGURATION", "note": "symmetric in the outer points"},
+    {"id": "R11c", "route": "AngleBisector(lAB,m)", "algorithm": "AlgoAngularBisectorLines", "direction": [[0.606994, 0.794707], [-0.794707, 0.606994]], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R12", "route": "Tangent(P,c) external", "algorithm": "AlgoTangentPoint", "direction": [[-1.83303, -4.2], [1.83303, -4.2]], "d3": "opposite", "class": "O-CONFIGURATION"},
+    {"id": "R12b", "route": "Tangent(T,c) T on c", "algorithm": "AlgoTangentPoint", "direction": [0, -2], "d3": "opposite", "class": "O-REPRESENTATION", "secondOutput": "undefined, unlabeled"},
+    {"id": "R12d", "route": "Tangent(T,-x^2-y^2=-4)", "algorithm": "AlgoTangentPoint", "direction": [0, 2], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R12g", "route": "Tangent(lAB,c)", "algorithm": "AlgoTangentLine", "direction": [3, 2], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R13", "route": "Tangent(1,f)", "algorithm": "AlgoTangentFunctionNumber", "direction": [1, 2], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R14", "route": "Line(P,f) f(x)=2x+1", "algorithm": "AlgoLinePointLine", "direction": [-1, -2], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R15", "route": "y=2x+1", "algorithm": "independent", "direction": [1, 2], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R15b", "route": "2x-y+1=0", "algorithm": "independent", "direction": [-1, -2], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R15f", "route": "X=(1,2)+t*(3,4)", "algorithm": "independent", "direction": [3, 4], "d3": "opposite", "class": "O-REPRESENTATION", "note": "DQ-F1-5 option E-D"},
+    {"id": "R15h", "route": "0=3x+4y", "algorithm": "independent", "direction": [-4, 3], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R16", "route": "xAxis, yAxis", "algorithm": "GeoAxis", "direction": [[1, 0], [0, 1]], "d3": "same", "class": "not drawn by DrawLine"},
+    {"id": "R17", "route": "Polygon(A,B,C) edges", "algorithm": "AlgoJoinPointsSegment", "direction": [[3, 2], [1, 3], [-4, -5]], "d3": "same", "class": "O-CONSTRUCTIVE"},
+    {"id": "R18", "route": "Reflect(lAB,yAxis)", "algorithm": "AlgoMirror", "direction": [-3, 2], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R18c", "route": "Rotate(lAB,90deg,A)", "algorithm": "AlgoRotatePoint", "direction": [-2, 3], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R18e", "route": "Dilate(lAB,-1,A)", "algorithm": "AlgoDilate", "direction": [-3, -2], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R19", "route": "Line(Intersect(lAB,x=3),lAB)", "algorithm": "AlgoLinePointLine", "direction": [9, 6], "d3": "opposite", "class": "O-INHERITED"},
+    {"id": "R21", "route": "Asymptote(x^2-y^2=1)", "algorithm": "AlgoAsymptote", "direction": [[1, 1], [-1, 1]], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R22", "route": "Polar(P,c)", "algorithm": "AlgoPolarLine", "direction": [5, 0], "d3": "opposite", "class": "O-REPRESENTATION"},
+    {"id": "R23", "route": "macro with inner Line(A,B)", "algorithm": "AlgoMacro", "direction": [-3, -4], "d3": "same", "class": "inner route"},
+    {"id": "R23b", "route": "macro with inner parallel", "algorithm": "AlgoMacro", "direction": [-3, -2], "d3": "opposite", "class": "inner route"}
+  ],
+  "dynamics": {
+    "coincidentPoints": "Line/Ray/parallel undefined (0,0,0); Segment defined, length 0, direction (0,0), isEuclidianVisible true",
+    "nearCoincidence1e-9": "line undefined by DoubleUtil.isZero (1e-8) while getDirection = (1e-9, 0)",
+    "identityAfterRecovery": "same GeoElement instances for line, segment, ray, parallel",
+    "redefinition": "new instance, same label, new sense",
+    "infiniteCoefficient": "isDefined true, isEuclidianVisible true, getDirection (1, -Inf)",
+    "nanCoefficient": "isDefined false",
+    "tangentCrossingConic": "polar sense (0,-2) on the conic; just outside: two tangents with opposite small directions, tangent 0 reversed; inside: undefined; back on the conic both defined and equal (history-dependent definedness, pre-existing)",
+    "angleBisectorStraightAngle": "(0.099,0.995) -> (0,1) -> (0.099,-0.995)",
+    "xmlReload": "independent and dependent senses preserved"
+  },
+  "presentation": {
+    "gv1Class": "GeoCeDGEuclidianView (AppGeoCeDG.java:1280-1288)",
+    "gv2Class": "EuclidianViewFor3DD (GuiManager3D.java:257-265); not in GeoCeDG perspectives; reachable from the Views menu",
+    "overlaySeam": "GeoCeDGEuclidianView.paint :69-112 (P0 citation :38-75 stale)",
+    "paintCallers": "only EuclidianViewJPanelD.paint (:95-99)",
+    "exportRoutesReachingPaint": [],
+    "drawableCueWouldReachExports": true,
+    "outlineArrow": "DrawSegmentWithEndings.getArrow :282-312, private, sized by line thickness",
+    "lineDrawableScreenOrderIsKernelSense": false,
+    "scalesPositive": true,
+    "nonUniformScale": true,
+    "logAxesSuppress": true
+  },
+  "preferences": {
+    "store": "portable java.util.Properties at %APPDATA%\\GeoCeDG\\5.4\\preferences.properties",
+    "keyConvention": "geocedg.<area>.<name>.v1",
+    "geocedgViewAreaExists": false,
+    "proposedKey": "geocedg.view.orientation-cue.v1 (proposal, not implemented)",
+    "existingViewTogglesClass": "SESSION",
+    "actionCatalog": 130,
+    "catalogPins": {"profile": "GeoCeDGProfile.java:340", "testAssertions": 11, "testClasses": 8, "allowList": "tools/agent/workspace-profile-validation.ps1:36-93", "staticContractPin": "geocedg/specs/operations/verification-static-contracts.json:21"}
+  },
+  "decisions": {
+    "DQ-F1-1": {"topic": "global or per-object", "recommendation": "global", "disposition": "PENDING"},
+    "DQ-F1-2": {"topic": "view coverage", "recommendation": "GV1 only", "disposition": "PENDING"},
+    "DQ-F1-3": {"topic": "export participation", "recommendation": "screen-only", "disposition": "PENDING"},
+    "DQ-F1-4": {"topic": "visual design", "recommendation": "hollow triangle L=10 px W=4 px, object colour, design candidate section 5-6 anchors", "disposition": "PENDING"},
+    "DQ-F1-5": {"topic": "eligibility", "recommendation": "E-B constructive and inherited, fail-closed; macros and affine images inherit", "disposition": "PENDING"},
+    "DQ-F1-6": {"topic": "preference lifecycle", "recommendation": "USER_PREFERENCE geocedg.view.orientation-cue.v1, shown/hidden, default hidden", "disposition": "PENDING"},
+    "DQ-F1-7": {"topic": "visibility and overlap", "recommendation": "design candidate section 4; suppress on midpoint arrow decorations only", "disposition": "PENDING"},
+    "DQ-F1-8": {"topic": "architecture and verification", "recommendation": "S1 GV1 paint overlay, BOUNDED_PHASE", "disposition": "PENDING"},
+    "DQ-F1-9": {"topic": "UI surface and catalog", "recommendation": "U3 menu action and Layout & Presentation row", "disposition": "PENDING"}
+  },
+  "proposedImplementationClass": {
+    "class": "BOUNDED_PHASE",
+    "frozen": false,
+    "acceptance": "one registered PHASE PRE-G9B-R6-PLUS-F1",
+    "escalationTriggers": ["export participation", "shared drawable change (S3)", "per-object persistence", "kernel change", "new upstream AppD/OptionsLayoutD hook", "author choice on catalog edits under DQ-F1-9"]
+  },
+  "filesChanged": [
+    "A docs/validation/pre_g9b_r6_plus_f1_preparation_characterization_report.md",
+    "A docs/validation/pre_g9b_r6_plus_f1_author_decision_preparation_record.md",
+    "A docs/architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md",
+    "A geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f1-preparation-characterization.json",
+    "A .github/prompts/tasks/pre-g9b-r6-plus-f1-orientation-cue.prompt.md",
+    "M docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "M docs/roadmap/geocedg_roadmap.md"
+  ]
+}
