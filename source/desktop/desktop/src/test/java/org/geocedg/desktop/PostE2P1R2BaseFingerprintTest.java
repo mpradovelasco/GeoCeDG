@@ -60,6 +60,9 @@ import org.junit.jupiter.api.io.TempDir;
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 class PostE2P1R2BaseFingerprintTest {
 	private static final String FIXTURE = "post-e2-p1-r2/base-fingerprints.json";
+	private static final String PHYSICAL_PGF_E3_R1 = "product.physical.pgf";
+	private static final String PHYSICAL_PGF_E3_R1_SHA256 =
+			"cc8ff265496f1e79dc1f229db8ff3a878430d4ce25093d57f7f20c02185dd3fa";
 
 	@TempDir
 	Path temporary;
@@ -115,7 +118,13 @@ class PostE2P1R2BaseFingerprintTest {
 		Matcher entry = Pattern.compile("\"([a-z.]+)\": \"([0-9a-f]{64})\"").matcher(expected);
 		int count = 0;
 		while (entry.find()) {
-			assertEquals(entry.group(2), digests.get(entry.group(1)), entry.group(1));
+			String key = entry.group(1);
+			// PRE-G9B-R6-plus-E3-R1 composes the physical PGF page (standalone,
+			// border 0pt, unit in TeX points, export-area bounding box); the base
+			// fixture stays immutable and this key pins PhysicalLatexComposition.pgf
+			// applied to the base output (x=0.1cm)
+			assertEquals(PHYSICAL_PGF_E3_R1.equals(key) ? PHYSICAL_PGF_E3_R1_SHA256
+					: entry.group(2), digests.get(key), key);
 			count++;
 		}
 		assertEquals(digests.size(), count, "every digest has a base value");

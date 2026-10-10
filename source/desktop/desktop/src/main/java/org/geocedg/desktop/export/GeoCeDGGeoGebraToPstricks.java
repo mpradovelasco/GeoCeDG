@@ -53,7 +53,8 @@ public final class GeoCeDGGeoGebraToPstricks extends GeoGebraToPstricks
 			original.write(new StringBuilder());
 			return;
 		}
-		frame = new GeoCeDGLatexSettings(original, this, getApp(), support, "%");
+		frame = new GeoCeDGLatexSettings(original, this, getApp(), support, "%",
+				PhysicalLatexComposition::pstricks);
 		try {
 			super.generateAllCode();
 		} finally {
@@ -90,6 +91,10 @@ public final class GeoCeDGGeoGebraToPstricks extends GeoGebraToPstricks
 	/** PRE-G9B-R6-plus-E2: the value of a native dimension, aligned and centred. */
 	@Override
 	protected void drawText(GeoText geo) {
+		if (IsoABorderLatexExport.labelOwner(geo) != null) {
+			drawSheetLabel(geo);
+			return;
+		}
 		AlgoNativeDimension owner = DimensionLatexExport.dimensionTextOwner(geo);
 		if (owner == null) {
 			super.drawText(geo);
@@ -110,6 +115,27 @@ public final class GeoCeDGGeoGebraToPstricks extends GeoGebraToPstricks
 		code.append("\\rput[b]{").append(format(place[2])).append("}(")
 				.append(format(place[0])).append(',').append(format(place[1]))
 				.append("){\\raisebox{0.5ex}{").append(value).append("}}\n");
+		endBeamer(code);
+	}
+
+	/** PRE-G9B-R6-plus-E3-R1: the sheet label, up and left of its anchor. */
+	private void drawSheetLabel(GeoText geo) {
+		double[] at = IsoABorderLatexExport.anchor(geo);
+		if (at == null || !geo.isDefined()) {
+			return;
+		}
+		String value = IsoABorderLatexExport.teX(geo.getTextStringSafe());
+		GColor color = geo.getObjectColor();
+		if (!color.equals(GColor.BLACK)) {
+			StringBuilder name = new StringBuilder();
+			colorCode(color, name);
+			value = "\\textcolor{" + name + "}{" + value + "}";
+		}
+		startBeamer(code);
+		// an unstroked frame gives the text the 0.3333em clearance of a TikZ node
+		code.append("\\rput[br](").append(format(at[0])).append(',').append(format(at[1]))
+				.append("){\\psframebox[linestyle=none,framesep=0.3333em]{").append(value)
+				.append("}}\n");
 		endBeamer(code);
 	}
 

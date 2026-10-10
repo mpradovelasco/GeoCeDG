@@ -650,13 +650,16 @@ class PreG9BR6PlusBExportSurfaceTest {
 	/**
 	 * SHA-256 of the PGF/TikZ, PSTricks, Asymptote and DXF outputs of
 	 * {@link #interimScene}, recorded by the same code on a {@code git archive}
-	 * of the implementation base {@code f6194f09}.
+	 * of the implementation base {@code f6194f09}. PRE-G9B-R6-plus-E3-R1 completes
+	 * the AC1015 container (tables, blocks, objects): the DXF digest changes from
+	 * {@code e7ba0405...f0f2} while the ENTITIES section keeps the base bytes,
+	 * pinned by {@code PreG9BR6PlusCBaseIdentityTest}.
 	 */
 	private static final String[] BASE_INTERIM_SHA256 = {
 		"1d2570f9453ad70c64a5f7c9deac22c0362520358bf4c259d84795f04d364844",
 		"ba1a29b2f9d1f499a4131235f1b210132c0118beba0869ef204cd136c098c514",
 		"9e5cf21cfd5f5a52f595dad437817410a8301eede902e1e37c173577a3eeffbc",
-		"e7ba040534c447cf40e3c005ab18c0d2780ceaa9c70e9ea0cc2ac0ccd980f0f2"};
+		"c287020f3dc10b160c087a241730d7e7563df1ec1337dd60e31a324c8f0ddb85"};
 
 	/**
 	 * PRE-G9B-R6-plus-C replaces the interim expectation of B: without an

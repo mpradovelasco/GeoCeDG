@@ -66,7 +66,12 @@ import org.junit.jupiter.api.io.TempDir;
  * version, units, layers, export area, outside-area records) and the build
  * provenance are removed; Classic LaTeX and picture output, the default FreeHEP EMF
  * writers and the GeoCeDG LaTeX output of a document without semantic curves, unit
- * or area are byte-identical.
+ * or area are byte-identical. PRE-G9B-R6-plus-E3-R1 completes the AC1015 container
+ * (tables, blocks, objects): each complete DXF digest is the corrected container's,
+ * recorded on the corrective tree, and each {@code .dxf.core} digest (leading comments
+ * and ENTITIES section) equals the core of the base bytes, recorded on a worktree of
+ * the frozen E3 candidate {@code 257c854a}, whose complete DXF digests are the base
+ * digests above.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -76,25 +81,37 @@ class PreG9BR6PlusCBaseIdentityTest {
 	/** Recorded on a git archive of e613502831e3b412780d69424d4a1e433a4ae688. */
 	private static final String[][] BASE = {
 		{"g9x1.locus.components.dxf",
-				"6e11d905b8082f298a628d382ce264af285972b5c335b77bd4284bb465b1ecdb"},
+				"d8c1223b1ec8f529ae2eec7dbad1be622926fa3be40942013dda76901c2c935a"},
+		{"g9x1.locus.components.dxf.core",
+				"fb8dc4b676e39ae0719bda4524bfc7df9236b358c23b13e3dd5539e975094fa7"},
 		{"g9x1.locus.components.sidecar",
 				"f16f327cf6e8d4e77c7bc233699776afca2499d03b3a6a26752c882659460e3b"},
 		{"g9x1.locus.closed.dxf",
-				"325eff1729837397b77690db0ba11314ce1468f6db535b339c4e683a24e08ea9"},
+				"3d2200a3e1bb1698bf9857bc378501bfa71f2285a79ace900afddb6f75206e4c"},
+		{"g9x1.locus.closed.dxf.core",
+				"302b83191cba0a449ccb4f3a025e12d379e99e2bb9c2432fe4cc4b171fd4fb88"},
 		{"g9x1.locus.closed.sidecar",
 				"c43e26d3283a62dcfa7f57e512bbf21e52f26002cc243fa02443005054074f48"},
 		{"g9x1.spline.dxf",
-				"a8f7677f5a9fd7deea365c4c745f611ab87f016d261a7c2bc47cac7128878a3e"},
+				"d2a4780754b8ccebc07b9148d09d536496482ba9bb588bead993a91ada8ea407"},
+		{"g9x1.spline.dxf.core",
+				"70d04d9935a732636a8df40e2ed0b9db8fa01e699e65fcc71ce495bc389aaad1"},
 		{"g9x1.spline.sidecar",
 				"df4ec6208cf3af1db71277fd00a644675695dbc91b4f701a9fa02d28cac46e5f"},
 		{"g9x1.function.dxf",
-				"fd776f1ac50a7875e953320dc77a45ccbc58cd2e40b8e8dce086a9ebb951144b"},
+				"0c4340ea918dbfa8952a674a60d007f6294c2da5938b8e213a7534301014b213"},
+		{"g9x1.function.dxf.core",
+				"36cad8c1475c603d009e6b2a9283f9e71247b9d888f3fa5091f3914fb1460c89"},
 		{"g9x1.function.sidecar",
 				"e23beceb412d3ad455174500d0d695edd9aa937cc3a17e0c07de334bcedfee42"},
 		{"g5.exact.dxf",
-				"d816cb205911153d49aba10409d0d24dbf90ef79b2699b8b3df2a6ce0396e7a6"},
+				"c46f613486850e7fee5af280d23c7487c4c126cbaa929fc0ee6978b2cfe67c38"},
+		{"g5.exact.dxf.core",
+				"a711533a284b11e971b5185cb14266f5742b966251a20a38b9a4962bce557619"},
 		{"g9x1.exact.dxf",
-				"d816cb205911153d49aba10409d0d24dbf90ef79b2699b8b3df2a6ce0396e7a6"},
+				"c46f613486850e7fee5af280d23c7487c4c126cbaa929fc0ee6978b2cfe67c38"},
+		{"g9x1.exact.dxf.core",
+				"a711533a284b11e971b5185cb14266f5742b966251a20a38b9a4962bce557619"},
 		{"g9x1.exact.sidecar",
 				"b75e1a456e00818fc582de004061d505dd76ab6bbaec7baa745b07e55592f04a"},
 		{"geocedg.latex.pgf.unspecified",
@@ -214,8 +231,8 @@ class PreG9BR6PlusCBaseIdentityTest {
 			scene.add(eval(exact, command));
 		}
 		scene.get(1).setEuclidianVisible(false);
-		digests.put("g5.exact.dxf", sha256(service.exportDxf(service.createModel(scene,
-				SelectionMode.CURRENT_SELECTION))));
+		putDxf(digests, "g5.exact", service.exportDxf(service.createModel(scene,
+				SelectionMode.CURRENT_SELECTION)));
 		putG9x1(digests, service, "g9x1.exact", scene,
 				request(0.01));
 
@@ -277,13 +294,40 @@ class PreG9BR6PlusCBaseIdentityTest {
 		GeometryExportPreflight preflight = service.preflight(list,
 				SelectionMode.CURRENT_SELECTION, request);
 		DxfEncodingResult encoding = service.encode(preflight);
-		digests.put(name + ".dxf", sha256(withoutSessionIdentity(encoding.getDxfText())));
+		putDxf(digests, name, withoutSessionIdentity(encoding.getDxfText()));
 		DxfPreparedOutput output = new DxfFidelityManifestWriter().prepare(preflight,
 				encoding);
 		if (output.hasManifest()) {
 			digests.put(name + ".sidecar", sha256(normalizeSidecar(new String(
 					output.getManifest().getBytes(), StandardCharsets.UTF_8))));
 		}
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-E3-R1: the complete DXF and its core — the leading comments and
+	 * the ENTITIES section — whose digest is the base digest, because the corrective
+	 * container changes only the structure around the entities.
+	 */
+	private static void putDxf(Map<String, String> digests, String name, String dxf) {
+		digests.put(name + ".dxf", sha256(dxf));
+		digests.put(name + ".dxf.core", sha256(dxfCore(dxf)));
+	}
+
+	/**
+	 * @param dxf complete DXF text
+	 * @return its leading 999 comments followed by its ENTITIES section
+	 */
+	static String dxfCore(String dxf) {
+		StringBuilder core = new StringBuilder();
+		String[] lines = dxf.split("\r\n", -1);
+		int index = 0;
+		while (index + 1 < lines.length && "999".equals(lines[index])) {
+			core.append(lines[index]).append("\r\n").append(lines[index + 1]).append("\r\n");
+			index += 2;
+		}
+		int start = dxf.indexOf("0\r\nSECTION\r\n2\r\nENTITIES\r\n");
+		int end = dxf.indexOf("0\r\nENDSEC\r\n", start);
+		return core.append(dxf, start, end).toString();
 	}
 
 	/**

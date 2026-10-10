@@ -53,7 +53,8 @@ public final class GeoCeDGGeoGebraToAsymptote extends GeoGebraToAsymptote
 			original.write(new StringBuilder());
 			return;
 		}
-		frame = new GeoCeDGLatexSettings(original, this, getApp(), support, "//");
+		frame = new GeoCeDGLatexSettings(original, this, getApp(), support, "//",
+				PhysicalLatexComposition::asymptote);
 		try {
 			super.generateAllCode();
 		} finally {
@@ -94,6 +95,10 @@ public final class GeoCeDGGeoGebraToAsymptote extends GeoGebraToAsymptote
 	/** PRE-G9B-R6-plus-E2: the value of a native dimension, aligned and centred. */
 	@Override
 	protected void drawText(GeoText geo) {
+		if (IsoABorderLatexExport.labelOwner(geo) != null) {
+			drawSheetLabel(geo);
+			return;
+		}
 		AlgoNativeDimension owner = DimensionLatexExport.dimensionTextOwner(geo);
 		if (owner == null) {
 			super.drawText(geo);
@@ -108,6 +113,24 @@ public final class GeoCeDGGeoGebraToAsymptote extends GeoGebraToAsymptote
 				.append("\"), ");
 		addPoint(place[0], place[1], code);
 		code.append(", dir(").append(format(place[2] + 90)).append(')');
+		GColor color = geo.getObjectColor();
+		if (!color.equals(GColor.BLACK)) {
+			code.append(", ");
+			colorCode(color, code);
+		}
+		code.append("); ");
+	}
+
+	/** PRE-G9B-R6-plus-E3-R1: the sheet label, up and left of its anchor. */
+	private void drawSheetLabel(GeoText geo) {
+		double[] at = IsoABorderLatexExport.anchor(geo);
+		if (at == null || !geo.isDefined()) {
+			return;
+		}
+		code.append("\nlabel(\"").append(IsoABorderLatexExport.asymptote(
+				geo.getTextStringSafe())).append("\", ");
+		addPoint(at[0], at[1], code);
+		code.append(", NW");
 		GColor color = geo.getObjectColor();
 		if (!color.equals(GColor.BLACK)) {
 			code.append(", ");

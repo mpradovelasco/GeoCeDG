@@ -28,6 +28,10 @@ public final class DxfExporter {
 	/** DXF database version written by G5. */
 	public static final String ACAD_VERSION = "AC1015";
 	private static final String NEW_LINE = "\r\n";
+	/** First entity handle; G5 entity handles are unchanged by the E3-R1 container. */
+	private static final int FIRST_ENTITY_HANDLE = 0x100;
+	private static final String MODEL_SPACE = "*Model_Space";
+	private static final String PAPER_SPACE = "*Paper_Space";
 
 	/**
 	 * @param model neutral model
@@ -67,10 +71,12 @@ public final class DxfExporter {
 		Map<String, SourceExportOutcome> emittedOutcomes = emittedOutcomes(model);
 		DxfPairs out = new DxfPairs();
 		writeHeader(out, allEntitiesExact(model), model);
-		writeTables(out, model);
+		Structure structure = new Structure();
+		writeTables(out, model, structure);
+		writeBlocks(out, structure);
 		out.pair(0, "SECTION");
 		out.pair(2, "ENTITIES");
-		int handle = 0x100;
+		int handle = FIRST_ENTITY_HANDLE;
 		Map<String, DxfEncodingResult.EntityEncoding> encodings =
 				new LinkedHashMap<>();
 		for (Entity entity : model.getEntities()) {
@@ -94,6 +100,7 @@ public final class DxfExporter {
 							+ emittedOutcomes.keySet().iterator().next());
 		}
 		out.pair(0, "ENDSEC");
+		writeObjects(out, structure);
 		out.pair(0, "EOF");
 		return new DxfEncodingResult(model, out.toString(), encodings);
 	}
@@ -124,12 +131,23 @@ public final class DxfExporter {
 		out.pair(2, "HEADER");
 		out.pair(9, "$ACADVER");
 		out.pair(1, ACAD_VERSION);
+		out.pair(9, "$HANDSEED");
+		out.pair(5, Integer.toHexString(FIRST_ENTITY_HANDLE
+				+ model.getEntities().size()).toUpperCase());
 		out.pair(9, "$INSUNITS");
 		out.pair(70, model.getTargetUnit().getInsunitsCode());
 		out.pair(0, "ENDSEC");
 	}
 
-	private static void writeTables(DxfPairs out, GeometryExportModel model) {
+	/**
+	 * PRE-G9B-R6-plus-E3-R1: the smallest AC1015 container that AutoCAD reads and an
+	 * independent auditor accepts without repairs: the nine symbol tables with
+	 * handles, owners and subclass markers, the model and paper space blocks, and the
+	 * root dictionary with the plot-style placeholder every R2000 layer points to.
+	 * Structural handles stay below the entity handles, which keep their G5 values.
+	 */
+	private static void writeTables(DxfPairs out, GeometryExportModel model,
+			Structure structure) {
 		Set<String> layers = new LinkedHashSet<>();
 		layers.add("0");
 		for (Entity entity : model.getEntities()) {
@@ -137,10 +155,18 @@ public final class DxfExporter {
 		}
 		out.pair(0, "SECTION");
 		out.pair(2, "TABLES");
-		out.pair(0, "TABLE");
-		out.pair(2, "LTYPE");
-		out.pair(70, 1);
-		out.pair(0, "LTYPE");
+		structure.emptyTable(out, "VPORT");
+		String ltype = structure.table(out, "LTYPE", 3);
+		for (String name : new String[] {"ByBlock", "ByLayer"}) {
+			structure.record(out, "LTYPE", ltype, "AcDbLinetypeTableRecord");
+			out.pair(2, name);
+			out.pair(70, 0);
+			out.pair(3, "");
+			out.pair(72, 65);
+			out.pair(73, 0);
+			out.pair(40, 0.0);
+		}
+		structure.record(out, "LTYPE", ltype, "AcDbLinetypeTableRecord");
 		out.pair(2, "CONTINUOUS");
 		out.pair(70, 0);
 		out.pair(3, "Solid line");
@@ -148,20 +174,155 @@ public final class DxfExporter {
 		out.pair(73, 0);
 		out.pair(40, 0);
 		out.pair(0, "ENDTAB");
-		out.pair(0, "TABLE");
-		out.pair(2, "LAYER");
-		out.pair(70, layers.size());
+		String layerTable = structure.table(out, "LAYER", layers.size());
 		for (String layer : layers) {
-			out.pair(0, "LAYER");
+			structure.record(out, "LAYER", layerTable, "AcDbLayerTableRecord");
 			out.pair(2, layer);
 			out.pair(70, 0);
 			// PRE-G9B-R6-plus-C (DQ-C2): a persistently hidden GeoCeDG layer is an
 			// OFF DXF layer (negative color); its objects stay in the file.
 			out.pair(62, model.isLayerOff(layer) ? -7 : 7);
 			out.pair(6, "CONTINUOUS");
+			out.pair(390, structure.plotStylePlaceholder);
 		}
 		out.pair(0, "ENDTAB");
+		String style = structure.table(out, "STYLE", 1);
+		structure.record(out, "STYLE", style, "AcDbTextStyleTableRecord");
+		out.pair(2, "Standard");
+		out.pair(70, 0);
+		out.pair(40, 0.0);
+		out.pair(41, 1.0);
+		out.pair(50, 0.0);
+		out.pair(71, 0);
+		out.pair(42, 2.5);
+		out.pair(3, "txt");
+		out.pair(4, "");
+		out.pair(0, "ENDTAB");
+		structure.emptyTable(out, "VIEW");
+		structure.emptyTable(out, "UCS");
+		String appid = structure.table(out, "APPID", 1);
+		structure.record(out, "APPID", appid, "AcDbRegAppTableRecord");
+		out.pair(2, "ACAD");
+		out.pair(70, 0);
+		out.pair(0, "ENDTAB");
+		structure.table(out, "DIMSTYLE", 0);
+		out.pair(100, "AcDbDimStyleTable");
+		out.pair(71, 0);
+		out.pair(0, "ENDTAB");
+		String blockRecords = structure.table(out, "BLOCK_RECORD", 2);
+		structure.modelSpace = structure.record(out, "BLOCK_RECORD", blockRecords,
+				"AcDbBlockTableRecord");
+		out.pair(2, MODEL_SPACE);
+		structure.paperSpace = structure.record(out, "BLOCK_RECORD", blockRecords,
+				"AcDbBlockTableRecord");
+		out.pair(2, PAPER_SPACE);
+		out.pair(0, "ENDTAB");
 		out.pair(0, "ENDSEC");
+	}
+
+	private static void writeBlocks(DxfPairs out, Structure structure) {
+		out.pair(0, "SECTION");
+		out.pair(2, "BLOCKS");
+		structure.block(out, MODEL_SPACE, structure.modelSpace, false);
+		structure.block(out, PAPER_SPACE, structure.paperSpace, true);
+		out.pair(0, "ENDSEC");
+	}
+
+	private static void writeObjects(DxfPairs out, Structure structure) {
+		out.pair(0, "SECTION");
+		out.pair(2, "OBJECTS");
+		out.pair(0, "DICTIONARY");
+		out.pair(5, structure.rootDictionary);
+		out.pair(330, "0");
+		out.pair(100, "AcDbDictionary");
+		out.pair(281, 1);
+		out.pair(3, "ACAD_PLOTSTYLENAME");
+		out.pair(350, structure.plotStyleDictionary);
+		out.pair(0, "ACDBDICTIONARYWDFLT");
+		out.pair(5, structure.plotStyleDictionary);
+		out.pair(330, structure.rootDictionary);
+		out.pair(100, "AcDbDictionary");
+		out.pair(281, 1);
+		out.pair(3, "Normal");
+		out.pair(350, structure.plotStylePlaceholder);
+		out.pair(100, "AcDbDictionaryWithDefault");
+		out.pair(340, structure.plotStylePlaceholder);
+		out.pair(0, "ACDBPLACEHOLDER");
+		out.pair(5, structure.plotStylePlaceholder);
+		out.pair(330, structure.plotStyleDictionary);
+		out.pair(0, "ENDSEC");
+	}
+
+	/** Deterministic handles and owners of the AC1015 container (E3-R1). */
+	private static final class Structure {
+		private int next = 1;
+		private final String rootDictionary = allocate();
+		private final String plotStyleDictionary = allocate();
+		private final String plotStylePlaceholder = allocate();
+		private String modelSpace;
+		private String paperSpace;
+
+		private String allocate() {
+			if (next >= FIRST_ENTITY_HANDLE) {
+				throw new IllegalArgumentException(
+						"DXF container handles would reach the entity handles");
+			}
+			return Integer.toHexString(next++).toUpperCase();
+		}
+
+		private String table(DxfPairs out, String name, int count) {
+			String handle = allocate();
+			out.pair(0, "TABLE");
+			out.pair(2, name);
+			out.pair(5, handle);
+			out.pair(330, "0");
+			out.pair(100, "AcDbSymbolTable");
+			out.pair(70, count);
+			return handle;
+		}
+
+		private void emptyTable(DxfPairs out, String name) {
+			table(out, name, 0);
+			out.pair(0, "ENDTAB");
+		}
+
+		private String record(DxfPairs out, String type, String owner, String subclass) {
+			String handle = allocate();
+			out.pair(0, type);
+			out.pair(5, handle);
+			out.pair(330, owner);
+			out.pair(100, "AcDbSymbolTableRecord");
+			out.pair(100, subclass);
+			return handle;
+		}
+
+		private void block(DxfPairs out, String name, String owner, boolean paper) {
+			out.pair(0, "BLOCK");
+			out.pair(5, allocate());
+			out.pair(330, owner);
+			out.pair(100, "AcDbEntity");
+			if (paper) {
+				out.pair(67, 1);
+			}
+			out.pair(8, "0");
+			out.pair(100, "AcDbBlockBegin");
+			out.pair(2, name);
+			out.pair(70, 0);
+			out.pair(10, 0.0);
+			out.pair(20, 0.0);
+			out.pair(30, 0.0);
+			out.pair(3, name);
+			out.pair(1, "");
+			out.pair(0, "ENDBLK");
+			out.pair(5, allocate());
+			out.pair(330, owner);
+			out.pair(100, "AcDbEntity");
+			if (paper) {
+				out.pair(67, 1);
+			}
+			out.pair(8, "0");
+			out.pair(100, "AcDbBlockEnd");
+		}
 	}
 
 	private static void writeEntity(DxfPairs out, Entity entity, String handle) {

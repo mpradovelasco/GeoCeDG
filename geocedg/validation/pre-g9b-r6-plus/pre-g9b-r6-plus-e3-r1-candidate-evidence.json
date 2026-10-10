@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-E3-R1",
+  "phaseKind": "BOUNDED_CORRECTIVE_EXPORT_INTEROPERABILITY",
+  "report": "docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md",
+  "characterization": "docs/validation/pre_g9b_r6_plus_e3_r1_characterization_report.md",
+  "technicalCandidateState": "FROZEN with the candidate commit that contains this file",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "publicationAuthorized": false,
+  "verificationClass": "INTEGRATED_PHASE",
+  "frozenAtPhaseStart": true,
+  "frozenAcceptance": [
+    "tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-E3-R1 -LogDirectory artifacts\\agent\\<fresh-name>",
+    "tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\\agent\\<fresh-name>"
+  ],
+  "finalRequired": false,
+  "parentCandidate": {
+    "name": "T_R6PLUS_E3",
+    "commit": "257c854aa65fe82d316968109b9d084deefd2a49",
+    "tree": "b3cedf15b42c3a4dc5925744e83d510ea2dd4850",
+    "phase": "verification-a243082e9be1444f910aa3d7cab15e47",
+    "integration": "verification-d0e9c1b892f34061a29e4d41fb6aa0b5",
+    "retained": true
+  },
+  "publishedBaseline": {
+    "commit": "ff56099184544e5988c63e0ea3339e3d0fe01fac",
+    "tree": "1cdd1e986df785f5f16e7887300d9034e5e4a677"
+  },
+  "branch": "phase/pre-g9b-r6-plus-e3-r1-export-correction",
+  "authorSmoke": {
+    "parent": "PASS WITH TWO BLOCKING EXPORT OBSERVATIONS",
+    "observations": ["OBS-E3-DXF-INVALID-OUTPUT", "OBS-E3-LATEX-EXPORT"],
+    "authorSamples": {
+      "isaoA.dxf": "d974a55555dfcfe2f65814fae2d1ca7769c486c18f9e90939c9eaaabb4faad8b",
+      "isaoA_sin_comentario_largo.dxf": "68164b6b5102a78f62a68cc670be46b771a343153ce899024cb11c7342dc952e",
+      "isaoA_diagnostico_normalizado.dxf": "52c0700c7122057dc4c23538f06aa8da764d17b0824f09061004e3e39176ee18"
+    },
+    "authorDifferential": {"variantA_commentRemoved": "FAIL", "variantB_ezdxfNormalized": "PASS"},
+    "authorSamplesInWorkspace": false
+  },
+  "dxf": {
+    "rootCause": "incomplete G5 AC1015 container (no $HANDSEED, no VPORT/STYLE/VIEW/UCS/APPID/DIMSTYLE/BLOCK_RECORD tables, no handles/owners/subclass markers in LTYPE/LAYER, no BLOCKS, no OBJECTS, no layer plot-style pointer); pre-existing since G5 (OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION), exposed by E3; DxfExporter byte-identical in ff560991 and 257c854a",
+    "commentIsCause": false,
+    "correction": "smallest AC1015 container accepted by AutoCAD 2026 and audited clean by ezdxf, found by single-feature differential variants; entity records and handles unchanged",
+    "requiredStructure": ["$HANDSEED", "VPORT", "LTYPE ByBlock/ByLayer/CONTINUOUS", "LAYER with 390", "STYLE Standard", "VIEW", "UCS", "APPID ACAD", "DIMSTYLE table", "BLOCK_RECORD *Model_Space/*Paper_Space", "BLOCKS", "OBJECTS root dictionary + ACAD_PLOTSTYLENAME + ACDBPLACEHOLDER", "subclass markers"],
+    "toleratedOmissions": ["CLASSES", "DIMSTYLE Standard record", "ACAD_GROUP", "layer 370", "entity 330 owner"],
+    "keptOwners": true,
+    "samples": [
+      {"name": "e3-sample", "parentSha256": "65937a58688e470321b7089f4777dcafa851e514d5937ebc99c3a6d87067285b", "correctedSha256": "fa8108232141bc3ffdd82b9559b06421f16215eb278edcdde5b67b67b602b286", "ezdxfParent": "0 errors, 2 fixes", "ezdxfCorrected": "0 errors, 0 fixes", "autocadParent": "refused: Error in APPID Table (ErrorStatus 53)", "autocadCorrected": "opened: 6 entities, 2 LWPOLYLINE, INSUNITS 4, AUDIT 0 found 0 fixed", "geometryEqual": true},
+      {"name": "simple", "parentSha256": "50701a99ee188c59d60e5a70a0ae1cdaf0673f98c15c5c60e0735bc0d9735e6c", "correctedSha256": "01e791e289e05fc1272b96d3181e5288af170eb98dec879c3dfbb27478801abd", "ezdxfParent": "0 errors, 2 fixes", "ezdxfCorrected": "0 errors, 0 fixes", "autocadParent": "refused", "autocadCorrected": "opened: 4 entities, AUDIT 0 found 0 fixed", "geometryEqual": true},
+      {"name": "c-smoke", "parentSha256": "33bdfca96dabbe95e8a330bee30c50fa20acb017249b08ab3265ad27db2db9f7", "correctedSha256": "f0ed5702dc76cca449a8f1f690d261fac7b931005301f737a1bd8d7bfbfcac59", "ezdxfParent": "0 errors, 2 fixes", "ezdxfCorrected": "0 errors, 0 fixes", "autocadParent": "refused", "autocadCorrected": "opened: 8 entities, AUDIT 0 found 0 fixed, GEOCEDG_L3 colour -7, 3 invisible entities", "geometryEqual": true}
+    ],
+    "independentReaders": {"ezdxf": "1.4.4 (scratch venv, author-permitted; strict readfile + audit of the serialized file)", "autocad": "AutoCAD 2026 accoreconsole W.164.0.0 (agent-side evidence; author re-smoke pending)"},
+    "coreDigestsEqualBase": true,
+    "autocad2026Acceptance": "PENDING AUTHOR RE-SMOKE"
+  },
+  "latex": {
+    "rootCauses": [
+      "UnicodeTeX JLaTeXMath mapping: \\emdash in math mode (PGF/TikZ, PSTricks), the word emdash (Asymptote)",
+      "label alignment ignored by the host: text below-right of its anchor",
+      "article page crops a physical drawing (since C)",
+      "centimetre unit in TeX fixed point: up to 6e-4 relative page error (since C)",
+      "TikZ clipping does not bound the picture; body set-up lines add an interword space",
+      "Asymptote size() fits the visible content, not the export area (since C)"
+    ],
+    "correction": {
+      "label": "text mode, \\textemdash{}, lower-right corner at the anchor (south east / [br] with 0.3333em frame / NW); kernel label unchanged; UnicodeTeX unchanged",
+      "physicalComposition": "standalone border=0pt, unit in TeX points (8 decimals), TikZ bounding box = export area, set-up lines end with %, Asymptote invisible export-area outline; device output unchanged"
+    },
+    "pages": {
+      "expected": {"1:10": "1190.55 x 841.89 bp (420 x 297 mm)", "1:5": "2381.10 x 1683.78 bp (840 x 594 mm)"},
+      "measured": {"pgf": "1190.56 x 841.90 / 2381.13 x 1683.80", "pstricks": "1190.56 x 841.90 / 2381.13 x 1683.80", "asymptoteWithoutLabel": "1190.55 x 841.89 / 2381.10 x 1683.78"},
+      "parentMeasured": {"pgf_cm_unit_standalone": "1189.86 x 841.40 / 2381.58 x 1684.11", "asymptote_hidden_paper": "2382.30 x 1692.39 (frame scaled to 84 cm)"}
+    },
+    "toolchain": "MiKTeX 26.5 pdflatex, latex, dvips, ps2pdf, pdfinfo; Ghostscript 10.02.1; asy 3.06",
+    "asymptoteLabelCompilation": "UNAVAILABLE (installed asy cannot typeset any label with any TeX engine)"
+  },
+  "kernelGeometry": "UNCHANGED",
+  "exportArea": "AUTHORITY UNCHANGED",
+  "junitInventory": {"selections": 55, "phaseSelections": 60, "discovery.shared": 6075, "discovery.desktop": 1991, "final.shared": 6992, "final.desktop": 1985, "pre-g9b-r6-plus-e3-r1.shared": 63, "pre-g9b-r6-plus-e3-r1.desktop": 105, "updater": "tools/agent/update-verification-junit-inventory.ps1 with discovery and executed selection evidence"},
+  "checks": {"finalShared": "6992 tests, 0 failures, 10 skipped", "finalDesktop": "1985 tests, 0 failures, 1 skipped", "phaseShared": "63 tests, 0 failures", "phaseDesktop": "105 tests, 0 failures", "staticDevelopment": "ACCEPTED / COMPLETE (standing governance finding, historical UNAVAILABLE)", "infraUnitDevelopment": "ACCEPTED / COMPLETE", "checkstyle": "no E3-R1 finding; pre-existing PreG9BR6PlusA1HiddenLayerTest warning", "diffCheck": "clean", "physicalPgfProbe": "product.physical.pgf = PhysicalLatexComposition.pgf(parent output 26b96019...03e1, 0.1 cm)"},
+  "observationsOutOfScope": [
+    "OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP",
+    "OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES",
+    "OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE"
+  ]
+}

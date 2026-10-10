@@ -52,7 +52,8 @@ public final class GeoCeDGGeoGebraToPgf extends GeoGebraToPgf
 			original.write(new StringBuilder());
 			return;
 		}
-		frame = new GeoCeDGLatexSettings(original, this, getApp(), support, "%");
+		frame = new GeoCeDGLatexSettings(original, this, getApp(), support, "%",
+				PhysicalLatexComposition::pgf);
 		try {
 			super.generateAllCode();
 		} finally {
@@ -94,6 +95,10 @@ public final class GeoCeDGGeoGebraToPgf extends GeoGebraToPgf
 	/** PRE-G9B-R6-plus-E2: the value of a native dimension, aligned and centred. */
 	@Override
 	protected void drawText(GeoText geo) {
+		if (IsoABorderLatexExport.labelOwner(geo) != null) {
+			drawSheetLabel(geo);
+			return;
+		}
 		AlgoNativeDimension owner = DimensionLatexExport.dimensionTextOwner(geo);
 		if (owner == null) {
 			super.drawText(geo);
@@ -116,6 +121,26 @@ public final class GeoCeDGGeoGebraToPgf extends GeoGebraToPgf
 				.append(",anchor=south] {")
 				.append(DimensionLatexExport.escapeTeX(geo.getTextStringSafe()))
 				.append("};\n");
+		endBeamer(code);
+	}
+
+	/** PRE-G9B-R6-plus-E3-R1: the sheet label, up and left of its anchor. */
+	private void drawSheetLabel(GeoText geo) {
+		double[] at = IsoABorderLatexExport.anchor(geo);
+		if (at == null || !geo.isDefined()) {
+			return;
+		}
+		startBeamer(code);
+		code.append("\\draw ");
+		GColor color = geo.getObjectColor();
+		if (!color.equals(GColor.BLACK)) {
+			code.append("[color=");
+			colorCode(color, code);
+			code.append("] ");
+		}
+		code.append('(').append(format(at[0])).append(',').append(format(at[1]))
+				.append(") node[anchor=south east] {")
+				.append(IsoABorderLatexExport.teX(geo.getTextStringSafe())).append("};\n");
 		endBeamer(code);
 	}
 

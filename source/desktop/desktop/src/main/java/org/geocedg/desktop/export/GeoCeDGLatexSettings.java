@@ -5,6 +5,8 @@
 
 package org.geocedg.desktop.export;
 
+import java.util.function.BiFunction;
+
 import org.geogebra.common.export.pstricks.ExportSettings;
 import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -28,6 +30,7 @@ final class GeoCeDGLatexSettings implements ExportSettings {
 	private final LatexSemanticExportSupport support;
 	private final String commentPrefix;
 	private final String scaleComment;
+	private final BiFunction<String, Double, String> physicalComposition;
 
 	/**
 	 * @param delegate dialog or API settings
@@ -35,12 +38,16 @@ final class GeoCeDGLatexSettings implements ExportSettings {
 	 * @param app exporting application
 	 * @param support semantic-curve support of the exporter
 	 * @param commentPrefix dialect line-comment prefix
+	 * @param physicalComposition dialect page composition of a physical export
+	 *            (PRE-G9B-R6-plus-E3-R1), given the text and centimetres per unit
 	 */
 	GeoCeDGLatexSettings(ExportSettings delegate, GeoGebraExport exporter, App app,
-			LatexSemanticExportSupport support, String commentPrefix) {
+			LatexSemanticExportSupport support, String commentPrefix,
+			BiFunction<String, Double, String> physicalComposition) {
 		this.delegate = delegate;
 		this.exporter = exporter;
 		this.support = support;
+		this.physicalComposition = physicalComposition;
 		this.commentPrefix = commentPrefix;
 		double scale = app.getPhysicalExportScale();
 		physicalScale = scale > 0 && Double.isFinite(scale) ? scale : Double.NaN;
@@ -90,8 +97,12 @@ final class GeoCeDGLatexSettings implements ExportSettings {
 
 	@Override
 	public void write(StringBuilder code) {
-		delegate.write(new StringBuilder(
-				support.finish(code, commentPrefix, scaleComment)));
+		String text = support.finish(code, commentPrefix, scaleComment).toString();
+		if (isPhysical()) {
+			// PRE-G9B-R6-plus-E3-R1: the page is the export area at the physical scale
+			text = physicalComposition.apply(text, physicalScale);
+		}
+		delegate.write(new StringBuilder(text));
 	}
 
 	@Override

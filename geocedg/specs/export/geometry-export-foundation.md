@@ -176,6 +176,18 @@ polygon-side suppression. Layer declarations and handles are deterministic.
 The DXF contains no timestamps. Validation compares parsed entities and their
 geometry, not only bytes.
 
+Proposed amendment of the `PRE-G9B-R6-plus-E3-R1` corrective candidate (not
+author approved; [candidate report](../../../docs/validation/pre_g9b_r6_plus_e3_r1_candidate_report.md)):
+the AC1015 container is complete enough for AutoCAD to read it. The header
+carries `$HANDSEED`; TABLES holds the nine symbol tables (VPORT, LTYPE with
+`ByBlock`, `ByLayer` and `CONTINUOUS`, LAYER, STYLE `Standard`, VIEW, UCS, APPID
+`ACAD`, DIMSTYLE, BLOCK_RECORD with `*Model_Space` and `*Paper_Space`), each
+table and record with its handle, owner and subclass markers, and every layer
+with its plot-style pointer; BLOCKS holds the two space blocks; OBJECTS holds the
+root dictionary with the `ACAD_PLOTSTYLENAME` dictionary and its placeholder.
+Structural handles stay below the entity handles; the leading comments and every
+entity record, including its handle, are unchanged.
+
 A G5 PASS requires:
 
 - exact entity counts and types;

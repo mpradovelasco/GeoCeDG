@@ -277,13 +277,18 @@ class PreG9BR6PlusCDxfDesktopTest {
 						.requestSidecar(true).build(), controller::exportContext);
 		DxfEncodingResult encoding = service.encode(preflight);
 		String dxf = encoding.getDxfText();
-		assertEquals("33bdfca96dabbe95e8a330bee30c50fa20acb017249b08ab3265ad27db2db9f7",
+		// PRE-G9B-R6-plus-E3-R1: the complete AC1015 container around the same core
+		// (leading comments and ENTITIES); the C bytes were 33bdfca9...b9f7
+		assertEquals("f0ed5702dc76cca449a8f1f690d261fac7b931005301f737a1bd8d7bfbfcac59",
 				PreG9BR6PlusCBaseIdentityTest.sha256(dxf), "the author's smoke file");
+		assertEquals("dfcc45beebe1bdd64d2f60f4e2fdd89b3e97d65b5d668d026ffbaaf40cc2959c",
+				PreG9BR6PlusCBaseIdentityTest.sha256(PreG9BR6PlusCBaseIdentityTest.dxfCore(dxf)),
+				"the core of the C bytes");
 		assertTrue(dxf.contains("0\r\nCIRCLE\r\n5\r\n103\r\n100\r\nAcDbEntity\r\n8\r\n0\r\n"
 				+ "420\r\n0\r\n999\r\nGeoCeDG source geo-3-hiddenObject\r\n60\r\n1\r\n"
 				+ "100\r\nAcDbCircle\r\n"), "60 = 1 within AcDbEntity, before AcDbCircle");
-		assertTrue(dxf.contains("0\r\nLAYER\r\n2\r\nGEOCEDG_L3\r\n70\r\n0\r\n62\r\n-7\r\n"),
-				"the hidden layer is OFF");
+		assertTrue(dxf.contains("100\r\nAcDbLayerTableRecord\r\n2\r\nGEOCEDG_L3\r\n70\r\n0\r\n"
+				+ "62\r\n-7\r\n"), "the hidden layer is OFF");
 		assertTrue(dxf.contains("8\r\nGEOCEDG_L3\r\n420\r\n0\r\n999\r\nGeoCeDG source "
 				+ "geo-1-onHiddenLayer\r\n100\r\nAcDbLine\r\n"),
 				"a hidden layer is not object visibility: no 60");

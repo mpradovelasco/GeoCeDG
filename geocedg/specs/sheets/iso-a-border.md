@@ -510,6 +510,20 @@ outputs through the shared drawables; LaTeX through polylines and text; DXF
 writes each polyline as an open `LWPOLYLINE` with the closing vertex repeated,
 and no text (durable limitation).
 
+14.1a Proposed amendment of the `PRE-G9B-R6-plus-E3-R1` corrective candidate
+(not author approved): the LaTeX exporters write the label in text mode with the
+em dash as `\textemdash{}` and the label's lower-right corner at its anchor
+(PGF/TikZ `anchor=south east`, PSTricks `\rput[br]`, Asymptote `NW`), as on
+screen. A physical LaTeX export has the export area as its page: PGF/TikZ and
+PSTricks use `standalone` without border (PGF/TikZ with the export area as bounding
+box, since TikZ clipping does not bound the picture) and the physical unit in TeX points with
+eight decimals (the same `fb(c) · 100 · a / b` centimetres per model unit, free of
+the fixed-point error of a centimetre value such as `0.01cm`); Asymptote keeps
+`size()` and outlines the export area with an invisible zero-width path, so that
+the paper boundary, hidden or not, defines the scale and the page. The DXF of a
+sheet is the complete AC1015 container of `geometry-export-foundation.md` and
+opens in AutoCAD.
+
 14.2 Documents without the command re-save byte-identically. A build that
 does not know `IsoABorder` (older GeoCeDG, upstream GeoGebra) drops its
 outputs and dependents with a load error and loses them on re-save — a

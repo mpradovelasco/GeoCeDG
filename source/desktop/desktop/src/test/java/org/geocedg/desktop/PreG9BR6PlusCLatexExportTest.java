@@ -136,20 +136,22 @@ class PreG9BR6PlusCLatexExportTest {
 		app.getDocumentUnits().replace(UnitState.of(UnitToken.CM, UnitToken.MM, null));
 		app.setDrawingScale(DrawingScale.of(1, 2));
 		String pgf = generate(exporter(app, "pgf"), view);
-		assertTrue(pgf.contains("x=0.5cm,y=0.5cm"), pgf);
+		// PRE-G9B-R6-plus-E3-R1: the physical unit is written in TeX points
+		// (0.5 cm = 14.22637795 pt), free of the fixed-point error of "0.5cm"
+		assertTrue(pgf.contains("x=14.22637795pt,y=14.22637795pt"), pgf);
 		assertTrue(pgf.startsWith("% GeoCeDG physical scale: drawing scale 1:2, "
 				+ "construction unit cm: 1 model unit = 0.5 cm on the output"), pgf);
 		String pstricks = generate(exporter(app, "pstricks"), view);
-		assertTrue(pstricks.contains("xunit=0.5cm,yunit=0.5cm"), pstricks);
+		assertTrue(pstricks.contains("xunit=14.22637795pt,yunit=14.22637795pt"), pstricks);
 		String asymptote = generate(exporter(app, "asymptote"), view);
 		assertTrue(asymptote.contains("size(2.cm)"), "4 units at 0.5 cm: " + asymptote);
 		app.getDocumentUnits().replace(UnitState.of(UnitToken.MM, null, null));
-		assertTrue(generate(exporter(app, "pgf"), view).contains("x=0.05cm,y=0.05cm"));
+		assertTrue(generate(exporter(app, "pgf"), view).contains("x=1.42263780pt,y=1.42263780pt"));
 		app.getDocumentUnits().replace(UnitState.of(UnitToken.MM, UnitToken.M, null));
 		assertEquals(generate(exporter(app, "pgf"), view),
 				generate(exporter(app, "pgf"), view), "deterministic");
-		assertTrue(generate(exporter(app, "pgf"), view).contains("x=0.05cm,y=0.05cm"),
-				"presentationUnit is never a scale factor");
+		assertTrue(generate(exporter(app, "pgf"), view).contains(
+				"x=1.42263780pt,y=1.42263780pt"), "presentationUnit is never a scale factor");
 	}
 
 	// -------------------------------------------------------- T-LATEX-SEMANTIC

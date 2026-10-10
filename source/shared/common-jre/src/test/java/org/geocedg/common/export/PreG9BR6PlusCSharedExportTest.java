@@ -173,9 +173,12 @@ class PreG9BR6PlusCSharedExportTest extends BaseUnitTest {
 		assertEquals(4, preflight.getModel().getEntities().size(),
 				"every object stays in the export");
 		String dxf = service.encode(preflight).getDxfText();
-		assertTrue(dxf.contains("0\r\nLAYER\r\n2\r\nGEOCEDG_L3\r\n70\r\n0\r\n62\r\n-7\r\n"));
-		assertTrue(dxf.contains("0\r\nLAYER\r\n2\r\nGEOCEDG_L4\r\n70\r\n0\r\n62\r\n7\r\n"));
-		assertTrue(dxf.contains("0\r\nLAYER\r\n2\r\n0\r\n70\r\n0\r\n62\r\n7\r\n"));
+		// PRE-G9B-R6-plus-E3-R1: each layer record now starts with its handle, owner
+		// and subclass markers; name, flags and color are unchanged
+		String layer = "100\r\nAcDbLayerTableRecord\r\n2\r\n";
+		assertTrue(dxf.contains(layer + "GEOCEDG_L3\r\n70\r\n0\r\n62\r\n-7\r\n"));
+		assertTrue(dxf.contains(layer + "GEOCEDG_L4\r\n70\r\n0\r\n62\r\n7\r\n"));
+		assertTrue(dxf.contains(layer + "0\r\n70\r\n0\r\n62\r\n7\r\n"));
 		List<List<String[]>> entities = entities(dxf);
 		assertEquals(4, entities.size());
 		assertEquals("GEOCEDG_L3", value(entities.get(0), 8));

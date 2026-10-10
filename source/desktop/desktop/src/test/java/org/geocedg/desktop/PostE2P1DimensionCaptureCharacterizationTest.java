@@ -582,9 +582,11 @@ class PostE2P1DimensionCaptureCharacterizationTest {
 	 * @return {gap mm, overshoot mm, uncertainty mm, extension stroke width mm}
 	 */
 	static double[] measurePgf(String pgf) {
-		Matcher unit = Pattern.compile("x=([0-9.]+)cm").matcher(pgf);
+		// PRE-G9B-R6-plus-E3-R1 writes the physical unit in TeX points
+		Matcher unit = Pattern.compile("x=([0-9.]+)(cm|pt)").matcher(pgf);
 		assertTrue(unit.find(), pgf);
-		double mmPerUnit = Double.parseDouble(unit.group(1)) * 10;
+		double mmPerUnit = Double.parseDouble(unit.group(1))
+				* ("pt".equals(unit.group(2)) ? 25.4 / 72.27 : 10);
 		Matcher draw = Pattern.compile("\\\\draw \\[([^\\]]*)\\] \\((-?[0-9.E-]+),"
 				+ "(-?[0-9.E-]+)\\)-- \\((-?[0-9.E-]+),(-?[0-9.E-]+)\\);").matcher(pgf);
 		List<String[]> horizontal = new ArrayList<>();
