@@ -48,6 +48,7 @@
 - `E3` technical candidate (`PRE-G9B-R6-plus-E3-IMPLEMENTATION` Stage B, 2026-10-10): native `IsoABorder` (R2: two closed `GeoPolyLine` and one `GeoText`, seven arguments, `MarcoISOA`), the menu-only tool with its unit gate, the `ISO_A_SELECTION` and `ISO_A_BORDER` export-area producers with the identity-only link, the physical-size and scale-label coherence indicators and "Use sheet scale", catalog 127 → 130, the shared command available in GeoCeDG and Classic; [candidate report](../validation/pre_g9b_r6_plus_e3_candidate_report.md), [specification](../../geocedg/specs/sheets/iso-a-border.md) and [ADR 0036](../adr/0036-iso-a-border-representation-and-export-area-producers.md) `PROPOSED`; `TECHNICAL CANDIDATE PENDING AUTHOR REVIEW`; `PHASE` and `INTEGRATION` on the candidate commit reported outside the report; author smoke pending; publication `NOT AUTHORIZED`; `selfApproved = false`.
 - `E3-R1` corrective candidate (`PRE-G9B-R6-plus-E3-R1`, 2026-10-10): after the author smoke of `257c854a` (`PASS WITH TWO BLOCKING EXPORT OBSERVATIONS`), the bounded correction completes the AC1015 DXF container (entities unchanged; AutoCAD 2026 opens it in the agent-side check, author re-smoke pending) and fixes the LaTeX export of the sheet (label with `\textemdash{}` inside the frame; physical page equal to the export area in PGF/TikZ, PSTricks and Asymptote); [candidate report](../validation/pre_g9b_r6_plus_e3_r1_candidate_report.md); `INTEGRATED_PHASE`; publication `NOT AUTHORIZED`; `selfApproved = false`.
 - `E3` and `E3-R1` author closeout (`PRE-G9B-R6-plus-E3-AUTHOR-CLOSEOUT`, 2026-10-10): `PRE-G9B-R6-plus-E3-R1` and `PRE-G9B-R6-plus-E3` = `PASS — AUTHOR APPROVED` on the corrective successor `T_R6PLUS_E3_R1` `7cd501167c856eef356888ca87ed3a0c97cea55c`, tree `3c51c9d3635c22939df6cab60259521f885eff92` (the original candidate `257c854a` stays historical evidence); `AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION` (Asymptote with label `UNAVAILABLE — NOT CLAIMED PASS`); ISO A specification `1.0` with §14.1a `NORMATIVE / AUTHOR APPROVED`, ADR 0036 `ACCEPTED — AUTHOR APPROVED`, the `E3-R1` G5 container amendment `AUTHOR APPROVED — IMPLEMENTED AND VERIFIED` (G5 stays `Experimental`); three POST-E3 activities authorized with bounded scopes and prepared, not executed; [closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md); publication `NOT AUTHORIZED`; `selfApproved = false`.
+- POST-E3 author decisions and local integration (`POST-E3-AUTHOR-RECONCILIATION-AND-INTEGRATION-PREP`, 2026-10-10): on the published `P_POST_E3` `31286a2355cabebc69c3937442e7f15636da12ba`, the author approved the Spanish command-lookup characterization (D0 for the legacy-load attribution; new `OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP` open), the PSTricks dimension-angle characterization and the C1 design (implementation a separate task; planned `BOUNDED_PHASE`), and the legacy inventory correction (`28e9aebe`). `OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION` is retained outside C1. The three candidates are integrated linearly on `phase/post-e3-followups-author-integration` (`ed3f7a5e`, `61dbb0ad`, `718c4081` and a reconciliation commit); integration candidate pending author review; publication `NOT AUTHORIZED`; [reconciliation record](../validation/post_e3_followups_author_reconciliation_record.md); `selfApproved = false`.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1328,7 +1329,10 @@ PRE-G9B-R6-plus-E3         = PASS — AUTHOR APPROVED (with PRE-G9B-R6-plus-E3-R
                              publication NOT AUTHORIZED; selfApproved = false)
                              earlier: NOT AUTHORIZED (documentary readiness only,
                              POST-E2-P4 closeout)
-POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = CHARACTERIZATION COMPLETE — PENDING AUTHOR
+POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = PASS — AUTHOR APPROVED (2026-10-10, POST-E3
+                             author reconciliation; D0 for the legacy-load attribution;
+                             integrated as ed3f7a5e; publication NOT AUTHORIZED)
+                             earlier: CHARACTERIZATION COMPLETE — PENDING AUTHOR
                              REVIEW (2026-10-10; on P_R6PLUS_E3 31286a23; pre-existing
                              upstream lazy reverse-table refill, not legacy-load specific;
                              user-visible only via the scripting language API; correction
@@ -1336,7 +1340,11 @@ POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = CHARACTERIZATION COMPLETE — PENDI
                              docs/validation/post_e3_es_command_lookup_characterization_report.md)
                              earlier: PREPARED — CHARACTERIZATION AND DESIGN AUTHORIZED —
                              CORRECTION NOT AUTHORIZED (2026-10-10, E3/E3-R1 closeout; order 1)
-POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = CHARACTERIZATION COMPLETE — PENDING AUTHOR REVIEW
+POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = PASS — AUTHOR APPROVED; C1 DESIGN AUTHOR APPROVED
+                             (2026-10-10; integrated as 61dbb0ad; C1 implementation NOT
+                             AUTHORIZED here: separate task POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1
+                             on the published integration; planned BOUNDED_PHASE)
+                             earlier: CHARACTERIZATION COMPLETE — PENDING AUTHOR REVIEW
                              (2026-10-10; on P_R6PLUS_E3 31286a23; pre-existing since E2:
                              unbounded upstream formatter vs the PSTricks 9-digit limit;
                              correction C1 designed, BOUNDED_PHASE, prompt PREPARED — NOT
@@ -1344,7 +1352,10 @@ POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = CHARACTERIZATION COMPLETE — PENDING AUTH
                              recorded; docs/validation/post_e3_e2_pstricks_dimension_angle_characterization_report.md)
                              earlier: PREPARED — CHARACTERIZATION AND CORRECTIVE DESIGN
                              AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED (2026-10-10; order 2)
-POST-E3-LEGACY-INVENTORY-CASE-FIX = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (2026-10-10;
+POST-E3-LEGACY-INVENTORY-CASE-FIX = PASS — AUTHOR APPROVED (2026-10-10, original candidate
+                             28e9aebe; integrated as 718c4081, equivalent; publication NOT
+                             AUTHORIZED)
+                             earlier: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (2026-10-10;
                              on P_R6PLUS_E3 31286a23; readiness gate passed; class
                              OPERATIONAL_VERIFICATION_INFRASTRUCTURE; ordinal label map in
                              tools/legacy/ingest.ps1; 24 of 169 template-v7 I/O types
@@ -1352,6 +1363,10 @@ POST-E3-LEGACY-INVENTORY-CASE-FIX = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (2
                              docs/validation/post_e3_legacy_inventory_case_fix_candidate_report.md)
                              earlier: PREPARED — BOUNDED IMPLEMENTATION AUTHORIZED — SUBJECT
                              TO CHARACTERIZATION AND READINESS GATE (2026-10-10; order 3)
+POST-E3-INTEGRATION        = LOCAL INTEGRATION CANDIDATE — PENDING AUTHOR REVIEW (2026-10-10;
+                             phase/post-e3-followups-author-integration on P_POST_E3 31286a23;
+                             publication NOT AUTHORIZED; next after publication:
+                             POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1; F1 NOT AUTHORIZED)
 PRE-G9B-R6-plus-F1         = NOT AUTHORIZED
 PRE-G9B-R6-plus-F2         = NOT AUTHORIZED
 
@@ -1424,18 +1439,36 @@ OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES = OPEN — OUTSIDE E3 — NOT F
                              BOUNDED CORRECTION AUTHORIZED (2026-10-10, E3/E3-R1 closeout) as
                              POST-E3-LEGACY-INVENTORY-CASE-FIX — CORRECTED IN THE LOCAL
                              TECHNICAL CANDIDATE (2026-10-10) — AUTHOR REVIEW PENDING
+                             CORRECTION PASS — AUTHOR APPROVED (2026-10-10, 28e9aebe;
+                             integrated as 718c4081; publication pending)
 OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP = OPEN — OUTSIDE E3 — RETAINED (E3 candidate report
                              §12: after loadXML of Templatev7.ggb and setLanguage("es") no
                              Spanish command name resolves in the Desktop test harness)
                              CHARACTERIZATION AUTHORIZED (2026-10-10) as
                              POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION — CORRECTION NOT
                              AUTHORIZED — NOT STARTED
+                             DISPOSITIONED — NOT LEGACY-LOAD SPECIFIC (author decision D0,
+                             2026-10-10); the narrower cause is
+                             OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP
+OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP = OPEN — PRE-EXISTING UPSTREAM BEHAVIOR —
+                             USER-VISIBLE THROUGH SCRIPTING API — PRODUCT CORRECTION NOT
+                             AUTHORIZED (registered 2026-10-10: a language switch through
+                             the scripting API can leave localized command lookup stale;
+                             English canonical names stay usable; independent of legacy
+                             documents; reproduced in the real GUI)
 OBS-R6PLUS-E2-PSTRICKS-DIMENSION-ANGLE = OPEN — PRE-EXISTING ON 257c854a — NOT ATTRIBUTED
                              TO E3-R1 (E3-R1 report §4.5: 14-decimal \rput rotation of an E2
                              dimension value; latex "Number too big")
                              CHARACTERIZATION AUTHORIZED (2026-10-10) as
                              POST-E3-E2-PSTRICKS-DIMENSION-ANGLE — IMPLEMENTATION NOT
                              AUTHORIZED — NOT STARTED
+                             CHARACTERIZATION PASS — AUTHOR APPROVED; C1 DESIGN AUTHOR
+                             APPROVED (2026-10-10); C1 implementation a separate task —
+                             NOT AUTHORIZED YET
+OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION = OPEN — PRE-EXISTING — OUTSIDE C1 —
+                             IMPLEMENTATION NOT AUTHORIZED (registered 2026-10-10: inherited
+                             PSTricks rotations of other objects, e.g. a rotated ellipse, fail
+                             the same way; not assigned to F1)
 OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED = ACCEPTED NON-BLOCKING
                              VERIFICATION LIMITATION (2026-10-10, E3/E3-R1 closeout):
                              Asymptote with label UNAVAILABLE in the agent environment —

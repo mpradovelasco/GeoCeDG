@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "task": "POST-E3-AUTHOR-RECONCILIATION-AND-INTEGRATION-PREP",
+  "artifactKind": "AUTHOR_DECISION_RECONCILIATION_RECORD",
+  "record": "docs/validation/post_e3_followups_author_reconciliation_record.md",
+  "authorInstruction": {"date": "2026-10-10", "title": "GeoCeDG — POST-E3 Author Decision Reconciliation and Publication Preparation"},
+  "selfApproved": false,
+  "publishedBaseline": {"name": "P_POST_E3", "commit": "31286a2355cabebc69c3937442e7f15636da12ba", "tree": "d223d7400b2eabacddafba874b49eae581c5c6c4"},
+  "decisions": {
+    "POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION": "PASS — AUTHOR APPROVED",
+    "OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP": "D0 — DISPOSITIONED — NOT LEGACY-LOAD SPECIFIC",
+    "OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP": "OPEN — PRE-EXISTING UPSTREAM BEHAVIOR — USER-VISIBLE THROUGH SCRIPTING API — PRODUCT CORRECTION NOT AUTHORIZED",
+    "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE": "PASS — AUTHOR APPROVED",
+    "C1 design": "AUTHOR APPROVED",
+    "C1 implementation": "NOT AUTHORIZED IN THIS TASK — separate task POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 on the published integration commit",
+    "C1 planned verification class": "BOUNDED_PHASE (freeze at the C1 entry gate)",
+    "OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION": "OPEN — PRE-EXISTING — OUTSIDE C1 — IMPLEMENTATION NOT AUTHORIZED",
+    "POST-E3-LEGACY-INVENTORY-CASE-FIX": "PASS — AUTHOR APPROVED (original candidate 28e9aebe)",
+    "legacy correction verification class": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE (accepted)",
+    "legacy correction interactive smoke": "NOT REQUIRED"
+  },
+  "c1Design": {
+    "placement": "GeoCeDGGeoGebraToPstricks, native-dimension text branch",
+    "precision": "six decimal places, deterministic, no scientific notation",
+    "bound": "|dtheta| <= 5e-7 degrees",
+    "unchanged": ["geometric orientation", "document serialization", "construction DAG", "PGF/TikZ", "Asymptote", "GeoGebraExport.format", "kernel geometry", "native-dimension construction semantics"],
+    "prompt": {"path": ".github/prompts/tasks/post-e3-e2-pstricks-dimension-angle-correction.prompt.md", "state": "PREPARED — DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED"}
+  },
+  "originalCandidates": [
+    {"task": "POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION", "branch": "phase/post-e3-es-command-lookup-characterization", "commit": "4fe048095015a1f6b3dae170b84f265d56e4d216", "tree": "d009e7512f1d209db22aa015b3ad827c94a170ba", "verification": [{"profile": "STATIC", "run": "verification-f98eeff39b7e4505b39c6c44fb8bb0b1", "verdict": "ACCEPTED / COMPLETE", "resultHash": "564de8e7919851ee62554c7d93aa64d0f7b0aa9da158d88241b0edf5a1edfb19"}], "report": "docs/validation/post_e3_es_command_lookup_characterization_report.md"},
+    {"task": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE", "branch": "phase/post-e3-e2-pstricks-dimension-angle", "commit": "4866ce2843915ce609a91fe6ab2f4cb67c94380e", "tree": "3ad78fe20fea904d6a3d59436a8802469cfed16d", "verification": [{"profile": "STATIC", "run": "verification-f7a407c391c34f76af0c1c6463fb1e32", "verdict": "ACCEPTED / COMPLETE", "resultHash": "626df8291bd3999b91f873af77142dc0700a2e4b679825afa50296ad4c56ab00"}], "report": "docs/validation/post_e3_e2_pstricks_dimension_angle_characterization_report.md"},
+    {"task": "POST-E3-LEGACY-INVENTORY-CASE-FIX", "branch": "phase/post-e3-legacy-inventory-case-fix", "commit": "28e9aebe17725310ed785afad0a3f46e20126305", "tree": "326a7603a42fe5b6f2d0018f27f7095fe8593c2a", "verificationClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE", "verification": [{"profile": "STATIC", "run": "verification-9841175d464a4401b4104344d3fcde67", "verdict": "ACCEPTED / COMPLETE", "resultHash": "6be303ad99433398a868c74cd95822a92b774dccc6d1b438a510f049f19a1ab8"}, {"profile": "INFRA_UNIT", "run": "verification-a142b475b4be4e39be760d43c4fdca95", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22", "resultHash": "b32c747a73b4c3cc98bb59e826330e65c0bff46916f981936f4fd120d1a8bf31"}, {"command": "pwsh -File tools/agent/verify-legacy.ps1", "exit": 0}], "report": "docs/validation/post_e3_legacy_inventory_case_fix_candidate_report.md"}
+  ],
+  "integration": {
+    "branch": "phase/post-e3-followups-author-integration",
+    "method": "git cherry-pick -x in the authorized order, then one reconciliation commit",
+    "successors": [
+      {"order": 1, "sourceTask": "POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION", "original_candidate_sha": "4fe048095015a1f6b3dae170b84f265d56e4d216", "original_candidate_tree": "d009e7512f1d209db22aa015b3ad827c94a170ba", "integrated_successor_sha": "ed3f7a5e6a73aa0fd53bf069530ff6a128d44d6d", "integrated_successor_tree": "d009e7512f1d209db22aa015b3ad827c94a170ba", "integration_method": "clean cherry-pick -x (tree identical to the original)"},
+      {"order": 2, "sourceTask": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE", "original_candidate_sha": "4866ce2843915ce609a91fe6ab2f4cb67c94380e", "original_candidate_tree": "3ad78fe20fea904d6a3d59436a8802469cfed16d", "integrated_successor_sha": "61dbb0adba8e880e284ba08cb6e5f4e20591cd75", "integrated_successor_tree": "7719b6911a4f40e08c26d2150666068c3024a731", "integration_method": "cherry-pick -x; additive resolution of adjacent mini-track status lines"},
+      {"order": 3, "sourceTask": "POST-E3-LEGACY-INVENTORY-CASE-FIX", "original_candidate_sha": "28e9aebe17725310ed785afad0a3f46e20126305", "original_candidate_tree": "326a7603a42fe5b6f2d0018f27f7095fe8593c2a", "integrated_successor_sha": "718c408118168591ccc2799a862538f1afdeb367", "integrated_successor_tree": "3996114b64d8d58245a4bff30cc58e9b2ff1c124", "integration_method": "cherry-pick -x; additive resolution of adjacent mini-track status lines"},
+      {"order": 4, "sourceTask": "POST-E3-AUTHOR-RECONCILIATION-AND-INTEGRATION-PREP", "integration_method": "new commit (the commit that contains this file)"}
+    ],
+    "conflicts": "only the adjacent POST-E3 status lines of the mini-track plan section 14; resolved additively, each task block exactly as its task wrote it",
+    "legacyEquivalence": "git diff 28e9aebe 718c4081 -- tools/legacy models/legacy and the legacy reports is empty",
+    "characterizationsDocumentaryOnly": true,
+    "c1Implemented": false,
+    "productEffect": "NONE beyond the approved legacy metadata correction (tools/legacy/ingest.ps1 and derived inventories)"
+  },
+  "integrationVerification": {
+    "frozenClass": "OPERATIONAL_VERIFICATION_INFRASTRUCTURE",
+    "obligations": ["documentary validation", "verify-legacy.ps1", "ingest.ps1 -Check for three resources", "idempotent regeneration", "original artifact hashes", "record-level equivalence with 28e9aebe", "STATIC", "INFRA_UNIT"],
+    "finalRequired": false,
+    "receipts": "new, bound to the integration candidate, reported outside this file; original receipts never reattributed"
+  },
+  "publicationAuthorized": false,
+  "notAuthorized": ["publication", "tag", "release", "application-version change", "C1 implementation", "command lookup correction", "host PSTricks rotation correction", "F1", "F2", "F3", "F4", "G"]
+}
