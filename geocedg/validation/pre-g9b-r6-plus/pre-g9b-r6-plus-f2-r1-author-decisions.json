@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "recordVersion": "1.0",
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F2-R1",
+  "task": "PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION",
+  "stage": 2,
+  "artifactKind": "AUTHOR_DECISION_RECORD_AND_DESIGN_RECONCILIATION",
+  "record": "docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md",
+  "reconciledDesign": "docs/architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md",
+  "testMatrixAndSmokePlan": "docs/validation/pre_g9b_r6_plus_f2_r1_test_matrix_and_smoke_plan.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f2-r1-dual-activation.prompt.md",
+  "frozenEvidence": [
+    "docs/validation/pre_g9b_r6_plus_f2_r1_activation_characterization_report.md",
+    "docs/architecture/pre_g9b_r6_plus_f2_r1_activation_alternatives_candidate.md",
+    "docs/validation/pre_g9b_r6_plus_f2_r1_author_decision_preparation_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-r1-activation-characterization.json"
+  ],
+  "preservedF2": ["docs/validation/pre_g9b_r6_plus_f2_author_decisions_record.md (v1.1)", "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md", "geocedg/specs/ui/authoring-memory.md (PROPOSED)", "F2 candidate 6af85ee3 and receipts"],
+  "publishedMain": {"commit": "6d9bafb04235a71c8dfadef9631cd6057964b1f9", "tree": "6bc65715cd37f5872b804eea7949d2f9fea96092"},
+  "f2OriginalCandidate": {"commit": "6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873", "tree": "3d412a801024411ebfcbaf8469691ec00f7c4fee", "state": "FROZEN — NOT AUTHOR APPROVED — NOT PUBLISHED", "phase": "verification-ac975f8c79ec4d58ba018ca4eb2a4cbd", "static": "verification-49e939c13b71429bbcf246ca08480c3f", "infraUnit": "verification-2a4c7afa3282477ca3412c0a8de49f33"},
+  "stage1Candidate": {"commit": "b7faad3af2cbce0c2254cbdc7366c96a3df5ad48", "tree": "980207638c8bd045621879b2a28f407104b08bc4", "static": "verification-5d571ee293c641b7b9259a33885e8e7e ACCEPTED / COMPLETE 3/3"},
+  "stage2Candidate": "the direct child of b7faad3a containing this file; identity and STATIC reported outside the record",
+  "designState": "CANDIDATE PENDING AUTHOR REVIEW",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "decisions": {
+    "DQ-F2R1-1": {"kind": "AUTHOR DECISION (direction, conditional)", "content": "Candidate A: Ctrl at toolbar activation on Windows/Linux requests MEMORY_ENABLED; normal activation NORMAL; macOS Command intended, not claimed; modifier from the originating event; latched; B1 fallback needs a separate decision", "gate": "met for toolbar, reclick, real flyout, keyboard; macOS and Linux NOT_ESTABLISHED"},
+    "DQ-F2R1-2": {"kind": "AUTHOR PROPOSAL (pending confirmation)", "content": "latest qualifying activation wins; same behaviour keeps the inherited partial selection; a behaviour change cancels the incomplete gesture; no memory change, object or undo point", "reconciled": "AppGeoCeDG.setMode -> controller -> inherited protected initNewMode(mode) only on a behaviour change"},
+    "DQ-F2R1-3": {"kind": "AUTHOR PROPOSAL (pending confirmation)", "content": "behaviour persists until leaving or reactivating; leaving resets to NORMAL; Escape returns to NORMAL without clearing valid memories; F2 invalidation regardless of behaviour", "reconciled": "coordinator resets both tools on any other mode"},
+    "DQ-F2R1-4": {"kind": "AUTHOR PROPOSAL (pending confirmation)", "content": "activations without a proven toolbar modifier default to NORMAL, also for an already active tool", "reconciled": "route contract design section 3"},
+    "DQ-F2R1-5": {"kind": "AUTHOR PROPOSAL (pending confirmation)", "content": "discreet status-bar indicator while MEMORY_ENABLED", "reconciled": "hidden-by-default GeoCeDGStatusBar segment, localized '<tool> · Memoria' text, no action, catalog or icon"},
+    "DQ-F2R1-6": {"kind": "AUTHOR DECISION (scope)", "content": "GeoCeDG Desktop only; separate corrective PHASE; F2 receipt not inherited", "recommendation": "BOUNDED_PHASE, phase PRE-G9B-R6-PLUS-F2-R1 with compile.desktop.semantic, junit.desktop.pre-g9b-r6-plus-f2-r1.semantic, workspace-profile.product"}
+  },
+  "originalF2Decisions": {"amended": ["DQ-F2-1", "DQ-F2-2", "DQ-F2-3", "DQ-F2-6 (indicator)"], "refined": ["DQ-F2-10"], "inForce": ["DQ-F2-4", "DQ-F2-5", "DQ-F2-7", "DQ-F2-8", "DQ-F2-9"]},
+  "routes": {
+    "directToolbar": "CONFIRMED",
+    "reclickActiveTool": "CONFIRMED (observation: reaches App.setMode, not the controller); resolution CONDITIONALLY SUPPORTED",
+    "realFlyoutPopup": "CONFIRMED (shown popup, posted item press/release; Ctrl propagates; OS-level injection not used)",
+    "keyboardSpace": "CONFIRMED (NORMAL; Ctrl+Space fires no action)",
+    "menuRegistry": "CONDITIONALLY SUPPORTED (NORMAL by coordinator default, same mode included)",
+    "scriptingApi": "CONDITIONALLY SUPPORTED",
+    "userToolsProfileFlyouts": "CONDITIONALLY SUPPORTED",
+    "undockedToolbars": "NOT_ESTABLISHED (NORMAL by construction)",
+    "focusAndModalDialogs": "NOT_ESTABLISHED",
+    "macOS": "NOT_ESTABLISHED",
+    "linux": "NOT_ESTABLISHED",
+    "escapeLanguageNew": "CONFIRMED route through setMoveMode",
+    "dockFocusGv2UndoRedoSetXml": "CONFIRMED no setMode call"
+  },
+  "stage2Probe": {
+    "class": "F2R1DesignProbeTest",
+    "route": "scratch JUnit through a Gradle init script; compileTestJava rerun without it; probe XML and compile-stash copies removed",
+    "outputs": {"cancel": "5f7168d8813e70796f420a65d78f59698f27e461ed3bc69755d1c83184af6303", "origins": "3492a05c88ffe85837373d579ba8ed4c72e123578c8d780f7ac8e0bc540fc990", "flyout": "21100f92c28f3034664117e830198f6219bb9030ccddd34cd17ec9ff925cfbe7"},
+    "sourceSha256": "4336ca16c397c5a6ca13eb052874b6ccdcf71725c89c3ad49ff1206ebb1d7851",
+    "initScriptSha256": "69bd0869d6a4e53ebfbec080a9a542054d3a01f14f21ac5c3acaa3ccde3c4dc0",
+    "cancellation": {"none": "pending gesture survives", "clearSelections": "selection cleared; unfinished empty-space point stays (orphan)", "initNewMode": "selection cleared; unfinished point removed; no undo store; memory and mode unchanged"},
+    "defectFixed": "first run's setup double-clicked the same point, opening the inherited Redefine dialog; setup corrected and the method rerun"
+  },
+  "statusIndication": {"seam": "GeoCeDGStatusBar hidden-by-default segment (precedents sheet-coherence, paste-notice)", "texts": "2-4 localized_text keys EN/ES", "catalogChange": false, "entryGateCheck": "free localized_text keys pass workspace-profile-validation.ps1"},
+  "proposedCorrectiveClass": {"class": "BOUNDED_PHASE", "frozen": false, "phase": "PRE-G9B-R6-PLUS-F2-R1", "nodes": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f2-r1.semantic", "workspace-profile.product"]},
+  "filesChanged": [
+    "docs/architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md",
+    "docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-r1-author-decisions.json",
+    "docs/validation/pre_g9b_r6_plus_f2_r1_test_matrix_and_smoke_plan.md",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f2-r1-dual-activation.prompt.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
