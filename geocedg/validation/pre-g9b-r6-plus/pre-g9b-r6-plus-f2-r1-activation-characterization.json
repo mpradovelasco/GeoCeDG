@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F2-R1",
+  "activity": "PRE-G9B-R6-plus-F2-R1-ACTIVATION-CHARACTERIZATION",
+  "stage": 1,
+  "artifactKind": "DOCUMENTARY_CHARACTERIZATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_f2_r1_activation_characterization_report.md",
+  "alternativesCandidate": "docs/architecture/pre_g9b_r6_plus_f2_r1_activation_alternatives_candidate.md",
+  "authorDecisionPreparationRecord": "docs/validation/pre_g9b_r6_plus_f2_r1_author_decision_preparation_record.md",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "characterization": "COMPLETE",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "characterizationClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "authorInstruction": {
+    "date": "2026-10-11",
+    "title": "PRE-G9B-R6-plus-F2-R1-ACTIVATION-CHARACTERIZATION — Stage 1 — Characterization of Dual-Mode Parallel and Perpendicular Tool Activation",
+    "authorizes": "focused characterization, scratch probes, design alternatives, author-decision preparation, one local documentary candidate and its STATIC",
+    "doesNotAuthorize": ["Ctrl behaviour implementation", "toggle implementation", "toolbar production changes", "F2 memory changes", "corrective F2-R1 product commit", "design approval", "F2 or F2-R1 closeout", "F2 specification promotion", "publication", "F3", "F4", "G"]
+  },
+  "entryGate": {
+    "publishedMain": {"commit": "6d9bafb04235a71c8dfadef9631cd6057964b1f9", "tree": "6bc65715cd37f5872b804eea7949d2f9fea96092", "localMain": true, "originMain": true, "liveRemoteMain": true},
+    "f2Candidate": {"commit": "6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873", "tree": "3d412a801024411ebfcbaf8469691ec00f7c4fee", "parent": "bdb9b6a94cf95ccebd1beb2f3f31f2bab523c75a", "parentTree": "674fcfd479e377f70f511ddd22eb95136add0252", "published": false, "authorApproved": false},
+    "f2Acceptance": {"phase": "verification-ac975f8c79ec4d58ba018ca4eb2a4cbd ACCEPTED / COMPLETE 2/2", "static": "verification-49e939c13b71429bbcf246ca08480c3f ACCEPTED / COMPLETE 3/3", "infraUnit": "verification-2a4c7afa3282477ca3412c0a8de49f33 ACCEPTED / COMPLETE 22/22"},
+    "worktreeClean": true,
+    "branch": "phase/pre-g9b-r6-plus-f2-r1-activation",
+    "authorReportedSmokeOfF2": "satisfactory; interaction-contract revision requested before F2 closeout"
+  },
+  "eventChain": {
+    "toolbarButton": "ToolToggleButton.actionPerformed reads only e.getActionCommand() and calls app.setMode(int) (desktop/gui/toolbar/ToolToggleButton.java:89-95)",
+    "flyout": "ModeToggleMenuD.MenuItemListener -> selectItem (visual) -> tbutton.doClick() (ModeToggleMenuD.java:210-230, 130-149)",
+    "appSetMode": "App.setMode(int) -> setMode(mode, ModeSetter.TOOLBAR) (common/main/App.java:1660-1662, 2384-2400)",
+    "guiManager": "GuiManager.setMode -> kernel.notifyModeChanged -> view.setMode (GuiManager.java:522-576; Kernel.java:3776-3782)",
+    "sameModeReturn": "EuclidianView.setMode returns for the same mode except MODE_IMAGE (EuclidianView.java:783-786)",
+    "controller": "GeoCeDGEuclidianController.setMode(int, ModeSetter) (:603-628) receives no activation-source or modifier information",
+    "modeSetterValues": ["DOCK_PANEL", "TOOLBAR", "CAS_VIEW", "EXIT_TEMPORARY_MODE", "CAS_BLUR"],
+    "modifiersPassedIntoSetMode": false
+  },
+  "ctrlAvailability": {
+    "buttonActionEvent": "present for direct clicks, flyout selections and reclicks; listener added after construction is notified before app.setMode",
+    "currentAwtEvent": "MouseEvent release with its modifiers during the button action",
+    "appControlDown": "global flag from the last key event (AppD.java:3848-3855, 3933-3937); not reset on focus loss; not authoritative",
+    "ownedSeam": "GeoCeDGToolbarContainer.ProfileToolbar.addNativeGroup (GeoCeDGToolbarContainer.java:200-221) via public getJToggleButton().addActionListener",
+    "inheritedChangeNeeded": false,
+    "group": "construction-derived (application-profile.yml:3563-3567): parallel, perpendicular, perpendicular bisector, angle bisector, Angle with Given Size, tangent"
+  },
+  "probe": {
+    "class": "F2R1ActivationProbeTest",
+    "route": "scratch JUnit through a Gradle init script; real GeoCeDG toolbar; MouseEvents posted to the system EventQueue; compileTestJava rerun without the init script; probe XML and compile-stash copies removed",
+    "tests": 1, "exit": 0,
+    "outputSha256": "0c0570baeee1a7c6af9f18ee10d690eec8dd370526386b16b9eca3280d53208c",
+    "sourceSha256": "cf88bc602ebb02bbc321b4afcf7dd55bcc593ec41454c33f61a7fa65f0aef492",
+    "initScriptSha256": "1310c6da6d972311084460444f841158dc3e7ca2c730f4051a499ee53c6f68f4",
+    "notEstablished": ["real popup display", "keyboard focus traversal and Space activation", "focus changes between windows", "modal dialogs", "application KeyEventDispatcher (removed by the test host)", "macOS", "Linux"]
+  },
+  "matrix": [
+    {"id": "A01", "scenario": "normal click Parallel", "ctrlOnEvent": false, "setMode": true, "controllerActivation": true, "classification": "NORMAL"},
+    {"id": "A02", "scenario": "Ctrl click Parallel", "ctrlOnEvent": true, "setMode": true, "controllerActivation": true, "classification": "MEMORY_ENABLED"},
+    {"id": "A03", "scenario": "normal click Perpendicular", "ctrlOnEvent": false, "setMode": true, "controllerActivation": true, "classification": "NORMAL"},
+    {"id": "A04", "scenario": "Ctrl click Perpendicular", "ctrlOnEvent": true, "setMode": true, "controllerActivation": true, "classification": "MEMORY_ENABLED"},
+    {"id": "A05", "scenario": "Ctrl released after activation", "ctrlOnEvent": true, "setMode": true, "controllerActivation": true, "classification": "MEMORY_ENABLED kept by an activation-time rule"},
+    {"id": "A06", "scenario": "Ctrl during construction", "setMode": false, "controllerActivation": false, "classification": "no activation"},
+    {"id": "A07", "scenario": "normal reclick of the active tool", "ctrlOnEvent": false, "setMode": true, "controllerActivation": false, "pendingSelectionKept": true, "classification": "button event only"},
+    {"id": "A08", "scenario": "Ctrl reclick of the active tool", "ctrlOnEvent": true, "setMode": true, "controllerActivation": false, "pendingSelectionKept": true, "classification": "button event only"},
+    {"id": "A09", "scenario": "flyout selection", "ctrlOnEvent": "as dispatched", "setMode": true, "controllerActivation": true, "classification": "like a click", "note": "popup simulated; real popup release inferred"},
+    {"id": "A10", "scenario": "menu / action registry with CTRL_MASK", "ctrlOnEvent": "discarded by the registry", "setMode": true, "controllerActivation": true, "classification": "not classifiable from the button"},
+    {"id": "A11", "scenario": "keyboard Space on the button", "classification": "NOT_ESTABLISHED"},
+    {"id": "A12", "scenario": "focus toolbar <-> Graphics View", "classification": "NOT_ESTABLISHED (source: button event focus-independent; AppD flag focus-dependent)"},
+    {"id": "A13", "scenario": "other tool then Ctrl click back", "ctrlOnEvent": true, "setMode": true, "controllerActivation": true, "classification": "MEMORY_ENABLED"},
+    {"id": "A14", "scenario": "Parallel -> Perpendicular via flyout", "ctrlOnEvent": "as dispatched", "setMode": true, "controllerActivation": true, "classification": "like a click"},
+    {"id": "A15", "scenario": "modal dialog before activation", "classification": "NOT_ESTABLISHED (button event unaffected; AppD flag possibly stale)"},
+    {"id": "A16", "scenario": "Escape then Ctrl click", "ctrlOnEvent": true, "setMode": true, "controllerActivation": true, "classification": "MEMORY_ENABLED"},
+    {"id": "A17a", "scenario": "button.doClick() without input event", "ctrlOnEvent": false, "setMode": true, "classification": "NORMAL (synthetic)"},
+    {"id": "A17b", "scenario": "Ctrl mouse events dispatched directly", "ctrlOnEvent": true, "setMode": true, "classification": "MEMORY_ENABLED"},
+    {"id": "A18a", "scenario": "Ctrl+Shift click", "ctrlOnEvent": true, "setMode": true, "classification": "MEMORY_ENABLED"},
+    {"id": "A18b", "scenario": "Ctrl + right button", "setMode": false, "classification": "not an activation"}
+  ],
+  "platform": {"windows": "Ctrl (CTRL_MASK) observed", "macOS": "Cmd via AppD.isControlDown(meta, ctrl); Ctrl+click is a context click (inferred, not tested)", "linux": "Ctrl+click usually delivered (inferred, not tested)"},
+  "alternatives": {
+    "A": {"name": "Ctrl/Cmd at toolbar activation", "inheritedChange": false, "class": "BOUNDED_PHASE", "limits": ["menu, keyboard, scripting and user-tool routes carry no modifier", "no feedback unless indicated", "mouse-oriented"]},
+    "B": {"name": "explicit session toggle", "variants": ["B1 declarative checked action (catalog 131 -> 132)", "B2 status-bar segment"], "inheritedChange": false, "class": "BOUNDED_PHASE with workspace-profile.product"},
+    "C": {"name": "separate tool entries", "inheritedChange": true, "reason": "new mode ids in common EuclidianConstants and shared menu*.properties; profile rejects duplicate modes", "class": "escalation above BOUNDED_PHASE"}
+  },
+  "toggleCatalogCost": {
+    "catalogCount": "GeoCeDGProfile.java:340 (131 -> 132)",
+    "countPins": ["G9U1ActionRegistryTest.java:65", "G9U1ProfileCompilerTest.java:44", "G9U1ProfileCompilerTest.java:212", "G9U1ProfileCompilerTest.java:384", "G9U1WorkspaceSurfaceTest.java:124", "G9U1WorkspaceSurfaceTest.java:704", "GeoCeDGProfileTest.java:45", "PreG9BR6PlusA1LayerWorkspaceTest.java:450", "PreG9BR6PlusE1LCuratedLibraryTest.java:380", "PreG9BR6PlusE2NativeDimensionDesktopTest.java:423", "PreG9BR6PlusE3IsoABorderDesktopTest.java:407", "PreG9BR6PlusF1OrientationCueTest.java:655"],
+    "other": ["five localized keys EN/ES", "GeoCeDGActionRegistry target, execute and checked cases", "workspace-profile-validation.ps1 approved-id block and static-contract pin"]
+  },
+  "recommendation": {"option": "A", "conditions": ["Ctrl on Windows/Linux, Cmd on macOS, from the activation event only", "every toolbar activation including reclicks sets the behaviour", "reset to NORMAL when another tool is chosen", "modifier-less routes NORMAL", "status-bar indication while MEMORY_ENABLED"], "fallback": "B1", "authorApproved": false},
+  "affectedOriginalDecisions": {"amended": ["DQ-F2-1", "DQ-F2-2", "DQ-F2-3"], "possiblyAmended": ["DQ-F2-6"], "refined": ["DQ-F2-10"], "unchanged": ["DQ-F2-4", "DQ-F2-5", "DQ-F2-7", "DQ-F2-8", "DQ-F2-9"]},
+  "decisions": [
+    {"id": "DQ-F2R1-1", "subject": "mechanism", "recommendation": "A (Ctrl/Cmd from the activation event)", "state": "PENDING"},
+    {"id": "DQ-F2R1-2", "subject": "reactivating the active tool", "recommendation": "R1 last activation wins", "state": "PENDING"},
+    {"id": "DQ-F2R1-3", "subject": "duration and reset", "recommendation": "D1 per activation; reset to NORMAL on another tool", "state": "PENDING"},
+    {"id": "DQ-F2R1-4", "subject": "flyout, keyboard, indirect routes", "recommendation": "flyouts like clicks; modifier-less routes NORMAL", "state": "PENDING"},
+    {"id": "DQ-F2R1-5", "subject": "indication", "recommendation": "I1 status-bar text", "state": "PENDING"},
+    {"id": "DQ-F2R1-6", "subject": "scope and class", "recommendation": "V1 corrective F2-R1, BOUNDED_PHASE, own phase PRE-G9B-R6-PLUS-F2-R1", "state": "PENDING"}
+  ],
+  "proposedCorrectiveClass": {"class": "BOUNDED_PHASE", "phase": "PRE-G9B-R6-PLUS-F2-R1", "frozen": false},
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f2_r1_activation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-r1-activation-characterization.json",
+    "docs/architecture/pre_g9b_r6_plus_f2_r1_activation_alternatives_candidate.md",
+    "docs/validation/pre_g9b_r6_plus_f2_r1_author_decision_preparation_record.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
