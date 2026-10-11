@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
-  "recordVersion": "1.1",
+  "recordVersion": "1.2",
   "recordHistory": [
     {"version": "1.0", "task": "PRE-G9B-R6-plus-F1-PREP-CLOSEOUT", "commit": "d57d077d7cc4c58c12198f95f68fed8566b20c3d", "content": "DQ-F1-1 to DQ-F1-9"},
-    {"version": "1.1", "task": "PRE-G9B-R6-plus-F1-PREP-FINAL", "commit": "the direct child of d57d077d containing this version", "content": "OTQ-F1-1 to OTQ-F1-4 decided; preparation approved; publication of the exact chain authorized"}
+    {"version": "1.1", "task": "PRE-G9B-R6-plus-F1-PREP-FINAL", "commit": "c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc", "content": "OTQ-F1-1 to OTQ-F1-4 decided; preparation approved; publication of the exact chain authorized; published"},
+    {"version": "1.2", "task": "PRE-G9B-R6-plus-F1", "commit": "the first commit of phase/pre-g9b-r6-plus-f1 on c52f565e", "content": "implementation authorized; readiness gate; BOUNDED_PHASE frozen; decisions unchanged"}
   ],
   "track": "PRE-G9B-R6-plus",
   "phase": "PRE-G9B-R6-plus-F1",
@@ -54,9 +55,21 @@
   "finalReconciliation": "the direct child of d57d077d containing this version; identity, STATIC and publication reported outside the record",
   "preparationState": "PASS — AUTHOR APPROVED — PUBLISHED (on the authorized fast-forward)",
   "designState": "DESIGN — AUTHOR APPROVED",
-  "promptState": "PREPARED — NOT AUTHORIZED",
+  "promptState": "AUTHORIZED FOR IMPLEMENTATION (v1.2); implementation publication NOT AUTHORIZED",
   "specificationOrAdrPromoted": false,
-  "implementation": "NOT AUTHORIZED",
+  "implementation": "AUTHORIZED on c52f565e (local technical candidate only)",
+  "implementationAuthorization": {
+    "date": "2026-10-11",
+    "title": "PRE-G9B-R6-plus-F1 Implementation Authorization",
+    "base": {"commit": "c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc", "tree": "fdfbc327983a18d6761411591daf606942f15fda"},
+    "branch": "phase/pre-g9b-r6-plus-f1",
+    "verificationClass": "BOUNDED_PHASE",
+    "verificationClassFrozen": true,
+    "phase": "PRE-G9B-R6-PLUS-F1",
+    "phaseChecks": ["compile.shared.semantic", "compile.desktop.semantic", "workspace-profile.product", "junit.desktop.pre-g9b-r6-plus-f1.semantic"],
+    "readinessGate": {"gv1Overlay": true, "panelWithoutInheritedChange": true, "catalogDeltaBounded": "130 -> 131", "sharedDrawableKernelXmlExportChange": false},
+    "doesNotAuthorize": ["publication", "author approval of the implementation", "F2", "F3", "F4", "G"]
+  },
   "publication": "AUTHORIZED for the exact chain 732292e6 -> d57d077d -> final reconciliation; no tag, release, installer or version change",
   "unchangedSubphases": ["F2", "F3", "F4", "G"],
   "selfApproved": false,
@@ -138,5 +151,5 @@
       "M docs/roadmap/geocedg_roadmap.md"
     ]
   },
-  "nextDecision": "a separately authorized F1 implementation against the exact new published base"
+  "nextDecision": "author review and author smoke of the F1 technical candidate"
 }

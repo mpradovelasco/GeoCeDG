@@ -2,18 +2,26 @@
 
 ```text
 ARTIFACT_KIND             = AUTHOR-DECISION RECORD AND DOCUMENTARY CLOSEOUT
-RECORD VERSION            = 1.1
+RECORD VERSION            = 1.2
                             1.0 (2026-10-11) PRE-G9B-R6-plus-F1-PREP-CLOSEOUT: DQ-F1-1
                                 to DQ-F1-9, in closeout commit d57d077d (frozen)
                             1.1 (2026-10-11) PRE-G9B-R6-plus-F1-PREP-FINAL: OTQ-F1-1
                                 to OTQ-F1-4 decided by the author (§7); preparation
-                                approved; publication of the exact chain authorized
-TASKS                     = PRE-G9B-R6-plus-F1-PREP-CLOSEOUT; PRE-G9B-R6-plus-F1-PREP-FINAL
+                                approved; publication of the exact chain authorized;
+                                published as c52f565e (tree fdfbc327)
+                            1.2 (2026-10-11) PRE-G9B-R6-plus-F1: implementation
+                                authorized on c52f565e; readiness gate and frozen
+                                class (§8); this version does not change §1-§7
+TASKS                     = PRE-G9B-R6-plus-F1-PREP-CLOSEOUT; PRE-G9B-R6-plus-F1-PREP-FINAL;
+                            PRE-G9B-R6-plus-F1
 AUTHOR_DECISION_SOURCES   = author instruction of 2026-10-11 ("Author decisions and
                             documentary closeout"); author instruction of 2026-10-11
                             ("Final Author Decisions and Documentary Publication";
                             AUTHOR AUTHORIZED — FINAL TECHNICAL RECONCILIATION,
-                            DOCUMENTARY APPROVAL AND CONTROLLED PUBLICATION)
+                            DOCUMENTARY APPROVAL AND CONTROLLED PUBLICATION); author
+                            instruction of 2026-10-11 ("PRE-G9B-R6-plus-F1 Implementation
+                            Authorization"; AUTHOR AUTHORIZED — BOUNDED IMPLEMENTATION AND
+                            TECHNICAL VERIFICATION)
 PUBLISHED BASE            = P_C1 bde2827bb21e4a28e080db6a65b4abc892071cf8
                             tree 1b74102cea5151b8a6c571cb36b96b33af6fb3c8
 PREPARATION CANDIDATE     = T_R6PLUS_F1_PREP 732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b
@@ -24,15 +32,17 @@ CLOSEOUT CANDIDATE        = T_R6PLUS_F1_PREP_CLOSEOUT d57d077d7cc4c58c12198f95f6
                             tree 7a15c931c30e1ad65449ae55c249b4ad5fd8214b
                             (STATIC verification-647bf1a87ae3439597300c528a39c7a3,
                             ACCEPTED / COMPLETE); not amended
-FINAL RECONCILIATION      = the commit that contains this version (direct child of
-                            d57d077d); its identity, STATIC and publication are reported
-                            outside this record, which cannot name its own commit
-PRE-G9B-R6-plus-F1-PREP   = PASS — AUTHOR APPROVED — PUBLISHED (on the authorized
-                            non-force fast-forward of this exact chain)
-PRE-G9B-R6-plus-F1        = DESIGN — AUTHOR APPROVED; CANONICAL PROMPT PREPARED — NOT AUTHORIZED
-IMPLEMENTATION            = NOT AUTHORIZED
-PUBLICATION               = AUTHORIZED for the exact chain 732292e6 -> d57d077d -> this
-                            commit only (no tag, release, installer or version change)
+FINAL RECONCILIATION      = P_F1_PREP c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc
+                            tree fdfbc327983a18d6761411591daf606942f15fda (STATIC
+                            verification-1b2ceb52c88b402e9c545a27976382a6, ACCEPTED /
+                            COMPLETE); published to main by non-force fast-forward
+PRE-G9B-R6-plus-F1-PREP   = PASS — AUTHOR APPROVED — PUBLISHED
+PRE-G9B-R6-plus-F1        = DESIGN — AUTHOR APPROVED; CANONICAL PROMPT AUTHORIZED FOR
+                            IMPLEMENTATION (v1.2, §8)
+IMPLEMENTATION            = AUTHORIZED on c52f565e (bounded; local candidate only)
+VERIFICATION_CLASS        = BOUNDED_PHASE — FROZEN at the readiness gate (§8)
+PUBLICATION               = preparation chain published (v1.1); implementation
+                            publication NOT AUTHORIZED
 selfApproved              = false
 passClaimed               = false   (no product claim of any kind)
 ```
@@ -41,7 +51,8 @@ This record transcribes the author's decisions of 2026-10-11 on `DQ-F1-1` to
 `DQ-F1-9`. It is their authority and prevails over the recommendations of the
 preparation candidate wherever they differ. Version 1.1 adds the author's
 dispositions of `OTQ-F1-1` to `OTQ-F1-4` and the approval of the preparation
-(§7). The record authorizes **no implementation**. Machine-readable mirror:
+(§7). Version 1.2 records the implementation authorization and the readiness
+gate (§8); the decisions of §1-§7 are unchanged. Machine-readable mirror:
 [`pre-g9b-r6-plus-f1-author-decisions.json`](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f1-author-decisions.json).
 The reconciled design is
 [`pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md`](../architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md)
@@ -329,5 +340,41 @@ F1 CANONICAL PROMPT      = PREPARED — NOT AUTHORIZED
 F1 IMPLEMENTATION        = NOT AUTHORIZED
 AUTHOR_DECISION          = RECORDED IN THIS ARTIFACT (DQ-F1-1 to DQ-F1-9; OTQ-F1-1 to OTQ-F1-4)
 F2 / F3 / F4 / G         = unchanged
+selfApproved             = false
+```
+
+The block above is the state at version 1.1.
+
+## 8. Implementation authorization and readiness gate (v1.2, `PRE-G9B-R6-plus-F1`)
+
+**AUTHOR DECISION (2026-10-11):** implementation and technical verification of
+the scope fixed by `DQ-F1-1` to `DQ-F1-9` and `OTQ-F1-1` to `OTQ-F1-4` are
+authorized on the published base `c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc`
+(tree `fdfbc327983a18d6761411591daf606942f15fda`), on a local phase branch, up
+to one frozen local technical candidate for author review and author smoke.
+Publication, author approval of the implementation and `F2`, `F3`, `F4`, `G`
+are not authorized. The canonical prompt is amended to the authorized state as
+the first tracked change of the phase.
+
+**Entry gate (2026-10-11).** Local `main`, `origin/main` and the live remote
+`main` resolve to `c52f565e`; the worktree is clean; no orientation-cue code,
+key or test exists at the base (search of `source/`, `apps/`, `tools/`,
+`geocedg/specs/` for `orientation-cue` and `OrientationCue`: no match); the
+frozen preparation artifacts are unchanged.
+
+**Readiness gate (IMPLEMENTATION DESIGN confirmed against the base):**
+
+| # | Condition | Finding |
+|---|---|---|
+| 1 | GV1 overlay | `GeoCeDGEuclidianView` (GeoCeDG-owned, `final`) overrides `paint` after `super.paint` and already hosts two transient overlays; GV2 stays the upstream `EuclidianViewFor3DD` |
+| 2 | Layout & Presentation control | `GeoCeDGPresentationOptionsPanel` (GeoCeDG-owned) is created by `AppGeoCeDG.newProductPresentationOptionsPanel()`; a checkbox row below the size controls needs no `AppD`/`OptionsLayoutD` change; its texts live in the profile `localized_text` |
+| 3 | catalog 130 → 131 | bounded: one action record, one cluster placement (`presentation-visibility-style`), one presentation-group placement (`view-visibility-style`), five localized texts, one `GeoCeDGActionRegistry` target with `execute` and `checked` cases, the `GeoCeDGProfile` count, eleven test assertions in eight classes, the approved-id block of `workspace-profile-validation.ps1` with its static-contract and registry pins, the catalog line of `geocedg/specs/ui/cedg-workspaces.md` |
+| 4 | no shared drawable, kernel, XML or export change | confirmed: the cue model reads public kernel API; rendering stays in `GeoCeDGEuclidianView.paint`; the preference lives in the portable GeoCeDG properties |
+| 5 | phase selection | `PRE-G9B-R6-PLUS-F1`: `compile.shared.semantic`, `compile.desktop.semantic`, `workspace-profile.product`, `junit.desktop.pre-g9b-r6-plus-f1.semantic` (selection `pre-g9b-r6-plus-f1.desktop`: the F1 test classes and the profile-pin classes) |
+
+```text
+VERIFICATION_CLASS       = BOUNDED_PHASE — FROZEN (2026-10-11)
+F1 IMPLEMENTATION        = AUTHORIZED (local technical candidate only)
+F1 PUBLICATION           = NOT AUTHORIZED
 selfApproved             = false
 ```

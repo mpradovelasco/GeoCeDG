@@ -1,25 +1,23 @@
 # PRE-G9B-R6-plus-F1 — orientation cue
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — AUTHORIZED FOR IMPLEMENTATION (author authorization of 2026-10-11) — IMPLEMENTATION PUBLICATION NOT AUTHORIZED.**
 
 This prompt was prepared by `PRE-G9B-R6-plus-F1-PREP` (author instruction of
-2026-10-11) and reconciled by `PRE-G9B-R6-plus-F1-PREP-CLOSEOUT` with the
-author decisions of 2026-10-11 on `DQ-F1-1` to `DQ-F1-9`, and finalized by
+2026-10-11), reconciled by `PRE-G9B-R6-plus-F1-PREP-CLOSEOUT` with the
+author decisions of 2026-10-11 on `DQ-F1-1` to `DQ-F1-9`, finalized by
 `PRE-G9B-R6-plus-F1-PREP-FINAL` with the author decisions on `OTQ-F1-1` to
 `OTQ-F1-4`
 ([F1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f1_author_decisions_record.md)
-v1.1). The author approved the F1 preparation and the
+v1.2), and amended to the authorized state by `PRE-G9B-R6-plus-F1` with the
+author instruction of 2026-10-11 ("PRE-G9B-R6-plus-F1 Implementation
+Authorization"; AUTHOR AUTHORIZED — BOUNDED IMPLEMENTATION AND TECHNICAL
+VERIFICATION), which **authorizes the implementation** of the scope fixed by
+`DQ-F1-1` to `DQ-F1-9` and `OTQ-F1-1` to `OTQ-F1-4` on the exact published base
+below, up to one frozen local technical candidate for author review and author
+smoke. The governing design is the
 [reconciled design](../../../docs/architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md)
-(`DESIGN — AUTHOR APPROVED`) and authorized the publication of the documentary
-chain that contains this file. **The author did not authorize
-implementation.** The existence or publication of this file is not
-authorization, and nothing in it may be read as permission to start coding.
-
-Execution requires a new, separate, explicit author instruction that names
-`PRE-G9B-R6-plus-F1` and an exact published base, given after the author's
-review of the documentary package. That instruction may authorize, as the
-first tracked edit of the phase, an amendment of this prompt to the authorized
-state, following the `E1-L`, `E1-X1`, `E2` and `E3` precedent. This file is an
+(`DESIGN — AUTHOR APPROVED`). The authorization does not cover publication,
+author approval of the implementation, or any later subphase. This file is an
 execution contract, not a second policy document: the state classes are stated
 once in `geocedg/specs/units/unit-system.md` §17.2; the verification classes
 once in `geocedg/specs/operations/verification-levels.md` §12.8; the F1
@@ -33,17 +31,21 @@ named under *Required design/specification*.
 ```text
 PRE-G9B-R6-plus-F1 =
 DESIGN — AUTHOR APPROVED (2026-10-11)
-CANONICAL PROMPT — PREPARED — NOT AUTHORIZED
+CANONICAL PROMPT — AUTHORIZED FOR IMPLEMENTATION
 
+AUTHOR AUTHORIZATION     = 2026-10-11 (PRE-G9B-R6-plus-F1 Implementation Authorization)
+IMPLEMENTATION BASE      = c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc
+                           tree fdfbc327983a18d6761411591daf606942f15fda
 CHARACTERIZATION         = COMPLETE (2026-10-11, on P_C1 bde2827b)
 AUTHOR DECISIONS         = DQ-F1-1 to DQ-F1-9 and OTQ-F1-1 to OTQ-F1-4 RECORDED
-                           (2026-10-11, record v1.1)
+                           (2026-10-11, record v1.2)
 PREPARATION              = PRE-G9B-R6-plus-F1-PREP = PASS — AUTHOR APPROVED — PUBLISHED
-                           (on the authorized fast-forward of the documentary chain)
-IMPLEMENTATION           = NOT AUTHORIZED
+IMPLEMENTATION           = AUTHORIZED
+IMPLEMENTATION PUBLICATION = NOT AUTHORIZED
 selfApproved             = false
-authorApproved (design)  = true    (the reconciled design only; no technical candidate exists)
-implementationAuthorized = false
+authorApproved (design)  = true    (the reconciled design only)
+authorApproved (implementation) = false   (pending author review and smoke)
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = DESKTOP PRESENTATION-ONLY OVERLAY IN GRAPHICS VIEW 1 +
                            GLOBAL USER PREFERENCE + ONE MENU ACTION AND ONE
@@ -56,11 +58,9 @@ DEPENDS_ON               = PRE-G9B-R6-plus-P0 = PASS — AUTHOR APPROVED (hard)
                            POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1
                                               = PASS — AUTHOR APPROVED — PUBLISHED
 GLOBAL GATE              = closeout in PRE-G9B-R6-plus-G
-VERIFICATION CLASS       = BOUNDED_PHASE (author decision, finalized for planning,
-                           record §7.5), conditioned on the entry gate confirming
-                           the approved scope; frozen at implementation entry
-PRECONDITIONS            = separate explicit implementation authorization on an
-                           exact published base
+VERIFICATION CLASS       = BOUNDED_PHASE — FROZEN at the readiness gate of
+                           2026-10-11 (record §8); one registered PHASE
+                           PRE-G9B-R6-PLUS-F1; no INTEGRATION or FINAL
 OPEN TECHNICAL ITEMS     = none (OTQ-F1-1 to OTQ-F1-4 decided, record §7)
 NEXT_SUBPHASE            = none implied; F2, F3, F4, G stay unauthorized
 ```
@@ -68,7 +68,7 @@ NEXT_SUBPHASE            = none implied; F2, F3, F4, G stay unauthorized
 <!-- geocedg-field: objective -->
 ## Objective
 
-Implement, once authorized, the approved orientation cue:
+Implement the approved orientation cue (authorized 2026-10-11):
 
 1. A GeoCeDG-owned, read-only **cue model** that, for a geo in Graphics View 1,
    applies the eligibility matrix v1 (design §3.3, `A1`–`A17` admitted,
@@ -106,18 +106,14 @@ Implement, once authorized, the approved orientation cue:
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-To be named by the author's implementation authorization: an exact published
-`main` that contains the F1 documentary chain (preparation candidate
-`732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b`, tree
-`0839dd764ffceefc2fb009155b25f6495becaae1`; closeout
-`d57d077d7cc4c58c12198f95f68fed8566b20c3d`, tree
-`7a15c931c30e1ad65449ae55c249b4ad5fd8214b`; and the final reconciliation
-commit that contains this version of the prompt), on top of
+Authorized by the author on 2026-10-11: the published F1 preparation closeout
 
 ```text
-P_C1                  = bde2827bb21e4a28e080db6a65b4abc892071cf8
-tree                  = 1b74102cea5151b8a6c571cb36b96b33af6fb3c8
-                        (published C1 closeout, docs/validation/post_e3_e2_pstricks_dimension_angle_c1_closeout_record.md §6)
+P_F1_PREP             = c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc
+tree                  = fdfbc327983a18d6761411591daf606942f15fda
+chain                 = bde2827b (P_C1) -> 732292e6 (preparation) -> d57d077d
+                        (DQ-F1 decisions) -> c52f565e (OTQ-F1 decisions)
+phase branch          = phase/pre-g9b-r6-plus-f1 (local), direct descendant
 ```
 
 **Entry gate.** Before any tracked change the agent verifies that local
@@ -278,13 +274,13 @@ for the author.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing is authorized by this prompt. A future author instruction may authorize
-F1 on an exact published base; it then authorizes local implementation on a
-local branch, local commits, focused tests, the phase registration and its
-official catalog updates, development `INFRA_UNIT` and `STATIC` runs, the
-frozen acceptance run, and one frozen technical candidate for author review and
-author smoke. It never authorizes self-approval, author smoke by the agent, a
-run above the frozen class, or a change of the class; a proven inability of the
+The author instruction of 2026-10-11 authorizes F1 on the exact base above:
+local implementation on a local branch, local commits, focused tests, the phase
+registration and its official catalog updates, development `INFRA_UNIT` and
+`STATIC` runs, the frozen acceptance run (`PHASE` plus `STATIC` and
+`INFRA_UNIT`), and one frozen technical candidate for author review and author
+smoke. It never authorizes self-approval, author smoke by the agent, a run
+above the frozen class, or a change of the class; a proven inability of the
 frozen class to cover the change is reported as a reclassification proposal,
 never applied silently.
 
