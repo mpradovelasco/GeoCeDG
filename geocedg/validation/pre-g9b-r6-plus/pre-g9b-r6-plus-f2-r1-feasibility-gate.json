@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-F2-R1",
+  "artifactKind": "FEASIBILITY_GATE_REPORT",
+  "report": "docs/validation/pre_g9b_r6_plus_f2_r1_feasibility_gate_report.md",
+  "authorization": {"record": "docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md (v1.2 section 6)", "commit": "de5c267767693d1051d7089cf4d19cc7d4bfe7a4", "tree": "31e20c2607cc821e0dc968f829f2f5ca5a4406e2"},
+  "base": {"commit": "e13bfbd231700019a8f81c115b22a5bb8c44f7bb", "tree": "2e8ee23addebcb05c4505c30e1fa593c8a3d4fa7"},
+  "entryGate": "PASS",
+  "gate": {
+    "FR-1": {"result": "PASS (probe)", "mechanism": "AppGeoCeDG.setLanguage(Locale) override: inherited call as host synchronization, restore of the captured tool and behaviour unless a genuine activation intervened", "evidence": "inherited setLanguage(Locale) switches to Move and marks unsaved; emulated restore setMode keeps undo history and saved flag; setLanguage(String) and setLocale keep the mode"},
+    "FR-2": {"result": "FAIL", "evaluatedSeam": "GeoCeDG subclass of GgbAPID returned by an AppGeoCeDG.getGgbApi() override", "failure": "EvaluatorException: Access to Java class org.geocedg.desktop.GeoCeDGScriptingApi is prohibited (CallJavaScript.SandboxClassShutter admits only GgbAPID and ScriptUtil.ALLOWED); every document load initializes the JavaScript global scope", "probeGap": "the gate probe checked instance identity and setMode routing but not JavaScript initialization", "isolation": "adapted F2 suite 19 of 19 passing with only the getGgbApi override removed", "inheritedChangeNeededForSeam": true},
+    "FR-3": {"result": "PASS", "evidence": "initNewMode discards only the provisional point; completed constructions identical; undo history, undo/redo availability and saved flag unchanged; mode kept; remembered reference current; later undo invalidates through the F2 lifecycle"},
+    "FR-4": {"result": "PASS", "evidence": "schema accepts free localized_text keys with en and es; added segment single-row at 640-1920 px; full text from 800 px; truncated at 640 px (bar preferred width 678 px, inherited SingleRowLayout)"}
+  },
+  "probe": {"class": "F2R1GateProbeTest", "exit": 0, "outputs": {"fr1": "0eaa745bf8e3c31a550852f9276f02e38858d62538cee103caa32328d6da0c5f", "fr2": "52cd65d3d8bdfc0c36c788dbf2400e299feba9f25f6a6dc623f8078435b143d5", "fr3": "2253a4a1b2e92eb842520d4bc732b568db1ddc2c1b04259edcef8eee6bf2b492", "fr4": "c93d43213d7214700e7139bb8fc9096d72019e2c097674820c5e29c18c8427c1"}, "sourceSha256": "f723d01cd253f142a3bc7f040fc0c34c7e35e6d97d4dfecfe595db42ee98967e", "initScriptSha256": "23893142bfc936e9b45acc1843b053f6032062c03f126473bfc783001947bebd"},
+  "options": [
+    {"id": "O1", "mechanism": "override single-argument App3D.setMode(int) in AppGeoCeDG: unmarked single-argument activation = genuine NORMAL request; two-argument host form = synchronization", "contract": "DQ-F2R1-4 met", "inheritedChange": false, "risk": "relies on the overload convention; future inherited single-argument callers would count as user requests", "recommended": true},
+    {"id": "O2", "mechanism": "scripted same-mode activation treated as host synchronization", "contract": "narrows DQ-F2R1-4 for scripting", "inheritedChange": false},
+    {"id": "O3", "mechanism": "admit a GeoCeDG API class to the script sandbox", "contract": "DQ-F2R1-4 met", "inheritedChange": true, "class": "above BOUNDED_PHASE"}
+  ],
+  "workInProgress": {"branch": "wip/pre-g9b-r6-plus-f2-r1-fr2-blocked", "commit": "654f7021a8fcf207ace595033ed71d618cb0ba34", "tree": "b0137fabf545d79824394b24a4ab68b16d1a9d36", "state": "NOT A CANDIDATE — unverified", "patchSha256": "a7ed141345b66d8c2ac1ef31bab65d179707564802538bfc0c28c609f7d98911"},
+  "verificationClass": "NOT FROZEN",
+  "technicalCandidate": null,
+  "phase": "NOT RUN",
+  "infraUnit": "NOT RUN",
+  "authorSmoke": "NOT APPLICABLE",
+  "authorDisposition": "REQUIRED (FR-2)",
+  "f2OriginalCandidate": "FROZEN — HISTORICAL EVIDENCE",
+  "publication": "NOT AUTHORIZED",
+  "selfApproved": false
+}
