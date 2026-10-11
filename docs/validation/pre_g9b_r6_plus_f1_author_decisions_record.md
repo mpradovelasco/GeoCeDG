@@ -2,31 +2,46 @@
 
 ```text
 ARTIFACT_KIND             = AUTHOR-DECISION RECORD AND DOCUMENTARY CLOSEOUT
-RECORD VERSION            = 1.0
-TASK                      = PRE-G9B-R6-plus-F1-PREP-CLOSEOUT
-AUTHOR_DECISION_SOURCE    = author instruction of 2026-10-11 ("Author decisions and
-                            documentary closeout"; AUTHOR AUTHORIZED — RECONCILIATION
-                            OF AUTHOR DECISIONS AND DOCUMENTARY CLOSEOUT)
+RECORD VERSION            = 1.1
+                            1.0 (2026-10-11) PRE-G9B-R6-plus-F1-PREP-CLOSEOUT: DQ-F1-1
+                                to DQ-F1-9, in closeout commit d57d077d (frozen)
+                            1.1 (2026-10-11) PRE-G9B-R6-plus-F1-PREP-FINAL: OTQ-F1-1
+                                to OTQ-F1-4 decided by the author (§7); preparation
+                                approved; publication of the exact chain authorized
+TASKS                     = PRE-G9B-R6-plus-F1-PREP-CLOSEOUT; PRE-G9B-R6-plus-F1-PREP-FINAL
+AUTHOR_DECISION_SOURCES   = author instruction of 2026-10-11 ("Author decisions and
+                            documentary closeout"); author instruction of 2026-10-11
+                            ("Final Author Decisions and Documentary Publication";
+                            AUTHOR AUTHORIZED — FINAL TECHNICAL RECONCILIATION,
+                            DOCUMENTARY APPROVAL AND CONTROLLED PUBLICATION)
 PUBLISHED BASE            = P_C1 bde2827bb21e4a28e080db6a65b4abc892071cf8
                             tree 1b74102cea5151b8a6c571cb36b96b33af6fb3c8
 PREPARATION CANDIDATE     = T_R6PLUS_F1_PREP 732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b
                             tree 0839dd764ffceefc2fb009155b25f6495becaae1
                             (STATIC verification-38ff592383c64c3fbac46cb3c5023dd3,
-                            ACCEPTED / COMPLETE); kept as the parent, not amended
-CLOSEOUT CANDIDATE        = the commit that contains this record (direct child of
-                            732292e6); its identity and STATIC are reported outside
-                            this record, which cannot name its own commit
+                            ACCEPTED / COMPLETE); not amended
+CLOSEOUT CANDIDATE        = T_R6PLUS_F1_PREP_CLOSEOUT d57d077d7cc4c58c12198f95f68fed8566b20c3d
+                            tree 7a15c931c30e1ad65449ae55c249b4ad5fd8214b
+                            (STATIC verification-647bf1a87ae3439597300c528a39c7a3,
+                            ACCEPTED / COMPLETE); not amended
+FINAL RECONCILIATION      = the commit that contains this version (direct child of
+                            d57d077d); its identity, STATIC and publication are reported
+                            outside this record, which cannot name its own commit
+PRE-G9B-R6-plus-F1-PREP   = PASS — AUTHOR APPROVED — PUBLISHED (on the authorized
+                            non-force fast-forward of this exact chain)
 PRE-G9B-R6-plus-F1        = DESIGN — AUTHOR APPROVED; CANONICAL PROMPT PREPARED — NOT AUTHORIZED
 IMPLEMENTATION            = NOT AUTHORIZED
-PUBLICATION               = NOT AUTHORIZED
+PUBLICATION               = AUTHORIZED for the exact chain 732292e6 -> d57d077d -> this
+                            commit only (no tag, release, installer or version change)
 selfApproved              = false
 passClaimed               = false   (no product claim of any kind)
 ```
 
 This record transcribes the author's decisions of 2026-10-11 on `DQ-F1-1` to
 `DQ-F1-9`. It is their authority and prevails over the recommendations of the
-preparation candidate wherever they differ. It authorizes **no implementation**
-and **no publication**. Machine-readable mirror:
+preparation candidate wherever they differ. Version 1.1 adds the author's
+dispositions of `OTQ-F1-1` to `OTQ-F1-4` and the approval of the preparation
+(§7). The record authorizes **no implementation**. Machine-readable mirror:
 [`pre-g9b-r6-plus-f1-author-decisions.json`](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f1-author-decisions.json).
 The reconciled design is
 [`pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md`](../architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md)
@@ -83,10 +98,11 @@ The author accepts the F1 preparation findings (report `K0`–`K17`).
 - **AUTHOR DECISION:** a discreet hollow triangular arrowhead, nominal
   dimensions 10 × 4 device pixels, in the object's colour; geometry and
   placement are presentation-only.
-- IMPLEMENTATION DESIGN: length `L = 10` and half-width `W = 4` device pixels
-  at style scale 1, as tabled in the preparation (design §6); 1 px outline in
-  the object colour and line opacity, interior filled with the view background;
-  anchors of design §5. See `OTQ-F1-3`.
+- AUTHOR DECISION (`OTQ-F1-3`, v1.1): axial length 10 device pixels, total
+  base width 4, half-width 2 (§7). This supersedes the v1.0 reading of a
+  half-width of 4.
+- IMPLEMENTATION DESIGN: 1 px outline in the object colour and line opacity,
+  interior filled with the view background; anchors of design §5.
 
 ### `DQ-F1-5` — supported orientation
 
@@ -106,8 +122,8 @@ The author accepts the F1 preparation findings (report `K0`–`K17`).
   decision because those routes are neither constructive nor inherited.
   Inherited routes are admitted only when every orienting input is itself
   admitted (recursive, fail-closed). Affine images are limited to the
-  dedicated, source-proven methods (§4 erratum `ER-1`). See `OTQ-F1-1` for
-  macros.
+  dedicated, source-proven methods (§4 erratum `ER-1`). Macros: conservative
+  rule of `OTQ-F1-1` (§7).
 
 ### `DQ-F1-6` — preference
 
@@ -135,9 +151,10 @@ The author accepts the F1 preparation findings (report `K0`–`K17`).
 - IMPLEMENTATION DESIGN: the eligibility predicate and degeneration table of
   design §4; "redundant directional decorations" are the three segment
   midpoint arrow decorations (`DECORATION_SEGMENT_ONE_ARROW`,
-  `TWO_ARROWS`, `THREE_ARROWS`), as proposed; arrow ending styles do not
-  suppress (`OTQ-F1-2`); the sense is re-read from `getDirection` at every
-  paint, with no memory, hysteresis or continuity heuristic.
+  `TWO_ARROWS`, `THREE_ARROWS`); arrow ending styles do not suppress — confirmed
+  as the bounded v1 rule by the author (`OTQ-F1-2`, §7); the sense is re-read
+  from `getDirection` at every paint, with no memory, hysteresis or continuity
+  heuristic.
 
 ### `DQ-F1-8` — architecture and verification
 
@@ -167,11 +184,14 @@ The author accepts the F1 preparation findings (report `K0`–`K17`).
   `effect_profile_id: preference-only`, `availability_profile_id:
   product-only`, `command_surface_profile_id: action-only`, maturity
   `experimental`, checkbox state from the preference, in the View menu group
-  `view-visibility-style` (precedent `export.area.show`); the Layout &
-  Presentation control is a row inside an existing GeoCeDG-owned panel
-  (`GeoCeDGThemeOptionsPanel` or `GeoCeDGPresentationOptionsPanel`), so no
-  `AppD` or `OptionsLayoutD` hook is needed; both controls read and write the
-  one preference owner in `AppGeoCeDG`. Profile pins to update: report `K14`.
+  `view-visibility-style` (precedent `export.area.show`); both controls read and
+  write the one preference owner in `AppGeoCeDG`. Profile pins to update:
+  report `K14`.
+- AUTHOR DECISION (`OTQ-F1-4`, v1.1): the Layout & Presentation control is a
+  clearly differentiated checkbox in the existing GeoCeDG-owned
+  `GeoCeDGPresentationOptionsPanel`, created through the existing
+  `AppGeoCeDG.newProductPresentationOptionsPanel()`, preserving the
+  presentation-size controls; no new hook in `AppD` or `OptionsLayoutD` (§7).
 
 ## 2. Distinction kept by the design
 
@@ -183,14 +203,16 @@ kernel's sense is meaningful to the user only where the construction gives it
 routes keep a real, documented kernel sense (report `K4`, `K6`) that the cue
 does not display.
 
-## 3. Open technical items
+## 3. Technical items (open in v1.0, decided in v1.1)
 
-| Id | Item | Blocks implementation authorization? |
+| Id | v1.0 item | v1.1 state |
 |---|---|---|
-| `OTQ-F1-1` | Macro outputs (`A17`): admitted only if the inner output's route can be resolved read-only, by identity or definition position, through existing public API of `AlgoMacro`/`Macro`; otherwise macro outputs stay excluded (`X10`). The entry gate establishes which | no (fail-closed default) |
-| `OTQ-F1-2` | Interpretation of "redundant directional decorations" as the three midpoint arrow decorations, not the arrow ending styles; the author may widen it | no (proposal applies unless the author widens it) |
-| `OTQ-F1-3` | Interpretation of "10 × 4" as length 10 and half-width 4 (base 8) device pixels, per the preparation design §6; if the author meant a total base of 4 px, only the constant changes | no |
-| `OTQ-F1-4` | Host panel of the Layout & Presentation row (`GeoCeDGThemeOptionsPanel` or `GeoCeDGPresentationOptionsPanel`), chosen at the entry gate by which needs no inherited-class change; if neither can host it, stop (`DQ-F1-9`) | no |
+| `OTQ-F1-1` | macro outputs (`A17`) admitted only if the inner route resolves through existing public API, otherwise excluded | **DECIDED** — conservative rule (§7) |
+| `OTQ-F1-2` | "redundant directional decorations" read as the three midpoint arrow decorations, not the ending styles | **DECIDED** — bounded v1 suppression rule (§7) |
+| `OTQ-F1-3` | "10 × 4" read as length 10 and half-width 4 | **DECIDED** — length 10, total base 4, half-width 2 (§7); the v1.0 reading is superseded |
+| `OTQ-F1-4` | host panel chosen at the entry gate | **DECIDED** — `GeoCeDGPresentationOptionsPanel` (§7) |
+
+No open technical item remains.
 
 ## 4. Corrections to the frozen preparation evidence
 
@@ -213,20 +235,99 @@ does not display.
 | specification / ADR | none promoted; the specification remains the first deliverable of an authorized F1 |
 | planned implementation class | `BOUNDED_PHASE`, author-accepted, conditioned on the entry gate |
 | closeout class | `DOCUMENTATION_STATUS_ONLY`, acceptance `STATIC` |
-| implementation, publication | `NOT AUTHORIZED` |
+| closeout candidate | `d57d077d7cc4c58c12198f95f68fed8566b20c3d`, tree `7a15c931c30e1ad65449ae55c249b4ad5fd8214b`, direct child of `732292e6`, six files |
+| closeout STATIC | `verification-647bf1a87ae3439597300c528a39c7a3`, `ACCEPTED / COMPLETE`, bound to that commit and tree; standing diagnostics only |
+| implementation | `NOT AUTHORIZED` |
+| publication | `NOT AUTHORIZED` in v1.0; authorized for the exact chain in v1.1 (§7.6) |
 
-## 6. Next decision
+## 6. Next decision (v1.0, answered by v1.1)
 
-After review of this documentary closeout, the author decides whether to
-authorize and publish the F1 preparation package (preparation candidate and
-this closeout commit), and then, separately, whether to authorize the F1
-implementation against an exact published base. `F2`, `F3`, `F4` and `G` are
-unchanged and unauthorized.
+v1.0 left to the author whether to authorize and publish the F1 preparation
+package and, separately, whether to authorize the F1 implementation. The
+author answered the first question in v1.1 (§7); the second remains open.
+
+## 7. Final author decisions (v1.1, `PRE-G9B-R6-plus-F1-PREP-FINAL`)
+
+The author approves the F1 preparation and the reconciled orientation-cue
+design. `DQ-F1-1` to `DQ-F1-9` remain approved. The design is
+`DESIGN — AUTHOR APPROVED`. The approved scope remains a presentation-only
+indication of kernel orientation for the positive matrix of supported line,
+segment and ray construction routes. This approval does not authorize product
+implementation.
+
+### 7.1 `OTQ-F1-1` — macro eligibility
+
+**AUTHOR DECISION:** conservative eligibility rule. A macro-produced object is
+admitted only when its internal construction route and the orientation-bearing
+dependency chain can be established reliably through existing supported APIs;
+every orientation-bearing input in that chain satisfies the approved
+eligibility contract. No orientation is inferred from labels, coordinates,
+proximity, construction indices, presentation state or arbitrary Java
+references. If the provenance cannot be established, the cue is suppressed. No
+new kernel identity, macro serialization or provenance infrastructure is
+introduced to admit more cases.
+
+### 7.2 `OTQ-F1-2` — redundant directional decorations
+
+**AUTHOR DECISION:** bounded initial suppression rule. The cue is suppressed
+for the three existing segment styles that already display a directional arrow
+at the segment midpoint (`DECORATION_SEGMENT_ONE_ARROW`, `TWO_ARROWS`,
+`THREE_ARROWS`). Endpoint arrow decorations are not globally reinterpreted and
+existing segment-style behavior is unchanged; endpoint decorations keep their
+existing presentation semantics. This is a deliberate v1 boundary, not a claim
+that every visual redundancy is eliminated; a broader style-interaction policy
+needs separate characterization.
+
+### 7.3 `OTQ-F1-3` — arrow dimensions
+
+**AUTHOR DECISION:** axial length 10 device pixels, total base width 4 device
+pixels, half-width 2 device pixels. The hollow triangular arrowhead uses the
+object colour and stays a presentation-only decoration. The indicated
+direction comes from the admitted kernel orientation; the pixel geometry
+determines only the rendered appearance. No document geometry, scale or
+exported coordinate is modified.
+
+### 7.4 `OTQ-F1-4` — Layout & Presentation panel
+
+**AUTHOR DECISION:** the existing GeoCeDG-owned `GeoCeDGPresentationOptionsPanel`,
+through the existing product route `AppGeoCeDG.newProductPresentationOptionsPanel()`,
+receives a clearly differentiated orientation-cue checkbox, preserving the
+presentation-size controls. The menu action `presentation.orientation-cue` and
+the checkbox operate on the same global user preference
+`geocedg.view.orientation-cue.v1`: default OFF, survives restart, not reset by
+New/Open; neither control modifies document state, XML or undo history. No new
+inherited hook in `AppD` or `OptionsLayoutD`. If the integration is not
+possible through this GeoCeDG-owned surface, the work stops for author review.
+
+### 7.5 Verification class
+
+**AUTHOR DECISION:** `BOUNDED_PHASE` is retained for the future F1
+implementation, finalized for planning, conditional on the implementation
+entry gate confirming the scope: a GeoCeDG Desktop Graphics View 1 overlay;
+one persistent user preference; one declarative menu action; one synchronized
+existing product-options panel control; no shared drawable, kernel, export or
+document-serialization change. The catalog delta 130 → 131 alone does not
+require `INTEGRATED_PHASE`. The registered `PHASE` covers the full
+profile/action-catalog impact (counts, pins, enablement, synchronization,
+presentation lifecycle). If the required code changes violate the bounded
+architecture, the work stops and requests author reclassification. The class
+is frozen at implementation entry according to repository policy.
+
+### 7.6 Publication
+
+**AUTHOR DECISION:** publication of the exact F1 preparation chain
+`732292e6` → `d57d077d` → the commit containing this version, through the
+ordinary non-force fast-forward of `main`, after all documentary gates pass;
+no amend, squash, rebase or force push; no tag, release, installer, version
+change or product implementation. The published identity is verified and
+reported outside this record.
 
 ```text
-AUTHOR_DECISION          = RECORDED IN THIS ARTIFACT (DQ-F1-1 to DQ-F1-9, 2026-10-11)
-DESIGN                   = DESIGN — AUTHOR APPROVED
-IMPLEMENTATION           = NOT AUTHORIZED
-PUBLICATION              = NOT AUTHORIZED
+PRE-G9B-R6-plus-F1-PREP  = PASS — AUTHOR APPROVED — PUBLISHED (on the authorized fast-forward)
+F1 DESIGN                = DESIGN — AUTHOR APPROVED
+F1 CANONICAL PROMPT      = PREPARED — NOT AUTHORIZED
+F1 IMPLEMENTATION        = NOT AUTHORIZED
+AUTHOR_DECISION          = RECORDED IN THIS ARTIFACT (DQ-F1-1 to DQ-F1-9; OTQ-F1-1 to OTQ-F1-4)
+F2 / F3 / F4 / G         = unchanged
 selfApproved             = false
 ```

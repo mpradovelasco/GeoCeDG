@@ -1,12 +1,14 @@
 # PRE-G9B-R6-plus-F1 — orientation cue: reconciled design
 
 - Status: **DESIGN — AUTHOR APPROVED** (author decisions of 2026-10-11 on
-  `DQ-F1-1` to `DQ-F1-9`,
+  `DQ-F1-1` to `DQ-F1-9` and, at `PRE-G9B-R6-plus-F1-PREP-FINAL`, on
+  `OTQ-F1-1` to `OTQ-F1-4`;
   [F1 author-decision record](../validation/pre_g9b_r6_plus_f1_author_decisions_record.md)
-  v1.0, which is their authority and prevails over this file). The approval
+  v1.1, which is their authority and prevails over this file). The approval
   concerns this design, **not its implementation**: implementation is
-  `NOT AUTHORIZED` and needs a separate explicit author authorization.
-  Publication is `NOT AUTHORIZED`.
+  `NOT AUTHORIZED` and needs a separate explicit author authorization. The
+  author authorized publication of the documentary chain that contains this
+  file; no technical item is open.
 - Not a specification and not an ADR: the durable specification is the first
   deliverable of an authorized F1 (canonical prompt, *Required
   design/specification*).
@@ -107,7 +109,7 @@ Admitted:
 | `A14` | `AlgoRotatePoint`, `AlgoRotate`, admitted source | `Rotate` | rotated source sense | inherited | R18c, `ER-1` |
 | `A15` | `AlgoTranslate`, admitted source | `Translate` | source sense | inherited | R18d, `ER-1` |
 | `A16` | `AlgoDilate`, admitted source | `Dilate` | source sense times the sign of the factor | inherited | R18e, `ER-1` |
-| `A17` | `AlgoMacro` | macro output | sense of the inner route, only if that route is admitted and resolvable (`OTQ-F1-1`) | inherited | R23, R23b |
+| `A17` | `AlgoMacro` | macro output | sense of the inner route, only when the inner route and its whole orientation-bearing dependency chain are established reliably through existing supported APIs and every orientation-bearing input in the chain is admitted; otherwise suppressed (AUTHOR DECISION `OTQ-F1-1`; no new identity, macro serialization or provenance infrastructure) | inherited | R23, R23b |
 
 Excluded initially (kernel facts retained; no cue until separately admitted):
 
@@ -148,7 +150,9 @@ hold:
 6. visible chord ≥ `4L` on screen;
 7. for a segment, none of `DECORATION_SEGMENT_ONE_ARROW`, `TWO_ARROWS`,
    `THREE_ARROWS` (`common/kernel/kernelND/GeoElementND.java:123-127`); arrow
-   ending styles do not suppress (`OTQ-F1-2`).
+   ending styles do not suppress and keep their existing presentation
+   semantics (AUTHOR DECISION `OTQ-F1-2`: a deliberate v1 boundary; a broader
+   style-interaction policy needs separate characterization).
 
 | Degeneration | Kernel fact (report) | Cue |
 |---|---|---|
@@ -186,11 +190,13 @@ and size, and `L`. Pan, zoom, resize and non-uniform axis ratios move, rotate
 on screen or suppress the cue; they never reverse it. Label overlap is
 accepted.
 
-## 6. Rendering (AUTHOR DECISION `DQ-F1-4`; values IMPLEMENTATION DESIGN)
+## 6. Rendering (AUTHOR DECISIONS `DQ-F1-4`, `OTQ-F1-3`)
 
-- Discreet hollow isosceles triangle, tip forward along `s`; length `L = 10`,
-  half-width `W = 4` device pixels at style scale 1, scaled by the view's style
-  scale (`OTQ-F1-3`).
+- Discreet hollow isosceles triangle in the object's colour, tip forward along
+  `s`: axial length `L = 10` device pixels, total base width 4 device pixels,
+  half-width `W = 2` device pixels; independent of zoom. The direction comes
+  from the admitted kernel orientation; the pixel geometry determines only the
+  appearance; no document geometry, scale or exported coordinate changes.
 - 1 px outline in the object's colour and line opacity; interior filled with
   the view background so the line does not show through.
 - Built by a small GeoCeDG-owned Desktop path builder (same triangle family as
@@ -221,12 +227,17 @@ shared drawables, any kernel object or command.
   `geocedg.presentation.orientation-cue`, `preference-only`, `product-only`,
   `action-only`, maturity `experimental`, checkbox state from the preference,
   View menu group `view-visibility-style`.
-- One synchronized control in Layout & Presentation. IMPLEMENTATION DESIGN: a
-  row in an existing GeoCeDG-owned panel (`OTQ-F1-4`), no `AppD` or
-  `OptionsLayoutD` change; menu checkbox and row read and write the same
-  preference owner in `AppGeoCeDG` and refresh each other.
+- One synchronized control in Layout & Presentation (AUTHOR DECISION
+  `OTQ-F1-4`): a clearly differentiated orientation-cue checkbox in the existing
+  GeoCeDG-owned `GeoCeDGPresentationOptionsPanel`, created through the existing
+  `AppGeoCeDG.newProductPresentationOptionsPanel()`, preserving the
+  presentation-size controls; no new hook in `AppD` or `OptionsLayoutD`. Menu
+  checkbox and panel checkbox read and write the same preference owner in
+  `AppGeoCeDG` and refresh each other; neither modifies document state, XML or
+  undo history.
 - Stop for author review if either control needs an unexpected inherited-class
-  modification or broadens the product contract.
+  modification, cannot be integrated through this GeoCeDG-owned surface, or
+  broadens the product contract.
 
 ## 9. Lifecycle
 
@@ -246,7 +257,7 @@ Identity is never touched.
 | `T-F1-DEGENERATE` | every row of the §4 degeneration table: no cue, no exception |
 | `T-F1-VISIBILITY` | hidden object, hidden layer, thickness 0, not visible in GV1, auxiliary object drawn normally, list member, axis |
 | `T-F1-PLACEMENT` | deterministic anchors; pan, zoom, resize, non-uniform ratio, off-screen start, corner-cutting line, short chord, log axis |
-| `T-F1-RENDERING` | 10 × 4 hollow triangle, object colour, background interior, style scale; midpoint-decoration suppression |
+| `T-F1-RENDERING` | hollow triangle of axial length 10 and total base 4 device pixels (half-width 2), object colour, background interior; midpoint-decoration suppression; endpoint styles unchanged |
 | `T-F1-VIEWS` | cue in GV1; never in GV2 |
 | `T-F1-EXPORT` | with the option on: PNG, PDF, SVG, EMF, print, clipboard, CLI, PGF, PSTricks, Asymptote and DXF byte-identical to option off |
 | `T-F1-NO-MUTATION` | document XML, undo state, construction order, styles, layers, labels, selection identical with the option on and off |
@@ -256,13 +267,18 @@ Identity is never touched.
 | `T-F1-PROFILE` | catalog completeness 131, stable IDs, projections (menus, groups, clusters), status synchronization, every pin of report `K14` |
 | `T-SMOKE` | author smoke (not by the agent) |
 
-## 11. Verification class (AUTHOR DECISION `DQ-F1-8`)
+## 11. Verification class (AUTHOR DECISIONS `DQ-F1-8`, record §7.5)
 
-`BOUNDED_PHASE`, one registered `PHASE` `PRE-G9B-R6-PLUS-F1`, conditioned on
-the entry gate confirming the approved scope. The catalog delta alone does not
-imply `INTEGRATED_PHASE` (`DQ-F1-9`). Any shared-code, export, persistence,
-GV2, kernel or inherited-class change outside this design stops the work for
-author review.
+`BOUNDED_PHASE`, finalized for planning, one registered `PHASE`
+`PRE-G9B-R6-PLUS-F1`, conditioned on the implementation entry gate confirming
+the scope: a GeoCeDG Desktop Graphics View 1 overlay; one persistent user
+preference; one declarative menu action; one synchronized existing
+product-options panel control; no shared drawable, kernel, export or
+document-serialization change. The catalog delta 130 → 131 alone does not
+require `INTEGRATED_PHASE`; the `PHASE` covers the full profile/action-catalog
+impact (counts, pins, enablement, synchronization, presentation lifecycle).
+Any change violating this bounded architecture stops the work and requests
+author reclassification. The class is frozen at implementation entry.
 
 ## 12. Rejected alternatives
 

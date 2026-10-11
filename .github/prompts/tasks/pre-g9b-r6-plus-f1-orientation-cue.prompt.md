@@ -4,13 +4,16 @@
 
 This prompt was prepared by `PRE-G9B-R6-plus-F1-PREP` (author instruction of
 2026-10-11) and reconciled by `PRE-G9B-R6-plus-F1-PREP-CLOSEOUT` with the
-author decisions of 2026-10-11 on `DQ-F1-1` to `DQ-F1-9`
+author decisions of 2026-10-11 on `DQ-F1-1` to `DQ-F1-9`, and finalized by
+`PRE-G9B-R6-plus-F1-PREP-FINAL` with the author decisions on `OTQ-F1-1` to
+`OTQ-F1-4`
 ([F1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f1_author_decisions_record.md)
-v1.0). The author approved the
+v1.1). The author approved the F1 preparation and the
 [reconciled design](../../../docs/architecture/pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md)
-(`DESIGN — AUTHOR APPROVED`). **The author did not authorize implementation
-or publication.** The existence of this file is not authorization, and nothing
-in it may be read as permission to start coding.
+(`DESIGN — AUTHOR APPROVED`) and authorized the publication of the documentary
+chain that contains this file. **The author did not authorize
+implementation.** The existence or publication of this file is not
+authorization, and nothing in it may be read as permission to start coding.
 
 Execution requires a new, separate, explicit author instruction that names
 `PRE-G9B-R6-plus-F1` and an exact published base, given after the author's
@@ -33,9 +36,11 @@ DESIGN — AUTHOR APPROVED (2026-10-11)
 CANONICAL PROMPT — PREPARED — NOT AUTHORIZED
 
 CHARACTERIZATION         = COMPLETE (2026-10-11, on P_C1 bde2827b)
-AUTHOR DECISIONS         = DQ-F1-1 to DQ-F1-9 RECORDED (2026-10-11, record v1.0)
+AUTHOR DECISIONS         = DQ-F1-1 to DQ-F1-9 and OTQ-F1-1 to OTQ-F1-4 RECORDED
+                           (2026-10-11, record v1.1)
+PREPARATION              = PRE-G9B-R6-plus-F1-PREP = PASS — AUTHOR APPROVED — PUBLISHED
+                           (on the authorized fast-forward of the documentary chain)
 IMPLEMENTATION           = NOT AUTHORIZED
-PUBLICATION              = NOT AUTHORIZED
 selfApproved             = false
 authorApproved (design)  = true    (the reconciled design only; no technical candidate exists)
 implementationAuthorized = false
@@ -51,12 +56,12 @@ DEPENDS_ON               = PRE-G9B-R6-plus-P0 = PASS — AUTHOR APPROVED (hard)
                            POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1
                                               = PASS — AUTHOR APPROVED — PUBLISHED
 GLOBAL GATE              = closeout in PRE-G9B-R6-plus-G
-VERIFICATION CLASS       = BOUNDED_PHASE (author-accepted, DQ-F1-8), conditioned on
-                           the entry gate confirming the approved scope; frozen at
-                           authorization
+VERIFICATION CLASS       = BOUNDED_PHASE (author decision, finalized for planning,
+                           record §7.5), conditioned on the entry gate confirming
+                           the approved scope; frozen at implementation entry
 PRECONDITIONS            = separate explicit implementation authorization on an
                            exact published base
-OPEN TECHNICAL ITEMS     = OTQ-F1-1 to OTQ-F1-4 (record §3), none blocking
+OPEN TECHNICAL ITEMS     = none (OTQ-F1-1 to OTQ-F1-4 decided, record §7)
 NEXT_SUBPHASE            = none implied; F2, F3, F4, G stay unauthorized
 ```
 
@@ -71,16 +76,16 @@ Implement, once authorized, the approved orientation cue:
    sense (`GeoLine.getDirection`), the screen anchor and angle (design §5). It
    never mutates kernel, view or document state.
 2. A **Graphics View 1 overlay** in `GeoCeDGEuclidianView.paint`, after
-   `super.paint`, drawing the discreet hollow 10 × 4 device-pixel triangle in
-   the object's colour (design §6, §7) through a small GeoCeDG-owned path
-   builder; screen-only.
+   `super.paint`, drawing the discreet hollow triangle (axial length 10, total
+   base 4, half-width 2 device pixels) in the object's colour (design §6, §7)
+   through a small GeoCeDG-owned path builder; screen-only.
 3. The **global preference** `geocedg.view.orientation-cue.v1`, default OFF
    (design §8), with **one declarative menu action** (catalog 130 → 131) and
    **one synchronized control** in Layout & Presentation.
 4. The tests of design §10 and the durable specification of *Required
    design/specification*.
 
-### Author decisions this prompt implements (record v1.0 §1)
+### Author decisions this prompt implements (record v1.1 §1, §7)
 
 | Id | Decision |
 |---|---|
@@ -93,14 +98,21 @@ Implement, once authorized, the approved orientation cue:
 | `DQ-F1-7` | suppression of undefined, non-finite, degenerate, effectively hidden, insufficiently visible and redundantly decorated objects; inversions faithful to the kernel |
 | `DQ-F1-8` | presentation-only GV1 overlay; no new `GeoElement`, kernel algorithm, persistence attribute, dependency or shared drawable change; `BOUNDED_PHASE` conditioned on the entry gate |
 | `DQ-F1-9` | one declarative menu action and a synchronized Layout & Presentation control; catalog 130 → 131 without implying `INTEGRATED_PHASE`; stop on unexpected inherited-class changes |
+| `OTQ-F1-1` | conservative macro rule: a macro output is admitted only when its internal route and whole orientation-bearing dependency chain are established reliably through existing supported APIs, every orientation-bearing input admitted; otherwise suppressed; no new kernel identity, macro serialization or provenance infrastructure |
+| `OTQ-F1-2` | bounded v1 suppression: only the three midpoint arrow segment styles suppress the cue; endpoint decorations keep their existing semantics; a broader policy needs separate characterization |
+| `OTQ-F1-3` | axial length 10, total base width 4, half-width 2 device pixels; object colour; presentation-only |
+| `OTQ-F1-4` | checkbox in the existing `GeoCeDGPresentationOptionsPanel` through `AppGeoCeDG.newProductPresentationOptionsPanel()`, size controls preserved; same preference as `presentation.orientation-cue`; no `AppD`/`OptionsLayoutD` hook; stop if not possible |
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 To be named by the author's implementation authorization: an exact published
-`main` that contains the F1 documentary package (preparation candidate
+`main` that contains the F1 documentary chain (preparation candidate
 `732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b`, tree
-`0839dd764ffceefc2fb009155b25f6495becaae1`, and its closeout child), on top of
+`0839dd764ffceefc2fb009155b25f6495becaae1`; closeout
+`d57d077d7cc4c58c12198f95f68fed8566b20c3d`, tree
+`7a15c931c30e1ad65449ae55c249b4ad5fd8214b`; and the final reconciliation
+commit that contains this version of the prompt), on top of
 
 ```text
 P_C1                  = bde2827bb21e4a28e080db6a65b4abc892071cf8
@@ -114,15 +126,18 @@ and that the worktree is clean. It then confirms the approved scope for
 `BOUNDED_PHASE` (`DQ-F1-8`): every planned change lies in GeoCeDG-owned
 Desktop code, `apps/geocedg/application-profile.yml`, GeoCeDG tests, the
 profile pins and allow-list of report `K14`, the phase registration and
-documentation; the Layout & Presentation control fits an existing
-GeoCeDG-owned panel (`OTQ-F1-4`); the macro resolution of `OTQ-F1-1` is
-decided (admit or exclude). Any other need stops the work and is reported.
+documentation; the scope is a GeoCeDG Desktop Graphics View 1 overlay, one
+persistent user preference, one declarative menu action and one synchronized
+control in `GeoCeDGPresentationOptionsPanel` (`OTQ-F1-4`), with no shared
+drawable, kernel, export or document-serialization change; macro outputs are
+admitted only under the conservative rule of `OTQ-F1-1`. Any other need stops
+the work and requests author reclassification.
 
 ## Authority and evidence hierarchy
 
 `AGENTS.md` §2 governs. For this phase: current code and tests at the base;
 `unit-system.md` §17.2 and `verification-levels.md`; the F1 author-decision
-record v1.0; this prompt; the reconciled design; then the characterization
+record v1.1; this prompt; the reconciled design; then the characterization
 report, its JSON mirror and the decision preparation record; then the `P0` F1
 candidate and older evidence. Probe outputs, reports and screenshots are
 evidence, not authority.
@@ -149,9 +164,10 @@ base.
   `application-profile.yml` entry and placement in `view-visibility-style`,
   `GeoCeDGActionRegistry` target, `execute` and `checked` cases, localized
   texts (EN, ES).
-- One row in an existing GeoCeDG-owned Layout & Presentation panel
-  (`GeoCeDGThemeOptionsPanel` or `GeoCeDGPresentationOptionsPanel`),
-  synchronized with the menu checkbox.
+- One clearly differentiated orientation-cue checkbox in the existing
+  GeoCeDG-owned `GeoCeDGPresentationOptionsPanel` (created through
+  `AppGeoCeDG.newProductPresentationOptionsPanel()`), preserving the
+  presentation-size controls and synchronized with the menu checkbox.
 - Desktop tests for design §10.
 
 **Documentation and verification.**
@@ -304,7 +320,7 @@ authorized documentary steps.
 - The specification; the Desktop, profile, registry and guide deltas with their
   tests.
 - A candidate report with the entry gate, `K3`–`K14` re-established with every
-  correction, the dispositions of `OTQ-F1-1` to `OTQ-F1-4`, test evidence, the
+  correction, the application of `OTQ-F1-1` to `OTQ-F1-4`, test evidence, the
   exact commands, exit codes, report paths and verdicts, and an author-smoke
   checklist: with the option OFF nothing changes; switch it ON from the View
   menu and check that the Layout & Presentation row follows (and the reverse);
@@ -326,7 +342,11 @@ Stop and report, without guessing, when:
 - the sense of an admitted route cannot be obtained from `getDirection` or its
   `T-F1-SENSE` test fails (the row is then excluded and reported);
 - a route cannot be classified from class identity through existing public
-  API;
+  API (the cue is then suppressed for it; for macros this is the `OTQ-F1-1`
+  rule, and admitting more cases would need new kernel identity, macro
+  serialization or provenance infrastructure, which is forbidden);
+- the orientation-cue checkbox cannot be integrated through
+  `GeoCeDGPresentationOptionsPanel` and `AppGeoCeDG.newProductPresentationOptionsPanel()`;
 - eligibility, placement, rendering or the UI controls would need a change in
   `source/shared/**`, an inherited class, a new XML element or a broader
   product contract;
