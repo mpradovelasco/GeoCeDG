@@ -5,6 +5,10 @@
   v1.1, which prevails over this design wherever they differ). The approval
   covers the design only; **implementation is not authorized**; feasibility items
   `FR-1` to `FR-4` (§8) are resolved at the implementation entry gate.
+- Scripting clarification: record v1.3 §7 (author disposition after the `FR-2`
+  stop) makes reference memory interactive-only and replaces the scripting seam
+  of §2, §4 and §8 by Option O1 (single-argument `setMode(int)` origin); the
+  rows marked "v1.3" below follow it.
 - Produced by: `PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION` (Stage 2),
   reconciled by `PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT`
 - Bases: frozen F2 candidate `6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873` (tree
@@ -53,7 +57,8 @@ origins:
 | native toolbar button / native flyout (`ProfileToolbar.addNativeGroup` listener; keyboard Space on the focused button reaches the same action) | PAR/PERP with `MEMORY_ENABLED` iff the `ActionEvent` carries Ctrl (Windows), else `NORMAL`; bound to the current AWT event |
 | menu items and the action registry (`GeoCeDGActionRegistry.invoke`) | `NORMAL` |
 | pinned user tools and other GeoCeDG `app.setMode` call sites for these modes | `NORMAL` |
-| scripting (`setMode` of the scripting API) | `NORMAL` **if** a GeoCeDG-owned API seam exists (`FR-2`) |
+| scripting (`setMode` of the scripting API) | v1.3: `NORMAL`, also for the active tool, through the unmarked single-argument `AppGeoCeDG.setMode(int)` route (Option O1); the original `GgbAPID` is kept; a script never selects `MEMORY_ENABLED` |
+| any other unmarked single-argument `setMode(int)` | v1.3: genuine request → `NORMAL`; a direct two-argument `setMode(int, ModeSetter)` call stays host synchronization |
 
 Resolution in the GeoCeDG-owned `AppGeoCeDG.setMode(int, ModeSetter)` override,
 which sees every mode activation including same-mode ones (Stage 2 `O01`–`O04`):
@@ -98,7 +103,7 @@ does not reset the active behaviour or the remembered references:
 | native Parallel/Perpendicular flyout | Stage 2 `F01` (shown popup, real item, posted events) | as a direct click | **CONFIRMED** (Swing event level) |
 | keyboard Space on the focused button | Stage 2 `K01` | `NORMAL`; Ctrl+Space fires no activation and is **not** claimed | **CONFIRMED** |
 | menu / registry, also for the active tool | Stage 1 `A10`; Stage 2 `O03` | `NORMAL` | design-supported; to be verified |
-| scripting API, also for the active tool | Stage 2 `O04` | `NORMAL` if `FR-2` holds; otherwise unclassified (host synchronization) | **CONDITIONAL** (`FR-2`) |
+| scripting API, also for the active tool | Stage 2 `O04` | v1.3: `NORMAL` (Option O1); memory never read, written or cleared by the script | **CONDITIONAL** (revised `FR-2` gate) |
 | pinned user tools | Stage 1 `R6` | `NORMAL` | design-supported |
 | undocked dock-panel toolbars (inherited, no listener) | Stage 1 `R6` | target differs → departure `NORMAL`; same mode → unchanged | **NOT_ESTABLISHED** at runtime |
 | host re-assertion of the active mode | none observed (Stage 2 `O06`–`O10`) | unchanged | design rule |
@@ -170,7 +175,7 @@ remembered references are preserved unless invalidated by the F2 lifecycle.
 | Id | Item | If it fails |
 |---|---|---|
 | `FR-1` | Language change: an `AppGeoCeDG.setLanguage(Locale)` override can capture and restore the active PAR/PERP tool and its behaviour around the inherited `setMoveMode` without breaking the GUI refresh, Input Help or the saved state | stop for author disposition (the inherited switch to Move would otherwise reset the behaviour) |
-| `FR-2` | Scripting `setMode` can be marked as a genuine `NORMAL` request through a GeoCeDG-owned seam (e.g. a GeoCeDG subclass of `GgbAPID` returned by `AppGeoCeDG`) without an inherited-class change | scripting same-mode activations remain host synchronization (unchanged behaviour); report for author disposition |
+| `FR-2` | Scripting `setMode` can be marked as a genuine `NORMAL` request through a GeoCeDG-owned seam (e.g. a GeoCeDG subclass of `GgbAPID` returned by `AppGeoCeDG`) without an inherited-class change. **Failed** for the `GgbAPID` subclass (JavaScript sandbox; historical). v1.3: revised to Option O1 — the unmarked single-argument `AppGeoCeDG.setMode(int)` route is a genuine `NORMAL` request; `GgbAPID`, the class shutter and the shared allow-list unchanged | stop and report; no global Ctrl flag, stack-trace inference, API replacement or sandbox change |
 | `FR-3` | `initNewMode` cancellation conditions of §6, including saved-state coherence | stop for author disposition |
 | `FR-4` | free status texts accepted by the profile validator; indication laid out in the single-row bar | stop; the author may choose a smaller indication |
 

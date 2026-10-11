@@ -17,7 +17,11 @@ The author instruction "PRE-G9B-R6-plus-F2-R1 Implementation Authorization"
 (record v1.2 §6) authorizes the conditional bounded corrective implementation on
 the exact base below, up to one frozen local technical candidate; this amendment
 is its first tracked change. The feasibility gate `FR-1` to `FR-4` must pass
-before production behaviour changes; a failed gate stops the work. This file is not a second policy document:
+before production behaviour changes; a failed gate stops the work. The gate
+stopped at `FR-2` (the `GgbAPID`-subclass seam); the author disposition
+"PRE-G9B-R6-plus-F2-R1-FR2-AUTHOR-DISPOSITION" (record v1.3 §7) makes reference
+memory interactive-only, selects Option O1 and resumes the implementation
+subject to a revised `FR-2` gate; this prompt is amended accordingly. This file is not a second policy document:
 state classes are in `geocedg/specs/units/unit-system.md` §17.2; verification
 classes in `geocedg/specs/operations/verification-levels.md` §12.8; F2 memory
 semantics in the [F2 specification](../../../geocedg/specs/ui/authoring-memory.md)
@@ -31,12 +35,15 @@ CANONICAL PROMPT — AUTHORIZED FOR CONDITIONAL IMPLEMENTATION
 
 DESIGN                   = DESIGN — AUTHOR APPROVED (record v1.1 §5)
 AUTHOR DECISIONS         = DQ-F2R1-1 to DQ-F2R1-6 RECORDED (with refinements)
-FEASIBILITY ITEMS        = FR-1 to FR-4 open; resolved at the entry gate (design §8)
+FEASIBILITY ITEMS        = FR-1, FR-3, FR-4 PASS; FR-2 (GgbAPID subclass) FAIL —
+                           historical; FR-2 revised to Option O1 (record v1.3 §7),
+                           gate recorded separately
 F2 ORIGINAL CANDIDATE    = 6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873 (FROZEN — NOT AUTHOR
                            APPROVED — NOT PUBLISHED)
 IMPLEMENTATION BASE      = e13bfbd231700019a8f81c115b22a5bb8c44f7bb
                            tree 2e8ee23addebcb05c4505c30e1fa593c8a3d4fa7
-IMPLEMENTATION           = AUTHORIZED (conditional on FR-1..FR-4)
+IMPLEMENTATION           = AUTHORIZED (conditional on FR-1..FR-4; FR-2 as revised
+                           by record v1.3 §7)
 PUBLICATION              = NOT AUTHORIZED
 selfApproved             = false
 authorApproved           = false (implementation pending author review and smoke)
@@ -66,9 +73,11 @@ Give the existing Parallel and Perpendicular tools two operating behaviours
 The behaviour is selected at activation (design §2–§4): Ctrl (Windows; macOS
 and Linux not claimed) read from a native-toolbar, reactivation or native-flyout
 activation event requests `MEMORY_ENABLED`; every other genuine activation
-request (menu, registry, user tools, keyboard Space; scripting under `FR-2`)
-requests `NORMAL`, also for the active tool; host synchronization of the active
-mode changes nothing; departure resets to `NORMAL`; a language change preserves
+request (menu, registry, user tools, keyboard Space, scripting `setMode`)
+requests `NORMAL`, also for the active tool; reference memory is interactive
+only, so a script can never select `MEMORY_ENABLED` and never reads, writes or
+clears a slot (record v1.3 §7); host synchronization of the active mode changes
+nothing; departure resets to `NORMAL`; a language change preserves
 the active tool and behaviour (`FR-1`); a behaviour change on the active tool
 cancels the partial gesture through the inherited protected `initNewMode(mode)`
 (`FR-3`); a localized status-bar segment shows `MEMORY_ENABLED` (design §7,
@@ -122,12 +131,15 @@ GeoCeDG-owned Desktop code (`source/desktop/desktop/src/main/java/org/geocedg/de
 - `AppGeoCeDG`: override of `setMode(int, ModeSetter)` resolving the behaviour
   (pending genuine request → its behaviour; other mode without request →
   departure, both tools `NORMAL`; same mode without request → host
-  synchronization, unchanged), then `super.setMode`; override of
+  synchronization, unchanged), then `super.setMode`; override of the
+  single-argument `setMode(int)` (Option O1, record v1.3 §7) marking an unmarked
+  single-argument request (toolbar action, registry, user tools, scripting
+  `GgbAPI.setMode`) as a genuine `NORMAL` request, without overriding an explicit
+  GeoCeDG toolbar mark or an enclosing host-synchronization scope; override of
   `setLanguage(Locale)` preserving and restoring the active Parallel/Perpendicular
   tool and behaviour around the inherited switch (`FR-1`).
-- `GeoCeDGActionRegistry` and GeoCeDG user-tool call sites: scoped `NORMAL`
-  request markers around their own `app.setMode`; a GeoCeDG-owned scripting-API
-  seam only if `FR-2` establishes one without inherited-class change.
+- `GeoCeDGActionRegistry` and GeoCeDG user-tool call sites: covered by the
+  single-argument route; explicit scoped markers only where needed.
 - `GeoCeDGEuclidianController`: behaviour state of the active tool,
   `applyActivationBehaviour` with `initNewMode(mode)` on a same-mode behaviour
   change, and the `NORMAL` gate in `processLineReferenceTool`.
@@ -157,6 +169,10 @@ GeoCeDG-owned Desktop code (`source/desktop/desktop/src/main/java/org/geocedg/de
 - Any change to F2 currentness, admissibility, certificate, lifecycle,
   serialization or undo rules; Angle with Given Size; Graphics View 2; Classic;
   `ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY`.
+- Replacing the `GgbAPID` scripting instance (the former `GeoCeDGScriptingApi`
+  subclass), changing the JavaScript class shutter or the shared scripting
+  allow-list, and adding scripting commands or API methods for reference memory
+  (record v1.3 §7).
 - Claiming macOS or Linux modifier support without verification.
 - Editing the F2 decision record, the F2 reconciled design, the Stage 1/Stage 2
   artifacts other than by an authorized amendment; `AGENTS.md`, `CLAUDE.md`,
@@ -175,8 +191,12 @@ is persisted. Kernel, export adapters, Python: unchanged.
 
 Obligations: the test matrix of the
 [test matrix and author-smoke plan](../../../docs/validation/pre_g9b_r6_plus_f2_r1_test_matrix_and_smoke_plan.md)
-§1 (`T-R1-*`) and every `T-F2-*` obligation executed in `MEMORY_ENABLED`; author
-smoke §2 (not performed by the agent).
+§1 (`T-R1-*`) and every `T-F2-*` obligation executed in `MEMORY_ENABLED`; the
+revised `FR-2` sequences of record v1.3 §7 (scripted activation and same-mode
+reselection `NORMAL`, Ctrl and normal toolbar reactivation, memory untouched by
+`NORMAL`, JavaScript initialization and document loading with the original
+`GgbAPID`, unchanged `evalCommand` constructions); author smoke §2 (not
+performed by the agent).
 
 Commands (PowerShell; fresh log directories under `artifacts\agent\`):
 
@@ -198,7 +218,11 @@ No `INTEGRATION` or `FINAL`. The F2 `PHASE` receipt is not inherited.
 ## Authorization boundary
 
 The author instruction of record v1.2 §6 authorizes F2-R1 on the exact base
-above, conditional on `FR-1` to `FR-4`: local implementation on a local
+above, conditional on `FR-1` to `FR-4` (`FR-2` as revised by the author
+disposition of record v1.3 §7, continuing on a local successor of the blocked
+gate commit `7027cf9357571298fe335343d01bd258f3c190f9`; the unverified branch
+`wip/pre-g9b-r6-plus-f2-r1-fr2-blocked` is reusable only after review and is never
+a candidate): local implementation on a local
 branch, local commits, focused tests, the phase registration and catalog
 updates, development and acceptance `STATIC`, `INFRA_UNIT` and `PHASE`, and one
 frozen technical candidate for author review and smoke. It never authorizes
@@ -232,8 +256,12 @@ selfApproved = false, authorApproved = false, passClaimed = false
   GeoCeDG-owned code.
 - `FR-1` fails: the active tool and behaviour cannot be preserved across a
   language change without an inherited-class change or a GUI regression.
-- `FR-2` finds no safe GeoCeDG-owned scripting seam (report; scripting same-mode
-  activations then stay host synchronization pending author disposition).
+- The revised `FR-2` gate (Option O1, record v1.3 §7) fails: the single-argument
+  route cannot be distinguished safely from host synchronization at runtime, a
+  marked Ctrl activation is overridden, the original `GgbAPID` is not the
+  effective scripting API, or JavaScript initialization or document loading
+  regresses (report; no global Ctrl flag, stack-trace inference, API replacement
+  or sandbox change as a substitute).
 - `initNewMode` cancellation changes anything other than the partial gesture or
   stores an undo point.
 - The status texts require an action, catalog, schema or icon change.

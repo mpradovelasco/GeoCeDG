@@ -2,7 +2,7 @@
 
 ```text
 ARTIFACT_KIND             = AUTHOR-DECISION RECORD AND DESIGN RECONCILIATION
-RECORD VERSION            = 1.2
+RECORD VERSION            = 1.3
 VERSION HISTORY           = 1.0 Stage 2 reconciliation (DQ-F2R1-1 direction, DQ-F2R1-6
                                 scope; DQ-F2R1-2..5 proposals)
                             1.1 PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT: author dispositions
@@ -11,6 +11,9 @@ VERSION HISTORY           = 1.0 Stage 2 reconciliation (DQ-F2R1-1 direction, DQ-
                                 v1.0 state
                             1.2 PRE-G9B-R6-plus-F2-R1: implementation authorized on e13bfbd2,
                                 conditional on FR-1..FR-4 (§6); §1-§5 unchanged
+                            1.3 PRE-G9B-R6-plus-F2-R1-FR2-AUTHOR-DISPOSITION: interactive-only
+                                reference memory; Option O1 selected for FR-2 subject to a
+                                revised gate; conditional resumption (§7); §1-§6 unchanged
 STATE AT VERSION 1.1      = F2-R1 DESIGN = DESIGN — AUTHOR APPROVED
                             F2-R1 PROMPT = PREPARED — NOT AUTHORIZED
                             F2-R1 IMPLEMENTATION = NOT AUTHORIZED
@@ -375,4 +378,102 @@ VERIFICATION_CLASS    = BOUNDED_PHASE proposed — frozen only after FR-1..FR-4 
 F2-R1 PUBLICATION     = NOT AUTHORIZED
 F2 ORIGINAL CANDIDATE = FROZEN — HISTORICAL EVIDENCE
 selfApproved          = false
+```
+
+## 7. FR-2 author disposition (v1.3, `PRE-G9B-R6-plus-F2-R1-FR2-AUTHOR-DISPOSITION`)
+
+**AUTHOR DECISION (author instruction "PRE-G9B-R6-plus-F2-R1-FR2-AUTHOR-DISPOSITION —
+Author Decision: Interactive-Only Reference Memory and Resumption of F2-R1"; AUTHOR
+AUTHORIZED — FR-2 CONTRACT REFINEMENT AND CONDITIONAL RESUMPTION OF THE EXISTING
+F2-R1 IMPLEMENTATION):** after the implementation stopped at `FR-2`
+([feasibility gate report](pre_g9b_r6_plus_f2_r1_feasibility_gate_report.md),
+commit `7027cf9357571298fe335343d01bd258f3c190f9`, tree
+`d259cb5db3b98da26926faa6768c307f27817b97`), the author confirms that the
+remembered-reference behaviour of Parallel and Perpendicular is an
+**interactive authoring feature only**. No scripting interface for enabling or
+manipulating reference memory is required; scripting keeps every existing
+geometric command and mode-selection function. The author selects **Option
+O1**, subject to a revised `FR-2` gate; **O2 is not selected**; **O3 is rejected**
+as unnecessary and outside scope.
+
+**Refined `FR-2` contract.**
+
+- *Scripting.* `ggbApplet.setMode(PARALLEL)` or `ggbApplet.setMode(ORTHOGONAL)`
+  selects `NORMAL`, from another tool and for the tool already active. A
+  scripting request never enables `MEMORY_ENABLED`, never reuses, replaces or
+  erases a remembered reference, never changes the identity or lifecycle of
+  stored references and never changes geometric command behaviour; a script
+  cannot select `MEMORY_ENABLED` through `setMode`. The original `GgbAPID`
+  instance stays the scripting API exposed to JavaScript.
+- *Interactive.* A direct GeoCeDG toolbar activation with Ctrl (Windows) selects
+  `MEMORY_ENABLED`; a normal toolbar activation selects `NORMAL`; the modifier
+  comes from the actual activation event. A genuine marked interactive
+  activation is never overridden by the default of the single-argument
+  `setMode(int)` route; the mark is scoped, consumed reliably and never survives
+  into a later unrelated activation.
+- *Host synchronization.* Internal host mode synchronization never silently
+  changes the active behaviour; the two-argument `setMode(int, ModeSetter)`
+  semantics are preserved and genuine activation requests are explicitly
+  distinguished from non-user synchronization. If the single-argument route
+  cannot be distinguished safely under actual runtime conditions, the work
+  stops; no implicit global Ctrl flag and no stack-trace inference.
+- *Mechanism (O1).* The GeoCeDG-owned `AppGeoCeDG.setMode(int)` override
+  classifies an unmarked single-argument mode request as a genuine `NORMAL`
+  request and leaves an explicitly marked interactive Ctrl activation as
+  `MEMORY_ENABLED`. `GgbAPID` is not replaced; the JavaScript class shutter and
+  the shared scripting allow-list are not modified; the former
+  `GeoCeDGScriptingApi` subclass is not used.
+
+**Difference from v1.1 (§5, `DQ-F2R1-4`).** v1.1 treated an unmarked same-mode
+`setMode` as host synchronization and scripting as genuine only through a
+GeoCeDG-owned API seam. Under v1.3 the origin is distinguished by the inherited
+entry signature: an unmarked single-argument `setMode(int)` is a genuine request
+(`NORMAL` unless a GeoCeDG mark says otherwise); a direct two-argument
+`setMode(int, ModeSetter)` call is host synchronization (same mode unchanged;
+another mode is a departure).
+
+**Revised `FR-2` gate (before production implementation resumes).** Verify that
+`GgbAPI.setMode(int)` routes through `App.setMode(int)` and dispatches to
+`AppGeoCeDG.setMode(int)`; direct toolbar activation and the ordering of the
+GeoCeDG-owned event marker; same-mode activation in `NORMAL` and
+`MEMORY_ENABLED`; that internal UI synchronization does not falsely reset the
+behaviour; that the original `GgbAPID` stays the effective scripting API; that
+JavaScript initialization and document loading work normally; and that ordinary
+`evalCommand` constructions are unchanged. Required sequences: `NORMAL` → script
+Parallel → `NORMAL`; `MEMORY_ENABLED` Parallel → script reselects Parallel →
+`NORMAL`; `MEMORY_ENABLED` Parallel → script Perpendicular → `NORMAL`;
+`MEMORY_ENABLED` Parallel → Ctrl toolbar reactivation → `MEMORY_ENABLED`;
+`MEMORY_ENABLED` Parallel → normal toolbar reactivation → `NORMAL`; a `NORMAL`
+construction with a different reference leaves the stored memory unchanged;
+Ctrl activation after a scripted mode selection can reuse a previous valid
+memory; document loading with JavaScript enabled raises no class-shutter error.
+The gate is recorded separately; the earlier `FR-2` failure of the API-subclass
+seam stays historical evidence and is not re-marked.
+
+**Restart point.** Published `main` `6d9bafb04235a71c8dfadef9631cd6057964b1f9`;
+frozen F2 candidate `6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873`; design closeout
+`e13bfbd231700019a8f81c115b22a5bb8c44f7bb`; implementation authorization
+`de5c267767693d1051d7089cf4d19cc7d4bfe7a4`; blocked gate commit `7027cf93`. Work
+continues on a local successor of `7027cf93` (no historical commit amended). The
+unverified work in progress `wip/pre-g9b-r6-plus-f2-r1-fr2-blocked`
+(`654f7021a8fcf207ace595033ed71d618cb0ba34`) may be inspected and selectively
+reused after review; it is not a candidate. If the revised `FR-2` gate passes and
+`FR-1`, `FR-3`, `FR-4` remain valid: freeze `BOUNDED_PHASE` (phase
+`PRE-G9B-R6-PLUS-F2-R1`), complete the dual activation, adapt the F2 tests,
+add `NORMAL`, scripting, same-mode and JavaScript-load regressions, keep Angle
+with Given Size, complete the status indication (EN/ES) and reconcile the
+`PROPOSED` specification, guides, provenance and inventory; then `PHASE`,
+`STATIC` and `INFRA_UNIT` on the exact frozen candidate. No shared or inherited
+source change, no `INTEGRATION` or `FINAL`, no scripting command or API method
+for reference memory, no promotion of the F2 specification.
+
+```text
+FR-2 (API-subclass seam)  = FAIL — HISTORICAL EVIDENCE (feasibility gate report)
+FR-2 (revised O1)         = GATE PENDING (recorded separately)
+F2-R1 IMPLEMENTATION      = AUTHORIZED (conditional on the revised FR-2 gate; local candidate only)
+VERIFICATION_CLASS        = BOUNDED_PHASE — frozen only after the revised gate passes
+F2 ORIGINAL CANDIDATE     = FROZEN — HISTORICAL EVIDENCE
+AUTHOR_SMOKE              = PENDING
+PUBLICATION               = NOT AUTHORIZED
+selfApproved              = false
 ```
