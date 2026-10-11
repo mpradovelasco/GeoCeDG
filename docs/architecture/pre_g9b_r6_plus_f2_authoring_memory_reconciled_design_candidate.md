@@ -1,280 +1,308 @@
-# PRE-G9B-R6-plus-F2 — authoring-memory refinements: reconciled design candidate
+# PRE-G9B-R6-plus-F2 — authoring-memory refinements: reconciled design
 
-- Status: **PROPOSED — RECONCILED CANDIDATE — NOT AUTHOR APPROVED**
-- Produced by: `PRE-G9B-R6-plus-F2-PREP` (author instruction of 2026-10-11;
-  characterization and documentary preparation only)
+- Status: **DESIGN — AUTHOR APPROVED** (author decisions of 2026-10-11 on
+  `DQ-F2-1` to `DQ-F2-10`, recorded in the
+  [F2 author-decision record](../validation/pre_g9b_r6_plus_f2_author_decisions_record.md)
+  v1.0, which prevails over this design wherever they differ)
+- Produced by: `PRE-G9B-R6-plus-F2-PREP` (characterization and preparation),
+  reconciled by `PRE-G9B-R6-plus-F2-PREP-CLOSEOUT`
 - Base: published `main` `24985f14c565b9ba6282ec80fa0cb7be20a2e459`, tree
   `1c683ebb3e303b7692915feae3417cf51e4cce22`
-- Reconciles: the [`P0` F2 design candidate](pre_g9b_r6_plus_f2_authoring_memory_design_candidate.md)
-  (unchanged, historical evidence) with the
+- Evidence: the frozen
   [F2 preparation characterization report](../validation/pre_g9b_r6_plus_f2_preparation_characterization_report.md)
-  (`K0`–`K16`; corrections `ER-F2-1` to `ER-F2-9` in `K14`)
-- Questions: [author-decision preparation record](../validation/pre_g9b_r6_plus_f2_author_decision_preparation_record.md)
-  (`DQ-F2-1` to `DQ-F2-10`, all pending)
-- Claim vocabulary: **proposed / not normative**. Where a section depends on a
-  pending question, it states the **recommended** alternative and names the
-  question; the author's disposition replaces the recommendation.
-  `selfApproved = false`.
+  (`K0`–`K16`; corrections `ER-F2-1` to `ER-F2-9` in `K14`, `ER-F2-10` to
+  `ER-F2-12` in the decision record §5); the `P0`
+  [F2 design candidate](pre_g9b_r6_plus_f2_authoring_memory_design_candidate.md)
+  stays unchanged as historical evidence
+- Contract: [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-f2-authoring-memory.prompt.md)
+  (`PREPARED — NOT AUTHORIZED`)
+- The approval covers this design only. **F2 implementation is not
+  authorized**; publication is not authorized. `selfApproved = false`.
+  Statements tagged *implementation design* are resolutions inside the decided
+  scope, reviewable by the author; open items `OTQ-F2-1` to `OTQ-F2-3` are
+  listed in the decision record §4 (none blocking).
 
 Path abbreviations follow the report: **EC** = inherited
 `EuclidianController`; **GCEC** = `GeoCeDGEuclidianController`.
 
 ## 1. Scope
 
-| Target | Content | Questions |
+| Target | Content | Decisions |
 |---|---|---|
-| A | Parallel and Perpendicular keep independent session-only references: point first reuses a valid remembered reference; reference first, then a point uses the new reference and replaces the memory; nothing valid remembered: the tool requests the reference (today's flow) | `DQ-F2-1` to `DQ-F2-6` |
-| B | Angle with Given Size: the created angle is hidden by default, the rotated point stays visible, the user can show the angle later; the `Angle` command and scripting are unchanged | `DQ-F2-7`, `DQ-F2-8` |
-| ENH | `ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY` | `DQ-F2-9` — **not included** by this design unless the author decides so |
-| all | architecture, views and verification class | `DQ-F2-10` |
+| A | Parallel and Perpendicular keep independent session-only remembered references in GeoCeDG Graphics View 1 | `DQ-F2-1` to `DQ-F2-6` |
+| B | Angle with Given Size created through GeoCeDG Graphics View 1: the angle is hidden in the graphical views by ordinary visibility; the rotated point stays visible | `DQ-F2-7`, `DQ-F2-8` |
+| excluded | `ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY`: separate pending enhancement, not part of F2 (`DQ-F2-9`) | `DQ-F2-9` |
+| all | Desktop-only orchestration; GeoCeDG-owned controller companion; `BOUNDED_PHASE` | `DQ-F2-10` |
 
 ## 2. Invariants
 
 1. Geometry algorithms unchanged: the created objects are the ones the
    unchanged upstream `parallel`, `orthogonal` and `AlgoDispatcher.angle`
-   create today (`AlgoLinePointLine`, `AlgoLinePointVector`,
-   `AlgoOrthoLinePointLine`, `AlgoOrthoLinePointVector`, `AlgoRotatePoint`,
-   `AlgoAnglePoints`).
+   create (`AlgoLinePointLine`, `AlgoLinePointVector`, `AlgoOrthoLinePointLine`,
+   `AlgoOrthoLinePointVector`, `AlgoRotatePoint`, `AlgoAnglePoints`).
 2. Kernel command semantics unchanged: `Line(P, l)`, `PerpendicularLine`,
-   `Angle(B, A, α)`, scripts, API and Algebra input create exactly what they
+   `Angle(B, A, α)`, GGBScript, API and Algebra input create exactly what they
    create today, visible as today.
 3. The dependency graph changes only by the objects a completed tool gesture
-   creates, as with any tool.
-4. Object identity unchanged: no durable ID, no document metadata, no new
-   kernel identity, no label-based resolution.
-5. No new XML element or attribute; documents, macros and preferences XML are
-   unchanged except for ordinary objects and the ordinary `<show
-   object="false">` of a hidden tool angle.
-6. The parallel/perpendicular memory is `SESSION` state only: never serialized,
-   never in undo snapshots, never restored by undo, redo, Open or New.
-7. Remembering, replacing or clearing a reference never stores an undo point;
-   a completed creation stores exactly one, as today.
-8. The angle's visibility is the ordinary object property, editable and
-   persisted as for any object.
-9. Classic is unchanged (it never constructs the GeoCeDG controller).
-10. No inherited class is modified. A need to modify one is an **authorization
-    blocker**: the work stops and the author is asked.
+   creates.
+4. Object identity unchanged: no durable ID, document association, kernel
+   identity infrastructure or label-based resolution.
+5. No new XML element or attribute.
+6. The memory is `SESSION` state only: never serialized, never in undo
+   snapshots, cleared by undo/redo rebuilds, New, Open and document
+   replacement.
+7. Remembering, replacing, suspending or clearing a reference never stores an
+   undo point; a completed creation stores exactly one, as today.
+8. The angle's visibility is the ordinary object property, persisted as today.
+9. Graphics View 2's tool controller and Classic are not modified.
+10. No inherited class or `source/shared/**` file is modified; a need to modify
+    one stops the work for author review (`DQ-F2-10`).
 
 ## 3. Memory model (target A)
 
-### 3.1 Owner and slots
+### 3.1 Owner and slots (`DQ-F2-1`, `DQ-F2-2`)
 
-A GeoCeDG-owned Desktop helper (proposed name `GeoCeDGLineReferenceMemory`)
-with two independent slots, `PARALLEL` and `PERPENDICULAR` (`DQ-F2-2`). Each
-slot holds one Java reference to a `GeoElement` or nothing. Recommended owner:
-the GV1 GeoCeDG controller, created eagerly as a field and **not** reset in
-`setMode` (unlike `GeoCeDGSimilarityTools`, `DQ-F2-1`). One memory per window
-(each window has its own controller).
+A GeoCeDG-owned Desktop helper (proposed `GeoCeDGLineReferenceMemory`) owned
+by the GV1 GeoCeDG controller, one per window, with two independent slots,
+`PARALLEL` and `PERPENDICULAR`. Each slot holds one exact Java reference or
+nothing. The memory is **not** reset in the controller's `setMode`: it
+survives ordinary tool changes, including Escape (`setMoveMode`), within the
+same document session.
 
-### 3.2 Currentness predicate
+### 3.2 Admissibility (`DQ-F2-4`)
 
-A slot value `ref` is **usable** iff all of:
+A reference is admissible for a slot iff it is:
 
-1. **current** — `ref` is the very instance present in
-   `kernel.getConstruction().getGeoSetConstructionOrder()` (identity scan,
-   the `ExportAreaSession.isLive` and `GeoCeDGSimilarityTools` precedent);
-   optionally confirmed by `kernel.lookupLabel(ref.getLabelSimple()) == ref`,
-   which only tests the held instance and never resolves a different one
-   (`DQ-F2-5`);
-2. **admissible** for the slot's tool (`§5`);
-3. **defined** (`ref.isDefined()`) — recommended, `DQ-F2-5`;
-4. **visible in GV1** (`isEuclidianVisible`, `isVisibleInView(GV1)` and its
-   layer shown) — recommended, `DQ-F2-5`.
+- a 2D (non-3D) `GeoLine` — line, segment, ray or polygon edge;
+- a 2D `GeoVector`;
+- a `GeoFunction` whose kernel linear interpretation is defined:
+  `Lineable2D.getX()` of `GeoFunction` (`GeoFunction.java:2895-2913`) is finite
+  only for degree ≤ 1, and is the route `AlgoLinePointLine` consumes.
 
-Never used as currentness: `isInConstructionList()`,
-`Construction.isInConstructionList(geo)`, `isLabelSet()`,
-`getConstruction() == …`, a stored label, coordinates or position (report
-`K8` finding 1).
+Parallel 3D vectors and every 3D input keep their inherited tool behavior and
+are never remembered. Non-linear functions, conics, polygons and points are
+never remembered. Hit priority is the inherited one.
 
-A slot whose value fails test 1 is cleared when tested (stale forever). A slot
-failing only test 3 or 4 is kept but not reused while it fails (recommended,
-`DQ-F2-5`), so an undefined-then-recovered or hidden-then-shown reference is
-usable again.
+### 3.3 Currentness and usability (`DQ-F2-5`)
 
-### 3.3 State-transition matrix (per slot)
+For a slot value `ref`:
 
-States: `EMPTY`; `HELD(r)` with `r` usable; `HELD-SUSPENDED(r)` (current but
-undefined or not visible); `HELD-STALE(r)` (no longer current, detected lazily).
+- **current** iff `ref` is an exact-instance member of
+  `kernel.getConstruction().getGeoSetConstructionOrder()` (the
+  `ExportAreaSession.isLive` and `GeoCeDGSimilarityTools` precedent). A label
+  lookup may corroborate (`lookupLabel(ref.getLabelSimple()) == ref`) but never
+  resolves another object; `isInConstructionList`,
+  `Construction.isInConstructionList`, `isLabelSet` and `getConstruction()` are
+  never currentness tests (report `K8` finding 1);
+- **usable** iff current, admissible **now**, defined, and visible in GV1
+  (implementation design: Euclidian-visible, visible in GV1, layer shown; exact
+  predicate `OTQ-F2-3`).
 
-| Event | From | To | Notes (evidence) |
+A non-current slot is cleared. A current slot that is not usable is
+**suspended**: kept, not reused, and usable again when it becomes defined,
+admissible and visible.
+
+### 3.4 State machine (per slot)
+
+States: `EMPTY`, `HELD(r)` (usable), `SUSPENDED(r)` (current, not usable).
+`HELD`/`SUSPENDED` is evaluated at every use; a non-current value goes to
+`EMPTY` whenever detected.
+
+| Event | From | To | Notes |
 |---|---|---|---|
-| creation by this tool completes, reference `r'` read back from `input[1]` | any | `HELD(r')` | replace on success (`DQ-F2-2`); reference-first or memory reuse |
-| point-first click, slot usable | `HELD(r)` | `HELD(r)` | memory reused (`§4`) |
-| point-first click, slot stale | `HELD-STALE` | `EMPTY` | upstream flow: the point is selected and the tool waits for a reference (report `K4` T03) |
-| point-first click, slot suspended | `HELD-SUSPENDED` | unchanged | upstream flow; memory kept for later |
-| reference-first click (selection only) | any | unchanged | the new reference replaces the slot only when the creation completes |
-| Escape, right click, tool re-selection, switch to another tool and back | any | unchanged | recommended `DQ-F2-1`; the pending upstream selection is discarded as today (T08) |
-| the other tool creates | any | unchanged | slots are independent |
+| successful committed construction by this tool, certificate of §4.3 met, `input[1] = r'` admissible | any | `HELD(r')` | the **only** write of a slot |
+| point-first click (existing point or empty space), slot usable | `HELD(r)` | `HELD(r)` | memory injected at release; creation as upstream |
+| point-first click, slot `EMPTY` or `SUSPENDED` | unchanged | unchanged | inherited flow: the point is selected and the tool waits for an explicit reference (report `K4` T03, T06) |
+| reference-first click (selection only) | any | unchanged | replaced only when a construction then succeeds |
+| unsuccessful construction (no certificate) | any | unchanged | e.g. non-linear function (T13) |
+| preview (mouse move) | any | unchanged | preview never reads or writes memory |
+| Escape, right click, tool change, switch to the other tool and back | any | unchanged | pending upstream selection discarded as today (T08) |
+| the other tool constructs | any | unchanged | independent slots |
 | recompute, drag of inputs | `HELD(r)` | `HELD(r)` | same instance (L01) |
-| becomes undefined / recovers | `HELD` ↔ `HELD-SUSPENDED` | | same instance (L02, L03) |
-| hidden / shown, its layer hidden / shown | `HELD` ↔ `HELD-SUSPENDED` | | if `DQ-F2-5` adopts test 4 |
+| becomes undefined / recovers | `HELD` ↔ `SUSPENDED` | | same instance (L02, L03) |
+| hidden or layer hidden / shown again | `HELD` ↔ `SUSPENDED` | | |
+| function becomes non-linear / linear again | `HELD` ↔ `SUSPENDED` | | e.g. a slider coefficient |
 | rename | `HELD(r)` | `HELD(r)` | same instance (L04) |
-| undo, redo (any step) | `HELD(r)` | `HELD-STALE` → `EMPTY` at next use or eagerly | new objects (L05, L06); report `K8` finding 5 |
-| redefine (compatible or incompatible) of `r` | `HELD(r)` | `HELD-STALE` | new object (L07, L08); a soft or identical redefinition keeps `HELD` |
-| redefine with children anywhere | `HELD(r)` | `HELD-STALE` | full rebuild (S) |
-| delete `r` (and delete-and-recreate the label) | `HELD(r)` | `HELD-STALE` | L09, L10 |
-| File → New, Open, document replacement, clearing `setXML` | any | `EMPTY` | eagerly through the existing `AppGeoCeDG` document-boundary overrides (recommended) or lazily (L11, L12) |
-| macro-produced reference | | as any reference | `AlgoMacro` output, stable identity (L13, L14) |
-| window closed | | discarded with the controller | |
+| delete of `r` (`REMOVE`), or delete and recreate of the label | any | `EMPTY` | L09, L10 |
+| redefine of `r` replacing the object (`REDEFINE` with a new object) | any | `EMPTY` | L07, L08; a soft or identical redefinition that keeps the instance keeps the state |
+| undo, redo, any rebuild of the construction (incl. redefinition with children) | any | `EMPTY` (both slots) | eager (`OTQ-F2-1`); L05, L06 |
+| File → New, Open, full document replacement, clearing `setXML` | any | `EMPTY` (both slots) | eager; L11, L12 |
+| macro-produced admissible reference | | as any reference | `AlgoMacro` output, stable identity (L13, L14) |
+| window closed | | discarded | |
 
-Eager clearing is an optimisation for document boundaries; the lazy predicate
-of §3.2 is the authority (report `K9`).
+Eager clearing (rebuilds, document boundaries, `REMOVE`/`REDEFINE`) and the lazy
+check at use are both required; the lazy check alone guarantees that no stale
+instance is ever reused, whatever path made it stale (report `K9`).
 
 ## 4. Gestures (target A)
 
-**Interception I1 — release-time seeding** (report `K6`). In the GCEC
-`switchModeForProcessMode` override, for `MODE_PARALLEL` and
-`MODE_ORTHOGONAL` only, before the existing `super` call (GCEC:688):
+### 4.1 Release-time injection (`DQ-F2-3`)
 
-1. if `selectionPreview` is true: do nothing (upstream preview);
-2. if the tool's selection lists (points, lines, vectors, functions) are not
-   all empty: do nothing (a gesture is already in progress, upstream rules);
-3. if the hits contain a point (an existing point, or the free point the press
-   created on empty space, `DQ-F2-3`) and the slot is usable: add the
+In the GCEC `switchModeForProcessMode` override, for `MODE_PARALLEL` and
+`MODE_ORTHOGONAL` only, immediately before the existing `super` call (GCEC:688):
+
+1. `selectionPreview` true → no injection, no read-back (preview);
+2. any of the tool's selection lists (points, lines, vectors, functions) not
+   empty → no injection (a gesture is in progress; inherited rules);
+3. hits contain a point — an existing point or the free point created by the
+   press on empty space — **and** the tool's slot is usable → add the
    remembered reference to the matching selection list (line, vector or
-   function), then call `super`. The unchanged `parallel`/`orthogonal`
-   selects the point and creates the line in the same call;
-4. otherwise call `super` unchanged (reference-first click, a point with no
-   usable memory, empty memory).
+   function), then call `super`; the unchanged `parallel`/`orthogonal`
+   selects the point and constructs in the same call;
+4. otherwise → `super` unchanged.
 
-After `super` returns with `!selectionPreview` and a created line, read the
-used reference from `getJustCreatedGeos()` → `getParentAlgorithm().getInput()[1]`
-and store it in the slot if it is admissible (`§5`). Nothing else writes a
-slot.
+Nothing is injected at press, at mode entry or across events. The selection
+list holds the injected reference only inside this one call.
 
-Consequences (I, to be proven by the tests of `§10`):
+### 4.2 Inherited gestures kept exactly
 
-- The press sees an empty selection, so issue #2610 behaves exactly as today
-  (T04, T15) and needs no suppression (corrects `ER-F2-4`).
-- Nothing is seeded across events, so the preview-creation hazard (report
-  `K3`) cannot trigger.
-- A point on a line (hits: point and line) is a point-first click: the point
-  wins, as upstream.
-- A click on a reference while a memory exists is a reference-first click: it
-  selects the reference and waits for the point; the new reference replaces the
-  memory when the line is created (T02, T16 pattern).
-- No `DrawLine` preview of the remembered reference before the click and no
-  visual indication of the memory (`DQ-F2-6`).
+- **Point-on-path (issue #2610).** At press, with one line already selected
+  by the user in this gesture and a path hit, the host creates a point on that
+  path and the release constructs through it with the selected reference (T04).
+  Because the selection is empty at press for a memory click, the gesture is
+  never triggered by the memory and is unchanged when the user selects a line
+  explicitly.
+- **Same line clicked again** after the double-click interval: point on that
+  line and the construction through it (T15), unchanged.
+- **Double click** (two quick clicks on the same object): the inherited
+  Redefine dialog opens (T15q), unchanged; no memory event.
+- **Point on a line** (point and line both hit): the point wins, as upstream.
+- **Two points** (T14): the second is ignored, unchanged.
 
-## 5. Admissible references (no broadening)
+### 4.3 Commit moment and success certificate (`DQ-F2-2`, `DQ-F2-4`, `DQ-F2-6`)
 
-Recommended (`DQ-F2-4`): the slot stores only what the tool already accepts
-**and** what produced a labelled 2D output:
+The slot is written only after `super.switchModeForProcessMode` returns, with
+`!selectionPreview`, when all of:
 
-| Reference | Parallel slot | Perpendicular slot |
-|---|---|---|
-| 2D line, segment, ray, polygon edge | yes | yes |
-| 2D vector | yes | yes |
-| linear function | yes | yes |
-| non-linear function | not stored (no labelled output, T13) | idem |
-| 3D vector or 3D line | not stored (GV1 2D authoring) | not stored |
-| conic, polygon, point | never (not accepted today) | idem |
+- the inherited process step returned a created line (read back through
+  `getJustCreatedGeos()` or a wrapped release callback, `OTQ-F2-2`);
+- the line is an exact-instance member of the current construction order and
+  is defined;
+- its parent algorithm is exactly `AlgoLinePointLine` or
+  `AlgoLinePointVector` (Parallel), `AlgoOrthoLinePointLine` or
+  `AlgoOrthoLinePointVector` (Perpendicular);
+- its `input[1]` is admissible (§3.2); that object — never an inferred one —
+  becomes the slot value.
 
-Hit priority is unchanged: upstream `parallel`/`orthogonal` decide.
+A label is never the certificate. Cancellation, a failed or partial gesture,
+and preview never write.
 
-## 6. Cancellation, preview, success and undo
+### 4.4 Missing reference (`DQ-F2-3`)
 
-- Escape and tool changes discard the pending upstream selection exactly as
-  today; the slots survive (recommended, `DQ-F2-1`).
-- A gesture that fails to create (e.g. a non-linear function) leaves the slot
-  unchanged.
+With the slot `EMPTY` or `SUSPENDED`, the inherited flow runs: the point is
+selected (or created on empty space) and the tool waits for an explicit
+reference. No reference is invented; no geometry beyond the inherited flow is
+created.
+
+## 5. Cancellation, preview and undo (`DQ-F2-6`)
+
+- No preview of the remembered reference and no memory indicator in v1.
 - One completed creation = one undo point (the inherited release callback);
   an empty-space click that creates a point and, through the memory, the line
-  stores one undo point for both (as upstream T06).
-- Undo/redo make every held reference stale (report `K8`); after an undo the
-  next point-first click asks for a reference. This is the only behavior
-  compatible with invariant 4.
+  stores one undo point for both, as the inherited empty-space flow (T06).
+- Memory operations store no undo point; undo and redo clear the memory
+  (§3.4).
 
-## 7. Angle with Given Size hidden by default (target B)
+## 6. Angle with Given Size hidden by default (target B)
 
-**Seam C — companion override** (report `K10`): GCEC overrides
-`newCompanion()` to return a GeoCeDG-owned subclass of
-`EuclidianControllerFor3DCompanion` whose public
-`createAngle(GeoPointND, GeoPointND, GeoNumberValue, boolean)` calls `super`,
-then sets the returned `GeoAngle` hidden in the Euclidian views
-(`setEuclidianVisible(false)` and a repaint) and returns it. The rotated point
-is untouched (visible). The companion reads no controller field (it is
-constructed inside the superclass constructor).
+### 6.1 Hook (`DQ-F2-7`)
 
-- Runs before `doAngleFixed` stores the undo point, so the stored state, undo
-  and redo hold the hidden angle.
-- Reached only by `DialogManager.doAngleFixed` (both the two-point and the
-  segment route); never by `Angle(…)`, `CmdAngle3D`, scripts, API, Algebra
-  input, macros or XML reload.
-- The angle remains a valid dependent object, labelled, algebra-visible
-  (recommended, `DQ-F2-8`), selectable in the Algebra View, and shown again by
-  the ordinary visibility controls.
-- Persisted as ordinary `<show object="false">`; no new serialization
-  semantics; older readers and Classic show it hidden.
+GCEC overrides `newCompanion()` to return a GeoCeDG-owned subclass of
+`EuclidianControllerFor3DCompanion` overriding only the public
+`createAngle(GeoPointND, GeoPointND, GeoNumberValue, boolean)`: it calls
+`super`, and — when its controller is in `MODE_ANGLE_FIXED` (implementation
+design, defense in depth) — sets the returned `GeoAngle` hidden with the
+ordinary `setEuclidianVisible(false)` and repaints, then returns it. It reads
+no controller field (it is constructed inside the superclass constructor).
 
-Rejected: the `DialogManagerD` seam (undo ordering and inherited-code
-duplication) and hiding after `doAngleFixed` (`ER-F2-6`).
+- Call sites (report `K10`): only `DialogManager.doAngleFixed`
+  (`DialogManager.java:163,166`), two-point and segment routes; the
+  implementation entry gate re-establishes this census.
+- Ordering: `doAngleFixed` stores the undo state after `createAngle` returns
+  (`:170`), so the stored state, undo and redo hold the hidden angle.
+- Never reached by `Angle(...)`, `CmdAngle3D`, GGBScript, API, Algebra input,
+  macros or XML reload. `AlgoDispatcher.angle` and the kernel are untouched.
 
-## 8. Views
+### 6.2 Visibility and persistence (`DQ-F2-8`)
 
-Recommended (`DQ-F2-10`): **GV1 only** for A and B, as F1. GV2 keeps upstream
-behavior (no memory; visible angle), recorded as a known limitation in the
-specification and the guides. Alternative: a GeoCeDG-owned GV2 controller
-subclass installed by a `GuiManagerGeoCeDG.newEuclidianView` override, carrying
-the same memory (shared or per view) and companion; it changes GV2's controller
-class and needs GV2 regression tests.
+- The angle stays a labelled, defined, dependent object, algebra-visible and
+  accessible in the Algebra View; the rotated point is untouched (visible).
+- The hidden state is the ordinary Euclidian visibility property, persisted as
+  `<show object="false">`; save, reload, undo and redo apply unchanged; the
+  user shows the angle with the ordinary controls.
+- **Controller scope versus object property.** The interception happens only
+  in the GeoCeDG Graphics View 1 controller. The property it sets is one object
+  property, not a per-view session overlay: an angle created through GV1 is
+  hidden in every graphics view. An angle created with the tool in Graphics
+  View 2 (upstream controller) stays visible.
 
-## 9. Working-layer direct entry
+## 7. Graphics View 1 limits (`DQ-F2-10`)
 
-Not part of this design. If the author includes it (`DQ-F2-9`), it is a
-separate work item **F2-WL** of the same phase: a chooser dialog with the
-existing list plus a numeric field validated against
-`app.getLayerWorkspace().getMaxLayer()`, rejecting (never clamping) values
-outside `0..maxLayer`, both routes ending in `AppGeoCeDG.chooseWorkingLayer` →
-`setWorkingLayer`; A-2 contracts, the layer domain and the status bar
-unchanged; the two pinned A-2 tests rewritten and EN/ES texts added.
+Both targets are implemented in the GeoCeDG GV1 controller only. Graphics
+View 2 runs the upstream `EuclidianControllerFor3DD` (report `K11`) and keeps
+inherited behavior: no memory, visible angle. No GeoCeDG GV2 controller and no
+`GuiManagerGeoCeDG.newEuclidianView` override are part of F2. The limitation is
+documented in the specification and the user guides. Classic never constructs
+the GeoCeDG controller and is unchanged.
 
-## 10. Test matrix (proposed)
+## 8. Working-layer direct entry (excluded)
 
-Desktop tests on the real GV1 controller with synthetic press/release events
-(report `K2`), each also asserting the created algorithm class and inputs:
+`ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY` is not part of F2 (`DQ-F2-9`). Its
+tracking and state (`ENHANCEMENT — NOT A-2 BLOCKING — IMPLEMENTATION NOT
+AUTHORIZED`) are unchanged; the chooser, its texts and the A-2 tests are out of
+F2's scope.
+
+## 9. Test matrix
+
+Desktop tests on the real GV1 controller with press/release events (report
+`K2`), asserting the created algorithm class and inputs:
 
 | Id | Obligation |
 |---|---|
-| `T-F2-PAR-POINT-FIRST` | with a remembered line, segment, polygon edge, vector and linear function: point click creates the parallel with that reference |
-| `T-F2-PERP-POINT-FIRST` | idem for Perpendicular |
-| `T-F2-REF-FIRST-REPLACES` | reference then point creates with the new reference and replaces the slot; the replaced slot is used by the next point-first click |
-| `T-F2-NO-MEMORY` | empty or stale slot: the point is selected and the tool waits (today's T03) |
-| `T-F2-SLOTS-INDEPENDENT` | the Parallel slot never feeds Perpendicular and vice versa; both survive switching between the tools |
-| `T-F2-EMPTY-SPACE` | per `DQ-F2-3` |
-| `T-F2-2610-UNCHANGED` | T04 and T15 reproduce exactly, with and without a memory |
-| `T-F2-TYPES` | non-linear function, 3D objects and failed creations are never stored |
-| `T-F2-LIFECYCLE` | every row of design §3.3 (recompute, undefined/recovered, hidden/shown, rename, undo, redo, compatible and incompatible redefinition, redefinition with children, delete, delete-and-recreate, New, Open, document replacement, macro reference) |
-| `T-F2-CANCEL` | Escape, right click and tool switches keep the slot and discard the pending selection |
-| `T-F2-PREVIEW-NO-CREATION` | mouse moves with and without memory never create an object |
-| `T-F2-UNDO` | one undo point per creation; memory changes store none; after undo the slot is stale |
+| `T-F2-PAR-POINT-FIRST` | remembered line, segment, ray, polygon edge, 2D vector and linear function: an existing-point click constructs the parallel with that exact reference |
+| `T-F2-PERP-POINT-FIRST` | idem for Perpendicular (2D vectors only) |
+| `T-F2-REF-FIRST-REPLACES` | reference then point constructs with the new reference and replaces the slot; the next point-first click uses it |
+| `T-F2-NO-MEMORY` | empty or suspended slot: the point is selected and the tool waits; nothing else is created |
+| `T-F2-SLOTS-INDEPENDENT` | the Parallel slot never feeds Perpendicular and vice versa; both survive switching between the tools and to other tools |
+| `T-F2-EMPTY-SPACE` | with a usable memory an empty-space click creates the point and the line, one undo point; without memory it creates only the point, as today |
+| `T-F2-2610-UNCHANGED` | T04, T15 and T15q reproduce exactly, with and without a memory |
+| `T-F2-TYPES` | non-linear functions, 3D objects, failed and partial constructions never write a slot; a function made non-linear suspends its slot |
+| `T-F2-CERTIFICATE` | the slot is written only from the certificate of §4.3, never from a label |
+| `T-F2-LIFECYCLE` | every row of §3.4 |
+| `T-F2-CANCEL` | Escape, right click and tool changes keep the slot and discard the pending selection; a reference-first gesture abandoned keeps the previous slot |
+| `T-F2-PREVIEW-NO-CREATION` | mouse moves with and without memory never create an object and never write memory |
+| `T-F2-UNDO` | one undo point per creation; memory operations store none; undo and redo clear both slots |
 | `T-F2-NO-SERIALIZATION` | document, macro and preferences XML contain no memory trace |
 | `T-F2-COMMANDS-UNCHANGED` | `Line(P, l)`, `PerpendicularLine(P, l)` and the vector forms unchanged |
-| `T-F2-ANGLE-HIDDEN` | two-point and segment routes, clockwise and counter-clockwise: angle hidden, rotated point visible, both labelled and defined |
+| `T-F2-ANGLE-HIDDEN` | two-point and segment routes, clockwise and counter-clockwise: angle hidden, rotated point visible, both labelled and defined, angle algebra-visible |
+| `T-F2-ANGLE-ROUTE-ONLY` | the companion hides only on the tool route; the call-site census is asserted |
 | `T-F2-ANGLE-UNDO-REDO` | undo removes both; redo restores the hidden angle |
-| `T-F2-ANGLE-PERSISTENCE` | save and reopen keep the angle hidden; XML shows ordinary `<show object="false">` |
+| `T-F2-ANGLE-PERSISTENCE` | save and reopen keep the angle hidden; ordinary `<show object="false">` |
 | `T-F2-ANGLE-USER-SHOW` | the user can show the angle; it then saves visible |
-| `T-F2-ANGLE-COMMAND-UNCHANGED` | `Angle(B, A, α)`, scripts and Algebra input create a visible angle |
-| `T-F2-VIEWS` | per `DQ-F2-10` (GV2 unchanged, or GV2 covered) |
+| `T-F2-ANGLE-COMMAND-UNCHANGED` | `Angle(B, A, α)`, GGBScript and Algebra input create a visible angle |
+| `T-F2-VIEWS` | GV2 keeps the upstream controller and companion; a GV1-created hidden angle is hidden in GV2 too |
 | `T-F2-CLASSIC-UNCHANGED` | Classic constructs no GeoCeDG controller or companion |
 | `T-SMOKE` | author smoke (not performed by the agent) |
 
-## 11. Verification class (proposed)
+## 10. Verification class
 
-`BOUNDED_PHASE` with one registered `PHASE` `PRE-G9B-R6-PLUS-F2` covering
-`compile.desktop.semantic` and a focused `junit.desktop.pre-g9b-r6-plus-f2.semantic`
-selection (`DQ-F2-10`). It escalates — and the work stops for the author — on
-any change in `source/shared/**`, in an inherited class, in a command or
-algorithm, in XML, or (if the author chooses GV2 coverage) on GV2 regressions
-beyond the bounded surface. The working-layer item, if included, adds
-`workspace-profile.product` and the two A-2 test classes.
+`BOUNDED_PHASE`, author-accepted, conditioned on the implementation entry gate:
+one registered `PHASE` `PRE-G9B-R6-PLUS-F2` covering `compile.desktop.semantic`
+and a focused `junit.desktop.pre-g9b-r6-plus-f2.semantic` selection. No
+`INTEGRATION` or `FINAL`. Any change in `source/shared/**`, in an inherited
+class, in a command or algorithm or in XML stops the work for author review
+and classification.
 
-## 12. Stop conditions for the implementation
+## 11. Stop conditions for the implementation
 
-- Any target requires a change to an inherited class (`EuclidianController`,
-  `DialogManager`, `GuiManager3D`, companions) or to `source/shared/**`.
-- The reference actually used cannot be read back from the created algorithm.
-- Release-time seeding changes #2610, preview or hit-priority behavior.
-- The companion seam is not reached by the tool, or is reached by a command,
-  script or reload.
-- Memory would need a durable identity, label resolution or serialization.
+- Any target requires a change to an inherited class or to `source/shared/**`,
+  or an override of `parallel(Hits, boolean)`.
+- The reference actually used cannot be read back with the certificate of
+  §4.3.
+- Release-time injection changes the point-on-path, double-click, preview or
+  hit-priority behavior.
+- The companion is not reached by the tool, or is reached by a command,
+  script, API call, macro or reload.
+- The memory would need a durable identity, label resolution, document
+  association or serialization.
+- The eager-clearing hook (`OTQ-F2-1`) needs an inherited change.

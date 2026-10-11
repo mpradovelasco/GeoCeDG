@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "recordVersion": "1.0",
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F2",
+  "task": "PRE-G9B-R6-plus-F2-PREP-CLOSEOUT",
+  "artifactKind": "AUTHOR_DECISION_RECORD_AND_DOCUMENTARY_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_r6_plus_f2_author_decisions_record.md",
+  "reconciledDesign": "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f2-authoring-memory.prompt.md",
+  "frozenPreparationEvidence": [
+    "docs/validation/pre_g9b_r6_plus_f2_preparation_characterization_report.md",
+    "docs/validation/pre_g9b_r6_plus_f2_author_decision_preparation_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-preparation-characterization.json"
+  ],
+  "historicalEvidence": "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_design_candidate.md (P0; unchanged)",
+  "authorInstruction": {
+    "date": "2026-10-11",
+    "title": "PRE-G9B-R6-plus-F2-PREP-CLOSEOUT — Author Decisions and Design Reconciliation",
+    "authorizes": "recording DQ-F2-1 to DQ-F2-10; reconciling the design and the canonical prompt; the documentary closeout and its mirror; roadmap and mini-track updates; documentary validation; one local documentary commit and its STATIC",
+    "doesNotAuthorize": ["F2 implementation", "production code, tests, application profile, verification registry or inherited source changes", "publication, merge, tag, release, package creation", "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY", "F3", "F4", "G"]
+  },
+  "publishedBase": {"name": "P_F1", "commit": "24985f14c565b9ba6282ec80fa0cb7be20a2e459", "tree": "1c683ebb3e303b7692915feae3417cf51e4cce22"},
+  "preparationCandidate": {
+    "name": "T_R6PLUS_F2_PREP",
+    "commit": "09bb63022c649cb6882440120aa121e8ecbb799f",
+    "tree": "31d436733a71f626b412092515d23bcd87b30b0d",
+    "parent": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+    "files": 7,
+    "static": "verification-d61c1adb78414a2ab4608ddabfd078a7 ACCEPTED / COMPLETE 3/3",
+    "p0CandidateUnchanged": true,
+    "amended": false
+  },
+  "closeoutCandidate": "the direct child of 09bb6302 containing this file; identity and STATIC reported outside the record",
+  "designState": "DESIGN — AUTHOR APPROVED",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "specificationOrAdrPromoted": false,
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "selfApproved": false,
+  "passClaimed": false,
+  "classificationVocabulary": ["AUTHOR DECISION", "NORMATIVE INHERITANCE", "CHARACTERIZATION EVIDENCE", "IMPLEMENTATION DESIGN", "OPEN TECHNICAL ITEM"],
+  "decisions": {
+    "DQ-F2-1": {"previous": "P1 survive tool changes", "decision": "memories survive ordinary tool changes within the same application document session; not serialized", "differsFromRecommendation": false},
+    "DQ-F2-2": {"previous": "S1 two slots, replaced on success", "decision": "two independent slots (parallel, perpendicular); a newly selected admissible reference replaces the slot only after a successful construction; cancellation or failure never replaces a valid slot", "differsFromRecommendation": false},
+    "DQ-F2-3": {"previous": "G1 point-first includes empty space; #2610 unchanged", "decision": "with a valid memory an existing point or empty space may start a construction; without memory an explicit reference is required; no invented reference or unintended geometry; point-on-path preserved; no press-time pre-seeding where it conflicts; release-time injection if the tool flows prove it correct", "differsFromRecommendation": false},
+    "DQ-F2-4": {"previous": "R1 accepted references with a labelled 2D output", "decision": "2D lines, segments, rays, polygon edges, appropriate 2D vectors and linear functions; the reference actually used by the successful kernel algorithm; a label is never the sole certificate; unsupported and 3D inputs keep inherited behavior and are not remembered", "differsFromRecommendation": true, "difference": "labelled-output criterion replaced by the success certificate (algorithm class, exact-instance membership, defined output, input[1])"},
+    "DQ-F2-5": {"previous": "MB identity; suspend; lazy plus document-boundary clearing; undo forgets", "decision": "exact object reference only; exact-instance membership; label lookup only corroborates; clear on removal, replacement, staleness, New, Open, full document replacement and undo/redo rebuilds; keep across rename and same-instance recompute; temporary invalidity or invisibility suspends reuse; no durable IDs, identity infrastructure or document associations", "differsFromRecommendation": true, "difference": "undo/redo rebuilds clear eagerly instead of lazily; observable behavior identical"},
+    "DQ-F2-6": {"previous": "C1 release-time seeding, no preview, no indicator", "decision": "no preview or memory indicator in v1; preview never updates memory; memory updates only on a committed construction; no undo point for memory", "differsFromRecommendation": false},
+    "DQ-F2-7": {"previous": "H1 companion createAngle override", "decision": "GeoCeDG controller-companion override of createAngle(GeoPointND, GeoPointND, GeoNumberValue, boolean); call sites verified; tool route only; hidden before the inherited undo store; AlgoDispatcher.angle, Angle(...), GGBScript and shared algorithms unchanged", "differsFromRecommendation": false},
+    "DQ-F2-8": {"previous": "V1 hidden in graphics views only", "decision": "angle hidden in the graphical views by ordinary visibility; valid dependent object accessible in the Algebra View; rotated point visible; user may show it; save, reload, undo, redo unchanged; interception only in GeoCeDG GV1; visibility is not a per-view overlay; GV2 controller and Classic unchanged", "differsFromRecommendation": false},
+    "DQ-F2-9": {"previous": "K keep independent", "decision": "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY remains a separate pending enhancement, not implemented in F2; tracking and status preserved", "differsFromRecommendation": false},
+    "DQ-F2-10": {"previous": "A1 GV1 only, BOUNDED_PHASE", "decision": "Desktop-only orchestration and a GeoCeDG-owned controller companion; BOUNDED_PHASE with one registered PHASE subject to the entry gate; no shared kernel, command, XML schema, global identity or inherited-class change; missing seams stop for author review", "differsFromRecommendation": false}
+  },
+  "implementationDesign": {
+    "injection": "release-time, in the GCEC switchModeForProcessMode override before super (GCEC:688), non-preview, empty selection lists, hits containing a point or the press-created free point, usable slot",
+    "successCertificate": ["non-preview call", "created line returned", "exact-instance member of the construction order", "defined", "parent algorithm exactly AlgoLinePointLine or AlgoLinePointVector (parallel), AlgoOrthoLinePointLine or AlgoOrthoLinePointVector (perpendicular)", "input[1] admissible and recorded"],
+    "functionLinearity": "GeoFunction Lineable2D getX() finite only for degree <= 1 (GeoFunction.java:2895-2913)",
+    "angleGuard": "hide only when the controller is in MODE_ANGLE_FIXED",
+    "stateMachine": "design §3.4"
+  },
+  "openTechnicalItems": [
+    {"id": "OTQ-F2-1", "item": "eager-clearing hook for undo/redo and rebuilds (client EventListener reset() or AppGeoCeDG overrides plus an undo listener)", "blocking": false},
+    {"id": "OTQ-F2-2", "item": "read-back route (getJustCreatedGeos after super, or a wrapped release callback)", "blocking": false},
+    {"id": "OTQ-F2-3", "item": "exact visible-in-GV1 suspension predicate", "blocking": false}
+  ],
+  "compatibilityWithCharacterization": "all ten decisions compatible with the characterized code paths; no technical blocker",
+  "corrections": [
+    {"id": "ER-F2-10", "location": "decision preparation record DQ-F2-4 R1; preparation design §5", "correction": "labelled-output criterion replaced by the success certificate"},
+    {"id": "ER-F2-11", "location": "preparation design §3.3, §6", "correction": "undo/redo clear the memory eagerly"},
+    {"id": "ER-F2-12", "location": "report K5", "correction": "supplement: function linearity through GeoFunction.getX()"}
+  ],
+  "workingLayerEnhancement": {"id": "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY", "state": "ENHANCEMENT — NOT A-2 BLOCKING — IMPLEMENTATION NOT AUTHORIZED", "inF2": false},
+  "plannedImplementationClass": {"class": "BOUNDED_PHASE", "authorAccepted": true, "conditionedOn": "implementation entry gate", "registeredPhase": "PRE-G9B-R6-PLUS-F2", "nodes": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f2.semantic"]},
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC", "productChange": "NONE"},
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f2_author_decisions_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-author-decisions.json",
+    "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f2-authoring-memory.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
