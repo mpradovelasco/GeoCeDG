@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F2-R1 — dual-mode Parallel/Perpendicular activation (corrective)
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — DESIGN AUTHOR APPROVED — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — AUTHORIZED FOR CONDITIONAL IMPLEMENTATION (author authorization "PRE-G9B-R6-plus-F2-R1 Implementation Authorization") — IMPLEMENTATION PUBLICATION NOT AUTHORIZED.**
 
 This prompt was prepared by `PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION`
 (Stage 2) at the author's instruction, after the Stage 1 characterization
@@ -13,13 +13,11 @@ successor of the frozen F2 technical candidate. The governing design is the
 [F2-R1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md)
 v1.1 §5; tests and smoke in the
 [test matrix and author-smoke plan](../../../docs/validation/pre_g9b_r6_plus_f2_r1_test_matrix_and_smoke_plan.md).
-The design approval is not implementation authorization; the existence of this
-file is not authorization.
-
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-F2-R1` and the exact base. That instruction may
-authorize, as the first tracked edit, an amendment of this prompt to the
-authorized state (F1/F2 precedent). This file is not a second policy document:
+The author instruction "PRE-G9B-R6-plus-F2-R1 Implementation Authorization"
+(record v1.2 §6) authorizes the conditional bounded corrective implementation on
+the exact base below, up to one frozen local technical candidate; this amendment
+is its first tracked change. The feasibility gate `FR-1` to `FR-4` must pass
+before production behaviour changes; a failed gate stops the work. This file is not a second policy document:
 state classes are in `geocedg/specs/units/unit-system.md` §17.2; verification
 classes in `geocedg/specs/operations/verification-levels.md` §12.8; F2 memory
 semantics in the [F2 specification](../../../geocedg/specs/ui/authoring-memory.md)
@@ -28,25 +26,29 @@ section numbers are cited below.
 
 ```text
 PRE-G9B-R6-plus-F2-R1 =
-PREPARED — NOT AUTHORIZED
+DESIGN — AUTHOR APPROVED
+CANONICAL PROMPT — AUTHORIZED FOR CONDITIONAL IMPLEMENTATION
 
 DESIGN                   = DESIGN — AUTHOR APPROVED (record v1.1 §5)
 AUTHOR DECISIONS         = DQ-F2R1-1 to DQ-F2R1-6 RECORDED (with refinements)
 FEASIBILITY ITEMS        = FR-1 to FR-4 open; resolved at the entry gate (design §8)
 F2 ORIGINAL CANDIDATE    = 6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873 (FROZEN — NOT AUTHOR
                            APPROVED — NOT PUBLISHED)
-IMPLEMENTATION           = NOT AUTHORIZED
+IMPLEMENTATION BASE      = e13bfbd231700019a8f81c115b22a5bb8c44f7bb
+                           tree 2e8ee23addebcb05c4505c30e1fa593c8a3d4fa7
+IMPLEMENTATION           = AUTHORIZED (conditional on FR-1..FR-4)
 PUBLICATION              = NOT AUTHORIZED
 selfApproved             = false
-authorApproved           = false
-implementationAuthorized = false
+authorApproved           = false (implementation pending author review and smoke)
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = DESKTOP AUTHORING-MODE CORRECTION: activation behaviour
                            NORMAL / MEMORY_ENABLED for Parallel and Perpendicular,
                            toolbar-modifier capture, AppGeoCeDG.setMode coordination,
                            memory gate, status-bar indication; no kernel, command,
                            algorithm, XML, identity, catalog, GV2 or Classic change
-PROPOSED CLASS           = BOUNDED_PHASE — NOT FROZEN; new phase PRE-G9B-R6-PLUS-F2-R1
+VERIFICATION CLASS       = BOUNDED_PHASE — frozen only after FR-1..FR-4 pass; phase
+                           PRE-G9B-R6-PLUS-F2-R1; no INTEGRATION or FINAL
 NEXT_SUBPHASE            = none implied; F3, F4, G stay unauthorized
 ```
 
@@ -76,7 +78,10 @@ force.
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-To be named exactly by the authorizing instruction. Prepared on:
+Authorized: the F2-R1 design closeout `e13bfbd231700019a8f81c115b22a5bb8c44f7bb`
+(tree `2e8ee23addebcb05c4505c30e1fa593c8a3d4fa7`); chain `6d9bafb0` → `bdb9b6a9` →
+`6af85ee3` → `b7faad3a` → `d630b8dd` → `e13bfbd2`; branch
+`phase/pre-g9b-r6-plus-f2-r1` (local). Prepared on:
 
 ```text
 F2 ORIGINAL CANDIDATE = 6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873
@@ -192,8 +197,8 @@ No `INTEGRATION` or `FINAL`. The F2 `PHASE` receipt is not inherited.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing is authorized by this prompt. A future author instruction may authorize
-F2-R1 on an exact base; it then authorizes local implementation on a local
+The author instruction of record v1.2 §6 authorizes F2-R1 on the exact base
+above, conditional on `FR-1` to `FR-4`: local implementation on a local
 branch, local commits, focused tests, the phase registration and catalog
 updates, development and acceptance `STATIC`, `INFRA_UNIT` and `PHASE`, and one
 frozen technical candidate for author review and smoke. It never authorizes

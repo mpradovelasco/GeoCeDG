@@ -2,13 +2,15 @@
 
 ```text
 ARTIFACT_KIND             = AUTHOR-DECISION RECORD AND DESIGN RECONCILIATION
-RECORD VERSION            = 1.1
+RECORD VERSION            = 1.2
 VERSION HISTORY           = 1.0 Stage 2 reconciliation (DQ-F2R1-1 direction, DQ-F2R1-6
                                 scope; DQ-F2R1-2..5 proposals)
                             1.1 PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT: author dispositions
                                 of DQ-F2R1-1..6 with refinements; design AUTHOR APPROVED;
                                 feasibility items FR-1..FR-4 (§5); §1-§4 kept as the
                                 v1.0 state
+                            1.2 PRE-G9B-R6-plus-F2-R1: implementation authorized on e13bfbd2,
+                                conditional on FR-1..FR-4 (§6); §1-§5 unchanged
 STATE AT VERSION 1.1      = F2-R1 DESIGN = DESIGN — AUTHOR APPROVED
                             F2-R1 PROMPT = PREPARED — NOT AUTHORIZED
                             F2-R1 IMPLEMENTATION = NOT AUTHORIZED
@@ -337,5 +339,40 @@ F2-R1 PROMPT          = PREPARED — NOT AUTHORIZED
 F2-R1 IMPLEMENTATION  = NOT AUTHORIZED
 F2 ORIGINAL CANDIDATE = FROZEN — NOT AUTHOR APPROVED
 PUBLICATION           = NOT AUTHORIZED
+selfApproved          = false
+```
+
+## 6. Implementation authorization (v1.2, `PRE-G9B-R6-plus-F2-R1`)
+
+**AUTHOR DECISION (author instruction "PRE-G9B-R6-plus-F2-R1 Implementation
+Authorization"; AUTHOR AUTHORIZED — CONDITIONAL BOUNDED CORRECTIVE IMPLEMENTATION
+AND TECHNICAL VERIFICATION):** implementation and technical verification of
+`DQ-F2R1-1` to `DQ-F2R1-6` (§5) are authorized on the design closeout
+`e13bfbd231700019a8f81c115b22a5bb8c44f7bb` (tree
+`2e8ee23addebcb05c4505c30e1fa593c8a3d4fa7`), on a local branch, up to one frozen
+local technical candidate for author review and author smoke, **conditional on**
+the feasibility gate `FR-1` to `FR-4` passing before production behaviour
+changes. Publication, author approval of the implementation and later subphases
+are not authorized. A failed gate stops the work for author disposition; no
+alternative mechanism and no reduced contract may be substituted.
+
+**Entry gate.** Linear chain `6d9bafb0` → `bdb9b6a9` → `6af85ee3` → `b7faad3a`
+→ `d630b8dd` → `e13bfbd2` with every tree verified; worktree clean; `main`,
+`origin/main` and the live remote `main` at `6d9bafb0`; receipts verified on their
+exact commits: F2 `PHASE` `verification-ac975f8c79ec4d58ba018ca4eb2a4cbd`, `STATIC`
+`verification-49e939c13b71429bbcf246ca08480c3f`, `INFRA_UNIT`
+`verification-2a4c7afa3282477ca3412c0a8de49f33`; F2-R1 Stage 1 `STATIC`
+`verification-5d571ee293c641b7b9259a33885e8e7e`, Stage 2 `STATIC`
+`verification-9d6384e236fc428db3883b01a0d23a19`, closeout `STATIC`
+`verification-72c784bc27b8498e90394b1f03b48629`, all `ACCEPTED / COMPLETE`; no
+product change after `6af85ee3`. Branch `phase/pre-g9b-r6-plus-f2-r1` (local) from
+`e13bfbd2`. The canonical corrective prompt moves to its authorized state as the
+first tracked change.
+
+```text
+F2-R1 IMPLEMENTATION  = AUTHORIZED (conditional on FR-1..FR-4; local candidate only)
+VERIFICATION_CLASS    = BOUNDED_PHASE proposed — frozen only after FR-1..FR-4 pass
+F2-R1 PUBLICATION     = NOT AUTHORIZED
+F2 ORIGINAL CANDIDATE = FROZEN — HISTORICAL EVIDENCE
 selfApproved          = false
 ```
