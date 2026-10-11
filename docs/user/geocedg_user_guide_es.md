@@ -709,6 +709,20 @@ Las herramientas correspondientes están en **Construcción → Rectas y vectore
 **Segmento de longitud dada** y **Vector desde un punto** admiten un dato
 numérico.
 
+**Indicación de orientación.** **Vista → Mostrar indicación de orientación**
+(también **Opciones → Preferencias… → Disposición y presentación →
+Indicación de orientación**) dibuja una pequeña punta de flecha hueca con el
+sentido que usa el núcleo para una recta, un segmento o una semirrecta en
+Gráficos 1:
+`Line(A,B)` va de `A` a `B`, y las paralelas, perpendiculares, mediatrices,
+simetrías, giros, traslaciones y homotecias heredan el sentido de aquello de lo
+que se construyen. Las rectas cuyo sentido depende solo de cómo se escribió una
+ecuación o de una configuración (por ejemplo `y = 2x + 1`, una tangente a una
+cónica o la bisectriz de tres puntos) no muestran indicación. La opción está
+desactivada por defecto, es una preferencia de usuario que se conserva al
+reiniciar y nunca aparece en un archivo guardado, una exportación, una
+impresión ni el portapapeles.
+
 ### 5.3 Circunferencias y cónicas
 
 ```text

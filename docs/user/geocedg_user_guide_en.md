@@ -671,6 +671,17 @@ v=Vector(A,B)
 The corresponding tools are under **Construction → Lines and vectors**.
 **Segment with given length** and **Vector from point** take a numeric input.
 
+**Orientation cue.** **View → Show orientation cue** (also **Options →
+Preferences… → Layout & Presentation → Orientation cue**) draws a small hollow
+arrowhead with the direction the kernel uses for a line, segment or ray in
+Graphics 1: `Line(A,B)` points from `A` to `B`, and parallels, perpendiculars,
+perpendicular bisectors, reflections, rotations, translations and dilations
+inherit the direction of what they are built from. Lines whose direction
+depends only on how an equation was typed or on a configuration (for example
+`y = 2x + 1`, a tangent to a conic or the bisector of three points) show no
+cue. The option is off by default, is a user preference kept after a restart,
+and never appears in a saved file, an export, a print or the clipboard.
+
 ### 5.3 Circles and conics
 
 ```text

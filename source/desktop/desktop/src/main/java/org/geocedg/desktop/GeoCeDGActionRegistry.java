@@ -77,7 +77,7 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.export.area.define-rectangle", "geocedg.export.area.use-export-points",
 			"geocedg.export.area.show", "geocedg.export.area.clear",
 			"geocedg.export.area.iso-a", "geocedg.export.area.use-iso-a-border",
-			"geocedg.document.units");
+			"geocedg.document.units", "geocedg.presentation.orientation-cue");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -400,6 +400,9 @@ public final class GeoCeDGActionRegistry {
 		case "geocedg.export.area.show":
 			((AppGeoCeDG) app).toggleExportAreaOverlay();
 			break;
+		case "geocedg.presentation.orientation-cue":
+			((AppGeoCeDG) app).toggleOrientationCue();
+			break;
 		case "geocedg.export.area.clear":
 			((AppGeoCeDG) app).clearExportArea();
 			break;
@@ -506,6 +509,8 @@ public final class GeoCeDGActionRegistry {
 			return controller().isZoomWindowActive();
 		case "geocedg.export.area.show":
 			return ((AppGeoCeDG) app).isExportAreaOverlayShown();
+		case "geocedg.presentation.orientation-cue":
+			return ((AppGeoCeDG) app).isOrientationCueShown();
 		case "host.preference.algebra-style.VALUE":
 			return app.getSettings().getAlgebra().getStyle() == AlgebraStyle.VALUE;
 		case "host.preference.algebra-style.DESCRIPTION":

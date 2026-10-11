@@ -75,6 +75,11 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 			app.getExportAreaSession().validateLink();
 		}
 		paintExportAreaOverlay(graphics);
+		if (getApplication() instanceof AppGeoCeDG app && app.isOrientationCueShown()) {
+			// PRE-G9B-R6-plus-F1: kernel orientation cue, live Graphics 1 paint only;
+			// exportPaint never calls this method, so no export or print shows it
+			GeoCeDGOrientationCueRenderer.paint(this, graphics);
+		}
 		if (!(getEuclidianController() instanceof GeoCeDGEuclidianController)) {
 			return;
 		}

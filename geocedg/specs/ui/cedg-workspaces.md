@@ -475,8 +475,8 @@ Symbolic action IDs remain the manifest authority.
 
 These eleven groups remain the professional Construction design; R1 is consumed
 through existing actions and does not change the 110 stable action IDs.
-Current live catalog (2026-10-10, `PRE-G9B-R6-plus-E3` technical candidate):
-130 actions. The 110-action figure in this
+Current live catalog (2026-10-11, `PRE-G9B-R6-plus-F1` technical candidate):
+131 actions. The 110-action figure in this
 section is the G9U1 baseline; POST-G9U1-A7 added two navigation actions,
 PRE-G9B-R4 three authoring tools, PRE-G9B-R6-plus-A-1 the one-shot
 `construction.working-layer` mode, placed in the Move group (`edit-selection`)
@@ -522,6 +522,13 @@ export-area actions `export.area.iso-a` and `export.area.use-iso-a-border`.
 The tool and `export.area.iso-a` are unavailable, with their reason, while the
 document has no physical construction unit. The sheet coherence indicator and
 "Use sheet scale" are session presentation, never document or geometric state.
+PRE-G9B-R6-plus-F1 (technical candidate pending author review; contract
+`geocedg/specs/presentation/orientation-cue.md`, `PROPOSED`) added the
+preference action `presentation.orientation-cue` (View menu, group
+`view-visibility-style`; cluster `presentation-visibility-style`), a checkbox
+on the global user preference `geocedg.view.orientation-cue.v1` (default OFF)
+that it shares with Layout & Presentation; the orientation cue is screen-only
+presentation in Graphics 1, never document, undo or export state.
 The main toolbar should expose groups, not one permanent button per action.
 Actions the author explicitly does not need as direct buttons—such as Delete,
 Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and

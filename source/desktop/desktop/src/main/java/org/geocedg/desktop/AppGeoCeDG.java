@@ -145,6 +145,12 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private ArrayList<Runnable> drawingScaleListeners;
 	private boolean apiDocumentReplacement;
 	private GeoCeDGExportScalePresentation exportScalePresentation;
+	/**
+	 * PRE-G9B-R6-plus-F1 orientation-cue user preference and the controls that show it;
+	 * created lazily because views created inside the host constructor may paint first.
+	 */
+	private GeoCeDGOrientationCuePreference orientationCuePreference;
+	private ArrayList<Runnable> orientationCueListeners;
 
 	/**
 	 * @param args command line arguments
@@ -843,6 +849,60 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 
 	boolean isExportAreaOverlayShown() {
 		return exportAreaSession != null && exportAreaSession.isOverlayShown();
+	}
+
+	// ------------------------------------------- PRE-G9B-R6-plus-F1 orientation cue
+
+	private GeoCeDGOrientationCuePreference orientationCuePreference() {
+		if (orientationCuePreference == null) {
+			orientationCuePreference = new GeoCeDGOrientationCuePreference();
+		}
+		return orientationCuePreference;
+	}
+
+	/** @return whether the orientation cue is shown in Graphics View 1 (default OFF) */
+	boolean isOrientationCueShown() {
+		return orientationCuePreference().isShown();
+	}
+
+	/**
+	 * Sets the global orientation-cue preference shared by the menu action and the
+	 * Layout &amp; Presentation control. Presentation only: the construction, the
+	 * document, its saved state and the undo history never change.
+	 *
+	 * @param shown whether the cue is shown
+	 */
+	void setOrientationCueShown(boolean shown) {
+		orientationCuePreference().setShown(shown);
+		orientationCueChanged();
+		for (GeoGebraFrame frame : new ArrayList<>(GeoGebraFrame.getInstances())) {
+			if (frame.getApplication() instanceof AppGeoCeDG other && other != this) {
+				other.orientationCuePreference().reload();
+				other.orientationCueChanged();
+			}
+		}
+	}
+
+	void toggleOrientationCue() {
+		setOrientationCueShown(!isOrientationCueShown());
+	}
+
+	/** @param listener notified after every change of the orientation-cue preference */
+	void addOrientationCueListener(Runnable listener) {
+		if (orientationCueListeners == null) {
+			orientationCueListeners = new ArrayList<>();
+		}
+		orientationCueListeners.add(listener);
+	}
+
+	private void orientationCueChanged() {
+		if (orientationCueListeners != null) {
+			new ArrayList<>(orientationCueListeners).forEach(Runnable::run);
+		}
+		if (getGuiManager() instanceof GuiManagerGeoCeDG manager) {
+			manager.getActionRegistry().refresh();
+		}
+		getEuclidianView1().repaintView();
 	}
 
 	void clearExportArea() {

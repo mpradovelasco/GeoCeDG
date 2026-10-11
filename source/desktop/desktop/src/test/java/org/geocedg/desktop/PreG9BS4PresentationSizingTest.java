@@ -123,7 +123,13 @@ class PreG9BS4PresentationSizingTest {
 		AppGeoCeDG app = G9U1TestApp.create();
 		GeoCeDGPresentationOptionsPanel panel = new GeoCeDGPresentationOptionsPanel(app);
 		GridBagLayout layout = assertInstanceOf(GridBagLayout.class, panel.getLayout());
-		assertEquals(Category.values().length * 2, panel.getComponentCount());
+		// PRE-G9B-R6-plus-F1 appends one separate orientation-cue group below the grid
+		assertEquals(Category.values().length * 2 + 1, panel.getComponentCount());
+		Component group = panel.getComponent(Category.values().length * 2);
+		assertEquals(2, layout.getConstraints(group).gridwidth);
+		assertEquals(Category.values().length, layout.getConstraints(group).gridy);
+		assertInstanceOf(javax.swing.JCheckBox.class,
+				((java.awt.Container) group).getComponent(0));
 
 		for (int index = 0; index < Category.values().length; index++) {
 			Component label = panel.getComponent(index * 2);

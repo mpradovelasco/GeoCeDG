@@ -13,6 +13,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,13 +22,19 @@ import org.geocedg.desktop.GeoCeDGPresentationPreferences.Category;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.desktop.gui.dialog.options.OptionPanelD;
 
-/** Compact Advanced-options panel for the six independent S4 preferences. */
+/**
+ * Compact Advanced-options panel for the six independent S4 preferences and, since
+ * PRE-G9B-R6-plus-F1, the orientation-cue checkbox in its own titled group.
+ */
 final class GeoCeDGPresentationOptionsPanel extends JPanel
 		implements OptionPanelD, SetLabels {
 	private static final long serialVersionUID = 1L;
 	private final AppGeoCeDG app;
 	private final Map<Category, JLabel> labels = new EnumMap<>(Category.class);
 	private final Map<Category, JComboBox<Integer>> controls = new EnumMap<>(Category.class);
+	/** PRE-G9B-R6-plus-F1: shares the global preference with the View menu action. */
+	private final JCheckBox orientationCue = new JCheckBox();
+	private final JPanel orientationCueGroup = new JPanel(new GridBagLayout());
 	private boolean updating;
 
 	GeoCeDGPresentationOptionsPanel(AppGeoCeDG app) {
@@ -51,6 +58,21 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 			labels.put(category, label);
 			controls.put(category, control);
 		}
+		orientationCue.addActionListener(event -> {
+			if (!updating) {
+				app.setOrientationCueShown(orientationCue.isSelected());
+			}
+		});
+		GridBagConstraints checkConstraints = constraints(0, 0);
+		checkConstraints.anchor = GridBagConstraints.LINE_START;
+		checkConstraints.weightx = 1;
+		orientationCueGroup.add(orientationCue, checkConstraints);
+		GridBagConstraints groupConstraints = constraints(0, row);
+		groupConstraints.gridwidth = 2;
+		groupConstraints.fill = GridBagConstraints.HORIZONTAL;
+		groupConstraints.insets = new Insets(10, 4, 2, 4);
+		add(orientationCueGroup, groupConstraints);
+		app.addOrientationCueListener(this::updateGUI);
 		setLabels();
 		updateGUI();
 	}
@@ -80,6 +102,10 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 				.setText(text("Presentation.ConstructionProtocolFont") + ":");
 		labels.get(Category.GRAPHICS_FONT).setText(text("Presentation.GraphicsFont") + ":");
 		setBorder(BorderFactory.createTitledBorder(text("Presentation.Sizes")));
+		orientationCue.setText(text("Presentation.OrientationCue"));
+		orientationCue.setToolTipText(text("Presentation.OrientationCue.Help"));
+		orientationCueGroup.setBorder(BorderFactory.createTitledBorder(
+				text("Presentation.OrientationCue.Title")));
 	}
 
 	private String text(String key) {
@@ -94,12 +120,18 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 		return (Integer) controls.get(category).getSelectedItem();
 	}
 
+	/** @return the PRE-G9B-R6-plus-F1 orientation-cue checkbox */
+	JCheckBox orientationCueControl() {
+		return orientationCue;
+	}
+
 	@Override
 	public void updateGUI() {
 		updating = true;
 		try {
 			controls.forEach((category, control) ->
 					control.setSelectedItem(app.getPresentationSize(category)));
+			orientationCue.setSelected(app.isOrientationCueShown());
 		} finally {
 			updating = false;
 		}
@@ -121,6 +153,7 @@ final class GeoCeDGPresentationOptionsPanel extends JPanel
 		setFont(font);
 		labels.values().forEach(label -> label.setFont(font));
 		controls.values().forEach(control -> control.setFont(font));
+		orientationCue.setFont(font);
 	}
 
 	@Override
