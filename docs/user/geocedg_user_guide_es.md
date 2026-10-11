@@ -723,6 +723,20 @@ desactivada por defecto, es una preferencia de usuario que se conserva al
 reiniciar y nunca aparece en un archivo guardado, una exportación, una
 impresión ni el portapapeles.
 
+**Referencia recordada.** En Gráficos 1, **Recta paralela** y **Recta
+perpendicular** recuerdan cada una la referencia (recta, segmento, semirrecta,
+lado de polígono, vector o función lineal) de la última recta que construyeron.
+Mientras hay una referencia recordada, al hacer clic en un punto, o en un lugar
+vacío, que crea el punto, se construye la siguiente recta de inmediato; para usar
+otra referencia, haga clic primero en ella y después en el punto, y pasa a ser la
+recordada. Las dos herramientas recuerdan por separado, y cambiar de herramienta
+o pulsar Esc conserva la referencia. Se olvida al deshacer o rehacer, con Nuevo o
+Abrir, y cuando el objeto se borra o se redefine. Mientras la referencia está
+oculta, indefinida o en una capa oculta, la herramienta vuelve a pedir una
+referencia en lugar de usarla. Las funciones constantes no pueden ser
+referencias. No se guarda nada en el archivo, y Gráficos 2 se comporta como
+antes.
+
 ### 5.3 Circunferencias y cónicas
 
 ```text
@@ -755,6 +769,12 @@ Deslizadores, casillas, botones, campos de entrada y el ángulo de amplitud dada
 están en **Construcción → Parámetros y controladores**. Un parámetro es la vía
 normal para gobernar un lugar geométrico, una transformación o cualquier relación
 que quiera estudiar dinámicamente.
+
+**Ángulo de amplitud dada** en Gráficos 1 oculta el ángulo que crea y mantiene
+visible el punto girado. El ángulo es un objeto ordinario: aparece en la Vista
+Algebraica, donde puede mostrarlo, y se guarda oculto o visible como cualquier
+otro objeto. El comando `Angle(B, A, 40°)`, los guiones y la herramienta en
+Gráficos 2 siguen mostrando el ángulo.
 
 ### 5.6 Texto
 

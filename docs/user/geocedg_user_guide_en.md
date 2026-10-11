@@ -682,6 +682,18 @@ depends only on how an equation was typed or on a configuration (for example
 cue. The option is off by default, is a user preference kept after a restart,
 and never appears in a saved file, an export, a print or the clipboard.
 
+**Remembered reference.** In Graphics 1, **Parallel line** and **Perpendicular
+line** each remember the reference (line, segment, ray, polygon side, vector or
+linear function) of the last line they built. While a reference is remembered,
+clicking a point, or empty space, which creates the point, builds the next line
+at once; to use another reference, click it first and then the point, and it
+becomes the remembered one. The two tools remember independently, and changing
+tools or pressing Esc keeps the reference. It is forgotten after Undo or Redo,
+New or Open, and when the object is deleted or redefined. While the reference is
+hidden, undefined or on a hidden layer, the tool asks for a reference again
+instead of using it. Constant functions cannot be references. Nothing is saved
+in the file, and Graphics 2 behaves as before.
+
 ### 5.3 Circles and conics
 
 ```text
@@ -713,6 +725,12 @@ Sliders, check boxes, buttons, input boxes and the angle with a given size are
 under **Construction → Parameters and drivers**. A parameter is the normal way
 to drive a locus, a transformation or any relation you want to study
 dynamically.
+
+**Angle with given size** in Graphics 1 hides the angle it creates and keeps the
+rotated point visible. The angle is an ordinary object: it is listed in the
+Algebra View, where you can show it, and it is saved hidden or shown like any
+other object. The `Angle(B, A, 40°)` command, scripts and the tool in Graphics 2
+still show the angle.
 
 ### 5.6 Text
 

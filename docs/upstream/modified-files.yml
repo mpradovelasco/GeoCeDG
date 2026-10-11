@@ -2664,7 +2664,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianController.java",
       "change": "added",
-      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: dispatch the one-shot working-layer mode 141. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-E2: Aligned Dimension and Linear Dimension tool modes (two points, a line or vector direction for Linear, a placement click that sets only the Offset) and the Move-mode drag of a dimension that edits only its independent Offset, stored through the existing undo path. PRE-G9B-R6-plus-E3: route the one-shot ISO A sheet tool (a selected point or one created by the click, then the dialog) and return to Move only after renewing the mode-start state, so the mode change never removes the finished sheet. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Provide GeoCeDG-only creation, semantic-position, rich metric, rich inspector/token and general-intersection actions for enabled Locus V2 sessions. G9U1: Orchestrate exact R6 Point creation/drag, transient token markers and view-only ZoomWindow. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R4: collect ordered points for the three SplineV2 tools with the host polyline preview and finish gesture, and build ordinary dependent lists in click order. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R6-plus-A-1: dispatch the one-shot working-layer mode 141. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-E2: Aligned Dimension and Linear Dimension tool modes (two points, a line or vector direction for Linear, a placement click that sets only the Offset) and the Move-mode drag of a dimension that edits only its independent Offset, stored through the existing undo path. PRE-G9B-R6-plus-E3: route the one-shot ISO A sheet tool (a selected point or one created by the click, then the dialog) and return to Move only after renewing the mode-start state, so the mode change never removes the finished sheet. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F2: Parallel and Perpendicular session memory (release-time injection of a usable remembered reference for a point-first click with an empty tool selection, read-back of the certified reference from the created algorithm; inherited parallel/orthogonal unchanged) and the GeoCeDG controller companion. Authority: docs/validation/pre_g9b_r6_plus_f2_candidate_report.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -6194,6 +6194,24 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F1 orientation cue: admitted A1-A17 and excluded X1-X10 routes, reversals, degeneracies, visibility, placement, rendering, Graphics 2 and export absence, no mutation, preference lifecycle, menu and panel synchronization, catalog and Classic.",
       "authority": "docs/validation/pre_g9b_r6_plus_f1_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLineReferenceMemory.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F2 session memory of the Parallel and Perpendicular tools of Graphics View 1: two independent slots, admissibility (2D lines, segments, rays, polygon edges, 2D vectors, functions with a finite kernel getX), exact-instance currentness, GV1 usability with suspension, and a client EventListener clearing the slots on construction rebuilds and document boundaries; never serialized, never an undo point.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGControllerCompanion.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F2 controller companion of GeoCeDG Graphics View 1: the Angle with Given Size tool hides the created angle by ordinary Euclidian visibility before the inherited undo store; commands, scripts and Graphics View 2 unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f2_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF2AuthoringMemoryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F2 authoring memory: point-first reuse for every admitted reference and both tools, replacement after success, independent slots across tool changes and Escape, empty space, inherited point-on-path and double-click gestures, preview and cancellation, function admissibility, currentness, suspension, rebuild and document-boundary clearing, no undo point or serialization, unchanged commands; Angle with Given Size hidden on both routes and orientations with undo/redo, persistence, user recovery, unchanged commands, scripts and API, Graphics View 2 and Classic.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f2_candidate_report.md"
     }
   ]
 }

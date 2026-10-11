@@ -24,6 +24,7 @@ import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.EuclidianControllerCompanion;
 import org.geogebra.common.euclidian.EuclidianCursor;
 import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.euclidian.Previewable;
@@ -31,12 +32,16 @@ import org.geogebra.common.euclidian.event.AbstractEvent;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.ModeSetter;
+import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.kernel.kernelND.GeoLineND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
+import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianControllerFor3DD;
@@ -55,6 +60,7 @@ public final class GeoCeDGEuclidianController
 	private final GeoCeDGSimilarityTools similarityTools;
 	private final GeoCeDGSplineV2Authoring splineAuthoring;
 	private final GeoCeDGDimensionTools dimensionTools;
+	private final GeoCeDGLineReferenceMemory referenceMemory;
 	private AlgoNativeDimension dimensionDrag;
 	private GeoPointND isoABorderClickPoint;
 	private GeoPoint interactionDragPoint;
@@ -81,6 +87,18 @@ public final class GeoCeDGEuclidianController
 		dimensionTools = new GeoCeDGDimensionTools((AppD) kernel.getApplication());
 		locusV2Dialogs = new GeoCeDGLocusV2Dialogs(
 				(AppD) kernel.getApplication(), intersectionSession);
+		referenceMemory = new GeoCeDGLineReferenceMemory(kernel.getApplication());
+	}
+
+	@Override
+	protected EuclidianControllerCompanion newCompanion() {
+		// Runs inside the superclass constructor: the companion reads no field of this class.
+		return new GeoCeDGControllerCompanion(this);
+	}
+
+	/** @return the Parallel/Perpendicular session memory (authoring-memory.md section 3) */
+	GeoCeDGLineReferenceMemory getReferenceMemory() {
+		return referenceMemory;
 	}
 
 	@Override
@@ -668,6 +686,12 @@ public final class GeoCeDGEuclidianController
 			return endOfSwitchModeForProcessMode(null, false, callback,
 					selectionPreview);
 		}
+		GeoCeDGLineReferenceMemory.Slot referenceSlot =
+				GeoCeDGLineReferenceMemory.Slot.forMode(mode);
+		if (referenceSlot != null) {
+			return processLineReferenceTool(referenceSlot, hits, controlDown, shiftDown,
+					callback, selectionPreview);
+		}
 		if (!isLocusV2Mode(mode) && !GeoCeDGSplineV2Authoring.handles(mode)) {
 			if (mode == EuclidianConstants.MODE_INTERSECT && !selectionPreview
 					&& callback != null && intersectionSession.isAutoMaterialize()) {
@@ -717,6 +741,90 @@ public final class GeoCeDGEuclidianController
 		}
 		return endOfSwitchModeForProcessMode(output, false, callback,
 				selectionPreview);
+	}
+
+	/**
+	 * Parallel and Perpendicular with session memory (authoring-memory.md sections 5-6): a
+	 * usable remembered reference is injected at release only, for a point-first click
+	 * with an empty tool selection; the inherited {@code parallel}/{@code orthogonal}
+	 * then construct unchanged. The slot is written only from a certified construction.
+	 */
+	private boolean processLineReferenceTool(GeoCeDGLineReferenceMemory.Slot slot,
+			Hits hits, boolean controlDown, boolean shiftDown,
+			AsyncOperation<Boolean> callback, boolean selectionPreview) {
+		GeoElement injected = selectionPreview ? null : injectRememberedReference(slot, hits);
+		boolean created = super.switchModeForProcessMode(hits, controlDown, shiftDown,
+				callback, selectionPreview);
+		if (injected != null) {
+			withdrawInjectedReference(injected);
+		}
+		if (!selectionPreview && created) {
+			rememberCertifiedReference(slot);
+		}
+		return created;
+	}
+
+	private GeoElement injectRememberedReference(GeoCeDGLineReferenceMemory.Slot slot,
+			Hits hits) {
+		if (selPoints() + selLines() + selVectors() + selFunctions() != 0
+				|| !containsPoint(hits)) {
+			return null;
+		}
+		GeoElement reference = referenceMemory.getUsable(slot);
+		if (reference == null) {
+			return null;
+		}
+		int added;
+		if (reference instanceof GeoVectorND) {
+			added = selection.addToSelectionList(getSelectedVectorList(),
+					(GeoVectorND) reference, 1);
+		} else if (reference instanceof GeoFunction) {
+			added = selection.addToSelectionList(getSelectedFunctionList(),
+					(GeoFunction) reference, 1);
+		} else {
+			added = selection.addToSelectionList(getSelectedLineList(),
+					(GeoLineND) reference, 1);
+		}
+		return added == 1 ? reference : null;
+	}
+
+	private static boolean containsPoint(Hits hits) {
+		for (GeoElement hit : hits) {
+			if (hit.isGeoPoint()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** An injected reference never outlives its process step. */
+	private void withdrawInjectedReference(GeoElement injected) {
+		if (getSelectedLineList().contains(injected)) {
+			selection.addToSelectionList(getSelectedLineList(), (GeoLineND) injected, 1);
+		} else if (getSelectedVectorList().contains(injected)) {
+			selection.addToSelectionList(getSelectedVectorList(), (GeoVectorND) injected, 1);
+		} else if (getSelectedFunctionList().contains(injected)) {
+			selection.addToSelectionList(getSelectedFunctionList(), (GeoFunction) injected, 1);
+		}
+	}
+
+	/**
+	 * Success certificate (authoring-memory.md section 6.2): one created line, an exact-instance
+	 * member of the construction, defined, built by this tool's admitted algorithm; its
+	 * input 1 is the reference actually used. Never a label or a non-null output alone.
+	 */
+	private void rememberCertifiedReference(GeoCeDGLineReferenceMemory.Slot slot) {
+		ArrayList<GeoElement> created = getJustCreatedGeos();
+		if (created.size() != 1) {
+			return;
+		}
+		GeoElement line = created.get(0);
+		AlgoElement algo = line.getParentAlgorithm();
+		if (!line.isDefined() || !slot.admits(algo) || algo.getInputLength() != 2
+				|| !referenceMemory.isCurrent(line)) {
+			return;
+		}
+		referenceMemory.remember(slot, algo.getInput(1).toGeoElement());
 	}
 
 	@Override
