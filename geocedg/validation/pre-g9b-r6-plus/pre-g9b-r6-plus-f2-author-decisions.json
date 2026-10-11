@@ -1,6 +1,53 @@
 {
   "schemaVersion": 1,
-  "recordVersion": "1.0",
+  "recordVersion": "1.1",
+  "versionHistory": [
+    {"version": "1.0", "task": "PRE-G9B-R6-plus-F2-PREP-CLOSEOUT", "content": "DQ-F2-1 to DQ-F2-10 recorded; design approved"},
+    {"version": "1.1", "task": "PRE-G9B-R6-plus-F2", "content": "preparation approved and published; implementation authorized on 6d9bafb0; entry gate; OTQ-F2-1 to OTQ-F2-3 resolved; BOUNDED_PHASE frozen (record §8); decisions unchanged"}
+  ],
+  "stateAtVersion11": {
+    "preparation": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "design": "DESIGN — AUTHOR APPROVED",
+    "prompt": "AUTHORIZED FOR IMPLEMENTATION",
+    "implementation": "AUTHORIZED on 6d9bafb0 (bounded; local candidate only)",
+    "verificationClass": "BOUNDED_PHASE — FROZEN",
+    "publication": "preparation chain published; implementation publication NOT AUTHORIZED"
+  },
+  "preparationPublication": {
+    "task": "PRE-G9B-R6-plus-F2-PREP-FINAL",
+    "chain": ["24985f14c565b9ba6282ec80fa0cb7be20a2e459", "09bb63022c649cb6882440120aa121e8ecbb799f", "6d9bafb04235a71c8dfadef9631cd6057964b1f9"],
+    "method": "ordinary non-force fast-forward of main",
+    "remoteMain": {"commit": "6d9bafb04235a71c8dfadef9631cd6057964b1f9", "tree": "6bc65715cd37f5872b804eea7949d2f9fea96092"},
+    "staticRuns": {"preparation": "verification-d61c1adb78414a2ab4608ddabfd078a7", "closeout": "verification-6faf76297e6c4b86b1f8b9080060ef5d"},
+    "githubNotice": "Bypassed rule violations (pull request required; locked branch)"
+  },
+  "implementationAuthorization": {
+    "date": "2026-10-11",
+    "title": "PRE-G9B-R6-plus-F2 Implementation Authorization",
+    "base": {"commit": "6d9bafb04235a71c8dfadef9631cd6057964b1f9", "tree": "6bc65715cd37f5872b804eea7949d2f9fea96092"},
+    "branch": "phase/pre-g9b-r6-plus-f2",
+    "scope": "DQ-F2-1 to DQ-F2-10 without change of meaning or scope; specification geocedg/specs/ui/authoring-memory.md PROPOSED first",
+    "notAuthorized": ["publication", "author approval of the implementation", "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY", "shared or inherited-class changes", "F3", "F4", "G"],
+    "entryGate": {
+      "mainRefsAgree": true,
+      "worktreeClean": true,
+      "frozenEvidenceUnchanged": true,
+      "existingF2Code": false,
+      "probe": {"class": "F2GateProbeTest", "tests": 3, "failures": 0, "outputs": {"reset": "d022c6aa1040f93974d1b5fa6632bc9d17ddb36015d48113c57426e2bc5eb361", "readback": "4d532bf21693433f61505b84521b7c94a068bc5cde31248092c8371838923e61", "domain": "c70b377d56de591beb707837b007079b42eafc98b4acced116ede3c4dd26fd0f"}, "sourceSha256": "66db992e31ea7048faf8d067e306c7508b8d3282c3a52113fcd6f42c68533f0b"}
+    },
+    "otq": {
+      "OTQ-F2-1": {"state": "RESOLVED", "mechanism": "GeoCeDG-owned client EventListener on app.getEventDispatcher(), registered at the first slot write; reset(), UNDO, REDO clear both slots; REMOVE, REDEFINE re-validate; exact-instance check before every reuse", "resetFires": ["undo", "redo", "redefinition with children", "clearing setXML", "loadXML", "File New"], "resetDoesNotFire": ["store undo", "mode change", "recompute", "hide/show", "layer hide", "language change", "GV2 creation", "non-clearing evalXML", "non-clearing setXML"]},
+      "OTQ-F2-2": {"state": "RESOLVED", "evidence": "input[0] = point, input[1] = reference in the four algorithms (source); 12 of 12 admitted routes confirmed at runtime", "successDetection": "super.switchModeForProcessMode returns true for a non-preview call; getJustCreatedGeos() holds only this step's output (cleared otherwise); certificate of design §4.3 applied"},
+      "OTQ-F2-3": {"state": "RESOLVED", "predicate": "exact-instance member AND admissible AND isDefined AND isEuclidianVisible AND isVisibleInView(GV1) AND app.isLayerShown(layer)", "sharedWith": "F1 cue model GeoCeDGOrientationCue.java:130-132", "suspendedNotEmpty": true}
+    },
+    "linearFunctionDomain": {
+      "contract": "GeoFunction (non-3D) with finite getX() (GeoFunction.java:2895-2913)",
+      "lineable": ["2x+1", "x", "(x+1)^2-x^2", "a x^2+x with a=0"],
+      "notLineable": ["constant 3", "0", "0x^2+5", "x^2", "sin(x)", "sqrt(x)", "abs(x)", "If(x>0,x,2x)", "a x^2+x with a=1"],
+      "limitation": "constant functions have getX() = NaN (degree-0 polynomial has no getCoeffs()[1]); the inherited tools create no line from them; not remembered; not broadened"
+    },
+    "verificationClass": {"class": "BOUNDED_PHASE", "frozen": true, "phase": "PRE-G9B-R6-PLUS-F2", "nodes": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f2.semantic"], "selection": "pre-g9b-r6-plus-f2.desktop"}
+  },
   "track": "PRE-G9B-R6-plus",
   "phase": "PRE-G9B-R6-plus-F2",
   "task": "PRE-G9B-R6-plus-F2-PREP-CLOSEOUT",

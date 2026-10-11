@@ -1,23 +1,26 @@
 # PRE-G9B-R6-plus-F2 — authoring-memory refinements
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — DESIGN AUTHOR APPROVED — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — AUTHORIZED FOR IMPLEMENTATION (author authorization of 2026-10-11) — IMPLEMENTATION PUBLICATION NOT AUTHORIZED.**
 
 This prompt was prepared by `PRE-G9B-R6-plus-F2-PREP` at the author's
-instruction of 2026-10-11 and reconciled by `PRE-G9B-R6-plus-F2-PREP-CLOSEOUT`
-with the author decisions of 2026-10-11 on `DQ-F2-1` to `DQ-F2-10`
+instruction of 2026-10-11, reconciled by `PRE-G9B-R6-plus-F2-PREP-CLOSEOUT`
+with the author decisions of 2026-10-11 on `DQ-F2-1` to `DQ-F2-10`, published
+by `PRE-G9B-R6-plus-F2-PREP-FINAL`
 ([F2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_author_decisions_record.md)
-v1.0). The governing design is the
+v1.1), and amended to the authorized state by `PRE-G9B-R6-plus-F2` with the
+author instruction of 2026-10-11 ("PRE-G9B-R6-plus-F2 Implementation
+Authorization"; AUTHOR AUTHORIZED — BOUNDED IMPLEMENTATION AND TECHNICAL
+VERIFICATION), which **authorizes the implementation** of `DQ-F2-1` to
+`DQ-F2-10`, without change of meaning or scope, on the exact published base
+below, up to one frozen local technical candidate for author review and author
+smoke. The governing design is the
 [reconciled design](../../../docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md)
 (`DESIGN — AUTHOR APPROVED`); the evidence is the frozen
 [F2 preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_f2_preparation_characterization_report.md)
-(`K0`–`K16`) and its JSON mirror. The design approval does not authorize the
-implementation. The existence of this file is not authorization.
-
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-F2` and the exact base (the published preparation package or
-a named descendant). That instruction may authorize, as the first tracked edit
-of the phase, an amendment of this prompt to the authorized state, following
-the `F1` precedent. This file is an execution contract, not a second policy
+(`K0`–`K16`) and its JSON mirror; the entry-gate resolutions of `OTQ-F2-1` to
+`OTQ-F2-3` and of the linear-function domain are in the decision record §8.
+The authorization does not cover publication, author approval of the
+implementation, or any later subphase. This file is an execution contract, not a second policy
 document: the state classes are stated once in
 `geocedg/specs/units/unit-system.md` §17.2; the verification classes once in
 `geocedg/specs/operations/verification-levels.md` §12.8; the F2 semantics once
@@ -29,18 +32,22 @@ design/specification*.
 ```text
 PRE-G9B-R6-plus-F2 =
 DESIGN — AUTHOR APPROVED (2026-10-11)
-PREPARED — NOT AUTHORIZED
+CANONICAL PROMPT — AUTHORIZED FOR IMPLEMENTATION
 
-PREPARATION              = PRE-G9B-R6-plus-F2-PREP (DOCUMENTATION_STATUS_ONLY)
+AUTHOR AUTHORIZATION     = 2026-10-11 (PRE-G9B-R6-plus-F2 Implementation Authorization)
+IMPLEMENTATION BASE      = 6d9bafb04235a71c8dfadef9631cd6057964b1f9
+                           tree 6bc65715cd37f5872b804eea7949d2f9fea96092
 CHARACTERIZATION         = COMPLETE (2026-10-11, on P_F1 24985f14)
 AUTHOR DECISIONS         = DQ-F2-1 to DQ-F2-10 RECORDED (2026-10-11, record v1.0)
-OPEN TECHNICAL ITEMS     = OTQ-F2-1 to OTQ-F2-3 (none blocking; record §4)
-IMPLEMENTATION           = NOT AUTHORIZED
-PUBLICATION              = NOT AUTHORIZED
+PREPARATION              = PRE-G9B-R6-plus-F2-PREP = PASS — AUTHOR APPROVED — PUBLISHED
+OPEN TECHNICAL ITEMS     = none (OTQ-F2-1 to OTQ-F2-3 resolved at the entry gate,
+                           record v1.1 §8)
+IMPLEMENTATION           = AUTHORIZED
+IMPLEMENTATION PUBLICATION = NOT AUTHORIZED
 selfApproved             = false
 authorApproved (design)  = true    (the reconciled design only)
-authorApproved (implementation) = false
-implementationAuthorized = false
+authorApproved (implementation) = false   (pending author review and smoke)
+implementationAuthorized = true
 passClaimed              = false
 PHASE_KIND               = DESKTOP AUTHORING-MODE ORCHESTRATION IN THE GEOCEDG
                            GRAPHICS VIEW 1 CONTROLLER: session memory for
@@ -54,22 +61,22 @@ DEPENDS_ON               = PRE-G9B-R6-plus-P0 = PASS — AUTHOR APPROVED (hard)
                            PRE-G9B-R6-plus-F1 = PASS — AUTHOR APPROVED — PUBLISHED
                                                 (recommended predecessor, no coupling)
 GLOBAL GATE              = closeout in PRE-G9B-R6-plus-G
-PLANNED CLASS            = BOUNDED_PHASE — author-accepted (DQ-F2-10), conditioned
-                           on the implementation entry gate; one registered PHASE
-                           PRE-G9B-R6-PLUS-F2
+VERIFICATION CLASS       = BOUNDED_PHASE — FROZEN at the entry gate of
+                           2026-10-11 (record §8.5); one registered PHASE
+                           PRE-G9B-R6-PLUS-F2; no INTEGRATION or FINAL
 EXCLUDED                 = ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY (DQ-F2-9)
 NEXT_SUBPHASE            = none implied; F3, F4, G stay unauthorized
 ```
 
 `authorApproved (implementation) = false` means that no technical candidate of
 this phase has been author-approved. Technical verification never creates
-author approval. Once authorized, the phase stops with one exact technically
-verified candidate pending author review and author smoke.
+author approval. The phase stops with one exact technically verified
+candidate pending author review and author smoke.
 
 <!-- geocedg-field: objective -->
 ## Objective
 
-Implement, once authorized, the approved authoring-memory refinements:
+Implement the approved authoring-memory refinements (authorized 2026-10-11):
 
 1. **Parallel and perpendicular memory** (design §3–§5): two independent
    `SESSION` slots in the GeoCeDG Graphics View 1 controller; release-time
@@ -108,28 +115,23 @@ Implement, once authorized, the approved authoring-memory refinements:
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-Prepared on, and to be authorized on an exact descendant named by the author:
+Authorized by the author on 2026-10-11: the published F2 preparation closeout
 
 ```text
-P_F1                  = 24985f14c565b9ba6282ec80fa0cb7be20a2e459
-                        (published F1 closeout, docs/validation/pre_g9b_r6_plus_f1_closeout_record.md)
-tree                  = 1c683ebb3e303b7692915feae3417cf51e4cce22
-preparation candidate = 09bb63022c649cb6882440120aa121e8ecbb799f
-                        tree 31d436733a71f626b412092515d23bcd87b30b0d
-                        (STATIC verification-d61c1adb78414a2ab4608ddabfd078a7)
-closeout candidate    = the local commit of phase/pre-g9b-r6-plus-f2-prep
-                        that contains this reconciled file (documentation only),
-                        direct child of 09bb6302
+P_F2_PREP             = 6d9bafb04235a71c8dfadef9631cd6057964b1f9
+tree                  = 6bc65715cd37f5872b804eea7949d2f9fea96092
+chain                 = 24985f14 (P_F1) -> 09bb6302 (preparation, STATIC
+                        verification-d61c1adb) -> 6d9bafb0 (DQ-F2 decisions,
+                        STATIC verification-6faf7629)
+phase branch          = phase/pre-g9b-r6-plus-f2 (local), direct descendant
 ```
 
 **Entry gate.** Before any tracked change the agent verifies that local
-`main`, `origin/main` and the live remote `main` resolve to the base named by
-the authorizing instruction (normally the published F2 preparation package),
-that the worktree is clean, and that no F2 code exists. It then re-establishes
-at that base: the call-site census of the four-argument `createAngle` (only
-`DialogManager.doAngleFixed`); the GCEC `switchModeForProcessMode` `super`
-call; the GV2 controller class; and the hooks for `OTQ-F2-1` and `OTQ-F2-2`
-within GeoCeDG-owned code. It confirms that every planned change lies in the
+`main`, `origin/main` and the live remote `main` resolve to the authorized base,
+that the worktree is clean, that the frozen preparation evidence is unchanged
+and that no F2 code exists. It then resolves `OTQ-F2-1` to `OTQ-F2-3` and the
+linear-function domain within GeoCeDG-owned code (record v1.1 §8, done on
+2026-10-11) and confirms that every planned change lies in the
 `BOUNDED_PHASE` scope of `DQ-F2-10`. Any other need stops the work for author
 review and classification.
 
@@ -281,16 +283,15 @@ The registered phase `PRE-G9B-R6-PLUS-F2` covers at least
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing is authorized by this prompt; the design approval of 2026-10-11 does
-not authorize implementation. A future author instruction may authorize `F2`
-on an exact base; it then authorizes local implementation on a local branch,
-local commits, focused tests, the phase registration and its official catalog
-updates, development `INFRA_UNIT` and `STATIC` runs, the frozen acceptance run,
-and one frozen technical candidate for author review and author smoke. It
-never authorizes self-approval, author smoke by the agent, a run above the
-frozen class, or a change of the class; a proven inability of the frozen class
-to cover the change is reported as a reclassification proposal, never applied
-silently.
+The author instruction of 2026-10-11 authorizes F2 on the exact base above:
+local implementation on a local branch, local commits, the specification,
+focused tests, the phase registration and its official catalog updates,
+development `INFRA_UNIT` and `STATIC` runs, the frozen acceptance run (`PHASE`
+plus `STATIC` and `INFRA_UNIT`), and one frozen technical candidate for author
+review and author smoke. It never authorizes self-approval, author smoke by the
+agent, a run above the frozen class, or a change of the class; a proven
+inability of the frozen class to cover the change is reported as a
+reclassification proposal, never applied silently.
 
 `F3`, `F4`, `G`, `PRE-G9B-R7` and `G9B` stay unauthorized, and so does every
 open observation and enhancement not named here, including

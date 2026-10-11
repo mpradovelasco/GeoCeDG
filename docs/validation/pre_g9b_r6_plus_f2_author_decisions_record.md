@@ -2,11 +2,33 @@
 
 ```text
 ARTIFACT_KIND             = AUTHOR-DECISION RECORD AND DOCUMENTARY CLOSEOUT
-RECORD VERSION            = 1.0
-TASK                      = PRE-G9B-R6-plus-F2-PREP-CLOSEOUT
+RECORD VERSION            = 1.1
+VERSION HISTORY           = 1.0 (2026-10-11) PRE-G9B-R6-plus-F2-PREP-CLOSEOUT: DQ-F2-1 to
+                                DQ-F2-10 recorded; design approved
+                            1.1 (2026-10-11) PRE-G9B-R6-plus-F2: preparation approved and
+                                published (PRE-G9B-R6-plus-F2-PREP-FINAL); implementation
+                                authorized on 6d9bafb0; entry gate, OTQ-F2-1 to OTQ-F2-3
+                                resolved and class frozen (§8); §1-§7 unchanged
+TASKS                     = PRE-G9B-R6-plus-F2-PREP-CLOSEOUT; PRE-G9B-R6-plus-F2-PREP-FINAL;
+                            PRE-G9B-R6-plus-F2
 AUTHOR_DECISION_SOURCE    = author instruction of 2026-10-11 ("Author Decisions and
                             Design Reconciliation"; AUTHOR AUTHORIZED — AUTHOR-DECISION
-                            RECONCILIATION AND DOCUMENTARY CLOSEOUT ONLY)
+                            RECONCILIATION AND DOCUMENTARY CLOSEOUT ONLY); author
+                            instruction of 2026-10-11 ("Author Approval and Controlled
+                            Documentary Publication"; PRE-G9B-R6-plus-F2-PREP-FINAL);
+                            author instruction of 2026-10-11 ("PRE-G9B-R6-plus-F2
+                            Implementation Authorization"; AUTHOR AUTHORIZED — BOUNDED
+                            IMPLEMENTATION AND TECHNICAL VERIFICATION)
+STATE AT VERSION 1.1      = PRE-G9B-R6-plus-F2-PREP = PASS — AUTHOR APPROVED — PUBLISHED
+                            (chain 24985f14 -> 09bb6302 -> 6d9bafb0, non-force
+                            fast-forward of main; remote main 6d9bafb0, tree 6bc65715)
+                            PRE-G9B-R6-plus-F2 = DESIGN — AUTHOR APPROVED; CANONICAL PROMPT
+                            AUTHORIZED FOR IMPLEMENTATION (§8)
+                            IMPLEMENTATION = AUTHORIZED on 6d9bafb0 (bounded; local
+                            candidate only)
+                            VERIFICATION_CLASS = BOUNDED_PHASE — FROZEN at the entry gate (§8)
+                            PUBLICATION = preparation chain published; implementation
+                            publication NOT AUTHORIZED
 PUBLISHED BASE            = P_F1 24985f14c565b9ba6282ec80fa0cb7be20a2e459
                             tree 1c683ebb3e303b7692915feae3417cf51e4cce22
 PREPARATION CANDIDATE     = T_R6PLUS_F2_PREP 09bb63022c649cb6882440120aa121e8ecbb799f
@@ -23,10 +45,15 @@ selfApproved              = false
 passClaimed               = false   (no product claim of any kind)
 ```
 
+In the block above, the entries from `PUBLISHED BASE` to `passClaimed` record
+the state at version 1.0; `STATE AT VERSION 1.1` supersedes them.
+
 This record transcribes the author's decisions of 2026-10-11 on `DQ-F2-1` to
 `DQ-F2-10`. It is their authority and prevails over the recommendations of the
-preparation candidate wherever they differ. It authorizes **no implementation**
-and **no publication**. Machine-readable mirror:
+preparation candidate wherever they differ. Version 1.0 authorized **no
+implementation** and **no publication**; version 1.1 records the later
+implementation authorization and the entry gate (§8), and leaves §1–§7
+unchanged. Machine-readable mirror:
 [`pre-g9b-r6-plus-f2-author-decisions.json`](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-author-decisions.json).
 The reconciled design is
 [`pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md`](../architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md)
@@ -278,5 +305,148 @@ DESIGN                   = DESIGN — AUTHOR APPROVED
 CANONICAL PROMPT         = PREPARED — NOT AUTHORIZED
 IMPLEMENTATION           = NOT AUTHORIZED
 PUBLICATION              = NOT AUTHORIZED
+selfApproved             = false
+```
+
+The block above is the state at version 1.0.
+
+## 8. Preparation publication, implementation authorization and entry gate (v1.1, `PRE-G9B-R6-plus-F2`)
+
+**Preparation publication (author instruction "Author Approval and Controlled
+Documentary Publication", `PRE-G9B-R6-plus-F2-PREP-FINAL`, 2026-10-11).** The
+author approved the F2 preparation and `DQ-F2-1` to `DQ-F2-10`. The exact chain
+`24985f14` → `09bb63022c649cb6882440120aa121e8ecbb799f` →
+`6d9bafb04235a71c8dfadef9631cd6057964b1f9` was published by an ordinary
+non-force fast-forward of `main`; remote `main` = `6d9bafb0`, tree
+`6bc65715cd37f5872b804eea7949d2f9fea96092`. GitHub reported its standing
+"Bypassed rule violations" notice (pull request required; locked branch).
+Preparation STATIC `verification-d61c1adb78414a2ab4608ddabfd078a7` and
+closeout STATIC `verification-6faf76297e6c4b86b1f8b9080060ef5d`, both
+`ACCEPTED / COMPLETE` on their exact commits. `PRE-G9B-R6-plus-F2-PREP` =
+`PASS — AUTHOR APPROVED — PUBLISHED`. That instruction named `OTQ-F2-1` to
+`OTQ-F2-3` and the linear-function domain as implementation-entry checks.
+
+**AUTHOR DECISION (implementation authorization, 2026-10-11):** implementation
+and technical verification of `DQ-F2-1` to `DQ-F2-10`, without change of meaning
+or scope, are authorized on the published base `6d9bafb0` (tree `6bc65715`), on
+a local phase branch, up to one frozen local technical candidate for author
+review and author smoke. Publication, author approval of the implementation,
+`ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY`, `F3`, `F4` and `G` are not authorized.
+The canonical prompt is amended to the authorized state as the first tracked
+change of the phase; the durable specification
+`geocedg/specs/ui/authoring-memory.md` (`PROPOSED`) precedes production code.
+
+**Entry gate (2026-10-11).** Local `main`, `origin/main` and the live remote
+`main` resolve to `6d9bafb0`; the worktree is clean; the frozen preparation
+evidence is unchanged since `09bb6302`; no F2 code exists (search of
+`source/desktop/desktop/src/main/java/org/geocedg` for
+`GeoCeDGLineReferenceMemory`, `newCompanion`, `MODE_ANGLE_FIXED`,
+`MODE_PARALLEL`: no match). Branch `phase/pre-g9b-r6-plus-f2` (local) from
+`6d9bafb0`. The gate questions were resolved by source reading and one
+scratch-only probe (`F2GateProbeTest`, three methods, 0 failures; Desktop test
+source set through a Gradle init script, removed afterwards; outputs
+`reset` `d022c6aa1040f93974d1b5fa6632bc9d17ddb36015d48113c57426e2bc5eb361`,
+`readback` `4d532bf21693433f61505b84521b7c94a068bc5cde31248092c8371838923e61`,
+`domain` `c70b377d56de591beb707837b007079b42eafc98b4acced116ede3c4dd26fd0f`,
+probe source `66db992e31ea7048faf8d067e306c7508b8d3282c3a52113fcd6f42c68533f0b`).
+
+### 8.1 `OTQ-F2-1` — immediate invalidation (RESOLVED)
+
+- CHARACTERIZATION EVIDENCE (source): `EventDispatcher` is a kernel `View`;
+  its `clearView()` calls `reset()` on every registered client
+  `EventListener` (`common/plugin/EventDispatcher.java:256-263`).
+  `Kernel.notifyClearView` runs from `Kernel.clearConstruction` (`Kernel.java:3080`)
+  and when view notification is switched off (`:3703`), which only
+  `MyXMLio.doParseXML` does, for zooming XML loads (`MyXMLio.java:419-421`, call at `:420`);
+  undo, redo, Open, document replacement and a rebuilding redefinition all load
+  XML this way.
+- CHARACTERIZATION EVIDENCE (probe, `reset` census on a held line): `reset()`
+  fires on undo (2), redo (2), redefinition of an object with children (2,
+  every object replaced), clearing `setXML` (2), `loadXML` (the document-open
+  route, 2) and File → New (1); it does **not** fire on store-undo, mode
+  changes, recomputation, hide/show, layer hiding, language change, creation
+  of Graphics View 2, non-clearing `evalXML` or non-clearing `setXML`. A plain
+  redefinition sends `REDEFINE` with the new object (held instance no longer
+  current); deletion sends `REMOVE`.
+- IMPLEMENTATION DESIGN (decided by this gate): a GeoCeDG-owned client
+  `EventListener` of the memory helper, registered on
+  `app.getEventDispatcher()` at the first slot write (not in the controller
+  constructor, so application start-up and view-attachment order are
+  unchanged): `reset()`, `UNDO` and `REDO` clear both slots; `REMOVE` and
+  `REDEFINE` re-validate both slots (a non-current slot is cleared). The
+  exact-instance currentness check runs before every implicit reuse
+  regardless. No inherited class is changed; no label, `isInConstructionList`
+  or `isLabelSet` is used.
+
+### 8.2 `OTQ-F2-2` — read-back of the reference actually used (RESOLVED)
+
+- Source: `input[0]` is the point and `input[1]` the reference in
+  `AlgoLinePointLine` (`setInputOutput`, `input[1] = l.toGeoElement()`),
+  `AlgoOrthoLinePointLine` (`setInput`), `AlgoLinePointVector` (`:92-93`) and
+  `AlgoOrthoLinePointVector` (`:91-92`).
+- Probe (`readback`, both tools × line, segment, ray, polygon edge, vector,
+  linear function): every admitted route creates one labelled, defined line,
+  an exact-instance member of the construction, whose algorithm is the
+  expected class with `input[0]` = the clicked point and `input[1]` = the
+  clicked reference (12 of 12).
+- Success detection: `endOfSwitchModeForProcessMode` memorizes the returned
+  output and, on a non-preview step without output, **clears** the
+  just-created list (`EuclidianController.java:5466-5485`). After the GeoCeDG
+  override's `super.switchModeForProcessMode` returns `true` for a non-preview
+  call, `getJustCreatedGeos()` therefore holds this step's output only.
+- Non-null output is not success: for non-linear, constant and
+  non-polynomial functions the tool returns an unlabelled, undefined line that
+  is not a construction member (probe). IMPLEMENTATION DESIGN: the certificate
+  of design §4.3 (one created line; exact-instance member; defined; algorithm
+  class; `input[1]` admissible) is applied to that list.
+
+### 8.3 `OTQ-F2-3` — effective GV1 usability (RESOLVED)
+
+- IMPLEMENTATION DESIGN: usable = current (exact-instance membership) ∧
+  admissible now ∧ `isDefined()` ∧ `isEuclidianVisible()` ∧
+  `isVisibleInView(GV1 view id)` ∧ `app.isLayerShown(getLayer())` — the
+  visibility conjunction is the one already used by the approved F1 cue model
+  (`GeoCeDGOrientationCue.java:130-132`), so the two GV1 features share one
+  definition of "visible in GV1", including A-2 hidden layers.
+- Probe (`domain`): each component switches independently (hidden object,
+  object shown only in GV2, layer hidden, layer shown again) while the
+  instance stays a member: these are `SUSPENDED`, never `EMPTY`; suspension
+  never binds another object.
+
+### 8.4 Linear-function domain (VERIFIED)
+
+`GeoFunction.getX()` (`GeoFunction.java:2895-2913`) expands the function to a
+polynomial and returns the gradient only for degree ≤ 1; `getY()` is −1.
+`AlgoLinePointLine` and `AlgoOrthoLinePointLine` compute from `getX()`/`getY()`.
+
+| Function | `getX()` | parallel / perpendicular line |
+|---|---|---|
+| `2x + 1`, `x`, `(x+1)² − x²` | 2, 1, 2 | defined |
+| `a x² + x` with `a = 0` / `a = 1` | 1 / NaN | defined / undefined |
+| constant `3`, `0`, `0x² + 5` | NaN | **undefined** |
+| `x²`, `sin(x)`, `sqrt(x)`, `abs(x)`, `If(x > 0, x, 2x)` | NaN | undefined |
+
+**Limitation (reported, not broadened):** constant functions are not lineable
+through the kernel route: the degree-0 polynomial has no `getCoeffs()[1]`, so
+`getX()` is NaN and the inherited tools create no line from them today. The
+function-reference predicate is therefore exactly the kernel contract —
+`GeoFunction` (non-3D) with a finite `getX()` — and constant functions are
+neither remembered nor reused. A function whose expression stops being
+lineable (e.g. `a` from 0 to 1) suspends its slot.
+
+### 8.5 Readiness and frozen class
+
+| # | Condition | Finding |
+|---|---|---|
+| 1 | memory and injection | GeoCeDG-owned: a new helper and the existing GCEC `switchModeForProcessMode` override (before/after its `super` call, GCEC:688), using the protected `selection` field and the public `SelectionManager.addToSelectionList`; `parallel(Hits, boolean)` untouched |
+| 2 | angle hook | GCEC overrides the protected `newCompanion()` with a GeoCeDG subclass of the public, non-final `EuclidianControllerFor3DCompanion` overriding the public `createAngle(GeoPointND, GeoPointND, GeoNumberValue, boolean)` |
+| 3 | invalidation | client `EventListener` through public `EventDispatcher` API (§8.1) |
+| 4 | no shared, kernel, command, algorithm, XML, identity, GV2 or Classic change | confirmed |
+| 5 | phase selection | `PRE-G9B-R6-PLUS-F2`: `compile.desktop.semantic` and `junit.desktop.pre-g9b-r6-plus-f2.semantic` (selection `pre-g9b-r6-plus-f2.desktop`: the F2 test class and the controller-regression classes of the other GeoCeDG tool branches) |
+
+```text
+VERIFICATION_CLASS       = BOUNDED_PHASE — FROZEN (2026-10-11)
+F2 IMPLEMENTATION        = AUTHORIZED (local technical candidate only)
+F2 PUBLICATION           = NOT AUTHORIZED
 selfApproved             = false
 ```
