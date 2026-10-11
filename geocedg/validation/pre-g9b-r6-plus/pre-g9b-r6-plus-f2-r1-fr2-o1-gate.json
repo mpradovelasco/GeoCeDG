@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-F2-R1-FR2-AUTHOR-DISPOSITION",
+  "artifactKind": "REVISED_FEASIBILITY_GATE_REPORT",
+  "report": "docs/validation/pre_g9b_r6_plus_f2_r1_fr2_o1_gate_report.md",
+  "authority": "docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md v1.3 section 7",
+  "dispositionCommit": {"commit": "fdb5517970d7fcf94f6fea43c2a6078f83ab19e4", "tree": "42303f97d2b274809cc4bea83643bfdb2910a2ba"},
+  "blockedGateCommit": "7027cf9357571298fe335343d01bd258f3c190f9",
+  "historicalFr2": "FAIL (GgbAPID subclass rejected by the JavaScript sandbox) — not re-marked",
+  "mechanism": {"singleArgument": "AppGeoCeDG.setMode(int) -> GeoCeDGToolActivation.runAsSingleArgumentRequest: unmarked = genuine NORMAL; inside an explicit request or host synchronization adds nothing", "toolbarMark": "ActionEvent Ctrl bound to the current AWT event; resolved first; discarded at any resolution", "scopedRequests": "consumed by the first activation they decide", "hostSynchronization": "direct two-argument setMode(int, ModeSetter): same mode unchanged, other mode departure", "unchanged": ["GgbAPID", "CallJavaScript.SandboxClassShutter", "ScriptUtil.ALLOWED"], "notUsed": "GeoCeDGScriptingApi"},
+  "residualRisk": "a future inherited single-argument caller with a variable Parallel/Perpendicular mode would count as a genuine NORMAL request",
+  "probe": {"class": "F2R1O1GateProbeTest", "route": "scratch JUnit through a Gradle init script; shown JFrame with the real toolbar; posted mouse events; real ScriptManagerD; compileTestJava rerun without it; result XML and stash copies removed", "outputSha256": "a885d08964e27ec45374a9d8dc5694717483d9cd0e3be8cc5cde1af8028cc8d1", "sourceSha256": "07c5ed381b1dc743aa13617496b05d26ced3797ac07732b61b5f9f64803b3c7b", "initScriptSha256": "0c733680b8c192234b2ee8db76337245ec83f837e2a9b5b9e50ae4992d0dce27", "setupDefectsCorrected": 2},
+  "checks": {"G1G2": "PASS", "G3": "PASS", "G4": "PASS", "G5": "PASS", "G6": "PASS", "G7": "PASS", "S1": "PASS", "S2": "PASS", "S2b": "PASS", "S2c": "PASS", "S3": "PASS", "S6": "PASS", "S7": "PASS", "M": "PASS", "status": "PASS"},
+  "fr1": "still valid (language ES/EN keeps Perpendicular MEMORY_ENABLED)",
+  "fr3": "still valid (reselection cancellation: no object, undo or saved-state change)",
+  "fr4": "still valid (localized segment only in MEMORY_ENABLED)",
+  "fr2": "PASS (REVISED O1 CONTRACT)",
+  "verificationClass": {"class": "BOUNDED_PHASE", "frozen": true, "phase": "PRE-G9B-R6-PLUS-F2-R1", "nodes": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f2-r1.semantic", "workspace-profile.product"]},
+  "publication": "NOT AUTHORIZED",
+  "selfApproved": false
+}
