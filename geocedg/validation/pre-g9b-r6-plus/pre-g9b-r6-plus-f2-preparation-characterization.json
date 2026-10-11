@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F2",
+  "activity": "PRE-G9B-R6-plus-F2-PREP",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_f2_preparation_characterization_report.md",
+  "reconciledDesignCandidate": "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md",
+  "authorDecisionPreparationRecord": "docs/validation/pre_g9b_r6_plus_f2_author_decision_preparation_record.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f2-authoring-memory.prompt.md",
+  "supersededEvidence": "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_design_candidate.md (P0; unchanged; PROPOSED — CANDIDATE — NOT AUTHOR APPROVED)",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "phaseState": "PREPARED — NOT AUTHORIZED",
+  "preparationState": "TECHNICAL CANDIDATE — PENDING AUTHOR REVIEW",
+  "characterization": "COMPLETE",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "preparationClass": {
+    "class": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "supplementaryCheck": "Test-PromptContractDocument on the phase prompt (profile task); STATIC does not cover uncatalogued phase prompts",
+    "impactFacts": "documentation, one JSON evidence mirror, one uncatalogued phase prompt, two status files; no product, test, build, registry, verifier, profile, inventory, schema or serialization path"
+  },
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "authorInstruction": {
+    "date": "2026-10-11",
+    "title": "PRE-G9B-R6-plus-F2-PREP — Authoring-Memory Refinements — Characterization and Design Preparation",
+    "authorizes": "baseline and F1-prerequisite verification; characterization of the parallel/perpendicular tools, the issue #2610 gesture, admissible references, reference identity and lifecycle, Angle with Given Size and the working-layer surface; reconciliation of the P0 F2 candidate; DQ-F2 questions; the canonical F2 prompt; scratch probes outside tracked source; documentary validation; one local preparation candidate and its STATIC verification",
+    "forbidden": [
+      "F2 implementation, production controller changes, kernel commands or algorithms, persistent reference associations, Angle command or scripting changes, working-layer direct entry implementation",
+      "F2 author approval or marking any decision resolved",
+      "publication, merge to main, tags, releases, installers",
+      "F3, F4 or G work"
+    ]
+  },
+  "preservedDispositions": {
+    "PRE-G9B-R6-plus-F1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-P0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-R6-plus-F2": "NOT AUTHORIZED before this preparation",
+    "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY": "ENHANCEMENT — NOT A-2 BLOCKING — IMPLEMENTATION NOT AUTHORIZED (preferred owner F2; inclusion pending DQ-F2-9)"
+  },
+  "publishedBase": {
+    "name": "P_F1",
+    "commit": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+    "tree": "1c683ebb3e303b7692915feae3417cf51e4cce22",
+    "f1Candidate": "1cea3c89e34d32ab6321a434e7bb873bc1a33f83"
+  },
+  "entryGate": {
+    "localHead": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+    "originMain": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+    "liveRemoteMain": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+    "worktreeClean": true,
+    "f1State": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "f2AlreadyImplemented": false
+  },
+  "preparationBase": {
+    "commit": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+    "branch": "phase/pre-g9b-r6-plus-f2-prep",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "probes": {
+    "route": "scratch JUnit class F2PrepProbeTest (four methods) compiled into the Desktop test source set through a Gradle init script; never in a tracked path; compileTestJava rerun without the init script, probe test-result XML and two compile-stash copies removed; worktree clean afterwards",
+    "items": [
+      {"id": "lifecycle", "report": "K8", "outputSha256": "3eadde9c919f009fcc17a2ee5e0f1353fc11d164ec63440a50d9249504d4ff72"},
+      {"id": "tools", "report": "K4", "outputSha256": "2b463edf262f365a185422a3a5a35e266f883b901edcee8aeaf3b03eee66f59c"},
+      {"id": "tools-quick-repeat", "report": "K4 T15q", "outputSha256": "3209584b0856197c97efbcc83aebd0accfba68ab1c33e986fd73dd73d5d8c90a"},
+      {"id": "angle", "report": "K10, K11", "outputSha256": "1dc3bca4558d65b013e53543f8d54019674b55c73555d16d6e77f2d79be11047"},
+      {"id": "diagnostics", "report": "K4 T11, T13", "outputSha256": "ade50f8be4f1b8d126386ea574b9a88304288601750879d83615e84ecee8b4d2"}
+    ],
+    "finalRun": {"tests": 4, "failures": 0, "exit": 0},
+    "probeSourceSha256": "e33c0b342975ad0f1e8eade41056e6e5dfdc73935b39031df4c4d7f16b998ea6",
+    "initScriptSha256": "6474c22036f1d1cb2f457d25a3bffeb09b31732e9d727b68c462df4a672e21c9",
+    "probeDefectsFixedBeforeRecording": [
+      "harness teardown failure after an immediate repeated click opened the inherited Redefine dialog (recorded as T15q)",
+      "scene polygon auto-labelled its edges f, g, h before the functions g, h were defined",
+      "static JOptionPane mocking prevented Polygon creation in the probe host; replaced by ErrorHelper.silent()"
+    ]
+  },
+  "parallelPerpendicular": {
+    "pressPath": ["GeoCeDGEuclidianController.java:87", "GeoCeDGEuclidianController.java:333-349", "EuclidianController.java:9164-9178"],
+    "releasePath": ["GeoCeDGEuclidianController.java:640", "GeoCeDGEuclidianController.java:688 (super)", "EuclidianController.java:5157-5169", "EuclidianController.java:10527-10534"],
+    "parallelFinal": "EuclidianController.parallel(Hits, boolean) is protected final (EuclidianController.java:2424-2482); not overridden, not proposed",
+    "orthogonalOverridable": "orthogonal(Hits, boolean) protected (EuclidianController.java:2507-2515), delegates to a final three-argument form",
+    "issue2610": "with one line selected and a path hit, press creates a point on the path (EuclidianController.java:9173-9176); probe T04, T15",
+    "previewHazard": "creation branches have no selPreview guard (EuclidianController.java:2442-2479, 2532-2558)",
+    "currentMemory": "none; T03 shows a third point waiting for a reference",
+    "behaviorRows": ["T01 point-then-line", "T02 line-then-point", "T03 repeat", "T04 #2610", "T05", "T06 empty-then-line", "T07 line-then-empty", "T08 tool re-selection", "T09 vector", "T10 segment", "T11 polygon edge", "T12 linear function", "T13 non-linear function: nothing labelled", "T14 point-then-point", "T15 same line after delay: point on the line", "T15q immediate repeat: Redefine dialog", "T16 two series"],
+    "referenceTypes": {
+      "both": ["2D line", "segment", "ray", "polygon edge (as segment)", "2D vector", "linear function"],
+      "parallelOnly": ["3D vector (line3D)"],
+      "selectableWithoutLabelledOutput": ["non-linear function"],
+      "never": ["conic", "polygon interior", "point"]
+    },
+    "smallestInterception": "I1 release-time seeding in the GeoCeDG switchModeForProcessMode override before super (GCEC:688), !selectionPreview, empty selection lists, hits containing a point; read-back of input[1] from getJustCreatedGeos()"
+  },
+  "referenceIdentity": {
+    "tests": {
+      "LK": "kernel.lookupLabel(ref.getLabelSimple()) == ref (exact-instance test only)",
+      "MB": "exact-instance membership in getGeoSetConstructionOrder()",
+      "IC": "Construction.isInConstructionList(ref) (Construction.java:1295-1300)",
+      "LS": "ref.isLabelSet()",
+      "CC": "ref.getConstruction() == kernel.getConstruction()"
+    },
+    "matrix": [
+      {"id": "L01", "transition": "recompute", "sameInstance": true, "LK": true, "MB": true, "IC": true, "LS": true},
+      {"id": "L02", "transition": "undefined", "sameInstance": true, "LK": true, "MB": true, "IC": true, "LS": true, "defined": false},
+      {"id": "L03", "transition": "recovered", "sameInstance": true, "LK": true, "MB": true, "IC": true, "LS": true},
+      {"id": "L04", "transition": "rename", "sameInstance": true, "LK": true, "MB": true, "IC": true, "LS": true},
+      {"id": "L05", "transition": "undo", "sameInstance": false, "LK": false, "MB": false, "IC": true, "LS": true},
+      {"id": "L06", "transition": "redo", "sameInstance": false, "LK": false, "MB": false, "IC": true, "LS": true},
+      {"id": "L07", "transition": "redefine compatible", "sameInstance": false, "LK": false, "MB": false, "IC": false, "LS": false},
+      {"id": "L08", "transition": "redefine incompatible", "sameInstance": false, "LK": false, "MB": false, "IC": false, "LS": false},
+      {"id": "L09", "transition": "delete", "sameInstance": "dead", "LK": false, "MB": false, "IC": false, "LS": false},
+      {"id": "L10", "transition": "recreate same label", "sameInstance": false, "LK": false, "MB": false, "IC": false, "LS": false},
+      {"id": "L11", "transition": "open (clearing setXML)", "sameInstance": false, "LK": false, "MB": false, "IC": true, "LS": true},
+      {"id": "L12", "transition": "File New", "sameInstance": false, "LK": false, "MB": false, "IC": true, "LS": true},
+      {"id": "L13", "transition": "macro output", "sameInstance": true, "LK": true, "MB": true, "IC": true, "LS": true},
+      {"id": "L14", "transition": "macro recompute", "sameInstance": true, "LK": true, "MB": true, "IC": true, "LS": true}
+    ],
+    "conclusions": [
+      "isInConstructionList and isLabelSet are not currentness tests (true for stale instances after undo, redo, Open, New)",
+      "LK and MB agree on every probed transition; MB is the GeoCeDG precedent (ExportAreaSession.isLive, GeoCeDGSimilarityTools) and has no false negatives",
+      "compatible redefinition replaces the object; redefinition with children rebuilds every object (source only)",
+      "undo or redo of any step makes every held ordinary reference stale; no durable identity is allowed",
+      "client EventListener.reset() fires on undo, redo, Open and New (proven); redefinitions and deletions arrive as REDEFINE/REMOVE; lazy identity check at use remains mandatory"
+    ]
+  },
+  "angleWithGivenSize": {
+    "route": ["EuclidianController.angleFixed (protected final, :3154-3177)", "DialogManager3D (no override) -> DialogManagerD:377-385 -> InputDialogAngleFixedD", "DialogManager.createAngleFixed :1016-1057", "DialogManager.doAngleFixed :159-171 (undo stored at :170 after createAngle)", "EuclidianControllerFor3DCompanion.createAngle (public, non-final, :117-134)", "AlgoDispatcher.angle :768-801"],
+    "visibilitySource": "AlgoAngle.java:75-79 setDrawableNoSlider via newGeoAngle (P0 citation AlgoAnglePointsND.java:92-96 corrected)",
+    "probe": {"undoStored": true, "rotatedPoint": "visible, label hidden", "angle": "visible, label visible", "xmlShow": "<show object=\"true\" label=\"true\"/>", "hiddenAfterReopen": true, "userCanShow": true, "angleCommand": "visible (unchanged)"},
+    "seams": {
+      "companionOverride": "feasible without inherited change; hides before the undo store; tool path only; recommended (DQ-F2-7 H1)",
+      "dialogManagerSubclass": "feasible; undo stored before its callback; would duplicate createAngleFixed/doAngleFixed and the dialog",
+      "existingHooks": "none fit"
+    },
+    "persistence": "ordinary <show object=\"false\">; no new serialization semantics"
+  },
+  "views": {
+    "gv1Controller": "org.geocedg.desktop.GeoCeDGEuclidianController",
+    "gv2Controller": "org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianControllerFor3DD",
+    "companion": "org.geogebra.common.geogebra3D.euclidianFor3D.EuclidianControllerFor3DCompanion",
+    "dialogManager": "org.geogebra.desktop.geogebra3D.gui.dialogs.DialogManager3D",
+    "consequence": "controller-based targets cover GV1 only; GV2 coverage needs a GeoCeDG GV2 controller and a GuiManagerGeoCeDG.newEuclidianView override (DQ-F2-10)",
+    "classic": "never constructs the GeoCeDG controller"
+  },
+  "workingLayerEnhancement": {
+    "id": "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY",
+    "surface": "GeoCeDGWorkingLayerChooser.dialog (list-only JOptionPane.showInputDialog of 0..maxLayer)",
+    "authority": "GeoCeDGLayerWorkspace.setWorkingLayer rejects outside 0..maxLayer, never clamps",
+    "pinnedTests": ["PreG9BR6PlusA1LayerWorkspaceTest.theProductDialogOffersExactlyTheDomainAndNeverWraps", "PreG9BR6PlusA2LayerDomainDesktopTest.theChooserAndTheStatusBarOfferTheConfiguredDomain"],
+    "includedByThisPreparation": false,
+    "decision": "DQ-F2-9"
+  },
+  "corrections": ["ER-F2-1", "ER-F2-2", "ER-F2-3", "ER-F2-4", "ER-F2-5", "ER-F2-6", "ER-F2-7", "ER-F2-8", "ER-F2-9"],
+  "decisions": [
+    {"id": "DQ-F2-1", "subject": "persistence across tool changes", "recommendation": "P1 survive tool changes", "state": "PENDING"},
+    {"id": "DQ-F2-2", "subject": "independent slots and replacement", "recommendation": "S1 two slots, replaced on successful creation", "state": "PENDING"},
+    {"id": "DQ-F2-3", "subject": "first-use gestures and missing reference", "recommendation": "G1 point-first includes empty space; #2610 unchanged", "state": "PENDING"},
+    {"id": "DQ-F2-4", "subject": "admissible types and hit priority", "recommendation": "R1 accepted references with a labelled 2D output", "state": "PENDING"},
+    {"id": "DQ-F2-5", "subject": "identity, currentness and reset events", "recommendation": "MB identity; suspend undefined or hidden; lazy plus document-boundary clearing; undo forgets", "state": "PENDING"},
+    {"id": "DQ-F2-6", "subject": "cancellation, preview, success and undo", "recommendation": "C1 release-time seeding, no preview, no indicator", "state": "PENDING"},
+    {"id": "DQ-F2-7", "subject": "tool-only angle hook", "recommendation": "H1 GeoCeDG companion createAngle override", "state": "PENDING"},
+    {"id": "DQ-F2-8", "subject": "angle visibility, persistence, recovery", "recommendation": "V1 hidden in Graphics Views only; ordinary persistence", "state": "PENDING"},
+    {"id": "DQ-F2-9", "subject": "working-layer direct entry ownership", "recommendation": "K keep independent, later", "state": "PENDING"},
+    {"id": "DQ-F2-10", "subject": "architectural scope and verification class", "recommendation": "A1 GV1 only; BOUNDED_PHASE", "state": "PENDING"}
+  ],
+  "proposedImplementationClass": {
+    "class": "BOUNDED_PHASE",
+    "frozen": false,
+    "registeredPhase": "PRE-G9B-R6-PLUS-F2 (to be registered by the implementation)",
+    "nodes": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f2.semantic"],
+    "conditionalNodes": {"DQ-F2-9 include": ["workspace-profile.product", "A-2 chooser test classes"]},
+    "escalation": "any source/shared, inherited-class, command, algorithm or XML change stops the work; GV2 coverage widens the regression surface"
+  },
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f2_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f2-preparation-characterization.json",
+    "docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md",
+    "docs/validation/pre_g9b_r6_plus_f2_author_decision_preparation_record.md",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f2-authoring-memory.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
