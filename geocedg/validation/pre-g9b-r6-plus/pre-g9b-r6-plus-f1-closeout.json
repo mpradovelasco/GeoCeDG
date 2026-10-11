@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "phase": "PRE-G9B-R6-plus-F1",
+  "registeredPhaseId": "PRE-G9B-R6-PLUS-F1",
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_f1_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-11", "title": "GeoCeDG — PRE-G9B-R6-plus-F1 Author Closeout and Publication", "task": "PRE-G9B-R6-plus-F1-AUTHOR-CLOSEOUT"},
+  "state": "PASS — AUTHOR APPROVED — PUBLISHED",
+  "authorSmoke": {"state": "PASS", "authorConfirmation": "the interactive F1 smoke is satisfactory"},
+  "approvedScope": ["orientation cue for admitted lines, segments and rays", "synchronized activation and deactivation from the View menu and Layout & Presentation", "correct visual orientation", "suppression of unsupported and hidden objects", "persistent preference behavior", "no effect on construction geometry or export behavior"],
+  "notApproved": ["excluded geometric routes X1-X10", "Graphics View 2"],
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "publishedBase": {"commit": "c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc", "tree": "fdfbc327983a18d6761411591daf606942f15fda"},
+  "authorizationCommit": "f1166e3e0f42919e3834a39b78c0e6140489a37a",
+  "approvedCandidate": {"commit": "1cea3c89e34d32ab6321a434e7bb873bc1a33f83", "tree": "0901ef120a8f945ff70e94d00f21cdd7eb10b58f", "parent": "f1166e3e0f42919e3834a39b78c0e6140489a37a", "mutated": false},
+  "acceptedEvidence": {
+    "phase": {"run": "verification-207719610a7042d4bf25814f78354b5a", "verdict": "ACCEPTED / COMPLETE", "checks": "4/4", "tests": 225, "resultHash": "6b771cad841ad5aa06adffd3dc2aa5cdbc821b23e5806343ce9a7c208b071370"},
+    "static": {"run": "verification-46fb0a7ec50d400aa101b2d10cf0b334", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "resultHash": "30b0661ec85e3f46363717c3407aa8064aabd9569ebda47743cabe7ee791c4d8"},
+    "infraUnit": {"run": "verification-f260f621cdb748bfabf0f0014926d362", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22", "resultHash": "502c27ce48084bb4ee6224036258c6518b00e7d9f1ce5ea22528a4b978a05d25"},
+    "verificationClass": "BOUNDED_PHASE",
+    "receiptsLocation": "artifacts/agent/pre-g9b-r6-plus-f1-{phase,static,infra-unit}/"
+  },
+  "specificationPromotion": {"path": "geocedg/specs/presentation/orientation-cue.md", "from": "PROPOSED", "to": "NORMATIVE / AUTHOR APPROVED", "newRequirements": false, "adrRequired": false},
+  "observations": [
+    {"id": "OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT", "state": "OPEN — NON-BLOCKING FOR F1 — CAUSAL ATTRIBUTION NOT ESTABLISHED", "test": "G9U1SemanticPointInteractionTest.ownedDragUndoRedoRestoresExactSemanticAddress", "failedRun": {"selection": "final.desktop", "tests": 2004, "failures": 1, "evidenceSha256": "69e167aa4ab23c644467452751d446498e08836608c4e4c14900a8f417c0fb72", "testXmlSha256": "61a8271791c6523bb8e0bcb4ff56f6144c90382014e977db26dab0d8767b2732"}, "passingRerun": {"selection": "final.desktop", "tests": 2004, "failures": 0, "skipped": 1, "evidenceSha256": "5f091b317baa356388f044496cd0ee79fb7d27f3c40c920674b089a259b586c0"}, "isolatedReruns": "3 of 3 passing", "preExistenceEstablished": false, "attributedToF1": false, "evidenceLocation": "artifacts/agent/pre-g9b-r6-plus-f1-final-desktop-evidence/", "correction": "NOT AUTHORIZED — separate characterization required"},
+    {"id": "OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION", "state": "OPEN — unchanged"},
+    {"id": "OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP", "state": "OPEN — unchanged"}
+  ],
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC", "productChange": "NONE"},
+  "publication": {"authorized": true, "method": "ordinary non-force fast-forward of main", "range": ["c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc", "f1166e3e0f42919e3834a39b78c0e6140489a37a", "1cea3c89e34d32ab6321a434e7bb873bc1a33f83", "closeout commit"], "tagsOrReleases": false, "packagingOrVersionChange": false},
+  "next": {"activity": "PRE-G9B-R6-plus-F2", "readiness": "P0 design candidate only (PROPOSED); preparation, author decisions and canonical prompt required", "f2Implementation": "NOT AUTHORIZED"},
+  "unchanged": ["F3", "F4", "G"]
+}

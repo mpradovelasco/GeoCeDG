@@ -2,7 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
+| Status | **NORMATIVE / AUTHOR APPROVED** (author closeout of 2026-10-11, [F1 closeout record](../../../docs/validation/pre_g9b_r6_plus_f1_closeout_record.md)); the approved implementation is the technical candidate `1cea3c89e34d32ab6321a434e7bb873bc1a33f83`. Earlier: `PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` |
+| Approval scope | the behavior of the F1 author decisions (`DQ-F1-1` to `DQ-F1-9`, `OTQ-F1-1` to `OTQ-F1-4`) as implemented by the approved candidate; it does not extend to the excluded routes `X1`–`X10` or to Graphics View 2 |
 | Version | `1.0` |
 | Owner phase | `PRE-G9B-R6-plus-F1` (orientation cue) |
 | Governing author decisions | [F1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f1_author_decisions_record.md) v1.2 (`DQ-F1-1` to `DQ-F1-9`, `OTQ-F1-1` to `OTQ-F1-4`, implementation authorization §8) |
@@ -13,9 +14,10 @@
 
 ## 0. Status and normative language
 
-This specification is the durable contract of the F1 technical candidate. It
-becomes normative only through an author closeout record; until then it binds
-the candidate and nothing else. It transcribes the approved design without
+This specification is the durable contract of the F1 orientation cue. It was
+written as the contract of the F1 technical candidate and became normative
+through the author closeout record of 2026-10-11, without any change of
+requirement. It transcribes the approved design without
 semantic change; §9 records how the candidate implements it. `MUST`,
 `MUST NOT`, `SHOULD` and `MAY` have their usual meaning. Where an author
 decision and this text differ, the decision prevails and this text is
@@ -204,7 +206,7 @@ command behavior, shared drawables, hit testing, selection, undo history,
 exports (print, clipboard, PNG, PDF, SVG, EMF, PGF/TikZ, PSTricks, Asymptote,
 DXF, CLI) and Classic behavior are unchanged with the option on and off.
 
-## 9. Implementation (technical candidate)
+## 9. Implementation (approved candidate `1cea3c89`)
 
 - Seam: `GeoCeDGEuclidianView.paint`, after `super.paint` and the export-area
   overlay; no export, print or clipboard route calls this method **[CE]**

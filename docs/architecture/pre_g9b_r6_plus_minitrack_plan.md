@@ -53,6 +53,7 @@
 - Author decisions and `F1` design closeout (`PRE-G9B-R6-plus-F1-PREP-CLOSEOUT`, 2026-10-11): on the preparation candidate `T_R6PLUS_F1_PREP` `732292e6cb9bf3a0f29367e43eb39bdc6b4ad22b`, tree `0839dd764ffceefc2fb009155b25f6495becaae1` (STATIC `verification-38ff592383c64c3fbac46cb3c5023dd3` `ACCEPTED / COMPLETE`), the author decided `DQ-F1-1` to `DQ-F1-9` ([F1 author-decision record](../validation/pre_g9b_r6_plus_f1_author_decisions_record.md) v1.0): one global presentation option; Graphics View 1 only; screen-only; a discreet hollow 10 × 4 device-pixel triangle in the object's colour; a positive eligibility matrix of constructive or demonstrably inherited orientations with `GeoLine.getDirection` as authority (equation-defined, convention-dependent and configuration-defined routes excluded and documented); preference `geocedg.view.orientation-cue.v1`, default OFF, not serialized; suppression of undefined, non-finite, degenerate, hidden, insufficiently visible and redundantly decorated objects, with kernel inversions shown faithfully; a presentation-only overlay in `GeoCeDGEuclidianView`; one menu action and a synchronized Layout & Presentation control (catalog 130 → 131); planned `BOUNDED_PHASE` conditioned on the entry gate. The [reconciled design](pre_g9b_r6_plus_f1_orientation_cue_reconciled_design_candidate.md) is `DESIGN — AUTHOR APPROVED`; the [canonical prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-f1-orientation-cue.prompt.md) stays `PREPARED — NOT AUTHORIZED`; no specification or ADR is promoted; implementation and publication not authorized.
 - Final `F1` preparation decisions and publication (`PRE-G9B-R6-plus-F1-PREP-FINAL`, 2026-10-11): on the closeout `T_R6PLUS_F1_PREP_CLOSEOUT` `d57d077d7cc4c58c12198f95f68fed8566b20c3d`, tree `7a15c931c30e1ad65449ae55c249b4ad5fd8214b` (STATIC `verification-647bf1a87ae3439597300c528a39c7a3` `ACCEPTED / COMPLETE`), the author approved the F1 preparation and design and decided `OTQ-F1-1` to `OTQ-F1-4` ([F1 author-decision record](../validation/pre_g9b_r6_plus_f1_author_decisions_record.md) v1.1 §7): macro outputs admitted only when their orientation-bearing chain is established through existing supported APIs, otherwise suppressed; suppression only for the three midpoint arrow segment styles as a v1 boundary; arrowhead 10 device pixels long with a 4-pixel base (half-width 2); the checkbox in `GeoCeDGPresentationOptionsPanel` through `AppGeoCeDG.newProductPresentationOptionsPanel()`; `BOUNDED_PHASE` finalized for planning, conditioned on the implementation entry gate. `PRE-G9B-R6-plus-F1-PREP` = `PASS — AUTHOR APPROVED — PUBLISHED` with the authorized non-force fast-forward of the chain `732292e6` → `d57d077d` → final reconciliation; the canonical prompt stays `PREPARED — NOT AUTHORIZED`; F1 implementation not authorized; `F2`, `F3`, `F4` and `G` unchanged.
 - `F1` implementation (`PRE-G9B-R6-plus-F1`, 2026-10-11): authorized by the author on the published `c52f565e9f2c4c3515a68f6ac120ffc9c393dfbc` (tree `fdfbc327983a18d6761411591daf606942f15fda`); the canonical prompt is `AUTHORIZED FOR IMPLEMENTATION` and the [F1 author-decision record](../validation/pre_g9b_r6_plus_f1_author_decisions_record.md) v1.2 §8 records the readiness gate and the frozen `BOUNDED_PHASE`. The technical candidate ([candidate report](../validation/pre_g9b_r6_plus_f1_candidate_report.md); [specification](../../geocedg/specs/presentation/orientation-cue.md), `PROPOSED`) is pending author review and author smoke; publication not authorized.
+- `F1` closeout (`PRE-G9B-R6-plus-F1-AUTHOR-CLOSEOUT`, 2026-10-11): `PASS — AUTHOR APPROVED — PUBLISHED` on `T_F1` `1cea3c89e34d32ab6321a434e7bb873bc1a33f83`, tree `0901ef120a8f945ff70e94d00f21cdd7eb10b58f` (`AUTHOR_SMOKE = PASS`; `PHASE` `verification-207719610a7042d4bf25814f78354b5a` 4/4, `STATIC` and `INFRA_UNIT` `ACCEPTED / COMPLETE`; [F1 closeout record](../validation/pre_g9b_r6_plus_f1_closeout_record.md)); the [orientation-cue specification](../../geocedg/specs/presentation/orientation-cue.md) is `NORMATIVE / AUTHOR APPROVED`; the approval does not cover the excluded routes or Graphics View 2; `OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT` is open and non-blocking. Next planned subphase: `F2`, which needs its own preparation; `F2` is not authorized; `F3`, `F4` and `G` unchanged.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1383,7 +1384,13 @@ POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1 = PASS — AUTHOR APPROVED — PUBLISHED 
                              PSTricks dimension rotation with at most six decimals,
                              |dtheta| <= 5e-7 deg; host rotations unchanged; publication NOT
                              AUTHORIZED; docs/validation/post_e3_e2_pstricks_dimension_angle_c1_candidate_report.md)
-PRE-G9B-R6-plus-F1         = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R6-plus-F1         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-11;
+                             AUTHOR_SMOKE = PASS; candidate 1cea3c89, tree 0901ef12;
+                             PHASE verification-20771961 4/4, STATIC and INFRA_UNIT
+                             ACCEPTED / COMPLETE; specification orientation-cue.md
+                             NORMATIVE / AUTHOR APPROVED; approval excludes X1-X10 and
+                             Graphics View 2; docs/validation/pre_g9b_r6_plus_f1_closeout_record.md)
+                             earlier: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              (2026-10-11; implementation authorized on c52f565e;
                              BOUNDED_PHASE frozen; PHASE PRE-G9B-R6-PLUS-F1; GV1
                              screen-only overlay of the kernel orientation for A1-A17,
@@ -1534,6 +1541,14 @@ OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED = ACCEPTED NON-BLOCKING
                              Asymptote with label UNAVAILABLE in the agent environment —
                              NOT CLAIMED PASS; independent tracking required; no owner
                              authorized
+OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT = OPEN — NON-BLOCKING FOR F1 —
+                             CAUSAL ATTRIBUTION NOT ESTABLISHED (registered 2026-10-11, F1
+                             closeout): G9U1SemanticPointInteractionTest.
+                             ownedDragUndoRedoRestoresExactSemanticAddress failed once in a
+                             final.desktop run during the F1 inventory regeneration, passed
+                             3/3 in isolation and in a complete rerun; not declared
+                             pre-existing, not attributed to F1; both runs preserved;
+                             correction NOT AUTHORIZED (separate characterization required)
 OBS-R6PLUS-CLASSIC-PICTURE-DIALOG-OFF-EDT = REPRODUCED BY AUTHOR — PRE-EXISTING —
                              NOT CAUSED BY C — ACCEPTED DEBT — NOT C-BLOCKING —
                              DEFERRED TO POST-C (author disposition at the C
