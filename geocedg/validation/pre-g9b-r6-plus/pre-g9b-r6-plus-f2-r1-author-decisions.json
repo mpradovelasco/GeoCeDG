@@ -1,6 +1,33 @@
 {
   "schemaVersion": 1,
-  "recordVersion": "1.0",
+  "recordVersion": "1.1",
+  "versionHistory": [
+    {"version": "1.0", "task": "PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION", "content": "DQ-F2R1-1 direction and DQ-F2R1-6 scope; DQ-F2R1-2..5 proposals; design candidate"},
+    {"version": "1.1", "task": "PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT", "content": "author dispositions of DQ-F2R1-1..6 with refinements; design AUTHOR APPROVED; feasibility items FR-1..FR-4"}
+  ],
+  "closeout": {
+    "instruction": "PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT — F2-R1 Author Decisions and Design Closeout",
+    "authorization": "AUTHOR AUTHORIZED — AUTHOR-DECISION RECORDING AND DOCUMENTARY RECONCILIATION ONLY",
+    "stage2Candidate": {"commit": "d630b8dd3ace0cafd28f9896a8964778dd346e2e", "tree": "3ed8c9689f11a7a877eaae08c1b97f7fbaf54c12", "static": "verification-9d6384e236fc428db3883b01a0d23a19 ACCEPTED / COMPLETE 3/3"},
+    "states": {"design": "DESIGN — AUTHOR APPROVED", "prompt": "PREPARED — NOT AUTHORIZED", "implementation": "NOT AUTHORIZED", "f2OriginalCandidate": "FROZEN — NOT AUTHOR APPROVED", "publication": "NOT AUTHORIZED", "selfApproved": false},
+    "dispositions": {
+      "DQ-F2R1-1": "AUTHOR DECISION: Ctrl at toolbar activation on Windows; modifier from the specific activation event, never a global flag; NORMAL / MEMORY_ENABLED latched; explicit toggle is a separately authorized fallback, not part of the design",
+      "DQ-F2R1-2": "AUTHOR DECISION: every qualifying toolbar activation, including reactivation, establishes the behaviour; latest wins; unchanged keeps the partial selection; a change cancels the gesture with initNewMode subject to FR-3; never a geometric construction",
+      "DQ-F2R1-3": "AUTHOR DECISION (refined): persists until departure or reactivation; departure resets to NORMAL; tool changes and Escape keep valid references; a language change by itself resets neither the behaviour nor the references (FR-1); F2 invalidation unchanged; no stale reuse after undo/redo",
+      "DQ-F2R1-4": "AUTHOR DECISION (refined): toolbar, reactivation and native flyout use the originating event; indirect activations without a validated modifier origin are NORMAL incl. same mode; internal resynchronization never changes the behaviour; genuine requests distinguished from host synchronization (FR-2 for scripting); Space NORMAL; Ctrl+Space not claimed; macOS/Linux NOT_ESTABLISHED",
+      "DQ-F2R1-5": "AUTHOR DECISION: localized status-bar indication while MEMORY_ENABLED ('Parallel Line · Memory' / 'Paralela · Memoria', 'Perpendicular Line · Memory' / 'Perpendicular · Memoria'); no icon or action; reflects the activation state; single-row layout compatible (FR-4)",
+      "DQ-F2R1-6": "AUTHOR DECISION: GeoCeDG-owned Desktop classes and resources; BOUNDED_PHASE conditioned on the entry gate; phase PRE-G9B-R6-PLUS-F2-R1 with compile.desktop.semantic, junit.desktop.pre-g9b-r6-plus-f2-r1.semantic, workspace-profile.product; no inherited, shared, mode-id, XML or command change"
+    },
+    "refinementsVsV10": ["language change preserves the active tool and behaviour (v1.0: departure)", "unmarked same-mode setMode is host synchronization (v1.0: NORMAL)"],
+    "normativeRelationship": {"refines": ["DQ-F2-1", "DQ-F2-2", "DQ-F2-3", "DQ-F2-6", "DQ-F2-10"], "unchanged": "admissibility, identity, currentness, suspension, lifecycle, certificate, Angle with Given Size", "f2Specification": "PROPOSED (not promoted)", "f2Candidate": "historical technical evidence, not author-approved implementation"},
+    "feasibilityItems": [
+      {"id": "FR-1", "item": "restore the active Parallel/Perpendicular tool and behaviour around the inherited AppD.setLanguage -> setMoveMode in an AppGeoCeDG.setLanguage override", "evidence": "AppD.java:2171-2180 (call at 2179); Stage 2 O05"},
+      {"id": "FR-2", "item": "mark scripting setMode as a genuine NORMAL request through a GeoCeDG-owned seam (GgbAPID created by AppD.getGgbApi)", "fallback": "scripting same-mode activations remain host synchronization"},
+      {"id": "FR-3", "item": "initNewMode cancellation: provisional-only discard, completed constructions intact, no undo/redo step, coherent saved state", "established": "provisional discard and no undo store (probe C); saved state not yet verified"},
+      {"id": "FR-4", "item": "free status texts accepted by workspace-profile-validation; segment laid out in the single-row bar"}
+    ],
+    "notEstablished": ["macOS", "Linux", "undocked toolbars", "window focus", "modal dialogs"]
+  },
   "track": "PRE-G9B-R6-plus",
   "phase": "PRE-G9B-R6-plus-F2-R1",
   "task": "PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION",
@@ -21,7 +48,7 @@
   "f2OriginalCandidate": {"commit": "6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873", "tree": "3d412a801024411ebfcbaf8469691ec00f7c4fee", "state": "FROZEN — NOT AUTHOR APPROVED — NOT PUBLISHED", "phase": "verification-ac975f8c79ec4d58ba018ca4eb2a4cbd", "static": "verification-49e939c13b71429bbcf246ca08480c3f", "infraUnit": "verification-2a4c7afa3282477ca3412c0a8de49f33"},
   "stage1Candidate": {"commit": "b7faad3af2cbce0c2254cbdc7366c96a3df5ad48", "tree": "980207638c8bd045621879b2a28f407104b08bc4", "static": "verification-5d571ee293c641b7b9259a33885e8e7e ACCEPTED / COMPLETE 3/3"},
   "stage2Candidate": "the direct child of b7faad3a containing this file; identity and STATIC reported outside the record",
-  "designState": "CANDIDATE PENDING AUTHOR REVIEW",
+  "designState": "DESIGN — AUTHOR APPROVED (v1.1; v1.0: CANDIDATE PENDING AUTHOR REVIEW)",
   "promptState": "PREPARED — NOT AUTHORIZED",
   "implementation": "NOT AUTHORIZED",
   "publication": "NOT AUTHORIZED",

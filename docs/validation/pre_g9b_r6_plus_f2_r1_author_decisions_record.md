@@ -2,7 +2,26 @@
 
 ```text
 ARTIFACT_KIND             = AUTHOR-DECISION RECORD AND DESIGN RECONCILIATION
-RECORD VERSION            = 1.0
+RECORD VERSION            = 1.1
+VERSION HISTORY           = 1.0 Stage 2 reconciliation (DQ-F2R1-1 direction, DQ-F2R1-6
+                                scope; DQ-F2R1-2..5 proposals)
+                            1.1 PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT: author dispositions
+                                of DQ-F2R1-1..6 with refinements; design AUTHOR APPROVED;
+                                feasibility items FR-1..FR-4 (§5); §1-§4 kept as the
+                                v1.0 state
+STATE AT VERSION 1.1      = F2-R1 DESIGN = DESIGN — AUTHOR APPROVED
+                            F2-R1 PROMPT = PREPARED — NOT AUTHORIZED
+                            F2-R1 IMPLEMENTATION = NOT AUTHORIZED
+                            F2 ORIGINAL CANDIDATE = FROZEN — NOT AUTHOR APPROVED
+                            PUBLICATION = NOT AUTHORIZED
+                            selfApproved = false
+CLOSEOUT INSTRUCTION      = author instruction "PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT — F2-R1
+                            Author Decisions and Design Closeout" (AUTHOR AUTHORIZED —
+                            AUTHOR-DECISION RECORDING AND DOCUMENTARY RECONCILIATION ONLY),
+                            on the Stage 2 candidate d630b8dd3ace0cafd28f9896a8964778dd346e2e
+                            tree 3ed8c9689f11a7a877eaae08c1b97f7fbaf54c12 (STATIC
+                            verification-9d6384e236fc428db3883b01a0d23a19, ACCEPTED /
+                            COMPLETE 3/3), kept as the parent
 TASK                      = PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION (Stage 2)
 AUTHOR_DECISION_SOURCE    = author instruction "PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION —
                             Stage 2 — Dual-Mode Activation, Author Decisions and Corrective
@@ -29,6 +48,10 @@ F2-R1 IMPLEMENTATION      = NOT AUTHORIZED
 PUBLICATION               = NOT AUTHORIZED
 selfApproved              = false
 ```
+
+The entries from `PUBLISHED MAIN` to `selfApproved` in the block above and
+§1–§4 below record the state at version 1.0; `STATE AT VERSION 1.1` and §5
+supersede them.
 
 This record separates what the author **decided** in the Stage 2 instruction,
 what the author **proposed** there for confirmation, and what this
@@ -207,4 +230,112 @@ DESIGN            = CANDIDATE PENDING AUTHOR REVIEW
 IMPLEMENTATION    = NOT AUTHORIZED
 PUBLICATION       = NOT AUTHORIZED
 selfApproved      = false
+```
+
+## 5. Author dispositions (v1.1, `PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT`)
+
+The author approves the reconciled dual-mode design with the refinements below.
+The [reconciled design](../architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md)
+is `DESIGN — AUTHOR APPROVED`; the [canonical corrective prompt](../../.github/prompts/tasks/pre-g9b-r6-plus-f2-r1-dual-activation.prompt.md)
+stays `PREPARED — NOT AUTHORIZED`; implementation and publication are not
+authorized.
+
+### `DQ-F2R1-1` — mechanism (AUTHOR DECISION)
+
+Ctrl at toolbar activation **on Windows** is the preferred mechanism; the
+modifier is taken from the specific activation event, never from a global Ctrl
+flag; normal activation selects `NORMAL`, Ctrl activation `MEMORY_ENABLED`;
+releasing or pressing Ctrl during construction does not modify the latched
+behaviour. An explicit session toggle is a separately authorized fallback, not
+part of the approved design.
+
+### `DQ-F2R1-2` — reactivation (AUTHOR DECISION)
+
+Every qualifying toolbar activation establishes the requested behaviour,
+including reactivation of the selected tool; the latest wins; an unchanged
+behaviour preserves the inherited partial selection; a changed behaviour cancels
+the incomplete gesture with the characterized protected `initNewMode`, subject
+to verification that only provisional geometry of that gesture is discarded,
+completed constructions are intact, no undo or redo step is introduced, the
+saved/unsaved state stays coherent and remembered references are preserved
+unless invalidated by the F2 lifecycle (`FR-3`). A behaviour change is never a
+geometric construction.
+
+### `DQ-F2R1-3` — lifecycle (AUTHOR DECISION, refined)
+
+The behaviour persists until tool departure or explicit reactivation; leaving
+Parallel or Perpendicular resets it to `NORMAL`; ordinary tool changes and
+Escape do not erase valid remembered references; **a language change by itself
+must not reset the active behaviour or the remembered references**; New/Open and
+rebuilds keep the F2 invalidation rules; undo/redo never restore a stale
+reference.
+
+- Difference from v1.0: v1.0 treated a language change as a departure (the
+  inherited `AppD.setLanguage(Locale)` calls `setMoveMode`, Stage 2 `O05`). The
+  approved design (§3) preserves and restores the active tool and behaviour
+  through a GeoCeDG-owned `AppGeoCeDG.setLanguage` override; feasibility `FR-1`.
+
+### `DQ-F2R1-4` — activation origins (AUTHOR DECISION, refined)
+
+Direct toolbar activations, reactivations and the native Parallel/Perpendicular
+flyout use the originating event; indirect activations without a validated
+modifier origin default to `NORMAL`, including same-mode activations; **internal
+mode resynchronization must not silently change the behaviour, and genuine
+activation requests are distinguished from host UI synchronization**; keyboard
+Space without Ctrl may activate `NORMAL`; Ctrl+Space is not claimed; macOS and
+Linux remain `NOT_ESTABLISHED`.
+
+- Difference from v1.0: v1.0 resolved every unmarked same-mode `setMode` to
+  `NORMAL`. The approved design (§2) marks genuine requests at their GeoCeDG-owned
+  origins (toolbar listener, action registry, user tools) and treats an
+  unmarked same-mode `setMode` as host synchronization (unchanged). Scripting
+  activations are genuine only if a GeoCeDG-owned API seam can mark them
+  (`FR-2`).
+
+### `DQ-F2R1-5` — presentation (AUTHOR DECISION)
+
+A discreet, localized GeoCeDG-owned status-bar indication while
+`MEMORY_ENABLED` is active — "Parallel Line · Memory" / "Paralela · Memoria",
+"Perpendicular Line · Memory" / "Perpendicular · Memoria"; no toolbar icon or
+action; it reflects the activation state, not reference usability; hidden in
+`NORMAL` and for other tools; compatible with the single-row status bar,
+localization and lifecycle (`FR-4`).
+
+### `DQ-F2R1-6` — architecture and verification (AUTHOR DECISION)
+
+GeoCeDG-owned Desktop classes and resources only; proposed class
+`BOUNDED_PHASE`, conditioned on the implementation entry gate; corrective phase
+`PRE-G9B-R6-PLUS-F2-R1` with `compile.desktop.semantic`,
+`junit.desktop.pre-g9b-r6-plus-f2-r1.semantic` and `workspace-profile.product`.
+No inherited toolbar or controller modification, shared kernel change, new mode
+id, XML change or geometric command.
+
+### Normative relationship to F2
+
+F2-R1 refines the interaction conditions of `DQ-F2-1`, `DQ-F2-2`, `DQ-F2-3`,
+`DQ-F2-6` and `DQ-F2-10`. Geometric admissibility, reference identity,
+currentness, suspension, lifecycle and the successful-construction certificate
+are unchanged; Angle with Given Size is unchanged. The original F2 candidate
+`6af85ee3` is retained as historical technical evidence and is **not** promoted
+to an author-approved implementation; the F2 specification stays `PROPOSED`.
+
+### Feasibility items for the implementation entry gate (unresolved risks)
+
+| Id | Item | Risk |
+|---|---|---|
+| `FR-1` | restore the active Parallel/Perpendicular tool and behaviour around the inherited language switch (`AppD.setLanguage` → `setMoveMode`) in an `AppGeoCeDG.setLanguage` override | interaction with the GUI rebuild, Input Help and saved state not yet exercised; if infeasible, the decision cannot be met without author disposition |
+| `FR-2` | mark scripting `setMode` through a GeoCeDG-owned seam (the scripting API object is created by the inherited `AppD.getGgbApi()` as `GgbAPID`) | if no safe seam exists, scripting same-mode activations stay host synchronization instead of `NORMAL` |
+| `FR-3` | `initNewMode` cancellation: provisional-only discard, completed constructions intact, no undo/redo step, coherent saved state | the probe established the first and third points; saved-state coherence is not yet verified |
+| `FR-4` | status texts accepted by the profile validator; segment laid out in the single-row bar | profile-validation behaviour for free text keys not yet run |
+
+Also not established (no claim made): macOS and Linux modifiers, undocked
+toolbars, window focus and modal dialogs.
+
+```text
+F2-R1 DESIGN          = DESIGN — AUTHOR APPROVED
+F2-R1 PROMPT          = PREPARED — NOT AUTHORIZED
+F2-R1 IMPLEMENTATION  = NOT AUTHORIZED
+F2 ORIGINAL CANDIDATE = FROZEN — NOT AUTHOR APPROVED
+PUBLICATION           = NOT AUTHORIZED
+selfApproved          = false
 ```

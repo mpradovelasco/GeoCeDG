@@ -1,22 +1,23 @@
 # PRE-G9B-R6-plus-F2-R1 — dual-mode Parallel/Perpendicular activation (corrective)
 
-**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — DESIGN CANDIDATE PENDING AUTHOR REVIEW — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — PREPARED ON AN EXACT BASE — DESIGN AUTHOR APPROVED — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
 
 This prompt was prepared by `PRE-G9B-R6-plus-F2-R1-DESIGN-RECONCILIATION`
 (Stage 2) at the author's instruction, after the Stage 1 characterization
-`PRE-G9B-R6-plus-F2-R1-ACTIVATION-CHARACTERIZATION`. It is the execution
-contract of a corrective successor of the frozen F2 technical candidate. The
-governing design is the
-[reconciled dual-activation design candidate](../../../docs/architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md)
-(pending author review); the decisions and proposals are in the
+`PRE-G9B-R6-plus-F2-R1-ACTIVATION-CHARACTERIZATION`, and reconciled by
+`PRE-G9B-R6-plus-F2-R1-DESIGN-CLOSEOUT` with the author dispositions of
+`DQ-F2R1-1` to `DQ-F2R1-6`. It is the execution contract of a corrective
+successor of the frozen F2 technical candidate. The governing design is the
+[reconciled dual-activation design](../../../docs/architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md)
+(`DESIGN — AUTHOR APPROVED`); the decisions are in the
 [F2-R1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md)
-v1.0; tests and smoke in the
+v1.1 §5; tests and smoke in the
 [test matrix and author-smoke plan](../../../docs/validation/pre_g9b_r6_plus_f2_r1_test_matrix_and_smoke_plan.md).
-The existence of this file is not authorization.
+The design approval is not implementation authorization; the existence of this
+file is not authorization.
 
 Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-F2-R1`, confirms or amends the proposals `DQ-F2R1-2` to
-`DQ-F2R1-5`, approves the design, and names the exact base. That instruction may
+`PRE-G9B-R6-plus-F2-R1` and the exact base. That instruction may
 authorize, as the first tracked edit, an amendment of this prompt to the
 authorized state (F1/F2 precedent). This file is not a second policy document:
 state classes are in `geocedg/specs/units/unit-system.md` §17.2; verification
@@ -29,9 +30,9 @@ section numbers are cited below.
 PRE-G9B-R6-plus-F2-R1 =
 PREPARED — NOT AUTHORIZED
 
-DESIGN                   = CANDIDATE PENDING AUTHOR REVIEW
-AUTHOR DECISIONS         = DQ-F2R1-1 direction (Candidate A, conditional) and DQ-F2R1-6
-                           scope recorded; DQ-F2R1-2..5 proposals pending confirmation
+DESIGN                   = DESIGN — AUTHOR APPROVED (record v1.1 §5)
+AUTHOR DECISIONS         = DQ-F2R1-1 to DQ-F2R1-6 RECORDED (with refinements)
+FEASIBILITY ITEMS        = FR-1 to FR-4 open; resolved at the entry gate (design §8)
 F2 ORIGINAL CANDIDATE    = 6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873 (FROZEN — NOT AUTHOR
                            APPROVED — NOT PUBLISHED)
 IMPLEMENTATION           = NOT AUTHORIZED
@@ -60,13 +61,17 @@ Give the existing Parallel and Perpendicular tools two operating behaviours
 2. `MEMORY_ENABLED` — the F2 remembered-reference behaviour unchanged (reuse of a
    current, usable slot; write only after a certified construction).
 
-The behaviour is selected at activation (design §2–§3): Ctrl (Windows/Linux) on a
-native-toolbar or flyout activation requests `MEMORY_ENABLED`, any other
-activation `NORMAL`; it is latched until the next activation or until another
-tool is chosen; a behaviour change on an active tool cancels the partial gesture
-through the inherited protected `initNewMode(mode)`; a status-bar segment shows
-`MEMORY_ENABLED` (design §5). Every F2 obligation not amended in the decision
-record §2 remains in force.
+The behaviour is selected at activation (design §2–§4): Ctrl (Windows; macOS
+and Linux not claimed) read from a native-toolbar, reactivation or native-flyout
+activation event requests `MEMORY_ENABLED`; every other genuine activation
+request (menu, registry, user tools, keyboard Space; scripting under `FR-2`)
+requests `NORMAL`, also for the active tool; host synchronization of the active
+mode changes nothing; departure resets to `NORMAL`; a language change preserves
+the active tool and behaviour (`FR-1`); a behaviour change on the active tool
+cancels the partial gesture through the inherited protected `initNewMode(mode)`
+(`FR-3`); a localized status-bar segment shows `MEMORY_ENABLED` (design §7,
+`FR-4`). Every F2 obligation not refined in the decision record §5 remains in
+force.
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
@@ -84,10 +89,12 @@ PUBLISHED MAIN        = 6d9bafb04235a71c8dfadef9631cd6057964b1f9 (does not conta
 ```
 
 **Entry gate.** Verify the named base, its ancestry to `6af85ee3`, the clean
-worktree and the F2 receipts; confirm that free `localized_text` keys pass
-`tools/agent/workspace-profile-validation.ps1`; re-establish the seams of design
-§2 (`ProfileToolbar.addNativeGroup`, `App.setMode(int, ModeSetter)` overridable
-in `AppGeoCeDG`, protected `initNewMode`, `GeoCeDGStatusBar` segments); freeze
+worktree and the F2 receipts; resolve the feasibility items of design §8
+(`FR-1` language-change restoration, `FR-2` scripting seam, `FR-3` cancellation
+conditions including saved state, `FR-4` status texts and layout); re-establish
+the seams of design §2 (`ProfileToolbar.addNativeGroup`, `App.setMode(int,
+ModeSetter)` and `setLanguage(Locale)` overridable in `AppGeoCeDG`, registry and
+user-tool call sites, protected `initNewMode`, `GeoCeDGStatusBar` segments); freeze
 `BOUNDED_PHASE` only if every planned change is GeoCeDG-owned Desktop code,
 profile texts, tests, registration and documentation. Otherwise stop.
 
@@ -108,8 +115,14 @@ GeoCeDG-owned Desktop code (`source/desktop/desktop/src/main/java/org/geocedg/de
   per native group button that records `{mode, behaviour, current AWT event}` for
   PAR/PERP actions from the event's own modifier.
 - `AppGeoCeDG`: override of `setMode(int, ModeSetter)` resolving the behaviour
-  for every activation (token match → request; otherwise `NORMAL`; other modes →
-  both tools `NORMAL`), then `super.setMode`.
+  (pending genuine request → its behaviour; other mode without request →
+  departure, both tools `NORMAL`; same mode without request → host
+  synchronization, unchanged), then `super.setMode`; override of
+  `setLanguage(Locale)` preserving and restoring the active Parallel/Perpendicular
+  tool and behaviour around the inherited switch (`FR-1`).
+- `GeoCeDGActionRegistry` and GeoCeDG user-tool call sites: scoped `NORMAL`
+  request markers around their own `app.setMode`; a GeoCeDG-owned scripting-API
+  seam only if `FR-2` establishes one without inherited-class change.
 - `GeoCeDGEuclidianController`: behaviour state of the active tool,
   `applyActivationBehaviour` with `initNewMode(mode)` on a same-mode behaviour
   change, and the `NORMAL` gate in `processLineReferenceTool`.
@@ -209,9 +222,13 @@ selfApproved = false, authorApproved = false, passClaimed = false
 ## Stop conditions
 
 - The base or entry gate differs from *Implementation base*.
-- A same-mode indirect activation cannot be resolved to `NORMAL` within
-  GeoCeDG-owned code, or a host path re-asserts the active mode and would reset an
-  intentional `MEMORY_ENABLED` without user action.
+- A genuine same-mode indirect activation cannot be resolved to `NORMAL`, or host
+  synchronization cannot be kept from changing the behaviour, within
+  GeoCeDG-owned code.
+- `FR-1` fails: the active tool and behaviour cannot be preserved across a
+  language change without an inherited-class change or a GUI regression.
+- `FR-2` finds no safe GeoCeDG-owned scripting seam (report; scripting same-mode
+  activations then stay host synchronization pending author disposition).
 - `initNewMode` cancellation changes anything other than the partial gesture or
   stores an undo point.
 - The status texts require an action, catalog, schema or icon change.
