@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "activity": "PRE-G9B-R6-plus-F3-DQ21-FOCUSED-RECOVERY-SAFETY-GATE",
+  "artifactKind": "DOCUMENTARY_RECOVERY_SAFETY_GATE_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_f3_dq21_recovery_safety_report.md",
+  "assessment": "docs/validation/pre_g9b_r6_plus_f3_dq21_recovery_option_assessment.md",
+  "stateMatrix": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-recovery-state-matrix.json",
+  "riskRegisterUpdate": "docs/validation/pre_g9b_r6_plus_f3_risk_register_recovery_gate_update.md",
+  "decisionRecordUpdate": "docs/validation/pre_g9b_r6_plus_f3_author_decision_sheet_recovery_update.md (v4.1)",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "designState": "PROPOSED — PENDING AUTHOR REVIEW",
+  "decisionsState": "DQ-F3-1..24 — PENDING FINAL AUTHOR DISPOSITION",
+  "promptState": "PREPARED — DECISION-RECONCILED — RECOVERY-GATED — NOT AUTHORIZED",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "activityClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "approvedTextsChanged": "NONE",
+  "frozenCandidatesChanged": "NONE",
+  "entryGate": {
+    "publishedMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "candidate": "3e24ed3aca422eef4e844a6c1230a3a3fc599c21",
+    "tree": "65e282431a6ece824c783e8217bed74b85b79e68",
+    "parent": "8b41af11316f90d7a068ce6af4859213240ce6a6",
+    "static": "verification-f7ab50a453f74a03bca60b0ad7d2d032 ACCEPTED / COMPLETE",
+    "linearAncestry": true,
+    "worktreeClean": true,
+    "productDeltaSinceMain": "NONE",
+    "branch": "phase/pre-g9b-r6-plus-f3-dq21-recovery-safety-gate",
+    "result": "PASS"
+  },
+  "probes": {
+    "class": "F3RecoveryGateProbeTest (8 methods), scratch only, Gradle init script, isolated preferences, silent evaluation",
+    "runs": [
+      "focusAandD x2 (first run: whole-history detach failed with NoSuchElementException; second: prefix variant + reopen comparison)",
+      "focusB x2 (second after fixture label ln_{1})",
+      "focusBsuccessPath",
+      "focusC",
+      "focusCquiescence",
+      "focusCidentification",
+      "focusE x2 (second adds E1 fallback and E2b)"
+    ],
+    "outputs": {
+      "f3-probe.gate-identity.txt": "d3b5abf90f2ec7989d76df2ad1db1808892c90477256aeac33f8a801cb851ed2",
+      "f3-probe.gate-history.txt": "6d1a4112af771b0c2dc3e8d148d26b2ae445cc993009bf6ac9b1f64aa932cac4",
+      "f3-probe.gate-history-success.txt": "c26b449a4ba8bea70cc63abbceb869ff065fc50fee910e7ab1eb5097fc2ba974",
+      "f3-probe.gate-async.txt": "54bef7f3ceb0b3e149b28bfb3f6b6ddd4293e652e6d65550f7407462a74ee1cf",
+      "f3-probe.gate-quiescence.txt": "60dd8524b6af8471aa6e17f30997f52c3bf5c88827d2523d055b9eca76010790",
+      "f3-probe.gate-identification.txt": "1f645daadff9b060e72dcdcaa8a26aa05f97d4a602086222a03df4a96b31b31f",
+      "f3-probe.gate-failure.txt": "9f6b8e59d0c7932424f98bb620c3bed0e3ffab1e97eb24802fbbee7cf94c6c1e"
+    },
+    "probeSourceSha256": "0325c938a430cd1f2de9dadafc8334b1141b930b1751354541a252268fb147e8",
+    "cleanup": "compileTestJava without init script exit 0; 18 probe classes, stash copies and probe JUnit XML removed; git status clean"
+  },
+  "focus": {
+    "A_documentIdentity": {
+      "verdict": "CLOSED WITH EXPLICIT SCOPE RESTRICTION (failure paths)",
+      "facts": ["every successful paste regenerates the document UUID (MyXMLio.processXMLString -> resetUniqueId; clipboard wrapper has no id)", "K1-S without restore: UUID changed; with setUniqueId(captured): full XML byte-identical, save/reopen exact", "reload paths restore the UUID from the undo state or rollback XML", "tubeId null before and after (no Desktop reader)"],
+      "openObservation": "F3R-DOCUMENT-IDENTITY-SUCCESS — successful insertion changes the UUID (inherited)"
+    },
+    "B_undoRedo": {
+      "verdict": "K1-R as proposed ALTERED — UNACCEPTABLE (Redo destroyed in U2, U3); K1-S, inherited rollback and K1-R-H PRESERVED — VERIFIED (U1–U4, Locus V2 and Spline V2)",
+      "cause": "UndoManagerD.doStoreUndoInfo prunes after every store; the identity paste stores once",
+      "correction": "K1-R-H: undoHistoryTo/undoHistoryFrom with a live prefix copy; reinstate and restoreCurrentUndoInfo after the identified store"
+    },
+    "C_async": {
+      "verdict": "CLOSED WITH EXPLICIT SCOPE RESTRICTION with quiescence gate, content-identified bounded await and monitor-atomic swap; OPEN — NOT ESTABLISHED for equal-content pending stores",
+      "facts": ["one store per identity commit, none for elementary payloads", "landing 0.27-0.57 s, sometimes before insertFrom returns", "undo before the store undoes the user's previous action and the insertion reappears (A3a)", "restore before the store reproduces ER-F3R-1 (A3b)", "listener parameterless; concurrent store order undefined by source (observed 12/12 user-first)", "content identification 5/5; pending differing store detected before mutation"]
+    },
+    "D_savedState": {
+      "verdict": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+      "facts": ["clean and modified flags restored in every path", "no late flip after settle", "path, bytes and modification time unchanged; no save"]
+    },
+    "E_recoveryFailure": {
+      "verdict": "F3R-RECOVERY-FAILURE remains OPEN — NOT ESTABLISHED (detection established, containment designed only)",
+      "facts": ["E1 removal fault detectable; second-line reload certified with session reset", "E2 single reload fault swallowed by inherited retry", "E2b persistent reload fault walks the cursor to 0 and throws NoSuchElementException", "E3 locked undo file leaks, history correct", "E4 not injectable", "E5 certificate detects a missed recovery"]
+    }
+  },
+  "options": {
+    "K1S": "certified under contract with UUID restore and second-line reload",
+    "K1R": "withdrawn (ER-F3R-2)",
+    "K1R_H": "certified with declared session reset under gates 1-9",
+    "K2": "shared changes; not probed; likely GLOBAL_IMPACT",
+    "S": "fallback per payload class; quiescence gate is an S-type rejection for every path"
+  },
+  "dq21": "RECOMMENDATION ONLY — PENDING AUTHOR DISPOSITION: K1 corrected (K1-S + K1-R-H + gates); S fallback for identity-bearing payloads",
+  "corrections": ["ER-F3R-2: await + undo + prune keeps the history identical only for linear histories; listener-only await unsafe"],
+  "riskRegisterDelta": {
+    "F3R-ATOMICITY-COMMIT": "OPEN — PENDING AUTHOR DISPOSITION",
+    "F3R-UNDO-RACE": "CLOSED WITH EXPLICIT SCOPE RESTRICTION (restriction replaced)",
+    "F3R-UNDO-EQUAL-CONTENT-PENDING": "OPEN — NOT ESTABLISHED",
+    "F3R-REDO-PRESERVATION": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+    "F3R-DOCUMENT-IDENTITY": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+    "F3R-DOCUMENT-IDENTITY-SUCCESS": "OPEN — PENDING AUTHOR DISPOSITION",
+    "F3R-SAVED-STATE": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+    "F3R-RECOVERY-FAILURE": "OPEN — NOT ESTABLISHED",
+    "F3R-SPECIALIZED-ISOA": "CLOSED WITH RESTRICTION (K1-S link survival verified)"
+  },
+  "proposedImplementationClass": {"class": "INTEGRATED_PHASE", "frozen": false, "condition": "K1-S, K1-R-H or S; a pending-store counter subclass or K2 needs a classification review"},
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f3_dq21_recovery_safety_report.md",
+    "docs/validation/pre_g9b_r6_plus_f3_dq21_recovery_option_assessment.md",
+    "docs/validation/pre_g9b_r6_plus_f3_risk_register_recovery_gate_update.md",
+    "docs/validation/pre_g9b_r6_plus_f3_author_decision_sheet_recovery_update.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-recovery-state-matrix.json",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-recovery-safety-gate.json",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}

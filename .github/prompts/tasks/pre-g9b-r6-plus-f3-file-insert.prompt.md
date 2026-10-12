@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — File / Insert surface and restricted native document insertion
 
-**CANONICAL PROMPT — DECISION-RECONCILED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — DECISION-RECONCILED AND RECOVERY-GATED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
 
 History of this file (each version kept in Git): prepared by
 `PRE-G9B-R6-plus-F3-PREP` (commit `480c972972e90514e88421194a792898c916834e`);
@@ -14,8 +14,12 @@ characterization and documentary reconciliation only (commit
 `8b41af11316f90d7a068ce6af4859213240ce6a6`); reconciled again by
 `PRE-G9B-R6-plus-F3-AUTHOR-DECISION-RECONCILIATION` (author instruction of
 2026-10-12), which resolved `DQ-F3-21` into options, corrected the commit-time
-compensation procedure (`ER-F3R-1`) and prepared the final decision sheet.
-Nothing in this file is authorization.
+compensation procedure (`ER-F3R-1`) and prepared the final decision sheet
+(commit `3e24ed3aca422eef4e844a6c1230a3a3fc599c21`); reviewed by
+`PRE-G9B-R6-plus-F3-DQ21-FOCUSED-RECOVERY-SAFETY-GATE` (author instruction of
+2026-10-12), which found that the earlier K1-R procedure destroys pre-existing
+Redo states (`ER-F3R-2`) and replaced the recovery gates. Nothing in this file
+is authorization.
 
 This prompt distinguishes three kinds of content:
 
@@ -25,14 +29,20 @@ This prompt distinguishes three kinds of content:
 - **PENDING DECISION** — `DQ-F3-1` to `DQ-F3-24` and the proposed amendments
   `P1`–`P6`, including those of `F3-D2` and `DQ-D1-7`
   ([final author-decision preparation record](../../../docs/validation/pre_g9b_r6_plus_f3_final_author_decision_preparation_record.md)
-  v4.0 §3–§6; [normative amendment proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md));
+  v4.0 §3–§6, with Q1 as updated by the
+  [author decision preparation update](../../../docs/validation/pre_g9b_r6_plus_f3_author_decision_sheet_recovery_update.md)
+  v4.1; [normative amendment proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md));
   the agent never chooses among their alternatives;
 - **TECHNICAL GATE** — feasibility items the implementation entry gate must
   establish before product code (*Implementation base*).
 
-Evidence: [decision reconciliation report](../../../docs/validation/pre_g9b_r6_plus_f3_author_decision_reconciliation_report.md),
+Evidence: [focused recovery safety report](../../../docs/validation/pre_g9b_r6_plus_f3_dq21_recovery_safety_report.md)
+(`RG-S*`, Focus A–E), [updated DQ-F3-21 assessment](../../../docs/validation/pre_g9b_r6_plus_f3_dq21_recovery_option_assessment.md)
+(recovery procedure and gates, superseding §3 of the design successor),
+[risk register update](../../../docs/validation/pre_g9b_r6_plus_f3_risk_register_recovery_gate_update.md),
+[decision reconciliation report](../../../docs/validation/pre_g9b_r6_plus_f3_author_decision_reconciliation_report.md),
 [DQ-F3-21 option assessment](../../../docs/validation/pre_g9b_r6_plus_f3_dq21_option_assessment.md)
-(`DQ21-Q1`–`Q5`), [risk register reconciliation](../../../docs/validation/pre_g9b_r6_plus_f3_risk_register_reconciliation.md),
+(`DQ21-Q1`–`Q5`, history), [risk register reconciliation](../../../docs/validation/pre_g9b_r6_plus_f3_risk_register_reconciliation.md),
 [focused feasibility report](../../../docs/validation/pre_g9b_r6_plus_f3_focused_feasibility_report.md)
 (`G0`–`G9`), [risk closeout candidate](../../../docs/validation/pre_g9b_r6_plus_f3_risk_closeout_candidate.md)
 (as corrected by `ER-F3R-1`) and, as history, the earlier F3 reports. Design:
@@ -53,14 +63,16 @@ the first tracked edit, an amendment of this prompt to the authorized state.
 ```text
 PRE-G9B-R6-plus-F3 =
 PLANNED — AUTHOR APPROVED (2026-10-03, F3-D1 to F3-D6)
-PREPARED — DECISION-RECONCILED — NOT AUTHORIZED
+PREPARED — DECISION-RECONCILED — RECOVERY-GATED — NOT AUTHORIZED
 
 AUTHOR DIRECTIONS        = R / M1 / L1 / INDEPENDENT BUFFER / SPECIALIZED OBJECTS / T0 / U0
                            (2026-10-12; directions, not approvals)
-FINAL DECISION SHEET     = Q1–Q7 (record v4.0 §6), all PENDING
-RISK REGISTER            = 2 CLOSED, 10 CLOSED WITH RESTRICTION, 1 OPEN PENDING
-                           AUTHOR DISPOSITION (F3R-ATOMICITY-COMMIT), 1 OPEN NOT
-                           ESTABLISHED (F3R-RECOVERY-FAILURE), 0 BLOCKED
+FINAL DECISION SHEET     = Q1 (record v4.1) and Q2–Q7 (record v4.0 §6), all PENDING
+RISK REGISTER            = 2 CLOSED, 13 CLOSED WITH RESTRICTION, 2 OPEN PENDING
+                           AUTHOR DISPOSITION (F3R-ATOMICITY-COMMIT,
+                           F3R-DOCUMENT-IDENTITY-SUCCESS), 2 OPEN NOT ESTABLISHED
+                           (F3R-RECOVERY-FAILURE, F3R-UNDO-EQUAL-CONTENT-PENDING),
+                           0 BLOCKED
 IMPLEMENTATION           = NOT AUTHORIZED
 selfApproved             = false
 authorApproved           = false
@@ -105,7 +117,7 @@ Deliver, as the author disposes:
 |---|---|---|
 | `DQ-F3-1`–`-4` | surface, chooser, containers, OFF | N1 (+ `document.apply-styles` if `DQ-F3-23`); A1; X1; OFF-B |
 | `DQ-F3-5` | labels | L1, no overwrite |
-| `DQ-F3-6`, `-18`, `-21` | atomicity | admission + strict dry run + strict verification; commit-time recovery K1 refined (K1-S, K1-R with await/undo/prune, serious-failure path); immediate restore forbidden |
+| `DQ-F3-6`, `-18`, `-21` | atomicity | quiescence gate + admission + strict dry run + strict verification; commit-time recovery K1 corrected: K1-S (UUID restore, second-line reload) and K1-R-H (history-isolated reload, content-identified store); serious-failure path; K1-R with undo/prune withdrawn; no restore while the paste store can land |
 | `DQ-F3-7`, `-16` | buffer and `D1` | operation-scoped insertion buffer; `DQ-D1-7` amendment (record §4.2) |
 | `DQ-F3-8`, `-9`, `-17`, `-23` | style operation | T0 with exclusions (`P5`); "Apply Styles…" / "Aplicar estilos…" |
 | `DQ-F3-10`, `-11`, `-12`, `-19`, `-20` | helper, Classic, class, upstream, debt | H-1, H-3; F-1; `INTEGRATED_PHASE`; U0; C20-1 |
@@ -123,8 +135,10 @@ published main         = e70718fec3612814144cd405d46f6c08864ceadd (tree 26817bfc
 T_F3_PREP              = 480c972972e90514e88421194a792898c916834e (tree 166caf6c7802c37db03060a2fd07cd71d28daa17)
 T_F3_RECONCILIATION    = 0eb50311d55a099de70e3f222b885b31685ac0df (tree 061e08f1a9d821cf642827afaf52d802629b940a)
 T_F3_RISK              = 8b41af11316f90d7a068ce6af4859213240ce6a6 (tree 8be60e86e09f957f1735990b966190bd44ffab2a)
-decision reconciliation = the local commit of
-                         phase/pre-g9b-r6-plus-f3-author-decision-reconciliation
+T_F3_DECISION_RECONCILIATION
+                       = 3e24ed3aca422eef4e844a6c1230a3a3fc599c21 (tree 65e282431a6ece824c783e8217bed74b85b79e68)
+recovery safety gate   = the local commit of
+                         phase/pre-g9b-r6-plus-f3-dq21-recovery-safety-gate
                          that contains this version (documentation only)
 ```
 
@@ -137,26 +151,34 @@ phase branch; re-establishes the cited seams; records the dispositions applied.
 **TECHNICAL GATES** (before product code; recorded in the candidate report; a
 failed gate stops the work for the author and is never worked around):
 
-1. under `DQ-F3-21` as disposed (assessment §5; design successor §2–§3): the
-   orchestration determines `pasteStored` (commit returned normally and a
-   created object participates in the identity registry) and awaits that
-   store before any verification decision or compensation; an immediate
-   `restoreCurrentUndoInfo()` after an identity-bearing commit is never used
-   (`DQ21-Q1`);
+1. under `DQ-F3-21` as disposed (updated assessment §2, §4 gates 1–4): before
+   any mutation the history head content equals the live undo XML, otherwise
+   the insertion is rejected unchanged; identity-bearing commits run with only
+   the history prefix up to the cursor live; the paste's own store is
+   identified by content with a bounded wait; no recovery step runs before it
+   (regression tests reproduce A3a and A3b); the history swap and reload run as
+   one step synchronized on the undo manager; `undo()` + `pruneStateList()`
+   is never used as recovery (`ER-F3R-2`);
 2. K1-S (if disposed): after an injected post-commit failure on a payload
-   without identity records, subtractive removal keeps live instances, the
-   Parallel/Perpendicular memory, the undo history, the layers and the saved
-   flag, and the serializable state differs at most in the root document id
-   (`DQ21-Q3`);
-3. K1-R (if disposed): after an injected failure with `pasteStored`, `undo()`
-   then `pruneStateList()` leaves serializable state and undo history
-   identical, no later Undo makes the insertion reappear, transferred macros
-   are removed, the saved flag is restored and the session reset is the
-   declared one (`DQ21-Q2`);
-4. serious failure: a failure inside the inherited rollback or the recovery, a
-   missing awaited store, or a failed post-recovery certificate makes no further
-   mutation, reports the `P6` serious message and marks the document modified
-   (`DQ21-Q5`);
+   without identity records, subtractive removal plus restore of the captured
+   document UUID leaves the full document XML byte-identical, the complete
+   Undo/Redo history (list and cursor) identical in U1–U4, live instances, the
+   Parallel/Perpendicular memory and the IsoABorder link kept, macros and the
+   saved flag restored; a failed removal falls back to reloading the history
+   head and is certified again (E1);
+3. K1-R-H (if disposed): after an injected failure on a Locus V2 or Spline V2
+   payload, reinstating the held history and reloading leaves the full
+   document XML, the root UUID and the complete Undo/Redo history (U1–U4)
+   identical, no later Undo/Redo makes the insertion reappear, the saved flag
+   is restored without saving, and only the declared session reset occurs;
+   on success the held Redo branch is discarded and the insertion is one undo
+   step;
+4. serious failure: a failure inside the inherited rollback (`DQ21-Q5`), inside
+   the reload (persistent load failure, E2b), a missing or unidentified paste
+   store, or a failed certificate makes no further mutation, reports the `P6`
+   serious message and marks the document modified; the certificate includes
+   full XML, root UUID, identities, macros, history list and cursor, saved flag
+   and file association;
 5. the dry run detects every deterministic content failure class of the
    feasibility report G2 and its cost on a large document is recorded;
 6. strict verification (count, pairwise class and parent algorithm, closure,
@@ -241,7 +263,8 @@ stay in shared services, unchanged.
 
 First deliverable: `geocedg/specs/ui/document-insertion.md` — the disposed
 contracts of the restricted design §1, the matrix, the store-aware transaction
-and the recovery branches of the design successor §2–§3 as disposed, the macro
+of the design successor §2 and the recovery procedure and gates of the updated
+`DQ-F3-21` assessment §2 and §4 as disposed, the macro
 rules, the style whitelist and
 exclusions, the `D1`, layer and identity interactions and the user-facing
 messages; `PROPOSED` until approved. An ADR is required if `DQ-F3-19` selects
@@ -278,8 +301,11 @@ layer workspace and undo; the Open and document-lifecycle suites unchanged.
 The obligations of the restricted design §5 (`T-F3R-ATOMIC-PRECOMMIT`,
 `T-F3R-ATOMIC-DRYRUN`, `T-F3R-ATOMIC-COMMIT`, `T-F3R-STRICT-VERIFY`,
 `T-F3R-M1`, `T-F3R-L1`, `T-F3R-SPECIAL`, `T-F3R-BUFFER`, `T-F3R-T0`), of the
-design successor §6 (`T-F3R-UNDO-RACE`, `T-F3R-RECOVERY-S`, `T-F3R-RECOVERY-R`,
-`T-F3R-RECOVERY-SERIOUS`, for the branches `DQ-F3-21` disposes) and of the
+design successor §6 (`T-F3R-UNDO-RACE`, `T-F3R-RECOVERY-S`, `T-F3R-RECOVERY-R`
+— now for K1-R-H —, `T-F3R-RECOVERY-SERIOUS`, for the branches `DQ-F3-21`
+disposes), of the updated assessment §4 gate 9 (`T-F3R-REDO-BRANCH` U1–U4 per
+path and payload class, `T-F3R-QUIESCENCE`, `T-F3R-DOCUMENT-ID`,
+`T-F3R-SAVED-STATE` clean and modified, `T-F3R-RELOAD-FAULT`) and of the
 conservative design §9 that remain applicable (`T-F3-MENU`, `T-F3-L10N`,
 `T-F3-PINS`, `T-F3-CLASSIC`, `T-F3-FALLBACK`, `T-F3-OPEN-UNCHANGED`,
 `T-F3-OFF`, `T-F3-GUIDES`, `T-F3R-MATRIX`, `T-F3R-REJECT`, `T-F3R-HELPER`),
@@ -370,8 +396,9 @@ Stop and report, without guessing, when:
   `TemplateHelper` or `ConstructionDefaults`, or an unselected inherited change;
 - any rejection path changes the serializable or runtime certificate;
 - a commit-time failure cannot be compensated as `DQ-F3-21` disposes, or a
-  compensation would need an immediate restore, a shared change or a
-  non-awaited undo store;
+  compensation would need a restore while the paste store can still land, a
+  shared change, an unidentified undo store, or would remove pre-existing Redo
+  states;
 - an admitted type fails its class, algorithm, closure, value, identity,
   dynamic or persistence test;
 - macro transfer would substitute, duplicate or leak a macro;
