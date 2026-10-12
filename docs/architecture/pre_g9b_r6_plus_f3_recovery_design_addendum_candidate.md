@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — recovery design addendum candidate
 
-- Status: **PROPOSED — PENDING AUTHOR REVIEW**
+- Status: **SUPERSEDED — NOT AUTHOR APPROVED** — superseded by the recovery design addendum successor (author decision of 2026-10-13, [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); implementation NOT AUTHORIZED); kept as history
 - Produced by: `PRE-G9B-R6-plus-F3-UNDO-HISTORY-SEMANTIC-INTEGRITY-GATE`
   (author instruction of 2026-10-12; documentary)
 - Base: `T_F3_RECOVERY_CORRECTIVE` `6e41bf4426b9bdcb137f42e783038b02827ff3bd`

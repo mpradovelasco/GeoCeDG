@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — restricted insertion: design successor candidate
 
-- Status: **PROPOSED — PENDING AUTHOR REVIEW**
+- Status: **DESIGN — AUTHOR APPROVED** (author decision of 2026-10-13, [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); implementation NOT AUTHORIZED); its recovery §2–§3 are superseded by the recovery design addendum successor
 - Produced by: `PRE-G9B-R6-plus-F3-AUTHOR-DECISION-RECONCILIATION` (author
   instruction of 2026-10-12; documentary)
 - Base: `T_F3_RISK` `8b41af11316f90d7a068ce6af4859213240ce6a6`, tree

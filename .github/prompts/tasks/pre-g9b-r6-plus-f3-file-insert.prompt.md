@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — File / Insert surface and restricted native document insertion
 
-**CANONICAL PROMPT — DECISION-RECONCILED, RECOVERY-CORRECTED, HISTORY-INTEGRITY-GATED AND AUDIT-RECONCILED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — F3 DESIGN AUTHOR APPROVED (2026-10-13) — UNEXECUTED — PREPARED — IMPLEMENTATION NOT AUTHORIZED.**
 
 History of this file (each version kept in Git): prepared by
 `PRE-G9B-R6-plus-F3-PREP` (commit `480c972972e90514e88421194a792898c916834e`);
@@ -35,22 +35,30 @@ instruction of 2026-10-12) with the independent final design safety audit
 (`GO WITH CONDITIONS`): a distinct verified native recovery snapshot,
 conservative fail-closed pending-store accounting, attach-side quiescence,
 recovery-source capture by reference, save-prompt bypass, a stateless factory,
-exception preservation and the stop conditions FR-F3-1 to FR-F3-8. Nothing in
-this file is authorization.
+exception preservation and the stop conditions FR-F3-1 to FR-F3-8 (commit
+`9d130b43fbeb731a25d5dcf6413ed0dd0439f61e`); reconciled again by
+`PRE-G9B-R6-plus-F3-AUTHOR-DESIGN-CLOSEOUT` (author decision of 2026-10-13),
+which records the author's approval of the F3 design — Q1–Q7, `DQ-F3-1` to
+`DQ-F3-24` and `P1`–`P7` — in the
+[F3 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md).
+That approval is of the design only. Nothing in this file is authorization to
+implement.
 
 This prompt distinguishes three kinds of content:
 
 - **APPROVED** — the planning decisions `F3-D1` to `F3-D6`
-  ([F3 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f3_author_decisions_record.md))
-  and the accepted `D1` decisions, unchanged until the author amends them;
-- **PENDING DECISION** — `DQ-F3-1` to `DQ-F3-24` and the proposed amendments
-  `P1`–`P7`, including those of `F3-D2` and `DQ-D1-7`
-  ([Final F3 Author Decision Sheet v6.0](../../../docs/validation/pre_g9b_r6_plus_f3_final_author_decision_sheet_v6.md),
-  superseding v5.0;
-  [reconciled amendment proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md));
-  the agent never chooses among their alternatives;
+  ([F3 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f3_author_decisions_record.md)),
+  with `F3-D2` items 1–5 amended by `P1`; the accepted `D1` decisions, with
+  `DQ-D1-7` amended by `P2`; the F3 design (Q1–Q7, final dispositions of
+  `DQ-F3-1` to `DQ-F3-24`, contracts `P3`–`P7`), all recorded in the
+  [F3 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md)
+  §3–§8, which also fixes the precedence of the approved design documents;
+- **PENDING AUTHORIZATION** — the implementation itself: exact base, frozen
+  executable class and bounded scope, to be given by
+  `PRE-G9B-R6-plus-F3-IMPLEMENTATION-AUTHORIZATION`;
 - **TECHNICAL GATE** — feasibility items the implementation entry gate must
-  establish before product code (*Implementation base*).
+  establish before product code (*Implementation base*), under the binding
+  stop conditions FR-F3-1 to FR-F3-8.
 
 Evidence: [independent final design safety audit](../../../docs/validation/pre_g9b_r6_plus_f3_independent_final_design_safety_audit.md)
 (G1–G7, N1–N5, NE1–NE2), [audit reconciliation report](../../../docs/validation/pre_g9b_r6_plus_f3_independent_audit_reconciliation_report.md),
@@ -87,32 +95,31 @@ by reference. This file is an execution contract, not a second policy
 document: units in `geocedg/specs/units/unit-system.md`; classes in
 `geocedg/specs/operations/verification-levels.md` §12.8.
 
-Execution requires a new explicit author instruction that names
-`PRE-G9B-R6-plus-F3` and an exact base, disposes of every pending decision and
-approves or rejects each proposed amendment. That instruction may authorize, as
-the first tracked edit, an amendment of this prompt to the authorized state.
+Execution requires a new explicit author instruction
+(`PRE-G9B-R6-plus-F3-IMPLEMENTATION-AUTHORIZATION`) that names
+`PRE-G9B-R6-plus-F3`, an exact approved base and the frozen executable class.
+That instruction may authorize, as the first tracked edit, an amendment of this
+prompt to the authorized state. The design approval of 2026-10-13 does not.
 
 ```text
 PRE-G9B-R6-plus-F3 =
 PLANNED — AUTHOR APPROVED (2026-10-03, F3-D1 to F3-D6)
-PREPARED — DECISION-RECONCILED — RECOVERY-CORRECTED — HISTORY-INTEGRITY-GATED
-— AUDIT-RECONCILED — NOT AUTHORIZED
+DESIGN — AUTHOR APPROVED (2026-10-13; Q1–Q7, DQ-F3-1..24, P1–P7)
+PREPARED — IMPLEMENTATION NOT AUTHORIZED
 
-AUTHOR DIRECTIONS        = R / M1 / L1 / INDEPENDENT BUFFER / SPECIALIZED OBJECTS / T0 / U0
-                           (2026-10-12; directions, not approvals); for this
-                           reconciliation: accounting C1, recovery copy keeps
-                           the UUID, no export of uncertified state (preferred,
-                           not ratified)
-FINAL DECISION SHEET     = Q1–Q7 (Final F3 Author Decision Sheet v6.0), all PENDING
+AUTHOR DECISIONS         = F3 author design closeout record (design only)
 INDEPENDENT AUDIT        = GO WITH CONDITIONS (0 blockers; G1–G7 gates; N1–N5;
-                           NE1–NE2), reconciled
-RISK REGISTER            = see the audit risk register: 6 OPEN IMPLEMENTATION
-                           GATE, 2 OPEN NOT ESTABLISHED (containment, EDT),
-                           1 OPEN PENDING AUTHOR DISPOSITION
-                           (F3R-ATOMICITY-COMMIT), 0 BLOCKED
+                           NE1–NE2), reconciled; not a PASS
+RISK REGISTER            = risk register at the design closeout: implementation
+                           gates and not-established items mapped to FR-F3-1..8;
+                           0 BLOCKED
+STOP CONDITIONS          = FR-F3-1 to FR-F3-8 — BINDING
 IMPLEMENTATION           = NOT AUTHORIZED
+TECHNICAL VERIFICATION   = NOT EXECUTED
+AUTHOR SMOKE             = NOT EXECUTED
+PUBLICATION              = NOT AUTHORIZED
 selfApproved             = false
-authorApproved           = false
+authorApproved           = true (F3 DESIGN ONLY)
 implementationAuthorized = false
 passClaimed              = false
 PHASE_KIND               = DESKTOP PRODUCT SURFACE AND A GEOCEDG-OWNED, FAIL-CLOSED
@@ -121,47 +128,55 @@ PHASE_KIND               = DESKTOP PRODUCT SURFACE AND A GEOCEDG-OWNED, FAIL-CLO
                            serialization, parser or unit change
 DEBT                     = DEBT-R6PLUS-FILE-INSERT-SURFACE (closure per DQ-F3-20)
 DEPENDS_ON               = PRE-G9B-R6-plus-D1 (hard, F3-D5); F2/F2-R1 published
-PLANNED CLASS            = INTEGRATED_PHASE (F3-D4) — NOT FROZEN; the frozen plan
-                           names integration coverage of the existing Desktop
-                           undo, document-lifecycle and identity suites
+PLANNED CLASS            = INTEGRATED_PHASE (PHASE + INTEGRATION) — author-selected
+                           target (2026-10-13); NOT FROZEN — frozen with its
+                           verification contract at implementation
+                           authorization; the frozen plan names the existing
+                           AppGeoCeDG-based undo, document-lifecycle and
+                           identity suites
 NEXT_SUBPHASE            = none implied; F4, G stay unauthorized
 ```
 
 <!-- geocedg-field: objective -->
 ## Objective
 
-Deliver, as the author disposes:
+Deliver, as the author approved on 2026-10-13 (design only; implementation
+pending its own authorization):
 
 1. **APPROVED** — File → Insert / Archivo → Insertar with two independent
-   actions removed from the GeoCeDG Open dialog (`F3-D2` 1–2); `.cedg`/`.ggb`
-   containers only (`F3-D2` 3, 8); OFF out of the GeoCeDG UI with internal OFF
-   support unchanged (`F3-D2` 6–7); `D1` provenance and notice, no coordinate
-   scaling (`F3-D2` 4; `F3-D5`); no geometry import and no unit change by the
-   style operation (`F3-D2` 5); Classic unchanged; closure before `G`.
-2. **PENDING DECISION** — the restricted insertion contract (design §1, §3:
-   admission, matrix, M1 with transitive closure and digest reuse, L1 without
+   actions removed from the GeoCeDG Open dialog (`F3-D2` 1–2 as amended by
+   `P1`); `.cedg`/`.ggb` containers only, contents admitted only by their
+   contracts (`F3-D2` 3 as amended, 8); OFF out of the GeoCeDG UI with internal
+   OFF support unchanged (`F3-D2` 6–7); `D1` provenance and notice through the
+   operation-scoped buffer, no coordinate scaling (`F3-D2` 4 as amended;
+   `F3-D5`; `DQ-D1-7` as amended by `P2`); no geometry import and no unit
+   change by the style operation (`F3-D2` 5 as amended); Classic unchanged;
+   closure before `G`.
+2. **APPROVED** — the restricted insertion contract (design §1, §3: admission,
+   matrix `P4`, M1 `P3` with transitive closure and digest reuse, L1 without
    overwrite, strict dry run, strict verification, operation-scoped insertion
-   buffer, one undo step) under `DQ-F3-5`, `-6`, `-7`, `-13`–`-16`, `-18`,
-   `-21`, `-22`, `-24`.
-3. **PENDING DECISION** — the T0 style operation and its name ("Apply Styles…"
-   / "Aplicar estilos…" proposed) under `DQ-F3-8`, `-17`, `-23`.
+   buffer, one undo step) and the recovery and isolation contract (`P6`, `P7`,
+   recovery design addendum successor) under `DQ-F3-5`, `-6`, `-7`,
+   `-13`–`-16`, `-18`, `-21`, `-22`, `-24`.
+3. **APPROVED** — the T0 style operation `P5`, named "Apply Styles…" /
+   "Aplicar estilos…", under `DQ-F3-8`, `-9`, `-17`, `-23`.
 4. The surface, chooser, OFF, helper and fallback details of `DQ-F3-1`–`-4`,
    `-10`, `-11`; the class of `DQ-F3-12`; the debt closure of `DQ-F3-20`; the
    tests of design §5 and of the conservative design §9; the durable
    specification.
 
-### Pending decisions (recommendations only)
+### Approved decisions (author decision of 2026-10-13; closeout record §5)
 
-| Id | Subject | Recommendation |
+| Id | Subject | Final author disposition |
 |---|---|---|
-| `DQ-F3-1`–`-4` | surface, chooser, containers, OFF | N1 (+ `document.apply-styles` if `DQ-F3-23`); A1; X1; OFF-B |
+| `DQ-F3-1`–`-4` | surface, chooser, containers, OFF | N1 with `document.apply-styles`; A1; X1; OFF-B |
 | `DQ-F3-5` | labels | L1, no overwrite |
 | `DQ-F3-6`, `-18`, `-21` | atomicity | history-preserving barrier (conservative fail-closed accounting C1, verified native recovery snapshot, original history moved by a GeoCeDG undo-manager subclass, generation barrier, attach-side quiescence) + admission + strict dry run + strict verification; K1-S and K1-R-H guarded reload; destination UUID preserved; isolation with three exits, no export of the uncertified state; K1-R with undo/prune withdrawn |
-| `DQ-F3-7`, `-16` | buffer and `D1` | operation-scoped insertion buffer; `DQ-D1-7` amendment (record §4.2) |
+| `DQ-F3-7`, `-16` | buffer and `D1` | operation-scoped insertion buffer; `DQ-D1-7` amended by `P2` |
 | `DQ-F3-8`, `-9`, `-17`, `-23` | style operation | T0 with exclusions (`P5`); "Apply Styles…" / "Aplicar estilos…" |
-| `DQ-F3-10`, `-11`, `-12`, `-19`, `-20` | helper, Classic, class, upstream, debt | H-1, H-3; F-1; `INTEGRATED_PHASE`; U0; C20-1 |
-| `DQ-F3-13`, `-14` | contract, matrix | A13-1; matrix of the risk candidate §2 |
-| `DQ-F3-15`, `-22`, `-24` | macros | M1 with restrictions; transferred macros kept after Undo (MU-1); reject identity + macros (R24-1) |
+| `DQ-F3-10`, `-11`, `-12`, `-19`, `-20` | helper, Classic, class, upstream, debt | H-1, H-3; F-1; `INTEGRATED_PHASE` target; U0; C20-1 |
+| `DQ-F3-13`, `-14` | contract, matrix | `P1` items 3–4 (reconciled); `P4` |
+| `DQ-F3-15`, `-22`, `-24` | macros | M1 per `P3`; MU-1; reject identity + macros before mutation |
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
@@ -181,8 +196,11 @@ T_F3_RECOVERY_CORRECTIVE
                        = 6e41bf4426b9bdcb137f42e783038b02827ff3bd (tree 8b614863de45a7fccb93ec751871498c8ee7bbd1)
 T_F3_UNDO_HISTORY_INTEGRITY
                        = e479b76d47c4e62baf9a4cf511ec06268c5b5ab3 (tree 749005c525af0d54724fa9acc1608bde2420253a)
-audit reconciliation   = the local commit of
-                         phase/pre-g9b-r6-plus-f3-independent-audit-reconciliation
+T_F3_AUDIT_RECONCILIATION
+                       = 9d130b43fbeb731a25d5dcf6413ed0dd0439f61e (tree daec52cd9f2cfe395bfac26b9556a11276323a9f)
+                         (approved design base)
+design closeout        = the local commit of
+                         phase/pre-g9b-r6-plus-f3-author-design-closeout
                          that contains this version (documentation only)
 ```
 

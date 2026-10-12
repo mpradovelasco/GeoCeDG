@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — File / Insert surface: reconciled design candidate
 
-- Status: **PROPOSED — CANDIDATE — NOT AUTHOR APPROVED**
+- Status: **NOT AUTHOR APPROVED AS A WHOLE**; its §3, §4, §8 and §9 are part of the approved design by reference (**DESIGN — AUTHOR APPROVED**) (author decision of 2026-10-13, [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); implementation NOT AUTHORIZED)
 - Produced by: `PRE-G9B-R6-plus-F3-PREP` (author instruction of 2026-10-12;
   characterization and documentary preparation only)
 - Base: published `main` `e70718fec3612814144cd405d46f6c08864ceadd`, tree

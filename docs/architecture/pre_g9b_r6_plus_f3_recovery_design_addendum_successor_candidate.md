@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — recovery design addendum successor candidate
 
-- Status: **PROPOSED — PENDING AUTHOR REVIEW**
+- Status: **DESIGN — AUTHOR APPROVED** (author decision of 2026-10-13, [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); implementation NOT AUTHORIZED)
 - Produced by: `PRE-G9B-R6-plus-F3-INDEPENDENT-AUDIT-RECONCILIATION` (author
   instruction of 2026-10-12; documentary)
 - Base: `T_F3_UNDO_HISTORY_INTEGRITY` `e479b76d47c4e62baf9a4cf511ec06268c5b5ab3`

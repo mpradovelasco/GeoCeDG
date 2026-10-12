@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — restricted native insertion: design candidate
 
-- Status: **PROPOSED — PENDING AUTHOR REVIEW**
+- Status: **DESIGN — AUTHOR APPROVED** (author decision of 2026-10-13, [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); implementation NOT AUTHORIZED); where it conflicts with the reconciled proposals `P1`–`P7`, the recovery design addendum successor or the design successor, those prevail
 - Produced by: `PRE-G9B-R6-plus-F3-FOCUSED-RISK-CLOSEOUT` (author instruction
   of 2026-10-12; documentary only)
 - Base: `T_F3_RECONCILIATION` `0eb50311d55a099de70e3f222b885b31685ac0df`,

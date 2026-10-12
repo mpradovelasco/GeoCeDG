@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — conservative insertion: reconciled design candidate
 
-- Status: **PROPOSED — PENDING AUTHOR REVIEW**
+- Status: **SUPERSEDED — NOT AUTHOR APPROVED AS A WHOLE**; its §9 test matrix is part of the approved design by reference (author decision of 2026-10-13, [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); implementation NOT AUTHORIZED)
 - Produced by: `PRE-G9B-R6-plus-F3-AUTHOR-RECONCILIATION` (author instruction
   of 2026-10-12; conservative scope reassessment, documentary only)
 - Base: F3 preparation candidate `480c972972e90514e88421194a792898c916834e`,

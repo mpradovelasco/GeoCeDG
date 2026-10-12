@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "activity": "PRE-G9B-R6-plus-F3-AUTHOR-DESIGN-CLOSEOUT",
+  "recordKind": "AUTHOR_DECISIONS",
+  "record": "docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md",
+  "decisionDate": "2026-10-13",
+  "approvedDesignBase": {
+    "commit": "9d130b43fbeb731a25d5dcf6413ed0dd0439f61e",
+    "tree": "daec52cd9f2cfe395bfac26b9556a11276323a9f",
+    "parent": "e479b76d47c4e62baf9a4cf511ec06268c5b5ab3",
+    "static": "verification-d975299fbf334c05b98e3aec5b9006b9 ACCEPTED / COMPLETE"
+  },
+  "publishedMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+  "entryGate": "PASS",
+  "authorApprovedDesign": true,
+  "authorApprovedScope": "F3 DESIGN ONLY",
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "publicationAuthorized": false,
+  "productPassClaimed": false,
+  "status": {
+    "design": "DESIGN — AUTHOR APPROVED",
+    "implementation": "NOT AUTHORIZED",
+    "technicalVerification": "NOT EXECUTED",
+    "authorSmoke": "NOT EXECUTED",
+    "productCloseout": "NOT PERFORMED",
+    "publication": "NOT AUTHORIZED",
+    "debt": "DEBT-R6PLUS-FILE-INSERT-SURFACE OPEN (closes only at F3 product closeout, C20-1)"
+  },
+  "approvedDesignDocuments": [
+    {"rank": 1, "path": "docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md", "role": "authority"},
+    {"rank": 2, "path": "docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md", "role": "P1-P7 APPROVED"},
+    {"rank": 3, "path": "docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md", "role": "DESIGN — AUTHOR APPROVED"},
+    {"rank": 4, "path": "docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_successor_candidate.md", "role": "DESIGN — AUTHOR APPROVED (recovery sections superseded by rank 3)"},
+    {"rank": 5, "path": "docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_candidate.md", "role": "DESIGN — AUTHOR APPROVED"},
+    {"rank": 6, "path": "docs/architecture/pre_g9b_r6_plus_f3_file_insert_reconciled_design_candidate.md", "role": "sections 3, 4, 8, 9 by reference"},
+    {"rank": 6, "path": "docs/architecture/pre_g9b_r6_plus_f3_conservative_insertion_design_candidate.md", "role": "section 9 tests by reference"}
+  ],
+  "q": {
+    "Q1": {"dq": ["DQ-F3-21"], "decision": "APPROVED — K1 corrected with mandatory safety gates (K1-S, K1-R-H, original-command history transfer, GeoCeDG undo-manager subclass, generation barrier, accounting C1, verified native recovery snapshot, UUID preserved, certified postconditions, declared session reset, S, isolation with three exits, no uncertified export)"},
+    "Q2": {"dq": ["DQ-F3-5", "DQ-F3-6", "DQ-F3-13", "DQ-F3-14", "DQ-F3-18"], "decision": "APPROVED — R with L1 and strict admission (P1 items 3-4, P4)"},
+    "Q3": {"dq": ["DQ-F3-15", "DQ-F3-22", "DQ-F3-24"], "decision": "APPROVED — M1 / MU-1 / identity + macro rejection (P3)"},
+    "Q4": {"dq": ["DQ-F3-7", "DQ-F3-16"], "decision": "APPROVED — independent insertion buffer; P2 amends DQ-D1-7"},
+    "Q5": {"dq": ["DQ-F3-8", "DQ-F3-9", "DQ-F3-17", "DQ-F3-23"], "decision": "APPROVED — T0 / Apply Styles… / Aplicar estilos… (P5)"},
+    "Q6": {"dq": ["DQ-F3-20"], "decision": "APPROVED — C20-1 closure policy"},
+    "Q7": {"dq": ["DQ-F3-1", "DQ-F3-2", "DQ-F3-3", "DQ-F3-4", "DQ-F3-10", "DQ-F3-11", "DQ-F3-12", "DQ-F3-19"], "decision": "APPROVED — N1, A1, X1, OFF-B, H-1/H-3, F-1, U0; INTEGRATED_PHASE target"}
+  },
+  "amendments": {
+    "P1": "APPROVED — replaces F3-D2 items 1-5 (items 6-9 unchanged); F3 author-decision record kept as history",
+    "P2": "APPROVED — replaces DQ-D1-7 for Insert File; D1 prompt closeout record kept as history",
+    "P3": "APPROVED", "P4": "APPROVED", "P5": "APPROVED", "P6": "APPROVED", "P7": "APPROVED"
+  },
+  "conditionalRequirements": ["independent audit G1-G7 as implementation gates", "NE1 EDT", "NE2 containment effectiveness"],
+  "stopConditions": {"ids": ["FR-F3-1", "FR-F3-2", "FR-F3-3", "FR-F3-4", "FR-F3-5", "FR-F3-6", "FR-F3-7", "FR-F3-8"], "status": "BINDING"},
+  "pendingImplementation": "PRE-G9B-R6-plus-F3-IMPLEMENTATION-AUTHORIZATION (exact base, frozen executable class, bounded scope)",
+  "deferredWork": ["DEFER-F3-TEMPLATE-DEFAULTS", "DEFER-F3-M2", "DEFER-F3-SCRIPTS", "DEFER-F3-3D", "DEFER-F3-UNLISTED-TYPES", "DEFER-F3-IDENTITY-MACROS", "DEFER-F3-FORENSIC-EXPORT"],
+  "verificationClassTarget": {"class": "INTEGRATED_PHASE", "acceptance": "PHASE + INTEGRATION", "frozen": false, "freezeAt": "implementation authorization"},
+  "canonicalPrompt": {"path": ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md", "status": "F3 DESIGN AUTHOR APPROVED — PREPARED — IMPLEMENTATION NOT AUTHORIZED"},
+  "independentAudit": {"verdict": "GO WITH CONDITIONS", "isPass": false, "copy": "docs/validation/pre_g9b_r6_plus_f3_independent_final_design_safety_audit.md", "sha256": "b22629efc7099482f592b98271f707087cccd04e28cada93999221864f5fbd41"},
+  "activityClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"},
+  "productChange": "NONE",
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md",
+    "docs/validation/pre_g9b_r6_plus_f3_risk_register_design_closeout.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-author-design-closeout.json",
+    "docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_candidate.md",
+    "docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_successor_candidate.md",
+    "docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md",
+    "docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_candidate.md",
+    "docs/architecture/pre_g9b_r6_plus_f3_conservative_insertion_design_candidate.md",
+    "docs/architecture/pre_g9b_r6_plus_f3_file_insert_reconciled_design_candidate.md",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
