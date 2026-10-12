@@ -3,8 +3,9 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
-| Version | `1.0` |
-| Owner phase | `PRE-G9B-R6-plus-F2` (authoring-memory refinements) |
+| Version | `1.1` (1.0 F2 candidate; 1.1 adds the F2-R1 dual activation, §11) |
+| Owner phase | `PRE-G9B-R6-plus-F2` (authoring-memory refinements); §11 `PRE-G9B-R6-plus-F2-R1` (corrective) |
+| F2-R1 governing decisions | [F2-R1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md) v1.3 (`DQ-F2R1-1` to `DQ-F2R1-6` §5; `FR-2` disposition §7); [dual-activation design](../../../docs/architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md) (`DESIGN — AUTHOR APPROVED`) |
 | Governing author decisions | [F2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_author_decisions_record.md) v1.1 (`DQ-F2-1` to `DQ-F2-10`; implementation authorization and entry gate §8) |
 | Approved design transcribed | [F2 reconciled design](../../../docs/architecture/pre_g9b_r6_plus_f2_authoring_memory_reconciled_design_candidate.md) (`DESIGN — AUTHOR APPROVED`) |
 | Evidence | [F2 preparation characterization report](../../../docs/validation/pre_g9b_r6_plus_f2_preparation_characterization_report.md) `K0`–`K16`; entry-gate probe (record §8) |
@@ -220,3 +221,71 @@ controller.
 | injection, read-back and certificate | `GeoCeDGEuclidianController.switchModeForProcessMode` (before and after its existing `super` call) |
 | angle hook | `org.geocedg.desktop.GeoCeDGControllerCompanion` (extends `EuclidianControllerFor3DCompanion`), returned by `GeoCeDGEuclidianController.newCompanion()` |
 | tests | `PreG9BR6PlusF2AuthoringMemoryTest` |
+
+## 11. Dual activation (`PRE-G9B-R6-plus-F2-R1`, corrective)
+
+11.1 **[AD]** Each of the two tools has an operating behaviour, selected at
+activation and independent of its slot (`DQ-F2R1-1`): `NORMAL`, the inherited
+tool, which MUST NOT read, write or clear a slot; and `MEMORY_ENABLED`, the
+behaviour of §3–§7. §3.2, §4 and §5 apply only while the active tool is
+`MEMORY_ENABLED`; the lifecycle of §7 applies in both behaviours.
+
+11.2 **Activation origins** **[AD]** (`DQ-F2R1-1`, `DQ-F2R1-4`, record v1.3 §7):
+
+| Origin | Behaviour |
+|---|---|
+| native GeoCeDG toolbar button or native flyout item, with Ctrl in its own activation event (Windows) | `MEMORY_ENABLED` |
+| the same without Ctrl; keyboard Space on the focused button | `NORMAL` |
+| any other single-argument activation request (`setMode(int)`): menus, action registry, user tools, tool dialogs, scripting `ggbApplet.setMode` / `GgbAPI.setMode` | `NORMAL`, also for the active tool |
+| direct two-argument host synchronization (`setMode(int, ModeSetter)`): `setMoveMode`, dock panels, toolbar-panel switching, CAS | same mode: unchanged; another mode: departure |
+
+The modifier MUST come from the activation event, never from global keyboard
+state; it is latched: later Ctrl presses or releases change nothing. Ctrl+Space
+activates nothing. macOS and Linux modifiers are not claimed. Reference memory
+is interactive only: a script MUST NOT be able to select `MEMORY_ENABLED`, and
+no scripting command or API method exists for it; the scripting API is the
+original `GgbAPID` instance (record v1.3 §7).
+
+11.3 **Marks** **[ID]**: a toolbar request is recorded by a GeoCeDG listener of
+the native group button, notified before the inherited button action, with the
+mode, the behaviour and the current AWT event; it decides only the activation of
+that event and mode and is discarded at the next activation either way. A
+scoped request (single-argument entry, language-change restoration, the test
+seam) decides only the first activation inside it; nested host activations
+resolve as unmarked. Inside an explicit request or a host-synchronization
+scope, the single-argument entry adds no request.
+
+11.4 **Reactivation** **[AD]** (`DQ-F2R1-2`): the latest activation wins. A
+same-mode activation that keeps the behaviour keeps the inherited partial
+selection; one that changes it cancels the incomplete gesture through the
+inherited protected `initNewMode(mode)`: selections and preview are cleared and
+an unfinished free point is removed, while completed constructions, the mode,
+both slots, the undo history and the saved state are unchanged. A behaviour
+change is never a construction and never an undo point.
+
+11.5 **Lifecycle** **[AD]** (`DQ-F2R1-3`): a departure (another tool, Escape,
+File → New) resets both tools to `NORMAL` and keeps valid slots (New clears them
+by §7). A language change MUST NOT reset the active tool, its behaviour or the
+slots: the inherited switch to Move inside `setLanguage(Locale)` is host
+synchronization and the tool is restored with its behaviour unless a genuine
+activation intervened. Dock focus, Graphics View 2 creation, undo, redo and
+clearing loads call no activation and change no behaviour.
+
+11.6 **Indication** **[AD]** (`DQ-F2R1-5`): a hidden-by-default status-bar
+segment shows "Parallel Line · Memory" / "Paralela · Memoria" or
+"Perpendicular Line · Memory" / "Perpendicular · Memoria" only while the active
+tool is `MEMORY_ENABLED`, on the single row of the bar, re-rendered on every
+activation and language change; it states the behaviour, never whether a slot
+is held. It is presentation only: no document, undo, export or preference
+content.
+
+11.7 **Implementation** **[ID]**:
+
+| Element | Implementation |
+|---|---|
+| behaviour state, marks, resolution | `org.geocedg.desktop.GeoCeDGToolActivation` |
+| toolbar marks | listener added in `GeoCeDGToolbarContainer.ProfileToolbar.addNativeGroup` |
+| resolution, single-argument entry, language restoration | `AppGeoCeDG.setMode(int, ModeSetter)`, `AppGeoCeDG.setMode(int)`, `AppGeoCeDG.setLanguage(Locale)` |
+| `NORMAL` gate and cancellation | `GeoCeDGEuclidianController.processLineReferenceTool`, `cancelPartialGesture` |
+| indication | `GeoCeDGStatusBar` segment `tool-memory`; profile texts `AuthoringMemory.Status.*` |
+| tests | `PreG9BR6PlusF2R1DualActivationTest`; `PreG9BR6PlusF2AuthoringMemoryTest` with explicit `MEMORY_ENABLED` activation |

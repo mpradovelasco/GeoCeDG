@@ -5441,6 +5441,9 @@
     "IsoA.Status.ScaleDifferent": {"en": "scale %0 ≠ sheet %1", "es": "escala %0 ≠ lámina %1"},
     "IsoA.Status.LinkLost": {"en": "ISO A sheet link released: the export area fell back", "es": "Enlace a la lámina ISO A liberado: el área de exportación volvió a la regla por defecto"},
     "IsoA.Status.Tooltip": {"en": "Presentation only, compared with the current unit and session scale; never saved or exported. Click to use the sheet scale.", "es": "Solo presentación, comparada con la unidad y la escala de la sesión actuales; nunca se guarda ni se exporta. Haga clic para usar la escala de la lámina."},
+    "AuthoringMemory.Status.Parallel": {"en": "Parallel Line · Memory", "es": "Paralela · Memoria"},
+    "AuthoringMemory.Status.Perpendicular": {"en": "Perpendicular Line · Memory", "es": "Perpendicular · Memoria"},
+    "AuthoringMemory.Status.Tooltip": {"en": "Remembered reference active: Ctrl+click on the tool turned it on; a plain click on the tool, Esc or another tool turns it off. It shows the mode, not whether a reference is remembered.", "es": "Referencia recordada activa: se activó con Ctrl+clic en la herramienta; un clic normal en la herramienta, Esc u otra herramienta la desactivan. Indica el modo, no si hay una referencia recordada."},
     "Properties.LineThickness.Field": {
       "en": "Line thickness: type a whole number within the slider range and press Enter",
       "es": "Grosor de línea: escribe un número entero dentro del rango del deslizador y pulsa Intro"

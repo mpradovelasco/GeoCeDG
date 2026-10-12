@@ -724,18 +724,26 @@ reiniciar y nunca aparece en un archivo guardado, una exportación, una
 impresión ni el portapapeles.
 
 **Referencia recordada.** En Gráficos 1, **Recta paralela** y **Recta
-perpendicular** recuerdan cada una la referencia (recta, segmento, semirrecta,
-lado de polígono, vector o función lineal) de la última recta que construyeron.
+perpendicular** funcionan como siempre al elegirlas. En Windows, mantenga
+pulsada **Ctrl** al hacer clic en la herramienta de la barra (o al elegirla en su
+menú de la barra) para activar su referencia recordada; la barra de estado
+muestra entonces «Paralela · Memoria» o «Perpendicular · Memoria». En ese modo la
+herramienta recuerda la referencia (recta, segmento, semirrecta, lado de
+polígono, vector o función lineal) de la última recta que construyó en ese modo.
 Mientras hay una referencia recordada, al hacer clic en un punto, o en un lugar
 vacío, que crea el punto, se construye la siguiente recta de inmediato; para usar
 otra referencia, haga clic primero en ella y después en el punto, y pasa a ser la
+recordada. Un clic normal en la herramienta, Esc u otra herramienta vuelven a la
+herramienta normal, y una recta a medio hacer se descarta al cambiar de modo;
+cambiar de idioma conserva el modo. Los menús y los scripts eligen siempre la
+herramienta normal, y la herramienta normal ni usa ni cambia la referencia
 recordada. Las dos herramientas recuerdan por separado, y cambiar de herramienta
-o pulsar Esc conserva la referencia. Se olvida al deshacer o rehacer, con Nuevo o
-Abrir, y cuando el objeto se borra o se redefine. Mientras la referencia está
-oculta, indefinida o en una capa oculta, la herramienta vuelve a pedir una
-referencia en lugar de usarla. Las funciones constantes no pueden ser
-referencias. No se guarda nada en el archivo, y Gráficos 2 se comporta como
-antes.
+o pulsar Esc conserva la referencia para el siguiente Ctrl+clic. Se olvida al
+deshacer o rehacer, con Nuevo o Abrir, y cuando el objeto se borra o se redefine.
+Mientras la referencia está oculta, indefinida o en una capa oculta, la
+herramienta vuelve a pedir una referencia en lugar de usarla. Las funciones
+constantes no pueden ser referencias. No se guarda nada en el archivo, y
+Gráficos 2 se comporta como antes.
 
 ### 5.3 Circunferencias y cónicas
 

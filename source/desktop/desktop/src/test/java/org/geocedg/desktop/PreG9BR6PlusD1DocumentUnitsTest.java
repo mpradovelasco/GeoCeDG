@@ -353,6 +353,8 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 				"geocedg.status-bar.drawing-scale", "geocedg.status-bar.separator",
 				// PRE-G9B-R6-plus-E3 adds the hidden sheet-coherence segment
 				"geocedg.status-bar.sheet-coherence", "geocedg.status-bar.separator",
+				// PRE-G9B-R6-plus-F2-R1 adds the hidden tool-memory segment
+				"geocedg.status-bar.tool-memory", "geocedg.status-bar.separator",
 				"geocedg.status-bar.paste-notice"), names);
 		JLabel construction = bar.getSegment(GeoCeDGStatusBar.CONSTRUCTION_UNIT_SEGMENT);
 		JLabel presentation = bar.getSegment(GeoCeDGStatusBar.PRESENTATION_UNIT_SEGMENT);

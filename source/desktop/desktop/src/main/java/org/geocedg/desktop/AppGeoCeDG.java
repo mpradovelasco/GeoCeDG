@@ -61,6 +61,7 @@ import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -114,6 +115,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private HiddenLayerSet parsedHiddenLayers;
 	private boolean documentTransitionCommitted;
 	private GeoCeDGStatusBar statusBar;
+	/** PRE-G9B-R6-plus-F2-R1 activation behaviour; lazy (host constructor first). */
+	private GeoCeDGToolActivation toolActivation;
 	private GeoCeDGWorkingLayerChooser layerChooser;
 	/**
 	 * PRE-G9B-R6-plus-B session export area and the single picture service; created
@@ -1339,6 +1342,72 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	public EuclidianController newEuclidianController(Kernel kernel) {
 		return new GeoCeDGEuclidianController(kernel);
+	}
+
+	/** @return the F2-R1 Parallel/Perpendicular activation behaviour of this window */
+	GeoCeDGToolActivation getToolActivation() {
+		if (toolActivation == null) {
+			toolActivation = new GeoCeDGToolActivation();
+		}
+		return toolActivation;
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-F2-R1 (Option O1, decision record v1.3 section 7): the
+	 * single-argument entry is the activation request of the toolbar button, the menu
+	 * and action registry, user tools and scripting ({@code GgbAPI.setMode}); unmarked,
+	 * it is a genuine NORMAL request, also for the active tool. A marked Ctrl toolbar
+	 * activation, an enclosing explicit request and host synchronization keep
+	 * precedence. Direct two-argument calls stay host synchronization.
+	 */
+	@Override
+	public void setMode(int mode) {
+		getToolActivation().runAsSingleArgumentRequest(() -> super.setMode(mode));
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-F2-R1: every mode activation passes here, including same-mode
+	 * activations that never reach the controller; the behaviour is resolved first
+	 * (authoring-memory.md section 11).
+	 */
+	@Override
+	public void setMode(int mode, ModeSetter m) {
+		EuclidianView view = getEuclidianView1();
+		if (view != null && view.getEuclidianController() instanceof GeoCeDGEuclidianController
+				controller) {
+			GeoCeDGToolActivation.Outcome outcome = getToolActivation().resolve(mode,
+					view.getMode());
+			if (outcome.sameModeBehaviourChange()) {
+				controller.cancelPartialGesture(mode);
+			}
+		}
+		super.setMode(mode, m);
+		refreshToolMemoryStatus();
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-F2-R1 (DQ-F2R1-3): the inherited language change switches to Move;
+	 * here that switch is host synchronization, and an active Parallel/Perpendicular
+	 * tool is restored with its behaviour unless a genuine activation intervened.
+	 */
+	@Override
+	public void setLanguage(Locale locale) {
+		EuclidianView view = getEuclidianView1();
+		GeoCeDGToolActivation activation = getToolActivation();
+		GeoCeDGToolActivation.Snapshot snapshot = view == null ? null
+				: activation.snapshot(view.getMode());
+		activation.runAsHostSynchronization(() -> super.setLanguage(locale));
+		if (snapshot != null && view.getMode() != snapshot.mode
+				&& activation.noGenuineActivationSince(snapshot)) {
+			activation.runAsRestore(snapshot, () -> setMode(snapshot.mode));
+		}
+		refreshToolMemoryStatus();
+	}
+
+	private void refreshToolMemoryStatus() {
+		if (statusBar != null) {
+			statusBar.updateToolMemory();
+		}
 	}
 
 	@Override

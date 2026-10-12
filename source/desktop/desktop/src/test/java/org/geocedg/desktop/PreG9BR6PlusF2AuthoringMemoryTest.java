@@ -102,6 +102,16 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		return (GeoCeDGEuclidianController) app.getEuclidianView1().getEuclidianController();
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-F2-R1: the F2 memory obligations run with the tool activated in
+	 * MEMORY_ENABLED (the product route is Ctrl + toolbar click, tested with posted
+	 * events in PreG9BR6PlusF2R1DualActivationTest).
+	 */
+	static void activateWithMemory(AppGeoCeDG app, int mode) {
+		app.getToolActivation().runWithRequest(GeoCeDGToolActivation.Behaviour.MEMORY_ENABLED,
+				true, () -> app.setMode(mode));
+	}
+
 	private static GeoCeDGLineReferenceMemory memory(AppGeoCeDG app) {
 		return controller(app).getReferenceMemory();
 	}
@@ -227,7 +237,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 				{"g", new double[] {-8, 1}, AlgoLinePointLine.class}};
 		for (Object[] reference : references) {
 			AppGeoCeDG app = scene();
-			app.setMode(EuclidianConstants.MODE_PARALLEL);
+			activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 			GeoElement ref = lookup(app, (String) reference[0]);
 			assertEquals(State.EMPTY, memory(app).getState(Slot.PARALLEL));
 			click(app, (double[]) reference[1]);
@@ -252,7 +262,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 				{"g", new double[] {-8, 1}, AlgoOrthoLinePointLine.class}};
 		for (Object[] reference : references) {
 			AppGeoCeDG app = scene();
-			app.setMode(EuclidianConstants.MODE_ORTHOGONAL);
+			activateWithMemory(app, EuclidianConstants.MODE_ORTHOGONAL);
 			GeoElement ref = lookup(app, (String) reference[0]);
 			click(app, (double[]) reference[1]);
 			click(app, P);
@@ -266,7 +276,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void pointFirstBeforeAnyReferenceWaitsForAnExplicitReference() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		int before = size(app);
 		click(app, P);
 		assertEquals(before, size(app), "nothing is invented");
@@ -281,7 +291,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void referenceFirstReplacesTheSlotAfterSuccess() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		click(app, ON_M);
@@ -299,10 +309,10 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void slotsAreIndependentAndSurviveToolChangesAndEscape() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
-		app.setMode(EuclidianConstants.MODE_ORTHOGONAL);
+		activateWithMemory(app, EuclidianConstants.MODE_ORTHOGONAL);
 		int before = size(app);
 		click(app, Q);
 		assertEquals(before, size(app), "the Parallel slot never feeds Perpendicular");
@@ -312,11 +322,11 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 				lookup(app, "m"));
 		app.setMoveMode();
 		app.setMode(EuclidianConstants.MODE_POINT);
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, R);
 		assertConstruction(created(app), AlgoLinePointLine.class, lookup(app, "R"),
 				lookup(app, "l"));
-		app.setMode(EuclidianConstants.MODE_ORTHOGONAL);
+		activateWithMemory(app, EuclidianConstants.MODE_ORTHOGONAL);
 		click(app, S);
 		assertConstruction(created(app), AlgoOrthoLinePointLine.class, lookup(app, "S"),
 				lookup(app, "m"));
@@ -327,13 +337,13 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void emptySpaceWithAndWithoutMemory() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		int before = size(app);
 		click(app, EMPTY);
 		assertEquals(before + 1, size(app), "without memory only the free point");
 		assertEquals(1, selection(app).size());
 		app.setMoveMode();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		UndoManagerD undo = undo(app);
@@ -364,7 +374,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void inheritedPointOnPathGestureIsUnchanged() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		click(app, ON_M);
@@ -398,7 +408,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 					.getLabelSimple() + ")");
 			return null;
 		}).when(dialogs).showRedefineDialog(any(GeoElement.class), anyBoolean());
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		if (withMemory) {
 			click(app, ON_L);
 			click(app, new double[] {-9, -2});
@@ -428,7 +438,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void previewAndCancellationNeverCreateOrWrite() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		int before = size(app);
@@ -440,7 +450,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		assertSame(lookup(app, "l"), memory(app).peek(Slot.PARALLEL));
 		click(app, ON_M);
 		app.setMoveMode();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		assertEquals(List.of(), selection(app), "Escape discards the pending selection");
 		assertSame(lookup(app, "l"), memory(app).peek(Slot.PARALLEL),
 				"an abandoned reference-first gesture keeps the slot");
@@ -452,7 +462,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void functionReferencesFollowTheKernelLinearityContract() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		int before = size(app);
 		click(app, new double[] {5, -6.8});
 		click(app, P);
@@ -469,7 +479,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		assertFalse(GeoCeDGLineReferenceMemory.isAdmissible(lookup(app, "k")));
 		assertFalse(GeoCeDGLineReferenceMemory.isAdmissible(lookup(app, "h")));
 		app.setMoveMode();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, new double[] {-9, -1});
 		click(app, P);
 		assertConstruction(created(app), AlgoLinePointLine.class, lookup(app, "P"), f);
@@ -482,7 +492,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		click(app, R);
 		assertEquals(suspended, size(app), "a suspended function is not reused");
 		app.setMoveMode();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		a.setValue(0);
 		a.updateCascade();
 		assertEquals(State.HELD, memory(app).getState(Slot.PARALLEL));
@@ -493,7 +503,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void hiddenUndefinedAndHiddenLayerReferencesAreSuspended() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		GeoElement l = lookup(app, "l");
@@ -504,7 +514,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		click(app, Q);
 		assertEquals(before, size(app), "a hidden reference is not reused");
 		app.setMoveMode();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		l.setEuclidianVisible(true);
 		l.updateRepaint();
 		assertEquals(State.HELD, memory(app).getState(Slot.PARALLEL));
@@ -536,7 +546,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 	@Test
 	void currentnessAcrossRenameRecomputeRedefineAndDelete() throws Exception {
 		AppGeoCeDG app = scene();
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		GeoElement l = lookup(app, "l");
@@ -579,10 +589,10 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			PreG9BR6PlusA1LayerWorkspaceTest.awaitStore(app, undo);
 			CountDownLatch toolStores = new CountDownLatch(2);
 			undo.addUndoInfoStoredListener(toolStores::countDown);
-			app.setMode(EuclidianConstants.MODE_PARALLEL);
+			activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 			click(app, ON_L);
 			click(app, P);
-			app.setMode(EuclidianConstants.MODE_ORTHOGONAL);
+			activateWithMemory(app, EuclidianConstants.MODE_ORTHOGONAL);
 			click(app, ON_L);
 			click(app, Q);
 			assertTrue(toolStores.await(5, TimeUnit.SECONDS));
@@ -623,7 +633,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		AppGeoCeDG app = scene();
 		UndoManagerD undo = undo(app);
 		PreG9BR6PlusA1LayerWorkspaceTest.baseline(undo);
-		app.setMode(EuclidianConstants.MODE_PARALLEL);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
 		click(app, ON_L);
 		click(app, P);
 		Thread.sleep(500);

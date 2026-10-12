@@ -683,13 +683,21 @@ cue. The option is off by default, is a user preference kept after a restart,
 and never appears in a saved file, an export, a print or the clipboard.
 
 **Remembered reference.** In Graphics 1, **Parallel line** and **Perpendicular
-line** each remember the reference (line, segment, ray, polygon side, vector or
-linear function) of the last line they built. While a reference is remembered,
-clicking a point, or empty space, which creates the point, builds the next line
-at once; to use another reference, click it first and then the point, and it
-becomes the remembered one. The two tools remember independently, and changing
-tools or pressing Esc keeps the reference. It is forgotten after Undo or Redo,
-New or Open, and when the object is deleted or redefined. While the reference is
+line** work as usual when you choose them. On Windows, hold **Ctrl** while
+clicking the tool on the toolbar (or choosing it in its toolbar menu) to turn on
+its remembered reference; the status bar then shows "Parallel Line · Memory" or
+"Perpendicular Line · Memory". In that mode the tool remembers the reference
+(line, segment, ray, polygon side, vector or linear function) of the last line
+it built in that mode. While a reference is remembered, clicking a point, or
+empty space, which creates the point, builds the next line at once; to use
+another reference, click it first and then the point, and it becomes the
+remembered one. A plain click on the tool, Esc or another tool returns to the
+normal tool, and a half-made line is discarded when the mode changes; changing
+the language keeps the mode. Menus and scripts always choose the normal tool,
+and the normal tool neither uses nor changes the remembered reference. The two
+tools remember independently, and changing tools or pressing Esc keeps the
+reference for the next Ctrl+click. It is forgotten after Undo or Redo, New or
+Open, and when the object is deleted or redefined. While the reference is
 hidden, undefined or on a hidden layer, the tool asks for a reference again
 instead of using it. Constant functions cannot be references. Nothing is saved
 in the file, and Graphics 2 behaves as before.

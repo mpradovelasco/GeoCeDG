@@ -211,6 +211,12 @@ final class GeoCeDGToolbarContainer extends ToolbarContainer {
 			if (menu.getToolsCount() == 0) {
 				throw new IllegalStateException("Empty native toolbar group " + groupId);
 			}
+			if (app instanceof AppGeoCeDG geoCeDG) {
+				// PRE-G9B-R6-plus-F2-R1: added after the button's own listener, so Swing
+				// notifies it first, before app.setMode; reclicks and flyout items included
+				menu.getJToggleButton().addActionListener(
+						geoCeDG.getToolActivation()::recordToolbarActivation);
+			}
 			menu.putClientProperty("geocedg.presentation.group.id", groupId);
 			menu.putClientProperty("geocedg.toolbar.action.ids", List.copyOf(ids));
 			modeMenus.add(menu);

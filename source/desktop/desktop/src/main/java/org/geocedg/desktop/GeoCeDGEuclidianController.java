@@ -101,6 +101,25 @@ public final class GeoCeDGEuclidianController
 		return referenceMemory;
 	}
 
+	private boolean isMemoryEnabled(int toolMode) {
+		return app instanceof AppGeoCeDG geoCeDG
+				&& geoCeDG.getToolActivation().isMemoryEnabled(toolMode);
+	}
+
+	/**
+	 * F2-R1: a same-mode activation changed the operating behaviour; cancels the
+	 * incomplete gesture exactly as the inherited tool change does (selections,
+	 * preview, unfinished creation), without changing the mode, the memory or the undo
+	 * history (authoring-memory.md section 11).
+	 *
+	 * @param toolMode the active tool mode
+	 */
+	void cancelPartialGesture(int toolMode) {
+		if (mode == toolMode) {
+			initNewMode(toolMode);
+		}
+	}
+
 	@Override
 	public void wrapMousePressed(AbstractEvent event) {
 		interactionTailCancelled = false;
@@ -752,6 +771,11 @@ public final class GeoCeDGEuclidianController
 	private boolean processLineReferenceTool(GeoCeDGLineReferenceMemory.Slot slot,
 			Hits hits, boolean controlDown, boolean shiftDown,
 			AsyncOperation<Boolean> callback, boolean selectionPreview) {
+		if (!isMemoryEnabled(mode)) {
+			// F2-R1 NORMAL: the inherited tool; the memory is neither read nor written
+			return super.switchModeForProcessMode(hits, controlDown, shiftDown, callback,
+					selectionPreview);
+		}
 		GeoElement injected = selectionPreview ? null : injectRememberedReference(slot, hits);
 		boolean created = super.switchModeForProcessMode(hits, controlDown, shiftDown,
 				callback, selectionPreview);

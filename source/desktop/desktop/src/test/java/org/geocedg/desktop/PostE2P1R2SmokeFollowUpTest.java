@@ -269,6 +269,8 @@ class PostE2P1R2SmokeFollowUpTest {
 				"geocedg.status-bar.drawing-scale", "geocedg.status-bar.separator",
 				// PRE-G9B-R6-plus-E3: the hidden sheet-coherence segment
 				"geocedg.status-bar.sheet-coherence", "geocedg.status-bar.separator",
+				// PRE-G9B-R6-plus-F2-R1: the hidden tool-memory segment
+				"geocedg.status-bar.tool-memory", "geocedg.status-bar.separator",
 				"geocedg.status-bar.paste-notice"), names, "existing segments kept, in order");
 		onEdt(() -> { });
 		assertEquals("Scale: 1:1", scale(app).getText());

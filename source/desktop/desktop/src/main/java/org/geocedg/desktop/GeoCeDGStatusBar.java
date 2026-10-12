@@ -27,6 +27,7 @@ import org.geocedg.common.kernel.sheet.IsoASheet;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.common.kernel.units.UnitToken;
 import org.geocedg.common.kernel.units.UsmDefinition;
+import org.geogebra.common.euclidian.EuclidianConstants;
 
 /**
  * PRE-G9B-R6-plus-A-1 complementary status bar in the free SOUTH slot of the
@@ -62,6 +63,12 @@ final class GeoCeDGStatusBar extends JPanel {
 	private static final String SEPARATOR = " " + (char) 0xb7 + " ";
 	/** Stable id of the transient unit-mismatch paste notice (DQ-D1-9). */
 	static final String PASTE_NOTICE_SEGMENT = "paste-notice";
+	/**
+	 * Stable id of the PRE-G9B-R6-plus-F2-R1 tool-memory segment: shown only while the
+	 * active Parallel/Perpendicular tool is MEMORY_ENABLED. Presentation only; it states
+	 * the operating behaviour, never whether a remembered reference is usable.
+	 */
+	static final String TOOL_MEMORY_SEGMENT = "tool-memory";
 	/** Lifetime of the paste notice. */
 	static final int PASTE_NOTICE_MILLIS = 10_000;
 
@@ -74,6 +81,7 @@ final class GeoCeDGStatusBar extends JPanel {
 	private final transient AppGeoCeDG app;
 	private final JLabel noticeSeparator;
 	private final JLabel sheetSeparator;
+	private final JLabel toolMemorySeparator;
 	private transient NoticeTimer noticeTimer = GeoCeDGStatusBar::swingTimer;
 	private transient Runnable cancelNotice;
 
@@ -194,6 +202,10 @@ final class GeoCeDGStatusBar extends JPanel {
 				app.useSheetScale();
 			}
 		});
+		toolMemorySeparator = separator();
+		toolMemorySeparator.setVisible(false);
+		add(toolMemorySeparator);
+		addSegment(TOOL_MEMORY_SEGMENT).setVisible(false);
 		noticeSeparator = separator();
 		noticeSeparator.setVisible(false);
 		add(noticeSeparator);
@@ -274,6 +286,26 @@ final class GeoCeDGStatusBar extends JPanel {
 		scaleLabel.setToolTipText(app.layerText(physical ? "Units.Status.ScaleTooltip"
 				: "Units.Status.ScaleTooltipNonPhysical"));
 		updateSheetSegment();
+		updateToolMemory();
+	}
+
+	/** PRE-G9B-R6-plus-F2-R1: synchronous refresh after every activation and language change. */
+	void updateToolMemory() {
+		JLabel label = segments.get(TOOL_MEMORY_SEGMENT);
+		int mode = app.getEuclidianView1() == null ? -1 : app.getEuclidianView1().getMode();
+		boolean shown = app.getToolActivation().isMemoryEnabled(mode);
+		if (shown) {
+			label.setText(app.layerText(mode == EuclidianConstants.MODE_PARALLEL
+					? "AuthoringMemory.Status.Parallel"
+					: "AuthoringMemory.Status.Perpendicular"));
+			label.setToolTipText(app.layerText("AuthoringMemory.Status.Tooltip"));
+		}
+		if (label.isVisible() != shown) {
+			label.setVisible(shown);
+			toolMemorySeparator.setVisible(shown);
+			revalidate();
+		}
+		repaint();
 	}
 
 	/** PRE-G9B-R6-plus-E3: derived each refresh; never stored, exported or in undo. */
