@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus-F3 — File / Insert surface and restricted native document insertion
 
-**CANONICAL PROMPT — DECISION-RECONCILED, RECOVERY-CORRECTED AND HISTORY-INTEGRITY-GATED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
+**CANONICAL PROMPT — DECISION-RECONCILED, RECOVERY-CORRECTED, HISTORY-INTEGRITY-GATED AND AUDIT-RECONCILED ON AN EXACT BASE — UNEXECUTED — PREPARED — NOT AUTHORIZED.**
 
 History of this file (each version kept in Git): prepared by
 `PRE-G9B-R6-plus-F3-PREP` (commit `480c972972e90514e88421194a792898c916834e`);
@@ -29,7 +29,14 @@ preservation and serious-failure containment gates (commit
 2026-10-12), which found that taking the history aside by copy loses Undo
 metadata (`ER-F3R-3`), required moving the original commands through a GeoCeDG
 undo-manager subclass with a pending-store tracker, and made the containment
-contract a modal isolation. Nothing in this file is authorization.
+contract a modal isolation (commit `e479b76d47c4e62baf9a4cf511ec06268c5b5ab3`);
+reconciled by `PRE-G9B-R6-plus-F3-INDEPENDENT-AUDIT-RECONCILIATION` (author
+instruction of 2026-10-12) with the independent final design safety audit
+(`GO WITH CONDITIONS`): a distinct verified native recovery snapshot,
+conservative fail-closed pending-store accounting, attach-side quiescence,
+recovery-source capture by reference, save-prompt bypass, a stateless factory,
+exception preservation and the stop conditions FR-F3-1 to FR-F3-8. Nothing in
+this file is authorization.
 
 This prompt distinguishes three kinds of content:
 
@@ -37,15 +44,21 @@ This prompt distinguishes three kinds of content:
   ([F3 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f3_author_decisions_record.md))
   and the accepted `D1` decisions, unchanged until the author amends them;
 - **PENDING DECISION** — `DQ-F3-1` to `DQ-F3-24` and the proposed amendments
-  `P1`–`P6`, including those of `F3-D2` and `DQ-D1-7`
-  ([Final F3 Author Decision Sheet](../../../docs/validation/pre_g9b_r6_plus_f3_final_author_decision_sheet.md)
-  v5.0, consolidating v4.0 §6 and v4.2 Q1;
-  [normative amendment proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md));
+  `P1`–`P7`, including those of `F3-D2` and `DQ-D1-7`
+  ([Final F3 Author Decision Sheet v6.0](../../../docs/validation/pre_g9b_r6_plus_f3_final_author_decision_sheet_v6.md),
+  superseding v5.0;
+  [reconciled amendment proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md));
   the agent never chooses among their alternatives;
 - **TECHNICAL GATE** — feasibility items the implementation entry gate must
   establish before product code (*Implementation base*).
 
-Evidence: [Undo history semantic integrity report](../../../docs/validation/pre_g9b_r6_plus_f3_undo_history_semantic_integrity_report.md)
+Evidence: [independent final design safety audit](../../../docs/validation/pre_g9b_r6_plus_f3_independent_final_design_safety_audit.md)
+(G1–G7, N1–N5, NE1–NE2), [audit reconciliation report](../../../docs/validation/pre_g9b_r6_plus_f3_independent_audit_reconciliation_report.md),
+[recovery design addendum successor](../../../docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md)
+(transaction, native recovery snapshot, accounting C1, isolation; superseding
+the recovery procedure of every earlier document),
+[audit risk register](../../../docs/validation/pre_g9b_r6_plus_f3_risk_register_audit_reconciliation.md),
+[Undo history semantic integrity report](../../../docs/validation/pre_g9b_r6_plus_f3_undo_history_semantic_integrity_report.md)
 (`HS-*`, H1–H5, O1–O4, P1–P4), [final DQ-F3-21 assessment](../../../docs/validation/pre_g9b_r6_plus_f3_dq21_final_option_assessment.md)
 (history-preserving barrier and gates 1–8, superseding the recovery procedure of
 every previous assessment and §3 of the design successor),
@@ -83,16 +96,20 @@ the first tracked edit, an amendment of this prompt to the authorized state.
 PRE-G9B-R6-plus-F3 =
 PLANNED — AUTHOR APPROVED (2026-10-03, F3-D1 to F3-D6)
 PREPARED — DECISION-RECONCILED — RECOVERY-CORRECTED — HISTORY-INTEGRITY-GATED
-— NOT AUTHORIZED
+— AUDIT-RECONCILED — NOT AUTHORIZED
 
 AUTHOR DIRECTIONS        = R / M1 / L1 / INDEPENDENT BUFFER / SPECIALIZED OBJECTS / T0 / U0
-                           (2026-10-12; directions, not approvals)
-FINAL DECISION SHEET     = Q1–Q7 (Final F3 Author Decision Sheet v5.0), all PENDING
-FINAL TECHNICAL GATE     = READY FOR AUTHOR DISPOSITION (not implementation readiness)
-RISK REGISTER            = 3 CLOSED, 16 CLOSED WITH RESTRICTION, 1 OPEN PENDING
-                           AUTHOR DISPOSITION (F3R-ATOMICITY-COMMIT), 1 OPEN NOT
-                           ESTABLISHED (F3R-RECOVERY-FAILURE, containment only),
-                           0 BLOCKED
+                           (2026-10-12; directions, not approvals); for this
+                           reconciliation: accounting C1, recovery copy keeps
+                           the UUID, no export of uncertified state (preferred,
+                           not ratified)
+FINAL DECISION SHEET     = Q1–Q7 (Final F3 Author Decision Sheet v6.0), all PENDING
+INDEPENDENT AUDIT        = GO WITH CONDITIONS (0 blockers; G1–G7 gates; N1–N5;
+                           NE1–NE2), reconciled
+RISK REGISTER            = see the audit risk register: 6 OPEN IMPLEMENTATION
+                           GATE, 2 OPEN NOT ESTABLISHED (containment, EDT),
+                           1 OPEN PENDING AUTHOR DISPOSITION
+                           (F3R-ATOMICITY-COMMIT), 0 BLOCKED
 IMPLEMENTATION           = NOT AUTHORIZED
 selfApproved             = false
 authorApproved           = false
@@ -139,7 +156,7 @@ Deliver, as the author disposes:
 |---|---|---|
 | `DQ-F3-1`–`-4` | surface, chooser, containers, OFF | N1 (+ `document.apply-styles` if `DQ-F3-23`); A1; X1; OFF-B |
 | `DQ-F3-5` | labels | L1, no overwrite |
-| `DQ-F3-6`, `-18`, `-21` | atomicity | history-preserving barrier (pending-store gate, original history moved by a GeoCeDG undo-manager subclass, generation barrier, baseline preflight) + admission + strict dry run + strict verification; K1-S and K1-R-H guarded reload; destination UUID preserved; modal isolation on serious failure; K1-R with undo/prune withdrawn |
+| `DQ-F3-6`, `-18`, `-21` | atomicity | history-preserving barrier (conservative fail-closed accounting C1, verified native recovery snapshot, original history moved by a GeoCeDG undo-manager subclass, generation barrier, attach-side quiescence) + admission + strict dry run + strict verification; K1-S and K1-R-H guarded reload; destination UUID preserved; isolation with three exits, no export of the uncertified state; K1-R with undo/prune withdrawn |
 | `DQ-F3-7`, `-16` | buffer and `D1` | operation-scoped insertion buffer; `DQ-D1-7` amendment (record §4.2) |
 | `DQ-F3-8`, `-9`, `-17`, `-23` | style operation | T0 with exclusions (`P5`); "Apply Styles…" / "Aplicar estilos…" |
 | `DQ-F3-10`, `-11`, `-12`, `-19`, `-20` | helper, Classic, class, upstream, debt | H-1, H-3; F-1; `INTEGRATED_PHASE`; U0; C20-1 |
@@ -162,8 +179,10 @@ T_F3_DECISION_RECONCILIATION
 T_F3_RECOVERY_SAFETY   = 6c07e01a834e0a3ecd7af7290bc7d2ddef50ceb6 (tree 8f2e141bcb1311051b14d8efb3d7289b15e95212)
 T_F3_RECOVERY_CORRECTIVE
                        = 6e41bf4426b9bdcb137f42e783038b02827ff3bd (tree 8b614863de45a7fccb93ec751871498c8ee7bbd1)
-history integrity gate = the local commit of
-                         phase/pre-g9b-r6-plus-f3-undo-history-semantic-integrity
+T_F3_UNDO_HISTORY_INTEGRITY
+                       = e479b76d47c4e62baf9a4cf511ec06268c5b5ab3 (tree 749005c525af0d54724fa9acc1608bde2420253a)
+audit reconciliation   = the local commit of
+                         phase/pre-g9b-r6-plus-f3-independent-audit-reconciliation
                          that contains this version (documentation only)
 ```
 
@@ -176,21 +195,32 @@ phase branch; re-establishes the cited seams; records the dispositions applied.
 **TECHNICAL GATES** (before product code; recorded in the candidate report; a
 failed gate stops the work for the author and is never worked around):
 
-1. under `DQ-F3-21` as disposed (final assessment §2, gates 1–4), on the EDT:
-   a GeoCeDG `UndoManagerD` subclass installed through
-   `AppGeoCeDG.getUndoManager(Construction)` serves every GeoCeDG document and
-   leaves ordinary Undo behavior unchanged; the insertion starts only when it
-   reports no pending store (bounded wait outside the monitor, else rejection
-   before mutation); in one block synchronized on the undo manager the original
-   history is detached (moved, never copied — `undoHistoryTo` is not used,
-   `ER-F3R-3`), a baseline is committed (`commitUndoBaseline`, cancelling every
-   earlier store) and its archive passes `DocumentArchivePreflight`; the
-   original history is re-attached in a `finally` block; labels, grouping,
-   cursor, Redo and snapshot files are identical after every path (H2–H5,
-   O1–O4); the paste's own store is identified by generation and content with
-   a bounded wait; `undo()` + `pruneStateList()` and the inherited
-   `restoreCurrentUndoInfo` are never used as recovery (`ER-F3R-1`,
-   `ER-F3R-2`);
+1. under `DQ-F3-21` as disposed (recovery design addendum successor §1–§4),
+   on the EDT: a GeoCeDG `UndoManagerD` subclass installed through a
+   **stateless** `AppGeoCeDG.getUndoManager(Construction)` override (G6) serves
+   every GeoCeDG document and leaves ordinary Undo behavior unchanged; its
+   pending-store accounting is the conservative fail-closed contract C1
+   (registration in `storeUndoInfo`, thread-local marker for synchronous
+   callers, success flag from the store thread's `pruneStateList`, no decrement
+   on exception exits, `degraded` on any anomaly, reset only by
+   `commitUndoBaseline`) and is proven exit by exit (G2); in one block
+   synchronized on the undo manager the insertion requires `pending == 0` and
+   not degraded (bounded wait outside the monitor, else rejection before
+   mutation), captures and preflights the **complete native recovery snapshot**
+   (`writeGeoGebraFile(OutputStream, false)`, UUID equal to the live one,
+   provenance recorded; failure → rejection before mutation, G1), detaches the
+   original history (moved, never copied — `undoHistoryTo` is not used,
+   `ER-F3R-3`), commits a baseline (`commitUndoBaseline`, cancelling every
+   earlier store) and captures that baseline's `AppState` **by reference** as
+   the reload source (G4); re-attachment happens only in a synchronized block
+   with `pending == 0`, not degraded and an unchanged temporary list, else
+   after a closing barrier (G3); attach installs first and refreshes actions
+   best-effort; failures in cleanup are added as suppressed to the original
+   failure (G7); labels, grouping, cursor, Redo and snapshot files are
+   identical after every path (H2–H5, O1–O4); the paste's own store is
+   identified by generation and content with a bounded wait; `undo()` +
+   `pruneStateList()` and the inherited `restoreCurrentUndoInfo` are never used
+   as recovery (`ER-F3R-1`, `ER-F3R-2`);
 2. K1-S (if disposed): after an injected post-commit failure on a payload
    without identity records, subtractive removal, macro removal, UUID restore
    and reinstatement of the held history leave the full document XML
@@ -199,7 +229,8 @@ failed gate stops the work for the author and is never worked around):
    IsoABorder link kept, the saved flag restored; a failed removal goes to the
    guarded reload and is certified again (B-F2);
 3. K1-R-H (if disposed): after an injected failure on a Locus V2 or Spline V2
-   payload, the guarded reload of the barrier baseline archive (no history access, no
+   payload, the guarded reload of the barrier baseline undo archive (captured
+   by reference; a reload source only, never the recovery copy) (no history access, no
    inherited fallback, one retry) and reinstatement of the held history leave
    the full document XML, the root UUID and the complete Undo/Redo history
    (U1–U4, with an equal-content pending store) identical, no later Undo/Redo
@@ -210,16 +241,22 @@ failed gate stops the work for the author and is never worked around):
    held Redo branch is discarded as for any new action (A-Q6, Focus C);
 4. serious failure: a failure inside the inherited rollback (`DQ21-Q5`), two
    failed guarded reloads (B-F4, B-F5), an unexpected or missing store, or a
-   failed certificate re-attaches the original history unchanged and isolates
-   the drawing (final assessment §4, gate 7): update scripts blocked and
-   animation stopped, Undo/Redo suspended (`Kernel.setUndoActive(false)`), and a
-   modal `P6` serious-failure dialog whose only exits are saving the last
-   verified state (the barrier baseline archive) to a new file, reopening the
-   document from its file, or closing it (optionally saving an explicitly
-   labelled copy of the unverified state); the unverified state is never
-   edited, saved or exported as if verified; no further automatic change; the
-   certificate includes full XML, root UUID, identities, macros, history list,
-   cursor and per-entry labels and grouping, saved flag and file association;
+   failed certificate re-attaches the original history unchanged (or keeps it
+   held if attach is unsafe), transfers the native recovery snapshot to the
+   isolation controller and isolates the drawing (addendum successor §5, `P7`):
+   modal dialog; GeoCeDG isolation flag refusing Save, Save As, Export, Insert
+   File, Apply Styles, clipboard and any save of the live state; update scripts
+   blocked, global listeners suppressed, animation stopped, Undo/Redo suspended
+   (`Kernel.setUndoActive(false)`), file drop and in-process API mutation
+   refused; the `P6` dialog's only exits are **save the verified native
+   recovery snapshot** to a new file (original UUID; never the current file; no
+   silent replacement; atomic publication; published bytes re-validated),
+   **reopen** the document (Undo re-enabled first, native open of the existing
+   file) and **close** — none routes through an inherited save-changes prompt
+   (G5); no export of the uncertified state; the snapshot is released only
+   after the exit completes; the certificate includes full XML, root UUID,
+   identities, macro definition digests, history list, cursor and per-entry
+   labels and grouping, saved flag and file association;
 5. the dry run detects every deterministic content failure class of the
    feasibility report G2 and its cost on a large document is recorded;
 6. strict verification (count, pairwise class and parent algorithm, closure,
@@ -258,8 +295,10 @@ Under the dispositions; paths re-established at the base (restricted design
   override installing the GeoCeDG undo-manager subclass, and — only as
   `DQ-F3-21` disposes — the isolation wiring), a GeoCeDG undo-manager subclass
   (proposed `GeoCeDGUndoManager extends UndoManagerD`: detach/attach of
-  original commands, pending-store tracker; bookkeeping-only overrides), the
-  serious-failure isolation dialog, `GeoCeDGUserToolLibrary` (package
+  original commands, conservative fail-closed pending-store accounting C1;
+  bookkeeping-only overrides that delegate unchanged), the native recovery
+  snapshot holder, the serious-failure isolation controller, dialog and guards,
+  `GeoCeDGUserToolLibrary` (package
   access to the existing definition digest).
 - Inherited corrections only if `DQ-F3-19` selects them, each with a
   modified-files record and a Classic regression test.
@@ -310,8 +349,8 @@ stay in shared services, unchanged.
 First deliverable: `geocedg/specs/ui/document-insertion.md` — the disposed
 contracts of the restricted design §1, the matrix, the store-aware transaction
 of the design successor §2 and the barrier transaction, containment and gates
-of the final `DQ-F3-21` assessment §2, §4 and §5 and the recovery design
-addendum as disposed, the macro
+of the recovery design addendum successor and `P6`/`P7` as disposed (the final
+`DQ-F3-21` assessment and the first addendum as history), the macro
 rules, the style whitelist and
 exclusions, the `D1`, layer and identity interactions and the user-facing
 messages; `PROPOSED` until approved. An ADR is required if `DQ-F3-19` selects
@@ -356,10 +395,13 @@ path and payload class, `T-F3R-QUIESCENCE`, `T-F3R-DOCUMENT-ID`,
 assessment §4 (`T-F3R-BARRIER` A-Q1/A-Q3/A-Q4 on the EDT, `T-F3R-GUARDED-RELOAD`
 B-F2–B-F5, `T-F3R-SUCCESS-UUID` for the four payload classes with Save, Save As
 and reopen, `T-F3R-CONTAINMENT` B-F4/B-F6), of the recovery design addendum
-§3 (`T-F3R-HISTORY-METADATA`, `T-F3R-HISTORY-OWNERSHIP`,
-`T-F3R-PENDING-TRACKER`, `T-F3R-ISOLATION`, regression `ER-F3R-3`), the existing
-Desktop undo, document-lifecycle and identity suites as integration coverage,
-and of the
+§3 (`T-F3R-HISTORY-METADATA`, `T-F3R-HISTORY-OWNERSHIP`, regression
+`ER-F3R-3`), of the recovery design addendum successor §6
+(`T-F3R-NATIVE-SNAPSHOT`, `T-F3R-ACCOUNTING`, `T-F3R-ATTACH`,
+`T-F3R-SOURCE-CAPTURE`, `T-F3R-ISOLATION-ROUTES`, `T-F3R-ISOLATION-EXITS`,
+`T-F3R-FACTORY`, `T-F3R-EDT`; these supersede `T-F3R-PENDING-TRACKER` and
+`T-F3R-ISOLATION`), the existing `AppGeoCeDG`-based suites named in the audit
+reconciliation report §9 as integration coverage, and of the
 conservative design §9 that remain applicable (`T-F3-MENU`, `T-F3-L10N`,
 `T-F3-PINS`, `T-F3-CLASSIC`, `T-F3-FALLBACK`, `T-F3-OPEN-UNCHANGED`,
 `T-F3-OFF`, `T-F3-GUIDES`, `T-F3R-MATRIX`, `T-F3R-REJECT`, `T-F3R-HELPER`),
@@ -461,3 +503,29 @@ Stop and report, without guessing, when:
 - the style operation would change a non-whitelisted property or an excluded
   object;
 - the frozen class cannot cover a required change.
+
+Named F3 recovery stop conditions (blocking; never reinterpreted as
+observations; on failure preserve the evidence and request a new author
+decision):
+
+- **FR-F3-1 Undo accounting** — the conservative pending-store accounting C1
+  cannot be shown free of unsafe false negatives on every exit path (success,
+  stale discard, stale and current exception exits, other `Error`,
+  thread-creation failure, delayed notification); no automatic switch to C2 or
+  C3;
+- **FR-F3-2 History semantics** — labels, grouping, Redo, cursor, checkpoints
+  or snapshot ownership cannot be preserved;
+- **FR-F3-3 Native recovery snapshot** — the complete verified recovery archive
+  cannot be captured, validated or retained safely until isolation ends;
+- **FR-F3-4 Serious-failure isolation** — an uncertified drawing can still be
+  edited, saved or exported through an admitted mutation route, or an exit
+  routes through a save-changes prompt;
+- **FR-F3-5 EDT safety** — synchronization deadlocks, blocks indefinitely or
+  orders operations invalidly;
+- **FR-F3-6 Document identity** — a successful insertion changes the
+  destination document UUID, or the recovery copy loses the approved identity
+  semantics;
+- **FR-F3-7 Semantic admission** — an accepted construction cannot be verified
+  for DAG, identities, algorithms, macros and specialized-object conditions;
+- **FR-F3-8 Compatibility** — the implementation introduces an unauthorized
+  shared or Classic behavior change.
