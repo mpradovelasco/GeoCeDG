@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "activity": "PRE-G9B-R6-plus-F3-DQ21-RECOVERY-CORRECTIVE-FEASIBILITY-GATE",
+  "artifactKind": "DOCUMENTARY_CORRECTIVE_FEASIBILITY_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_f3_dq21_corrective_feasibility_report.md",
+  "assessment": "docs/validation/pre_g9b_r6_plus_f3_dq21_corrected_option_assessment.md",
+  "stateMatrix": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-corrective-state-matrix.json",
+  "riskUpdate": "docs/validation/pre_g9b_r6_plus_f3_risk_register_corrective_update.md",
+  "decisionRecordUpdate": "docs/validation/pre_g9b_r6_plus_f3_author_decision_sheet_corrective_update.md (v4.2)",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "designState": "PROPOSED — PENDING AUTHOR REVIEW",
+  "decisionsState": "DQ-F3-1..24 — PENDING FINAL AUTHOR DISPOSITION",
+  "promptState": "PREPARED — DECISION-RECONCILED — RECOVERY-CORRECTED — NOT AUTHORIZED",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "activityClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "approvedTextsChanged": "NONE",
+  "frozenCandidatesChanged": "NONE",
+  "entryGate": {
+    "publishedMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "candidate": "6c07e01a834e0a3ecd7af7290bc7d2ddef50ceb6",
+    "tree": "8f2e141bcb1311051b14d8efb3d7289b15e95212",
+    "parent": "3e24ed3aca422eef4e844a6c1230a3a3fc599c21",
+    "static": "verification-a2b8e613f2fe43d18c8300893c307ba2 ACCEPTED / COMPLETE",
+    "linearAncestry": true,
+    "worktreeClean": true,
+    "productDeltaSinceMain": "NONE",
+    "branch": "phase/pre-g9b-r6-plus-f3-dq21-recovery-corrective-feasibility",
+    "result": "PASS"
+  },
+  "probes": {
+    "class": "F3CorrectiveGateProbeTest (4 methods), scratch only, reuses F3RecoveryGateProbeTest helpers",
+    "runs": ["focusA", "focusB", "focusC x2 (archive id lookup fix, reopen diff)", "focusAK1S"],
+    "outputs": {
+      "f3-probe.corrective-a.txt": "7ddf13351f19df9e6295e22a7f2ce344f29fb6dab4c59bced441d3a17ab0c27d",
+      "f3-probe.corrective-b.txt": "6077083474d6962d0b992c588b0397ce1f381bb3746db4a0df9f9493def49a9b",
+      "f3-probe.corrective-c.txt": "1893985255d8786befe417967aa59f8a5976107d5cfed1c7659726a60755be19",
+      "f3-probe.corrective-a-k1s.txt": "80e6a692e1879369c3eb98071e5435faf45d64b5c8cea255cbfb575b369903ca"
+    },
+    "probeSourceSha256": "324a23f215aeb2a426c33a19cc486b2041df74ab29c72921861a833abd99aba9",
+    "cleanup": "compileTestJava without init script exit 0; probe classes, stash copies and JUnit XML removed; git status clean"
+  },
+  "focusA": {
+    "risk": "F3R-UNDO-EQUAL-CONTENT-PENDING",
+    "verdict": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+    "alternatives": {
+      "A1_observation": "INFEASIBLE UNDER CURRENT CONTRACT",
+      "A1_cancellation": "PROVEN FEASIBLE WITH EXISTING API",
+      "A2_barrier": "PROVEN FEASIBLE WITH EXISTING API",
+      "A3_serialization": "INFEASIBLE UNDER CURRENT CONTRACT",
+      "A4_shared": "not needed"
+    },
+    "sourceGuarantee": "undoHistoryGeneration advanced only by commitUndoBaseline; older stores deleted inside synchronized doStoreUndoInfo",
+    "runtime": ["A-Q1 pending equal store BLOCKED then discarded; Locus V2 and Spline V2 recovery CERTIFIED", "A-Q3 late equal store: previous K1-R-H NOT CERTIFIED, barrier CERTIFIED", "A-Q4a differing store rejected before mutation", "A-Q4b two equal stores discarded x3", "A-Q-K1S K1-S under barrier CERTIFIED, instances kept", "A-Q6 success one undo step, UUID kept"]
+  },
+  "focusB": {
+    "risk": "F3R-RECOVERY-FAILURE",
+    "detection": "CLOSED — EVIDENCE SUPPORTED",
+    "completion": "CLOSED WITH EXPLICIT SCOPE RESTRICTION (one retry)",
+    "historyPreservation": "CLOSED — EVIDENCE SUPPORTED (inherited fallback bypassed)",
+    "containment": "OPEN — NOT ESTABLISHED (Undo/Redo suspension proven; save guard, insertion lock, message specified; editing not blockable)",
+    "approaches": {
+      "B1_preflight": "PROVEN FEASIBLE WITH EXISTING API",
+      "B2_guarded_reload": "PROVEN FEASIBLE WITH EXISTING API",
+      "B3_containment": "CONDITIONALLY FEASIBLE — SPECIFIED GATE REQUIRED",
+      "B4_shared": "not needed for F3"
+    }
+  },
+  "focusC": {
+    "risk": "F3R-DOCUMENT-IDENTITY-SUCCESS",
+    "semantics": "document-lineage id (Save and Save As keep it; new documents and id-less files get a new one); regeneration on paste is a loader side effect; no other Desktop consumer; GeoCeDG already keeps it on rejected opens",
+    "verified": ["inherited success changes the UUID for all four payload classes and persists it", "preserved success keeps it through Undo, Redo, Save, Save As and reopen", "ordinary Ctrl+V changes it (unchanged)"],
+    "recommendation": "PRESERVE DESTINATION DOCUMENT UUID",
+    "technicalStatus": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+    "contract": "author choice"
+  },
+  "options": {
+    "K1S": "certified under the barrier; instances, F2 memory, IsoABorder link kept",
+    "K1R_H": "barrier form certified; guarded reload; declared session reset",
+    "K2_minimal": "pending-store API, fail-fast loadUndoInfo, id-keeping clipboard import; no additional F3 guarantee; likely GLOBAL_IMPACT; not recommended",
+    "S": "differing pending store, unloadable recovery source, inadmissible payload; payload-class fallback"
+  },
+  "architecture": "Desktop only (public inherited API); no shared, kernel or Classic change",
+  "proposedImplementationClass": {"class": "INTEGRATED_PHASE", "frozen": false},
+  "dq21": "RECOMMENDATION ONLY — PENDING AUTHOR DISPOSITION; ready for final disposition",
+  "riskRegisterDelta": {
+    "F3R-UNDO-EQUAL-CONTENT-PENDING": "CLOSED WITH EXPLICIT SCOPE RESTRICTION",
+    "F3R-RECOVERY-FAILURE": "OPEN — NOT ESTABLISHED (containment only)",
+    "F3R-DOCUMENT-IDENTITY-SUCCESS": "CLOSED WITH EXPLICIT SCOPE RESTRICTION (technical); contract pending author",
+    "F3R-ATOMICITY-COMMIT": "OPEN — PENDING AUTHOR DISPOSITION (unchanged)"
+  },
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f3_dq21_corrective_feasibility_report.md",
+    "docs/validation/pre_g9b_r6_plus_f3_dq21_corrected_option_assessment.md",
+    "docs/validation/pre_g9b_r6_plus_f3_risk_register_corrective_update.md",
+    "docs/validation/pre_g9b_r6_plus_f3_author_decision_sheet_corrective_update.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-corrective-state-matrix.json",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-corrective-feasibility-gate.json",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}

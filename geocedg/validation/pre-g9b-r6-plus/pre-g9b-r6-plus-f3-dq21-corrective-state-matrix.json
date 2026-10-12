@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "activity": "PRE-G9B-R6-plus-F3-DQ21-RECOVERY-CORRECTIVE-FEASIBILITY-GATE",
+  "artifactKind": "RECOVERY_STATE_PRESERVATION_MATRIX",
+  "supersedes": "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-dq21-recovery-state-matrix.json (unchanged, history)",
+  "report": "docs/validation/pre_g9b_r6_plus_f3_dq21_corrective_feasibility_report.md",
+  "assessment": "docs/validation/pre_g9b_r6_plus_f3_dq21_corrected_option_assessment.md",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "selfApproved": false,
+  "codes": {
+    "PV": "PRESERVED — VERIFIED",
+    "RD": "RESET — EXPLICITLY DECLARED",
+    "AU": "ALTERED — UNACCEPTABLE",
+    "NE": "NOT ESTABLISHED",
+    "NA": "NOT APPLICABLE"
+  },
+  "confidence": {
+    "S": "source-level guarantee",
+    "R": "runtime-verified",
+    "C": "conditionally feasible (stated gate)",
+    "N": "not established"
+  },
+  "paths": {
+    "K1S": "barrier transaction, subtractive recovery (no identity records)",
+    "K1R_H": "barrier transaction, guarded reload (identity payloads, inherited rollback, K1-S second line)",
+    "S": "rejection before mutation",
+    "K2": "minimal shared correction (not probed; feasibility analysed only)"
+  },
+  "rows": [
+    {"state": "full document XML incl. root id", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "A-Q1, A-Q4b, B-F2, B-F3 certificates"},
+    {"state": "construction and DAG", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "certificates, walks"},
+    {"state": "durable semantic identities", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "ids in every certificate"},
+    {"state": "document UUID on failure", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "certificates"},
+    {"state": "document UUID on success", "K1S": "PV", "K1R_H": "PV", "S": "NA", "K2": "NE", "confidence": "R", "evidence": "C-preserve-* incl. Undo, Redo, Save, Save As, reopen"},
+    {"state": "complete Undo/Redo history with equal-content pending store", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "S+R", "evidence": "CF-S1, A-Q1, A-Q3, A-Q4b"},
+    {"state": "differing pending store at start", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "A-Q4a rejected before mutation (S applies to every path)"},
+    {"state": "late store after the recovery boundary", "K1S": "PV", "K1R_H": "PV", "S": "NA", "K2": "NE", "confidence": "S+R", "evidence": "A-Q3 (emulated thread body)"},
+    {"state": "no reappearance through Undo/Redo", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "A-Q1, A-Q5"},
+    {"state": "success: one undo step, previous prefix kept", "K1S": "PV", "K1R_H": "PV", "S": "NA", "K2": "NE", "confidence": "R", "evidence": "A-Q6, C-*"},
+    {"state": "saved/modified flag", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "certificates"},
+    {"state": "file association, no unintended save", "K1S": "PV", "K1R_H": "PV", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "certificates; B-F4 original file untouched"},
+    {"state": "macros", "K1S": "PV", "K1R_H": "NA", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "earlier A-*-macro-K1S; identity + macros rejected (DQ-F3-24)"},
+    {"state": "live instances", "K1S": "PV", "K1R_H": "RD", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "A-Q-K1S (14 same), certificates"},
+    {"state": "Parallel/Perpendicular memory", "K1S": "PV", "K1R_H": "RD", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "A-Q-K1S (K1S kept), certificates"},
+    {"state": "IsoABorder export link", "K1S": "PV", "K1R_H": "RD", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "A-Q-K1S (K1S kept); earlier report §10"},
+    {"state": "selection and active tool", "K1S": "RD", "K1R_H": "RD", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "inherited paste"},
+    {"state": "runtime layer of non-drawables", "K1S": "PV", "K1R_H": "RD", "S": "PV", "K2": "NE", "confidence": "R", "evidence": "not serialized"},
+    {"state": "recovery failure detection", "K1S": "PV", "K1R_H": "PV", "S": "NA", "K2": "NE", "confidence": "R", "evidence": "B-F1, B-F3, B-F4"},
+    {"state": "recovery completion (single fault, one retry)", "K1S": "PV", "K1R_H": "PV", "S": "NA", "K2": "NE", "confidence": "R", "evidence": "B-F2, B-F3"},
+    {"state": "history preserved on persistent reload failure", "K1S": "PV", "K1R_H": "PV", "S": "NA", "K2": "NE", "confidence": "R", "evidence": "B-F4, B-F5 (inherited reference corrupts the cursor)"},
+    {"state": "containment of an uncertified drawing", "K1S": "NE", "K1R_H": "NE", "S": "NA", "K2": "NE", "confidence": "C", "evidence": "Undo/Redo suspension proven (CF-S5); save guard and insertion lock not implemented; editing not blockable"}
+  ]
+}
