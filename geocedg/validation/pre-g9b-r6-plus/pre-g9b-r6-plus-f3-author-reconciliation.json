@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "activity": "PRE-G9B-R6-plus-F3-AUTHOR-RECONCILIATION",
+  "artifactKind": "DOCUMENTARY_RECONCILIATION_EVIDENCE",
+  "conservativeScopeAssessment": "docs/validation/pre_g9b_r6_plus_f3_conservative_scope_assessment.md",
+  "feasibilityReport": "docs/validation/pre_g9b_r6_plus_f3_reconciliation_feasibility_report.md",
+  "designCandidate": "docs/architecture/pre_g9b_r6_plus_f3_conservative_insertion_design_candidate.md",
+  "decisionRecord": "docs/validation/pre_g9b_r6_plus_f3_author_decision_reconciliation_record.md (v2.0)",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+  "historicalEvidence": [
+    "docs/validation/pre_g9b_r6_plus_f3_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-preparation-characterization.json",
+    "docs/architecture/pre_g9b_r6_plus_f3_file_insert_reconciled_design_candidate.md",
+    "docs/validation/pre_g9b_r6_plus_f3_author_decision_preparation_record.md (v1)"
+  ],
+  "governingPlanningRecord": "docs/validation/pre_g9b_r6_plus_f3_author_decisions_record.md (F3-D1 to F3-D6; unchanged; amendments proposed only)",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "authorDirection": {
+    "date": "2026-10-12",
+    "state": "RECORDED — SCOPE REASSESSMENT AUTHORIZED",
+    "principle": "fail closed: unsupported, ambiguous, incomplete or unverified insertions are rejected without modifying the target",
+    "priority": "correctness over functional breadth and upstream behavioral compatibility",
+    "approvesFeatureSetOrArchitecture": false
+  },
+  "designState": "PROPOSED — PENDING AUTHOR REVIEW",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "reconciliationClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "base": {
+    "publishedMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "publishedTree": "26817bfc6a72b378e4babc1cd08efd0d734473c9",
+    "preparationCandidate": "480c972972e90514e88421194a792898c916834e",
+    "preparationTree": "166caf6c7802c37db03060a2fd07cd71d28daa17",
+    "preparationStatic": "verification-e7bb62e990814e4791e7f1aabbdb9581 ACCEPTED / COMPLETE",
+    "branch": "phase/pre-g9b-r6-plus-f3-reconciliation",
+    "published": false
+  },
+  "entryGate": {
+    "liveRemoteMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "localMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "originMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "candidateParent": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "worktreeClean": true,
+    "receiptBoundToCandidate": true,
+    "result": "PASS"
+  },
+  "probes": {
+    "route": "scratch JUnit class F3ReconProbeTest (6 methods) through the F3-PREP init script; scratch-only conservative-insertion prototype; never tracked; compileTestJava rerun without the init script; probe test-result XML and four compile-stash copies removed; worktree clean",
+    "runs": ["compile failure (GColor.getRGB)", "compile failure (character literal)", "1 of 6 failed (prototype did not catch a preflight IOException)", "6 tests, exit 0"],
+    "items": [
+      {"id": "recon-types", "answers": ["FQ-1", "FQ-2", "RF-1", "RF-2", "RF-3"], "outputSha256": "fe2330ba3f061982e6325487d2ddf9d01b0deabb8850c995ff6b1c1157423344"},
+      {"id": "recon-labels", "answers": ["FQ-5"], "outputSha256": "02a8e48a25814a3a35e68ab9db63d3bbfdd251982a4f39a038125698c14e6db8"},
+      {"id": "recon-macros", "answers": ["FQ-4"], "outputSha256": "ed4c612599755e741ffe62b107bd1aa2c8d0b78bb14a1eeedd616b9e80eeed88"},
+      {"id": "recon-undo", "answers": ["FQ-3", "FQ-6"], "outputSha256": "47f23677c51ab91add2b02504c31b961b3454136c9a29d7154d6ee866032b912"},
+      {"id": "recon-narrowfix", "answers": ["FQ-7"], "outputSha256": "be4fc747131811c451af0a001bc95fef514eca04918ccc9e97d7dafd6d8c43b4"},
+      {"id": "recon-template", "answers": ["FQ-8", "FQ-9"], "outputSha256": "5ef72a449e47d91971e2c44f2d6e263b008917fe89c4f93b9b8c7390f01b09a2"}
+    ],
+    "probeSourceSha256": "652b652fb3f07e6a8e43a7c6408a13bdee814c6c235fd5e317b0f483dd51cf31"
+  },
+  "priorityQuestions": [
+    {"id": "FQ-1", "question": "useful collision-free macro-free subset safely insertable", "outcome": "CONFIRMED"},
+    {"id": "FQ-2", "question": "subset certified before mutation", "outcome": "CONFIRMED (admission); CONDITIONALLY FEASIBLE (full certification by dry run)"},
+    {"id": "FQ-3", "question": "atomic and independently undoable", "outcome": "CONDITIONALLY FEASIBLE (forced mid-commit failure not probed)"},
+    {"id": "FQ-4", "question": "macro-dependent insertion rejected before mutation", "outcome": "CONFIRMED"},
+    {"id": "FQ-5", "question": "label conflicts rejected or safely renamed", "outcome": "CONFIRMED"},
+    {"id": "FQ-6", "question": "clipboard isolated from insertion", "outcome": "CONFIRMED (amends DQ-D1-7)"},
+    {"id": "FQ-7", "question": "Ctrl+V placeholder labels fixable narrowly", "outcome": "CONFIRMED (GeoCeDG dedicated buffer; or one-line CopyPasteD reset)"},
+    {"id": "FQ-8", "question": "template properties applicable without layers, geometry or units", "outcome": "CONFIRMED for the measured whitelist"},
+    {"id": "FQ-9", "question": "template undo and saved state", "outcome": "CONFIRMED for object styles; BLOCKED for construction defaults and labeling style under existing undo"},
+    {"id": "FQ-10", "question": "inherited Desktop changes necessary", "outcome": "CONFIRMED not necessary for the recommended contracts"}
+  ],
+  "findings": {
+    "RF-1": "runtime feature flags do not gate paste (Locus V2 inserted into a Locus V2 creation-disabled target)",
+    "RF-2": "native-dimension text is presentation in target units",
+    "RF-3": "AlignedDimension did not evaluate in the probe host; insertion NOT ESTABLISHED",
+    "RF-4": "insertFrom protects every source label in the target until the next clearing",
+    "RF-5": "an Undo reload normalizes a dimension text's line thickness although getXML is identical",
+    "RF-6": "identity-bearing payloads with copied macros are refused by CopyPasteD"
+  },
+  "alternatives": {
+    "S": "strict minimal: elementary 2D types, no macros, no scripts, L0",
+    "R": "restricted native: verified whitelist incl. Locus V2 family, Spline V2, LinearDimension, identity records; M0; L1; no Overwrite; dedicated buffer; dry run; verification; rollback",
+    "B": "broad repaired inherited Insert File"
+  },
+  "recommendedInsertionContract": "R with M0 and L1 (S as fallback); not author approved",
+  "admissibilityMatrix": {
+    "SUPPORTED": ["points (free, dependent, midpoint, on path, single intersection)", "line, ray, segment, vector", "circle, ellipse", "dependent function", "polygon with edges", "angle from three points", "free numbers and booleans", "dependent text", "lists and Sequence"],
+    "SUPPORTED_WITH_CONDITIONS": ["show-object condition referencing an inserted boolean", "Locus V2, LocusLength and Locus V2 intersection results (target allows Locus V2; no macros)", "Spline V2 with promoted list and degree", "LinearDimension and outputs (text in target units)", "free 3D point"],
+    "REJECTED": ["macro-generated objects and any macros (M0)", "objects with scripts"],
+    "NOT_ESTABLISHED_REJECTED": ["AlignedDimension", "IsoABorder", "3D lines, planes, solids", "images and external files", "buttons, input boxes", "CAS cells", "any unlisted (class, algorithm) pair"]
+  },
+  "macroPolicy": "M0 recommended; M1 feasible (FQ-4); M1+ and M2 deferred",
+  "labelPolicy": "L1 safe rename, no Overwrite; L0 if the author prefers S",
+  "clipboard": "dedicated GeoCeDGCopyPaste insertion buffer; window buffer untouched; requires DQ-D1-7 amendment (DQ-F3-16)",
+  "applyTemplate": "T0 whitelist: colour, line thickness, line style, point size, point style, fill opacity; specialized objects skipped; defaults and labeling deferred",
+  "upstreamChanges": "none recommended (U0); optional U1-a CopyPasteD.insertFrom duplicateLabels reset, U1-b AppD load-result checks, U1-c GuiManagerD Cancel null checks as separate decisions (DQ-F3-19)",
+  "classicImpact": "none under U0; Classic keeps CF-F3-1, -6, -7, -12 unless DQ-F3-19 chooses U1",
+  "decisions": [
+    {"id": "DQ-F3-1", "recommendation": "N1 unchanged", "state": "PENDING"},
+    {"id": "DQ-F3-2", "recommendation": "A1; orchestration no longer calls AppD.insertFile/applyTemplate", "state": "PENDING"},
+    {"id": "DQ-F3-3", "recommendation": "X1 as container rule", "state": "PENDING"},
+    {"id": "DQ-F3-4", "recommendation": "OFF-B unchanged", "state": "PENDING"},
+    {"id": "DQ-F3-5", "recommendation": "L1 safe rename, no Overwrite; macros per DQ-F3-15; objects per DQ-F3-14", "state": "PENDING"},
+    {"id": "DQ-F3-6", "recommendation": "all-or-nothing per DQ-F3-18; one undo step", "state": "PENDING"},
+    {"id": "DQ-F3-7", "recommendation": "provenance through the dedicated buffer (DQ-F3-16)", "state": "PENDING"},
+    {"id": "DQ-F3-8", "recommendation": "T0 (DQ-F3-17)", "state": "PENDING"},
+    {"id": "DQ-F3-9", "recommendation": "moot under T0 (layers untouched)", "state": "PENDING"},
+    {"id": "DQ-F3-10", "recommendation": "H-1, H-3; clipboard per DQ-F3-16", "state": "PENDING"},
+    {"id": "DQ-F3-11", "recommendation": "F-1 unchanged", "state": "PENDING"},
+    {"id": "DQ-F3-12", "recommendation": "C-1 INTEGRATED_PHASE", "state": "PENDING"},
+    {"id": "DQ-F3-13", "recommendation": "A13-1 amend F3-D2 item 4; item 3 read as containers", "state": "PENDING"},
+    {"id": "DQ-F3-14", "recommendation": "A14-1 whitelist matrix (Design R)", "state": "PENDING"},
+    {"id": "DQ-F3-15", "recommendation": "M0", "state": "PENDING"},
+    {"id": "DQ-F3-16", "recommendation": "B16-1 dedicated insertion buffer (amends DQ-D1-7)", "state": "PENDING"},
+    {"id": "DQ-F3-17", "recommendation": "T0; amend F3-D2 item 5", "state": "PENDING"},
+    {"id": "DQ-F3-18", "recommendation": "A18-1 admission, dry run, commit, verification, rollback", "state": "PENDING"},
+    {"id": "DQ-F3-19", "recommendation": "U0 only in F3", "state": "PENDING"},
+    {"id": "DQ-F3-20", "recommendation": "C20-1 debt closes with the approved amendments; deferred items recorded", "state": "PENDING"}
+  ],
+  "originalPlanning": {
+    "F3-D1": "retained",
+    "F3-D2": "items 1, 2, 6, 7, 8, 9 retained; item 3 retained as container rule; items 4 and 5 proposed amendments (DQ-F3-13, DQ-F3-17)",
+    "F3-D3": "retained",
+    "F3-D4": "retained",
+    "F3-D5": "retained; DQ-D1-7 amendment proposed (DQ-F3-16)",
+    "F3-D6": "retained"
+  },
+  "proposedImplementationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozen": false,
+    "acceptance": "registered PHASE PRE-G9B-R6-PLUS-F3 + INTEGRATION (COMPOSED alias) on the same commit",
+    "globalImpactTrigger": "only a shared change (macro semantics, construction transfer, undo of defaults); none recommended"
+  },
+  "openTechnicalItems": ["OTI-F3R-1", "OTI-F3R-2", "OTI-F3R-3", "OTI-F3R-4", "OTI-F3R-5", "OTI-F3-3"],
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f3_conservative_scope_assessment.md",
+    "docs/validation/pre_g9b_r6_plus_f3_reconciliation_feasibility_report.md",
+    "docs/validation/pre_g9b_r6_plus_f3_author_decision_reconciliation_record.md",
+    "docs/architecture/pre_g9b_r6_plus_f3_conservative_insertion_design_candidate.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-author-reconciliation.json",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
