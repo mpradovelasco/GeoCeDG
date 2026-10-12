@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-F3-IMPLEMENTATION-AUTHORIZATION",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "artifactKind": "TECHNICAL_CANDIDATE_REPORT",
+  "report": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md",
+  "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md (not amended)",
+  "specification": "geocedg/specs/ui/document-insertion.md (v1.0)",
+  "specificationStatus": "PROPOSED",
+  "authorDecisionRecord": "docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md",
+  "authorizationRecord": "docs/validation/pre_g9b_r6_plus_f3_implementation_authorization_record.md",
+  "approvedBase": {"commit": "108d9cb6591aef92135a95ec9bf71482fcd78e7f", "tree": "45644a6fabdb5e3b4cb23df063761f57d3fdf133"},
+  "chain": [
+    {"commit": "bc1c9ac6f6801e88437824ddcb981cb54d17eeb0", "tree": "e2ae0fbf26fe4ba8f33222a6118abc13d7735517", "role": "implementation authorization record; INTEGRATED_PHASE frozen"}
+  ],
+  "branch": "phase/pre-g9b-r6-plus-f3-implementation",
+  "verificationClass": {"class": "INTEGRATED_PHASE", "frozen": true, "acceptance": ["PHASE -Phase PRE-G9B-R6-PLUS-F3", "INTEGRATION"], "final": "not required"},
+  "registration": {
+    "phaseId": "PRE-G9B-R6-PLUS-F3",
+    "requiredCheckIds": ["compile.desktop.semantic", "workspace-profile.product", "junit.desktop.pre-g9b-r6-plus-f3.semantic"],
+    "selectionId": "pre-g9b-r6-plus-f3.desktop",
+    "selectionClasses": 44,
+    "selectionIdentities": 458,
+    "finalDesktopIdentities": 2085,
+    "developmentRuns": {"INFRA_UNIT": ["verification-8928c7b0bba3488fbe2e307adeaaedfc REJECTED_VERIFICATION_CORE (input_identities shape, corrected)", "verification-58bd9566233b4153b770144383c40b27 ACCEPTED / COMPLETE"], "STATIC": "verification-3ea051df3c244ee3ad16567a9b1f54fe ACCEPTED / COMPLETE"}
+  },
+  "focusedTests": {
+    "PreG9BR6PlusF3UndoAccountingTest": 12,
+    "PreG9BR6PlusF3RecoverySnapshotTest": 4,
+    "PreG9BR6PlusF3InsertionTest": 15,
+    "PreG9BR6PlusF3RecoveryTest": 7,
+    "PreG9BR6PlusF3SurfaceAndStylesTest": 8
+  },
+  "stopConditions": {
+    "FR-F3-1": "PASS (technical)",
+    "FR-F3-2": "PASS (technical)",
+    "FR-F3-3": "PASS (technical)",
+    "FR-F3-4": "PASS (technical, every in-process route probed and the three exits); real-window modality, window close and OS file drop are author-smoke items",
+    "FR-F3-5": "PASS (technical)",
+    "FR-F3-6": "PASS (technical)",
+    "FR-F3-7": "PASS (technical)",
+    "FR-F3-8": "PASS (technical)"
+  },
+  "observations": ["OBS-F3-PROTECTED-LABELS", "OBS-F3-TEXT-THICKNESS"],
+  "sharedOrInheritedChange": "NONE",
+  "serializationChange": "NONE",
+  "authorSmoke": "PENDING",
+  "productCloseout": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "debt": "DEBT-R6PLUS-FILE-INSERT-SURFACE OPEN (C20-1)",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}

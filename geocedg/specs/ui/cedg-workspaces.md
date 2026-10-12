@@ -475,8 +475,8 @@ Symbolic action IDs remain the manifest authority.
 
 These eleven groups remain the professional Construction design; R1 is consumed
 through existing actions and does not change the 110 stable action IDs.
-Current live catalog (2026-10-11, `PRE-G9B-R6-plus-F1` technical candidate):
-131 actions. The 110-action figure in this
+Current live catalog (2026-10-13, `PRE-G9B-R6-plus-F3` technical candidate):
+133 actions. The 110-action figure in this
 section is the G9U1 baseline; POST-G9U1-A7 added two navigation actions,
 PRE-G9B-R4 three authoring tools, PRE-G9B-R6-plus-A-1 the one-shot
 `construction.working-layer` mode, placed in the Move group (`edit-selection`)
@@ -529,6 +529,13 @@ preference action `presentation.orientation-cue` (View menu, group
 on the global user preference `geocedg.view.orientation-cue.v1` (default OFF)
 that it shares with Layout & Presentation; the orientation cue is screen-only
 presentation in Graphics 1, never document, undo or export state.
+PRE-G9B-R6-plus-F3 (technical candidate pending author review; contract
+`geocedg/specs/ui/document-insertion.md`, `PROPOSED`) added the File submenu
+`file-insert` (Insert / Insertar) directly after the Open group, with the
+document actions `document.insert-file` (Insert File…) and
+`document.apply-styles` (Apply Styles…) in the document-lifecycle cluster, no
+toolbar entry and no accelerator; GeoCeDG Open keeps one document filter and
+refuses OFF files.
 The main toolbar should expose groups, not one permanent button per action.
 Actions the author explicitly does not need as direct buttons—such as Delete,
 Show/Hide, Copy Visual Style, image/freehand tools, rigid/vector polygon and

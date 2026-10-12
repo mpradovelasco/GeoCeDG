@@ -346,6 +346,8 @@ formato nuevo.
 | Nuevo archivo | Archivo → grupo Abrir |
 | Abrir… | Archivo → grupo Abrir |
 | Abrir reciente… | Archivo → grupo Abrir |
+| Insertar archivo… | Archivo → Insertar |
+| Aplicar estilos… | Archivo → Insertar |
 | Guardar | Archivo → grupo Guardar |
 | Guardar como… | Archivo → grupo Guardar |
 | Vista previa de impresión… | Archivo → Imprimir |
@@ -357,6 +359,43 @@ comporta como **Guardar como…**. No hay degradación silenciosa de `.cedg` a
 
 Si un guardado falla su prevalidación, el archivo anterior en disco se conserva y
 sus cambios quedan sin guardar. Nada se escribe a medias.
+
+**Abrir…** ofrece un único tipo de archivo, documentos GeoCeDG (`.cedg`, `.ggb`,
+`.ggt`, `.html`, `.htm`). GeoCeDG no admite archivos OFF: abrir uno muestra un
+mensaje y no cambia nada.
+
+**Insertar archivo…** inserta la construcción de un documento `.cedg` o `.ggb` en
+el dibujo actual, completa o nada. Antes de cambiar nada, GeoCeDG comprueba cada
+objeto del documento y prueba la inserción sobre una copia. Se admiten puntos,
+rectas, semirrectas, segmentos, vectores, circunferencias, elipses, funciones,
+polígonos, ángulos de tres puntos, números, booleanos, textos dependientes, listas
+y sucesiones, y también objetos Locus V2 y Spline V2, cotas lineales y alineadas,
+hojas ISO A y objetos construidos con herramientas. Los documentos con guiones,
+objetos 3D u otros tipos de objeto se rechazan con un mensaje que los nombra, y no
+cambia nada. Los objetos existentes nunca se reemplazan: un objeto insertado cuyo
+nombre está ocupado recibe el siguiente nombre indexado libre (`A` pasa a ser
+`A_1`). Una herramienta que necesitan los objetos insertados se añade una vez, o
+se usa la propia del dibujo cuando es idéntica; otra herramienta distinta con el
+mismo nombre rechaza la inserción. Se rechaza un documento que necesita a la vez
+herramientas y objetos Locus V2 o Spline V2. Las coordenadas nunca se escalan y
+las unidades del dibujo nunca cambian; cuando el documento insertado tiene otra
+unidad física, la barra de estado lo indica (sección 4.6). La inserción es un
+solo paso de Deshacer, conserva la identidad del dibujo y no cambia lo que haya
+copiado; una hoja ISO A se inserta sin el vínculo con el área de exportación de
+su documento. Tras una inserción la selección se vacía y queda activa la
+herramienta Mover. Si la inserción falla una vez iniciada, GeoCeDG restaura el
+dibujo y su historial de Deshacer y lo indica. En el caso poco frecuente de que la
+restauración no pueda verificarse, el dibujo queda aislado: no puede editarse,
+guardarse ni exportarse, y solo puede guardar la última versión verificada en un
+archivo nuevo, reabrir el documento desde su archivo o cerrarlo.
+
+**Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
+punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de
+un documento `.cedg` o `.ggb` a los objetos seleccionados, o a todos si no hay
+selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 conservan
+sus estilos; la geometría, los nombres, las capas, los rótulos, la visibilidad y
+las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores; un
+documento que no puede leerse no cambia nada.
 
 ### 4.3 Qué conserva un documento
 
@@ -565,8 +604,9 @@ documento con otra unidad física, la barra de estado lo indica durante unos die
 segundos; el aviso no es un paso de deshacer y no se guarda. En una ventana
 estrecha el aviso se acorta al espacio libre de la barra de estado; su descripción
 emergente muestra el texto completo. Insertar un
-documento (el tipo de archivo **Inserta Archivo** de **Archivo → Abrir…**)
-muestra el mismo aviso, y un pegado posterior de los mismos objetos lo conserva.
+documento (**Archivo → Insertar → Insertar archivo…**) muestra el mismo aviso;
+nunca reemplaza lo que haya copiado, así que un pegado posterior usa su propia
+copia y su aviso.
 No se muestra aviso cuando alguno de los dos documentos no tiene unidad física.
 
 **Exportaciones.** Con unidad de construcción, las imágenes, la impresión y
@@ -2080,6 +2120,8 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Usar una lámina como área de exportación | Archivo → Área de exportación → Usar el marco ISO A seleccionado | — | estado de sesión | el borde del papel, en vivo, nunca el marco; deshacer, rehacer y borrar lo liberan |
 | Área de exportación ISO A | Archivo → Área de exportación → Definir área de exportación ISO A… | — | estado de sesión | calculada una vez a la escala de dibujo y la unidad de la sesión |
 | Abrir un documento | Archivo → Abrir… | — | — | `.cedg` nativo, `.ggb` entrada de compatibilidad |
+| Insertar un documento | Archivo → Insertar → Insertar archivo… | — | — | solo objetos admitidos, todo o nada; un paso de Deshacer |
+| Aplicar los estilos de un documento | Archivo → Insertar → Aplicar estilos… | — | — | solo seis estilos de objeto; un paso de Deshacer |
 | Guardar un documento | Archivo → Guardar / Guardar como… | — | — | guarde el trabajo nativo como `.cedg` |
 | Inspeccionar una definición | menú contextual → Inspeccionar definición… | — | — | solo lectura; no cambia el modo de presentación de Álgebra |
 | Inspeccionar la estructura semántica | Construcción → Curvas semánticas → Inspeccionar definición de curva semántica… | — | — | rama, componente, dirección, estado, parámetro |

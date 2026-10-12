@@ -121,7 +121,7 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collect(component, ids);
 		}
-		assertEquals(131, ids.size());
+		assertEquals(133, ids.size());
 		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
 		assertTrue(ids.contains("navigation.zoom-factor-in"));
@@ -186,7 +186,10 @@ class G9U1WorkspaceSurfaceTest {
 		for (int menuIndex : new int[] {0, 1}) {
 			for (Component component : bar.getMenu(menuIndex).getMenuComponents()) {
 				assertTrue(component instanceof JMenuItem || component instanceof JSeparator);
-				assertFalse(component instanceof JMenu);
+				// PRE-G9B-R6-plus-F3 (DQ-F3-1 N1): File -> Insert is the one approved group
+				assertFalse(component instanceof JMenu && !(menuIndex == 0
+						&& "file-insert".equals(((JMenu) component)
+								.getClientProperty("geocedg.presentation.group.id"))));
 			}
 		}
 		assertNotNull(findPresentationGroup(bar.getMenu(3),
@@ -701,7 +704,7 @@ class G9U1WorkspaceSurfaceTest {
 					.getJSONArray("toolbar_action_ids")));
 		}
 		assertEquals(59, toolbarIds.size());
-		assertEquals(131, menuIds.size());
+		assertEquals(133, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();

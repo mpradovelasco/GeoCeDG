@@ -120,8 +120,19 @@ public final class GeoCeDGEuclidianController
 		}
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-F3 P7: an isolated drawing takes no pointer edit, even if an
+	 * event reached the view despite the modal dialog.
+	 */
+	private boolean isInsertionIsolated() {
+		return app instanceof AppGeoCeDG geoCeDG && geoCeDG.isInsertionIsolated();
+	}
+
 	@Override
 	public void wrapMousePressed(AbstractEvent event) {
+		if (isInsertionIsolated()) {
+			return;
+		}
 		interactionTailCancelled = false;
 		if (zoomWindowActive && event.isRightClick()) {
 			cancelZoomWindow();
@@ -240,6 +251,9 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseDragged(AbstractEvent event, boolean startCapture) {
+		if (isInsertionIsolated()) {
+			return;
+		}
 		markNavigationCursorCurrent(event);
 		if (interactionTailCancelled) {
 			return;
@@ -276,6 +290,9 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseReleased(AbstractEvent event) {
+		if (isInsertionIsolated()) {
+			return;
+		}
 		markNavigationCursorCurrent(event);
 		if (interactionTailCancelled) {
 			interactionTailCancelled = false;

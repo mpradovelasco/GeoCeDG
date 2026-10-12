@@ -154,6 +154,18 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 */
 	private GeoCeDGOrientationCuePreference orientationCuePreference;
 	private ArrayList<Runnable> orientationCueListeners;
+	/**
+	 * PRE-G9B-R6-plus-F3: whether this instance is a hidden Insert File / Apply Styles
+	 * helper (never published to the recent-file list), and the lazily created
+	 * operations of a document window. No field initializer: the host constructor runs
+	 * first.
+	 */
+	private boolean insertionHelper;
+	private GeoCeDGDocumentInsertion documentInsertion;
+	private GeoCeDGStyleApplication styleApplication;
+	private GeoCeDGInsertionIsolation insertionIsolation;
+	private GeoCeDGInsertionSourceChooser insertionSourceChooser;
+	private Consumer<String> insertionMessageSink;
 
 	/**
 	 * @param args command line arguments
@@ -799,6 +811,10 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	/** The graphics clipboard is a consumer of the picture service (AQ-X4, DQ-B6). */
 	@Override
 	public void copyGraphicsViewToClipboard(EuclidianView copyView) {
+		if (isInsertionIsolated()) {
+			// P7: no export of the uncertified drawing
+			return;
+		}
 		PictureExportService service = getPictureExportService();
 		if (!service.handles(copyView)) {
 			super.copyGraphicsViewToClipboard(copyView);
@@ -1339,6 +1355,195 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 								.isExtendedDxfEnabled()), false);
 	}
 
+	// ------------------------------------------------------- PRE-G9B-R6-plus-F3
+
+	/**
+	 * PRE-G9B-R6-plus-F3 (G6): the GeoCeDG undo manager of every document. Stateless:
+	 * it may run inside the host constructor and reads no field of this class.
+	 */
+	@Override
+	public UndoManagerD getUndoManager(Construction cons) {
+		return new GeoCeDGUndoManager(cons);
+	}
+
+	/**
+	 * @return a hidden helper with the runtime features of this window that never
+	 *         publishes its file to the recent-file list (H-1)
+	 */
+	AppGeoCeDG newInsertionHelper() {
+		AppGeoCeDG helper = (AppGeoCeDG) newAppForTemplateOrInsertFile();
+		helper.insertionHelper = true;
+		helper.setErrorDialogsActive(false);
+		return helper;
+	}
+
+	/**
+	 * Releases a hidden helper after every outcome (H-3): animation stopped, AWT and
+	 * keyboard registrations removed, its frame (if any) disposed.
+	 *
+	 * @param helper helper or null
+	 */
+	void releaseInsertionHelper(AppGeoCeDG helper) {
+		if (helper == null) {
+			return;
+		}
+		try {
+			helper.getKernel().getAnimationManager().stopAnimation();
+			// every dock manager the helper registered (a layout may be rebuilt by a load)
+			for (java.awt.event.AWTEventListener registered : Toolkit.getDefaultToolkit()
+					.getAWTEventListeners()) {
+				java.awt.event.AWTEventListener listener =
+						registered instanceof java.awt.event.AWTEventListenerProxy proxy
+								? proxy.getListener() : registered;
+				if (listener instanceof org.geogebra.desktop.gui.layout.DockManagerD manager
+						&& manager.getLayout().getApplication() == helper) {
+					Toolkit.getDefaultToolkit().removeAWTEventListener(manager);
+				}
+			}
+			// the helper is an embedded host: never call getFrame(), which creates one
+			java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.removeKeyEventDispatcher(helper);
+		} catch (RuntimeException failure) {
+			Log.debug(failure);
+		}
+	}
+
+	/** H-1: a helper sets its current file without publishing it to the recent list. */
+	@Override
+	public void setCurrentFile(File file) {
+		if (insertionHelper) {
+			currentFile = file;
+			if (file != null) {
+				currentPath = file.getParentFile();
+			}
+			return;
+		}
+		super.setCurrentFile(file);
+	}
+
+	/** @return whether this instance is a hidden insertion helper */
+	boolean isInsertionHelper() {
+		return insertionHelper;
+	}
+
+	GeoCeDGDocumentInsertion getDocumentInsertion() {
+		if (documentInsertion == null) {
+			documentInsertion = new GeoCeDGDocumentInsertion(this);
+		}
+		return documentInsertion;
+	}
+
+	GeoCeDGStyleApplication getStyleApplication() {
+		if (styleApplication == null) {
+			styleApplication = new GeoCeDGStyleApplication(this);
+		}
+		return styleApplication;
+	}
+
+	GeoCeDGInsertionIsolation getInsertionIsolation() {
+		if (insertionIsolation == null) {
+			insertionIsolation = new GeoCeDGInsertionIsolation(this);
+		}
+		return insertionIsolation;
+	}
+
+	/** @return whether a serious insertion failure isolated this drawing (P7) */
+	boolean isInsertionIsolated() {
+		return insertionIsolation != null && insertionIsolation.isActive();
+	}
+
+	GeoCeDGInsertionSourceChooser getInsertionSourceChooser() {
+		if (insertionSourceChooser == null) {
+			insertionSourceChooser = GeoCeDGInsertionSourceChooser.swing();
+		}
+		return insertionSourceChooser;
+	}
+
+	void setInsertionSourceChooser(GeoCeDGInsertionSourceChooser chooser) {
+		insertionSourceChooser = chooser;
+	}
+
+	void setInsertionMessageSink(Consumer<String> sink) {
+		insertionMessageSink = sink;
+	}
+
+	/** @param text Insert File, Apply Styles or Open message (P6) */
+	void showInsertionMessage(String text) {
+		if (insertionMessageSink != null) {
+			insertionMessageSink.accept(text);
+		} else {
+			JOptionPane.showMessageDialog(getMainComponent(), text,
+					layerText("Insert.Title"), JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/** File -> Insert -> Insert File... (document.insert-file). */
+	void insertFileAction() {
+		File chosen = getInsertionSourceChooser().choose(this, "Insert.Chooser.InsertTitle");
+		if (chosen == null) {
+			return;
+		}
+		GeoCeDGDocumentInsertion.Result result = getDocumentInsertion().insert(
+				GeoCeDGDocumentPolicy.resolveInsertionName(chosen));
+		// the isolation dialog itself shows the serious-failure message
+		if (result.getMessage() != null && result.getOutcome()
+				!= GeoCeDGDocumentInsertion.Outcome.SERIOUS_RECOVERY_FAILURE) {
+			showInsertionMessage(result.getMessage());
+		}
+	}
+
+	/** File -> Insert -> Apply Styles... (document.apply-styles). */
+	void applyStylesAction() {
+		File chosen = getInsertionSourceChooser().choose(this, "Insert.Chooser.StylesTitle");
+		if (chosen == null) {
+			return;
+		}
+		GeoCeDGStyleApplication.Result result = getStyleApplication().apply(
+				GeoCeDGDocumentPolicy.resolveInsertionName(chosen));
+		if (result.getMessage() != null) {
+			showInsertionMessage(result.getMessage());
+		}
+	}
+
+	/**
+	 * P7 isolation: no inherited save-changes prompt may write the uncertified drawing;
+	 * every prompt route (New, Open, Open Recent, file drop, window close, next file)
+	 * is refused while isolated.
+	 */
+	@Override
+	public boolean saveCurrentFile() {
+		if (isInsertionIsolated()) {
+			return false;
+		}
+		return super.saveCurrentFile();
+	}
+
+	/** P7 isolation: the dialog keys stay with the dialog; no global key handling. */
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		if (isInsertionIsolated()) {
+			return false;
+		}
+		return super.dispatchKeyEvent(event);
+	}
+
+	/**
+	 * P7 Close exit: closes the window without the inherited save prompt (the
+	 * uncertified drawing is discarded, never written). A window-less host discards the
+	 * drawing for a new blank document instead.
+	 */
+	void closeWithoutSavePrompt() {
+		// getFrame() would create a frame lazily: look at the existing window only
+		if (SwingUtilities.getWindowAncestor(getMainComponent()) instanceof GeoGebraFrame) {
+			exitFrame();
+			return;
+		}
+		getKernel().clearConstruction(true);
+		getKernel().initUndoInfo();
+		setCurrentFile(null);
+		setSaved();
+	}
+
 	@Override
 	public EuclidianController newEuclidianController(Kernel kernel) {
 		return new GeoCeDGEuclidianController(kernel);
@@ -1750,6 +1955,11 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 
 	@Override
 	public boolean saveGeoGebraFile(File file) {
+		if (isInsertionIsolated()) {
+			// P7: the uncertified drawing is never written
+			showInsertionMessage(layerText("Insert.Isolation.Refused"));
+			return false;
+		}
 		if (!GeoCeDGDocumentPolicy.isNative(file)) {
 			showError(Errors.InvalidInput, file == null ? "" : file.getName());
 			return false;

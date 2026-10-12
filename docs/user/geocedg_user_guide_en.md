@@ -334,6 +334,8 @@ GeoCeDG does not introduce a new archive format.
 | New file | File → Open group |
 | Open… | File → Open group |
 | Open recent… | File → Open group |
+| Insert File… | File → Insert |
+| Apply Styles… | File → Insert |
 | Save | File → Save group |
 | Save as… | File → Save group |
 | Print preview… | File → Print |
@@ -345,6 +347,41 @@ and no destructive conversion in either direction.
 
 If a save fails its pre-validation, the previous file on disk is preserved and
 your changes remain unsaved. Nothing is written half-way.
+
+**Open…** offers one file type, GeoCeDG documents (`.cedg`, `.ggb`, `.ggt`,
+`.html`, `.htm`). OFF files are not supported in GeoCeDG: opening one shows a
+message and nothing changes.
+
+**Insert File…** inserts the construction of a `.cedg` or `.ggb` document into
+the current drawing, completely or not at all. Before anything changes, GeoCeDG
+checks every object of the document and tries the insertion on a copy. Points,
+lines, rays, segments, vectors, circles, ellipses, functions, polygons, angles
+from three points, numbers, booleans, dependent texts, lists and sequences are
+supported, and so are Locus V2 and Spline V2 objects, Linear and Aligned
+dimensions, ISO A sheets and objects built with tools. Documents with scripts,
+3D objects or other object types are refused with a message naming them, and
+nothing changes. Existing objects are never replaced: an inserted object whose
+name is taken gets the next free indexed name (`A` becomes `A_1`). A tool the
+inserted objects need is added once, or the drawing's own tool is used when it
+is identical; a different tool with the same name refuses the insertion. A
+document that needs both tools and Locus V2 or Spline V2 objects is refused.
+Coordinates are never scaled and the units of the drawing never change; when the
+inserted document has a different physical unit the status bar says so
+(section 4.6). The insertion is one Undo step, keeps the identity of the drawing
+and does not change what you copied; an ISO A sheet is inserted without the
+export-area link of its document. After an insertion the selection is cleared
+and the Move tool is active. If the insertion fails after it started, GeoCeDG
+restores the drawing and its Undo history and says so. In the rare case that the
+restoration cannot be verified, the drawing is isolated: it cannot be edited,
+saved or exported, and you can only save the last verified version to a new
+file, reopen the document from its file, or close it.
+
+**Apply Styles…** copies colour, line style, line thickness, point style, point
+size and fill opacity from the default styles of a `.cedg` or `.ggb` document to
+the selected objects, or to all objects when nothing is selected. Native
+dimensions, ISO A sheets and Locus V2 results keep their styles; geometry,
+names, layers, captions, visibility and units never change. One Undo restores
+the previous styles; a document that cannot be read changes nothing.
 
 ### 4.3 What a document preserves
 
@@ -536,9 +573,9 @@ was.
 of the target document. When the copied objects come from a document with a
 different physical unit, the status bar says so for about ten seconds; the
 notice is not an undo step and is not saved. In a narrow window the notice is
-shortened to the space left in the status bar; its tooltip shows the whole text. Inserting a document (the
-**Insert File** file type of **File → Open…**) shows the same notice, and a
-later paste of the same objects keeps it. No notice is shown when either
+shortened to the space left in the status bar; its tooltip shows the whole text. Inserting a document
+(**File → Insert → Insert File…**) shows the same notice; it never replaces what
+you copied, so a later paste uses your own copy and its notice. No notice is shown when either
 document has no physical unit.
 
 **Exports.** With a construction unit, pictures, printing and LaTeX use the
@@ -1983,6 +2020,8 @@ These are the limitations that affect what you can do in the application today.
 | Use a sheet as the export area | File → Export area → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
 | ISO A export area | File → Export area → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
 | Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
+| Insert a document | File → Insert → Insert File… | — | — | supported objects only, all or nothing; one Undo step |
+| Apply the styles of a document | File → Insert → Apply Styles… | — | — | six object styles only; one Undo step |
 | Save a document | File → Save / Save as… | — | — | save native work as `.cedg` |
 | Inspect a definition | context menu → Inspect definition… | — | — | read-only; does not change Algebra display mode |
 | Inspect semantic structure | Construction → Semantic curves → Inspect semantic curve definition… | — | — | branch, component, address, status, parameter |

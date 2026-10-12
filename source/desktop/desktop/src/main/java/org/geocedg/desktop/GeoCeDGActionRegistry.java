@@ -77,7 +77,8 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.export.area.define-rectangle", "geocedg.export.area.use-export-points",
 			"geocedg.export.area.show", "geocedg.export.area.clear",
 			"geocedg.export.area.iso-a", "geocedg.export.area.use-iso-a-border",
-			"geocedg.document.units", "geocedg.presentation.orientation-cue");
+			"geocedg.document.units", "geocedg.presentation.orientation-cue",
+			"geocedg.document.insert-file", "geocedg.document.apply-styles");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -183,6 +184,10 @@ public final class GeoCeDGActionRegistry {
 	}
 
 	private String unavailableReason(ActionDefinition definition) {
+		if (app instanceof AppGeoCeDG geoCeDG && geoCeDG.isInsertionIsolated()) {
+			// PRE-G9B-R6-plus-F3 P7: only the isolation dialog's exits are available
+			return text("Insert.Isolation.Refused");
+		}
 		if ("gated-g9u2".equals(definition.availability())) {
 			return text("GeoCeDG.Workspace.Unavailable.G9U2");
 		}
@@ -348,6 +353,12 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "host.document.save":
 			gui.save();
+			break;
+		case "geocedg.document.insert-file":
+			((AppGeoCeDG) app).insertFileAction();
+			break;
+		case "geocedg.document.apply-styles":
+			((AppGeoCeDG) app).applyStylesAction();
 			break;
 		case "host.document.save-as":
 			gui.saveAs();

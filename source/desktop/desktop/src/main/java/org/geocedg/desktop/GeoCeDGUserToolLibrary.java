@@ -1163,7 +1163,15 @@ final class GeoCeDGUserToolLibrary {
 		tool.definitionDigests.putAll(calculated);
 	}
 
-	private static String definitionDigest(Macro macro) throws IOException {
+	/**
+	 * PRE-G9B-R6-plus-F3 (P3) uses this digest as the only macro equivalence of Insert
+	 * File, unchanged.
+	 *
+	 * @param macro registered macro
+	 * @return product definition digest
+	 * @throws IOException for a malformed definition
+	 */
+	static String definitionDigest(Macro macro) throws IOException {
 		XMLStringBuilder builder = new XMLStringBuilder();
 		macro.getXML(builder);
 		String xml = builder.toString();

@@ -40,6 +40,11 @@ public final class GeoCeDGAlgebraInputSubmission {
 	public static void submit(AppD app, String input, EvalInfo info,
 			ErrorHandler errors, AsyncOperation<GeoElementND[]> callback)
 			throws ParseException {
+		if (app instanceof AppGeoCeDG geoCeDG && geoCeDG.isInsertionIsolated()) {
+			// PRE-G9B-R6-plus-F3 P7: no input reaches an isolated drawing
+			callback.callback(null);
+			return;
+		}
 		AlgebraProcessor processor = app.getKernel().getAlgebraProcessor();
 		ValidExpression expression = processor.getValidExpressionNoExceptionHandling(input);
 		String label = expression.getLabel();

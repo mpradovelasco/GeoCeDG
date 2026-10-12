@@ -15,9 +15,10 @@ import org.geogebra.desktop.util.CopyPasteD;
 /**
  * PRE-G9B-R6-plus-D1 window copy buffer with transient unit provenance
  * (unit-system v1.0, section 11; DQ-D0-8, DQ-D1-7). The provenance is the source
- * document's unit state at the moment the buffer was replaced (copy, cut or Insert
- * File); it is session state beside the buffer, never clipboard XML, construction XML
- * or document state, and paste semantics never depend on it.
+ * document's unit state at the moment the buffer was replaced (copy or cut); it is
+ * session state beside the buffer, never clipboard XML, construction XML or document
+ * state, and paste semantics never depend on it. Since PRE-G9B-R6-plus-F3 (P2) Insert
+ * File uses its own operation-scoped buffer and never replaces this one.
  */
 final class GeoCeDGCopyPaste extends CopyPasteD {
 	private final AppGeoCeDG owner;
@@ -29,12 +30,29 @@ final class GeoCeDGCopyPaste extends CopyPasteD {
 
 	@Override
 	public void copyToXML(App app, List<GeoElement> geos, boolean putdown) {
+		if (isIsolated(app)) {
+			// PRE-G9B-R6-plus-F3 P7: the uncertified drawing is never copied out
+			return;
+		}
 		StringBuilder before = copiedXML;
 		super.copyToXML(app, geos, putdown);
 		if (copiedXML != before) {
 			// the buffer was replaced: record where its numbers come from
 			provenance = app.getKernel().getConstruction().getUnitSystem().getState();
 		}
+	}
+
+	@Override
+	public void pasteFromXML(App app, boolean putdown) {
+		if (isIsolated(app)) {
+			// PRE-G9B-R6-plus-F3 P7: no paste into an uncertified drawing
+			return;
+		}
+		super.pasteFromXML(app, putdown);
+	}
+
+	private static boolean isIsolated(App app) {
+		return app instanceof AppGeoCeDG geoCeDG && geoCeDG.isInsertionIsolated();
 	}
 
 	@Override

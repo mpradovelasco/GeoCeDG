@@ -10,7 +10,9 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -24,8 +26,11 @@ import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.euclidianND.EuclidianViewInterfaceD;
 import org.geogebra.desktop.geogebra3D.gui.GuiManager3D;
 import org.geogebra.desktop.gui.ContextMenuChooseGeoD;
+import org.geogebra.desktop.gui.app.FileExtensionFilter;
+import org.geogebra.desktop.gui.dialog.DialogManagerD;
 import org.geogebra.desktop.gui.menubar.GeoGebraMenuBar;
 import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
+import org.geogebra.desktop.gui.util.GeoGebraFileChooser;
 import org.geogebra.desktop.gui.view.algebra.AlgebraControllerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
 import org.geogebra.desktop.main.AppD;
@@ -185,8 +190,123 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 		return AppConfigGeoCeDG.APPLICATION_NAME + " " + getLocalization().getMenu("Files");
 	}
 
+	/**
+	 * PRE-G9B-R6-plus-F3 GeoCeDG Open (A1, OFF-B, F-1): the inherited save prompt, then
+	 * the shared chooser with exactly one filter, the document filter; Insert File and
+	 * Apply Styles are separate File -> Insert actions and OFF is not offered. Each
+	 * selection resolves by {@link GeoCeDGDocumentPolicy#resolveOpenName}; an OFF or
+	 * unresolved name is refused with a message. Cancel does nothing. The v1 fallback
+	 * keeps the inherited dialog.
+	 */
+	@Override
+	public void openFile(File file) {
+		if (GeoCeDGProfile.isLegacyFallback()) {
+			super.openFile(file);
+			return;
+		}
+		if (!(getApp().isSaved() || getApp().saveCurrentFile())) {
+			return;
+		}
+		((DialogManagerD) getDialogManager()).initFileChooser();
+		GeoGebraFileChooser chooser = ((DialogManagerD) getDialogManager()).getFileChooser();
+		chooser.setMode(GeoGebraFileChooser.MODE_GEOGEBRA);
+		chooser.setCurrentDirectory(getApp().getCurrentPath());
+		chooser.setMultiSelectionEnabled(true);
+		chooser.setSelectedFile(file != null ? file : getApp().getCurrentFile());
+		chooser.resetChoosableFileFilters();
+		FileExtensionFilter documents = new FileExtensionFilter();
+		for (FileExtensions extension : getDocumentOpenExtensions()) {
+			documents.addExtension(extension);
+		}
+		documents.addExtension(FileExtensions.GEOGEBRA_TOOL);
+		documents.addExtension(FileExtensions.HTML);
+		documents.addExtension(FileExtensions.HTM);
+		documents.setDescription(getDocumentOpenDescription());
+		chooser.addChoosableFileFilter(documents);
+		chooser.setFileFilter(documents);
+		File[] selected = null;
+		try {
+			if (chooser.showOpenDialog(getApp().getMainComponent())
+					== JFileChooser.APPROVE_OPTION) {
+				selected = chooser.getSelectedFiles();
+				if (selected == null || selected.length == 0) {
+					selected = new File[] {chooser.getSelectedFile()};
+				}
+			}
+		} finally {
+			chooser.setMultiSelectionEnabled(false);
+		}
+		openResolved(selected);
+	}
+
+	/**
+	 * @param selected chooser selection, or null after cancellation
+	 * @return the files passed to the inherited open (refusals shown)
+	 */
+	List<File> openResolved(File[] selected) {
+		List<File> resolved = new ArrayList<>();
+		if (selected == null) {
+			return resolved;
+		}
+		for (File candidate : selected) {
+			if (candidate == null) {
+				continue;
+			}
+			File file = GeoCeDGDocumentPolicy.resolveOpenName(candidate);
+			if (file == null) {
+				refuseOpen(candidate);
+			} else {
+				resolved.add(file);
+			}
+		}
+		if (!resolved.isEmpty()) {
+			super.doOpenFiles(resolved.toArray(new File[0]), true);
+		}
+		return resolved;
+	}
+
+	private void refuseOpen(File file) {
+		AppGeoCeDG app = (AppGeoCeDG) getApp();
+		app.showInsertionMessage(GeoCeDGDocumentPolicy.isOff(file)
+				? app.layerText("Open.Reject.Off", file.getName())
+				: app.layerText("Open.Reject.NotFound", file.getName()));
+	}
+
+	/**
+	 * Every caller (chooser, file drop, recent list) refuses OFF files in the GeoCeDG
+	 * UI, and nothing opens over an isolated drawing (P7). The v1 fallback is inherited.
+	 */
+	@Override
+	public synchronized void doOpenFiles(File[] files, boolean allowOpeningInThisInstance) {
+		if (GeoCeDGProfile.isLegacyFallback() || files == null) {
+			super.doOpenFiles(files, allowOpeningInThisInstance);
+			return;
+		}
+		AppGeoCeDG app = (AppGeoCeDG) getApp();
+		if (app.isInsertionIsolated()) {
+			app.showInsertionMessage(app.layerText("Insert.Isolation.Refused"));
+			return;
+		}
+		List<File> accepted = new ArrayList<>();
+		for (File file : files) {
+			if (GeoCeDGDocumentPolicy.isOff(file)) {
+				refuseOpen(file);
+			} else {
+				accepted.add(file);
+			}
+		}
+		if (!accepted.isEmpty()) {
+			super.doOpenFiles(accepted.toArray(new File[0]), allowOpeningInThisInstance);
+		}
+	}
+
 	@Override
 	public boolean save() {
+		if (((AppGeoCeDG) getApp()).isInsertionIsolated()) {
+			((AppGeoCeDG) getApp()).showInsertionMessage(
+					((AppGeoCeDG) getApp()).layerText("Insert.Isolation.Refused"));
+			return false;
+		}
 		getApp().setWaitCursor();
 		getDialogManager().closeAll();
 		File currentFile = getApp().getCurrentFile();
@@ -203,6 +323,11 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 
 	@Override
 	public boolean saveAs() {
+		if (((AppGeoCeDG) getApp()).isInsertionIsolated()) {
+			((AppGeoCeDG) getApp()).showInsertionMessage(
+					((AppGeoCeDG) getApp()).layerText("Insert.Isolation.Refused"));
+			return false;
+		}
 		getApp().needThumbnailFor3D();
 		File file = showSaveDialog(FileExtensions.GEOCEDG,
 				GeoCeDGDocumentPolicy.nativeSuggestion(getApp().getCurrentFile()),
