@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "activity": "PRE-G9B-R6-plus-F3-PREP",
+  "artifactKind": "DOCUMENTARY_PREPARATION_EVIDENCE",
+  "report": "docs/validation/pre_g9b_r6_plus_f3_preparation_characterization_report.md",
+  "reconciledDesignCandidate": "docs/architecture/pre_g9b_r6_plus_f3_file_insert_reconciled_design_candidate.md",
+  "authorDecisionPreparationRecord": "docs/validation/pre_g9b_r6_plus_f3_author_decision_preparation_record.md",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+  "governingPlanningRecord": "docs/validation/pre_g9b_r6_plus_f3_author_decisions_record.md (F3-D1 to F3-D6, 2026-10-03; unchanged)",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "phaseState": "PLANNED — AUTHOR APPROVED; PREPARED — IMPLEMENTATION NOT AUTHORIZED",
+  "preparationState": "DOCUMENTARY PREPARATION CANDIDATE — PENDING AUTHOR REVIEW",
+  "designState": "PROPOSED — CANDIDATE — NOT AUTHOR APPROVED",
+  "promptState": "PREPARED — NOT AUTHORIZED",
+  "characterization": "COMPLETE",
+  "implementation": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "preparationClass": {
+    "class": "DOCUMENTATION_STATUS_ONLY",
+    "acceptance": "STATIC",
+    "supplementaryCheck": "Test-PromptContractDocument on the phase prompt (profile task); STATIC does not cover uncatalogued phase prompts",
+    "impactFacts": "documentation, one JSON evidence mirror, one uncatalogued phase prompt, two status files; no product, test, build, registry, verifier, profile, inventory, schema or serialization path"
+  },
+  "selfApproved": false,
+  "authorApproved": false,
+  "implementationAuthorized": false,
+  "passClaimed": false,
+  "productChange": "NONE",
+  "testOrRegistryChange": "NONE",
+  "serializationChange": "NONE",
+  "authorInstruction": {
+    "date": "2026-10-12",
+    "title": "PRE-G9B-R6-plus-F3-PREP — File / Insert Surface and Document Insertion Compatibility",
+    "authorizes": "source inspection, focused scratch characterization, design reconciliation proposals, author-decision preparation, the canonical F3 prompt, documentary status updates, one local documentary commit and its STATIC verification",
+    "forbidden": [
+      "product implementation; GuiManagerD, TemplateHelper, ConstructionDefaults changes; serialization, parsing or unit-semantics changes; new copy/paste or import algorithms; Classic changes; OFF support changes; persistent identity changes",
+      "application-profile, implementation-test or verification-registry changes",
+      "author approval of the design or marking any decision resolved",
+      "publication, merge, tag, release, installer or binary publication",
+      "F3 implementation, F4, G, PRE-G9B-R7 or G9B"
+    ]
+  },
+  "preservedDispositions": {
+    "PRE-G9B-R6-plus-D1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-A-2": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-F2": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-F2-R1": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R6-plus-F3": "PLANNED — AUTHOR APPROVED — PUBLISHED — IMPLEMENTATION NOT AUTHORIZED before this preparation",
+    "F3-D1..F3-D6": "AUTHOR DECISIONS of 2026-10-03, unchanged",
+    "DEBT-R6PLUS-FILE-INSERT-SURFACE": "ASSIGNED TO PRE-G9B-R6-plus-F3 — NOT AUTHORIZED"
+  },
+  "publishedBase": {
+    "name": "P_F2_F2R1_CLOSEOUT",
+    "commit": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "tree": "26817bfc6a72b378e4babc1cd08efd0d734473c9"
+  },
+  "entryGate": {
+    "localHead": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "localMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "originMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "liveRemoteMain": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "worktreeClean": true,
+    "f2f2r1State": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "f3PlanningState": "PLANNED — AUTHOR APPROVED",
+    "f3AlreadyImplemented": false,
+    "result": "PASS"
+  },
+  "preparationBase": {
+    "commit": "e70718fec3612814144cd405d46f6c08864ceadd",
+    "branch": "phase/pre-g9b-r6-plus-f3-prep",
+    "published": false,
+    "productDeltaFromPublishedBase": "NONE"
+  },
+  "probes": {
+    "route": "scratch JUnit classes F3PrepProbeTest (7 methods) and F3PrepProbe2Test (4 methods) compiled into the Desktop test source set through a Gradle init script; never in a tracked path; isolated preferences file; JOptionPane mocked on the test thread; compileTestJava rerun without the init script, probe test-result XML and two compile-stash copies removed; worktree clean afterwards",
+    "runs": [
+      {"run": 1, "result": "compile failure in the probe (non-existent setMaxLayerUsed); nothing executed"},
+      {"run": 2, "class": "F3PrepProbeTest", "exit": 0},
+      {"run": 3, "class": "F3PrepProbe2Test", "exit": 0}
+    ],
+    "items": [
+      {"id": "insert", "report": "K5 C1 C5 C7", "outputSha256": "bbd11b67c20958fdf5bb03a6698cae20e3ae9482dfcd1988e40a11a4b90982b5"},
+      {"id": "conflicts", "report": "K5 C2 C3", "outputSha256": "ac8b06f009662d08a87f23d541051b9c68a3eacdc094c6412d3309e9bb76cee4"},
+      {"id": "undo", "report": "K5 C4 C6", "outputSha256": "ba9057aa875c33957aeca805ccab165aae88625a2468f58800312331b0feb358"},
+      {"id": "undo2", "report": "K5 C4, K7 E5", "outputSha256": "5980a9496467d0c68c84a6792d6f294b692c346c7a08e9d10f6366c85a83f4da"},
+      {"id": "failures", "report": "K5 C8", "outputSha256": "beca18cc300e05d7b30df7c49ed27e436558486ab52c24e645b40f6e1263f559"},
+      {"id": "units", "report": "K6", "outputSha256": "03498bde93c168f6a46fe0229f4fb23a7a2324daeed921513c4d2172565d3dd2"},
+      {"id": "template", "report": "K7, K10", "outputSha256": "4353037ad67d0f6c098170d7a2022f49b7ae19bdd3a1b4c7a6fd9cd4868bb4e3"},
+      {"id": "open", "report": "K4 OFF through doOpenFiles", "outputSha256": "b04aa852bbfb507b91eb8073d3baf0fce6ae4df988119b961980d5d343c1d450"},
+      {"id": "chooser", "report": "K4 filter list; approve cases superseded by chooser2", "outputSha256": "4c415d00df35bca00663c58ce95b232a604ba4a982631db14a0a36e2988897bd"},
+      {"id": "chooser2", "report": "K4 real chooser routes", "outputSha256": "e012e17c0d293e03b4c212851b29000db90fa80f044de348f0cad29abbb28cf5"},
+      {"id": "classic", "report": "K10", "outputSha256": "6640c14ee16a75e75a513f96dd310aab08bef04a841026cd42644fe59b318b46"},
+      {"id": "native", "report": "K5 C1", "outputSha256": "5474121bf17edab637d5dcbdc431efd374c105f5ac548bcfd952020d6baf57b5"}
+    ],
+    "probeSourceSha256": {
+      "F3PrepProbeTest.java": "4ff803136704f4dcb87b359895e46ee2c086c4d16ccde2be37838ed3837c8a61",
+      "F3PrepProbe2Test.java": "19118189fad689de6801e13a75dcfea58f42d3363f8de28d861ecac27cd47f4e"
+    },
+    "initScriptSha256": "363e58541e963713244496751f791a5af6e400f1cc96f01890026744a6883851"
+  },
+  "corrections": ["ER-F3-1", "ER-F3-2", "ER-F3-3", "ER-F3-4", "ER-F3-5", "ER-F3-6", "ER-F3-7", "ER-F3-8", "ER-F3-9"],
+  "fileMenu": {
+    "actionCatalog": 131,
+    "runtimePin": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProfile.java:340",
+    "fileDirectActions": 19,
+    "fileSubmenus": 0,
+    "flatnessTest": "G9U1WorkspaceSurfaceTest.fileAndEditAreFlatWhileConstructionUsesDeclaredSemanticGroups",
+    "groupEntryRendersSubmenu": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGMenuBar.java:97-103",
+    "newTargetNeeds": ["GeoCeDGActionRegistry TARGETS", "GeoCeDGActionRegistry execute case"],
+    "allowList": "tools/agent/workspace-profile-validation.ps1 (validator hash in verification-static-contracts.json:21; catalog hash in verification-registry.json:7)",
+    "workspacesShareFileMenu": true,
+    "legacyFallbackUsesGuiManagerGeoCeDG": true
+  },
+  "openDialog": {
+    "method": "GuiManagerD.openFile(File) lines 1928-2102 (public, non-final)",
+    "filters": ["All Files", "GeoCeDG Files (.cedg, .ggb, .ggt, .html, .htm)", "Insert File (.ggb)", "Apply Template (.ggb)", "OFF file (.off)"],
+    "dispatchBy": "selected filter",
+    "savePromptBeforeEveryRoute": true,
+    "cancelWithInsertTemplateOrOffFilter": "NullPointerException on the EDT at GuiManagerD.java:2065 / 2046 / 2083",
+    "insertFilterTypedStem": "'.ggb' appended; a '.cedg'-only stem becomes a missing file and re-pastes the previous buffer",
+    "explicitCedgUnderInsertFilter": "inserted"
+  },
+  "offRoutes": {
+    "filterOffered": true,
+    "explicitTypedOff": "imported into the current document on the working layer; document stays saved",
+    "fallbackStem": "imported (fallback chain ends with .off)",
+    "dragAndDrop": "rejected",
+    "commandLine": "not an OFF route (inferred)",
+    "internalApi": "AppD.loadOffFile, GuiManagerD.loadOffFile, OFFHandler: no GeoCeDG caller",
+    "filterRemovalAloneSufficient": false,
+    "decision": "DQ-F3-4"
+  },
+  "insertFile": {
+    "constructionImported": "all objects and algorithms in construction order; dependencies re-bound; layers kept; Locus V2/Spline V2 imported",
+    "sourceHiddenSetImported": false,
+    "macrosImportedTwice": true,
+    "macroCollision": "inserted objects bind to the target's same-name macro (value (3.67, 4) instead of (5.5, 6))",
+    "labelConflict": {"rename": "source objects get index labels", "overwrite": "target object and its dependents removed", "cancel": "nothing inserted; source macros remain; helper frame undisposed"},
+    "undoPoint": false,
+    "mergedIntoNextUndoStep": true,
+    "documentUnsavedAfterInsert": true,
+    "currentFileUnchanged": true,
+    "failurePaths": "missing, not-a-zip .cedg/.ggb, .txt, malformed archive, .off, empty document: previous copy buffer re-pasted with placeholder label; 'Import successful' dialog",
+    "laterCtrlV": "pastes the inserted document again with CLIPBOARDmagicSTRING labels (stale duplicateLabels); same in Classic"
+  },
+  "unitMatrix": [
+    {"case": "D0", "source": "mm", "target": "mm", "notice": false},
+    {"case": "D1", "source": "m", "target": "mm", "notice": true},
+    {"case": "D2", "source": "mm", "target": "unspecified", "notice": false},
+    {"case": "D3", "source": "unspecified", "target": "mm", "notice": false},
+    {"case": "D4", "source": "unspecified", "target": "unspecified", "notice": false},
+    {"case": "D5", "source": "mm, presentation cm", "target": "mm", "notice": false},
+    {"case": "D6", "source": "usm 0.001 m", "target": "mm", "notice": false},
+    {"case": "D7", "source": "usm 0.0254 m", "target": "mm", "notice": true}
+  ],
+  "unitInvariants": {
+    "coordinatesScaled": false,
+    "targetUnitStateChanged": false,
+    "drawingScaleChanged": false,
+    "provenanceInXml": false,
+    "provenanceSource": "helper construction state captured by GeoCeDGCopyPaste.copyToXML at buffer replacement",
+    "holdsOnFailurePaths": false,
+    "sharedOrKernelChangeNeeded": false
+  },
+  "applyTemplate": {
+    "targetUnitStateChanged": false,
+    "geometryImported": false,
+    "constructionDefaultsReplaced": true,
+    "labelingStyleReplaced": "for a .cedg template",
+    "restyled": "selected objects, else all objects",
+    "resets": ["caption", "fixed flag", "label offsets", "colour function and show condition (by reading)"],
+    "euclidianVisibilityApplied": false,
+    "undoPoint": false,
+    "documentStaysSaved": true,
+    "layers": {
+      "geocedg": "every restyled object moves to the working layer; objects of hidden layers become visible",
+      "classic": "every restyled object moves to the capped highest used layer",
+      "hiddenSetChanged": false,
+      "workingLayerChanged": false
+    },
+    "failedLoad": "helper factory defaults applied (inferred, CF-F3-12)"
+  },
+  "helper": {
+    "construction": "AppGeoCeDG(args null, JPanel, same runtime-feature flags, newDocumentDefaults false)",
+    "recentListPublication": true,
+    "dockManagerListenerLeakPerOperation": true,
+    "frameUndisposedAfterCancel": true,
+    "preferenceWriteObserved": false,
+    "replacesUserDocument": false
+  },
+  "anomalies": ["CF-F3-1", "CF-F3-2", "CF-F3-3", "CF-F3-4", "CF-F3-5", "CF-F3-6", "CF-F3-7", "CF-F3-8", "CF-F3-9", "CF-F3-10", "CF-F3-11", "CF-F3-12"],
+  "openTechnicalItems": ["OTI-F3-1", "OTI-F3-2", "OTI-F3-3", "OTI-F3-4", "OTI-F3-5"],
+  "decisions": [
+    {"id": "DQ-F3-1", "subject": "submenu structure and action identities", "recommendation": "N1 group file-insert after file-open; document.insert-file, document.apply-template; geocedg.document.* targets", "state": "PENDING"},
+    {"id": "DQ-F3-2", "subject": "chooser architecture and inherited seams", "recommendation": "A1 GeoCeDG-owned Open override and insertion chooser; no inherited change", "state": "PENDING"},
+    {"id": "DQ-F3-3", "subject": "formats, default extension, fallback", "recommendation": "X1 one .cedg+.ggb filter; stem .cedg then .ggb; refuse others; single selection", "state": "PENDING"},
+    {"id": "DQ-F3-4", "subject": "OFF UI policy", "recommendation": "OFF-B no filter; refuse explicit and fallback .off with a message; internal support unchanged", "state": "PENDING"},
+    {"id": "DQ-F3-5", "subject": "objects, macros, label conflicts", "recommendation": "R-A inherited dialog; M-B fail closed on conflicting macro definitions (OTI-F3-2)", "state": "PENDING"},
+    {"id": "DQ-F3-6", "subject": "undo, cancellation, partial failure", "recommendation": "U-1 one undo point per success; no mutation on Cancel or failure", "state": "PENDING"},
+    {"id": "DQ-F3-7", "subject": "D1 provenance and notice", "recommendation": "P-A existing mechanism unchanged; end-to-end tests", "state": "PENDING"},
+    {"id": "DQ-F3-8", "subject": "Apply Template invariants and state", "recommendation": "T-1 inherited style semantics documented; one undo point; unsaved", "state": "PENDING"},
+    {"id": "DQ-F3-9", "subject": "Apply Template and layers", "recommendation": "L-A preserve each object's layer", "state": "PENDING"},
+    {"id": "DQ-F3-10", "subject": "helper, recent list, clipboard", "recommendation": "H-1 no recent publication; H-3 release registrations; P1 record CF-F3-7 outside F3", "state": "PENDING"},
+    {"id": "DQ-F3-11", "subject": "Classic and legacy profile", "recommendation": "F-1 Classic unchanged; fallback keeps the inherited dialog", "state": "PENDING"},
+    {"id": "DQ-F3-12", "subject": "architecture, class, acceptance", "recommendation": "C-1 INTEGRATED_PHASE, registered PHASE + INTEGRATION", "state": "PENDING"}
+  ],
+  "proposedImplementationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozen": false,
+    "plannedBy": "F3-D4 (author planning assignment 2026-10-03)",
+    "registeredPhase": "PRE-G9B-R6-PLUS-F3 (to be registered by the implementation)",
+    "nodes": ["compile.desktop.semantic", "workspace-profile.product", "junit.desktop.pre-g9b-r6-plus-f3.semantic"],
+    "integration": "INTEGRATION on the same commit and tree",
+    "reclassificationTriggers": "source/shared change; serialization, parser or unit-semantics change; TemplateHelper or ConstructionDefaults change; global verification-infrastructure change beyond the phase-local allow-list amendment and registration",
+    "verificationLevelsPolicy": "geocedg/specs/operations/verification-levels.md §12.8"
+  },
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f3_preparation_characterization_report.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f3-preparation-characterization.json",
+    "docs/architecture/pre_g9b_r6_plus_f3_file_insert_reconciled_design_candidate.md",
+    "docs/validation/pre_g9b_r6_plus_f3_author_decision_preparation_record.md",
+    ".github/prompts/tasks/pre-g9b-r6-plus-f3-file-insert.prompt.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
