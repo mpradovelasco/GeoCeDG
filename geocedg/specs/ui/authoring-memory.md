@@ -2,8 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW**; not author approved |
-| Version | `1.1` (1.0 F2 candidate; 1.1 adds the F2-R1 dual activation, §11) |
+| Status | **NORMATIVE / AUTHOR APPROVED** (joint F2/F2-R1 author closeout of 2026-10-12, [F2/F2-R1 closeout record](../../../docs/validation/pre_g9b_r6_plus_f2_f2r1_closeout_record.md)); the approved implementation is the F2-R1 corrective candidate `488f1e991fee641b9ec521059edc318df7271bdd`; the original F2 candidate `6af85ee3` is historical evidence, not a second implementation. Earlier: `PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` |
+| Approval scope | the behaviour of the F2 author decisions (`DQ-F2-1` to `DQ-F2-10`) as refined by the F2-R1 decisions (`DQ-F2R1-1` to `DQ-F2R1-6`, `FR-2` disposition) and implemented by the approved candidate; it does not extend to macOS or Linux modifiers, undocked toolbars, window-focus or modal-dialog activation routes, Graphics View 2, Classic, any scripting or API activation of the memory, or the working-layer direct entry |
+| Version | `1.1` (1.0 F2 candidate; 1.1 adds the F2-R1 dual activation, §11); promoted to normative without requirement change |
 | Owner phase | `PRE-G9B-R6-plus-F2` (authoring-memory refinements); §11 `PRE-G9B-R6-plus-F2-R1` (corrective) |
 | F2-R1 governing decisions | [F2-R1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md) v1.3 (`DQ-F2R1-1` to `DQ-F2R1-6` §5; `FR-2` disposition §7); [dual-activation design](../../../docs/architecture/pre_g9b_r6_plus_f2_r1_dual_activation_reconciled_design_candidate.md) (`DESIGN — AUTHOR APPROVED`) |
 | Governing author decisions | [F2 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f2_author_decisions_record.md) v1.1 (`DQ-F2-1` to `DQ-F2-10`; implementation authorization and entry gate §8) |
@@ -14,10 +15,13 @@
 
 ## 0. Status and normative language
 
-This specification is the durable contract of the F2 technical candidate. It
-becomes normative only through an author closeout record; until then it binds
-the candidate and nothing else. It transcribes the approved design without
-semantic change; §10 records how the candidate implements it. `MUST`,
+This specification is the durable contract of the GeoCeDG authoring memory
+(F2, with the F2-R1 dual activation of §11). It was written as the contract of
+the technical candidates and became normative through the joint F2/F2-R1
+author closeout record of 2026-10-12, without any change of requirement. It
+transcribes the approved designs without semantic change; §11 refines the
+activation conditions of §1–§5 (in NORMAL the memory takes no part); §10 and
+§11.7 record how the approved candidate implements it. `MUST`,
 `MUST NOT`, `SHOULD` and `MAY` have their usual meaning. Where an author
 decision and this text differ, the decision prevails and this text is
 defective.
@@ -213,7 +217,7 @@ View 2 runs the upstream `EuclidianControllerFor3DD` and keeps the inherited
 behavior (no memory; visible angle). Classic never constructs the GeoCeDG
 controller.
 
-## 10. Implementation (technical candidate)
+## 10. Implementation (F2 elements, carried unchanged into the approved candidate `488f1e99`)
 
 | Element | Implementation |
 |---|---|

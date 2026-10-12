@@ -65,6 +65,7 @@
 - `F2-R1` feasibility gate (`PRE-G9B-R6-plus-F2-R1`): **stopped at `FR-2`** for author disposition ([feasibility gate report](../validation/pre_g9b_r6_plus_f2_r1_feasibility_gate_report.md)). `FR-1`, `FR-3` and `FR-4` pass; the prescribed scripting seam (a GeoCeDG subclass of `GgbAPID` through `AppGeoCeDG.getGgbApi()`) is rejected by the JavaScript sandbox, which admits only `GgbAPID` and a fixed shared allow-list, so it cannot be the effective API instance without an inherited or shared change. Options O1 (single-argument `setMode` origin, recommended), O2 (scripted same-mode as host synchronization) and O3 (sandbox change, reclassification) await the author; the unverified work in progress is kept on the local branch `wip/pre-g9b-r6-plus-f2-r1-fr2-blocked` (`654f7021`), not a candidate; class not frozen; no `PHASE` run; publication not authorized.
 - `F2-R1` FR-2 author disposition (`PRE-G9B-R6-plus-F2-R1-FR2-AUTHOR-DISPOSITION`): the author made reference memory an interactive authoring feature only (no scripting interface for it) and selected Option O1, subject to a revised `FR-2` gate: the GeoCeDG-owned `AppGeoCeDG.setMode(int)` override treats an unmarked single-argument request (scripting `setMode` included, also for the active tool) as a genuine `NORMAL` request, a marked Ctrl toolbar activation stays `MEMORY_ENABLED`, and direct two-argument host synchronization never changes the behaviour; `GgbAPID`, the JavaScript class shutter and the shared allow-list stay unchanged; O2 not selected, O3 rejected ([F2-R1 decision record](../validation/pre_g9b_r6_plus_f2_r1_author_decisions_record.md) v1.3 §7). The earlier `FR-2` failure stays historical evidence; the implementation resumes conditionally on a local successor of `7027cf93`; publication not authorized.
 - `F2-R1` technical candidate (`PRE-G9B-R6-plus-F2-R1`): the revised `FR-2` gate passed ([revised gate report](../validation/pre_g9b_r6_plus_f2_r1_fr2_o1_gate_report.md); `FR-2 = PASS (REVISED O1 CONTRACT)`; `FR-1`, `FR-3`, `FR-4` still valid) and froze `BOUNDED_PHASE` with phase `PRE-G9B-R6-PLUS-F2-R1`. The candidate gives Parallel and Perpendicular a `NORMAL` behaviour (the inherited tool; memory never read, written or cleared) and a `MEMORY_ENABLED` behaviour (the F2 memory) selected by Ctrl on the toolbar activation event (Windows); menus, registry, user tools and scripting select `NORMAL` through the single-argument `setMode(int)` route with the original `GgbAPID`; host synchronization and language changes keep the behaviour; a same-mode behaviour change cancels the partial gesture through `initNewMode`; a localized status-bar segment shows the memory mode ([candidate report](../validation/pre_g9b_r6_plus_f2_r1_candidate_report.md); [specification](../../geocedg/specs/ui/authoring-memory.md) v1.1 §11 `PROPOSED`). `TECHNICAL CANDIDATE PENDING AUTHOR REVIEW`; author smoke pending; the original F2 candidate stays frozen historical evidence; publication not authorized.
+- `F2`/`F2-R1` joint closeout (`PRE-G9B-R6-plus-F2-F2R1-AUTHOR-CLOSEOUT`, 2026-10-12): `PASS — AUTHOR APPROVED — PUBLISHED` for both on the approved implementation `488f1e991fee641b9ec521059edc318df7271bdd`, tree `9673d9afca483dbd8129c92c76639711596cf13b` (`AUTHOR_SMOKE = PASS`; `PHASE` `verification-3a1ac4a636834a32b11baf7d71fbbbd9` 3/3, `STATIC` and `INFRA_UNIT` `ACCEPTED / COMPLETE`; [joint closeout record](../validation/pre_g9b_r6_plus_f2_f2r1_closeout_record.md)); the [authoring-memory specification](../../geocedg/specs/ui/authoring-memory.md) is `NORMATIVE / AUTHOR APPROVED`; the original F2 candidate `6af85ee3` stays frozen historical evidence; the historical `FR-2` blocker is `RESOLVED BY AUTHOR-APPROVED O1 REPLACEMENT`; `OBS-R6PLUS-F2R1-FULL-SUITE-MODAL-ERROR-DIALOGS` is open and non-blocking; macOS/Linux modifiers and the unestablished routes are not claimed. Next planned subphase: `F3` (`PLANNED — AUTHOR APPROVED`, implementation not authorized); `F4` and `G` unchanged.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -271,7 +272,7 @@ No other boundary changed.
 | `E2` | native dimension tools | shared kernel commands, Desktop modes, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
 | `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `PASS — AUTHOR APPROVED` (2026-10-10; `T_R6PLUS_E3_R1` `7cd50116`, corrective successor of `257c854a`; `AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION`; `PHASE` `verification-c4853de4…` and `INTEGRATION` `verification-cf79b0af…` `ACCEPTED / COMPLETE`; publication `NOT AUTHORIZED`; [closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md)) |
 | `F1` | direction visualization | view/drawables, Desktop option | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
-| `F2` | authoring-memory refinements | Desktop mode orchestration | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
+| `F2` | authoring-memory refinements | Desktop mode orchestration | `BOUNDED_PHASE` | `PASS — AUTHOR APPROVED — PUBLISHED` (with its corrective `F2-R1`, 2026-10-12, implementation `488f1e99`) |
 | `F3` | File / Insert surface and document insertion compatibility (`DEBT-R6PLUS-FILE-INSERT-SURFACE`) | profile, Desktop file surface and chooser routes, minimal upstream-identical seams | `INTEGRATED_PHASE` (author planning assignment 2026-10-03; frozen at authorization) | `PLANNED — AUTHOR APPROVED — PUBLISHED — IMPLEMENTATION NOT AUTHORIZED` (planning approved 2026-10-03, published with the `A-2` chain on 2026-10-04; implementation prompt not prepared) |
 | `G` | help, integrated verification and R6-plus closeout | documentation, verification | `INTEGRATED_PHASE` (`INTEGRATION`) | `NOT AUTHORIZED` |
 
@@ -1444,7 +1445,18 @@ PRE-G9B-R6-plus-F1         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-11;
                              selfApproved = false)
                              earlier: NOT AUTHORIZED (readiness review named at the
                              C1 closeout)
-PRE-G9B-R6-plus-F2         = TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
+PRE-G9B-R6-plus-F2         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-12; joint
+                             F2/F2-R1 closeout; AUTHOR_SMOKE = PASS; approved
+                             implementation 488f1e99, tree 9673d9af (the F2-R1
+                             corrective successor); PHASE PRE-G9B-R6-PLUS-F2-R1
+                             verification-3a1ac4a6 3/3, STATIC and INFRA_UNIT ACCEPTED /
+                             COMPLETE; specification authoring-memory.md NORMATIVE /
+                             AUTHOR APPROVED; original candidate 6af85ee3 FROZEN —
+                             HISTORICAL EVIDENCE; FR-2 RESOLVED BY AUTHOR-APPROVED O1
+                             REPLACEMENT; docs/validation/pre_g9b_r6_plus_f2_f2r1_closeout_record.md)
+PRE-G9B-R6-plus-F2-R1      = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-12; corrective
+                             dual NORMAL / MEMORY_ENABLED activation; same closeout)
+                             earlier for F2: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW
                              (2026-10-11; BOUNDED_PHASE frozen; PHASE
                              PRE-G9B-R6-PLUS-F2; two GV1 session slots for Parallel
                              and Perpendicular with release-time injection and a
@@ -1593,6 +1605,16 @@ OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED = ACCEPTED NON-BLOCKING
                              Asymptote with label UNAVAILABLE in the agent environment —
                              NOT CLAIMED PASS; independent tracking required; no owner
                              authorized
+OBS-R6PLUS-F2R1-FULL-SUITE-MODAL-ERROR-DIALOGS = OPEN — NON-BLOCKING FOR F2/F2-R1 —
+                             CAUSAL ATTRIBUTION NOT ESTABLISHED (registered 2026-10-12,
+                             F2/F2-R1 closeout): in the complete Desktop run four
+                             application-modal "GeoGebra - Error" dialogs left by earlier
+                             classes discarded the posted toolbar events of
+                             PreG9BR6PlusF2R1DualActivationTest (final.desktop runs 1 and 2
+                             failed, run 3 passed after the test window was excluded from
+                             application modality); leaking classes not established; runs
+                             preserved; correction NOT AUTHORIZED (separate characterization
+                             required)
 OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT = OPEN — NON-BLOCKING FOR F1 —
                              CAUSAL ATTRIBUTION NOT ESTABLISHED (registered 2026-10-11, F1
                              closeout): G9U1SemanticPointInteractionTest.

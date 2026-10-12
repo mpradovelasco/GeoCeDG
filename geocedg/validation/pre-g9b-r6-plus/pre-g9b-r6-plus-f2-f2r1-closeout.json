@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "phases": ["PRE-G9B-R6-plus-F2", "PRE-G9B-R6-plus-F2-R1"],
+  "registeredPhaseIds": ["PRE-G9B-R6-PLUS-F2", "PRE-G9B-R6-PLUS-F2-R1"],
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_f2_f2r1_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-12", "title": "GeoCeDG — PRE-G9B-R6-plus-F2-F2R1-AUTHOR-CLOSEOUT — Joint Author Approval, Normative Promotion and Controlled Publication", "task": "PRE-G9B-R6-plus-F2-F2R1-AUTHOR-CLOSEOUT", "authorization": "AUTHOR AUTHORIZED — JOINT F2/F2-R1 CLOSEOUT AND CONTROLLED PUBLICATION"},
+  "states": {"PRE-G9B-R6-plus-F2": "PASS — AUTHOR APPROVED — PUBLISHED", "PRE-G9B-R6-plus-F2-R1": "PASS — AUTHOR APPROVED — PUBLISHED", "specification": "NORMATIVE / AUTHOR APPROVED", "boundedPhase": "ACCEPTED / COMPLETE", "f2OriginalCandidate": "FROZEN — HISTORICAL EVIDENCE"},
+  "authorSmoke": {"state": "PASS", "authorConfirmation": "AUTHOR_SMOKE = PASS on the F2-R1 candidate", "performedByAgent": false},
+  "approvedScope": ["independent session-only reference memories for Parallel and Perpendicular", "exact-instance currentness, validity, suspension and lifecycle", "normal tool activation without memory participation", "Ctrl-enabled interactive reference memory on the supported Windows toolbar routes", "preservation of stored references during normal constructions", "safe switching between NORMAL and MEMORY_ENABLED", "scripting operating exclusively under NORMAL", "existing unchanged GgbAPID and JavaScript sandbox", "localized memory-mode status indication", "Angle with Given Size hidden by default on the approved tool route"],
+  "notApproved": ["macOS and Linux modifiers", "undocked toolbars", "window-focus and modal-dialog activation routes", "Ctrl+Space activation", "Graphics View 2 and Classic memory", "scripting or API activation of the memory", "working-layer direct entry", "any additional functional scope"],
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "publishedBase": {"commit": "6d9bafb04235a71c8dfadef9631cd6057964b1f9", "tree": "6bc65715cd37f5872b804eea7949d2f9fea96092"},
+  "chain": [
+    {"commit": "bdb9b6a94cf95ccebd1beb2f3f31f2bab523c75a", "tree": "674fcfd479e377f70f511ddd22eb95136add0252", "role": "F2 authorization"},
+    {"commit": "6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873", "tree": "3d412a801024411ebfcbaf8469691ec00f7c4fee", "role": "original F2 technical candidate (historical)"},
+    {"commit": "b7faad3af2cbce0c2254cbdc7366c96a3df5ad48", "tree": "980207638c8bd045621879b2a28f407104b08bc4", "role": "F2-R1 activation characterization"},
+    {"commit": "d630b8dd3ace0cafd28f9896a8964778dd346e2e", "tree": "3ed8c9689f11a7a877eaae08c1b97f7fbaf54c12", "role": "F2-R1 design reconciliation"},
+    {"commit": "e13bfbd231700019a8f81c115b22a5bb8c44f7bb", "tree": "2e8ee23addebcb05c4505c30e1fa593c8a3d4fa7", "role": "F2-R1 approved design closeout"},
+    {"commit": "de5c267767693d1051d7089cf4d19cc7d4bfe7a4", "tree": "31e20c2607cc821e0dc968f829f2f5ca5a4406e2", "role": "F2-R1 implementation authorization"},
+    {"commit": "7027cf9357571298fe335343d01bd258f3c190f9", "tree": "d259cb5db3b98da26926faa6768c307f27817b97", "role": "original FR-2 feasibility blocker"},
+    {"commit": "fdb5517970d7fcf94f6fea43c2a6078f83ab19e4", "tree": "42303f97d2b274809cc4bea83643bfdb2910a2ba", "role": "revised FR-2 author disposition"},
+    {"commit": "72b14a9bff4cd1bf66ab58f248b3a2a9ef4fcac8", "tree": "402b2d532134bc0a2a3c10a692913560bf32dba0", "role": "revised feasibility gate"},
+    {"commit": "488f1e991fee641b9ec521059edc318df7271bdd", "tree": "9673d9afca483dbd8129c92c76639711596cf13b", "role": "final approved technical candidate"}
+  ],
+  "approvedCandidate": {"commit": "488f1e991fee641b9ec521059edc318df7271bdd", "tree": "9673d9afca483dbd8129c92c76639711596cf13b", "parent": "72b14a9bff4cd1bf66ab58f248b3a2a9ef4fcac8", "mutated": false},
+  "wipBranch": {"name": "wip/pre-g9b-r6-plus-f2-r1-fr2-blocked", "commit": "654f7021a8fcf207ace595033ed71d618cb0ba34", "merged": false, "published": false},
+  "historicalEvidence": {
+    "f2": {"phase": "verification-ac975f8c79ec4d58ba018ca4eb2a4cbd ACCEPTED / COMPLETE 2/2", "static": "verification-49e939c13b71429bbcf246ca08480c3f ACCEPTED / COMPLETE 3/3", "infraUnit": "verification-2a4c7afa3282477ca3412c0a8de49f33 ACCEPTED / COMPLETE 22/22", "candidate": "6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873", "tree": "3d412a801024411ebfcbaf8469691ec00f7c4fee"}
+  },
+  "acceptedEvidence": {
+    "phase": {"run": "verification-3a1ac4a636834a32b11baf7d71fbbbd9", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "tests": 301, "resultHash": "9a9fa6d5d91c1b179019c7757f50b2afa95fc0eb5c94e73bc3ae04151168060d"},
+    "static": {"run": "verification-d21879b09b5e471ea05ca9fc5aa612df", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "resultHash": "8f895d2213cdfa67317464b7228d70d015a6cb51d9957bc3f8f74adf3c5adb05"},
+    "infraUnit": {"run": "verification-19556b4d051c4b50b291e57b9b298daa", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22", "resultHash": "468520626bc6f87fca1a4c5d19d7697582240b7c36652724ead6a130d39618ec"},
+    "candidate": "488f1e991fee641b9ec521059edc318df7271bdd",
+    "tree": "9673d9afca483dbd8129c92c76639711596cf13b",
+    "verificationClass": "BOUNDED_PHASE",
+    "receiptsLocation": "artifacts/agent/pre-g9b-r6-plus-f2-r1-{phase,static,infra-unit}/",
+    "finalDesktop": {"tests": 2039, "failures": 0, "skipped": 1, "evidenceSha256": "1feb880d6cdd0df6064b187ed5ce0c86ad3db02205210a69e436b4c4e092ef19", "treeCoverage": "every source, test and profile file of 488f1e99 predates the run; afterwards only documentation, the catalog regenerated from this evidence, the registry pin and coverage pins were written"}
+  },
+  "specificationPromotion": {"path": "geocedg/specs/ui/authoring-memory.md", "version": "1.1", "from": "PROPOSED", "to": "NORMATIVE / AUTHOR APPROVED", "newRequirements": false, "adrRequired": false},
+  "fr2Disposition": {"historicalBlocker": "GgbAPID subclass via AppGeoCeDG.getGgbApi() rejected by the Rhino class shutter (7027cf93)", "state": "RESOLVED BY AUTHOR-APPROVED O1 REPLACEMENT", "replacement": "existing API and the GeoCeDG-owned AppGeoCeDG.setMode(int) activation seam", "sandboxChanged": false},
+  "observations": [
+    {"id": "OBS-R6PLUS-F2R1-FULL-SUITE-MODAL-ERROR-DIALOGS", "state": "OPEN — NON-BLOCKING FOR F2/F2-R1 — CAUSAL ATTRIBUTION NOT ESTABLISHED", "finding": "four visible application-modal 'GeoGebra - Error' dialogs in the complete Desktop run discarded posted events to the F2-R1 test window", "leakingClasses": "not established", "harnessCorrection": "test window excluded from application modality; toolbar activations asserted to fire", "runs": [
+      {"run": 1, "outcome": "FAILED", "tests": 2039, "failures": 17, "skipped": 1, "evidenceSha256": "e1382a5e5aa8f9fb1d99587c83b891d55ca623eeaef902562813b32bab242bfd", "f2r1XmlSha256": "af6476a6f812aa754401006e1c714c173a6c0661334b7cbce58f134aca936744"},
+      {"run": 2, "outcome": "FAILED", "tests": 2039, "failures": 15, "skipped": 1, "evidenceSha256": "30f84a0911dffae0fcc523cd719cb221f8322bf2b7a6f94cd03c39131c13f3f1", "f2r1XmlSha256": "37d241e85ed567b65d82fbe23e86d9fc6afc02f0b6f2a7cf28c58bdbf8338e3b"},
+      {"run": 3, "outcome": "ACCEPTED", "tests": 2039, "failures": 0, "skipped": 1, "evidenceSha256": "1feb880d6cdd0df6064b187ed5ce0c86ad3db02205210a69e436b4c4e092ef19", "f2r1XmlSha256": "73187671d26c912ef46cb29e59b77f735b56cae191c38ff4ee7a5ff7285a9b3d"}
+    ], "evidenceLocation": "artifacts/agent/pre-g9b-r6-plus-f2-r1-producer-evidence/", "correction": "NOT AUTHORIZED — separate characterization required"}
+  ],
+  "limitations": ["macOS and Linux modifiers not claimed", "undocked toolbars not established", "window-focus and modal-dialog routes not established", "Ctrl+Space is no activation", "OS-level Ctrl+click covered only by the author smoke", "Graphics View 2 and Classic inherited", "scripting NORMAL only", "residual risk: a future inherited single-argument setMode(int) caller with a variable Parallel/Perpendicular mode counts as a genuine NORMAL request"],
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC", "productChange": "NONE"},
+  "publication": {"authorized": true, "method": "ordinary non-force fast-forward of main", "range": ["6d9bafb04235a71c8dfadef9631cd6057964b1f9", "bdb9b6a94cf95ccebd1beb2f3f31f2bab523c75a", "6af85ee3dc2cbb82ab95aeb070e765d2fbdaa873", "b7faad3af2cbce0c2254cbdc7366c96a3df5ad48", "d630b8dd3ace0cafd28f9896a8964778dd346e2e", "e13bfbd231700019a8f81c115b22a5bb8c44f7bb", "de5c267767693d1051d7089cf4d19cc7d4bfe7a4", "7027cf9357571298fe335343d01bd258f3c190f9", "fdb5517970d7fcf94f6fea43c2a6078f83ab19e4", "72b14a9bff4cd1bf66ab58f248b3a2a9ef4fcac8", "488f1e991fee641b9ec521059edc318df7271bdd", "closeout commit"], "wipBranchPublished": false, "tagsOrReleases": false, "packagingOrVersionChange": false},
+  "next": {"F3": "PLANNED — AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED", "F4": "PLANNING INTENT RECORDED — IMPLEMENTATION NOT AUTHORIZED", "G": "NOT AUTHORIZED", "automaticAdvance": false}
+}
