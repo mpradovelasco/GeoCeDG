@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F4-D",
+  "activity": "PRE-G9B-R6-plus-F4-D-SCOPE-AMENDMENT-01",
+  "recordKind": "AUTHOR_SCOPE_AMENDMENT",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_d_scope_amendment_01_record.md",
+  "authorDecisionDate": "2026-10-14",
+  "authorOption": "A",
+  "startingPoint": {
+    "commit": "aae7b12ccc7e8c21eced1b10f7aa08562ae2bec2",
+    "tree": "f6732b1536af3c831fb9bfb05bd8d0784d6f331a",
+    "parent": "3d609397cf82c428872a0b6859426aba7c0efdeb",
+    "static": "verification-ff489c0e65cd484490f8896c37f6173b ACCEPTED / COMPLETE",
+    "role": "documentary STOP commit, accepted as correct and kept as historical evidence"
+  },
+  "wipForInspection": {"commit": "6c2fc40918be3e43a1df09a454f407be85acd553", "tree": "5c2c4f292ce0144f83e298c8240a48e6d63470cf", "candidate": false},
+  "publishedMainAnchor": "847bb20a593e8092eabf80bd9d7c62ed7c21de08",
+  "branch": "phase/pre-g9b-r6-plus-f4-d-amendment-01",
+  "entryGate": "PASS",
+  "authorizedProductiveScope": [
+    "AbstractCharTable.toName(char) -> toName(Character.valueOf(c))",
+    "CharstringEncoder.move(double,double): emit a Type 1 moveto when the displacement is zero"
+  ],
+  "type1Conformance": {
+    "source": "Adobe Type 1 Font Format, version 1.1 (third printing, February 1993), section 6.4 Charstring Command List",
+    "hsbw": "p. 50: sets the current point to (sbx, 0) but does not place it in the character path; rmoveto for the first point",
+    "closepath": "p. 51: does not reposition the current point; a subsequent rmoveto is relative to the point before closepath",
+    "hmoveto": "p. 52: equivalent to dx 0 rmoveto; 0 hmoveto is a valid zero-displacement moveto",
+    "correction": "move(): LAST_POINT case writes 0 hmoveto instead of nothing; BOTH, HORIZONTAL and VERTICAL cases and all other commands unchanged"
+  },
+  "impactAnalysis": {
+    "chain": "CharstringEncoder <- FontEmbedderType1.writeGlyph <- PDFFontEmbedderType1 (only subclass) <- PDFFontTable.embedAll (EMBED_FONTS, Type 1, non-standard font) <- PDFGraphics2D <- PictureExportService.writePDF, GraphicExportDialog.exportPDF",
+    "productFonts": "SansSerif.plain and Serif.plain derivatives, neither substituted nor standard, so embedded",
+    "postScriptEps": "unreachable: no org/freehep/graphicsio/ps package, no PSGraphics2D; App.ExportType.EPS declared but unreferenced; EPS only in GraphicExportDialog comments",
+    "otherFormats": "SVG, EMF, PNG do not use the encoder",
+    "baseOutputs": "the encoder output never reached a file on the base (StackOverflowError in writeString before embedAll)",
+    "perimeterBounded": true
+  },
+  "verificationClass": {"class": "INTEGRATED_PHASE", "maintained": true, "acceptance": ["PHASE -Phase PRE-G9B-R6-PLUS-F4-D", "INTEGRATION", "INFRA_UNIT", "STATIC"], "finalRequired": false},
+  "normalizationPolicy": "unchanged: PDF date strings and SVG clip identifiers; any new exclusion is a stop",
+  "debts": {"TD-PDF-2": "OPEN until verification and author acceptance", "TD-PDF-3": "to be recorded; related to TD-PDF-2 (latent behind it); OPEN until verification and author acceptance"},
+  "status": {
+    "F4DExpandedImplementation": "AUTHORIZED",
+    "F4DTechnicalAcceptance": "PENDING",
+    "F4DAuthorSmoke": "PENDING",
+    "F4AImplementation": "NOT AUTHORIZED",
+    "G": "NOT AUTHORIZED",
+    "publication": "NOT AUTHORIZED"
+  },
+  "previousReceiptsReused": false,
+  "selfApproved": false,
+  "productChange": "NONE (this record precedes product code)"
+}
