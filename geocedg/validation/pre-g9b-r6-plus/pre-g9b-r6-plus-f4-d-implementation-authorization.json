@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F4-D",
+  "activity": "PRE-G9B-R6-plus-F4-D IMPLEMENTATION AUTHORIZATION",
+  "recordKind": "AUTHOR_AUTHORIZATION",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_d_implementation_authorization_record.md",
+  "authorizationDate": "2026-10-13",
+  "approvedBase": {
+    "commit": "0c7885260761f442c25b380fcbbae11d1215fb51",
+    "tree": "e75fb9c6b55a1677380802766300f514323762d6",
+    "parent": "83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9",
+    "static": "verification-13c304f54c664e8ca42e6103c4c66a9c ACCEPTED / COMPLETE"
+  },
+  "publishedMainAnchor": "847bb20a593e8092eabf80bd9d7c62ed7c21de08",
+  "branch": "phase/pre-g9b-r6-plus-f4-d-implementation",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4d-freehep-embedded-fonts.prompt.md",
+  "canonicalPromptAmended": false,
+  "entryGate": "PASS",
+  "entryGateFacts": {
+    "linearAncestry": ["847bb20a", "089fc220", "3251f085", "83f07931", "0c788526"],
+    "mergeCommits": 0,
+    "productDeltaInDocumentaryChain": "NONE",
+    "abstractCharTableBlob": "22cb250d764ef32f5bad87420f3358c38b9d9d3d",
+    "abstractCharTableEqualsBaseline9b93256b": true,
+    "defectLine": "AbstractCharTable.java:35 return toName(c);",
+    "reachabilityReconfirmed": true,
+    "reachabilityRefinement": "Lookup.toName(char) also delegates to a table toName(char) but has no caller in the tree"
+  },
+  "authorized": "F4-D only: AbstractCharTable.toName(char) -> toName(Character.valueOf(c)); F4-D-limited tests, registry and evidence",
+  "notAuthorized": ["F4-A", "phase G", "publication", "final author approval of the technical candidate", "closeout", "FreeHEP refactoring", "unrelated PDF functionality", "geometry kernel changes", "additional export semantics"],
+  "status": {
+    "design": "AUTHOR APPROVED",
+    "F4DImplementation": "AUTHORIZED",
+    "F4DTechnicalAcceptance": "PENDING",
+    "F4DAuthorSmoke": "PENDING",
+    "F4AImplementation": "NOT AUTHORIZED",
+    "G": "NOT AUTHORIZED",
+    "publication": "NOT AUTHORIZED"
+  },
+  "verificationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozen": true,
+    "basis": "executable verification registry (not archived verification-levels section 12.8)",
+    "acceptance": ["PHASE -Phase PRE-G9B-R6-PLUS-F4-D", "INTEGRATION", "INFRA_UNIT", "STATIC"],
+    "phaseId": "PRE-G9B-R6-PLUS-F4-D",
+    "requiredCheckIds": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f4-d.semantic"],
+    "producerCheckId": "junit.desktop.pre-g9b-r6-plus-f4-d.producer",
+    "selectionId": "pre-g9b-r6-plus-f4-d.desktop",
+    "selectionClasses": ["PreG9BR6PlusF4DEmbeddedFontPdfTest", "PostE2P1R2PhysicalPdfStyleTest", "PostE2P1R2BaseFingerprintTest", "PreG9BR6PlusBPictureFidelityTest", "PreG9BR6PlusCBaseIdentityTest", "PreG9BR6PlusCPhysicalExportTest"],
+    "finalRequired": false
+  },
+  "normalizationExclusions": [
+    {"format": "PDF", "pattern": "\\(D:[0-9+\\-Z']*\\)", "replacement": "(D:)", "field": "creation and modification date strings", "origin": "existing fingerprint tests"},
+    {"format": "SVG", "pattern": "clip[0-9a-f-]+", "replacement": "clip", "field": "generated clip-path identifiers", "origin": "existing fingerprint tests"}
+  ],
+  "newNormalizationExclusionPolicy": "STOP FOR AUTHOR REVIEW",
+  "externalEvidencePolicy": "tool, version, command, result and artifact per check, or UNAVAILABLE with cause; never counted as a pass when missing",
+  "selfApproved": false,
+  "productChange": "NONE (this record precedes product code)",
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_f4_d_implementation_authorization_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-f4-d-implementation-authorization.json",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md"
+  ]
+}
