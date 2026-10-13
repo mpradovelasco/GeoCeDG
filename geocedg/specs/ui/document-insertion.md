@@ -2,8 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW** (not normative until an author closeout approves it) |
-| Version | `1.2` (1.0 F3 candidate; 1.1 F3-R1 corrective candidate: §1.5 helper windows, §2.6 axes; 1.2 F3-R2 corrective candidate: §8.3 scope, §9.4) |
+| Status | **NORMATIVE / AUTHOR APPROVED** (joint F3/F3-R1/F3-R2 author closeout of 2026-10-13, [F3/F3-R1/F3-R2 closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_f3r1_f3r2_closeout_record.md)); the approved implementation is the F3-R2 corrective candidate `2d7b2cae23d5229f889877f22924b3669f98b755`; the original F3 candidate `16547115` and the F3-R1 candidate `c4dffe60` are historical evidence, not separate implementations. Earlier: `PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` |
+| Approval scope | restricted native insertion R with L1, M1/MU-1, the operation-scoped buffer and `D1`, the recovery, snapshot and isolation contract, and Apply Styles T0 (source construction defaults by object type), as implemented by the approved candidate; it does not extend to per-object style transfer, 3D or spatial import, the deferred items `DEFER-F3-*`, Classic or any additional functional scope |
+| Version | `1.2` (1.0 F3 candidate; 1.1 F3-R1 corrective candidate: §1.5 helper windows, §2.6 axes; 1.2 F3-R2 corrective candidate: §8.3 scope, §9.4); promoted to normative without requirement change |
 | Owner phase | `PRE-G9B-R6-plus-F3` (File → Insert surface; `DEBT-R6PLUS-FILE-INSERT-SURFACE`); corrective `PRE-G9B-R6-plus-F3-R1` (author smoke failures) and `PRE-G9B-R6-plus-F3-R2` (Apply Styles author smoke) |
 | Governing author decisions | [F3 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md) (Q1–Q7, `DQ-F3-1` to `DQ-F3-24`, `P1`–`P7`, FR-F3-1 to FR-F3-8); [implementation authorization record](../../../docs/validation/pre_g9b_r6_plus_f3_implementation_authorization_record.md) |
 | Approved design transcribed | [recovery design addendum successor](../../../docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md); [restricted insertion design successor](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_successor_candidate.md) and [candidate](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_candidate.md); [reconciled amendment texts](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md) (`P1`, `P6`, `P7`) and [proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md) (`P2`–`P5`); all `DESIGN — AUTHOR APPROVED` or `APPROVED` |
@@ -12,8 +13,10 @@
 
 ## 0. Status and normative language
 
-This specification transcribes the approved F3 design into one durable contract
-for the technical candidate. It changes no approved decision. `MUST`, `MUST NOT`,
+This specification transcribes the approved F3 design into one durable contract.
+It was written as the contract of the technical candidates and became normative
+through the joint F3/F3-R1/F3-R2 author closeout of 2026-10-13, without any change
+of requirement. It changes no approved decision. `MUST`, `MUST NOT`,
 `SHOULD` and `MAY` have their usual meaning. Where an author decision and this
 text differ, the decision prevails and this text is defective. Provenance
 markers: **[AD]** author decision, **[NI]** normative inheritance, **[ID]**
@@ -266,5 +269,7 @@ window close and file drop onto a real window are author-smoke items.
 construction defaults (§8.1); the styles of the source's existing objects are
 never read, and two documents with equal construction defaults give the same
 result whatever their objects look like. The F3-R2 author smoke expected the
-styles of corresponding source objects; that expectation is outside `P5` and
-awaits an author decision (`F3R2-T0-CONTRACT-DISCREPANCY`).
+styles of corresponding source objects; the author then clarified that this
+expectation was a misunderstanding and accepted the construction-default
+semantics as intended (`F3R2-T0-CONTRACT-DISCREPANCY` resolved by author
+clarification, `P5` unchanged; per-object transfer not authorized).
