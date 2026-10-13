@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **PROPOSED — PENDING AUTHOR REVIEW** (no part is an author decision) |
+| Status | **PENDING FINAL AUTHOR APPROVAL** (amended 2026-10-13 by the final author reconciliation amendment: author directions on `DQ-F4-2` and `DQ-F4-10` recorded, `DQ-F4-7` reconciled with the executable verification authority; no part is yet an approved decision) |
 | Supersedes | [reconciled design candidate](pre_g9b_r6_plus_f4_reconciled_design_candidate.md) of `PRE-G9B-R6-plus-F4-PREP` (kept unchanged as preparation evidence) |
 | Prepared by | `PRE-G9B-R6-plus-F4-AUTHOR-DECISION-RECONCILIATION` (author instruction of 2026-10-13) on `089fc2205300559c572c12f0cd32326abd0c2b5e` |
 | Decisions | [author-decision reconciliation](../validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md) (`DQ-F4-1` to `DQ-F4-10`, pending) |
@@ -29,8 +29,9 @@ stroke and marker sizes, S3, DXF, F3).
 the application) to the line-style popup with `addPopupMenuItem`. It is installed by
 `GeoCeDGEuclidianView.newEuclidianStyleBar()` (Graphics 1) and by a `GuiManagerGeoCeDG`
 override of the protected `GuiManager3D.newEuclidianView` that returns an
-`EuclidianViewFor3DD` subclass overriding only its style-bar factory (Graphics 2,
-`DQ-F4-2`). No inherited source changes.
+`EuclidianViewFor3DD` subclass overriding only its style-bar factory (Graphics 2;
+author direction on `DQ-F4-2`: both Graphics 1 and Graphics 2). No inherited source
+changes.
 
 **Lifecycle.** `createButtons()` runs inside the inherited constructor and again on
 language and font changes, recreating `btnLineStyle`; the subclass re-attaches a fresh
@@ -47,8 +48,9 @@ Classic unchanged, shown with native input (`java.awt.Robot`) and confirmed by t
 smoke. Only fallback: GeoCeDG-owned focusability of the containing popup through the
 component ancestry. Otherwise `STOP — F4-A FOCUS FEASIBILITY BLOCKED`.
 
-**Class.** Proposed `BOUNDED_PHASE` (registered PHASE). Alternative A2 (profile-gated
-inherited hook) would be `INTEGRATED_PHASE`.
+**Class.** Proposed `BOUNDED_PHASE`: registered PHASE, with `INFRA_UNIT` and `STATIC` for
+the phase-selection registration. Alternative A2 (profile-gated inherited hook) would be
+`INTEGRATED_PHASE`; it is not the author's direction.
 
 ## 3. Track F4-D — embedded-font PDF correction
 
@@ -61,20 +63,26 @@ refactoring, no dialog or exporter change, no correction of the xref observation
 **Perimeter.** Reachable only from `PDFGraphics2D.writeString` → `showCharacterCodes` →
 `FontUtilities.showString` → `toEncoding(char)` → `toName(char)`, i.e. PDF text written
 as text, from the GeoCeDG picture route and the Classic picture dialog; FreeHEP is used
-only by the Desktop module. Every execution that reaches the line fails today.
+only by the Desktop module. On the inspected paths every execution that reaches the line
+fails today and no frame swallows the error (reconciliation §3); identity of the declared
+outputs with the base (after the existing fingerprint normalization) is verified by
+tests, and no wider guarantee is claimed.
 
 **Verification obligations.** The nine obligations of the reconciliation §6 (no
 `StackOverflowError`; complete PDF; font program embedded; glyphs correct; reader
-compatibility beyond Ghostscript; text-as-shapes PDFs byte-identical; Classic; SVG; no
+compatibility beyond Ghostscript; text-as-shapes PDFs identical after normalization; Classic; SVG; no
 other PDF change).
 
-**Class.** Evidence-based proposal `INTEGRATED_PHASE` (registered PHASE with the PDF and
-export suites + INTEGRATION); author default `GLOBAL_IMPACT` (FINAL) remains admissible
-(`DQ-F4-7`).
+**Class.** `INTEGRATED_PHASE`, supported by the executable registry (`DQ-F4-7`;
+reconciliation §4): registered PHASE with the PDF and export suites + INTEGRATION (which
+holds every product and export node of FINAL), `INFRA_UNIT` and `STATIC` for the
+registration; the raster and reader obligations, enforced by no profile (FINAL included),
+by focused external evidence and the author smoke.
 
 ## 4. Sequencing, publication and aggregate closeout (`DQ-F4-10`)
 
-Proposed order: F4-D, then F4-A on the published F4-D closeout. Each track: its own
+Author direction (2026-10-13): F4-D, then F4-A on the published F4-D closeout, then a
+final documentary aggregate F4 closeout. Each track: its own
 implementation authorization (exact base, frozen class), technical candidate, evidence,
 author smoke, author closeout and controlled publication. A final documentary F4
 aggregate closeout records F4 complete. Approval or publication of one track never

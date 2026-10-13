@@ -29,8 +29,9 @@ authorization; under A2 the class must be reassessed (`INTEGRATED_PHASE` propose
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-The exact commit and tree named by the F4-A implementation authorization (proposed: the
-published closeout of track F4-D **[DQ-F4-10]**). Entry gate: exact identity; clean
+The exact commit and tree named by the F4-A implementation authorization (author
+direction on **[DQ-F4-10]**: the published closeout of track F4-D; F4-A starts only after
+F4-D is closed and published). Entry gate: exact identity; clean
 worktree; local, tracking and live remote `main`; the F4 decisions taken for this track;
 `EuclidianStyleBarD.java`, `PopupMenuButtonD.java`, `EuclidianViewD.java` and
 `GuiManager3D.java` byte-identical to the GeoGebra baseline `9b93256b` (else stop and
@@ -60,7 +61,8 @@ after every `createButtons()`, attaches a fresh `GeoCeDGLineThicknessField` boun
 `btnLineStyle.getMySlider()` through `addPopupMenuItem`; `GeoCeDGEuclidianView`
 overriding `newEuclidianStyleBar()`; a `GuiManagerGeoCeDG` override of
 `newEuclidianView` returning an `EuclidianViewFor3DD` subclass that only overrides its
-style-bar factory (Graphics 2, if confirmed by **[DQ-F4-2]**); a small generalization of
+style-bar factory (Graphics 2; author direction on **[DQ-F4-2]**: Graphics 1 and
+Graphics 2); a small generalization of
 `GeoCeDGLineThicknessField` only if the style-bar context needs it (no behaviour change
 for the Properties field); EN/ES text in `apps/geocedg/application-profile.yml`; the user
 guide sentences (EN/ES); tests; the phase selection `pre-g9b-r6-plus-f4-a.desktop`,
@@ -105,8 +107,7 @@ Register new source and test files; keep the upstream boundary green; update the
 <!-- geocedg-field: required_checks -->
 ## Required tests and commands
 
-Focused tests: the field exists once in the Graphics 1 (and, if decided, Graphics 2)
-style-bar popup and is re-attached after a language and a font-size change; Classic's
+Focused tests: the field exists once in the Graphics 1 and the Graphics 2 style-bar popup and is re-attached after a language and a font-size change; Classic's
 popup has no field; the field follows the slider value, the selection, a creation mode's
 defaults and the polygon minimum 0; refused entries (`""`, `abc`, `2.5`, `-1`, `0` where
 the minimum is 1, `14`, `7x`) restore the value; an accepted entry equals moving the
@@ -114,9 +115,12 @@ slider (same targets including multi-selection, same line type) and stores exact
 undo step; Undo, Redo, save and reopen; the Properties field and
 `PostE2P1R2SmokeFollowUpTest` unchanged. Then Checkstyle, the upstream boundary, the
 official `verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-F4-A` on the frozen candidate
-(plus `INTEGRATION` only if the frozen class requires it) and `STATIC`. Author smoke:
+(plus `INTEGRATION` only if the frozen class requires it), `INFRA_UNIT` (the
+phase-selection and inventory registration) and `STATIC`. The executable authority is the
+active recovery contract of `verification-levels.md` with `verify.ps1` and
+`verification-registry.json`; its archived §12.8 is design history only. Author smoke:
 typing a thickness in the style-bar popup on Windows, Enter, Escape, focus loss, Undo,
-Redo, save and reopen, Graphics 2 if covered.
+Redo, save and reopen, in Graphics 1 and Graphics 2.
 
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary

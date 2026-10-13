@@ -24,16 +24,18 @@ every PDF that draws text fails with `StackOverflowError` in
 `org.freehep.graphics2d.font.AbstractCharTable.toName(char)`, which calls itself since
 upstream GeoGebra commit `c4fd03ce` replaced `toName(new Character(c))` with
 `toName(c)`. Restore the delegation as `toName(Character.valueOf(c))` **[DQ-F4-5]**, in
-GeoCeDG and Classic alike. `VERIFICATION_CLASS` **[DQ-F4-7]**: evidence-based proposal
-`INTEGRATED_PHASE` (registered PHASE + INTEGRATION); the author's conservative default
-`GLOBAL_IMPACT` (one FINAL campaign) remains admissible; frozen only by the implementation
-authorization.
+GeoCeDG and Classic alike. `VERIFICATION_CLASS` **[DQ-F4-7]**: `INTEGRATED_PHASE`,
+supported by the executable authority (active recovery contract of
+`verification-levels.md`, `verify.ps1`, `verification-registry.json`; reconciliation §4:
+`FINAL` = `INTEGRATION` ∪ `INFRA_UNIT`, so `INTEGRATION` holds every product and export
+node of `FINAL`); frozen only by the implementation authorization.
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-The exact commit and tree named by the F4-D implementation authorization (proposed: the
-first F4 track, on the published base current at authorization **[DQ-F4-10]**). Entry
+The exact commit and tree named by the F4-D implementation authorization (author direction
+on **[DQ-F4-10]**: F4-D is the first F4 track, on the published `main` current at its
+authorization). Entry
 gate: exact identity; clean worktree; local, tracking and live remote `main`; the F4
 decisions for this track; `AbstractCharTable.java` byte-identical to the GeoGebra
 baseline `9b93256b` and still containing `return toName(c);` in `toName(char)`; the
@@ -82,9 +84,12 @@ Not applicable: no coordinate, definition, dependency, label, layer or unit chan
 
 ## Compatibility and serialization
 
-No document change. Only executions that today end in `StackOverflowError` can change;
-every currently successful output must stay byte-identical. Classic's embedded-font PDF
-route is corrected identically and recorded as such.
+No document change. On the inspected paths (reconciliation §3) only executions that today
+end in `StackOverflowError` reach the corrected line; this is source evidence, not a
+universal guarantee. The declared outputs must be shown identical to the base by tests,
+after the normalization the existing fingerprint tests already apply (PDF date strings
+`(D:…)`, SVG clip identifiers); no wider identity claim is made. Classic's embedded-font
+PDF route is corrected identically and recorded as such.
 
 ## Integration obligations
 
@@ -102,16 +107,20 @@ Type 1 embedding); (4) the text drawn correctly (extracted text equals the sourc
 strings; raster comparison against the text-as-shapes rendering of the same scene within
 a stated tolerance); (5) reader compatibility: Ghostscript rendering plus at least one
 other reader in the author smoke — Ghostscript success alone is not proof of structural
-validity; (6) text-as-shapes PDFs byte-identical to the base (GeoCeDG physical and
-legacy, Classic); (7) Classic otherwise unchanged; (8) SVG with and without embedded fonts
-byte-identical; (9) no other PDF change (physical stroke and marker sizes, page box,
+validity; (6) text-as-shapes PDFs identical to the base after the existing normalization
+(GeoCeDG physical and legacy, Classic); (7) Classic otherwise unchanged; (8) SVG with and
+without embedded fonts identical after the existing normalization; (9) no other PDF change (physical stroke and marker sizes, page box,
 `PostE2P1R2PhysicalPdfStyleTest`, `PostE2P1R2BaseFingerprintTest`,
 `PreG9BR6PlusBPictureFidelityTest`, `PreG9BR6PlusCBaseIdentityTest`,
 `PreG9BR6PlusCPhysicalExportTest`). Failure reporting: a failing export is never reported
-as success. Then Checkstyle, the upstream boundary and, per the frozen class, the official
-`verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-F4-D` plus `-Profile INTEGRATION`
-(`INTEGRATED_PHASE`) or one `FINAL` campaign (`GLOBAL_IMPACT`), and `STATIC`. Author
-smoke: an embedded-font PDF exported from GeoCeDG and from Classic, opened in the author's
+as success. Obligations (1)–(3), the text-extraction part of (4) and (6)–(9) are in-JVM
+JUnit tests that fail, never skip; the raster part of (4) and (5) depend on software
+outside the workstation contract (enforced by no executable profile, `FINAL` included) and
+are recorded as focused evidence in the candidate report and confirmed by the author
+smoke. Then Checkstyle, the upstream boundary and the official
+`verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-F4-D` and `-Profile INTEGRATION` on the
+frozen candidate, `INFRA_UNIT` (the phase-selection and inventory registration) and
+`STATIC`. Author smoke: an embedded-font PDF exported from GeoCeDG and from Classic, opened in the author's
 PDF reader, with the text selectable and correct.
 
 <!-- geocedg-field: authorization_boundary -->
@@ -142,7 +151,7 @@ STATIC receipts; author smoke checklist; roadmap and mini-track status.
 - The base no longer matches the recorded defect or perimeter.
 - After the correction, embedded-font PDFs are empty, incomplete, without the font
   program, or render incorrectly.
-- Any currently successful output changes.
+- Any declared output that succeeds on the base differs after the existing normalization.
 - Any change beyond the single line appears necessary.
 - Base identity, worktree, remote divergence, incomplete or untrusted coverage, or a
   missing author decision.

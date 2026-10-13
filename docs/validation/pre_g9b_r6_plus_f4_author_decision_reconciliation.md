@@ -7,9 +7,13 @@ BASE                 = T_F4_PREP 089fc2205300559c572c12f0cd32326abd0c2b5e
                        tree 61fa86b01d66f129e3bc52e8e93d05959530bed6, parent 847bb20a
                        (STATIC verification-1a0c0f4e41b44767a3e40a5b3e8dc367 ACCEPTED /
                        COMPLETE)
-F4 AUTHOR DECISIONS  = PREPARED — PENDING FINAL AUTHOR DISPOSITION
-F4 DESIGN            = PROPOSED — PENDING AUTHOR REVIEW
-F4 IMPLEMENTATION    = NOT AUTHORIZED
+F4 AUTHOR DECISIONS  = PREPARED — READY FOR FINAL AUTHOR APPROVAL (DQ-F4-2 and DQ-F4-10
+                       author directions recorded; DQ-F4-7 reconciled with the executable
+                       authority — final author reconciliation amendment, 2026-10-13)
+F4 DESIGN            = PENDING FINAL AUTHOR APPROVAL
+F4-A IMPLEMENTATION  = NOT AUTHORIZED
+F4-D IMPLEMENTATION  = NOT AUTHORIZED
+PUBLICATION          = NOT AUTHORIZED
 PRODUCT CHANGE       = NONE
 selfApproved = false; implementationAuthorized = false; publicationAuthorized = false
 ```
@@ -92,27 +96,75 @@ Targeted reading of the published base (no new characterization):
   `PDFGraphics2D` instances are created only by the GeoCeDG `PictureExportService.writePDF`
   (`:177`) and the Classic `GraphicExportDialog.exportPDF` (`:1099`). No code under
   `source/shared`, `source/web`, `tools` or the Python validators references FreeHEP.
-  Hence every execution that can reach the corrected line ends today in
-  `StackOverflowError`; no execution that succeeds today can change.
+  On the text-as-shapes route `AbstractVectorGraphicsIO.drawString` never calls
+  `writeString` (`:617-641`). On the path from the export entry points to
+  `toName(char)` no frame catches `Error` (`drawString` catches `IOException` only;
+  the only `catch (Error)` / `catch (Throwable)` in the inspected drawing code wrap LaTeX
+  formula parsing (`DrawEquation.java:268`) and hit-test shape creation
+  (`DrawParametricCurve.java:546`)); the picture dialogs catch it only to report the
+  export as failed. Hence every execution that reaches the corrected line ends today in
+  `StackOverflowError` and is reported as a failure. *(Amended 2026-10-13, final author
+  reconciliation amendment.)* This is source evidence for the inspected paths, not a
+  universal guarantee: identity of the declared outputs with the base, after the
+  normalization the existing fingerprint tests apply (PDF date strings `(D:…)`, SVG clip
+  identifiers), is an obligation verified by tests (§6), and no wider identity claim is
+  made.
 
-## 4. Verification-class assessment (`verification-levels.md` §12.8)
+## 4. Verification-class assessment
 
-§12.8: the class "selects the minimum acceptance coverage; it is not a hint that an
-agent may increase by prudence", and it is frozen with the impact facts that select it.
-Precedents (mini-track plan §12): `GLOBAL_IMPACT` for shared document serialization read
-on every load (`A-2`, `D1`); `INTEGRATED_PHASE` for shared export paint paths consumed by
-Classic and GeoCeDG (`B`, `C`) and for inherited Desktop hosts (POST-E2-P1-R2);
-`BOUNDED_PHASE` for GeoCeDG-owned Desktop presentation (`F1`, `F2`).
+*(Amended 2026-10-13 by the final author reconciliation amendment.)* **Authority.**
+`verification-levels.md` is an **ACTIVE RECOVERY CONTRACT** whose current contract is its
+"Current contract" section; the executable authority is `tools/agent/verify.ps1`,
+`verification-registry.json` and their schemas. Section 12.8 belongs to the "Archived
+pre-recovery contract" ("not parsed as live configuration and must not be used instead
+of the current registry and schemas") and is used here only as design history. The
+executable registry has no verification-class field: a class is a planning label whose
+meaning is the set of executable profiles run on the frozen candidate —
+`BOUNDED_PHASE` → the registered `PHASE`; `INTEGRATED_PHASE` → `PHASE` + `INTEGRATION`;
+`GLOBAL_IMPACT` → `FINAL`.
+
+**Executable coverage (registry on `089fc220`).** `PHASE` runs a registered phase
+selection (`phase_selections[].required_check_ids`, for F3: `compile.desktop.semantic`,
+`workspace-profile.product`, `junit.desktop.<phase>.semantic`). `INTEGRATION` requires 46
+nodes, including `junit.desktop.final` — the `final.desktop` inventory selection, which
+has no include filter and excludes only six G9U1 methods run by their own isolated nodes,
+so every Desktop test class, the GeoCeDG and Classic PDF tests included, runs —
+`junit.shared.final`, `compile.*`, the Python validators, packaging and repository safety.
+`FINAL` requires 68 nodes: exactly the 46 of `INTEGRATION` plus the 22 `infra.*` leaves
+of the `INFRA_UNIT` profile (verifier registry, receipts, prompt contracts, closeout
+compatibility, final coverage, and similar). `FINAL` therefore adds no product or export
+node to `INTEGRATION`; its additional nodes cover verification infrastructure, which F4-D
+does not change except through the ordinary registration of its phase selection and
+inventory (watched by `infra.final-coverage`, impact path
+`verification-registry.json`) — the obligation that `INFRA_UNIT` covers, as in the F2
+and F3 precedents.
+
+**Not covered by any executable profile.** Ghostscript is not part of the workstation
+contract, and the existing external-tool tests report `UNAVAILABLE` and pass when a tool
+is missing (`PreG9BR6PlusE3R1ExportInteroperabilityTest`). The raster part of F4-D
+obligation (4) and obligation (5) (reader compatibility) are therefore not enforced by
+`INTEGRATION` **nor by `FINAL`**; they need focused external evidence recorded in the
+candidate report and the author smoke. This gap does not distinguish the two classes and
+does not justify escalation.
+
+Design-history precedents (mini-track plan §12): `GLOBAL_IMPACT` for shared document
+serialization read on every load (`A-2`, `D1`); `INTEGRATED_PHASE` for shared export
+paint paths consumed by Classic and GeoCeDG (`B`, `C`) and for inherited Desktop hosts
+(POST-E2-P1-R2); `BOUNDED_PHASE` for GeoCeDG-owned Desktop presentation (`F1`, `F2`).
 
 | Track | Actual affected code | Classic impact | Proposed class | Required verification | Rationale |
 |---|---|---|---|---|---|
-| F4-A with **A1** (recommended) | new GeoCeDG style-bar subclass; `GeoCeDGEuclidianView.newEuclidianStyleBar`; a `GuiManagerGeoCeDG` Graphics 2 view factory; reuse of `GeoCeDGLineThicknessField`; EN/ES text; guide; no inherited diff | none: Classic never constructs GeoCeDG views or the GeoCeDG GUI manager | **`BOUNDED_PHASE`** | registered `PHASE` (new F4-A tests, `PostE2P1R2SmokeFollowUpTest`, workspace/profile pins); real-window focus gate; Classic containment test; author smoke | GeoCeDG-owned presentation only (`F1`/`F2` precedent); escalate if any inherited change appears |
+| F4-A with **A1** (recommended) | new GeoCeDG style-bar subclass; `GeoCeDGEuclidianView.newEuclidianStyleBar`; a `GuiManagerGeoCeDG` Graphics 2 view factory; reuse of `GeoCeDGLineThicknessField`; EN/ES text; guide; no inherited diff | none: Classic never constructs GeoCeDG views or the GeoCeDG GUI manager | **`BOUNDED_PHASE`** | registered `PHASE` (new F4-A tests, `PostE2P1R2SmokeFollowUpTest`, workspace/profile pins); `INFRA_UNIT` and `STATIC` for the phase-selection registration (F2 precedent); real-window focus gate; Classic containment test; author smoke | GeoCeDG-owned presentation only (`F1`/`F2` precedent); escalate if any inherited change appears |
 | F4-A with A2 (alternative) | the same plus a profile-gated hook in the inherited `EuclidianStyleBarD`, shared by Classic, Graphics 2, plane and 3D bars | gated, but the inherited class changes | `INTEGRATED_PHASE` | registered `PHASE` + `INTEGRATION` | inherited host consumed by Classic (POST-E2-P1-R2 precedent) |
-| F4-D | one line of vendored FreeHEP `AbstractCharTable` in the Desktop module; reachable only through PDF text written as text, from two production entry points | Classic's embedded-font PDF route is corrected identically; no other Classic output can change | **evidence-based: `INTEGRATED_PHASE`**; author default: `GLOBAL_IMPACT` | `INTEGRATED_PHASE`: registered `PHASE` (new F4-D tests and the seven existing PDF/export test classes) + `INTEGRATION` on the frozen candidate (complete Desktop and shared suites, Classic included). `GLOBAL_IMPACT`: one `FINAL` campaign | no serialization, kernel, shared-module or verifier impact; the changed executions are exactly those that fail today (§3); the concrete integration coverage is the two PDF entry points and every FreeHEP output |
+| F4-D | one line of vendored FreeHEP `AbstractCharTable` in the Desktop module; reachable only through PDF text written as text, from two production entry points | Classic's embedded-font PDF route is corrected identically; on the inspected paths no other Classic output reaches the line (§3) | **`INTEGRATED_PHASE`** (supported by the executable registry) | registered `PHASE` (new F4-D tests and the seven existing PDF/export test classes) + `INTEGRATION` on the frozen candidate (all Desktop tests including Classic, shared, Python, packaging) + `INFRA_UNIT` and `STATIC` for the phase-selection and inventory registration; focused external-renderer evidence (Ghostscript) in the candidate report; author smoke in a PDF reader | no serialization, kernel, shared-module or verifier impact; `FINAL` = `INTEGRATION` ∪ `INFRA_UNIT`, so this plan executes every node `FINAL` would for this change; the renderer and reader obligations are outside every profile, `FINAL` included |
 
 The one-line size of the change is not used as an argument; the class rests on the
-reachability evidence of §3. `GLOBAL_IMPACT` remains admissible as an author decision;
-neither class is frozen here.
+reachability evidence of §3 and on the executable node sets. **Result:** `INTEGRATED_PHASE`
+is supported by the current executable authority for the complete demonstrated
+regression perimeter, provided the plan also runs `INFRA_UNIT` and `STATIC` for the
+registration changes and records the external-renderer evidence and the author smoke
+for the two obligations no profile enforces. `GLOBAL_IMPACT` would add only the single
+`FINAL` campaign identity, not coverage. No class is frozen here; the author ratifies it.
 
 ## 5. Decisions `DQ-F4-1` to `DQ-F4-9` and the additional candidate `DQ-F4-10`
 
@@ -158,8 +210,9 @@ judgment.
    Classic containment.
 9. `F4R-G2-VIEW-CLASS`: code testing the exact Graphics 2 view class (none known) would
    see the subclass.
-10. **Yes**: confirm Graphics 2 coverage (recommended) or Graphics 1 only (`F1`/`F2`
-    precedent).
+10. ~~Yes: confirm Graphics 2 coverage~~ — **resolved by the author's approved direction
+    of the final reconciliation amendment (2026-10-13): Graphics 1 and Graphics 2, A1, no
+    inherited source modification, the focus gate blocking.** Ready for final approval.
 
 ### DQ-F4-3 — keyboard-focus gate and fallback
 
@@ -248,14 +301,21 @@ judgment.
 5. §4.
 6. **"F4-A and F4-D are separate tracks, each with its own base, scope, class, stop
    conditions, candidate, evidence, author smoke and approval gate; approval of one never
-   authorizes the other. F4-A (A1): `BOUNDED_PHASE`. F4-D: `INTEGRATED_PHASE`
-   (registered PHASE + INTEGRATION), on the reachability evidence of §3 — or
-   `GLOBAL_IMPACT` (FINAL) if the author keeps the conservative default. Each class is
-   frozen at that track's implementation authorization."**
+   authorizes the other. F4-A (A1): `BOUNDED_PHASE` (registered PHASE; `INFRA_UNIT` and
+   `STATIC` for its registration). F4-D: `INTEGRATED_PHASE` (registered PHASE +
+   INTEGRATION; `INFRA_UNIT` and `STATIC` for its registration; focused external-renderer
+   evidence and the author smoke for the obligations no executable profile enforces).
+   Each class is frozen at that track's implementation authorization."** *(Amended by
+   the final author reconciliation amendment: the class rests on the active recovery
+   contract and the executable registry, §4.)*
 7. Two phase selections and two candidates.
 8. Per §4.
 9. None.
-10. **Yes**: the F4-D class.
+10. **Resolved for preparation** (amendment of 2026-10-13): the author accepted the
+    source argument as technically plausible and required reconciliation with the
+    executable authority; §4 shows that the registry supports `INTEGRATED_PHASE` for the
+    complete demonstrated perimeter (`FINAL` = `INTEGRATION` ∪ `INFRA_UNIT`). Ready for
+    final author ratification at the F4-D implementation authorization.
 
 ### DQ-F4-8 — `TD-PDF-1` disposition
 
@@ -317,8 +377,11 @@ The nine questions do not cover how two independent tracks are published and clo
 7. The second track's base is the first track's published closeout.
 8. None beyond each track's.
 9. If F4-A's gate blocks, F4 can close with F4-D only by an explicit author decision.
-10. **Yes**: the order (F4-D first recommended) and whether a separate aggregate
-    closeout is wanted.
+10. ~~Yes: the order and the aggregate closeout~~ — **resolved by the author's approved
+    direction of the final reconciliation amendment (2026-10-13): (1) F4-D
+    implementation, verification, author smoke, closeout and publication; (2) F4-A
+    likewise; (3) final documentary aggregate F4 closeout; each implementation with its own
+    explicit authorization and exact base commit.** Ready for final approval.
 
 ## 6. F4-D verification obligations
 
@@ -328,9 +391,15 @@ present); (3) the expected font program is embedded (font dictionary, `FontFile`
 for the configured `EMBED_FONTS_AS`); (4) glyphs render correctly (text extraction and
 raster comparison against the text-as-shapes rendering of the same scene); (5) reader
 compatibility (Ghostscript plus at least one other reader in the author smoke; a
-successful Ghostscript rendering is not proof of structural validity); (6) the default
-text-as-shapes PDFs byte-identical to the base; (7) Classic: text-as-shapes unchanged,
-embedded-font route corrected; (8) SVG with and without embedded fonts byte-identical;
+successful Ghostscript rendering is not proof of structural validity). *(Amendment:
+obligations (1)–(3), the text-extraction part of (4) and (6)–(9) are in-JVM JUnit tests
+that fail, never skip, inside the F4-D phase selection and `final.desktop`; the raster
+part of (4) and (5) depend on external software outside the workstation contract and are
+recorded as focused evidence in the candidate report and in the author smoke, not as
+executable acceptance.)* (6) the default
+text-as-shapes PDFs identical to the base after the existing fingerprint normalization;
+(7) Classic: text-as-shapes unchanged, embedded-font route corrected; (8) SVG with and
+without embedded fonts identical after the same normalization;
 (9) no change to any other PDF output (physical stroke and marker sizes, page box,
 legacy route). The xref warning is out of scope.
 
