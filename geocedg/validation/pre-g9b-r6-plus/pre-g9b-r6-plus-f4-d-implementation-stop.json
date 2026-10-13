@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F4-D",
+  "recordKind": "IMPLEMENTATION_STOP_REPORT",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_d_implementation_stop_report.md",
+  "authorizationRecord": "docs/validation/pre_g9b_r6_plus_f4_d_implementation_authorization_record.md",
+  "authorizationCommit": "3d609397cf82c428872a0b6859426aba7c0efdeb",
+  "approvedBase": {"commit": "0c7885260761f442c25b380fcbbae11d1215fb51", "tree": "e75fb9c6b55a1677380802766300f514323762d6"},
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4d-freehep-embedded-fonts.prompt.md",
+  "canonicalPromptAmended": false,
+  "stopConditionsMet": [
+    "After the correction, embedded-font PDFs are empty, incomplete, without the font program, or render incorrectly (render incorrectly)",
+    "Any change beyond the single line appears necessary"
+  ],
+  "technicalCandidate": "NOT ESTABLISHED",
+  "workInProgress": {
+    "branch": "wip/pre-g9b-r6-plus-f4-d-type1-outline-blocked",
+    "commit": "6c2fc40918be3e43a1df09a454f407be85acd553",
+    "tree": "5c2c4f292ce0144f83e298c8240a48e6d63470cf",
+    "parent": "3d609397cf82c428872a0b6859426aba7c0efdeb",
+    "candidate": false,
+    "acceptanceRun": false
+  },
+  "developmentEvidence": {
+    "baseReproduction": "all four routes and the delegation test end in StackOverflowError at AbstractCharTable.java:35 on the base product",
+    "baseFixturesReproduced": true,
+    "focusedClassOnCorrection": "8 of 8 passed",
+    "phaseSelection": {"id": "pre-g9b-r6-plus-f4-d.desktop", "identities": 45, "passed": 45},
+    "finalDesktopProducer": {"tests": 2107, "failures": 0, "skipped": 1, "skipReason": "allow-listed disabled upstream case"},
+    "upstreamBoundary": "green (1060 registered files)",
+    "checkstyle": "no finding on new or changed files",
+    "compiledDelta": "only the body of AbstractCharTable.toName(char)"
+  },
+  "finding": {
+    "proposedId": "TD-PDF-3",
+    "title": "inherited FreeHEP Type 1 charstrings without an initial moveto",
+    "source": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/font/CharstringEncoder.java move(): case LAST_POINT writes nothing when the first point equals the side-bearing point set by hsbw",
+    "affectedGlyphs": 43,
+    "totalGlyphs": 230,
+    "affectedGlyphNames": ["period", "A", "B", "D", "E", "F", "H", "I", "K", "L", "M", "N", "P", "R", "X", "Z", "h", "k", "l", "m", "n", "r", "x", "z", "Zcaron", "dotlessi", "zcaron", "Agrave", "Aacute", "Acircumflex", "Atilde", "Adieresis", "Aring", "AE", "Egrave", "Eacute", "Ecircumflex", "Edieresis", "Ntilde", "Thorn", "germandbls", "ntilde", ".notdef"],
+    "renderers": ["Ghostscript 10.02.1", "Poppler 24.04.0 pdftoppm"],
+    "rasterUnmatchedEmbeddedInk": {
+      "geocedgRoutes1200dpiR5": 0,
+      "geocedgRoutes2400dpiR5": "236-237 px (0.05-0.10 %)",
+      "classic1200dpiR5": "1246 px gs (1.06 %), 1414 px Poppler (1.22 %)",
+      "classic2400dpiR5": "8072 px gs (1.72 %), 8478 px Poppler (1.83 %)"
+    },
+    "preExisting": "CharstringEncoder unchanged since the import e6a9568f; latent behind TD-PDF-2 since c4fd03ce",
+    "scratchFeasibility": {"change": "move(): emit a zero hmoveto in the LAST_POINT case (two lines)", "affectedGlyphsAfter": 0, "unmatched1200dpiR2": {"ghostscript": 0, "poppler": 0}, "unmatched1200dpiR10Before": {"ghostscript": "103914 px (5.6 %)", "poppler": "105928 px (5.7 %)"}}
+  },
+  "options": {
+    "A": "extend F4-D with a second minimal inherited correction in CharstringEncoder.move(); new author instruction amending the scope; recommended",
+    "B": "accept the one-line correction with TD-PDF-3 recorded and stop condition waived; not recommended",
+    "C": "withdraw or defer F4-D; TD-PDF-2 stays open"
+  },
+  "evidenceFolder": "artifacts/pre-g9b-r6-plus-f4-d/ (ignored: pre-freeze/pdfs, pre-freeze/external, stop-evidence)",
+  "status": {
+    "F4DTechnicalCandidate": "NOT ESTABLISHED",
+    "F4DTechnicalAcceptance": "NOT APPLICABLE",
+    "F4DAuthorSmoke": "NOT APPLICABLE",
+    "TD-PDF-2": "OPEN",
+    "TD-PDF-3": "PROPOSED",
+    "F4AImplementation": "NOT AUTHORIZED",
+    "G": "NOT AUTHORIZED",
+    "publication": "NOT AUTHORIZED"
+  },
+  "productChange": "NONE (on the phase branch)",
+  "selfApproved": false
+}
