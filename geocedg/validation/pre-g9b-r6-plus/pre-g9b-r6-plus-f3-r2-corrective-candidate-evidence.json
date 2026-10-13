@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-F3-R2-APPLY-STYLES-CORRECTION",
+  "phase": "PRE-G9B-R6-plus-F3",
+  "artifactKind": "CORRECTIVE_TECHNICAL_CANDIDATE_REPORT",
+  "report": "docs/validation/pre_g9b_r6_plus_f3_r2_corrective_candidate_report.md",
+  "rootCauseReport": "docs/validation/pre_g9b_r6_plus_f3_r2_apply_styles_root_cause_report.md",
+  "reconciliation": "docs/validation/pre_g9b_r6_plus_f3_r2_risk_and_observation_reconciliation.md",
+  "specification": "geocedg/specs/ui/document-insertion.md (v1.2)",
+  "specificationStatus": "PROPOSED",
+  "correctiveBase": {
+    "commit": "c4dffe60e5721bfeba21b2c59390286b5382d855",
+    "tree": "8c9dd493db2bcd50ae3679c8375277252f1c5424",
+    "parent": "165471154cd16e8875994a21eb49fbc2f828216b",
+    "receipts": {
+      "PHASE": "verification-667d449952904a3d91ba14d7381e9a1c ACCEPTED / COMPLETE",
+      "INTEGRATION": "verification-9bfa9937f43b429186a53c94048a9ce5 ACCEPTED / COMPLETE",
+      "STATIC": "verification-db91f2428ebf4b25846bc200b2ea4d1e ACCEPTED / COMPLETE"
+    },
+    "receiptsReused": false,
+    "lifecycleAuthorSmoke": "PASS — AUTHOR OBSERVATION",
+    "t0AuthorSmoke": "FAIL — INCOMPLETE T0 PROPERTY TRANSFER (historical, blocking for F3-R1 closeout)"
+  },
+  "branch": "phase/pre-g9b-r6-plus-f3-r2",
+  "entryGate": "PASS",
+  "authorDocuments": [
+    {"path": "C:\\Temp\\EstilosOrigen.cedg", "sha256": "9e5f3ca9810f1b0c8f51e00622bb114aae50109dacd015ab9fdaa9168bf4cd1d", "modified": false, "committed": false},
+    {"path": "C:\\Temp\\EstilosDestino.cedg", "sha256": "1558fd01daa6ddfe1fd80473648336fd3e75eb7cef473d3421d4d4b1fc9c33d7", "modified": false, "committed": false}
+  ],
+  "authorDocumentFacts": {
+    "constructionDefaults": "byte-identical in both documents and equal to the factory defaults",
+    "documentUuid": "1b91e315-80e3-4b1e-952e-1575602f5034 (same in both)"
+  },
+  "rootCauses": {
+    "RC-T0-1": "MATCH FAILURE (scope): objects of a document closed by Open, Open Recent or New stay in the inherited selection and were taken as the Apply Styles scope; CORRECTED",
+    "RC-T0-2": "CONTRACT-CORRECT: P5 copies the source construction defaults by default type; the author expected the styles of corresponding source objects; AUTHOR DECISION REQUIRED",
+    "RC-T0-3": "misleading short help 'Apply the object styles of a GeoCeDG document'; CORRECTED"
+  },
+  "noFailureFound": ["READ", "APPLICABILITY", "CHANGE_DETECTION", "WRITE", "RENDER", "PERSISTENCE"],
+  "productChanges": [
+    "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStyleApplication.java",
+    "apps/geocedg/application-profile.yml",
+    "docs/user/geocedg_user_guide_en.md",
+    "docs/user/geocedg_user_guide_es.md"
+  ],
+  "tests": {
+    "PreG9BR6PlusF3R2StylesTest": 5,
+    "correctiveBaseResult": "3 of 5 pass and 2 of 5 fail on a git archive of c4dffe60 with the class added (f3r2s1 expected 6 restyled but was 1; f3r2s2 expected 0 but was 1)",
+    "candidateResult": "5 of 5 passed"
+  },
+  "p5Contract": "UNCHANGED",
+  "contractDiscrepancy": {
+    "id": "F3R2-T0-CONTRACT-DISCREPANCY",
+    "status": "OPEN — AUTHOR DECISION REQUIRED",
+    "options": [
+      "keep P5 (construction defaults) and review and smoke the F3-R2 candidate against it",
+      "replace or extend P5 with a per-object style contract through a new author-approved design and implementation task"
+    ]
+  },
+  "stopConditions": {
+    "FR-F3-1..8": "retained",
+    "FR-F3R2-1": "PASS",
+    "FR-F3R2-2": "PASS (by default type, P5)",
+    "FR-F3R2-3": "FAIL on c4dffe60 (RC-T0-1); PASS on F3-R2",
+    "FR-F3R2-4": "PASS",
+    "FR-F3R2-5": "PASS (automated)",
+    "FR-F3R2-6": "TRIGGERED for the per-object expectation; not implemented"
+  },
+  "authorSmoke": "PENDING",
+  "productCloseout": "NOT AUTHORIZED",
+  "publication": "NOT AUTHORIZED",
+  "debt": "DEBT-R6PLUS-FILE-INSERT-SURFACE OPEN (C20-1)",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}

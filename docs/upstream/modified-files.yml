@@ -6264,7 +6264,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStyleApplication.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-F3 Apply Styles (T0, P5): the six whitelisted properties from the source construction defaults, exclusions, selection scope and one undo step; never TemplateHelper.",
+      "purpose": "PRE-G9B-R6-plus-F3 Apply Styles (T0, P5): the six whitelisted properties from the source construction defaults, exclusions, selection scope and one undo step; never TemplateHelper. PRE-G9B-R6-plus-F3-R2: the scope keeps only selected objects of the open drawing (the inherited selection still holds the objects of a document closed by Open, Open Recent or New); with none, every object.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {
@@ -6326,6 +6326,12 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F3-R1 shown-window regression: GeoCeDG.main in a child JVM inserts, uses Open Recent and New, then closes through the real window-closing route; the process must exit by itself.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_r1_corrective_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF3R2StylesTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F3-R2 corrective regression of Apply Styles: the six P5 properties of segments, points and circles from the source construction defaults in both directions, persisted, repainted, one undo step; a mixed selection with an excluded object; objects of a closed document never form the scope and leave no invisible undo step.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f3_r2_corrective_candidate_report.md"
     }
   ]
 }

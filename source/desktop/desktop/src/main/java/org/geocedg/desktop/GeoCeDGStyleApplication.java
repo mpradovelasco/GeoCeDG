@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geogebra.common.kernel.ConstructionDefaults;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.geos.GProperty;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -93,12 +94,8 @@ final class GeoCeDGStyleApplication {
 					.getConstructionDefaults();
 			ConstructionDefaults target = app.getKernel().getConstruction()
 					.getConstructionDefaults();
-			List<GeoElement> scope = new ArrayList<>(app.getSelectionManager().getSelectedGeos());
-			if (scope.isEmpty()) {
-				scope.addAll(app.getKernel().getConstruction().getGeoSetConstructionOrder());
-			}
 			int restyled = 0;
-			for (GeoElement geo : scope) {
+			for (GeoElement geo : scope(app)) {
 				if (isExcluded(geo)) {
 					continue;
 				}
@@ -118,6 +115,28 @@ final class GeoCeDGStyleApplication {
 		} finally {
 			app.releaseInsertionHelper(helper);
 		}
+	}
+
+	/**
+	 * @param app target document
+	 * @return the selected objects of the drawing, or every object when none is selected.
+	 *         The inherited selection keeps the objects of a document closed by Open, Open
+	 *         Recent or New (F3-R2); they no longer belong to the drawing and never count
+	 *         as selected.
+	 */
+	static List<GeoElement> scope(AppGeoCeDG app) {
+		Kernel kernel = app.getKernel();
+		List<GeoElement> scope = new ArrayList<>();
+		for (GeoElement selected : app.getSelectionManager().getSelectedGeos()) {
+			if (selected.isLabelSet()
+					&& kernel.lookupLabel(selected.getLabelSimple()) == selected) {
+				scope.add(selected);
+			}
+		}
+		if (scope.isEmpty()) {
+			scope.addAll(kernel.getConstruction().getGeoSetConstructionOrder());
+		}
+		return scope;
 	}
 
 	private Result refused(String name, String reasonKey) {

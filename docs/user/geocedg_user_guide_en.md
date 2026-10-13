@@ -377,8 +377,10 @@ saved or exported, and you can only save the last verified version to a new
 file, reopen the document from its file, or close it.
 
 **Apply Styles…** copies colour, line style, line thickness, point style, point
-size and fill opacity from the default styles of a `.cedg` or `.ggb` document to
-the selected objects, or to all objects when nothing is selected. Native
+size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the
+styles that document gives to new objects of each type, not the styles of its
+existing objects) to the selected objects, or to all objects when nothing is
+selected. Native
 dimensions, ISO A sheets and Locus V2 results keep their styles; geometry,
 names, layers, captions, visibility and units never change. One Undo restores
 the previous styles; a document that cannot be read changes nothing.

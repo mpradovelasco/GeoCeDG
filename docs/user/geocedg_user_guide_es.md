@@ -391,8 +391,9 @@ archivo nuevo, reabrir el documento desde su archivo o cerrarlo.
 
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de
-un documento `.cedg` o `.ggb` a los objetos seleccionados, o a todos si no hay
-selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 conservan
+un documento `.cedg` o `.ggb` (los estilos que ese documento da a los objetos
+nuevos de cada tipo, no los de sus objetos existentes) a los objetos
+seleccionados, o a todos si no hay selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 conservan
 sus estilos; la geometría, los nombres, las capas, los rótulos, la visibilidad y
 las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores; un
 documento que no puede leerse no cambia nada.

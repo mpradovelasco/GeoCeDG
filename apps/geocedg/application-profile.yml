@@ -5413,12 +5413,12 @@
       "es": "Aplicar estilos…"
     },
     "geocedg.document.ApplyStyles.short_help": {
-      "en": "Apply the object styles of a GeoCeDG document.",
-      "es": "Aplica los estilos de objeto de un documento GeoCeDG."
+      "en": "Apply the default object styles of a GeoCeDG document.",
+      "es": "Aplica los estilos de objeto predeterminados de un documento GeoCeDG."
     },
     "geocedg.document.ApplyStyles.long_help": {
-      "en": "Copy colour, line style, line thickness, point style, point size and fill opacity from the default styles of a .cedg or .ggb document to the selected objects, or to all objects when nothing is selected. Native dimensions, ISO A sheets and Locus V2 results are not restyled; geometry, layers and units never change. One Undo restores the previous styles.",
-      "es": "Copia color, estilo de línea, grosor de línea, estilo de punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de un documento .cedg o .ggb a los objetos seleccionados, o a todos si no hay selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 no cambian de estilo; la geometría, las capas y las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores."
+      "en": "Copy colour, line style, line thickness, point style, point size and fill opacity from the default styles of a .cedg or .ggb document (the styles that document gives to new objects of each type, not the styles of its existing objects) to the selected objects, or to all objects when nothing is selected. Native dimensions, ISO A sheets and Locus V2 results are not restyled; geometry, layers and units never change. One Undo restores the previous styles.",
+      "es": "Copia color, estilo de línea, grosor de línea, estilo de punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de un documento .cedg o .ggb (los estilos que ese documento da a los objetos nuevos de cada tipo, no los de sus objetos existentes) a los objetos seleccionados, o a todos si no hay selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 no cambian de estilo; la geometría, las capas y las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores."
     },
     "geocedg.document.ApplyStyles.status": {
       "en": "Ready: Apply Styles…",

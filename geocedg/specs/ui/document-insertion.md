@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW** (not normative until an author closeout approves it) |
-| Version | `1.1` (1.0 F3 candidate; 1.1 F3-R1 corrective candidate: §1.5 helper windows, §2.6 axes) |
-| Owner phase | `PRE-G9B-R6-plus-F3` (File → Insert surface; `DEBT-R6PLUS-FILE-INSERT-SURFACE`); corrective `PRE-G9B-R6-plus-F3-R1` (author smoke failures) |
+| Version | `1.2` (1.0 F3 candidate; 1.1 F3-R1 corrective candidate: §1.5 helper windows, §2.6 axes; 1.2 F3-R2 corrective candidate: §8.3 scope, §9.4) |
+| Owner phase | `PRE-G9B-R6-plus-F3` (File → Insert surface; `DEBT-R6PLUS-FILE-INSERT-SURFACE`); corrective `PRE-G9B-R6-plus-F3-R1` (author smoke failures) and `PRE-G9B-R6-plus-F3-R2` (Apply Styles author smoke) |
 | Governing author decisions | [F3 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md) (Q1–Q7, `DQ-F3-1` to `DQ-F3-24`, `P1`–`P7`, FR-F3-1 to FR-F3-8); [implementation authorization record](../../../docs/validation/pre_g9b_r6_plus_f3_implementation_authorization_record.md) |
 | Approved design transcribed | [recovery design addendum successor](../../../docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md); [restricted insertion design successor](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_successor_candidate.md) and [candidate](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_candidate.md); [reconciled amendment texts](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md) (`P1`, `P6`, `P7`) and [proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md) (`P2`–`P5`); all `DESIGN — AUTHOR APPROVED` or `APPROVED` |
 | Normative inputs used, not restated | [unit-system specification](../units/unit-system.md) §11 (`D1` provenance and notice); `geocedg/specs/operations/verification-levels.md` §12.8 |
@@ -242,6 +242,13 @@ show condition, dynamic colour, construction default, labeling style or unit.
 One undoable step; the document becomes unsaved; a source that cannot be
 validated and loaded changes nothing. `TemplateHelper` is not used.
 
+8.3 **[ID]** (F3-R2) The selected objects are those of the open drawing: an
+object counts only while the drawing's kernel resolves its label to it. The
+inherited selection keeps the objects of a document closed by Open, Open Recent
+or New; they are never restyled and never make the selection non-empty, so a
+drawing with nothing selected is restyled entirely. An application that changes
+nothing stores no undo step and leaves the saved state unchanged.
+
 ## 9. Observations
 
 9.1 **[OBS]** The inherited construction copy reserves the source labels as
@@ -254,3 +261,10 @@ Redo and reopen equally, not T0).
 
 9.3 **[OBS]** Reopen and Close are verified on embedded hosts; the modal dialog,
 window close and file drop onto a real window are author-smoke items.
+
+9.4 **[OBS]** (F3-R2) The style values come from the source document's
+construction defaults (§8.1); the styles of the source's existing objects are
+never read, and two documents with equal construction defaults give the same
+result whatever their objects look like. The F3-R2 author smoke expected the
+styles of corresponding source objects; that expectation is outside `P5` and
+awaits an author decision (`F3R2-T0-CONTRACT-DISCREPANCY`).
