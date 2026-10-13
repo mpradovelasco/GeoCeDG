@@ -3893,6 +3893,7 @@
     "Insert.Reject.Snapshot": {"en": "a verified copy of the drawing could not be made before the insertion", "es": "no pudo hacerse una copia verificada del dibujo antes de la inserción"},
     "Insert.Reject.Isolated": {"en": "the drawing is isolated after a serious failure", "es": "el dibujo está aislado tras un fallo grave"},
     "Insert.Reject.UndoUnavailable": {"en": "the undo history is not available", "es": "el historial de deshacer no está disponible"},
+    "Insert.Reject.Internal": {"en": "an internal error stopped the operation before any change (%0)", "es": "un error interno detuvo la operación antes de cualquier cambio (%0)"},
     "Insert.Reset.Instances": {"en": "drawing reloaded", "es": "dibujo recargado"},
     "Insert.Reset.Selection": {"en": "selection", "es": "selección"},
     "Insert.Reset.ReferenceMemory": {"en": "remembered Parallel/Perpendicular references", "es": "referencias recordadas de Paralela/Perpendicular"},

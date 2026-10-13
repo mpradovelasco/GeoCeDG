@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Status | **PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW** (not normative until an author closeout approves it) |
-| Version | `1.0` |
-| Owner phase | `PRE-G9B-R6-plus-F3` (File → Insert surface; `DEBT-R6PLUS-FILE-INSERT-SURFACE`) |
+| Version | `1.1` (1.0 F3 candidate; 1.1 F3-R1 corrective candidate: §1.5 helper windows, §2.6 axes) |
+| Owner phase | `PRE-G9B-R6-plus-F3` (File → Insert surface; `DEBT-R6PLUS-FILE-INSERT-SURFACE`); corrective `PRE-G9B-R6-plus-F3-R1` (author smoke failures) |
 | Governing author decisions | [F3 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md) (Q1–Q7, `DQ-F3-1` to `DQ-F3-24`, `P1`–`P7`, FR-F3-1 to FR-F3-8); [implementation authorization record](../../../docs/validation/pre_g9b_r6_plus_f3_implementation_authorization_record.md) |
 | Approved design transcribed | [recovery design addendum successor](../../../docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md); [restricted insertion design successor](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_successor_candidate.md) and [candidate](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_candidate.md); [reconciled amendment texts](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md) (`P1`, `P6`, `P7`) and [proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md) (`P2`–`P5`); all `DESIGN — AUTHOR APPROVED` or `APPROVED` |
 | Normative inputs used, not restated | [unit-system specification](../units/unit-system.md) §11 (`D1` provenance and notice); `geocedg/specs/operations/verification-levels.md` §12.8 |
@@ -47,7 +47,13 @@ Accepting a container does not admit its contents.
 1.5 **[AD]** (`DQ-F3-10` H-1, H-3) The source is loaded into a hidden helper
 document that never publishes its file to the recent-file list and is released
 after every outcome (animation stopped, AWT and keyboard registrations
-removed). The inherited `AppD.insertFile` and `AppD.applyTemplate` are never
+removed). **[ID]** (F3-R1) Building a helper with its GUI registers a hidden
+application window in the inherited static window list; release unregisters
+every window registered for the helper (as the inherited `AppD.insertFile` does
+with its helper), clears the helper's file and restores the window that was
+active before the helper existed. No helper may stay registered: it would claim
+the source for Open Recent, count in the title of a new document and keep
+closing the last visible window from reaching the application exit. The inherited `AppD.insertFile` and `AppD.applyTemplate` are never
 called by GeoCeDG.
 
 ## 2. Insert File: restricted native insertion R
@@ -91,7 +97,10 @@ tool; F3 does not claim them unchanged.
 
 2.6 **[AD]** Strict verification: count; pairwise object class and parent
 algorithm class; layer; value (points, numbers, booleans, list sizes,
-definedness); closure (every labeled input of an inserted object is inserted);
+definedness); closure (every labeled input of an inserted object is inserted,
+or is the same built-in coordinate axis of the target that the source used at
+that input: the axes are construction constants, never target objects —
+F3-R1);
 identity records (a source participant yields a participant with a fresh
 durable identity, different from the source's and from every target identity);
 macro bindings (an inserted macro object is bound to the target's registered

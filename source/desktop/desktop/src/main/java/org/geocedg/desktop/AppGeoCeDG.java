@@ -161,6 +161,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 * first.
 	 */
 	private boolean insertionHelper;
+	/** PRE-G9B-R6-plus-F3-R1: the application window that was active before this helper */
+	private GeoGebraFrame activeWindowBeforeHelper;
 	private GeoCeDGDocumentInsertion documentInsertion;
 	private GeoCeDGStyleApplication styleApplication;
 	private GeoCeDGInsertionIsolation insertionIsolation;
@@ -1371,8 +1373,10 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 *         publishes its file to the recent-file list (H-1)
 	 */
 	AppGeoCeDG newInsertionHelper() {
+		GeoGebraFrame active = GeoGebraFrame.getActiveInstance();
 		AppGeoCeDG helper = (AppGeoCeDG) newAppForTemplateOrInsertFile();
 		helper.insertionHelper = true;
+		helper.activeWindowBeforeHelper = active;
 		helper.setErrorDialogsActive(false);
 		return helper;
 	}
@@ -1389,6 +1393,10 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		}
 		try {
 			helper.getKernel().getAnimationManager().stopAnimation();
+		} catch (RuntimeException failure) {
+			Log.debug(failure);
+		}
+		try {
 			// every dock manager the helper registered (a layout may be rebuilt by a load)
 			for (java.awt.event.AWTEventListener registered : Toolkit.getDefaultToolkit()
 					.getAWTEventListeners()) {
@@ -1400,11 +1408,48 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 					Toolkit.getDefaultToolkit().removeAWTEventListener(manager);
 				}
 			}
-			// the helper is an embedded host: never call getFrame(), which creates one
+		} catch (RuntimeException failure) {
+			Log.debug(failure);
+		}
+		try {
 			java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager()
 					.removeKeyEventDispatcher(helper);
 		} catch (RuntimeException failure) {
 			Log.debug(failure);
+		}
+		try {
+			unregisterHelperWindows(helper);
+		} catch (RuntimeException failure) {
+			Log.debug(failure);
+		}
+		// no window may claim the source document of a released helper
+		helper.currentFile = null;
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-F3-R1 (author smoke SF-F3-2 to SF-F3-4): building a helper with its
+	 * GUI creates and registers a hidden {@link GeoGebraFrame} in the static application
+	 * window list. Left there, it claimed the inserted source for Open Recent, added "(1)"
+	 * to the title of a new document and kept closing the last visible window from ever
+	 * reaching the application exit. As the inherited {@code AppD.insertFile} does with its
+	 * helper, every window registered for the helper is disposed (which only unregisters a
+	 * never-shown frame); the window that was active before the helper existed becomes
+	 * active again. Legitimate windows are never touched.
+	 *
+	 * @param helper released helper
+	 */
+	private static void unregisterHelperWindows(AppGeoCeDG helper) {
+		for (GeoGebraFrame window : new ArrayList<>(GeoGebraFrame.getInstances())) {
+			if (window.getApplication() == helper) {
+				window.dispose();
+			}
+		}
+		GeoGebraFrame previous = helper.activeWindowBeforeHelper;
+		helper.activeWindowBeforeHelper = null;
+		GeoGebraFrame active = GeoGebraFrame.getActiveInstance();
+		if (previous != null && (active == null || active.getApplication() == helper)
+				&& GeoGebraFrame.getInstances().contains(previous)) {
+			previous.windowGainedFocus(null);
 		}
 	}
 

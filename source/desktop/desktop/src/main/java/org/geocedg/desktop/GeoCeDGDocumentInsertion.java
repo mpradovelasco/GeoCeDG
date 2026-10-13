@@ -213,12 +213,20 @@ final class GeoCeDGDocumentInsertion {
 			return transact(name, helper, admission);
 		} catch (RuntimeException unexpected) {
 			Log.debug(unexpected);
+			// PRE-G9B-R6-plus-F3-R1: the stage and cause are kept, never a generic reason
 			return new Result(Outcome.REJECTED_BEFORE_MUTATION,
-					text("Insert.Rejected", name, text("Insert.Reject.Invalid")), List.of(),
-					unexpected);
+					text("Insert.Rejected", name, text("Insert.Reject.Internal",
+							describe(unexpected))), List.of(), unexpected);
 		} finally {
 			app.releaseInsertionHelper(helper);
 		}
+	}
+
+	/** @return exception class and message, for a rejection diagnosis */
+	static String describe(Throwable failure) {
+		String message = failure.getMessage();
+		return failure.getClass().getSimpleName()
+				+ (message == null || message.isEmpty() ? "" : ": " + message);
 	}
 
 	private boolean preflight(byte[] bytes) {
@@ -273,7 +281,7 @@ final class GeoCeDGDocumentInsertion {
 			return mismatch != null ? mismatch : verifyMacros(scratchAdmission, scratch, helper);
 		} catch (Exception | Error failure) {
 			Log.debug(failure);
-			return "commit";
+			return "commit: " + describe(failure);
 		} finally {
 			app.releaseInsertionHelper(helper);
 			app.releaseInsertionHelper(scratch);
@@ -841,12 +849,8 @@ final class GeoCeDGDocumentInsertion {
 			if (!sameValue(from, to)) {
 				return "value " + label;
 			}
-			if (toAlgo != null) {
-				for (GeoElement input : toAlgo.getInput()) {
-					if (input.isLabelSet() && !inserted.contains(input)) {
-						return "closure " + label;
-					}
-				}
+			if (toAlgo != null && !closed(fromAlgo, toAlgo, inserted, helper, target)) {
+				return "closure " + label;
 			}
 			if (fromAlgo instanceof AlgoMacro fromMacro) {
 				Macro bound = target.getKernel().getMacro(fromMacro.getMacro().getCommandName());
@@ -868,6 +872,37 @@ final class GeoCeDGDocumentInsertion {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Closure of one inserted algorithm: every labeled input is an inserted object, or
+	 * (PRE-G9B-R6-plus-F3-R1, author smoke SF-F3-1) the same built-in coordinate axis of
+	 * the target that the source algorithm used at that position. The axes are
+	 * construction constants of every document, never objects of the target, so a
+	 * dependency on them is internal; any other labeled outside input is a closure
+	 * failure, as before.
+	 */
+	private static boolean closed(AlgoElement fromAlgo, AlgoElement toAlgo,
+			Set<GeoElement> inserted, AppGeoCeDG helper, AppGeoCeDG target) {
+		GeoElement[] toInputs = toAlgo.getInput();
+		GeoElement[] fromInputs = fromAlgo.getInput();
+		if (toInputs.length != fromInputs.length) {
+			return false;
+		}
+		Construction from = helper.getKernel().getConstruction();
+		Construction to = target.getKernel().getConstruction();
+		for (int k = 0; k < toInputs.length; k++) {
+			GeoElement input = toInputs[k];
+			if (!input.isLabelSet() || inserted.contains(input)) {
+				continue;
+			}
+			boolean xAxis = input == to.getXAxis() && fromInputs[k] == from.getXAxis();
+			boolean yAxis = input == to.getYAxis() && fromInputs[k] == from.getYAxis();
+			if (!xAxis && !yAxis) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
