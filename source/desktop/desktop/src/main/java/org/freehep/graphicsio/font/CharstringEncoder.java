@@ -135,6 +135,10 @@ public class CharstringEncoder extends QuadToCubicPathConstructor {
 			writeCommand(4);
 			break;
 		case LAST_POINT:
+			// GeoCeDG (2026-10-14): PRE-G9B-R6-plus-F4-D a Type 1 subpath begins with
+			// a moveto, also for a zero displacement (0 hmoveto)
+			writeNumber(0);
+			writeCommand(22);
 			break;
 		}
 		super.move(x, y);

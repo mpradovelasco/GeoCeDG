@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F4-D",
+  "activity": "PRE-G9B-R6-plus-F4-D-SCOPE-AMENDMENT-01",
+  "artifactKind": "TECHNICAL_CANDIDATE_REPORT",
+  "report": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md",
+  "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4d-freehep-embedded-fonts.prompt.md (not amended)",
+  "records": {
+    "authorization": "docs/validation/pre_g9b_r6_plus_f4_d_implementation_authorization_record.md",
+    "stop": "docs/validation/pre_g9b_r6_plus_f4_d_implementation_stop_report.md",
+    "scopeAmendment": "docs/validation/pre_g9b_r6_plus_f4_d_scope_amendment_01_record.md",
+    "debtRegister": "docs/validation/pre_g9b_r6_plus_f4_risk_and_debt_register.md"
+  },
+  "chain": [
+    {"commit": "3d609397cf82c428872a0b6859426aba7c0efdeb", "role": "implementation authorization; INTEGRATED_PHASE frozen"},
+    {"commit": "aae7b12ccc7e8c21eced1b10f7aa08562ae2bec2", "tree": "f6732b1536af3c831fb9bfb05bd8d0784d6f331a", "role": "implementation STOP, accepted by the author, historical evidence"},
+    {"commit": "3968771327aca5aa3e7b47fc68a74451f44fc9d6", "tree": "c88143b02760e88ea18d1b4185a0693b55eb31bf", "role": "scope amendment 01 record; INTEGRATED_PHASE maintained"}
+  ],
+  "wipReused": {"commit": "6c2fc40918be3e43a1df09a454f407be85acd553", "reused": ["AbstractCharTable line", "PreG9BR6PlusF4DEmbeddedFontPdfTest", "three base fixtures", "manifest entries", "registry entries"], "regenerated": ["inventory", "registry catalog pin", "final-coverage pins"], "receiptsReused": false},
+  "branch": "phase/pre-g9b-r6-plus-f4-d-amendment-01",
+  "verificationClass": {"class": "INTEGRATED_PHASE", "maintained": true, "acceptance": ["PHASE -Phase PRE-G9B-R6-PLUS-F4-D", "INTEGRATION", "INFRA_UNIT", "STATIC"], "final": "not required"},
+  "productChange": {
+    "source/desktop/desktop/src/main/java/org/freehep/graphics2d/font/AbstractCharTable.java": {"blobBefore": "22cb250d764ef32f5bad87420f3358c38b9d9d3d", "blobAfter": "52c0ff23699c1f19440cde0a3f96c17ecf4b41ce", "lines": 1, "compiledDelta": "toName(char) body only", "defect": "TD-PDF-2"},
+    "source/desktop/desktop/src/main/java/org/freehep/graphicsio/font/CharstringEncoder.java": {"blobBefore": "d665899d7b7c10aea307ae6f65aa6891152c2eb9", "blobAfter": "e6d6c6f7fe0f2fc71f554f1c3fbe4d73ed5915d6", "lines": "2 code + 2 notice", "compiledDelta": "move(double,double) LAST_POINT branch only (1 of 23 members)", "defect": "TD-PDF-3"}
+  },
+  "type1Conformance": "Adobe Type 1 Font Format 1.1, section 6.4: hsbw (p. 50), closepath (p. 51), hmoveto and rmoveto (p. 52)",
+  "perimeter": {"postScriptEps": "unreachable (no writer vendored; ExportType.EPS unreferenced)", "otherFormats": "SVG, EMF, PNG do not use the changed classes", "baseOutputsChangeable": false},
+  "tests": {
+    "PreG9BR6PlusF4DEmbeddedFontPdfTest": 8,
+    "PreG9BR6PlusF4DType1OutlineTest": 8,
+    "reproductions": {"base": "StackOverflowError in all four routes and the delegation test", "oneLineState": "7 of 8 structural tests fail (missing zero-displacement movetos); nonzero-displacement test passes", "candidate": "16 of 16 pass"}
+  },
+  "registration": {
+    "phaseId": "PRE-G9B-R6-PLUS-F4-D",
+    "requiredCheckIds": ["compile.desktop.semantic", "junit.desktop.pre-g9b-r6-plus-f4-d.semantic"],
+    "selectionId": "pre-g9b-r6-plus-f4-d.desktop",
+    "selectionClasses": 7,
+    "selectionIdentities": 53,
+    "finalDesktopIdentities": 2115,
+    "discoveryDesktopIdentities": 2121,
+    "selections": 61,
+    "phases": 66,
+    "junitInventoryPin": "70c04abb9310423f31914b27eda8b0327761bf203342e22159476da412622694",
+    "upstreamBoundaryRegisteredFiles": 1062
+  },
+  "normalization": {"exclusions": ["PDF \\(D:[0-9+\\-Z']*\\) -> (D:)", "SVG clip[0-9a-f-]+ -> clip"], "newExclusions": 0},
+  "externalEvidence": {
+    "folder": "artifacts/pre-g9b-r6-plus-f4-d/amendment-pre-freeze/ (ignored)",
+    "tools": {"ghostscript": "10.02.1", "poppler": "24.04.0 (pdfinfo, pdffonts, pdftoppm, pdftotext)", "xpdf": "4.06 (pdftotext)", "java": "22.0.2 (scratch tools)"},
+    "scenes": ["geocedg_physical", "geocedg_legacy", "geocedg_dialog", "classic_dialog", "geocedg_cohort", "classic_cohort", "arial40 (FreeHEP writer, candidate classes)"],
+    "toleranceStated": "Chebyshev radius 5 px at 1200 dpi (0.106 mm), zero unmatched pixels in both directions",
+    "toleranceResult": "holds in every scene and both renderers",
+    "embeddedOnlyInkAt2px": "0 in all 26 embedded-versus-shapes comparisons",
+    "shapesOnlyResiduesBeyond2px": ["classic_cohort Poppler 1200 dpi: 1 px (matched at 5 px)", "classic_dialog Ghostscript 2400 dpi: isolated 1x2 px mark, present before the amendment, belongs to the unchanged text-as-shapes output"],
+    "type1Structure": "0 glyphs without initial moveto and 0 drawing commands outside a subpath in all 17 embedded programs (4 focused, 12 cohort, 1 Arial; 230 glyphs each)",
+    "objectComparisonOneLineToCandidate": "only the FontFile stream and its length object differ; widths, encoding, descriptor, content and trailer identical",
+    "text": "Poppler and Xpdf extract every drawn string, accents included",
+    "xrefWarning": "OBS-F4P-FREEHEP-XREF-SIZE on every PDF, independent observation",
+    "unavailable": []
+  },
+  "debts": {"TD-PDF-2": "OPEN until verification and author acceptance", "TD-PDF-3": "OPEN until verification and author acceptance (recorded in the F4 risk and debt register section 5)"},
+  "blockingIssues": [],
+  "status": {"F4DTechnicalAcceptance": "PENDING", "F4DAuthorSmoke": "PENDING", "F4AImplementation": "NOT AUTHORIZED", "G": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}

@@ -52,3 +52,16 @@
   in a PDF reader.
 - Both: upstream boundary registration, Checkstyle, the registered phase selection,
   `INTEGRATION`.
+
+## 5. F4-D implementation updates (2026-10-14)
+
+Recorded by the [F4-D implementation stop report](pre_g9b_r6_plus_f4_d_implementation_stop_report.md)
+and [scope amendment 01](pre_g9b_r6_plus_f4_d_scope_amendment_01_record.md); the sections
+above stay as the preparation record.
+
+| Id | State | Relation and evidence | Owner |
+|---|---|---|---|
+| `TD-PDF-2` | `CONFIRMED — INHERITED PRODUCT DEFECT — OWNED BY F4-D`; **OPEN** until the corrected technical candidate passes the required verification and the author accepts it | `AbstractCharTable.toName(char)` self-call from upstream `c4fd03ce`; reproduced on the base in all four routes | F4-D |
+| `TD-PDF-3` | **new — CONFIRMED — INHERITED PRODUCT DEFECT — OWNED BY F4-D (scope amendment 01)**; **OPEN** under the same condition | the inherited FreeHEP `CharstringEncoder.move()` wrote no moveto for a zero displacement, so 43 of 230 embedded Type 1 glyphs had no subpath start (Adobe Type 1 Font Format 1.1, §6.4) and rendered with a slanted left stem in Ghostscript and Poppler; unchanged since the import; **latent behind `TD-PDF-2`**: no embedded-font PDF could be written while `TD-PDF-2` held, so it surfaced only once `TD-PDF-2` was corrected | F4-D |
+| `F4R-EMBED-FIDELITY` (§2) | realized as `TD-PDF-3` | the risk anticipated here materialized in the glyph outlines, not in spacing or reader rejection | F4-D |
+| `OBS-F4P-FREEHEP-XREF-SIZE` | unchanged — independent observation, not in F4-D | Ghostscript reports it on every FreeHEP PDF, embedded and text as shapes alike | — |

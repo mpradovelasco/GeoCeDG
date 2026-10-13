@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "76cfa5a452afc4ad81338e272c54492d89679889ee179a7be45f1e400f19a010",
+      "discovery_evidence_sha256": "7866a85d3c97de4eb4def223a6df43c57b68c90bc4a9d700e6d5903e24d2cf82",
       "discovered_identity_count": 6075,
       "discovered_identities_sha256": "69dba6242d81bf292dd37fb6e75513e97ab239e34ca8deacd5cde8305f83643e"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "f0889bbbc45261ee06e63673ab144ebea6991ed5b36d9e6e2b88cd8bdb1d9f19",
-      "discovered_identity_count": 2105,
-      "discovered_identities_sha256": "975c4eb771a651cb09e994eeb228f0dc621159d58434b520b39107843eb3fc8f"
+      "discovery_evidence_sha256": "8d602ffc17707d7783fd7bcf0c8ef302495c8e93e15d3ad63b898886b3786925",
+      "discovered_identity_count": 2121,
+      "discovered_identities_sha256": "f4b13a5fdeb88c1a1766b42e5f53e215bf8fd50aeee1af92cd04d51f596e4fb2"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2105,
-      "expected_identities_sha256": "975c4eb771a651cb09e994eeb228f0dc621159d58434b520b39107843eb3fc8f",
+      "expected_identity_count": 2121,
+      "expected_identities_sha256": "f4b13a5fdeb88c1a1766b42e5f53e215bf8fd50aeee1af92cd04d51f596e4fb2",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2099,
-      "expected_identities_sha256": "b98fc9b3195ef88e7d8d587a4db5bca4698528c8bb688b4e47c200fb37c359ec",
+      "expected_identity_count": 2115,
+      "expected_identities_sha256": "2f1bed9694f4d56bd10969babd21b1a9a0045861cd09c0b36643a5e8f213ff60",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -3033,6 +3033,53 @@
         {
           "commit": "108d9cb6591aef92135a95ec9bf71482fcd78e7f",
           "tree": "45644a6fabdb5e3b4cb23df063761f57d3fdf133"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-r6-plus-f4-d.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BR6PlusF4DEmbeddedFontPdfTest",
+        "org.geocedg.desktop.PreG9BR6PlusF4DType1OutlineTest",
+        "org.geocedg.desktop.PostE2P1R2PhysicalPdfStyleTest",
+        "org.geocedg.desktop.PostE2P1R2BaseFingerprintTest",
+        "org.geocedg.desktop.PreG9BR6PlusBPictureFidelityTest",
+        "org.geocedg.desktop.PreG9BR6PlusCBaseIdentityTest",
+        "org.geocedg.desktop.PreG9BR6PlusCPhysicalExportTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF4DEmbeddedFontPdfTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF4DType1OutlineTest",
+        "--tests",
+        "org.geocedg.desktop.PostE2P1R2PhysicalPdfStyleTest",
+        "--tests",
+        "org.geocedg.desktop.PostE2P1R2BaseFingerprintTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusBPictureFidelityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusCBaseIdentityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusCPhysicalExportTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 53,
+      "expected_identities_sha256": "1bebe3ad90d97522768cef21d377250d30381ecfe99b9c0180ac703975d4b428",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "0c7885260761f442c25b380fcbbae11d1215fb51",
+          "tree": "e75fb9c6b55a1677380802766300f514323762d6"
         }
       ]
     }

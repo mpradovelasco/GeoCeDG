@@ -32,7 +32,7 @@ public abstract class AbstractCharTable implements CharTable {
 
 	@Override
 	public String toName(char c) {
-		return toName(c);
+		return toName(Character.valueOf(c)); // GeoCeDG (2026-10-14): PRE-G9B-R6-plus-F4-D
 	}
 
 	@Override

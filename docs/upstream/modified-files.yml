@@ -6332,6 +6332,48 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F3-R2 corrective regression of Apply Styles: the six P5 properties of segments, points and circles from the source construction defaults in both directions, persisted, repainted, one undo step; a mixed selection with an excluded object; objects of a closed document never form the scope and leave no invisible undo step.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_r2_corrective_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/freehep/graphics2d/font/AbstractCharTable.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-F4-D modified third-party FreeHEP VectorGraphics source (LGPL; provenance in docs/licensing/freehep-vectorgraphics-provenance.md), an explicitly authorized exception to the minimal-upstream-change policy limited to one line: toName(char) delegates to toName(Character.valueOf(c)) again. Upstream GeoGebra commit c4fd03ce (Fix Java 17 warnings, inside baseline 9b93256b) had replaced toName(new Character(c)) with toName(c), a self-call that ended every embedded-font PDF with text in StackOverflowError (TD-PDF-2), in GeoCeDG and Classic alike; the restored semantics are those before c4fd03ce. Dated GeoCeDG notice on the changed line.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF4DEmbeddedFontPdfTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-D focused tests: toName(char) equals toName(Character) for every char of the PDFLatin, Symbol and Zapfdingbats tables; the GeoCeDG physical, legacy and dialog routes and the Classic dialog route write complete embedded-font PDFs with a Type 1 font program and the source strings; text-as-shapes PDFs, Classic PNG and EMF, and GeoCeDG and Classic SVG with and without embedded fonts equal the base fixtures after the existing normalization.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r6-plus-f4-d/o6-base-fingerprints.json",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-D base fixture (0c788526 product) of the text-as-shapes PDF digests (obligation 6), produced by PreG9BR6PlusF4DEmbeddedFontPdfTest on the base product.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r6-plus-f4-d/o7-base-fingerprints.json",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-D base fixture (0c788526 product) of the Classic PNG pixel and EMF digests (obligation 7), produced by PreG9BR6PlusF4DEmbeddedFontPdfTest on the base product.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r6-plus-f4-d/o8-base-fingerprints.json",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-D base fixture (0c788526 product) of the GeoCeDG and Classic SVG digests with and without embedded fonts (obligation 8), produced by PreG9BR6PlusF4DEmbeddedFontPdfTest on the base product.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/font/CharstringEncoder.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-R6-plus-F4-D scope amendment 01 modified third-party FreeHEP VectorGraphics source (LGPL; provenance in docs/licensing/freehep-vectorgraphics-provenance.md), authorized by the author as the second and last productive change of F4-D: move() writes 0 hmoveto when the rounded target equals the current point, instead of nothing, so every Type 1 subpath begins with a moveto (Adobe Type 1 Font Format 1.1, section 6.4: hsbw does not place the current point in the path, closepath does not reposition it). Without it 43 of 230 embedded glyphs had no subpath start and rendered with a slanted left stem (TD-PDF-3). Nonzero displacements and every other command are unchanged. Dated GeoCeDG notice at the change.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF4DType1OutlineTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-D scope amendment 01 structural Type 1 tests: zero and nonzero displacement movetos, repeated movetos, closed contours and multiple subpaths decoded by a Type 1 interpreter; every glyph of the product sans and serif fonts in four styles equals the rounded Java shape FreeHEP encodes; every glyph of every embedded program of GeoCeDG and Classic glyph-cohort PDFs begins each subpath with a moveto, with widths equal to the hsbw widths and the source text extracted.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
     }
   ]
 }
