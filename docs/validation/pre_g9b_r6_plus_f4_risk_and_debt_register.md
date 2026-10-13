@@ -1,0 +1,54 @@
+# PRE-G9B-R6-plus-F4 — risk and debt register (preparation)
+
+- Activity: `PRE-G9B-R6-plus-F4-PREP` (author authorization of 2026-10-13), on
+  `847bb20a593e8092eabf80bd9d7c62ed7c21de08`
+- Status: **PREPARATION REGISTER** — proposed dispositions; no author decision, no
+  product verification
+- Evidence: [characterization report](pre_g9b_r6_plus_f4_preparation_characterization_report.md);
+  decisions: [author-decision preparation](pre_g9b_r6_plus_f4_author_decision_preparation_record.md)
+- `selfApproved = false`
+
+## 1. Planning-intent items
+
+| Item | State before | Evidence now | Proposed disposition | Owner |
+|---|---|---|---|---|
+| `OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT` (F4-A) | ENHANCEMENT — ACCEPTED NON-BLOCKING — IMPLEMENTATION NOT AUTHORIZED | host, component and seams characterized; keyboard focus in the popup `NOT ESTABLISHED` | **INCLUDE — IMPLEMENTATION CANDIDATE** (`DQ-F4-1`–`-4`) | F4 |
+| DXF compatibility recheck with AutoCAD 2026 (F4-B) | planning intent; `OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION` resolved by E3-R1 for AutoCAD 2026 | AutoCAD 2026 re-check on `847bb20a`: eight G5 families, both routes, AUDIT clean | **CLOSE — ALREADY RESOLVED** (AutoCAD 2026); other releases `NOT RECHECKED — COVERAGE GAP`; optional author **VALIDATION ONLY** (`DQ-F4-6`) | closed by F4 closeout if approved |
+| `TD-PDF-1` / `OBS-POST-E2-P1-R1-PDF-TEXT-SIZE` (F4-C) | OPEN — CHARACTERIZATION REQUIRED — NOT AUTHORIZED | characterized: S3 world-scaled texts (model units), view-pixel labels; no approved contract violated | **DEFER — NOT IN F4**; reclassify `CHARACTERIZED — CONTRACT DESIGN REQUIRED — NOT AUTHORIZED` (`DQ-F4-8`) | contract-design task to be named by the author; otherwise G register |
+| `TD-PDF-2` / `OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS` (F4-D) | OPEN — UNCONFIRMED IN PRODUCT — HEADLESS TEST ENVIRONMENT OBSERVATION — NOT AUTHORIZED | `PRODUCT DEFECT CONFIRMED` (windowed JVM; GeoCeDG and Classic); root cause upstream `c4fd03ce`; one-line correction feasible in scratch | **INCLUDE — IMPLEMENTATION CANDIDATE** (`DQ-F4-5`); reclassify `CONFIRMED — INHERITED PRODUCT DEFECT — OWNED BY F4` (`DQ-F4-9`) | F4 |
+
+## 2. Implementation risks (if F4 is authorized as recommended)
+
+| Risk | Workstream | Mitigation / gate | Stop |
+|---|---|---|---|
+| `F4R-POPUP-FOCUS`: the non-focusable popup blocks typing or closes on focus | F4-A | `FG-F4A-1` in the real window first; fallback F-1 only (`DQ-F4-3`) | yes, beyond F-1 |
+| `F4R-LINETYPE-COUPLING`: an entered thickness also re-applies the selected line type (inherited `applyLineStyle`) | F4-A | accepted and documented (`DQ-F4-4`); tests assert parity with the slider | no |
+| `F4R-DEFAULTS-UNDO`: in a creation mode the style bar edits construction defaults outside the undo history (inherited) | F4-A | documented limitation, unchanged | no |
+| `F4R-CLASSIC-LEAK`: the style-bar hook or the popup change reaches Classic | F4-A | `forProduct` gate; Classic test asserting no field and identical popup | yes |
+| `F4R-EMBED-FIDELITY`: embedded Type 1 glyphs differ visually (spacing, hinting) or some reader rejects them | F4-D | PDF structure checks, Ghostscript render, author smoke in a PDF reader | report; author disposition |
+| `F4R-SHAPES-UNCHANGED`: the correction alters a currently successful export | F4-D | byte-identical fingerprints of text-as-shapes PDF, SVG, EMF, PNG (the corrected method is unreachable on successful paths today) | yes |
+| `F4R-FAILED-EXPORT-REPORTING`: other font failures after the correction leave an empty file or a generic message | F4-D | tests of failure reporting; no claim of success | report |
+
+## 3. Debts and observations touched
+
+| Id | Proposed state | Note |
+|---|---|---|
+| `DEBT-R6PLUS-FILE-INSERT-SURFACE` and `DEFER-F3-*` | unchanged | F3 debts are not moved into F4 |
+| `OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION` | unchanged (resolved for AutoCAD 2026; other versions not rechecked) | not reopened |
+| `OBS-R6PLUS-E2-DXF-DIMENSION-SUBSET` | unchanged | outside F4 |
+| `OBS-F4P-FREEHEP-XREF-SIZE` | **new — REGISTERED — NOT AUTHORIZED** | Ghostscript repairs "incorrect xref size" in every FreeHEP PDF, text-as-shapes included; pre-existing |
+| `OBS-F4P-S3-SPEC-HEADER` | **new — REGISTERED** | S3 specification header still says candidate pending review |
+| `OBS-F4P-ADR0035-CONSEQUENCE-LINE` | **new — REGISTERED** | ADR 0035 Consequences line superseded by its amendment |
+
+## 4. Validation obligations of a future implementation
+
+- F4-A: real-window gate `FG-F4A-1`; field present only in GeoCeDG; value follows the
+  slider, selection, creation-mode defaults and polygon minimum; accepted entries apply
+  through the slider with one undo step; refusals; Undo/Redo; save and reopen; Classic
+  without field; Properties field unchanged; author smoke.
+- F4-D: embedded-font PDF on the physical and legacy routes and in Classic, with an
+  embedded font program and correct text; failure reporting; byte identity of every
+  currently successful output; physical stroke and marker sizes unchanged; author smoke
+  in a PDF reader.
+- Both: upstream boundary registration, Checkstyle, the registered phase selection,
+  `INTEGRATION`.

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-F4-PREP",
+  "phase": "PRE-G9B-R6-plus-F4",
+  "artifactKind": "PREPARATION_CHARACTERIZATION_REPORT",
+  "authorInstruction": {"date": "2026-10-13", "task": "PRE-G9B-R6-plus-F4-PREP", "implementation": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "records": {
+    "report": "docs/validation/pre_g9b_r6_plus_f4_preparation_characterization_report.md",
+    "design": "docs/architecture/pre_g9b_r6_plus_f4_reconciled_design_candidate.md",
+    "decisions": "docs/validation/pre_g9b_r6_plus_f4_author_decision_preparation_record.md",
+    "register": "docs/validation/pre_g9b_r6_plus_f4_risk_and_debt_register.md",
+    "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md"
+  },
+  "publishedBase": {"commit": "847bb20a593e8092eabf80bd9d7c62ed7c21de08", "tree": "10846ff491572f5c557f3c2b7fadb3a6a1053f0a", "localMain": "847bb20a593e8092eabf80bd9d7c62ed7c21de08", "trackingMain": "847bb20a593e8092eabf80bd9d7c62ed7c21de08", "remoteMain": "847bb20a593e8092eabf80bd9d7c62ed7c21de08"},
+  "entryGate": "PASS",
+  "f3": {"state": "PASS — AUTHOR APPROVED — PUBLISHED", "approvedImplementation": "2d7b2cae23d5229f889877f22924b3669f98b755", "closeoutStatic": "verification-f919cf565f0e4a2da3128d8387210200 ACCEPTED / COMPLETE", "publicationConfirmed": "remote main 847bb20a (non-force fast-forward from e70718fe)", "closeoutRecordChanged": false},
+  "planningAuthority": {"record": "docs/validation/post_e2_p4_closeout_record.md", "date": "2026-10-09", "items": ["OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT", "DXF compatibility recheck with AutoCAD 2026", "TD-PDF-1", "TD-PDF-2"]},
+  "environment": {"testJvm": "Java 17.0.10", "os": "Windows 11", "headless": false, "autocad": "AutoCAD 2026 accoreconsole W.164.0.0", "ghostscript": "10.02.1", "probes": "scratch only, kept untracked in artifacts/pre-g9b-r6-plus-f4-prep/"},
+  "workstreams": {
+    "F4-A": {
+      "item": "OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT",
+      "verifiedState": "inherited EuclidianStyleBarD.btnLineStyle popup with a slider 1..13 (0 for polygons), no numeric entry; reusable product-gated GeoCeDGLineThicknessField from POST-E2-P1-R2; EuclidianStyleBarD and PopupMenuButtonD byte-identical to baseline 9b93256b",
+      "notEstablished": ["FG-F4A-1 keyboard focus inside the non-focusable popup (PopupMenuButtonD.java:155,159)"],
+      "inheritedCouplings": ["applyLineStyle also applies the selected line type", "creation-mode construction defaults are outside the undo history"],
+      "recommendation": "INCLUDE — IMPLEMENTATION CANDIDATE",
+      "ownership": "GeoCeDG Desktop presentation; one profile-gated inherited host hook (A-1) or a GeoCeDG style-bar subclass (A-2)"
+    },
+    "F4-B": {
+      "item": "DXF compatibility recheck with AutoCAD",
+      "acceptedEvidence": "OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION RESOLVED BY E3-R1 FOR AUTOCAD 2026 — AUTHOR CONFIRMED",
+      "recheck": [
+        {"case": "point, segment, circle, arc, ellipse", "entities": {"POINT": 2, "LINE": 1, "CIRCLE": 1, "ARC": 1, "ELLIPSE": 1}, "routes": "neutral and extended byte-identical", "autocad2026": "opened, AUDIT 0 found / 0 fixed"},
+        {"case": "polygon", "entities": {"LWPOLYLINE": 1}, "routes": "byte-identical", "autocad2026": "opened, AUDIT clean"},
+        {"case": "line and ray", "entities": {"XLINE": 1, "RAY": 1}, "routes": "byte-identical", "autocad2026": "opened, AUDIT clean"},
+        {"case": "ISO A sheet 1:5 with segment and circle", "entities": {"POINT": 2, "LWPOLYLINE": 2, "LINE": 1, "CIRCLE": 1}, "routes": "byte-identical", "autocad2026": "opened, AUDIT clean"},
+        {"case": "function graph", "entities": {}, "routes": "neutral writes no entity; extended refused by the strict preflight (pre-existing scope)", "autocad2026": "empty container opened, AUDIT clean"}
+      ],
+      "classification": {"AutoCAD 2026": "RESOLVED — AUTHOR-VERIFIED; SUPPORTED BY EXISTING AUTOMATED EVIDENCE (agent re-check)", "AutoCAD 2024 and other releases, LT, TrueView": "NOT RECHECKED — COVERAGE GAP", "openDefect": "none reproduced"},
+      "recommendation": "CLOSE — ALREADY RESOLVED (AutoCAD 2026); optional author VALIDATION ONLY for other versions",
+      "ownership": "documentary closure"
+    },
+    "F4-C": {
+      "item": "TD-PDF-1",
+      "contracts": "no approved physical text-size contract; physical-pdf-style-sizes section 4 and ADR 0035 exclude text and labels; S3 scales construction texts with the view",
+      "measurementsMm": [
+        {"unit": "mm", "scale": "1:1", "zoom": 2, "ptPerViewPx": 1.41732, "label": 4.297, "text": 0.360, "dimension": 0.368},
+        {"unit": "mm", "scale": "1:1", "zoom": 8, "ptPerViewPx": 0.35433, "label": 1.074, "text": 0.268, "dimension": 0.274},
+        {"unit": "mm", "scale": "1:1", "zoom": 32, "ptPerViewPx": 0.08858, "label": 0.268, "text": 0.224, "dimension": 0.229},
+        {"unit": "cm", "scale": "1:1", "zoom": 80, "ptPerViewPx": 0.35433, "label": 1.074, "text": 2.326, "dimension": 2.365},
+        {"unit": "m", "scale": "1:1", "zoom": 8000, "ptPerViewPx": 0.35433, "label": 1.074, "text": 229.063, "dimension": 233.906},
+        {"unit": "mm", "scale": "1:10", "zoom": 8, "ptPerViewPx": 0.03543, "label": 0.107, "text": 0.027, "dimension": 0.027},
+        {"unit": "mm", "scale": "2:1", "zoom": 8, "ptPerViewPx": 0.70866, "label": 2.147, "text": 0.535, "dimension": 0.547},
+        {"unit": "none", "scale": "n/a", "zoom": 8, "ptPerViewPx": 0.35433, "label": 1.074, "text": 0.268, "dimension": 0.274}
+      ],
+      "measurementBasis": "glyph ink height, text-as-shapes route, default font 16 px",
+      "historicalReproduced": true,
+      "diagnosis": "construction texts and dimension values follow S3 (font fLogical/50 model units); labels follow the inherited view-pixel rule; no defect against an approved contract; a physical text-size contract is missing",
+      "recommendation": "DEFER — NOT IN F4; reclassify CHARACTERIZED — CONTRACT DESIGN REQUIRED — NOT AUTHORIZED",
+      "options": ["C-0 keep and document", "C-1 physical labels on the physical PDF route (export layer)", "C-2 C-1 plus physical construction texts (shared DrawText hook)", "C-3 redefine S3 for physical documents"]
+    },
+    "F4-D": {
+      "item": "TD-PDF-2",
+      "classification": "PRODUCT DEFECT CONFIRMED",
+      "reproduction": {"geocedgEmbeddedPdf": "StackOverflowError at AbstractCharTable.toName(AbstractCharTable.java:35) in every case", "noTextScene": "succeeds", "classicEmbeddedPdf": "StackOverflowError, same frame", "classicTextAsShapes": "succeeds", "svgEmbeddedFonts": "succeeds", "failedFile": "0 bytes left on disk", "userMessage": "Save file failed", "headless": false},
+      "rootCause": {"upstreamCommit": "c4fd03ce52c8f6d124a17c09892e9ed181d15236", "date": "2025-12-17", "change": "toName(new Character(c)) replaced by toName(c), self-recursion", "inBaseline": true, "fileIdenticalToBaseline": true},
+      "reachability": "picture dialog option 'Export text as shapes' unchecked (GeoCeDG and Classic); command line always uses shapes",
+      "feasibility": {"scratchFix": "return toName(Character.valueOf(c))", "result": "every case and Classic write embedded-font PDFs (one Type 1 font program, /FontFile); Ghostscript 10.02.1 renders the glyphs", "notAssessed": ["glyph spacing and hinting quality", "other PDF readers"]},
+      "notReproduced": ["historical failure without text", "historical Classic NullPointerException"],
+      "recommendation": "INCLUDE — IMPLEMENTATION CANDIDATE (D-1 one-line inherited correction)",
+      "ownership": "inherited vendored FreeHEP code, registered upstream modification; corrects Classic identically"
+    }
+  },
+  "newObservations": ["OBS-F4P-FREEHEP-XREF-SIZE", "OBS-F4P-S3-SPEC-HEADER", "OBS-F4P-ADR0035-CONSEQUENCE-LINE"],
+  "pendingDecisions": ["DQ-F4-1 scope", "DQ-F4-2 style-bar host", "DQ-F4-3 focus fallback", "DQ-F4-4 field behaviour", "DQ-F4-5 embedded-font correction", "DQ-F4-6 DXF disposition", "DQ-F4-7 structure and class", "DQ-F4-8 TD-PDF-1 disposition", "DQ-F4-9 records"],
+  "proposedVerificationClass": {"recommended": "INTEGRATED_PHASE (one F4 implementation of F4-A and F4-D)", "alternative": "two BOUNDED_PHASE tracks", "frozen": false},
+  "states": {"F4": "PLANNING INTENT RECORDED — PREPARED — DESIGN PROPOSED — PENDING AUTHOR REVIEW", "F4Design": "PROPOSED — PENDING AUTHOR REVIEW", "F4Implementation": "NOT AUTHORIZED", "canonicalPrompt": "PREPARED — NOT AUTHORIZED", "G": "NOT AUTHORIZED"},
+  "productChange": "NONE",
+  "approvedDocumentsChanged": false,
+  "limitations": ["keyboard focus in the style-bar popup not established in-process", "only AutoCAD 2026 available on the workstation", "embedded-glyph visual quality and other PDF readers not assessed", "historical headless conditions of TD-PDF-2 not recorded"],
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "publicationAuthorized": false
+}
