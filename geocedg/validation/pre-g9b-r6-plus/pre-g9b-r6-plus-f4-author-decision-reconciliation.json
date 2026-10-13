@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-F4-AUTHOR-DECISION-RECONCILIATION",
+  "phase": "PRE-G9B-R6-plus-F4",
+  "artifactKind": "AUTHOR_DECISION_RECONCILIATION",
+  "class": "DOCUMENTATION_STATUS_ONLY",
+  "records": {
+    "reconciliation": "docs/validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md",
+    "designSuccessor": "docs/architecture/pre_g9b_r6_plus_f4_two_track_design_successor_candidate.md",
+    "promptF4A": ".github/prompts/tasks/pre-g9b-r6-plus-f4a-stylebar-thickness.prompt.md",
+    "promptF4D": ".github/prompts/tasks/pre-g9b-r6-plus-f4d-freehep-embedded-fonts.prompt.md",
+    "supersededPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md"
+  },
+  "base": {"commit": "089fc2205300559c572c12f0cd32326abd0c2b5e", "tree": "61fa86b01d66f129e3bc52e8e93d05959530bed6", "parent": "847bb20a593e8092eabf80bd9d7c62ed7c21de08", "static": "verification-1a0c0f4e41b44767a3e40a5b3e8dc367 ACCEPTED / COMPLETE"},
+  "publishedMain": "847bb20a593e8092eabf80bd9d7c62ed7c21de08",
+  "entryGate": "PASS",
+  "authorDirections": [
+    "include the compact style-bar numeric thickness input",
+    "close the AutoCAD 2026 DXF recheck without additional product changes",
+    "defer physical PDF text sizing until a new presentation contract is designed",
+    "include the minimal correction of the confirmed FreeHEP embedded-font failure",
+    "prefer separate, independently verifiable tracks for the style bar and FreeHEP",
+    "reassess the verification class of each track, especially the inherited FreeHEP modification (default GLOBAL_IMPACT for F4-D)",
+    "avoid changes to GeoCeDG geometry, the shared kernel and previously approved functionality"
+  ],
+  "optionNaming": {"authorA1": "GeoCeDG-owned Desktop implementation (preparation option A-2, extended to Graphics 2)", "authorA2": "minimal Classic-safe inherited hook (preparation option A-1)"},
+  "tracks": {
+    "F4-A": {"disposition": "INCLUDE — DESIGN RECONCILED", "architecture": "A1", "inheritedChange": false, "classicImpact": "none", "proposedClass": "BOUNDED_PHASE", "alternativeClass": "INTEGRATED_PHASE under A2", "gate": "real-window keyboard focus with native input and author smoke; else STOP — F4-A FOCUS FEASIBILITY BLOCKED", "fallback": "GeoCeDG-owned focusability of the containing popup through the component ancestry"},
+    "F4-D": {"disposition": "INCLUDE — MINIMAL FREEHEP CORRECTION", "change": "AbstractCharTable.toName(char) delegates to toName(Character.valueOf(c))", "upstreamCause": "c4fd03ce52c8f6d124a17c09892e9ed181d15236", "perimeter": "PDFGraphics2D.writeString -> showCharacterCodes -> FontUtilities.showString -> toEncoding(char) -> toName(char); production PDFGraphics2D only in PictureExportService.writePDF and GraphicExportDialog.exportPDF; FreeHEP used only by the Desktop module", "classicImpact": "embedded-font PDF route corrected identically; no other Classic output can change", "evidenceBasedClass": "INTEGRATED_PHASE", "authorDefaultClass": "GLOBAL_IMPACT", "classFrozen": false},
+    "F4-B": {"disposition": "CLOSE — RESOLVED FOR AUTOCAD 2026", "limitations": ["AutoCAD 2024 and other releases not rechecked (coverage limitation, not a defect)", "no universal AutoCAD compatibility claimed", "function graphs outside the export contract", "no exact SPLINE", "approximate DXF never authoritative CeDG geometry"]},
+    "F4-C": {"disposition": "DEFER", "state": "CHARACTERIZED — NEW PHYSICAL TEXT PRESENTATION CONTRACT REQUIRED — IMPLEMENTATION NOT AUTHORIZED", "owner": "separate presentation-contract design activity to be named by the author; until then the G structured debt register"}
+  },
+  "decisions": {
+    "DQ-F4-1": {"topic": "F4 scope", "proposed": "two independently authorizable tracks F4-A and F4-D; F4-B closed for AutoCAD 2026; TD-PDF-1 deferred", "furtherAuthorJudgment": false},
+    "DQ-F4-2": {"topic": "host of the style-bar field", "proposed": "A1 GeoCeDG-owned subclass for Graphics 1 and Graphics 2; A2 not authorized", "furtherAuthorJudgment": true, "question": "confirm Graphics 2 coverage (recommended) or Graphics 1 only"},
+    "DQ-F4-3": {"topic": "keyboard-focus gate and fallback", "proposed": "real-window gate with native input and author smoke; GeoCeDG-owned popup focusability as the only fallback; else STOP", "furtherAuthorJudgment": false},
+    "DQ-F4-4": {"topic": "behaviour of the style-bar field", "proposed": "identical to the Properties field; equivalent to moving the slider; one undo step", "furtherAuthorJudgment": false},
+    "DQ-F4-5": {"topic": "correction of the embedded-font route", "proposed": "one-line delegation fix, registered inherited modification, GeoCeDG and Classic", "furtherAuthorJudgment": false},
+    "DQ-F4-6": {"topic": "DXF / AutoCAD disposition", "proposed": "F4-B = CLOSE — RESOLVED FOR AUTOCAD 2026", "furtherAuthorJudgment": false},
+    "DQ-F4-7": {"topic": "structure and verification class", "proposed": "separate tracks; F4-A BOUNDED_PHASE; F4-D INTEGRATED_PHASE or the author's GLOBAL_IMPACT", "furtherAuthorJudgment": true, "question": "the F4-D class"},
+    "DQ-F4-8": {"topic": "TD-PDF-1 disposition", "proposed": "CHARACTERIZED — NEW PHYSICAL TEXT PRESENTATION CONTRACT REQUIRED — IMPLEMENTATION NOT AUTHORIZED", "furtherAuthorJudgment": false},
+    "DQ-F4-9": {"topic": "records", "proposed": "TD-PDF-2 CONFIRMED — INHERITED PRODUCT DEFECT — OWNED BY F4-D; OBS-F4P-* registered; xref warning separate and not corrected", "furtherAuthorJudgment": false},
+    "DQ-F4-10": {"topic": "sequencing, publication and aggregate closeout (additional candidate)", "proposed": "sequential tracks, F4-D first; separate closeouts and publications; final documentary F4 aggregate closeout", "furtherAuthorJudgment": true, "question": "track order and whether a separate aggregate closeout is wanted"}
+  },
+  "decisionCoverage": {"original": 9, "covered": 9, "additional": ["DQ-F4-10"]},
+  "states": {"F4AuthorDecisions": "PREPARED — PENDING FINAL AUTHOR DISPOSITION", "F4Design": "PROPOSED — PENDING AUTHOR REVIEW", "F4Implementation": "NOT AUTHORIZED", "prompts": "TWO PREPARED — NOT AUTHORIZED", "G": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "productChange": "NONE",
+  "approvedDocumentsChanged": false,
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "publicationAuthorized": false
+}

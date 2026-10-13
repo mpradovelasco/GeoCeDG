@@ -1,5 +1,13 @@
 # PRE-G9B-R6-plus-F4 — compact style-bar thickness entry and embedded-font PDF correction
 
+**SUPERSEDED — PREPARATION EVIDENCE — NOT EXECUTABLE.** Superseded on 2026-10-13 by
+`PRE-G9B-R6-plus-F4-AUTHOR-DECISION-RECONCILIATION`, which splits F4 into two
+independently authorizable tracks:
+[F4-A](pre-g9b-r6-plus-f4a-stylebar-thickness.prompt.md) and
+[F4-D](pre-g9b-r6-plus-f4d-freehep-embedded-fonts.prompt.md)
+([reconciliation](../../../docs/validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md)).
+The text below is kept unchanged as the preparation record.
+
 **CANONICAL PROMPT — PREPARED — NOT AUTHORIZED.** Prepared by `PRE-G9B-R6-plus-F4-PREP`
 (author authorization of 2026-10-13) on the published F3 closeout
 `847bb20a593e8092eabf80bd9d7c62ed7c21de08`. The design it implements is
