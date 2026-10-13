@@ -1,13 +1,16 @@
 # PRE-G9B-R6-plus-F4-A — compact style-bar numeric thickness entry
 
-**CANONICAL PROMPT — PREPARED — NOT AUTHORIZED.** Prepared by
+**CANONICAL PROMPT — DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED.** Prepared by
 `PRE-G9B-R6-plus-F4-AUTHOR-DECISION-RECONCILIATION` (author instruction of 2026-10-13)
 on `089fc2205300559c572c12f0cd32326abd0c2b5e`; successor, for this track, of the
 superseded combined prompt
 [`pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md`](pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md).
-The design is `PROPOSED — PENDING AUTHOR REVIEW`; choices marked **[DQ-F4-n]** depend on
-the pending decisions of the
-[F4 author-decision reconciliation](../../../docs/validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md).
+The design is `AUTHOR APPROVED` (F4 final author design approval of 2026-10-13 on
+`83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9`; choices marked **[DQ-F4-n]** follow the
+approved decisions of the
+[F4 author-decision reconciliation](../../../docs/validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md)
+as recorded in the
+[F4 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f4_author_design_closeout_record.md)).
 Nothing here authorizes implementation, and approval of track F4-D never authorizes
 this track.
 
@@ -125,9 +128,10 @@ Redo, save and reopen, in Graphics 1 and Graphics 2.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file authorizes implementation. A separate author instruction must name
-the exact base, the decisions on `DQ-F4-2`, `-3`, `-4`, `-7` and `-10`, and the frozen
-class. Technical verification never implies author approval.
+Nothing in this file authorizes implementation; the F4 design approval of 2026-10-13
+approved `DQ-F4-2`, `-3`, `-4`, `-7` and `-10` but authorized no implementation. A
+separate author instruction, after the F4-D publication, must name the exact base commit
+and tree and freeze the class. Technical verification never implies author approval.
 
 <!-- geocedg-field: publication_boundary -->
 ## Publication boundary

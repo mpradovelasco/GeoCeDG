@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "task": "F4 FINAL AUTHOR DESIGN APPROVAL",
+  "phase": "PRE-G9B-R6-plus-F4",
+  "artifactKind": "AUTHOR_DESIGN_CLOSEOUT",
+  "class": "DOCUMENTATION_STATUS_ONLY",
+  "acceptance": "STATIC",
+  "date": "2026-10-13",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_author_design_closeout_record.md",
+  "approvedCandidate": {"commit": "83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9", "tree": "d4e6989c585e6839d22eaffc84df783c09a0c065", "parent": "3251f08595fee8cd5819cc4c607e1dd97c6d0ad2"},
+  "lineage": [
+    {"commit": "847bb20a593e8092eabf80bd9d7c62ed7c21de08", "role": "published main"},
+    {"commit": "089fc2205300559c572c12f0cd32326abd0c2b5e", "role": "F4-PREP"},
+    {"commit": "3251f08595fee8cd5819cc4c607e1dd97c6d0ad2", "role": "author-decision reconciliation"},
+    {"commit": "83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9", "role": "final author reconciliation amendment (approved candidate)"}
+  ],
+  "approvedDecisions": ["DQ-F4-1", "DQ-F4-2", "DQ-F4-3", "DQ-F4-4", "DQ-F4-5", "DQ-F4-6", "DQ-F4-7", "DQ-F4-8", "DQ-F4-9", "DQ-F4-10"],
+  "approvedDispositions": {
+    "F4-A": "Architecture A1, GeoCeDG-owned, Graphics 1 and Graphics 2; no inherited modifications; real-window keyboard-focus feasibility gate mandatory and blocking",
+    "F4-D": "minimal one-line FreeHEP correction affecting GeoCeDG and Classic; INTEGRATED_PHASE accepted on the current executable verification registry, not on archived section 12.8",
+    "F4-D-verification": "PHASE + INTEGRATION + INFRA_UNIT + STATIC with the required focused external evidence; PDF glyph-rendering and reader-compatibility checks reported explicitly and reviewed before author acceptance; missing evidence never silently treated as successful validation",
+    "F4-B": "CLOSED — RESOLVED FOR AUTOCAD 2026 ONLY",
+    "F4-C": "DEFERRED as TD-PDF-1 pending a new physical text presentation contract",
+    "sequencing": "F4-D first; F4-A after F4-D publication; then an aggregate documentary F4 closeout; each track with independent implementation authorization, verification, author smoke and closeout",
+    "outputRegression": "normalized output fingerprints with narrowly defined volatile-field exclusions; no exclusion may mask geometric, semantic or rendering differences"
+  },
+  "tracks": {
+    "F4-D": {"state": "DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED", "order": 1, "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4d-freehep-embedded-fonts.prompt.md", "implementationBaseRule": "the published main current at the F4-D implementation authorization, named there by exact commit and tree, containing this design closeout (or this closeout commit itself while the F4 documentary candidates are unpublished)", "publishedMainAtRecord": "847bb20a593e8092eabf80bd9d7c62ed7c21de08"},
+    "F4-A": {"state": "DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED", "order": 2, "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4a-stylebar-thickness.prompt.md", "implementationBaseRule": "the published F4-D closeout"},
+    "aggregate": {"state": "PENDING BOTH TRACK CLOSEOUTS", "order": 3, "kind": "documentary"}
+  },
+  "states": {"F4AuthorDecisions": "AUTHOR APPROVED", "F4Design": "AUTHOR APPROVED — DOCUMENTARY DESIGN CLOSEOUT", "F4AImplementation": "NOT AUTHORIZED", "F4DImplementation": "NOT AUTHORIZED", "G": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "productChange": "NONE",
+  "specOrAdrChange": false,
+  "selfApproved": false,
+  "implementationAuthorized": false,
+  "publicationAuthorized": false
+}

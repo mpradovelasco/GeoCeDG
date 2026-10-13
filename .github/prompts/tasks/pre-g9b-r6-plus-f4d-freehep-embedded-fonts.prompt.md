@@ -1,13 +1,16 @@
 # PRE-G9B-R6-plus-F4-D — minimal correction of the inherited FreeHEP embedded-font failure
 
-**CANONICAL PROMPT — PREPARED — NOT AUTHORIZED.** Prepared by
+**CANONICAL PROMPT — DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED.** Prepared by
 `PRE-G9B-R6-plus-F4-AUTHOR-DECISION-RECONCILIATION` (author instruction of 2026-10-13)
 on `089fc2205300559c572c12f0cd32326abd0c2b5e`; successor, for this track, of the
 superseded combined prompt
 [`pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md`](pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md).
-The design is `PROPOSED — PENDING AUTHOR REVIEW`; choices marked **[DQ-F4-n]** depend on
-the pending decisions of the
-[F4 author-decision reconciliation](../../../docs/validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md).
+The design is `AUTHOR APPROVED` (F4 final author design approval of 2026-10-13 on
+`83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9`; choices marked **[DQ-F4-n]** follow the
+approved decisions of the
+[F4 author-decision reconciliation](../../../docs/validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md)
+as recorded in the
+[F4 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f4_author_design_closeout_record.md)).
 Nothing here authorizes implementation, and approval of track F4-A never authorizes
 this track.
 
@@ -35,7 +38,10 @@ node of `FINAL`); frozen only by the implementation authorization.
 
 The exact commit and tree named by the F4-D implementation authorization (author direction
 on **[DQ-F4-10]**: F4-D is the first F4 track, on the published `main` current at its
-authorization). Entry
+authorization). The base must contain the F4 author design closeout and this approved
+version of the prompt; while the F4 documentary candidates are unpublished, the
+authorization names either the design closeout commit itself or a published `main` that
+contains it. Entry
 gate: exact identity; clean worktree; local, tracking and live remote `main`; the F4
 decisions for this track; `AbstractCharTable.java` byte-identical to the GeoGebra
 baseline `9b93256b` and still containing `return toName(c);` in `toName(char)`; the
@@ -88,7 +94,11 @@ No document change. On the inspected paths (reconciliation §3) only executions 
 end in `StackOverflowError` reach the corrected line; this is source evidence, not a
 universal guarantee. The declared outputs must be shown identical to the base by tests,
 after the normalization the existing fingerprint tests already apply (PDF date strings
-`(D:…)`, SVG clip identifiers); no wider identity claim is made. Classic's embedded-font
+`(D:…)`, SVG clip identifiers); no wider identity claim is made. Normalization **[approved
+item 7]** compares normalized output fingerprints and excludes only narrowly defined
+volatile fields, each listed in the candidate report with its pattern and justification;
+no exclusion may mask a geometric, semantic or rendering difference, and any new
+exclusion beyond the existing ones is a stop for author review. Classic's embedded-font
 PDF route is corrected identically and recorded as such.
 
 ## Integration obligations
@@ -117,7 +127,11 @@ as success. Obligations (1)–(3), the text-extraction part of (4) and (6)–(9)
 JUnit tests that fail, never skip; the raster part of (4) and (5) depend on software
 outside the workstation contract (enforced by no executable profile, `FINAL` included) and
 are recorded as focused evidence in the candidate report and confirmed by the author
-smoke. Then Checkstyle, the upstream boundary and the official
+smoke. **[approved item 3]** The PDF glyph-rendering and reader-compatibility checks are
+reported explicitly — tool, version, command, result and artifact for each, or
+`UNAVAILABLE` with the reason — and are reviewed by the author before acceptance; missing
+or `UNAVAILABLE` evidence is never reported or counted as successful validation, and an
+executable profile passing while such a tool is absent is not evidence for them. Then Checkstyle, the upstream boundary and the official
 `verify.ps1 -Profile PHASE -Phase PRE-G9B-R6-PLUS-F4-D` and `-Profile INTEGRATION` on the
 frozen candidate, `INFRA_UNIT` (the phase-selection and inventory registration) and
 `STATIC`. Author smoke: an embedded-font PDF exported from GeoCeDG and from Classic, opened in the author's
@@ -126,8 +140,9 @@ PDF reader, with the text selectable and correct.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file authorizes implementation. A separate author instruction must name
-the exact base, the decisions on `DQ-F4-5`, `-7`, `-9` and `-10`, and the frozen class.
+Nothing in this file authorizes implementation; the F4 design approval of 2026-10-13
+approved `DQ-F4-5`, `-7`, `-9` and `-10` but authorized no implementation. A separate
+author instruction must name the exact base commit and tree and freeze the class.
 Technical verification never implies author approval.
 
 <!-- geocedg-field: publication_boundary -->
@@ -143,8 +158,10 @@ records invariant facts only (`AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT`)
 
 ## Required artifacts
 
-Base reproduction; candidate report and mirror; PHASE and INTEGRATION (or FINAL) and
-STATIC receipts; author smoke checklist; roadmap and mini-track status.
+Base reproduction; candidate report and mirror; PHASE, INTEGRATION, INFRA_UNIT and
+STATIC receipts; the explicit glyph-rendering and reader-compatibility evidence table and
+the list of normalization exclusions; author smoke checklist; roadmap and mini-track
+status.
 
 ## Stop conditions
 
@@ -152,6 +169,10 @@ STATIC receipts; author smoke checklist; roadmap and mini-track status.
 - After the correction, embedded-font PDFs are empty, incomplete, without the font
   program, or render incorrectly.
 - Any declared output that succeeds on the base differs after the existing normalization.
+- A normalization exclusion would be needed that could hide a geometric, semantic or
+  rendering difference.
+- Glyph-rendering or reader-compatibility evidence is missing and would have to be
+  presented as a pass.
 - Any change beyond the single line appears necessary.
 - Base identity, worktree, remote divergence, incomplete or untrusted coverage, or a
   missing author decision.

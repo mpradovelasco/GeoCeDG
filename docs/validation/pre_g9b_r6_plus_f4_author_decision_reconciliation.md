@@ -7,10 +7,13 @@ BASE                 = T_F4_PREP 089fc2205300559c572c12f0cd32326abd0c2b5e
                        tree 61fa86b01d66f129e3bc52e8e93d05959530bed6, parent 847bb20a
                        (STATIC verification-1a0c0f4e41b44767a3e40a5b3e8dc367 ACCEPTED /
                        COMPLETE)
-F4 AUTHOR DECISIONS  = PREPARED — READY FOR FINAL AUTHOR APPROVAL (DQ-F4-2 and DQ-F4-10
-                       author directions recorded; DQ-F4-7 reconciled with the executable
-                       authority — final author reconciliation amendment, 2026-10-13)
-F4 DESIGN            = PENDING FINAL AUTHOR APPROVAL
+F4 AUTHOR DECISIONS  = DQ-F4-1 TO DQ-F4-10 — AUTHOR APPROVED (F4 final author design
+                       approval, 2026-10-13, on 83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9,
+                       tree d4e6989c585e6839d22eaffc84df783c09a0c065; recorded in the
+                       author design closeout record); earlier: DQ-F4-2 and DQ-F4-10
+                       author directions and DQ-F4-7 reconciled with the executable
+                       authority — final author reconciliation amendment, 2026-10-13
+F4 DESIGN            = AUTHOR APPROVED — DOCUMENTARY DESIGN CLOSEOUT
 F4-A IMPLEMENTATION  = NOT AUTHORIZED
 F4-D IMPLEMENTATION  = NOT AUTHORIZED
 PUBLICATION          = NOT AUTHORIZED
@@ -424,4 +427,6 @@ All other entries of the preparation register are unchanged. F3 debts are not mo
 The combined prompt `pre-g9b-r6-plus-f4-stylebar-thickness-and-pdf-fonts.prompt.md` is
 kept as preparation evidence and marked superseded. Its successors are the F4-A and F4-D
 prompts, both `PREPARED — NOT AUTHORIZED` and validated against the task prompt
-contract.
+contract; since the F4 final author design approval of 2026-10-13 both are
+`DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED`
+([author design closeout record](pre_g9b_r6_plus_f4_author_design_closeout_record.md)).

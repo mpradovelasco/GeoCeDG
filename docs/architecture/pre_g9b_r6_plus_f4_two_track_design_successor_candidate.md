@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | **PENDING FINAL AUTHOR APPROVAL** (amended 2026-10-13 by the final author reconciliation amendment: author directions on `DQ-F4-2` and `DQ-F4-10` recorded, `DQ-F4-7` reconciled with the executable verification authority; no part is yet an approved decision) |
+| Status | **AUTHOR APPROVED — DESIGN** (F4 final author design approval of 2026-10-13 on `83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9`, tree `d4e6989c585e6839d22eaffc84df783c09a0c065`; [author design closeout record](../validation/pre_g9b_r6_plus_f4_author_design_closeout_record.md)); earlier amended 2026-10-13 by the final author reconciliation amendment (author directions on `DQ-F4-2` and `DQ-F4-10`, `DQ-F4-7` reconciled with the executable verification authority) |
 | Supersedes | [reconciled design candidate](pre_g9b_r6_plus_f4_reconciled_design_candidate.md) of `PRE-G9B-R6-plus-F4-PREP` (kept unchanged as preparation evidence) |
 | Prepared by | `PRE-G9B-R6-plus-F4-AUTHOR-DECISION-RECONCILIATION` (author instruction of 2026-10-13) on `089fc2205300559c572c12f0cd32326abd0c2b5e` |
-| Decisions | [author-decision reconciliation](../validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md) (`DQ-F4-1` to `DQ-F4-10`, pending) |
-| Implementation | **NOT AUTHORIZED** |
+| Decisions | [author-decision reconciliation](../validation/pre_g9b_r6_plus_f4_author_decision_reconciliation.md) (`DQ-F4-1` to `DQ-F4-10`, author approved 2026-10-13) |
+| Implementation | **NOT AUTHORIZED** — F4-D first, then F4-A after F4-D publication, each by its own author instruction naming the exact base |
 
 ## 1. Common F4 scope
 
