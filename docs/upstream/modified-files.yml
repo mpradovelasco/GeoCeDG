@@ -3018,7 +3018,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGBuildProvenance.java",
       "change": "added",
-      "purpose": "Load and validate immutable build-time repository provenance for reproducible G9X1 sidecars without runtime Git invocation.",
+      "purpose": "Load and validate immutable build-time repository provenance for reproducible G9X1 sidecars without runtime Git invocation. PRE-G9B-R6-plus-G (metadata contract PM-3 to PM-5): optional canonical version date, canonical package-profile digest and declared distribution-profile table, validated on construction; the existing four-argument constructor keeps them absent.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -3738,7 +3738,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGActionRegistry.java",
       "change": "added",
-      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9. PRE-G9B-R6-plus-B: execute the Picture, PSTricks, PGF/TikZ and Asymptote export actions and the four export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: execute the document.units action. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E1-X1: the Open Classic and Legacy laboratory routes start the separate diagnostic Classic process through GeoCeDGClassicDiagnosticLaunch (packaged launcher or development Java, discarded streams). PRE-G9B-R6-plus-E3: execute the ISO A export-area actions and gate the ISO A sheet tool on a physical document unit; a single preselected point creates the sheet directly with one undo point. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: target geocedg.presentation.orientation-cue (toggle and checked state of the global preference). Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F3: targets of document.insert-file and document.apply-styles, and every action unavailable while a drawing is isolated after a serious insertion failure.",
+      "purpose": "Bind every declared stable action to one frontend target with localized availability and shared state. G9U1 review round 1: route the existing user-tools action, quick-guide help and differentiated registered product icons without additional stable action IDs. G9U1 review round 3: use the view-specific construction-navigation seam and expose global preferences without implicit object selection. Final presentation polish resolves the optional profile-owned Locus V2 display name while retaining the inherited host action and all 110 stable IDs. PRE-G9B-R4: SplineV2 tools take the set-mode branch; the Algebra Input prefill is removed. PRE-G9B-R4 corrective: tool activation never opens Input Help; the Input Help, command-list and contextual help actions show it only on request, and AppGeoCeDG then selects the SplineV2 syntax while a SplineV2 tool is active. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-A: the user-guide action shows the single render of the edition with its derived outline. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-R5-B-R1: the product-language action enters the host language change (AppD.setLanguage) instead of the bare locale setter, so labels, Input Help and the command tables change language together; an unmodified document stays saved. Authority: geocedg/specs/ui/g9u1-construction-interaction.md section 9. PRE-G9B-R6-plus-B: execute the Picture, PSTricks, PGF/TikZ and Asymptote export actions and the four export-area actions. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: execute the document.units action. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E1-X1: the Open Classic and Legacy laboratory routes start the separate diagnostic Classic process through GeoCeDGClassicDiagnosticLaunch (packaged launcher or development Java, discarded streams). PRE-G9B-R6-plus-E3: execute the ISO A export-area actions and gate the ISO A sheet tool on a physical document unit; a single preselected point creates the sheet directly with one undo point. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: target geocedg.presentation.orientation-cue (toggle and checked state of the global preference). Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F3: targets of document.insert-file and document.apply-styles, and every action unavailable while a drawing is isolated after a serious insertion failure. PRE-G9B-R6-plus-G (PM-6, PM-7): the existing geocedg.help.about read-only text dialog shows the GeoCeDG About composition; Classic keeps its inherited About.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4032,7 +4032,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGProductInfo.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 2: Provide one GeoCeDG-owned product name/version/origin/author authority consumed by Desktop title and About presentation without replacing mandatory upstream credits.",
+      "purpose": "G9U1 author-review round 2: Provide one GeoCeDG-owned product name/version/origin/author authority consumed by Desktop title and About presentation without replacing mandatory upstream credits. PRE-G9B-R6-plus-G (PM-1, PM-3): exposes the product-name constant equal to the package-profile schema constant, the embedded provenance and the canonical version date.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -6386,6 +6386,30 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F4-A focused tests (scope amendment 01): the light-weight popup without drop shadow holding the table and one row with the slider and the field at its right, sized from the font; Graphics 1 and Graphics 2; re-attachment after language and font changes; none in Classic; following the slider, selection, creation-mode defaults and the polygon minimum; refused entries; an accepted entry equals moving the slider with one undo step; closing the popup ends the edit; keyboard reachability; Undo, Redo, save and reopen; the Properties field unchanged.",
       "authority": "docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAboutText.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-G (PM-4, PM-6, PM-7): GeoCeDG-owned About content in one order for English and Spanish - version, version date when declared, build identity, distribution condition, description, upstream baseline, author and a licensing summary that separates the composite product from its component permissions and points to the licensing authorities.",
+      "authority": "docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDistributionCondition.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-G (PM-5): distribution condition of the running copy - INTERNAL, NC, DEVELOPMENT or UNVERIFIED - from the bounded, strictly parsed installed record located through the jpackage launcher property and consistency-checked against the build-embedded binding and the notice hash; never derived from names, paths or the environment; no authenticity claim.",
+      "authority": "docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStrictJson.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-G (PM-5): strict RFC 8259 reader for small GeoCeDG-owned records; refuses lenient forms, duplicate members, a byte-order mark and trailing content.",
+      "authority": "docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusGProductMetadataTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-G focused tests (PM-11): product-name authority; strict record reader; the four distribution states from fixture records, including every mismatch, COMMERCIAL and not-authorized records; the build binding; build-identity rendering; About content and order in English and Spanish; licensing consistency with its authorities; the inherited Classic About route; bilingual guide coverage at structure level.",
+      "authority": "docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md"
     }
   ]
 }

@@ -69,6 +69,24 @@ en **Ayuda → Acerca de GeoCeDG**. Ese número de versión identifica el estado
 producto descrito en esta guía. No constituye por sí mismo una publicación: el
 empaquetado y la distribución se gobiernan por separado.
 
+**Ayuda → Acerca de GeoCeDG** muestra además la compilación de la copia en
+ejecución (los doce primeros dígitos hexadecimales de su revisión de fuentes, y
+si esas fuentes estaban modificadas) y su *condición de distribución*. Una copia
+instalada lleva un registro de distribución escrito por el empaquetado de
+GeoCeDG, que la aplicación comprueba contra sí misma. Una copia verificada
+muestra su marcador, *INTERNAL EVALUATION — NOT FOR REDISTRIBUTION* o
+*NON-COMMERCIAL DISTRIBUTION — PROFILE NC*, y nombra su aviso de distribución.
+Una copia iniciada desde un checkout de fuentes es una *compilación de
+desarrollo*, y una copia instalada cuyo registro falta o no coincide se muestra
+como *no verificada*; ninguna de las dos puede redistribuirse. Es una
+comprobación de coherencia, no un mecanismo de seguridad ni de licencias: el
+aviso de distribución y los archivos de licencias siguen siendo la autoridad.
+Acerca de resume después las licencias: GeoCeDG es una obra compuesta y ninguna
+licencia única cubre el producto completo; el software de autoría GeoCeDG está
+bajo EUPL-1.2, su documentación y su obra gráfica ordinaria bajo CC BY 4.0, y el
+material heredado de GeoGebra y los componentes de terceros conservan sus
+propios términos. Indica dónde están los textos completos y nunca los sustituye.
+
 Dos capacidades aquí descritas —las curvas semánticas (Locus V2 y Spline V2) y
 la exportación DXF extendida— están activadas por defecto en GeoCeDG, pero
 conservan la madurez `experimental`. Funcionan como comportamiento normal del
@@ -89,7 +107,10 @@ abierto.
 Si trabaja desde un checkout de fuentes preparado en lugar de una copia
 instalada, el perfil de producto se lanza mediante la tarea Gradle
 `:desktop:desktop:runGeoCeDG`. No hace falta ningún argumento adicional para
-obtener las capacidades descritas en esta guía.
+obtener las capacidades descritas en esta guía, salvo dos que solo existen en
+una copia instalada: la biblioteca de herramientas GeoCeDG incluida
+(sección 13.2) y una condición de distribución verificada (sección 1.3). Un
+checkout de fuentes se ejecuta como compilación de desarrollo sin ellas.
 
 ### 2.2 La ventana principal
 
@@ -122,8 +143,9 @@ ningún objeto.
 
 La pestaña **Disposición y presentación** reúne los ajustes de presentación de
 GeoCeDG: el tema de presentación y los tamaños de presentación descritos a
-continuación, el grupo **Unidades de los documentos nuevos** (sección 4.6) y el
-grupo **Presentación de cotas** (sección 9.5).
+continuación, el grupo **Unidades de los documentos nuevos** (sección 4.6), el
+grupo **Presentación de cotas** (sección 9.5) y la opción **Indicación de
+orientación** (sección 5.2).
 
 ### 2.5 Temas de presentación
 
@@ -370,7 +392,7 @@ objeto del documento y prueba la inserción sobre una copia. Se admiten puntos,
 rectas, semirrectas, segmentos, vectores, circunferencias, elipses, funciones,
 polígonos, ángulos de tres puntos, números, booleanos, textos dependientes, listas
 y sucesiones, y también objetos Locus V2 y Spline V2, cotas lineales y alineadas,
-hojas ISO A y objetos construidos con herramientas. Los documentos con guiones,
+láminas ISO A y objetos construidos con herramientas. Los documentos con guiones,
 objetos 3D u otros tipos de objeto se rechazan con un mensaje que los nombra, y no
 cambia nada. Los objetos existentes nunca se reemplazan: un objeto insertado cuyo
 nombre está ocupado recibe el siguiente nombre indexado libre (`A` pasa a ser
@@ -381,7 +403,7 @@ herramientas y objetos Locus V2 o Spline V2. Las coordenadas nunca se escalan y
 las unidades del dibujo nunca cambian; cuando el documento insertado tiene otra
 unidad física, la barra de estado lo indica (sección 4.6). La inserción es un
 solo paso de Deshacer, conserva la identidad del dibujo y no cambia lo que haya
-copiado; una hoja ISO A se inserta sin el vínculo con el área de exportación de
+copiado; una lámina ISO A se inserta sin el vínculo con el área de exportación de
 su documento. Tras una inserción la selección se vacía y queda activa la
 herramienta Mover. Si la inserción falla una vez iniciada, GeoCeDG restaura el
 dibujo y su historial de Deshacer y lo indica. En el caso poco frecuente de que la
@@ -393,7 +415,7 @@ archivo nuevo, reabrir el documento desde su archivo o cerrarlo.
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de
 un documento `.cedg` o `.ggb` (los estilos que ese documento da a los objetos
 nuevos de cada tipo, no los de sus objetos existentes) a los objetos
-seleccionados, o a todos si no hay selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 conservan
+seleccionados, o a todos si no hay selección. Las cotas nativas, las láminas ISO A y los resultados Locus V2 conservan
 sus estilos; la geometría, los nombres, las capas, los rótulos, la visibilidad y
 las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores; un
 documento que no puede leerse no cambia nada.
@@ -476,6 +498,12 @@ absoluta en pantalla conservan esa posición en la imagen. Las imágenes de fond
 pertenecen al fondo de la vista y no se ocultan con su capa, ni en la vista ni
 en la imagen.
 
+**Texto en PDF.** Para PDF el diálogo de imagen ofrece **Exportar textos como
+figuras**. Está activada por defecto, y de nuevo cada vez que elige PDF: los
+textos y los rótulos se dibujan entonces como contornos vectoriales. Desactívela
+para conservarlos como texto: el PDF incorpora entonces las fuentes que usa como
+fuentes Type 1. Ambas formas se comprobaron con Ghostscript, Poppler y Xpdf.
+
 **Tamaño físico y escala de dibujo.** En un documento con unidad de
 construcción (sección 4.6), los diálogos de imagen, impresión y LaTeX dan a la
 salida el tamaño que resulta de esa unidad y de la *escala de dibujo* `a:b` de
@@ -491,7 +519,12 @@ completo la devuelven a `1:1`; deshacer, rehacer, editar o reemplazar una
 herramienta y acciones parecidas la conservan. El zoom, la ventana y la
 resolución nunca cambian un tamaño físico: la resolución solo fija el número de
 píxeles, y la unidad de presentación solo cambia cómo se expresan las
-longitudes. Un tamaño que un formato no puede representar, por ejemplo menor
+longitudes. En una imagen PDF de un documento así, los anchos de línea y los
+marcadores de punto también son físicos: una línea de grosor `t` mide `0.4·t` pt
+de ancho y un punto de tamaño `s` ocupa `s` pt, con cualquier zoom, como en
+PGF/TikZ; los textos, los rótulos, los arcos de ángulo, los rayados y los ejes
+conservan tamaños que siguen el zoom del momento de la exportación (sección 15).
+Un tamaño que un formato no puede representar, por ejemplo menor
 que un píxel, se rechaza con un mensaje en lugar de recortarse. En un documento
 sin unidad de construcción los diálogos conservan sus escalas de dispositivo,
 rotuladas como no físicas, y no se ofrece ninguna escala técnica; la nota breve
@@ -1801,7 +1834,11 @@ fuente de Álgebra, fuente del Protocolo de Construcción y fuente de Gráficos.
 El color, el estilo de línea, el estilo de punto, la visibilidad y el etiquetado
 de los objetos individuales son propiedades ordinarias del objeto, accesibles
 desde **Propiedades** o **Vista → Visibilidad y estilo**. **Copiar estilo
-visual** los transfiere entre objetos.
+visual** los transfiere entre objetos. En la barra de estilo de Gráficos 1 y
+Gráficos 2, el menú de estilo de línea tiene un campo numérico de grosor a la
+derecha de su deslizador de grosor: escriba un número entero dentro del rango
+del deslizador y pulse `Intro`; cerrar el menú también aplica un valor válido, y
+`Escape` lo cancela (sección 9.5).
 
 ### 12.4 Zoom y navegación
 
@@ -1860,8 +1897,9 @@ la sesión actual y **capas ocultas** que se guardan con el documento.
   espacio vacío para elegir una capa de 0 a 99. Tras una elección válida la
   herramienta vuelve a Mover; cancelar no cambia nada. Hacer clic en
   **Capa: n** en la barra de estado abre el mismo selector.
-- **Ocultar una capa.** En la Vista algebraica, elija **Ordenar por capa**: cada
-  grupo de capa tiene un ojo. Al hacer clic en él se oculta o se muestra la capa
+- **Ocultar una capa.** En la Vista algebraica, elija **Ordenar por capa**: los
+  grupos de capa se listan en orden numérico (la capa 10 tras la 9, no tras la
+  1), y cada uno tiene un ojo. Al hacer clic en él se oculta o se muestra la capa
   entera en las vistas gráficas. Sus objetos no se dibujan ni se pueden
   seleccionar allí, pero cada objeto conserva su propia visibilidad, así que su
   marcador no cambia. La capa de trabajo no se puede ocultar, y elegir una capa
@@ -1935,6 +1973,25 @@ resultados. Nunca se elimina ni se sustituye. Si una herramienta instalada ofrec
 el mismo nombre de comando con una definición *distinta*, su entrada instalada
 queda deshabilitada solo en ese documento. Ninguna asociación se decide por
 nombre, orden de carga o posición en la barra.
+
+**La biblioteca GeoCeDG.** Una copia instalada de GeoCeDG ofrece además las
+doce herramientas de solo lectura de la **biblioteca GeoCeDG** incluida,
+listadas tras sus herramientas instaladas en el gestor y en el menú
+**Herramientas de usuario**, cada una con su propio icono: `SquarebyDiagonal`,
+`CirclebyD`, `circArcbyAngle`, `ellipseLength12`, `IFPositiveSelectPoint`,
+`EllipseAxis`, `conj2mainAxesEllipse`, `pointJump`, `relCoor`,
+`translationCoor`, `DuctSymbol` y `SymmSymbol`. Sus líneas y curvas se dibujan
+en negro con grosor de línea 3. No pueden eliminarse ni recibir otro icono; solo
+puede cambiar su posición en la barra de herramientas. Un paquete instalado con
+el mismo nombre de comando tiene prioridad, y una macro del documento abierto
+tiene prioridad sobre ambos. Si la biblioteca de una instalación no supera su
+comprobación de integridad, no se ofrece ninguna de sus herramientas y un
+mensaje lo indica una vez. La biblioteca solo existe en una copia instalada, y
+su madurez es `experimental`. Sus herramientas son construcciones ordinarias
+sobre objetos existentes, sin semántica geométrica nueva: `EllipseAxis` solo es
+válida si `C` está en el eje que pasa por `O` perpendicular a `OB`, y
+`pointJump`, `relCoor` y `translationCoor` son herramientas auxiliares 2D que no
+establecen una proyección espacial ni un sistema de referencia.
 
 Sin paquete instalado, **Herramientas del documento (solo locales)…** permite de
 todos modos gestionar la definición portable.
@@ -2064,6 +2121,12 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   Spline V2 cúbico (4.5).
 - Un `Locus` heredado en una imagen solo está completo dentro de la ventana en
   la que se muestreó (4.5).
+- En una imagen PDF de un documento con unidad de construcción, los textos, los
+  rótulos, los arcos de ángulo, los rayados y los ejes conservan tamaños que
+  siguen el zoom del momento de la exportación; solo las líneas y los marcadores
+  de punto tienen tamaño físico (4.5).
+- La salida DXF solo se ha comprobado abriéndola en AutoCAD 2026; no se han
+  comprobado otros programas CAD ni otras versiones.
 
 **No disponible**
 
@@ -2087,6 +2150,9 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   de aplicación heredado `classic`; no hay un formato de archivo nuevo.
 - El diálogo de exportación DXF se presenta en inglés con independencia del
   idioma de producto.
+- El campo de grosor del menú de estilo de línea de la barra de estilo se
+  desactiva mientras otra ventana de la aplicación cubre ese menú; en ese caso
+  use **Propiedades** (12.3).
 
 ---
 

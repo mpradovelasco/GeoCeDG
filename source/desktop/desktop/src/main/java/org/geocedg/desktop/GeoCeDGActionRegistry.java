@@ -31,7 +31,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geocedg.desktop.GeoCeDGProfile.ActionDefinition;
 import org.geocedg.desktop.resources.GeoCeDGToolImageResource;
-import org.geogebra.common.GeoGebraConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
@@ -448,7 +447,8 @@ public final class GeoCeDGActionRegistry {
 			message(text("Workspace.Shortcuts"));
 			break;
 		case "geocedg.help.about":
-			message(aboutText());
+			// the same read-only text dialog, sized for the PM-7 content
+			showReadOnlyText(aboutText(), 22, 64);
 			break;
 		case "geocedg.classic":
 			openDiagnostic(false);
@@ -682,13 +682,10 @@ public final class GeoCeDGActionRegistry {
 		return GeoCeDGProfile.getText(key, app.getLocale().getLanguage());
 	}
 
+	/** PRE-G9B-R6-plus-G (PM-6, PM-7): GeoCeDG-owned About content; Classic keeps its own. */
 	String aboutText() {
-		return GeoCeDGProductInfo.applicationTitle() + "\n\n"
-				+ text("Workspace.About") + "\n\n"
-				+ text("About.UpstreamBaseline") + ": "
-				+ GeoGebraConstants.VERSION_STRING + "\n"
-				+ text("About.Author") + "\n\n"
-				+ text("About.Licenses");
+		return GeoCeDGAboutText.compose(app.getLocale().getLanguage(),
+				GeoCeDGProductInfo.provenance(), GeoCeDGDistributionCondition.current());
 	}
 
 	private void message(String text) {

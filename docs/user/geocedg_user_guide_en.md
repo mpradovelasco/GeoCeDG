@@ -67,6 +67,22 @@ under **Help → About GeoCeDG**. That version number identifies the product
 state described by this guide. It is not, by itself, a public release: packaging
 and distribution are governed separately.
 
+**Help → About GeoCeDG** also shows the build of the running copy (the first
+twelve hexadecimal digits of its source revision, and whether that source was
+modified) and its *distribution condition*. An installed copy carries a
+distribution record written by the GeoCeDG packaging, which the application
+checks against itself. A verified copy shows its marker, *INTERNAL EVALUATION —
+NOT FOR REDISTRIBUTION* or *NON-COMMERCIAL DISTRIBUTION — PROFILE NC*, and names
+its distribution notice. A copy started from a source checkout is a *development
+build*, and an installed copy whose record is missing or does not match is shown
+as *not verified*; neither may be redistributed. This is a consistency check, not
+a security or licensing mechanism: the distribution notice and the licensing
+files remain the authority. About then summarizes the licensing: GeoCeDG is a
+composite work, and no single licence covers the whole product; GeoCeDG-authored
+software is under EUPL-1.2, its documentation and ordinary artwork are under
+CC BY 4.0, and inherited GeoGebra material and third-party components keep their
+own terms. It points to the full texts and never replaces them.
+
 Two capabilities described here — semantic curves (Locus V2 and Spline V2) and
 extended DXF export — are enabled by default in GeoCeDG but keep the maturity
 `experimental`. They work as normal product behaviour and require no launch
@@ -85,7 +101,10 @@ Start GeoCeDG from its installed shortcut. The window title reads
 If you are working from a prepared source checkout instead of an installed
 copy, the product profile is launched through the Gradle task
 `:desktop:desktop:runGeoCeDG`. No additional argument is required to obtain the
-capabilities described in this guide.
+capabilities described in this guide, except two that belong to an installed
+copy only: the bundled GeoCeDG tool library (section 13.2) and a verified
+distribution condition (section 1.3). A source checkout runs as a development
+build without them.
 
 ### 2.2 The main window
 
@@ -117,8 +136,8 @@ select an object.
 
 The **Layout & Presentation** tab holds the GeoCeDG presentation settings: the
 presentation theme and the presentation sizes described below, the
-**New document units** group (section 4.6) and the **Dimension presentation**
-group (section 9.5).
+**New document units** group (section 4.6), the **Dimension presentation**
+group (section 9.5) and the **Orientation cue** option (section 5.2).
 
 ### 2.5 Presentation themes
 
@@ -457,6 +476,12 @@ dialog's clipboard button) show the same area and omit hidden layers
 picture. Background images belong to the view background and are not hidden
 with their layer, in the view and in the picture alike.
 
+**Text in PDF.** For PDF the picture dialog offers **Export Text as Shapes**. It
+is selected by default, and again each time you choose PDF: texts and labels are
+then drawn as vector outlines. Clear it to keep them as text: the PDF then embeds
+the fonts it uses as Type 1 fonts. Both forms were checked with Ghostscript,
+Poppler and Xpdf.
+
 **Physical size and drawing scale.** In a document with a construction unit
 (section 4.6) the picture, print and LaTeX dialogs size the output from that
 unit and the *drawing scale* `a:b` of the window: a length of the model is
@@ -470,7 +495,12 @@ step and does not mark the document as modified; the status bar shows it as
 replacement of the whole document set it back to `1:1`; undo, redo, editing or
 replacing a tool and similar actions keep it. Zoom, the window and the
 resolution never change a physical size: the resolution only sets the number
-of pixels, and the presentation unit only changes how lengths are expressed. A
+of pixels, and the presentation unit only changes how lengths are expressed. In
+a PDF picture of such a document the line widths and point markers are physical
+too: a line of
+thickness `t` is `0.4·t` pt wide and a point of size `s` spans `s` pt, at any
+zoom, as in PGF/TikZ; texts, labels, angle arcs, hatching and axes keep sizes
+that follow the zoom at export time (section 15). A
 size that a format cannot represent, for example below one pixel, is refused
 with a message instead of being clamped. In a document without a construction
 unit the dialogs keep their device scales, labelled as non-physical, and no
@@ -1719,6 +1749,10 @@ the document.
 Colour, line style, point style, visibility and labelling of individual objects
 are ordinary object properties, set through **Properties** or **View →
 Visibility and style**. **Copy visual style** transfers them between objects.
+In the style bar of Graphics 1 and Graphics 2, the line-style menu has a numeric
+thickness field to the right of its thickness slider: type a whole number in the
+slider's range and press `Enter`; closing the menu also applies a valid entry,
+and `Escape` cancels it (section 9.5).
 
 ### 12.4 Zoom and navigation
 
@@ -1774,8 +1808,9 @@ session and **hidden layers** that are saved with the document.
   use its layer, or click empty space to choose a layer from 0 to 99. After a
   valid choice the tool returns to Move; cancelling changes nothing. Clicking
   **Layer: n** in the status bar opens the same chooser.
-- **Hiding a layer.** In the Algebra View, choose **Sort by Layer**: each layer
-  group has an eye. Clicking it hides or shows the whole layer in the Graphics
+- **Hiding a layer.** In the Algebra View, choose **Sort by Layer**: the layer
+  groups are listed in numeric order (layer 10 after layer 9, not after layer 1),
+  and each has an eye. Clicking it hides or shows the whole layer in the Graphics
   views. Its objects are neither drawn nor selectable there, but each object
   keeps its own visibility, so its marble does not change. The working layer
   cannot be hidden, and choosing a hidden layer in the chooser shows it again.
@@ -1844,6 +1879,24 @@ macro continues to belong to the document and to rebuild its results. It is
 never deleted or replaced. If an installed tool offers the same command name
 with a *different* definition, its installed entry is disabled in that document
 only. No association is ever decided by name, load order or toolbar position.
+
+**The GeoCeDG library.** An installed copy of GeoCeDG also offers the twelve
+read-only tools of the bundled **GeoCeDG library**, listed after your installed
+tools in the manager and in the **User tools** menu, each with its own icon:
+`SquarebyDiagonal`, `CirclebyD`, `circArcbyAngle`, `ellipseLength12`,
+`IFPositiveSelectPoint`, `EllipseAxis`, `conj2mainAxesEllipse`, `pointJump`,
+`relCoor`, `translationCoor`, `DuctSymbol` and `SymmSymbol`. Their lines and
+curves are drawn black with line thickness 3. They cannot be removed or given
+another icon; only their toolbar placement can change. An installed package with
+the same command name takes precedence, and a macro of the open document takes
+precedence over both. If the library of an installation fails its integrity
+check, none of its tools is offered and a message says so once. The library
+exists in an installed copy only, and its maturity is `experimental`. Its tools
+are ordinary constructions over existing objects, without new geometric
+semantics: `EllipseAxis` is valid only when `C` lies on the axis through `O`
+perpendicular to `OB`, and `pointJump`, `relCoor` and `translationCoor` are 2D
+construction helpers that do not establish a spatial projection or a reference
+frame.
 
 With no package installed, **Document tools (local only)…** still lets you
 manage the portable definition.
@@ -1966,6 +2019,11 @@ These are the limitations that affect what you can do in the application today.
   there is no exact Bézier or spline output, also for cubic Spline V2 (4.5).
 - A legacy `Locus` in a picture is complete only within the window in which it
   was sampled (4.5).
+- In a PDF picture of a document with a construction unit, texts, labels, angle
+  arcs, hatching and axes keep sizes that follow the zoom at export time; only
+  lines and point markers have physical sizes (4.5).
+- DXF output has been checked to open in AutoCAD 2026 only; other CAD programs
+  and versions have not been checked.
 
 **Not available**
 
@@ -1988,6 +2046,9 @@ These are the limitations that affect what you can do in the application today.
   application code internally; there is no new archive format.
 - The DXF export dialog is presented in English regardless of the product
   language.
+- The thickness field of the style-bar line-style menu is disabled while another
+  window of the application covers that menu; use **Properties** in that case
+  (12.3).
 
 ---
 

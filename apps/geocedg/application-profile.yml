@@ -3874,7 +3874,7 @@
     "Insert.Rejected": {"en": "%0 was not inserted: %1. Nothing in the drawing, its undo history or the session changed.", "es": "%0 no se insertó: %1. No cambió nada en el dibujo, su historial de deshacer ni la sesión."},
     "Insert.Failed.Compensated": {"en": "%0 was not inserted: %1. The drawing is unchanged.", "es": "%0 no se insertó: %1. El dibujo no ha cambiado."},
     "Insert.Failed.Reloaded": {"en": "%0 was not inserted: %1. The drawing was restored to its state before the insertion; the selection and the remembered references of Parallel/Perpendicular were reset%2.", "es": "%0 no se insertó: %1. El dibujo se restauró a su estado anterior a la inserción; se restablecieron la selección y las referencias recordadas de Paralela/Perpendicular%2."},
-    "Insert.Failed.ExportLink": {"en": ", and the export area was unlinked from its ISO A sheet", "es": ", y el área de exportación se desvinculó de su hoja ISO A"},
+    "Insert.Failed.ExportLink": {"en": ", and the export area was unlinked from its ISO A sheet", "es": ", y el área de exportación se desvinculó de su lámina ISO A"},
     "Insert.Failure.Commit": {"en": "the construction could not be inserted and verified", "es": "la construcción no pudo insertarse y verificarse"},
     "Insert.Serious": {"en": "The drawing could not be verified after a failed insertion of %0. You can save the last verified version to a new file, reopen the document from its file, or close it.", "es": "El dibujo no pudo verificarse tras una inserción fallida de %0. Puedes guardar la última versión verificada en un archivo nuevo, reabrir el documento desde su archivo o cerrarlo."},
     "Insert.Reject.Missing": {"en": "the file does not exist", "es": "el archivo no existe"},
@@ -3897,7 +3897,7 @@
     "Insert.Reset.Instances": {"en": "drawing reloaded", "es": "dibujo recargado"},
     "Insert.Reset.Selection": {"en": "selection", "es": "selección"},
     "Insert.Reset.ReferenceMemory": {"en": "remembered Parallel/Perpendicular references", "es": "referencias recordadas de Paralela/Perpendicular"},
-    "Insert.Reset.ExportLink": {"en": "export area link to its ISO A sheet", "es": "vínculo del área de exportación con su hoja ISO A"},
+    "Insert.Reset.ExportLink": {"en": "export area link to its ISO A sheet", "es": "vínculo del área de exportación con su lámina ISO A"},
     "Insert.Isolation.Title": {"en": "Drawing not verified", "es": "Dibujo no verificado"},
     "Insert.Isolation.SaveCopy": {"en": "Save verified copy…", "es": "Guardar copia verificada…"},
     "Insert.Isolation.Reopen": {"en": "Reopen document", "es": "Reabrir documento"},
@@ -4795,8 +4795,8 @@
       "es": "Guía de usuario de GeoCeDG"
     },
     "geocedg.help.UserGuide.short_help": {
-      "en": "Open the bundled GeoCeDG construction guide.",
-      "es": "Abre la guía de construcción GeoCeDG incluida."
+      "en": "Open the bundled GeoCeDG user guide.",
+      "es": "Abre la guía de usuario de GeoCeDG incluida."
     },
     "geocedg.help.UserGuide.long_help": {
       "en": "Read the packaged guide for the approved workspace, document lifecycle, semantic tools, validation surfaces, and current limitations.",
@@ -5418,7 +5418,7 @@
     },
     "geocedg.document.ApplyStyles.long_help": {
       "en": "Copy colour, line style, line thickness, point style, point size and fill opacity from the default styles of a .cedg or .ggb document (the styles that document gives to new objects of each type, not the styles of its existing objects) to the selected objects, or to all objects when nothing is selected. Native dimensions, ISO A sheets and Locus V2 results are not restyled; geometry, layers and units never change. One Undo restores the previous styles.",
-      "es": "Copia color, estilo de línea, grosor de línea, estilo de punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de un documento .cedg o .ggb (los estilos que ese documento da a los objetos nuevos de cada tipo, no los de sus objetos existentes) a los objetos seleccionados, o a todos si no hay selección. Las cotas nativas, las hojas ISO A y los resultados Locus V2 no cambian de estilo; la geometría, las capas y las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores."
+      "es": "Copia color, estilo de línea, grosor de línea, estilo de punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de un documento .cedg o .ggb (los estilos que ese documento da a los objetos nuevos de cada tipo, no los de sus objetos existentes) a los objetos seleccionados, o a todos si no hay selección. Las cotas nativas, las láminas ISO A y los resultados Locus V2 no cambian de estilo; la geometría, las capas y las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores."
     },
     "geocedg.document.ApplyStyles.status": {
       "en": "Ready: Apply Styles…",
@@ -5785,8 +5785,8 @@
       "es": "Ejemplos: SplineV2(A,B,C) o SplineV2({A,B,C,D}) usan grado 3; SplineV2({A,B,C,D},4) fija un grado explícito, de 3 al número de puntos; SplineV2(A,B,C,D,A) repite el primer punto para la forma cerrada. No se crea ningún objeto hasta Intro."
     },
     "Workspace.About": {
-      "en": "GeoCeDG — Computational extended Descriptive Geometry based on GeoGebra. Geometry and identity belong to the shared kernel. Upstream compatibility is preserved; this is an author-review implementation candidate.",
-      "es": "GeoCeDG — Geometría Descriptiva computacional extendida basada en GeoGebra. La geometría y la identidad pertenecen al núcleo compartido. Se conserva la compatibilidad heredada; este es un candidato de implementación para revisión del autor."
+      "en": "GeoCeDG — Computational extended Descriptive Geometry based on GeoGebra. Geometry and identity belong to the shared kernel, and upstream compatibility is preserved.",
+      "es": "GeoCeDG — Geometría Descriptiva computacional extendida basada en GeoGebra. La geometría y la identidad pertenecen al núcleo compartido, y se conserva la compatibilidad heredada."
     },
     "About.UpstreamBaseline": {
       "en": "GeoGebra upstream baseline",
@@ -5796,9 +5796,85 @@
       "en": "Manuel Prado-Velasco, Universidad de Sevilla",
       "es": "Manuel Prado-Velasco, Universidad de Sevilla"
     },
-    "About.Licenses": {
-      "en": "Required upstream credits and licenses are retained in LICENSE, NOTICE.md, and THIRD_PARTY.md.",
-      "es": "Los créditos y licencias upstream obligatorios se conservan en LICENSE, NOTICE.md y THIRD_PARTY.md."
+    "About.VersionDate": {
+      "en": "Version date",
+      "es": "Fecha de versión"
+    },
+    "About.Build": {
+      "en": "Build",
+      "es": "Compilación"
+    },
+    "About.Build.Clean": {
+      "en": "clean",
+      "es": "sin cambios"
+    },
+    "About.Build.Modified": {
+      "en": "modified",
+      "es": "modificada"
+    },
+    "About.Build.StateUnavailable": {
+      "en": "state unavailable",
+      "es": "estado no disponible"
+    },
+    "About.Build.Unavailable": {
+      "en": "unavailable",
+      "es": "no disponible"
+    },
+    "About.Distribution": {
+      "en": "Distribution condition",
+      "es": "Condición de distribución"
+    },
+    "About.Distribution.INTERNAL": {
+      "en": "internal evaluation — not for redistribution",
+      "es": "evaluación interna — no redistribuible"
+    },
+    "About.Distribution.NC": {
+      "en": "non-commercial distribution under PROFILE NC",
+      "es": "distribución no comercial bajo PROFILE NC"
+    },
+    "About.Distribution.DEVELOPMENT": {
+      "en": "development build — not a distribution; not for redistribution",
+      "es": "compilación de desarrollo — no es una distribución; no redistribuible"
+    },
+    "About.Distribution.UNVERIFIED": {
+      "en": "distribution condition not verified — not for redistribution",
+      "es": "condición de distribución no verificada — no redistribuible"
+    },
+    "About.Licensing.Composite": {
+      "en": "Licensing. GeoCeDG is a composite work: no single licence covers the whole product. The permissions below belong to its components, not to the complete product.",
+      "es": "Licencias. GeoCeDG es una obra compuesta: ninguna licencia única cubre el producto completo. Los permisos siguientes pertenecen a sus componentes, no al producto completo."
+    },
+    "About.Licensing.Software": {
+      "en": "GeoCeDG-authored software: EUPL-1.2.",
+      "es": "Software de autoría GeoCeDG: EUPL-1.2."
+    },
+    "About.Licensing.Documentation": {
+      "en": "GeoCeDG-authored documentation and ordinary artwork: CC BY 4.0, with the exceptions recorded in docs/LICENSE.md. The GeoCeDG name and official marks are governed separately by the brand policy.",
+      "es": "Documentación y obra gráfica ordinaria de autoría GeoCeDG: CC BY 4.0, con las excepciones registradas en docs/LICENSE.md. El nombre GeoCeDG y sus marcas oficiales se rigen por separado por la política de marca."
+    },
+    "About.Licensing.Inherited": {
+      "en": "Inherited GeoGebra source code keeps its EUPL-1.2 grant. GeoGebra Language Files, GeoGebra Materials and the other third-party components keep their own terms.",
+      "es": "El código fuente heredado de GeoGebra conserva su concesión EUPL-1.2. Los GeoGebra Language Files, los GeoGebra Materials y los demás componentes de terceros conservan sus propios términos."
+    },
+    "About.Licensing.Notice": {
+      "en": "Distribution notice of this copy: %0.",
+      "es": "Aviso de distribución de esta copia: %0."
+    },
+    "About.Licensing.Notice.Development": {
+      "en": "A development build has no distribution notice and is not for redistribution.",
+      "es": "Una compilación de desarrollo no tiene aviso de distribución y no es redistribuible."
+    },
+    "About.Licensing.Notice.Unverified": {
+      "en": "The distribution notice of this copy could not be verified; it is not for redistribution.",
+      "es": "No se ha podido verificar el aviso de distribución de esta copia; no es redistribuible."
+    },
+    "About.Licensing.Texts.Package": {
+      "en": "Full texts: app/legal/ (LICENSE, NOTICE.md, THIRD_PARTY.md and LICENSES/) and the distribution notice in app/.",
+      "es": "Textos completos: app/legal/ (LICENSE, NOTICE.md, THIRD_PARTY.md y LICENSES/) y el aviso de distribución en app/."
+    },
+    "About.Licensing.Texts.Development": {
+      "en": "Full texts: LICENSE, NOTICE.md, THIRD_PARTY.md and LICENSES/ in the source repository, with docs/LICENSE.md and docs/licensing/component-matrix.md.",
+      "es": "Textos completos: LICENSE, NOTICE.md, THIRD_PARTY.md y LICENSES/ en el repositorio fuente, con docs/LICENSE.md y docs/licensing/component-matrix.md."
     },
     "Definition.SemanticStructure": {
       "en": "Semantic structure",
@@ -5831,8 +5907,8 @@
     },
     "Definition.Seam": { "en": "Seam side", "es": "Lado de costura" },
     "Workspace.Shortcuts": {
-      "en": "Enter: commit Algebra Input; Escape: cancel; Ctrl+Z: undo; Ctrl+Y: redo. Use Zoom to rectangle for view-only navigation. Tab navigates controls; F1 opens tool help.",
-      "es": "Intro: confirmar Entrada algebraica; Esc: cancelar; Ctrl+Z: deshacer; Ctrl+Y: rehacer. Usa Zoom por rectángulo para navegación visual. Tab recorre controles; F1 abre la ayuda."
+      "en": "Enter: commit Algebra Input; Escape: cancel; Ctrl+Z: undo; Ctrl+Y: redo. Use Zoom to rectangle for view-only navigation. Tab navigates controls; F1 opens tool help. Ctrl+Shift+U: Graphics View as Picture; Ctrl+Shift+C: copy the Graphics view as an image of the export area; Ctrl+Shift+D: Export 2D geometry as DXF.",
+      "es": "Intro: confirmar Entrada algebraica; Esc: cancelar; Ctrl+Z: deshacer; Ctrl+Y: rehacer. Usa Zoom por rectángulo para navegación visual. Tab recorre controles; F1 abre la ayuda. Ctrl+Mayús+U: Vista gráfica como imagen; Ctrl+Mayús+C: copiar la vista gráfica como imagen del área de exportación; Ctrl+Mayús+D: exportar geometría 2D como DXF."
     },
     "point.choose": {
       "en": "Choose a semantic location",
