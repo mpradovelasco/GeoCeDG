@@ -49,6 +49,19 @@ once it is authorized. A **remaining decision** is still open.
 
 ## 2. Remaining decisions requiring author approval
 
+> **Status update (design closeout, 2026-10-14).** The
+> [author design closeout record](pre_g9b_r6_plus_g_author_design_closeout_record.md)
+> decides several of the items below:
+> - item 1: the contract is approved, with the runtime-checked digest and the schema `2`
+>   migration;
+> - the `CLOSEOUT_MODE` part of item 2: `AUTHOR_OPERATED`;
+> - the class-2 dispositions of item 7, for the E2 naming collision, the E3 unit gate and
+>   `ExportArea` link, and the five F4 risks;
+> - the retention under items 8 and 9;
+> - R-14 under item 10: "no blanket authorization".
+>
+> The table is kept as written at `caf740a1`; that closeout record is the current authority.
+
 | # | Decision | Needed before |
 |---|---|---|
 | 1 | Approve the **final revision of the product metadata contract** for normative transcription. This includes the digest role (runtime-checked, as recommended, or audit-only) and the package-profile `schema_version` `2` migration. | G implementation authorization |

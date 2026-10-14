@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE REVISION 2 — RECONCILED — PREPARED FOR AUTHOR-APPROVED NORMATIVE TRANSCRIPTION — NOT NORMATIVE** (no normative promotion occurs without the author's explicit approval of this final revision) |
-| Revisions | 1: `ccb4ef34` (G author decision reconciliation). 2: this revision, reconciling the author directions of "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14). Those directions are recorded in the [G author design decision record](../validation/pre_g9b_r6_plus_g_author_design_decision_record.md): PM-1/PM-2 kept; PM-3 semantics and the `1.1.0` / `2026-10-15` designation; no version date for `1.0.0`; PM-5 digest role and the consistency-is-not-authenticity clause; PM-6 to PM-12 accepted; M1 adopted. |
+| Status | **AUTHOR APPROVED — DESIGN** (PM-1 to PM-12, revision 2 with the three documentary clarifications of the design closeout; author decision "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN APPROVAL AND DOCUMENTARY CLOSEOUT", 2026-10-14; [G author design closeout record](../validation/pre_g9b_r6_plus_g_author_design_closeout_record.md)). It is the design authority for the subsequent G implementation. It is **not** a normative specification: the normative transcription into the approved Windows packaging and application-profile specifications (§9) belongs to the separately authorized G implementation. Earlier: `CANDIDATE REVISION 2 — PREPARED FOR AUTHOR-APPROVED NORMATIVE TRANSCRIPTION` (`caf740a1`). |
+| Revisions | 1: `ccb4ef34` (G author decision reconciliation). 2: `caf740a1`, reconciling the author directions of "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14). Those directions are recorded in the [G author design decision record](../validation/pre_g9b_r6_plus_g_author_design_decision_record.md): PM-1/PM-2 kept; PM-3 semantics and the `1.1.0` / `2026-10-15` designation; no version date for `1.0.0`; PM-5 digest role and the consistency-is-not-authenticity clause; PM-6 to PM-12 accepted; M1 adopted. Approved text: revision 2 plus three design-closeout clarifications. (a) PM-5 illustrative records per profile, with an unambiguous `profile_id` and `redistributable`. (b) The duplicated §6.3 table header removed, with L0–L7 and `2026-10-15` unchanged. (c) §9 normative ownership: transcription into the existing approved specifications; this document is the historical design authority. |
 | Requirement served | `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` (author-approved requirement of 2026-10-07, [E1 preparation closeout record](../validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md) §5) |
 | Decisions it prepares | `DQ-G-2` (version and version-date source), `DQ-G-3` (distribution-condition source), `DQ-G-4` (`1.0.0` → `1.1.0` lifecycle) of the [G author-decision reconciliation](pre_g9b_r6_plus_g_author_decision_reconciliation.md) |
 | Prepared on | published `main` `abe12893b74f574c248117fbe873633a449e23e0`, tree `ba4298c5658bf3f897455db5a49a76fea7105e72` |
@@ -11,11 +11,11 @@
 | Implementation | **NOT AUTHORIZED.** No product, build, packaging, test, schema or pin change is made or authorized by this document. |
 | `selfApproved` | `false` |
 
-This document is a design candidate. The author has accepted its design directions
-(design decision record). It becomes a contract only when the author explicitly approves
-this final revision. After that approval, the G implementation transcribes it into the
-normative documents listed in §9. Until then the approved packaging and
-application-profile contracts stay unchanged.
+The author approved this design on 2026-10-14. The authorized G implementation
+transcribes it into the existing normative documents listed in §9. Until then the
+approved packaging and application-profile specifications stay unchanged. The file name
+keeps the word "candidate" so that existing links stay stable; the Status field above is
+the authority for its state.
 
 ## 1. Purpose and scope
 
@@ -179,21 +179,52 @@ notice. It is therefore part of the app-image, the ZIP, the installers and
 `app-image.SHA256SUMS.txt`. The builder derives it only from the selected
 `package.yml` profile it has already validated, never from the environment:
 
+The record contains one selected profile. Two illustrations follow, one per packageable
+profile. Hash and commit values are placeholders.
+
+For an INTERNAL build:
+
 ```json
 {
   "schema_version": 1,
   "record_kind": "geocedg-distribution-record",
-  "profile_id": "INTERNAL | NC",
-  "status": "<profile status>",
+  "profile_id": "INTERNAL",
+  "status": "internal-evaluation",
   "redistributable": false,
-  "marker": "<profile marker>",
-  "notice_file": "<profile notice file name>",
+  "marker": "INTERNAL EVALUATION — NOT FOR REDISTRIBUTION",
+  "notice_file": "INTERNAL_EVALUATION_ONLY.txt",
   "notice_sha256": "<sha-256 of the staged notice>",
-  "application": { "name": "GeoCeDG", "version": "<PM-2>", "version_date": "<PM-3>" },
+  "application": { "name": "GeoCeDG", "version": "1.1.0", "version_date": "2026-10-15" },
   "source_revision": "<40-hex commit embedded in desktop.jar>",
   "package_profile_sha256": "<canonical sha-256 of package.yml, see below>"
 }
 ```
+
+For an NC build:
+
+```json
+{
+  "schema_version": 1,
+  "record_kind": "geocedg-distribution-record",
+  "profile_id": "NC",
+  "status": "public-non-commercial",
+  "redistributable": true,
+  "marker": "NON-COMMERCIAL DISTRIBUTION — PROFILE NC",
+  "notice_file": "NC_DISTRIBUTION_NOTICE.txt",
+  "notice_sha256": "<sha-256 of the staged notice>",
+  "application": { "name": "GeoCeDG", "version": "1.1.0", "version_date": "2026-10-15" },
+  "source_revision": "<40-hex commit embedded in desktop.jar>",
+  "package_profile_sha256": "<canonical sha-256 of package.yml, see below>"
+}
+```
+
+Field rules:
+- `profile_id` is the actual selected profile, exactly one declared id (`INTERNAL` or
+  `NC`). A combined or alternative value is invalid and yields `UNVERIFIED`.
+- `status`, `redistributable`, `marker` and `notice_file` are the values that
+  `package.yml` declares for that profile. `redistributable` is `false` for `INTERNAL`
+  and `true` for `NC`.
+- `application` carries the PM-2 and PM-3 values of the build.
 
 **Profile table.** The Gradle provenance task embeds in the generated resource each
 declared profile's `id`, `status`, `marker` and `redistributable`, read from
@@ -209,10 +240,9 @@ declared profile's `id`, `status`, `marker` and `redistributable`, read from
 - **Runtime check.** The record's value must equal the embedded value exactly.
   Otherwise the state is `UNVERIFIED`. This proves that the record and the JAR were
   derived from the same package-profile text.
-- **Fallback.** If the author prefers fewer bindings, the field becomes audit-only
-  metadata. It is then never compared at runtime and is described only as an audit field.
-  The contract must never claim that an unchecked digest takes part in runtime
-  verification.
+- **Selected by the author (design closeout, 2026-10-14): runtime-checked.** The
+  audit-only alternative is not adopted. In any case, no document may claim that an
+  unchecked digest takes part in runtime verification.
 
 **Consistency is not authenticity.** Every runtime check here is a consistency check
 between artifacts produced by the same GeoCeDG build and packaging pipeline. It protects
@@ -419,8 +449,6 @@ bytes.
 
 ### 6.3 Lifecycle contract (M1)
 
-| Stage | Version / date in product bytes | Canonical? | Observable where |
-|---|---|---|---|
 `D = 2026-10-15` (author-designated, 2026-10-14).
 
 | Stage | Version / date in product bytes | Canonical? | Observable where |
@@ -468,7 +496,7 @@ They are never "released" by any of these stages.
 | `DQ-G-3` | **direction accepted**: PM-5 (`app/geocedg-distribution.json`, four states, conservative `DEVELOPMENT`/`UNVERIFIED`, `COMMERCIAL` unauthorized), with the digest-role and consistency-not-authenticity clarifications of this revision |
 | `DQ-G-4` | **direction accepted**: M1, `1.1.0` / `2026-10-15`, no date for `1.0.0` (the `2026-09-16` proposal is withdrawn) |
 | PM-6 to PM-12 | **direction accepted** |
-| Remaining | 1. Explicit approval of **this final revision** as the text to transcribe normatively (§9). 2. The digest role: runtime-checked as recommended here, or audit-only. 3. The package-profile schema migration as specified in PM-3 (`schema_version` `2`). |
+| Design closeout (2026-10-14) | **AUTHOR APPROVED — DESIGN**: PM-1 to PM-12. The runtime-checked `package_profile_sha256` is selected (deterministic canonicalization; real comparison with the build-embedded provenance digest). The package-profile `schema_version` `2` migration is introduced with the version transition. Normative transcription into the existing specifications belongs to the authorized G implementation (§9). |
 
 ## 8. Risks
 
@@ -488,4 +516,10 @@ They are never "released" by any of these stages.
 | `geocedg/specs/operations/package-profile.schema.json` | `schema_version` `2`, `$id` `package-profile-v2`, the required `application.version_date` (PM-3). The builder and the packaging check accept exactly version `2`. |
 | static-contract pins | re-pinned through the official mechanism |
 | `docs/upstream/modified-files.yml` | purpose of `source/desktop/desktop/build.gradle.kts` |
-| this candidate | either becomes a new normative specification or is transcribed into the two documents above, as the author chooses |
+| this document | **not** a normative specification. PM-1 to PM-12 are transcribed into the existing approved specifications above: `windows-packaging.md` for PM-1 to PM-5, PM-8, PM-10 and PM-12; `application-profile.md` for PM-6, PM-7 and PM-9; PM-11 as the G test obligations. This document remains the historical **design** authority behind that transcription, never a competing duplicate normative specification. |
+
+Ownership of the normative text (author decision, 2026-10-14): until the authorized G
+implementation transcribes PM-1 to PM-12, the approved packaging and application-profile
+specifications stay unchanged and keep their current authority. After transcription, they
+are the only normative authority for product metadata. A later divergence between them
+and this document is resolved in their favour, and recorded.

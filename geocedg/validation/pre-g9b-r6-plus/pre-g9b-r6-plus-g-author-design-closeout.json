@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-G-AUTHOR-DESIGN-CLOSEOUT",
+  "phase": "PRE-G9B-R6-plus-G",
+  "artifactKind": "AUTHOR_DESIGN_CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_g_author_design_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN APPROVAL AND DOCUMENTARY CLOSEOUT", "scope": "G design approval and documentary closeout only", "implementation": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "approvedCandidate": {
+    "publishedBase": {"commit": "abe12893b74f574c248117fbe873633a449e23e0", "tree": "ba4298c5658bf3f897455db5a49a76fea7105e72"},
+    "preparedReconciliation": {"commit": "ccb4ef34dde4736030cc1a600cd7b84624f9ab56", "tree": "04882e1d042282442cc6977efa2ea07398b0340a"},
+    "finalDocumentaryCandidate": {"commit": "caf740a1c0c5633abf535dc2dd8279fdabc6611d", "tree": "93699b2323747aa3ca270f3fbb4accd8172de353", "parent": "ccb4ef34dde4736030cc1a600cd7b84624f9ab56"},
+    "liveRemoteMain": "abe12893b74f574c248117fbe873633a449e23e0",
+    "staticReceipt": {"runId": "verification-af736ce5110941d0a90ca8a5b268bac7", "runState": "COMPLETED", "acceptance": "ACCEPTED", "coverage": "COMPLETE", "executionPlanHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "resultHash": "0755825a0a7d7783813a0dda6ee168e5111e95370f0d8ffffac89f378153bc8d", "resultHashRecomputed": true, "fileSha256": "f39186de67616652fbc56b2210b3e8fd14cc9d8987be7ac7fa9194a3bd9e6936", "diagnostics": {"diagnostic.governance": "DIAGNOSTIC_FINDING (standing)", "diagnostic.historical-consistency": "DIAGNOSTIC_UNAVAILABLE (standing)"}}
+  },
+  "clarificationsApplied": ["PM-5 illustrative records per profile; profile_id is the actual selected profile; redistributable false for INTERNAL and true for NC", "duplicated §6.3 lifecycle-table header removed; L0-L7 and 2026-10-15 unchanged", "§9 normative ownership: transcription into the existing approved Windows packaging and application-profile specifications during authorized G; the PM design record is the historical design authority, not a competing normative specification"],
+  "states": {
+    "G design": "AUTHOR APPROVED",
+    "G metadata contract": "AUTHOR APPROVED — DESIGN",
+    "G canonical prompt": "DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED",
+    "G version target": "1.1.0",
+    "G version date": "2026-10-15 — AUTHOR DESIGNATED",
+    "verification class": "INTEGRATED_PHASE (to be frozen by the implementation authorization)",
+    "closeout mode": "AUTHOR_OPERATED",
+    "G implementation": "NOT AUTHORIZED",
+    "G technical candidate": "NOT CREATED",
+    "G global closeout": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "public release": "NOT AUTHORIZED",
+    "publication of this closeout": "NOT AUTHORIZED"
+  },
+  "selfApproved": false,
+  "decisions": {
+    "DQ-G-1": {"decision": "APPROVED", "class": "INTEGRATED_PHASE", "acceptance": ["PHASE PRE-G9B-R6-PLUS-G", "INTEGRATION", "INFRA_UNIT", "STATIC", "PACKAGING INTERNAL and NC from the exact frozen candidate", "COMMERCIAL refusal evidence", "focused compatibility and regression tests", "author smoke after technical verification"], "closeoutMode": "AUTHOR_OPERATED", "final": "only by explicit escalation or a separate author milestone decision"},
+    "DQ-G-2": {"decision": "APPROVED", "authority": "packaging/windows/package.yml", "newField": "application.version_date", "packageProfileSchemaVersion": 2},
+    "DQ-G-3": {"decision": "APPROVED", "record": "app/geocedg-distribution.json", "states": ["INTERNAL", "NC", "DEVELOPMENT", "UNVERIFIED"], "packageProfileSha256": "RUNTIME-CHECKED (UTF-8, CRLF/CR to LF, SHA-256; compared with the build-embedded digest)", "consistencyNotAuthenticity": true, "commercial": "UNAUTHORIZED", "profileNeutralJar": true},
+    "DQ-G-4": {"decision": "APPROVED", "mechanism": "M1", "version": "1.1.0", "versionDate": "2026-10-15", "version100Date": "none"},
+    "DQ-G-5": {"decision": "APPROVED (characterization)", "scenarios": "SC-01..SC-27", "observations": ["OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT"], "correctionApproved": false, "dispositionBeforeGlobalCloseout": true},
+    "DQ-G-6": {"decision": "FRAMEWORK AND PLANNING OWNERS APPROVED", "perItemDispositions": "not approved by the framework"},
+    "DQ-G-7": {"decision": "APPROVED", "plan": "minimal complete bilingual EN/ES help", "editorialCorrections": "permitted without structure, normative or behaviour change"},
+    "DQ-G-8": {"decision": "APPROVED", "class1": "G reconciles confirmed stale labels including F4 and earlier publication status", "R-14": "NO SUBPHASE AUTHORIZED = absence of blanket authorization"},
+    "DQ-G-9": {"decision": "APPROVED (retention)", "retained": ["verifier-pinned headers", "ADR 0035 body wording", "undecided C/E3 normative amendments"]},
+    "DQ-G-10": {"decision": "RESOLVED EARLIER", "record": "PUBLICATION COMPLETED — EXACT BASE ESTABLISHED", "base": "abe12893b74f574c248117fbe873633a449e23e0"}
+  },
+  "resolvedByAuthorDisposition": {
+    "OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION": "RESOLVED — naming DQ-E2-7; coexistence in approved E2 3a724661; user-library collision preserved as independent",
+    "OBS-R6PLUS-E3-EXPORT-AREA-NO-REBUILD-SIGNAL": "RESOLVED BY THE IDENTITY-VALIDITY SOLUTION — no rebuild signal added",
+    "OBS-R6PLUS-E3-NO-UNIT-GATE-PATTERN": "RESOLVED",
+    "F4R-G2-VIEW-CLASS": "CLOSED — NOT REALIZED",
+    "F4R-A1-REBUILD": "CLOSED — HELD BY TEST",
+    "F4R-INHERITED-FREEHEP": "CLOSED — PERIMETER VERIFIED AND REGISTERED",
+    "F4R-CLASSIC-PERIMETER": "CLOSED — HELD",
+    "F4R-READER-COMPAT": "CLOSED FOR THE CHECKED READERS (Ghostscript, Poppler, Xpdf)"
+  },
+  "keptOpen": ["OBS-R6P-SAVE-WARNING", "OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT", "OBS-R6PLUS-E2-USER-LIBRARY-LOCALE-DEPENDENT-NATIVE-COLLISION", "OBS-F4P-FREEHEP-XREF-SIZE"],
+  "stillPending": ["OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS", "Desktop test-heap pressure / OBS-R6PLUS-E2-DESKTOP-TEST-HOST-RETENTION", "minor E2 closeout-silent items", "PROPOSED re-categorizations", "B and P dispositions", "O-row owners not covered by planning owners"],
+  "implementationConditions": ["approved and published base named exactly", "explicit G implementation authorization freezing INTEGRATED_PHASE and AUTHOR_OPERATED, authorizing the prompt and stating the characterization", "FINAL only by escalation or author milestone decision", "before the global closeout: both observation dispositions, pending debt dispositions, class-1 corrections"],
+  "documentaryChanges": {"productChange": false, "testChange": false, "buildChange": false, "packagingChange": false, "verificationInfrastructureChange": false, "approvedSpecOrAdrChange": false, "closeoutRecordRewrite": false},
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"}
+}

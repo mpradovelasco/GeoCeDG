@@ -1,27 +1,36 @@
 # PRE-G9B-R6-plus-G — help, product metadata, integrated verification and R6-plus closeout
 
-**CANONICAL PROMPT CANDIDATE — REVISION 3 — READY FOR FINAL AUTHOR REVIEW — NOT
-AUTHORIZED.**
+**G CANONICAL PROMPT — DESIGN AUTHOR APPROVED — IMPLEMENTATION NOT AUTHORIZED.**
+
+The author approved the G design on 2026-10-14
+([author design closeout record](../../../docs/validation/pre_g9b_r6_plus_g_author_design_closeout_record.md)).
+Execution requires a separate G implementation authorization naming an approved and
+published base.
 
 | Revision | Origin | Base |
 |---|---|---|
 | 1 | G readiness operation of the author instruction "GeoCeDG — F4-A PUBLICATION + F4 AGGREGATE CLOSEOUT + G READINESS" (2026-10-14) | `abe12893`; kept as history |
 | 2 | author instruction "GeoCeDG — PRE-G9B-R6-plus-G AUTHOR DECISION RECONCILIATION" (2026-10-14) | `ccb4ef34`; kept as history |
-| 3 | author instruction "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14): author design directions incorporated | published `main` `abe12893` |
+| 3 | author instruction "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14): author design directions incorporated | `caf740a1` |
+| 3 (design approved) | author instruction "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN APPROVAL AND DOCUMENTARY CLOSEOUT" (2026-10-14): design approved, prompt status updated, approved metadata contract referenced | the design closeout commit |
 
 Inputs:
+- the [author design closeout record](../../../docs/validation/pre_g9b_r6_plus_g_author_design_closeout_record.md):
+  - the approved decisions `DQ-G-1` to `DQ-G-10`;
+  - the debt dispositions recorded by the author;
+  - the conditions for the implementation authorization;
+- the [product metadata contract](../../../docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md),
+  **AUTHOR APPROVED — DESIGN** (PM-1 to PM-12);
 - the [author design decision record](../../../docs/validation/pre_g9b_r6_plus_g_author_design_decision_record.md):
-  the author directions and the remaining decisions;
+  the design directions;
 - the [author decision reconciliation](../../../docs/architecture/pre_g9b_r6_plus_g_author_decision_reconciliation.md),
-  revision 2: decisions, characterization plan, help matrix and documentation plan;
-- the [product metadata contract candidate](../../../docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md),
-  revision 2;
+  revision 2: characterization plan, help matrix and documentation plan;
 - the [debt and observation disposition proposal](../../../docs/validation/pre_g9b_r6_plus_g_debt_and_observation_disposition_proposal.md);
 - the [readiness package](../../../docs/architecture/pre_g9b_r6_plus_g_readiness_package.md).
 
-The author has given design directions for `DQ-G-1` to `DQ-G-10`; they are recorded in the
-decision record and are not repeated as open choices here. Nothing in this file authorizes
-implementation, verification campaigns, publication, release or `PRE-G9B-R7`.
+The G design decisions are approved and are not repeated as open choices here. Nothing in
+this file authorizes implementation, verification campaigns, publication, release or
+`PRE-G9B-R7`.
 
 <!-- geocedg-field: objective -->
 ## Objective
@@ -38,23 +47,20 @@ implementation, verification campaigns, publication, release or `PRE-G9B-R7`.
 5. the structured debt and observation register with the author's dispositions;
 6. the global R6-plus closeout record, pending author approval.
 
-`VERIFICATION_CLASS = INTEGRATED_PHASE` (author direction for `DQ-G-1`). It is frozen by
-the G implementation authorization. `CLOSEOUT_MODE` is proposed as `AUTHOR_OPERATED`; the
-author selects it explicitly.
+`VERIFICATION_CLASS = INTEGRATED_PHASE` (approved for `DQ-G-1`). It is frozen explicitly
+by the G implementation authorization. `CLOSEOUT_MODE = AUTHOR_OPERATED` (approved).
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
-The exact commit and tree named by the G implementation authorization. Two
-possibilities:
-- the published `main` `abe12893b74f574c248117fbe873633a449e23e0`, tree
-  `ba4298c5658bf3f897455db5a49a76fea7105e72`. It contains the F4 aggregate closeout
-  `19f8f206` and the readiness package, both published (`DQ-G-10 = PUBLICATION COMPLETED
-  — EXACT BASE ESTABLISHED`);
-- a documentary reconciliation commit that the author has explicitly approved and that
-  has been published under control.
+The exact commit and tree named by the G implementation authorization. The base must be
+explicitly named, approved and **published**. The proposed base is the G author design
+closeout commit, once the author approves and publishes it. Until then the only
+published base is `main` `abe12893b74f574c248117fbe873633a449e23e0` (tree
+`ba4298c5658bf3f897455db5a49a76fea7105e72`; `DQ-G-10 = PUBLICATION COMPLETED — EXACT BASE
+ESTABLISHED`). That base lacks the approved design documents.
 
-A local documentary commit is never the base by default.
+A local documentary commit is never the base.
 
 Entry gate:
 - exact identity and a clean worktree;
@@ -81,15 +87,16 @@ stops the phase.
    `verification-registry.json` and its schemas. The archived §12.8 of
    `verification-levels.md` is history only.
 6. The mini-track plan and the roadmap; the subphase closeout records.
-7. The author design decision record; the author's approval of the final metadata
-   contract revision.
-8. The reconciliation, the contract candidate, the debt proposal and the readiness package,
+7. The author design closeout record; the approved product metadata contract (design
+   authority until its normative transcription into the specifications of item 2); the
+   author design decision record.
+8. The reconciliation, the debt proposal and the readiness package,
    as prepared evidence.
 
 <!-- geocedg-field: allowed_scope -->
 ## Allowed scope
 
-1. **Help** (author direction, `DQ-G-7`).
+1. **Help** (approved `DQ-G-7`).
    - The minimal EN/ES help package of reconciliation §6.2: PDF export with text as
      shapes or with embedded Type 1 fonts; physical PDF stroke widths; the curated GeoCeDG
      tool library and its limitations; the numeric thickness editor; the accepted
@@ -97,23 +104,27 @@ stops the phase.
    - The optional editorial items the authorization selects.
    - Paragraphs only, respecting the guide-outline pin (`PreG9BR5AGuideOutlineTest`) and the
      bilingual structure contract (documentation contract §10).
-   - No new help framework or UI window.
-2. **About and product metadata** (directions for `DQ-G-2`, `DQ-G-3`, PM-1 to PM-12).
-   Implement the contract **as approved in its final revision**:
+   - Small editorial terminology and cross-reference corrections that change no guide
+     structure, normative meaning or product behaviour.
+   - No new help framework or UI window. No modification of Classic-shared help
+     implementations or properties.
+2. **About and product metadata** (approved `DQ-G-2`, `DQ-G-3`, PM-1 to PM-12).
+   Implement the **AUTHOR APPROVED — DESIGN** metadata contract:
    - `package.yml` stays the single authority for name and version, with the new required
      `application.version_date`;
    - build identity from repository provenance; no wall-clock timestamp;
    - the installed record `app/geocedg-distribution.json`, derived from the selected
      package profile, with the four states INTERNAL, NC, DEVELOPMENT and UNVERIFIED;
-   - `package_profile_sha256` in the role the approved revision fixes (runtime-checked
-     against the build-embedded canonical digest, or audit-only);
+   - `package_profile_sha256` **runtime-checked**: the documented deterministic
+     canonicalization (UTF-8, `CRLF`/`CR` → `LF`, SHA-256), and a real comparison with the
+     digest embedded in the build provenance;
    - consistency checks only: no cryptographic authenticity, signed metadata, online
      validation, DRM or licensing authority;
    - a profile-neutral `desktop.jar`;
    - the About inside the existing `geocedg.help.about` dialog: a composite-product
      statement distinct from component permissions, and never "licensed solely under
      EUPL-1.2".
-3. **Version** (direction for `DQ-G-4`, M1).
+3. **Version** (approved `DQ-G-4`, M1).
    - Every commit before the version-transition commit shows `1.0.0` with no version-date
      field.
    - One atomic version-transition commit, the last productive commit, sets:
@@ -123,7 +134,7 @@ stops the phase.
      - the About date line;
      - the guide version strings and the version tests.
    - No version date for `1.0.0`. No other version, tag or release.
-4. **Characterization** (direction for `DQ-G-5`).
+4. **Characterization** (approved `DQ-G-5`).
    - Execute the 27 scenarios of reconciliation §5.3, SC-01 to SC-27, as scratch probes
      or untracked focused tests. They cover
      `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` and
@@ -137,7 +148,7 @@ stops the phase.
    - Refresh executed `final.shared` and `final.desktop` selection evidence before
      freezing.
    - Then run the frozen acceptance plan.
-6. **Debt register** (direction for `DQ-G-6`).
+6. **Debt register** (approved `DQ-G-6` framework and planning owners).
    - The structured R6-plus register on the 134-entry framework, with the author's
      planning owners:
      - `TD-PDF-1` → G15, after a physical-presentation contract-design activity;
@@ -146,16 +157,27 @@ stops the phase.
      - physical zoom aid → G12;
      - `DEFER-F3-*` → a future author-named insertion and styles activity;
      - full-suite instability → G monitoring and `PRE-G9B-R7` follow-up.
+   - Record the author dispositions of the design closeout §4.1 (the E2 naming collision,
+     the E3 `ExportArea` identity validity and unit gate, the five F4 risks) with their
+     evidence.
+   - Keep `OBS-R6P-SAVE-WARNING` and the independent observations open.
    - Every other pending item keeps an explicit author-disposition requirement.
 7. **Documentation** (`DQ-G-8`, `DQ-G-9`; reconciliation §7.3).
-   - Apply the class-1 corrections, each traced to its superseding record.
-   - Record class-2 items with their narrowest truthful status until the author disposes
-     of them.
-   - Classes 3 and 4 stay pending or retained unless separately authorized.
+   - Apply the class-1 corrections, each traced to its superseding record. They include
+     the published status of F4 and the earlier subphases.
+   - Clarify the track-level "NO SUBPHASE AUTHORIZED" as absence of blanket
+     authorization.
+   - Record the remaining class-2 items with their narrowest truthful status until the
+     author disposes of them.
+   - Classes 3 and 4 are retained unless separately authorized: verifier-pinned headers,
+     the ADR 0035 body wording, the undecided C/E3 normative amendments.
 8. **Closeout.**
    - The global closeout record; roadmap and mini-track status.
    - The candidate report and mirror; `docs/upstream/modified-files.yml` entries.
-   - The normative transcription of the approved metadata contract (candidate §9).
+   - The normative transcription of PM-1 to PM-12 into the existing approved
+     `windows-packaging.md` and `application-profile.md`, and the package-profile schema
+     (contract §9). The contract stays the historical design authority; no duplicate
+     normative specification is created.
 
 <!-- geocedg-field: forbidden_scope -->
 ## Explicitly forbidden scope
@@ -207,10 +229,11 @@ GeoCeDG Desktop presentation, build provenance, packaging and documentation.
 
 ## Required design/specification
 
-The product metadata contract candidate, **as approved by the author in its final
-revision**. Its design directions were accepted on 2026-10-14, but normative promotion
-needs that explicit approval. Without it, stop before any product change. Its normative
-transcription (candidate §9) is part of G.
+The product metadata contract, **AUTHOR APPROVED — DESIGN** on 2026-10-14 (PM-1 to PM-12,
+revision 2 with the design-closeout clarifications). It is the design authority for G.
+Transcribing it into the existing approved Windows packaging and application-profile
+specifications (contract §9) is part of G and requires no further design. Any deviation
+from the approved design stops the phase for an author decision.
 
 ## Geometric invariants and degeneracies
 
@@ -290,17 +313,19 @@ authorization.
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
 
-Nothing in this file authorizes implementation. A separate author instruction must:
-- approve the final metadata contract revision;
+The G design is approved; implementation is **not** authorized. A separate G
+implementation authorization must:
 - authorize this prompt for implementation;
-- name the exact base commit and tree;
-- freeze `INTEGRATED_PHASE` with the acceptance plan above, and select `CLOSEOUT_MODE`;
-- select the optional help items.
+- name the exact base commit and tree, approved and published;
+- freeze `INTEGRATED_PHASE` explicitly with the acceptance plan above, under
+  `CLOSEOUT_MODE = AUTHOR_OPERATED`;
+- state whether the `DQ-G-5` characterization runs in the same task;
+- select the optional editorial help items, if any.
 
 Before the global closeout the author must decide:
 - the dispositions of both document-replacement observations;
-- the per-item debt dispositions;
-- the class-2 dispositions.
+- the remaining per-item debt dispositions (design closeout §4.3);
+- the remaining class-2 dispositions.
 
 Technical verification never implies author approval.
 
@@ -339,7 +364,12 @@ Stop with a frozen technical candidate pending author review.
 ## Stop conditions
 
 - A hard predecessor is missing from the base, or the base, worktree or remote diverges.
-- The final metadata contract revision is not approved by the author.
+- The base is not an explicitly named, author-approved and published commit.
+- The implementation would deviate from the approved metadata design, for example:
+  - a second version authority;
+  - an unchecked digest presented as verified;
+  - a profile-specific `desktop.jar`;
+  - a duplicate normative specification.
 - A characterized contract violation would require a code change: stop that corrective
   branch and request authorization.
 - `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` or

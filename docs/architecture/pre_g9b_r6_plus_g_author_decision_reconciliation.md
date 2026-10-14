@@ -3,7 +3,8 @@
 | Field | Value |
 |---|---|
 | Status | **G AUTHOR DECISION RECONCILIATION — REVISION 2 — AUTHOR DESIGN DIRECTIONS RECONCILED — PENDING FINAL AUTHOR REVIEW** (documentary). The directions the author gave on 2026-10-14 are recorded in the [author design decision record](../validation/pre_g9b_r6_plus_g_author_design_decision_record.md). Every other recommendation below remains a proposal. |
-| Revisions | 1: `ccb4ef34dde4736030cc1a600cd7b84624f9ab56` (tree `04882e1d042282442cc6977efa2ea07398b0340a`). 2: this revision, under "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14). |
+| Revisions | 1: `ccb4ef34dde4736030cc1a600cd7b84624f9ab56` (tree `04882e1d042282442cc6977efa2ea07398b0340a`). 2: `caf740a1c0c5633abf535dc2dd8279fdabc6611d` (tree `93699b2323747aa3ca270f3fbb4accd8172de353`), under "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14). |
+| Design closeout | **G DESIGN = AUTHOR APPROVED** (2026-10-14, [author design closeout record](../validation/pre_g9b_r6_plus_g_author_design_closeout_record.md)). The author approved `caf740a1` with three documentary clarifications to the metadata contract. That record now holds the current decision states of `DQ-G-1` to `DQ-G-10` and the debt dispositions. This record stays the prepared evidence behind them. |
 | Author instruction | "GeoCeDG — PRE-G9B-R6-plus-G AUTHOR DECISION RECONCILIATION" (2026-10-14): architectural, contractual and verification-design reconciliation of the prepared G phase; documentation and review only |
 | Base | published `main` `abe12893b74f574c248117fbe873633a449e23e0`, tree `ba4298c5658bf3f897455db5a49a76fea7105e72` (§1) |
 | Package | this record (A, D summary, E); [product metadata contract candidate](pre_g9b_r6_plus_g_product_metadata_contract_candidate.md) (B); [debt and observation disposition proposal](../validation/pre_g9b_r6_plus_g_debt_and_observation_disposition_proposal.md) (C); [canonical G prompt, reconciled candidate](../../.github/prompts/tasks/pre-g9b-r6-plus-g-help-verification-and-closeout.prompt.md) (D); [JSON mirror](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-g-author-decision-reconciliation.json) |
@@ -1138,6 +1139,9 @@ required (no workstation prerequisite, toolchain or environment contract changed
 ## 11. Authorization state
 
 ```text
+G DESIGN                           = AUTHOR APPROVED (design closeout, 2026-10-14;
+                                     the states below were current at revision 2 and
+                                     are superseded where the design closeout decides)
 G AUTHOR DECISION RECONCILIATION   = REVISION 2 — PREPARED
 G VERSION TARGET                   = 1.1.0
 G VERSION_DATE                     = 2026-10-15 — AUTHOR DESIGNATED

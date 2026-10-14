@@ -54,6 +54,26 @@ The narrowest truthful status proposed for the "closeout silent" rows is given i
 §7.3 (class 2). This includes the E2 naming collision, the E3 unit gate, the `ExportArea`
 link and the five F4 risks.
 
+## Design closeout (2026-10-14) — author dispositions recorded
+
+The [author design closeout record](pre_g9b_r6_plus_g_author_design_closeout_record.md)
+§4 records these author dispositions, each limited to its tested and approved scope:
+
+| Item | Disposition | Rows |
+|---|---|---|
+| `OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION` | resolved (naming and coexistence) | R-4 |
+| `OBS-R6PLUS-E3-EXPORT-AREA-NO-REBUILD-SIGNAL` | resolved by the identity-validity solution; no rebuild signal was added | R-1 |
+| `OBS-R6PLUS-E3-NO-UNIT-GATE-PATTERN` | resolved | R-2 |
+| `F4R-G2-VIEW-CLASS`, `F4R-A1-REBUILD`, `F4R-INHERITED-FREEHEP`, `F4R-CLASSIC-PERIMETER`, `F4R-READER-COMPAT` | closed | R-6 to R-10 |
+
+These stay open:
+- the user-library collision (P-16);
+- `OBS-R6P-SAVE-WARNING` (P-4);
+- `OBS-F4P-FREEHEP-XREF-SIZE` (O-10);
+- both document-replacement observations (B-1, B-2).
+
+Every other row keeps the state of revision 2.
+
 ## How to read this proposal
 
 - **Line numbers.** They refer to the committed `abe12893` blobs. The documentary
