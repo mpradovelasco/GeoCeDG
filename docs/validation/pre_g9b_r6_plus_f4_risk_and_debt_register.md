@@ -65,3 +65,20 @@ above stay as the preparation record.
 | `TD-PDF-3` | **new — CONFIRMED — INHERITED PRODUCT DEFECT — OWNED BY F4-D (scope amendment 01)**; **OPEN** under the same condition | the inherited FreeHEP `CharstringEncoder.move()` wrote no moveto for a zero displacement, so 43 of 230 embedded Type 1 glyphs had no subpath start (Adobe Type 1 Font Format 1.1, §6.4) and rendered with a slanted left stem in Ghostscript and Poppler; unchanged since the import; **latent behind `TD-PDF-2`**: no embedded-font PDF could be written while `TD-PDF-2` held, so it surfaced only once `TD-PDF-2` was corrected | F4-D |
 | `F4R-EMBED-FIDELITY` (§2) | realized as `TD-PDF-3` | the risk anticipated here materialized in the glyph outlines, not in spacing or reader rejection | F4-D |
 | `OBS-F4P-FREEHEP-XREF-SIZE` | unchanged — independent observation, not in F4-D | Ghostscript reports it on every FreeHEP PDF, embedded and text as shapes alike | — |
+
+## 6. F4-D author closeout (2026-10-14)
+
+Recorded by the [F4-D author closeout record](pre_g9b_r6_plus_f4_d_author_closeout_record.md):
+F4-D `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS`, on the approved implementation
+`6214d15a0bc986cf1d16f178c67fd76bf6e54bc2` (tree `47b634b1885a9b5650af73369caa97a955bf22f2`).
+Sections 1–5 stay as the historical record.
+
+| Id | State | Resolution reference | Owner |
+|---|---|---|---|
+| `TD-PDF-2` | **CLOSED — RESOLVED BY F4-D** | `AbstractCharTable.java` blob `52c0ff23` in `6214d15a`; evidence of §5 and the candidate report | — |
+| `TD-PDF-3` | **CLOSED — RESOLVED BY F4-D SCOPE AMENDMENT 01**; relation to `TD-PDF-2` kept (latent behind it) | `CharstringEncoder.java` blob `e6d6c6f7` in `6214d15a`; `PreG9BR6PlusF4DType1OutlineTest`; external evidence | — |
+| `F4R-EMBED-FIDELITY` | **CLOSED** — realized as `TD-PDF-3`, resolved with it | as `TD-PDF-3` | — |
+| `F4R-SHAPES-UNCHANGED` | **CLOSED — HELD** | obligations 6–8 | — |
+| `F4R-FAILED-EXPORT-REPORTING` | **CLOSED FOR F4-D — NOT REALIZED**; the inherited generic failure reporting is unchanged and outside the approved obligations; no debt opened | obligations 1–2 | — |
+| `OBS-F4P-FREEHEP-XREF-SIZE` | **OPEN — UNRESOLVED — INDEPENDENT OBSERVATION**; not caused or changed by F4-D; proposed for the G structured register; not authorized | candidate report §6 | G register (proposed) |
+| F4-A risks of §2 | unchanged; F4-A not authorized, after F4-D publication (`DQ-F4-10`) | — | F4-A |

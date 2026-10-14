@@ -89,6 +89,7 @@
 - **F4-D implementation stop** (on `3d609397`; [stop report](../validation/pre_g9b_r6_plus_f4_d_implementation_stop_report.md)): the one-line correction removes the `StackOverflowError` and yields complete embedded-font PDFs with correct text, but 43 of 230 embedded Type 1 glyphs (e.g. `A B D E F H … h k l m n r`, `ñ`, `Ñ`) render with distorted left stems in Ghostscript and Poppler: the inherited FreeHEP `CharstringEncoder` omits the initial moveto (`TD-PDF-3` proposed; pre-existing, latent behind `TD-PDF-2`). Stop conditions "render incorrectly" and "change beyond the single line" met; no candidate; unverified work on local branch `wip/pre-g9b-r6-plus-f4-d-type1-outline-blocked` (`6c2fc409`); options A (second minimal inherited correction, recommended, scratch-proven), B (accept with debt) and C (withdraw) for author decision. **F4-D TECHNICAL CANDIDATE — NOT ESTABLISHED**; F4-A, G and publication not authorized.
 - **F4-D scope amendment 01** (author option A, 2026-10-14, on the STOP commit `aae7b12c`; [amendment record](../validation/pre_g9b_r6_plus_f4_d_scope_amendment_01_record.md)): productive scope `AbstractCharTable.toName(char)` and `CharstringEncoder.move(double,double)` (zero-displacement Type 1 moveto); entry gate PASS; source impact analysis: encoder reachable only through the embedded Type 1 PDF route, no PostScript/EPS writer; `INTEGRATED_PHASE` maintained (`PHASE` + `INTEGRATION` + `INFRA_UNIT` + `STATIC`); `TD-PDF-3` to be recorded with `TD-PDF-2`. **F4-D EXPANDED IMPLEMENTATION — AUTHORIZED**; technical acceptance and author smoke pending; F4-A, G and publication not authorized.
 - **F4-D technical candidate (scope amendment 01)** (on `39687713`; [candidate report](../validation/pre_g9b_r6_plus_f4_d_candidate_report.md)): `AbstractCharTable.toName(char)` (one line, `TD-PDF-2`) and `CharstringEncoder.move()` emitting `0 hmoveto` for a zero displacement (two lines, `TD-PDF-3`), both registered; focused classes `PreG9BR6PlusF4DEmbeddedFontPdfTest` and `PreG9BR6PlusF4DType1OutlineTest` (selection 53); glyph outlines equal the Java shapes; Ghostscript, Poppler and Xpdf evidence within the stated 0.106 mm tolerance in every scene; `TD-PDF-3` recorded with `TD-PDF-2`, both open. **F4-D TECHNICAL ACCEPTANCE — PENDING** (frozen-candidate runs reported outside the candidate); author smoke pending; F4-A, G and publication not authorized.
+- **F4-D author approval and closeout** (author decision of 2026-10-14; [author closeout record](../validation/pre_g9b_r6_plus_f4_d_author_closeout_record.md)): **PASS — AUTHOR APPROVED** on the approved implementation `6214d15a0bc986cf1d16f178c67fd76bf6e54bc2` (tree `47b634b1885a9b5650af73369caa97a955bf22f2`), covering both FreeHEP corrections; `AUTHOR_SMOKE = PASS` (author confirmation); `PHASE` `verification-0d7d0418479645779c9c2690ab50b140`, `INTEGRATION` `verification-c1f5709d41444f6e88c801a9d4ba9189`, `INFRA_UNIT` `verification-1abe42a5651e4dafb469838331413042` and `STATIC` `verification-e9a03b359f8f43208ebec344a125ca7e` re-authenticated on the exact candidate (result hashes recomputed), no campaign repeated; `TD-PDF-2` and `TD-PDF-3` **CLOSED — RESOLVED BY F4-D**; `OBS-F4P-FREEHEP-XREF-SIZE` open and independent; documentary closeout accepted by `STATIC` (reported outside the record). **F4-D PUBLICATION — NOT AUTHORIZED**; F4-A not authorized and only after F4-D publication (`DQ-F4-10`); G not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1690,6 +1691,10 @@ PRE-G9B-R6-plus-F4         = PLANNING INTENT RECORDED — IMPLEMENTATION NOT AUT
                              F4-D TECHNICAL CANDIDATE (amendment 01, on 39687713):
                              two-file FreeHEP correction, structural Type 1 tests,
                              selection 53; acceptance and author smoke PENDING
+                             F4-D PASS — AUTHOR APPROVED (2026-10-14, on 6214d15a):
+                             AUTHOR_SMOKE = PASS; TD-PDF-2 and TD-PDF-3 CLOSED;
+                             documentary closeout; publication NOT AUTHORIZED;
+                             F4-A NOT AUTHORIZED, only after F4-D publication
                              earlier: PREPARATION NEXT (F3 closed 2026-10-13)
                              (author planning decision recorded at the POST-E2-P4
                              closeout, 2026-10-09: to be proposed between F3 and G;
@@ -1973,9 +1978,17 @@ OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS = TD-PDF-2 — OPEN — UNCONFIRMED I
                              "Save file failed"; one-line correction feasible in a
                              scratch copy; proposed owner F4 (DQ-F4-5, DQ-F4-9
                              pending)
+                             CLOSED — RESOLVED BY F4-D (2026-10-14, author approved
+                             on 6214d15a; AbstractCharTable.toName(char) delegation)
+TD-PDF-3                   = CLOSED — RESOLVED BY F4-D SCOPE AMENDMENT 01
+                             (2026-10-14, author approved on 6214d15a; inherited
+                             CharstringEncoder initial moveto; latent behind
+                             TD-PDF-2, recorded at the F4-D stop aae7b12c)
 OBS-F4P-FREEHEP-XREF-SIZE, OBS-F4P-S3-SPEC-HEADER, OBS-F4P-ADR0035-CONSEQUENCE-LINE
                            = REGISTERED (F4-PREP, 2026-10-13) — NOT AUTHORIZED —
                              proposed for the G structured register
+                             (OBS-F4P-FREEHEP-XREF-SIZE unchanged by the F4-D
+                             closeout, 2026-10-14: OPEN — UNRESOLVED — INDEPENDENT)
 OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER = OPEN — PRE-EXISTING —
                              CHARACTERIZATION AUTHORIZED NEXT (registered at the E1-P
                              closeout, 2026-10-07: reproduced by the author in a

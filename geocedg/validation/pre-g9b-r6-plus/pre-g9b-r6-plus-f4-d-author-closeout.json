@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "phases": ["PRE-G9B-R6-plus-F4-D"],
+  "registeredPhaseIds": ["PRE-G9B-R6-PLUS-F4-D"],
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_d_author_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — PRE-G9B-R6-plus-F4-D AUTHOR APPROVAL AND CLOSEOUT", "authorization": "F4-D PRODUCT APPROVAL AND DOCUMENTARY CLOSEOUT", "newProductImplementation": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "states": {"PRE-G9B-R6-plus-F4-D": "PASS — AUTHOR APPROVED", "integratedPhase": "ACCEPTED / COMPLETE", "f4dStop": "aae7b12c — HISTORICAL EVIDENCE (accepted as correct)", "f4dWip": "6c2fc409 — UNVERIFIED — NOT IN THE APPROVED LINEAGE", "publication": "NOT AUTHORIZED", "F4-A": "NOT AUTHORIZED — STARTS ONLY AFTER F4-D PUBLICATION (DQ-F4-10)", "G": "NOT AUTHORIZED"},
+  "authorSmoke": {"state": "PASS", "authorConfirmation": true, "performedByAgent": false, "checklist": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md §10", "individualResultsAttributed": false},
+  "approvedScope": ["AbstractCharTable.toName(char) delegates to toName(Character.valueOf(c)) (TD-PDF-2)", "CharstringEncoder.move(double,double) writes 0 hmoveto for a zero displacement (TD-PDF-3, Adobe Type 1 Font Format 1.1 §6.4)"],
+  "notApproved": ["FreeHEP update, replacement or refactoring", "correction of OBS-F4P-FREEHEP-XREF-SIZE", "TD-PDF-1", "F4-A", "G", "publication"],
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "publishedBase": {"commit": "847bb20a593e8092eabf80bd9d7c62ed7c21de08", "liveRemoteMainReadOn": "2026-10-14"},
+  "chain": [
+    {"commit": "089fc2205300559c572c12f0cd32326abd0c2b5e", "tree": "61fa86b01d66f129e3bc52e8e93d05959530bed6", "role": "F4 preparation"},
+    {"commit": "3251f08595fee8cd5819cc4c607e1dd97c6d0ad2", "tree": "0c6fcb3367ab7c8cf40b7e13d9c7f0253aad9aee", "role": "F4 author-decision reconciliation"},
+    {"commit": "83f07931afb3a1c7fbbdba268d7da5fb2d8b3cf9", "tree": "d4e6989c585e6839d22eaffc84df783c09a0c065", "role": "F4 final author reconciliation amendment (approved design base)"},
+    {"commit": "0c7885260761f442c25b380fcbbae11d1215fb51", "tree": "e75fb9c6b55a1677380802766300f514323762d6", "role": "F4 author design closeout"},
+    {"commit": "3d609397cf82c428872a0b6859426aba7c0efdeb", "tree": "0c04e38f79f28d5506c025f055ade92048204c8e", "role": "F4-D implementation authorization"},
+    {"commit": "aae7b12ccc7e8c21eced1b10f7aa08562ae2bec2", "tree": "f6732b1536af3c831fb9bfb05bd8d0784d6f331a", "role": "F4-D implementation stop (historical)"},
+    {"commit": "3968771327aca5aa3e7b47fc68a74451f44fc9d6", "tree": "c88143b02760e88ea18d1b4185a0693b55eb31bf", "role": "F4-D scope amendment 01"},
+    {"commit": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2", "tree": "47b634b1885a9b5650af73369caa97a955bf22f2", "role": "F4-D technical candidate — approved implementation"}
+  ],
+  "excludedFromChain": [{"commit": "6c2fc40918be3e43a1df09a454f407be85acd553", "branch": "wip/pre-g9b-r6-plus-f4-d-type1-outline-blocked", "role": "unverified WIP, never a candidate"}],
+  "approvedCandidate": {"commit": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2", "tree": "47b634b1885a9b5650af73369caa97a955bf22f2", "parent": "3968771327aca5aa3e7b47fc68a74451f44fc9d6", "mutated": false},
+  "acceptedEvidence": {
+    "candidate": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2",
+    "tree": "47b634b1885a9b5650af73369caa97a955bf22f2",
+    "verificationClass": "INTEGRATED_PHASE",
+    "resultHashRecomputed": true,
+    "phase": {"phaseId": "PRE-G9B-R6-PLUS-F4-D", "run": "verification-0d7d0418479645779c9c2690ab50b140", "verdict": "ACCEPTED / COMPLETE", "checks": "2/2", "selectionIdentities": 53, "resultHash": "6f0116f2cef11bb96a1b7b7636ea340225a715445f4de15ce4e1b3c80f89424e", "receipt": "artifacts/agent/f4d-amend01-phase/"},
+    "integration": {"run": "verification-c1f5709d41444f6e88c801a9d4ba9189", "verdict": "ACCEPTED / COMPLETE", "checks": "19/19", "resultHash": "3ac11536cd8c57055f38203c6c4a52cc63861df800a7f63ea12a6be9e26aa4e7", "receipt": "artifacts/agent/f4d-amend01-integration/"},
+    "infraUnit": {"run": "verification-1abe42a5651e4dafb469838331413042", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22", "resultHash": "6c28c956fe072f98b0c5c2c3cbe6f7abad7ab4a01d8f5c03b722a71c24dfd6ff", "receipt": "artifacts/agent/f4d-amend01-infra-unit/ (copied unchanged from the verifier's temporary folder)", "resultFileSha256": "ba216fa753e9cc3023b724ca92bdb60b7b688367154f636ff7191b92f77d00ea"},
+    "static": {"run": "verification-e9a03b359f8f43208ebec344a125ca7e", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "resultHash": "1cec22e1d4a58c1ac4a9a976f8956ac25b86a33b346db5104d738ddfaf4d8d2b", "receipt": "artifacts/agent/f4d-amend01-static/ (copied unchanged from the verifier's temporary folder)", "resultFileSha256": "0b58fd5da323a016459bb27ff2482a77eb612f67fb01e558ca27f96f67a5e55c"},
+    "standingDiagnostics": ["diagnostic.governance DIAGNOSTIC_FINDING", "diagnostic.historical-consistency DIAGNOSTIC_UNAVAILABLE"],
+    "final": "NOT RUN (above the frozen class)",
+    "developmentRunsNotAcceptance": ["verification-0a59456c89f34117a0c67a489930895b", "verification-4b28c6bee5734a378b47668226cc3b3f"],
+    "structuralType1": {"glyphsWithoutInitialMoveto": 0, "embeddedPrograms": 17, "oneLineStateDefectiveGlyphsPerProgram": 43, "javaShapeOracle": "every glyph of the product sans and serif fonts in four styles"},
+    "external": {"tools": ["Ghostscript 10.02.1", "Poppler 24.04.0", "Xpdf 4.06"], "unavailable": [], "tolerance": "Chebyshev r = 5 px at 1200 dpi (0.106 mm), zero unmatched pixels both directions", "toleranceHeldInEveryScene": true, "embeddedOnlyMatchedWithin2px": "26/26", "textExtractionExact": true, "candidateReproduction": "artifacts/pre-g9b-r6-plus-f4-d/candidate/", "externalEvidenceSha256": "ae3d56a0c21eef5cee2b95c355630dcfad87668d6ed2bbe7280553cc3d2f3922"},
+    "newNormalizationExclusions": false
+  },
+  "debts": {
+    "TD-PDF-2": {"alias": "OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS", "state": "CLOSED — RESOLVED BY F4-D", "resolution": {"commit": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2", "file": "source/desktop/desktop/src/main/java/org/freehep/graphics2d/font/AbstractCharTable.java", "blob": "52c0ff23699c1f19440cde0a3f96c17ecf4b41ce"}, "historicalEvidence": ["089fc2205300559c572c12f0cd32326abd0c2b5e (F4-PREP confirmation, upstream c4fd03ce)", "docs/validation/pre_g9b_r6_plus_f4_d_implementation_stop_report.md"]},
+    "TD-PDF-3": {"relatedTo": "TD-PDF-2 (latent behind it)", "state": "CLOSED — RESOLVED BY F4-D SCOPE AMENDMENT 01", "resolution": {"commit": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2", "file": "source/desktop/desktop/src/main/java/org/freehep/graphicsio/font/CharstringEncoder.java", "blob": "e6d6c6f7fe0f2fc71f554f1c3fbe4d73ed5915d6"}, "historicalEvidence": ["aae7b12ccc7e8c21eced1b10f7aa08562ae2bec2 (stop)", "6c2fc40918be3e43a1df09a454f407be85acd553 (WIP)", "3968771327aca5aa3e7b47fc68a74451f44fc9d6 (scope amendment 01)"]},
+    "TD-PDF-1": "DEFERRED (DQ-F4-8) — unchanged"
+  },
+  "risks": {
+    "F4R-EMBED-FIDELITY": "CLOSED — realized as TD-PDF-3 and resolved with it",
+    "F4R-SHAPES-UNCHANGED": "CLOSED — HELD (obligations 6-8)",
+    "F4R-FAILED-EXPORT-REPORTING": "CLOSED FOR F4-D — NOT REALIZED; inherited generic failure reporting unchanged, outside the approved obligations; no debt opened",
+    "F4-A risks": "unchanged"
+  },
+  "observations": [
+    {"id": "OBS-F4P-FREEHEP-XREF-SIZE", "state": "OPEN — UNRESOLVED — INDEPENDENT OBSERVATION", "causedByF4D": false, "changedByF4D": false, "owner": "proposed for the G structured register (not authorized)"},
+    {"id": "FreeHEP provenance families, inherited FIXME in FontEmbedderType1.writeGlyph, JVM-wide Classic FreeHEP defaults, external tools outside the workstation contract", "state": "RETAINED NOTES — NON-BLOCKING"}
+  ],
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC", "productChange": "NONE", "testChange": "NONE", "registryChange": "NONE", "promptChange": "NONE", "phaseIntegrationOrInfraRerun": false},
+  "publicationReadiness": {"authorized": false, "linearFromLiveRemoteMain": true, "fastForwardPossible": true, "includesStopCommit": true, "excludesWip": true, "requires": ["separate author authorization naming the exact closeout commit", "fresh read of the live remote main", "closeout accepted by STATIC", "publication gate"], "tagsOrReleases": false},
+  "next": {"F4-D publication": "NOT AUTHORIZED — separate author decision", "F4-A": "NOT AUTHORIZED — after F4-D publication, own authorization and exact base", "F4 aggregate closeout": "after F4-A", "G": "NOT AUTHORIZED", "automaticAdvance": false}
+}
