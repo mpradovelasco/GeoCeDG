@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-G-READINESS",
+  "phase": "PRE-G9B-R6-plus-G",
+  "artifactKind": "READINESS_AND_AUTHORIZATION_PACKAGE",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — F4-A PUBLICATION + F4 AGGREGATE CLOSEOUT + G READINESS", "operation": 3, "implementation": "NOT AUTHORIZED", "publication": "NOT AUTHORIZED"},
+  "records": {
+    "package": "docs/architecture/pre_g9b_r6_plus_g_readiness_package.md",
+    "prompt": ".github/prompts/tasks/pre-g9b-r6-plus-g-help-verification-and-closeout.prompt.md",
+    "plan": "docs/architecture/pre_g9b_r6_plus_minitrack_plan.md",
+    "f4AggregateCloseout": "docs/validation/pre_g9b_r6_plus_f4_aggregate_closeout_record.md"
+  },
+  "preparedOn": {"commit": "19f8f206b5ed7df8d203b3cebddd59eb1183d589", "tree": "4d803c6a9f3f8db9cfeea2420d161835e08d7871", "static": "verification-152be358dba24759ab1af829e1ec2d84", "publishedMain": "07424dee6e5293c6259e84b97ca0ea3e6e5fc72f"},
+  "states": {
+    "G readiness": "PREPARED — PENDING AUTHOR REVIEW",
+    "G prompt": "CANONICAL PROMPT CANDIDATE — PREPARED — PENDING AUTHOR REVIEW — NOT AUTHORIZED",
+    "G implementation": "NOT AUTHORIZED",
+    "PRE-G9B-R6-plus global closeout": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "visibleVersion": "1.0.0 (unchanged)"
+  },
+  "selfApproved": false,
+  "prerequisites": {
+    "hard": ["A-1", "A-2", "B", "C", "D1", "E1", "E2", "E3", "F1", "F2", "F3"],
+    "recommendedPredecessor": "F3",
+    "operationalPredecessor": {"id": "F4", "hardDependency": false, "basis": "author planning decision 2026-10-09 (between F3 and G)"},
+    "rows": [
+      {"id": "A-1", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "2a71133a", "inPublishedMain": true},
+      {"id": "A-2", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "06a2ea6b", "inPublishedMain": true},
+      {"id": "B", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "848206c4", "inPublishedMain": true},
+      {"id": "C", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "6248bf0f", "corrective": {"C-X1": "eabe6368"}, "inPublishedMain": true},
+      {"id": "D1", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "6e1d8459", "predecessor": {"D0": "8383a153"}, "inPublishedMain": true},
+      {"id": "E1-L", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "5f34d181", "inPublishedMain": true},
+      {"id": "E1-P", "state": "PASS — AUTHOR APPROVED", "implementation": "dcda4075", "inPublishedMain": true, "finding": "R-1"},
+      {"id": "E1", "state": "PASS — AUTHOR APPROVED (aggregate)", "correctives": {"E1-X1": "b12ab32c", "E1-P-X1": "44b90156"}, "inPublishedMain": true},
+      {"id": "E2", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "3a724661", "inPublishedMain": true},
+      {"id": "E3", "state": "PASS — AUTHOR APPROVED", "implementation": "7cd50116", "inPublishedMain": true, "finding": "R-1"},
+      {"id": "F1", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "1cea3c89", "inPublishedMain": true},
+      {"id": "F2", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "488f1e99", "inPublishedMain": true},
+      {"id": "F3", "state": "PASS — AUTHOR APPROVED — PUBLISHED", "implementation": "2d7b2cae", "inPublishedMain": true},
+      {"id": "F4", "state": "COMPLETE — AUTHOR APPROVED (aggregate, documentary)", "implementations": {"F4-A": "6baa66a5", "F4-D": "6214d15a"}, "inPublishedMain": "implementations yes; aggregate closeout 19f8f206 no"}
+    ]
+  },
+  "proposedBase": "the published successor containing the F4 aggregate closeout 19f8f206 and this readiness package; exact commit and tree named by the G implementation authorization (DQ-G-10)",
+  "decisions": ["DQ-G-1 verification class and acceptance profiles", "DQ-G-2 version and version-date source", "DQ-G-3 distribution-condition source", "DQ-G-4 when 1.1.0 and its date apply", "DQ-G-5 OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET disposition", "DQ-G-6 owners and dispositions", "DQ-G-7 in-product help depth", "DQ-G-8 status reconciliation", "DQ-G-9 documentary observations", "DQ-G-10 publication before the G authorization"],
+  "aboutRequirements": {
+    "id": "ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA",
+    "obligations": ["M-1 GeoCeDG-owned About", "M-2 product name", "M-3 canonical version", "M-4 canonical version date distinct from the build date", "M-5 EUPL-1.2 software", "M-6 CC BY 4.0 documentation and ordinary artwork", "M-7 inherited components under their own terms", "M-8 INTERNAL / NC / COMMERCIAL distribution condition", "M-9 Classic About unchanged", "M-10 visible version 1.0.0 preserved during preparation"],
+    "currentGaps": ["no canonical version date", "distribution profile not in the build provenance", "licences only by pointer", "About description says author-review implementation candidate"]
+  },
+  "findings": ["R-1 status-label drift", "R-2 Apply Template re-layering moot under T0", "R-3 guide gap for Export text as shapes / embedded fonts", "R-4 no version date; version from pinned package.yml", "R-5 distribution profile not available at runtime", "R-6 full-suite intermittent observations", "R-7 working-layer direct entry without owner", "R-8 DQ-F4-6 and DQ-F4-8 shown pending in the plan", "R-9 E2/E3 labels behind approved closeouts", "R-10 observations outside the plan register"],
+  "debtMatrix": {
+    "categories": {"R": "resolved", "L": "accepted limitation", "D": "deferred with owner (to be assigned)", "O": "open non-blocking", "B": "blocking G entry or global closeout", "P": "pending author decision"},
+    "blockingGEntry": [],
+    "blockingGlobalCloseout": ["OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA"],
+    "pending": ["OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT", "OBS-R6PLUS-DESKTOP-ADJACENT-OFF-EDT-SITES", "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY", "ENH-B-MANUAL-EXPORT-AREA-DRAG", "OBS-R6P-SAVE-WARNING", "OBS-A1-3D-VIEW", "OBS-A1-NON-HIT-SELECTION", "OBS-A1-GRAPHICS2-GEOCEDG-MODES", "OBS-A1-BACKGROUND-IMAGE-LAYER", "OBS-F4P-S3-SPEC-HEADER", "OBS-F4P-ADR0035-CONSEQUENCE-LINE", "OBS-R6P-DXF-DEFAULT-DOC", "OBS-R6P-DXF-SPEC-HEADER", "OBS-R6P-DOC-IDENTITY-HEADER", "OBS-R6P-ACTION-COUNT-DOC", "OBS-R6PLUS-E2-UPSTREAM-MANIFEST-SPLINEV2-PURPOSE", "F4R-G2-VIEW-CLASS", "F4R-A1-REBUILD", "F4R-INHERITED-FREEHEP", "F4R-CLASSIC-PERIMETER", "F4R-READER-COMPAT"],
+    "deferred": ["DEFER-F3-TEMPLATE-DEFAULTS", "DEFER-F3-M2", "DEFER-F3-SCRIPTS", "DEFER-F3-3D", "DEFER-F3-UNLISTED-TYPES", "DEFER-F3-IDENTITY-MACROS", "DEFER-F3-FORENSIC-EXPORT", "TD-PDF-1", "POST-E2-P1 Option B and physical zoom aid"],
+    "openNonBlocking": ["OBS-R6PLUS-F2R1-FULL-SUITE-MODAL-ERROR-DIALOGS", "OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT", "OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP", "OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION", "OBS-D1-ROLLBACK-CONSPROT-GUI", "OBS-F3-PROTECTED-LABELS", "OBS-F3-TEXT-THICKNESS", "OBS-F3R2-PARTIAL-RESTYLE", "OBS-F3R2-INHERITED-STALE-SELECTION", "OBS-F4P-FREEHEP-XREF-SIZE", "AutoCAD releases other than 2026 (coverage gap)", "OBS-R6PLUS-E2-USER-LIBRARY-LOCALE-DEPENDENT-NATIVE-COLLISION", "OBS-R6PLUS-E2-TEMPLATE-V7-PERIMETER-MACRO-SHADOWS-NATIVE", "OBS-R6PLUS-E2-ALIGNDRAWTEXT-HASCHANGED", "OBS-R6P0-ROTATE-TEXT-POINT", "OBS-R6P0-CONSTRUCTION-XML-SWALLOW", "OBS-R6P0-STALE-REFERENCE-FLAG", "OBS-E1P-SMOKE-READER-LOG", "OBS-E1P-USERSTORE-LOCK", "OBS-E1P-SOURCE-REVISION", "OBS-D1-DEFAULTS-SAVE-RELEVANT", "OBS-D1-INSTALLED-PREFERENCES-IN-TESTS", "OBS-D1-INHERITED-HEADLESS-LOGGER", "OBS-D1-ANIMATING-DOCUMENT-RETENTION", "carried test and tool debts (Desktop test heap, exportPDF UTF-8 read, AutoColor JVM state, historical G9X1 scan)"],
+    "acceptedLimitations": ["F4-A-L1", "F4-A-L2", "F4-A-L3", "F4R-LINETYPE-COUPLING", "F4R-DEFAULTS-UNDO", "F4-D retained notes", "OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED", "A-2 3D draw-order", "OBS-R6PLUS-E2-DXF-DIMENSION-SUBSET", "OBS-R6PLUS-E2-READING-FLIP-AT-VERTICAL", "OBS-R6PLUS-E2-VALUE-LONGER-THAN-DIMENSION-LINE", "OBS-R6PLUS-E2-OLDER-READER-OUTPUTS-SURVIVE", "OBS-R6PLUS-E2-SMOKE-LEGACY-DOCUMENT-MACROS", "P1-DEFAULT-UX-LIMITATION", "DQ-D1-10 older-reader limitation", "OBS-B-LEGACY-LOCUS-OFFSCREEN-COVERAGE", "OBS-B-FREEHEP-PATH-COORDINATE-PRECISION", "C-SMOKE-1 EXTERNAL_READER_LIMITATION", "F2/F2-R1 platform and interaction limitations", "OBS-F3R2-SILENT-NO-OP", "F3 real-window isolation", "F3R-RECOVERY-FAILURE", "F3R scope-restricted closures"],
+    "note": "categories are proposals of this package; the G structured register re-derives the inventory on the G base and the author decides"
+  },
+  "verificationProposal": {"class": "INTEGRATED_PHASE", "acceptance": ["PHASE PRE-G9B-R6-PLUS-G", "INTEGRATION", "INFRA_UNIT", "STATIC", "PACKAGING INTERNAL and NC when packaging inputs change"], "escalation": "FINAL on a global verification-infrastructure change", "inheritedEvidence": "none", "frozenBy": "G implementation authorization (DQ-G-1)"},
+  "promptContractCheck": {"tool": "Test-PromptContractDocument", "executionSafe": true, "missing": [], "duplicate": [], "unknown": [], "order": []},
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"}
+}
