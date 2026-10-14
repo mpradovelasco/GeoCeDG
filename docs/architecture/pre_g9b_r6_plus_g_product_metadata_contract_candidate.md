@@ -2,7 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — PENDING AUTHOR APPROVAL — NOT NORMATIVE** |
+| Status | **CANDIDATE REVISION 2 — RECONCILED — PREPARED FOR AUTHOR-APPROVED NORMATIVE TRANSCRIPTION — NOT NORMATIVE** (no normative promotion occurs without the author's explicit approval of this final revision) |
+| Revisions | 1: `ccb4ef34` (G author decision reconciliation). 2: this revision, reconciling the author directions of "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14). Those directions are recorded in the [G author design decision record](../validation/pre_g9b_r6_plus_g_author_design_decision_record.md): PM-1/PM-2 kept; PM-3 semantics and the `1.1.0` / `2026-10-15` designation; no version date for `1.0.0`; PM-5 digest role and the consistency-is-not-authenticity clause; PM-6 to PM-12 accepted; M1 adopted. |
 | Requirement served | `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` (author-approved requirement of 2026-10-07, [E1 preparation closeout record](../validation/pre_g9b_r6_plus_e1_prompt_closeout_record.md) §5) |
 | Decisions it prepares | `DQ-G-2` (version and version-date source), `DQ-G-3` (distribution-condition source), `DQ-G-4` (`1.0.0` → `1.1.0` lifecycle) of the [G author-decision reconciliation](pre_g9b_r6_plus_g_author_decision_reconciliation.md) |
 | Prepared on | published `main` `abe12893b74f574c248117fbe873633a449e23e0`, tree `ba4298c5658bf3f897455db5a49a76fea7105e72` |
@@ -10,10 +11,11 @@
 | Implementation | **NOT AUTHORIZED.** No product, build, packaging, test, schema or pin change is made or authorized by this document. |
 | `selfApproved` | `false` |
 
-This document is a design candidate. It becomes a contract only through an explicit
-author decision on `DQ-G-2` to `DQ-G-4`. After that decision, the G implementation
-transcribes it into the normative documents listed in §9; until then the approved
-packaging and application-profile contracts stay unchanged.
+This document is a design candidate. The author has accepted its design directions
+(design decision record). It becomes a contract only when the author explicitly approves
+this final revision. After that approval, the G implementation transcribes it into the
+normative documents listed in §9. Until then the approved packaging and
+application-profile contracts stay unchanged.
 
 ## 1. Purpose and scope
 
@@ -127,20 +129,35 @@ their pins are the existing P0/P1 assertions.
 - **Field.** New required `application.version_date`, an ISO 8601 calendar date
   `YYYY-MM-DD`. The schema gets a pattern; the Gradle guard checks for a valid calendar
   date and exactly one `"version_date"` key.
-- **Semantics.** It is the date of the author-approved promotion of `application.version`,
-  as designated by the author (§6). It is never computed from a clock, a commit, a tag or
-  a file time. It is never a build date.
-- **Generation.** The generated provenance resource carries it as
-  `application.version.date`. Schema `2` → `3`; the loader accepts `3` only, fail-closed,
-  as today for `2`.
+- **Semantics (author direction, 2026-10-14).** The canonical version date is a
+  calendar date explicitly designated by the author for a product version. It is adopted
+  when the author approves that exact verified version. It is distinct from:
+  - the actual approval date;
+  - the build timestamp and the commit date;
+  - the publication date and the release date.
+
+  It is never computed from a clock, a commit, a tag or a file time.
+- **Value for `1.1.0`.** `VERSION_DATE = 2026-10-15`, designated by the author.
+- **`1.0.0` has no version date.** The published `1.0.0` stays historically valid without
+  a canonical version-date field. No date is inferred for it or approved retroactively.
+  The earlier proposal `2026-09-16` is withdrawn.
+- **Schema migration.** The field arrives only with the version-transition commit (§6.3,
+  L2). That one commit atomically:
+  - adds `application.version_date` to `package.yml`;
+  - moves the package-profile schema to `schema_version` `2` (`$id` `package-profile-v2`),
+    with the field required. The builder and the packaging check then accept exactly
+    version `2` and fail closed on `1`. Profile documents at earlier commits remain valid
+    under their own version-1 schema.
+  - adds the Gradle guard for the field;
+  - moves the generated provenance resource from schema `2` to `3`
+    (`application.version.date`, the profile table and digest of PM-5). The loader accepts
+    `3` only, fail-closed.
+  - adds the About version-date line and its tests.
+
+  Commits before the transition show no version-date line. The final verified candidate
+  requires and validates the field at every layer.
 - **Unchanged consumers.** The DXF fidelity sidecar keeps its schema and fields. Its
   `version` value follows PM-2.
-- **Value for `1.0.0` (`DQ-G-4`, sub-decision b).**
-  - Evidence points to 2026-09-16: P0, which adopted `1.0.0`, was closed in `1c97e780`
-    on that date. The P0 report states the adoption but no calendar date.
-  - If the author confirms that date, G introduces the field with `1.0.0` /
-    `2026-09-16`, so every intermediate commit tells the truth.
-  - Otherwise the field is introduced only by the version-transition commit of §6.
 
 ### PM-4 Build identity
 
@@ -174,7 +191,7 @@ notice. It is therefore part of the app-image, the ZIP, the installers and
   "notice_sha256": "<sha-256 of the staged notice>",
   "application": { "name": "GeoCeDG", "version": "<PM-2>", "version_date": "<PM-3>" },
   "source_revision": "<40-hex commit embedded in desktop.jar>",
-  "package_profile_sha256": "<sha-256 of package.yml>"
+  "package_profile_sha256": "<canonical sha-256 of package.yml, see below>"
 }
 ```
 
@@ -182,11 +199,38 @@ notice. It is therefore part of the app-image, the ZIP, the installers and
 declared profile's `id`, `status`, `marker` and `redistributable`, read from
 `package.yml`. Java therefore holds no second literal copy of a marker.
 
+**Role of `package_profile_sha256`: runtime-checked.**
+- **Digest definition.** SHA-256 of the UTF-8 text of `packaging/windows/package.yml`
+  with every `CRLF` and lone `CR` normalized to `LF`. This removes working-tree
+  line-ending differences.
+- **Who computes it.** The Gradle provenance task computes it from the same file it reads
+  the version and profile table from, and embeds it in the generated resource as
+  `package.profile.sha256`. The builder computes it identically when it writes the record.
+- **Runtime check.** The record's value must equal the embedded value exactly.
+  Otherwise the state is `UNVERIFIED`. This proves that the record and the JAR were
+  derived from the same package-profile text.
+- **Fallback.** If the author prefers fewer bindings, the field becomes audit-only
+  metadata. It is then never compared at runtime and is described only as an audit field.
+  The contract must never claim that an unchecked digest takes part in runtime
+  verification.
+
+**Consistency is not authenticity.** Every runtime check here is a consistency check
+between artifacts produced by the same GeoCeDG build and packaging pipeline. It protects
+against stale, mixed or hand-edited installations, which degrade to a
+non-redistributable state.
+- It provides no cryptographic authenticity or tamper resistance.
+- It confers no licensing permission: the record and the About text are not a licensing
+  authority. The legal condition of a copy is its packaged notice and the licensing
+  documents.
+- No signed metadata, online validation, DRM or other security infrastructure is
+  introduced.
+- `desktop.jar` stays profile-neutral.
+
 **Runtime states.** Exactly four:
 
 | State | Condition | About shows |
 |---|---|---|
-| `INTERNAL` | Launched by a jpackage launcher (`jpackage.app-path`). The record exists. It is valid, bounded in size and strictly parsed. It names a declared profile whose status, marker and `redistributable` equal the embedded table. Its `application` equals PM-2/PM-3. Its `source_revision` equals the embedded commit. The notice exists in `app/` with the recorded hash. | the INTERNAL marker verbatim, a localized "internal evaluation — not for redistribution", and the notice path |
+| `INTERNAL` | Launched by a jpackage launcher (`jpackage.app-path`). The record exists. It is valid, bounded in size and strictly parsed. It names a declared profile whose status, marker and `redistributable` equal the embedded table. Its `application` equals PM-2/PM-3. Its `source_revision` equals the embedded commit. Its `package_profile_sha256` equals the embedded digest. The notice exists in `app/` with the recorded hash. | the INTERNAL marker verbatim, a localized "internal evaluation — not for redistribution", and the notice path |
 | `NC` | Same conditions, profile `NC` | the NC marker verbatim, a localized "non-commercial distribution under PROFILE NC", and the notice and `app/legal/` paths |
 | `DEVELOPMENT` | No jpackage launcher: Gradle `runGeoCeDG`, tests, a source checkout | localized "development build — not a distribution; not for redistribution" |
 | `UNVERIFIED` | A jpackage launcher, but the record is missing, malformed, inconsistent or unbound. Or it names a profile that is not authorized for packaging. | localized "distribution condition not verified — not for redistribution" |
@@ -249,6 +293,15 @@ A focused consistency test asserts:
 
 The summary is presentation; the files remain the authority.
 
+The About surface keeps two kinds of statement distinct:
+- the terms of the **composite product** as a whole: a composite work, no single licence,
+  the distribution condition of this copy;
+- the **specific permissions attached to its components**: EUPL-1.2 for GeoCeDG-authored
+  software and for inherited GeoGebra source; CC BY 4.0 for GeoCeDG documentation and
+  ordinary artwork; their own terms for GeoGebra Materials and third-party components.
+
+A component's permission is never presented as the licence of the complete binary.
+
 ### PM-7 About surface
 
 The existing `geocedg.help.about` action and its read-only text dialog are kept: no new
@@ -298,10 +351,10 @@ Focused Desktop tests:
 
 | Area | Assertions |
 |---|---|
-| Single authority (PM-1 to PM-3) | name, version and date equal `package.yml`; exactly one `version` and one `version_date` key; valid calendar date |
-| Schema `3` | the provenance loader rejects schema `2` |
+| Single authority (PM-1 to PM-3) | name, version and date equal `package.yml` (`1.1.0` / `2026-10-15` in the final candidate); exactly one `version` and one `version_date` key; valid calendar date; the version date is not derived from, or compared with, any build or commit time |
+| Schemas | the provenance loader rejects schema `2`; the package-profile schema `2` requires `version_date`; the builder and packaging check refuse a version-1 profile |
 | Build identity (PM-4) | rendering for `CLEAN`, `DIRTY` and `UNAVAILABLE` |
-| Distribution states (PM-5) | each of the four states, from fixture records in a temporary directory; `COMMERCIAL` and `not-authorized` records give `UNVERIFIED`; mismatched version, date, revision or notice hash gives `UNVERIFIED` |
+| Distribution states (PM-5) | each of the four states, from fixture records in a temporary directory; `COMMERCIAL` and `not-authorized` records give `UNVERIFIED`; a mismatched version, date, revision, package-profile digest or notice hash gives `UNVERIFIED`; the digest canonicalization is identical for LF and CRLF copies of `package.yml` |
 | About content (PM-6, PM-7) | content and order in EN and ES; the licensing consistency test |
 | Classic (PM-9) | Classic About unchanged |
 | Existing pins | `GeoCeDGProfileTest`, P0 and P1 version assertions updated in the version-transition commit only |
@@ -329,7 +382,7 @@ Other required evidence:
 |---|---|
 | `DQ-G-2` (b) "a GeoCeDG product-metadata resource … recommended (b)" | Replaced by A (§3): (b) duplicates or relocates the approved single version authority. |
 | `DQ-G-3` "packaging writes the profile id into the build provenance; development builds show INTERNAL" | Refined. The build provenance in `desktop.jar` is profile-neutral, and one JAR serves both profiles. The profile is therefore written into an install-level record bound to that JAR (PM-5). Development builds show a distinct, conservative `DEVELOPMENT` condition rather than impersonating a packaged `INTERNAL` copy. |
-| `DQ-G-4` "the G candidate carries `1.1.0` and the proposed date" | Kept, with a precise lifecycle, the date-designation rule and stop conditions (§6). |
+| `DQ-G-4` "the G candidate carries `1.1.0` and the proposed date" | Kept as M1, adopted by the author with `1.1.0` / `2026-10-15` (§6). |
 
 ## 6. Version lifecycle `1.0.0` → `1.1.0` (`DQ-G-4`)
 
@@ -345,7 +398,7 @@ A post-approval version commit does not help:
   `desktop.jar`, the guides, `--app-version`;
 - so it needs a fresh campaign, or it ships unverified bytes.
 
-The coherent reading, proposed for author confirmation, is the following. The canonical
+The author adopted M1 on 2026-10-14 (design decision record). The reading follows. The canonical
 visible version is the version of the approved and published product line. That is
 `1.0.0` at every approved or published state until G is approved. A `1.1.0` that exists
 only in an unapproved, unpublished G candidate is a proposal under review, not a
@@ -360,7 +413,7 @@ bytes.
 
 | Mechanism | Productive bytes after acceptance | Verification | Shows an unapproved version as released | Verdict |
 |---|---|---|---|---|
-| **M1 — approve what was verified.** The candidate carries `1.1.0` and the designated date. Approval adopts them. | none | one frozen campaign on `T` | No. The copies are unpublished, carry the `DEVELOPMENT` or `INTERNAL` condition, and no release is implied. | **recommended** |
+| **M1 — approve what was verified.** The candidate carries `1.1.0` and the designated date. Approval adopts them. | none | one frozen campaign on `T` | No. The copies are unpublished, carry the `DEVELOPMENT` or `INTERNAL` condition, and no release is implied. | **adopted by the author** |
 | **M2 — post-approval version commit.** Approve `T₁` at `1.0.0`, then commit `1.1.0` and the date. | yes (`desktop.jar` resource, guides, installers) | either unverified bytes (rejected) or a second complete campaign on `T₂`. Approving `T₁` would not be G approval. | It shows `1.1.0` in `T₂` before `T₂`'s approval anyway. | rejected: the cost doubles and the tension remains |
 | **M3 — candidate metadata with an approval flag and later activation.** The product reads an "activated" state from a documentary file or a later record. | yes: build output changes without a productive source change | none for the activation delta | The approval state is encoded in product inputs. | rejected: violates the frozen-candidate rule and hides a productive change |
 
@@ -368,27 +421,30 @@ bytes.
 
 | Stage | Version / date in product bytes | Canonical? | Observable where |
 |---|---|---|---|
-| L0 Published base (`abe12893`) | `1.0.0` / none | yes | published product |
-| L1 G development commits | `1.0.0` / `2026-09-16` if confirmed (PM-3), else none | `1.0.0` yes | local development builds (`DEVELOPMENT`) |
-| L2 Version-transition commit: the last productive commit; `package.yml`, guides and version tests change together | `1.1.0` / `D` | **no — proposed** | local candidate builds only |
-| L3 Verified technical candidate `T` (contains L2) | `1.1.0` / `D` | **no — proposed** | the frozen campaign, INTERNAL and NC builds of `T` for PACKAGING and author smoke; never published |
-| L4 Author approval of `T` (`G = PASS — AUTHOR APPROVED`) | unchanged bytes | **yes, from the approval** | — |
+`D = 2026-10-15` (author-designated, 2026-10-14).
+
+| Stage | Version / date in product bytes | Canonical? | Observable where |
+|---|---|---|---|
+| L0 Published base (`abe12893`) | `1.0.0` / no version-date field (historically valid as published) | yes | published product |
+| L1 G development commits | `1.0.0` / no version-date field and no About date line | `1.0.0` yes | local development builds (`DEVELOPMENT`) |
+| L2 Version-transition commit: the last productive commit. It atomically changes `package.yml` (`version` and the new required `version_date`), the package-profile schema `2`, the Gradle guard, the provenance schema `3`, the About date line, the guides and the version tests. | `1.1.0` / `2026-10-15` | **no — unapproved candidate** | local candidate builds only |
+| L3 Verified technical candidate `T` (contains L2) | `1.1.0` / `2026-10-15` | **no — unpublished, unapproved candidate** | the frozen campaign; INTERNAL and NC builds of `T` for PACKAGING and the author smoke; never published |
+| L4 Author approval of the exact `T` (`G = PASS — AUTHOR APPROVED`) | unchanged bytes | **yes, from the approval** | — |
 | L5 Documentary closeout `C` (descends from `T`) | unchanged bytes. `git diff --name-only T C` touches no product, build, packaging, test or verification path. | yes | — |
-| L6 Publication (separate exact-SHA instruction) | unchanged bytes | yes | published `main` shows `1.1.0` / `D` |
+| L6 Publication (separate exact-SHA instruction) | unchanged bytes | yes | published `main` shows `1.1.0` / `2026-10-15` |
 | L7 Public release (separate decision: tag, binaries, redistribution) | — | — | not implied by any stage above |
 
-**Date designation rule.**
-- `D` is fixed by the author in writing before `T` is frozen: in the G implementation
-  authorization or in a later instruction naming `D`.
-- `D` is the date the author designates for the promotion. Approval of `T` adopts it as
-  the version date of `1.1.0`.
-- Approval may come after `D`. The closeout then records `VERSION_DATE = D (adopted)`
-  explicitly.
-- If the author wants another date, or another version, the only route is a
-  metadata-only successor `T′`, with its own complete frozen campaign. Evidence never
-  carries across commits.
+**Date rule.**
+- `2026-10-15` is the author-designated product-version date of `1.1.0`. It is not
+  automatically the date of technical approval, publication, build or public release.
+- The author's approval of the exact `T` adopts it. The closeout records
+  `VERSION_DATE = 2026-10-15 (author designated; adopted by the approval of T)`, together
+  with the actual approval date as a separate fact.
+- Productive bytes are never modified after candidate acceptance to activate the version.
+- A changed version or date requires a new technical candidate `T′` with its own complete
+  frozen campaign. Evidence never carries across commits.
 
-`1.1.0` and `D` become:
+`1.1.0` and `2026-10-15` become:
 - **observable** from L2, and only in unpublished candidate builds;
 - **authoritative** at L4;
 - **published** at L6.
@@ -397,22 +453,22 @@ They are never "released" by any of these stages.
 
 **Stop conditions.**
 - Any product, build or packaging path changes after `T`.
-- `D` is undesignated at freeze time.
-- The approval does not adopt `D`, and no successor is authorized.
-- A version other than `1.1.0` appears.
+- The candidate carries a version or date other than `1.1.0` / `2026-10-15`, unless a
+  new author designation exists.
+- The approval does not adopt the date, and no successor is authorized.
+- A version date is introduced for `1.0.0`.
 - A tag, release or `COMMERCIAL` artifact is requested inside G.
 - The candidate report encodes approval state.
 
-## 7. Required author dispositions
+## 7. Author directions and remaining dispositions
 
-| Id | Disposition requested |
+| Id | State |
 |---|---|
-| `DQ-G-2` | approve Alternative A (PM-1 to PM-4), or choose B with the single-authority amendment it requires |
-| `DQ-G-3` | approve PM-5: the install-level distribution record, the four runtime states, and `DEVELOPMENT` as the conservative development condition |
-| `DQ-G-4` a | approve M1 and the stages of §6.3, including the reading of "visible version" in §6.1 |
-| `DQ-G-4` b | confirm or reject `2026-09-16` as the version date of `1.0.0` (PM-3) |
-| `DQ-G-4` c | designate `D` for `1.1.0` before the G candidate is frozen (now, or by a later instruction) |
-| PM-6, PM-7 | approve the licensing wording plan and the About order |
+| `DQ-G-2` | **direction accepted**: A. `package.yml` is the single authority for name and version; `application.version_date` is added there; no second independently editable source. |
+| `DQ-G-3` | **direction accepted**: PM-5 (`app/geocedg-distribution.json`, four states, conservative `DEVELOPMENT`/`UNVERIFIED`, `COMMERCIAL` unauthorized), with the digest-role and consistency-not-authenticity clarifications of this revision |
+| `DQ-G-4` | **direction accepted**: M1, `1.1.0` / `2026-10-15`, no date for `1.0.0` (the `2026-09-16` proposal is withdrawn) |
+| PM-6 to PM-12 | **direction accepted** |
+| Remaining | 1. Explicit approval of **this final revision** as the text to transcribe normatively (§9). 2. The digest role: runtime-checked as recommended here, or audit-only. 3. The package-profile schema migration as specified in PM-3 (`schema_version` `2`). |
 
 ## 8. Risks
 
@@ -429,7 +485,7 @@ They are never "released" by any of these stages.
 |---|---|
 | `geocedg/specs/packaging/windows-packaging.md` | add `version_date`, the distribution record and the build-manifest field |
 | `geocedg/specs/ui/application-profile.md` | About content paragraph (PM-6, PM-7) |
-| `geocedg/specs/operations/package-profile.schema.json` | one required property |
+| `geocedg/specs/operations/package-profile.schema.json` | `schema_version` `2`, `$id` `package-profile-v2`, the required `application.version_date` (PM-3). The builder and the packaging check accept exactly version `2`. |
 | static-contract pins | re-pinned through the official mechanism |
 | `docs/upstream/modified-files.yml` | purpose of `source/desktop/desktop/build.gradle.kts` |
 | this candidate | either becomes a new normative specification or is transcribed into the two documents above, as the author chooses |

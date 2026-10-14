@@ -2,11 +2,57 @@
 
 | Field | Value |
 |---|---|
-| Status | **G DEBT DISPOSITION PLAN — PROPOSED — PENDING AUTHOR DECISION** (`DQ-G-6`; feeds `DQ-G-5`, `DQ-G-8`, `DQ-G-9`) |
+| Status | **G DEBT DISPOSITION PLAN — REVISION 2 — FRAMEWORK AND PLANNING OWNERS ADOPTED BY THE AUTHOR — PER-ITEM DISPOSITIONS PENDING AUTHOR DECISION** (`DQ-G-6`; feeds `DQ-G-5`, `DQ-G-8`, `DQ-G-9`) |
 | Part of | the [G author decision reconciliation](../architecture/pre_g9b_r6_plus_g_author_decision_reconciliation.md) (2026-10-14) |
 | Base | published `main` `abe12893b74f574c248117fbe873633a449e23e0`, tree `ba4298c5658bf3f897455db5a49a76fea7105e72` |
 | Method | read-only re-derivation of every item in [readiness package](../architecture/pre_g9b_r6_plus_g_readiness_package.md) §5. Each item was traced to: the latest author-approved closeout or decision record; the mini-track plan §14 register; the JSON mirrors; and, where relevant, the approved code at `abe12893`. A further search of 58 R6-plus, POST-E2 and POST-E3 records found the open items the readiness package missed. Only git read commands and searches were run. |
 | Nature | **A proposal.** This document closes, waives, approves, implements and re-owns nothing. Categories, owners and blocking flags are proposals until the author decides them. `selfApproved = false`. |
+
+## Revision 2 — author planning directions (2026-10-14)
+
+Revision 1 is `ccb4ef34`. The author instruction "GeoCeDG — PRE-G9B-R6-plus-G FINAL
+AUTHOR DESIGN RECONCILIATION" (2026-10-14) gives four directions. They are recorded in the
+[G author design decision record](pre_g9b_r6_plus_g_author_design_decision_record.md).
+
+1. **Inventory and framework adopted.** The inventory of 134 entries and its categorization
+   framework (B, P, D, O, L, R and the three blocking columns) are adopted as the
+   structure of the G register. This is **not** blanket approval of any per-item
+   disposition.
+2. **Planning owners decided.** The author decides the following preferred future owners.
+   They are planning ownership decisions only. They authorize no implementation and
+   change no phase's approved scope. They supersede the revision-1 "Proposed owner" cell
+   of the rows named:
+
+   | Row | Item | Planning owner (author decision) |
+   |---|---|---|
+   | D-8 | `TD-PDF-1` | **G15**, preceded by a specific physical-presentation contract-design activity |
+   | P-2 | `ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY` | **G11** |
+   | P-3 | `ENH-B-MANUAL-EXPORT-AREA-DRAG` | **G15** (preferred) |
+   | D-10 | POST-E2-P1 physical zoom aid | **G12** |
+   | D-1 to D-7 | `DEFER-F3-*` | a future **author-named insertion and styles activity** |
+   | O-1, O-2 | full-suite instability observations | **G monitoring** (G's INTEGRATION run) with **`PRE-G9B-R7` follow-up** |
+
+   P-2 and P-3 keep category **P**. Their owner is now decided, but their disposition
+   (implementation scope) remains the owner phase's own future decision.
+3. **No silent promotion.** For every other pending item, an explicit author disposition
+   is still required. A row whose revision-1 *proposed* category differs from its
+   *recorded* status keeps its recorded status until the author decides it. This covers:
+   - P → R and O → L proposals;
+   - the five F4 reconciliation risks;
+   - the E2 and E3 rows whose closeout is silent.
+
+   In particular, §0.2's re-categorizations are proposals marked
+   `PROPOSED — AUTHOR DISPOSITION REQUIRED`. Previously approved closures and accepted
+   limitations stay as recorded.
+4. **Mandatory pre-global-closeout dispositions preserved.** These two items cannot be
+   closed before their G characterization evidence and an explicit author disposition:
+   - B-1 `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`;
+   - B-2 `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT`.
+
+The narrowest truthful status proposed for the "closeout silent" rows is given in the
+[reconciliation record](../architecture/pre_g9b_r6_plus_g_author_decision_reconciliation.md)
+§7.3 (class 2). This includes the E2 naming collision, the E3 unit gate, the `ExportArea`
+link and the five F4 risks.
 
 ## How to read this proposal
 
@@ -17,7 +63,9 @@
   - five after `:1757`.
 
   In that candidate, plan lines shift by +1 from `:101`, by +5 from `:1664` and by +10
-  from `:1758`. The roadmap line numbers do not change.
+  from `:1758`. Revision 2 adds one more line after `:100` and five more after `:1757`:
+  +2 from `:101`, +6 from `:1664`, +16 from `:1758`. The roadmap line numbers do not
+  change.
 - **Live remote.** It was verified by the reconciliation (`git ls-remote`, §1.1 there).
 - **Category rule.** Category **L** is used only where an author-approved record accepts the
   behaviour. An item whose only record is a candidate or preparation report that says
@@ -164,7 +212,7 @@ Owner gates (roadmap quotes):
 
 Labels that drift but carry no debt (E1-P and E3 headlines, the plan's subphase table) are covered by RP R-1 (RP:59) and are not repeated here.
 
-### 0.2 Category changes proposed against readiness §5
+### 0.2 Category changes proposed against readiness §5 (each `PROPOSED — AUTHOR DISPOSITION REQUIRED`; the recorded status stands until decided)
 
 | Item | Readiness | Proposed | Basis |
 |---|---|---|---|

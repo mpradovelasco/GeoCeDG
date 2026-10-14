@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "task": "PRE-G9B-R6-plus-G-FINAL-AUTHOR-DESIGN-RECONCILIATION",
+  "phase": "PRE-G9B-R6-plus-G",
+  "artifactKind": "AUTHOR_DESIGN_DECISION_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_g_author_design_decision_record.md",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION", "productImplementation": "NOT AUTHORIZED", "documentaryReconciliation": "AUTHORIZED", "remoteMutation": "NOT AUTHORIZED"},
+  "entryIdentity": {"publishedBase": {"commit": "abe12893b74f574c248117fbe873633a449e23e0", "tree": "ba4298c5658bf3f897455db5a49a76fea7105e72"}, "previousDocumentaryCandidate": {"commit": "ccb4ef34dde4736030cc1a600cd7b84624f9ab56", "tree": "04882e1d042282442cc6977efa2ea07398b0340a", "parent": "abe12893b74f574c248117fbe873633a449e23e0"}, "liveRemoteMain": "abe12893b74f574c248117fbe873633a449e23e0", "cleanWorktree": true},
+  "states": {
+    "G version target": "1.1.0",
+    "G version date": "2026-10-15 — AUTHOR DESIGNATED",
+    "G metadata design": "RECONCILED — PENDING FINAL AUTHOR REVIEW",
+    "G canonical prompt": "REVISION 3 CANDIDATE — NOT AUTHORIZED",
+    "G implementation": "NOT AUTHORIZED",
+    "G technical candidate": "NOT CREATED",
+    "G global closeout": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "public release": "NOT AUTHORIZED",
+    "DQ-G-10": "PUBLICATION COMPLETED — EXACT BASE ESTABLISHED"
+  },
+  "selfApproved": false,
+  "directions": {
+    "version": {"target": "1.1.0", "versionDate": "2026-10-15", "versionDateSemantics": "author-designated calendar date for a product version, adopted when the author approves that exact verified version; distinct from approval, build, commit, publication and release dates", "version100Date": "none (historically valid without the field; 2026-09-16 not inferred or approved)"},
+    "PM-1/PM-2": "packaging/windows/package.yml single authority for name and version; no second independently editable version source",
+    "PM-3": "application.version_date required, introduced atomically by the version-transition commit with a coherent schema migration; the final verified candidate requires and validates it",
+    "PM-4": "build identity from repository provenance; no wall-clock timestamp",
+    "PM-5": {"record": "app/geocedg-distribution.json", "states": ["INTERNAL", "NC", "DEVELOPMENT", "UNVERIFIED"], "commercial": "unauthorized", "packageProfileSha256": "role clarified (runtime-checked against the build-embedded canonical digest, or audit-only; never claimed as checked if unchecked)", "consistencyNotAuthenticity": true, "profileNeutralJar": true, "noSignedMetadataOnlineValidationOrDrm": true},
+    "PM-6..PM-12": "accepted; composite-product terms distinct from component permissions; never 'licensed solely under EUPL-1.2'",
+    "DQ-G-1": "INTEGRATED_PHASE: PHASE PRE-G9B-R6-PLUS-G + INTEGRATION + INFRA_UNIT + STATIC + PACKAGING INTERNAL and NC + COMMERCIAL refusal evidence; FINAL only by escalation or a separate author decision for a unified milestone receipt",
+    "DQ-G-4": "M1 approve exactly what was verified; no post-acceptance productive mutation; changed version or date requires a new candidate",
+    "DQ-G-5": "27 bounded scenarios in planned G scope for both document-replacement observations; no productive correction; no closure before evidence and explicit author disposition",
+    "DQ-G-6": {"framework": "134-entry inventory adopted; no blanket approval of per-item dispositions", "planningOwners": {"TD-PDF-1": "G15 after a physical-presentation contract-design activity", "ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY": "G11", "ENH-B-MANUAL-EXPORT-AREA-DRAG": "G15 (preferred)", "POST-E2-P1 physical zoom aid": "G12", "DEFER-F3-*": "future author-named insertion and styles activity", "full-suite instability": "G monitoring and PRE-G9B-R7 follow-up"}, "noSilentPromotion": true, "mandatoryPreGlobalCloseout": ["OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET", "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT"]},
+    "DQ-G-7": "minimal EN/ES help package; no new framework or window",
+    "DQ-G-8/9": {"designPreparation": "authorized for minimal current-state corrections supported by approved records", "classes": ["1 confirmed stale status labels", "2 approved implementations whose observations lack an explicit closeout disposition", "3 normative amendments requiring separate author approval", "4 ADR-body changes or verifier-pinned files requiring separate authorization"], "retained": "OBS-F4P-ADR0035-CONSEQUENCE-LINE"}
+  },
+  "remainingDecisions": [
+    "approve the final product metadata contract revision for normative transcription (digest role; package-profile schema_version 2)",
+    "authorize canonical prompt revision 3 naming the exact base, freezing INTEGRATED_PHASE and selecting CLOSEOUT_MODE",
+    "approve and separately publish the documentary reconciliation commits if they are to become the base (optional)",
+    "select the optional editorial help items",
+    "dispose of both document-replacement observations on the characterization evidence (before the global closeout)",
+    "decide the pending per-item debt dispositions and O-row owners (before the global closeout; owners by PRE-G9B-R7)",
+    "class 2 dispositions (E2 naming, E3 unit gate and ExportArea link, five F4 risks, other closeout-silent rows)",
+    "class 3 normative amendments (C/E3 amendments in three specifications; documentation-maintenance §9/§10 wording)",
+    "class 4 authorizations or retention (ADR 0035 line; G9U0-R2 and G9X1 pinned headers)",
+    "R-13 and R-14 intent decisions"
+  ]
+}

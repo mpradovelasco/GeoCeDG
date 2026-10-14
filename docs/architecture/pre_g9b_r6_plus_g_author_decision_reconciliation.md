@@ -2,12 +2,45 @@
 
 | Field | Value |
 |---|---|
-| Status | **G AUTHOR DECISION RECONCILIATION — PREPARED — PENDING AUTHOR REVIEW** (documentary; every recommendation below is a proposal, none is an author decision) |
+| Status | **G AUTHOR DECISION RECONCILIATION — REVISION 2 — AUTHOR DESIGN DIRECTIONS RECONCILED — PENDING FINAL AUTHOR REVIEW** (documentary). The directions the author gave on 2026-10-14 are recorded in the [author design decision record](../validation/pre_g9b_r6_plus_g_author_design_decision_record.md). Every other recommendation below remains a proposal. |
+| Revisions | 1: `ccb4ef34dde4736030cc1a600cd7b84624f9ab56` (tree `04882e1d042282442cc6977efa2ea07398b0340a`). 2: this revision, under "GeoCeDG — PRE-G9B-R6-plus-G FINAL AUTHOR DESIGN RECONCILIATION" (2026-10-14). |
 | Author instruction | "GeoCeDG — PRE-G9B-R6-plus-G AUTHOR DECISION RECONCILIATION" (2026-10-14): architectural, contractual and verification-design reconciliation of the prepared G phase; documentation and review only |
 | Base | published `main` `abe12893b74f574c248117fbe873633a449e23e0`, tree `ba4298c5658bf3f897455db5a49a76fea7105e72` (§1) |
 | Package | this record (A, D summary, E); [product metadata contract candidate](pre_g9b_r6_plus_g_product_metadata_contract_candidate.md) (B); [debt and observation disposition proposal](../validation/pre_g9b_r6_plus_g_debt_and_observation_disposition_proposal.md) (C); [canonical G prompt, reconciled candidate](../../.github/prompts/tasks/pre-g9b-r6-plus-g-help-verification-and-closeout.prompt.md) (D); [JSON mirror](../../geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-g-author-decision-reconciliation.json) |
 | Supersedes | nothing. The [readiness package](pre_g9b_r6_plus_g_readiness_package.md) stays as prepared at `abe12893`. This record reconciles its proposals and records where they change. |
 | Boundaries | G implementation, the G technical candidate, G verification campaigns, G approval, the global `PRE-G9B-R6-plus` closeout, `PRE-G9B-R7`, `G9B`, version change, public release, push, merge and tag: **NOT AUTHORIZED**; `selfApproved = false` |
+
+## 0. Revision 2 — author design directions
+
+On 2026-10-14 the author resolved the remaining architectural questions of this design
+and authorized its documentary reconciliation. **G implementation is not authorized.**
+The directions, transcribed in the
+[author design decision record](../validation/pre_g9b_r6_plus_g_author_design_decision_record.md),
+are:
+
+- **Version.** Target `1.1.0`; canonical version date `2026-10-15`, author-designated.
+  `1.0.0` keeps no version date, and the `2026-09-16` proposal is withdrawn.
+- **Metadata.** `DQ-G-2` alternative A, `DQ-G-3` PM-5, and PM-6 to PM-12 are accepted, with
+  the clarifications reconciled in contract revision 2:
+  - the semantics of the version date;
+  - the atomic schema migration;
+  - the role of `package_profile_sha256`;
+  - consistency is not authenticity.
+- **Lifecycle.** `DQ-G-4` M1 is adopted.
+- **Verification.** `DQ-G-1` is adopted as proposed.
+- **Characterization.** The `DQ-G-5` characterization (27 scenarios) is in the planned G
+  scope. No correction is authorized.
+- **Debt register.** `DQ-G-6`: the framework and the planning owners are adopted, but no
+  per-item disposition.
+- **Help.** `DQ-G-7`: the minimal help package.
+- **Documentation.** `DQ-G-8` and `DQ-G-9`: design preparation of minimal corrections in
+  four classes (§7.3).
+- **Publication.** `DQ-G-10` is recorded.
+
+Where the "Disposition requested" field of a revision-1 decision below conflicts with a
+direction, the direction prevails. The summary table shows the current state of each
+decision. The decisions that remain open are listed in §9 and in the design decision
+record §2.
 
 ## Executive assessment
 
@@ -163,22 +196,22 @@ Each decision uses the same fields:
 - remaining uncertainty;
 - the disposition requested.
 
-`DQ-G-10` is a **resolved historical decision**. `DQ-G-1` to `DQ-G-9` are **new decisions
-pending approval**.
+`DQ-G-10` is a **resolved historical decision**. `DQ-G-1` to `DQ-G-9` were new decisions at
+revision 1. Their current state after the author directions of 2026-10-14 is:
 
 ### Summary
 
-| Id | Recommended choice | Kind | Needed before |
+| Id | Choice | State (revision 2) | Still open |
 |---|---|---|---|
-| `DQ-G-1` | `INTEGRATED_PHASE`: PHASE `PRE-G9B-R6-PLUS-G` + INTEGRATION + INFRA_UNIT + STATIC + PACKAGING (INTERNAL, NC) on the frozen candidate; `FINAL` only on escalation or by author choice | new | G implementation authorization |
-| `DQ-G-2` | Alternative A: `application.version_date` in `package.yml` | new | G implementation authorization |
-| `DQ-G-3` | install-level distribution record; four runtime states; `DEVELOPMENT` for unpackaged builds; `COMMERCIAL` never authorized | new | G implementation authorization |
-| `DQ-G-4` | M1 "approve what was verified"; `D` designated before freeze; `1.0.0` date confirmation | new | a and b: authorization; c: candidate freeze |
-| `DQ-G-5` | **A**: characterize first (bounded plan, §5), then author disposition before the global closeout | new | G characterization step; disposition before the global closeout |
-| `DQ-G-6` | per-item dispositions and owners as proposed in C | new | global closeout (none blocks G entry) |
-| `DQ-G-7` | complete EN/ES guide coverage plus existing entry points; no new help framework | new | G implementation authorization |
-| `DQ-G-8` | documentary label reconciliation (§7.1) inside G, each change traced to its superseding record | new | G implementation (or a separately authorized documentary commit) |
-| `DQ-G-9` | per-observation correction or retention (§7.2) | new | G implementation |
+| `DQ-G-1` | `INTEGRATED_PHASE`: PHASE `PRE-G9B-R6-PLUS-G` + INTEGRATION + INFRA_UNIT + STATIC + PACKAGING (INTERNAL, NC) + COMMERCIAL refusal evidence on the frozen candidate; `FINAL` only by escalation or by a separate author decision for a unified milestone receipt | **direction accepted** | freezing it, with `CLOSEOUT_MODE`, in the G implementation authorization |
+| `DQ-G-2` | Alternative A: `application.version_date` in `package.yml`, the single authority | **direction accepted** | approval of the final contract revision |
+| `DQ-G-3` | `app/geocedg-distribution.json`; four runtime states; conservative `DEVELOPMENT`/`UNVERIFIED`; `COMMERCIAL` unauthorized; digest runtime-checked (or audit-only); consistency is not authenticity | **direction accepted** | approval of the final contract revision (digest role) |
+| `DQ-G-4` | M1; `1.1.0` / `2026-10-15`; no date for `1.0.0` | **direction accepted** | — |
+| `DQ-G-5` | **A**: the 27 scenarios are in the planned G scope; no correction | **direction accepted** | disposition of both observations on the evidence, before the global closeout |
+| `DQ-G-6` | the 134-entry framework; planning owners for `TD-PDF-1`, working-layer entry, manual `ExportArea`, zoom aid, `DEFER-F3-*` and instability | **framework and owners accepted** | per-item dispositions (B, P, the `PROPOSED` re-categorizations, the O owners) |
+| `DQ-G-7` | the minimal EN/ES help package; no new framework or window | **direction accepted** | selection of the optional editorial items |
+| `DQ-G-8` | the four-class documentation plan (§7.3) | **design preparation authorized** | the class 2, 3 and 4 decisions |
+| `DQ-G-9` | per-observation correction, retention or escalation (§7.2, §7.3) | **design preparation authorized**; ADR 0035 retained as a discrepancy | the class 3 and 4 items |
 | `DQ-G-10` | `PUBLICATION COMPLETED — EXACT BASE ESTABLISHED` (`abe12893`) | **resolved** | — |
 
 ### `DQ-G-1` — verification class and acceptance profiles
@@ -845,11 +878,16 @@ Not recommended:
 
 ## 7. Status and documentary reconciliation
 
-Line numbers refer to the committed `abe12893` blobs. In this documentary candidate the
-plan lines shift as follows:
-- after `:100`: by one;
-- after `:1663`: by five;
-- after `:1757`: by ten. "Plan" is
+Line numbers refer to the committed `abe12893` blobs. The plan lines shift in the
+documentary candidates as follows:
+
+| After `abe12893` line | Revision 1 (`ccb4ef34`) | Revision 2 |
+|---|---|---|
+| `:100` | +1 | +2 |
+| `:1663` | +5 | +6 |
+| `:1757` | +10 | +16 |
+
+"Plan" is
 `docs/architecture/pre_g9b_r6_plus_minitrack_plan.md`; "roadmap" is
 `docs/roadmap/geocedg_roadmap.md`; records are under `docs/validation/`.
 
@@ -897,6 +935,89 @@ correction:
 None of these corrections changes a geometric specification, an ADR decision or a
 scientific contract.
 
+### 7.3 Revised documentation plan: four classes (revision 2)
+
+The author authorized design preparation for minimal current-state corrections that
+approved records support (2026-10-14). The items of §7.1 and §7.2 fall into four classes.
+Where a revision-1 proposal in §7.1 or §7.2 differs, this classification prevails. For
+example, the DXF specification `:7` header moves to class 4, because its file is pinned
+by a historical verifier.
+
+The perimeter is the same for every class:
+- historical closeout records, accepted evidence, JSON mirrors and the readiness package
+  are never edited;
+- historical byte pins, old verification scripts, ADR decision bodies and normative
+  scientific content are never modified under a documentation-maintenance pretext;
+- an observation is never closed merely because it resembles a later implementation.
+
+Corrections that are planned but not applied are applied by G's documentary closeout, each
+traced to its superseding record. The publication registration (R-11) is the one class-1
+correction already **applied** in revision 1, as the `DQ-G-10` record.
+
+**Class 1 — confirmed stale status labels** (an approved record supports the
+correction; within the documentation-maintenance perimeter):
+
+| Item | Correction planned for G |
+|---|---|
+| R-1a E1-P / E1, R-1b E2, R-1c F1, R-1d E3 and POST-E3 sub-items | `— PUBLISHED` and "at the closeout" qualifiers in the plan §3 State column, the §14 register and roadmap `:3399` |
+| R-1e F4 | plan row already completed (applied); one roadmap phase-table row for `PRE-G9B-R6-plus-F4`, carrying the three dependency classes |
+| R-2 | "MOOT — CLOSED UNDER T0" line in plan §14 |
+| R-7 | owner qualifier: "not implemented in F2 (DQ-F2-9); planning owner G11 (author, 2026-10-14)" |
+| R-8 | `DQ-F4-6` and `DQ-F4-8` decided lines in plan §14 |
+| R-9b | "PUBLISHED (2026-10-10, POST-E3-INTEGRATION 00b525fd)" line |
+| R-11 | applied (roadmap `:10`; plan F4 and G blocks) |
+| R-12 | roadmap "Siguiente puerta": "at the C closeout" qualifier, plus the current next gate |
+| `OBS-R6P-DXF-DEFAULT-DOC` | `docs/architecture/g9_extended_dxf_architecture.md:3-4`, keeping the token "default-off" as history (the historical G9X1 script asserts the token; no byte pin) |
+| `OBS-R6P-ACTION-COUNT-DOC` residuals | status qualifiers in `geocedg/specs/ui/cedg-workspaces.md:5-6,478,517-518,525-526,532-533`; the count is already correct |
+| `OBS-R6PLUS-E2-UPSTREAM-MANIFEST-SPLINEV2-PURPOSE` | one G9S1 sentence per `docs/upstream/modified-files.yml` purpose |
+| `OBS-F4P-S3-SPEC-HEADER` | status line `geocedg/specs/ui/construction-text-view-scaling.md:4` → `NORMATIVE / AUTHOR APPROVED`. S3 is approved (S3 closeout report; roadmap `:3129`). Author confirmation is recommended because the line promotes a specification status. |
+| ADR 0029 status line | `docs/adr/0029…:3-4` → "Accepted — AUTHOR APPROVED (PRE-G9B-R3, as amended by R3-R1; decision text unchanged)". This is the status line only, approved by `pre_g9b_r3_closeout_record.md:62-84`; author confirmation is recommended. |
+
+**Class 2 — approved implementations whose old observations lack an explicit closeout
+disposition.** The approved code evidence is preserved. The narrowest truthful status is
+proposed below, and none of these items is closed by it.
+
+| Item | Narrowest truthful status proposed |
+|---|---|
+| `OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION` | `NAMING RESOLVED BY DQ-E2-7; COEXISTENCE VALIDATED IN THE APPROVED E2 IMPLEMENTATION 3a724661 (Commands.java:155,158; PreG9BR6PlusE2NativeDimensionDesktopTest) — NO CLOSEOUT DISPOSITION RECORDED — AUTHOR DISPOSITION REQUIRED`. The future-collision failure mode stays with the user-library row (P-16). |
+| `OBS-R6PLUS-E3-NO-UNIT-GATE-PATTERN` | `ADDRESSED BY THE APPROVED E3 IMPLEMENTATION 7cd50116 (GeoCeDGActionRegistry unit gate; GeoCeDGIsoABorderTool.checkUnit; test unitGateBlocksCreationAndOffersDocumentUnits) — NO CLOSEOUT DISPOSITION RECORDED — AUTHOR DISPOSITION REQUIRED` |
+| `OBS-R6PLUS-E3-EXPORT-AREA-NO-REBUILD-SIGNAL` | `MITIGATED BY DESIGN IN THE APPROVED E3 IMPLEMENTATION 7cd50116 (identity-only link validated on every resolve and Graphics 1 paint; no rebuild signal added, DQ-E3-9; test explicitLinkLifecycleByIdentity) — NO CLOSEOUT DISPOSITION RECORDED — AUTHOR DISPOSITION REQUIRED` |
+| `F4R-G2-VIEW-CLASS` | proposed author-reviewed disposition `CLOSED — NOT REALIZED`. Evidence: `GuiManagerGeoCeDG.java:113-121`; `PreG9BR6PlusF4AStyleBarThicknessTest` `:225,:234`; no exact-class dependency found in source. |
+| `F4R-A1-REBUILD` | proposed `CLOSED — HELD BY TEST` (`theFieldIsAttachedAgainAfterLanguageAndFontChanges`, approved F4-A `6baa66a5`) |
+| `F4R-INHERITED-FREEHEP` | proposed `CLOSED — PERIMETER VERIFIED AND REGISTERED` (F4-D perimeter re-check; `modified-files.yml` entry; `TD-PDF-2` and `TD-PDF-3` closed by the F4-D closeout) |
+| `F4R-CLASSIC-PERIMETER` | proposed `CLOSED — HELD` (Classic assertions in the F4-A and F4-D test classes; `F4R-CLASSIC-LEAK` `CLOSED — HELD` by the F4-A closeout) |
+| `F4R-READER-COMPAT` | proposed `CLOSED FOR THE CHECKED READERS (Ghostscript, Poppler, Xpdf)`; the xref repair remains `OBS-F4P-FREEHEP-XREF-SIZE` (open, owner G15 proposed) |
+| `OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS` | `CLOSED IN THE APPROVED A-2 CANDIDATE REPORT ONLY (persistent reopen) — NO CLOSEOUT DISPOSITION RECORDED — AUTHOR DISPOSITION REQUIRED` |
+| Desktop test-heap pressure = `OBS-R6PLUS-E2-DESKTOP-TEST-HOST-RETENTION`; the minor E2 items marked "closeout silent" in C | `ADDRESSED BY THE APPROVED E2 IMPLEMENTATION 3a724661 — NO CLOSEOUT DISPOSITION RECORDED — AUTHOR DISPOSITION REQUIRED` (heap: monitored in G's INTEGRATION) |
+
+**Class 3 — normative amendments requiring separate author approval.** These stay
+explicitly pending, and G does not promote them under documentation maintenance:
+- the `PRE-G9B-R6-plus-C` and `PRE-G9B-R6-plus-E3` amendments still marked "technical
+  candidate pending author review" inside approved specifications:
+  - `geocedg/specs/export/geometry-export-foundation.md:7,92`;
+  - `geocedg/specs/export/dxf-curve-fidelity-and-approximation.md:5,183`;
+  - `geocedg/specs/units/unit-system.md:20,678,837`;
+
+  (debt proposal P-18; E3 closeout `:168` says the pending C amendment "is not disposed
+  of");
+- R-15: the stale sentences of the documentation-maintenance contract §9 (`:147-149`) and
+  §10 (`:153-156`). This is wording only, but it sits in a normative operations
+  specification.
+
+**Class 4 — ADR-body changes or verifier-pinned files requiring separate authorization.**
+These are retained by default:
+- `OBS-F4P-ADR0035-CONSEQUENCE-LINE`: **retained as a registered discrepancy** (author
+  direction). The Amendment prevails inside the same accepted ADR.
+- `OBS-R6P-DOC-IDENTITY-HEADER` for `geocedg/specs/ui/native-document-identity.md:6-7,10`
+  and `docs/adr/0016…:6-7`. Both are byte-pinned by
+  `tools/agent/verify-g9u0-r2-product-refinement.ps1:40-45,451-462`.
+- `OBS-R6P-DXF-SPEC-HEADER` (`dxf-curve-fidelity-and-approximation.md:7`). The file is
+  pinned by `tools/agent/verify-g9x1-extended-dxf.ps1:60-64`, and that pin already
+  mismatches at `HEAD` since E3 (pre-existing).
+
+**Author decisions on intent, not classed above:** R-13 (optional "Estado actual"
+summary) and R-14 (track-level "NO SUBPHASE AUTHORIZED" wording).
+
 ## 8. D — Canonical prompt reconciliation
 
 The prompt is updated **in place** as revision 2 of the candidate. One canonical path
@@ -921,7 +1042,30 @@ avoids a duplicate prompt authority; revision 1 stays at `abe12893`. Its status 
    - a distribution state inferred from file names or paths;
    - a global verification-infrastructure change without escalation.
 
-`Test-PromptContractDocument` (profile `task`) is run on revision 2; see §10.
+`Test-PromptContractDocument` (profile `task`) was run on revision 2.
+
+**Revision 3 (this documentary revision).** The prompt becomes internally coherent with
+the author directions and is ready for final author review. It is **not** labelled
+authorized for implementation. Changes from revision 2:
+1. **Fixed values.** `1.1.0` / `2026-10-15` and the author-designated date semantics. The
+   version-transition commit is defined as the single atomic commit of contract PM-3,
+   with no version date for `1.0.0`.
+2. **Metadata.** The accepted directions for PM-1 to PM-12, including the
+   `package_profile_sha256` role and the consistency-is-not-authenticity clause. Normative
+   transcription happens only after the author approves the final contract revision.
+3. **Verification.** `DQ-G-1` is accepted as the class to freeze, with COMMERCIAL refusal
+   evidence. Equivalent leaf coverage is kept distinct from a single receipt-bound
+   `FINAL`.
+4. **Characterization.** The 27 `DQ-G-5` scenarios are planned G scope, covering both
+   observations. A demonstrated contract violation that needs code stops that branch.
+5. **Debt register.** The 134-entry framework and the author's planning owners; no silent
+   P/O → R/L promotion.
+6. **Help.** The minimal help package with its required coverage.
+7. **Documentation.** The four-class documentation plan of §7.3.
+8. **Stop conditions.** Updated: a version or date other than `1.1.0` / `2026-10-15`; a
+   version date for `1.0.0`; a class 3 or 4 change made as maintenance.
+
+`Test-PromptContractDocument` result on revision 3: §10.
 
 ## 9. E — Implementation readiness assessment
 
@@ -929,13 +1073,13 @@ avoids a duplicate prompt authority; revision 1 stays at `abe12893`. Its status 
 |---|---|
 | Is the proposed scope internally consistent? | **Yes**, with the three refinements of the executive assessment. No scope item needs a kernel, serialization or inherited change. The About, packaging-record and version changes are GeoCeDG-owned Desktop, build and packaging work. Help is documentation and profile text. |
 | Are all mandatory preconditions known? | **Yes**: the hard predecessors (§1.3), the About requirement, the base, the class proposal, and the global-closeout dispositions (`DQ-G-5`, `DQ-G-6`). |
-| Decisions required **before implementation** | `DQ-G-1`; `DQ-G-2`; `DQ-G-3`; `DQ-G-4` (a) and (b); `DQ-G-7`; the exact base (`DQ-G-10` resolved: `abe12893` or a named published successor); whether the `DQ-G-5` characterization is authorized inside G |
-| Decisions required **before the candidate freeze** | `DQ-G-4` (c), the designated date `D` |
-| Decisions required **before the global closeout** | `DQ-G-5` disposition; disposition of `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` (C prompt closeout); `DQ-G-6` dispositions and owners for every item C lists as pending; `DQ-G-8` and `DQ-G-9` corrections applied or retained |
+| Decisions required **before implementation** (revision 2) | The design directions of `DQ-G-1` to `DQ-G-7` are accepted. Still required: (1) approval of the final metadata contract revision, including the digest role and the package-profile schema `2`; (2) the G implementation authorization of prompt revision 3. That authorization names the exact base (`abe12893`, or an approved and published documentary successor), freezes `INTEGRATED_PHASE` and selects `CLOSEOUT_MODE`. (3) The selection of the optional help items. |
+| Decisions required **before the candidate freeze** | none. `1.1.0` / `2026-10-15` is designated. |
+| Decisions required **before the global closeout** | the dispositions of `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` and `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` on the characterization evidence; the per-item `DQ-G-6` dispositions; the class 2 dispositions (§7.3); the class 1 corrections applied. Class 3 and 4 items may stay explicitly pending or retained. |
 | Issues that may be handled **during authorized G characterization** | the `DQ-G-5` scenarios (§5), with `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` alongside; confirmation of the `OBS-R6PLUS-E3-*` closure evidence and of `OBS-R6P-SAVE-WARNING` at the base; recurrence of R-6 during INTEGRATION |
 | Exact future implementation base | `abe12893b74f574c248117fbe873633a449e23e0`, tree `ba4298c5658bf3f897455db5a49a76fea7105e72`, unless superseded by a named, approved and published successor |
 | Proposed verification plan | `DQ-G-1` items 1–10 |
-| Remaining stop conditions | listed in the reconciled prompt. Main ones: a missing hard predecessor or base divergence; a kernel, serialization or inherited change needed; a global verification-infrastructure change without escalation; a licensing fact not sourceable; `D` undesignated at freeze; a product, build or packaging change after `T`; a `COMMERCIAL` artifact or label; incomplete or untrusted coverage; the `DQ-G-5` or tool-replacement disposition missing at the global closeout |
+| Remaining stop conditions | listed in the reconciled prompt. Main ones: a missing hard predecessor or base divergence; a kernel, serialization or inherited change needed; a global verification-infrastructure change without escalation; a licensing fact not sourceable; a version or date other than `1.1.0` / `2026-10-15`; a product, build or packaging change after `T`; a characterized contract violation that needs code; a `COMMERCIAL` artifact or label; incomplete or untrusted coverage; the `DQ-G-5` or tool-replacement disposition missing at the global closeout |
 
 ## 10. Documentary candidate and validation
 
@@ -950,6 +1094,22 @@ The documentary candidate holds only these files:
 | `.github/prompts/tasks/pre-g9b-r6-plus-g-help-verification-and-closeout.prompt.md` | revision 2 of the candidate (D) |
 | `docs/architecture/pre_g9b_r6_plus_minitrack_plan.md` | status entries: header bullet, G row, §14 G block; `DQ-G-10` registration in the F4 row and the §14 F4 block |
 | `docs/roadmap/geocedg_roadmap.md` | version 5.52; "Última fase cerrada" publication completion; "Última fase ejecutada"; G row |
+
+Revision 2 (a documentary commit on the same lineage, child of `ccb4ef34`):
+
+| Path | Change |
+|---|---|
+| `docs/validation/pre_g9b_r6_plus_g_author_design_decision_record.md` | new: the author design decision record |
+| `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-g-author-design-decisions.json` | new: its mirror |
+| this record | revision 2 (§0, the summary table, §7.3, §8, §9, §10, §11) |
+| the contract candidate | revision 2 (PM-3, PM-5, PM-6, PM-11, §5 to §7, §9) |
+| the debt proposal | revision 2 section (framework and planning owners; no silent promotion) |
+| the canonical G prompt | revision 3 |
+| `geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-g-author-decision-reconciliation.json` | revision 2 fields |
+| roadmap, plan | status entries for this revision (roadmap 5.53) |
+
+The checks are the same as for revision 1, run again on revision 2. The official STATIC
+result of the exact revision-2 commit is reported outside the candidate.
 
 Untouched:
 - product source, tests, kernel, serialization, build logic and packaging configuration;
@@ -978,10 +1138,15 @@ required (no workstation prerequisite, toolchain or environment contract changed
 ## 11. Authorization state
 
 ```text
-G AUTHOR DECISION RECONCILIATION   = PREPARED
-G METADATA CONTRACT                = CANDIDATE — PENDING AUTHOR APPROVAL
-G DEBT DISPOSITION PLAN            = PROPOSED
-G CANONICAL PROMPT                 = RECONCILED CANDIDATE — NOT AUTHORIZED
+G AUTHOR DECISION RECONCILIATION   = REVISION 2 — PREPARED
+G VERSION TARGET                   = 1.1.0
+G VERSION_DATE                     = 2026-10-15 — AUTHOR DESIGNATED
+G METADATA DESIGN                  = RECONCILED — PENDING FINAL AUTHOR REVIEW
+G METADATA CONTRACT                = CANDIDATE REVISION 2 — PREPARED FOR AUTHOR-APPROVED
+                                     NORMATIVE TRANSCRIPTION — NOT NORMATIVE
+G DEBT DISPOSITION PLAN            = FRAMEWORK AND PLANNING OWNERS ADOPTED — PER-ITEM
+                                     DISPOSITIONS PENDING
+G CANONICAL PROMPT                 = REVISION 3 CANDIDATE — NOT AUTHORIZED
 G IMPLEMENTATION                   = NOT AUTHORIZED
 G TECHNICAL CANDIDATE              = NOT CREATED
 PRE-G9B-R6-plus GLOBAL CLOSEOUT    = NOT AUTHORIZED
