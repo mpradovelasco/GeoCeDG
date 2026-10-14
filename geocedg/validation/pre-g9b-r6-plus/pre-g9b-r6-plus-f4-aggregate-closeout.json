@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "phases": ["PRE-G9B-R6-plus-F4"],
+  "registeredPhaseIds": ["PRE-G9B-R6-PLUS-F4-D", "PRE-G9B-R6-PLUS-F4-A"],
+  "artifactKind": "AGGREGATE_CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_aggregate_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — F4-A PUBLICATION + F4 AGGREGATE CLOSEOUT + G READINESS", "operation": 2, "condition": "F4-A publication and audit PASS"},
+  "states": {"PRE-G9B-R6-plus-F4": "COMPLETE — AUTHOR APPROVED", "F4-A": "PASS — AUTHOR APPROVED — PUBLISHED", "F4-B": "CLOSED — RESOLVED FOR AUTOCAD 2026", "F4-C": "DEFERRED — TD-PDF-1", "F4-D": "PASS — AUTHOR APPROVED — PUBLISHED", "F4 aggregate publication": "PENDING SEPARATE AUTHORIZATION", "G": "NOT AUTHORIZED", "global closeout": "NOT AUTHORIZED"},
+  "additionalProductChange": false,
+  "selfApproved": false,
+  "f4aPublication": {
+    "previousRemoteMain": "e968245ef329a86108df81a49cbdb05601cefe9e",
+    "publishedMain": "07424dee6e5293c6259e84b97ca0ea3e6e5fc72f",
+    "publishedTree": "59d2e022a82f474fc2c2e63ada462800dc43ed81",
+    "method": "direct non-force fast-forward",
+    "bypassReported": ["Changes must be made through a pull request.", "Cannot change this locked branch"],
+    "audit": {"result": "PASS", "record": "artifacts/agent/f4a-publication-audit/publication-audit.json", "sha256": "0d385a1e15c228883abd59d17f901762f896291ac39e9ef6db0008921cb2021e"},
+    "tag": "none"
+  },
+  "tracks": {
+    "F4-A": {"implementation": {"commit": "6baa66a584ceef1973c854fb63b00aa7070708b4", "tree": "bfc22c5dff6a1dcb7a371030c77f695a1a6b1925"}, "closeout": "07424dee6e5293c6259e84b97ca0ea3e6e5fc72f", "receipts": {"phase": "verification-528e53e44fa1400e933ead8cff52f4e5", "infraUnit": "verification-0ea5a0c6b4e84831a6bb017088df73a8", "static": "verification-63e2bb4e88b441d3b4184ecbcfb449b4"}, "realWindowGate": "F4-A E5 FOCUS FEASIBILITY = PASS", "authorSmoke": "PASS (author confirmation)", "acceptedLimitations": ["F4-A-L1", "F4-A-L2", "F4-A-L3"], "history": {"stop": "e7b235dca9afc68f051faefa133e2db585bfea4c", "wipExcluded": "9b755225eadf3c2040029f6bee0b455f1d5bb89c", "amendment": "72f6c5af24bd1651e19764c8bdb02814949bb4b9"}},
+    "F4-B": {"disposition": "CLOSED — RESOLVED FOR AUTOCAD 2026", "decision": "DQ-F4-6", "otherVersions": "NOT RECHECKED — COVERAGE GAP"},
+    "F4-C": {"disposition": "DEFERRED — TD-PDF-1", "decision": "DQ-F4-8", "debtOpen": true},
+    "F4-D": {"implementation": {"commit": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2", "tree": "47b634b1885a9b5650af73369caa97a955bf22f2"}, "closeout": "e968245ef329a86108df81a49cbdb05601cefe9e", "receipts": {"phase": "verification-0d7d0418479645779c9c2690ab50b140", "integration": "verification-c1f5709d41444f6e88c801a9d4ba9189", "infraUnit": "verification-1abe42a5651e4dafb469838331413042", "static": "verification-e9a03b359f8f43208ebec344a125ca7e"}, "authorSmoke": "PASS (author confirmation)", "closedDebts": ["TD-PDF-2", "TD-PDF-3"], "history": {"stop": "aae7b12ccc7e8c21eced1b10f7aa08562ae2bec2", "wipExcluded": "6c2fc40918be3e43a1df09a454f407be85acd553", "amendment": "3968771327aca5aa3e7b47fc68a74451f44fc9d6"}}
+  },
+  "remaining": [
+    {"id": "TD-PDF-1", "state": "OPEN — DEFERRED"},
+    {"id": "AutoCAD other versions", "state": "NOT RECHECKED — COVERAGE GAP"},
+    {"id": "OBS-F4P-FREEHEP-XREF-SIZE", "state": "OPEN — INDEPENDENT"},
+    {"id": "OBS-F4P-S3-SPEC-HEADER", "state": "REGISTERED"},
+    {"id": "OBS-F4P-ADR0035-CONSEQUENCE-LINE", "state": "REGISTERED"},
+    {"id": "F4R-LINETYPE-COUPLING", "state": "RETAINED — ACCEPTED"},
+    {"id": "F4R-DEFAULTS-UNDO", "state": "RETAINED — DOCUMENTED"}
+  ],
+  "dependencyNote": "F4 precedes G operationally; it is not a hard semantic dependency of G",
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC"}
+}

@@ -104,3 +104,20 @@ as the historical record.
 | **F4-A-L3** validated runtime | **ACCEPTED LIMITATION** — validated with Temurin 25.0.4 and FlatLaf 3.7; a relevant runtime or look-and-feel change requires renewed compatibility verification | e5 gate evidence |
 | `TD-PDF-1` (F4-C) | DEFERRED, unchanged | §1 |
 | `OBS-F4P-FREEHEP-XREF-SIZE` | OPEN — independent observation, unchanged | §6 |
+
+## 8. F4 aggregate closeout (2026-10-14)
+
+Recorded by the [F4 aggregate closeout record](pre_g9b_r6_plus_f4_aggregate_closeout_record.md):
+`PRE-G9B-R6-plus-F4 = COMPLETE — AUTHOR APPROVED`, after F4-A was published (remote `main`
+`07424dee6e5293c6259e84b97ca0ea3e6e5fc72f`). F4-A and F4-D are `PASS — AUTHOR APPROVED —
+PUBLISHED`; F4-B is closed for AutoCAD 2026 only; F4-C stays deferred as `TD-PDF-1`.
+Sections 1–7 stay as the historical record.
+
+| Id | State after F4 |
+|---|---|
+| F4-A-L1, F4-A-L2, F4-A-L3 | accepted limitations of F4-A |
+| `F4R-LINETYPE-COUPLING`, `F4R-DEFAULTS-UNDO` | retained, inherited |
+| `TD-PDF-1` | **OPEN — DEFERRED** (physical text-size presentation contract) |
+| AutoCAD versions other than 2026 | **NOT RECHECKED — COVERAGE GAP** |
+| `OBS-F4P-FREEHEP-XREF-SIZE` | **OPEN — INDEPENDENT** |
+| `OBS-F4P-S3-SPEC-HEADER`, `OBS-F4P-ADR0035-CONSEQUENCE-LINE` | REGISTERED, proposed for the G structured register |
