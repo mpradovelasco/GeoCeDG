@@ -2,8 +2,9 @@
 
 - Status: **NORMATIVE / AUTHOR APPROVED**
 - Phase: G9P base design approved; definitive G9U1 design
-  `PASS — AUTHOR APPROVED`, post-R1 reconciled; G9U1 implementation is an
-  authorized candidate pending author review. G9U2 remains blocked.
+  `PASS — AUTHOR APPROVED`, post-R1 reconciled; G9U1 implementation
+  `PASS — AUTHOR APPROVED` (status reconciled by PRE-G9B-R6-plus-G, 2026-10-14;
+  earlier an authorized candidate pending author review). G9U2 remains blocked.
 - Normative manifest target: application profile schema version 2
 - Related Accepted ADR: `docs/adr/0012-manifest-defined-geocedg-workspaces.md`
 - Evidence: `docs/references/cedg/models/g9p/g9p-reference-workflow-audit.md`
@@ -475,7 +476,8 @@ Symbolic action IDs remain the manifest authority.
 
 These eleven groups remain the professional Construction design; R1 is consumed
 through existing actions and does not change the 110 stable action IDs.
-Current live catalog (2026-10-13, `PRE-G9B-R6-plus-F3` technical candidate):
+Current live catalog (2026-10-13, `PRE-G9B-R6-plus-F3`, author approved and
+published with F3-R1 and F3-R2; status reconciled by PRE-G9B-R6-plus-G, 2026-10-14):
 133 actions. The 110-action figure in this
 section is the G9U1 baseline; POST-G9U1-A7 added two navigation actions,
 PRE-G9B-R4 three authoring tools, PRE-G9B-R6-plus-A-1 the one-shot
@@ -514,23 +516,26 @@ PRE-G9B-R6-plus-E2 added `measure.aligned-dimension` and
 group after Distance or Length and to the metrics-validation toolbar cluster;
 their values are model-unit measures and only their texts follow the document
 units (`geocedg/specs/dimensions/native-dimensions.md`).
-PRE-G9B-R6-plus-E3 (technical candidate pending author review; contract
-`geocedg/specs/sheets/iso-a-border.md`, `PROPOSED`) added the menu-only
+PRE-G9B-R6-plus-E3 (`PASS — AUTHOR APPROVED`, 2026-10-10; contract
+`geocedg/specs/sheets/iso-a-border.md`, `NORMATIVE / AUTHOR APPROVED`; status
+reconciled by PRE-G9B-R6-plus-G, 2026-10-14) added the menu-only
 `presentation.iso-a-border` tool (mode `144`) after Image in the
 construction-annotations-media group, with no toolbar entry, and the File
 export-area actions `export.area.iso-a` and `export.area.use-iso-a-border`.
 The tool and `export.area.iso-a` are unavailable, with their reason, while the
 document has no physical construction unit. The sheet coherence indicator and
 "Use sheet scale" are session presentation, never document or geometric state.
-PRE-G9B-R6-plus-F1 (technical candidate pending author review; contract
-`geocedg/specs/presentation/orientation-cue.md`, `PROPOSED`) added the
+PRE-G9B-R6-plus-F1 (`PASS — AUTHOR APPROVED`, 2026-10-11; contract
+`geocedg/specs/presentation/orientation-cue.md`, `NORMATIVE / AUTHOR APPROVED`;
+status reconciled by PRE-G9B-R6-plus-G, 2026-10-14) added the
 preference action `presentation.orientation-cue` (View menu, group
 `view-visibility-style`; cluster `presentation-visibility-style`), a checkbox
 on the global user preference `geocedg.view.orientation-cue.v1` (default OFF)
 that it shares with Layout & Presentation; the orientation cue is screen-only
 presentation in Graphics 1, never document, undo or export state.
-PRE-G9B-R6-plus-F3 (technical candidate pending author review; contract
-`geocedg/specs/ui/document-insertion.md`, `PROPOSED`) added the File submenu
+PRE-G9B-R6-plus-F3 (`PASS — AUTHOR APPROVED`, 2026-10-13, with F3-R1 and
+F3-R2; contract `geocedg/specs/ui/document-insertion.md`, `NORMATIVE / AUTHOR
+APPROVED`; status reconciled by PRE-G9B-R6-plus-G, 2026-10-14) added the File submenu
 `file-insert` (Insert / Insertar) directly after the Open group, with the
 document actions `document.insert-file` (Insert File…) and
 `document.apply-styles` (Apply Styles…) in the document-lifecycle cluster, no

@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus — final refinement mini-track plan
 
-- Status: **AUTHOR APPROVED PLANNING DESIGN — NO SUBPHASE AUTHORIZED**
+- Status: **AUTHOR APPROVED PLANNING DESIGN — NO SUBPHASE AUTHORIZED** (track level: no blanket authorization of the subphases; each subphase is authorized separately, see the §3 `State` column; clarified by G under `DQ-G-8`, 2026-10-14)
 - Recorded: 2026-10-01
 - Track state: `PRE-G9B-R6-plus` = `PLANNING PASS — AUTHOR APPROVED / PRODUCT IMPLEMENTATION NOT AUTHORIZED`
 - Author disposition: `PRE-G9B-R6-plus PLANNING = PASS — AUTHOR APPROVED` (2026-10-01) on `T_R6PLUS_PLAN` `147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f` as reconciled by `D_R6PLUS_PLAN` `af2aa1133620e49d68ac469ee8d10d273498cd95` ([closeout record](../validation/pre_g9b_r6_plus_planning_closeout_record.md))
@@ -303,10 +303,10 @@ No other boundary changed.
 | `D0` | unit-system normative design | documentation (ADR + specification) | `DOCUMENTATION_STATUS_ONLY` (author-frozen 2026-10-02) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-02; `T_R6PLUS_D0` `8383a153`; ADR 0032 and unit-system v1.0 author-approved; authorized 2026-10-02 on `8814468`; canonical prompt prepared on `0ef616bb` and `AUTHORIZED`; author decisions `AQ-U2`–`AQ-U6` recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED` 2026-10-02, `T_R6PLUS_D0_PROMPT` `8814468`, with the `DQ-D0` dispositions) |
 | `D1` | unit-system implementation and status integration | shared kernel/document serialization, Desktop | `GLOBAL_IMPACT` (author-frozen 2026-10-02) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-03; `T_R6PLUS_D1` `6e1d8459`; `AUTHOR_SMOKE = PASS`; revision 2 after the author smoke of `b55aa817`; authorized 2026-10-03 on `3fb7542a`; canonical prompt prepared on `3268f9b9` and `AUTHORIZED`; preparation decisions recorded 2026-10-02; preparation package `PASS — AUTHOR APPROVED`) |
 | `C` | 2D export completion and semantic curve exporters | export adapters, shared export package | `INTEGRATED_PHASE` (re-characterized and confirmed by the preparation; frozen at authorization) | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-06; `T_R6PLUS_C` `6248bf0f`, revision 1; `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`; `PHASE` `verification-a198a69b…` and `INTEGRATION` `verification-0bcf9709…` `ACCEPTED / COMPLETE`; `b981f8ea` and its runs historical evidence; hidden-circle DXF finding expected by `DQ-C3`; Classic picture-dialog empty dialog and hang reproduced by the author, pre-existing, not caused by `C`, accepted debt deferred to post-`C`; [closeout record](../validation/pre_g9b_r6_plus_c_closeout_record.md); [candidate report](../validation/pre_g9b_r6_plus_c_candidate_report.md)) |
-| `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence); split by the author into `E1-L` (`BOUNDED_PHASE`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`) | `PASS — AUTHOR APPROVED` (aggregate, 2026-10-07; `E1-L` `T_R6PLUS_E1_L` `5f34d181` `PASS — AUTHOR APPROVED — PUBLISHED`, [closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md); `E1-P` `T_R6PLUS_E1_P` `dcda4075` `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`, [closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` open, pre-existing) |
-| `E2` | native dimension tools | shared kernel commands, Desktop modes, profile | `INTEGRATED_PHASE` | `NOT AUTHORIZED` |
-| `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `PASS — AUTHOR APPROVED` (2026-10-10; `T_R6PLUS_E3_R1` `7cd50116`, corrective successor of `257c854a`; `AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION`; `PHASE` `verification-c4853de4…` and `INTEGRATION` `verification-cf79b0af…` `ACCEPTED / COMPLETE`; publication `NOT AUTHORIZED`; [closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md)) |
-| `F1` | direction visualization | view/drawables, Desktop option | `BOUNDED_PHASE` | `NOT AUTHORIZED` |
+| `E1` | GGT library, assets and packaging | legacy store, resources, packaging, Desktop library | `BOUNDED_PHASE` (+ packaging evidence); split by the author into `E1-L` (`BOUNDED_PHASE`) and `E1-P` (`OPERATIONAL_VERIFICATION_INFRASTRUCTURE`, `PHASE_LOCAL`) | `PASS — AUTHOR APPROVED — PUBLISHED` (published with the `E1-P` closeout `fdc1ade6`, reconciled by G on 2026-10-14; aggregate, 2026-10-07; `E1-L` `T_R6PLUS_E1_L` `5f34d181` `PASS — AUTHOR APPROVED — PUBLISHED`, [closeout record](../validation/pre_g9b_r6_plus_e1_l_closeout_record.md); `E1-P` `T_R6PLUS_E1_P` `dcda4075` `PASS — AUTHOR APPROVED — PUBLISHED`, `AUTHOR_SMOKE = PASS WITH ACCEPTED PRE-EXISTING DEBT`, [closeout record](../validation/pre_g9b_r6_plus_e1_p_closeout_record.md); `OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER` open, pre-existing, at the `E1` closeout; resolved in `E1-X1` `b12ab32c`) |
+| `E2` | native dimension tools | shared kernel commands, Desktop modes, profile | `INTEGRATED_PHASE` | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-08, `3a724661`; [closeout record](../validation/pre_g9b_r6_plus_e2_closeout_record.md); reconciled by G on 2026-10-14; earlier `NOT AUTHORIZED`) |
+| `E3` | `IsoABorder` and `ExportArea` integration | shared kernel command, Desktop, profile | `INTEGRATED_PHASE` | `PASS — AUTHOR APPROVED — PUBLISHED` (first published with the `E3`/`E3-R1` closeout by `P_POST_E3` `31286a23`, then in `POST-E3-INTEGRATION` `00b525fd`; reconciled by G on 2026-10-14; 2026-10-10; `T_R6PLUS_E3_R1` `7cd50116`, corrective successor of `257c854a`; `AUTHOR_SMOKE = PASS WITH ACCEPTED NON-BLOCKING VERIFICATION LIMITATION`; `PHASE` `verification-c4853de4…` and `INTEGRATION` `verification-cf79b0af…` `ACCEPTED / COMPLETE`; publication `NOT AUTHORIZED` at the closeout; [closeout record](../validation/pre_g9b_r6_plus_e3_closeout_record.md)) |
+| `F1` | direction visualization | view/drawables, Desktop option | `BOUNDED_PHASE` | `PASS — AUTHOR APPROVED — PUBLISHED` (2026-10-11, `1cea3c89`; the approval excludes routes `X1`–`X10` and Graphics View 2; [closeout record](../validation/pre_g9b_r6_plus_f1_closeout_record.md); reconciled by G on 2026-10-14; earlier `NOT AUTHORIZED`) |
 | `F2` | authoring-memory refinements | Desktop mode orchestration | `BOUNDED_PHASE` | `PASS — AUTHOR APPROVED — PUBLISHED` (with its corrective `F2-R1`, 2026-10-12, implementation `488f1e99`) |
 | `F3` | File / Insert surface and document insertion compatibility (`DEBT-R6PLUS-FILE-INSERT-SURFACE`) | profile, Desktop file surface and chooser routes, minimal upstream-identical seams | `INTEGRATED_PHASE` (author planning assignment 2026-10-03; frozen at authorization) | `PASS — AUTHOR APPROVED — PUBLISHED` (with its correctives `F3-R1` and `F3-R2`, 2026-10-13, implementation `2d7b2cae`; published, remote main `847bb20a`). Earlier: `PLANNED — AUTHOR APPROVED — PUBLISHED — PREPARED — DESIGN — AUTHOR APPROVED (2026-10-13) — IMPLEMENTATION AUTHORIZED (2026-10-13) — ORIGINAL CANDIDATE AUTHOR SMOKE FAIL — F3-R1 CANDIDATE T0 AUTHOR SMOKE FAIL — F3-R2 CORRECTIVE TECHNICAL CANDIDATE PENDING AUTHOR REVIEW — T0 CONTRACT DISCREPANCY: AUTHOR DECISION REQUIRED — INTEGRATED_PHASE FROZEN` ([F3-R2 corrective candidate report](../validation/pre_g9b_r6_plus_f3_r2_corrective_candidate_report.md); [F3-R1 corrective candidate report](../validation/pre_g9b_r6_plus_f3_r1_corrective_candidate_report.md); [candidate report](../validation/pre_g9b_r6_plus_f3_candidate_report.md); [implementation authorization record](../validation/pre_g9b_r6_plus_f3_implementation_authorization_record.md)); design approved by the [F3 author design closeout record](../validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md); technical verification, author smoke and product closeout not performed; publication not authorized; planning approved 2026-10-03, published with the `A-2` chain on 2026-10-04; preparation `PRE-G9B-R6-plus-F3-PREP` 2026-10-12; conservative reconciliation `PRE-G9B-R6-plus-F3-AUTHOR-RECONCILIATION` 2026-10-12; focused risk characterization `PRE-G9B-R6-plus-F3-FOCUSED-RISK-CLOSEOUT` 2026-10-12, documentary candidate: implementation prompt `PREPARED — NOT AUTHORIZED`, `DQ-F3-1` to `DQ-F3-24` pending, amendments of `F3-D2` and `DQ-D1-7` proposed; author decision reconciliation `PRE-G9B-R6-plus-F3-AUTHOR-DECISION-RECONCILIATION` 2026-10-12, documentary candidate pending final author disposition: `DQ-F3-21` options K1 refined / K2 / S, amendments `P1`–`P6` proposed, decision sheet Q1–Q7, prompt `PREPARED — DECISION-RECONCILED — NOT AUTHORIZED`; DQ-F3-21 recovery safety gate `PRE-G9B-R6-plus-F3-DQ21-FOCUSED-RECOVERY-SAFETY-GATE` 2026-10-12, documentary candidate: K1-R with undo/prune withdrawn, K1-S with UUID restore and history-isolated K1-R-H certified under gates, decision sheet v4.1, prompt `PREPARED — DECISION-RECONCILED — RECOVERY-GATED — NOT AUTHORIZED`; DQ-F3-21 corrective feasibility gate `PRE-G9B-R6-plus-F3-DQ21-RECOVERY-CORRECTIVE-FEASIBILITY-GATE` 2026-10-12, documentary candidate: generation barrier and guarded reload certified, destination UUID preservable, containment specified, decision sheet v4.2, prompt `PREPARED — DECISION-RECONCILED — RECOVERY-CORRECTED — NOT AUTHORIZED`; Undo history semantic integrity gate `PRE-G9B-R6-plus-F3-UNDO-HISTORY-SEMANTIC-INTEGRITY-GATE` 2026-10-12, READY FOR AUTHOR DISPOSITION: original history moved by a GeoCeDG undo-manager subclass, modal isolation, Final F3 Author Decision Sheet v5.0, prompt `PREPARED — DECISION-RECONCILED — RECOVERY-CORRECTED — HISTORY-INTEGRITY-GATED — NOT AUTHORIZED`; independent audit reconciliation `PRE-G9B-R6-plus-F3-INDEPENDENT-AUDIT-RECONCILIATION` 2026-10-12, audit `GO WITH CONDITIONS` reconciled: native recovery snapshot, accounting C1, Final F3 Author Decision Sheet v6.0, prompt `… — AUDIT-RECONCILED — NOT AUTHORIZED` with FR-F3-1 to FR-F3-8) |
 | `F4` | compact style-bar thickness entry (`F4-A`), DXF recheck with AutoCAD 2026 (`F4-B`), physical PDF text size (`F4-C`), embedded-font PDF export (`F4-D`); added by the author planning decision of 2026-10-09 | Desktop style bar (`F4-A`); inherited FreeHEP PDF writer (`F4-D`) | `F4-A` `BOUNDED_PHASE`, `F4-D` `INTEGRATED_PHASE` (each frozen at its authorization) | `COMPLETE — AUTHOR APPROVED` (aggregate, 2026-10-14; `F4-A` `6baa66a5` and `F4-D` `6214d15a` `PASS — AUTHOR APPROVED — PUBLISHED`; `F4-B` closed for AutoCAD 2026; `F4-C` deferred as `TD-PDF-1`; [aggregate closeout record](../validation/pre_g9b_r6_plus_f4_aggregate_closeout_record.md); aggregate closeout `19f8f206` published 2026-10-14 in `main` `abe12893` by direct non-force fast-forward from `07424dee`, recorded by the [G author decision reconciliation](pre_g9b_r6_plus_g_author_decision_reconciliation.md) §1.2) |
@@ -1241,6 +1241,8 @@ rows below. It does not change §4.
 PRE-G9B-R6                 = PASS — AUTHOR APPROVED — PUBLISHED
 PRE-G9B-R6-plus            = PLANNING PASS — AUTHOR APPROVED
                              PRODUCT IMPLEMENTATION NOT AUTHORIZED
+                             (track level only: no blanket authorization; each subphase
+                             is authorized separately, see §3; clarified by G, 2026-10-14)
 PRE-G9B-R6-plus PLANNING   = PASS — AUTHOR APPROVED (2026-10-01)
 PRE-G9B-R6-plus-P0         = PASS — AUTHOR APPROVED — PUBLISHED
                              (2026-10-02; T_R6PLUS_P0 6b7fd5de)
@@ -1271,7 +1273,9 @@ PRE-G9B-R6-plus-C-X1       = PASS — AUTHOR APPROVED — PUBLISHED
                              PHASE verification-f07334b6; BOUNDED_PHASE; post-C
                              corrective activity, operational order unchanged)
 
-PRE-G9B-R6-plus-E1         = PASS — AUTHOR APPROVED (aggregate, 2026-10-07: E1-L and
+PRE-G9B-R6-plus-E1         = PASS — AUTHOR APPROVED — PUBLISHED (reconciled by G,
+                             2026-10-14: published with the E1-P closeout fdc1ade6)
+                             earlier: PASS — AUTHOR APPROVED (aggregate, 2026-10-07: E1-L and
                              E1-P closed; split into E1-L and E1-P by the author on
                              T_R6PLUS_E1_PREP 0ce52a96; DQ-E1-1 to DQ-E1-16 decided;
                              not reopened by OBS-R6PLUS-PACKAGED-CLASSIC-DIAGNOSTIC-LAUNCHER)
@@ -1281,7 +1285,9 @@ PRE-G9B-R6-plus-E1-L       = PASS — AUTHOR APPROVED — PUBLISHED
                              PHASE verification-1c7d88a3; BOUNDED_PHASE; R0 1aa05d67
                              historical evidence; ADR 0033 and the curated-library
                              specification author-approved)
-PRE-G9B-R6-plus-E1-P       = PASS — AUTHOR APPROVED
+PRE-G9B-R6-plus-E1-P       = PASS — AUTHOR APPROVED — PUBLISHED (reconciled by G,
+                             2026-10-14: published with its closeout fdc1ade6)
+                             earlier: PASS — AUTHOR APPROVED
                              (2026-10-07; T_R6PLUS_E1_P dcda4075; AUTHOR_SMOKE = PASS
                              WITH ACCEPTED PRE-EXISTING DEBT; PHASE verification-81ffec9c,
                              INFRA_UNIT verification-ace3de87, PACKAGING verification-e3c98ad1,
@@ -1345,7 +1351,10 @@ PRE-G9B-R6-plus-E2         = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-08 
                              implementation NOT AUTHORIZED)
                              earlier: NOT AUTHORIZED (NEXT after E1-P-X1, verification
                              baseline clean; requires a separate explicit author instruction)
-PRE-G9B-R6-plus-E3         = PASS — AUTHOR APPROVED (with PRE-G9B-R6-plus-E3-R1)
+PRE-G9B-R6-plus-E3         = PASS — AUTHOR APPROVED — PUBLISHED (reconciled by G,
+                             2026-10-14: first published with the E3/E3-R1 closeout by
+                             P_POST_E3 31286a23, then in POST-E3-INTEGRATION 00b525fd)
+                             earlier: PASS — AUTHOR APPROVED (with PRE-G9B-R6-plus-E3-R1)
                              (2026-10-10; approved candidate T_R6PLUS_E3_R1 7cd50116,
                              corrective successor of 257c854a; AUTHOR_SMOKE = PASS WITH
                              ACCEPTED NON-BLOCKING VERIFICATION LIMITATION; Asymptote with
@@ -1385,6 +1394,8 @@ PRE-G9B-R6-plus-E3         = PASS — AUTHOR APPROVED (with PRE-G9B-R6-plus-E3-R
 POST-E3-ES-COMMAND-LOOKUP-CHARACTERIZATION = PASS — AUTHOR APPROVED (2026-10-10, POST-E3
                              author reconciliation; D0 for the legacy-load attribution;
                              integrated as ed3f7a5e; publication NOT AUTHORIZED)
+                             PUBLISHED (reconciled by G, 2026-10-14: in POST-E3-INTEGRATION
+                             00b525fd)
                              earlier: CHARACTERIZATION COMPLETE — PENDING AUTHOR
                              REVIEW (2026-10-10; on P_R6PLUS_E3 31286a23; pre-existing
                              upstream lazy reverse-table refill, not legacy-load specific;
@@ -1408,6 +1419,8 @@ POST-E3-E2-PSTRICKS-DIMENSION-ANGLE = PASS — AUTHOR APPROVED; C1 DESIGN AUTHOR
 POST-E3-LEGACY-INVENTORY-CASE-FIX = PASS — AUTHOR APPROVED (2026-10-10, original candidate
                              28e9aebe; integrated as 718c4081, equivalent; publication NOT
                              AUTHORIZED)
+                             PUBLISHED (reconciled by G, 2026-10-14: in POST-E3-INTEGRATION
+                             00b525fd)
                              earlier: TECHNICAL CANDIDATE PENDING AUTHOR REVIEW (2026-10-10;
                              on P_R6PLUS_E3 31286a23; readiness gate passed; class
                              OPERATIONAL_VERIFICATION_INFRASTRUCTURE; ordinal label map in
@@ -1799,6 +1812,9 @@ OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT = RECORDED BY THE C RECONCILIATION —
                              BEHAVIOR — NOT C SCOPE — NOT FIXED — AUTHOR DISPOSITION
 ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY = ENHANCEMENT — NOT A-2 BLOCKING —
                              IMPLEMENTATION NOT AUTHORIZED (preferred owner F2)
+                             reconciled by G (2026-10-14): not implemented in F2 (DQ-F2-9);
+                             planning owner G11 (author decision, G design closeout);
+                             implementation NOT AUTHORIZED
 ENH-R6PLUS-E3-ISOA-LABEL-SCALE-COHERENCE = ENHANCEMENT — OWNER PRE-G9B-R6-plus-E3 —
                              IMPLEMENTATION NOT AUTHORIZED (recorded by the C
                              smoke remediation, 2026-10-06): a stable, exportable
@@ -1832,6 +1848,8 @@ OBS-R6PLUS-E3-LEGACY-INVENTORY-CASE-FOLDED-TYPES = OPEN — OUTSIDE E3 — NOT F
                              TECHNICAL CANDIDATE (2026-10-10) — AUTHOR REVIEW PENDING
                              CORRECTION PASS — AUTHOR APPROVED (2026-10-10, 28e9aebe;
                              integrated as 718c4081; publication pending)
+                             PUBLISHED (reconciled by G, 2026-10-14: 2026-10-10, in
+                             POST-E3-INTEGRATION 00b525fd)
 OBS-R6PLUS-E3-LEGACY-DOC-ES-LOOKUP = OPEN — OUTSIDE E3 — RETAINED (E3 candidate report
                              §12: after loadXML of Templatev7.ggb and setLanguage("es") no
                              Spanish command name resolves in the Desktop test harness)
@@ -1920,6 +1938,9 @@ OBS-R6PLUS-DXF-AUTOCAD-CONTAINER-REJECTION = PRE-EXISTING SINCE G5 (AutoCAD 2024
                              G5 families on 847bb20a, both routes, AUDIT clean;
                              proposed CLOSE for AutoCAD 2026, other versions NOT
                              RECHECKED — COVERAGE GAP (DQ-F4-6 pending)
+                             DQ-F4-6 DECIDED (F4 design and aggregate closeouts): CLOSED —
+                             RESOLVED FOR AUTOCAD 2026; other versions NOT RECHECKED —
+                             COVERAGE GAP (reconciled by G, 2026-10-14)
 OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
                              PREPARATION (2026-10-06) — E2-OWNED CROSS-PHASE
                              CONSTRAINT (author decision 2026-10-07) — NOT SOLVED
@@ -1941,6 +1962,11 @@ OBS-R6PLUS-E2-LEGACY-DIMENSION-MACRO-NAME-COLLISION = RECORDED BY THE E1
                              (2026-10-08: Templatev7.ggb and a user store with the
                              legacy macros keep working next to the new commands, no
                              byte change) — PENDING AUTHOR REVIEW
+                             RESOLVED — AUTHOR DISPOSITION (G design closeout §4.1,
+                             2026-10-14: naming by DQ-E2-7, coexistence in the approved E2
+                             implementation 3a724661); the future-collision failure mode
+                             stays with OBS-R6PLUS-E2-USER-LIBRARY-LOCALE-DEPENDENT-NATIVE-
+                             COLLISION, which is open
 OBS-R6PLUS-E2-SMOKE-LEGACY-DOCUMENT-MACROS = A-INTENTIONAL-PROFILE-BEHAVIOR
                              (author decision 2026-10-08: the Templatev7.ggb macros
                              are loaded, registered, executable and preserved, the
@@ -2030,6 +2056,10 @@ OBS-POST-E2-P1-R1-PDF-TEXT-SIZE = TD-PDF-1 — OPEN — CHARACTERIZATION REQUIRE
                              values follow S3 (model units), labels view pixels;
                              proposed CONTRACT DESIGN REQUIRED, outside F4 (DQ-F4-8
                              pending)
+                             DQ-F4-8 DECIDED (F4 design and aggregate closeouts): TD-PDF-1
+                             OPEN — DEFERRED, contract design required; planning owner G15
+                             after a contract-design activity (author, G design closeout)
+                             (reconciled by G, 2026-10-14)
 OBS-POST-E2-P1-R1-PDF-EMBEDDED-FONTS-FAILS = TD-PDF-2 — OPEN — UNCONFIRMED IN
                              PRODUCT — HEADLESS TEST ENVIRONMENT OBSERVATION — NOT
                              AUTHORIZED (planned after P2–P4; intended owner
@@ -2123,6 +2153,9 @@ F3 Apply Template re-layering = CHARACTERIZED (F3-PREP, 2026-10-12: restyled
                              layers) — DISPOSITION PENDING DQ-F3-9 (moot under the
                              proposed T0 template contract, DQ-F3-17) —
                              F3 IMPLEMENTATION NOT AUTHORIZED
+                             MOOT — CLOSED UNDER T0 (reconciled by G, 2026-10-14: DQ-F3-9
+                             decided "layers never touched"; the F3 closeout approved T0
+                             without the inherited applyTemplate path)
 G11 / G12 / G15 ownership  = UNCHANGED
 selfApproved               = false
 ```

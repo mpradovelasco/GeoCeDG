@@ -1,7 +1,10 @@
 # Construction Text view scaling
 
 - Phase: `PRE-G9B-S3`
-- Status: `IMPLEMENTATION AUTHORIZED — CANDIDATE PENDING REVIEW`
+- Status: `NORMATIVE / AUTHOR APPROVED` (`PRE-G9B-S3` approved on `543c7729`; see the
+  [S3 closeout report](../../../docs/validation/pre_g9b_s3_text_view_scaling_candidate_report.md); status
+  reconciled by PRE-G9B-R6-plus-G, 2026-10-14; earlier
+  `IMPLEMENTATION AUTHORIZED — CANDIDATE PENDING REVIEW`)
 - Scope: GeoCeDG Euclidian presentation only
 - Semantic-format change: none
 - Self approval: `false`

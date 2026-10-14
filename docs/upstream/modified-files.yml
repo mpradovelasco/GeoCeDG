@@ -2598,19 +2598,19 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java",
       "change": "modified",
-      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: register IsoABorder in TABLE_GEOMETRY; every existing command is unchanged. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: register IsoABorder in TABLE_GEOMETRY; every existing command is unchanged. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): register the experimental SplineV2 command identity in TABLE_FUNCTION; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/BasicCommandProcessorFactory.java",
       "change": "modified",
-      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: create the IsoABorder processor. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: create the IsoABorder processor. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): create the experimental SplineV2 processor; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
       "change": "modified",
-      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: dispatch IsoABorder to the basic processor factory. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: dispatch IsoABorder to the basic processor factory. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): dispatch SplineV2 to the basic processor factory; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2682,19 +2682,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the default SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the English SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: CotaAlineada and CotaLineal aliases and Spanish syntax. PRE-G9B-R6-plus-E3: the Spanish name MarcoISOA and syntax of IsoABorder. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: CotaAlineada and CotaLineal aliases and Spanish syntax. PRE-G9B-R6-plus-E3: the Spanish name MarcoISOA and syntax of IsoABorder. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the Spanish SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {

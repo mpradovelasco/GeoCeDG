@@ -1,7 +1,9 @@
 # G9X1 extended DXF architecture
 
 **Status: G9X1 = PASS — AUTHOR APPROVED. The approved implementation remains
-experimental, default-off and strictly outside geometric authority.**
+experimental and strictly outside geometric authority. It was default-off at the
+G9X1 closeout and is enabled by default since PRE-G9B-P1 (status reconciled by
+PRE-G9B-R6-plus-G, 2026-10-14).**
 
 The author-closeout evidence and frozen focused scenario authority live in
 `geocedg/validation/export/g9x1/`; the execution report is
