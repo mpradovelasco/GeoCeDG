@@ -1386,7 +1386,10 @@ lines start with line thickness 2; each keeps its own style, which you can chang
 in its properties and which is saved with it. In the Style tab of the properties,
 beside the thickness slider, you can also type the thickness as a whole number in
 the slider's range and press `Enter`; a value outside the range is refused and
-leaves the style unchanged. The **Dimension presentation**
+leaves the style unchanged. The same field is in the line-style menu of the
+Graphics 1 and Graphics 2 style bar, to the right of its thickness slider; there,
+closing the menu also applies a valid entry and `Escape` cancels it. The
+**Dimension presentation**
 group under **Options → Preferences… → Layout & Presentation** sets the
 **Initial line thickness** of dimensions created afterwards with the tools, and
 whether new documents show the unit on dimension values (section 4.6). These

@@ -19,6 +19,7 @@ import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.main.settings.EuclidianSettings;
+import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
 import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
 
 /** GeoCeDG-only transient rich-result overlay; creates no construction objects. */
@@ -38,6 +39,12 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 				}
 			}
 		});
+	}
+
+	@Override
+	protected EuclidianStyleBarD newEuclidianStyleBar() {
+		// PRE-G9B-R6-plus-F4-A: numeric line-thickness entry in the style bar
+		return new GeoCeDGEuclidianStyleBar(this);
 	}
 
 	/**

@@ -1455,7 +1455,10 @@ referencia empiezan con grosor de línea 2; cada una conserva su propio estilo,
 que puede cambiar en sus propiedades y que se guarda con ella. En la pestaña
 Estilo de las propiedades, junto al deslizador de grosor, también puede escribir
 el grosor como número entero dentro del rango del deslizador y pulsar `Intro`; un
-valor fuera del rango se rechaza y deja el estilo sin cambios. El grupo
+valor fuera del rango se rechaza y deja el estilo sin cambios. El mismo campo
+está en el menú de estilo de línea de la barra de estilo de Gráficos 1 y
+Gráficos 2, a la derecha de su deslizador de grosor; allí, cerrar el menú también
+aplica un valor válido y `Escape` lo cancela. El grupo
 **Presentación de cotas** de **Opciones → Preferencias… → Disposición y
 presentación** fija el **Grosor inicial de línea** de las cotas creadas después
 con las herramientas, y si los documentos nuevos muestran la unidad en los

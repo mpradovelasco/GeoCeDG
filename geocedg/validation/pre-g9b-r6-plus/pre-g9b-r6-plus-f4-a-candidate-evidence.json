@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F4-A",
+  "recordKind": "TECHNICAL_CANDIDATE_REPORT",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md",
+  "technicalCandidateState": "FROZEN",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "scopeAmendment": {"record": "docs/validation/pre_g9b_r6_plus_f4_a_scope_amendment_01_record.md", "commit": "72f6c5af24bd1651e19764c8bdb02814949bb4b9", "static": "verification-70b649a2a5f74a9fbc0a5b8e07ab252a"},
+  "lineage": ["e968245ef329a86108df81a49cbdb05601cefe9e", "1b944afbc88ef46402c20fccd49eea5e66d64371", "e7b235dca9afc68f051faefa133e2db585bfea4c", "72f6c5af24bd1651e19764c8bdb02814949bb4b9"],
+  "historicalEvidenceUnchanged": {"stop": "e7b235dca9afc68f051faefa133e2db585bfea4c", "wip": "9b755225eadf3c2040029f6bee0b455f1d5bb89c", "stopEvidenceSha256Sums": "3c432fcd438673237a731ec9f47cd665bb1c9190c285a164f1638a77426728e7"},
+  "architecture": "A1 — GeoCeDG-owned Desktop",
+  "verificationClass": "BOUNDED_PHASE",
+  "frozenAcceptance": ["PHASE PRE-G9B-R6-PLUS-F4-A", "INFRA_UNIT", "STATIC"],
+  "productDelta": {
+    "added": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianStyleBar.java"],
+    "modified": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java", "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java", "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLineThicknessField.java"],
+    "inheritedSourceChange": false,
+    "globalSwingSettingsChanged": false,
+    "behaviour": ["inherited slider moved, unchanged, into a GeoCeDG row with the field at its right (font-sized, centred)", "this one popup light-weight without the FlatLaf drop shadow", "button tooltip dismissed on opening; a popup placed in a separate window only because of a lingering tooltip window is shown once more in place", "field enabled only where the keyboard reaches it", "closing ends a pending entry as focus loss does in Properties", "one undo step per accepted entry"]
+  },
+  "gate": {
+    "result": "F4-A E5 FOCUS FEASIBILITY = PASS",
+    "runtime": "Temurin 25.0.4 with the runGeoCeDG JVM arguments",
+    "input": "java.awt.Robot, keys only with the field as confirmed focus owner",
+    "display": {"windowsScale": 1.25, "forcedScales": [1.0, 1.5]},
+    "items": {"1": "PASS", "2": "PASS", "3": "PASS", "4": "PASS", "5": "PASS", "6": "PASS", "7": "PASS", "8": "PASS", "9": "PASS", "10": "PASS", "11": "PASS", "12": "PASS", "13": "PASS", "14": "PASS", "15": "PASS", "tooltipHoverThenClick": "PASS"},
+    "view3D": {"docked": "PASS", "overlapping": "PASS (popup intersects the 3D view, drawn above it, interactive)", "resized": "PASS"},
+    "windowBounds": {"shortWindow": "PASS (light-weight)", "screenEdge": "PASS (light-weight)"},
+    "heavyWeightCase": "only when another visible application window overlaps the popup area: field disabled, no focus; slider and table usable",
+    "evidence": {"folder": "artifacts/pre-g9b-r6-plus-f4-a/e5-gate-evidence/", "files": 101, "sha256SumsFileSha256": "7b64623c70d4f8a080942a198d9e050b5e3f01c0937125b237385bd3038bc81f", "finalRuns": ["f4a-e5-gate-run3", "f4a-e5-gate-scale1.0", "f4a-e5-gate-scale1.5", "f4a-e5-classic"]},
+    "gatedProductBlobs": {"GeoCeDGEuclidianStyleBar.java": "cedfc16487012ddd15a88f880fb429e2041b65ca", "GeoCeDGEuclidianView.java": "4dd8d9ebde4a1212e5a204273203f5e1a2c254f1", "GeoCeDGLineThicknessField.java": "3defa6c1744f28e82742a9f6199ff34c290f82b5", "GuiManagerGeoCeDG.java": "335679502f25cfc17068dfcf788755ef4639b919"}
+  },
+  "tests": {"focusedClass": {"name": "PreG9BR6PlusF4AStyleBarThicknessTest", "tests": 12}, "propertiesField": {"name": "PostE2P1R2SmokeFollowUpTest", "tests": 7}, "phaseSelection": {"id": "pre-g9b-r6-plus-f4-a.desktop", "identities": 159, "passed": 159}, "finalDesktopProducer": {"tests": 2127, "failures": 0, "skipped": 1}},
+  "registration": {"phase": "PRE-G9B-R6-PLUS-F4-A", "selections": 62, "phases": 67, "discovery": {"shared": 6075, "desktop": 2133}},
+  "risks": [
+    {"id": "F4A-R-HEAVYWEIGHT-RESTRICTED", "disposition": "restricted availability presented for author disposition"},
+    {"id": "F4A-R-TOOLTIP-RESHOW", "disposition": "characterized; FlatLaf 3.7 lingering tooltip window"},
+    {"id": "F4A-R-NO-SHADOW", "disposition": "visual, approved by the amendment"},
+    {"id": "F4A-R-LAF-VERSION", "disposition": "repeat the real-window gate after a JDK or FlatLaf update"},
+    {"id": "F4R-LINETYPE-COUPLING", "disposition": "inherited, unchanged (DQ-F4-4)"},
+    {"id": "F4R-DEFAULTS-UNDO", "disposition": "inherited, unchanged"}
+  ],
+  "states": {"F4-A E5 focus feasibility": "PASS", "F4-A technical acceptance": "PENDING", "F4-A author smoke": "PENDING", "F4-A author approval": "NOT GRANTED", "F4-A publication": "NOT AUTHORIZED", "F4 aggregate closeout": "NOT AUTHORIZED", "G": "NOT AUTHORIZED"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}

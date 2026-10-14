@@ -40,6 +40,7 @@ public final class GeoCeDGLineThicknessField {
 	private final JSpinner spinner;
 	private final JFormattedTextField text;
 	private boolean following;
+	private boolean applying;
 
 	/**
 	 * @param app application
@@ -103,8 +104,23 @@ public final class GeoCeDGLineThicknessField {
 		if (value == slider.getValue()) {
 			return;
 		}
-		slider.setValue(value);
+		applying = true;
+		try {
+			slider.setValue(value);
+		} finally {
+			applying = false;
+		}
 		storeUndo.run();
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-F4-A: lets a host that stores its own undo points on slider
+	 * changes leave the single undo point of an entry to this field.
+	 *
+	 * @return whether the slider is being moved by an accepted entry
+	 */
+	boolean isApplying() {
+		return applying;
 	}
 
 	/**

@@ -126,7 +126,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java",
       "change": "added",
-      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. POST-E2-P4: the object context menu of one native dimension offers the explicit Make offset draggable action. Authority: docs/architecture/post_e2_p4_offset_conversion_design.md. Follow-up: the Graphics View chooser menu opened for outputs of one native dimension carries the same action; every other context keeps the inherited chooser. PRE-G9B-R6-plus-F3: GeoCeDG Open with the single document filter and name resolution without .off (A1, OFF-B), OFF refusal for every doOpenFiles caller, and Save, Save As and open refusal while a drawing is isolated; the v1 fallback keeps the inherited dialog.",
+      "purpose": "Select the GeoCeDG menu surface and implement native .cedg Save/Save As plus non-destructive .ggb compatibility-input state transitions without changing Classic defaults. G9U1: Connect the registry/workspace to existing Desktop document and view seams. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. POST-E2-P4: the object context menu of one native dimension offers the explicit Make offset draggable action. Authority: docs/architecture/post_e2_p4_offset_conversion_design.md. Follow-up: the Graphics View chooser menu opened for outputs of one native dimension carries the same action; every other context keeps the inherited chooser. PRE-G9B-R6-plus-F3: GeoCeDG Open with the single document filter and name resolution without .off (A1, OFF-B), OFF refusal for every doOpenFiles caller, and Save, Save As and open refusal while a drawing is isolated; the v1 fallback keeps the inherited dialog. PRE-G9B-R6-plus-F4-A: Graphics 2 is the inherited view with only its style-bar factory overridden, so its style bar carries the numeric line-thickness field. Authority: docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -3756,7 +3756,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
       "change": "added",
-      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects. PRE-G9B-R6-plus-B: paint the transient export-area overlay in the live view only; exports never paint it. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E3: validate the ISO A export-area link by identity when painting. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: paints the orientation cue in the live Graphics 1 paint only, after the export-area overlay; exportPaint never calls it. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md.",
+      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects. PRE-G9B-R6-plus-B: paint the transient export-area overlay in the live view only; exports never paint it. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E3: validate the ISO A export-area link by identity when painting. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: paints the orientation cue in the live Graphics 1 paint only, after the export-area overlay; exportPaint never calls it. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F4-A: the Graphics 1 style bar is the GeoCeDG style bar with the numeric line-thickness field. Authority: docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -6042,7 +6042,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLineThicknessField.java",
       "change": "added",
-      "purpose": "POST-E2-P1-R2 smoke follow-up B: numeric line-thickness field synchronized with the host thickness slider of the object Properties; the slider applies the style; one undo point per accepted entry; refused entries change nothing.",
+      "purpose": "POST-E2-P1-R2 smoke follow-up B: numeric line-thickness field synchronized with the host thickness slider of the object Properties; the slider applies the style; one undo point per accepted entry; refused entries change nothing. PRE-G9B-R6-plus-F4-A: reused in the Graphics style-bar line-style popup; reports while an accepted entry moves the slider so that the style bar leaves the single undo point to the field; no behaviour change for the Properties field. Authority: docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md.",
       "authority": "docs/validation/post_e2_p1_r2_smoke_followup_report.md"
     },
     {
@@ -6374,6 +6374,18 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F4-D scope amendment 01 structural Type 1 tests: zero and nonzero displacement movetos, repeated movetos, closed contours and multiple subpaths decoded by a Type 1 interpreter; every glyph of the product sans and serif fonts in four styles equals the rounded Java shape FreeHEP encodes; every glyph of every embedded program of GeoCeDG and Classic glyph-cohort PDFs begins each subpath with a moveto, with widths equal to the hsbw widths and the source text extracted.",
       "authority": "docs/validation/pre_g9b_r6_plus_f4_d_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianStyleBar.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-A (scope amendment 01): GeoCeDG subclass of the inherited Graphics style bar (Graphics 1 and Graphics 2). After every createButtons() it moves the inherited line-style slider into a GeoCeDG row with a fresh numeric line-thickness field at its right, shows that one popup light-weight without the FlatLaf drop shadow, ends a pending entry when the popup closes, disables the field where the keyboard cannot reach it, and leaves the single undo step of an accepted entry to the field; no inherited source change and no global popup setting.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF4AStyleBarThicknessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-R6-plus-F4-A focused tests (scope amendment 01): the light-weight popup without drop shadow holding the table and one row with the slider and the field at its right, sized from the font; Graphics 1 and Graphics 2; re-attachment after language and font changes; none in Classic; following the slider, selection, creation-mode defaults and the polygon minimum; refused entries; an accepted entry equals moving the slider with one undo step; closing the popup ends the edit; keyboard reachability; Undo, Redo, save and reopen; the Properties field unchanged.",
+      "authority": "docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md"
     }
   ]
 }

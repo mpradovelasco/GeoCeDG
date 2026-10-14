@@ -19,11 +19,17 @@ import javax.swing.JPopupMenu;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.GPoint;
+import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.MyError.Errors;
+import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.common.util.FileExtensions;
+import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
+import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.geogebra.desktop.euclidianND.EuclidianViewInterfaceD;
+import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianControllerFor3DD;
+import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
 import org.geogebra.desktop.geogebra3D.gui.GuiManager3D;
 import org.geogebra.desktop.gui.ContextMenuChooseGeoD;
 import org.geogebra.desktop.gui.app.FileExtensionFilter;
@@ -93,6 +99,27 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 	@Override
 	protected AlgebraViewD newAlgebraView(AlgebraControllerD controller) {
 		return new GeoCeDGAlgebraView(controller, (AppGeoCeDG) getApp());
+	}
+
+	@Override
+	protected EuclidianViewD newEuclidianView(boolean[] showAxis, boolean showGrid,
+			int viewId) {
+		// PRE-G9B-R6-plus-F4-A: Graphics 2 as inherited, with the GeoCeDG style bar
+		return new Graphics2View(new EuclidianControllerFor3DD(kernel), showAxis,
+				showGrid, viewId, getApp().getSettings().getEuclidian(viewId));
+	}
+
+	/** The inherited Graphics 2 view; only its style-bar factory differs. */
+	private static final class Graphics2View extends EuclidianViewFor3DD {
+		Graphics2View(EuclidianController controller, boolean[] showAxis,
+				boolean showGrid, int viewId, EuclidianSettings settings) {
+			super(controller, showAxis, showGrid, viewId, settings);
+		}
+
+		@Override
+		protected EuclidianStyleBarD newEuclidianStyleBar() {
+			return new GeoCeDGEuclidianStyleBar(this);
+		}
 	}
 
 	@Override
