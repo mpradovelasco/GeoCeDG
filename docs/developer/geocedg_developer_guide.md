@@ -247,6 +247,22 @@ publication authority by itself. The former readiness, status-projection,
 automated commit/tag/push and dual-mode machinery is retained only in historical
 ADRs, reports and the archived pre-recovery specification.
 
+**Author publication preference (2026-10-14).** For an author-approved GeoCeDG
+phase, the default promotion is a direct, non-force fast-forward push of the exact
+approved closeout commit to `main`, made with the author's administrator
+privileges. A pull request is used only when the author asks for one or a
+mandatory policy requires it, such as upstream synchronization (`AGENTS.md`
+section 8). The preference selects the mechanism only and never authorizes a
+publication: each promotion still needs explicit author approval of the exact
+technical and closeout identities, the applicable accepted verification, a clean
+linear ancestry and a fresh read of the live remote `main` just before the push.
+Never force-push, rewrite approved history or change branch-protection settings
+to make a push possible. When GitHub accepts an authorized push while reporting
+bypassed rules, record the reported rules as a fact; a rejected push, a
+protection that is not bypassed or a failed gate stops the publication. After
+the push, audit that local `main`, `origin/main` and the live remote `main` name
+the approved commit and tree and that no unintended commit was published.
+
 ADR 0024 section 11.2 remains an exceptional fifteen-condition repair for its
 bounded input-identity/provenance defect. Do not use it as normal closeout, to
 justify a known post-FULL lifecycle repair or to waive FULL for a deliberate
