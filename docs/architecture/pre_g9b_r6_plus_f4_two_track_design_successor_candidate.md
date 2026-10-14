@@ -48,6 +48,14 @@ Classic unchanged, shown with native input (`java.awt.Robot`) and confirmed by t
 smoke. Only fallback: GeoCeDG-owned focusability of the containing popup through the
 component ancestry. Otherwise `STOP — F4-A FOCUS FEASIBILITY BLOCKED`.
 
+**Scope amendment 01** (author decision of 2026-10-14,
+[record](../validation/pre_g9b_r6_plus_f4_a_scope_amendment_01_record.md)). The
+real-window gate stopped this design: the popup-focusability fallback failed
+([stop report](../validation/pre_g9b_r6_plus_f4_a_focus_gate_stop_report.md)). The
+amendment replaces the popup strategy with a light-weight popup without drop shadow for
+the line-style control only, and places the field to the right of the slider. The rest of
+this section is unchanged.
+
 **Class.** Proposed `BOUNDED_PHASE`: registered PHASE, with `INFRA_UNIT` and `STATIC` for
 the phase-selection registration. Alternative A2 (profile-gated inherited hook) would be
 `INTEGRATED_PHASE`; it is not the author's direction.

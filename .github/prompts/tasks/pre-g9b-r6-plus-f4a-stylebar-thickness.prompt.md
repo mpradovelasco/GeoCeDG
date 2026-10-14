@@ -14,6 +14,19 @@ as recorded in the
 Nothing here authorizes implementation, and approval of track F4-D never authorizes
 this track.
 
+**Scope amendment 01** (author decision of 2026-10-14,
+[record](../../../docs/validation/pre_g9b_r6_plus_f4_a_scope_amendment_01_record.md)),
+after `STOP — F4-A FOCUS FEASIBILITY BLOCKED`
+([stop report](../../../docs/validation/pre_g9b_r6_plus_f4_a_focus_gate_stop_report.md)).
+It replaces only the popup-focus strategy and the layout below:
+- the line-style popup that holds the field is a light-weight popup without the FlatLaf
+  drop shadow (E5), scoped to that GeoCeDG control;
+- the field sits immediately to the right of the slider, on the same row, under the
+  line-type table.
+
+Its own real-window gate comes first. A1, the forbidden scope and every other
+requirement here keep binding.
+
 Evidence and design:
 [F4 characterization report](../../../docs/validation/pre_g9b_r6_plus_f4_preparation_characterization_report.md) §4;
 [two-track design successor](../../../docs/architecture/pre_g9b_r6_plus_f4_two_track_design_successor_candidate.md) §2.
