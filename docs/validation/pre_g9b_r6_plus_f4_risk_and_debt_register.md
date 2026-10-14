@@ -82,3 +82,25 @@ Sections 1–5 stay as the historical record.
 | `F4R-FAILED-EXPORT-REPORTING` | **CLOSED FOR F4-D — NOT REALIZED**; the inherited generic failure reporting is unchanged and outside the approved obligations; no debt opened | obligations 1–2 | — |
 | `OBS-F4P-FREEHEP-XREF-SIZE` | **OPEN — UNRESOLVED — INDEPENDENT OBSERVATION**; not caused or changed by F4-D; proposed for the G structured register; not authorized | candidate report §6 | G register (proposed) |
 | F4-A risks of §2 | unchanged; F4-A not authorized, after F4-D publication (`DQ-F4-10`) | — | F4-A |
+
+## 7. F4-A author closeout (2026-10-14)
+
+Recorded by the [F4-A author closeout record](pre_g9b_r6_plus_f4_a_author_closeout_record.md):
+F4-A `PASS — AUTHOR APPROVED`, `AUTHOR_SMOKE = PASS`, on the approved implementation
+`6baa66a584ceef1973c854fb63b00aa7070708b4` (tree `bfc22c5dff6a1dcb7a371030c77f695a1a6b1925`),
+after the [focus gate stop](pre_g9b_r6_plus_f4_a_focus_gate_stop_report.md) and
+[scope amendment 01](pre_g9b_r6_plus_f4_a_scope_amendment_01_record.md). Sections 1–6 stay
+as the historical record.
+
+| Id | State | Evidence / reference |
+|---|---|---|
+| `OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT` | **CLOSED — FULFILLED BY F4-A** (`6baa66a5`), with F4-A-L1 | candidate report; real-window gate `F4-A E5 FOCUS FEASIBILITY = PASS` |
+| `F4R-POPUP-FOCUS` | **CLOSED** — realized at the first gate (STOP `e7b235dc`), resolved by scope amendment 01 (E5) | stop report; e5 gate evidence |
+| `F4R-LINETYPE-COUPLING` | retained, accepted (`DQ-F4-4`), inherited and unchanged | candidate report §9 |
+| `F4R-DEFAULTS-UNDO` | retained, documented, inherited and unchanged | candidate report §9 |
+| `F4R-CLASSIC-LEAK` | **CLOSED — HELD** | `classicStyleBarsHaveNoField`; gate item 13 |
+| **F4-A-L1** restricted numeric-entry availability | **ACCEPTED LIMITATION** — editor disabled when another application-owned window overlaps the popup and Swing selects a heavy-weight popup; accepted only while it is visibly disabled, takes no keyboard input, the table and slider work, and editing resumes with a light-weight popup | gate `owned.overlap.path`, `owned.overlap.after.path` |
+| **F4-A-L2** popup redraw | **ACCEPTED LIMITATION** — one redraw when opening after a visible tooltip; popup usable, no duplicated operation | gate `tooltip.hover.path`; `f4a-e5-diag-*` |
+| **F4-A-L3** validated runtime | **ACCEPTED LIMITATION** — validated with Temurin 25.0.4 and FlatLaf 3.7; a relevant runtime or look-and-feel change requires renewed compatibility verification | e5 gate evidence |
+| `TD-PDF-1` (F4-C) | DEFERRED, unchanged | §1 |
+| `OBS-F4P-FREEHEP-XREF-SIZE` | OPEN — independent observation, unchanged | §6 |

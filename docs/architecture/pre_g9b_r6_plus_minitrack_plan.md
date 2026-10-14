@@ -94,6 +94,7 @@
 - **F4-A focus feasibility gate stop** (Operation 2 of the author instruction of 2026-10-14, on `e968245e` with the documentary ancestor `1b944afb`; [stop report](../validation/pre_g9b_r6_plus_f4_a_focus_gate_stop_report.md)): **STOP — F4-A FOCUS FEASIBILITY BLOCKED**. With native input (`java.awt.Robot`) in the real window, on JDK 17 and on the product runtime Temurin 25, the field in the line-style popup never takes keyboard focus (the inherited popup is a non-focusable heavy-weight window, because `GuiManager3D` disables light-weight popups; keystrokes reach the drawing pad), and the approved fallback (a focusable popup) leaves the popup off screen. A light-weight popup without the FlatLaf drop shadow, tried in the probe only, works (real focus, Enter, one undo step). No technical candidate and no acceptance run; unverified work on local branch `wip/pre-g9b-r6-plus-f4-a-focus-blocked` (`9b755225`); options A (light-weight popup, recommended), B (field in the bar), C (A2) and D (withdraw or defer) for the author. F4-A implementation not established; F4-A publication, the F4 aggregate closeout and G not authorized.
 - **F4-A scope amendment 01** (author option A, 2026-10-14, on the STOP commit `e7b235dc`; [amendment record](../validation/pre_g9b_r6_plus_f4_a_scope_amendment_01_record.md)): E5 light-weight line-style popup without the FlatLaf drop shadow, scoped to the GeoCeDG control that holds the field; the field immediately right of the slider on one row; A1 and `BOUNDED_PHASE` maintained; no inherited or global Swing change; complete real-window gate (Temurin 25.0.4, `java.awt.Robot`, 3D view and window-bound positions) before any candidate. **F4-A E5 IMPLEMENTATION — AUTHORIZED**; technical acceptance, author smoke and approval pending; publication, the F4 aggregate closeout and G not authorized.
 - **F4-A technical candidate (scope amendment 01)** (on `72f6c5af`; [candidate report](../validation/pre_g9b_r6_plus_f4_a_candidate_report.md)): `GeoCeDGEuclidianStyleBar` (A1) for Graphics 1 and 2 puts the numeric thickness field to the right of the line-style slider in a light-weight popup without drop shadow, scoped to that control; close-commit as in Properties, one undo step per entry, field disabled where the keyboard cannot reach it; real-window gate **F4-A E5 FOCUS FEASIBILITY = PASS** (Temurin 25.0.4, all fifteen items, 3D view docked and overlapped, window bounds, scales 1.0/1.25/1.5, Classic unchanged); restricted availability (another application window over the popup) characterized for the author. **F4-A TECHNICAL ACCEPTANCE — PENDING** (frozen-candidate runs reported outside the candidate); author smoke and approval pending; publication, the F4 aggregate closeout and G not authorized.
+- **F4-A author approval and closeout** (author decision of 2026-10-14; [author closeout record](../validation/pre_g9b_r6_plus_f4_a_author_closeout_record.md)): **PASS — AUTHOR APPROVED** on the approved implementation `6baa66a584ceef1973c854fb63b00aa7070708b4` (tree `bfc22c5dff6a1dcb7a371030c77f695a1a6b1925`), `AUTHOR_SMOKE = PASS` (author confirmation); `PHASE` `verification-528e53e44fa1400e933ead8cff52f4e5`, `INFRA_UNIT` `verification-0ea5a0c6b4e84831a6bb017088df73a8` and `STATIC` `verification-63e2bb4e88b441d3b4184ecbcfb449b4` re-authenticated; accepted limitations F4-A-L1 (editor disabled when another application window covers the popup), F4-A-L2 (single redraw after a visible tooltip) and F4-A-L3 (validated on Temurin 25.0.4 and FlatLaf 3.7); `OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT` closed. F4-D published, F4-B closed for AutoCAD 2026, F4-C deferred (`TD-PDF-1`), `OBS-F4P-FREEHEP-XREF-SIZE` open, all unchanged. **F4-A PUBLICATION — NOT AUTHORIZED**; the F4 aggregate closeout and G not authorized.
 - Self approval: **false**
 
 This note records the mini-track the author defined on 2026-10-01 as the final
@@ -1714,6 +1715,9 @@ PRE-G9B-R6-plus-F4         = PLANNING INTENT RECORDED — IMPLEMENTATION NOT AUT
                              F4-A TECHNICAL CANDIDATE (amendment 01, on 72f6c5af):
                              E5 FOCUS FEASIBILITY PASS; acceptance and author smoke
                              PENDING
+                             F4-A PASS — AUTHOR APPROVED (2026-10-14, on 6baa66a5):
+                             AUTHOR_SMOKE = PASS; limitations F4-A-L1..L3 accepted;
+                             documentary closeout; publication NOT AUTHORIZED
                              earlier: PREPARATION NEXT (F3 closed 2026-10-13)
                              (author planning decision recorded at the POST-E2-P4
                              closeout, 2026-10-09: to be proposed between F3 and G;
@@ -1979,6 +1983,9 @@ OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT = ENHANCEMENT — ACCEPTED
                              and seams identified; keyboard focus in the
                              non-focusable popup is the first implementation gate;
                              proposed INCLUDE (DQ-F4-1 to DQ-F4-4 pending)
+                             CLOSED — FULFILLED BY PRE-G9B-R6-plus-F4-A (2026-10-14,
+                             author approved on 6baa66a5; accepted limitation
+                             F4-A-L1: editor disabled when a heavy-weight popup is used)
 OBS-POST-E2-P1-R1-PDF-TEXT-SIZE = TD-PDF-1 — OPEN — CHARACTERIZATION REQUIRED —
                              NOT AUTHORIZED (planned after P2–P4; intended owner
                              PRE-G9B-R6-plus-F4, planning intent 2026-10-09)

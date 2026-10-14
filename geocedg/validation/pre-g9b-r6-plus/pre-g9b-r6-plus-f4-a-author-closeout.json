@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "phases": ["PRE-G9B-R6-plus-F4-A"],
+  "registeredPhaseIds": ["PRE-G9B-R6-PLUS-F4-A"],
+  "artifactKind": "CLOSEOUT_RECORD",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_a_author_closeout_record.md",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — PRE-G9B-R6-plus-F4-A AUTHOR APPROVAL AND CLOSEOUT", "authorization": "F4-A PRODUCT APPROVAL AND DOCUMENTARY CLOSEOUT", "publication": "NOT AUTHORIZED"},
+  "states": {"PRE-G9B-R6-plus-F4-A": "PASS — AUTHOR APPROVED", "boundedPhase": "ACCEPTED / COMPLETE", "F4-D": "PASS — AUTHOR APPROVED — PUBLISHED", "F4-B": "CLOSED FOR AUTOCAD 2026", "F4-C": "DEFERRED — TD-PDF-1", "F4-A publication": "NOT AUTHORIZED", "F4 aggregate closeout": "NOT AUTHORIZED", "G": "NOT AUTHORIZED"},
+  "authorSmoke": {"state": "PASS", "authorConfirmation": true, "performedByAgent": false, "checklist": "docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md §10"},
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "publishedBase": "e968245ef329a86108df81a49cbdb05601cefe9e",
+  "chain": [
+    {"commit": "1b944afbc88ef46402c20fccd49eea5e66d64371", "role": "Operation 1 (F4-D published status, publication preference)"},
+    {"commit": "e7b235dca9afc68f051faefa133e2db585bfea4c", "role": "F4-A focus gate STOP (historical)"},
+    {"commit": "72f6c5af24bd1651e19764c8bdb02814949bb4b9", "role": "scope amendment 01"},
+    {"commit": "6baa66a584ceef1973c854fb63b00aa7070708b4", "tree": "bfc22c5dff6a1dcb7a371030c77f695a1a6b1925", "role": "approved implementation"}
+  ],
+  "excludedFromChain": [{"commit": "9b755225eadf3c2040029f6bee0b455f1d5bb89c", "branch": "wip/pre-g9b-r6-plus-f4-a-focus-blocked", "role": "unverified WIP"}],
+  "approvedCandidate": {"commit": "6baa66a584ceef1973c854fb63b00aa7070708b4", "tree": "bfc22c5dff6a1dcb7a371030c77f695a1a6b1925", "parent": "72f6c5af24bd1651e19764c8bdb02814949bb4b9", "mutated": false},
+  "acceptedEvidence": {
+    "verificationClass": "BOUNDED_PHASE",
+    "resultHashRecomputed": true,
+    "phase": {"run": "verification-528e53e44fa1400e933ead8cff52f4e5", "verdict": "ACCEPTED / COMPLETE", "selectionIdentities": 159, "resultHash": "183dc178abf6e107f9447126f8c38fbd9a881ef33695a3cdd70f24d4251a0198", "receipt": "artifacts/agent/f4a-amend01-phase/"},
+    "infraUnit": {"run": "verification-0ea5a0c6b4e84831a6bb017088df73a8", "verdict": "ACCEPTED / COMPLETE", "checks": "22/22", "resultHash": "1e6b1eccd78506f1e27511c57825a047479fbc047d5e102d910759c861d2ccd0", "receipt": "artifacts/agent/f4a-amend01-infra-unit/"},
+    "static": {"run": "verification-63e2bb4e88b441d3b4184ecbcfb449b4", "verdict": "ACCEPTED / COMPLETE", "checks": "3/3", "resultHash": "587f9d2936a39e27595261654f7de30343c398b6ec54d09b8a82740d2ed47ed5", "receipt": "artifacts/agent/f4a-candidate-static/"},
+    "realWindowGate": {"result": "F4-A E5 FOCUS FEASIBILITY = PASS", "runtime": "Temurin 25.0.4", "laf": "FlatLaf 3.7", "evidence": "artifacts/pre-g9b-r6-plus-f4-a/e5-gate-evidence/", "sha256SumsFileSha256": "7b64623c70d4f8a080942a198d9e050b5e3f01c0937125b237385bd3038bc81f"},
+    "stopGateEvidenceSha256Sums": "3c432fcd438673237a731ec9f47cd665bb1c9190c285a164f1638a77426728e7"
+  },
+  "acceptedLimitations": [
+    {"id": "F4-A-L1", "title": "restricted numeric-entry availability", "conditions": ["visibly disabled", "no keyboard input received or processed", "line-type table operational", "slider operational", "normal editing resumes with a light-weight popup"], "evidence": "gate owned.overlap.path and owned.overlap.after.path"},
+    {"id": "F4-A-L2", "title": "single popup redraw after a visible tooltip", "conditions": ["popup remains usable", "no geometric or editing operation duplicated"], "evidence": "gate tooltip.hover.path; f4a-e5-diag-*"},
+    {"id": "F4-A-L3", "title": "validated runtime Temurin 25.0.4 and FlatLaf 3.7", "conditions": ["a relevant runtime or look-and-feel change requires renewed compatibility verification"]}
+  ],
+  "debts": {
+    "OBS-POST-E2-R2-COMPACT-STYLEBAR-THICKNESS-INPUT": "CLOSED — FULFILLED BY F4-A (6baa66a5), with F4-A-L1",
+    "F4R-POPUP-FOCUS": "CLOSED — realized at the first gate, resolved by scope amendment 01, with F4-A-L1",
+    "F4R-LINETYPE-COUPLING": "RETAINED — ACCEPTED (DQ-F4-4)",
+    "F4R-DEFAULTS-UNDO": "RETAINED — DOCUMENTED",
+    "F4R-CLASSIC-LEAK": "CLOSED — HELD",
+    "TD-PDF-1": "DEFERRED (unchanged)",
+    "OBS-F4P-FREEHEP-XREF-SIZE": "OPEN — INDEPENDENT (unchanged)"
+  },
+  "closeoutClass": {"class": "DOCUMENTATION_STATUS_ONLY", "acceptance": "STATIC", "productChange": "NONE"},
+  "publicationReadiness": {"authorized": false, "target": "mpradovelasco/GeoCeDG main", "linearFromLiveRemoteMain": true, "fastForwardPossible": true, "excludesWip": true, "requires": ["separate author authorization naming the exact closeout commit", "fresh read of the live remote main", "closeout accepted by STATIC", "publication gate"]}
+}
