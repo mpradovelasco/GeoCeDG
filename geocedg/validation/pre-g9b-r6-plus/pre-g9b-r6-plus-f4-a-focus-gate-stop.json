@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-F4-A",
+  "recordKind": "FEASIBILITY_GATE_STOP_REPORT",
+  "record": "docs/validation/pre_g9b_r6_plus_f4_a_focus_gate_stop_report.md",
+  "authorInstruction": {"date": "2026-10-14", "title": "GeoCeDG — PRE-G9B-R6-plus-F4-D-PUBLISHED + F4-A IMPLEMENTATION", "operation": 2},
+  "implementationBase": {"commit": "e968245ef329a86108df81a49cbdb05601cefe9e", "tree": "516f28dfe75dd1e35954f1e1e224dcf10edd4d2b", "intermediateAncestor": "1b944afbc88ef46402c20fccd49eea5e66d64371"},
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-f4a-stylebar-thickness.prompt.md",
+  "canonicalPromptAmended": false,
+  "architecture": "A1 — GeoCeDG-owned Desktop",
+  "verificationClass": "BOUNDED_PHASE",
+  "entryGate": {
+    "identities": "PASS",
+    "inheritedFilesIdenticalToBaseline": ["EuclidianStyleBarD.java", "PopupMenuButtonD.java", "GuiManager3D.java"],
+    "reconciled": {"file": "EuclidianViewD.java", "reason": "registered PRE-G9B-R6-plus-B and -C print-route modifications, earlier than the F4 design; unchanged since 847bb20a; newEuclidianStyleBar() identical to the baseline"}
+  },
+  "gateResult": "STOP — F4-A FOCUS FEASIBILITY BLOCKED",
+  "preferredDesign": {"result": "FAILED", "popupWindow": "heavy-weight Popup$HeavyWeightWindow, focusableWindowState=false", "fieldOnScreen": true, "nativeClickFocus": false, "keystrokesReach": "the drawing pad (Delete deleted the selected object, Home moved the view, Enter focused the Input bar; probe application only)"},
+  "approvedFallback": {"result": "FAILED", "change": "popup holding the field made focusable through the component ancestry", "popupWindow": "heavy-weight ###focusableSwingPopup###, focusableWindowState=true", "fieldOnScreen": false, "note": "JPopupMenu.isVisible() true but the field is not showing and the screenshot shows no popup"},
+  "classic": {"styleBar": "org.geogebra.desktop.euclidian.EuclidianStyleBarD", "lineStylePopup": ["SelectionTableD", "JSlider"], "field": false},
+  "unreachedGateItems": ["typing and editing", "Enter, Escape and focus loss", "popup usability with the field", "slider", "accelerators while typing"],
+  "cause": "inherited GuiManager3D disables light-weight popups (3D view); PopupMenuButtonD creates the popup non-focusable; the focusable heavy-weight popup is not displayed (internal FlatLaf/AWT reason not established)",
+  "environment": {"os": "Windows 11", "laf": "FlatLaf Light", "jvms": ["17.0.10 (Desktop test JVM)", "25.0.4 Eclipse Adoptium (product runtime, runGeoCeDG JVM arguments)"], "inputBlockResolved": "elevated Administrator PowerShell foreground blocked Robot input (UIPI) until minimized by the author; no key was sent"},
+  "probeOnlyExperiments": [
+    {"id": "E5", "change": "light-weight popup without the FlatLaf drop shadow, popup non-focusable", "result": "real focus; typing 8 and Enter applied thickness 8 with exactly one undo step; popup stays open"},
+    {"id": "E5f", "change": "E5 plus focusable popup", "result": "same (6, one undo step)"}
+  ],
+  "technicalCandidate": "NOT ESTABLISHED",
+  "acceptanceRuns": "NONE",
+  "workInProgress": {"branch": "wip/pre-g9b-r6-plus-f4-a-focus-blocked", "commit": "9b755225eadf3c2040029f6bee0b455f1d5bb89c", "tree": "69b6677219d82e8c3af81d7f5b44475e3421b052", "parent": "1b944afbc88ef46402c20fccd49eea5e66d64371", "candidate": false, "acceptanceRun": false},
+  "developmentEvidence": {"focusedClass": "8 of 8", "propertiesField": "7 of 7", "phaseSelection": {"id": "pre-g9b-r6-plus-f4-a.desktop", "identities": 155, "passed": 155}, "finalDesktopProducer": {"tests": 2123, "failures": 0, "skipped": 1}, "upstreamBoundary": "green, 1064 registered files", "developmentInfraUnitAndStatic": "accepted (not acceptance)"},
+  "evidence": {"folder": "artifacts/pre-g9b-r6-plus-f4-a/gate-evidence/", "files": 91, "sha256sumsFileSha256": "3c432fcd438673237a731ec9f47cd665bb1c9190c285a164f1638a77426728e7"},
+  "options": [
+    {"id": "A", "title": "light-weight popup for the field (recommended, scratch-proven)", "architecture": "A1", "class": "BOUNDED_PHASE"},
+    {"id": "B", "title": "numeric field directly in the style bar", "architecture": "A1", "class": "BOUNDED_PHASE", "note": "changes the approved placement (DQ-F4-2)"},
+    {"id": "C", "title": "A2 inherited PopupMenuButtonD change", "architecture": "A2", "class": "INTEGRATED_PHASE", "note": "not authorized"},
+    {"id": "D", "title": "withdraw or defer F4-A", "note": "numeric entry stays in Object Properties"}
+  ],
+  "states": {"PRE-G9B-R6-plus-F4-D": "PASS — AUTHOR APPROVED — PUBLISHED", "F4-A design": "AUTHOR APPROVED", "F4-A focus gate": "STOP — F4-A FOCUS FEASIBILITY BLOCKED", "F4-A implementation": "NOT ESTABLISHED — AWAITING AUTHOR DISPOSITION", "F4-A publication": "NOT AUTHORIZED", "F4 aggregate closeout": "NOT AUTHORIZED", "G": "NOT AUTHORIZED"},
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}
