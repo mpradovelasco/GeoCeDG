@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-G",
+  "activity": "PRE-G9B-R6-plus-G IMPLEMENTATION AUTHORIZATION",
+  "recordKind": "AUTHOR_AUTHORIZATION",
+  "record": "docs/validation/pre_g9b_r6_plus_g_implementation_authorization_record.md",
+  "authorizationDate": "2026-10-14",
+  "approvedBase": {
+    "commit": "ceb5a7e9ef8bafcfabb10aeba5162451d88f79c3",
+    "tree": "fa748fd1b87ae16c9f0c248f8f77b94069cc2ea3",
+    "kind": "published G author design closeout"
+  },
+  "liveRemoteMain": "ceb5a7e9ef8bafcfabb10aeba5162451d88f79c3",
+  "branch": "phase/pre-g9b-r6-plus-g-implementation",
+  "canonicalPrompt": ".github/prompts/tasks/pre-g9b-r6-plus-g-help-verification-and-closeout.prompt.md",
+  "canonicalPromptAmended": false,
+  "entryGate": "PASS",
+  "hardPredecessorsAncestorsOfBase": {
+    "A-1": "2a71133ad622e18e9963b04a466a92665a784722",
+    "A-2": "06a2ea6b4523a71f9f84fefca39e7d3b2b717e64",
+    "B": "848206c413eb4f78694c9149e153f6e867eb9525",
+    "C": "6248bf0fc4208540de09d26a7755d4163055ac76",
+    "C-X1": "eabe6368f9e012d8186aa668a68a5bcc48cdcc17",
+    "D0": "8383a153dc2228fc08b4e00a0c92ef8025608916",
+    "D1": "6e1d845902f534b9d45b533ac265089cbc01e689",
+    "E1-L": "5f34d181b4f03412acfbdbeedb3fd7931de02ed9",
+    "E1-P": "dcda4075843766e8c384c176007c5edb776357c2",
+    "E1-X1": "b12ab32c3a4dcf42941617e95d06a92bfb3b2955",
+    "E1-P-X1": "44b90156786bce4ec5fca0466e7b8f81ea5bb358",
+    "E2": "3a7246614a6ef040d84a1440c4c10b3f93be5776",
+    "E3-R1": "7cd501167c856eef356888ca87ed3a0c97cea55c",
+    "POST-E3-INTEGRATION": "00b525fda64968efdf973504a6426e8565931fff",
+    "F1": "1cea3c89e34d32ab6321a434e7bb873bc1a33f83",
+    "F2": "488f1e991fee641b9ec521059edc318df7271bdd",
+    "F3": "2d7b2cae23d5229f889877f22924b3669f98b755"
+  },
+  "operationalPredecessorF4": {
+    "F4-A": "6baa66a584ceef1973c854fb63b00aa7070708b4",
+    "F4-D": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2",
+    "aggregateCloseout": "19f8f206b5ed7df8d203b3cebddd59eb1183d589"
+  },
+  "authorized": [
+    "PM-1 to PM-12 metadata contract and its normative transcription into windows-packaging.md and application-profile.md",
+    "M1 version transition to 1.1.0 / 2026-10-15 in one last productive commit",
+    "minimal EN/ES help package with the selected editorial items",
+    "SC-01 to SC-27 characterization without productive correction",
+    "structured debt register on the 134-entry framework",
+    "class-1 documentary status corrections"
+  ],
+  "selectedEditorialHelpItems": [
+    "numeric sorting by layer in the Algebra View",
+    "orientation cue in the existing preferences summary",
+    "Spanish ISO A terminology alignment",
+    "shortcut and guide-window tooltip descriptions"
+  ],
+  "notAuthorized": ["kernel, geometry, DAG or spatial-serialization changes", "inherited source changes without separate authorization", "document-replacement product correction", "other deferred enhancements", "new help frameworks", "global verification-infrastructure changes without escalation", "PRE-G9B-R7", "G9B", "COMMERCIAL distribution", "public release, binary publication or redistribution", "push, merge, tag or publication", "G approval", "global PRE-G9B-R6-plus closeout"],
+  "verificationClass": {
+    "class": "INTEGRATED_PHASE",
+    "frozen": true,
+    "closeoutMode": "AUTHOR_OPERATED",
+    "acceptance": ["STATIC", "PHASE -Phase PRE-G9B-R6-PLUS-G", "INTEGRATION", "INFRA_UNIT", "PACKAGING -CheckToolchain", "PACKAGING -VerifyPackagingArtifacts (INTERNAL)", "PACKAGING -VerifyPackagingArtifacts (NC)", "COMMERCIAL refusal evidence with unchanged output root"],
+    "finalRequired": false,
+    "finalRule": "only by an explicit escalation request or a separate author decision"
+  },
+  "versionTarget": {"version": "1.1.0", "versionDate": "2026-10-15", "mechanism": "M1"},
+  "status": {
+    "design": "AUTHOR APPROVED — PUBLISHED",
+    "implementation": "AUTHORIZED — EXACT BASE ceb5a7e9",
+    "characterization": "AUTHORIZED",
+    "documentReplacementCorrection": "NOT AUTHORIZED",
+    "technicalApproval": "PENDING AUTHOR REVIEW",
+    "globalCloseout": "NOT AUTHORIZED",
+    "PRE-G9B-R7": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "publicRelease": "NOT AUTHORIZED"
+  },
+  "selfApproved": false,
+  "productChange": "NONE (this record precedes product code)",
+  "filesChanged": [
+    "docs/validation/pre_g9b_r6_plus_g_implementation_authorization_record.md",
+    "geocedg/validation/pre-g9b-r6-plus/pre-g9b-r6-plus-g-implementation-authorization.json"
+  ]
+}
