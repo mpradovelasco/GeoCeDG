@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
@@ -147,6 +148,14 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private DrawingScale drawingScale;
 	private ArrayList<Runnable> drawingScaleListeners;
 	private boolean apiDocumentReplacement;
+	/**
+	 * PRE-G9B-R6-plus-G-R1: whether a GeoCeDG Open route (loadExistingFile,
+	 * loadXML(String), loadBase64File) is running, and whether its transition has
+	 * already reset the document session. No field initializer: the host constructor
+	 * may load a startup file first.
+	 */
+	private boolean openRouteRunning;
+	private boolean documentSessionReset;
 	private GeoCeDGExportScalePresentation exportScalePresentation;
 	/**
 	 * PRE-G9B-R6-plus-F1 orientation-cue user preference and the controls that show it;
@@ -459,6 +468,11 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		}
 		// PRE-G9B-R6-plus-C (DQ-C7) E2: a committed native Open
 		resetDrawingScale();
+		if (layerWorkspaceActive) {
+			// PRE-G9B-R6-plus-G-R1 (AQ-X2, DQ-A2-6): every committed native Open, the API
+			// file and URL routes included, starts a new export-area session
+			resetDocumentSession(true);
+		}
 	}
 
 	/**
@@ -474,6 +488,11 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		}
 		// PRE-G9B-R6-plus-C (DQ-C7) E3: a committed non-native replacement
 		resetDrawingScale();
+		if (layerWorkspaceActive) {
+			// PRE-G9B-R6-plus-G-R1: the export area resets only when an Open route runs
+			// this replacement (File > Open of .html, DQ-F3-2); Base64 is transport
+			resetDocumentSession(openRouteRunning);
+		}
 	}
 
 	/**
@@ -505,6 +524,50 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	}
 
 	/**
+	 * PRE-G9B-R6-plus-G-R1: the session reset of one committed document transition. The
+	 * previous document's paste notice clears on every transition (DQ-D1-9); its export
+	 * area - MANUAL rectangle, explicit producer, overlay and ISO A link - resets only on
+	 * an Open route (AQ-X2). A notice can only be visible on an existing status bar.
+	 *
+	 * @param openRoute whether the transition is an approved Open
+	 */
+	private void resetDocumentSession(boolean openRoute) {
+		documentSessionReset = true;
+		if (openRoute) {
+			getExportAreaSession().resetForDocument();
+		}
+		if (statusBar != null) {
+			statusBar.clearPasteNotice();
+		}
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-G-R1: runs a GeoCeDG Open route. Its committed transition resets
+	 * the document session exactly once: at the commit event when the route reaches one,
+	 * otherwise after the route succeeded. A failed route resets nothing.
+	 *
+	 * @param route the load
+	 * @return whether the route succeeded
+	 */
+	private boolean runOpenRoute(BooleanSupplier route) {
+		boolean outerRunning = openRouteRunning;
+		boolean outerReset = documentSessionReset;
+		openRouteRunning = true;
+		documentSessionReset = false;
+		boolean opened = false;
+		try {
+			opened = route.getAsBoolean();
+			if (opened && !documentSessionReset) {
+				resetDocumentSession(true);
+			}
+			return opened;
+		} finally {
+			openRouteRunning = outerRunning;
+			documentSessionReset = outerReset || opened;
+		}
+	}
+
+	/**
 	 * A clearing {@code setXML} replaces the document (it resets the current file):
 	 * when its document parse completed, the parsed hidden set is committed
 	 * (DQ-A2-6); a non-clearing merge never commits.
@@ -523,6 +586,9 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 				// PRE-G9B-R6-plus-C (DQ-C7) E5: the API document replacement whose
 				// parse completed; a tool-replacement reload carries no marker
 				resetDrawingScale();
+				// PRE-G9B-R6-plus-G-R1 (DQ-D1-9): the paste notice clears; the export
+				// area of an API setXML has no approved contract (SC-05) and is kept
+				resetDocumentSession(false);
 			}
 		}
 	}
@@ -1298,12 +1364,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			// workspace exists; it then starts from that document below.
 			return super.loadExistingFile(file, isMacroFile);
 		}
-		boolean loaded = runDocumentLoad(() -> super.loadExistingFile(file, false));
-		if (loaded) {
-			getExportAreaSession().resetForDocument();
-			getStatusBar().clearPasteNotice();
-		}
-		return loaded;
+		return runOpenRoute(() -> runDocumentLoad(() -> super.loadExistingFile(file, false)));
 	}
 
 	@Override
@@ -1311,12 +1372,20 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		if (!layerWorkspaceActive) {
 			return super.loadXML(xml);
 		}
-		boolean loaded = runDocumentLoad(() -> super.loadXML(xml));
-		if (loaded) {
-			getExportAreaSession().resetForDocument();
-			getStatusBar().clearPasteNotice();
+		return runOpenRoute(() -> runDocumentLoad(() -> super.loadXML(xml)));
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-G-R1 (DQ-F3-2): File &gt; Open and the file drop of an
+	 * {@code .html}/{@code .htm} page are Open routes; the page's archive commits through
+	 * {@link #documentReplacementCommitted()} or {@link #nativeDocumentLoadCommitted()}.
+	 */
+	@Override
+	public boolean loadBase64File(File file) {
+		if (!layerWorkspaceActive) {
+			return super.loadBase64File(file);
 		}
-		return loaded;
+		return runOpenRoute(() -> super.loadBase64File(file));
 	}
 
 	@Override
