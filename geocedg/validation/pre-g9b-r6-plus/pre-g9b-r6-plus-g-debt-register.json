@@ -14,16 +14,16 @@
       "id": "B-1",
       "item": "`OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`",
       "category": "B",
-      "status": "OPEN — CHARACTERIZED IN G (SC-01 to SC-27): contract violations SC-01, SC-02, SC-11; correction NOT AUTHORIZED",
+      "status": "OPEN — OPEN ROUTES CORRECTED BY G-R1 (SC-01, SC-02, SC-11); SC-03 to SC-05, SC-16, SC-23 and SC-26 without a contract, unchanged",
       "owner": "author",
       "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition (limitation, deferral with owner, separately authorized correction, or a split) before the global closeout"
+      "authorDecisionRemaining": "disposition of the uncontracted residue before the global closeout"
     },
     {
       "id": "B-2",
       "item": "`OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT`",
       "category": "B",
-      "status": "OPEN — CHARACTERIZED IN G (SC-07, SC-10, SC-12, SC-17, SC-18); correction NOT AUTHORIZED",
+      "status": "OPEN — CHARACTERIZED IN G (SC-07, SC-10, SC-12, SC-17, SC-18); unchanged by G-R1; correction NOT AUTHORIZED; proposed disposition in the G-R1 correction report §6",
       "owner": "author",
       "globalCloseoutGate": "Yes",
       "authorDecisionRemaining": "separate disposition before the global closeout"
@@ -32,10 +32,10 @@
       "id": "B-3",
       "item": "`ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA`",
       "category": "B",
-      "status": "IMPLEMENTED IN THE G TECHNICAL CANDIDATE (PM-1 to PM-12, 1.1.0 / 2026-10-15) — PENDING AUTHOR APPROVAL OF G",
+      "status": "IMPLEMENTED IN THE G-R1 TECHNICAL CANDIDATE (PM-1 to PM-12, 1.1.0 / 2026-10-15; the original candidate T is superseded for final review) — PENDING AUTHOR APPROVAL OF G",
       "owner": "PRE-G9B-R6-plus-G",
       "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "author approval of the exact G candidate and author smoke"
+      "authorDecisionRemaining": "author approval of the exact G-R1 candidate and author smoke"
     },
     {
       "id": "P-1",
@@ -113,10 +113,10 @@
       "id": "P-9",
       "item": "`OBS-F4P-S3-SPEC-HEADER`",
       "category": "P",
-      "status": "CORRECTED BY G (class 1): status line NORMATIVE / AUTHOR APPROVED",
+      "status": "CORRECTED BY G (class 1): status line NORMATIVE / AUTHOR APPROVED — CONFIRMED BY THE AUTHOR IN G-R1 (2026-10-15)",
       "owner": "PRE-G9B-R6-plus-G (documentary)",
       "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm the correction and the closure (the reconciliation recommends author confirmation)"
+      "authorDecisionRemaining": "none (confirmed by the G-R1 authorization)"
     },
     {
       "id": "P-10",
@@ -149,10 +149,10 @@
       "id": "P-13",
       "item": "`OBS-R6P-DOC-IDENTITY-HEADER`",
       "category": "P",
-      "status": "PARTLY CORRECTED: ADR 0029 status line (class 1); native-document-identity and ADR 0016 headers RETAINED (class 4, byte-pinned by the G9U0-R2 verifier)",
+      "status": "PARTLY CORRECTED: ADR 0029 status line (class 1) CONFIRMED BY THE AUTHOR IN G-R1 (2026-10-15); native-document-identity and ADR 0016 headers RETAINED (class 4, byte-pinned by the G9U0-R2 verifier)",
       "owner": "author",
       "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "pin reconciliation authorization or retention; confirm the ADR 0029 status line"
+      "authorDecisionRemaining": "pin reconciliation authorization or retention of the pinned headers"
     },
     {
       "id": "P-14",

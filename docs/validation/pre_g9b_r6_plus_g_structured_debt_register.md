@@ -8,6 +8,8 @@ DISPOSITION AUTHORITY      = G author design closeout record §4 (2026-10-14)
 CATEGORY COUNTS            = B 3, P 18, D 10, O 27, L 31, R 45
 ROWS GATING THE GLOBAL CLOSEOUT = 25 (author decision required before the global
                              PRE-G9B-R6-plus closeout)
+G-R1 UPDATE (2026-10-15)    = rows B-1, B-2, B-3, P-9 and P-13 updated; 24 rows still await an
+                             author decision (consolidated G-R1 decision sheet)
 OBS-R6P-SAVE-WARNING       = OPEN (kept open by the design closeout §4.2)
 PER-ITEM DISPOSITIONS      = only those recorded by the author; every other pending item
                              keeps an explicit author-disposition requirement
@@ -57,9 +59,9 @@ mirror: [`pre-g9b-r6-plus-g-debt-register.json`](../../geocedg/validation/pre-g9
 
 | # | Item | Cat | Register status | Owner | Global gate | Author decision remaining |
 |---|---|---|---|---|---|---|
-| B-1 | `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` | B | OPEN — CHARACTERIZED IN G (SC-01 to SC-27): contract violations SC-01, SC-02, SC-11; correction NOT AUTHORIZED | author | Yes | disposition (limitation, deferral with owner, separately authorized correction, or a split) before the global closeout |
-| B-2 | `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` | B | OPEN — CHARACTERIZED IN G (SC-07, SC-10, SC-12, SC-17, SC-18); correction NOT AUTHORIZED | author | Yes | separate disposition before the global closeout |
-| B-3 | `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` | B | IMPLEMENTED IN THE G TECHNICAL CANDIDATE (PM-1 to PM-12, 1.1.0 / 2026-10-15) — PENDING AUTHOR APPROVAL OF G | PRE-G9B-R6-plus-G | Yes | author approval of the exact G candidate and author smoke |
+| B-1 | `OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET` | B | OPEN — OPEN ROUTES CORRECTED BY G-R1 (SC-01, SC-02, SC-11); SC-03 to SC-05, SC-16, SC-23 and SC-26 without a contract, unchanged | author | Yes | disposition of the uncontracted residue before the global closeout |
+| B-2 | `OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT` | B | OPEN — CHARACTERIZED IN G (SC-07, SC-10, SC-12, SC-17, SC-18); unchanged by G-R1; correction NOT AUTHORIZED; proposed disposition in the G-R1 correction report §6 | author | Yes | separate disposition before the global closeout |
+| B-3 | `ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA` | B | IMPLEMENTED IN THE G-R1 TECHNICAL CANDIDATE (PM-1 to PM-12, 1.1.0 / 2026-10-15; the original candidate T is superseded for final review) — PENDING AUTHOR APPROVAL OF G | PRE-G9B-R6-plus-G | Yes | author approval of the exact G-R1 candidate and author smoke |
 | P-1 | `OBS-R6PLUS-DESKTOP-ADJACENT-OFF-EDT-SITES` | P | PENDING AUTHOR DISPOSITION | proposed: author (bounded corrective or L) (none decided) | Yes | disposition and owner |
 | P-2 | `ENH-R6PLUS-WORKING-LAYER-DIRECT-ENTRY` | P | ENHANCEMENT — NOT IMPLEMENTED — IMPLEMENTATION NOT AUTHORIZED | G11 (planning owner, author decision of 2026-10-14) | No | implementation scope is the owner phase's own decision |
 | P-3 | `ENH-B-MANUAL-EXPORT-AREA-DRAG` | P | ENHANCEMENT — NOT IMPLEMENTED — IMPLEMENTATION NOT AUTHORIZED | G15 (preferred planning owner, author decision of 2026-10-14) | No | implementation scope is the owner phase's own decision |
@@ -68,11 +70,11 @@ mirror: [`pre-g9b-r6-plus-g-debt-register.json`](../../geocedg/validation/pre-g9
 | P-6 | `OBS-A1-NON-HIT-SELECTION` | P | PENDING AUTHOR DISPOSITION | proposed: G11 (none decided) | Yes | disposition and owner |
 | P-7 | `OBS-A1-GRAPHICS2-GEOCEDG-MODES` | P | PENDING AUTHOR DISPOSITION | proposed: a future frontend phase (none decided) | Yes | disposition and owner |
 | P-8 | `OBS-A1-BACKGROUND-IMAGE-LAYER` | P | PENDING AUTHOR DISPOSITION | proposed: G11 (none decided) | Yes | disposition and owner |
-| P-9 | `OBS-F4P-S3-SPEC-HEADER` | P | CORRECTED BY G (class 1): status line NORMATIVE / AUTHOR APPROVED | PRE-G9B-R6-plus-G (documentary) | Yes | confirm the correction and the closure (the reconciliation recommends author confirmation) |
+| P-9 | `OBS-F4P-S3-SPEC-HEADER` | P | CORRECTED BY G (class 1): status line NORMATIVE / AUTHOR APPROVED — CONFIRMED BY THE AUTHOR IN G-R1 (2026-10-15) | PRE-G9B-R6-plus-G (documentary) | Yes | none (confirmed by the G-R1 authorization) |
 | P-10 | `OBS-F4P-ADR0035-CONSEQUENCE-LINE` | P | RETAINED AS A REGISTERED DISCREPANCY (class 4, DQ-G-9): the Amendment prevails inside the accepted ADR | author | Yes | separate authorization only if an ADR annotation is wanted |
 | P-11 | `OBS-R6P-DXF-DEFAULT-DOC` | P | CORRECTED BY G (class 1): default-off kept as a historical qualifier | PRE-G9B-R6-plus-G (documentary) | Yes | confirm closure |
 | P-12 | `OBS-R6P-DXF-SPEC-HEADER` | P | RETAINED (class 4): the file is pinned by the historical G9X1 verifier | author | Yes | separate authorization (pin reconciliation) or retention |
-| P-13 | `OBS-R6P-DOC-IDENTITY-HEADER` | P | PARTLY CORRECTED: ADR 0029 status line (class 1); native-document-identity and ADR 0016 headers RETAINED (class 4, byte-pinned by the G9U0-R2 verifier) | author | Yes | pin reconciliation authorization or retention; confirm the ADR 0029 status line |
+| P-13 | `OBS-R6P-DOC-IDENTITY-HEADER` | P | PARTLY CORRECTED: ADR 0029 status line (class 1) CONFIRMED BY THE AUTHOR IN G-R1 (2026-10-15); native-document-identity and ADR 0016 headers RETAINED (class 4, byte-pinned by the G9U0-R2 verifier) | author | Yes | pin reconciliation authorization or retention of the pinned headers |
 | P-14 | `OBS-R6P-ACTION-COUNT-DOC` | P | CORRECTED BY G (class 1): the count was already 133; residual status qualifiers reconciled | PRE-G9B-R6-plus-G (documentary) | Yes | confirm closure |
 | P-15 | `OBS-R6PLUS-E2-UPSTREAM-MANIFEST-SPLINEV2-PURPOSE` | P | CORRECTED BY G (class 1): the G9S1 SplineV2 sentence appended to the six purposes | PRE-G9B-R6-plus-G (documentary) | Yes | confirm closure |
 | P-16 | `OBS-R6PLUS-E2-USER-LIBRARY-LOCALE-DEPENDENT-NATIVE-COLLISION` | P | OPEN — PRE-EXISTING; preserved as independent by the G design closeout §4.1 (recorded O, proposed P) | none decided | Yes | owner or acceptance |
@@ -209,5 +211,10 @@ Before the global `PRE-G9B-R6-plus` closeout (the rows with global gate `Yes`):
 
 By `PRE-G9B-R7` at the latest: the owners of the O rows not covered by the planning
 owners, D-9 and the tracking owner of L-7.
+
+G-R1 (2026-10-15): the [consolidated author decision sheet](pre_g9b_r6_plus_g_r1_author_decision_sheet.md)
+prepares the 24 remaining decisions in five groups. The author's G-R1 authorization
+confirms P-9 and the ADR 0029 part of P-13; the Open-route part of B-1 is corrected by the
+authorized G-R1 correction ([report](pre_g9b_r6_plus_g_r1_correction_report.md)).
 
 This register closes, waives or re-owns nothing beyond the author's recorded decisions.

@@ -1,9 +1,12 @@
 # Construction Text view scaling
 
 - Phase: `PRE-G9B-S3`
-- Status: `NORMATIVE / AUTHOR APPROVED` (`PRE-G9B-S3` approved on `543c7729`; see the
-  [S3 closeout report](../../../docs/validation/pre_g9b_s3_text_view_scaling_candidate_report.md); status
-  reconciled by PRE-G9B-R6-plus-G, 2026-10-14; earlier
+- Status: `NORMATIVE / AUTHOR APPROVED` (`PRE-G9B-S3` `PASS — AUTHOR APPROVED` on the
+  verified implementation commit `543c77295fdc56ade60656a8d52829c7d6254cc7`, author smoke
+  `PASS`; see the
+  [S3 closeout report](../../../docs/validation/pre_g9b_s3_text_view_scaling_candidate_report.md);
+  status reconciled by PRE-G9B-R6-plus-G on 2026-10-14 and confirmed by the author in
+  PRE-G9B-R6-plus-G-R1 on 2026-10-15; earlier
   `IMPLEMENTATION AUTHORIZED — CANDIDATE PENDING REVIEW`)
 - Scope: GeoCeDG Euclidian presentation only
 - Semantic-format change: none

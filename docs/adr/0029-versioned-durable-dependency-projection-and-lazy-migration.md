@@ -1,10 +1,14 @@
 # ADR 0029: Versioned durable dependency projection, lazy migration and typed redefine outcomes
 
 - Status: **Accepted — AUTHOR APPROVED** (`PRE-G9B-R3`, as amended by the
-  `PRE-G9B-R3-R1` corrective descendant; decision text unchanged; see the
-  [R3 closeout record](../validation/pre_g9b_r3_closeout_record.md); status line
-  reconciled by PRE-G9B-R6-plus-G, 2026-10-14; earlier: Proposed — `PRE-G9B-R3`
-  technical candidate, amended by the `PRE-G9B-R3-R1` corrective descendant)
+  `PRE-G9B-R3-R1` corrective descendant: author disposition of 2026-09-28 on the
+  approved technical candidate `89fab9d1ee09f95f5c21f61bced46a102366b2ef`, tree
+  `e3ff7c34a6cf3ad40cdd737e463ced5a9f3066e5`; see the
+  [R3 closeout record](../validation/pre_g9b_r3_closeout_record.md); decision text
+  unchanged; status line reconciled by PRE-G9B-R6-plus-G on 2026-10-14 and confirmed
+  by the author in PRE-G9B-R6-plus-G-R1 on 2026-10-15; earlier: Proposed —
+  `PRE-G9B-R3` technical candidate, amended by the `PRE-G9B-R3-R1` corrective
+  descendant)
 - Date: 2026-09-24
 - Phase: `PRE-G9B-R3` (redefine correctness), resumed under the author's
   `AD-R0-6` migration disposition
