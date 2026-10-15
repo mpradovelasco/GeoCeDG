@@ -7,12 +7,12 @@ AUTHORITY           = author instruction "GeoCeDG — PRE-G9B-R7 Integrated PRE-
                       (2026-10-15), §9-§10
 STARTING EVIDENCE   = G11/G12/G15 roadmap scope reconciliation of 2026-10-15 (REC)
 RECHECK BASE        = b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513 (tree 3aef929b)
-G11 / G12 / G15     = PENDING — ROADMAP SCOPE REVIEW (none PASS; implementation not authorized)
+G11 / G12 / G15     = PENDING — REVISED FUTURE SCOPE (none PASS; implementation not authorized)
 ENH-B-MANUAL-EXPORT-AREA-DRAG = OPEN — ENHANCEMENT — NOT IMPLEMENTED — OWNER G15
-PROPOSALS           = PENDING AUTHOR DECISION (§6); nothing here is author approved
+PROPOSALS           = §6 (history); AUTHOR DECISIONS ADOPTED 2026-10-15 (§9)
 ROADMAP CHANGE BY R7 = factual status and reference corrections only (§7); the "Trabajo"
-                      and "Salida" lists of the three gates are unchanged until the author
-                      decides
+                      and "Salida" lists of the three gates were revised at the R7
+                      closeout by the adopted decisions (§9)
 selfApproved        = false
 ```
 
@@ -339,3 +339,26 @@ visibility), G11 ↔ G14 (per-view and 3D visibility), G11 → G15 (sheet layers
 (PL §1.1) still holds. `G11`, `G12` and `G15` are `PENDING — ROADMAP SCOPE REVIEW`; none is
 `PASS`; none is authorized. Nothing in this package promotes a phase or authorizes
 implementation.
+
+## 9. Author decisions (2026-10-15)
+
+The author instruction "GeoCeDG — PRE-G9B-R7 FINAL AUTHOR APPROVAL, DECISION ADOPTION AND
+DOCUMENTARY CLOSEOUT" adopted the final decision review
+([R7 closeout record](../validation/pre_g9b_r7_closeout_record.md) §4). These decisions prevail
+over the proposals of §5 and §6 where they differ; the roadmap gate sections carry the adopted
+wording.
+
+| Decision | Author disposition |
+|---|---|
+| DEC-R7-G1 | approved |
+| DEC-R7-G2 | approved with modifications: G15 states the `ENH-B-MANUAL-EXPORT-AREA-DRAG` UX — an explicit button or control in the existing export-area coordinate dialog starts a rectangular pointer gesture that updates the same `ExportArea(MANUAL)`; the numeric fields stay available and editable; no second export-area authority; `OPEN — ENHANCEMENT — NOT IMPLEMENTED — OWNER G15`. G12 distinguishes model units, view transformations, drawing scale, physical output scale and future paper-space viewport scale; geometric model quantities never depend on zoom, DPI, camera or viewport presentation transforms; no new scale authority is introduced |
+| DEC-R7-G3 | approved within its tested scope: A7 complete for the primary Desktop Graphics View only |
+| DEC-R7-G4 | retained as a future normative design decision (scale independence contract) |
+| DEC-R7-G5 | retained as a future normative design decision (G15 design with an ADR); session semantics unchanged |
+| DEC-R7-G6 | approved: `FitLayer` owned by G12, consuming future G11 semantics |
+| DEC-R7-G7 | approved: extended scale profiles and sheet sets are kept; contracts in future design |
+| DEC-R7-G8 | approved: planning owners integrated in the gate sections |
+| DEC-R7-G9 | approved as future separate normative maintenance of `cedg-workspaces.md`; no amendment in the closeout |
+
+`G11`, `G12` and `G15` are `PENDING — REVISED FUTURE SCOPE`; their implementation is not
+authorized.

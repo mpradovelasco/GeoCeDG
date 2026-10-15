@@ -1811,8 +1811,10 @@ PRE-G9B-R6-plus-G          = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-15;
                              APPROVED — DESIGN; PROMPT = DESIGN AUTHOR APPROVED —
                              IMPLEMENTATION NOT AUTHORIZED
 
-PRE-G9B-R7                 = EXECUTION AUTHORIZED — TECHNICAL CANDIDATE PENDING AUTHOR
-                             REVIEW (author instruction of 2026-10-15 on the published
+PRE-G9B-R7                 = PASS — AUTHOR APPROVED (2026-10-15, candidate 0120cc40,
+                             pre_g9b_r7_closeout_record.md; not yet published)
+                             earlier: EXECUTION AUTHORIZED — TECHNICAL CANDIDATE PENDING
+                             AUTHOR REVIEW (author instruction of 2026-10-15 on the published
                              base b9bdb1e1; GLOBAL_IMPACT, acceptance FINAL;
                              pre_g9b_r7_phase_entry_record.md)
                              earlier: DESIGNED — NOT AUTHORIZED; prerequisite

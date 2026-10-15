@@ -13,7 +13,9 @@ OWNERSHIP DESIGNATIONS = applied under the R7 authorization ownership rule to ev
                         implementation authorization)
 ITEMS WITHOUT A LIVE OWNER = 38 before R7 (§2: 1, §3: 30, §4: 7) -> 0 after R7;
                         R6-plus register rows without an owner: 0 (unchanged)
-PROPOSED DISPOSITIONS = pending author decision (§7); none is author approved
+PROPOSED DISPOSITIONS = §7 (candidate proposals, kept as history)
+AUTHOR DECISIONS      = ADOPTED 2026-10-15 (§8; PRE-G9B-R7 closeout record), which
+                        prevail over §1-§7 where they differ
 R7 TECHNICAL BLOCKERS = none
 selfApproved          = false
 ```
@@ -225,3 +227,107 @@ Recorded, not repaired in historical records:
 
 Until the author decides, every item above remains in its recorded status with the
 owner shown, which satisfies the R7 ownership requirement.
+
+## 8. Author decisions (2026-10-15)
+
+Adopted by the author instruction "GeoCeDG — PRE-G9B-R7 FINAL AUTHOR APPROVAL, DECISION
+ADOPTION AND DOCUMENTARY CLOSEOUT", which accepts the final decision review including its
+modifications ([closeout record](pre_g9b_r7_closeout_record.md) §3). These dispositions
+prevail over the proposals of §1–§7, which stay as the candidate's history. Historical
+closeout records and verdicts are not edited.
+
+### 8.1 DEC-R7-D1 — construction-protocol reorder
+
+`TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER = OPEN — CORRECTION DEFERRED — AUTHOR DECIDED`;
+owner `AUTHOR — ACCOUNTABLE`. A future, separately authorized correction is required; it must
+characterize and preserve constructive dependencies, semantic identity, DAG invariants,
+persistence, undo/redo and compatibility, and is not a visual reordering. The historical R3
+classification `deferred refinement` stays in the R3 records. Neither option A nor B of §7 is
+adopted; no phase number is assigned; no correction is authorized within R7.
+
+### 8.2 DEC-R7-D2 — resolutions confirmed by evidence
+
+| Item | Author disposition | Evidence |
+|---|---|---|
+| `TD-R0-REDEFINE-AMBIGUOUS-VOCABULARY` | `RESOLVED BY PRE-G9B-R3 (D3-b)` | R3 closeout ("`D3-a` and `D3-b` resolved"); R0 mirror maps D3-b to this identifier |
+| `BASELINE-GUIDE-RESOURCE-LF-MATERIALIZATION` | `RESOLVED BY eab5a7937 — CONFIRMED BY ACCEPTED R7 FINAL` | `.gitattributes` `text eol=lf` for both guides; `PostP1BilingualUserGuideTest` 16/16 in `verification-58826f64…`; the R1 FINAL verdict and author exception are unchanged |
+| `GUIDE-A1-SECTION-9.3-STALE` | `RESOLVED BY APPROVED PRE-G9B-R2-E0/E1` | both guide editions rewritten; `PreG9bR2E0SemanticEndpointAdmissibilityTest.userGuideWorkedExampleEndpointsHoldAsDocumented` passing in the R7 FINAL |
+| `OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST` | `RESOLVED FOR NEW OBJECTS BY PRE-G9B-R6-plus-A-1`; the layer behaviour of documents created before A-1 is an `ACCEPTED LIMITATION` | A-1 candidate report; register R-17 |
+
+### 8.3 DEC-R7-D3 — individual classification
+
+`ACCEPTED LIMITATION` (inherited, upstream, test-harness, documented-contract or fail-closed),
+each limited to its recorded characterization:
+
+| Item | Basis |
+|---|---|
+| `OBS-R2-PHASE-SELECTION-COHORT` | informational verification observation |
+| `OBS-R6-EVENT-DISPATCH-SELF-GEO-ON-ESCAPE` | inherited upstream |
+| `OBS-R6-EXECUTE-INNER-FAILURE-NOT-PROPAGATED` | inherited `Execute` contract, recorded in the matrix |
+| `OBS-R6-EXECUTE-ALIAS-SYNTAX-KEY` | presentation only |
+| `OBS-R6-ROTATE-FORM-4-UPSTREAM-REFUSAL` | truthful upstream refusal |
+| `HZ-R5B-ALIAS-CAS-STATE` | retained compatibility observation, not worsened |
+| `HZ-R5B-HARNESS-TABLE-FRESHNESS` | test-harness caveat |
+| `OBS-R5B-R1-SYNTHETIC-INPUT` | test-harness note |
+| `OBS-R5B-R1-CAS-GROUP-READINESS` | test-harness note |
+| `OBS-R5B-R2-EMBEDDED-HOST-ROOT` | test-harness note |
+| `OBS-R5B-R2-COMPLETIONS-POPUP-LISTENER-ORDER` | no observed product failure |
+| `CSolve` / `CSolutions` Algebra syntax | inherited, outside R5-B |
+| `OBS-R5A-LATENT-NESTED-LIST-CONTINUATION` | non-live renderer behaviour |
+| `OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE` | inherited upstream restore path |
+| `OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY` | inherited upstream restore path |
+| `OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS` | inherited generic XML paste |
+| `OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER` | documented constraint |
+| `OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION` | documented `SplineV2` contract |
+| `OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY` | documented `SplineV2` contract |
+| `OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY` | documented `SplineV2` tool contract |
+| `CLIPBOARD-COPY-POINT-DRIVEN-LOCUS-SLICE` | fail-closed capability boundary |
+| `A3-PAIR-SOURCE-COMPATIBLE-STRUCTURAL-REDEFINE` | fail-closed capability boundary |
+| `LOCUS-PARTICIPANT-AXIS-NOT-SERIALIZABLE` | fail-closed capability boundary |
+
+`OPEN — RETAINED WITH OWNER` (author):
+
+| Item | Note |
+|---|---|
+| `TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD` | `OPEN — RETAINED WITH OWNER — FUTURE MIGRATION DECISION` (author change); technical debt that may need a future correction |
+| `BASELINE-G9U1-BRANDING-EVIDENCE-PIN` | historical-verifier pin; a reconciliation needs its own authorization |
+| `OBS-R6-PLACEHOLDER-REGEX-REPLACEMENT` | candidate for a future GGBScript hardening |
+| `OBS-R5B-CAS-TABLE-VERBATIM-HEADS` | future command-surface polish |
+| `OBS-R5B-HARDCODED-SYNTAX-HEADS` | future command-surface polish |
+| `OBS-R5B-PROVER-DETAILS-CAPTIONS` | future command-surface polish |
+| `OBS-R5B-INPUT-BAR-INSERTED-TEXT` | future command-surface polish |
+| `OBS-R5B-R1-NATIVE-AWT-CRASH-UNATTRIBUTED` | monitoring |
+| `OBS-R5A-GUIDE-STRUCTURE-CHECKS-OUTSIDE-FINAL` | covered by the focused R7 PHASE run; a FINAL change needs its own authorization |
+| `OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION` | future frontend maintenance |
+
+The R5-B dispositions of `OBS-R5B-R1-LANGUAGE-CHANGE-RETURNS-TO-MOVE` and
+`OBS-R5B-R2-CLASSIC-CARET-READ` stand as recorded by R5-B. No wildcard classification is
+applied beyond the entries listed.
+
+### 8.4 DEC-R7-D4 — historical pinned headers
+
+P-12 and the pinned remainder of P-13: `RETAINED AS HISTORICAL PINNED HEADER — CURRENT STATUS
+RECORDED BY CROSS-REFERENCE` (§5.1); owner author. The files, their byte pins, the ADR and the
+verifier scripts are unchanged; a re-pin is a separately authorized activity.
+
+### 8.5 DEC-R7-D5 — planning owners
+
+G15: O-4, O-10, O-22, O-25 and the L-7 tracking. Future insertion-and-styles activity: O-6,
+O-8. Future characterization activity: O-9. Future serialization owner: O-7. Future
+verification-maintenance activity: O-19, O-20, O-21, O-23. Author: every other item of §5.2
+(B-1 residue, P-4, P-7, P-10, P-16, P-18, D-9, O-1 to O-3, O-5, O-11 to O-18, O-24, O-26,
+O-27). The author stays accountable until each unnamed activity is formally established.
+Planning dispositions only; no implementation is authorized. P-4 remains a specification /
+implementation discrepancy that is not waived; P-18 remains a pending normative decision.
+
+### 8.6 DEC-R7-D6 — G9-R4 drift and historical suites
+
+`OBS-R7-G9R4-LIVING-DOC-DRIFT`: a separate bounded documentary task, which may be planned with
+P-18 and DEC-R7-G9 while keeping their distinct authorizations; no normative specification is
+edited by the R7 closeout. `OBS-R7-UNREGISTERED-HISTORICAL-SUITES = OPEN — RETAINED WITH
+OWNER` (author); any verification-maintenance activity needs its own authorization.
+
+### 8.7 State at closeout
+
+Every item of this view has a terminal disposition or an explicit retained state with an
+accountable owner; 0 items lack an owner. Future corrections stay `OPEN`.

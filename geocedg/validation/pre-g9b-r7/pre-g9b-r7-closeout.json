@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R",
+  "phase": "PRE-G9B-R7",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_r7_closeout_record.md",
+  "instruction": "GeoCeDG — PRE-G9B-R7 FINAL AUTHOR APPROVAL, DECISION ADOPTION AND DOCUMENTARY CLOSEOUT",
+  "authorApprovalDate": "2026-10-15",
+  "status": {
+    "PRE-G9B-R7": "PASS — AUTHOR APPROVED",
+    "R7 author smoke": "PASS",
+    "R7 FINAL": "ACCEPTED / COMPLETE",
+    "R7 canonical receipt": "AUTHENTICATED",
+    "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "OPEN — CORRECTION DEFERRED — AUTHOR DECIDED",
+    "G11": "PENDING — REVISED FUTURE SCOPE",
+    "G12": "PENDING — REVISED FUTURE SCOPE",
+    "G15": "PENDING — REVISED FUTURE SCOPE",
+    "ENH-B-MANUAL-EXPORT-AREA-DRAG": "OPEN — ENHANCEMENT — NOT IMPLEMENTED — OWNER G15",
+    "commercialPolicyStatusReconciliation": "AUTHOR ACCEPTED — DOCUMENTARY ONLY",
+    "G9B": "NOT AUTHORIZED",
+    "G9C": "NOT AUTHORIZED",
+    "G9U2": "NOT AUTHORIZED",
+    "productiveG10": "NOT AUTHORIZED",
+    "publication": "NOT AUTHORIZED",
+    "publicRelease": "NOT AUTHORIZED"
+  },
+  "approvedCandidate": {
+    "commit": "0120cc40c4c49bc159e930dc42d1fe252467c7bf",
+    "tree": "21d563cfc93cea67b0e202957074944f650461c5",
+    "parent": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+    "parentTree": "3aef929b0b5939854d9ccd736a919b496172a30e",
+    "branch": "phase/pre-g9b-r7-readiness-closeout",
+    "liveRemoteMain": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+    "productDeltaFromBase": "NONE"
+  },
+  "acceptance": [
+    {"check": "STATIC", "runId": "verification-32aafdd48c0e46fbb9b286d75b128baf", "resultHash": "b2bd0e5ce5eb4c864176c03461d8bb43bfd7ff317f8a73cc6f1609253736c052", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"},
+    {"check": "PHASE -Phase PRE-G9B-R5-A", "runId": "verification-67334c3e1a3e40aea8b07a0c60d5a6d6", "resultHash": "dc63ca5c598cd225d6f69525c28e1ce3fe0afb3f99c066dcb6c0af5c2e7ebfca", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-R6", "runId": "verification-20a2060f53184486a6766cf0cee5f61b", "resultHash": "e450a537c6a0e8a500e42c1e8bb9c2c225f9cdee5fec2fdf5f6ac23eeb59abb5", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "6/6"},
+    {"check": "FINAL", "runId": "verification-58826f64bff64fbd991d20df1e480174", "resultHash": "ac561fddb07ffc720d68709b8daea89aa63cd88838c455726f3e2768435e88ad", "planHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "41/41", "junit": {"desktopFinal": {"tests": 2153, "skipped": 1, "failures": 0}, "sharedFinal": {"tests": 6992, "skipped": 10, "failures": 0}}}
+  ],
+  "receipt": {
+    "receiptId": "bbef47fa023918cab3684ec164a4814112dd6a01f2d90982cbcc9403fc2af8e4",
+    "kind": "GEOCEDG_ACCEPTANCE_RECEIPT",
+    "acceptedReportHash": "ac561fddb07ffc720d68709b8daea89aa63cd88838c455726f3e2768435e88ad",
+    "closeoutInspect": {"exitCode": 0, "identityConfirmed": true, "mismatches": [], "verificationExecuted": false, "repositoryMutated": false}
+  },
+  "historicalVerdictsUnchanged": [
+    {"phase": "PRE-G9B-R1", "runId": "verification-8763e250d1be413f83e54429b5923ca3", "acceptance": "REJECTED_SEMANTIC", "authorBaselineException": true},
+    {"phase": "PRE-G9B-R3-X1", "runId": "verification-ecdb8e4845064b46af2ec1df49963418", "acceptance": "REJECTED_VERIFICATION_CORE", "coverage": "UNTRUSTED"}
+  ],
+  "debtDecisions": {
+    "DEC-R7-D1": {"TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER": "OPEN — CORRECTION DEFERRED — AUTHOR DECIDED", "owner": "AUTHOR — ACCOUNTABLE", "futureWork": "separately authorized correction preserving constructive dependencies, semantic identity, DAG invariants, persistence, undo/redo and compatibility", "phaseNumber": null},
+    "DEC-R7-D2": {
+      "TD-R0-REDEFINE-AMBIGUOUS-VOCABULARY": "RESOLVED BY PRE-G9B-R3 (D3-b)",
+      "BASELINE-GUIDE-RESOURCE-LF-MATERIALIZATION": "RESOLVED BY eab5a7937 — CONFIRMED BY ACCEPTED R7 FINAL",
+      "GUIDE-A1-SECTION-9.3-STALE": "RESOLVED BY APPROVED PRE-G9B-R2-E0/E1",
+      "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST": "RESOLVED FOR NEW OBJECTS BY PRE-G9B-R6-plus-A-1; pre-A-1 documents ACCEPTED LIMITATION"
+    },
+    "DEC-R7-D3": {"classification": "docs/validation/pre_g9b_r7_debt_reconciliation.md §8.3", "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD": "OPEN — RETAINED WITH OWNER — FUTURE MIGRATION DECISION"},
+    "DEC-R7-D4": {"P-12": "RETAINED AS HISTORICAL PINNED HEADER — CURRENT STATUS RECORDED BY CROSS-REFERENCE", "P-13 (pinned remainder)": "RETAINED AS HISTORICAL PINNED HEADER — CURRENT STATUS RECORDED BY CROSS-REFERENCE", "owner": "AUTHOR"},
+    "DEC-R7-D5": {"G15": ["O-4", "O-10", "O-22", "O-25", "L-7 (tracking)"], "futureInsertionAndStylesActivity": ["O-6", "O-8"], "futureCharacterizationActivity": ["O-9"], "futureSerializationOwner": ["O-7"], "futureVerificationMaintenanceActivity": ["O-19", "O-20", "O-21", "O-23"], "author": "every other item; accountable until each unnamed activity is established"},
+    "DEC-R7-D6": {"OBS-R7-G9R4-LIVING-DOC-DRIFT": "separate bounded documentary task (not authorized here)", "OBS-R7-UNREGISTERED-HISTORICAL-SUITES": "OPEN — RETAINED WITH OWNER (author)"}
+  },
+  "roadmapDecisions": {
+    "DEC-R7-G1": "APPROVED",
+    "DEC-R7-G2": "APPROVED WITH MODIFICATIONS (ENH-B UX; five scale concepts; no new scale authority)",
+    "DEC-R7-G3": "APPROVED WITHIN TESTED SCOPE (primary Desktop Graphics View)",
+    "DEC-R7-G4": "RETAINED — FUTURE NORMATIVE DESIGN DECISION",
+    "DEC-R7-G5": "RETAINED — FUTURE NORMATIVE DESIGN DECISION (G15 with ADR)",
+    "DEC-R7-G6": "APPROVED (FitLayer owned by G12)",
+    "DEC-R7-G7": "APPROVED (not deleted; contracts in future design)",
+    "DEC-R7-G8": "APPROVED",
+    "DEC-R7-G9": "APPROVED AS FUTURE SEPARATE NORMATIVE MAINTENANCE"
+  },
+  "debtState": {"unownedItems": 0, "r6PlusRegisterEntries": 134, "r6PlusRegisterUnowned": 0, "globalLedgerCreated": false},
+  "nextStep": "separate roadmap-prioritization and authorization decision; no productive phase selected",
+  "publicationTarget": "the commit adding this record; reported outside the record",
+  "selfApproved": false
+}
