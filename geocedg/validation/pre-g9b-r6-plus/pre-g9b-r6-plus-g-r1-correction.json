@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-G",
+  "activity": "PRE-G9B-R6-plus-G-R1",
+  "record": "docs/validation/pre_g9b_r6_plus_g_r1_correction_report.md",
+  "authorization": "docs/validation/pre_g9b_r6_plus_g_r1_authorization_record.md",
+  "historicalCharacterization": "docs/validation/pre_g9b_r6_plus_g_document_replacement_characterization_report.md",
+  "correctedViolations": ["SC-01", "SC-02", "SC-11"],
+  "productChange": {"files": ["source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java"], "inheritedSource": "NONE", "sharedOrKernel": "NONE", "serialization": "NONE", "geometry": "NONE"},
+  "resetSemantics": {
+    "exportArea": "reset once after commitment on approved Open routes: R01 File > Open .html, R02 API openFile native, R03 URL drop file:, R04 URL drop stream (plus the unchanged R09-R11 controls)",
+    "pasteNotice": "cleared on every committed document transition E2, E3, E5 and the Open routes (R01-R11, R17)",
+    "unchangedWithoutContract": ["SC-03 setBase64 ExportArea", "SC-04 non-native openFile/loadXML(File) ExportArea", "SC-05 API setXML ExportArea", "SC-16 cancelled v1 Open URL pre-clear ExportArea", "SC-23 Move switch on native Open", "SC-26 embedded close"],
+    "untouched": ["commitLoadedDocument", "generic clearing setXML", "tool replacement", "Insert File", "Apply Styles", "embedded close", "hidden-layer, working-layer and drawing-scale lifecycles", "Classic"]
+  },
+  "readingRecorded": "DQ-G-5 text versus the approved SC-11 scenario row: G-R1 follows SC-11 for the notice and keeps the ExportArea of the uncontracted routes",
+  "regressionTests": {
+    "class": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusGR1OpenRouteSessionTest.java",
+    "tests": 9,
+    "corrective": 4,
+    "preservation": 5,
+    "correctedTree": "9/9 pass; 128/128 with 13 related classes",
+    "negativeControl": "on the uncorrected AppGeoCeDG the 4 corrective tests fail and the 5 preservation tests pass"
+  },
+  "reCharacterization": {
+    "probeSourceSha256": "5f3c7d9c49d1602489a72bd29e1731646089ed8c8b7f67666dec0e3ae74c70fc",
+    "initScriptSha256": "bb260003112386845306e3d14913ee328266f05ea59a62026b412e1c42b697cd",
+    "rowsPerRun": 57,
+    "runs": 2,
+    "runsIdentical": true,
+    "rowsChanged": 28,
+    "changedRoutes": {"exportAreaAndNotice": ["R01", "R02", "R03", "R04"], "noticeOnly": ["R05", "R06", "R07", "R08", "R17"]},
+    "run1Sha256": "8d97e90a0b47519f6db295bc0d876f46c80118afce62d1e93f80380f95b30b0f",
+    "run2Sha256": "1cbe67438462b5dafa4b5a5cf3da7abb93517eecd2a002b013b610265127aa55",
+    "originalRun1Sha256": "a9fa785828a51fa78e7e7acc6aed4a938580af4f7f1b68a6e74c283977828065",
+    "comparisonSha256": "9214e1a2f08156027702bc590f074bb9d3a0ae9c8e86d2ee314dec271e420ff1",
+    "location": "artifacts/agent/pre-g9b-r6-plus-g-r1-characterization/ (git-ignored)"
+  },
+  "limitations": ["openResolved after the chooser, no real chooser or window", "loadURL instead of a real drag gesture", "mocked save prompt (R17)", "second embedded host as macro-edit window (SC-18)", "New Window by constructor emulation", "no laid-out view size", "remote-file and iframe .html pages and non-native URL drops not exercised"],
+  "toolReplacement": {
+    "observation": "OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT",
+    "productChange": "NONE",
+    "behaviourAfterG-R1": "unchanged: ExportArea, notice and scale kept; ISO link stale; working layer recomputed 2 -> 6 (SC-17, SC-18)",
+    "proposedDisposition": "record that tool replacement is not a document transition; defer the working-layer recomputation to G11 (Capas y estados de vista)",
+    "status": "OPEN — DISPOSITION PENDING AUTHOR REVIEW"
+  },
+  "b1Status": "OPEN ROUTES CORRECTED BY G-R1; ROUTES WITHOUT A CONTRACT PENDING AUTHOR DECISION",
+  "selfApproved": false
+}
