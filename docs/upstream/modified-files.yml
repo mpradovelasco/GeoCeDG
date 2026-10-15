@@ -18,7 +18,7 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam. PRE-G9B-D1: remove the redundant jsobject runtime dependency after exact-byte, dependency-use and JDK 25 jdk.jsobject correspondence checks.",
+      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam. PRE-G9B-D1: remove the redundant jsobject runtime dependency after exact-byte, dependency-use and JDK 25 jdk.jsobject correspondence checks. PRE-G9B-R6-plus-G (metadata contract PM-3 to PM-5, version transition M1): guard exactly one application version_date with a valid calendar date and package-profile schema 2; embed provenance schema 3 with the version date, the canonical package-profile SHA-256 (strict UTF-8, CRLF and CR to LF) and the declared distribution-profile table, in ASCII; no clock is read.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -3018,7 +3018,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/GeoCeDGBuildProvenance.java",
       "change": "added",
-      "purpose": "Load and validate immutable build-time repository provenance for reproducible G9X1 sidecars without runtime Git invocation. PRE-G9B-R6-plus-G (metadata contract PM-3 to PM-5): optional canonical version date, canonical package-profile digest and declared distribution-profile table, validated on construction; the existing four-argument constructor keeps them absent.",
+      "purpose": "Load and validate immutable build-time repository provenance for reproducible G9X1 sidecars without runtime Git invocation. PRE-G9B-R6-plus-G (metadata contract PM-3 to PM-5): optional canonical version date, canonical package-profile digest and declared distribution-profile table, validated on construction; the existing four-argument constructor keeps them absent. Version transition: the loader accepts provenance schema 3 only, with exactly its keys, and requires the version date, the digest and the profile table.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {

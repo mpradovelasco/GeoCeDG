@@ -88,6 +88,114 @@ class PreG9BR6PlusGProductMetadataTest {
 		assertTrue(GeoCeDGProductInfo.applicationTitle().startsWith("GeoCeDG "));
 	}
 
+	// ------------------------------------------------- PM-2, PM-3 version transition
+
+	@Test
+	void theSingleAuthorityDeclaresTheVersionAndItsDesignatedDate() throws IOException {
+		String text = read("packaging/windows/package.yml");
+		assertEquals(1, count(text, "\"version\"\\s*:"), "exactly one version key");
+		assertEquals(1, count(text, "\"version_date\"\\s*:"), "exactly one version_date key");
+		Map<?, ?> application = (Map<?, ?>) ((Map<?, ?>) GeoCeDGStrictJson.parse(text))
+				.get("application");
+		assertEquals("1.1.0", application.get("version"));
+		assertEquals("2026-10-15", application.get("version_date"));
+		assertTrue(GeoCeDGBuildProvenance.isCalendarDate("2026-10-15"));
+		assertEquals("1.1.0", GeoCeDGProductInfo.semanticVersion());
+		assertEquals("2026-10-15", GeoCeDGProductInfo.versionDate());
+		assertEquals("GeoCeDG 1.1.0", GeoCeDGProductInfo.applicationTitle());
+		// the version date is the author-designated value of the authority, never a
+		// build, commit or file time: the generated record carries no other date field
+		java.util.Properties generated = generatedProvenance();
+		assertEquals("2026-10-15", generated.getProperty("application.version.date"));
+		for (String key : generated.stringPropertyNames()) {
+			String lower = key.toLowerCase(java.util.Locale.ROOT);
+			assertFalse(lower.contains("time") || lower.contains("timestamp")
+					|| (lower.contains("date") && !key.equals("application.version.date")), key);
+		}
+	}
+
+	@Test
+	void theSchemasMoveTogetherAndFailClosedOnTheOldVersions() throws Exception {
+		Map<?, ?> schema = (Map<?, ?>) GeoCeDGStrictJson.parse(read(
+				"geocedg/specs/operations/package-profile.schema.json"));
+		assertEquals("https://geocedg.local/schemas/package-profile-v2", schema.get("$id"));
+		Map<?, ?> properties = (Map<?, ?>) schema.get("properties");
+		assertEquals(2L, ((Map<?, ?>) properties.get("schema_version")).get("const"));
+		Map<?, ?> application = (Map<?, ?>) properties.get("application");
+		assertTrue(((List<?>) application.get("required")).contains("version_date"));
+		assertNotNull(((Map<?, ?>) ((Map<?, ?>) application.get("properties"))
+				.get("version_date")).get("pattern"));
+		assertEquals(2L, ((Map<?, ?>) GeoCeDGStrictJson.parse(read(
+				"packaging/windows/package.yml"))).get("schema_version"));
+		// provenance schema 3 only
+		java.util.Properties generated = generatedProvenance();
+		assertEquals("3", generated.getProperty("schema.version"));
+		assertNotNull(GeoCeDGBuildProvenance.read(generated));
+		java.util.Properties schemaTwo = (java.util.Properties) generated.clone();
+		schemaTwo.setProperty("schema.version", "2");
+		assertThrows(IllegalStateException.class, () -> GeoCeDGBuildProvenance.read(schemaTwo));
+		java.util.Properties undated = (java.util.Properties) generated.clone();
+		undated.remove("application.version.date");
+		assertThrows(IllegalStateException.class, () -> GeoCeDGBuildProvenance.read(undated));
+		java.util.Properties extra = (java.util.Properties) generated.clone();
+		extra.setProperty("build.time", "2026-10-15T00:00:00Z");
+		assertThrows(IllegalStateException.class, () -> GeoCeDGBuildProvenance.read(extra));
+		java.util.Properties flag = (java.util.Properties) generated.clone();
+		flag.setProperty("distribution.profile.0.redistributable", "yes");
+		assertThrows(IllegalStateException.class, () -> GeoCeDGBuildProvenance.read(flag));
+		// the builder and the packaging check accept exactly package-profile schema 2
+		String builder = read("tools/release/build-windows-package.ps1");
+		assertTrue(builder.contains("($profile.schema_version -eq 2)"));
+		assertFalse(builder.contains("($profile.schema_version -eq 1)"));
+		String check = read("tools/agent/checks/packaging-product.ps1");
+		assertTrue(check.contains("$profile.schema_version -eq 2 -and"));
+		assertTrue(check.contains("package-profile-v2"));
+		assertFalse(check.contains("package-profile-v1"));
+	}
+
+	@Test
+	void theBuildEmbedsTheCanonicalBindingOfThePackageProfile() throws IOException {
+		byte[] bytes = Files.readAllBytes(repositoryRoot().resolve("packaging/windows/package.yml"));
+		String lf = new String(bytes, StandardCharsets.UTF_8).replace("\r\n", "\n");
+		String digest = canonicalSha256(lf.getBytes(StandardCharsets.UTF_8));
+		assertEquals(digest, canonicalSha256(lf.replace("\n", "\r\n")
+				.getBytes(StandardCharsets.UTF_8)), "CRLF and LF copies have one digest");
+		assertEquals(digest, canonicalSha256(lf.replace("\n", "\r")
+				.getBytes(StandardCharsets.UTF_8)), "lone CR normalizes too");
+		assertFalse(digest.equals(canonicalSha256((lf + " ").getBytes(StandardCharsets.UTF_8))));
+		GeoCeDGBuildProvenance build = GeoCeDGProductInfo.provenance();
+		assertEquals(digest, build.getPackageProfileSha256());
+		assertEquals("2026-10-15", build.getApplicationVersionDate());
+		List<?> declared = (List<?>) ((Map<?, ?>) ((Map<?, ?>) GeoCeDGStrictJson.parse(lf))
+				.get("distribution")).get("profiles");
+		assertEquals(declared.size(), build.getDistributionProfiles().size());
+		for (int index = 0; index < declared.size(); index++) {
+			Map<?, ?> profile = (Map<?, ?>) declared.get(index);
+			DistributionProfile embedded = build.getDistributionProfiles().get(index);
+			assertEquals(profile.get("id"), embedded.getId());
+			assertEquals(profile.get("status"), embedded.getStatus());
+			assertEquals(profile.get("marker"), embedded.getMarker());
+			assertEquals(profile.get("redistributable"), embedded.isRedistributable());
+		}
+		if (build.isEstablished()) {
+			assertNotNull(Expected.of(build), "the build carries a complete binding");
+		}
+	}
+
+	@Test
+	void aboutShowsTheDesignatedVersionDateOfThisVersion() {
+		GeoCeDGDistributionCondition development = GeoCeDGDistributionCondition.evaluate(null,
+				null);
+		String english = GeoCeDGAboutText.compose("en", GeoCeDGProductInfo.provenance(),
+				development);
+		String spanish = GeoCeDGAboutText.compose("es", GeoCeDGProductInfo.provenance(),
+				development);
+		assertTrue(english.startsWith("GeoCeDG 1.1.0\nVersion date: 2026-10-15\nBuild: "),
+				english);
+		assertTrue(spanish.startsWith("GeoCeDG 1.1.0\nFecha de versión: 2026-10-15\n"
+				+ "Compilación: "), spanish);
+	}
+
 	// ------------------------------------------------------- strict record reader
 
 	@Test
@@ -592,6 +700,32 @@ class PreG9BR6PlusGProductMetadataTest {
 			assertTrue(at >= 0, "missing or out of order: " + part + "\n" + text);
 			from = at + part.length();
 		}
+	}
+
+	private static java.util.Properties generatedProvenance() throws IOException {
+		java.util.Properties properties = new java.util.Properties();
+		try (java.io.InputStream stream = GeoCeDGBuildProvenance.class.getResourceAsStream(
+				"/org/geocedg/desktop/export/geocedg-build-provenance.properties")) {
+			assertNotNull(stream, "generated provenance resource");
+			properties.load(stream);
+		}
+		return properties;
+	}
+
+	/** The documented canonicalization: CRLF and lone CR become LF, then SHA-256. */
+	private static String canonicalSha256(byte[] bytes) {
+		java.io.ByteArrayOutputStream canonical = new java.io.ByteArrayOutputStream();
+		for (int index = 0; index < bytes.length; index++) {
+			if (bytes[index] == '\r') {
+				canonical.write('\n');
+				if (index + 1 < bytes.length && bytes[index + 1] == '\n') {
+					index++;
+				}
+			} else {
+				canonical.write(bytes[index]);
+			}
+		}
+		return GeoCeDGDistributionCondition.sha256(canonical.toByteArray());
 	}
 
 	private static int count(String text, String regex) {

@@ -6,7 +6,7 @@ exactly one authority per document class and no third, divergent user manual.
 
 ## Official user guides
 
-The user-facing behaviour of GeoCeDG 1.0.0 is documented in two official
+The user-facing behaviour of GeoCeDG 1.1.0 is documented in two official
 editions with identical structure, identical examples and the same stable
 section identifiers:
 

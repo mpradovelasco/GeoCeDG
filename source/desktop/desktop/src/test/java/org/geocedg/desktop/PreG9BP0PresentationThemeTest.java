@@ -420,7 +420,12 @@ class PreG9BP0PresentationThemeTest {
 				.resolve("packaging/windows/package.yml"), StandardCharsets.UTF_8);
 
 		assertEquals(1, occurrences(profile, "\"version\""), profile);
-		assertTrue(profile.contains("\"version\": \"1.0.0\""), profile);
+		assertTrue(profile.contains("\"version\": \"1.1.0\""), profile);
+		// PRE-G9B-R6-plus-G (M1): the version transition adds exactly one canonical
+		// version date beside the single version authority; the test name is the P0
+		// baseline name and stays for identity stability.
+		assertEquals(1, occurrences(profile, "\"version_date\""), profile);
+		assertTrue(profile.contains("\"version_date\": \"2026-10-15\""), profile);
 		assertFalse(profile.contains("0.9.0"), profile);
 		// The installer upgrade identity is preserved across the version baseline.
 		assertTrue(profile.contains(
@@ -434,10 +439,10 @@ class PreG9BP0PresentationThemeTest {
 
 	@Test
 	void derivedVersionSurfacesConsumeTheSingleAuthority() {
-		assertEquals("1.0.0", GeoCeDGProductInfo.semanticVersion());
-		assertEquals("1.0.0", GeoCeDGProductInfo.displayVersion());
-		assertEquals("GeoCeDG 1.0.0", GeoCeDGProductInfo.applicationTitle());
-		assertEquals("GeoCeDG 1.0.0 — Revision1.cedg",
+		assertEquals("1.1.0", GeoCeDGProductInfo.semanticVersion());
+		assertEquals("1.1.0", GeoCeDGProductInfo.displayVersion());
+		assertEquals("GeoCeDG 1.1.0", GeoCeDGProductInfo.applicationTitle());
+		assertEquals("GeoCeDG 1.1.0 — Revision1.cedg",
 				GeoCeDGProductInfo.windowTitle("Revision1.cedg"));
 	}
 

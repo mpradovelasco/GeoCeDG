@@ -70,6 +70,22 @@ function Invoke-PowerShellCapture {
     } finally { $process.Dispose() }
 }
 
+function Get-FixturePackageProfileSha256 {
+    # PRE-G9B-R6-plus-G: the documented canonical digest (strict UTF-8, CRLF and CR -> LF).
+    param([string]$Path)
+    $bytes = [IO.File]::ReadAllBytes($Path)
+    [void][Text.UTF8Encoding]::new($false, $true).GetString($bytes)
+    $canonical = [IO.MemoryStream]::new($bytes.Length)
+    for ($index = 0; $index -lt $bytes.Length; $index++) {
+        if ($bytes[$index] -eq 13) {
+            $canonical.WriteByte(10)
+            if ($index + 1 -lt $bytes.Length -and $bytes[$index + 1] -eq 10) { $index++ }
+        } else { $canonical.WriteByte($bytes[$index]) }
+    }
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($canonical.ToArray())).ToLowerInvariant()
+}
+
 function New-PackagingArtifactFixture {
     param([string]$Root)
     $marker = 'INTERNAL EVALUATION — NOT FOR REDISTRIBUTION'
@@ -187,16 +203,53 @@ function New-PackagingArtifactFixture {
         }
         profile_admitted = 'INTERNAL'
     }
+    # PRE-G9B-R6-plus-G (PM-5): an INTERNAL build stages its distribution record, bound to
+    # the real package profile, and records it in the build manifest.
+    $packageProfilePath = Join-Path $repositoryRoot 'packaging/windows/package.yml'
+    $packageProfile = Read-VerificationJson $packageProfilePath
+    $internalProfile = @($packageProfile.distribution.profiles | Where-Object id -CEQ 'INTERNAL')[0]
+    $fixtureRevision = '0123456789abcdef0123456789abcdef01234567'
+    $profileSha = Get-FixturePackageProfileSha256 $packageProfilePath
+    $record = [ordered]@{
+        schema_version = 1
+        record_kind = 'geocedg-distribution-record'
+        profile_id = 'INTERNAL'
+        status = [string]$internalProfile.status
+        redistributable = $false
+        marker = [string]$internalProfile.marker
+        notice_file = 'INTERNAL_EVALUATION_ONLY.txt'
+        notice_sha256 = (Get-FileHash -LiteralPath (Join-Path $app 'app/INTERNAL_EVALUATION_ONLY.txt') `
+            -Algorithm SHA256).Hash.ToLowerInvariant()
+        application = [ordered]@{
+            name = [string]$packageProfile.application.name
+            version = [string]$packageProfile.application.version
+            version_date = [string]$packageProfile.application.version_date
+        }
+        source_revision = $fixtureRevision
+        package_profile_sha256 = $profileSha
+    }
+    $recordPath = Join-Path $app 'app/geocedg-distribution.json'
+    Write-FixtureText $recordPath ((ConvertTo-Json $record -Depth 5) + "`n")
     $manifest = [ordered]@{
         ggt_library = $ggtLibrary
         schema_version = 2
+        source_revision = $fixtureRevision
         target = 'All'
         distribution_marker = $marker
         public_redistribution = 'BLOCKED PENDING LICENSE/ASSET APPROVAL'
-        application = [ordered]@{ icon = [ordered]@{
+        application = [ordered]@{
+            version = [string]$packageProfile.application.version
+            version_date = [string]$packageProfile.application.version_date
+            icon = [ordered]@{
                 path = 'source/desktop/desktop/src/main/resources/org/geocedg/desktop/branding/v1/derived/geocedg-application.ico'
                 sha256 = 'e5dac1dd3a556f4ce9747f00d272281e9a571ecc5e757180ba1c6750b664cd73'
         } }
+        distribution_record = [ordered]@{
+            path = 'app/geocedg-distribution.json'
+            sha256 = (Get-FileHash -LiteralPath $recordPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            profile_id = 'INTERNAL'
+            package_profile_sha256 = $profileSha
+        }
         file_association = [ordered]@{
             enabled_for_target = $true
             registration_scope = 'msi-exe-installers-only'
@@ -619,6 +672,120 @@ Invoke-Case 'curated GGT library admission separates location, membership, hash 
             Remove-Item -LiteralPath (Join-Path $a 'app-image/GeoCeDG/app/ggt-library') -Recurse -Force }
         Assert-Case ($missingLibrary.status['packaging.ggt-library.membership'] -ceq 'VIOLATED') `
             'An admitted INTERNAL build without the curated library was accepted.'
+    } finally {
+        $env:PATH = $savedPath
+        $env:GEOCEDG_WIX_FIXTURE_XML = $savedXml
+        $resolved = [IO.Path]::GetFullPath($root)
+        $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
+        if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
+                (Test-Path -LiteralPath $marker) -and
+                [IO.File]::ReadAllText($marker) -ceq 'verification-contract-boundary') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force
+        } else { throw "Fixture cleanup refused unexpected path: $resolved" }
+    }
+}
+
+Invoke-Case 'distribution record admission binds the built profile, the package profile and the manifest' {
+    # PRE-G9B-R6-plus-G (PM-5): consistency subcontracts only; no JAR inspection.
+    $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $root = Join-Path $tempBase ('geocedg-distribution-record-' + [guid]::NewGuid().ToString('N'))
+    $fakeBin = Join-Path $root 'bin'
+    $marker = Join-Path $root '.fixture-owner'
+    [void][IO.Directory]::CreateDirectory($root)
+    Write-FixtureText $marker 'verification-contract-boundary'
+    $xml = New-FakeWix $fakeBin $true
+    $savedPath = $env:PATH
+    $savedXml = $env:GEOCEDG_WIX_FIXTURE_XML
+    $checker = Join-Path $repositoryRoot 'tools/agent/checks/packaging-product.ps1'
+    $ids = @('packaging.distribution-record', 'packaging.distribution-record.build-manifest',
+        'packaging.version-date', 'packaging.schema', 'packaging.profile')
+    $script:RecordCase = 0
+    function Invoke-RecordCase {
+        param([scriptblock]$Mutate)
+        $script:RecordCase++
+        $caseRoot = Join-Path $root ("case-$script:RecordCase")
+        $artifacts = Join-Path $caseRoot 'artifacts'
+        New-PackagingArtifactFixture $artifacts
+        & $Mutate $artifacts
+        $resultPath = Join-Path $caseRoot 'result.json'
+        $run = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repositoryRoot,
+            '-ResultPath', $resultPath, '-RequireArtifacts', '-ArtifactRoot', $artifacts)
+        $json = Read-VerificationJson $resultPath
+        $status = @{}
+        foreach ($id in $ids) {
+            $matching = @($json.subcontracts | Where-Object contract_id -CEQ $id)
+            $status[$id] = $(if ($matching.Count -eq 1) { [string]$matching[0].status } else {
+                "MISSING:$($json.outcome):$($json.cause)" })
+        }
+        return [pscustomobject]@{ exit_code = $run.exit_code; status = $status }
+    }
+    function Edit-Record {
+        param([string]$Artifacts, [scriptblock]$Change, [bool]$Rehash)
+        $path = Join-Path $Artifacts 'app-image/GeoCeDG/app/geocedg-distribution.json'
+        $record = [IO.File]::ReadAllText($path) | ConvertFrom-Json -AsHashtable
+        & $Change $record
+        Write-FixtureText $path ((ConvertTo-Json $record -Depth 5) + "`n")
+        if ($Rehash) {
+            $manifestPath = Join-Path $Artifacts 'build-manifest.json'
+            $manifest = Read-VerificationJson $manifestPath
+            $manifest.distribution_record.sha256 = (Get-FileHash -LiteralPath $path `
+                -Algorithm SHA256).Hash.ToLowerInvariant()
+            Write-FixtureText $manifestPath ((ConvertTo-Json $manifest -Depth 20 -Compress) + "`n")
+        }
+    }
+    function Edit-Manifest {
+        param([string]$Artifacts, [scriptblock]$Change)
+        $manifestPath = Join-Path $Artifacts 'build-manifest.json'
+        $manifest = Read-VerificationJson $manifestPath
+        & $Change $manifest
+        Write-FixtureText $manifestPath ((ConvertTo-Json $manifest -Depth 20 -Compress) + "`n")
+    }
+    try {
+        $env:PATH = $fakeBin + [IO.Path]::PathSeparator + $savedPath
+        $env:GEOCEDG_WIX_FIXTURE_XML = $xml
+
+        $valid = Invoke-RecordCase { param($a) }
+        foreach ($id in $ids) {
+            Assert-Case ($valid.status[$id] -ceq 'SATISFIED') "A valid distribution record was rejected by $id."
+        }
+        Assert-Case ($valid.exit_code -eq 0) 'A valid INTERNAL build with its record was not accepted.'
+
+        $recordDefects = [ordered]@{
+            'marker' = { param($r) $r['marker'] = 'NON-COMMERCIAL DISTRIBUTION — PROFILE NC' }
+            'profile' = { param($r) $r['profile_id'] = 'NC' }
+            'commercial' = { param($r) $r['profile_id'] = 'COMMERCIAL'; $r['status'] = 'not-authorized' }
+            'digest' = { param($r) $r['package_profile_sha256'] = ('1' * 64) }
+            'revision' = { param($r) $r['source_revision'] = ('f' * 40) }
+            'version' = { param($r) $r['application']['version'] = '9.9.9' }
+            'version date' = { param($r) $r['application']['version_date'] = '2001-01-01' }
+            'notice hash' = { param($r) $r['notice_sha256'] = ('0' * 64) }
+            'notice name' = { param($r) $r['notice_file'] = 'NC_DISTRIBUTION_NOTICE.txt' }
+            'extra member' = { param($r) $r['approved'] = $true }
+            'missing member' = { param($r) $r.Remove('notice_sha256') }
+            'redistributable' = { param($r) $r['redistributable'] = $true }
+        }
+        foreach ($defect in $recordDefects.GetEnumerator()) {
+            # $change resolves dynamically when the mutation runs inside Invoke-RecordCase
+            $change = $defect.Value
+            $case = Invoke-RecordCase { param($a) Edit-Record $a $change $true }
+            Assert-Case ($case.exit_code -eq 1 -and
+                $case.status['packaging.distribution-record'] -ceq 'VIOLATED' -and
+                $case.status['packaging.distribution-record.build-manifest'] -ceq 'SATISFIED') `
+                "A distribution record with a wrong $($defect.Key) was not isolated."
+        }
+        $unhashed = Invoke-RecordCase { param($a) Edit-Record $a { param($r) $r['marker'] = 'x' } $false }
+        Assert-Case ($unhashed.status['packaging.distribution-record.build-manifest'] -ceq 'VIOLATED') `
+            'A record that no longer matches the manifest hash was accepted.'
+        $missing = Invoke-RecordCase { param($a)
+            Remove-Item -LiteralPath (Join-Path $a 'app-image/GeoCeDG/app/geocedg-distribution.json') }
+        Assert-Case ($missing.status['packaging.distribution-record'] -ceq 'VIOLATED' -and
+            $missing.status['packaging.distribution-record.build-manifest'] -ceq 'VIOLATED') `
+            'A build without its distribution record was accepted.'
+        $noDate = Invoke-RecordCase { param($a) Edit-Manifest $a { param($m)
+            $m.application.PSObject.Properties.Remove('version_date') } }
+        Assert-Case ($noDate.status['packaging.distribution-record.build-manifest'] -ceq 'VIOLATED' -and
+            $noDate.status['packaging.distribution-record'] -ceq 'SATISFIED') `
+            'A build manifest without the version date was accepted.'
     } finally {
         $env:PATH = $savedPath
         $env:GEOCEDG_WIX_FIXTURE_XML = $savedXml

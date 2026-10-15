@@ -1,7 +1,7 @@
 <!-- geocedg-guide-section: about-this-guide -->
 # Guía de usuario de GeoCeDG
 
-GeoCeDG 1.0.0 · Edición en español
+GeoCeDG 1.1.0 · Edición en español
 
 Esta es la guía de usuario oficial de GeoCeDG. Describe qué hace la aplicación
 hoy, cómo trabajar con ella y dónde están sus límites actuales. Existe una
@@ -64,13 +64,16 @@ intentar recuperar la intención que lo originó.
 
 ### 1.3 Versión y estado
 
-La aplicación se identifica como **GeoCeDG 1.0.0** en el título de la ventana y
+La aplicación se identifica como **GeoCeDG 1.1.0** en el título de la ventana y
 en **Ayuda → Acerca de GeoCeDG**. Ese número de versión identifica el estado de
 producto descrito en esta guía. No constituye por sí mismo una publicación: el
 empaquetado y la distribución se gobiernan por separado.
 
-**Ayuda → Acerca de GeoCeDG** muestra además la compilación de la copia en
-ejecución (los doce primeros dígitos hexadecimales de su revisión de fuentes, y
+**Ayuda → Acerca de GeoCeDG** muestra además la *fecha de versión*,
+`2026-10-15` para 1.1.0: la fecha que el autor designó para esta versión. No es una
+fecha de compilación, de commit, de publicación ni de lanzamiento, y la versión
+anterior 1.0.0 no tiene ninguna. Acerca de muestra después la compilación de la
+copia en ejecución (los doce primeros dígitos hexadecimales de su revisión de fuentes, y
 si esas fuentes estaban modificadas) y su *condición de distribución*. Una copia
 instalada lleva un registro de distribución escrito por el empaquetado de
 GeoCeDG, que la aplicación comprueba contra sí misma. Una copia verificada
@@ -101,7 +104,7 @@ que su contrato público todavía puede refinarse.
 ### 2.1 Iniciar GeoCeDG
 
 Inicie GeoCeDG desde su acceso directo instalado. El título de la ventana indica
-`GeoCeDG 1.0.0`, o `GeoCeDG 1.0.0 — <nombre de archivo>` cuando hay un documento
+`GeoCeDG 1.1.0`, o `GeoCeDG 1.1.0 — <nombre de archivo>` cuando hay un documento
 abierto.
 
 Si trabaja desde un checkout de fuentes preparado en lugar de una copia
@@ -2297,6 +2300,6 @@ y no se traducen nunca.
 
 ---
 
-*GeoCeDG 1.0.0 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
+*GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
 licencias upstream obligatorios se conservan en `LICENSE`, `NOTICE.md` y
 `THIRD_PARTY.md`.*

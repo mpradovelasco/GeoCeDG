@@ -1,10 +1,11 @@
 {
   "$schema": "../../geocedg/specs/operations/package-profile.schema.json",
-  "schema_version": 1,
+  "schema_version": 2,
   "profile_id": "geocedg-windows-internal",
   "application": {
     "name": "GeoCeDG",
-    "version": "1.0.0",
+    "version": "1.1.0",
+    "version_date": "2026-10-15",
     "vendor": "GeoCeDG Project",
     "main_jar": "desktop.jar",
     "main_class": "org.geocedg.desktop.GeoCeDG",

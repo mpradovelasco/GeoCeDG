@@ -1,7 +1,14 @@
 import Desktop_variants_gradle.Variants.nativesLinuxAmd64
 import Desktop_variants_gradle.Variants.nativesMacOSXUniversal
 import Desktop_variants_gradle.Variants.nativesWindowsAmd64
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.format.ResolverStyle
 
 plugins {
     application
@@ -86,9 +93,33 @@ fun resolveGeoCeDGRepositoryProvenance(): GeoCeDGRepositoryProvenance {
 
 val geoCeDGRepositoryProvenance = resolveGeoCeDGRepositoryProvenance()
 val geoCeDGPackageProfile = rootProject.file("../../packaging/windows/package.yml")
+val geoCeDGPackageProfileBytes = geoCeDGPackageProfile.readBytes()
+// PRE-G9B-R6-plus-G (PM-3, PM-5): strict UTF-8; the canonical digest normalizes CRLF
+// and lone CR to LF so that working-tree line endings never change it.
+val geoCeDGPackageProfileText = StandardCharsets.UTF_8.newDecoder()
+    .decode(ByteBuffer.wrap(geoCeDGPackageProfileBytes)).toString()
+val geoCeDGPackageProfileSha256 = run {
+    val canonical = ByteArrayOutputStream(geoCeDGPackageProfileBytes.size)
+    var index = 0
+    while (index < geoCeDGPackageProfileBytes.size) {
+        val byte = geoCeDGPackageProfileBytes[index]
+        if (byte == '\r'.code.toByte()) {
+            canonical.write('\n'.code)
+            if (index + 1 < geoCeDGPackageProfileBytes.size &&
+                geoCeDGPackageProfileBytes[index + 1] == '\n'.code.toByte()) {
+                index++
+            }
+        } else {
+            canonical.write(byte.toInt())
+        }
+        index++
+    }
+    MessageDigest.getInstance("SHA-256").digest(canonical.toByteArray())
+        .joinToString("") { "%02x".format(it) }
+}
 val geoCeDGApplicationVersion = run {
     val matches = Regex("\\\"version\\\"\\s*:\\s*\\\"([0-9]+\\.[0-9]+\\.[0-9]+)\\\"")
-        .findAll(geoCeDGPackageProfile.readText(StandardCharsets.UTF_8))
+        .findAll(geoCeDGPackageProfileText)
         .map { it.groupValues[1] }
         .toList()
     if (matches.size != 1) {
@@ -97,6 +128,72 @@ val geoCeDGApplicationVersion = run {
         )
     }
     matches.single()
+}
+// PRE-G9B-R6-plus-G (PM-3): exactly one author-designated canonical version date, a valid
+// ISO 8601 calendar date; never computed from a clock, a commit, a tag or a file time.
+val geoCeDGApplicationVersionDate = run {
+    val keys = Regex("\\\"version_date\\\"\\s*:").findAll(geoCeDGPackageProfileText).count()
+    val matches = Regex("\\\"version_date\\\"\\s*:\\s*\\\"([0-9]{4}-[0-9]{2}-[0-9]{2})\\\"")
+        .findAll(geoCeDGPackageProfileText)
+        .map { it.groupValues[1] }
+        .toList()
+    if (keys != 1 || matches.size != 1) {
+        throw GradleException(
+            "packaging/windows/package.yml must declare exactly one application version_date"
+        )
+    }
+    try {
+        LocalDate.parse(matches.single(),
+            DateTimeFormatter.ofPattern("uuuu-MM-dd")
+                .withResolverStyle(ResolverStyle.STRICT))
+    } catch (invalid: DateTimeParseException) {
+        throw GradleException(
+            "packaging/windows/package.yml version_date is not a valid calendar date")
+    }
+    matches.single()
+}
+// PRE-G9B-R6-plus-G (PM-5): the declared distribution profiles, embedded so that the
+// runtime holds no second literal copy of a marker.
+val geoCeDGDistributionProfiles: List<List<String>> = run {
+    @Suppress("UNCHECKED_CAST")
+    val document = groovy.json.JsonSlurper().parseText(geoCeDGPackageProfileText) as Map<String, Any?>
+    if (document["schema_version"] != 2) {
+        throw GradleException("packaging/windows/package.yml must use package-profile schema 2")
+    }
+    @Suppress("UNCHECKED_CAST")
+    val application = document["application"] as Map<String, Any?>
+    if (application["version"] != geoCeDGApplicationVersion ||
+        application["version_date"] != geoCeDGApplicationVersionDate) {
+        throw GradleException("packaging/windows/package.yml application metadata is ambiguous")
+    }
+    @Suppress("UNCHECKED_CAST")
+    val distribution = document["distribution"] as Map<String, Any?>
+    @Suppress("UNCHECKED_CAST")
+    val profiles = distribution["profiles"] as List<Map<String, Any?>>
+    if (profiles.isEmpty()) {
+        throw GradleException("packaging/windows/package.yml declares no distribution profile")
+    }
+    profiles.map { profile ->
+        val redistributable = profile["redistributable"]
+        if (redistributable !is Boolean) {
+            throw GradleException("A distribution profile lacks a boolean redistributable flag")
+        }
+        listOf(profile["id"] as String, profile["status"] as String,
+            profile["marker"] as String, redistributable.toString())
+    }
+}
+fun geoCeDGPropertiesValue(value: String): String = buildString {
+    value.forEachIndexed { index, character ->
+        when {
+            character == '\\' -> append("\\\\")
+            character == '=' || character == ':' || character == '#' || character == '!' ->
+                append('\\').append(character)
+            character == ' ' && index == 0 -> append("\\ ")
+            character.code < 0x20 || character.code > 0x7e ->
+                append("\\u%04x".format(character.code))
+            else -> append(character)
+        }
+    }
 }
 val generatedGeoCeDGProvenanceDirectory = layout.buildDirectory.dir(
     "generated/resources/geocedgProvenance"
@@ -107,6 +204,9 @@ val generatedGeoCeDGProvenanceFile = generatedGeoCeDGProvenanceDirectory.map {
 val generateGeoCeDGBuildProvenance by tasks.registering {
     inputs.file(geoCeDGPackageProfile)
     inputs.property("applicationVersion", geoCeDGApplicationVersion)
+    inputs.property("applicationVersionDate", geoCeDGApplicationVersionDate)
+    inputs.property("packageProfileSha256", geoCeDGPackageProfileSha256)
+    inputs.property("distributionProfiles", geoCeDGDistributionProfiles.toString())
     inputs.property("repositoryCommit", geoCeDGRepositoryProvenance.commit)
     inputs.property("repositoryState", geoCeDGRepositoryProvenance.state)
     inputs.property("resolutionSource", geoCeDGRepositoryProvenance.source)
@@ -114,13 +214,25 @@ val generateGeoCeDGBuildProvenance by tasks.registering {
     doLast {
         val output = generatedGeoCeDGProvenanceFile.get().asFile
         output.parentFile.mkdirs()
+        val profiles = StringBuilder()
+            .append("distribution.profile.count=${geoCeDGDistributionProfiles.size}\n")
+        geoCeDGDistributionProfiles.forEachIndexed { index, profile ->
+            profiles.append("distribution.profile.$index.id=${geoCeDGPropertiesValue(profile[0])}\n")
+                .append("distribution.profile.$index.status=${geoCeDGPropertiesValue(profile[1])}\n")
+                .append("distribution.profile.$index.marker=${geoCeDGPropertiesValue(profile[2])}\n")
+                .append("distribution.profile.$index.redistributable=${profile[3]}\n")
+        }
+        // ASCII only: non-ASCII marker characters are written as \u escapes.
         output.writeText(
-            "schema.version=2\n" +
+            "schema.version=3\n" +
                 "application.version=$geoCeDGApplicationVersion\n" +
+                "application.version.date=$geoCeDGApplicationVersionDate\n" +
+                "package.profile.sha256=$geoCeDGPackageProfileSha256\n" +
+                profiles +
                 "repository.commit=${geoCeDGRepositoryProvenance.commit}\n" +
                 "repository.state=${geoCeDGRepositoryProvenance.state}\n" +
                 "resolution.source=${geoCeDGRepositoryProvenance.source}\n",
-            StandardCharsets.UTF_8
+            StandardCharsets.US_ASCII
         )
     }
 }

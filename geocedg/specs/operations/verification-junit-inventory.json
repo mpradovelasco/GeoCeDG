@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "34445c964e6b9a5f8039956377a3643d248d16ff3213533b3f5d478212370e8a",
+      "discovery_evidence_sha256": "4b43841da375e469a95618f9258e40fe28ba80b6f1da40a8794fe4970de4340d",
       "discovered_identity_count": 6075,
       "discovered_identities_sha256": "69dba6242d81bf292dd37fb6e75513e97ab239e34ca8deacd5cde8305f83643e"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "5d236dfd1f1dd55d08ec5af19ddb00fc2bc2293bc7d66bbdf888ab7deef495ac",
-      "discovered_identity_count": 2133,
-      "discovered_identities_sha256": "7b32d6fcaf6a34b36650dc75d17629fd2d85c0901122b8b2e95499f6e4b0c689"
+      "discovery_evidence_sha256": "7106ba7547b53457c5178ffe8284da983f866ba06fe24c84f7497da88c4c5b1b",
+      "discovered_identity_count": 2159,
+      "discovered_identities_sha256": "50cc6d98b331d562310b4d7c1ca8d182ffbf33753554c89973d5ec62134b9c0a"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2133,
-      "expected_identities_sha256": "7b32d6fcaf6a34b36650dc75d17629fd2d85c0901122b8b2e95499f6e4b0c689",
+      "expected_identity_count": 2159,
+      "expected_identities_sha256": "50cc6d98b331d562310b4d7c1ca8d182ffbf33753554c89973d5ec62134b9c0a",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2127,
-      "expected_identities_sha256": "020034fda73ca3512fd2920ec514819ea44a893d0b5c250c5d2cd3b0a3920bbf",
+      "expected_identity_count": 2153,
+      "expected_identities_sha256": "b7780cc3169741801856230ca8c2bdc6f740f49ac17b7102b7f6055b9143c504",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -3139,6 +3139,59 @@
         {
           "commit": "e968245ef329a86108df81a49cbdb05601cefe9e",
           "tree": "516f28dfe75dd1e35954f1e1e224dcf10edd4d2b"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-r6-plus-g.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BR6PlusGProductMetadataTest",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "org.geocedg.desktop.PreG9BP0PresentationThemeTest",
+        "org.geocedg.desktop.PreG9BP1PublicSurfaceTest",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "org.geocedg.desktop.export.G9X1DxfManifestTest",
+        "org.geocedg.desktop.PreG9BR6PlusGR1OpenRouteSessionTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusGProductMetadataTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BP0PresentationThemeTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BP1PublicSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "--tests",
+        "org.geocedg.desktop.export.G9X1DxfManifestTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusGR1OpenRouteSessionTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 127,
+      "expected_identities_sha256": "713c7ea5d25d6f0ff1cae7c3098814987c6f95c65f2bed148eadeeb2b06847b7",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "e7076658294f2ea9343d6a95ce3286f82966843e",
+          "tree": "97da81f0be8487cc87442b6e05913c3436629e9b"
         }
       ]
     }

@@ -98,6 +98,7 @@ public final class GeoCeDGBuildProvenance {
 	private static final Pattern COMMIT = Pattern.compile(
 			"(?:[0-9a-f]{40}|[0-9a-f]{64})");
 	private static final String UNAVAILABLE = "UNAVAILABLE";
+	private static final int MAX_PROFILES = 16;
 	private static final Pattern SHA256 = Pattern.compile("[0-9a-f]{64}");
 	private static final Pattern CALENDAR_DATE = Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}");
 
@@ -200,18 +201,65 @@ public final class GeoCeDGBuildProvenance {
 			throw new IllegalStateException(
 					"Cannot load GeoCeDG build provenance", exception);
 		}
-		if (!"2".equals(properties.getProperty("schema.version"))) {
+		return read(properties);
+	}
+
+	/**
+	 * PRE-G9B-R6-plus-G (PM-3, PM-5): reads one generated provenance record. Only schema
+	 * {@code 3} is accepted, with exactly its keys: the version and its required
+	 * canonical version date, the canonical package-profile digest, the declared
+	 * distribution-profile table and the repository identity. Anything else fails
+	 * closed.
+	 *
+	 * @param properties generated record
+	 * @return the provenance
+	 * @throws IllegalStateException when the record is not a valid schema 3 record
+	 */
+	public static GeoCeDGBuildProvenance read(Properties properties) {
+		if (!"3".equals(properties.getProperty("schema.version"))) {
 			throw new IllegalStateException(
 					"Unsupported GeoCeDG build provenance schema");
 		}
 		try {
+			int count = Integer.parseInt(properties.getProperty(
+					"distribution.profile.count"));
+			if (count < 1 || count > MAX_PROFILES) {
+				throw new IllegalArgumentException("Invalid distribution profile count");
+			}
+			Set<String> expectedKeys = new HashSet<>(List.of("schema.version",
+					"application.version", "application.version.date",
+					"package.profile.sha256", "distribution.profile.count",
+					"repository.commit", "repository.state", "resolution.source"));
+			List<DistributionProfile> profiles = new ArrayList<>();
+			for (int index = 0; index < count; index++) {
+				String prefix = "distribution.profile." + index + ".";
+				for (String field : List.of("id", "status", "marker", "redistributable")) {
+					expectedKeys.add(prefix + field);
+				}
+				String redistributable = properties.getProperty(prefix + "redistributable");
+				if (!"true".equals(redistributable) && !"false".equals(redistributable)) {
+					throw new IllegalArgumentException("Invalid redistributable flag");
+				}
+				profiles.add(new DistributionProfile(properties.getProperty(prefix + "id"),
+						properties.getProperty(prefix + "status"),
+						properties.getProperty(prefix + "marker"),
+						Boolean.parseBoolean(redistributable)));
+			}
+			if (!properties.stringPropertyNames().equals(expectedKeys)) {
+				throw new IllegalArgumentException("Unexpected provenance keys");
+			}
+			String date = properties.getProperty("application.version.date");
+			String digest = properties.getProperty("package.profile.sha256");
+			if (date == null || digest == null) {
+				throw new IllegalArgumentException("Package metadata is required");
+			}
 			return new GeoCeDGBuildProvenance(
 					properties.getProperty("application.version"),
 					properties.getProperty("repository.commit"),
 					RepositoryState.valueOf(properties.getProperty(
 							"repository.state")),
 					ResolutionSource.valueOf(properties.getProperty(
-							"resolution.source")));
+							"resolution.source")), date, digest, profiles);
 		} catch (IllegalArgumentException | NullPointerException exception) {
 			throw new IllegalStateException(
 					"Invalid GeoCeDG build provenance resource", exception);

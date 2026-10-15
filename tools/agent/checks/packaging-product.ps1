@@ -329,13 +329,13 @@ try {
         [Text.UTF8Encoding]::new($false, $true)) | ConvertFrom-StringData
 
     Add-Contract 'packaging.schema' ($schema.type -eq 'object' -and
-        $schema.'$id' -eq 'https://geocedg.local/schemas/package-profile-v1') `
-        'package-profile-v1' $schema.'$id' 'Package schema identity is invalid.'
+        $schema.'$id' -eq 'https://geocedg.local/schemas/package-profile-v2') `
+        'package-profile-v2' $schema.'$id' 'Package schema identity is invalid.'
     Add-Contract 'packaging.schema-icon' `
         ($schema.properties.application.properties.icon.const -ceq $iconPath) `
         $iconPath $schema.properties.application.properties.icon.const `
         'Package schema does not freeze the versioned GeoCeDG icon.'
-    $identity = $profile.schema_version -eq 1 -and
+    $identity = $profile.schema_version -eq 2 -and
         $profile.profile_id -eq 'geocedg-windows-internal' -and
         $profile.application.name -eq 'GeoCeDG' -and
         $profile.application.main_class -eq 'org.geocedg.desktop.GeoCeDG' -and
@@ -345,6 +345,28 @@ try {
         $profile.toolchain.wix -eq '5.0.2'
     Add-Contract 'packaging.profile' $identity 'approved package profile' $profile.profile_id `
         'Package profile identity or declared toolchain contract differs.'
+    # PRE-G9B-R6-plus-G (PM-3): the required canonical version date of schema 2.
+    $versionDate = [string]$profile.application.version_date
+    $parsedDate = [datetime]::MinValue
+    $versionDateValid = $versionDate -cmatch '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' -and
+        [datetime]::TryParseExact($versionDate, 'yyyy-MM-dd',
+            [Globalization.CultureInfo]::InvariantCulture,
+            [Globalization.DateTimeStyles]::None, [ref]$parsedDate) -and
+        @($schema.properties.application.required) -ccontains 'version_date' -and
+        $schema.properties.schema_version.const -eq 2
+    Add-Contract 'packaging.version-date' $versionDateValid `
+        'one valid required application.version_date under package-profile schema 2' `
+        $versionDate 'The package profile version date is missing, invalid or not required.'
+    $profileBytes = [IO.File]::ReadAllBytes((Join-Path $repository 'packaging/windows/package.yml'))
+    $canonicalProfile = [IO.MemoryStream]::new($profileBytes.Length)
+    for ($index = 0; $index -lt $profileBytes.Length; $index++) {
+        if ($profileBytes[$index] -eq 13) {
+            $canonicalProfile.WriteByte(10)
+            if ($index + 1 -lt $profileBytes.Length -and $profileBytes[$index + 1] -eq 10) { $index++ }
+        } else { $canonicalProfile.WriteByte($profileBytes[$index]) }
+    }
+    $packageProfileSha256 = [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($canonicalProfile.ToArray())).ToLowerInvariant()
     $extensions = @($profile.toolchain.wix_extensions)
     Add-Contract 'packaging.declared-extensions' ($extensions.Count -eq 2 -and
         $extensions[0] -ceq 'WixToolset.Util.wixext/5.0.2' -and
@@ -674,6 +696,88 @@ try {
             Add-Contract 'packaging.ggt-library.build-manifest' $builtLibraryValid `
                 'build manifest records exactly the admitted curated library' $builtLibrary `
                 'The build manifest does not record the admitted curated library.'
+            # PRE-G9B-R6-plus-G (PM-5): the installed distribution record of the built
+            # profile, against the package profile and the build manifest. A consistency
+            # check between artifacts of one pipeline, never an authenticity proof.
+            $recordManifest = Read-JsonDocument $builtManifestPath
+            $recordPath = Join-Path $appImage 'app/geocedg-distribution.json'
+            $declaredProfile = @($profile.distribution.profiles | Where-Object {
+                [string]$_.id -ceq $builtProfileId })
+            $declaredNotice = if ($declaredProfile.Count -eq 1 -and
+                    $declaredProfile[0].PSObject.Properties.Name -contains 'notice_file') {
+                [IO.Path]::GetFileName([string]$declaredProfile[0].notice_file)
+            } else { $null }
+            $recordObserved = $null
+            $recordValid = $false
+            if (Test-Path -LiteralPath $recordPath -PathType Leaf) {
+                try {
+                    $record = [IO.File]::ReadAllText($recordPath,
+                        [Text.UTF8Encoding]::new($false, $true)) |
+                        ConvertFrom-Json -AsHashtable -Depth 10 -ErrorAction Stop
+                    $recordObserved = $record
+                    $recordKeys = (@($record.Keys) | Sort-Object) -join ','
+                    $expectedKeys = (@('schema_version', 'record_kind', 'profile_id', 'status',
+                        'redistributable', 'marker', 'notice_file', 'notice_sha256', 'application',
+                        'source_revision', 'package_profile_sha256') | Sort-Object) -join ','
+                    $recordApplication = $record['application']
+                    $noticePath = if ($declaredNotice) { Join-Path $appImage "app/$declaredNotice" } else { $null }
+                    $recordValid = $recordKeys -ceq $expectedKeys -and
+                        "$($record['schema_version'])" -ceq '1' -and
+                        $record['record_kind'] -ceq 'geocedg-distribution-record' -and
+                        $builtProfileId -cin @('INTERNAL', 'NC') -and
+                        $declaredProfile.Count -eq 1 -and
+                        [string]$declaredProfile[0].status -cne 'not-authorized' -and
+                        $record['profile_id'] -ceq $builtProfileId -and
+                        $record['status'] -ceq [string]$declaredProfile[0].status -and
+                        $record['marker'] -ceq [string]$declaredProfile[0].marker -and
+                        $record['redistributable'] -is [bool] -and
+                        $record['redistributable'] -eq [bool]$declaredProfile[0].redistributable -and
+                        $null -ne $declaredNotice -and $record['notice_file'] -ceq $declaredNotice -and
+                        (Test-Path -LiteralPath $noticePath -PathType Leaf) -and
+                        $record['notice_sha256'] -ceq (Get-FileHash -LiteralPath $noticePath `
+                            -Algorithm SHA256).Hash.ToLowerInvariant() -and
+                        $recordApplication -is [Collections.IDictionary] -and
+                        ((@($recordApplication.Keys) | Sort-Object) -join ',') -ceq 'name,version,version_date' -and
+                        $recordApplication['name'] -ceq [string]$profile.application.name -and
+                        $recordApplication['version'] -ceq [string]$profile.application.version -and
+                        $recordApplication['version_date'] -ceq $versionDate -and
+                        [string]$record['source_revision'] -cmatch '^([0-9a-f]{40}|[0-9a-f]{64})$' -and
+                        $record['source_revision'] -ceq [string]$recordManifest.source_revision -and
+                        $record['package_profile_sha256'] -ceq $packageProfileSha256
+                } catch {
+                    $recordValid = $false
+                }
+            }
+            Add-Contract 'packaging.distribution-record' $recordValid `
+                ([ordered]@{ profile = $builtProfileId; notice = $declaredNotice
+                    version = [string]$profile.application.version; version_date = $versionDate
+                    package_profile_sha256 = $packageProfileSha256 }) $recordObserved `
+                'The installed distribution record is missing or differs from the built profile, the package profile or the build manifest.'
+            $recordFileSha = if (Test-Path -LiteralPath $recordPath -PathType Leaf) {
+                (Get-FileHash -LiteralPath $recordPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            } else { $null }
+            $manifestRecord = if ($recordManifest.PSObject.Properties.Name -contains
+                    'distribution_record') { $recordManifest.distribution_record } else { $null }
+            $manifestApplication = if ($recordManifest.PSObject.Properties.Name -contains
+                    'application') { $recordManifest.application } else { $null }
+            $manifestFields = if ($null -ne $manifestRecord) {
+                @($manifestRecord.PSObject.Properties.Name) } else { @() }
+            $applicationFields = if ($null -ne $manifestApplication) {
+                @($manifestApplication.PSObject.Properties.Name) } else { @() }
+            $manifestRecordValid = $null -ne $recordFileSha -and
+                @('path', 'sha256', 'profile_id', 'package_profile_sha256' |
+                    Where-Object { $manifestFields -cnotcontains $_ }).Count -eq 0 -and
+                @('version', 'version_date' |
+                    Where-Object { $applicationFields -cnotcontains $_ }).Count -eq 0 -and
+                [string]$manifestRecord.path -ceq 'app/geocedg-distribution.json' -and
+                [string]$manifestRecord.sha256 -ceq $recordFileSha -and
+                [string]$manifestRecord.profile_id -ceq $builtProfileId -and
+                [string]$manifestRecord.package_profile_sha256 -ceq $packageProfileSha256 -and
+                [string]$manifestApplication.version -ceq [string]$profile.application.version -and
+                [string]$manifestApplication.version_date -ceq $versionDate
+            Add-Contract 'packaging.distribution-record.build-manifest' $manifestRecordValid `
+                'build manifest records the exact distribution record, the version and the version date' `
+                $manifestRecord 'The build manifest does not record the exact distribution record or version date.'
             $packagedLegal = @(
                 'app/legal/LICENSE', 'app/legal/NOTICE.md',
                 'app/legal/THIRD_PARTY.md',

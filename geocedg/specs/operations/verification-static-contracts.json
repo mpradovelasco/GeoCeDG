@@ -5,18 +5,18 @@
   "identity_mode":"canonical_utf8_lf_v1",
   "contracts":[
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"packaging/windows/package.yml","sha256":"e791e951188d36d44bae3c20a7b9b4dd1b3e49c4a6aa9a2f9bca7fc7b5ee6888"},
-      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"804c599c54fcf0525f07eaf25ac3f5a4e5cb90da3b45ace6574b0ff61ebef444"},
+      {"path":"packaging/windows/package.yml","sha256":"4fd3dd7142fce5e3f836f1b4a3ca6d7d644daf695c417ba20724c802ccb247d3"},
+      {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"5801f35e471259f5d3d3829c4320c927a808722acfc37452c0145361fe908c81"},
       {"path":"geocedg/resources/assets-manifest.yml","sha256":"a4c4f98be92c67813200dace793cd03a056e0364b379be49ad901a7f50b5c21a"},
       {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},
       {"path":"geocedg/validation/pre-g9b-d1/component-audit.json","sha256":"aaf35691de27cab94c6b413bfce8221426eca7ddc49a01f9ecc3b9a94bc2edb9"},
       {"path":"geocedg/validation/pre-g9b-d1/component-disposition.json","sha256":"794923825afa1e5f3f1cbaa0d3ccd8a0d819ab948368adc6154d191069ef2355"},
       {"path":"LICENSES/manifest.json","sha256":"405c8eddd9f2e4714d3f32c6f2837fcbbf271740213962c392cf34ac44fa12be"},
-      {"path":"tools/release/build-windows-package.ps1","sha256":"0743edff8cb99c378c450287e0f086f4476d34f76973f28614d37b73e3dc785d"},
+      {"path":"tools/release/build-windows-package.ps1","sha256":"5a52132f55802bd6982d449c87648fa2a43e8d36963f3f6d4ff7790102410a69"},
       {"path":"tools/release/export-runtime-components.init.gradle","sha256":"0bd0e7136357afd89289b9444c790d0e0b168c009e92b1ee8800095010b491e9"}
     ]},
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"73f098959bbb9d6a3490573423da0e7cc9f5d068233fa3d875441a613df769a1"},
+      {"path":"source/desktop/desktop/build.gradle.kts","sha256":"bb60c213f667de8f2793feeb0b84289a240968fd2ed8c07e29185117240e5525"},
       {"path":"gradle/libs.versions.toml","sha256":"6c4bdfa7611575b35e6d346112b064e40860f2f8fcdd3e5ea9252cad8d0bc2a4"},
       {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"74eb34251e90b36f514bc04af5599664a21f9bc851b79aeeda8aecfa6d953ab2"}
     ]},

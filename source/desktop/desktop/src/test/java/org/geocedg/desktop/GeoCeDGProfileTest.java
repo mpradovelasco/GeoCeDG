@@ -67,11 +67,11 @@ class GeoCeDGProfileTest {
 
 	@Test
 	void usesTextualIdentityAndNoUpstreamSplash() {
-		assertThat(GeoCeDGProductInfo.semanticVersion(), equalTo("1.0.0"));
-		assertThat(GeoCeDGProductInfo.displayVersion(), equalTo("1.0.0"));
-		assertThat(GeoCeDGFrame.APPLICATION_TITLE, equalTo("GeoCeDG 1.0.0"));
+		assertThat(GeoCeDGProductInfo.semanticVersion(), equalTo("1.1.0"));
+		assertThat(GeoCeDGProductInfo.displayVersion(), equalTo("1.1.0"));
+		assertThat(GeoCeDGFrame.APPLICATION_TITLE, equalTo("GeoCeDG 1.1.0"));
 		assertThat(GeoCeDGProductInfo.windowTitle("Revision1.cedg"),
-				equalTo("GeoCeDG 1.0.0 — Revision1.cedg"));
+				equalTo("GeoCeDG 1.1.0 — Revision1.cedg"));
 		assertThat(GeoCeDGFrame.APPLICATION_USER_MODEL_ID,
 				equalTo("org.geocedg.desktop"));
 		String splash = GeoCeDG.getSplashResource().toExternalForm();

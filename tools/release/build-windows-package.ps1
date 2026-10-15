@@ -273,6 +273,54 @@ function Get-CuratedGgtLibraryPayload {
     }
 }
 
+function Get-CanonicalPackageProfileSha256 {
+    # PRE-G9B-R6-plus-G (PM-5): SHA-256 of the strict UTF-8 package profile with every
+    # CRLF and lone CR normalized to LF; identical to the Gradle provenance digest.
+    param([Parameter(Mandatory)] [string]$Path)
+
+    $bytes = [IO.File]::ReadAllBytes($Path)
+    [void][Text.UTF8Encoding]::new($false, $true).GetString($bytes)
+    $canonical = [IO.MemoryStream]::new($bytes.Length)
+    for ($index = 0; $index -lt $bytes.Length; $index++) {
+        if ($bytes[$index] -eq 13) {
+            $canonical.WriteByte(10)
+            if ($index + 1 -lt $bytes.Length -and $bytes[$index + 1] -eq 10) { $index++ }
+        } else {
+            $canonical.WriteByte($bytes[$index])
+        }
+    }
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($canonical.ToArray())).ToLowerInvariant()
+}
+
+function Read-EmbeddedBuildProvenance {
+    # PRE-G9B-R6-plus-G (PM-5): the provenance resource inside the staged main JAR.
+    param([Parameter(Mandatory)] [string]$JarPath)
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [IO.Compression.ZipFile]::OpenRead($JarPath)
+    try {
+        $entry = $archive.GetEntry(
+            "org/geocedg/desktop/export/geocedg-build-provenance.properties")
+        Assert-Condition -Condition ($null -ne $entry) `
+            -Message "The main JAR carries no GeoCeDG build provenance."
+        $reader = [IO.StreamReader]::new($entry.Open(), [Text.Encoding]::ASCII)
+        try { $text = $reader.ReadToEnd() } finally { $reader.Dispose() }
+    } finally {
+        $archive.Dispose()
+    }
+    $values = @{}
+    foreach ($line in ($text -split "`n")) {
+        $trimmed = $line.TrimEnd("`r")
+        if ($trimmed.Length -eq 0) { continue }
+        $separator = $trimmed.IndexOf("=")
+        Assert-Condition -Condition ($separator -gt 0) `
+            -Message "The embedded build provenance is malformed."
+        $values[$trimmed.Substring(0, $separator)] = $trimmed.Substring($separator + 1)
+    }
+    return $values
+}
+
 function Write-JsonFile {
     param(
         [Parameter(Mandatory)] [object]$Value,
@@ -353,8 +401,18 @@ try {
     # Packaging consumes the tracked, hash-pinned derivative. Regeneration is a
     # separate provenance operation bound to the exact runtime recorded in the
     # asset manifest; it is not a workstation packaging prerequisite.
-    Assert-Condition -Condition ($profile.schema_version -eq 1) `
+    # PRE-G9B-R6-plus-G (PM-3): exactly package-profile schema 2, fail-closed on 1.
+    Assert-Condition -Condition ($profile.schema_version -eq 2) `
         -Message "Unsupported package profile schema version."
+    $versionDate = [string]$profile.application.version_date
+    $parsedVersionDate = [datetime]::MinValue
+    Assert-Condition -Condition (
+        $versionDate -cmatch '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' -and
+        [datetime]::TryParseExact($versionDate, 'yyyy-MM-dd',
+            [Globalization.CultureInfo]::InvariantCulture,
+            [Globalization.DateTimeStyles]::None, [ref]$parsedVersionDate)) `
+        -Message "The package profile must declare a valid application version_date."
+    $PackageProfileSha256 = Get-CanonicalPackageProfileSha256 -Path $ProfilePath
     Assert-Condition -Condition ($profile.profile_id -eq "geocedg-windows-internal") `
         -Message "Unexpected package profile identity."
 
@@ -618,6 +676,47 @@ try {
         -Message "No non-Windows native JAR was excluded; dependency naming may have changed."
 
     Copy-Item -LiteralPath $NoticePath -Destination $inputRoot
+
+    # PRE-G9B-R6-plus-G (PM-5): the installed distribution record, derived only from the
+    # selected, validated package profile and bound to the provenance embedded in the
+    # profile-neutral main JAR. A consistency record, not an authenticity proof.
+    $embedded = Read-EmbeddedBuildProvenance -JarPath (
+        Join-Path $inputRoot ([string]$profile.application.main_jar))
+    $headRevision = @(Invoke-Native -FilePath "git" -ArgumentList @(
+        "-C", $RepositoryRoot, "rev-parse", "HEAD"
+    ) -Description "source revision" -Capture)[-1].Trim()
+    Assert-Condition -Condition (
+        $embedded["schema.version"] -ceq "3" -and
+        $embedded["application.version"] -ceq [string]$profile.application.version -and
+        $embedded["application.version.date"] -ceq $versionDate -and
+        $embedded["package.profile.sha256"] -ceq $PackageProfileSha256 -and
+        [string]$embedded["repository.commit"] -cmatch '^([0-9a-f]{40}|[0-9a-f]{64})$' -and
+        $embedded["repository.commit"] -ceq $headRevision) `
+        -Message "The main JAR provenance does not match the package profile and source revision."
+    $stagedNoticePath = Join-Path $inputRoot ([IO.Path]::GetFileName($NoticePath))
+    $distributionRecord = [ordered]@{
+        schema_version = 1
+        record_kind = "geocedg-distribution-record"
+        profile_id = [string]$selected.id
+        status = [string]$selected.status
+        redistributable = [bool]$selected.redistributable
+        marker = $ExpectedMarker
+        notice_file = [IO.Path]::GetFileName($NoticePath)
+        notice_sha256 = (Get-FileHash -LiteralPath $stagedNoticePath `
+            -Algorithm SHA256).Hash.ToLowerInvariant()
+        application = [ordered]@{
+            name = [string]$profile.application.name
+            version = [string]$profile.application.version
+            version_date = $versionDate
+        }
+        source_revision = $headRevision
+        package_profile_sha256 = $PackageProfileSha256
+    }
+    $distributionRecordPath = Join-Path $inputRoot "geocedg-distribution.json"
+    Write-JsonFile -Value $distributionRecord -Path $distributionRecordPath -Depth 5
+    $distributionRecordSha256 = (Get-FileHash -LiteralPath $distributionRecordPath `
+        -Algorithm SHA256).Hash.ToLowerInvariant()
+
     $legalRoot = Join-Path $inputRoot "legal"
     [void](New-Item -ItemType Directory -Path $legalRoot -Force)
     foreach ($relative in @("LICENSE", "NOTICE.md", "THIRD_PARTY.md")) {
@@ -683,6 +782,12 @@ try {
     Assert-Condition -Condition (Test-Path -LiteralPath (
         Join-Path $appImage "app\$stagedNoticeName") -PathType Leaf) `
         -Message "The app-image does not contain the $($selected.id) distribution notice."
+    $installedRecord = Join-Path $appImage "app\geocedg-distribution.json"
+    Assert-Condition -Condition (
+        (Test-Path -LiteralPath $installedRecord -PathType Leaf) -and
+        (Get-FileHash -LiteralPath $installedRecord -Algorithm SHA256).Hash.ToLowerInvariant() -ceq
+            $distributionRecordSha256) `
+        -Message "The app-image does not contain the exact distribution record."
 
     $artifactFiles = [Collections.Generic.List[string]]::new()
     if ($Target -in @("Zip", "All")) {
@@ -1072,6 +1177,7 @@ try {
         application = [ordered]@{
             name = [string]$profile.application.name
             version = [string]$profile.application.version
+            version_date = $versionDate
             main_class = [string]$profile.application.main_class
             icon = Get-FileEvidence -Path $packageIconPath `
                 -RelativeTo $RepositoryRoot
@@ -1125,6 +1231,12 @@ try {
             approved_composition_profile = "PROFILE NC"
             licensing_authority = $selectedLicensingAuthority
             readiness = "TECHNICALLY/LICENSING-DOCKET READY — FINAL AUTHOR/LEGAL REVIEW REQUIRED"
+        }
+        distribution_record = [ordered]@{
+            path = "app/geocedg-distribution.json"
+            sha256 = $distributionRecordSha256
+            profile_id = [string]$selected.id
+            package_profile_sha256 = $PackageProfileSha256
         }
         component_identity = [ordered]@{
             evidence = Get-FileEvidence -Path $resolvedEvidencePath `

@@ -87,12 +87,63 @@ resources fail validation and never fall back to upstream branding. This
 internal authorization does not itself clear public redistribution. Inherited
 Classic UI strings/resources remain a separate release-audit limitation.
 
-The central build/package provenance declares semantic version `1.0.0`; product
-surfaces render that exact version as `GeoCeDG 1.0.0`, with no truncated
+The central build/package provenance declares semantic version `1.1.0` (the single
+authority is `packaging/windows/package.yml`; see the Windows packaging contract);
+product surfaces render that exact version as `GeoCeDG 1.1.0`, with no truncated
 major.minor abbreviation. The frame title appends
 the current filename when present. About consumes the same version authority,
 records the GeoGebra baseline and `Manuel Prado-Velasco, Universidad de Sevilla`,
 and retains required upstream credits/licenses.
+
+### About content (PM-6, PM-7, PM-9)
+
+Normative since `PRE-G9B-R6-plus-G` (transcription of the author-approved product
+metadata contract; the
+[design record](../../../docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md)
+stays the historical design authority, and this section prevails over it).
+
+The existing `geocedg.help.about` action and its read-only text dialog are kept; no
+new framework or window type exists. Its texts live in the live application
+profile, the single runtime authority for UI texts, in English and Spanish, and the
+content order is the same in both languages:
+
+1. `GeoCeDG <version>`;
+2. the canonical version date in ISO form, locale-neutral, when the build declares
+   one (`1.1.0`: `2026-10-15`);
+3. the build identity `Build: <first 12 hex digits> (clean)`, `(modified)` or
+   `(state unavailable)`, or `Build: unavailable` without a commit; never next to a
+   date and never a wall-clock build time;
+4. the distribution condition of this copy (Windows packaging contract): the verbatim
+   marker and a localized meaning for a verified `INTERNAL` or `NC` copy, a
+   development-build statement, or a not-verified statement; every one except `NC`
+   says "not for redistribution";
+5. the product description (`Workspace.About`);
+6. the GeoGebra upstream baseline (`GeoGebraConstants.VERSION_STRING`);
+7. the author line;
+8. the licensing summary.
+
+The licensing summary keeps two kinds of statement apart. For the **composite
+product**: GeoCeDG is a composite work and no single licence covers the whole
+product; the distribution notice of this copy, or the statement that a development
+or unverified copy has none. For its **components**: GeoCeDG-authored software,
+EUPL-1.2; GeoCeDG-authored documentation and ordinary artwork, CC BY 4.0 with the
+recorded exceptions, the name and official marks being governed separately by the
+brand policy; inherited GeoGebra source code keeps its EUPL-1.2 grant, and GeoGebra
+Language Files, Materials and the other third-party components keep their own terms.
+The summary ends with the route to the full texts: `app/legal/` and the notice in
+`app/` in a package, or the repository files `LICENSE`, `NOTICE.md`,
+`THIRD_PARTY.md`, `LICENSES/`, `docs/LICENSE.md` and the component matrix otherwise.
+
+The About surface never labels the product as licensed solely under EUPL-1.2 or as
+Open Source or Free Software, never presents a component's permission as the
+licence of the complete binary, never gives the upstream GeoGebra licence URL as the
+complete authority and never reproduces full legal texts. The summary is
+presentation; the files remain the authority, and a focused test keeps each
+summarized fact present in its authority file.
+
+Classic keeps its inherited About, menu and title (`GeoGebraMenuBar`, `HelpMenuD` and
+`MacApplicationListener` are not modified for it): its Help route still reaches the
+inherited dialog and receives no GeoCeDG metadata.
 
 ## Live schema-v2 G9U1 author-approved profile
 

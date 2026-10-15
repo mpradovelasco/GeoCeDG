@@ -1,7 +1,7 @@
 <!-- geocedg-guide-section: about-this-guide -->
 # GeoCeDG user guide
 
-GeoCeDG 1.0.0 · English edition
+GeoCeDG 1.1.0 · English edition
 
 This is the official user guide for GeoCeDG. It describes what the application
 does today, how to work with it, and where its current boundaries are. A
@@ -62,12 +62,15 @@ to recover the intent behind it.
 
 ### 1.3 Version and status
 
-The application identifies itself as **GeoCeDG 1.0.0** in the window title and
+The application identifies itself as **GeoCeDG 1.1.0** in the window title and
 under **Help → About GeoCeDG**. That version number identifies the product
 state described by this guide. It is not, by itself, a public release: packaging
 and distribution are governed separately.
 
-**Help → About GeoCeDG** also shows the build of the running copy (the first
+**Help → About GeoCeDG** also shows the *version date*, `2026-10-15` for
+1.1.0: the date the author designated for this version. It is not a build, commit,
+publication or release date, and the earlier version 1.0.0 has none. About then
+shows the build of the running copy (the first
 twelve hexadecimal digits of its source revision, and whether that source was
 modified) and its *distribution condition*. An installed copy carries a
 distribution record written by the GeoCeDG packaging, which the application
@@ -96,7 +99,7 @@ argument; "experimental" means their public contract may still be refined.
 ### 2.1 Starting GeoCeDG
 
 Start GeoCeDG from its installed shortcut. The window title reads
-`GeoCeDG 1.0.0`, or `GeoCeDG 1.0.0 — <file name>` once a document is open.
+`GeoCeDG 1.1.0`, or `GeoCeDG 1.1.0 — <file name>` once a document is open.
 
 If you are working from a prepared source checkout instead of an installed
 copy, the product profile is launched through the Gradle task
@@ -2189,6 +2192,6 @@ file extensions and code literals are identifiers and are never translated.
 
 ---
 
-*GeoCeDG 1.0.0 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
+*GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
 credits and licenses are retained in `LICENSE`, `NOTICE.md` and
 `THIRD_PARTY.md`.*
