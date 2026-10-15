@@ -14,37 +14,37 @@
       "id": "B-1",
       "item": "`OBS-R6PLUS-NONNATIVE-DOCUMENT-REPLACEMENT-SESSION-RESET`",
       "category": "B",
-      "status": "OPEN — OPEN ROUTES CORRECTED BY G-R1 (SC-01, SC-02, SC-11); SC-03 to SC-05, SC-16, SC-23 and SC-26 without a contract, unchanged",
-      "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition of the uncontracted residue before the global closeout"
+      "status": "OPEN ROUTES CORRECTED BY G-R1 — AUTHOR APPROVED (SC-01, SC-02; the paste notice clears on successful E2/E3/E5 transitions, SC-11, accepted by the author); UNCONTRACTED RESIDUE — OPEN — RETAINED WITH OWNER — NON-BLOCKING: the export area of setBase64, non-native openFile/loadXML(File) and API setXML (SC-03 to SC-05), the cancelled v1 Open URL pre-clear (SC-16), the Move switch on a native Open (SC-23) and the embedded close (SC-26) have no approved contract and are not claimed compliant",
+      "owner": "author (accountable; future bounded document-session lifecycle-contract activity, not authorized; next checkpoint PRE-G9B-R7)",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "a lifecycle contract for the uncontracted routes, by a future separate authorization"
     },
     {
       "id": "B-2",
       "item": "`OBS-R6PLUS-TOOL-REPLACE-DOCUMENT-COMMIT`",
       "category": "B",
-      "status": "OPEN — CHARACTERIZED IN G (SC-07, SC-10, SC-12, SC-17, SC-18); unchanged by G-R1; correction NOT AUTHORIZED; proposed disposition in the G-R1 correction report §6",
-      "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "separate disposition before the global closeout"
+      "status": "DEFERRED — RETAINED WITH OWNER G11 (author decision, G closeout): working-layer recomputation and session-state ownership on tool replacement (SC-17, SC-18); export area, paste notice and drawing scale kept (SC-07, SC-12); ISO A link revalidated by identity (SC-10); unchanged by G-R1; NOT CORRECTED",
+      "owner": "G11",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "contract question for G11: whether a tool replacement keeps the session working layer (no G11 implementation authorized)"
     },
     {
       "id": "B-3",
       "item": "`ENH-R6PLUS-G-ABOUT-PRODUCT-METADATA`",
       "category": "B",
-      "status": "IMPLEMENTED IN THE G-R1 TECHNICAL CANDIDATE (PM-1 to PM-12, 1.1.0 / 2026-10-15; the original candidate T is superseded for final review) — PENDING AUTHOR APPROVAL OF G",
+      "status": "RESOLVED — AUTHOR APPROVED on T' da1a09528a6f97254734400b12256e8fb20a6216 (PM-1 to PM-12; G-R1 acceptance ACCEPTED / COMPLETE; AUTHOR SMOKE PASS); no distribution right, commercial permission or public release implied",
       "owner": "PRE-G9B-R6-plus-G",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "author approval of the exact G-R1 candidate and author smoke"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "P-1",
       "item": "`OBS-R6PLUS-DESKTOP-ADJACENT-OFF-EDT-SITES`",
       "category": "P",
-      "status": "PENDING AUTHOR DISPOSITION",
-      "owner": "proposed: author (bounded corrective or L) (none decided)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition and owner"
+      "status": "ACCEPTED LIMITATION — AUTHOR DISPOSITION (G closeout): inherited Classic and adjacent off-EDT sites as characterized by C-X1 (1 of 100 Classic launches); Classic is a diagnostic surface; no product correction",
+      "owner": "author (accountable; revalidation if Classic becomes a supported user surface)",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none (revalidation trigger)"
     },
     {
       "id": "P-2",
@@ -59,8 +59,8 @@
       "id": "P-3",
       "item": "`ENH-B-MANUAL-EXPORT-AREA-DRAG`",
       "category": "P",
-      "status": "ENHANCEMENT — NOT IMPLEMENTED — IMPLEMENTATION NOT AUTHORIZED",
-      "owner": "G15 (preferred planning owner, author decision of 2026-10-14)",
+      "status": "OPEN — ENHANCEMENT — NOT IMPLEMENTED — OWNER G15 (confirmed by the G closeout, 2026-10-15): an interactive rectangle-selection gesture updating the existing ExportArea(MANUAL) beside the numeric coordinate editor; no second export-area authority; IMPLEMENTATION NOT AUTHORIZED",
+      "owner": "G15 (planning owner, author decision of 2026-10-14)",
       "globalCloseoutGate": "No",
       "authorDecisionRemaining": "implementation scope is the owner phase's own decision"
     },
@@ -68,136 +68,136 @@
       "id": "P-4",
       "item": "`OBS-R6P-SAVE-WARNING`",
       "category": "P",
-      "status": "OPEN — KEPT OPEN BY THE G design closeout §4.2 (confirmSave has no production caller; the G help claims no save warning)",
-      "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "contractual or implementation disposition"
+      "status": "OPEN — SPECIFICATION / IMPLEMENTATION DISCREPANCY (author disposition, G closeout): locus-v2-public-surface.md:609-612 requires a save warning; GeoCeDGExternalCompatibilityWarning.confirmSave has no production caller; the requirement is not waived",
+      "owner": "author (a separately authorized bounded resolution activity is required)",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "authorize the bounded resolution (specification amendment or wiring)"
     },
     {
       "id": "P-5",
       "item": "`OBS-A1-3D-VIEW`",
       "category": "P",
-      "status": "PENDING AUTHOR DISPOSITION",
-      "owner": "proposed: G11 (none decided)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition and owner"
+      "status": "DEFERRED — RETAINED WITH OWNER G11 (per-view visibility; author decision, G closeout); no implementation authorized",
+      "owner": "G11",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none until G11"
     },
     {
       "id": "P-6",
       "item": "`OBS-A1-NON-HIT-SELECTION`",
       "category": "P",
-      "status": "PENDING AUTHOR DISPOSITION",
-      "owner": "proposed: G11 (none decided)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition and owner"
+      "status": "DEFERRED — RETAINED WITH OWNER G11 (locking and filters; author decision, G closeout); no implementation authorized",
+      "owner": "G11",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none until G11"
     },
     {
       "id": "P-7",
       "item": "`OBS-A1-GRAPHICS2-GEOCEDG-MODES`",
       "category": "P",
-      "status": "PENDING AUTHOR DISPOSITION",
-      "owner": "proposed: a future frontend phase (none decided)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition and owner"
+      "status": "ACCEPTED LIMITATION — AUTHOR DISPOSITION (G closeout): Graphics View 2 has no GeoCeDG mode parity, consistent with the accepted F1 exclusion L-29",
+      "owner": "author (accountable; a frontend owner is named only if parity is wanted; next checkpoint PRE-G9B-R7)",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none (name a frontend owner if parity is wanted)"
     },
     {
       "id": "P-8",
       "item": "`OBS-A1-BACKGROUND-IMAGE-LAYER`",
       "category": "P",
-      "status": "PENDING AUTHOR DISPOSITION",
-      "owner": "proposed: G11 (none decided)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition and owner"
+      "status": "DEFERRED — RETAINED WITH OWNER G11 (layer semantics of background images; author decision, G closeout); no implementation authorized",
+      "owner": "G11",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none until G11"
     },
     {
       "id": "P-9",
       "item": "`OBS-F4P-S3-SPEC-HEADER`",
       "category": "P",
-      "status": "CORRECTED BY G (class 1): status line NORMATIVE / AUTHOR APPROVED — CONFIRMED BY THE AUTHOR IN G-R1 (2026-10-15)",
+      "status": "RESOLVED — AUTHOR CONFIRMATION (G-R1, 2026-10-15): the status line NORMATIVE / AUTHOR APPROVED cites PASS — AUTHOR APPROVED on 543c77295fdc56ade60656a8d52829c7d6254cc7 and the S3 closeout report",
       "owner": "PRE-G9B-R6-plus-G (documentary)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "none (confirmed by the G-R1 authorization)"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "P-10",
       "item": "`OBS-F4P-ADR0035-CONSEQUENCE-LINE`",
       "category": "P",
-      "status": "RETAINED AS A REGISTERED DISCREPANCY (class 4, DQ-G-9): the Amendment prevails inside the accepted ADR",
+      "status": "DOCUMENTARY DISCREPANCY — RETAINED (author disposition, G closeout): the Amendment inside the accepted ADR 0035 prevails; the consequence line is not amended",
       "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "separate authorization only if an ADR annotation is wanted"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "an annotation only by separate authorization"
     },
     {
       "id": "P-11",
       "item": "`OBS-R6P-DXF-DEFAULT-DOC`",
       "category": "P",
-      "status": "CORRECTED BY G (class 1): default-off kept as a historical qualifier",
+      "status": "RESOLVED BY APPROVED EVIDENCE — AUTHOR DISPOSITION (G closeout): status wording corrected (default-off kept as the G9X1 historical qualifier); AppConfigGeoCeDGTest:62 asserts the default true; documentary correction, no normative amendment",
       "owner": "PRE-G9B-R6-plus-G (documentary)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm closure"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "P-12",
       "item": "`OBS-R6P-DXF-SPEC-HEADER`",
       "category": "P",
-      "status": "RETAINED (class 4): the file is pinned by the historical G9X1 verifier",
-      "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "separate authorization (pin reconciliation) or retention"
+      "status": "DEFERRED — RETAINED WITH OWNER PRE-G9B-R7 (documentary reconciliation without altering historical pins or scripts; author decision, G closeout): the header is pinned by the historical G9X1 verifier",
+      "owner": "PRE-G9B-R7",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none until PRE-G9B-R7"
     },
     {
       "id": "P-13",
       "item": "`OBS-R6P-DOC-IDENTITY-HEADER`",
       "category": "P",
-      "status": "PARTLY CORRECTED: ADR 0029 status line (class 1) CONFIRMED BY THE AUTHOR IN G-R1 (2026-10-15); native-document-identity and ADR 0016 headers RETAINED (class 4, byte-pinned by the G9U0-R2 verifier)",
-      "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "pin reconciliation authorization or retention of the pinned headers"
+      "status": "PARTLY RESOLVED: the ADR 0029 status line CONFIRMED BY THE AUTHOR (G-R1, 2026-10-15); the native-document-identity and ADR 0016 headers DEFERRED — RETAINED WITH OWNER PRE-G9B-R7 (byte-pinned by the G9U0-R2 verifier; pins and scripts unchanged)",
+      "owner": "PRE-G9B-R7 (pinned headers)",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none until PRE-G9B-R7"
     },
     {
       "id": "P-14",
       "item": "`OBS-R6P-ACTION-COUNT-DOC`",
       "category": "P",
-      "status": "CORRECTED BY G (class 1): the count was already 133; residual status qualifiers reconciled",
+      "status": "RESOLVED BY APPROVED EVIDENCE — AUTHOR DISPOSITION (G closeout): the live catalog of 133 actions is asserted by G9U1ActionRegistryTest:65 and G9U1ProfileCompilerTest:44; residual qualifiers reconciled; documentary correction, no normative amendment",
       "owner": "PRE-G9B-R6-plus-G (documentary)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm closure"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "P-15",
       "item": "`OBS-R6PLUS-E2-UPSTREAM-MANIFEST-SPLINEV2-PURPOSE`",
       "category": "P",
-      "status": "CORRECTED BY G (class 1): the G9S1 SplineV2 sentence appended to the six purposes",
+      "status": "RESOLVED BY APPROVED EVIDENCE — AUTHOR DISPOSITION (G closeout): the G9S1 SplineV2 sentence completes the six manifest purposes; documentary manifest correction",
       "owner": "PRE-G9B-R6-plus-G (documentary)",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm closure"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "P-16",
       "item": "`OBS-R6PLUS-E2-USER-LIBRARY-LOCALE-DEPENDENT-NATIVE-COLLISION`",
       "category": "P",
-      "status": "OPEN — PRE-EXISTING; preserved as independent by the G design closeout §4.1 (recorded O, proposed P)",
-      "owner": "none decided",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "owner or acceptance"
+      "status": "OPEN — RETAINED WITH OWNER (author disposition, G closeout): pre-existing; a language switch can make a valid stored user library unreadable on a future native-command collision; the user-library policy question is unresolved; no product correction",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "a future user-library policy decision"
     },
     {
       "id": "P-17",
       "item": "`OBS-R6PLUS-E2-TEMPLATE-V7-PERIMETER-MACRO-SHADOWS-NATIVE`",
       "category": "P",
-      "status": "RECORDED (record only, pre-existing; recorded O, proposed P, expected L)",
+      "status": "ACCEPTED LIMITATION — AUTHOR DISPOSITION (G closeout): the Perimeter macro of Templatev7.ggb shadows the native command (document macros take precedence); pre-existing",
       "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "P-18",
       "item": "Undisposed C and E3 specification amendments inside approved specifications",
       "category": "P",
-      "status": "RETAINED (class 3: normative amendments need separate author approval)",
+      "status": "NORMATIVE DISPOSITION DEFERRED — AUTHOR OWNER (G closeout): the C and E3 amendment clauses are retained and not promoted",
       "owner": "author",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "promote or withdraw each amendment"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "per clause: promotion, withdrawal or supersession"
     },
     {
       "id": "D-1",
@@ -276,9 +276,9 @@
       "item": "POST-E2-P1 Option B (configurable physical defaults)",
       "category": "D",
       "status": "RETAINED AS A PREFERRED FUTURE ENHANCEMENT — NOT AUTHORIZED",
-      "owner": "proposed: a future native-dimensions preferences enhancement (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: a future native-dimensions preferences enhancement",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "D-10",
@@ -293,7 +293,7 @@
       "id": "O-1",
       "item": "`OBS-R6PLUS-F2R1-FULL-SUITE-MODAL-ERROR-DIALOGS`",
       "category": "O",
-      "status": "OPEN — CAUSAL ATTRIBUTION NOT ESTABLISHED — monitored on the G candidate (result in the handoff)",
+      "status": "OPEN — CAUSAL ATTRIBUTION NOT ESTABLISHED — monitored on the G candidate (result in the handoff); not recurred in the INTEGRATION runs of T and T' (2026-10-15)",
       "owner": "G monitoring in its INTEGRATION run; PRE-G9B-R7 follow-up (planning owner)",
       "globalCloseoutGate": "No",
       "authorDecisionRemaining": "characterization authorization if it recurs"
@@ -302,7 +302,7 @@
       "id": "O-2",
       "item": "`OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT`",
       "category": "O",
-      "status": "OPEN — CAUSAL ATTRIBUTION NOT ESTABLISHED — monitored on the G candidate (result in the handoff)",
+      "status": "OPEN — CAUSAL ATTRIBUTION NOT ESTABLISHED — monitored on the G candidate (result in the handoff); not recurred in the INTEGRATION runs of T and T' (2026-10-15)",
       "owner": "G monitoring in its INTEGRATION run; PRE-G9B-R7 follow-up (planning owner)",
       "globalCloseoutGate": "No",
       "authorDecisionRemaining": "characterization authorization if it recurs"
@@ -312,79 +312,79 @@
       "item": "`OBS-POST-E3-SCRIPT-LANGUAGE-COMMAND-LOOKUP`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: author (inherited) (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: author (inherited)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-4",
       "item": "`OBS-R6PLUS-PSTRICKS-HOST-ROTATION-PRECISION`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: G15 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: G15",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-5",
       "item": "`OBS-D1-ROLLBACK-CONSPROT-GUI`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: author (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: author",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-6",
       "item": "`OBS-F3-PROTECTED-LABELS`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: G register retention (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: G register retention",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-7",
       "item": "`OBS-F3-TEXT-THICKNESS`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: future serialization owner (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: future serialization owner",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-8",
       "item": "`OBS-F3R2-PARTIAL-RESTYLE`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: future F3 hardening (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: future F3 hardening",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-9",
       "item": "`OBS-F3R2-INHERITED-STALE-SELECTION`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: characterization activity (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: characterization activity",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-10",
       "item": "`OBS-F4P-FREEHEP-XREF-SIZE`",
       "category": "O",
       "status": "OPEN — INDEPENDENT; preserved by the G design closeout §4.2",
-      "owner": "proposed: G15 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: G15",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-11",
       "item": "AutoCAD releases other than 2026",
       "category": "O",
       "status": "NOT RECHECKED — COVERAGE GAP; the G guides state \"AutoCAD 2026 only\"",
-      "owner": "author (optional) (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); author (optional)",
       "globalCloseoutGate": "No",
       "authorDecisionRemaining": "optional author-controlled validation"
     },
@@ -393,144 +393,144 @@
       "item": "`OBS-R6PLUS-E2-ALIGNDRAWTEXT-HASCHANGED`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "none decided",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-13",
       "item": "`OBS-R6P0-ROTATE-TEXT-POINT`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "none decided",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-14",
       "item": "`OBS-R6P0-CONSTRUCTION-XML-SWALLOW`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-15",
       "item": "`OBS-R6P0-STALE-REFERENCE-FLAG`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "none decided",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-16",
       "item": "`OBS-E1P-SMOKE-READER-LOG`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "none decided",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-17",
       "item": "`OBS-E1P-USERSTORE-LOCK`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "none decided",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-18",
       "item": "`OBS-E1P-SOURCE-REVISION`",
       "category": "O",
       "status": "OPEN — build-manifest source_revision still has no dirty-tree flag; the G About shows the build state from the provenance",
-      "owner": "none decided",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-19",
       "item": "`OBS-D1-INSTALLED-PREFERENCES-IN-TESTS`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-20",
       "item": "`OBS-D1-INHERITED-HEADLESS-LOGGER`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-21",
       "item": "`OBS-D1-ANIMATING-DOCUMENT-RETENTION`",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-22",
       "item": "`exportPDF` callback UTF-8 read (carried)",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: G15 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: G15",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-23",
       "item": "`AutoColor` JVM-global state (carried)",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-24",
       "item": "Historical G9X1 authority scan (carried)",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-25",
       "item": "Host `UnicodeTeX` mapping of other characters",
       "category": "O",
       "status": "OPEN — NON-BLOCKING",
-      "owner": "proposed: G15 (none decided)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: G15",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-26",
       "item": "Standing verifier diagnostics (governance `FINDING`, historical-consistency `UNAVAILABLE`)",
       "category": "O",
-      "status": "OPEN — standing; expected again in the G STATIC and INTEGRATION runs",
-      "owner": "proposed: PRE-G9B-R7 (none decided)",
+      "status": "OPEN — standing; expected again in the G STATIC and INTEGRATION runs; present again in the G-R1 STATIC and INTEGRATION runs",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "O-27",
       "item": "Off-EDT construction race (`PreG9BR6CapabilityMatrixTest.exportImageRows` NPE)",
       "category": "O",
-      "status": "OPEN — candidate report only; monitored on the G candidate (result in the handoff)",
-      "owner": "proposed: PRE-G9B-R7 after G monitoring (none decided)",
+      "status": "OPEN — candidate report only; monitored on the G candidate (result in the handoff); not recurred in the INTEGRATION runs of T and T' (2026-10-15)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); proposed: PRE-G9B-R7 after G monitoring",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "owner by PRE-G9B-R7 at the latest"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "L-1",
@@ -591,9 +591,9 @@
       "item": "`OBS-R6PLUS-E3-R1-ASYMPTOTE-LABEL-COMPILATION-UNVERIFIED`",
       "category": "L",
       "status": "ACCEPTED LIMITATION (as recorded)",
-      "owner": "tracking owner pending (proposed G15)",
+      "owner": "author (accountable; next checkpoint PRE-G9B-R7); tracking owner pending (proposed G15)",
       "globalCloseoutGate": "No",
-      "authorDecisionRemaining": "tracking owner"
+      "authorDecisionRemaining": "future-owner decision at the PRE-G9B-R7 checkpoint (no implementation authorized)"
     },
     {
       "id": "L-8",
@@ -680,10 +680,10 @@
       "id": "L-17",
       "item": "`OBS-D1-DEFAULTS-SAVE-RELEVANT`",
       "category": "L",
-      "status": "RECORDED (\"kept as recorded\"; recorded O) — PROPOSED L — AUTHOR CONFIRMATION REQUIRED",
-      "owner": "—",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm or reject the re-categorization"
+      "status": "ACCEPTED LIMITATION — AUTHOR DISPOSITION (G closeout; recategorized from O): a new document whose defaults set a physical unit is save-relevant (DQ-D1-5)",
+      "owner": "author",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "L-18",
@@ -761,19 +761,19 @@
       "id": "L-26",
       "item": "`OBS-R6PLUS-E3-UNIT-FACTOR-ORDER`",
       "category": "L",
-      "status": "RECORDED (DQ-E3-5; recorded R) — PROPOSED L — AUTHOR CONFIRMATION REQUIRED",
-      "owner": "—",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm or reject the re-categorization"
+      "status": "ACCEPTED LIMITATION — AUTHOR DISPOSITION (G closeout; recategorized from R): the documented binary64 divergence of the E3 canonical unit-factor order (DQ-E3-5)",
+      "owner": "author",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "L-27",
       "item": "`OBS-A1-RECOMPUTE-OUTPUTS`",
       "category": "L",
-      "status": "RECORDED (owner \"none required\"; recorded R) — PROPOSED L — AUTHOR CONFIRMATION REQUIRED",
-      "owner": "—",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "confirm or reject the re-categorization"
+      "status": "ACCEPTED LIMITATION — AUTHOR DISPOSITION (G closeout; recategorized from R): the A-1 output recomputation, no correction recorded",
+      "owner": "author",
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "L-28",
@@ -851,10 +851,10 @@
       "id": "R-5",
       "item": "Desktop test-heap pressure = `OBS-R6PLUS-E2-DESKTOP-TEST-HOST-RETENTION`",
       "category": "R",
-      "status": "ADDRESSED BY THE APPROVED E2 IMPLEMENTATION — NO CLOSEOUT DISPOSITION — AUTHOR DISPOSITION REQUIRED (G design closeout §4.3); monitored on the G candidate",
+      "status": "RESOLVED BY APPROVED EVIDENCE — AUTHOR DISPOSITION (G closeout): addressed by the approved E2 implementation; final.desktop ran 2144 (T) and 2153 (T') tests without failures or out-of-memory; new host-creating tests use the lifecycle owner",
       "owner": "—",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "R-6",
@@ -977,10 +977,10 @@
       "id": "R-19",
       "item": "`OBS-R6PLUS-A1-EXPORT-PREVIEW-HIDDEN-LAYERS`",
       "category": "R",
-      "status": "CLOSED IN THE APPROVED A-2 CANDIDATE REPORT ONLY — AUTHOR DISPOSITION REQUIRED (G design closeout §4.3)",
+      "status": "RESOLVED BY APPROVED EVIDENCE — AUTHOR DISPOSITION (G closeout): closed under persistent reopen in the approved A-2 candidate",
       "owner": "—",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "R-20",
@@ -1103,10 +1103,10 @@
       "id": "R-33",
       "item": "`OBS-R6PLUS-E2-DEPENDENT-DRAG-MOVES-MEASURED-POINTS`; `OBS-R6PLUS-E2-LATEX-TEXT-PACKAGE`; LaTeX side of `OBS-R6PLUS-E2-LATEX-DXF-DIMENSION-FIDELITY`",
       "category": "R",
-      "status": "APPROVED WITH E2 — CLOSEOUT SILENT — AUTHOR DISPOSITION REQUIRED (G design closeout §4.3, minor E2 items)",
+      "status": "RESOLVED BY APPROVED EVIDENCE — AUTHOR DISPOSITION (G closeout): approved with E2 (Desktop drag interception; plain-text LaTeX; LaTeX dimension outputs); the DXF side stays L-10",
       "owner": "—",
-      "globalCloseoutGate": "Yes",
-      "authorDecisionRemaining": "disposition"
+      "globalCloseoutGate": "Yes — satisfied (G closeout)",
+      "authorDecisionRemaining": "none"
     },
     {
       "id": "R-34",
@@ -1217,5 +1217,12 @@
       "authorDecisionRemaining": "none"
     }
   ],
-  "selfApproved": false
+  "selfApproved": false,
+  "gCloseout": {
+    "date": "2026-10-15",
+    "record": "docs/validation/pre_g9b_r6_plus_g_closeout_record.md",
+    "gateRowsAwaitingDecision": 0,
+    "everyRetainedOpenOrDeferredRowHasOwner": true,
+    "nextReconciliationCheckpoint": "PRE-G9B-R7"
+  }
 }
