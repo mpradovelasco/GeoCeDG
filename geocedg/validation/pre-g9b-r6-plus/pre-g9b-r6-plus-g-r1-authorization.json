@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R6-plus",
+  "phase": "PRE-G9B-R6-plus-G",
+  "activity": "PRE-G9B-R6-plus-G-R1 corrective integration, debt reconciliation and technical reverification",
+  "recordKind": "AUTHOR_AUTHORIZATION",
+  "record": "docs/validation/pre_g9b_r6_plus_g_r1_authorization_record.md",
+  "authorizationDate": "2026-10-15",
+  "approvedPublishedBase": {"commit": "ceb5a7e9ef8bafcfabb10aeba5162451d88f79c3", "tree": "fa748fd1b87ae16c9f0c248f8f77b94069cc2ea3"},
+  "liveRemoteMain": "ceb5a7e9ef8bafcfabb10aeba5162451d88f79c3",
+  "originalCandidateT": {"commit": "dd3937cfba7092877f48e7f927dd6213959292cf", "tree": "b45311d2b78d9c3625e379835b8d76031df9530a", "branch": "phase/pre-g9b-r6-plus-g-implementation", "status": "VERIFIED — SUPERSEDED FOR FINAL REVIEW"},
+  "lineage": [
+    {"commit": "6e09eee99a9365ef1d770aa6e48ebab2e5938994", "tree": "f4a7550b72ef5e4a1ee3dfb593c61f070308c596"},
+    {"commit": "ebd6accb1a417ca98339d7d2f9342c6140d630ae", "tree": "65572e1d2c2c398efe282af56fa4cd96b546eb21"},
+    {"commit": "5962569e308652686df2097dceb0ad0575ba39d8", "tree": "4ed9ae7b46ade326bcb5dfbcc300d9d301fb88f6"},
+    {"commit": "f52cf5b31fc36b3dac007c7204b2df53ea80fcc6", "tree": "9014c7fe512a80b800292c903d3a899ab5bb57ac", "role": "last pre-transition commit; successor base"},
+    {"commit": "dd3937cfba7092877f48e7f927dd6213959292cf", "tree": "b45311d2b78d9c3625e379835b8d76031df9530a", "role": "original version transition and candidate T"}
+  ],
+  "successorBranch": "phase/pre-g9b-r6-plus-g-r1",
+  "entryGate": "PASS",
+  "d1": {
+    "disposition": "ACCEPTED RECOVERY — AUTHOR DISPOSITION",
+    "cause": "campaign script build step returned its log line with the exit code; both -VerifyPackagingArtifacts invocations were skipped",
+    "originalInternal": {"manifestSha256": "b3c3a52b33418681d90afd29f9fca6c0a15eec35a41fb5ee9e8d1be33d3dae66", "recordSha256": "60c1b660d06603df987119439c907f0e865dfec61153c51fef1ae3c5d7a59b49", "zipSha256": "999413582730749b1c01051881fb2fc23c5f280ceffe606ab1d0d0f38a78dbca", "msiSha256": "f3277653e00734970e0866f73cbc193b47b5843b13f4dc20c8af11dfa04091b6", "exeSha256": "a7dc9a38e58215b7e89d1eb416bc8c5a0ea5a570b173abaab936620ad81815bf", "runtimeModulesSha256": "dd22478cfd9c0b64b9be6abb09d331b5e5ccdc99b9a2207f87fb5d78bbd1d956", "artifactVerification": "NONE (skipped)"},
+    "nc": {"manifestSha256": "d424f6ef6c92d6738361bd5dcc3d0bccafc77a54a91fb3cd39eaf1a9de7a3b00", "recordSha256": "8419368bd132560a1f0ed3060529cfb447dd00ac9c693b3e5c6541867256004a", "zipSha256": "d5cd38ed3bcba164619dfe1c4167c5a2d58986cb17b874d234c798d3bd793d2c", "msiSha256": "817ac390833f572660afcbb3aba62fc655ca59e2be205529f0e0ff68cdd4ee52", "exeSha256": "cd6f2699311c5fd68ab9425e9b47322df82abd162f5f96d211ee3a77e766f0b1", "runtimeModulesSha256": "25fd18d578b2f894e7a74f9125eb59a68288f071564b063f40abc3b7aae87bb6", "artifactVerification": {"runId": "verification-31d0335626c245d785d2a4cc59368eaa", "resultHash": "48331e7e8db816e117cf916020ee8ee14bae2d6454f79d1069d5bcca072cb1e9", "verdict": "ACCEPTED", "coverage": "COMPLETE"}},
+    "recoveryInternal": {"manifestSha256": "b65c2c757dc32fd7ec5820e0362f491939ba497fc0666931692dd7f5f25baec9", "recordSha256": "60c1b660d06603df987119439c907f0e865dfec61153c51fef1ae3c5d7a59b49", "zipSha256": "17c78517bc2a8c6ad339a8b91d41f5df78e504cb772a607cd647782684871016", "msiSha256": "36781c1ee10769768d4f8b2dbe9f77c4b348980371761f2f715574e2e5d73eb0", "exeSha256": "76805e8f5f7194d5ddb7e1fd83c12716f4a02b429fb201d2f0ea6455ebfedc30", "runtimeModulesSha256": "25fd18d578b2f894e7a74f9125eb59a68288f071564b063f40abc3b7aae87bb6", "artifactVerification": {"runId": "verification-8ffb3adc4fd041cbbf7f69f6c776b9b5", "resultHash": "d0cd4cff778cff9fa53597b934e8fd04f8add8eadcb8dd29e372e54cc1a36bce", "verdict": "ACCEPTED", "coverage": "COMPLETE"}},
+    "desktopJarSha256": "f01b606793710118bf390ada0e405b0b2eab050b98d7964f28626bb8b2f57b67",
+    "jlinkVariation": "covered by geocedg/specs/packaging/windows-packaging.md (per-build hashes; no byte-identical ZIP, MSI or EXE promise)",
+    "authentication": "result hashes recompute and equal their journals; 54 preserved evidence files match SHA256SUMS.evidence.txt",
+    "originalInternalClaimedVerified": false,
+    "inheritedBySuccessor": false
+  },
+  "authorizedOperations": [
+    "D-1 acceptance and documentary recording",
+    "bounded Open-route correction of SC-01, SC-02 and SC-11 with focused regression tests",
+    "tool-replacement interaction characterization and proposed disposition (no correction)",
+    "successor candidate T' with the rebuilt last-productive version transition and the full INTEGRATED_PHASE campaign",
+    "consolidated author decision sheet for the pending global-closeout items",
+    "S3 and ADR 0029 status metadata only"
+  ],
+  "notAuthorized": ["tool-replacement correction", "Insert File, Apply Styles, merging, evalXML or partial-update semantic changes", "API transports with undecided session-reset semantics", "reset in commitLoadedDocument or the generic clearing setXML", "inherited-source, kernel, serialization or global verification-infrastructure changes", "modification of T or its evidence", "G author approval", "global PRE-G9B-R6-plus closeout", "PRE-G9B-R7", "G9B", "publication or public release", "push, merge, tag or publication"],
+  "verificationClass": {"class": "INTEGRATED_PHASE", "closeoutMode": "AUTHOR_OPERATED", "finalRequired": false},
+  "versionTarget": {"version": "1.1.0", "versionDate": "2026-10-15", "packageProfileSchema": 2, "buildProvenanceSchema": 3},
+  "selfApproved": false,
+  "productChange": "NONE (this record precedes the correction)"
+}
