@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R",
+  "phase": "PRE-G9B-R7",
+  "recordKind": "FROZEN_CANDIDATE_EVIDENCE",
+  "record": "docs/validation/pre_g9b_r7_candidate_report.md",
+  "technicalCandidateState": "FROZEN AT COMMIT",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "candidateIdentity": "the commit that adds this file; reported with the author handoff and the untracked evidence manifest",
+  "parent": {"commit": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513", "tree": "3aef929b0b5939854d9ccd736a919b496172a30e"},
+  "branch": "phase/pre-g9b-r7-readiness-closeout",
+  "productDeltaFromApprovedTechnicalCandidate": {"approvedCandidate": "da1a09528a6f97254734400b12256e8fb20a6216", "delta": "NONE (documentation and mirrors only)"},
+  "changeRoute": "ORDINARY",
+  "verificationClass": "GLOBAL_IMPACT",
+  "primaryAcceptanceProfile": "FINAL",
+  "closeoutMode": "AUTHOR_OPERATED",
+  "frozenPlans": [
+    {"profile": "STATIC", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "nodes": 10, "acceptanceLeaves": 3, "run": true},
+    {"profile": "FINAL", "planHash": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517", "nodes": 68, "acceptanceLeaves": 41, "run": true},
+    {"profile": "PHASE -Phase PRE-G9B-R5-A", "planHash": "31a5d90f3f251a4abcc1f74fd03c637d9860970ef0494edca7030708da3f0b04", "nodes": 7, "reason": "infra.guide-structure-diagnostic is not a FINAL node", "run": true},
+    {"profile": "PHASE -Phase PRE-G9B-R6", "planHash": "2583976cdd2a47df080a3f8f6834a33c6fd07d0ff4e29dacfa34b0f9143e21ae", "nodes": 10, "reason": "ggbscript-matrix.product and static.ggbscript-matrix-inputs.semantic are not FINAL nodes", "run": true},
+    {"profile": "INTEGRATION", "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "nodes": 46, "acceptanceLeaves": 19, "run": false, "reason": "covered by FINAL"},
+    {"profile": "INFRA_UNIT", "planHash": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d", "nodes": 22, "acceptanceLeaves": 22, "run": false, "reason": "covered by FINAL"}
+  ],
+  "commands": [
+    "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\\agent\\pre-g9b-r7-static-<commit8>",
+    "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R5-A -LogDirectory artifacts\\agent\\pre-g9b-r7-phase-r5a-<commit8>",
+    "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-R6 -LogDirectory artifacts\\agent\\pre-g9b-r7-phase-r6-<commit8>",
+    "pwsh -NoProfile -File tools/agent/verify.ps1 -Profile FINAL -LogDirectory artifacts\\agent\\pre-g9b-r7-final-<commit8>"
+  ],
+  "receiptHandling": "authenticate with Read-VerificationJson and Get-VerificationResultHash; inspect with tools/agent/phase-closeout.ps1 -Action INSPECT; report absence truthfully",
+  "historicalVerdictsPreserved": [
+    {"phase": "PRE-G9B-R1", "runId": "verification-8763e250d1be413f83e54429b5923ca3", "acceptance": "REJECTED_SEMANTIC", "receipt": null},
+    {"phase": "PRE-G9B-R3-X1", "runId": "verification-ecdb8e4845064b46af2ec1df49963418", "acceptance": "REJECTED_VERIFICATION_CORE", "coverage": "UNTRUSTED", "receipt": null}
+  ],
+  "impact": {
+    "productPhaseEffect": "NONE",
+    "serialization": "NONE",
+    "verificationInfrastructure": "NONE",
+    "bootstrap": "NO CHANGE REQUIRED",
+    "guide": "NONE"
+  },
+  "authorSmoke": "REQUIRED — NOT EXECUTED",
+  "selfApproved": false,
+  "authorApproved": false,
+  "passClaimed": false
+}

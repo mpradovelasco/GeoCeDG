@@ -1,6 +1,6 @@
 # PRE-G9B-R6-plus — final refinement mini-track plan
 
-- Status: **PASS — AUTHOR APPROVED** (global closeout of the mini-track, 2026-10-15, [G closeout record](../validation/pre_g9b_r6_plus_g_closeout_record.md); not yet published); earlier: **AUTHOR APPROVED PLANNING DESIGN — NO SUBPHASE AUTHORIZED** (track level: no blanket authorization of the subphases; each subphase is authorized separately, see the §3 `State` column; clarified by G under `DQ-G-8`, 2026-10-14)
+- Status: **PASS — AUTHOR APPROVED — PUBLISHED** (global closeout of the mini-track, 2026-10-15, [G closeout record](../validation/pre_g9b_r6_plus_g_closeout_record.md); published on 2026-10-15 as `main` `b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513` by an exact-SHA non-force fast-forward from `ceb5a7e9`, registered by `PRE-G9B-R7`; the closeout record keeps its pre-publication text); earlier: **AUTHOR APPROVED PLANNING DESIGN — NO SUBPHASE AUTHORIZED** (track level: no blanket authorization of the subphases; each subphase is authorized separately, see the §3 `State` column; clarified by G under `DQ-G-8`, 2026-10-14)
 - Recorded: 2026-10-01
 - Track state: `PRE-G9B-R6-plus` = `PASS — AUTHOR APPROVED` (2026-10-15, [G closeout record](../validation/pre_g9b_r6_plus_g_closeout_record.md)); earlier: `PLANNING PASS — AUTHOR APPROVED / PRODUCT IMPLEMENTATION NOT AUTHORIZED`
 - Author disposition: `PRE-G9B-R6-plus PLANNING = PASS — AUTHOR APPROVED` (2026-10-01) on `T_R6PLUS_PLAN` `147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f` as reconciled by `D_R6PLUS_PLAN` `af2aa1133620e49d68ac469ee8d10d273498cd95` ([closeout record](../validation/pre_g9b_r6_plus_planning_closeout_record.md))
@@ -1242,9 +1242,9 @@ rows below. It does not change §4.
 
 ```text
 PRE-G9B-R6                 = PASS — AUTHOR APPROVED — PUBLISHED
-PRE-G9B-R6-plus            = PASS — AUTHOR APPROVED (global closeout, 2026-10-15,
-                             pre_g9b_r6_plus_g_closeout_record.md; every subphase closed;
-                             not yet published)
+PRE-G9B-R6-plus            = PASS — AUTHOR APPROVED — PUBLISHED (global closeout,
+                             2026-10-15, pre_g9b_r6_plus_g_closeout_record.md; every
+                             subphase closed; published 2026-10-15 as main b9bdb1e1)
                              earlier: PLANNING PASS — AUTHOR APPROVED
                              PRODUCT IMPLEMENTATION NOT AUTHORIZED
                              (track level only: no blanket authorization; each subphase
@@ -1777,10 +1777,10 @@ OBS-F3R2-INHERITED-STALE-SELECTION = OPEN — RETAINED — NOT CHARACTERIZED BEY
                              T0 — NOT CORRECTED GLOBALLY — NON-BLOCKING (inherited;
                              Apply Styles corrected in F3-R2)
 
-PRE-G9B-R6-plus-G          = PASS — AUTHOR APPROVED (2026-10-15; G-R1 technical
-                             candidate T' da1a0952, tree 6e02685b; AUTHOR SMOKE = PASS;
-                             VERSION 1.1.0 / VERSION_DATE 2026-10-15 adopted; G closeout
-                             record; not yet published)
+PRE-G9B-R6-plus-G          = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-15; G-R1
+                             technical candidate T' da1a0952, tree 6e02685b; AUTHOR SMOKE =
+                             PASS; VERSION 1.1.0 / VERSION_DATE 2026-10-15 adopted; G
+                             closeout record; published 2026-10-15 as main b9bdb1e1)
                              earlier: IMPLEMENTATION AUTHORIZED — G-R1 TECHNICAL CANDIDATE
                              PENDING AUTHOR REVIEW (authorized 2026-10-14 on the
                              published base ceb5a7e9; G-R1 corrective integration
@@ -1811,8 +1811,12 @@ PRE-G9B-R6-plus-G          = PASS — AUTHOR APPROVED (2026-10-15; G-R1 technica
                              APPROVED — DESIGN; PROMPT = DESIGN AUTHOR APPROVED —
                              IMPLEMENTATION NOT AUTHORIZED
 
-PRE-G9B-R7                 = DESIGNED — NOT AUTHORIZED
-                             prerequisite PRE-G9B-R6-plus = PASS — AUTHOR APPROVED recorded
+PRE-G9B-R7                 = EXECUTION AUTHORIZED — TECHNICAL CANDIDATE PENDING AUTHOR
+                             REVIEW (author instruction of 2026-10-15 on the published
+                             base b9bdb1e1; GLOBAL_IMPACT, acceptance FINAL;
+                             pre_g9b_r7_phase_entry_record.md)
+                             earlier: DESIGNED — NOT AUTHORIZED; prerequisite
+                             PRE-G9B-R6-plus = PASS — AUTHOR APPROVED recorded
                              2026-10-15 (publication pending; entry statement: G closeout
                              record §9); earlier: BLOCKED UNTIL PRE-G9B-R6-plus GLOBAL CLOSEOUT
 

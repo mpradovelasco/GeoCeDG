@@ -1,8 +1,12 @@
 # GeoCeDG Windows packaging contract
 
-- Status: Stable G4 infrastructure refined by the G9U0-R2 implementation candidate
+- Status: Stable G4 infrastructure, as amended by the approved G9U0-R2,
+  PRE-G9B-P1, PRE-G9B-R6-plus-E1-P and PRE-G9B-R6-plus-G implementations
 - Platform: Windows x64 only
-- Distribution status: Internal evaluation; public redistribution blocked
+- Distribution status: the repository default profile is `INTERNAL` (internal
+  evaluation, not for redistribution); `NC` is the approved non-commercial
+  packaging profile; `COMMERCIAL` is not authorized. Building a package of any
+  profile is not a public release (section "Release gate").
 - Decisions: `docs/adr/0004-standalone-windows-packaging.md` and
   `docs/adr/0016-native-geocedg-document-identity.md`
 
@@ -51,7 +55,7 @@ as-is: packaging never regenerates, rewrites or filters its content.
    told to reuse a previously validated layout;
 3. copy runtime JARs to an isolated staging directory while rejecting all
    non-Windows native variants;
-4. add internal-evaluation and legal-status records, the installed distribution
+4. add the selected profile's distribution notice and the legal-status records, the installed distribution
    record `geocedg-distribution.json` (section "Product metadata and the
    installed distribution record") and, after the `legal/`
    copy, the curated GGT library at `ggt-library/` (app-image path
@@ -124,7 +128,7 @@ by packaging.
 `tools/agent/verify-packaging.ps1` validates durable contracts by default.
 `-CheckToolchain` additionally requires Java 25 `jpackage`, a compatible .NET
 SDK, and WiX 5.0.2. `-RequireArtifacts` validates a generated full package set,
-its internal marker, exclusions, SBOM, build manifest, hashes, and the
+its profile marker and notice, exclusions, SBOM, build manifest, hashes, and the
 decompiled MSI association. Static verification also proves that the package
 profile, schema and Java properties agree and that association arguments occur
 only in the installer path.
@@ -307,8 +311,11 @@ artifact remains:
 
 `INTERNAL EVALUATION — NOT FOR REDISTRIBUTION`
 
-`PRE-G9B-D1` approved PROFILE NC for the exact audited composition, so an `NC`
-build is technically and contractually producible. Producing an NC candidate is
-still not publication: a GitHub release, a tag, binary distribution or any
-third-party contact remains a separate explicit author decision. PROFILE
-COMMERCIAL remains `PENDING EXTERNAL TERMS / NOT AUTHORIZED`.
+`PRE-G9B-D1` approved PROFILE NC for the exact audited composition and
+`PRE-G9B-P1` added it as the explicit `NC` packaging profile, so an `NC` build is
+technically and contractually producible. The profile's `redistributable` flag is
+the licence condition that a copy of that profile carries; it is not an
+authorization to publish. Building any package, `INTERNAL` or `NC`, is not
+publication: a GitHub release, a tag, binary distribution or any third-party
+contact remains a separate explicit author decision. PROFILE COMMERCIAL remains
+`PENDING EXTERNAL TERMS / NOT AUTHORIZED`.

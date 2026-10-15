@@ -20,9 +20,10 @@ adopted GeoCeDG brand policy. No support, warranty, maintenance SLA, or fitness
 commitment is implied; any support offered later must be stated separately.
 
 The exact payload docket is closed for PROFILE NC. Professional review is
-complete and PRE-G9B-D1 deployability is author-approved. The current `1.0.0`
-package remains an internal-evaluation artifact; public package-state
-materialization is a later, separately authorized step.
+complete and PRE-G9B-D1 deployability is author-approved. PRE-G9B-P1
+materialized PROFILE NC as the explicit `NC` packaging profile; the repository
+default package remains `INTERNAL` (internal evaluation). Building either package
+is not publication; a public release is a later, separately authorized step.
 
 ## Short-term commercial policy — COMMERCIAL-A
 

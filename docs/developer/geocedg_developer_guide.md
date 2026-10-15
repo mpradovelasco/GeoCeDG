@@ -114,8 +114,10 @@ See `README.md` and `packaging/windows/README.md` for setup and packaging
 prerequisites.
 
 Packaging uses `tools/release/build-windows-package.ps1`. App-image/ZIP/MSI/EXE
-success is technical evidence only; public redistribution remains blocked
-pending license and asset approval.
+success is technical evidence only. The repository default profile `INTERNAL`
+is not for redistribution, `-DistributionProfile NC` builds the approved
+PROFILE NC package, and `COMMERCIAL` is not authorized; building a package is
+not a public release, which requires a separate author decision.
 
 ## Verification
 

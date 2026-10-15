@@ -2,9 +2,10 @@
 
 Status: **APPROVED** on 2026-09-16 as the PRE-G9B-D1 deployability profile.
 This is a compact navigation summary, not a second licensing authority and not
-a release artifact. The repository default `1.0.0` package profile remains
-marked `internal-evaluation`; publishing any package remains a separately
-authorized release step.
+a release artifact. The repository default package profile remains `INTERNAL`
+(`internal-evaluation`); `NC` is the approved non-commercial packaging profile
+since PRE-G9B-P1. Building a package of either profile is not publication;
+publishing any package remains a separately authorized release step.
 
 ## Approved scope
 
@@ -55,7 +56,8 @@ does not duplicate or supersede that evidence.
 D1 approves the audited composition as deployable for PROFILE NC. The
 [Windows package profile](../../packaging/windows/package.yml) keeps
 `INTERNAL` as its default, so an ordinary build is still an
-internal-evaluation `1.0.0` package. PRE-G9B-P1 later added the explicit `NC`
+internal-evaluation package of the current product version
+(`application.version`). PRE-G9B-P1 later added the explicit `NC`
 profile, so the
 [Windows builder](../../tools/release/build-windows-package.ps1) can now
 produce that package on request; `COMMERCIAL` fails closed before any build

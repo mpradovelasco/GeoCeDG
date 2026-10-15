@@ -392,13 +392,16 @@ only after the same source revision has already been built.
 Generated, regenerable outputs are:
 
 - `app-image/GeoCeDG/GeoCeDG.exe`: unpacked self-contained executable;
-- `GeoCeDG-0.4.0-windows-x64-internal.zip`: portable app-image archive;
-- `packages/GeoCeDG-0.4.0-windows-x64-internal.msi`: MSI installer;
-- `packages/GeoCeDG-0.4.0-windows-x64-internal.exe`: EXE installer;
+- `GeoCeDG-<version>-windows-x64-<tag>.zip`: portable app-image archive;
+- `packages/GeoCeDG-<version>-windows-x64-<tag>.msi`: MSI installer;
+- `packages/GeoCeDG-<version>-windows-x64-<tag>.exe`: EXE installer;
 - `geocedg-windows.cdx.json`: CycloneDX 1.5 runtime SBOM;
 - `build-manifest.json`: source, toolchain, composition, and exclusion record;
 - `app-image.SHA256SUMS.txt` and `SHA256SUMS.txt`: exact build hashes.
 
+`<version>` is `application.version` of `packaging/windows/package.yml`
+(currently `1.1.0`) and `<tag>` is the `artifact_tag` of the built profile
+(`internal` or `nc`); the examples below use the default `INTERNAL` profile.
 These outputs are ignored evidence, not durable source, and may be deleted
 after validation.
 
@@ -415,14 +418,16 @@ installing or creating a `.cedg` association:
 
 ```powershell
 $portable = Join-Path $env:TEMP `
-  ("GeoCeDG-0.4.0-internal-" + [Guid]::NewGuid().ToString("N"))
+  ("GeoCeDG-internal-" + [Guid]::NewGuid().ToString("N"))
 Expand-Archive `
-  -LiteralPath .\artifacts\packaging\windows\GeoCeDG-0.4.0-windows-x64-internal.zip `
+  -LiteralPath (Resolve-Path .\artifacts\packaging\windows\GeoCeDG-*-windows-x64-internal.zip).Path `
   -DestinationPath $portable
 & (Join-Path $portable "GeoCeDG\GeoCeDG.exe")
 ```
 
-The expected window title is `GeoCeDG`. Both routes use the bundled runtime
+Each build recreates the output tree, so the wildcard resolves to the single
+package of the last build. The expected window title is `GeoCeDG <version>`
+(for example `GeoCeDG 1.1.0`). Both routes use the bundled runtime
 and do not require the workstation Java installation at execution time.
 
 ### Install and uninstall with MSI
@@ -432,7 +437,7 @@ requires no GUI choices and writes a verbose log:
 
 ```powershell
 $msi = (Resolve-Path `
-  .\artifacts\packaging\windows\packages\GeoCeDG-0.4.0-windows-x64-internal.msi).Path
+  .\artifacts\packaging\windows\packages\GeoCeDG-*-windows-x64-internal.msi).Path
 $installArgs = "/i `"$msi`" /qn /norestart /L*v `"$env:TEMP\geocedg-msi-install.log`""
 $install = Start-Process msiexec.exe -ArgumentList $installArgs -Wait -PassThru
 $install.ExitCode
@@ -471,7 +476,7 @@ dialog sequence are claimed:
 
 ```powershell
 $exe = (Resolve-Path `
-  .\artifacts\packaging\windows\packages\GeoCeDG-0.4.0-windows-x64-internal.exe).Path
+  .\artifacts\packaging\windows\packages\GeoCeDG-*-windows-x64-internal.exe).Path
 Start-Process -FilePath $exe -Wait
 ```
 
@@ -507,18 +512,21 @@ artifact result is claimed here.
 ### Package composition and exclusions
 
 The package includes the selected Windows Desktop runtime JARs, linked Java
-runtime, internal-evaluation marker, and current legal-status records. G4
-verified that it does not include:
+runtime, the selected profile's distribution notice and installed distribution
+record, and current legal-status records. The packaging contract excludes:
 
 - scientific PDFs;
-- `Templatev7.ggb`, `.ggt` files, or the legacy/model corpus;
+- `Templatev7.ggb`, any `.ggb`, the legacy/model corpus, or any `.ggt` other
+  than the curated GGT library admitted at `app/ggt-library/` (`INTERNAL` and
+  `NC` only);
 - Linux or macOS native JAR variants;
 - the upstream GeoGebra installer, logo, or an explicit unauthorized branding
   asset.
 
 Inherited translations, UI resources, fonts, and third-party/native resources
-inside the required runtime JARs remain under audit; they are a reason public
-redistribution is blocked. Inspect
+inside the required runtime JARs are closed for PROFILE NC by PRE-G9B-D1;
+commercial retention remains unauthorized (see
+`docs/licensing/geocedg_profile_commercial.md`). Inspect
 `artifacts/packaging/windows/build-manifest.json`,
 `geocedg-windows.cdx.json`, and
 [the asset manifest](../../geocedg/resources/assets-manifest.yml) for detail.

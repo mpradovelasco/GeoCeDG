@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R",
+  "phase": "PRE-G9B-R7",
+  "recordKind": "PHASE_SPECIFIC_DEBT_RECONCILIATION_VIEW",
+  "record": "docs/validation/pre_g9b_r7_debt_reconciliation.md",
+  "base": {"commit": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513", "tree": "3aef929b0b5939854d9ccd736a919b496172a30e"},
+  "globalLedgerCreated": false,
+  "globalLedgerConstraint": "AD-R0-7",
+  "statusChanges": "NONE",
+  "ownershipRule": {
+    "owner": "AUTHOR — ACCOUNTABLE",
+    "nextCheckpoint": "PRE-G9B-R7 AUTHOR REVIEW",
+    "meaning": "retention and accountability designation; not resolution; no implementation authorization",
+    "authority": "author instruction of 2026-10-15, §7"
+  },
+  "counts": {
+    "withoutLiveOwnerBeforeR7": 38,
+    "bySection": {"r0AndDelegated": 1, "rTrackLedger": 30, "fixedConflictingNeverLedgeredNew": 7},
+    "withoutOwnerAfterR7": 0,
+    "r6PlusRegisterRowsWithoutOwner": 0,
+    "r6PlusRegisterEntries": 134
+  },
+  "r0Items": [
+    {"id": "TD-P1-SEMANTIC-LENGTH-INTERSECTION", "source": "docs/validation/pre_g9b_r2_closeout_record.md", "status": "CLOSED", "owner": "PRE-G9B-R2 (done)", "proposal": "terminal", "authorDecisionRequired": false},
+    {"id": "TD-P1-PACKAGING-SUMMARY", "source": "docs/validation/pre_g9b_r1_closeout_record.md", "status": "CLOSED", "owner": "PRE-G9B-R1 (done)", "proposal": "terminal", "authorDecisionRequired": false},
+    {"id": "TD-VERIFY-RECEIPT-RECOVERY", "source": "docs/validation/pre_g9b_r1_closeout_record.md", "status": "CLOSED", "owner": "PRE-G9B-R1 (done)", "proposal": "terminal", "authorDecisionRequired": false},
+    {"id": "TD-G9X1-HISTORICAL-PIN", "source": "docs/validation/pre_g9b_r1_closeout_record.md", "status": "CLOSED", "owner": "PRE-G9B-R1 (done)", "proposal": "terminal; later scan failure is register row O-24", "authorDecisionRequired": false},
+    {"id": "G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP", "source": "docs/validation/pre_g9b_r1_r1_closeout_record.md", "status": "RESOLVED (explicit author decision)", "owner": "PRE-G9B-R1-R1 (done)", "proposal": "terminal; living-document drift is OBS-R7-G9R4-LIVING-DOC-DRIFT", "authorDecisionRequired": false},
+    {"id": "TD-R0-G9U1-Q02-BINDING", "source": "docs/validation/pre_g9b_r1_r1_closeout_record.md", "status": "CLOSED", "owner": "PRE-G9B-R1-R1 (done)", "proposal": "terminal", "authorDecisionRequired": false},
+    {"id": "TD-R0-SPLINEV2-TOOLTIP-INVALID-SYNTAX", "source": "docs/validation/pre_g9b_r4_closeout_record.md", "status": "RESOLVED", "owner": "PRE-G9B-R4 (done)", "proposal": "terminal", "authorDecisionRequired": false},
+    {"id": "TD-R0-REDEFINE-AMBIGUOUS-VOCABULARY", "source": "docs/validation/pre_g9b_r3_closeout_record.md", "status": "resolved implicitly as D3-b; never closed by identifier", "owner": "PRE-G9B-R3 (done)", "proposal": "confirm RESOLVED BY PRE-G9B-R3 (D3-b) by identifier", "authorDecisionRequired": true, "decision": "DEC-R7-D2"},
+    {"id": "TD-R0-GGBSCRIPT-STRATEGY-RESTORE", "source": "docs/validation/pre_g9b_r6_closeout_record.md", "status": "RESOLVED — AUTHOR APPROVED", "owner": "PRE-G9B-R6 (done)", "proposal": "terminal", "authorDecisionRequired": false},
+    {"id": "TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER", "source": "docs/validation/pre_g9b_r3_candidate_report.md", "status": "retained; owner and disposition due by the PRE-G9B-R7 closeout", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "nature": "DEFERRED_REFINEMENT (not a defect)", "proposal": "DEFERRED REFINEMENT — RETAINED WITH OWNER (author); option A ACCEPTED LIMITATION; option B retention for a future authorized construction-order activity", "recommendation": "B", "authorDecisionRequired": true, "decision": "DEC-R7-D1"}
+  ],
+  "rTrackRetainedWithoutOwner": [
+    {"id": "TD-DOT-XML-HISTORICAL-LOCALIZED-HEAD", "source": "docs/validation/maintenance_dot_xml_locale_independent_serialization_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "BASELINE-G9U1-BRANDING-EVIDENCE-PIN", "source": "docs/validation/pre_g9b_r1_r1_periodic_quarantine_native_roundtrip_candidate_report.md", "proposal": "RETAINED WITH OWNER (author); historical-verifier task if wanted", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R2-PHASE-SELECTION-COHORT", "source": "docs/validation/pre_g9b_r2_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R6-PLACEHOLDER-REGEX-REPLACEMENT", "source": "docs/validation/pre_g9b_r6_closeout_record.md", "proposal": "RETAINED WITH OWNER (author); future GGBScript hardening", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R6-EVENT-DISPATCH-SELF-GEO-ON-ESCAPE", "source": "docs/validation/pre_g9b_r6_closeout_record.md", "proposal": "ACCEPTED LIMITATION (upstream)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R6-EXECUTE-INNER-FAILURE-NOT-PROPAGATED", "source": "docs/validation/pre_g9b_r6_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R6-EXECUTE-ALIAS-SYNTAX-KEY", "source": "docs/validation/pre_g9b_r6_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R6-ROTATE-FORM-4-UPSTREAM-REFUSAL", "source": "docs/validation/pre_g9b_r6_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "HZ-R5B-ALIAS-CAS-STATE", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "HZ-R5B-HARNESS-TABLE-FRESHNESS", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-CAS-TABLE-VERBATIM-HEADS", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "RETAINED WITH OWNER (author)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-HARDCODED-SYNTAX-HEADS", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "RETAINED WITH OWNER (author)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-PROVER-DETAILS-CAPTIONS", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "RETAINED WITH OWNER (author)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-INPUT-BAR-INSERTED-TEXT", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "RETAINED WITH OWNER (author)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-R1-SYNTHETIC-INPUT", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-R1-CAS-GROUP-READINESS", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-R2-EMBEDDED-HOST-ROOT", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-R2-COMPLETIONS-POPUP-LISTENER-ORDER", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5B-R1-NATIVE-AWT-CRASH-UNATTRIBUTED", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "RETAINED WITH OWNER (author) for monitoring", "decision": "DEC-R7-D3"},
+    {"id": "CSOLVE-CSOLUTIONS-ALGEBRA-SYNTAX", "label": "CSolve / CSolutions Algebra syntax", "source": "docs/validation/pre_g9b_r5_b_closeout_record.md", "proposal": "ACCEPTED LIMITATION (inherited)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5A-GUIDE-STRUCTURE-CHECKS-OUTSIDE-FINAL", "source": "docs/validation/pre_g9b_r5_a_closeout_record.md", "proposal": "RETAINED WITH OWNER (author); covered in R7 by PHASE -Phase PRE-G9B-R5-A", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R5A-LATENT-NESTED-LIST-CONTINUATION", "source": "docs/validation/pre_g9b_r5_a_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-C1-COMMAND-NOT-LOADED-OUTER-RESTORE", "source": "docs/validation/pre_g9b_r3_c1_closeout_record.md", "proposal": "ACCEPTED LIMITATION (upstream)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-C1-DOPARSEXML-CLEAR-BEFORE-TRY", "source": "docs/validation/pre_g9b_r3_c1_closeout_record.md", "proposal": "ACCEPTED LIMITATION (upstream)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-U1-PLAIN-XML-PASTE-TOLERATES-COMMAND-ERRORS", "source": "docs/validation/pre_g9b_r3_c1_u1_closeout_record.md", "proposal": "ACCEPTED LIMITATION (inherited)", "decision": "DEC-R7-D3"},
+    {"id": "OBS-X1-MACRO-BUILDXML-REQUIRES-CONSISTENT-SET-ORDER", "source": "docs/validation/pre_g9b_r3_x1_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R4-SPLINEV2-DURABLE-ARGUMENT-PROMOTION", "source": "docs/validation/pre_g9b_r4_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R4-KERNEL-CLOSURE-BY-ENDPOINT-VALUE-EQUALITY", "source": "docs/validation/pre_g9b_r4_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R4-TOOLS-SELECT-EXISTING-POINTS-ONLY", "source": "docs/validation/pre_g9b_r4_closeout_record.md", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R4C-PROFILE-TOOLBAR-MENU-ONLY-MODE-KEEPS-SELECTION", "source": "docs/validation/pre_g9b_r4_closeout_record.md", "proposal": "RETAINED WITH OWNER (author); future frontend maintenance", "decision": "DEC-R7-D3"}
+  ],
+  "rTrackDispositionedByR5B": [
+    {"id": "OBS-R5B-R1-LANGUAGE-CHANGE-RETURNS-TO-MOVE", "status": "accepted inherited host behaviour; not an R5-B defect"},
+    {"id": "OBS-R5B-R2-CLASSIC-CARET-READ", "status": "PRE-EXISTING / OUTSIDE R5-B SCOPE"}
+  ],
+  "fixedConflictingNeverLedgeredNew": [
+    {"id": "BASELINE-GUIDE-RESOURCE-LF-MATERIALIZATION", "source": "docs/validation/pre_g9b_r1_closeout_record.md", "status": "OPEN — NOT REPAIRED IN PRE-G9B-R1", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "RESOLVED BY eab5a7937 — PENDING AUTHOR CONFIRMATION", "evidence": ["commit eab5a7937228653d87f39fadba292597856fa641 (.gitattributes text eol=lf for both guide sources)", "ancestor of the R1-R1 base d0c4bef1e", "later accepted FINAL campaigns ran PostP1BilingualUserGuideTest"], "decision": "DEC-R7-D2"},
+    {"id": "GUIDE-A1-SECTION-9.3-STALE", "source": "docs/validation/pre_g9b_r2_closeout_record.md", "status": "carried forward unchanged", "ownerBefore": "POST-G9U1-A1 (closed phase)", "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "RESOLVED BY PRE-G9B-R2-E0/E1 — PENDING AUTHOR CONFIRMATION", "decision": "DEC-R7-D2"},
+    {"id": "CLIPBOARD-COPY-POINT-DRIVEN-LOCUS-SLICE", "source": "docs/validation/pre_g9b_r2_e0_e1_candidate_report.md", "status": "never ledgered (pre-existing, fail-closed)", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "A3-PAIR-SOURCE-COMPATIBLE-STRUCTURAL-REDEFINE", "source": "docs/validation/pre_g9b_r2_e0_e1_candidate_report.md", "status": "never ledgered (pre-existing, fail-closed)", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "LOCUS-PARTICIPANT-AXIS-NOT-SERIALIZABLE", "source": "docs/validation/pre_g9b_r2_e0_e1_candidate_report.md", "status": "never ledgered (pre-existing, fail-closed)", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "ACCEPTED LIMITATION", "decision": "DEC-R7-D3"},
+    {"id": "OBS-R7-UNREGISTERED-HISTORICAL-SUITES", "source": "docs/validation/maintenance_final_generated_state_historical_retirement_closeout_record.md", "status": "out of scope, no identifier", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "RETAINED WITH OWNER (author); separately authorized verification-maintenance decision", "decision": "DEC-R7-D6"},
+    {"id": "OBS-R7-G9R4-LIVING-DOC-DRIFT", "source": "docs/validation/pre_g9b_r1_r1_closeout_record.md", "status": "new (R7): four living documents still describe the resolved risk as open", "ownerBefore": null, "ownerAfterR7": "AUTHOR — ACCOUNTABLE", "proposal": "bounded documentary correction by author decision", "decision": "DEC-R7-D6"}
+  ],
+  "conflictingWithOwner": [
+    {"id": "OBS-R4C-LOCUS-V2-FAMILY-LAYER-BELOW-CONTAINING-LIST", "sources": ["docs/validation/pre_g9b_r6_closeout_record.md", "docs/validation/pre_g9b_r6_plus_g_structured_debt_register.md#R-17"], "proposal": "RESOLVED FOR NEW OBJECTS BY PRE-G9B-R6-plus-A-1; residue ACCEPTED LIMITATION", "decision": "DEC-R7-D2"}
+  ],
+  "correctedByR7": [
+    {"id": "OBS-R7-ROADMAP-PANORAMA-TRUNCATED-LINKS", "file": "docs/roadmap/geocedg_roadmap.md", "detail": "three panorama rows (G11, G12, G15) ended in an unterminated link; completed as a factual reference correction"}
+  ],
+  "r6PlusRegister": {
+    "authority": "docs/validation/pre_g9b_r6_plus_g_structured_debt_register.md",
+    "reopened": false,
+    "ownedByR7": [
+      {"row": "P-12", "item": "OBS-R6P-DXF-SPEC-HEADER", "action": "reconciled by cross-reference; pinned file unchanged", "proposal": "RETAINED AS HISTORICAL PINNED HEADER — CURRENT STATUS RECORDED BY CROSS-REFERENCE (R7); owner after R7 author", "decision": "DEC-R7-D4"},
+      {"row": "P-13", "item": "OBS-R6P-DOC-IDENTITY-HEADER (pinned remainder)", "action": "reconciled by cross-reference; pinned files unchanged", "proposal": "as P-12", "decision": "DEC-R7-D4"},
+      {"row": "O-1", "item": "OBS-R6PLUS-F2R1-FULL-SUITE-MODAL-ERROR-DIALOGS", "action": "monitored by the R7 FINAL", "proposal": "retain with owner author; characterization only if it recurs"},
+      {"row": "O-2", "item": "OBS-R6PLUS-F1-G9U1-SEMANTIC-DRAG-UNDO-INTERMITTENT", "action": "monitored by the R7 FINAL", "proposal": "as O-1"}
+    ],
+    "authorCheckpointR7Proposals": {
+      "B-1": "author; future document-session lifecycle-contract activity",
+      "P-4": "author; separately authorized bounded resolution",
+      "P-7": "keep; frontend owner only if parity is wanted",
+      "P-10": "author; annotation only by separate authorization",
+      "P-16": "author; future user-library policy decision",
+      "P-18": "author; per-clause promotion, withdrawal or supersession",
+      "D-9": "future native-dimensions preferences enhancement (author-named)",
+      "L-7": "tracking owner G15",
+      "O-3": "author", "O-4": "G15", "O-5": "author", "O-6": "future insertion and styles activity",
+      "O-7": "future serialization owner (author-named)", "O-8": "future insertion and styles activity",
+      "O-9": "characterization activity (author-named)", "O-10": "G15", "O-11": "author (optional validation)",
+      "O-12": "author", "O-13": "author", "O-14": "author", "O-15": "author", "O-16": "author",
+      "O-17": "author", "O-18": "author", "O-19": "author (future verification maintenance)",
+      "O-20": "author (future verification maintenance)", "O-21": "author (future verification maintenance)",
+      "O-22": "G15", "O-23": "author (future verification maintenance)", "O-24": "author (with P-12)",
+      "O-25": "G15", "O-26": "author (standing diagnostics)", "O-27": "author (R7 FINAL monitoring)"
+    },
+    "gateOwnedUnchanged": {"G11": ["B-2", "P-2", "P-5", "P-6", "P-8"], "G12": ["D-10"], "G15": ["P-3", "D-8"], "futureInsertionAndStylesActivity": ["D-1", "D-2", "D-3", "D-4", "D-5", "D-6", "D-7"]}
+  },
+  "authorDecisions": ["DEC-R7-D1", "DEC-R7-D2", "DEC-R7-D3", "DEC-R7-D4", "DEC-R7-D5", "DEC-R7-D6"],
+  "selfApproved": false
+}

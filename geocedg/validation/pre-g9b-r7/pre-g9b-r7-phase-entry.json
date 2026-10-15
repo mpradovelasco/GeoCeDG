@@ -1,0 +1,940 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-R",
+  "phase": "PRE-G9B-R7",
+  "recordKind": "PHASE_ENTRY",
+  "record": "docs/validation/pre_g9b_r7_phase_entry_record.md",
+  "instruction": "GeoCeDG — PRE-G9B-R7 Integrated PRE-G9B Readiness, Technical-Debt Reconciliation, Roadmap Revision and Final Verification",
+  "instructionDate": "2026-10-15",
+  "authorAddendum": "Reconcile obsolete distribution-status and version references in windows-packaging.md, geocedg_profile_nc.md and related living documentation; INTERNAL stays the repository default; NC is the approved non-commercial packaging profile; package construction is not authorization to publish a public release; packaging behaviour and historical licensing evidence unchanged",
+  "status": {
+    "PRE-G9B-R6-plus": "PASS — AUTHOR APPROVED — PUBLISHED",
+    "PRE-G9B-R7": "EXECUTION AUTHORIZED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW",
+    "G11": "PENDING — ROADMAP SCOPE REVIEW",
+    "G12": "PENDING — ROADMAP SCOPE REVIEW",
+    "G15": "PENDING — ROADMAP SCOPE REVIEW",
+    "ENH-B-MANUAL-EXPORT-AREA-DRAG": "OPEN — OWNER G15",
+    "G9B": "NOT AUTHORIZED",
+    "G9C": "NOT AUTHORIZED",
+    "G9U2": "NOT AUTHORIZED",
+    "productiveG10": "NOT AUTHORIZED",
+    "publication": "NOT AUTHORIZED",
+    "publicRelease": "NOT AUTHORIZED"
+  },
+  "executionInputs": {
+    "changeRoute": "ORDINARY",
+    "verificationClass": "GLOBAL_IMPACT",
+    "primaryAcceptanceProfile": "FINAL",
+    "closeoutMode": "AUTHOR_OPERATED",
+    "frozenAtPhaseStart": true,
+    "implementationBase": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+    "implementationTree": "3aef929b0b5939854d9ccd736a919b496172a30e",
+    "approvedTechnicalParent": "da1a09528a6f97254734400b12256e8fb20a6216",
+    "branch": "phase/pre-g9b-r7-readiness-closeout",
+    "planningAuthorityBase": {
+      "commit": "48b182b8ab09d9b13a92d641ae120cd20f47f240",
+      "tree": "cb5eacae18d36ad5ea1dfa0972b7d01ca64e1b6d",
+      "role": "provenance only"
+    }
+  },
+  "entryChecks": {
+    "headEqualsBase": true,
+    "treeEqualsExpected": true,
+    "localMain": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+    "originMain": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+    "liveRemoteMain": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+    "worktreeAndIndexClean": true,
+    "r0CloseoutToBaseCommits": 213,
+    "r0CloseoutToBaseMerges": 0,
+    "gR1CandidateAncestor": true,
+    "gCloseoutIsBase": true,
+    "r0AuthorDecisionsUnresolved": 0
+  },
+  "promptAmendment": {
+    "path": ".github/prompts/tasks/pre-g9b-r7-readiness-closeout.prompt.md",
+    "fromBlob": "be941a71454b85abf21a55f8f141b88b44a12281",
+    "promptContract": "Test-PromptContractDocument task profile: 7 fields present and ordered; execution_safe = true"
+  },
+  "lineageVerification": {
+    "method": "git cat-file -t, git rev-parse <commit>^{tree}, git merge-base --is-ancestor <commit> base",
+    "rows": 104,
+    "approvedIdentitiesNotAncestor": 0,
+    "nonAncestorsByDesign": [
+      "dd3937cfba7092877f48e7f927dd6213959292cf (superseded G candidate T)",
+      "2f1b091e1427e99c777288015cef43bcfc7face7 (historical-suite source candidate; replay 20351316 is on main)"
+    ],
+    "identities": [
+      {
+        "phase": "PRE-G9B-R0",
+        "role": "candidate",
+        "commit": "4161df2d4172175a7d51c12d799dff05fb443073",
+        "tree": "10c4b98d6253c8344ebef686e2435c2f097c36fe",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R0",
+        "role": "closeout",
+        "commit": "48b182b8ab09d9b13a92d641ae120cd20f47f240",
+        "tree": "cb5eacae18d36ad5ea1dfa0972b7d01ca64e1b6d",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R1",
+        "role": "candidate",
+        "commit": "36c8d754a05b8394428ffb9505ec4e541fdf93eb",
+        "tree": "7cab60ab1c76578fba6ec2ecbac193905a19eae3",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R1",
+        "role": "closeout",
+        "commit": "8cc42981e5cf37ecfd9306f706a836abbe9cd33c",
+        "tree": "425669b77d8abd1324c0bca2081b79fe60f4ab95",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R1 baseline fix",
+        "role": "maintenance",
+        "commit": "eab5a7937228653d87f39fadba292597856fa641",
+        "tree": "5560ff916bdb8df97043ad49a1992138e070b788",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R1-R1",
+        "role": "candidate",
+        "commit": "183fe18d14b4cbf3ae84a485f7feeabd63304f1c",
+        "tree": "af00ab4caf0a71c6edcb6706def3f836d9b94ebf",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R1-R1",
+        "role": "closeout",
+        "commit": "51a6b096335938bb2580eb3b8e1101db0f2f1575",
+        "tree": "1a432a59cde9b6421a3c1089751c26469574d00a",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R2",
+        "role": "candidate",
+        "commit": "f451f603cb4c9e7f887cbfef3ad6cf90800f98a5",
+        "tree": "c82d0e4a869b3c094b2cf802216573257e0db240",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R2",
+        "role": "closeout",
+        "commit": "a222b82aad821e3e0c0aa93145a57b7050f024c8",
+        "tree": "0768848e89961f0f372f514530f9e9e0b81cc872",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R2-E0/E1",
+        "role": "candidate",
+        "commit": "60cb1a2aa14cec3b700b492f94ba01ad449ba962",
+        "tree": "a3f4778df434e61f4238727c1f1cc49461d28852",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R2-E0/E1",
+        "role": "closeout",
+        "commit": "ef120a54f035b85df014e89c3916cb3a26f5f933",
+        "tree": "98bdd7220223bedefee0eddbb2c9ef5e6572b133",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3 (R3-R1)",
+        "role": "candidate",
+        "commit": "89fab9d1ee09f95f5c21f61bced46a102366b2ef",
+        "tree": "e3ff7c34a6cf3ad40cdd737e463ced5a9f3066e5",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3",
+        "role": "closeout",
+        "commit": "89d481b1b3eef36c429f920178d5e5de6c0149e3",
+        "tree": "56a9823c602710805dfc18bd703f6a0d0b6ed5fb",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-C1",
+        "role": "candidate",
+        "commit": "aeb40e16a334cdd6eaa52b8182c71e9743f715fe",
+        "tree": "0776268095f385606f22664420d082d6d945fb98",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-C1",
+        "role": "closeout",
+        "commit": "68169dc0f026eb43b3bdae41fb69c3796cc41ad0",
+        "tree": "46988e065de7d62aa37d1e29a9f1940dcf5c8f6f",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-C1-U1",
+        "role": "candidate",
+        "commit": "c595adc5ff5a8cc1b1df0b77850b633fad942926",
+        "tree": "270d1cfb0ad4076b119040a87e5cb7db14fef2c9",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-C1-U1",
+        "role": "closeout",
+        "commit": "78134aa8bc6ac30b65ffd916713fd3ca0502e6c6",
+        "tree": "f23218cc0b7c7189aae69489a1ce7a5ac5ee9fba",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-X1",
+        "role": "candidate",
+        "commit": "8ab7dddc726c044b6e019e007bca5af938e834d1",
+        "tree": "7f75e3c669609be6369ddc0651e082370c96760f",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "GOV-R",
+        "role": "adoption",
+        "commit": "8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b",
+        "tree": "ae197c6f52d9e56fc55bd25110e461a89ef9ba96",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-X1",
+        "role": "reconciliation",
+        "commit": "a624e4ad21d1b073c1153c55ae01c46cb491728a",
+        "tree": "b951548c1b2eef00202ef9d8d4707efa09e4cbb8",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R3-X1 + GOV-R",
+        "role": "closeout",
+        "commit": "f96373aca68e3d8efa5316355f75eb1709ddceda",
+        "tree": "24f8fb1d492c92c1518234da6a995839683c9fc3",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "INPUT MAINTENANCE",
+        "role": "candidate",
+        "commit": "a6f5c5fc21e8975794e483ed311abb241b8f9529",
+        "tree": "d01cd01e4cc3cd5965a2413ec94c7735b08d5115",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "INPUT MAINTENANCE",
+        "role": "closeout",
+        "commit": "107a98474fcf1ccc98aef282938c6b7fb70460c7",
+        "tree": "3afde754b19a96b15fb32ed456ba6f8279af765f",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "HISTORICAL-SUITE MAINTENANCE",
+        "role": "replay",
+        "commit": "2035131604bcad88207947070afae3815b1339b0",
+        "tree": "d37a11ccb697676bac1efa03a0156ff345107699",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "HISTORICAL-SUITE MAINTENANCE",
+        "role": "closeout",
+        "commit": "387084422106e66540a3e3400b8b65677087ecc2",
+        "tree": "0fed799f4f704387dcfe96f8fcf3eb5d94d33991",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "GENERATED-STATE MAINTENANCE",
+        "role": "candidate",
+        "commit": "d8a63d49cbe1cf47071639eac2e8abffd44d9537",
+        "tree": "ed0be0e7fc1d73ddc32fefa635841fa99537eb54",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "GENERATED-STATE MAINTENANCE",
+        "role": "closeout",
+        "commit": "62b1281b5006272d4f9b1a0ae9d413e1f7b94320",
+        "tree": "8ce2f6719f1094e300beeaafbadab4cd5135a8d5",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R4",
+        "role": "candidate",
+        "commit": "13d1192b573656ab032df5d54f4372c3f32a2849",
+        "tree": "3bda0491c9990c418d232a6ac963597ac2b1ad26",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R4",
+        "role": "closeout",
+        "commit": "cfed55fad3f8b3fb5b55954f72fe43fe9ec2ab4e",
+        "tree": "f34d350aa28e5324f184a4d1fb65ac55e0334c4b",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R5-A",
+        "role": "candidate",
+        "commit": "4804f5057082f6eb233263bf8635e2754875f3cc",
+        "tree": "52b24a3d3d433d44f8cd186f925e2b443b12b277",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R5-A",
+        "role": "closeout",
+        "commit": "4389b30b5478ac35c78a15255021e3c4f1e10ea3",
+        "tree": "1a4506b830a846efd5032fde5e8386ca8872dc89",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "ADR 0031 (R5-B compatibility)",
+        "role": "candidate",
+        "commit": "c459de9ab66d61fe849abbf9b9b8097c56605c48",
+        "tree": "3c8d0943f2be7b990e0e4cc97cd114203dd47a49",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "ADR 0031 (R5-B compatibility)",
+        "role": "closeout",
+        "commit": "e16697d96858639becf2dc72f7c7beaca8fcbd24",
+        "tree": "3269ce7e29c14e72ec2c52011a350387f276e36a",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "DOT/XML MAINTENANCE",
+        "role": "candidate",
+        "commit": "4f9bc94440c772388381bd6970ed689a7502564b",
+        "tree": "71bf61504719c034a940a8e81fd90a8454d17ce4",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "DOT/XML MAINTENANCE",
+        "role": "closeout",
+        "commit": "504a19f7e655ef50c4bfa8095a07f94c11b27a01",
+        "tree": "63e7f0cd79aa9e1cf1259b6466e8ac16dc261704",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R5-B (R5-B-R2)",
+        "role": "candidate",
+        "commit": "a1d96746a42c5ba7fc83d8909647083f11616009",
+        "tree": "61af3ce965cf279924ab44486d93ca87886229e6",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R5-B",
+        "role": "closeout",
+        "commit": "e7401734b4ef76d8f79dd4b0535845304937e4f7",
+        "tree": "3ad888b0895d0cb026be60e3d435c0819c4faed8",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6",
+        "role": "candidate",
+        "commit": "4333d032f2e3b309ef9a22913686609c951b6f52",
+        "tree": "a781559e72ce4b56f6d6b3b871689fcf4e893c78",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6",
+        "role": "documentary",
+        "commit": "dd486b594a86b4853575e61e872d65325d05647e",
+        "tree": "099c8cbdba19a3153b554407804086eb2c872d6e",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6",
+        "role": "closeout",
+        "commit": "9b8bc5b10a7ef61da0095853ea4c572ca06bfa72",
+        "tree": "f5c8c9f0cc76982170c6282a1242d2a5d07a0897",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus planning",
+        "role": "candidate",
+        "commit": "147dac8d838df9ee62c0ae9c4fa296b28b9b9b8f",
+        "tree": "4122e5626a26d5e039e97d33def6ea9b1993c8b8",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus planning",
+        "role": "closeout",
+        "commit": "babf20c7c03d0454e2da6760bf5d1fc3fa546f6b",
+        "tree": "3f7abded9163324a3142ad7446fb4e6c85407809",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-P0",
+        "role": "candidate",
+        "commit": "6b7fd5de343b6556b384e71a9345907e7944d1e5",
+        "tree": "cfff3a016956e32dd9503ca6c666a49ea794c2dc",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-P0",
+        "role": "closeout",
+        "commit": "562e2bb1e77b249b9c97c2e6e06e8b123d6de900",
+        "tree": "9f578093f2f3cba481f5630fe827fd3ef08cff61",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-A-1",
+        "role": "candidate",
+        "commit": "2a71133ad622e18e9963b04a466a92665a784722",
+        "tree": "e9bf297f4307b8ab027c64b6e791870ac1d55e93",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-A-1",
+        "role": "closeout",
+        "commit": "d32ad608ba8821bc18c9d4dc783c1b700a165ff2",
+        "tree": "9b123be7ed8c7176b5a7e19f74be5946f0164c8b",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-B",
+        "role": "candidate",
+        "commit": "848206c413eb4f78694c9149e153f6e867eb9525",
+        "tree": "b611506131b3d751627f87a31e3f3502e7ea6810",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-B",
+        "role": "closeout",
+        "commit": "0ef616bb7bb8efd3e4f19762f38936ff4742d1c3",
+        "tree": "be7ef7acbc3503002f3dac2bc33f047795f7a644",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-D0",
+        "role": "candidate",
+        "commit": "8383a153dc2228fc08b4e00a0c92ef8025608916",
+        "tree": "442e27fcafea223af426b4ee65102a8a5d90be8c",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-D0",
+        "role": "closeout",
+        "commit": "3268f9b99d20c5d9cf62f25d8066ee0a8e47765c",
+        "tree": "83b32b6cb579dc28162f990160c3eef0b1928be6",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-D1",
+        "role": "candidate",
+        "commit": "6e1d845902f534b9d45b533ac265089cbc01e689",
+        "tree": "3eb4ca454f22fb596fc1972552db2ab9e359d24b",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-D1",
+        "role": "closeout",
+        "commit": "2941ddf2f2712340e831d292bdc2687b879850d6",
+        "tree": "158184b150a42e6dcae2946c39620d92cbfcd888",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-A-2",
+        "role": "candidate",
+        "commit": "06a2ea6b4523a71f9f84fefca39e7d3b2b717e64",
+        "tree": "a05d84fd0e4ddcff27e15b2e09757ae28d36debb",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-A-2",
+        "role": "closeout",
+        "commit": "e613502831e3b412780d69424d4a1e433a4ae688",
+        "tree": "48b00681a727ea4bd8768c3e9b0159bc01573ff0",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-C",
+        "role": "candidate",
+        "commit": "6248bf0fc4208540de09d26a7755d4163055ac76",
+        "tree": "03038ae305716408aa404fd15dd40e71bf7f5f51",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-C",
+        "role": "closeout",
+        "commit": "39eb05bc16a18ae48167383e90fcf38b12a681b6",
+        "tree": "fc13f5f125a4e8d595dd450bfd47706be193e5cd",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-C-X1",
+        "role": "candidate",
+        "commit": "eabe6368f9e012d8186aa668a68a5bcc48cdcc17",
+        "tree": "fc8dfb290594d62cfc5240490ad5e1ee38cbc321",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-C-X1",
+        "role": "closeout",
+        "commit": "23b971f5a967958f93e745ca8c39fce1162706e6",
+        "tree": "5f564c8391828dc781dee0b1be93ef223431af58",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-L",
+        "role": "candidate",
+        "commit": "5f34d181b4f03412acfbdbeedb3fd7931de02ed9",
+        "tree": "f1f060703804ca99a7e8522de97a123becaabae6",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-L",
+        "role": "closeout",
+        "commit": "47b39e5f6d51e51b8d08ec5622305f11c1dab10f",
+        "tree": "d48c86c6f65b642a53609fb15f917bc587ff2ce7",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-P (E1 aggregate)",
+        "role": "candidate",
+        "commit": "dcda4075843766e8c384c176007c5edb776357c2",
+        "tree": "90eb1c73a11b423c6e08352f3b31702f627bfb18",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-P (E1 aggregate)",
+        "role": "closeout",
+        "commit": "fdc1ade6e7ab707bbc919d337bc48d1abce90a1b",
+        "tree": "cc613c0337d3d75fdf14e55d20db5cb896af2b52",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-X1",
+        "role": "candidate",
+        "commit": "b12ab32c3a4dcf42941617e95d06a92bfb3b2955",
+        "tree": "34fa96d9ddb37ea5a3a8addeb04e4b920d322b43",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-X1",
+        "role": "closeout",
+        "commit": "7d132ec5696535e18419e481b8306b5aecf3fef6",
+        "tree": "7509dcb05117eca87011e2bb82ac481592afbcad",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-P-X1",
+        "role": "candidate",
+        "commit": "44b90156786bce4ec5fca0466e7b8f81ea5bb358",
+        "tree": "e02daecdd86e8d791e0f00fd6e49d684d2ca0fd6",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E1-P-X1",
+        "role": "closeout",
+        "commit": "dc63b0e55f12eb96d3aea359db4476cbda6c89dc",
+        "tree": "8b2b5027a2119f996de8ca5af91b03ce32731a8c",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E2",
+        "role": "candidate",
+        "commit": "3a7246614a6ef040d84a1440c4c10b3f93be5776",
+        "tree": "00b5230d19debea5598299906f846f52b4d6e9d7",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E2",
+        "role": "closeout",
+        "commit": "86fdc9086d68f21ea67f360ff104679dace74223",
+        "tree": "2849d3060761358d3e3aeea8e332363b19a18814",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2 planning",
+        "role": "closeout",
+        "commit": "ed3332b5f06c83e63788b32a79fe703b13aa4375",
+        "tree": "582c87ea843f5d375eb7ba6d0db2b72828edb711",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P1",
+        "role": "candidate",
+        "commit": "02d84945e08c54883683110c2664e5174f76bd96",
+        "tree": "b918d96ca174c92f66ea25e0461a72df9c501b60",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P1",
+        "role": "closeout",
+        "commit": "64d25ba88703372c7c83e1c2fbdd59cbdc4d9aaa",
+        "tree": "50f0f7ccb84b441d7c7584454459f0f01d7c4b02",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P1-R1",
+        "role": "candidate",
+        "commit": "2237df0aad20eea9ad38831c9a5ad2bbf2d5f345",
+        "tree": "e3526e3323bac94e825c52853b9dfc35641b847d",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P1-R1",
+        "role": "closeout",
+        "commit": "0bb34739168e71eb62ca099273a9920e8a61673a",
+        "tree": "6bd46e7a7dea44d5d18ad3beeee5cd7134984b03",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P1-R2",
+        "role": "candidate",
+        "commit": "6dde194eba240ed7bcc249df323a3ca6173b8a0e",
+        "tree": "83d265149745e457063bb9efb23dfd66b55e8cfa",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P1-R2",
+        "role": "closeout",
+        "commit": "b6747a1bf829051ff95a29c281558e00d3f82459",
+        "tree": "b525a285e1b5b1552b0c7c48922b9834c41df79b",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P2",
+        "role": "candidate",
+        "commit": "216964dc4ce8512e7b2be9587c8f93ca1d5a4355",
+        "tree": "2ae1e51952c444abbadb2030dedc79142ad3f8eb",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P2",
+        "role": "closeout",
+        "commit": "32c3efc4a3ab9119d66b5b63f5e56a8394318b9e",
+        "tree": "4d97967e5079ca187762e077dd12a7ebdda73ddc",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P2-R1",
+        "role": "candidate",
+        "commit": "38647c796e6499a10d5435844866d2144fdfbe24",
+        "tree": "ebcb853e7d947b792029db1d1fde8518be96e04a",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P2-R1",
+        "role": "closeout",
+        "commit": "9bdcdf834814ce7eeb16ba189283208415fd1e7d",
+        "tree": "06831f900e728900c5fc92b48d4f85e3c10fe759",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P3",
+        "role": "candidate",
+        "commit": "1e8714a968b7def9697d67bf056fc77f48da0fc8",
+        "tree": "157fd06d25cf0db301c9c7f2407ed9ff6aeb1e07",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P3",
+        "role": "closeout",
+        "commit": "2b3fafe3ee8d4b29af57e826983ac0201e124ceb",
+        "tree": "df24c5f380887a78c1905791f590b6b6bf990ecd",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P4",
+        "role": "candidate",
+        "commit": "06835fdf477d23ade9694c952c84191b7f2ebe07",
+        "tree": "0732299a9117bceaca1b1f239179944dd9726c00",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E2-P4",
+        "role": "closeout",
+        "commit": "13e08ac1fe1c6c931a88985b97df93d8445812b9",
+        "tree": "dd2ba17c483a18b8931e1848f38616edfa98b06a",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E3 (E3-R1)",
+        "role": "candidate",
+        "commit": "7cd501167c856eef356888ca87ed3a0c97cea55c",
+        "tree": "3c51c9d3635c22939df6cab60259521f885eff92",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-E3 (E3-R1)",
+        "role": "closeout",
+        "commit": "31286a2355cabebc69c3937442e7f15636da12ba",
+        "tree": "d223d7400b2eabacddafba874b49eae581c5c6c4",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E3-INTEGRATION",
+        "role": "integration",
+        "commit": "00b525fda64968efdf973504a6426e8565931fff",
+        "tree": "23abd1ca06e30e07a9ed00a43522ea116180379d",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1",
+        "role": "candidate",
+        "commit": "22a215d8bcf5bf9a43ce881e992e37dbf0eb070b",
+        "tree": "2f49c8872d26bfc1b7abf648b47240e8f8dacb20",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "POST-E3-E2-PSTRICKS-DIMENSION-ANGLE-C1",
+        "role": "closeout",
+        "commit": "bde2827bb21e4a28e080db6a65b4abc892071cf8",
+        "tree": "1b74102cea5151b8a6c571cb36b96b33af6fb3c8",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F1",
+        "role": "candidate",
+        "commit": "1cea3c89e34d32ab6321a434e7bb873bc1a33f83",
+        "tree": "0901ef120a8f945ff70e94d00f21cdd7eb10b58f",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F1",
+        "role": "closeout",
+        "commit": "24985f14c565b9ba6282ec80fa0cb7be20a2e459",
+        "tree": "1c683ebb3e303b7692915feae3417cf51e4cce22",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F2 (F2-R1)",
+        "role": "candidate",
+        "commit": "488f1e991fee641b9ec521059edc318df7271bdd",
+        "tree": "9673d9afca483dbd8129c92c76639711596cf13b",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F2 (F2-R1)",
+        "role": "closeout",
+        "commit": "e70718fec3612814144cd405d46f6c08864ceadd",
+        "tree": "26817bfc6a72b378e4babc1cd08efd0d734473c9",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F3 (F3-R1, F3-R2)",
+        "role": "candidate",
+        "commit": "2d7b2cae23d5229f889877f22924b3669f98b755",
+        "tree": "667308b912c73e63d9b02c9a96b0ab1beab7cd50",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F3 (F3-R1, F3-R2)",
+        "role": "closeout",
+        "commit": "847bb20a593e8092eabf80bd9d7c62ed7c21de08",
+        "tree": "10846ff491572f5c557f3c2b7fadb3a6a1053f0a",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F4-D",
+        "role": "candidate",
+        "commit": "6214d15a0bc986cf1d16f178c67fd76bf6e54bc2",
+        "tree": "47b634b1885a9b5650af73369caa97a955bf22f2",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F4-D",
+        "role": "closeout",
+        "commit": "e968245ef329a86108df81a49cbdb05601cefe9e",
+        "tree": "516f28dfe75dd1e35954f1e1e224dcf10edd4d2b",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F4-A",
+        "role": "candidate",
+        "commit": "6baa66a584ceef1973c854fb63b00aa7070708b4",
+        "tree": "bfc22c5dff6a1dcb7a371030c77f695a1a6b1925",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F4-A",
+        "role": "closeout",
+        "commit": "07424dee6e5293c6259e84b97ca0ea3e6e5fc72f",
+        "tree": "59d2e022a82f474fc2c2e63ada462800dc43ed81",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-F4 (aggregate)",
+        "role": "closeout",
+        "commit": "19f8f206b5ed7df8d203b3cebddd59eb1183d589",
+        "tree": "4d803c6a9f3f8db9cfeea2420d161835e08d7871",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-G (design)",
+        "role": "closeout",
+        "commit": "ceb5a7e9ef8bafcfabb10aeba5162451d88f79c3",
+        "tree": "fa748fd1b87ae16c9f0c248f8f77b94069cc2ea3",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-G (G-R1 T')",
+        "role": "candidate",
+        "commit": "da1a09528a6f97254734400b12256e8fb20a6216",
+        "tree": "6e02685bf2877536ee02f98866352e46ef1ec49e",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-G and PRE-G9B-R6-plus",
+        "role": "closeout",
+        "commit": "b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513",
+        "tree": "3aef929b0b5939854d9ccd736a919b496172a30e",
+        "exists": true,
+        "ancestorOfBase": true
+      },
+      {
+        "phase": "PRE-G9B-R6-plus-G (superseded T)",
+        "role": "superseded",
+        "commit": "dd3937cfba7092877f48e7f927dd6213959292cf",
+        "tree": "b45311d2b78d9c3625e379835b8d76031df9530a",
+        "exists": true,
+        "ancestorOfBase": false
+      },
+      {
+        "phase": "HISTORICAL-SUITE MAINTENANCE (source)",
+        "role": "source",
+        "commit": "2f1b091e1427e99c777288015cef43bcfc7face7",
+        "tree": "6f0ae84194b6e8601ddcb7b7972083df9236221e",
+        "exists": true,
+        "ancestorOfBase": false
+      }
+    ]
+  },
+  "verificationHistory": {
+    "r1Final": {
+      "runId": "verification-8763e250d1be413f83e54429b5923ca3",
+      "acceptance": "REJECTED_SEMANTIC",
+      "coverage": "COMPLETE",
+      "receipt": null,
+      "authorBaselineException": true,
+      "technicalAcceptanceClaimed": false,
+      "cause": "BASELINE-GUIDE-RESOURCE-LF-MATERIALIZATION (pre-existing)"
+    },
+    "r3x1Final": {
+      "runId": "verification-ecdb8e4845064b46af2ec1df49963418",
+      "acceptance": "REJECTED_VERIFICATION_CORE",
+      "coverage": "UNTRUSTED",
+      "receipt": null,
+      "reconciliationReceipt": "7a4c4825447a9966e82268ecd09e4f9aba4f293f36493705d2310b57c5454400",
+      "mechanism": "GOV-R 8e4218dbfac89e9aca0e1f45c5635cb159b0ee1b"
+    },
+    "lastFinalBeforeR7": {
+      "runId": "verification-814f89fabe834b78ad29f08d78729081",
+      "candidate": "06a2ea6b4523a71f9f84fefca39e7d3b2b717e64",
+      "date": "2026-10-04",
+      "receipt": "b492d484fa3ae9f820036927045373128606b6eee59a4e80961fe0756db0d9ea"
+    },
+    "globalVerificationInfrastructureChanges": [
+      "PRE-G9B-R1 36c8d754 (receipt emission in verify.ps1; static-contract catalog pin)",
+      "GOV-R 8e4218db (post-run catalog reconciliation mechanism)",
+      "GENERATED-STATE MAINTENANCE d8a63d49 (FINAL plan 67 -> 68 nodes, 3d8752b9)"
+    ],
+    "finalPlanHashAtBase": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+    "finalPlanNodesAtBase": 68
+  },
+  "lineageObservations": [
+    "PRE-G9B-R0 has no separate closeout record; its approval is written in the amended candidate report and the evidence commit 48b182b8.",
+    "POST-E3-INTEGRATION 00b525fd: its own record keeps the pre-approval text; approval and publication are recorded by the mini-track plan (22a215d8) and by the author-approved G closeout section 6.",
+    "PRE-G9B-R1 closeout JSON publicationState predates the promotion; the roadmap records the publication at 8cc42981.",
+    "The G closeout record and the roadmap said unpublished; the closeout is main b9bdb1e1 since 2026-10-15 (registered in living documents by R7)."
+  ],
+  "selfApproved": false
+}

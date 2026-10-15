@@ -46,7 +46,7 @@ insufficient.
 | `tools/legacy` | Reproducible ingest and legacy Laboratory loader | Operational tools with immutable originals |
 | `tools/release` | Packaging generation and verification helpers | Reproducible release mechanics, not legal approval |
 | `tools/benchmark`, `benchmarks` | Informational harnesses and reproducible suites | Source definitions; raw outputs generated |
-| `packaging` | Windows `jpackage` configuration and notices | Durable packaging source; public release remains blocked |
+| `packaging` | Windows `jpackage` configuration and notices | Durable packaging source; default profile `INTERNAL`; a public release requires a separate author decision |
 | `.github/prompts`, `ai-shell/prompts` | Canonical tasks/reviews, bounded book operations, and lightweight profiles | Operational instructions, not geometric or editorial truth; prompts never self-authorize phases |
 | `.github/workflows` | CI invocation of repository verification | Automation source |
 | local `/book` | Optional filesystem link to the independent `mpradovelasco/geocedg_book` worktree | Ignored local convenience; never GeoCeDG authority, content or Git state |
