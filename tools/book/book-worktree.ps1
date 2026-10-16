@@ -557,20 +557,51 @@ function Get-ApplicationProfileSnapshot {
     $profilePath = "apps/geocedg/application-profile.yml"
     $text = Get-GitFileText -Root $Root -Commit $Commit `
         -RepositoryPath $profilePath
+    # Hashtable keys are case-sensitive; localized_text may hold keys that
+    # differ only by case, which a PSCustomObject cannot represent.
     try {
-        $profile = $text | ConvertFrom-Json -Depth 100 -NoEnumerate
+        $profile = $text | ConvertFrom-Json -Depth 100 -AsHashtable
     } catch {
         throw "Published application profile is invalid at $Commit."
     }
+    if ($profile -isnot [Collections.IDictionary] -or
+            -not $profile.Contains('schema_version') -or
+            -not $profile.Contains('profile_id') -or
+            -not $profile.Contains('features') -or
+            -not $profile.Contains('serialization') -or
+            $profile['serialization'] -isnot [Collections.IDictionary] -or
+            -not $profile['serialization'].Contains('app_code') -or
+            -not $profile['serialization'].Contains('policy')) {
+        throw "Published application profile is invalid at $Commit."
+    }
+    $schemaVersion = [int]$profile.schema_version
+    # Schema 1 lists enabled feature identifiers; schema 2 lists feature
+    # bindings whose enabled_by_default flag selects the enabled ones.
+    $enabledFeatures = @(switch ($schemaVersion) {
+        1 {
+            $profile.features | ForEach-Object { [string]$_ }
+        }
+        2 {
+            $profile.features | ForEach-Object {
+                if ($_ -isnot [Collections.IDictionary] -or
+                        -not $_.Contains('id') -or
+                        $_['enabled_by_default'] -isnot [bool]) {
+                    throw "Published application profile is invalid at $Commit."
+                }
+                if ($_['enabled_by_default']) { [string]$_['id'] }
+            }
+        }
+        default {
+            throw "Unsupported application profile schema at ${Commit}: $schemaVersion"
+        }
+    })
     return [pscustomobject][ordered]@{
         source = $profilePath
-        schema_version = [int]$profile.schema_version
+        schema_version = $schemaVersion
         profile_id = [string]$profile.profile_id
         serialization_app_code = [string]$profile.serialization.app_code
         serialization_policy = [string]$profile.serialization.policy
-        enabled_features = @($profile.features | ForEach-Object {
-                [string]$_
-            } | Sort-Object -CaseSensitive)
+        enabled_features = @($enabledFeatures | Sort-Object -CaseSensitive)
     }
 }
 

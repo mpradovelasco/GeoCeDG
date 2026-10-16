@@ -44,6 +44,30 @@ function Get-GeoCeDGMarkdownTableValue {
     return $values[0]
 }
 
+function ConvertFrom-GeoCeDGClosedPhaseValue {
+    param([Parameter(Mandatory)] [AllowEmptyString()] [string]$Value)
+
+    # The leading identifier is either a numbered G phase or a PRE-/POST-
+    # track identifier, optionally in one Markdown code span. Only G phases
+    # carry a phase number; track identifiers keep their roadmap spelling.
+    $pattern = '^(?<tick>`?)(?<id>G(?<number>[0-9]+)(?:[A-Z][A-Z0-9-]*)?|' +
+        '(?:PRE|POST)-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:/[A-Za-z0-9]+)*)' +
+        '\k<tick>(?:\s+[—-]\s+\S|[,\s].*?\s[—-]\s+\S)'
+    $match = [regex]::Match($Value, $pattern)
+    if (-not $match.Success) {
+        throw "The roadmap has an invalid closed-phase value: $Value"
+    }
+    $number = if ($match.Groups['number'].Success) {
+        [int]$match.Groups['number'].Value
+    } else {
+        $null
+    }
+    return [pscustomobject]@{
+        Id = $match.Groups['id'].Value
+        Number = $number
+    }
+}
+
 function Get-GeoCeDGPhaseSnapshot {
     [CmdletBinding()]
     param(
@@ -64,13 +88,7 @@ function Get-GeoCeDGPhaseSnapshot {
         -Path $roadmapRepositoryPath -Commit $commit
     $latestPhase = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
         -Label 'Última fase cerrada'
-    $phaseMatch = [regex]::Match($latestPhase,
-        '^G(?<number>[0-9]+)(?<suffix>[A-Z][A-Z0-9-]*)?\s+[—-]\s+\S')
-    if (-not $phaseMatch.Success) {
-        throw "The roadmap has an invalid closed-phase value: $latestPhase"
-    }
-    $phaseNumber = [int]$phaseMatch.Groups['number'].Value
-    $phaseSuffix = $phaseMatch.Groups['suffix'].Value
+    $phaseIdentity = ConvertFrom-GeoCeDGClosedPhaseValue -Value $latestPhase
 
     return [pscustomobject][ordered]@{
         source = $roadmapRepositoryPath
@@ -86,8 +104,8 @@ function Get-GeoCeDGPhaseSnapshot {
             -Markdown $roadmap -Label 'Última fase ejecutada'
         next_gate = Get-GeoCeDGMarkdownTableValue -Markdown $roadmap `
             -Label 'Siguiente puerta'
-        latest_closed_phase_id = "G${phaseNumber}${phaseSuffix}"
-        latest_closed_phase_number = $phaseNumber
+        latest_closed_phase_id = $phaseIdentity.Id
+        latest_closed_phase_number = $phaseIdentity.Number
     }
 }
 

@@ -727,10 +727,123 @@ try {
             -Message "Material category was invisible: $($case.Category)"
         $currentPublishedCandidate = $nextCandidate
     }
+
+    $fixtureRoadmapPath = Join-Path $geoRoot "docs\roadmap\geocedg_roadmap.md"
+    $numberedRoadmap = Get-Content -LiteralPath $fixtureRoadmapPath -Raw
+    $trackRoadmap = [regex]::Replace($numberedRoadmap,
+        '(?m)^\| Última fase cerrada \| G1 — .*$',
+        '| Última fase cerrada | `PRE-G9B-R7` — `PASS — AUTHOR APPROVED` (fixture) |')
+    Assert-Condition -Condition ($trackRoadmap -ne $numberedRoadmap) `
+        -Message "The track closed-phase fixture was not written."
+    Write-Utf8File -Path $fixtureRoadmapPath -Content $trackRoadmap
+    Write-Utf8File -Path (Join-Path $geoRoot `
+            "apps\geocedg\application-profile.yml") -Content @"
+{
+  "schema_version": 2,
+  "profile_id": "geocedg-fixture",
+  "serialization": {"app_code": "classic", "policy": "fixture"},
+  "features": [
+    {"id": "cedg.fixture.stable", "source": "geocedg/features/stable.yml",
+      "enabled_by_default": true},
+    {"id": "cedg.fixture.disabled",
+      "source": "geocedg/features/experimental.yml",
+      "enabled_by_default": false}
+  ],
+  "localized_text": {
+    "fixture.Workspace.Name": {"en": "lower"},
+    "Fixture.workspace.name": {"en": "upper"}
+  }
+}
+"@
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @("add", "--",
+            "docs/roadmap/geocedg_roadmap.md",
+            "apps/geocedg/application-profile.yml"))
+    [void](Invoke-TestGit -Root $geoRoot `
+        -Arguments @("commit", "-m", "track closed-phase fixture"))
+    $currentPublishedTag = "geocedg-track-phase-pass"
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @(
+            "tag", "-a", $currentPublishedTag, "-m", "track phase fixture"))
+    $currentPublishedCommit = (Invoke-TestGit -Root $geoRoot `
+        -Arguments @("rev-parse", "HEAD")).Trim()
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @(
+            "update-ref", "refs/remotes/origin/main", $currentPublishedCommit))
+    $trackPaths = foreach ($name in @("track-a", "track-b")) {
+        $trackResult = Invoke-BookOperation -Script $geo.Script `
+            -Action "BaselineCandidate" `
+            -Arguments @("-OutputPath", "artifacts/book/$name.json")
+        Assert-OperationResult -Result $trackResult -ExitCode 0 `
+            -Contains "Technical authority fingerprint:"
+        Join-Path $geoRoot "artifacts\book\$name.json"
+    }
+    Assert-Condition -Condition ((Get-FileHash -LiteralPath $trackPaths[0]).Hash -eq
+        (Get-FileHash -LiteralPath $trackPaths[1]).Hash) `
+        -Message "Track closed-phase baseline candidates are not byte-identical."
+    $trackCandidate = Get-Content -LiteralPath $trackPaths[0] -Raw |
+        ConvertFrom-Json -Depth 100 -NoEnumerate
+    $phaseBefore = @($currentPublishedCandidate.authority_categories |
+        Where-Object category -eq "phase_status")[0]
+    $phaseAfter = @($trackCandidate.authority_categories |
+        Where-Object category -eq "phase_status")[0]
+    Assert-Condition -Condition (
+        $trackCandidate.normative_phase_status.latest_closed_phase_id -ceq
+            "PRE-G9B-R7" -and
+        $null -eq $trackCandidate.normative_phase_status.latest_closed_phase_number -and
+        $trackCandidate.application_profile.schema_version -eq 2 -and
+        (@($trackCandidate.application_profile.enabled_features) -join ",") -ceq
+            "cedg.fixture.stable" -and
+        $phaseAfter.fingerprint -ne $phaseBefore.fingerprint) `
+        -Message "The track closed phase or schema-2 profile was not captured."
+    $trackStatus = Invoke-BookOperation -Script $geo.Script -Action "Status"
+    Assert-OperationResult -Result $trackStatus -ExitCode 0 `
+        -Contains 'GeoCeDG latest closed phase: `PRE-G9B-R7`'
+    $currentPublishedCandidate = $trackCandidate
+
     $categorizedStale = Invoke-BookOperation -Script $geo.Script `
         -Action "Alignment"
     Assert-OperationResult -Result $categorizedStale -ExitCode 0 `
         -Contains "Book alignment material drift:"
+
+    Set-BookBaselineRegistry -BookRoot $bookRoot `
+        -HistoricalCommit $geo.Commit -Status "ACCEPTED" `
+        -Commit $currentPublishedCommit `
+        -Fingerprint $trackCandidate.technical_authority_fingerprint `
+        -PublishedTag $currentPublishedTag -FingerprintSchemaVersion 2
+    Commit-BookBaselineRegistry -BookRoot $bookRoot `
+        -Message "accept track closed-phase fixture baseline"
+    $trackAligned = Invoke-BookOperation -Script $geo.Script -Action "Alignment"
+    Assert-OperationResult -Result $trackAligned -ExitCode 0 `
+        -Contains "Book technical alignment: ALIGNED"
+
+    [void](Invoke-TestGit -Root $geoRoot `
+        -Arguments @("switch", "-c", "invalid-phase-fixture"))
+    Write-Utf8File -Path $fixtureRoadmapPath -Content $trackRoadmap.Replace(
+        '`PRE-G9B-R7` — `PASS — AUTHOR APPROVED` (fixture)',
+        'Fase sin identificador — fixture')
+    [void](Invoke-TestGit -Root $geoRoot `
+        -Arguments @("add", "--", "docs/roadmap/geocedg_roadmap.md"))
+    [void](Invoke-TestGit -Root $geoRoot `
+        -Arguments @("commit", "-m", "invalid closed-phase fixture"))
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @(
+            "tag", "-a", "geocedg-invalid-phase-pass", "-m", "invalid phase"))
+    $invalidCommit = (Invoke-TestGit -Root $geoRoot `
+        -Arguments @("rev-parse", "HEAD")).Trim()
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @(
+            "update-ref", "refs/remotes/origin/main", $invalidCommit))
+    $invalidPhase = Invoke-BookOperation -Script $geo.Script `
+        -Action "BaselineCandidate" `
+        -Arguments @("-OutputPath", "artifacts/book/invalid-phase.json")
+    Assert-OperationResult -Result $invalidPhase -ExitCode 1 `
+        -Contains "invalid closed-phase value"
+    Assert-Condition -Condition (-not (Test-Path -LiteralPath (Join-Path `
+                    $geoRoot "artifacts\book\invalid-phase.json"))) `
+        -Message "An invalid closed phase still produced a baseline candidate."
+    [void](Invoke-TestGit -Root $geoRoot `
+        -Arguments @("tag", "-d", "geocedg-invalid-phase-pass"))
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @(
+            "update-ref", "refs/remotes/origin/main", $currentPublishedCommit))
+    [void](Invoke-TestGit -Root $geoRoot -Arguments @("switch", "main"))
+    [void](Invoke-TestGit -Root $geoRoot `
+        -Arguments @("branch", "-D", "invalid-phase-fixture"))
 
     Set-BookBaselineRegistry -BookRoot $bookRoot `
         -HistoricalCommit $geo.Commit -Status "ACCEPTED" `
