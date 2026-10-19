@@ -97,9 +97,17 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
 
 ### CU1 — Conformidad de evaluación, revisión, composición anidada y métrica
 
-- **Estado:** preparación normativa y técnica autorizada el 2026-10-20; implementación no
-  autorizada. La siguiente decisión autoral es la aprobación de la política métrica
+- **Estado:** preparación normativa y técnica autorizada el 2026-10-20 y ejecutada como
+  candidato documental pendiente de revisión
+  ([informe](../validation/pre_g9b_cu1_preparation_candidate_report.md)); implementación
+  no autorizada. La siguiente decisión autoral es la aprobación de la política métrica
   revisada y la autorización de la implementación sobre un commit base exacto.
+- **Preparación:** [análisis del aliasing métrico](pre_g9b_cu1_metric_aliasing_analysis.md);
+  [propuesta normativa revisada](pre_g9b_cu1_normative_proposal.md) (A1.1-R, A1.2-R,
+  ADR 0037 candidato); [estrategia de corrección](pre_g9b_cu1_correction_strategy.md);
+  [matriz de validación](../validation/pre_g9b_cu1_validation_matrix.md);
+  [prompt canónico](../../.github/prompts/tasks/pre-g9b-cu1-evaluation-composition-and-metric-conformance.prompt.md);
+  [hoja de decisiones](../validation/pre_g9b_cu1_author_decision_sheet.md).
 - **Objetivo:** que `e_2` y cualquier Locus V2 que dependa de métricas u otros loci se
   evalúe sin bloquear la aplicación y con longitudes correctas, conforme a
   `locus-v2-semantics.md` y `locus-v2-metrics.md`.
@@ -242,7 +250,9 @@ modifican.
 ## 9. Decisiones pendientes
 
 Las decisiones C1-0 a C1-4 quedaron resueltas el 2026-10-20 (§2.1). Las necesarias para
-preparar `CU2`/`CU3` siguen en la
+aprobar la política métrica revisada y autorizar la implementación de `CU1` están en la
+[hoja de decisiones de `CU1`](../validation/pre_g9b_cu1_author_decision_sheet.md). Las
+necesarias para preparar `CU2`/`CU3` siguen en la
 [hoja de decisiones](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
 precisión de `OBS-CU0-CU3-TANGENT-EXISTENCE` sobre F-2; el texto de las enmiendas
 candidatas de `CU0` está en las
