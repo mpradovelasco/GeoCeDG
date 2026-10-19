@@ -4,8 +4,8 @@
 |---|---|
 | Carácter | Plan vivo del track `PRE-G9B-CU`. No es especificación normativa: las decisiones arquitectónicas se incorporan a sus especificaciones mediante el procedimiento de revisión y aprobación |
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
-| Estado de esta consolidación | `CU0 CONSOLIDATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false` |
-| Paquetes | `CU0` autorizado y ejecutado como candidato pendiente de revisión; `CU1`–`CU10` **no autorizados** |
+| Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
+| Paquetes | `CU0` `PASS — AUTHOR APPROVED`; preparación normativa y técnica de `CU1` autorizada, implementación **no autorizada**; `CU2`–`CU10` **no autorizados** |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
 | Evidencia | [informe de caracterización inicial](../validation/pre_g9b_cu_characterization_evidence_report.md); [informe del candidato CU0](../validation/pre_g9b_cu0_baseline_candidate_report.md); [línea base geométrica](../../geocedg/validation/pre-g9b-cu/cu0-geometric-reference-baseline.json) |
@@ -41,6 +41,23 @@
 | CU8 | Solo diseño inicialmente; implementación con autorización separada | `CU8-D` |
 | Libro | En pausa; actualización mínima de la base técnica solo tras el cierre, la aprobación y una etiqueta nueva, con autorización separada | §8 |
 
+## 2.1 Decisiones adoptadas por la instrucción de 2026-10-20
+
+Fuente: [registro de cierre de `CU0`](../validation/pre_g9b_cu0_closeout_record.md), que las
+transcribe y es su autoridad.
+
+| Id | Decisión | Efecto en el plan |
+|---|---|---|
+| C1-0 | `CU0` `PASS — AUTHOR APPROVED`; la preparación de `CU1` parte de `d684e740` o de su descendiente de cierre verificado | `CU0`; `CU1` |
+| C1-1 | Puertas de rendimiento por contadores deterministas (reconstrucciones de índices, construcción de cortes, revisiones, evaluaciones anidadas); los tiempos de arrastre y carga son indicadores complementarios | `CU1` |
+| C1-2 | `CU1` incluye B10.1, H03, H04, H10, H11 y H12; la política métrica A1.2 se revisa antes de implementar | `CU1` |
+| C1-3 | `CU1` es `INTEGRATED_PHASE` (`PHASE` propio + `INTEGRATION`) | `CU1` |
+| C1-4 | Las referencias `preserve` son regresión obligatoria; las fijaciones `pins` solo se invierten o sustituyen mediante pruebas de aceptación; ninguna referencia numérica cambia en silencio | todos |
+| H10 | La profundidad mínima y la concordancia de dos niveles no garantizan la longitud de un evaluador general (aliasing). La política revisada distingue cuatro clases de resultado (estructural o analítico con garantías, numérico con cota justificada, estimación sin garantía suficiente, no establecido), no introduce garantías falsas y declara cuándo un resultado puede alimentar otra construcción del DAG; H11 y H12 se investigan conjuntamente con límites honestos | `CU1` |
+| Alcance de `CU1` | Se mantiene; si una corrección exige cambiar un contrato de `CU2` o `CU3`, se detiene y se presenta la dependencia | `CU1` |
+| `OBS-CU0-CU3-TANGENT-EXISTENCE` | Un punto crítico aislado certificado con residuo dentro de ε no prueba una raíz; distinguir contacto estructural, tangencia de existencia certificada, aproximación numérica y punto crítico sin intersección; F-2 (`TANGENT_CERTIFIED_ISOLATED`) no aprobada tal como está formulada | `CU3` |
+| `OBS-CU0-CU6-M07-SELECTION-IDENTITY` | La etiqueta puede introducir una referencia textual, pero no prueba la identidad de un objeto seleccionado antes; comprobar la vigencia de la selección tras Deshacer, Rehacer o reconstrucción y pedir una selección nueva si no se puede establecer; nunca reasociar en silencio | `CU6` |
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`.
@@ -66,9 +83,12 @@ Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`.
 
 ## 4. Paquetes
 
-### CU0 — Línea base reproducible, caracterización y decisiones (autorizado; candidato)
+### CU0 — Línea base reproducible, caracterización y decisiones (`PASS — AUTHOR APPROVED`)
 
-Entregado en el candidato `CU0` (ver el [informe](../validation/pre_g9b_cu0_baseline_candidate_report.md)):
+Aprobado por el autor el 2026-10-20 sobre el candidato técnico `636a0070` y su
+descendiente documental `d684e740`
+([registro de cierre](../validation/pre_g9b_cu0_closeout_record.md)). Entregado en el
+candidato `CU0` (ver el [informe](../validation/pre_g9b_cu0_baseline_candidate_report.md)):
 corpus con manifiesto; pruebas de caracterización versionadas y selección
 `PRE-G9B-CU0`; banco reproducible y escenarios ventaneados en `tools/benchmark/pre-g9b-cu/`;
 línea base geométrica; reproducción ventaneada de B02/B03 con el `main` del producto y
@@ -77,15 +97,19 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
 
 ### CU1 — Conformidad de evaluación, revisión, composición anidada y métrica
 
+- **Estado:** preparación normativa y técnica autorizada el 2026-10-20; implementación no
+  autorizada. La siguiente decisión autoral es la aprobación de la política métrica
+  revisada y la autorización de la implementación sobre un commit base exacto.
 - **Objetivo:** que `e_2` y cualquier Locus V2 que dependa de métricas u otros loci se
   evalúe sin bloquear la aplicación y con longitudes correctas, conforme a
   `locus-v2-semantics.md` y `locus-v2-metrics.md`.
 - **Alcance:** revisión semántica por contenido (mover solo el conductor no republica);
   corte reconstruido una vez por revisión; copias anidadas estables y reutilización del
   índice métrico; sesión propagada a la evaluación anidada; contadores anidados públicos;
-  presupuesto métrico con fallo explícito (H04, H11); corrección de la métrica de
-  evaluador: profundidad mínima, control de consistencia, tolerancia relativa repartida y
-  admisibilidad condicionada al error (H10, H12).
+  presupuesto métrico con fallo explícito (H04, H11); política métrica revisada con
+  clases de garantía explícitas y límites honestos para el evaluador general (H10, H12),
+  según la precisión H10 de §2.1: la profundidad mínima y la concordancia de niveles no
+  bastan por sí solas.
 - **Fuera de alcance:** existencia y dibujo (`CU2`), materialización (`CU3`).
 - **Aceptación:** puertas por contadores (decisión C1-1), referencias `preserve` de la
   línea base reproducidas, fijaciones B10.1, H03, H10 y H11 invertidas por pruebas de
@@ -118,6 +142,12 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
   (H06); clasificación de contacto por punto crítico.
 - **Aceptación:** los tres casos obligatorios materializados con identidad y dinámica;
   la raíz transversal de la costura se conserva; barrido de escala; casi-tangencias.
+- **Precisión autoral de 2026-10-20** (`OBS-CU0-CU3-TANGENT-EXISTENCE`): un punto crítico
+  aislado certificado con residuo dentro de ε no prueba la existencia de una raíz. El
+  diseño distingue contacto estructural, tangencia de existencia certificada,
+  aproximación numérica y punto crítico sin intersección, y no convierte aproximaciones
+  toleradas en incidencias exactas. La materialización autoritativa de
+  `TANGENT_CERTIFIED_ISOLATED` tal como la formula F-2 no está aprobada.
 
 ### CU4 — Valores por defecto, etiquetado, estilos e inserción
 
@@ -134,7 +164,12 @@ por paso, sin reasociación), M04 (DC-4) y H05.
 ### CU6 — Interacción y presentación
 
 Preparación de diseño de M07 al comienzo del paquete (`CU6-D`), seguida de M07 como
-prioridad y de B04, M02, M03, M06 y M10.
+prioridad y de B04, M02, M03, M06 y M10. Precisión autoral de 2026-10-20
+(`OBS-CU0-CU6-M07-SELECTION-IDENTITY`): la etiqueta puede introducir una referencia
+textual en el comando, pero no prueba la identidad de un objeto seleccionado antes; el
+diseño comprueba la vigencia de la selección tras Deshacer, Rehacer o reconstrucción,
+pide una selección nueva cuando no puede establecerla y nunca reasocia en silencio un
+objeto distinto que haya adquirido la misma etiqueta.
 
 ### CU7 — Puntos sobre Locus V2 y redefinición
 
@@ -206,7 +241,9 @@ modifican.
 
 ## 9. Decisiones pendientes
 
-Las decisiones necesarias para autorizar `CU1` y preparar `CU2`/`CU3` están en la
-[hoja de decisiones](../validation/pre_g9b_cu0_author_decision_sheet.md); el texto de las
-enmiendas candidatas, en las
+Las decisiones C1-0 a C1-4 quedaron resueltas el 2026-10-20 (§2.1). Las necesarias para
+preparar `CU2`/`CU3` siguen en la
+[hoja de decisiones](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
+precisión de `OBS-CU0-CU3-TANGENT-EXISTENCE` sobre F-2; el texto de las enmiendas
+candidatas de `CU0` está en las
 [enmiendas normativas candidatas](pre_g9b_cu0_candidate_normative_amendments.md).

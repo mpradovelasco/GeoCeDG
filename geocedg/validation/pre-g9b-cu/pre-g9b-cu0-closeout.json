@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU0",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu0_closeout_record.md",
+  "instruction": "GeoCeDG — PRE-G9B-CU0. Aprobación autoral, cierre y autorización de preparación de CU1",
+  "authorApprovalDate": "2026-10-20",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "exact reviewed content: technical candidate 636a0070 and documentary descendant d684e740; no further change inside CU0",
+  "authorSmoke": "NOT PERFORMED — NOT APPLICABLE (no productive change; review of deliverables and technical evidence)",
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "status": {
+    "PRE-G9B-CU framework": "PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS (2026-10-19)",
+    "PRE-G9B-CU0": "PASS — AUTHOR APPROVED",
+    "CU0 design candidates (D, E, F, G, H, A1.1-A3.4)": "CANDIDATE — NOT NORMATIVE",
+    "PRE-G9B-CU1": "NORMATIVE AND TECHNICAL PREPARATION AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-CU2..CU10": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "publication": "NOT AUTHORIZED",
+    "tag": "NOT AUTHORIZED",
+    "main": "UNCHANGED",
+    "book": "UNCHANGED — PAUSED AFTER BOOK-FIGPOL-PILOT"
+  },
+  "identities": {
+    "technicalCandidate": {"commit": "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "tree": "8fac2cae5c799fe7da215641c2a94ae95044a84d", "parent": "444ad46b1c18a6101dae68a75a8d7a5f92ed83fe", "modifiedByCloseout": false},
+    "verificationRecordDescendant": {"commit": "d684e74050988a3051a1692bfcf0651440b1567a", "tree": "6c59bdbfbee7a9dbba1b4d0a0f45e290d500c811", "parent": "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "changedPaths": ["docs/roadmap/geocedg_roadmap.md", "docs/validation/pre_g9b_cu0_author_decision_sheet.md", "docs/validation/pre_g9b_cu0_baseline_candidate_report.md", "docs/validation/pre_g9b_cu0_verification_record.md"], "executableInputsChanged": false},
+    "planningCandidate": {"commit": "444ad46b1c18a6101dae68a75a8d7a5f92ed83fe", "tree": "1aff549ccf3c0deff5581ee7942d566bd5cc4e19", "parent": "48a0775e4f2f122f5e2614c62b5773777752ccd1"},
+    "historicalBase": {"commit": "48a0775e4f2f122f5e2614c62b5773777752ccd1", "tree": "75ebf03f089a5effa02daa4a68be360b7499fdd9", "equalsMain": true, "equalsOriginMain": true, "equalsLiveRemoteMain": true},
+    "reviewBranch": {"name": "phase/pre-g9b-cu0-candidate", "remoteRef": "d684e74050988a3051a1692bfcf0651440b1567a"},
+    "ancestry": ["48a0775e4f2f122f5e2614c62b5773777752ccd1", "444ad46b1c18a6101dae68a75a8d7a5f92ed83fe", "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "d684e74050988a3051a1692bfcf0651440b1567a"],
+    "productSourceDeltaOutsideTests": "NONE",
+    "gitDiffCheck": {"range": "48a0775e4f2f122f5e2614c62b5773777752ccd1..d684e74050988a3051a1692bfcf0651440b1567a", "exitCode": 0}
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptance": [
+    {"check": "STATIC", "commit": "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "runId": "verification-3ebfbcdd2be443da830df7036e1f1d84", "resultHash": "c58fe1613e755818ea5e700963cc10d263338059b9bed1ae569d36f35f6f03bf", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"},
+    {"check": "INFRA_UNIT", "commit": "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "runId": "verification-0ee52198f76e4633b2405ee4dfb9bb50", "resultHash": "0b678cd3ec7fd8b3bc84e3a95c435e73bbd9b047f6a1b5d42945fff35808906d", "planHash": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "22/22"},
+    {"check": "PHASE -Phase PRE-G9B-CU0", "commit": "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "runId": "verification-2567deb5439140978837d7be1b9d6f46", "resultHash": "61204b2fcfac3b1a27efa87a2eb1efa762f7b7c19eb789cf31feb4d4cd2d9334", "planHash": "43e3e97e492bb71bcf1552f23402c615d728c259c8c0d2e2266e19fc62c49173", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "2/2", "junit": {"preG9bCu0Desktop": {"tests": 21, "skipped": 0, "failures": 0}}},
+    {"check": "INTEGRATION", "commit": "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "runId": "verification-439437f91e4a4d358e0825c5ad1880c9", "resultHash": "1a3816eede3fecbd02895183e082b29fa37d72bb0811dcf76259504aec482dfc", "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "19/19", "junit": {"desktopFinal": {"tests": 2174, "skipped": 1, "failures": 0}, "desktopG9u1Isolated": {"tests": 5, "skipped": 0, "failures": 0}, "sharedFinal": {"tests": 6992, "skipped": 10, "failures": 0}}},
+    {"check": "STATIC", "commit": "d684e74050988a3051a1692bfcf0651440b1567a", "runId": "verification-a74e57b005e14c09b6ec25933f1647ac", "resultHash": "50a0240d835f618562ce0a9cd2bc0f8082a10c52657f591af5294241a897e7e5", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"}
+  ],
+  "authentication": {"date": "2026-10-20", "method": "Read-VerificationJson + Get-VerificationResultHash; run_state and run journal COMPLETED; candidate commit and tree exact", "allAuthentic": true},
+  "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"],
+  "finalReceipt": "NOT REQUIRED BY INTEGRATED_PHASE — NONE CLAIMED; phase-closeout.ps1 -Action INSPECT not applicable",
+  "closeoutPrecedent": "PRE-G9B-R6-plus-B closeout (INTEGRATED_PHASE, PHASE + INTEGRATION, no receipt)",
+  "evidenceLocation": ["artifacts/agent/pre-g9b-cu0-static-636a0070/", "artifacts/agent/pre-g9b-cu0-infra-unit-636a0070/", "artifacts/agent/pre-g9b-cu0-phase-636a0070/", "artifacts/agent/pre-g9b-cu0-integration-636a0070/", "artifacts/agent/pre-g9b-cu0-record-static-d684e740/"],
+  "decisions": {
+    "C1-0": "APPROVED — CU0 PASS — AUTHOR APPROVED subject to this documentary closeout; CU1 preparation base = d684e740 or its authorized and verified closeout descendant",
+    "C1-1": "APPROVED — deterministic counters (index rebuilds, slice constructions, revisions, nested evaluations) are the main performance criteria; drag and load times are complementary indicators",
+    "C1-2": "APPROVED WITH DESIGN CONDITION — CU1 includes B10.1, H03, H04, H10, H11, H12; candidate metric policy A1.2 revised before implementation",
+    "C1-3": "APPROVED — INTEGRATED_PHASE with own PHASE and INTEGRATION",
+    "C1-4": "APPROVED — preserve references are regression evidence; pins are inverted or replaced only by acceptance tests; no silent change of numerical references"
+  },
+  "h10Precision": {
+    "finding": "minimum subdivision depth plus agreement of two consecutive levels is necessary but does not guarantee a correct arc length for a general evaluator; finitely many point evaluations cannot certify the length of an arbitrarily oscillating curve without regularity or complexity restrictions",
+    "resultClasses": ["structural or analytic capability with demonstrable guarantees", "numerical with a justified error bound", "estimate by refinement without sufficient guarantee", "not established (budget exhausted, degeneration or insufficient information)"],
+    "requirements": ["no false precision guarantee from the agreement of two chord sums", "never publish a length with a guarantee higher than the evidence", "state when a result may feed another DAG construction", "do not turn all general metrics undefined unnecessarily; distinguish usable estimate under explicit contract from certified result"],
+    "h11h12JointInvestigation": ["budget exhaustion for moderate-radius circles", "absolute and relative tolerances", "error-budget distribution over subintervals", "budget adequacy to necessary work", "declared precision versus actual error", "rich result versus scalar adapter consistency"],
+    "honestLimits": "no fixed budget resolves every regular curve of arbitrary complexity; resolve the characterized examples and set honest limits"
+  },
+  "cu1Scope": {
+    "evaluationAndComposition": ["semantic revision stability", "no rebuild per point query", "reuse of isolated constructions and metric indexes", "evaluation session propagation", "cycle detection and nested work control", "reproducible instrumentation"],
+    "metrics": ["H10 aliasing correction", "H11 budget exhaustion", "H12 error and tolerance coherence", "preservation of valid semantic results", "correct cache invalidation"],
+    "excluded": ["existence-component certification (CU2)", "topology of e_2", "tangency materialization (CU3)", "M08/M09", "interface improvements", "book editorial changes"],
+    "stopRule": "if a CU1 correction requires changing a CU2 or CU3 contract, stop and present the dependency"
+  },
+  "observations": [
+    {"id": "OBS-CU0-CU3-TANGENT-EXISTENCE", "owner": "PRE-G9B-CU3", "blocking": false, "statement": "an isolated certified critical point with h'(t*)=0, h''(t*)!=0 and |h(t*)|<=eps does not prove a root; distinguish structural contact, certified-existence tangency, numerical approximation to a contact and critical point without intersection", "f2Disposition": "authoritative materialization of TANGENT_CERTIFIED_ISOLATED as formulated in F-2 NOT APPROVED until the distinction is resolved", "objectiveKept": "materialize the three contacts of the author's model without converting tolerated approximations into exact incidences"},
+    {"id": "OBS-CU0-CU6-M07-SELECTION-IDENTITY", "owner": "PRE-G9B-CU6", "blocking": false, "statement": "a label may introduce a textual reference but never proves the identity of a previously selected object; check selection validity after Undo, Redo or rebuild; request a new selection when continuity cannot be established; never reassociate silently an object that acquired the same label"}
+  ],
+  "authorizedNextWork": {
+    "phase": "PRE-G9B-CU1 normative and technical preparation",
+    "tasks": ["inspect evaluation, metric, revision and composition contracts and code", "revise A1.1 and especially A1.2", "propose a realizable metric policy with explicit guarantees", "separate conformance from normative extension", "prepare specification or ADR drafts not presented as approved", "define focused and adversarial tests not passable by increasing minimum sampling depth", "set CU1 acceptance criteria and performance counters", "prepare the canonical CU1 implementation prompt"],
+    "localCandidateCommitAllowed": true,
+    "staticVerificationAllowed": true,
+    "notAuthorized": ["productive code changes", "CU1 implementation", "functional metric changes", "CU2-CU10"],
+    "nextAuthorDecision": "approval of the revised metric policy and explicit authorization of the CU1 implementation on an exact base commit"
+  },
+  "book": {"head": "78fbc88e9e12346b89d6ded411eaae94de2284b9", "equalsOriginMain": true, "worktreeClean": true, "state": "INTACT — PAUSED AFTER BOOK-FIGPOL-PILOT"},
+  "closeoutChangedPaths": [
+    "docs/architecture/pre_g9b_cu_corrective_usability_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_cu0_closeout_record.md",
+    "geocedg/validation/pre-g9b-cu/pre-g9b-cu0-closeout.json"
+  ],
+  "publication": "NONE — closeout commit local; review branch phase/pre-g9b-cu0-candidate stays at d684e740"
+}
