@@ -17,7 +17,7 @@ DC-4; DC-6 con límites justificados por pruebas; `CU8` solo diseño; libro en p
 
 | Id | Decisión | Opciones | Recomendación |
 |---|---|---|---|
-| C1-0 | Aceptación del candidato `CU0` y commit base de `CU1` | el commit candidato `CU0` (o su publicación, si se decide) | aceptar `CU0` y usar su commit como base |
+| C1-0 | Aceptación del candidato `CU0` y commit base de `CU1` | el candidato técnico `636a0070` o su descendiente documental, que solo registra la verificación ([registro de verificación](pre_g9b_cu0_verification_record.md)) (o su publicación, si se decide) | aceptar `CU0` y usar como base su descendiente documental |
 | C1-1 | Puertas de aceptación de B10.1 (`DT-1`) | por contadores deterministas, con tiempos informativos | (a) 0 reconstrucciones del índice métrico anidado por consulta puntual tras el primer cálculo de cada revisión; (b) ninguna revisión publicada al mover solo el conductor; (c) como máximo una construcción de corte por revisión; (d) informativo: arrastre con `e_2` ≤ 2 × sin `e_2` (hoy ≈ 5,7 s frente a ≈ 75 ms por paso) y carga ≤ 3 s (hoy ≈ 15 s) |
 | C1-2 | Incluir en `CU1` la conformidad métrica (H10 P0, H11 P1, H12 P2) con la política métrica v2 ([A1.2](../architecture/pre_g9b_cu0_candidate_normative_amendments.md)) | incluir / paquete aparte | incluir: comparte el índice métrico que `CU1` reorganiza y H10 da valores erróneos sin aviso |
 | C1-3 | Clase de verificación de `CU1` | `INTEGRATED_PHASE` / `GLOBAL_IMPACT` | `INTEGRATED_PHASE` (`PHASE` propio + `INTEGRATION`) |

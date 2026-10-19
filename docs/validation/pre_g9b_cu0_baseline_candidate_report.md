@@ -7,7 +7,7 @@
 | Encargo | Instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization» (2026-10-19), que autoriza exclusivamente `CU0` |
 | Base | candidato de planificación local `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe`, árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`, padre `main` = `origin/main` = `48a0775e4f2f122f5e2614c62b5773777752ccd1` |
 | Clase de verificación propuesta | `INTEGRATED_PHASE`: `STATIC`, `INFRA_UNIT` (cambia el registro), `PHASE -Phase PRE-G9B-CU0` e `INTEGRATION` sobre el commit candidato |
-| Identidad del commit y resultados de verificación | `docs/validation/pre_g9b_cu0_verification_record.md`, en un commit documental descendiente (un commit no puede citar su propia identidad) |
+| Identidad del commit y resultados de verificación | [registro de verificación](pre_g9b_cu0_verification_record.md), añadido por un commit documental descendiente (un commit no puede citar su propia identidad) |
 | Entorno | Windows 11 Pro 10.0.26300; JVM de pruebas Desktop Java 17.0.10; escenario ventaneado con Temurin 25.0.4 (runtime del producto); PowerShell 7.6.6 |
 
 ## 1. Comprobación de la base (instrucción §2)
