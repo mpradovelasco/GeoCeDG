@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.pre-g9b-cu",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/pre-g9b-cu/original",
+    "author": "Manuel Prado-Velasco",
+    "date": "2026-10-19",
+    "provenance_notes": "Byte-exact copies of the two author constructions of the PRE-G9B-CU corrective and usability track input of 2026-10-19 (B01-B12, M01-M10), received in the ignored local folder artifacts/author-input/Lista19oct2026/ and copied after filename, size and SHA-256 capture. The originals remain untouched and unversioned. Incorporated by the author-authorized CU0 baseline."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg",
+    "models/regression/pre-g9b-cu/original/InterCilConoObliqueTest.ggb"
+  ],
+  "outputs": [
+    "Seven Locus V2 curves of an oblique cone-cylinder construction: o, v, w and a_1 driven by N on circle g_1; e_1, o_1 and e_2 driven by E_1 on circle p",
+    "Rich intersection result u_1 = Intersect(o_1, h_2) and semantic point N_1 = Point(o_1, text2, v_1)",
+    "Oriented locus length w_1 = LocusLength(o_1, N_1, K_1), its scalar d_2 = Length(w_1) and the development curve e_2 = LocusV2(R_1, E_1)",
+    "Ordinary Classic construction (InterCilConoObliqueTest.ggb) with free angle sliders alpha_C and alpha_{cyl} and the static text text4"
+  ],
+  "validity_domain": {
+    "description": "Two-view descriptive-geometry construction of an oblique cone (base circle p, centre B, radius rbCone, apex projections H and I) and a vertical cylinder (circle g_1, centre C_c, radius rbCylinder) offset by excCyl along g. The first locus family is the cone-cylinder intersection; the second is the intersection of the cone with the sphere of centre H and radius HD_1 and its development e_2. The validity of every locus is a characterization subject of PRE-G9B-CU, not an established fact.",
+    "parameters": [
+      "excCyl in [-rbCone, rbCone] (slider, step 0.1, saved value 2.9)",
+      "rbCone = 5, rbCylinder = 1.5, alpha_{cone} = 47 degrees, alpha_{cyl} = 40 degrees (independent expressions)",
+      "free points A, D, D_1 and L_1; path points B, C, H, A_2, N (driver on g_1) and E_1 (driver on p)",
+      "v_1 = 0 and the principal-selection token text2 address N_1 on o_1"
+    ]
+  },
+  "known_degeneracies": [
+    "For excCyl in about [3.7, 3.9] the loci o, v, w and a_1 have driver subintervals without a solution while the dependent producer certifies one COMPLETE periodic component (B07).",
+    "For excCyl >= 4.0 with N at its saved position the loci o, v, w and a_1 are undefined as a whole because the traced point does not exist at the current driver position (H01).",
+    "The oriented length w_1 jumps by the total length of o_1 where K_1 passes N_1 (driver parameter 0); e_2 inherits the jump and is drawn closed (B10.2).",
+    "Every evaluation of e_2 rebuilds the isolated slice, including a nested copy of o_1 and its metric index (B10.1).",
+    "The requested points of e_1 with n and c_1 and of o_1 with h_2 are tangent contacts at driver parameter 0 and are not materializable under the current transverse-only contract (B08, B09)."
+  ],
+  "reference_models": [
+    "models/legacy/inter-cil-cono-oblique/manifest.yml",
+    "models/legacy/inter-cil-cono-oblique-two-levels/manifest.yml"
+  ],
+  "expected_metrics": {
+    "InterCilConoOblique.cedg": {
+      "bytes": 58896,
+      "sha256": "1ae6f51293fb111b54510948cbcc6e8ba38ab63b658ba3f8a668858ae890456c",
+      "declared_version": "5.4.928.0",
+      "locus_v2_count": 7,
+      "rich_intersection_results": 1,
+      "locus_metric_results": 1
+    },
+    "InterCilConoObliqueTest.ggb": {
+      "bytes": 25203,
+      "sha256": "88779d58bcbcb08449eec8ffe6f74982238c84020a347f4cf2011f20a2690398",
+      "declared_version": "5.4.932.1",
+      "free_angle_sliders": 2,
+      "static_texts": 1
+    }
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Author-supplied regression constructions; redistribution remains subject to repository license approval.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "derived_artifacts": [
+    {
+      "path": "models/regression/pre-g9b-cu/expected-results.yml",
+      "role": "regression-evidence"
+    },
+    {
+      "path": "geocedg/validation/pre-g9b-cu/cu0-geometric-reference-baseline.json",
+      "role": "regression-evidence"
+    }
+  ],
+  "implementation": {
+    "mechanisms": ["native-cedg-archive", "classic-ggb-archive", "locus-v2", "locus-metric", "locus-intersection", "user-tools"],
+    "embedded_tools": 2,
+    "global_javascript": false
+  },
+  "publications": []
+}

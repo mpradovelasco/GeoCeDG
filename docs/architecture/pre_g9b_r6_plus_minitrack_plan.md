@@ -1811,8 +1811,11 @@ PRE-G9B-R6-plus-G          = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-15;
                              APPROVED — DESIGN; PROMPT = DESIGN AUTHOR APPROVED —
                              IMPLEMENTATION NOT AUTHORIZED
 
-PRE-G9B-R7                 = PASS — AUTHOR APPROVED (2026-10-15, candidate 0120cc40,
-                             pre_g9b_r7_closeout_record.md; not yet published)
+PRE-G9B-R7                 = PASS — AUTHOR APPROVED — PUBLISHED (2026-10-15, candidate
+                             0120cc40, pre_g9b_r7_closeout_record.md; published
+                             2026-10-15 as main 372da89f with the annotated tag
+                             geocedg-pre-g9b-r7-pass; registered by PRE-G9B-CU0 on
+                             2026-10-19)
                              earlier: EXECUTION AUTHORIZED — TECHNICAL CANDIDATE PENDING
                              AUTHOR REVIEW (author instruction of 2026-10-15 on the published
                              base b9bdb1e1; GLOBAL_IMPACT, acceptance FINAL;

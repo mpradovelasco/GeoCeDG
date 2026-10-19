@@ -18,6 +18,13 @@ geocedg/validation/spatial/g9a2/point-reference-values.json text eol=lf
 models/regression/g9a2-spatial-point-pilot/geogebra.xml text eol=lf
 models/regression/g9a2-spatial-point-pilot/g9a2-spatial-point-pilot.ggb binary
 
+# PRE-G9B-CU author regression constructions: byte-exact copies of the
+# author's originals, identified by SHA-256 in their manifest.
+models/regression/pre-g9b-cu/original/*.ggb binary
+models/regression/pre-g9b-cu/original/*.cedg binary
+# PRE-G9B-CU0 deterministic harness output, compared byte for byte on regeneration.
+geocedg/validation/pre-g9b-cu/*.json text eol=lf
+
 # PRE-G9B-S3 deterministic author-smoke construction.
 models/regression/pre-g9b-s3-text-view-scaling/geogebra.xml text eol=lf
 models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb binary

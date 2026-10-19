@@ -6416,6 +6416,60 @@
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-G-R1 regression fingerprint of SC-01, SC-02 and SC-11: one export-area reset and a cleared paste notice on the Open routes, notice-only clearing on the other transitions, cancelled and failed opens, preserved tool replacement, macro-edit overwrite, Insert File and Apply Styles, and the inherited Classic routes.",
       "authority": "docs/validation/pre_g9b_r6_plus_g_r1_authorization_record.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0Corpus.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 test support: verified access to the byte-exact author regression corpus (models/regression/pre-g9b-cu), working copies, the derived variant without e_2 and the event-thread loading path.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0References.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 test support: geometric references (preserve) and characterization pins with owning package of the author corpus and of synthetic constructions; deterministic JSON of the CU0 baseline.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0Baseline.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 test support: reads the committed CU0 geometric reference baseline and compares computed sections with tolerance.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0CorpusTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 corpus identity: versioned copies match their manifest, the native model keeps the characterized e_2 chain and the derived variant removes only e_2.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0LocusReferenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 preserved references and pins of the author model without e_2: locus samples, oriented length, branch ends, contacts, B06, B07, H01, H03 and B08/B09.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0CompositionCharacterizationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 complete author model: preserved e_2 points and pins of B10.1 (nested rebuild per point query) and B10.2 (closed periodic certificate and render segment across the oriented-length reset).",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0SyntheticCharacterizationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0AuthoringCharacterizationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 authoring pins: B01 insertion rejection, B05 labels of GeoCeDG entities, M05.1 slider label mode, M04 orientation-cue admission, B04 indexed intersection order and H05 memory slot state.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0GuideCoverageMatrixTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU0 integrity of the initial user-guide coverage matrix: every profile action once, every cited anchor present in its edition, consistent totals.",
+      "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
     }
   ]
 }

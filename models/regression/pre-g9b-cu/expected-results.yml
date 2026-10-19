@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "intake": {
+    "local_path": "artifacts/author-input/Lista19oct2026/",
+    "received": "2026-10-19",
+    "policy": "immutable originals stay ignored and untouched; only byte-exact copies are versioned; working copies for probes are made in the session scratchpad or in test temporary folders"
+  },
+  "author_evidence": [
+    {
+      "filename": "InterCilConoOblique.cedg",
+      "role": "source-construction",
+      "bytes": 58896,
+      "sha256": "1ae6f51293fb111b54510948cbcc6e8ba38ab63b658ba3f8a668858ae890456c",
+      "original_last_write_utc": "2026-10-19T09:19:48.7829257Z",
+      "versioned_copy": "models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg",
+      "content": "native GeoCeDG archive (geogebra.xml, geogebra_defaults2d.xml, geogebra_defaults3d.xml, geogebra_macro.xml with the user tools pointJump and translationCoor, default empty geogebra_javascript.js, thumbnail); declared app classic 5.4.928.0; labelingStyle 2; 113 objects after loading; seven Locus V2",
+      "incidences": ["B05", "B06", "B07", "B08", "B09", "B10.1", "B10.2", "H01", "H03", "H04", "M04"]
+    },
+    {
+      "filename": "InterCilConoObliqueTest.ggb",
+      "role": "source-construction",
+      "bytes": 25203,
+      "sha256": "88779d58bcbcb08449eec8ffe6f74982238c84020a347f4cf2011f20a2690398",
+      "original_last_write_utc": "2026-10-18T07:43:09.1686074Z",
+      "versioned_copy": "models/regression/pre-g9b-cu/original/InterCilConoObliqueTest.ggb",
+      "content": "GeoGebra Classic archive declared 5.4.932.1; 67 objects; free angle sliders alpha_C and alpha_{cyl}; static text text4; labelingStyle 2; no embedded tools",
+      "incidences": ["B01", "M04"]
+    }
+  ],
+  "characterization": {
+    "report": "docs/validation/pre_g9b_cu_characterization_evidence_report.md",
+    "cu0_report": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md",
+    "geometric_reference_baseline": "geocedg/validation/pre-g9b-cu/cu0-geometric-reference-baseline.json",
+    "rule": "Characterization pins record defective behaviour as reference evidence with an owning CU package; they are not normative expectations and are inverted or replaced by the owning package's acceptance criteria."
+  }
+}

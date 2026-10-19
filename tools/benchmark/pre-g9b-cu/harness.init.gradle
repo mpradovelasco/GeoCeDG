@@ -1,0 +1,48 @@
+// PRE-G9B-CU0 reproducible harness (tools/benchmark/pre-g9b-cu/run-harness.ps1).
+// Adds the harness sources to the Desktop test source set for one explicit run of
+// the harness classes (PreG9BCu0Harness, PreG9BCu0WindowedHarness) and forwards the
+// harness properties to the test JVM. The runner recompiles the test source set without
+// this script afterwards, so no harness class remains in the build output. Not used by the
+// verifier.
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
+
+// The Desktop project lives in an included build, whose start parameters do not carry the
+// root build's -P properties: read them from the root build.
+def root = gradle
+while (root.parent != null) {
+    root = root.parent
+}
+def props = root.startParameter.projectProperties
+def sources = props['cu0HarnessSources']
+def target = java.nio.file.Paths.get('source', 'desktop', 'desktop')
+
+allprojects { p ->
+    if (sources != null && p.projectDir.toPath().endsWith(target)) {
+        p.afterEvaluate {
+            p.sourceSets.test.java.srcDir(sources)
+            p.tasks.named('test').configure { t ->
+                t.systemProperty('geocedg.cu0.harness', props['cu0Scenario'])
+                t.systemProperty('geocedg.cu0.output', props['cu0Output'])
+                t.systemProperty('geocedg.cu0.commit', props.getOrDefault('cu0Commit', ''))
+                t.systemProperty('geocedg.cu0.tree', props.getOrDefault('cu0Tree', ''))
+                t.systemProperty('geocedg.cu0.productDirty',
+                        props.getOrDefault('cu0ProductDirty', 'false'))
+                t.systemProperty('geocedg.cu0.dense', props.getOrDefault('cu0Dense', 'false'))
+                t.maxHeapSize = '2g'
+                t.outputs.upToDateWhen { false }
+                if (props['cu0ProductRuntime'] == 'true') {
+                    def toolchains = p.extensions.getByType(JavaToolchainService)
+                    t.javaLauncher.set(toolchains.launcherFor {
+                        languageVersion.set(JavaLanguageVersion.of(25))
+                    })
+                    t.jvmArgs('--add-exports=java.base/java.lang=ALL-UNNAMED',
+                            '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
+                            '--add-exports=java.desktop/sun.java2d=ALL-UNNAMED',
+                            '--enable-native-access=ALL-UNNAMED',
+                            '-Dnet.bytebuddy.experimental=true')
+                }
+            }
+        }
+    }
+}

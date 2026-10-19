@@ -1,0 +1,4680 @@
+{
+  "schema_version": 1,
+  "status": "INITIAL COVERAGE BASELINE — CANDIDATE",
+  "guide_sources": {
+    "en": "docs/user/geocedg_user_guide_en.md",
+    "es": "docs/user/geocedg_user_guide_es.md"
+  },
+  "profile_source": "apps/geocedg/application-profile.yml",
+  "anchor_rule": "An anchor is a derived navigation identity per geocedg/specs/operations/documentation-maintenance.md section 10 (as resolved by GeoCeDGGuideOutline and pinned by PreG9BR5AGuideOutlineTest): a level-1 or level-2 heading takes the id of the \"<!-- geocedg-guide-section: <id> -->\" marker on the line immediately before it, a level-3 heading takes \"<enclosing section id>/<numbering token>\" (for example \"spline-v2/7.2\"), deeper headings and translated heading text never form anchors, and both editions share the same 104 identities.",
+  "entries": [
+    {
+      "id": "action:construction.move",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:425",
+      "label_en": "Move",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.4",
+          "interface-and-workflow/3.3",
+          "spline-v2/7.4",
+          "lengths-and-measurements/9.5",
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "interface-and-workflow/3.4",
+          "interface-and-workflow/3.3",
+          "spline-v2/7.4",
+          "lengths-and-measurements/9.5",
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "Move is the selection tool (3.4), drags semantic points (7.4) and dimension lines (9.5) and heads the toolbar Move group. Its direct Edit-menu entry is not mentioned."
+    },
+    {
+      "id": "action:construction.move-rotate",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:443",
+      "label_en": "Move around Point",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "Wrong name: 12.5 calls it 'Rotate around Point' / 'Rotar alrededor de un punto'. The visible tool is 'Move around Point' / 'Gira en torno a un punto'; 'Rotate around Point' is the Similarity-transformations tool. The guide does not describe how to use it (select a rotation centre, then drag) or its Edit-menu entry."
+    },
+    {
+      "id": "action:construction.working-layer",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:461",
+      "label_en": "Working Layer",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.5",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "presentation-and-visualization/12.5",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The toolbar route (Move group) and the status-bar route (Layer: n) are correct; the direct Edit-menu entry is not mentioned. The profile action note still says 'bounded 0..9 chooser', but the product and the guide use 0..99 (AppConfigGeoCeDG.L_MAX = 99). The stale note is in the profile, not the guide."
+    },
+    {
+      "id": "action:construction.select",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:480",
+      "label_en": "Select Objects",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "'Select Objects' / 'Seleccionar objetos' is a direct Edit-menu entry (the profile host_characterization item desktop-select-mode is still open) and is never mentioned; the guide treats Move as the only selection tool."
+    },
+    {
+      "id": "action:construction.attach-detach",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:498",
+      "label_en": "Attach / Detach Point",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "'Attach / Detach Point' / 'Limitar/liberar punto' is in the Edit menu and in the toolbar 'Point and Intersection' flyout and is never mentioned."
+    },
+    {
+      "id": "action:edit.delete",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:516",
+      "label_en": "Delete",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The 'Delete' tool (a direct Edit-menu entry) is not described, and neither is deleting objects in general (Delete key, context menu). The guide only mentions what happens after an object is deleted."
+    },
+    {
+      "id": "action:edit.undo",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:534",
+      "label_en": "Undo",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.4",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.4",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "Ctrl+Z is correct. Wrong route: 'Edit → History' / 'Editar → Historial'. Edit is a flat menu (the 'History' group is rendered inline, not as a submenu), so Undo is a direct Edit entry."
+    },
+    {
+      "id": "action:edit.redo",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:551",
+      "label_en": "Redo",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.4",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.4",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "Ctrl+Y is correct. Wrong route: 'Edit → History'. Redo is a direct Edit entry."
+    },
+    {
+      "id": "action:construction.point",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:568",
+      "label_en": "Point",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.1",
+          "interface-and-workflow/3.2",
+          "spline-v2/7.4",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "basic-geometry/5.1",
+          "interface-and-workflow/3.2",
+          "spline-v2/7.4",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Covers free points and interactive semantic points on curves (7.4)."
+    },
+    {
+      "id": "action:construction.point-on-object",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:587",
+      "label_en": "Point on Object",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.1",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.1",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "One-sentence description; 'Point on object' / 'Punto en objeto' matches."
+    },
+    {
+      "id": "action:construction.line",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:606",
+      "label_en": "Line",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Command g=Line(A,B) and route given."
+    },
+    {
+      "id": "action:construction.segment",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:624",
+      "label_en": "Segment",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Command s=Segment(A,B) and route given."
+    },
+    {
+      "id": "action:construction.fixed-segment",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:642",
+      "label_en": "Segment with Given Length",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only says that it takes a numeric input (select a point, then enter the length)."
+    },
+    {
+      "id": "action:construction.ray",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:660",
+      "label_en": "Ray",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Command r=Ray(A,B) and route given."
+    },
+    {
+      "id": "action:construction.vector",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:678",
+      "label_en": "Vector",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Command v=Vector(A,B) and route given."
+    },
+    {
+      "id": "action:construction.vector-from-point",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:696",
+      "label_en": "Vector from Point",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Wrong behaviour: 5.2 says 'Vector from point takes a numeric input', but the tool takes a starting point and an existing vector (upstream help 'Select starting point and vector'). Spanish name mismatch: the guide says 'Vector desde un punto', the visible tool is 'Equipolente'."
+    },
+    {
+      "id": "action:construction.parallel-line",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:714",
+      "label_en": "Parallel Line",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The remembered-reference (Ctrl+click) mode is documented in detail. Spanish: the guide says 'Recta paralela', the visible tool is 'Paralela' (close)."
+    },
+    {
+      "id": "action:construction.perpendicular-line",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:732",
+      "label_en": "Perpendicular Line",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The remembered-reference mode is documented. Spanish: the guide says 'Recta perpendicular', the visible tool is 'Perpendicular' (close)."
+    },
+    {
+      "id": "action:construction.perpendicular-bisector",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:750",
+      "label_en": "Perpendicular Bisector",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ]
+      },
+      "notes": "Only listed (3.2) and mentioned for orientation-cue inheritance; how to use the tool is not described."
+    },
+    {
+      "id": "action:construction.angle-bisector",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:768",
+      "label_en": "Angle Bisector",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ]
+      },
+      "notes": "Only listed; 5.2 mentions only that a three-point bisector shows no orientation cue."
+    },
+    {
+      "id": "action:construction.midpoint",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:786",
+      "label_en": "Midpoint or Center",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.1",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.1",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Usage is explained (midpoint of two points or of a segment), but the visible name is 'Midpoint or Center' / 'Medio o Centro' (guide: 'Midpoint' / 'Punto medio'), and the centre-of-a-conic use is not mentioned."
+    },
+    {
+      "id": "action:construction.polyline",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:804",
+      "label_en": "Polyline",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed; usage is deferred to inherited behaviour ('behave as in the shared kernel')."
+    },
+    {
+      "id": "action:construction.list-from-selection",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:822",
+      "label_en": "Create List from Selection",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.8",
+          "interface-and-workflow/3.2",
+          "interface-and-workflow/3.3",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "basic-geometry/5.8",
+          "interface-and-workflow/3.2",
+          "interface-and-workflow/3.3",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Full workflow (selection order, finishing by reselecting the first object, Escape) is documented."
+    },
+    {
+      "id": "action:construction.polygon",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:841",
+      "label_en": "Polygon",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed; usage is deferred to inherited behaviour."
+    },
+    {
+      "id": "action:construction.regular-polygon",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:859",
+      "label_en": "Regular Polygon",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed; usage is deferred to inherited behaviour."
+    },
+    {
+      "id": "action:construction.rigid-polygon",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:877",
+      "label_en": "Rigid Polygon",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed; usage is deferred to inherited behaviour."
+    },
+    {
+      "id": "action:construction.vector-polygon",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:895",
+      "label_en": "Vector Polygon",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed; usage is deferred to inherited behaviour."
+    },
+    {
+      "id": "action:parameter.slider",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:913",
+      "label_en": "Slider",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The Slider tool is named as one way to create a parameter. The slider dialog and its options are inherited and not described."
+    },
+    {
+      "id": "action:parameter.fixed-angle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:931",
+      "label_en": "Angle with Given Size",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The GeoCeDG-specific behaviour (angle hidden in Graphics 1) is documented. The input steps (leg point, vertex, size) are not. Spanish word order differs: the guide says 'Ángulo de amplitud dada', the visible tool is 'Ángulo dada su amplitud'."
+    },
+    {
+      "id": "action:parameter.checkbox",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:949",
+      "label_en": "Check Box",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed. Spanish: the guide says 'Casilla', the visible tool is 'Casilla de control'."
+    },
+    {
+      "id": "action:parameter.button",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:967",
+      "label_en": "Button",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed; how to create a button and attach a script is not described."
+    },
+    {
+      "id": "action:parameter.input-box",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:985",
+      "label_en": "Input Box",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.5",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed. Spanish: the guide says 'Campo de entrada', the visible tool is 'Casilla de Entrada'."
+    },
+    {
+      "id": "action:parameter.animation-toggle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1003",
+      "label_en": "Animate selected object",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed. The guide does not say that it toggles animation of the selected animatable objects, is unavailable without such a selection, or is also in the object context menu (GeoCeDG submenu)."
+    },
+    {
+      "id": "action:relation.intersect",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1020",
+      "label_en": "Intersect",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.2",
+          "semantic-points-intersections-materialization/8.7",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.2",
+          "semantic-points-intersections-materialization/8.7",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The semantic-curve behaviour (rich result, markers, materialization) is documented; ordinary intersections are inherited."
+    },
+    {
+      "id": "action:relation.tangent",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1038",
+      "label_en": "Tangents",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed ('Tangents' / 'Tangentes')."
+    },
+    {
+      "id": "action:relation.compare",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1056",
+      "label_en": "Relation",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed ('Relation' / 'Relación'); what the dialog reports is not described."
+    },
+    {
+      "id": "action:relation.polar-diameter",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1074",
+      "label_en": "Polar or Diameter Line",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed, and the names differ: English guide 'Polar/diameter line' vs visible 'Polar or Diameter Line'; Spanish guide 'Polar o diámetro' vs visible 'Polar o Conjugado'."
+    },
+    {
+      "id": "action:result.inspect-rich",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1092",
+      "label_en": "Inspect rich result",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.4",
+          "semantic-points-intersections-materialization/8.3",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.4",
+          "semantic-points-intersections-materialization/8.3",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Construction → Relations and intersections is correct. The 'context menu' route is really the decorated object context menu → 'GeoCeDG' submenu. The inspector also opens LocusLength metric results (GeoCeDGLocusV2Dialogs.showMetric), which neither 8.4 nor section 9 says."
+    },
+    {
+      "id": "action:result.show-candidate-markers",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1111",
+      "label_en": "Show solution markers",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.4"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.4"
+        ]
+      },
+      "notes": "Its behaviour is described, but no route is given and the text implies an inspector control. It is a check item directly in the Options menu (the 'GeoCeDG options' group is inline). Clicking a marker to choose a solution is not described."
+    },
+    {
+      "id": "action:result.materialize-selected",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1130",
+      "label_en": "Create selected intersection point",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.4",
+          "semantic-points-intersections-materialization/8.6",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.4",
+          "semantic-points-intersections-materialization/8.6",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The menu and context item 'Create selected intersection point' / 'Crear punto de intersección seleccionado' is never named; 3.2 says only 'the three materialization actions', and 8.4 documents the inspector buttons instead ('Create one', 'Create selected', 'Create all eligible')."
+    },
+    {
+      "id": "action:result.materialize-multiple",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1149",
+      "label_en": "Create selected intersection points",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The menu item 'Create selected intersection points' is not named, and the guide does not say that it needs several selected solutions; the equivalent inspector button is documented."
+    },
+    {
+      "id": "action:result.materialize-all-eligible",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1168",
+      "label_en": "Create all eligible intersection points",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The menu item 'Create all eligible intersection points' is not named; only the inspector button 'Create all eligible' is documented."
+    },
+    {
+      "id": "action:result.auto-materialize-initial",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1187",
+      "label_en": "Auto-create eligible points for new explicit queries",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.6"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.6"
+        ]
+      },
+      "notes": "Wrong route: 'Options → GeoCeDG options' / 'Opciones → Opciones de GeoCeDG'. The item is directly in Options because the group is rendered inline (GeoCeDGMenuBar 'actions' kind). Its behaviour is documented."
+    },
+    {
+      "id": "action:curve.circle-two-points",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1207",
+      "label_en": "Circle with Center through Point",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "The guide paraphrases it as 'Circle (two points …)' / 'Circunferencia (dos puntos …)', while the visible tool is 'Circle with Center through Point' / 'Circunferencia (centro, punto)'. There is no Circle(A,B) example and no usage."
+    },
+    {
+      "id": "action:curve.circle-three-points",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1225",
+      "label_en": "Circle through 3 Points",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Paraphrased ('three points'), with the command k=Circle(A,B,C). The visible name is 'Circle through 3 Points'."
+    },
+    {
+      "id": "action:curve.circle-center-radius",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1243",
+      "label_en": "Circle: Center & Radius",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Paraphrased ('centre+radius'), with the command c=Circle((0,0),1). The visible name is 'Circle: Center & Radius'."
+    },
+    {
+      "id": "action:curve.compass",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1261",
+      "label_en": "Compass",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed."
+    },
+    {
+      "id": "action:curve.semicircle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1279",
+      "label_en": "Semicircle",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed."
+    },
+    {
+      "id": "action:curve.arc-center",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1297",
+      "label_en": "Circular Arc",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed. The guide says 'Arc' / 'Arco'; the visible tool is 'Circular Arc' / 'Arco de circunferencia'."
+    },
+    {
+      "id": "action:curve.arc-circumcircle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1315",
+      "label_en": "Circumcircular Arc",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed. Spanish: the guide says 'Arco de circunferencia circunscrita', the visible tool is 'Arco tres puntos'."
+    },
+    {
+      "id": "action:curve.sector-center",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1333",
+      "label_en": "Circular Sector",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed. The guide says 'Sector'; the visible tool is 'Circular Sector' / 'Sector circular'."
+    },
+    {
+      "id": "action:curve.sector-circumcircle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1351",
+      "label_en": "Circumcircular Sector",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed. Spanish: the guide says 'Sector circunscrito', the visible tool is 'Sector tres puntos'."
+    },
+    {
+      "id": "action:curve.conic-five-points",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1369",
+      "label_en": "Conic through 5 Points",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed ('Conic through five points'; visible 'Conic through 5 Points')."
+    },
+    {
+      "id": "action:curve.ellipse",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1387",
+      "label_en": "Ellipse",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Command e=Ellipse(A,B,C) and route given."
+    },
+    {
+      "id": "action:curve.hyperbola",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1405",
+      "label_en": "Hyperbola",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed; its DXF mapping is in 11.3."
+    },
+    {
+      "id": "action:curve.parabola",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1423",
+      "label_en": "Parabola",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "Only listed; its DXF mapping is in 11.3."
+    },
+    {
+      "id": "action:semantic.locus-v2.create",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1441",
+      "label_en": "Locus V2",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "locus-v2/6.5",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "locus-v2/6.5",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The menu name 'Locus V2' and the route are correct (toolbar tooltip: 'Semantic Locus V2 (experimental)'). But 6.5 says the tool 'offers the generator and domain selection', and it does not: it takes the dependent point, then the constrained driver point that point depends on (point-driven form only, no domain dialog). The scalar-state and domain forms are command-only."
+    },
+    {
+      "id": "action:semantic.locus-v2.point-explicit",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1462",
+      "label_en": "Point on semantic curve (explicit address)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2",
+          "spline-v2/7.4"
+        ],
+        "es": [
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2",
+          "spline-v2/7.4"
+        ]
+      },
+      "notes": "The visible name is 'Point on semantic curve (explicit address)'. The guide gives only the command form; the tool interaction (select one semantic curve, then enter the branch key and canonical parameter in a dialog) is not described."
+    },
+    {
+      "id": "action:semantic.spline-v2.create",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1483",
+      "label_en": "Spline V2",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "spline-v2/7.2",
+          "interface-and-workflow/3.3",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "spline-v2/7.2",
+          "interface-and-workflow/3.3",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Fully described; toolbar tooltip 'Semantic Spline V2 (experimental)'."
+    },
+    {
+      "id": "action:semantic.spline-v2.create-degree",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1505",
+      "label_en": "Spline V2 with degree",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Fully described in 7.2 but missing from the 3.2 'Semantic curves' row."
+    },
+    {
+      "id": "action:semantic.spline-v2.create-closed",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1527",
+      "label_en": "Closed Spline V2",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Fully described in 7.2 but missing from the 3.2 'Semantic curves' row."
+    },
+    {
+      "id": "action:measure.angle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1549",
+      "label_en": "Angle",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed."
+    },
+    {
+      "id": "action:measure.distance-length",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1567",
+      "label_en": "Distance or Length",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed. Its behaviour on semantic curves (guarded scalar Length) and its relation to the 16.1 'Total length / Partial length' rows are not explained."
+    },
+    {
+      "id": "action:measure.aligned-dimension",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1585",
+      "label_en": "Aligned Dimension",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Clicks, defaults, dragging, offset conversion and export are documented."
+    },
+    {
+      "id": "action:measure.linear-dimension",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1604",
+      "label_en": "Linear Dimension",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Clicks, defaults, dragging and export are documented."
+    },
+    {
+      "id": "action:measure.area",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1623",
+      "label_en": "Area",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed."
+    },
+    {
+      "id": "action:measure.slope",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1641",
+      "label_en": "Slope",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed."
+    },
+    {
+      "id": "action:measure.locus-v2-total-length",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1659",
+      "label_en": "Total semantic locus length (experimental)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1",
+          "lengths-and-measurements/9.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1",
+          "lengths-and-measurements/9.1"
+        ]
+      },
+      "notes": "Wrong name: the guide says 'Locus V2 total length' / 'Longitud total de Locus V2', the visible tool is 'Total semantic locus length (experimental)' / 'Longitud semántica total del lugar geométrico (experimental)'. The 16.1 row maps the Metrics route to Length(S), which returns a number, but this tool creates the rich LocusLength(L) result (GeoCeDGEuclidianController.createTotalMetric). Its use (select one Locus V2) is not described."
+    },
+    {
+      "id": "action:measure.locus-v2-partial-length",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1679",
+      "label_en": "Partial semantic locus length (experimental)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1",
+          "lengths-and-measurements/9.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1",
+          "lengths-and-measurements/9.3"
+        ]
+      },
+      "notes": "Wrong name: the guide says 'Locus V2 partial length', the visible tool is 'Partial semantic locus length (experimental)'. The 16.1 row maps it to Length(S,P,Q), but the tool creates the rich LocusLength(L,A,B) result with the default forward/strict/zero-length traversal. Its use (one Locus V2, then two admissible semantic points) is not described."
+    },
+    {
+      "id": "action:transform.reflect-point",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1699",
+      "label_en": "Reflect about Point",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "English matches 'Reflect about Point'. Spanish name mismatch: the guide says 'Reflejar respecto a un punto', the visible tool is 'Simetría central'. The tool steps are not described; only the commands are."
+    },
+    {
+      "id": "action:transform.reflect-line",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1717",
+      "label_en": "Reflect about Line",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "transformations/10.4",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "transformations/10.4",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "English matches 'Reflect about Line'. Spanish name mismatch: the guide says 'Reflejar respecto a una recta', the visible tool is 'Simetría axial (reflexión)'."
+    },
+    {
+      "id": "action:transform.translate-vector",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1735",
+      "label_en": "Translate by Vector",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Commands and semantics are documented. Spanish: the guide says 'Trasladar por vector', the visible tool is 'Traslación' (recognizable)."
+    },
+    {
+      "id": "action:transform.rotate-angle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1753",
+      "label_en": "Rotate around Point",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Wrong name: 3.2 says 'Rotate by angle', the visible tool is 'Rotate around Point'. Spanish: the guide says 'Rotar un ángulo', the visible tool is 'Rotación'. The commands are documented."
+    },
+    {
+      "id": "action:transform.dilate-point",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1771",
+      "label_en": "Dilate from Point",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "transformations/10.3",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.7",
+          "transformations/10.1",
+          "transformations/10.3",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Commands and semantics are documented. Spanish: the guide says 'Homotecia desde un punto', the visible tool is 'Homotecia' (recognizable)."
+    },
+    {
+      "id": "action:workspace.cedg-dihedral-procedures",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1789",
+      "label_en": "CeDG dihedral procedures (not authorized)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "known-limitations"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "known-limitations"
+        ]
+      },
+      "notes": "Documented as visible and not authorized. Minor: 3.2 says it 'reports that when selected', but the item is disabled and the reason is its tooltip. The same workspace also appears disabled as 'Dihedral procedures' under View → Restore Construction layout, which is not mentioned."
+    },
+    {
+      "id": "action:presentation.show-hide-object",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1807",
+      "label_en": "Show / Hide Object",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.3"
+        ],
+        "es": [
+          "presentation-and-visualization/12.3"
+        ]
+      },
+      "notes": "Only the submenu 'View → Visibility and style' is named; the 'Show / Hide Object' tool itself is not named or explained."
+    },
+    {
+      "id": "action:presentation.show-hide-label",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1825",
+      "label_en": "Show / Hide Label",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.3"
+        ],
+        "es": [
+          "presentation-and-visualization/12.3"
+        ]
+      },
+      "notes": "Only the submenu 'View → Visibility and style' is named; the 'Show / Hide Label' tool is not named or explained."
+    },
+    {
+      "id": "action:presentation.copy-style",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1843",
+      "label_en": "Copy Visual Style",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.3"
+        ],
+        "es": [
+          "presentation-and-visualization/12.3"
+        ]
+      },
+      "notes": "A one-sentence description. Its toolbar placement (in the Navigation flyout) is not mentioned."
+    },
+    {
+      "id": "action:presentation.text",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1861",
+      "label_en": "Text",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.6",
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "basic-geometry/5.6",
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "The Text tool and GeoCeDG text scaling are documented."
+    },
+    {
+      "id": "action:presentation.image",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1879",
+      "label_en": "Image",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "Only listed under Annotations and media; no usage."
+    },
+    {
+      "id": "action:presentation.iso-a-border",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1897",
+      "label_en": "ISO A Border",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.7",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.7",
+          "interface-and-workflow/3.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The tool, dialog, unit gate, export link and limits are documented."
+    },
+    {
+      "id": "action:presentation.axes-toggle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1916",
+      "label_en": "Axes",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The 'Axes' / 'Ejes' check item sits directly in the Options menu (inline 'GeoCeDG options' group). The guide only says the axes are visible by default (2.2)."
+    },
+    {
+      "id": "action:presentation.grid-toggle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1933",
+      "label_en": "Grid",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The 'Grid' / 'Cuadrícula' check item sits directly in the Options menu. The guide only says there is no grid by default (2.2)."
+    },
+    {
+      "id": "action:presentation.orientation-cue",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1950",
+      "label_en": "Show orientation cue",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "getting-started/2.4"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "Wrong route: 'View → Show orientation cue' / 'Vista → Mostrar indicación de orientación'. The item is in View → Visibility and style. The Preferences route and the behaviour are correct."
+    },
+    {
+      "id": "action:navigation.pan-view",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1968",
+      "label_en": "Move Graphics View",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "Name mismatch: the guide says 'pan' / 'desplazamiento', the visible tool is 'Move Graphics View' / 'Desplaza Vista Gráfica'. Its use (drag the background or an axis) is not described."
+    },
+    {
+      "id": "action:navigation.zoom-in",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:1986",
+      "label_en": "Zoom In",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "Mentioned only as 'the inherited zoom in and out' (Spanish visible name 'Aproximar'); the tool's use is not described. The Ctrl+'+' key is documented."
+    },
+    {
+      "id": "action:navigation.zoom-out",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2004",
+      "label_en": "Zoom Out",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "Mentioned only generically; the tool's use is not described. The Ctrl+'-' key is documented."
+    },
+    {
+      "id": "action:navigation.zoom-window",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2022",
+      "label_en": "Zoom to rectangle",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "The gesture, the scale preservation and Escape are documented."
+    },
+    {
+      "id": "action:navigation.zoom-factor-in",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2040",
+      "label_en": "Zoom Factor In",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "The factor, shortcut rules and validation are documented. It is a View → Navigation menu item and is not on the toolbar."
+    },
+    {
+      "id": "action:navigation.zoom-factor-out",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2058",
+      "label_en": "Zoom Factor Out",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "Same as Zoom Factor In."
+    },
+    {
+      "id": "action:navigation.standard-view",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2076",
+      "label_en": "Standard view",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "Mentioned only ('the standard view'); the effect is not described. It is also in the object context menu (GeoCeDG submenu) and is not on the toolbar."
+    },
+    {
+      "id": "action:navigation.show-all-objects",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2093",
+      "label_en": "Show all objects",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "Mentioned only; the effect is not described. It is also in the object context menu (GeoCeDG submenu)."
+    },
+    {
+      "id": "action:document.new",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2110",
+      "label_en": "New file",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.5",
+          "documents/4.6",
+          "presentation-and-visualization/12.5",
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.5",
+          "documents/4.6",
+          "presentation-and-visualization/12.5",
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "'File → Open group' means the inline items at the top of File. The effects of New (unit defaults, cleared export area and scale, shown layers, kept document macros) are documented."
+    },
+    {
+      "id": "action:document.open",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2127",
+      "label_en": "Open…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.1",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.1",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The accepted types and the OFF refusal are documented."
+    },
+    {
+      "id": "action:document.open-recent",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2144",
+      "label_en": "Open recent…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.2"
+        ],
+        "es": [
+          "documents/4.2"
+        ]
+      },
+      "notes": "Only listed; the recent-file list and its unavailable state ('There are no recent files.') are not described."
+    },
+    {
+      "id": "action:document.insert-file",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2161",
+      "label_en": "Insert File…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.6",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.6",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The route File → Insert → Insert File… is correct, and the admission, rollback and isolation behaviour is documented."
+    },
+    {
+      "id": "action:document.apply-styles",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2179",
+      "label_en": "Apply Styles…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Documented. The guide does not say where a document's default styles are set (inherited Preferences → Defaults tab)."
+    },
+    {
+      "id": "action:document.save",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2197",
+      "label_en": "Save",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Native-path and pre-validation behaviour are documented."
+    },
+    {
+      "id": "action:document.save-as",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2214",
+      "label_en": "Save as…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.1",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.1",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Listed with the .cedg advice, but 4.1 implies that work can be saved as .ggb ('saving GeoCeDG work as .ggb is not a promise…'). In fact AppGeoCeDG.saveGeoGebraFile refuses any non-.cedg target with an 'Invalid input' error (GeoCeDGDocumentPolicy.isNative), and the guide never documents that refusal."
+    },
+    {
+      "id": "action:document.print-preview",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2231",
+      "label_en": "Print preview…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.5"
+        ]
+      },
+      "notes": "The route 'File → Print' suggests a submenu, but 'Print preview…' is a direct File item (the 'Print' group is not rendered). Physical size and drawing scale for printing are documented."
+    },
+    {
+      "id": "action:document.close",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2248",
+      "label_en": "Close",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.6"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.6"
+        ]
+      },
+      "notes": "Only listed. The guide does not say that Close closes the window (app.exit) after asking to save unsaved changes; this is only implied in 4.6 and 12.5."
+    },
+    {
+      "id": "action:automation.algebra-input-toggle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2265",
+      "label_en": "Algebra Input",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "getting-started/2.2",
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.4"
+        ],
+        "es": [
+          "getting-started/2.2",
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.4"
+        ]
+      },
+      "notes": "The Algebra Input bar is documented extensively, but its show/hide item 'Algebra Input' in the Automation menu is not."
+    },
+    {
+      "id": "action:automation.manage-user-tools",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2282",
+      "label_en": "Manage user tools…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.1",
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.1",
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Route Automation → User tools → Manage user tools… is correct."
+    },
+    {
+      "id": "action:automation.object-scripting",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2300",
+      "label_en": "Object properties and scripting…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.4"
+        ],
+        "es": [
+          "user-tools-and-automation/13.4"
+        ]
+      },
+      "notes": "The route is correct. The guide does not say that it needs exactly one selected object (otherwise 'Select the required object first.')."
+    },
+    {
+      "id": "action:automation.legacy-laboratory",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2317",
+      "label_en": "Legacy laboratory (separate session)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "classic-compatibility-and-diagnostics/14.3"
+        ],
+        "es": [
+          "classic-compatibility-and-diagnostics/14.3"
+        ]
+      },
+      "notes": "The route is correct. The .ggb/.ggt chooser filter and the confirmation warning are not described."
+    },
+    {
+      "id": "action:export.dxf-2d",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2336",
+      "label_en": "Export 2D geometry as DXF (experimental)…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "dxf-export/11.1",
+          "dxf-export/11.7",
+          "documents/4.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "dxf-export/11.1",
+          "dxf-export/11.7",
+          "documents/4.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "The content is thorough, but the route 'File → Import and export → Export 2D geometry as DXF (experimental)…' is wrong: File is flat (GeoCeDGMenuBar 'actions' kind; G9U1WorkspaceSurfaceTest asserts it), so the item is directly in File. Ctrl+Shift+D is correct."
+    },
+    {
+      "id": "action:export.picture",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2356",
+      "label_en": "Graphics View as Picture…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "documents/4.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "The content is thorough, but the route 'File → Import and export → Graphics View as Picture…' is wrong: the item is directly in File. Ctrl+Shift+U is correct."
+    },
+    {
+      "id": "action:export.pstricks",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2373",
+      "label_en": "PSTricks…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The LaTeX behaviour is documented. Wrong route: there is no 'File → Import and export' submenu; the item is directly in File."
+    },
+    {
+      "id": "action:export.pgf",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2390",
+      "label_en": "PGF/TikZ…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The LaTeX behaviour is documented. Wrong route: there is no 'File → Import and export' submenu."
+    },
+    {
+      "id": "action:export.asymptote",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2407",
+      "label_en": "Asymptote…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The LaTeX behaviour is documented. Wrong route: there is no 'File → Import and export' submenu."
+    },
+    {
+      "id": "action:export.area.define-rectangle",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2424",
+      "label_en": "Define export area…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5",
+          "dxf-export/11.10",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.5",
+          "dxf-export/11.10",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The behaviour is documented. Wrong route: 'File → Export area → Define export area…'. The 'Export area' group is inline, so the item is directly in File."
+    },
+    {
+      "id": "action:export.area.use-export-points",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2441",
+      "label_en": "Use Export_1 and Export_2",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The behaviour is documented. Wrong route: 'File → Export area'; the item is directly in File."
+    },
+    {
+      "id": "action:export.area.show",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2458",
+      "label_en": "Show export area",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The behaviour is documented (a check item). Wrong route: 'File → Export area'."
+    },
+    {
+      "id": "action:export.area.clear",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2475",
+      "label_en": "Clear export area",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The behaviour is documented. Wrong route: 'File → Export area'."
+    },
+    {
+      "id": "action:export.area.iso-a",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2493",
+      "label_en": "Define ISO A export area…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.7",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.7",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The behaviour is documented. Wrong route: 'File → Export area → Define ISO A export area…'; the item is directly in File."
+    },
+    {
+      "id": "action:export.area.use-iso-a-border",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2511",
+      "label_en": "Use selected ISO A border",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.7",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.7",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The behaviour is documented. Wrong route: 'File → Export area → Use selected ISO A border' / 'Archivo → Área de exportación → …'; the item is directly in File."
+    },
+    {
+      "id": "action:help.input-panel",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2530",
+      "label_en": "Input help",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "getting-started/2.2",
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.3"
+        ],
+        "es": [
+          "getting-started/2.2",
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.3"
+        ]
+      },
+      "notes": "Input Help is referred to, but the 'Help → Input help' item is not named; it shows Algebra Input and opens the Input Help panel."
+    },
+    {
+      "id": "action:help.command-list",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2547",
+      "label_en": "Command list",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "'Help → Command list' / 'Lista de comandos' is not mentioned. It has the same effect as Input help: it opens the Input Help panel."
+    },
+    {
+      "id": "action:help.contextual-action",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2564",
+      "label_en": "Current tool help",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "spline-v2/7.2",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "Only the Spline V2 case is described. For other tools it shows a message with the current tool name and help. F1 is listed as 'tool help'. It is also in the object context menu (GeoCeDG submenu)."
+    },
+    {
+      "id": "action:help.user-guide",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2581",
+      "label_en": "GeoCeDG user guide",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "getting-started/2.3",
+          "about-this-guide"
+        ],
+        "es": [
+          "getting-started/2.3",
+          "about-this-guide"
+        ]
+      },
+      "notes": "Edition selection by product language is documented. The guide window's own navigation outline is not described."
+    },
+    {
+      "id": "action:help.keyboard-shortcuts",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2598",
+      "label_en": "Keyboard shortcuts",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "16.4 lists the keys, but the 'Help → Keyboard shortcuts' item (a short summary message) is not mentioned. Inherited keys such as Ctrl+C/Ctrl+V, Ctrl+A, Delete and Ctrl+N (new window) are absent from 16.4."
+    },
+    {
+      "id": "action:help.about-geocedg",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2615",
+      "label_en": "About GeoCeDG",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "what-is-geocedg/1.3"
+        ],
+        "es": [
+          "what-is-geocedg/1.3"
+        ]
+      },
+      "notes": "The version date, build and distribution condition are documented."
+    },
+    {
+      "id": "action:diagnostic.open-classic",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2632",
+      "label_en": "Open Classic diagnostic session",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "classic-compatibility-and-diagnostics/14.1",
+          "documents/4.4"
+        ],
+        "es": [
+          "classic-compatibility-and-diagnostics/14.1",
+          "documents/4.4"
+        ]
+      },
+      "notes": "Route File → Open Classic diagnostic session is correct (a direct File item)."
+    },
+    {
+      "id": "action:settings.product-language",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2649",
+      "label_en": "Product language…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "getting-started/2.3"
+        ],
+        "es": [
+          "getting-started/2.3"
+        ]
+      },
+      "notes": "Wrong route: 'Options → GeoCeDG options → Product language…' / 'Opciones → Opciones de GeoCeDG → Idioma del producto…'. The item is directly in Options because the 'GeoCeDG options' group is inline. The English/Español chooser is documented."
+    },
+    {
+      "id": "action:document.units",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2666",
+      "label_en": "Document units…",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.6",
+          "documents/4.7",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.6",
+          "documents/4.7",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The dialog is fully documented, but the route 'Options → GeoCeDG options → Document units…' is wrong (the item is directly in Options). The status-bar route is correct."
+    },
+    {
+      "id": "action:view.construction-protocol",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2684",
+      "label_en": "Construction protocol",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1",
+          "getting-started/2.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.1",
+          "getting-started/2.2"
+        ]
+      },
+      "notes": "Wrong route: 'View → Construction protocol' leaves out the 'Construction inspection' submenu. 2.2 also says the Construction Protocol view is initially closed, but the profile runtime_layout shows it (construction-protocol visible: true), and GeoCeDGProfileTest asserts it is visible."
+    },
+    {
+      "id": "action:view.construction-navigation",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2701",
+      "label_en": "Show construction navigation bar",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.1"
+        ]
+      },
+      "notes": "Wrong route: 'View → Show construction navigation bar' leaves out the 'Construction inspection' submenu. The behaviour is documented."
+    },
+    {
+      "id": "action:view.properties",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2718",
+      "label_en": "Preferences…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "getting-started/2.4"
+        ],
+        "es": [
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "Options → Preferences… is correct. It opens Preferences on the Advanced tab (OptionType.GLOBAL); the guide describes only the Layout & Presentation tab."
+    },
+    {
+      "id": "action:inspect.definition",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2735",
+      "label_en": "Inspect definition…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.5",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.5",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "View → Construction inspection → Inspect definition… is correct. The 'context menu' route is the decorated object context menu → 'GeoCeDG' submenu. It needs exactly one selected object."
+    },
+    {
+      "id": "action:semantic.curve.inspect-definition",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2753",
+      "label_en": "Inspect semantic curve definition…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.5",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.5",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Route Construction → Semantic curves → Inspect semantic curve definition… is correct."
+    },
+    {
+      "id": "action:algebra.description.value",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2772",
+      "label_en": "Value",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.1"
+        ]
+      },
+      "notes": "Options → Algebra display (radio items Value / Description / Definition)."
+    },
+    {
+      "id": "action:algebra.description.description",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2789",
+      "label_en": "Description",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.1"
+        ]
+      },
+      "notes": "Options → Algebra display."
+    },
+    {
+      "id": "action:algebra.description.definition",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2806",
+      "label_en": "Definition",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.1"
+        ]
+      },
+      "notes": "Options → Algebra display."
+    },
+    {
+      "id": "command:LocusV2",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:150",
+      "label_en": "LocusV2",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "locus-v2/6.5",
+          "locus-v2/6.6",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "locus-v2/6.5",
+          "locus-v2/6.6",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "All three forms and the domain descriptor are documented with a worked example. The generator families admitted by the constrained-point form appear only indirectly (8.7)."
+    },
+    {
+      "id": "command:SplineV2",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:365",
+      "label_en": "SplineV2",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "spline-v2/7.2",
+          "spline-v2/7.5",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "spline-v2/7.2",
+          "spline-v2/7.5",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The forms, degree bounds and closed form are documented. The SplineV2(<List>, <Degree>, <Weight Function>) form is listed but never explained: the weight function evaluates each (dx,dy) increment and must give a positive finite value (geocedg/specs/curves/semantic-spline-2d.md §1)."
+    },
+    {
+      "id": "command:LocusLength",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:152",
+      "label_en": "LocusLength",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.1",
+          "lengths-and-measurements/9.2",
+          "lengths-and-measurements/9.3",
+          "lengths-and-measurements/9.4",
+          "command-and-workflow-reference/16.2",
+          "command-and-workflow-reference/16.3"
+        ],
+        "es": [
+          "lengths-and-measurements/9.1",
+          "lengths-and-measurements/9.2",
+          "lengths-and-measurements/9.3",
+          "lengths-and-measurements/9.4",
+          "command-and-workflow-reference/16.2",
+          "command-and-workflow-reference/16.3"
+        ]
+      },
+      "notes": "The 1- and 3-argument forms and the endpoint rules are documented. The guide does not say how to read the rich evidence (Inspect rich result also opens metric results), and the 16.1 GUI rows suggest that the Metrics tools create Length rather than LocusLength."
+    },
+    {
+      "id": "command:LocusLength/traversal-policy",
+      "kind": "command",
+      "source": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties:508",
+      "label_en": "LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point>, <Direction>, <Boundary Policy>, <Same-position Policy> )",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.2",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "lengths-and-measurements/9.2",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "Only the signature is shown. Missing: the accepted quoted tokens (direction 'forward' | 'reverse'; boundary 'strict' | 'stop-at-end' | 'wrap-to-start'; same-position 'zero-length' | 'full-cycle'); the default of the 3-argument form (forward/strict/zero-length); the semantics (strict leaves an unreachable target absent; stop-at-end returns the incomplete result at the global boundary with targetReached=false; wrap-to-start adds both boundary-side parts without a connector, geometricallyConnected=false; no policy crosses an invalid gap or another component; full-cycle only on one approved periodic component, using the declared fundamental domain and seam); unknown tokens giving an absent or invalid result; Cartesian equality never meaning same-position; that Length takes no policy argument; and any worked example (locus-v2-metrics.md §22, locus-v2-public-surface.md §19)."
+    },
+    {
+      "id": "command:Length/semantic-curve",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:120",
+      "label_en": "Length( <Locus V2> [, <Start Semantic Point>, <End Semantic Point>] )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.1",
+          "lengths-and-measurements/9.2",
+          "lengths-and-measurements/9.3",
+          "lengths-and-measurements/9.4",
+          "locus-v2/6.6",
+          "spline-v2/7.5",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "lengths-and-measurements/9.1",
+          "lengths-and-measurements/9.2",
+          "lengths-and-measurements/9.3",
+          "lengths-and-measurements/9.4",
+          "locus-v2/6.6",
+          "spline-v2/7.5",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The scalar adapter and the endpoint admissibility rules are documented. The guide does not say that Length always uses the default traversal and accepts no policy."
+    },
+    {
+      "id": "command:Point/semantic-address",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdPoint.java:113",
+      "label_en": "Point( <Locus V2>, <Branch Key>, <Canonical Parameter> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "spline-v2/7.4",
+          "locus-v2/6.6",
+          "lengths-and-measurements/9.3",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "spline-v2/7.4",
+          "locus-v2/6.6",
+          "lengths-and-measurements/9.3",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "Branch keys generator.main and spline-v2/main are documented."
+    },
+    {
+      "id": "command:Point/principal-parameter",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdPoint.java:80",
+      "label_en": "Point( <Locus V2>, <Parameter> )",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The author-approved A6 form Point(L,u) (locus-v2-public-surface.md §18; LocusV2PublicOperations.createPrincipalSemanticPoint) creates a semantic point when exactly one eligible branch and component exists at u, and becomes undefined if that later becomes ambiguous. It is absent from the guide and from the Point.Syntax help."
+    },
+    {
+      "id": "command:Intersect/semantic-curve-and-object",
+      "kind": "command",
+      "source": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties:396",
+      "label_en": "Intersect( <Locus V2>, <Supported Object> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.2",
+          "lengths-and-measurements/9.4",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.2",
+          "lengths-and-measurements/9.4",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The supported targets (line, segment, ray, conic, bounded function graph, polynomial implicit curve) are listed only in 9.4; the built-in axes are excluded (section 15)."
+    },
+    {
+      "id": "command:Intersect/semantic-curve-pair",
+      "kind": "command",
+      "source": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties:396",
+      "label_en": "Intersect( <Locus V2>, <Locus V2> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.7",
+          "lengths-and-measurements/9.4",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.7",
+          "lengths-and-measurements/9.4",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The certified-model rules are documented."
+    },
+    {
+      "id": "command:Intersect/solution-token",
+      "kind": "command",
+      "source": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties:396",
+      "label_en": "Intersect( <Rich Intersection Result>, <Solution Token> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.5",
+          "semantic-points-intersections-materialization/8.6",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.5",
+          "semantic-points-intersections-materialization/8.6",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The token and materialization lifecycle are documented."
+    },
+    {
+      "id": "command:Translate/semantic-curve",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java:670",
+      "label_en": "Translate( <Semantic Curve>, <Vector> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "transformations/10.1",
+          "transformations/10.2",
+          "transformations/10.3",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "transformations/10.1",
+          "transformations/10.2",
+          "transformations/10.3",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The result is a new semantic curve with its own identity, and lengths are preserved (10.2, 10.3)."
+    },
+    {
+      "id": "command:Rotate/semantic-curve",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java:681",
+      "label_en": "Rotate( <Semantic Curve>, <Angle> [, <Center>] )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "transformations/10.1",
+          "transformations/10.3",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "transformations/10.1",
+          "transformations/10.3",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Both forms (with and without a centre) are documented, and lengths are preserved."
+    },
+    {
+      "id": "command:Reflect-Mirror/semantic-curve",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java:703",
+      "label_en": "Reflect / Mirror( <Semantic Curve>, <Point or Line> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "transformations/10.1",
+          "transformations/10.4",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "transformations/10.1",
+          "transformations/10.4",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The built-in axes cannot be mirrors; construct the line explicitly (10.4)."
+    },
+    {
+      "id": "command:Dilate/semantic-curve",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java:724",
+      "label_en": "Dilate( <Semantic Curve>, <Factor> [, <Center>] )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "transformations/10.1",
+          "transformations/10.3",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "transformations/10.1",
+          "transformations/10.3",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "Length scaling and the k=0 collapse are documented."
+    },
+    {
+      "id": "command:AlignedDimension",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:155",
+      "label_en": "AlignedDimension",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The Spanish edition also gives the localized name CotaAlineada."
+    },
+    {
+      "id": "command:LinearDimension",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:158",
+      "label_en": "LinearDimension",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The Spanish edition also gives the localized name CotaLineal."
+    },
+    {
+      "id": "command:IsoABorder",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:161",
+      "label_en": "IsoABorder",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.7",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "documents/4.7",
+          "command-and-workflow-reference/16.1",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "The Spanish edition also gives the localized name MarcoISOA."
+    },
+    {
+      "id": "command:ExportImage",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:983",
+      "label_en": "ExportImage",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.5",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The GeoCeDG export-area semantics and the gif/webm refusal are documented. The inherited syntax and options are not."
+    },
+    {
+      "id": "command:Locus/legacy",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:148",
+      "label_en": "Locus",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "locus-v2/6.2",
+          "documents/4.5",
+          "dxf-export/11.11",
+          "known-limitations"
+        ],
+        "es": [
+          "locus-v2/6.2",
+          "documents/4.5",
+          "dxf-export/11.11",
+          "known-limitations"
+        ]
+      },
+      "notes": "Documented as unchanged and distinct from Locus V2. The guide does not say explicitly that the legacy Locus tool (mode 47) is not offered in GeoCeDG (profile deferred_inventory legacy.locus-mode)."
+    },
+    {
+      "id": "command:Spline/classic",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java:363",
+      "label_en": "Spline",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "spline-v2/7.1"
+        ],
+        "es": [
+          "spline-v2/7.1"
+        ]
+      },
+      "notes": "Documented as unchanged and distinct from Spline V2."
+    },
+    {
+      "id": "tool:ggt-library/SquarebyDiagonal",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:35",
+      "label_en": "SquarebyDiagonal",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only (installed copy only). The purpose (hover tip: 'Creates a square from the endpoints of one diagonal.'), inputs and outputs are not in the guide."
+    },
+    {
+      "id": "tool:ggt-library/CirclebyD",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:63",
+      "label_en": "CirclebyD",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Creates a circle from its center and diameter.' Inputs and outputs are not described."
+    },
+    {
+      "id": "tool:ggt-library/circArcbyAngle",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:91",
+      "label_en": "circArcbyAngle",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Creates a circular arc from a center, start point and signed angle.'"
+    },
+    {
+      "id": "tool:ggt-library/ellipseLength12",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:119",
+      "label_en": "ellipseLength12",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Creates an elliptic arc between two points and returns its length.' Whether that length is exact or sampled is not discussed."
+    },
+    {
+      "id": "tool:ggt-library/IFPositiveSelectPoint",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:147",
+      "label_en": "IFPositiveSelectPoint",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Selects one of two points according to the sign of a value.'"
+    },
+    {
+      "id": "tool:ggt-library/EllipseAxis",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:175",
+      "label_en": "EllipseAxis",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named, with its validity statement (C on the axis through O perpendicular to OB). The purpose and input order are not described (hover tip: 'Creates an ellipse from its center and the endpoints of two perpendicular semiaxes.')."
+    },
+    {
+      "id": "tool:ggt-library/conj2mainAxesEllipse",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:203",
+      "label_en": "conj2mainAxesEllipse",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Constructs the principal-axis vertices of an ellipse using the Rytz construction.'"
+    },
+    {
+      "id": "tool:ggt-library/pointJump",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:231",
+      "label_en": "pointJump",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named, with the statement that it is a 2D helper that establishes no projection or reference frame. The purpose and inputs are not described (hover tip: 'Creates a point at a signed distance from another point along a line direction.')."
+    },
+    {
+      "id": "tool:ggt-library/relCoor",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:259",
+      "label_en": "relCoor",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named, with the 2D-helper statement. Purpose and inputs are not described (hover tip: 'Returns the signed coordinate of a point along a line, measured from a reference point.')."
+    },
+    {
+      "id": "tool:ggt-library/translationCoor",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:287",
+      "label_en": "translationCoor",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named, with the 2D-helper statement. Purpose and inputs are not described (hover tip: 'Transfers a signed coordinate from one reference line to another.')."
+    },
+    {
+      "id": "tool:ggt-library/DuctSymbol",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:315",
+      "label_en": "DuctSymbol",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Creates a duct or tube symbol between two points.'"
+    },
+    {
+      "id": "tool:ggt-library/SymmSymbol",
+      "kind": "tool",
+      "source": "models/curated/ggt-library/library-manifest.json:343",
+      "label_en": "SymmSymbol",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "Named only. Hover tip: 'Creates a symmetry mark oriented by a reference line.'"
+    },
+    {
+      "id": "tool:deferred/legacy.locus-mode",
+      "kind": "tool",
+      "source": "apps/geocedg/application-profile.yml:3358",
+      "label_en": "Locus (legacy tool, mode 47)",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "locus-v2/6.2"
+        ],
+        "es": [
+          "locus-v2/6.2"
+        ]
+      },
+      "notes": "Profile deferred_inventory: classic-only ('Legacy sampled Locus is not Locus V2 semantic authority'). The guide documents the legacy command but never says that the legacy tool is absent from the GeoCeDG toolbar and menus."
+    },
+    {
+      "id": "tool:deferred/transform.circle-inversion",
+      "kind": "tool",
+      "source": "apps/geocedg/application-profile.yml:3365",
+      "label_en": "Reflect about Circle (mode 54)",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "transformations/10.1"
+        ],
+        "es": [
+          "transformations/10.1"
+        ]
+      },
+      "notes": "Profile deferred_inventory: deferred ('outside the author-approved R5 similarity-transform scope'). The guide says inversion is not supported on semantic curves, but not that the inherited tool is not offered at all."
+    },
+    {
+      "id": "tool:deferred/template-v7.macros",
+      "kind": "tool",
+      "source": "apps/geocedg/application-profile.yml:3372",
+      "label_en": "Templatev7 macros (modes 100001..100024)",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "classic-compatibility-and-diagnostics/14.3",
+          "documents/4.7"
+        ],
+        "es": [
+          "classic-compatibility-and-diagnostics/14.3",
+          "documents/4.7"
+        ]
+      },
+      "notes": "Profile deferred_inventory: diagnostic-only. The guide states that no legacy toolbar is installed and that the sheetISOAn* macros are unchanged."
+    },
+    {
+      "id": "tool:deferred/cedg.procedures-developments",
+      "kind": "tool",
+      "source": "apps/geocedg/application-profile.yml:3379",
+      "label_en": "CeDG projection, fold, true-magnitude, section and development procedures",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "known-limitations"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "known-limitations"
+        ]
+      },
+      "notes": "Profile deferred_inventory: out of scope (a new kernel phase; G9U2 is not authorized). The guide shows the disabled workspace entry."
+    },
+    {
+      "id": "tool:deferred/spatial.3d-tools",
+      "kind": "tool",
+      "source": "apps/geocedg/application-profile.yml:3386",
+      "label_en": "3D and spatial/projection creation modes",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "known-limitations"
+        ],
+        "es": [
+          "known-limitations"
+        ]
+      },
+      "notes": "Profile deferred_inventory: out of scope (spatial semantics not authorized; AGENTS.md §12). The guide states that spatial semantics are not available."
+    },
+    {
+      "id": "tool:deferred/upstream.noncedg-default-tools",
+      "kind": "tool",
+      "source": "apps/geocedg/application-profile.yml:3400",
+      "label_en": "FitLine, complex number, freehand, pen, media, statistics, CAS and spreadsheet modes",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Profile deferred_inventory: deferred ('Useful upstream availability does not by itself justify default CeDG Construction placement'). The guide does not mention that these inherited tools are absent."
+    },
+    {
+      "id": "preference:tab/layout-presentation",
+      "kind": "preference",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:1866",
+      "label_en": "Layout & Presentation",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "getting-started/2.4"
+        ],
+        "es": [
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "The guide lists the GeoCeDG groups of the tab. The inherited sections of the same tab are covered by preference:layout/inherited-sections."
+    },
+    {
+      "id": "preference:presentation-theme",
+      "kind": "preference",
+      "source": "apps/geocedg/application-profile.yml:3846",
+      "label_en": "Theme",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "getting-started/2.5",
+          "presentation-and-visualization/12.1"
+        ],
+        "es": [
+          "getting-started/2.5",
+          "presentation-and-visualization/12.1"
+        ]
+      },
+      "notes": "The three themes and their scope are documented."
+    },
+    {
+      "id": "preference:presentation-sizes",
+      "kind": "preference",
+      "source": "apps/geocedg/application-profile.yml:3834",
+      "label_en": "Presentation sizes",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "getting-started/2.6",
+          "presentation-and-visualization/12.2"
+        ],
+        "es": [
+          "getting-started/2.6",
+          "presentation-and-visualization/12.2"
+        ]
+      },
+      "notes": "All six controls are documented with their defaults."
+    },
+    {
+      "id": "preference:orientation-cue",
+      "kind": "preference",
+      "source": "apps/geocedg/application-profile.yml:3842",
+      "label_en": "Orientation cue",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "basic-geometry/5.2",
+          "getting-started/2.4"
+        ],
+        "es": [
+          "basic-geometry/5.2",
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "The checkbox text is 'Show the orientation of lines, segments and rays in Graphics'."
+    },
+    {
+      "id": "preference:new-document-units",
+      "kind": "preference",
+      "source": "apps/geocedg/application-profile.yml:5675",
+      "label_en": "New document units",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.6",
+          "getting-started/2.4"
+        ],
+        "es": [
+          "documents/4.6",
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "Its scope (new blank documents only; opened documents keep their units) is documented."
+    },
+    {
+      "id": "preference:dimension-presentation",
+      "kind": "preference",
+      "source": "apps/geocedg/application-profile.yml:5691",
+      "label_en": "Dimension presentation",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5",
+          "documents/4.6",
+          "getting-started/2.4"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5",
+          "documents/4.6",
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "The guide covers Initial line thickness and 'Show the unit on dimension values in new documents'."
+    },
+    {
+      "id": "preference:layout/inherited-sections",
+      "kind": "preference",
+      "source": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/options/OptionsLayoutD.java:126",
+      "label_en": "Layout & Presentation: input bar, toolbar, title bar / style bar, sidebar",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited options of the same tab (show Input Bar and its position, show Input Help, show toolbar and its position, show title bar, allow style bar, sidebar) are not mentioned."
+    },
+    {
+      "id": "preference:navigation-zoom",
+      "kind": "preference",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:163",
+      "label_en": "Configure navigation zoom...",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "The zoom factor, both shortcuts, validation states, Apply and Cancel are documented. The dialog's Reset button is not."
+    },
+    {
+      "id": "preference:tab/objects",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:25",
+      "label_en": "Objects (Object Properties)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.5",
+          "lengths-and-measurements/9.5",
+          "presentation-and-visualization/12.3",
+          "user-tools-and-automation/13.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.5",
+          "lengths-and-measurements/9.5",
+          "presentation-and-visualization/12.3",
+          "user-tools-and-automation/13.4"
+        ]
+      },
+      "notes": "Object Properties is referred to repeatedly (Style tab, Scripting tab, read-only definitions), but the guide never says how to open it in general, and the tabs are not described."
+    },
+    {
+      "id": "preference:tab/graphics",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:25",
+      "label_en": "Graphics",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited Graphics tab (axes, grid, background, units of the axes, and so on) is not mentioned."
+    },
+    {
+      "id": "preference:tab/graphics-2",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:25",
+      "label_en": "Graphics 2",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Not mentioned. The tab appears only while Graphics 2 is open."
+    },
+    {
+      "id": "preference:tab/algebra",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:28",
+      "label_en": "Algebra",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited Algebra preferences tab is not mentioned."
+    },
+    {
+      "id": "preference:tab/defaults",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:28",
+      "label_en": "Defaults",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Not mentioned, although Apply Styles… (4.2) copies a document's default styles, which this tab sets."
+    },
+    {
+      "id": "preference:tab/advanced",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:28",
+      "label_en": "Advanced",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Not mentioned, although Options → Preferences… opens on this tab (OptionType.GLOBAL). GeoCeDG disables Continuity here (OptionsAdvancedD.java:470) and removes the inherited font-size control (OptionsAdvancedD.java:202)."
+    },
+    {
+      "id": "preference:tab/spreadsheet",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:27",
+      "label_en": "Spreadsheet",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Not mentioned. The tab appears only while the Spreadsheet view is open."
+    },
+    {
+      "id": "preference:tab/cas",
+      "kind": "preference",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/OptionType.java:27",
+      "label_en": "CAS",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Not mentioned. The tab appears only while the CAS view is open."
+    },
+    {
+      "id": "preference:policy/continuity-locked",
+      "kind": "preference",
+      "source": "apps/geocedg/application-profile.yml:25",
+      "label_en": "Continuity (locked off)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "classic-compatibility-and-diagnostics/14.2"
+        ],
+        "es": [
+          "classic-compatibility-and-diagnostics/14.2"
+        ]
+      },
+      "notes": "The policy and its reason are documented. The guide does not say where the setting appears (Preferences → Advanced, disabled radio buttons)."
+    },
+    {
+      "id": "preference:feature/cedg.frontend.profile",
+      "kind": "preference",
+      "source": "geocedg/features/stable.yml:7",
+      "label_en": "cedg.frontend.profile",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Internal feature that selects the GeoCeDG product profile itself; no user toggle (profile 'features'; geocedg/specs/ui/application-profile.md)."
+    },
+    {
+      "id": "preference:feature/cedg.frontend.classic-diagnostic",
+      "kind": "preference",
+      "source": "geocedg/features/stable.yml:14",
+      "label_en": "cedg.frontend.classic-diagnostic",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "classic-compatibility-and-diagnostics/14.1",
+          "documents/4.4"
+        ],
+        "es": [
+          "classic-compatibility-and-diagnostics/14.1",
+          "documents/4.4"
+        ]
+      },
+      "notes": "The flag itself is not user-facing; the diagnostic session it enables is documented."
+    },
+    {
+      "id": "preference:feature/cedg.legacy.ingest",
+      "kind": "preference",
+      "source": "geocedg/features/stable.yml:23",
+      "label_en": "cedg.legacy.ingest",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Repository ingestion of legacy models with manifests (geocedg/specs/legacy/controlled-integration.md). A tooling concern, not a product UI surface."
+    },
+    {
+      "id": "preference:feature/cedg.packaging.windows",
+      "kind": "preference",
+      "source": "geocedg/features/stable.yml:30",
+      "label_en": "cedg.packaging.windows",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "Packaging concern (geocedg/specs/packaging/windows-packaging.md). documentation-maintenance.md §2 assigns installation procedure to the operations manual."
+    },
+    {
+      "id": "preference:feature/cedg.export.dxf.2d",
+      "kind": "preference",
+      "source": "geocedg/features/experimental.yml:7",
+      "label_en": "cedg.export.dxf.2d",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "dxf-export/11.1"
+        ],
+        "es": [
+          "dxf-export/11.1"
+        ]
+      },
+      "notes": "Enabled by default. The baseline DXF export it gates is documented; the flag itself is not user-facing."
+    },
+    {
+      "id": "preference:feature/cedg.export.dxf.extended",
+      "kind": "preference",
+      "source": "geocedg/features/experimental.yml:16",
+      "label_en": "cedg.export.dxf.extended",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "dxf-export/11.1",
+          "what-is-geocedg/1.3"
+        ],
+        "es": [
+          "dxf-export/11.1",
+          "what-is-geocedg/1.3"
+        ]
+      },
+      "notes": "The guide documents that it is on by default and the --enableExtendedDxf=false override."
+    },
+    {
+      "id": "preference:feature/cedg.laboratory.legacy",
+      "kind": "preference",
+      "source": "geocedg/features/experimental.yml:25",
+      "label_en": "cedg.laboratory.legacy",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "classic-compatibility-and-diagnostics/14.3"
+        ],
+        "es": [
+          "classic-compatibility-and-diagnostics/14.3"
+        ]
+      },
+      "notes": "The flag is off by default in the product profile. The Automation → Legacy laboratory route, which starts a separate diagnostic process, is documented."
+    },
+    {
+      "id": "preference:feature/cedg.library.curated-ggt",
+      "kind": "preference",
+      "source": "geocedg/features/experimental.yml:35",
+      "label_en": "cedg.library.curated-ggt",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2",
+          "getting-started/2.1"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2",
+          "getting-started/2.1"
+        ]
+      },
+      "notes": "The bundled library (installed copy only) is documented. The flag is not in the profile 'features' list."
+    },
+    {
+      "id": "preference:feature/cedg.locus.v2",
+      "kind": "preference",
+      "source": "geocedg/features/experimental.yml:44",
+      "label_en": "cedg.locus.v2",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "locus-v2/6.7",
+          "spline-v2/7.7",
+          "what-is-geocedg/1.3"
+        ],
+        "es": [
+          "locus-v2/6.7",
+          "spline-v2/7.7",
+          "what-is-geocedg/1.3"
+        ]
+      },
+      "notes": "The guide documents that it is on by default and the --enableLocusV2=false override."
+    },
+    {
+      "id": "preference:feature/cedg.spatial.semantics",
+      "kind": "preference",
+      "source": "geocedg/features/experimental.yml:53",
+      "label_en": "cedg.spatial.semantics",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "known-limitations"
+        ],
+        "es": [
+          "known-limitations"
+        ]
+      },
+      "notes": "Disabled by default; the spatial phases are not authorized (AGENTS.md §12.6; profile deferred_inventory spatial.3d-tools). The guide correctly states that spatial semantics are not available."
+    },
+    {
+      "id": "menu:file",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3708",
+      "label_en": "File",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "documents/4.2",
+          "documents/4.5"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "documents/4.2",
+          "documents/4.5"
+        ]
+      },
+      "notes": "The structure is misdescribed. File is flat apart from the 'Insert' submenu (G9U1WorkspaceSurfaceTest.fileAndEditAreFlat…). The guide's routes 'File → Import and export → …', 'File → Export area → …' and 'File → Print' suggest submenus that do not exist."
+    },
+    {
+      "id": "menu:file/insert",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3507",
+      "label_en": "Insert",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "documents/4.6",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "documents/4.6",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The only File submenu; both items are documented."
+    },
+    {
+      "id": "menu:edit",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3730",
+      "label_en": "Edit",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "interface-and-workflow/3.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "interface-and-workflow/3.4"
+        ]
+      },
+      "notes": "Only Undo and Redo are mentioned, under a non-existent 'History' submenu. The Edit items Move, Move around Point, Working Layer, Select Objects, Attach / Detach Point and Delete are not described. There are no Copy, Paste or Select all items; copy and paste work only from the keyboard, and the guide does not say so."
+    },
+    {
+      "id": "menu:view",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3744",
+      "label_en": "View",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.5",
+          "presentation-and-visualization/12.3",
+          "presentation-and-visualization/12.4",
+          "getting-started/2.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.5",
+          "presentation-and-visualization/12.3",
+          "presentation-and-visualization/12.4",
+          "getting-started/2.2"
+        ]
+      },
+      "notes": "The real order is: Views submenu, Visibility and style, Navigation, Configure navigation zoom…, Construction inspection, then Restore Construction layout (a submenu). The guide gives several of these routes without their submenus (Construction protocol, Show construction navigation bar, Show orientation cue) and never mentions the Views submenu."
+    },
+    {
+      "id": "menu:view/views",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:44",
+      "label_en": "Views",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "This submenu toggles Algebra, Graphics 2, Spreadsheet, CAS and Properties. 2.2 says these views are available but not how to open them."
+    },
+    {
+      "id": "menu:view/visibility-and-style",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3564",
+      "label_en": "Visibility and style",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.3"
+        ],
+        "es": [
+          "presentation-and-visualization/12.3"
+        ]
+      },
+      "notes": "The submenu is named, but its items (Show / Hide Object, Show / Hide Label, Copy Visual Style, Show orientation cue) are not listed. 5.2 gives the orientation cue the wrong route (View → Show orientation cue)."
+    },
+    {
+      "id": "menu:view/navigation",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3570",
+      "label_en": "Navigation",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "The contents are summarized correctly. Individual inherited items are only named (see their action entries)."
+    },
+    {
+      "id": "menu:view/construction-inspection",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3577",
+      "label_en": "Construction inspection",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.5",
+          "interface-and-workflow/3.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.5",
+          "interface-and-workflow/3.1"
+        ]
+      },
+      "notes": "3.5 is correct for Inspect definition…, but 3.1 leaves the submenu out of the routes for Construction protocol and Show construction navigation bar."
+    },
+    {
+      "id": "menu:view/restore-construction-layout",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGWorkspaceController.java:181",
+      "label_en": "Restore Construction layout",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "getting-started/2.2"
+        ],
+        "es": [
+          "getting-started/2.2"
+        ]
+      },
+      "notes": "The guide presents this as a single action, but it is a submenu listing the workspaces 'CeDG Construction' (choose it to restore the layout) and 'Dihedral procedures' (disabled)."
+    },
+    {
+      "id": "menu:construction",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3763",
+      "label_en": "Construction",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2"
+        ]
+      },
+      "notes": "All 13 groups are listed in order. Problems inside individual groups are recorded on the group entries."
+    },
+    {
+      "id": "menu:construction/points",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3583",
+      "label_en": "Points",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.1"
+        ]
+      },
+      "notes": "The group is complete, but the Spanish row says 'Punto medio' where the visible tool is 'Medio o Centro' (English: 'Midpoint' for 'Midpoint or Center')."
+    },
+    {
+      "id": "menu:construction/lines-and-vectors",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3589",
+      "label_en": "Lines and vectors",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ]
+      },
+      "notes": "The group is complete. The Spanish row says 'Vector desde un punto' where the visible tool is 'Equipolente', and 5.2 wrongly says Vector from Point takes a numeric input."
+    },
+    {
+      "id": "menu:construction/polygons",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3595",
+      "label_en": "Polygons",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.4"
+        ]
+      },
+      "notes": "The group is complete; the tools themselves are only listed."
+    },
+    {
+      "id": "menu:construction/list-tools",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3601",
+      "label_en": "List tools",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.8"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.8"
+        ]
+      },
+      "notes": "The group and its single tool are documented."
+    },
+    {
+      "id": "menu:construction/derived-constructions",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3607",
+      "label_en": "Derived constructions",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.2"
+        ]
+      },
+      "notes": "The group is complete. The Spanish 'Recta paralela/perpendicular' are close to the visible 'Paralela/Perpendicular'."
+    },
+    {
+      "id": "menu:construction/parameters-and-drivers",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3613",
+      "label_en": "Parameters and drivers",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.5"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.5"
+        ]
+      },
+      "notes": "The group is complete, but the Spanish row says 'Casilla' and 'Campo de entrada' where the visible tools are 'Casilla de control' and 'Casilla de Entrada'."
+    },
+    {
+      "id": "menu:construction/relations-and-intersections",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3619",
+      "label_en": "Relations and intersections",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "semantic-points-intersections-materialization/8.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "semantic-points-intersections-materialization/8.4"
+        ]
+      },
+      "notes": "The row ends with 'the three materialization actions' without naming them (Create selected intersection point / Create selected intersection points / Create all eligible intersection points). Polar names mismatch: Spanish guide 'Polar o diámetro' vs visible 'Polar o Conjugado'."
+    },
+    {
+      "id": "menu:construction/circles-and-conics",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3625",
+      "label_en": "Circles and conics",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.3"
+        ]
+      },
+      "notes": "The group is complete but uses paraphrased names: 'Circle (two points, …)' for 'Circle with Center through Point', and in Spanish 'Arco de circunferencia circunscrita' / 'Sector circunscrito' for 'Arco tres puntos' / 'Sector tres puntos'."
+    },
+    {
+      "id": "menu:construction/semantic-curves",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3631",
+      "label_en": "Semantic curves",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "spline-v2/7.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "spline-v2/7.2"
+        ]
+      },
+      "notes": "The 3.2 row leaves out 'Spline V2 with degree' and 'Closed Spline V2' (they are documented in 7.2). The visible point item is 'Point on semantic curve (explicit address)'."
+    },
+    {
+      "id": "menu:construction/metrics-and-validation",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3638",
+      "label_en": "Metrics and validation",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "lengths-and-measurements/9.5"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "lengths-and-measurements/9.5"
+        ]
+      },
+      "notes": "The row names 'Locus V2 total length / partial length', but the visible items are 'Total / Partial semantic locus length (experimental)'."
+    },
+    {
+      "id": "menu:construction/similarity-transformations",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3644",
+      "label_en": "Similarity transformations",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.7",
+          "transformations/10.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "basic-geometry/5.7",
+          "transformations/10.1"
+        ]
+      },
+      "notes": "The row says 'Rotate by angle' where the visible tool is 'Rotate around Point'. The Spanish row uses descriptive names ('Reflejar respecto a un punto', 'Rotar un ángulo', …) instead of the visible ones ('Simetría central', 'Simetría axial (reflexión)', 'Traslación', 'Rotación', 'Homotecia')."
+    },
+    {
+      "id": "menu:construction/annotations-and-media",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3650",
+      "label_en": "Annotations and media",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "documents/4.7"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "documents/4.7"
+        ]
+      },
+      "notes": "Both members (Image, ISO A Border) are listed; Image is not explained (see action:presentation.image)."
+    },
+    {
+      "id": "menu:construction/manual-projection-procedures",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3656",
+      "label_en": "Manual projection procedures",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.2",
+          "known-limitations"
+        ],
+        "es": [
+          "interface-and-workflow/3.2",
+          "known-limitations"
+        ]
+      },
+      "notes": "The disabled CeDG dihedral procedures entry is documented."
+    },
+    {
+      "id": "menu:options",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3794",
+      "label_en": "Options",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1",
+          "getting-started/2.3",
+          "getting-started/2.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.1",
+          "getting-started/2.3",
+          "getting-started/2.4"
+        ]
+      },
+      "notes": "The real order is: Algebra display submenu, Sort by, Rounding, Labeling, Text font size, then the inline items Preferences…, Axes, Grid, Product language…, Show solution markers, Auto-create eligible points…, Document units…, then Save Settings. The guide invents a 'GeoCeDG options' submenu, and it does not mention Sort by (as a menu), Rounding, Labeling, Axes, Grid, Save Settings or the route for Text font size."
+    },
+    {
+      "id": "menu:options/algebra-display",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3662",
+      "label_en": "Algebra display",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.1"
+        ],
+        "es": [
+          "interface-and-workflow/3.1"
+        ]
+      },
+      "notes": "The three exclusive modes (value, description, definition) are documented in 3.1."
+    },
+    {
+      "id": "menu:options/sort-by",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:60",
+      "label_en": "Sort by",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "12.5 says to choose 'Sort by Layer' in the Algebra View. The Options → Sort by submenu (dependency, object type, construction order, layer) is not mentioned."
+    },
+    {
+      "id": "menu:options/rounding",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:81",
+      "label_en": "Rounding",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited Rounding submenu is not mentioned."
+    },
+    {
+      "id": "menu:options/labeling",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:105",
+      "label_en": "Labeling",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited Labeling submenu (automatic labelling policy for new objects) is not mentioned."
+    },
+    {
+      "id": "menu:options/text-font-size",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:130",
+      "label_en": "Text font size",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "getting-started/2.6",
+          "basic-geometry/5.6",
+          "presentation-and-visualization/12.2"
+        ],
+        "es": [
+          "getting-started/2.6",
+          "basic-geometry/5.6",
+          "presentation-and-visualization/12.2"
+        ]
+      },
+      "notes": "Named as a document property in three places, but the guide never gives its route (Options → Text font size) or says that changing it marks the document as modified."
+    },
+    {
+      "id": "menu:options/save-settings",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGHostMenuFactory.java:155",
+      "label_en": "Save Settings",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited 'Save Settings' item, which saves the current preferences, is not mentioned."
+    },
+    {
+      "id": "menu:automation",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3811",
+      "label_en": "Automation",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.1",
+          "user-tools-and-automation/13.4",
+          "classic-compatibility-and-diagnostics/14.3"
+        ],
+        "es": [
+          "user-tools-and-automation/13.1",
+          "user-tools-and-automation/13.4",
+          "classic-compatibility-and-diagnostics/14.3"
+        ]
+      },
+      "notes": "The User tools submenu, Object properties and scripting…, and Legacy laboratory are documented. The 'Algebra Input' show/hide item is not."
+    },
+    {
+      "id": "menu:automation/user-tools",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGUserTools.java:139",
+      "label_en": "User tools",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.1",
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.1",
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "The installed tools, the GeoCeDG library, Document tools and the manager are documented."
+    },
+    {
+      "id": "menu:automation/user-tools/document-tools",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:5192",
+      "label_en": "Document tools",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "The submenu for macros embedded in the open document is documented, including its precedence rules."
+    },
+    {
+      "id": "menu:automation/user-tools/geocedg-library",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:5238",
+      "label_en": "GeoCeDG library",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "user-tools-and-automation/13.2"
+        ],
+        "es": [
+          "user-tools-and-automation/13.2"
+        ]
+      },
+      "notes": "The bundled library is documented as a whole; per-tool purposes are missing (see the tool:ggt-library entries)."
+    },
+    {
+      "id": "menu:help",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3823",
+      "label_en": "Help",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "what-is-geocedg/1.3",
+          "getting-started/2.3",
+          "spline-v2/7.2"
+        ],
+        "es": [
+          "what-is-geocedg/1.3",
+          "getting-started/2.3",
+          "spline-v2/7.2"
+        ]
+      },
+      "notes": "About, User guide and Current tool help are documented. Input help (as an item), Command list and Keyboard shortcuts are not."
+    },
+    {
+      "id": "menu:context/geocedg-submenu",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java:144",
+      "label_en": "GeoCeDG (object context submenu)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.5",
+          "semantic-points-intersections-materialization/8.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.5",
+          "semantic-points-intersections-materialization/8.4"
+        ]
+      },
+      "notes": "The guide says 'context menu', but the product adds a 'GeoCeDG' submenu to the decorated object context menu. It holds Animate selected object, Inspect rich result, Create selected intersection point, Standard view, Show all objects, Object properties and scripting…, Current tool help and Inspect definition…. The submenu is not named, and the Graphics View right-click chooser is undecorated."
+    },
+    {
+      "id": "menu:context/make-offset-draggable",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDimensionOffsetConversion.java:35",
+      "label_en": "Make offset draggable",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5"
+        ]
+      },
+      "notes": "Placement and enablement rules are documented."
+    },
+    {
+      "id": "menu:context/inherited-object-menu",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GuiManagerGeoCeDG.java:144",
+      "label_en": "Object context menu (inherited items)",
+      "coverage": "MISSING",
+      "anchors": {
+        "en": [],
+        "es": []
+      },
+      "notes": "The inherited context-menu items (show object or label, trace, rename, delete, object properties, …) are not described."
+    },
+    {
+      "id": "menu:status-bar",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGStatusBar.java:46",
+      "label_en": "Status bar (Layer, units, scale, notices)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.6",
+          "documents/4.5",
+          "documents/4.7",
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "documents/4.6",
+          "documents/4.5",
+          "documents/4.7",
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "The clickable segments and notices are documented."
+    },
+    {
+      "id": "menu:style-bar",
+      "kind": "menu",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianStyleBar.java:46",
+      "label_en": "Graphics style bar",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "lengths-and-measurements/9.5",
+          "presentation-and-visualization/12.3"
+        ],
+        "es": [
+          "lengths-and-measurements/9.5",
+          "presentation-and-visualization/12.3"
+        ]
+      },
+      "notes": "Only the numeric line-thickness field is documented; the rest of the inherited style bar is not."
+    },
+    {
+      "id": "menu:toolbar/edit-selection",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3552",
+      "label_en": "",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3",
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "interface-and-workflow/3.3",
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "The guide calls it 'Move'; toolbar flyouts have no visible group label. The members (Move, Move around Point, Working Layer) appear in 12.5 with the wrong name 'Rotate around Point'."
+    },
+    {
+      "id": "menu:toolbar/construction-lists",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3601",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3",
+          "basic-geometry/5.8"
+        ],
+        "es": [
+          "interface-and-workflow/3.3",
+          "basic-geometry/5.8"
+        ]
+      },
+      "notes": "Called 'List tools', just right of Move."
+    },
+    {
+      "id": "menu:toolbar/construction-relations",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3619",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Point and Intersection'. The members (Point, Point on Object, Midpoint or Center, Attach / Detach Point, Intersect) are not listed; Attach / Detach Point is undocumented."
+    },
+    {
+      "id": "menu:toolbar/construction-lines-vectors",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3589",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Lines and vectors'."
+    },
+    {
+      "id": "menu:toolbar/construction-polygons",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3595",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Polygons'."
+    },
+    {
+      "id": "menu:toolbar/construction-derived",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3607",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Derived constructions'. The guide does not say that this flyout also holds Angle with Given Size and Tangents."
+    },
+    {
+      "id": "menu:toolbar/construction-circles-conics",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3625",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Circles and conics' (seven primary tools; the rest are menu-only)."
+    },
+    {
+      "id": "menu:toolbar/construction-semantic-curves",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3631",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3",
+          "spline-v2/7.2"
+        ],
+        "es": [
+          "interface-and-workflow/3.3",
+          "spline-v2/7.2"
+        ]
+      },
+      "notes": "The behaviour of this profile flyout (it remembers the last action) is documented."
+    },
+    {
+      "id": "menu:toolbar/construction-metrics",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3638",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Angles and lengths'; Area and Slope are menu-only."
+    },
+    {
+      "id": "menu:toolbar/construction-transforms",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3644",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Transformations'."
+    },
+    {
+      "id": "menu:toolbar/construction-parameters",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3613",
+      "label_en": "",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3"
+        ],
+        "es": [
+          "interface-and-workflow/3.3"
+        ]
+      },
+      "notes": "Called 'Parameters and drivers'; includes Text."
+    },
+    {
+      "id": "menu:toolbar/view-navigation",
+      "kind": "menu",
+      "source": "apps/geocedg/application-profile.yml:3570",
+      "label_en": "",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "interface-and-workflow/3.3",
+          "presentation-and-visualization/12.4"
+        ],
+        "es": [
+          "interface-and-workflow/3.3",
+          "presentation-and-visualization/12.4"
+        ]
+      },
+      "notes": "12.4 says 'The same actions are on the toolbar in the Navigation flyout', but the flyout holds only Move Graphics View, Zoom to rectangle, Zoom In, Zoom Out and Copy Visual Style. Zoom Factor In/Out, Standard view and Show all objects are menu-only."
+    },
+    {
+      "id": "document:format/cedg-native",
+      "kind": "document-operation",
+      "source": "apps/geocedg/application-profile.yml:19",
+      "label_en": ".cedg native document",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.1",
+          "documents/4.3"
+        ],
+        "es": [
+          "documents/4.1",
+          "documents/4.3"
+        ]
+      },
+      "notes": "The native format, what it preserves and its backward-compatibility rules are documented."
+    },
+    {
+      "id": "document:format/ggb-compatibility-input",
+      "kind": "document-operation",
+      "source": "apps/geocedg/application-profile.yml:20",
+      "label_en": ".ggb compatibility input",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.1",
+          "documents/4.2"
+        ],
+        "es": [
+          "documents/4.1",
+          "documents/4.2"
+        ]
+      },
+      "notes": "Opening is documented. See action:document.save-as for the undocumented refusal to save as .ggb."
+    },
+    {
+      "id": "document:open/ggt-html",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentPolicy.java:118",
+      "label_en": "Open… (.ggt, .html, .htm)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.2"
+        ],
+        "es": [
+          "documents/4.2"
+        ]
+      },
+      "notes": "Listed as accepted types, but the guide does not explain what opening a .ggt package or an .html/.htm worksheet does."
+    },
+    {
+      "id": "document:open/off-refused",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentPolicy.java:118",
+      "label_en": "OFF files refused",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2"
+        ],
+        "es": [
+          "documents/4.2"
+        ]
+      },
+      "notes": "The refusal message and the unchanged state are documented."
+    },
+    {
+      "id": "document:export/png",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java:24",
+      "label_en": "PNG",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The menu route is wrong; see action:export.picture."
+    },
+    {
+      "id": "document:export/pdf",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java:24",
+      "label_en": "PDF (incl. Export Text as Shapes)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5",
+          "known-limitations"
+        ],
+        "es": [
+          "documents/4.5",
+          "known-limitations"
+        ]
+      },
+      "notes": "The exact page size, Export Text as Shapes, physical line widths and size limits are documented."
+    },
+    {
+      "id": "document:export/svg",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java:24",
+      "label_en": "SVG",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The exact viewBox and the five-significant-digit path limit are documented."
+    },
+    {
+      "id": "document:export/emf-emfplus",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java:24",
+      "label_en": "EMF and EMF+",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "Device-unit rounding and the physical frame are documented."
+    },
+    {
+      "id": "document:export/clipboard-image",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java:24",
+      "label_en": "Copy Graphics View as image (Ctrl+Shift+C)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5",
+          "command-and-workflow-reference/16.4"
+        ],
+        "es": [
+          "documents/4.5",
+          "command-and-workflow-reference/16.4"
+        ]
+      },
+      "notes": "It shows the same area as the export and omits hidden layers."
+    },
+    {
+      "id": "document:drawing-scale",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java:101",
+      "label_en": "Drawing scale a:b",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5",
+          "documents/4.6",
+          "documents/4.7"
+        ],
+        "es": [
+          "documents/4.5",
+          "documents/4.6",
+          "documents/4.7"
+        ]
+      },
+      "notes": "The presets, free a:b entry, session scope and status-bar display are documented."
+    },
+    {
+      "id": "document:hidden-layers",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLayerWorkspace.java:30",
+      "label_en": "Hidden layers (Algebra view, Sort by Layer, eye)",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "Hiding, saving, the undo exclusion, error handling and export effects are documented."
+    },
+    {
+      "id": "document:export/command-line",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportCommandLine.java:25",
+      "label_en": "--export / --exportAnimation",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The guide says that --export uses the same area and that --exportAnimation is refused, but it gives no syntax or example (arguments, accepted formats, scale or dpi)."
+    },
+    {
+      "id": "document:export/scripting-api",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportRoute.java:24",
+      "label_en": "writePNGtoFile, getPNGBase64, exportSVG, exportPDF",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "The export-area semantics are documented; the function signatures are inherited and not documented."
+    },
+    {
+      "id": "document:export/not-offered",
+      "kind": "document-operation",
+      "source": "apps/geocedg/application-profile.yml:3525",
+      "label_en": "STL, Collada, HTML Collada, Dynamic Worksheet/upload, Animated GIF, WebM",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "documents/4.5"
+        ],
+        "es": [
+          "documents/4.5"
+        ]
+      },
+      "notes": "Deliberately not offered: the profile's file-import-export group exposes only five exporters, and animated exports are refused (PictureExportCommandLine). The guide states the exclusion."
+    },
+    {
+      "id": "document:copy-paste",
+      "kind": "document-operation",
+      "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGCopyPaste.java:23",
+      "label_en": "Copy / Paste (Ctrl+C / Ctrl+V)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.6",
+          "presentation-and-visualization/12.5"
+        ],
+        "es": [
+          "documents/4.6",
+          "presentation-and-visualization/12.5"
+        ]
+      },
+      "notes": "The paste semantics (unit notice, kept layers) are documented, but not how to copy or paste: the Edit menu has no Copy or Paste items, and the keys are missing from 16.4."
+    },
+    {
+      "id": "document:new-window",
+      "kind": "document-operation",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/main/GlobalKeyDispatcher.java:779",
+      "label_en": "New window (Ctrl+N)",
+      "coverage": "PARTIAL",
+      "anchors": {
+        "en": [
+          "documents/4.6",
+          "user-tools-and-automation/13.3"
+        ],
+        "es": [
+          "documents/4.6",
+          "user-tools-and-automation/13.3"
+        ]
+      },
+      "notes": "The guide refers to new windows and to several open windows, but never says how to open one (Ctrl+N; there is no File menu item)."
+    },
+    {
+      "id": "document:deferred/sheet-export",
+      "kind": "document-operation",
+      "source": "apps/geocedg/application-profile.yml:3393",
+      "label_en": "Title blocks, sheet sets, broad CAD import",
+      "coverage": "EXCLUDED_WITH_REASON",
+      "anchors": {
+        "en": [
+          "known-limitations",
+          "dxf-export/11.11"
+        ],
+        "es": [
+          "known-limitations",
+          "dxf-export/11.11"
+        ]
+      },
+      "notes": "Profile deferred_inventory document.sheet-export: title blocks are deferred to G15 and broad CAD import is out of scope. The guide states that title blocks and DXF import are unavailable."
+    }
+  ],
+  "totals": {
+    "COVERED": 116,
+    "PARTIAL": 119,
+    "MISSING": 20,
+    "EXCLUDED_WITH_REASON": 12
+  }
+}
