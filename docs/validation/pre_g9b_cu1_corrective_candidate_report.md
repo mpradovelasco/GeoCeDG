@@ -7,6 +7,7 @@
 | Autorización | decisión autoral D-CU1-R6 de 2026-10-20, «FIX TEST, RE-VERIFY»: corrección focalizada de la prueba ISO A que conserve íntegramente su objetivo, por sincronización determinista con el estado real del deshacer, sin esperas arbitrarias, reintentos, exclusiones ni relajación de aserciones; diagnóstico previo entre defecto de la prueba y fallo del producto; detención si hiciera falta cambiar código de producto o upstream; nuevo candidato verificado sobre su identidad exacta, sin reutilizar aceptaciones anteriores |
 | Padre | `508412e2f38d744bd2b333acd5754a77b7861e52`, árbol `696c5eb17ddfe8b625434e504e3cdd13934c36b8`: descendiente documental del candidato `8ee196679e0a6ab101eee0a4e60682efe3f11be0` con su [registro de verificación](pre_g9b_cu1_verification_record.md) |
 | Informes de `CU1` | [informe del candidato](pre_g9b_cu1_implementation_candidate_report.md), que sigue describiendo la implementación; este informe solo describe la corrección |
+| Identidad del commit y resultados de verificación | [registro de verificación del candidato correctivo](pre_g9b_cu1_corrective_verification_record.md), añadido por un commit documental descendiente (un commit no puede citar su propia identidad) |
 
 ## 1. Diagnóstico: defecto de la prueba, no del producto
 
