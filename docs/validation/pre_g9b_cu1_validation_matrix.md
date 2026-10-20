@@ -7,6 +7,15 @@
 | Normas | [propuesta normativa revisada](../architecture/pre_g9b_cu1_normative_proposal.md); [estrategia](../architecture/pre_g9b_cu1_correction_strategy.md) |
 | Decisiones aplicadas | C1-1 (contadores deterministas), C1-3 (`INTEGRATED_PHASE`), C1-4 (`preserve` frente a `pins`) del [registro de cierre de `CU0`](pre_g9b_cu0_closeout_record.md) |
 
+**Revisión de 2026-10-20 (implementación de `CU1`).** Por las precisiones N1–N5 de la
+autorización de implementación:
+
+- V-INV-1 se limita al régimen relativo y se añade V-INV-1b (N4);
+- V-ADV-1 deja de exigir que el error real quede dentro del estimado (N5);
+- se añaden V-TRANS-1 (N1) y V-CERT-RIGOR (N5).
+
+Las puertas G1–G8 no cambian.
+
 ## 1. Puertas de aceptación por contadores (C1-1)
 
 Se miden con la instrumentación pública de S1, sin reflexión, sobre el modelo del autor y
@@ -57,7 +66,10 @@ Tipos: **F** focal, **A** adversaria, **R** regresión, **B** banco.
 | V-ADM-1 | Adaptador escalar | resultados de cada clase, y de clase 3 con error mayor que `τ` (política de prueba) | escalar definido si y solo si es admisible según 25.4; mismo valor que el resultado rico | F | — |
 | V-DAG-1 | Uso como entrada | cadena `o_1 → d_2 → e_2` | la entrada métrica de `d_2` es de clase 3; `e_2` está definido; la longitud de `e_2` es como mucho `ESTIMATED_ERROR` | F | — |
 | V-BUD-1 | Fallo memorizado | presupuesto de prueba pequeño | `NOT_ESTABLISHED` con la dimensión tipada en el resultado; un segundo recálculo con la misma clave no repite la construcción (G5) | F | — |
-| V-INV-1 | Covarianza de escala y traslación (H11, H12) | construcciones de V-MET-STRUCT-1 y V-MET-EST-1 escaladas por `10⁻³` y `10³` y trasladadas `10⁶` | mismas clases; errores relativos iguales dentro de un factor 2; trabajo igual | F | — |
+| V-INV-1 | Covarianza de escala y traslación en el régimen relativo (H11, H12; revisada por N4) | construcciones de V-MET-STRUCT-1 y V-MET-EST-1 escaladas por `1`, `10³` y `10⁶` (todas con `eps_rel·S ≥ eps_abs`) y trasladadas `10⁶` | mismas clases; errores relativos iguales dentro de un factor 2; el trabajo solo difiere donde el redondeo cambia una decisión de refinamiento | F | — |
+| V-INV-1b | Régimen del suelo absoluto (N4) | la misma construcción escalada por `10⁻³`, con `S < eps_abs/eps_rel` | la tolerancia aplicada es `eps_abs`, como declara el contrato; no se exige invariancia de clase, de tolerancia relativa ni de trabajo | F | — |
+| V-TRANS-1 | Propagación por transformaciones (N1) | homotecias de factor 2, 0 y −3, giros y simetrías de un locus de clase 1 y de uno de clase 3 | la imagen nunca mejora la clase de la fuente; valor y error absoluto escalados por `abs(λ)` con su cota de redondeo; `λ = 0` da cero exacto | F | — |
+| V-CERT-RIGOR | Rigor de las clases certificadas (N5) | circunferencias, arcos, segmentos y programas v1/v2 con referencias independientes; envolventes con π, normas y raíces | toda cota `CERTIFIED_ERROR_BOUND` contiene la referencia; si una operación no tiene envolvente rigurosa, la certificación falla cerrada | F | — |
 | V-INV-2 | Independencia de la vista | zoom, DPI y tamaño de vista distintos | resultados idénticos bit a bit | F | — |
 | V-DET-1 | Determinismo | todas las anteriores dos veces | resultados idénticos bit a bit | F | — |
 
@@ -69,7 +81,7 @@ honestidad de la clasificación, no la exactitud, que es imposible por la propos
 
 | Id | Construcción | Aserción |
 |---|---|---|
-| V-ADV-1 | `sin(2π·2^20·x)` sobre `[0, 1]` | nunca clase 1 o 2. Si el resultado es de clase 3, la diferencia con la referencia, en valor absoluto, no supera el error declarado; si no, `NOT_ESTABLISHED` |
+| V-ADV-1 | `sin(2π·2^20·x)` sobre `[0, 1]` | nunca clase 1 o 2; si es de clase 3, sus hipótesis quedan registradas y accesibles. No se exige que el error real quede dentro del estimado (N5) |
 | V-ADV-2 | meseta estrecha `A·exp(−((x − x₀)/w)²)`, con `x₀ = 1/π` y `w` inferior al espaciado mínimo de sondeo | clase 3, nunca 1 o 2. Las hipótesis registradas incluyen «no feature narrower than `h_probe`» con `h_probe > w`; la prueba documenta que esa hipótesis no se cumple y no afirma el valor |
 | V-ADV-3 | V-ADV-1 y V-ADV-2 con políticas de prueba `d_min = 6, 10, 14` | la clasificación honesta se mantiene con cualquier profundidad mínima |
 | V-ADV-4 | curva que se anula en todos los parámetros de sondeo registrados en una primera ejecución | el resultado repite el de la curva base y su clase no es 1 ni 2. Demuestra el límite y lo deja fijado |

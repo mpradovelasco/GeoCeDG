@@ -1,13 +1,21 @@
 # ADR 0037 — Locus V2 metric guarantee classes and admissibility
 
-- Status: **PROPOSED** (`PRE-G9B-CU1` preparation candidate pending author review; not
-  author approved; the number is provisional until acceptance)
+- Status: **ACCEPTED — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5** (author
+  instruction "PRE-G9B-CU1 — Author Approval of Metric Architecture and Implementation
+  Authorization", 2026-10-20). The precision text below was incorporated by the
+  `CU1` implementation (step S0). It belongs to the `CU1` technical candidate, which
+  is pending author review.
 - Date: 2026-10-20
-- Phase: `PRE-G9B-CU1` (normative and technical preparation authorized on 2026-10-20)
-- Author decisions: [`CU0` closeout record](../validation/pre_g9b_cu0_closeout_record.md)
-  §3–§5 (C1-0 to C1-4 and the binding H10 precision)
-- Parent authority: [Locus V2 metric contract](../../geocedg/specs/locus/locus-v2-metrics.md) v1.4;
-  [Locus V2 semantic contract](../../geocedg/specs/locus/locus-v2-semantics.md); ADR 0007
+- Phase: `PRE-G9B-CU1` (preparation and implementation authorized on 2026-10-20)
+- Author decisions:
+  - [`CU0` closeout record](../validation/pre_g9b_cu0_closeout_record.md) §3–§5
+    (C1-0 to C1-4 and the binding H10 precision);
+  - the `CU1` implementation authorization (D-CU1-1 to D-CU1-12 adopted; precisions
+    N1–N5).
+- Parent authority:
+  - [Locus V2 metric contract](../../geocedg/specs/locus/locus-v2-metrics.md) v1.5, §25;
+  - [Locus V2 semantic contract](../../geocedg/specs/locus/locus-v2-semantics.md) v1.2;
+  - ADR 0007.
 - Normative candidate: [`CU1` normative proposal](../architecture/pre_g9b_cu1_normative_proposal.md)
   §3 (amendment A1.2-R, metrics §25)
 - Evidence: [metric aliasing analysis](../architecture/pre_g9b_cu1_metric_aliasing_analysis.md);
@@ -64,9 +72,22 @@ The repository already holds such information for some families, unused by the m
    - Richardson correction;
    - a non-dyadic interior probe per leaf;
    - recorded hypotheses with their numerical scale.
-4. A result's guarantee is the strongest class whose error does not exceed the declared
-   tolerance. A wider certified enclosure is kept as supplementary rigorous evidence, and
-   an estimate outside it is rejected.
+
+   **N3.** The Richardson correction is justified only on leaves where the curve is
+   `C⁴` with nonvanishing speed and the leaf lies in the asymptotic regime of the chord
+   expansion. Piecewise `C²` regularity alone does not justify an `O(h⁴)` error. The
+   estimator records these conditions as hypotheses, claims no convergence order, and
+   does not apply the correction where the evidence contradicts them (for example zero
+   speed).
+4. **Evidence and admissibility (N2).** Rigorous evidence, its width, the requested
+   tolerance and scalar admissibility are four distinct notions:
+   - a certified enclosure keeps its mathematical validity however wide it is, and the
+     rich result retains it;
+   - a value is published as certified only when its certified error does not exceed
+     the tolerance;
+   - otherwise an estimate within tolerance may be published as `ESTIMATED_ERROR`,
+     with the enclosure attached, and it must lie inside it;
+   - an estimate that meets the tolerance remains an estimate.
 5. Scalar and DAG admissibility:
    - classes 1 and 2 are certified inputs;
    - class 3 is an ordinary input under an explicit estimate contract, admissible only
@@ -75,9 +96,30 @@ The repository already holds such information for some families, unused by the m
    - class 4 makes consumers undefined.
 6. Budgets are versioned, benchmark-justified policy constants. They apply per
    component build and per query, with inheritance across nesting. Deterministic
-   failures are memoized under their complete key with a typed work dimension. No fixed
-   budget is claimed sufficient for arbitrary curves: cost grows with total turning and
-   with `1/√τ`.
+   failures are memoized under their complete key with a typed work dimension; a
+   failure caused by a caller's session limit is never memoized. No fixed budget is
+   claimed sufficient for arbitrary curves: cost grows with total turning and with
+   `1/√τ`.
+7. **Transformations (N1).** A geometric transformation never improves the guarantee
+   class of its source. For a similarity image with length factor `λ`:
+   - the value and the absolute error scale by `λ`, plus the rounding bound of the
+     product;
+   - an estimated source yields an estimated image with the source hypotheses;
+   - a certified source yields a certified image only when `λ` and the product are
+     enclosed rigorously;
+   - `λ = 0` gives an exact zero, and an undefined `λ` gives `NOT_ESTABLISHED`.
+8. **Invariance (N4).** Results are independent of view, zoom, DPI and presentation
+   size. Under a similarity of the construction, classes and relative errors are
+   invariant only in the relative regime (`eps_metric_rel·S ≥ eps_metric_abs`); where
+   the absolute floor dominates, no invariance of tolerance, class or work is
+   required.
+9. **Rigor of certificates (N5).** A class that publishes `CERTIFIED_ERROR_BOUND` must
+   produce valid bounds through its complete computation, including norms, square
+   roots, auxiliary constants and functions, and every rounding. An operation without
+   a rigorous enclosure makes the certification fail closed. Adversarial tests
+   demonstrate that no undue certification is attributed; they do not require the
+   actual error of an estimate to lie within its estimated error for arbitrary
+   curves.
 
 ## Consequences
 

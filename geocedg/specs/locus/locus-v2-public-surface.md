@@ -394,11 +394,18 @@ G9U0 must expose the standard total `Length[GeoLocusV2]` operation only as a
 guarded scalar child of or internal reuse of the reconstructible rich query.
 The scalar algorithm must
 never calculate directly or read samples. It publishes a finite number only
-when `LocusMetricResult2D.isScalarAdmissible()` is true
-(`source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricResult2D.java:125-142`): finite value, complete coverage, success,
+when `LocusMetricResult2D.isScalarAdmissible()` is true (method in
+`source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricResult2D.java`): finite value, complete coverage, success,
 rectifiable, target reached/wrapped when applicable, and a guarantee other than
 `FLOATING_POINT_UNCERTIFIED`. Otherwise it is undefined and links to the rich
 diagnostic result. No sampled chord sum is described as exact.
+
+PRE-G9B-CU1 conformance note: the guarantee classes, the tolerance-conditioned
+admissibility and the estimate contract of
+[`locus-v2-metrics.md`](locus-v2-metrics.md) §25 refine the predicate above. The
+nested-work, revision-stability and slice-lifecycle rules of the
+[semantic contract](locus-v2-semantics.md) v1.2 make the scoped-session and
+deterministic-counter requirements of this section concrete.
 
 If the rich result is not scalar-admissible, the standard scalar result is
 undefined or uses the repository-consistent typed failure behavior. A future

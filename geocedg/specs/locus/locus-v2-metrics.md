@@ -1,7 +1,7 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED**
-- Version: `1.4`
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5 (2026-10-20); THE INCORPORATED TEXT BELONGS TO THE CU1 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Version: `1.5`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -300,6 +300,9 @@ GeoCeDG-owned integrator with explicit status, counters and estimated error.
 The existing static adaptive-Gauss helper is an accuracy comparator, not the
 metric result contract.
 
+PRE-G9B-CU1: the guarantee classes and the capability order of §25.1–§25.2
+supersede the ordered list above; the aggregation rules of this section remain.
+
 ## 11. Publication in the kernel DAG
 
 The G7B working architecture is:
@@ -355,6 +358,11 @@ The G7A audit covered `GeoElement.isDefined()`, `NumberValue`/numeric
 interfaces, Algebra View, expression evaluation, generic numeric algorithms,
 lists, sequences and CAS. The resulting strategy C contract is author-approved.
 
+PRE-G9B-CU1: the default "at least an estimated-error guarantee" becomes the
+admissibility rule of §25.4 — a certified value whose certified error does not
+exceed the tolerance, or an estimate whose estimated error does not exceed it,
+under the estimate contract of §25.5.
+
 ## 13. Lifecycle
 
 G7A covered and G7B shall cover creation, publication, defined/undefined behavior,
@@ -381,6 +389,10 @@ and publishes a coherent `Absent` rich failure snapshot for `r+1`; its scalar
 adapter is undefined. No old-value/new-status hybrid, stale success or partial
 entry may be observed. “Failed build publishes nothing” applies to the index
 entry, not to the current-revision rich failure diagnostic.
+
+PRE-G9B-CU1 (§25.7): a deterministic failure of a component-state build
+publishes a memoized failure entry under its complete key instead of no entry,
+so the same key is never rebuilt until it changes.
 
 ## 14. Revision-scoped index hypothesis
 
@@ -471,6 +483,9 @@ Hard requirements from the first G7B implementation are:
 - no partially valid published entry; and
 - cache/index ON/OFF semantic equality.
 
+PRE-G9B-CU1 (§25.9): a between-position query against a cached component state
+performs only local work bounded by the leaves that contain its endpoints.
+
 ## 15. Tolerance and error ownership
 
 The initial versioned G7B policy is
@@ -490,6 +505,11 @@ remain `NUMERICAL_FAILURE`. No wall-clock timeout is metric authority.
 Absolute contribution errors add deterministically and the weakest guarantee
 propagates. These policies do not reuse the G6 evaluation envelope,
 `eps_domain`, render pixel tolerance or future G8 root/residual tolerance.
+
+PRE-G9B-CU1 (§25.3): `S` is a translation-invariant extent of the whole
+component image, never a local chord, and the resulting tolerance is
+distributed over the leaves of the partition. The default requested tolerances
+`eps_metric_abs=1e-10` and `eps_metric_rel=1e-9` are unchanged.
 
 ## 16. Reparameterization, improper metrics and arc coordinate
 
@@ -718,8 +738,8 @@ Endpoint resolution remains the existing exact semantic-point and A1
 constructor-occurrence authority. Coordinates, proximity, labels, branch
 order, render samples and solution indices never select an endpoint or route.
 The [A2 validation matrix](../../../docs/validation/post_g9u1_a2_explicit_traversal_policy_validation_matrix.md)
-is the candidate traceability authority. This v1.2 amendment remains pending
-author review and does not reinterpret G7 or A1 evidence.
+is the candidate traceability authority. This v1.2 amendment is author
+approved (status line above) and does not reinterpret G7 or A1 evidence.
 
 ## 23. PRE-G9B-R2 normative amendment: semantic-intersection endpoints
 
@@ -1115,3 +1135,233 @@ identities. Redefine follows
 the existing lifecycle and redefine contract; a resulting change of family, key,
 side, token or identity is resolved afresh under §24.3 and never repaired by
 proximity.
+
+## 25. PRE-G9B-CU1 normative amendment: metric guarantee classes, estimator v2, admissibility and budgets
+
+Status: architecture approved by the author on 2026-10-20 (instruction "Author
+Approval of Metric Architecture and Implementation Authorization") together with
+the obligatory precisions N1–N5, which this section incorporates. The section
+supersedes the ordered capability list of §10 and refines §12, §13, §14 and §15
+as stated there. Decision record: ADR 0037.
+
+### 25.1 Guarantee classes
+
+Every metric contribution belongs to exactly one guarantee class, recorded in its
+error evidence together with its method and its work evidence:
+
+1. **`STRUCTURAL`.** The value follows from a structural identity of the provider:
+   - a semantic zero or collapsed image;
+   - an affine image `|a|·Δu`;
+   - a similarity image of a source with an established length (§25.6);
+   - a similarity image, with driver-independent parameters, of a circle,
+     circular-arc or segment driver whose length has a closed form.
+
+   The guarantee is `CERTIFIED_ERROR_BOUND` with the rounding bound of the
+   formula. `EXACT_ARITHMETIC` is reserved for exact zeros.
+2. **`CERTIFIED_ENCLOSURE`.** A rigorous enclosure `[lower, upper]` of the semantic
+   length, obtained from outward value and first-derivative enclosures of the
+   semantic curve over a partition of parameter boxes. The lower bound is the sum
+   of chord lower bounds. The upper bound adds, per box:
+   - `chord_upper / cos_lower(α)` when the derivative enclosure of the box lies in
+     a closed convex cone with apex at the origin and half-angle `α < π/2`;
+   - `|box|·sup|F′|` otherwise.
+
+   The cone bound follows from `F′(t)·u ≥ |F′(t)|·cos α` for the unit bisector `u`
+   of the cone, which gives `|F(b) − F(a)| ≥ L·cos α`; the chord bound gives
+   `L ≥ |F(b) − F(a)|`. A box that the enclosure model refuses is unresolved and
+   prevents this class for the whole component.
+3. **`ESTIMATED`.** A refinement estimate whose error amount is justified only by
+   recorded hypotheses (§25.3). The guarantee is `ESTIMATED_ERROR`. Agreement
+   between refinement levels or sample sets, however many, never produces class 1
+   or 2.
+4. **`NOT_ESTABLISHED`.** No value. The cause is one of: an exhausted work budget,
+   a degenerate configuration, a failed consistency check or insufficient
+   information. The value is `Absent` with a typed status and cause.
+
+**Rigor of the certified classes (N5).** A contribution carries
+`CERTIFIED_ERROR_BOUND` only when its complete computation yields valid bounds.
+This covers the evaluation enclosures, norms, square roots, divisions, auxiliary
+constants such as `π`, auxiliary functions and every rounding. Each
+floating-point operation is rounded outward, one adjacent binary64 value beyond
+the correctly rounded IEEE result, or by the documented ulp bound of a library
+function. An operation without a rigorous enclosure in the available
+implementation makes the certification fail closed: the contribution falls
+through to the next capability and never inherits a partial certificate.
+
+### 25.2 Capability order
+
+The engine tries, in order:
+
+1. structural capabilities;
+2. certified enclosure;
+3. differential estimate;
+4. evaluator-only estimate;
+5. unsupported.
+
+A capability that cannot produce its class falls through to the next. Rigorous
+partial evidence of an earlier capability (for example an enclosure wider than the
+tolerance) is attached to the later result.
+
+### 25.3 Estimator v2
+
+Class 3 estimates, evaluator-only and differential, obey the following rules.
+
+a. **Component tolerance.** The tolerance is
+   `τ = max(eps_metric_abs, eps_metric_rel·S)`, where `S` is a translation-invariant
+   extent of the whole component image and never a local chord. It is distributed
+   over the leaves of the partition in proportion to their parameter share.
+b. **Minimum partition.** Before any acceptance, the component is partitioned
+   uniformly into `2^d_min` cells, split additionally at known semantic
+   breakpoints. `d_min` is a versioned policy constant.
+c. **Leaf acceptance.** A leaf is accepted only when both conditions hold:
+   - the Richardson-corrected estimates of two consecutive levels agree within its
+     share of `τ`;
+   - an interior probe at a non-dyadic fraction of the leaf (a versioned constant)
+     is consistent with the leaf's chord model within the same share.
+
+   The reported value is the corrected sum. The reported error is a versioned
+   safety factor times the level difference.
+d. **Hypotheses of the correction (N3).** The correction
+   `L ≈ S_fine + (S_fine − S_coarse)/3` rests on the chord expansion
+   `s − c = κ²s³/24 + O(s⁵)` of a regular arc of length `s`.
+   - It is justified on a leaf when the curve is `C⁴` there with nonvanishing speed
+     and the leaf lies in the asymptotic regime of that expansion. Then the
+     corrected leaf error is `O(s⁵)` and the corrected total `O(h⁴)`.
+   - Piecewise `C²` regularity alone guarantees only that the uncorrected chord
+     deficiency tends to zero, at the rate `O(h²)` where the curvature is bounded
+     and continuous. It does not justify an `O(h⁴)` claim.
+   - No condition is verified by sampling. The estimator records the conditions as
+     hypotheses, with their numerical scale (`d_min`, the finest probe spacing
+     `h_probe`, the safety factor), and claims no convergence order.
+   - Where the evidence contradicts a hypothesis on a leaf (a chord that vanishes on
+     a leaf of positive parameter width, which indicates zero speed or a cusp), the
+     correction is not applied there. The result then records an estimate without
+     a demonstrated order.
+e. **Failure.** A consistency failure that persists after the permitted refinement
+   ends as `NOT_ESTABLISHED` with `CONSISTENCY_NOT_ESTABLISHED`. Reaching the
+   parameter resolution without acceptance is reported as
+   `PARAMETER_RESOLUTION_REACHED`, never accepted silently.
+
+### 25.4 Evidence, width, tolerance and admissibility (N2)
+
+Four notions are distinct and recorded separately:
+
+1. **Rigorous evidence:** a certified enclosure `[lower, upper]` of the semantic
+   quantity, when one exists. Its mathematical validity does not depend on its
+   width, and the rich result retains it as rigorous evidence however wide it is.
+2. **Width:** `upper − lower`.
+3. **Requested tolerance:** `τ` (§25.3a).
+4. **Scalar admissibility:** whether the published value may feed the scalar
+   adapter.
+
+The published value and its guarantee are chosen as follows:
+
+- **Certified.** When the certified error of the published value (its largest
+  distance to the enclosure ends) does not exceed `τ`, the value is published with
+  `CERTIFIED_ERROR_BOUND`.
+- **Estimated, with rigorous evidence.** Otherwise, when an estimate exists whose
+  estimated error does not exceed `τ`, the estimate is published with
+  `ESTIMATED_ERROR`, and the enclosure is attached as rigorous evidence. The
+  estimate must lie inside the enclosure, up to the outward rounding of the
+  comparison. If it does not, it is rejected with `CONSISTENCY_NOT_ESTABLISHED`
+  and only the certified evidence is published.
+- **An estimate stays an estimate.** An estimate that satisfies `τ` remains
+  `ESTIMATED_ERROR`; meeting the tolerance never makes it certified.
+
+The scalar adapter publishes a value only in two cases: a `CERTIFIED_ERROR_BOUND`
+value whose certified error does not exceed `τ`, or an `ESTIMATED_ERROR` value whose
+estimated error does not exceed `τ`, under the estimate contract of §25.5. Otherwise
+the scalar is undefined with its typed cause, while the rich result keeps every
+piece of evidence. The rich result and the scalar adapter report the same value.
+
+### 25.5 Use as a DAG input
+
+The admissibility of a metric value as an input of other constructions depends on
+its class:
+
+- **Classes 1 and 2.** A certified input: downstream certificates may use its
+  enclosure.
+- **Class 3.** An ordinary numeric input under the *estimate contract*. It
+  propagates through normal dependencies, but every downstream metric result that
+  depends on it carries at most `ESTIMATED_ERROR`. No downstream certificate
+  (existence, intersection, materialization or metric) may rely on it as a rigorous
+  input: a certifier whose captured program contains such a value treats it as
+  uncertified.
+- **Class 4.** Makes its consumers undefined through the normal kernel DAG.
+
+### 25.6 Propagation through transformations (N1)
+
+A geometric transformation never improves the guarantee class of its source. For a
+similarity image with length factor `λ` (the absolute scale factor; 1 for an
+isometry), the image length is `λ·L_source` and:
+
+- **Value:** `λ·v`, rounded outward when the source is certified.
+- **Errors:** the absolute error becomes `λ·e_abs` plus the rounding bound of the
+  product. The relative error is unchanged, plus that rounding bound.
+- **Class and hypotheses:** the source's. An estimated source yields an estimated
+  image that carries the source hypotheses and the transformed error. A certified
+  source yields a certified image only when `λ` itself is enclosed rigorously (a
+  captured binary64 parameter, or an outward-rounded product of such parameters)
+  and the product is rounded outward. Otherwise the image falls through to its own
+  capability.
+- **Degenerate cases:**
+  - `λ = 0` (a dilation by zero) yields the collapsed image, with exact zero
+    length;
+  - an undefined or non-finite `λ` yields `NOT_ESTABLISHED`;
+  - a negative factor contributes `|λ|`.
+
+### 25.7 Budgets and failures
+
+- **Scope.** Work budgets apply per component-state build and per query, with
+  nested work charged to the caller through the slice-scoped child session of the
+  semantic contract.
+- **Values.** Budget values are versioned policy constants justified by
+  reproducible benchmarks; they are not mathematical constants.
+- **Failure memoization.** A deterministic failure is memoized under its complete
+  key (identity, revision, branch, component, capability and policy). It is
+  reported with its typed work dimension in the rich result and is not recomputed
+  until the key changes. A failure caused by a caller's session limit depends on
+  the caller and is never memoized.
+- **No universal budget.** No fixed budget is claimed to suffice for every regular
+  component. The cost of classes 2 and 3 grows with the total turning of the
+  component and with `1/√τ`.
+
+### 25.8 Determinism and invariance (N4)
+
+For a fixed revision and policy, results are bitwise deterministic and independent
+of view, zoom, DPI, render state and presentation size. Translations leave the
+results unchanged up to rounding.
+
+Under a similarity of the whole construction with factor `λ`, invariance holds only
+in the relative regime, that is, when `eps_metric_rel·S ≥ eps_metric_abs` for every
+component involved:
+
+- **Relative regime.** Classes and relative errors are invariant up to rounding.
+  The work is invariant except where rounding changes a refinement decision.
+- **Absolute floor.** Where the floor dominates (`S < eps_metric_abs /
+  eps_metric_rel`), the tolerance is absolute. Neither the relative tolerance, nor
+  the class, nor the work is required to be invariant there.
+
+### 25.9 Between-position queries on cached states
+
+A between-position query against a cached component state performs local work
+bounded by the leaves that contain its endpoints. It neither rebuilds the component
+state nor spends a fresh complete work budget. Its error evidence combines the
+evidence of the whole leaves it covers with the local evidence of the partial
+leaves, and its class is the weakest of the two.
+
+### 25.10 Versioning
+
+The public policy identifier becomes `cu1-metric-policy/v2`. The algorithm, policy
+and tolerance versions take part in the complete index key and in the result
+provenance.
+
+### 25.11 Validation (N5)
+
+- **Estimates.** Validation demonstrates honest classification. Adversarial curves
+  must never receive class 1 or 2: aliasing frequencies, features narrower than the
+  probe spacing, and curves that vanish on the probe sequence. The actual error of
+  an estimate is not required to lie within its estimated error for arbitrary
+  curves. Its hypotheses are recorded and accessible in the rich result.
+- **Certified classes.** Validation demonstrates that every certified bound
+  contains an independent reference value, through every auxiliary operation.

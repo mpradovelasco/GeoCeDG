@@ -1,7 +1,7 @@
 # Locus V2 semantic contract
 
-- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT**
-- Version: `1.1`
+- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED (2026-10-20); THE INCORPORATED TEXT BELONGS TO THE CU1 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Version: `1.2`
 - Approval date: 2026-08-11
 - Roadmap gate: G6A `PASS`; G6B `PASS`; G6 `PASS`
 - Affected layer: shared Java kernel semantics; derived rendering
@@ -190,6 +190,74 @@ bounded and scoped. Slice construction may occur at most once per locus
 definition/revision, never per point query. The normal kernel DAG remains the
 dependency and invalidation authority. Absolute timing and retained-memory
 budgets remain informational until productive G6B measurements are repeatable.
+
+### PRE-G9B-CU1 amendment (v1.2): snapshot, slice lifecycle and nested work
+
+Conformance clarification of the rules above, approved as architecture by the
+author on 2026-10-20 (ADR 0037 and `locus-v2-metrics.md` §25 hold the metric part).
+
+**Semantic snapshot of a reconstructible definition.** The semantic snapshot of a
+Locus V2 definition reconstructed from a construction slice consists of its
+definition inputs:
+
+- the durable identities and definition/topology revisions of its dependencies;
+- its generator descriptor;
+- an exact fingerprint of every non-driver input that the reconstruction slice
+  reads.
+
+The fingerprint covers:
+
+- the structural definition of every algorithm of the slice;
+- the complete serialized state of every element whose value does not depend on
+  the driver position;
+- for elements whose value does depend on it, their serialized options with
+  numeric values neutralized.
+
+The value of a Locus V2 output does not depend on the driver position, so elements
+derived from such an output are classified by their other inputs.
+
+The current driver position, recompute counters and dependency-update ordinals are
+not semantic content. A recompute whose snapshot is unchanged retains the published
+revision and the evaluator instance, so moving only the driver publishes no
+revision. An input whose state cannot be fingerprinted deterministically makes every
+recompute a snapshot change.
+
+**Slice lifecycle.** The reconstruction slice is built and synchronized with its
+inputs at most once per published revision. A point evaluation only applies the
+driver coordinate and updates the driver-dependent subgraph of the slice. It never
+re-reads live construction state and never updates the whole slice.
+
+**Nested definitions.** A Locus V2 copy inside a slice is a nested definition under
+the same snapshot rule. It keeps its revision while its definition inputs are
+unchanged, and its metric component states are reused across the outer point
+queries of one outer revision.
+
+**Scoped sessions.** Nested evaluation runs in a slice-scoped child session of the
+outer session:
+
+- The child shares the parent's active-key stack, which provides cycle detection
+  and the composition-depth limit across levels.
+- It shares the parent's work budget: every nested evaluation is charged to the
+  root. The root enforces its limit at its own evaluation boundaries; a nested
+  service is never interrupted mid-computation by the caller's limit. A
+  caller-dependent exhaustion therefore never enters a memoized nested result.
+- Its memoization keys and active keys are qualified by the slice scope, so a
+  nested copy never collides with the live locus that carries the same durable
+  identity.
+- Metric, binding and intersection services invoked inside a slice use the child
+  session instead of opening unrelated sessions.
+
+**Instrumentation.** Each locus exposes deterministic work counters through its
+public instrumentation:
+
+- slice builds and slice synchronizations;
+- revision publications and equivalent recomputes;
+- evaluator calls;
+- the aggregated counters of its nested evaluations: nested slice builds, nested
+  revision publications, nested metric component builds and nested evaluator
+  calls.
+
+Duration is never a counter.
 
 ## Forward compatibility of derived semantic services
 
