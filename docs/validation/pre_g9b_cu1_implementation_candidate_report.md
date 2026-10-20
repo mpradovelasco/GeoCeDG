@@ -8,6 +8,7 @@
 | Base autorizada | `e66ae4c06007f9aba47436a0c03f36608f0f4fd5`, árbol `c90ab8fb61648f231cb383b900af6b4b1e622f8f` (candidato de preparación revisado) |
 | Rama | `phase/pre-g9b-cu1-implementation` (local, sin publicar) |
 | Clase de verificación | `INTEGRATED_PHASE`: `STATIC`, `INFRA_UNIT`, `PHASE -Phase PRE-G9B-CU1`, `PHASE -Phase PRE-G9B-CU0` e `INTEGRATION` sobre el candidato congelado |
+| Identidad del commit y resultados de verificación | [registro de verificación](pre_g9b_cu1_verification_record.md), añadido por un commit documental descendiente (un commit no puede citar su propia identidad) |
 
 ## 1. Comprobación de la base
 
