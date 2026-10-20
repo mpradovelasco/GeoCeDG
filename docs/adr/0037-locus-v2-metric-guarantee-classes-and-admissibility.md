@@ -1,12 +1,14 @@
 # ADR 0037 — Locus V2 metric guarantee classes and admissibility
 
-- Status: **ACCEPTED — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5** (author
-  instruction "PRE-G9B-CU1 — Author Approval of Metric Architecture and Implementation
-  Authorization", 2026-10-20). The precision text below was incorporated by the
-  `CU1` implementation (step S0). It belongs to the `CU1` technical candidate, which
-  is pending author review.
+- Status: **ACCEPTED — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; CU1
+  IMPLEMENTATION PASS — AUTHOR APPROVED** (author instructions "PRE-G9B-CU1 — Author
+  Approval of Metric Architecture and Implementation Authorization" and "GeoCeDG —
+  PRE-G9B-CU. CU1 Final Author Approval, Documentary Closeout and CU2 Preparation
+  Authorization", both of 2026-10-20). The precision text below was incorporated by the
+  `CU1` implementation (step S0); the approved technical candidate is `143f5d37`
+  ([`CU1` closeout record](../validation/pre_g9b_cu1_closeout_record.md)).
 - Date: 2026-10-20
-- Phase: `PRE-G9B-CU1` (preparation and implementation authorized on 2026-10-20)
+- Phase: `PRE-G9B-CU1` (`PASS — AUTHOR APPROVED` on 2026-10-20)
 - Author decisions:
   - [`CU0` closeout record](../validation/pre_g9b_cu0_closeout_record.md) §3–§5
     (C1-0 to C1-4 and the binding H10 precision);

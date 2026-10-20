@@ -5,7 +5,7 @@
 | Carácter | Plan vivo del track `PRE-G9B-CU`. No es especificación normativa: las decisiones arquitectónicas se incorporan a sus especificaciones mediante el procedimiento de revisión y aprobación |
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
-| Paquetes | `CU0` `PASS — AUTHOR APPROVED`; arquitectura métrica de `CU1` aprobada con las precisiones N1–N5 e implementación autorizada (2026-10-20, base exacta `e66ae4c0`); candidato técnico de implementación pendiente de revisión autoral ([informe](../validation/pre_g9b_cu1_implementation_candidate_report.md)); `CU2`–`CU10` **no autorizados** |
+| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); preparación arquitectónica, normativa y técnica de `CU2` autorizada sin implementación; `CU3`–`CU10` **no autorizados** |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
 | Evidencia | [informe de caracterización inicial](../validation/pre_g9b_cu_characterization_evidence_report.md); [informe del candidato CU0](../validation/pre_g9b_cu0_baseline_candidate_report.md); [línea base geométrica](../../geocedg/validation/pre-g9b-cu/cu0-geometric-reference-baseline.json) |
@@ -58,9 +58,26 @@ transcribe y es su autoridad.
 | `OBS-CU0-CU3-TANGENT-EXISTENCE` | Un punto crítico aislado certificado con residuo dentro de ε no prueba una raíz; distinguir contacto estructural, tangencia de existencia certificada, aproximación numérica y punto crítico sin intersección; F-2 (`TANGENT_CERTIFIED_ISOLATED`) no aprobada tal como está formulada | `CU3` |
 | `OBS-CU0-CU6-M07-SELECTION-IDENTITY` | La etiqueta puede introducir una referencia textual, pero no prueba la identidad de un objeto seleccionado antes; comprobar la vigencia de la selección tras Deshacer, Rehacer o reconstrucción y pedir una selección nueva si no se puede establecer; nunca reasociar en silencio | `CU6` |
 
+## 2.2 Decisiones adoptadas por la instrucción de cierre de `CU1` (2026-10-20)
+
+Fuente: [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), que las
+transcribe y es su autoridad.
+
+| Id | Decisión | Efecto en el plan |
+|---|---|---|
+| D-CU1-R1 | `CU1` `PASS — AUTHOR APPROVED` sobre el candidato técnico exacto `143f5d37`, con smoke autoral `PASS` | `CU1` |
+| D-CU1-R2 | §25.12 de `locus-v2-metrics.md` v1.5 forma parte del contrato de `CU1`; se conserva la distinción entre longitud estructural, envolvente certificada, estimación numérica y resultado no establecido; las hipótesis de un estimador no son por sí mismas una certificación | `CU1`; `CU2` |
+| D-CU1-R3 | `L-CU1-TRANSLATION-RESOLUTION` aceptada provisionalmente como limitación numérica de binary64, no geométrica; se mantiene el fallo explícito; deuda registrada sin tolerancias arbitrarias ni dependientes de la posición absoluta | investigación métrica por planificar; disposición a más tardar en `CU10` |
+| D-CU1-R4 | Presupuesto versionado de 16 384 cajas de la envolvente certificada: límite computacional, no garantía de certificación | `CU1` |
+| D-CU1-R5 | Rama de revisión publicada; no autoriza la promoción a `main` | `CU10` |
+| D-CU1-R6 | Corrección de la prueba ISO A y nueva verificación completa aceptadas, sin cambios de producto | `CU1` |
+| Limitaciones | `L-CU1-CLASS2-REACH` y `L-CU1-AFFINE-FORMS` se evalúan en `CU2` solo si su alcance las necesita; `L-CU1-E2-LENGTH` es de `CU2`; `L-CU1-REVERSAL-DENSITY` y `L-CU1-IMPROPER-EVALUATOR` quedan para paquetes posteriores; `OBS-CU1-UNDO-ASYNC-STORE-WINDOW` exigiría una propuesta correctiva separada sobre código upstream; `OBS-CU1-UNDO-TEMP-FILES` es deuda de higiene de pruebas con disposición a más tardar en `CU10` | `CU2`; posteriores; `CU10` |
+| Preparación de `CU2` | Autorizada la preparación arquitectónica, normativa y técnica, sin código productivo, desde el cierre exacto de `CU1`: certificación híbrida DA-1 con separación entre evaluación puntual, evidencia exploratoria, componentes localmente certificadas y completitud global (ADR 0027); certificación constructiva del modelo del autor (`o`, `v`, `w`, `a_1`, `o_1`, `e_1`, `e_2`); una longitud `ESTIMATED` de `CU1` nunca es por sí misma evidencia rigurosa de una componente; evento estructural de la longitud orientada de `e_2`; reglas de consumo; representación y teselación; sin adelantar `CU3` | `CU2` |
+
 ## 3. Incidencias y paquetes
 
-Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`.
+Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de
+`CU1`, B10.1, H03, H04, H10, H11 y H12 están corregidas dentro de su contrato.
 
 | Id | Incidencia | Prioridad | Paquete |
 |---|---|---|---|
@@ -95,13 +112,21 @@ línea base geométrica; reproducción ventaneada de B02/B03 con el `main` del p
 el JDK 25 del producto; matriz de cobertura de la guía; análisis D; propuestas E, F, G y H;
 enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vivo.
 
-### CU1 — Conformidad de evaluación, revisión, composición anidada y métrica
+### CU1 — Conformidad de evaluación, revisión, composición anidada y métrica (`PASS — AUTHOR APPROVED`)
 
-- **Estado:** preparación normativa y técnica autorizada el 2026-10-20 y ejecutada como
-  candidato documental pendiente de revisión
-  ([informe](../validation/pre_g9b_cu1_preparation_candidate_report.md)); implementación
-  no autorizada. La siguiente decisión autoral es la aprobación de la política métrica
-  revisada y la autorización de la implementación sobre un commit base exacto.
+- **Estado:** aprobado por el autor el 2026-10-20 con smoke autoral `PASS` sobre el
+  candidato técnico correctivo `143f5d37` y su descendiente documental de verificación
+  `2fe8ed19`, publicados para revisión en la rama `phase/pre-g9b-cu1-implementation`
+  ([registro de cierre](../validation/pre_g9b_cu1_closeout_record.md)). `STATIC`,
+  `INFRA_UNIT`, `PHASE` de `CU1` y de `CU0` e `INTEGRATION` `ACCEPTED / COMPLETE` sobre ese
+  candidato; las dos ejecuciones rechazadas del candidato anterior `8ee19667` son evidencia
+  histórica. Informes: [implementación](../validation/pre_g9b_cu1_implementation_candidate_report.md),
+  [verificación del candidato anterior](../validation/pre_g9b_cu1_verification_record.md),
+  [corrección D-CU1-R6](../validation/pre_g9b_cu1_corrective_candidate_report.md) y
+  [verificación del candidato correctivo](../validation/pre_g9b_cu1_corrective_verification_record.md).
+  Limitaciones y propietarios en el registro de cierre (§6).
+- **Antecedente:** preparación normativa y técnica ejecutada el 2026-10-20
+  ([informe](../validation/pre_g9b_cu1_preparation_candidate_report.md)).
 - **Preparación:** [análisis del aliasing métrico](pre_g9b_cu1_metric_aliasing_analysis.md);
   [propuesta normativa revisada](pre_g9b_cu1_normative_proposal.md) (A1.1-R, A1.2-R,
   ADR 0037 candidato); [estrategia de corrección](pre_g9b_cu1_correction_strategy.md);
@@ -127,8 +152,20 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
 
 ### CU2 — Existencia, continuidad, fronteras y representación
 
+- **Estado:** preparación arquitectónica, normativa y técnica autorizada el 2026-10-20 por
+  la instrucción de cierre de `CU1` (§2.2), desde el cierre exacto de `CU1`; implementación
+  no autorizada. Las propuestas normativas de la preparación serán candidatas hasta su
+  aprobación específica.
 - **Prerrequisitos:** `CU1`; aprobación de la especificación de certificación híbrida
   (DA-1) y de las decisiones E-1 a E-3 y D-1.
+- **Condiciones de la autorización de 2026-10-20:** la certificación no se deriva solo del
+  muestreo y la evidencia exploratoria no adquiere autoridad semántica; ADR 0027 y la
+  independencia entre admisibilidad local y completitud global se preservan; una longitud
+  `ESTIMATED` de `CU1` no certifica por sí misma una componente; `LocusLength` no cambia
+  en silencio y `e_2` no se cierra por tener un conductor periódico; el kernel compartido
+  conserva la autoridad geométrica frente a la presentación y la exportación; no se
+  adelanta `CU3`. Cuestiones de `CU1` que `CU2` evalúa: `L-CU1-E2-LENGTH` y, solo si su
+  alcance lo necesita, `L-CU1-CLASS2-REACH` y `L-CU1-AFFINE-FORMS`.
 - **Alcance:** cuatro niveles de evidencia; certificación estructural (totalidad,
   periodicidad, eventos de dependencia como el `wrapEvent` métrico); programa de
   construcción clase v3 con resultado `UNIFORMLY_INVALID`; transiciones certificadas;
@@ -249,10 +286,10 @@ modifican.
 
 ## 9. Decisiones pendientes
 
-Las decisiones C1-0 a C1-4 quedaron resueltas el 2026-10-20 (§2.1). Las necesarias para
-aprobar la política métrica revisada y autorizar la implementación de `CU1` están en la
-[hoja de decisiones de `CU1`](../validation/pre_g9b_cu1_author_decision_sheet.md). Las
-necesarias para preparar `CU2`/`CU3` siguen en la
+Las decisiones C1-0 a C1-4 quedaron resueltas el 2026-10-20 (§2.1), y las de `CU1`
+(D-CU1-1 a D-CU1-12 y D-CU1-R1 a D-CU1-R6) con su cierre (§2.2). Las decisiones de la
+preparación de `CU2` se reunirán en su propia hoja de decisiones. Las de `CU0` que afectan a
+`CU2`/`CU3` siguen en la
 [hoja de decisiones](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
 precisión de `OBS-CU0-CU3-TANGENT-EXISTENCE` sobre F-2; el texto de las enmiendas
 candidatas de `CU0` está en las

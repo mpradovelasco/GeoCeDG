@@ -1,6 +1,6 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5 (2026-10-20); THE INCORPORATED TEXT BELONGS TO THE CU1 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20)**
 - Version: `1.5`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
@@ -1369,7 +1369,11 @@ provenance.
 ### 25.12 Implementation definitions of the CU1 candidate
 
 The CU1 technical candidate fixes the following definitions, which §25.1–§25.9 leave
-open. They belong to the candidate under author review.
+open. The author adopted them as part of the CU1 contract (decision D-CU1-R2,
+[CU1 closeout record](../../../docs/validation/pre_g9b_cu1_closeout_record.md)). The
+adoption preserves the distinction between structural length, certified enclosure,
+numerical estimate and result not established (§25.1); the hypotheses of an estimator are
+not by themselves a mathematical certification.
 
 1. **Extent.** `S` is the largest distance from the start point of the component to
    the points of its minimum partition (§25.3b). It is invariant under translations

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU1",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu1_closeout_record.md",
+  "instruction": "GeoCeDG — PRE-G9B-CU. CU1 Final Author Approval, Documentary Closeout and CU2 Preparation Authorization",
+  "authorApprovalDate": "2026-10-20",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "exact corrective technical candidate 143f5d37; documentary descendant 2fe8ed19 records the verification evidence and does not replace the candidate identity",
+  "authorSmoke": "PASS — manual smoke declared by the author in the instruction; no further smoke step, result or evidence recorded",
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "serializationChange": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "status": {
+    "PRE-G9B-CU framework": "PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS (2026-10-19)",
+    "PRE-G9B-CU0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU1": "PASS — AUTHOR APPROVED",
+    "locus-v2-metrics.md v1.5 §25 including §25.12": "PART OF THE APPROVED CU1 CONTRACT",
+    "locus-v2-semantics.md v1.2 amendment": "PASS — AUTHOR APPROVED WITH CU1",
+    "ADR 0037": "ACCEPTED; CU1 IMPLEMENTATION PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU2": "ARCHITECTURAL, NORMATIVE AND TECHNICAL PREPARATION AUTHORIZED — IMPLEMENTATION NOT AUTHORIZED",
+    "PRE-G9B-CU3..CU10": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "reviewBranchPublication": "AUTHORIZED FOR THIS CLOSEOUT (normal push to phase/pre-g9b-cu1-implementation)",
+    "main": "UNCHANGED — PROMOTION NOT AUTHORIZED",
+    "tag": "NOT AUTHORIZED",
+    "release": "NOT AUTHORIZED",
+    "book": "UNCHANGED"
+  },
+  "identities": {
+    "technicalCandidate": {"commit": "143f5d3793fc645b7c79503d7717997716637be2", "tree": "4de3cd7150fe0ec12607c1ab2a9697134f9de453", "parent": "508412e2f38d744bd2b333acd5754a77b7861e52", "modifiedByCloseout": false},
+    "verificationRecordDescendant": {"commit": "2fe8ed198e1861a5b0e4558e8088fe20901249e4", "tree": "c9df612e0d55d310a964a397ce0108d63abaf135", "parent": "143f5d3793fc645b7c79503d7717997716637be2", "changedPaths": ["docs/roadmap/geocedg_roadmap.md", "docs/validation/pre_g9b_cu1_corrective_candidate_report.md", "docs/validation/pre_g9b_cu1_corrective_verification_record.md"], "executableInputsChanged": false},
+    "supersededCandidate": {"commit": "8ee196679e0a6ab101eee0a4e60682efe3f11be0", "tree": "f3a895843cfc5c7e0ab124b544e4ff845bcef08f", "record": {"commit": "508412e2f38d744bd2b333acd5754a77b7861e52", "tree": "696c5eb17ddfe8b625434e504e3cdd13934c36b8"}, "productSourceDeltaToApprovedCandidate": "NONE"},
+    "specificationCommit": {"commit": "435ed78c547abf12642561c3b56a209527be535b", "tree": "f7b60f4b45a1f47dd970bcdcd31f1895849caeab"},
+    "authorizedBase": {"commit": "e66ae4c06007f9aba47436a0c03f36608f0f4fd5", "tree": "c90ab8fb61648f231cb383b900af6b4b1e622f8f", "parent": "df675e9ee42e1a4caac0e3bf2d74ab2d30450581"},
+    "historicalBase": {"commit": "48a0775e4f2f122f5e2614c62b5773777752ccd1", "tree": "75ebf03f089a5effa02daa4a68be360b7499fdd9", "equalsMain": true, "equalsOriginMain": true, "equalsLiveRemoteMain": true},
+    "reviewBranch": {"name": "phase/pre-g9b-cu1-implementation", "remoteRefBeforeCloseout": "2fe8ed198e1861a5b0e4558e8088fe20901249e4"},
+    "ancestry": ["48a0775e4f2f122f5e2614c62b5773777752ccd1", "444ad46b1c18a6101dae68a75a8d7a5f92ed83fe", "636a0070b6f4e32a8f270c25cfa70d9bd3b284b7", "d684e74050988a3051a1692bfcf0651440b1567a", "df675e9ee42e1a4caac0e3bf2d74ab2d30450581", "e66ae4c06007f9aba47436a0c03f36608f0f4fd5", "435ed78c547abf12642561c3b56a209527be535b", "8ee196679e0a6ab101eee0a4e60682efe3f11be0", "508412e2f38d744bd2b333acd5754a77b7861e52", "143f5d3793fc645b7c79503d7717997716637be2", "2fe8ed198e1861a5b0e4558e8088fe20901249e4"],
+    "deltaAuthorizedBaseToCandidate": {"files": 68, "insertions": 7386, "deletions": 187, "productFilesOutsideTests": 41, "allRegisteredInUpstreamManifest": true},
+    "gitDiffCheck": [
+      {"range": "48a0775e4f2f122f5e2614c62b5773777752ccd1..2fe8ed198e1861a5b0e4558e8088fe20901249e4", "exitCode": 0},
+      {"range": "e66ae4c06007f9aba47436a0c03f36608f0f4fd5..143f5d3793fc645b7c79503d7717997716637be2", "exitCode": 0}
+    ]
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptance": [
+    {"check": "STATIC", "commit": "143f5d3793fc645b7c79503d7717997716637be2", "runId": "verification-842a984fd13745b2a401396b55e42a7d", "resultHash": "446832167e558f549091b6b4fa9e79a4b23f84c985aec6cfb487fcc9ad9b9d0f", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"},
+    {"check": "INFRA_UNIT", "commit": "143f5d3793fc645b7c79503d7717997716637be2", "runId": "verification-1bc73db300fe4fd0ba85054d79561554", "resultHash": "f9eda832c7dae76742747cbfd651813c9c40224123b1f474f8b9aa7ee7feca0c", "planHash": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "22/22"},
+    {"check": "PHASE -Phase PRE-G9B-CU1", "commit": "143f5d3793fc645b7c79503d7717997716637be2", "runId": "verification-9acf4bcb65254f0389e197dff95cc178", "resultHash": "f04f0a5cd9470009c75ac4af803350ce1cdfc893475e040958a5f3d7dd6251f8", "planHash": "b0e4f130ce59b79d1f3cdf6dafae3a6ba7fce5bf6da40375d1e4be2ae5a74519", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4", "junit": {"preG9bCu1Shared": {"tests": 57, "skipped": 0, "failures": 0}, "preG9bCu1Desktop": {"tests": 20, "skipped": 0, "failures": 0}}},
+    {"check": "PHASE -Phase PRE-G9B-CU0", "commit": "143f5d3793fc645b7c79503d7717997716637be2", "runId": "verification-53c51a5f709b4d6393706b9721c8b022", "resultHash": "e9d0ec1031b8ef52abae175c0ad0a894cd2b122be1718b69ee45ccdc7022e210", "planHash": "43e3e97e492bb71bcf1552f23402c615d728c259c8c0d2e2266e19fc62c49173", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "2/2", "junit": {"preG9bCu0Desktop": {"tests": 21, "skipped": 0, "failures": 0}}},
+    {"check": "INTEGRATION", "commit": "143f5d3793fc645b7c79503d7717997716637be2", "runId": "verification-22c2ccd338434539baa10311565a0d47", "resultHash": "aa6ebf5af42c0e87c34bb0c0558adf6634a351acf9967ceb23370fdb18abc32d", "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "19/19", "junit": {"desktopFinal": {"tests": 2179, "skipped": 1, "failures": 0}, "desktopG9u1Isolated": {"tests": 5, "skipped": 0, "failures": 0}, "sharedFinal": {"tests": 7015, "skipped": 10, "failures": 0}}},
+    {"check": "STATIC", "commit": "2fe8ed198e1861a5b0e4558e8088fe20901249e4", "runId": "verification-91d6da880af942bd8c5338029b2bcfb1", "resultHash": "80826286b22358c845609971302ea6377e440c5d4b93dff58b1e8c6bed1a00bc", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"}
+  ],
+  "historicalRejectedRuns": [
+    {"check": "INTEGRATION", "commit": "8ee196679e0a6ab101eee0a4e60682efe3f11be0", "runId": "verification-eb1ff68a9d5d410ca74b887d2cfebe00", "resultHash": "9b6a821580b2773fd75217fb8fab3aaea1a799ad75b26bf2f017d5a4a03aa115", "verdict": "REJECTED_SEMANTIC", "coverage": "COMPLETE", "acceptanceLeaves": "18/19", "cause": "pre-existing ISO A undo-store race (OBS-CU1-ISOA-UNDO-STORE-RACE)"},
+    {"check": "INTEGRATION", "commit": "8ee196679e0a6ab101eee0a4e60682efe3f11be0", "runId": "verification-c126f174db774b5a9c7ddca1e4382689", "resultHash": "7f9a12f44ca5e5ff1b3241450b241fcd2a7644e53e9e5c9d002eed0bbbe8c799", "verdict": "REJECTED_SEMANTIC", "coverage": "COMPLETE", "acceptanceLeaves": "18/19", "cause": "pre-existing ISO A undo-store race (OBS-CU1-ISOA-UNDO-STORE-RACE)"}
+  ],
+  "authentication": {"date": "2026-10-20", "method": "Read-VerificationJson + Get-VerificationResultHash; run_state and run journal COMPLETED; candidate commit and tree exact", "allAuthentic": true},
+  "standingDiagnostics": ["diagnostic.governance = DIAGNOSTIC_FINDING", "diagnostic.historical-consistency = DIAGNOSTIC_UNAVAILABLE"],
+  "finalReceipt": "NOT REQUIRED BY INTEGRATED_PHASE — NONE CLAIMED; FINAL reserved for CU10; phase-closeout.ps1 -Action INSPECT not applicable",
+  "closeoutPrecedent": "PRE-G9B-CU0 closeout (INTEGRATED_PHASE, no receipt)",
+  "evidenceLocation": ["artifacts/agent/pre-g9b-cu1-r6-static-143f5d37/", "artifacts/agent/pre-g9b-cu1-r6-infra-unit-143f5d37/", "artifacts/agent/pre-g9b-cu1-r6-phase-pre-g9b-cu1-143f5d37/", "artifacts/agent/pre-g9b-cu1-r6-phase-pre-g9b-cu0-143f5d37/", "artifacts/agent/pre-g9b-cu1-r6-integration-143f5d37/", "artifacts/agent/pre-g9b-cu1-r6-record-static-2fe8ed19/", "artifacts/agent/pre-g9b-cu1-integration-8ee19667/", "artifacts/agent/pre-g9b-cu1-run2-integration-8ee19667/"],
+  "correctedWithinCu1Contract": ["B10.1", "H03", "H04", "H10", "H11", "H12"],
+  "decisions": {
+    "D-CU1-R1": "APPROVED — exact technical candidate 143f5d37, with a satisfactory author smoke",
+    "D-CU1-R2": "ADOPT — locus-v2-metrics.md v1.5 §25.12 is part of the CU1 contract; the distinction between structural length, certified enclosure, numerical estimate and result not established is expressly preserved; estimator hypotheses are not by themselves a mathematical certification",
+    "D-CU1-R3": "ACCEPT WITH RECORDED LIMITATION — L-CU1-TRANSLATION-RESOLUTION accepted provisionally as a binary64 numerical limitation, not a geometric property; explicit failure kept when no admissible estimate can be established; debt registered without arbitrary or absolute-position-dependent tolerances",
+    "D-CU1-R4": "ADOPT — versioned certified-enclosure budget of 16384 boxes; a computational limit, not a certification guarantee",
+    "D-CU1-R5": "COMPLETED — review branch published at 2fe8ed19; no promotion to main",
+    "D-CU1-R6": "PASS — ISO A test correction and its new complete verification accepted; no productive code change"
+  },
+  "normativeStatusReconciliation": [
+    {"path": "geocedg/specs/locus/locus-v2-metrics.md", "change": "header status and §25.12 opening paragraph: CU1 amendment PASS — AUTHOR APPROVED; §25.12 adopted with the D-CU1-R2 precision"},
+    {"path": "geocedg/specs/locus/locus-v2-semantics.md", "change": "header status: CU1 v1.2 amendment PASS — AUTHOR APPROVED"},
+    {"path": "docs/adr/0037-locus-v2-metric-guarantee-classes-and-admissibility.md", "change": "status: CU1 implementation PASS — AUTHOR APPROVED"}
+  ],
+  "limitations": [
+    {"id": "L-CU1-TRANSLATION-RESOLUTION", "class": "ACCEPTED LIMITATION (provisional, numerical, binary64) AND CORRECTIVE DEBT", "owner": "PRE-G9B-CU track: metric investigation to be planned; disposition due at the latest in the CU10 limitations report", "disposition": "explicit failure kept; translation invariance of the geometric length is the target; no arbitrary or absolute-position tolerance"},
+    {"id": "L-CU1-CLASS2-REACH", "class": "ACCEPTED LIMITATION (computational)", "owner": "PRE-G9B-CU2 evaluates it within the certified-construction model only where its scope needs it; otherwise a later metric package", "disposition": "enclosure kept as rigorous evidence"},
+    {"id": "L-CU1-AFFINE-FORMS", "class": "ACCEPTED LIMITATION", "owner": "PRE-G9B-CU2 only if strictly needed; otherwise a later package", "disposition": "non-direct affine expressions measured in class 3"},
+    {"id": "L-CU1-REVERSAL-DENSITY", "class": "ACCEPTED LIMITATION (recorded estimator hypothesis)", "owner": "a later corrective package, if observed", "disposition": "hypotheses keep stating it"},
+    {"id": "L-CU1-E2-LENGTH", "class": "QUESTION OWNED BY CU2", "owner": "PRE-G9B-CU2 (B10.2, oriented-length structural event)", "disposition": "length of e_2 not established in class 1 or 2"},
+    {"id": "L-CU1-IMPROPER-EVALUATOR", "class": "ACCEPTED LIMITATION (pre-existing)", "owner": "a later metric package", "disposition": "LIMIT_NOT_ESTABLISHED kept for improper components without a derivative"},
+    {"id": "OBS-CU1-UNDO-ASYNC-STORE-WINDOW", "class": "OBSERVATION OF INHERITED UPSTREAM BEHAVIOUR", "owner": "separate corrective proposal on upstream code only if the author deems it relevant; not authorized", "disposition": "non-blocking"},
+    {"id": "OBS-CU1-UNDO-TEMP-FILES", "class": "CORRECTIVE DEBT (test hygiene)", "owner": "test and verification infrastructure; disposition at the latest in CU10", "disposition": "nothing deleted or changed now; non-blocking"},
+    {"id": "OBS-CU1-ISOA-UNDO-STORE-RACE", "class": "CLOSED", "owner": null, "disposition": "corrected by D-CU1-R6 in 143f5d37"}
+  ],
+  "authorizedNextWork": {
+    "phase": "PRE-G9B-CU2 architectural, normative and technical preparation",
+    "base": "this exact CU1 closeout commit (its identity is recorded by the CU2 preparation)",
+    "incidents": ["B07", "B10.2", "H01", "B06"],
+    "inputs": ["docs/architecture/pre_g9b_cu0_hybrid_certification_proposal.md", "docs/architecture/pre_g9b_cu0_oriented_length_analysis.md", "docs/architecture/pre_g9b_cu0_candidate_normative_amendments.md (A2.1-A2.4)"],
+    "deliverables": ["complementary characterization only where needed", "consolidated hybrid certification design", "normative proposal for existence, continuity and components", "extension of the certified-construction model", "oriented-length structural event design", "certificate consumption rules", "Locus V2 representation and tessellation strategy", "test matrix and acceptance criteria", "minimal implementation strategy with dependencies and stop conditions", "candidate canonical prompt for CU2", "pending author decision sheet"],
+    "localCandidateCommitAllowed": true,
+    "ownBranch": true,
+    "staticVerificationAllowed": true,
+    "notAuthorized": ["productive CU2 code", "new structural points", "tangent-root materialization", "intersection-engine changes reserved to CU3", "new public intersection tools", "PASS — AUTHOR APPROVED of the preparation without a later author decision"],
+    "nextAuthorDecision": "review of the CU2 preparation candidate and its architectural decisions"
+  },
+  "book": {"head": "78fbc88e9e12346b89d6ded411eaae94de2284b9", "equalsOriginMain": true, "worktreeClean": true, "state": "INTACT"},
+  "closeoutChangedPaths": [
+    "docs/adr/0037-locus-v2-metric-guarantee-classes-and-admissibility.md",
+    "docs/architecture/pre_g9b_cu_corrective_usability_plan.md",
+    "docs/roadmap/geocedg_roadmap.md",
+    "docs/validation/pre_g9b_cu1_closeout_record.md",
+    "geocedg/specs/locus/locus-v2-metrics.md",
+    "geocedg/specs/locus/locus-v2-semantics.md",
+    "geocedg/validation/pre-g9b-cu/pre-g9b-cu1-closeout.json"
+  ],
+  "publication": "authorized: this closeout commit on the review branch phase/pre-g9b-cu1-implementation with a normal push; main, tags, releases and binaries not authorized"
+}
