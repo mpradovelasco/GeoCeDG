@@ -6,7 +6,7 @@
 | Estado | `CU2 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false`; `TECHNICAL_CANDIDATE_STATE = FROZEN`; `AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT` |
 | Antecedentes | [propuesta E de `CU0`](pre_g9b_cu0_hybrid_certification_proposal.md) §6; enmienda candidata A2.4; decisión DC-6 (2026-10-19: criterios de teselación con límites justificados por pruebas; 10° y profundidad 4 son candidatos) |
 | Documentos hermanos | [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
-| Revisión | 2026-10-20, revisión documental focalizada: principio 5 y §3 (disponibilidad, P5), §5.1 a §5.3 (parámetros singulares, pliegues y extremos no evaluables, P1–P3), §5.6 nuevo y §6 (fidelidad declarada) |
+| Revisión | 2026-10-20, revisión documental focalizada: principio 5 y §3 (disponibilidad, P5), §5.1 a §5.3 (parámetros singulares, pliegues y extremos no evaluables, P1–P3), §5.6 nuevo y §6 (fidelidad declarada). Cierre de coherencia (2026-10-20): §3.1 nuevo (componentes puntuales, C2), §3.2 nuevo (salidas efectivas en raíces coincidentes, C1), §5.2 y §6 |
 
 ## 1. Principios
 
@@ -62,6 +62,36 @@ Referencias al código en `27bf652f`. Prefijos: `L` = `kernel/locus`, `A` = `ker
 | DXF | 3, con fidelidad incompleta y anexo cuando no hay 4 | Un `LWPOLYLINE` por componente certificada, en el orden del arco aunque cruce la costura. Marca cerrada (código 70) solo para una componente periódica cerrada. Extremos abiertos de tipo estructural, con el vértice del límite lateral (§5.3); nunca se descarta la componente. Un extremo que no se puede evaluar termina en el último vértice evaluado y el anexo declara su estado. Con `NOT_ESTABLISHED`: fidelidad incompleta con anexo obligatorio y estricta en cada componente declarada (`existence-components` §12). Las bandas `UNRESOLVED` no se interpolan |
 | LaTeX (PGF, PSTricks, Asymptote) | 3 | Las mismas reglas de topología. `-- cycle`, `\pspolygon` o `--cycle` solo para una componente periódica cerrada. Los extremos no evaluables se declaran en comentarios y hacen la exportación incompleta. Las reglas de la decisión DQ-C5, que hoy viven solo en un registro de validación, pasan a una especificación durable (decisión D-CU2-11) |
 
+### 3.1 Componentes puntuales (C2)
+
+Una componente puntual `{t*}` ([diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md)
+§3.5) no es un arco de longitud cero: ningún consumidor la trata como tal. En `CU2` no se
+materializa ningún objeto punto (eso es de `CU3`), y la representación se declara sin dibujarla
+(decisión D-CU2-19):
+
+| Consumidor | Regla |
+|---|---|
+| Inspector | la enumera con su envolvente de `t*`, su fuente estructural y el estado de su posición (envolvente certificada o no disponible) |
+| Dibujo | no la dibuja; nunca un segmento ni una curva. Si la representación del locus la omite, su fidelidad es parcial con causa «componente puntual declarada, no dibujada» |
+| Métrica total | aporta cero; un locus `COMPLETE` formado solo por componentes puntuales mide 0 |
+| Ruta entre posiciones | solo existe dentro de la misma componente puntual y mide 0 |
+| Punto semántico, interacción, posiciones métricas, selector de rama principal | no la pueden seleccionar por un parámetro binary64, que en general no alcanza `t*`: fallo explícito con causa tipada |
+| Intersecciones | no declaran `EMPTY` ni un conjunto completo mientras no excluyan la componente puntual con una distancia certificada positiva; si no, el resultado es incompleto con causa tipada |
+| Loci dependientes con soporte locus | declaran la limitación y no son `COMPLETE` mientras el soporte tenga una componente puntual |
+| Transformaciones por semejanza | heredan la componente con su parámetro y transforman la envolvente de su posición |
+| DXF | ninguna entidad de trazo; el anexo la declara y la exportación es incompleta |
+| LaTeX | ningún camino; un comentario la declara y la clasificación es incompleta |
+
+### 3.2 Salidas efectivas en raíces coincidentes (C1)
+
+Donde una segunda salida sin etiqueta queda dentro de la banda `UNRESOLVED` de la supresión
+heredada (diseño §4.7), los consumidores ven una banda `UNRESOLVED` más: el dibujo y las
+exportaciones terminan cada lado en el borde de la banda, con marca, y nunca la cruzan; el locus es
+`NOT_ESTABLISHED`, de modo que los consumidores globales lo rechazan y la exportación es
+incompleta. El valor límite certificado de la raíz coincidente es evidencia del inspector, nunca
+un vértice dibujado ni exportado. En el modelo del autor no hay tal banda: `{Q, R}` están
+etiquetadas y la raíz doble es un parámetro singular (§5.2).
+
 ## 4. Vistas heredadas y migración
 
 - `getValidDomainComponents()` deja de usarse para decidir la topología. Se conserva como
@@ -105,6 +135,8 @@ En una transición `D = 0` (recta–circunferencia), `F` tiene una singularidad 
 Cerca de la frontera `t*` la teselación usa la reparametrización local `t = t* ± s²`, en la que
 `F` es regular. El vértice extremo es `F(t*)`, que en la raíz doble coincide para las dos salidas
 (`Q = R`): el dibujo llega exactamente a la frontera y el hueco de B07 en el extremo desaparece.
+Esto vale para salidas definidas en la raíz, como `{Q, R}`, etiquetadas; el extremo de una
+segunda salida sin etiqueta cae dentro de la banda de la supresión heredada (§3.2) y no se dibuja.
 Las fronteras `λ = 0` de un rayo no son singulares. Las fronteras abiertas singulares (divisor
 nulo) se acercan por dentro hasta la resolución, con marca tipada, porque el límite puede no
 existir.
@@ -172,6 +204,8 @@ en el [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §
   estado se declara en el anexo DXF o en los comentarios LaTeX, y la exportación es incompleta
   (`INCOMPLETE_WITH_CERTIFIED_COMPONENTS` en LaTeX, fidelidad incompleta en DXF).
 - Los parámetros singulares certificados se exportan como vértices exactos (§5.2).
+- Las componentes puntuales no se exportan como trazo: se declaran y la exportación es
+  incompleta (§3.1).
 - La profundidad mínima vale también para componentes abiertas.
 - El residuo de cierre se mide contra el certificado de cierre, no contra una identidad trivial.
 - La tolerancia de exportación sigue en unidades del modelo (0,001 por defecto). Si el criterio

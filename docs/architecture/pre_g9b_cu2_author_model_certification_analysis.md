@@ -8,7 +8,7 @@
 | Base | cierre documental de `CU1` `27bf652f176e57ced3807b82afe14fc00b7586a9` |
 | Modelo | `models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg` (SHA-256 `1ae6f512…890456c`, igual al manifiesto); `continuous=false` |
 | Producto caracterizado | el código de producto aprobado de `CU1` (`143f5d37`), idéntico en el cierre |
-| Revisión | 2026-10-20, revisión documental focalizada (instrucción autoral «PRE-G9B-CU2 — Revisión documental focalizada, certificación de degeneraciones y refinamiento normativo»): §3.2 a §3.6 y §4.3 revisados, §3.8 nuevo (P1), hallazgos F-CU2-8 a F-CU2-11 y dos sondeos nuevos (§8) |
+| Revisión | 2026-10-20, revisión documental focalizada (instrucción autoral «PRE-G9B-CU2 — Revisión documental focalizada, certificación de degeneraciones y refinamiento normativo»): §3.2 a §3.6 y §4.3 revisados, §3.8 nuevo (P1), hallazgos F-CU2-8 a F-CU2-11 y dos sondeos nuevos (§8). Cierre de coherencia (2026-10-20): §3.8.2 y §3.8.4 precisados (C3), §3.9 nuevo (C1), hallazgos F-CU2-12 a F-CU2-14 y dos sondeos más (§8) |
 
 ## 1. Método
 
@@ -304,13 +304,16 @@ próxima por el lado de la penetración, el giro medido en `t_c` es de 133,7° p
 |---|---|---|
 | A. Factorización estructural | `D` de una recta por un punto fijo exterior `P` y un punto que recorre una circunferencia fija | el signo de cada factor a partir de dos márgenes escalares, `h − r` y `h + r`; las raíces en forma cerrada, `τ ± arccos(h/r)` |
 | B. Punto estacionario de `D` | cualquier `D` con envolventes de `D′` y `D″` | existencia y unicidad del mínimo `t*` (Krawczyk sobre `D′`, con una envolvente de `D″` que excluye el cero) y el signo de `D(t*)` cuando su envolvente lo excluye. Nunca `D(t*) = 0` |
-| C. Intervalos para raíces múltiples | — | ninguna multiplicidad exacta: un cero doble desaparece con perturbaciones arbitrariamente pequeñas, y los métodos verificados solo prueban que un problema **perturbado** tiene una raíz múltiple (Rump y Graillat, *Verified error bounds for multiple roots of systems of nonlinear equations*, Numerical Algorithms, 2010) |
+| C. Intervalos para raíces múltiples | según la estructura disponible | el aislamiento ordinario de raíces simples (cambio de signo, derivada que no se anula, Newton de intervalos o Krawczyk) no certifica por sí solo una multiplicidad: con datos solo aproximados, un cero doble no es estable frente a perturbaciones arbitrariamente pequeñas. Los procedimientos verificados para raíces múltiples añaden estructura (multiplicidad conocida, deflación, factorización, información derivativa) o verifican la raíz múltiple de un problema **perturbado** (Rump y Graillat, *Verified error bounds for multiple roots of systems of nonlinear equations*, Numerical Algorithms, 2010) |
 | D. Información constructiva exacta | constantes capturadas en binary64, que son racionales exactos (`certified-construction-model` §3), y conductor sobre una circunferencia | con `u = tan(t/2)`, `(1 + u²)²·D` es un polinomio de grado 4 con coeficientes racionales exactos. El máximo común divisor con su derivada y la sucesión de Sturm dan **exactamente** el número de raíces reales, sus multiplicidades y el signo entre ellas; `t = ±π` se trata aparte |
 
-Solo D puede establecer la igualdad del caso crítico. A lo explica y da las referencias
-analíticas; B sirve, para casos estrictos, donde D no se aplica. La incidencia tangencial no es
-información constructiva adicional en el modelo del autor: el valor crítico no está construido,
-sino que lo produce un deslizador.
+Entre las técnicas estudiadas, D es la que establece la igualdad del caso crítico con las
+constantes capturadas: la decide con aritmética exacta, sin hipótesis numéricas. A lo explica y
+da las referencias analíticas; B sirve, para casos estrictos, donde D no se aplica; un
+procedimiento de C que añada estructura podría ser una alternativa en otras clases de
+predicados, pero aquí no aporta nada que D no dé. La incidencia tangencial no es información
+constructiva adicional en el modelo del autor: el valor crítico no está construido, sino que lo
+produce un deslizador.
 
 #### 3.8.3 Configuración crítica exacta frente a binary64
 
@@ -353,7 +356,9 @@ aritmética racional. Con enteros:
 El método D prueba una sola raíz real, de multiplicidad 2, en `u = 1/2` (`t = atan2(4, 3)`), con
 `D ≥ 0` a ambos lados. Con radio `40 + 2⁻ᵏ` hay dos raíces simples y con `40 − 2⁻ᵏ` ninguna,
 para `k` hasta 200 (raíces separadas `≈ 2⁻¹⁰⁰`). Con `g_1` de centro `(83, 19)` y radio 40,
-tangente exterior, prueba un punto aislado de existencia: cero doble con `D ≤ 0` a ambos lados.
+tangente exterior, prueba un punto aislado de existencia: cero doble con `D ≤ 0` a ambos lados,
+que el diseño representa como componente puntual
+([diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §3.5).
 
 Una tangencia que la construcción calcula con redondeo, por ejemplo un radio definido como la
 distancia de un centro a una tangente, se captura redondeada y se certifica como su configuración
@@ -364,11 +369,56 @@ conductor; no se propone para `CU2`.
 
 El caso crítico tiene un certificado: el certificado algebraico exacto del
 [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §4.6. Establece la
-existencia en todo el círculo, la multiplicidad 2 en `t_c`, la inclusión de `t_c` en la
-componente, la relación de las ramas a ambos lados y la completitud. En el modelo del autor
+existencia matemática en todo el círculo, la multiplicidad 2 en `t_c`, la inclusión de `t_c` en
+la componente, la relación de las ramas a ambos lados y la completitud. En el modelo del autor
 decide exactamente cualquier valor de `excCyl`: penetración o mordedura. `NOT_ESTABLISHED`
 queda como fallo cerrado cuando el certificado no se aplica (predicado que no es de primer
 nivel) o agota su presupuesto.
+
+Que la construcción seleccionada sea continua en `t_c` exige además que las salidas que definen
+los puntos trazados estén realmente definidas en la raíz coincidente. En el modelo lo están,
+porque `Q` y `R` tienen etiqueta (§3.9); con una segunda salida sin etiqueta no lo estarían, y la
+certificación completa no sería posible.
+
+### 3.9 Salidas efectivas en la raíz coincidente (C1)
+
+GeoGebra anula la segunda salida de una intersección cuando no tiene etiqueta y coincide con la
+primera dentro de 10⁻⁸ en cada coordenada (`AlgoIntersect.avoidDoubleTangentPoint`; detalle en el
+[diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §4.7). Un tercer sondeo y
+una comprobación posterior (§8) miden el ciclo completo en el modelo y en construcciones
+añadidas a su copia de trabajo:
+
+| Caso | Resultado |
+|---|---|
+| etiquetado de `{Q, R}` | etiquetadas en el vivo y en las copias de los cortes de `o` y `v`, también tras recargar el XML |
+| raíz coincidente con ambas salidas etiquetadas | `R` nunca se anula: 0 de 201 muestras indefinidas en `|t − t_c| ≤ 10⁻⁸`, tanto en la penetración más próxima como en la mordedura más próxima. El locus de `R` tampoco, en la penetración más próxima; en la mordedura más próxima su corte no se resincronizó (hallazgo F-CU2-12) y el dato no cuenta |
+| segunda salida sin etiqueta (`R2 = Intersect(p, t2, 2)`, con `t2 = Ray(P, N)`) | las salidas auxiliares del algoritmo padre no tienen etiqueta. En la penetración más próxima, `R2` está indefinida en 49 de 201 muestras dispersas de `|t − t_c| ≤ 10⁻⁸`, con `Q` y `R` iguales en ellas (ventana de tangencia); el locus de `R2` lo está en 55. En la mordedura más próxima, `R2` está indefinida en las 201 |
+| frontera simple de mordedura (excCyl 3,7) | `R` está definida hasta 1,6·10⁻⁷ dentro del hueco exacto; `R2` deja de estarlo en la propia frontera |
+| raíz doble en la primera inicialización | `R3 = Intersect(p, t3, 2)` creada con el conductor en `t_c`: el algoritmo sigue en `firstIntersection` (dos raíces iguales no inicializan) y `R3` está indefinida; al apartar el conductor se inicializa en orden bruto y `R3` es la raíz de `λ` mayor; al volver a `t_c`, permutación `[0, 1]` fija y `R3` de nuevo indefinida |
+| conductor sin intersección al crear | `R4` creada en el hueco: indefinida, sin inicializar; al salir, orden bruto |
+| recálculo y recarga del XML (como deshacer) | permutación `[0, 1]`, etiquetado y comportamiento de la banda idénticos |
+| copia del corte frente al vivo | igual etiquetado y permutación para `{Q, R}`; para `J/K` (`Intersect(p, i)`), permutación `[1, 0]` en el vivo y en la copia: la salida `J` es la raíz bruta 1 |
+| igualdad entre selección certificada y resultado operativo | `Q` es la raíz de `λ` menor y `R` la mayor en todos los estados comprobados |
+
+Conclusiones:
+
+1. En el modelo del autor la raíz doble certificada y las salidas efectivas son coherentes: en
+   `t_c` las dos salidas están definidas y coinciden, y los cuatro loci son continuos con su
+   esquina. La afirmación de completitud de §3.8 se mantiene, con la precondición de que la copia
+   del corte reproduzca el etiquetado y la permutación del algoritmo vivo.
+2. Con una segunda salida sin etiqueta, la definición efectiva cerca de una raíz coincidente
+   depende de la tolerancia y del redondeo, y difiere entre el vivo y el corte (49 frente a 55
+   muestras). No se puede certificar ni la existencia ni la continuidad en esa banda: el locus que
+   dependa de esa salida queda `NOT_ESTABLISHED`, con la banda `UNRESOLVED` y componentes locales
+   a ambos lados.
+3. El valor límite de la raíz coincidente está demostrado, pero no es una salida disponible.
+   Usarlo como salida cambiaría la semántica del Locus V2 respecto del objeto vivo (decisión
+   D-CU2-18).
+
+Además, la comprobación posterior encontró que el corte de `lr2 = LocusV2(R2, N)` no se
+resincronizó tras un cambio de un ulp de `excCyl`: su revisión no cambió y su copia de `excCyl`
+conservó el valor anterior, de modo que el locus se evaluó con la configuración previa
+(hallazgo F-CU2-12).
 
 ## 4. Segunda familia: `e_1` y `o_1` (conductor `E_1` sobre `p`)
 
@@ -502,7 +552,7 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 |---|---|---|---|---|
 | `o`, `v`, `w`, `a_1` | penetración (`|excCyl| < 3,65694`) | `D > 0` uniforme | `COMPLETE`, una componente periódica cerrada | clase v3 (rayos, recta–circunferencia con rama), periodicidad estructural |
 | `o`, `v`, `w`, `a_1` | mordedura | `D` con dos raíces simples | `COMPLETE`, un arco cerrado que cruza la costura | lo anterior + `UNIFORMLY_INVALID` + transiciones certificadas + arcos circulares |
-| `o`, `v`, `w`, `a_1` | valor crítico (solo con datos que lo representen exactamente) | cero doble de `D` sin cambio de signo | `COMPLETE`, una componente periódica cerrada con un parámetro singular certificado en `t_c` | certificado algebraico exacto |
+| `o`, `v`, `w`, `a_1` | valor crítico (solo con datos que lo representen exactamente) | cero doble de `D` sin cambio de signo | `COMPLETE`, una componente periódica cerrada con un parámetro singular certificado en `t_c`, porque `{Q, R}` están etiquetadas y el corte reproduce su etiquetado (§3.9) | certificado algebraico exacto; lectura del etiquetado |
 | `o`, `v`, `w`, `a_1` | binary64 contiguos al valor crítico | `D` sin raíces o con dos raíces simples a 10⁻⁸ | penetración o mordedura, decididas exactamente | certificado algebraico exacto |
 | `e_1` | todos | predicados uniformes | `COMPLETE`, una componente periódica cerrada; pliegues certificados en 0 y `±π` | clase v3 + simetría estructural + chorros de segundo orden |
 | `o_1` | todos | predicados uniformes | `COMPLETE`, una componente periódica cerrada | clase v3 |
@@ -523,6 +573,9 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 | F-CU2-9 | Cerca del valor crítico la clasificación exacta cambia entre dos binary64 consecutivos; la fórmula cerrada en `double` clasifica mal el primer valor de mordedura, y el evaluador da puntos dentro del hueco exacto (§3.8.3) | la existencia la decide un certificado exacto; el evaluador no es frontera ni prueba de existencia |
 | F-CU2-10 | Las constantes capturadas no cumplen exactamente las relaciones ideales: `P.y` difiere de `B.y` en una unidad de la última cifra | el certificado usa los valores capturados; las fórmulas cerradas son solo referencias |
 | F-CU2-11 | En el valor crítico la raíz seleccionada `Q` invierte su movimiento sobre `p` y los loci tienen una esquina de 133,7° (`o`, `v`) y 147,3° (`w`, `a_1`), sin pérdida de continuidad (§3.8.1) | el certificado publica un parámetro singular; el dibujo lo trata como vértice exacto, sin unirlo ni suavizarlo |
+| F-CU2-12 | La huella del corte de `CU1` usa la serialización XML, con 15 cifras significativas: un cambio de un ulp de `excCyl` no publicó revisión de `lr2 = LocusV2(R2, N)` y su corte conservó el valor anterior (§3.9) | contradice la «exact fingerprint» de `locus-v2-semantics.md` v1.2; los certificados por revisión quedarían obsoletos cerca del valor crítico; corrección pendiente de decisión (D-CU2-20) |
+| F-CU2-13 | GeoGebra anula una segunda salida sin etiqueta que coincide con la primera dentro de 10⁻⁸; cerca de una raíz coincidente la definición efectiva es dispersa y difiere entre el vivo y el corte (§3.9) | el certificado no declara continuidad a través de esa banda: `UNRESOLVED` acotada y `NOT_ESTABLISHED` global para los loci afectados (D-CU2-18) |
+| F-CU2-14 | En el modelo, `J/K = Intersect(p, i)` tiene la permutación `[1, 0]` en el vivo y en el corte: la salida `J` es la raíz bruta 1 (§3.9) | el estado de selección no es la identidad en general; la captura lo lee (P4) |
 
 ## 8. Reproducibilidad del sondeo
 
@@ -557,5 +610,18 @@ La revisión focalizada añadió dos sondeos de investigación con el mismo proc
 2. **Esquinas y selecciones simples.** Mide el giro de `o`, `v`, `w` y `a_1` en `t_c` con
    `h` = 10⁻³ a 10⁻⁶ en cinco configuraciones de penetración, la más próxima
    `0x1.d416bb67a38bbp1`, y lee el estado de los algoritmos padre de `H_1` y `G_1`.
+
+El cierre de coherencia añadió otros dos (§3.9):
+
+3. **Salidas efectivas en raíces coincidentes.** Lee por reflexión el etiquetado y la permutación
+   de `{Q, R}` en el vivo y en las copias de los cortes de `o` y `v`. Añade a la copia de trabajo
+   en memoria `t2 = Ray(P, N)`, `Q2 = Intersect(p, t2, 1)`, `R2 = Intersect(p, t2, 2)`,
+   `lr = LocusV2(R, N)` y `lr2 = LocusV2(R2, N)`, y mide la definición de `R`, `R2` y sus loci
+   en 201 conductores de `|t − t_c| ≤ 10⁻⁸` en los dos binary64 contiguos al valor crítico, y en
+   la frontera de mordedura de excCyl 3,7. Repite el ciclo de inicialización con la raíz doble y
+   con el conductor sin intersección, `updateConstruction` y una recarga del XML.
+4. **Corte frente a vivo.** Compara la copia de `R2` en el corte de `lr2` con la salida viva,
+   junto con la revisión de `lr2` y la copia de `excCyl`, tras cambios de un ulp; lee la
+   permutación viva de `J/K`.
 
 Ningún sondeo modifica el repositorio ni el modelo versionado.

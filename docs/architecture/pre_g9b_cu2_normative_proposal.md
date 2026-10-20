@@ -22,6 +22,15 @@ Los textos normativos se proponen en inglés, como sus especificaciones de desti
 | P5, existencia y disponibilidad | A2.1-R: existencia, evaluación y representación; A2.4-R y A2.6: fidelidad declarada |
 | Coherencia (§8 de la instrucción) | A2.1-R: completitud como recubrimiento; A2.2-R: `UNIFORMLY_INVALID` por desigualdad estricta o identidad estructural |
 
+**Cierre de coherencia de 2026-10-20** (instrucción autoral «PRE-G9B-CU2 — Cierre de coherencia
+normativa y registro del programa de apéndices científicos»). La arquitectura tampoco cambia:
+
+| Punto | Enmiendas revisadas |
+|---|---|
+| C1, salidas efectivas en raíces coincidentes | A2.2-R: estado de selección con el etiquetado de las salidas y salidas efectivas en raíces coincidentes; A2.1-R: huella exacta de la revisión (hallazgo F-CU2-12) |
+| C2, componentes puntuales | A2.1-R: componentes puntuales; A2.4-R, A2.5 y A2.6: su consumo y su representación |
+| C3, naturaleza de la evidencia | A2.2-R: transiciones, raíces múltiples y certificado algebraico exacto |
+
 ## 1. Conformidad y ampliación
 
 | Punto | Destino | Tipo | Motivo |
@@ -35,7 +44,11 @@ Los textos normativos se proponen en inglés, como sus especificaciones de desti
 | Programa de clase v3 y resultado `UNIFORMLY_INVALID` | `certified-construction-model` §3–§9 | **ampliación** y **corrección** | el modelo no distingue indecidible de uniformemente inválido y excluye las operaciones del modelo del autor; una envolvente que contiene el cero no prueba que un divisor se anule en toda la caja |
 | Estado de selección de las intersecciones | `certified-construction-model` §3 y §9; `existence-components` §6 y §8 | **ampliación** y **aclaración** | la permutación de salida es estado del algoritmo y se reinicializa por cercanía (P4, hallazgo F-CU2-8) |
 | Transiciones certificadas por raíz simple de un predicado de validez | `existence-components` §7 (autoridad 4) | **concreción** | §7 admite predicados de intervalos sin definir la prueba |
-| Certificado algebraico exacto de predicados de primer nivel | `existence-components` §7 (autoridad 3, fronteras analíticas); `certified-construction-model` | **ampliación** | ningún método de intervalos certifica una raíz múltiple; el valor crítico de la mordedura quedaba `NOT_ESTABLISHED` (P1) |
+| Certificado algebraico exacto de predicados de primer nivel | `existence-components` §7 (autoridad 3, fronteras analíticas); `certified-construction-model` | **ampliación** | el aislamiento ordinario de raíces simples no certifica una raíz múltiple, y el valor crítico de la mordedura quedaba `NOT_ESTABLISHED` (P1, C3) |
+| Naturaleza de la evidencia | ADR 0038; `existence-components` §7 | **aclaración** | separa prueba exacta, intervalos rigurosos, verificación bajo hipótesis, exploración y falta de evidencia, y las constantes binary64 capturadas de las relaciones ideales (C3) |
+| Componentes puntuales | `existence-components` §2–§3, §8 y §11; `metrics`; `presentation` | **ampliación** | no hay entidad para una existencia reducida a un parámetro aislado, que no es un arco de longitud positiva (C2) |
+| Salidas efectivas en raíces coincidentes | `certified-construction-model` §3 y §9; `existence-components` §4 | **ampliación** | la regla heredada anula la segunda salida sin etiqueta que coincide con la primera: la existencia de la raíz no implica la de la salida (C1, hallazgo F-CU2-13) |
+| Huella exacta de la revisión | `semantics`, «exact fingerprint» (A1.1-R) | **conformidad** | la huella de `CU1` toma la serialización XML de 15 cifras significativas, y un cambio de un ulp no publica revisión (hallazgo F-CU2-12) |
 | Puntos estacionarios certificados y parámetros singulares | `certified-construction-model`; `presentation` | **ampliación** | una envolvente de `F′` que contiene el cero no prueba un pliegue (P3) |
 | Totalidad y periodicidad estructurales | `existence-components` §7 (autoridad 1); `certified-construction-model` §7 | **ampliación** | §7 de `certified-construction-model` declara periodo 0 y ninguna identificación periódica |
 | Autoridad única de cierre | `existence-components` §12; `presentation`; `metrics` §22; `intersections` | **conformidad** (§12 ya exige el certificado para el DXF) **y ampliación** a todos los consumidores | hoy cinco predicados distintos |
@@ -49,8 +62,8 @@ Los textos normativos se proponen en inglés, como sus especificaciones de desti
 ## 2. A2.1-R — Evidencia, componentes, arcos, disponibilidad, publicación e identidad
 
 Destino: `locus-v2-existence-components.md` v1.1 (§2–§5, §7, §8 y §11) y `locus-v2-semantics.md`
-v1.3, sección «Status and degeneration axes», con una nota de alcance en
-`locus-v2-public-surface.md` §6.3. Requiere el ADR 0038.
+v1.3, secciones «Status and degeneration axes» y enmienda de `CU1` (huella exacta), con una nota
+de alcance en `locus-v2-public-surface.md` §6.3. Requiere el ADR 0038.
 
 > **Evidence levels.** Locus V2 existence evidence has four levels:
 >
@@ -77,7 +90,8 @@ v1.3, sección «Status and degeneration axes», con una nota de alcance en
 > unresolved band. A structural discontinuity with valid evaluations on both sides is a
 > boundary, never an interior point. A certified singular parameter, an even-multiplicity zero
 > of a validity predicate that keeps its sign, is interior to the component. End inclusion
-> follows the semantics of the boundary predicate, not pointwise evaluation.
+> follows the semantics of the boundary predicate, not pointwise evaluation. A certified
+> component is an interval or arc of positive length, or a point component.
 
 > **Arcs on periodic domains.** On a periodic canonical domain a component is an arc given
 > by its canonical start, its length in `(0, period]` and the inclusion of each end. An arc of
@@ -95,6 +109,26 @@ v1.3, sección «Status and degeneration axes», con una nota de alcance en
 > through an explicit one-sided limit query. Canonicalization never identifies the two ends,
 > and continuity between them is never inferred from coinciding coordinates or from a periodic
 > driver.
+
+> **Point components.** When a certificate proves that existence reduces to an isolated
+> parameter `t*`, for example an even-multiplicity zero of a validity predicate that is
+> nonpositive on both sides, the set `{t*}` is a point component: a kind of component of its
+> own, never an interval or arc of positive length. It carries a certified enclosure of `t*`,
+> which in general is not a binary64 value, and the structural source of the isolated root
+> (operation, predicate and root). Its inclusion is closed. Its continuity is trivial and
+> asserts no continuation and no direction. It is maximal when certified nonexistence bounds it
+> on both sides, and local otherwise; a cover by point components, other components and
+> certified nonexistence is `COMPLETE`. Its lineage is its branch key and its structural source;
+> appearance, disappearance and change of dimension (point to arc, when the even root splits
+> into two simple roots that bound an arc, and arc to point) are typed lineage transitions. Its
+> length is zero and it contributes zero to every total; a route exists only within it and
+> measures zero. Membership and selection use its structural address, never equality with a
+> binary64 parameter. Its position is a certified enclosure of the limit form where one exists;
+> otherwise it exists with its position unavailable. It is never represented as a segment or a
+> curve, and a consumer that does not support point components declares the limitation and
+> fails explicitly. A point component is never confused with a certified singular parameter,
+> which is interior to a component of positive length. It creates no public point object and
+> materializes no intersection.
 
 > **Existence, evaluation and representation.** Coverage `CERTIFIED_DOES_NOT_EXIST` requires a
 > validity predicate certified false, or a dependency whose own certificate establishes
@@ -116,6 +150,13 @@ v1.3, sección «Status and degeneration axes», con una nota de alcance en
 > A defined definition whose certified cover is empty is published as valid, `COMPLETE`, with
 > no component. A recompute that does not publish discards the previous semantic definition;
 > no consumer may evaluate a stale definition.
+
+> **Exact fingerprint (clarification of the `CU1` amendment).** The fingerprint of the
+> semantic snapshot is exact: every change of a definition input changes it, including a change
+> of one unit in the last place of a captured binary64 value and a change of the selection state
+> of a captured selection. A serialization that does not reproduce every binary64 value exactly
+> is not an exact fingerprint. A certificate is valid only for the revision whose fingerprint
+> it cites and is never reused for a state that its fingerprint does not distinguish.
 
 > **Identities, lineage and selectors.** The durable identity of a construction result, the
 > semantic identity of its selection and the lineage of a component are distinct. The
@@ -159,14 +200,33 @@ Destino: `locus-v2-certified-construction-model.md` v1.2 (§3–§9).
 > **Selection state.** Each output of a line–circle intersection is defined by its algorithm,
 > never by a sample: the raw roots are ordered by the parameter along the algorithm's line
 > direction, and the output is selected through the algorithm's selection state (its
-> permutation and initialization flags). The capture reads that state, and the revision
-> fingerprint includes it. At every revision synchronization the evaluator slice must
-> reproduce the selection state of the live algorithm; otherwise the selection is
-> `NOT_ESTABLISHED` with a typed diagnostic. An algorithm still in its initialization selects
-> by compaction of the roots that lie on its limited paths; this rule is certified only where
-> the number of such roots is proven constant, and a change of that number is a selection
-> boundary. Continuous-mode intersections and reference-point selections stay outside the
-> class.
+> permutation, its initialization flags and the label state of its outputs). The capture reads
+> that state, and the revision fingerprint includes it. At every revision synchronization the
+> evaluator slice must reproduce the selection state of the live algorithm; otherwise the
+> selection is `NOT_ESTABLISHED` with a typed diagnostic. An algorithm still in its
+> initialization selects by compaction of the roots that lie on its limited paths; this rule is
+> certified only where the number of such roots is proven constant, and a change of that number
+> is a selection boundary. A change of the live selection state, including the end of the
+> initialization, changes the fingerprint and publishes a revision with a diagnostic.
+> Continuous-mode intersections and reference-point selections stay outside the class.
+
+> **Effective outputs at coincident roots.** The mathematical existence of a root, its
+> multiplicity, the semantic identity of the selected solution, the effective definition of the
+> output that defines the traced point, its availability in the evaluator slice, the continuity
+> of the one-sided limits and the continuity of the selected construction are distinct facts,
+> and none is inferred from another. A component is never declared continuous, and its locus
+> never `COMPLETE`, only because the geometric equation has a double root, when the indexed
+> output that defines the traced point is undefined at that parameter. Where the inherited
+> algorithm sets an unlabelled second output undefined because it coincides with the first
+> within a tolerance, the effective definition of that output near a coincident root depends on
+> tolerance and rounding: the certificate states neither existence nor continuity of that
+> output across the coincident root, and publishes around it an unresolved band with a typed
+> cause, bounded by conservative first-level predicates; outside the band the output exists
+> where its validity predicates are certified. Where both outputs are labelled in the live
+> construction and in the slice, the inherited rule does not apply and the double root is
+> classified by the exact certificate. A certified limit value at a coincident root is
+> evidence, never an available output, and no output identity is ever replaced by another
+> because their points coincide.
 
 > **Box outcome.** Evaluating a program on a parameter box yields `VALID` (every validity
 > predicate certified true), `UNIFORMLY_INVALID` with a typed reason (`DISCRIMINANT_NEGATIVE`,
@@ -182,8 +242,10 @@ Destino: `locus-v2-certified-construction-model.md` v1.2 (§3–§9).
 > bracket excludes zero; the bracket is narrowed to width at most `δ`. The end is closed for a
 > discriminant root and for a ray or segment parameter root, and open for a vanishing divisor,
 > direction or radius. When the enclosures of `P` and `P′` both contain zero on a box that
-> cannot be subdivided further within the budget, the box is an unresolved band unless the
-> exact algebraic certificate applies.
+> cannot be subdivided further within the budget, the box is decided by the exact algebraic
+> certificate, when `P` is first-level, or by an isolated stationary point of `P` (a simple root
+> of `P′` certified with an enclosure of `P″` that excludes zero) at which the enclosure of `P`
+> excludes zero; otherwise it is an unresolved band.
 
 > **Exact algebraic certificate.** A validity predicate is first-level when its inputs are
 > captured constants and points that depend rationally on the driver, and the driver runs on
@@ -194,8 +256,12 @@ Destino: `locus-v2-certified-construction-model.md` v1.2 (§3–§9).
 > change is a certified transition with a closed end. An even-multiplicity root with a
 > nonnegative predicate on both sides is a certified singular parameter, interior to its
 > component. An even-multiplicity root with a nonpositive predicate on both sides is an
-> isolated point of existence. Interval methods are never used to certify a multiple root.
-> Exhausting the certificate budget yields `UNRESOLVED`.
+> isolated point of existence, a point component. Simple-root isolation (a sign change with a
+> derivative enclosure that excludes zero) never certifies a multiple root; in class v3 the
+> multiple roots of first-level predicates are certified by this certificate, and those of
+> other predicates remain unresolved. The certificate decides the configuration defined by the
+> captured binary64 constants, never an ideal geometric relation that the construction computes
+> with rounding. Exhausting the certificate budget yields `UNRESOLVED`.
 
 > **Certified stationary points.** A stationary point of the traced map is certified only by
 > separate proofs of: existence, from an exact structural symmetry `σ` of the driver domain
@@ -258,7 +324,9 @@ Destino: `locus-v2-presentation.md` versión 2 (hoy `1`), «Render continuity co
 > a join, a closure or a discontinuity from samples. A point that cannot be evaluated is never
 > interpolated: the path is cut there with a computational-gap mark. Exploratory evidence,
 > when its display is enabled, is drawn with a distinct style only inside unresolved bands and
-> is never joined to a component.
+> is never joined to a component. A point component is never drawn as a segment or a curve;
+> presentation version 2 declares it, with its parameter enclosure and the status of its
+> position, and does not draw it.
 
 > **Tessellation policy.** The render policy is versioned and deterministic per view. A span
 > is accepted when its chord deviation and its turning angle with the adjacent span are both
@@ -291,6 +359,14 @@ la estructura de existencia); `locus-v2-semantics.md` (referencia a ADR 0027 y A
 > their one-sided limits. The compatibility view of valid domain components never decides
 > topology.
 
+> **Point components in consumers.** A point component contributes zero to totals and to
+> routes. A consumer that addresses a component through a binary64 parameter (semantic points,
+> interaction, metric positions, principal branch) cannot select it and fails explicitly with a
+> typed cause. An intersection never reports `EMPTY` or a complete set while it has not
+> excluded a point component of its input rigorously, and a dependent locus whose support has a
+> point component declares the limitation and is not `COMPLETE`. No consumer treats a point
+> component as an arc.
+
 ## 7. A2.6 — Exportaciones
 
 Destinos: `dxf-curve-fidelity-and-approximation.md` (versión siguiente) y una especificación
@@ -303,7 +379,9 @@ durable de la exportación LaTeX (decisión D-CU2-11).
 > exported up to the last evaluated vertex and declared in the sidecar or in LaTeX comments,
 > and the export is then incomplete. Certified singular parameters are exported as exact
 > vertices. Without `COMPLETE`, export uses incomplete fidelity with its mandatory sidecar, and
-> every exported component remains strict.
+> every exported component remains strict. A point component is never exported as a path: the
+> sidecar or the LaTeX comments declare it, with its parameter enclosure and the status of its
+> position, and the export is then incomplete.
 
 ## 8. Constantes candidatas
 
@@ -327,15 +405,19 @@ presenta los valores elegidos con su evidencia.
 - **`CU1`:** se respetan sin cambio las clases de garantía (§25), el contrato de estimación
   (D-CU1-2) y la estabilidad de revisiones (A1.1-R). La regla de publicación es coherente con
   A1.1-R: no depende del conductor. El estado de selección se añade a la huella de la revisión
-  sin cambiar su regla.
+  sin cambiar su regla. La huella exacta es conformidad con A1.1-R, pero su corrección toca
+  `ReconstructionSliceFingerprint2D`, un componente de `CU1` (decisión D-CU2-20).
 - **`CU3`:** `CU2` no define puntos estructurales, contactos ni materialización de raíces
-  tangentes. Las fronteras certificadas, los parámetros singulares y los chorros de segundo
-  orden son entradas para `CU3`.
+  tangentes. Las fronteras certificadas, los parámetros singulares, las componentes puntuales
+  y los chorros de segundo orden son entradas para `CU3`; una componente puntual no crea ningún
+  objeto punto.
 - **ADR 0028 y 0029:** la clase v3 extiende la certificación por capacidad del ADR 0028; la
   regla de publicación no toca la proyección de dependencias durables del ADR 0029, y la
   resolución de selectores no reescribe ningún contenido persistido.
 - **Código heredado:** la lectura del estado de selección necesita accesores de solo lectura en
-  clases de GeoGebra, registrados como modificaciones.
+  clases de GeoGebra, registrados como modificaciones; el estado de etiquetado ya es público
+  (`GeoElement.isLabelSet`). La regla heredada que anula la segunda salida sin etiqueta no se
+  modifica, y ninguna capacidad nueva la sortea sin la decisión D-CU2-18.
 
 ## 10. Borradores
 

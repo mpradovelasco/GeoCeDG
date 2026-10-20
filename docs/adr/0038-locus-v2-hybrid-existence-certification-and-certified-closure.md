@@ -3,6 +3,7 @@
 - Status: **PROPOSED** (`PRE-G9B-CU2` preparation candidate pending author review; not
   author approved; the number is provisional until acceptance)
 - Date: 2026-10-20; revised the same day by the focused review P1–P5 requested by the author
+  and by the coherence closeout C1–C3
 - Phase: `PRE-G9B-CU2` (preparation authorized on 2026-10-20; implementation not authorized)
 - Extends: [ADR 0027](0027-locus-v2-existence-and-continuous-valid-components.md). Its four
   axes, its consumer rules and the independence of local admissibility from global
@@ -13,7 +14,9 @@
     preparation authorized; a class-3 length never becomes rigorous evidence of a `CU2`
     component;
   - the author's focused review of the preparation candidate (2026-10-20): the general
-    direction is favourable; five precisions P1–P5 before approval.
+    direction is favourable; five precisions P1–P5 before approval;
+  - the author's coherence closeout instruction (2026-10-20): effective outputs at coincident
+    roots (C1), point components (C2) and the precision of the evidence claims (C3).
 - Parent authority:
   - [existence and continuous-valid components](../../geocedg/specs/locus/locus-v2-existence-components.md) v1.0;
   - [certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md) v1.1;
@@ -62,9 +65,11 @@ The focused review added four facts:
 
 - the discriminant of the bite factors exactly into the signed distances of the driver point to
   the two tangents from `P` to the cone base; at the critical value it has a double zero
-  without sign change, so the loci keep existence and continuity with a corner. No interval
-  method can certify a double root, but exact rational arithmetic on the captured binary64
-  constants can;
+  without sign change, so the loci keep existence and continuity with a corner. Ordinary
+  simple-root isolation (a sign change with a derivative that does not vanish) cannot certify
+  a double root, and verified methods for multiple roots need added structure or prove that a
+  nearby problem has one; exact rational arithmetic on the captured binary64 constants decides
+  it for the configuration those constants define;
 - no binary64 value of the author's slider is exactly critical: the exact classification
   changes between two consecutive doubles, the double-precision closed form misclassifies one
   of them, and the evaluator returns points inside the exact gap;
@@ -73,6 +78,19 @@ The focused review added four facts:
   including in the evaluator slice of each revision;
 - the folds of `e_1` exist because of an exact symmetry of the construction; an enclosure of
   `F′` that contains zero would not prove them.
+
+The coherence closeout added three more:
+
+- GeoGebra sets an unlabelled second intersection output undefined when it coincides with the
+  first within 10⁻⁸ per coordinate. Near a coincident root the effective definition of such an
+  output is scattered, depends on tolerance and rounding, and differs between the live
+  construction and the evaluator slice. In the author's model both outputs of the bite are
+  labelled, live and in the slices, so at the double root both are defined and equal;
+- an exact certificate can reduce existence to an isolated parameter, which no interval or
+  arc of positive length represents;
+- the `CU1` revision fingerprint serializes numbers with 15 significant digits: a one-ulp
+  change of a captured constant publishes no revision and leaves the slice stale, against the
+  exact fingerprint of the semantic contract.
 
 ## Decision
 
@@ -95,8 +113,9 @@ The focused review added four facts:
 5. **Class v3.** The certified construction model gains a versioned class with rays and
    segments, circles by centre and point, line–circle intersection, multi-output steps, vector
    operations, macro expansion, a structural metric input and second-order jets. The selection
-   of an intersection output is read from the algorithm's selection state, which enters the
-   revision fingerprint and must match the live algorithm in the evaluator slice. Boxes
+   of an intersection output is read from the algorithm's selection state (permutation,
+   initialization flags and label state of its outputs), which enters the revision fingerprint
+   and must match the live algorithm in the evaluator slice. Boxes
    evaluate to `VALID`, `UNIFORMLY_INVALID` with a typed reason, or `UNRESOLVED`; intervals
    establish uniform invalidity only for strict inequalities.
 6. **Certified transitions.** A boundary between existence and nonexistence is a simple root
@@ -106,9 +125,11 @@ The focused review added four facts:
 7. **Exact algebraic certificate.** First-level validity predicates (inputs rational in the
    driver, driver on a circle or a segment) are decided in exact rational arithmetic on the
    captured constants: roots, multiplicities and signs. Multiple roots, including the critical
-   value of the bite, are certified this way, never by interval methods. A double zero without
-   sign change is a certified singular parameter; with nonpositive sides, an isolated point of
-   existence.
+   value of the bite, are certified this way, never by simple-root isolation; multiple roots of
+   other predicates stay unresolved in `CU2`. A double zero without sign change is a certified
+   singular parameter; with nonpositive sides, an isolated point of existence (decision 15).
+   The certificate decides the configuration of the captured binary64 constants, never an
+   ideal relation that the construction computes with rounding.
 8. **Certified stationary points.** A fold is certified only by an exact structural symmetry
    (existence), an enclosure of one component of `F″` excluding zero (isolation), `F″(t₀) ≠ 0`
    (non-degeneracy), continuity, and opposite one-sided tangents. Otherwise a high turn is not
@@ -140,6 +161,31 @@ The focused review added four facts:
 14. **Retirement of the compatibility certificate.** It is removed only after the hybrid
     certifier, the consumer migration and the closure authority are in place. A locus that
     cannot be certified falls to `NOT_ESTABLISHED`, never back to compatibility.
+15. **Point components.** A certified existence set reduced to an isolated parameter `t*` is
+    a point component, an entity of its own and never an interval or arc of positive length:
+    certified enclosure of `t*` with its structural source, closed inclusion, trivial
+    continuity, maximality from certified nonexistence on both sides, compatibility with
+    `COMPLETE`, lineage with typed point–arc transitions, zero length, membership by structural
+    address, and a position that is a certified enclosure or unavailable. In `CU2` it is
+    declared, not drawn or exported as a path, and creates no public point object; a consumer
+    that does not support it declares the limitation and fails explicitly.
+16. **Effective outputs at coincident roots.** Existence and multiplicity of a root, the
+    semantic identity of the selected solution, the effective definition of the output, its
+    availability in the slice, the continuity of the one-sided limits and the continuity of the
+    selected construction are distinct facts. A component is never declared continuous, nor
+    its locus `COMPLETE`, only because the geometric equation has a double root when the
+    indexed output that defines the traced point is undefined there. An unlabelled second
+    output suppressed by the inherited rule gets an unresolved band around the coincident root;
+    its certified limit value is evidence, never an available output, and no output identity is
+    replaced by another because their points coincide. The inherited rule is not changed.
+17. **Exact revision fingerprint.** The fingerprint changes with every change of a definition
+    input, down to one unit in the last place of a captured binary64 value and including the
+    selection state. A certificate is valid only for the revision whose fingerprint it cites.
+18. **Nature of the evidence.** Each certified fact records the nature of its proof: exact
+    symbolic or algebraic, rigorous interval arithmetic, numerical verification under stated
+    hypotheses, exploratory, or none. Only the first two certify; the third is an estimate
+    under its contract, the fourth is exploratory evidence and the fifth yields `UNRESOLVED`
+    or `NOT_ESTABLISHED`.
 
 ## Consequences
 
@@ -151,7 +197,17 @@ The focused review added four facts:
   closed periodic component per locus with a certified singular parameter. Every binary64
   value of the author's slider is decided exactly as penetration or bite.
   `NOT_ESTABLISHED` remains the fail-closed result where the exact certificate does not apply
-  or exhausts its budget.
+  or exhausts its budget. The claim holds because `{Q, R}` are labelled outputs, defined at
+  the double root live and in the slices; the capture checks that precondition.
+- A construction whose traced point depends on an unlabelled second output near a coincident
+  root stays `NOT_ESTABLISHED` through an unresolved band. Restoring its continuity needs
+  either a new kernel capability (continuous selection of coincident roots in the slice) or a
+  change of the inherited rule, both outside this decision and subject to their own author
+  authorization.
+- Point components are declared and never drawn as curves in `CU2`; their materialization
+  belongs to `CU3`.
+- Certificates are reused per revision only once the fingerprint is exact; its correction
+  touches a `CU1` component and needs its own author decision.
 - The evaluator is not an authority on existence: its tangency tolerance yields points inside
   exact gaps, which are not published as valid.
 - Existing tests that depend on the compatibility certificate change as declared conformance,
@@ -173,9 +229,26 @@ The focused review added four facts:
 - **Keep `NOT_ESTABLISHED` as the definitive result at the critical value:** rejected by the
   author's review. A double zero without sign change is neither nonexistence nor
   discontinuity, and it is certifiable exactly.
-- **Interval methods for multiple roots:** rejected. A double root disappears under
-  arbitrarily small perturbations; verified methods only prove that a perturbed problem has
-  one.
+- **Interval methods for the multiple roots of first-level predicates:** not chosen.
+  Ordinary simple-root isolation cannot certify a multiple root, because a double root
+  disappears under arbitrarily small perturbations. Verified methods for multiple roots exist,
+  but they need added structure (a known multiplicity, deflation, factorization or derivative
+  information) or prove that a nearby perturbed problem has a multiple root. The capture gives
+  exact rational data, and exact arithmetic decides the multiplicity of the captured
+  configuration itself.
+- **Treat a point component as an interval of zero length:** rejected. It would enter the arc
+  machinery (tessellation, routes, closure) with a degenerate length and be confused with an
+  interior singular parameter.
+- **Continuous selection of coincident roots in the slice:** not adopted in `CU2`. Evaluating a
+  suppressed unlabelled output by its certified limit would define the locus where the live
+  object is undefined, a semantic change with respect to the inherited behaviour that needs
+  its own authorization.
+- **Change the inherited rule that suppresses the second output:** not adopted. It is an
+  upstream behaviour change.
+- **Substitute the other output when one is undefined at a coincident root:** rejected. It
+  replaces an output identity because of a spatial coincidence.
+- **Keep the 15-digit serialized fingerprint:** rejected. Configurations one ulp apart on
+  either side of a critical value would share a revision and a certificate.
 - **A tolerance that declares near-tangency as tangency:** rejected. It turns a configuration
   with a real gap into a continuous one.
 - **Certify `e_2` through the value of `d_2`** (proposal E of `CU0`): rejected. It would use a

@@ -7,7 +7,9 @@ AUTHORIZED.**
   2026-10-20 ([`CU1` closeout record](../../../docs/validation/pre_g9b_cu1_closeout_record.md) §7).
   Preparation base: `27bf652f176e57ced3807b82afe14fc00b7586a9` (`CU1` documentary closeout).
   Revised by the author's focused review P1–P5 of 2026-10-20, on the published preparation
-  candidate `60d546441dcca5355edfe296ee8a0a521f8a3565`.
+  candidate `60d546441dcca5355edfe296ee8a0a521f8a3565`, and by the author's coherence closeout
+  C1–C3 of 2026-10-20, on the published focused-review candidate
+  `cbb7ea8ce379d8d74072f4d12dcd4443265eb7ac`.
 - **Normative candidate.** [`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
   amendments A2.1-R to A2.6, and
   [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) (PROPOSED).
@@ -42,6 +44,11 @@ amendments A2.1-R and A2.2-R:
   **[D-CU2-17]**, typed box outcomes and certified transitions;
 - the exact algebraic certificate of first-level predicates, which certifies multiple roots
   such as the critical bite value **[D-CU2-16]**;
+- effective outputs at coincident roots: the label state of the outputs in the selection
+  state, and an unresolved band where the inherited rule suppresses an unlabelled second
+  output **[D-CU2-18]**;
+- point components as an entity of their own, declared and not drawn **[D-CU2-19]**;
+- the exact revision fingerprint **[D-CU2-20]**;
 - structural totality and periodicity, and folds certified by structural symmetry with
   second-order jets **[D-CU2-6]**.
 
@@ -67,7 +74,7 @@ Entry gate:
 - exact base identity and a clean worktree;
 - local, tracking and live remote `main` as recorded by the authorization;
 - the approved texts of A2.1-R to A2.6, ADR 0038 and the decisions **[D-CU2-1]** to
-  **[D-CU2-17]** and **[E-1]** to **[E-3]**;
+  **[D-CU2-20]** and **[E-1]** to **[E-3]**;
 - development runs of `verify.ps1 -Profile PHASE -Phase PRE-G9B-CU0` and
   `-Phase PRE-G9B-CU1` accepted on the base.
 
@@ -109,9 +116,11 @@ In the same step, set ADR 0038 to the status the author decides.
 **Kernel**, under `source/shared/common/src/main/java/org/geocedg/common/kernel/`:
 
 - `locus/`:
-  - `LocusExistenceStructure2D`: arcs with one-sided ends, boundary kinds, singular
-    parameters, typed coverage causes and the closure query; removal of
-    `completeCompatibility` in step T11;
+  - `LocusExistenceStructure2D`: arcs with one-sided ends, point components, boundary kinds,
+    singular parameters, typed coverage causes, the nature of each proof and the closure
+    query; removal of `completeCompatibility` in step T11;
+  - `ReconstructionSliceFingerprint2D`: the exact binary64 fingerprint, only as decided in
+    **[D-CU2-20]**;
   - `LocusBranch2D` and `LocusV2Factory`: the explicit certificates of **[D-CU2-7]**;
   - `LocusComponentLineage2D` and `LocusLineage2D`: structural lineage;
   - `LocusPrincipalBranchSelector2D` and `LocusInstrumentation2D`;
@@ -138,12 +147,15 @@ In the same step, set ADR 0038 to the status the author decides.
 
 **Inherited classes:** read-only accessors of the selection state in
 `org/geogebra/common/kernel/algos/AlgoIntersectLineConic` and `AlgoIntersectSingle`,
-registered as modifications **[D-CU2-17]**. No change of their behaviour.
+registered as modifications **[D-CU2-17]**; the label state is read through the public
+`GeoElement.isLabelSet`. No change of their behaviour, including the suppression of an
+unlabelled second output in `AlgoIntersect.avoidDoubleTangentPoint`.
 
 **Rendering and export:**
 
 - `source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D`:
-  render topology, policy v2, singular vertices and declared fidelity **[D-CU2-10]**;
+  render topology, policy v2, singular vertices and declared fidelity **[D-CU2-10]**, with
+  point components declared and not drawn **[D-CU2-19]**;
 - `source/shared/common/src/main/java/org/geocedg/common/export/`:
   `SemanticCurveExportAdapter2D` and `AdaptiveCurveApproximationBuilder2D`;
 - `source/desktop/desktop/src/main/java/org/geocedg/desktop/export/`: the Locus V2 path of
@@ -167,6 +179,9 @@ registered as modifications **[D-CU2-17]**. No change of their behaviour.
   harness;
 - the corpus manifest wording, only as decided in **[D-CU2-15]**;
 - the candidate report and its machine-readable mirror;
+- the status and evidence of the `CU2` methods in the scientific transfer register
+  ([`pre_g9b_cu_scientific_methods_editorial_handoff_plan.md`](../../../docs/architecture/pre_g9b_cu_scientific_methods_editorial_handoff_plan.md)),
+  without editorial text;
 - roadmap and consolidated-plan status.
 
 <!-- geocedg-field: forbidden_scope -->
@@ -175,7 +190,8 @@ registered as modifications **[D-CU2-17]**. No change of their behaviour.
 **Owned by `CU3`:**
 
 - structural points, tangent-root materialization and tangency classification; a certified
-  singular parameter or fold never creates a point;
+  singular parameter, fold or point component never creates a point, and point components
+  are not drawn beyond **[D-CU2-19]**;
 - intersection solvers, residual tolerances and the intersection engine (H02, H06);
 - the seam-root observation F-CU2-5;
 - new public tools.
@@ -196,12 +212,16 @@ registered as modifications **[D-CU2-17]**. No change of their behaviour.
   coordinates;
 - writing the selection state of inherited algorithms, or any other change of inherited
   classes beyond registered read-only accessors;
+- the continuous selection of coincident roots in the slice and any change of the inherited
+  rule that suppresses an unlabelled second output **[D-CU2-18]**; substituting an undefined
+  output by its certified limit value or by another output;
 - tolerances that turn a near-tangency into a tangency, and the symbolic capture of
   driver-independent relations;
 - the legacy GeoGebra interval package, which must not be used as a certificate;
 - the compatibility certificate as a fallback for any locus;
 - M08 and M09;
-- the book;
+- the book: the author's editorial mandate E1 is a track obligation for `CU10`, not part of
+  `CU2`;
 - any `CU0` `preserve` value beyond its tolerance.
 
 ## Architectural placement
@@ -223,12 +243,23 @@ The following hold:
 
 - existence, continuity and boundaries are certified only by rigorous means, never by
   sampling, pointwise validity or rendering;
-- a multiple root is certified only by the exact algebraic certificate; interval enclosures
-  never prove a multiplicity, and a near-tangency is never declared a tangency by tolerance;
+- in this phase a multiple root is certified only by the exact algebraic certificate of a
+  first-level predicate; simple-root isolation never certifies a multiplicity, and a
+  near-tangency is never declared a tangency by tolerance;
+- every certified fact records the nature of its proof (exact, rigorous interval, numerical
+  under hypotheses, exploratory or none); only the first two certify;
 - the captured binary64 constants are the semantic reference: a tangency computed with
   rounding is certified as its rounded configuration;
 - a double zero of a validity predicate without sign change keeps existence and continuity;
   it is a certified singular parameter, not a boundary;
+- a component is never declared continuous, nor its locus `COMPLETE`, only because the
+  geometric equation has a double root when the indexed output that defines the traced point
+  is undefined there; a certified limit value is evidence, never an output, and no output
+  identity is replaced by another because of a spatial coincidence;
+- a point component is never an interval or arc of positive length and never a singular
+  parameter;
+- the revision fingerprint is exact; no certificate is reused for a state that it does not
+  distinguish;
 - a fold is certified only by its five separate proofs; an enclosure of `F′` that contains zero
   certifies nothing;
 - a curve is closed only when its component is a certified closed periodic component; the
@@ -281,7 +312,7 @@ informative.
 Nothing in this file authorizes implementation. A separate author instruction must:
 
 - approve the normative proposal, ADR 0038 and the decisions **[D-CU2-1]** to
-  **[D-CU2-17]** and **[E-1]** to **[E-3]**;
+  **[D-CU2-20]** and **[E-1]** to **[E-3]**;
 - name the exact base commit and tree;
 - authorize the implementation.
 
@@ -326,6 +357,7 @@ author's closeout record is the sole authority for approval.
     `INTEGRATION`);
   - the bootstrap-impact outcome (expected: no change);
   - `GUIDE_IMPACT` (expected: none in `CU2`; the guide belongs to `CU9`);
+- the `CU2` rows of the scientific transfer register, with status and evidence;
 - roadmap and plan status.
 
 ## Stop conditions
@@ -338,6 +370,12 @@ The stop conditions of strategy §4 apply, in particular:
   needs, or exhausts its approved budget;
 - the evaluator slice does not reproduce the live selection state in the author's model, or
   reproducing it would need writing into inherited classes;
+- a locus of the author's model depends on an unlabelled second output at a coincident root,
+  the slice does not reproduce the label state, or continuity would need substituting an
+  output **[D-CU2-18]**;
+- the revision fingerprint does not distinguish an input change and **[D-CU2-20]** does not
+  authorize its correction;
+- a consumer needs to materialize or draw a point component beyond **[D-CU2-19]**;
 - certifying `e_2` would need the value of a length;
 - resolving a persisted selector would need rewriting persisted content or associating it by
   containment without a demonstrated correspondence;

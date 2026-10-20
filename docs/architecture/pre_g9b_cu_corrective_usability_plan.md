@@ -6,6 +6,7 @@
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
 | Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); preparación arquitectónica, normativa y técnica de `CU2` ejecutada como candidato pendiente de revisión autoral ([informe](../validation/pre_g9b_cu2_preparation_candidate_report.md)), sin implementación autorizada; `CU3`–`CU10` **no autorizados** |
+| Mandato editorial | E1, aprobado por el autor el 2026-10-20 como obligación de cierre del track (§2.3 y §8): diseño detallado de los apéndices pendiente de preparación y revisión; redacción e incorporación a `geocedg_book` no autorizadas |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
 | Evidencia | [informe de caracterización inicial](../validation/pre_g9b_cu_characterization_evidence_report.md); [informe del candidato CU0](../validation/pre_g9b_cu0_baseline_candidate_report.md); [línea base geométrica](../../geocedg/validation/pre-g9b-cu/cu0-geometric-reference-baseline.json) |
@@ -19,7 +20,8 @@
 - Cada paquete exige autorización autoral explícita con commit base exacto; un PASS
   técnico no es aprobación autoral.
 - No se reabren fases históricas ni se alteran sus registros.
-- El libro `geocedg_book` permanece en pausa durante el track (§8).
+- El libro `geocedg_book` permanece en pausa durante el track (§8); el mandato editorial E1
+  (§2.3) no lo modifica.
 
 ## 2. Decisiones adoptadas por la instrucción de 2026-10-19
 
@@ -73,6 +75,20 @@ transcribe y es su autoridad.
 | D-CU1-R6 | Corrección de la prueba ISO A y nueva verificación completa aceptadas, sin cambios de producto | `CU1` |
 | Limitaciones | `L-CU1-CLASS2-REACH` y `L-CU1-AFFINE-FORMS` se evalúan en `CU2` solo si su alcance las necesita; `L-CU1-E2-LENGTH` es de `CU2`; `L-CU1-REVERSAL-DENSITY` y `L-CU1-IMPROPER-EVALUATOR` quedan para paquetes posteriores; `OBS-CU1-UNDO-ASYNC-STORE-WINDOW` exigiría una propuesta correctiva separada sobre código upstream; `OBS-CU1-UNDO-TEMP-FILES` es deuda de higiene de pruebas con disposición a más tardar en `CU10` | `CU2`; posteriores; `CU10` |
 | Preparación de `CU2` | Autorizada la preparación arquitectónica, normativa y técnica, sin código productivo, desde el cierre exacto de `CU1`: certificación híbrida DA-1 con separación entre evaluación puntual, evidencia exploratoria, componentes localmente certificadas y completitud global (ADR 0027); certificación constructiva del modelo del autor (`o`, `v`, `w`, `a_1`, `o_1`, `e_1`, `e_2`); una longitud `ESTIMATED` de `CU1` nunca es por sí misma evidencia rigurosa de una componente; evento estructural de la longitud orientada de `e_2`; reglas de consumo; representación y teselación; sin adelantar `CU3` | `CU2` |
+
+## 2.3 Mandato editorial adoptado por la instrucción de cierre de coherencia de `CU2` (2026-10-20)
+
+Fuente: instrucción autoral «GeoCeDG — PRE-G9B-CU2. Cierre de coherencia normativa y registro
+del programa de apéndices científicos» de 2026-10-20.
+
+| Id | Decisión | Efecto en el plan |
+|---|---|---|
+| E1 | Mandato editorial del autor: los métodos científicos que GeoCeDG implementa, diseña o estudia se transferirán al libro como apéndices técnicos, con rigor, generalidad declarada y evidencia. Es una obligación de cierre del track, no una decisión de implementación de `CU2` | registro vivo en el [plan de transferencia científica](pre_g9b_cu_scientific_methods_editorial_handoff_plan.md); expediente `SCIENTIFIC_METHODS_EDITORIAL_HANDOFF` en `CU10`; §6 y §8 |
+
+Estados: **mandato editorial del autor: aprobado ahora. Diseño detallado de los apéndices:
+pendiente de preparación y revisión. Redacción e incorporación a `geocedg_book`: no autorizadas
+todavía.** Cada paquete actualiza en el registro el estado y la evidencia de los métodos que
+implementa o diseña, sin texto editorial.
 
 ## 3. Incidencias y paquetes
 
@@ -244,6 +260,13 @@ Cierre del alcance efectivamente autorizado y ejecutado: candidato integrado, `F
 una vez, validación dinámica con los modelos del autor, smoke autoral, informe de
 limitaciones, versión y, si se autoriza, publicación con etiqueta anotada nueva.
 
+Obligación de cierre E1 (§2.3): el expediente `SCIENTIFIC_METHODS_EDITORIAL_HANDOFF`, preparado
+a partir del [plan de transferencia científica](pre_g9b_cu_scientific_methods_editorial_handoff_plan.md)
+§7, con el inventario consolidado de métodos, su alcance y generalidad, los enlaces a
+especificaciones, ADR, código, pruebas y modelos, la separación entre resultados rigurosos y
+estimaciones, las degeneraciones y limitaciones, los ejemplos reproducibles, la propuesta de
+apéndices, la bibliografía y las lagunas. El expediente no inicia ninguna fase editorial.
+
 ## 5. Secuencia
 
 ```text
@@ -269,6 +292,7 @@ pueden avanzar en paralelo tras `CU0` porque tocan zonas disjuntas.
 | `CU7-D` (diseño aprobado de M08 y M09) | `CU7-I` |
 | `CU8-D` | `CU8-I` |
 | `CU9` completo | — |
+| E1: expediente `SCIENTIFIC_METHODS_EDITORIAL_HANDOFF` en `CU10` (§2.3) | — |
 
 Una funcionalidad nueva pendiente no impide cerrar las correcciones científicas ya
 verificadas.
@@ -290,6 +314,14 @@ inician fases de redacción. Tras el cierre del producto, la aprobación autoral
 etiqueta nueva de GeoCeDG, una fase editorial autorizada por separado actualizará la base
 técnica mínima. Las etiquetas históricas y los registros de cierre anteriores no se
 modifican.
+
+**Mandato editorial E1 (§2.3).** El autor aprobó el 2026-10-20 que los métodos científicos de
+GeoCeDG se transfieran al libro como apéndices técnicos. Durante el track solo se mantiene el
+[plan de transferencia científica](pre_g9b_cu_scientific_methods_editorial_handoff_plan.md),
+registro vivo de este repositorio; `CU10` entrega su expediente. Después de `CU10` no hay fase
+editorial automática: la actualización de la base técnica del libro, el diseño detallado y la
+redacción de los apéndices y cualquier cambio de capítulos necesitan autorizaciones autorales
+propias.
 
 ## 9. Decisiones pendientes
 

@@ -8,7 +8,7 @@
 | Antecedentes | [propuesta E de `CU0`](pre_g9b_cu0_hybrid_certification_proposal.md) (dirección DA-1 aprobada el 2026-10-19); [enmiendas candidatas A2.1 y A2.2](pre_g9b_cu0_candidate_normative_amendments.md) |
 | Autoridades que se preservan | ADR 0027 (existencia y componentes continuas válidas, con admisibilidad local independiente de la completitud global); `locus-v2-existence-components.md` v1.0; `locus-v2-certified-construction-model.md` v1.1; `locus-v2-metrics.md` v1.5 §25 (clases de garantía, aprobadas con `CU1`) |
 | Documentos hermanos | [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](pre_g9b_cu2_consumption_and_representation.md); [propuesta normativa](pre_g9b_cu2_normative_proposal.md); [estrategia](pre_g9b_cu2_implementation_strategy.md) |
-| Revisión | 2026-10-20, revisión documental focalizada P1–P5: §3.2 (extremos laterales), §3.4 nuevo (existencia, evaluación y representación), §4.1 (selección de raíz y resultado de caja), §4.6 nuevo (certificado algebraico exacto), §5 (pliegues y parámetros singulares) y §7 (identidades y migración) |
+| Revisión | 2026-10-20, revisión documental focalizada P1–P5: §3.2 (extremos laterales), §3.4 nuevo (existencia, evaluación y representación), §4.1 (selección de raíz y resultado de caja), §4.6 nuevo (certificado algebraico exacto), §5 (pliegues y parámetros singulares) y §7 (identidades y migración). Cierre de coherencia C1–C3 (2026-10-20): §2 (naturaleza de la evidencia), §3.5 nuevo (componentes puntuales), §4.1 (etiquetado), §4.3 (raíces múltiples), §4.7 nuevo (salidas efectivas en raíces coincidentes, primera inicialización y capacidad mínima candidata), §8 (exactitud de la huella) y §11 (riesgos) |
 
 ## 1. Objetivo
 
@@ -44,6 +44,21 @@ la huella de revisión ni de la cobertura (`existence-components` §8): no avanz
 
 La independencia entre admisibilidad local y completitud global (ADR 0027, decisión 4) se
 conserva tal cual. Un consumidor local acepta el nivel 3; uno global exige el 4.
+
+**Naturaleza de la evidencia (C3).** Los niveles dicen qué se afirma; la naturaleza de la prueba
+dice con qué garantía:
+
+| Naturaleza | En `CU2` y en GeoCeDG | Puede certificar |
+|---|---|---|
+| prueba simbólica o algebraica exacta | certificado algebraico exacto (§4.6), factorización del par de tangentes, simetría estructural (§5), totalidad estructural (§4.2) | sí |
+| aritmética de intervalos con cotas rigurosas | cajas con redondeo exterior; inclusiones de Krawczyk para raíces simples, ya implementadas en las intersecciones de SplineV2 (`SplinePairIntervalCertification2D`, `SplineImplicitIntervalCertification2D`); envolventes de longitud de clase 2 de `CU1` | sí, para desigualdades estrictas y raíces simples; una multiplicidad, solo con estructura añadida (§4.3) |
+| verificación numérica bajo hipótesis | estimador de longitud de clase 3 de `CU1`, con sus hipótesis registradas | no: es una estimación (D-CU1-2) |
+| evidencia exploratoria | recorridos muestreados, bisección de la validez puntual | no |
+| falta de evidencia | presupuesto agotado, operación fuera de la clase, comportamiento heredado dependiente de tolerancias | no: `UNRESOLVED` o `NOT_ESTABLISHED` |
+
+Las constantes capturadas en binary64 son racionales exactos y definen la configuración que se
+certifica. Una relación geométrica ideal que la construcción calcula con redondeo no queda
+preservada: se certifica la configuración redondeada, nunca la relación ideal (análisis §3.8.3).
 
 ## 3. Componente certificada
 
@@ -148,6 +163,31 @@ Reglas:
 | resultados parciales | sin cambio | — | se representan las componentes disponibles y se enumeran las demás con su causa |
 | exportación con extremos abiertos o no evaluables | sin cambio | — | trazo abierto hasta el último vértice evaluado; el anexo DXF y los comentarios LaTeX declaran el estado de cada extremo y la exportación es incompleta |
 
+### 3.5 Componentes puntuales (C2)
+
+El certificado algebraico exacto (§4.6) puede probar que la existencia se reduce a un parámetro
+aislado: una raíz de multiplicidad par con el predicado no positivo a ambos lados, como la
+tangencia exterior. Ese conjunto `{t*}` no es un arco de longitud positiva y no se representa como
+tal. Se propone una entidad propia, la **componente puntual**, distinta de los arcos e intervalos:
+
+| Aspecto | Contrato |
+|---|---|
+| existencia | certificada solo en `t*`: todos los predicados de validez se cumplen allí, con no existencia certificada o banda `UNRESOLVED` a cada lado |
+| parámetro | una envolvente certificada de `t*`, número algebraico que en general no es binary64, con la fuente estructural que lo define (operación, predicado, raíz aislada) |
+| inclusión | cerrada: `{t*}` |
+| continuidad | trivial sobre el conjunto unitario; no afirma ninguna continuación ni dirección |
+| maximalidad | establecida con no existencia certificada a ambos lados; local si un lado es `UNRESOLVED` |
+| completitud | compatible con `COMPLETE`: un dominio cubierto por componentes puntuales y no existencia certificada es completo |
+| identidad y linaje | clave de rama más la fuente estructural del parámetro aislado; transiciones tipadas de aparición, desaparición y cambio de dimensión (punto a arco y arco a punto), con relación explícita: la raíz par se desdobla en dos raíces simples que acotan un arco |
+| métrica | longitud cero; contribución cero al total; una ruta solo existe dentro de la misma componente y mide cero |
+| pertenencia y selección | por la dirección estructural de la componente, no por igualdad de un parámetro binary64, que en general no alcanza `t*`. Un punto semántico no puede seleccionarla por parámetro |
+| representación y exportación | nunca un segmento ni una curva. En `CU2` se declara en el inspector, en el anexo DXF y en los comentarios LaTeX, sin dibujarla (D-CU2-19); un consumidor que no la admite lo declara y falla explícitamente |
+| posición geométrica | `F(t*)` se obtiene, si se puede, como envolvente certificada con la forma límite (en una raíz doble, `λ = −b′/a`); si no, la componente existe con su posición no disponible (§3.4) |
+
+No se confunde con un parámetro singular interior (§5): allí la raíz par tiene el predicado
+positivo a ambos lados y la componente continúa a través de ella. Un certificado de existencia
+puntual no crea un objeto punto público ni materializa una intersección: eso pertenece a `CU3`.
+
 ## 4. Fuentes de certificación
 
 El orden de autoridad de las fronteras de `existence-components` §7 se conserva:
@@ -185,8 +225,9 @@ Reglas:
     `(g_y, −g_x)` de la recta (para `Ray(P, N)`, `N − P`); la salida `i` es la raíz bruta
     `permutation[i]`, con el filtro de los caminos limitados
     ([análisis](pre_g9b_cu2_author_model_certification_analysis.md) §3.4);
-  - la permutación y los indicadores de inicialización son estado del algoritmo: la captura los
-    lee y forman parte de la huella de la revisión;
+  - la permutación, los indicadores de inicialización y el estado de etiquetado de las salidas
+    son estado del algoritmo: la captura los lee y forman parte de la huella de la revisión. El
+    etiquetado decide si la segunda salida se anula en una raíz coincidente (§4.7);
   - en cada sincronización de revisión, el estado de la copia del corte debe ser igual al del
     algoritmo vivo; si difiere (la copia lo reinicializa por cercanía, hallazgo F-CU2-8), la
     selección queda `NOT_ESTABLISHED` con diagnóstico tipado y no se elige ninguno de los dos;
@@ -282,13 +323,17 @@ la frontera se certifica sobre `P` y nunca sobre la evaluación de `F`. La valid
 evaluación no se usa como frontera: excede la raíz exacta entre 4·10⁻⁸ y 4,3·10⁻⁶ en el modelo
 del autor (hallazgo F-CU2-1).
 
-**Raíces múltiples.** Ningún método de intervalos prueba que un predicado tenga una raíz de
-multiplicidad dada: un cero doble desaparece con perturbaciones arbitrariamente pequeñas, y los
-métodos verificados solo prueban que un problema perturbado tiene una raíz múltiple (análisis
-§3.8.2). Para predicados que no son de primer nivel, la técnica general es la del punto
-estacionario: Krawczyk sobre `P′`, con una envolvente de `P″` que excluye el cero, prueba la
-existencia y unicidad del extremo `t*`, y el signo de `P(t*)` decide si su envolvente lo excluye;
-si no lo excluye, la caja queda `UNRESOLVED`. Para predicados de primer nivel decide §4.6.
+**Raíces múltiples (C3).** Los procedimientos ordinarios de aislamiento de raíces simples
+(cambio de signo, derivada que no se anula, Newton de intervalos o Krawczyk) no certifican por sí
+solos una raíz múltiple: con datos solo aproximados, un cero doble no es estable frente a
+perturbaciones arbitrariamente pequeñas. Existen procedimientos verificados que añaden
+estructura: multiplicidad conocida, deflación, factorización, información derivativa o la
+verificación de un problema perturbado (Rump y Graillat; análisis §3.8.2). Con los datos exactos
+que da la captura, la aritmética exacta decide además la multiplicidad. `CU2` elige, para los
+predicados de primer nivel, el certificado algebraico exacto (§4.6). Para los demás usa el
+método del punto estacionario: Krawczyk sobre `P′`, con una envolvente de `P″` que excluye el
+cero, prueba la existencia y unicidad del extremo `t*`, y el signo de `P(t*)` decide si su
+envolvente lo excluye; si no lo excluye, la caja queda `UNRESOLVED`.
 
 ### 4.4 Periodicidad estructural y autoridad única de cierre
 
@@ -367,7 +412,7 @@ de `H_1` en el modelo del autor ([análisis](pre_g9b_cu2_author_model_certificat
 |---|---|---|
 | multiplicidad impar | distinto | transición certificada con extremo cerrado; es una frontera analítica (autoridad 3 de `existence-components` §7) |
 | multiplicidad par | positivo y positivo | parámetro singular interior: la existencia continúa y la selección tiene una esquina (multiplicidad 2) o es suave (multiplicidad ≥ 4) |
-| multiplicidad par | negativo y negativo | punto aislado de existencia: componente degenerada `[t*, t*]` |
+| multiplicidad par | negativo y negativo | punto aislado de existencia: componente puntual (§3.5) |
 
 En un parámetro singular de multiplicidad 2 la continuidad es estructural: `√D` de una función
 continua no negativa es continua, y `a = |N − P|² ≥ a_mín > 0` se certifica aparte.
@@ -396,7 +441,79 @@ limita los bits de los coeficientes y el número de bisecciones, con valores ver
 **Límites.** Los predicados posteriores a una raíz cuadrada, como los de `G_1` o los rayos que
 dependen de `Q`, no son de primer nivel: se certifican por cajas, y su eliminación algebraica
 queda fuera de `CU2`. Una tangencia que la construcción calcula con redondeo se certifica como su
-configuración redondeada (análisis §3.8.3).
+configuración redondeada (análisis §3.8.3). El certificado prueba la existencia matemática de la
+raíz y su multiplicidad; que la **salida** que define el punto trazado esté realmente definida en
+ella es otra cuestión (§4.7).
+
+### 4.7 Definición efectiva de las salidas en raíces coincidentes (C1)
+
+GeoGebra anula la segunda salida de una intersección cuando no tiene etiqueta y coincide con la
+primera: `AlgoIntersect.avoidDoubleTangentPoint` (`AlgoIntersect.java:40-45`), llamada al final
+de cada cálculo de `AlgoIntersectLineConic` (`AlgoIntersectLineConic.java:280`). La coincidencia
+se mide con `DoubleUtil.isEqual`, una tolerancia absoluta de 10⁻⁸ en cada coordenada
+(`GeoPoint.java:1036-1046`; `DoubleUtil.java:69-75`). Una intersección simple de índice 2
+(`Intersect(c, l, 2)`) copia esa salida auxiliar, que nunca tiene etiqueta
+(`AlgoIntersectSingle.java:236-279`).
+
+Hay que distinguir siete hechos:
+
+| Hecho | Quién lo establece | En una raíz doble |
+|---|---|---|
+| 1. existencia matemática de la intersección | el certificado (§4.6) | la recta es tangente: un punto doble |
+| 2. multiplicidad | el certificado | 2 |
+| 3. identidad semántica de cada solución seleccionada | el estado de selección (§4.1) | la salida `i` es la raíz bruta `permutation[i]`; las dos designan el mismo punto |
+| 4. definición efectiva de cada salida `GeoElement` | el algoritmo heredado | la salida 0 está definida; la 1, solo si tiene etiqueta |
+| 5. disponibilidad de un punto para la evaluación de Locus V2 | la copia del corte | la del algoritmo de la copia, con el estado de etiquetado de la copia |
+| 6. continuidad de los límites laterales | el certificado | existen y coinciden: `√D` es continua |
+| 7. continuidad de la construcción seleccionada | 4 y 5 junto con 6 | continua si la salida está definida en todo el entorno; si no, interrumpida |
+
+**Modelo del autor.** `{Q, R}` son salidas etiquetadas de un algoritmo de varias salidas, tanto
+en el vivo como en las copias de los cortes de `o` y `v` (sondeo, análisis §3.9). La regla no se
+aplica y en la raíz doble las dos salidas están definidas y coinciden: la construcción seleccionada
+es continua, con su esquina, y la componente periódica cerrada con un parámetro singular de §3.8
+del análisis se mantiene. Lo hace con una precondición nueva: el estado de etiquetado de cada
+salida forma parte de la identidad semántica de la selección y de la huella de la revisión, y la
+copia del corte debe reproducirlo (hoy lo reproduce).
+
+**Segunda salida sin etiqueta.** La salida 1 queda indefinida donde sus coordenadas calculadas
+coinciden con las de la salida 0 dentro de 10⁻⁸, y también dentro de la ventana de tangencia del
+evaluador, donde las dos son iguales. Esa definición efectiva depende de la tolerancia y del
+redondeo: el sondeo la encuentra dispersa en la banda `|t − t_c| ≤ 10⁻⁸`, con 49 de 201 muestras
+indefinidas en el vivo y 55 en la copia del corte. Por eso:
+
+- el certificado no declara existencia ni continuidad de esa salida a través de una raíz
+  coincidente: publica alrededor de ella una banda `UNRESOLVED` con causa tipada (supresión
+  heredada de la segunda salida), acotada por predicados de primer nivel conservadores (distancia
+  entre las raíces hasta `√2·10⁻⁸` más un margen de redondeo, y la ventana de tangencia);
+- fuera de la banda, la salida existe donde el discriminante lo prueba;
+- un locus que dependa de esa salida queda `NOT_ESTABLISHED`, con componentes locales a ambos
+  lados; en una frontera simple de mordedura, el extremo de esa salida no se certifica.
+
+**Raíz doble en la primera inicialización.** Dos raíces iguales no inicializan el algoritmo
+(análisis §3.9): mientras sigue en inicialización, la regla es la compactación en orden bruto
+(§4.1). El primer movimiento que separa las raíces fija la permutación, y ese cambio del estado
+heredado se vuelve a leer y publica una revisión con diagnóstico, con las mismas componentes. La
+regla de A1.1-R se cumple, porque la huella cambió; lo que no se cumple en este caso es su
+consecuencia habitual, que mover solo el conductor no publique revisión. La causa es el estado
+heredado, no la posición del conductor (D-CU2-18).
+
+El valor límite de la raíz coincidente (`λ = −b′/a`, con su envolvente) se certifica como
+evidencia y nunca como salida operativa. Para devolver la continuidad a esas construcciones hay
+dos caminos, los dos fuera de la autorización actual (D-CU2-18):
+
+- **selección continua de raíces coincidentes en el corte**, capacidad mínima del núcleo,
+  diseñada aquí y no implementada:
+
+  | Aspecto | Diseño |
+  |---|---|
+  | Contrato | dentro de la banda de supresión certificada, el corte da a la salida 1 suprimida el valor de la raíz coincidente que designa su selección, calculado con la forma límite (`λ = −b′/a`) y su envolvente; fuera de la banda no actúa |
+  | Precondiciones | salida de índice 1 sin etiqueta de una intersección recta–circunferencia de la clase v3, o la auxiliar de una intersección simple; raíces coincidentes certificadas por el certificado exacto; la misma raíz bruta designada a ambos lados; límite común de los dos lados certificado |
+  | Ciclo de vida | se decide al sincronizar cada revisión y forma parte de su huella; no se persiste; se recalcula al cargar, deshacer, rehacer y recalcular |
+  | Compatibilidad | el Locus V2 queda definido donde el objeto vivo no lo está: cambia la semántica respecto del comportamiento heredado y hay que declararlo en la especificación y en el inspector; el objeto vivo no cambia |
+  | Pruebas | V-COINC-2, V-COINC-5, V-COINC-7 y V-COINC-9 con la capacidad activa: continuidad a través de la banda, igualdad con la referencia de precisión ampliada y divergencia declarada con el vivo |
+  | Frontera | escribe en el corte la definición de una salida que el algoritmo heredado anula: modifica en la copia el comportamiento heredado, aunque no el algoritmo vivo ni su permutación. Por eso la propuesta se detiene aquí y necesita autorización específica |
+
+- **cambiar la regla heredada**: cambio de comportamiento upstream.
 
 ## 5. Puntos estacionarios, pliegues y parámetros singulares (P3)
 
@@ -517,6 +634,14 @@ que `unchanged()`. Propuesta (decisión E-3 revisada):
   política de `CU1`: los contadores deciden y los tiempos informan.
 - El certificado algebraico exacto (§4.6) cuesta de 2 a 53 ms por predicado en el modelo del
   autor y se calcula una vez por revisión, con su propio presupuesto de bits y bisecciones.
+- **Exactitud de la huella (hallazgo F-CU2-12).** El certificado de una revisión solo es válido si
+  la revisión cambia con cualquier cambio de sus entradas. La huella de `CU1`
+  (`ReconstructionSliceFingerprint2D`) toma la serialización XML, cuyos números tienen 15 cifras
+  significativas (`StringTemplate.java:309-325`): el sondeo muestra que un cambio de un ulp de
+  `excCyl` no publica revisión y que el corte conserva el valor anterior. Contradice la «exact
+  fingerprint» de `locus-v2-semantics.md` v1.2 y dejaría obsoletos los certificados de los
+  binary64 contiguos al valor crítico. La corrección (huella con los valores binary64 exactos)
+  toca un componente de `CU1` y queda como decisión (D-CU2-20).
 - El certificador de 512 celdas fijas de SplineV2 (`SelectedRootContinuousDomainCertifier2D`)
   queda sustituido por el certificador de cajas sobre su modelo de intervalos, o se conserva como
   caso particular (decisión D-CU2-9). Hoy:
@@ -563,4 +688,6 @@ raíces tangentes ni cambios del motor de intersecciones. La precisión
 | La certificación de `e_2` exigiera el valor de la longitud | parar: se viola la instrucción de cierre de `CU1` |
 | Un predicado necesario no es de primer nivel y tiene una raíz múltiple | cajas y punto estacionario; `UNRESOLVED` si no deciden; parar si ocurre en el modelo del autor |
 | La copia del corte no reproduce el estado de selección del algoritmo vivo | selección `NOT_ESTABLISHED` con diagnóstico; parar si ocurre en el modelo del autor |
+| Un locus del modelo del autor depende de una segunda salida sin etiqueta en una raíz coincidente, o la copia no reproduce el etiquetado | banda `UNRESOLVED` y `NOT_ESTABLISHED` (§4.7); parar y presentar la decisión D-CU2-18, sin sustituir la salida por su límite |
+| La huella de la revisión no cambia con un cambio de entrada (hallazgo F-CU2-12) | ningún certificado se reutiliza entre estados que la huella no distingue; parar si la corrección no está autorizada (D-CU2-20) |
 | Coste del certificado exacto con coeficientes grandes | presupuesto de bits y bisecciones; `UNRESOLVED` tipado |

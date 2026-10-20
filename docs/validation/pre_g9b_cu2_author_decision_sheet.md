@@ -5,7 +5,7 @@
 | Carácter | Decisiones necesarias para aprobar la arquitectura de `CU2` y autorizar su implementación. No registra ninguna decisión tomada por el agente |
 | Estado | `PENDING AUTHOR DECISIONS`; `selfApproved=false` |
 | Contexto | [informe del candidato de preparación](pre_g9b_cu2_preparation_candidate_report.md); [propuesta normativa](../architecture/pre_g9b_cu2_normative_proposal.md); [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) |
-| Revisión | 2026-10-20, revisión focalizada P1–P5: D-CU2-1 a D-CU2-6 y E-3 reformuladas; D-CU2-16 y D-CU2-17 nuevas |
+| Revisión | 2026-10-20, revisión focalizada P1–P5: D-CU2-1 a D-CU2-6 y E-3 reformuladas; D-CU2-16 y D-CU2-17 nuevas. Cierre de coherencia C1–C3 (2026-10-20): D-CU2-18 a D-CU2-20 nuevas, D-CU2-16 precisada (C3), mandato editorial E1 registrado como obligación del track (§1) |
 
 ## 1. Ya decidido (no requiere nueva decisión)
 
@@ -20,6 +20,16 @@
 - La valoración favorable de la dirección general de la preparación y las precisiones P1–P5
   (instrucción autoral de 2026-10-20); `NOT_ESTABLISHED` sigue siendo obligatorio cuando no
   hay prueba, pero no es el resultado objetivo del valor crítico.
+- La regla de C1 (instrucción autoral de cierre de coherencia, 2026-10-20): ninguna componente
+  se declara `COMPLETE` y continua solo porque su ecuación geométrica admita una raíz doble si la
+  salida indexada que define el punto trazado queda indefinida en ese parámetro; ninguna
+  identidad de salida histórica se sustituye por otra por coincidencia espacial.
+- El mandato editorial E1 (misma instrucción): es una obligación de cierre del track, registrada
+  en el [plan](../architecture/pre_g9b_cu_corrective_usability_plan.md) (`CU10` y §8), en la hoja
+  de ruta y en el
+  [plan de transferencia científica](../architecture/pre_g9b_cu_scientific_methods_editorial_handoff_plan.md).
+  No es una decisión de `CU2`. El diseño detallado de los apéndices está pendiente de preparación
+  y revisión, y su redacción e incorporación a `geocedg_book` no están autorizadas.
 
 ## 2. Para aprobar la arquitectura y las normas
 
@@ -36,8 +46,11 @@
 | D-CU2-9 | Certificador de 512 celdas de la raíz seleccionada de SplineV2 (`SelectedRootContinuousDomainCertifier2D`), que usa el testigo `m` | (a) conservarlo como caso particular del contrato híbrido, corrigiendo su dependencia de la raíz actual (que contradice A1.1-R) y la última celda del dominio semiabierto; (b) sustituirlo por el certificador de cajas sobre `SplineIntervalModel2D` | (a): cambio menor que conserva el testigo aprobado; (b) en un paquete posterior |
 | D-CU2-10 | Constantes de dibujo DC-6 (`d_min`, `θ_max`, presupuesto de vértices) y criterio de giro en las exportaciones | intervalos ahora y valores con el banco; criterio de giro solo en el dibujo / también en las exportaciones | intervalos ahora; giro solo en el dibujo. La exportación conserva su tolerancia en unidades del modelo, ahora con la desviación sin acotar, que ya impide puentear saltos |
 | D-CU2-11 | Especificación durable de la exportación LaTeX | (a) crear una especificación en `geocedg/specs/export/` con las reglas de DQ-C5, hoy solo en el [registro de decisiones de `R6-plus-C`](pre_g9b_r6_plus_c_author_decisions_record.md), y la topología de A2.6; (b) mantenerlas en el registro | (a) |
-| D-CU2-16 | Certificado algebraico exacto para el valor crítico y las degeneraciones equivalentes (P1): nueva capacidad del núcleo (racionales y polinomios exactos, máximo común divisor y sucesión de Sturm) para predicados de primer nivel, con la API, la evidencia, el presupuesto y las pruebas del [diseño](../architecture/pre_g9b_cu2_hybrid_certification_design.md) §4.6, y con los binary64 de las constantes capturadas como referencia semántica | (a) incluirla en `CU2`; (b) solo intervalos (método del punto estacionario) y `NOT_ESTABLISHED` en el valor crítico | (a). Es la única técnica que prueba la igualdad del caso crítico y decide los binary64 contiguos; cuesta milisegundos por predicado. Con (b), el valor crítico y sus vecinos quedan sin decidir |
+| D-CU2-16 | Certificado algebraico exacto para el valor crítico y las degeneraciones equivalentes (P1): nueva capacidad del núcleo (racionales y polinomios exactos, máximo común divisor y sucesión de Sturm) para predicados de primer nivel, con la API, la evidencia, el presupuesto y las pruebas del [diseño](../architecture/pre_g9b_cu2_hybrid_certification_design.md) §4.6, y con los binary64 de las constantes capturadas como referencia semántica | (a) incluirla en `CU2`; (b) solo intervalos (método del punto estacionario) y `NOT_ESTABLISHED` en el valor crítico | (a). Entre las técnicas estudiadas, es la que prueba la igualdad del caso crítico con las constantes capturadas y decide los binary64 contiguos; cuesta milisegundos por predicado. Hay procedimientos verificados de intervalos para raíces múltiples, pero necesitan estructura añadida o certifican un problema perturbado (C3). Con (b), el valor crítico y sus vecinos quedan sin decidir |
 | D-CU2-17 | Lectura del estado de selección (P4) | (a) accesores de solo lectura en `AlgoIntersectLineConic` y `AlgoIntersectSingle`, registrados como modificaciones; el estado entra en la huella de la revisión y la copia del corte debe coincidir con el algoritmo vivo, o la selección falla cerrada; (b) escribir el estado del algoritmo vivo en la copia (cambio de escritura en clases heredadas) | (a). No cambia el comportamiento heredado y no infiere nada por cercanía; (b) solo si (a) fallara en el modelo del autor, con una decisión aparte |
+| D-CU2-18 | Salidas efectivas en raíces coincidentes (C1; [diseño](../architecture/pre_g9b_cu2_hybrid_certification_design.md) §4.7; [análisis](../architecture/pre_g9b_cu2_author_model_certification_analysis.md) §3.9) | (a) contrato de salidas efectivas: el etiquetado de las salidas entra en el estado de selección y en la huella; una segunda salida sin etiqueta recibe una banda `UNRESOLVED` alrededor de la raíz coincidente y su locus queda `NOT_ESTABLISHED`; el valor límite certificado es solo evidencia; la regla heredada no cambia; en una primera inicialización en una raíz doble, el cambio de estado que provoca el primer movimiento publica una revisión con diagnóstico y las mismas componentes; (b) además, preparar en un paquete con autorización propia una capacidad mínima del núcleo, la selección continua de raíces coincidentes en el corte, con el contrato, el ciclo de vida, la compatibilidad y las pruebas del diseño §4.7; (c) cambiar la regla heredada (cambio de comportamiento upstream) | (a). El modelo del autor no necesita más: `{Q, R}` están etiquetadas y son continuas en la raíz doble. (b) solo si el autor quiere continuidad en esas construcciones; define el Locus V2 donde el objeto vivo no lo está y hay que declararlo. (c) no se recomienda |
+| D-CU2-19 | Componentes puntuales (C2; diseño §3.5; [consumo](../architecture/pre_g9b_cu2_consumption_and_representation.md) §3.1) | (a) entidad propia con el contrato del diseño §3.5; en `CU2`, declarada en el inspector, en el anexo DXF y en los comentarios LaTeX, sin dibujarla; los consumidores que no la admiten lo declaran y fallan explícitamente; ningún objeto punto público; (b) como (a), y además dibujarla con una marca en `CU2`; (c) no admitirlas y dejar `UNRESOLVED` la existencia puntual | (a). (b) añade una representación nueva que el modelo del autor no necesita; (c) pierde una existencia certificada y la completitud de esos dominios |
+| D-CU2-20 | Huella exacta de la revisión (hallazgo F-CU2-12; A2.1-R) | (a) corregir en `CU2`, en el paso T3, la huella de `CU1` (`ReconstructionSliceFingerprint2D`) para que use los valores binary64 exactos, como exige la «exact fingerprint» de `locus-v2-semantics.md` v1.2, con la prueba V-REV-EXACT-1; (b) corregirla en un paquete correctivo de `CU1` previo a `CU2` | (a). Es conformidad con una norma aprobada, pero toca un componente aprobado de `CU1` y por eso se somete a decisión. Sin la corrección, los certificados de los binary64 contiguos al valor crítico podrían ser los de la configuración anterior (condición de parada 16 de la estrategia) |
 
 ## 3. Para autorizar la implementación
 
@@ -67,17 +80,19 @@ autorizar `CU2`. E-0 y D-1 quedan sustituidas por D-CU2-1 a D-CU2-3.
 - **`CU3`.** Las fronteras certificadas, los parámetros singulares y los chorros de segundo
   orden de `CU2` son entradas para los contactos tangentes. La precisión
   `OBS-CU0-CU3-TANGENT-EXISTENCE` no cambia.
-- **Comportamiento heredado (F-CU2-8, F-CU2-9).** La permutación de salida de las
-  intersecciones se reinicializa por cercanía, y el evaluador declara tangente lo que está a
-  menos de su tolerancia. `CU2` no los cambia: los lee o los contradice con el certificado. Una
-  persistencia exacta del estado de selección exigiría un cambio de formato, fuera de `CU2`.
+- **Comportamiento heredado (F-CU2-8, F-CU2-9, F-CU2-13).** La permutación de salida de las
+  intersecciones se reinicializa por cercanía, el evaluador declara tangente lo que está a
+  menos de su tolerancia y la segunda salida sin etiqueta se anula cuando coincide con la
+  primera. `CU2` no los cambia: los lee o los contradice con el certificado. Una persistencia
+  exacta del estado de selección exigiría un cambio de formato, fuera de `CU2`.
 - **Limitación de `CU1`.** `L-CU1-TRANSLATION-RESOLUTION` sigue abierta. La matriz admite
   el fallo cerrado de la certificación con traslaciones de `10⁶` (V-INV-2).
 
 ## 6. Fuera de decisión en este momento
 
 - publicación, etiqueta y cambios en `main`;
-- el libro;
+- el libro: el mandato editorial E1 ya está aprobado (§1), pero el diseño detallado de los
+  apéndices, su redacción y su incorporación a `geocedg_book` necesitan autorizaciones propias;
 - la implementación de `CU3`–`CU10`;
 - la certificación en clase 1 o 2 de la longitud de `o_1` y de `e_2`;
 - la reescritura de selectores persistidos y la captura simbólica de tangencias calculadas con

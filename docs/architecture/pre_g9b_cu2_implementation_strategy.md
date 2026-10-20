@@ -8,7 +8,7 @@
 | Diseños | [certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](pre_g9b_cu2_consumption_and_representation.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
 | Validación | [matriz de validación y criterios de aceptación](../validation/pre_g9b_cu2_validation_matrix.md) |
 | Rutas | abreviadas desde `source/shared/common/src/main/java/org/geocedg/common/kernel/` |
-| Revisión | 2026-10-20, revisión focalizada P1–P5: T3, T4, T5, T7, T8, T10 y T11 ajustados, condiciones de parada 12 a 14 y efecto previsto en el valor crítico. El orden y la numeración T0–T13 no cambian |
+| Revisión | 2026-10-20, revisión focalizada P1–P5: T3, T4, T5, T7, T8, T10 y T11 ajustados, condiciones de parada 12 a 14 y efecto previsto en el valor crítico. Cierre de coherencia C1–C3 (2026-10-20): T2, T3, T4, T9 y T10 ajustados, condiciones de parada 15 a 17, causas, efecto previsto, riesgos y fuera de alcance. El orden y la numeración T0–T13 no cambian |
 
 ## 1. Causas
 
@@ -26,6 +26,9 @@
 | Identidad | la clave de componente incluye los bits de sus extremos; ningún productor emite otra transición de linaje que `unchanged()` | `locus/LocusComponentLineage2D.java:21-32`; `locus/LocusLineage2D.java:16-117` |
 | Selección (P4) | la salida de una intersección recta–circunferencia es una raíz bruta elegida por una permutación que es estado del algoritmo; se reinicializa por cercanía al crear, al cargar y en cada `updateConstruction`, también en la copia del corte de cada revisión | `org/geogebra/common/kernel/algos/AlgoIntersectLineConic.java:224-235, 268-281, 467-562`; `org/geogebra/common/kernel/Construction.java:1474-1496`; `locus/ReconstructibleLocusEvaluator2D.java:133-143, 334-346` |
 | Valor crítico (P1) | ninguna prueba de raíz simple certifica un cero doble, y el evaluador declara tangente lo que está a menos de su tolerancia | `org/geogebra/common/kernel/algos/AlgoIntersectLineConic.java:617-640, 703-704, 741-746`; [análisis](pre_g9b_cu2_author_model_certification_analysis.md) §3.8 |
+| Salidas en raíces coincidentes (C1) | la segunda salida sin etiqueta se anula cuando coincide con la primera dentro de 10⁻⁸; su definición cerca de una raíz coincidente es dispersa y difiere entre el vivo y el corte (F-CU2-13) | `org/geogebra/common/kernel/algos/AlgoIntersect.java:40-45`; `AlgoIntersectLineConic.java:280`; `AlgoIntersectSingle.java:236-279`; análisis §3.9 |
+| Huella de la revisión (F-CU2-12) | la huella de `CU1` toma la serialización XML con 15 cifras significativas: un cambio de un ulp no publica revisión y el corte queda obsoleto | `locus/ReconstructionSliceFingerprint2D.java`; `org/geogebra/common/kernel/StringTemplate.java:309-325`; análisis §3.9 |
+| Componentes puntuales (C2) | la estructura de existencia solo tiene intervalos de longitud positiva: una existencia reducida a un parámetro aislado no se puede expresar | `locus/LocusExistenceStructure2D.java`; diseño de certificación §3.5 |
 | Consumidores | vistas heredadas (`getValidDomainComponents()`, `PERIODIC`) e inconsistencia índice/tamaño en `resolveOpenBoundary` | [consumo](pre_g9b_cu2_consumption_and_representation.md) §2; `LocusMetricRouteResolver2D.java:180-184` |
 
 **Riesgo principal.** El certificado de compatibilidad sostiene hoy la cadena
@@ -68,12 +71,17 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
 - Causas tipadas de la cobertura, con la distinción entre no existencia certificada e
   indefinición computacional.
 - Evidencia exploratoria como estructura hermana, derivada y no persistida.
+- Componente puntual como entidad propia (C2; diseño de certificación §3.5): envolvente del
+  parámetro con su fuente estructural, inclusión cerrada, maximalidad, linaje con transiciones
+  de cambio de dimensión, longitud cero y estado de su posición. Nunca un intervalo de longitud
+  cero.
+- Naturaleza de la prueba registrada en cada hecho certificado (C3).
 - Consulta única de cierre (`closed periodic`) que todos los consumidores usarán en T9.
 - Las vistas heredadas quedan como adaptadores documentados; un arco se devuelve como una
   componente.
 - El productor sigue publicando la compatibilidad, ahora expresada en el modelo nuevo: ningún
   cambio visible.
-- Pruebas: V-ARC-2 y V-LVL-2 sobre estructuras construidas en prueba.
+- Pruebas: V-ARC-2, V-LVL-2 y V-POINT-1 sobre estructuras construidas en prueba.
 
 ### T3 — Clase v3 del modelo de construcciones certificadas
 
@@ -81,17 +89,21 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
 - Captura de rayos, segmentos, circunferencias por centro y punto, recta–circunferencia,
   pasos de varias salidas, operaciones vectoriales, expansión de macros y entrada métrica
   estructural.
-- Selección de las intersecciones (P4): lectura del estado de selección del algoritmo
-  (permutación e indicadores de inicialización) con accesores de solo lectura registrados como
-  modificaciones; huella de la revisión con ese estado; comparación con el algoritmo vivo en
-  cada sincronización, con fallo cerrado si difieren; compactación solo donde el número de
-  raíces en los caminos está probado.
+- Selección de las intersecciones (P4, C1): lectura del estado de selección del algoritmo
+  (permutación, indicadores de inicialización y etiquetado de las salidas) con accesores de
+  solo lectura registrados como modificaciones; huella de la revisión con ese estado;
+  comparación con el algoritmo vivo en cada sincronización, con fallo cerrado si difieren;
+  compactación solo donde el número de raíces en los caminos está probado.
+- Huella exacta de la revisión (F-CU2-12), solo si el autor aprueba D-CU2-20: valores binary64
+  exactos en lugar de la serialización de 15 cifras, en `ReconstructionSliceFingerprint2D`. Sin
+  esa decisión, la condición de parada 16.
 - Envolventes de valor y primera derivada con redondeo exterior para cada capacidad nueva.
 - Resultado de caja `VALID`, `UNIFORMLY_INVALID` con causa tipada o `UNRESOLVED`, en lugar de
   la excepción, solo en el camino v3; `UNIFORMLY_INVALID` por intervalos solo para
   desigualdades estrictas.
 - Límite versionado de pasos dependientes del conductor tras expandir macros (D-CU2-5).
-- Pruebas: V-V3-1 a V-V3-4, V-SEL-1 a V-SEL-7 y V-UNIF-1.
+- Pruebas: V-V3-1 a V-V3-4, V-SEL-1 a V-SEL-7, V-UNIF-1, V-COINC-1, V-COINC-2, V-COINC-8 y
+  V-REV-EXACT-1.
 
 ### T4 — Certificador híbrido en sombra
 
@@ -105,16 +117,21 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
   [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §4.6): racionales y
   polinomios exactos, máximo común divisor, sucesión de Sturm, bisección exacta y evidencia
   registrada, con su presupuesto. Produce transiciones, parámetros singulares interiores y
-  puntos aislados.
+  componentes puntuales.
 - Para los predicados que no son de primer nivel, método del punto estacionario (Krawczyk sobre
   `P′` con `P″`) y `UNRESOLVED` si no decide.
+- Salidas efectivas en raíces coincidentes (C1; diseño de certificación §4.7): una segunda
+  salida sin etiqueta recibe una banda `UNRESOLVED` alrededor de la raíz coincidente, acotada por
+  predicados de primer nivel conservadores, y su locus queda `NOT_ESTABLISHED`; su valor límite
+  se registra como evidencia y nunca como salida.
 - Identificación periódica solo con la premisa de función de configuración; cierre solo con
   continuidad certificada en el punto de cierre.
 - Evidencia exploratoria determinista para las bandas sin resolver.
 - Un cálculo por revisión, compartido (A1.1-R de `CU1`).
 - El resultado se expone a las pruebas y a la instrumentación, **no** se publica todavía.
 - Pruebas: V-LVL-1, V-LVL-3, V-CMP-1, V-TR-1, V-TR-2, V-TR-4, V-CRIT-1 a V-CRIT-10,
-  V-TOT-1, V-PER-1 a V-PER-3, V-UND-1, V-COMPL-1, GC-4 y GC-8 sobre el certificado en sombra.
+  V-COINC-3 a V-COINC-7, V-COINC-9, V-POINT-2 a V-POINT-4, V-TOT-1, V-PER-1 a V-PER-3, V-UND-1,
+  V-COMPL-1, GC-4 y GC-8 sobre el certificado en sombra.
 
 ### T5 — Pliegues certificados y chorros de segundo orden (P3, D-CU2-6)
 
@@ -161,9 +178,13 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
 - Separación entre existencia, evaluación y representación (P5): un punto del evaluador en una
   no existencia certificada no se publica como válido; un fallo de evaluación es computacional;
   la consulta explícita de límites laterales sustituye a la canonicalización de los extremos.
+- Componentes puntuales (C2; consumo §3.1): aportan cero a totales y rutas; los consumidores
+  que direccionan por un parámetro binary64 fallan explícitamente con causa tipada; las
+  intersecciones no declaran `EMPTY` sin excluirlas; los loci dependientes declaran la
+  limitación.
 - Con la compatibilidad aún publicada, el comportamiento visible no cambia salvo las
   correcciones declaradas.
-- Pruebas: V-CON-1 a V-CON-10 y V-AVAIL-1.
+- Pruebas: V-CON-1 a V-CON-10, V-AVAIL-1, V-POINT-5 y V-POINT-6.
 
 ### T10 — Política de dibujo v2 y aproximaciones de exportación
 
@@ -177,8 +198,11 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
 - Exportación: extremos abiertos con límite o, si no se puede evaluar, hasta el último vértice
   evaluado con su estado declarado; profundidad mínima para componentes abiertas; residuo de
   cierre contra el certificado.
+- Componentes puntuales declaradas y no dibujadas (D-CU2-19): inspector, anexo DXF y
+  comentarios LaTeX, con fidelidad parcial; nunca un segmento ni una curva. Las bandas de la
+  supresión heredada (C1) no se cruzan.
 - Pruebas: V-B06-1 a V-B06-3, V-B07-2, V-REP-1, V-REP-2, V-DXF-3 y V-AVAIL-2 a V-AVAIL-6, con
-  certificados de prueba.
+  certificados de prueba, y la parte de representación de V-POINT-5.
 
 ### T11 — Conmutación
 
@@ -258,7 +282,15 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 13. la copia del corte no reprodujera el estado de selección del algoritmo vivo en el modelo del
     autor, o reproducirlo exigiera escribir en clases heredadas;
 14. resolver un selector persistido exigiera reescribir contenido persistido o reasociarlo por
-    contención sin una correspondencia demostrada.
+    contención sin una correspondencia demostrada;
+15. un locus del modelo del autor dependiera de una segunda salida sin etiqueta en una raíz
+    coincidente, la copia del corte no reprodujera el etiquetado del vivo, o mantener la
+    continuidad exigiera sustituir una salida por su valor límite o por otra salida (D-CU2-18);
+16. la huella de la revisión no distinguiera un cambio de entrada y la corrección de D-CU2-20 no
+    estuviera autorizada: ningún certificado se reutiliza entre estados que la huella no
+    distingue;
+17. un consumidor necesitara materializar o dibujar una componente puntual más allá de lo que
+    fije D-CU2-19 (`CU3`).
 
 ## 5. Procedimiento para fijaciones y referencias (C1-4)
 
@@ -288,7 +320,10 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 | Los mismos en mordedura (3,7; 3,85; 3,9) | componente falsa `[−π, π)`; 2 subtrazos; hueco de 6 a 24 px en los extremos | un arco cerrado que cruza la costura; 1 subtrazo; extremos a ≤ 0,75 px de la frontera | `pins.B07` invertida |
 | Los mismos cerca del valor crítico (3,657–3,66) | un subtrazo a través de un hueco real (F-CU2-2) | transiciones certificadas exactamente; ninguna unión | V-B07-3 |
 | Los mismos en los binary64 contiguos al valor crítico | `COMPLETE` de compatibilidad; el evaluador define puntos dentro del hueco exacto | penetración o mordedura decididas exactamente; los puntos del evaluador en el hueco no se publican como válidos | V-CRIT-7 |
-| Los mismos en el valor crítico, en una configuración que lo represente exactamente | — (no representable con el deslizador) | `COMPLETE`, una componente periódica cerrada con un parámetro singular certificado en `t_c` | V-CRIT-1 |
+| Los mismos en el valor crítico, en una configuración que lo represente exactamente | — (no representable con el deslizador) | `COMPLETE`, una componente periódica cerrada con un parámetro singular certificado en `t_c`; `{Q, R}` etiquetadas, definidas e iguales en `t_c` | V-CRIT-1, V-COINC-1 |
+| Los mismos tras un cambio de un ulp de excCyl | sin revisión nueva; el corte conserva el valor anterior (F-CU2-12) | revisión nueva y corte con el valor exacto, si se aprueba D-CU2-20 | V-REV-EXACT-1 |
+| Construcciones con una segunda salida sin etiqueta (fuera del modelo) | `COMPLETE` de compatibilidad; definición dispersa cerca de la raíz coincidente | banda `UNRESOLVED` y `NOT_ESTABLISHED`, con componentes locales | V-COINC-2 |
+| Existencia reducida a un parámetro aislado (fuera del modelo) | `COMPLETE` de compatibilidad con una componente `[−π, π)` | componente puntual declarada, sin dibujo | V-POINT-1 a V-POINT-6 |
 | Los mismos a excCyl 4,0 con el conductor guardado | no publicados | publicados, `COMPLETE`, un arco | `pins.H01` invertida |
 | `e_1` | `COMPLETE` de compatibilidad; giro de 180° | `COMPLETE` certificado; dos pliegues certificados; giro ≤ `θ_max` fuera de ellos | `pins.B06` invertida |
 | `o_1` | `COMPLETE` de compatibilidad | `COMPLETE` certificado; selector de `N_1` migrado | `preserve.state` |
@@ -307,6 +342,8 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 | La clase v3 no alcanza una construcción del usuario fuera del modelo | fallo cerrado con evidencia exploratoria visible; nunca compatibilidad |
 | Migración de identidad de componentes | linaje estructural, correspondencia estructural demostrada (la contención solo la valida) y fallo cerrado |
 | Selección dependiente del estado heredado | lectura del estado del algoritmo, comparación con el algoritmo vivo y fallo cerrado si difieren (condición 13) |
+| Supresión heredada de una segunda salida sin etiqueta | banda `UNRESOLVED`; nunca sustitución por el valor límite ni por otra salida (condición 15) |
+| Huella inexacta de `CU1` | corrección en T3 si se aprueba D-CU2-20; si no, parada (condición 16) |
 | Cambio de vértices en dibujo y exportaciones | conformidad declarada por prueba; DXF y LaTeX con la misma topología |
 | Pruebas que dependen de la compatibilidad | inventario y conformidad declarada (§5) |
 | Dependencia de `CU3` | parada y presentación (§4, condición 5) |
@@ -315,6 +352,9 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 
 - puntos estructurales, materialización de raíces tangentes y cambios del motor de
   intersecciones (`CU3`), incluida la observación F-CU2-5;
+- la materialización y el dibujo de las componentes puntuales (D-CU2-19);
+- la selección continua de raíces coincidentes en el corte y cualquier cambio de la regla
+  heredada de la segunda salida (D-CU2-18);
 - herramientas públicas nuevas y mejoras de interfaz;
 - cónicas generales, intersección cónica–cónica, listas, funciones generales e intersecciones
   en modo continuo en la clase v3;

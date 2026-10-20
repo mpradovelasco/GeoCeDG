@@ -7,7 +7,7 @@
 | Normas | [propuesta normativa](../architecture/pre_g9b_cu2_normative_proposal.md); [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md); [estrategia](../architecture/pre_g9b_cu2_implementation_strategy.md) |
 | Diseños | [certificación](../architecture/pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](../architecture/pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](../architecture/pre_g9b_cu2_consumption_and_representation.md); [análisis del modelo del autor](../architecture/pre_g9b_cu2_author_model_certification_analysis.md) |
 | Decisiones aplicadas | C1-1 (puertas por contadores) y C1-4 (`preserve` frente a `pins`) del [registro de cierre de `CU0`](pre_g9b_cu0_closeout_record.md); D-CU1-2 (contrato de estimación) del [registro de cierre de `CU1`](pre_g9b_cu1_closeout_record.md) |
-| Revisión | 2026-10-20, revisión focalizada P1–P5: filas V-CRIT (sustituyen a V-TR-3), V-FOLD (sustituyen a V-JET-1), V-SEL, V-AVAIL, V-UNIF, V-COMPL, V-E2-8, V-E2-9 y V-LIN-6; V-LIN-3 y V-LIN-4 revisadas; puerta GC-8 |
+| Revisión | 2026-10-20, revisión focalizada P1–P5: filas V-CRIT (sustituyen a V-TR-3), V-FOLD (sustituyen a V-JET-1), V-SEL, V-AVAIL, V-UNIF, V-COMPL, V-E2-8, V-E2-9 y V-LIN-6; V-LIN-3 y V-LIN-4 revisadas; puerta GC-8. Cierre de coherencia C1–C3 (2026-10-20): §3.5c nuevo (V-COINC-1 a V-COINC-9, amplía V-SEL-3), §3.5d nuevo (V-POINT-1 a V-POINT-6, amplía V-CRIT-5), V-REV-EXACT-1, V-SEL-3 y V-CRIT-5 revisadas, referencias de §1 y límites de §5 |
 
 ## 1. Referencias analíticas y exactas
 
@@ -28,6 +28,10 @@ análisis §3.8.3, no la fórmula en coma flotante, que se equivoca en un valor 
 | extremos analíticos a excCyl = 4,0 | 0,6024120274 y 1,9511182317 |
 | parámetro guardado de `N` (`pins.H01`) | 0,6456498832 |
 | configuración crítica sintética exacta | `p`: centro `(0, 0)`, radio 25; `P = (−25, 50)`; `g_1`: centro `(35, −45)`, radio 40; raíz doble en `u = 1/2`, `t = atan2(4, 3)` |
+| tangentes desde `P` a `p` en las configuraciones sintéticas | `3x + 4y = 125`, que toca `p` en `(15, 20)`, y `x = −25`, que lo toca en `(−25, 0)` |
+| tangencia exterior sintética (V-CRIT-5, V-POINT-1) | `g_1`: centro `(83, 19)`, radio 40; componente puntual en `t* = atan2(−4, −3)` (`u = −2`), con `λ > 0` y `Q = R = (15, 20)`; `D ≤ 0` a ambos lados |
+| dos componentes puntuales sintéticas (V-POINT-2) | `Line(P, N)` (no un rayo: en `t = ±π` la raíz tiene `λ < 0`) con `N` sobre la circunferencia de centro `(15, 70)` y radio 40, inscrita en el ángulo exterior de las dos tangentes; `D ≤ 0` con ceros dobles en `t = ±π` (costura) y `t = atan2(−4, −3)` |
+| supresión heredada de una segunda salida sin etiqueta (análisis §3.9) | 49 de 201 muestras indefinidas en el vivo y 55 en el corte, con `|t − t_c| ≤ 10⁻⁸` en el binary64 de penetración más próximo |
 | giro de los loci en `t_c` (penetración más próxima) | 133,7° (`o`, `v`); 147,3° (`w`, `a_1`) |
 | pliegues de `e_1` | `t = 0` y `t = π`; `|F″(0)|` ≈ 3,93 y `|F″(π)|` ≈ 1,27 |
 
@@ -92,7 +96,7 @@ de intersección ni de contacto, que pertenecen a `CU3`.
 | V-CRIT-2 | Parámetros inmediatamente anteriores y posteriores | radio `40 ± 2⁻ᵏ`, `k` ∈ {10, 30, 47} (`2⁻⁴⁷` es la unidad de la última cifra de 40) | `40 − 2⁻ᵏ`: penetración, sin raíces reales; `40 + 2⁻ᵏ`: mordedura, dos raíces simples alrededor de `atan2(4, 3)` | F | — |
 | V-CRIT-3 | Separación arbitrariamente pequeña de raíces | los mismos datos como constantes racionales exactas en el certificado, `k` ∈ {80, 200} | dos raíces simples con envolventes disjuntas, o `UNRESOLVED` tipado si se agota el presupuesto; nunca una sola raíz ni una componente que atraviese el hueco | A | — |
 | V-CRIT-4 | Discriminante no negativo con cero doble | V-CRIT-1 | ninguna transición publicada en `t_c`; ninguna banda `UNRESOLVED`; el predicado se declara cierto en todo el círculo | F | — |
-| V-CRIT-5 | Desaparición real de soluciones | `g_1` de centro `(83, 19)` y radio 40 (tangente exterior); modelo con excCyl 3,7 | punto aislado de existencia `[t*, t*]` en el primero; en el segundo, dos transiciones simples que contienen las referencias de §1 | F | — |
+| V-CRIT-5 | Desaparición real de soluciones | `g_1` de centro `(83, 19)` y radio 40 (tangente exterior); modelo con excCyl 3,7 | en el primero, una componente puntual `{t*}` con `t* = atan2(−4, −3)`, nunca un intervalo (§3.5d); en el segundo, dos transiciones simples que contienen las referencias de §1 | F | — |
 | V-CRIT-6 | Continuidad y selección de ramas | V-CRIT-1 | `λ_Q` continua en `t_c` con derivadas laterales distintas; `Q` invierte su movimiento sobre la circunferencia (tangentes laterales opuestas); el locus trazado tiene una esquina; la selección es la misma regla a ambos lados | F | — |
 | V-CRIT-7 | Configuraciones binary64 contiguas al valor crítico | modelo con los trece binary64 centrados en el valor crítico | clasificación exacta: penetración hasta `0x1.d416bb67a38bbp1` y mordedura desde `0x1.d416bb67a38bcp1`; ninguna raíz doble; los puntos del evaluador dentro del hueco exacto no se publican como válidos | F | — |
 | V-CRIT-8 | Restauración con deshacer y rehacer | modelo: excCyl 2,9 → 3,7 → `0x1.d416bb67a38bcp1` → 2,9, deshaciendo y rehaciendo cada paso | certificado, transiciones de linaje y estado de selección idénticos bit a bit a los de una construcción recién creada con el mismo estado | F | — |
@@ -130,6 +134,7 @@ de intersección ni de contacto, que pertenecen a `CU3`.
 | V-PUB-2 | Ninguna definición obsoleta (F-CU2-3) | excCyl 3,95 → 3,96 → 4,0 → 4,5 → 5,0 con el conductor dentro del hueco | cada revisión publica su propia geometría, igual bit a bit a la de una construcción recién creada con el mismo estado | F | — |
 | V-PUB-3 | Recubrimiento vacío | configuración con `D < 0` en todo el círculo (excCyl > 6,7915, fijado por prueba) | según D-CU2-8: publicado, válido, `COMPLETE`, cero componentes; intersecciones `EMPTY` completas; longitud total cero | F | — |
 | V-PUB-4 | Entradas de definición indefinidas | un punto libre del corte indefinido | locus `UNDEFINED`, sin definición anterior visible | F | — |
+| V-REV-EXACT-1 | Huella exacta (F-CU2-12; si se aprueba D-CU2-20) | modelo con excCyl `0x1.d416bb67a38bbp1` → `0x1.d416bb67a38bcp1` → `0x1.d416bb67a38bbp1`; y `lr2 = LocusV2(R2, N)` del sondeo del análisis §3.9 | cada cambio de un ulp publica una revisión; la copia del corte toma el valor exacto (mismos bits que el vivo); cada revisión tiene el certificado de su propia configuración (penetración o mordedura); ningún certificado se reutiliza entre estados que la huella no distingue | F | — |
 
 ### 3.5 Linaje y migración (E-3 revisada)
 
@@ -148,11 +153,44 @@ de intersección ni de contacto, que pertenecen a `CU3`.
 |---|---|---|---|---|---|
 | V-SEL-1 | Regla procedente del algoritmo | `{Q, R}`, `H_1` y `G_1` del modelo | la captura lee el estado (`[0, 1]` para `{Q, R}` y `H_1`; inicialización con compactación para `G_1`); `Q` es la raíz de `λ` menor; el certificado es idéntico con el conductor en cualquier posición | F | — |
 | V-SEL-2 | Conductor que empieza sin intersección | documento guardado con excCyl 4,0 y el conductor en el hueco, reabierto | la regla se captura sin muestra válida; certificado idéntico al de V-SEL-1 para ese valor | F | — |
-| V-SEL-3 | Tangencia | fronteras de V-TR-1 y parámetro singular de V-CRIT-1 | `Q = R` en la frontera; ambas salidas continuas; ninguna permutación nueva | F | — |
+| V-SEL-3 | Tangencia | fronteras de V-TR-1 y parámetro singular de V-CRIT-1 | `Q = R` en la frontera; ambas salidas, etiquetadas, definidas y continuas; ninguna permutación nueva. Ampliada en §3.5c | F | — |
 | V-SEL-4 | Cambio entre penetración y mordedura | excCyl 2,9 ↔ 3,7 | la identidad semántica de la selección no cambia; transición de linaje registrada; revisión nueva | F | — |
 | V-SEL-5 | Desaparición temporal de una raíz | conductor que atraviesa el hueco a excCyl 3,7 | salida indefinida en el hueco; la misma regla a ambos lados; un solo arco | F | — |
 | V-SEL-6 | Permutación heredada y orden de consultas | construcción sintética cuyo algoritmo vivo tiene la permutación `[1, 0]`; el modelo consultado primero por el dibujo y después por la métrica, y al revés | la copia del corte reproduce el estado vivo o la selección falla cerrada con diagnóstico; el certificado no depende del orden de las consultas | A | — |
 | V-SEL-7 | Guardar, reabrir, deshacer y rehacer | el modelo y la construcción de V-SEL-6 | el estado de selección se vuelve a leer; si es igual, contenido idéntico; si cambia, revisión nueva con diagnóstico, sin reasociación silenciosa | F | — |
+
+### 3.5c Salidas efectivas en raíces coincidentes (C1)
+
+Amplían V-SEL-3. «Salidas etiquetadas» es `{Q, R}` (o `Intersect(p, t)` con las dos salidas
+etiquetadas); «segunda sin etiqueta» es `R2 = Intersect(p, t2, 2)` con `t2 = Ray(P, N)`, cuyas
+salidas auxiliares no tienen etiqueta. Cada fila se ejecuta en la configuración crítica sintética,
+en los dos binary64 del modelo contiguos al valor crítico y en la frontera simple de excCyl 3,7.
+
+| Id | Requisito | Construcción | Aserción | Tipo | Fijación |
+|---|---|---|---|---|---|
+| V-COINC-1 | Tangencia con ambas salidas etiquetadas | salidas etiquetadas | la captura lee el etiquetado, igual en el vivo y en la copia del corte; en la raíz doble las dos salidas están definidas y coinciden; componente periódica cerrada con parámetro singular | F | — |
+| V-COINC-2 | Tangencia con la segunda sin etiqueta | segunda sin etiqueta y su locus `lr2 = LocusV2(R2, N)` | banda `UNRESOLVED` con causa tipada (supresión heredada de la segunda salida) que contiene todas las muestras indefinidas del vivo y del corte; `lr2` `NOT_ESTABLISHED`, con componentes locales a ambos lados; nunca `COMPLETE` ni continuidad a través de la banda | A | — |
+| V-COINC-3 | Raíz doble en la primera inicialización | las dos variantes creadas con el conductor exactamente en la raíz doble de la configuración crítica sintética, y documentos guardados así y reabiertos | mientras el algoritmo sigue en inicialización (dos raíces iguales no lo inicializan), la regla capturada es la compactación en orden bruto, certificada porque las dos raíces están en el rayo en todo el círculo; designa las mismas raíces que la permutación `[0, 1]` que el algoritmo fija al separarse; ese cambio de estado se vuelve a leer y publica una revisión con diagnóstico y las mismas componentes (D-CU2-18); con la segunda sin etiqueta, la salida 2 está indefinida en `t_c` y dentro de la banda | F | — |
+| V-COINC-4 | Raíces que convergen y se separan | conductor que recorre `t_c` en la configuración crítica (`+/+`) y en la de radio `40 + 2⁻³⁰` | cada salida designa la misma raíz bruta a ambos lados; ninguna salida cambia de raíz en la raíz doble; en mordedura, el hueco es no existencia certificada | F | — |
+| V-COINC-5 | Desaparición temporal | radio `40 + 2⁻³⁰` y modelo a excCyl 3,7, con el conductor atravesando el hueco | salidas indefinidas en el hueco y la misma regla a ambos lados; con salidas etiquetadas, extremos cerrados certificados; con la segunda sin etiqueta, su extremo no se certifica y queda dentro de la banda | F | — |
+| V-COINC-6 | Conductor que empieza sin intersección | las dos variantes creadas, y guardadas y reabiertas, con el conductor en el hueco | la regla se captura sin muestra válida; certificado igual al de V-COINC-1 o V-COINC-2 | F | — |
+| V-COINC-7 | Corte frente a algoritmo vivo | 201 conductores de `|t − t_c| ≤ 10⁻⁸` en las dos variantes | con salidas etiquetadas, definidas en todas las muestras del vivo y del corte; con la segunda sin etiqueta, toda diferencia de definición entre el vivo y el corte cae dentro de la banda `UNRESOLVED`; el certificado no afirma nada en que difieran | A | — |
+| V-COINC-8 | Guardar, reabrir, deshacer, rehacer y recalcular | las dos variantes; `updateConstruction` y recarga del XML | el estado de selección y de etiquetado se vuelve a leer en cada operación; si no cambia, certificado idéntico bit a bit; si cambia, revisión nueva con diagnóstico, sin reasociación | F | — |
+| V-COINC-9 | Selección certificada frente a resultado operativo | V-COINC-1 a V-COINC-8 | en toda muestra fuera de las bandas `UNRESOLVED`, la salida operativa del vivo y del corte es la raíz que designa la selección certificada (`Q` la de `λ` menor, `R` la mayor), comparada con la referencia de precisión ampliada; el valor límite certificado de la raíz coincidente se registra como evidencia y nunca sustituye a una salida indefinida | F | — |
+
+### 3.5d Componentes puntuales (C2)
+
+Amplían V-CRIT-5. Una componente puntual no es una raíz doble interior: V-CRIT-1 sigue siendo un
+parámetro singular interior de una componente periódica cerrada.
+
+| Id | Requisito | Construcción | Aserción | Tipo | Fijación |
+|---|---|---|---|---|---|
+| V-POINT-1 | Parámetro único | estructura construida en prueba; tangencia exterior sintética de §1 | entidad propia, nunca un intervalo de longitud cero: envolvente de `t*` que contiene `atan2(−4, −3)`, fuente estructural (operación, predicado y raíz), inclusión cerrada, maximal con no existencia certificada a ambos lados | F | — |
+| V-POINT-2 | Dos componentes separadas por una región inválida | dos componentes puntuales sintéticas de §1 | dos componentes puntuales, una en la costura, con fuentes distintas y separadas por no existencia certificada; ninguna se une a la otra a través de la costura ni se trata como arco | A | — |
+| V-POINT-3 | Transición entre punto y arco | tangencia exterior con radio `40 − 2⁻³⁰` → `40` → `40 + 2⁻³⁰` → `40`, deshaciendo y rehaciendo cada paso | recubrimiento vacío, componente puntual, arco entre dos raíces simples y otra vez componente puntual; transiciones de linaje tipadas de aparición y de cambio de dimensión con relación explícita; ninguna reasociación por etiqueta, índice, coordenadas o proximidad | F | — |
+| V-POINT-4 | Punto geométrico no evaluable | V-POINT-1 con el evaluador en los binary64 más próximos a `t*` | ningún binary64 alcanza `t*`; la componente existe; su posición es la envolvente certificada de la forma límite, que contiene `(15, 20)`, o, con un fallo forzado de esa forma, «no disponible» sin que cambie la existencia; los puntos del evaluador en parámetros con no existencia certificada no se publican como válidos | F | — |
+| V-POINT-5 | Métrica, pertenencia y representación | V-POINT-1 y V-POINT-2 | longitud total exactamente 0; una ruta solo dentro de la componente y de longitud 0; `Point(L, u)` con `u` binary64 próximo a `t*`: fallo explícito con causa tipada; dibujo: nada dibujado y fidelidad parcial con causa; DXF: ninguna entidad de trazo y anexo que la declara; LaTeX: ningún camino y comentario que la declara; inspector: envolvente, fuente y estado de la posición | F | — |
+| V-POINT-6 | Completitud con solo existencia puntual | V-POINT-1 y V-POINT-2 | `COMPLETE`: el recubrimiento son las componentes puntuales y la no existencia certificada; las intersecciones no declaran `EMPTY` ni un conjunto completo sin excluir rigurosamente las posiciones; un locus dependiente con ese soporte declara la limitación y no es `COMPLETE`; las semejanzas heredan las componentes | F | — |
 
 ### 3.6 Consumidores (A2.5)
 
@@ -244,6 +282,10 @@ Clase propuesta `INTEGRATED_PHASE` (decisión D-CU2-12). El candidato congelado 
   nivel con raíces múltiples: fallan cerradas, y la matriz solo comprueba que fallan así.
 - La criticidad exacta de una configuración cuya tangencia se calcula con redondeo: se
   certifica la configuración redondeada que se captura.
+- La continuidad, a través de una raíz coincidente, de una construcción que depende de una
+  segunda salida sin etiqueta: la matriz solo comprueba que falla cerrada (D-CU2-18).
+- La representación gráfica de las componentes puntuales, que en `CU2` solo se declara
+  (D-CU2-19).
 - La existencia de un pliegue sin simetría estructural.
 - La exactitud de las coordenadas de `e_2`, que son estimaciones de clase 3 (D-CU1-2).
 - El rendimiento en otras máquinas: GC-7 y el tiempo de GC-8 son informativos.
