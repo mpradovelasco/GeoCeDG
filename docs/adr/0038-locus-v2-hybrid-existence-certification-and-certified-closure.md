@@ -2,7 +2,7 @@
 
 - Status: **PROPOSED** (`PRE-G9B-CU2` preparation candidate pending author review; not
   author approved; the number is provisional until acceptance)
-- Date: 2026-10-20
+- Date: 2026-10-20; revised the same day by the focused review P1–P5 requested by the author
 - Phase: `PRE-G9B-CU2` (preparation authorized on 2026-10-20; implementation not authorized)
 - Extends: [ADR 0027](0027-locus-v2-existence-and-continuous-valid-components.md). Its four
   axes, its consumer rules and the independence of local admissibility from global
@@ -11,7 +11,9 @@
   - hybrid direction DA-1 (2026-10-19; [`CU0` decision sheet](../validation/pre_g9b_cu0_author_decision_sheet.md) §1);
   - [`CU1` closeout record](../validation/pre_g9b_cu1_closeout_record.md) §7: `CU2`
     preparation authorized; a class-3 length never becomes rigorous evidence of a `CU2`
-    component.
+    component;
+  - the author's focused review of the preparation candidate (2026-10-20): the general
+    direction is favourable; five precisions P1–P5 before approval.
 - Parent authority:
   - [existence and continuous-valid components](../../geocedg/specs/locus/locus-v2-existence-components.md) v1.0;
   - [certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md) v1.1;
@@ -48,58 +50,94 @@ as `NOT_ESTABLISHED` until suitable evidence exists.
 
 Three structural facts block a real certificate:
 
-1. the certified construction model has no ray, no line–circle intersection with a captured
-   root branch, no multi-output step, no vectors and no macros, and it cannot tell an
+1. the certified construction model has no ray, no line–circle intersection with a defined
+   root selection, no multi-output step, no vectors and no macros, and it cannot tell an
    undecidable box from a uniformly invalid one;
 2. components are intervals inside `[−π, π)`, so a component that crosses the seam cannot be
    expressed, and five consumers decide closure with five different predicates;
 3. `e_2` depends on `LocusLength`, whose value is class 3 (`ESTIMATED`) and therefore never a
    rigorous input of a certificate (ADR 0037, metrics §25.5).
 
+The focused review added four facts:
+
+- the discriminant of the bite factors exactly into the signed distances of the driver point to
+  the two tangents from `P` to the cone base; at the critical value it has a double zero
+  without sign change, so the loci keep existence and continuity with a corner. No interval
+  method can certify a double root, but exact rational arithmetic on the captured binary64
+  constants can;
+- no binary64 value of the author's slider is exactly critical: the exact classification
+  changes between two consecutive doubles, the double-precision closed form misclassifies one
+  of them, and the evaluator returns points inside the exact gap;
+- the output of a line–circle intersection is selected through a permutation that is state of
+  the algorithm and is reinitialized by proximity on creation, load and construction updates,
+  including in the evaluator slice of each revision;
+- the folds of `e_1` exist because of an exact symmetry of the construction; an enclosure of
+  `F′` that contains zero would not prove them.
+
 ## Decision
 
 1. **Four evidence levels.** `POINT_VALID`, `EXPLORATORY`, `LOCAL_CERTIFIED` and
    `COMPLETE`. Exploratory evidence is a separate typed structure, derived per revision and
    policy, not persisted and not part of the revision fingerprint. It never becomes a
-   component, a completeness claim, an identity or an export.
+   component, a completeness claim, an identity or an export. `COMPLETE` is a certified cover
+   of the whole domain, never inferred from explored boxes.
 2. **Component continuity.** A certified component requires the continuity of the traced
    map, besides existence and continuation of the captured selections. A structural
-   discontinuity with valid evaluations on both sides is a boundary.
-3. **Arcs.** On a periodic domain a component is an arc (canonical start, length, end
-   inclusion). A full-length arc whose map is certified continuous at its closing point is a
-   closed periodic component; otherwise it is open.
+   discontinuity with valid evaluations on both sides is a boundary; a certified singular
+   parameter is interior.
+3. **Arcs and one-sided ends.** On a periodic domain a component is an arc (canonical start,
+   length, end inclusion, arc coordinate). A full-length arc whose map is certified continuous
+   at its closing point is a closed periodic component; otherwise it is open, and its two ends
+   are distinct one-sided ends that canonicalization never identifies.
 4. **One closure authority.** Every consumer decides closure, seam crossing and periodic
    semantics from the certificate. Neither the provider's `PERIODIC` flag nor the legacy
    component view decides topology.
 5. **Class v3.** The certified construction model gains a versioned class with rays and
-   segments, circles by centre and point, line–circle intersection with a geometric root rule
-   captured per revision, multi-output steps, vector operations, macro expansion, a structural
-   metric input and second-order jets. Boxes evaluate to `VALID`, `UNIFORMLY_INVALID` with a
-   typed reason, or `UNRESOLVED`; only the second yields certified nonexistence.
+   segments, circles by centre and point, line–circle intersection, multi-output steps, vector
+   operations, macro expansion, a structural metric input and second-order jets. The selection
+   of an intersection output is read from the algorithm's selection state, which enters the
+   revision fingerprint and must match the live algorithm in the evaluator slice. Boxes
+   evaluate to `VALID`, `UNIFORMLY_INVALID` with a typed reason, or `UNRESOLVED`; intervals
+   establish uniform invalidity only for strict inequalities.
 6. **Certified transitions.** A boundary between existence and nonexistence is a simple root
    of an identified validity predicate, certified by a sign change and a derivative enclosure
    that excludes zero. End inclusion follows the predicate. Pointwise validity of the evaluator
    never certifies a boundary.
-7. **Structural periodicity.** A program whose driver is a point of a circle and whose
+7. **Exact algebraic certificate.** First-level validity predicates (inputs rational in the
+   driver, driver on a circle or a segment) are decided in exact rational arithmetic on the
+   captured constants: roots, multiplicities and signs. Multiple roots, including the critical
+   value of the bite, are certified this way, never by interval methods. A double zero without
+   sign change is a certified singular parameter; with nonpositive sides, an isolated point of
+   existence.
+8. **Certified stationary points.** A fold is certified only by an exact structural symmetry
+   (existence), an enclosure of one component of `F″` excluding zero (isolation), `F″(t₀) ≠ 0`
+   (non-degeneracy), continuity, and opposite one-sided tangents. Otherwise a high turn is not
+   a fold.
+9. **Structural periodicity.** A program whose driver is a point of a circle and whose
    operations are functions of their current inputs defines a function on the circle and may
    claim its periodic identification. The periodicity of the driver alone never closes a
    component.
-8. **Structural certificate of a metric function.** A `LocusLength` node in a dependent
-   slice contributes its definition domain, its continuity and its `ORIGIN_WRAP` event with a
-   certified positive jump, never its value. `e_2` is certified as one open component cut at
-   the origin of the oriented length; its coordinates remain estimates under the `CU1`
-   estimate contract. `LocusLength` values and policies do not change.
-9. **Computational undefinedness.** A failed computation (a class-4 metric, an estimate above
-   its tolerance, an exhausted budget) yields `UNRESOLVED` coverage when it decides existence,
-   and only a point evaluation status when existence is already certified. It never yields
-   certified nonexistence.
-10. **Publication.** A locus is published when its definition inputs are defined. The traced
+10. **Structural certificate of a metric function.** A `LocusLength` node in a dependent
+    slice contributes its definition domain, its continuity and its `ORIGIN_WRAP` event with a
+    certified positive jump and two distinct one-sided ends, never its value. `e_2` is
+    certified as one open component cut at the origin of the oriented length; its coordinates
+    remain estimates under the `CU1` estimate contract. `LocusLength` values and policies do
+    not change.
+11. **Existence, evaluation and representation.** Mathematical existence and certified
+    topology, numerical availability and representation availability are distinct facts and
+    none is inferred from another. A failed computation never yields certified nonexistence;
+    a valid evaluation never yields existence; certified existence is never a guarantee of
+    coordinates. Rendering and export declare their effective fidelity and fail explicitly.
+12. **Publication.** A locus is published when its definition inputs are defined. The traced
     point at the current driver position never decides publication. A recompute that does not
     publish discards the previous definition.
-11. **Structural lineage.** Component lineage derives from the sources of its boundaries.
-    Persisted component selectors resolve by unique containment and are rewritten lazily, with
-    fail-closed behaviour when containment is not unique.
-12. **Retirement of the compatibility certificate.** It is removed only after the hybrid
+13. **Identities, lineage and selectors.** The durable identity of a result, the semantic
+    identity of its selection and the lineage of a component are distinct. Component lineage
+    derives from the sources of its boundaries. A persisted selector resolves only through a
+    demonstrated structural correspondence, which unique containment can validate but never
+    create; ambiguity fails closed with a typed cause, and resolution never rewrites persisted
+    content.
+14. **Retirement of the compatibility certificate.** It is removed only after the hybrid
     certifier, the consumer migration and the closure authority are in place. A locus that
     cannot be certified falls to `NOT_ESTABLISHED`, never back to compatibility.
 
@@ -107,28 +145,50 @@ Three structural facts block a real certificate:
 
 - B07, H01, B10.2 and B06 are corrected in the author's model: the first family becomes one
   closed periodic component before the bite and one arc across the seam after it; `e_1` and
-  `o_1` are `COMPLETE` closed periodic components; `e_2` is one open component.
-- The critical bite value and its neighbourhood remain `NOT_ESTABLISHED` with an explicit
-  unresolved band: the certificate fails closed at a double root.
+  `o_1` are `COMPLETE` closed periodic components with certified folds on `e_1`; `e_2` is one
+  open component.
+- The critical bite value is certified when the configuration represents it exactly: one
+  closed periodic component per locus with a certified singular parameter. Every binary64
+  value of the author's slider is decided exactly as penetration or bite.
+  `NOT_ESTABLISHED` remains the fail-closed result where the exact certificate does not apply
+  or exhausts its budget.
+- The evaluator is not an authority on existence: its tangency tolerance yields points inside
+  exact gaps, which are not published as valid.
 - Existing tests that depend on the compatibility certificate change as declared conformance,
   never by weakening.
-- Persisted selectors that cite component endpoints migrate by containment; ambiguous ones
-  become unresolved with a typed cause.
+- Persisted selectors that cite component endpoints resolve by structural correspondence
+  without being rewritten; ambiguous ones become unresolved with a typed cause.
 - The export topology of DXF and LaTeX follows the certificate. A component with an open end
-  is exported instead of dropped.
+  is exported instead of dropped; unevaluable ends are declared.
 - Certification work is bounded by versioned budgets and visible through deterministic
-  counters.
-- `CU3` receives certified boundaries and second-order jets as inputs. Structural points,
-  tangent materialization and intersection-engine changes remain in `CU3`.
+  counters; the exact certificate costs milliseconds per predicate in the author's model.
+- Reading the selection state needs read-only accessors in inherited GeoGebra classes.
+- `CU3` receives certified boundaries, singular parameters and second-order jets as inputs.
+  Structural points, tangent materialization and intersection-engine changes remain in `CU3`.
 
 ## Alternatives considered
 
 - **Keep the compatibility certificate and correct only the drawing:** rejected. It keeps a
   false `COMPLETE` claim and a second topology authority.
+- **Keep `NOT_ESTABLISHED` as the definitive result at the critical value:** rejected by the
+  author's review. A double zero without sign change is neither nonexistence nor
+  discontinuity, and it is certifiable exactly.
+- **Interval methods for multiple roots:** rejected. A double root disappears under
+  arbitrarily small perturbations; verified methods only prove that a perturbed problem has
+  one.
+- **A tolerance that declares near-tangency as tangency:** rejected. It turns a configuration
+  with a real gap into a continuous one.
 - **Certify `e_2` through the value of `d_2`** (proposal E of `CU0`): rejected. It would use a
   class-3 length as a rigorous input.
 - **Boundaries by bisection of pointwise validity:** rejected. Pointwise validity overshoots
   the exact root by up to 4.3·10⁻⁶ in the author's model, and sampling cannot exclude gaps.
+- **Root selection captured from a sample at the current driver:** rejected. It fails when the
+  driver starts in a gap and ignores the algorithm's selection state.
+- **Fold certification from an enclosure of `F′` that contains zero:** rejected. It does not
+  prove that a stationary point exists.
+- **Selector migration by unique containment alone, or by lazy rewrite of persisted
+  selectors:** rejected. Containment cannot create a correspondence, and a rewrite changes
+  persisted user content without its own authorization.
 - **Close a component because its driver is periodic:** rejected by the author's instruction
   and by ADR 0027.
 - **A cumulative lifted parameter for `e_2`:** rejected. The winding count would depend on the

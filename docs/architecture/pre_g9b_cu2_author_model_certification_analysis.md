@@ -8,6 +8,7 @@
 | Base | cierre documental de `CU1` `27bf652f176e57ced3807b82afe14fc00b7586a9` |
 | Modelo | `models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg` (SHA-256 `1ae6f512…890456c`, igual al manifiesto); `continuous=false` |
 | Producto caracterizado | el código de producto aprobado de `CU1` (`143f5d37`), idéntico en el cierre |
+| Revisión | 2026-10-20, revisión documental focalizada (instrucción autoral «PRE-G9B-CU2 — Revisión documental focalizada, certificación de degeneraciones y refinamiento normativo»): §3.2 a §3.6 y §4.3 revisados, §3.8 nuevo (P1), hallazgos F-CU2-8 a F-CU2-11 y dos sondeos nuevos (§8) |
 
 ## 1. Método
 
@@ -69,26 +70,53 @@ Los rayos nunca limitan: `i_1` tiene pendiente `−tan 40°` y los alzados de to
 generatrices tienen pendiente positiva desde `v'`, de modo que se cortan siempre debajo de `v'`.
 `W` y `A_1` existen exactamente cuando existen `R` y `Q`, y `B_1` y `C_1` cuando existen `W` y
 `A_1`. El único predicado de existencia es el discriminante `D(t)` de la recta `PN` frente a la
-circunferencia `p`. `D` es una función analítica de `(cos t, sin t)` con coeficientes que no
-dependen del conductor.
+circunferencia `p`.
 
-Sea `θp` el ángulo de la tangente desde `P` a `p` por el lado del cilindro:
-`sin θp = rbCone / |PB|`, `cos θp` = 0,957083363. Entonces:
+**Forma estructural.** El rayo `t` es `X = P + λ (N − P)`. Su intersección con `p` es la ecuación
+`a λ² + 2 b′ λ + c = 0`, con `a = |N − P|²`, `b′ = (N − P)·(P − B)` y `c = |PB|² − rbCone²`. El
+discriminante reducido es
+
+`D = b′² − a c = rbCone²·|N − P|² − ((N − P) × (P − B))²`.
+
+Con `P` exterior a `p` se factoriza exactamente. Si `θ` es el ángulo entre `N − P` y `B − P`,
+
+`D = |N − P|²·|PB|²·(sin²θp − sin²θ) = |PB|²·[|N − P| sin(θp − θ)]·[|N − P| sin(θp + θ)]`,
+
+y cada corchete es la distancia con signo de `N` a una de las dos tangentes desde `P` a `p`,
+positiva del lado de `B`. Es la ecuación del par de tangentes desde `P` (Joachimsthal):
+`D(N) = |PB|²·ℓ_A(N)·ℓ_B(N)`, con `ℓ_A` y `ℓ_B` funciones afines de `N`. Como `P` y `B` están en
+`i`, `C_c = B + excCyl·u` y `N(t) = C_c + rbCylinder (cos t, sin t)`:
+
+- `ℓ_A(t) = (rbCone − excCyl·cos θp) − rbCylinder·cos(t − t_c)`;
+- `ℓ_B(t) = (rbCone + excCyl·cos θp) − rbCylinder·cos(t + t_c)`.
+
+Cada factor es la distancia de un punto que recorre `g_1` a una recta fija, de la forma
+`h − r cos(t − τ)`: su signo lo deciden los márgenes `h − r` y `h + r`. El sondeo de esta revisión
+confirma la identidad en el modelo con error relativo ≤ 8,7·10⁻¹⁶, y los valores de `h` y `τ` de
+las fórmulas con todas las cifras impresas (§8).
+
+Aquí `θp` es el semiángulo con que se ve `p` desde `P`: `sin θp = rbCone / |PB|`,
+`cos θp` = 0,957083363, y `t_c = π/2 − θp`. Entonces:
 
 - **Penetración:** si `|excCyl|·cos θp < rbCone − rbCylinder`, es decir
-  `|excCyl| < 3,656943727`, la intersección son dos curvas cerradas, `{v, w}` (`p1`) y `{o, a_1}`
-  (`p2`), y cada locus es una componente periódica completa.
-- **Mordedura:** para `3,656943727 < |excCyl| < 6,7915` cada locus deja de existir en el
-  intervalo de conductor `(t_c − β, t_c + β)`, con `t_c = π/2 − θp` = 1,2767651295 (`−t_c` si
-  `excCyl < 0`) y `β = arccos((rbCone − excCyl·cos θp)/rbCylinder)`.
+  `|excCyl| < 3,656943727`, los dos factores son positivos en todo el círculo; la intersección
+  son dos curvas cerradas, `{v, w}` (`p1`) y `{o, a_1}` (`p2`), y cada locus es una componente
+  periódica completa.
+- **Mordedura:** para `3,656943727 < |excCyl| < 6,7915`, `ℓ_A` (o `ℓ_B` si `excCyl < 0`) cambia
+  de signo en dos raíces simples y cada locus deja de existir en el intervalo de conductor
+  `(t_c − β, t_c + β)`, con `t_c = π/2 − θp` = 1,2767651295 (`−t_c` si `excCyl < 0`) y
+  `β = arccos((rbCone − excCyl·cos θp)/rbCylinder)`.
+- **Sin intersección:** para `|excCyl| > (rbCone + rbCylinder)/cos θp` = 6,7915 (fuera del
+  deslizador), `D < 0` en todo el círculo; en la igualdad, un único punto (tangencia exterior).
 - **En los extremos** `Q = R = T+`, el punto de tangencia de la recta límite: raíz doble y
   extremo **cerrado**. `o` y `v` comparten sus extremos, igual que `w` y `a_1`. Todos los
   extremos están sobre la generatriz fija `VT+`.
 - **Singularidad:** cada locus tiene en los extremos una singularidad de raíz cuadrada,
   `|F′(t)| ~ (t − t±)^(−1/2)`, con longitud finita. Por eso la frontera se certifica sobre `D`,
   que es regular, y no sobre `F`.
-- **Valor crítico** `excCyl = 3,656943727`: `β = 0` y `D` tiene un cero doble en `t_c`. No es
-  una raíz simple y ninguna prueba de raíz simple lo certifica (§3.6).
+- **Valor crítico** `excCyl = 3,656943727…`: `ℓ_A` alcanza el cero sin cambiar de signo y `D`
+  tiene un cero doble en `t_c`. No es una raíz simple, pero tampoco una pérdida de existencia:
+  su estudio y su certificación están en §3.8.
 
 ### 3.3 Contraste con la evaluación del producto
 
@@ -110,19 +138,36 @@ la evaluación (lado válido, sondeo de esta preparación):
 
 En todos los casos la evaluación puntual sigue siendo válida un poco **dentro** del hueco: el
 umbral absoluto heredado del discriminante declara tangente lo que es ligeramente secante en
-sentido contrario. El exceso crece como `ε/|D′(t*)|` cuando `D′` tiende a cero cerca del valor
-crítico. Los extremos de `CU0` (`preserve.branch_ends`) son, por tanto, evidencia de la
+sentido contrario. El evaluador trata la recta como tangente si `|dis| ≤ δ`, con
+`δ = mín(10⁻⁵, máx(1, |2d| + |u| + |w|)·ε)` y `ε` desde 10⁻¹⁵, multiplicado por 10 mientras los
+puntos no superen la comprobación de incidencia (`AlgoIntersectLineConic.java:617-640, 703-704,
+741-746`). El exceso crece como `δ/|D′(t*)|` cuando `D′` tiende a cero cerca del valor crítico. Los extremos de `CU0` (`preserve.branch_ends`) son, por tanto, evidencia de la
 evaluación y no fronteras exactas: difieren de la raíz exacta de `D` en más de su tolerancia de
 10⁻⁷ (1,6·10⁻⁷ en 3,7). La matriz de `CU2` compara las fronteras certificadas con la referencia
 analítica y no con esos valores (§7, hallazgo F-CU2-1).
 
 ### 3.4 Orden de las raíces, costura y regularidad
 
-- **Orden:** con excCyl = 3,7, `Q` fue la raíz más cercana a `P` a lo largo del rayo en los 44
-  conductores válidos de 48. El orden lo fija la permutación de salida de
-  `AlgoIntersectLineConic` (modo no continuo), no la geometría. Pero dentro de cada componente
-  coincide con una regla geométrica certificable: `Q` es la raíz de parámetro de rayo menor,
-  la rama `−√D`.
+- **Orden (P4):** lo define el algoritmo, no una muestra.
+  - `intersectLineConic` parametriza la recta como `X = p + s (g_y, −g_x)` con sus coeficientes
+    normalizados, escalados por potencias de 2 sin cambiar de signo (`GeoLine.java:1620-1649`), y
+    devuelve primero la raíz de `s` menor (`AlgoIntersectLineConic.java:758-777`). Para
+    `Ray(P, N)` los coeficientes son `(P_y − N_y, N_x − P_x, ·)` (`GeoVec3D.java:295-299`), así que
+    `(g_y, −g_x) = N − P` y la raíz bruta 0 es la de parámetro de rayo `λ` menor, la rama `−√D`.
+  - La salida `i` es la raíz bruta `permutation[i]` (`AlgoIntersectLineConic.java:467-484`). La
+    permutación es un **estado** del algoritmo: en la primera evaluación con dos raíces sobre los
+    caminos se toma el orden bruto, compactando las raíces que no están en los caminos
+    (`firstIntersection`, 526-547); después se ajusta por cercanía a las posiciones anteriores
+    (`setNearTo`, 550-556) en cada `initForNearToRelationship`, que se llama al crear, al cargar y
+    en `Construction.updateConstruction` (`Construction.java:1474-1496`). Las intersecciones de
+    una sola salida además comunican al algoritmo padre la posición guardada en el XML
+    (`AlgoIntersectSingle.java:225-235`).
+  - Estado leído en el modelo (sondeo, §8): para `{Q, R}`, `permutation = [0, 1]` tras la carga,
+    tras `updateConstruction` con el conductor en el hueco y tras saltos lejanos del conductor;
+    `Q` es siempre la raíz de `λ` menor. `H_1` toma la salida 0 de una permutación `[0, 1]` sobre
+    `i` (la intersección de `x` mayor). `G_1`, sobre el rayo `s_1` que sale del centro de `c_1`,
+    nunca ve dos raíces en el rayo: su algoritmo sigue en `firstIntersection` y la salida 0 es la
+    única raíz del rayo (hallazgo F-CU2-8).
 - **Costura:** con excCyl = 3,7, `|F(π − 10⁻⁹) − F(−π)|` vale 9,9·10⁻¹⁰ para `o` y `v` y
   1,7·10⁻⁹ para `w` y `a_1`. La función es continua en la costura y el conjunto válido
   `[−π, t_c − β] ∪ [t_c + β, π)` es **un solo arco** del círculo que la cruza.
@@ -148,11 +193,13 @@ construye así, con las capacidades definidas en el
    - en otro caso: **`UNRESOLVED`**, que se subdivide.
 3. **Transiciones:** una caja `UNRESOLVED` que contiene un cambio de signo de `D` y una
    envolvente de `D′` que excluye el cero (Newton de intervalos) certifica una raíz simple
-   única en un corchete de anchura `≤ δ`. La frontera es cerrada, porque en la raíz doble de la
-   recta–circunferencia `Q = R` existe.
+   única en un corchete de anchura `≤ δ`. Como `D` es aquí un predicado de primer nivel (sus
+   entradas son constantes y el propio conductor), el certificado algebraico exacto (§3.8)
+   da además todas sus raíces con su multiplicidad. La frontera es cerrada, porque en ella la
+   ecuación en `λ` tiene una raíz doble y `Q = R` existe.
 4. **Continuidad de la selección:** en cada caja válida la rama `−√D` (o `+√D`) es continua.
-   La selección capturada es la misma en todo el intervalo porque la permutación congelada no
-   cambia mientras `D > 0`.
+   La regla de selección es la misma en todo el intervalo porque procede del estado del
+   algoritmo (§3.4), fijo durante la revisión, y no de una muestra.
 5. **Costura:** todas las operaciones del corte son funciones de la configuración actual (modo
    no continuo, sin historia), y el conductor es el punto de la circunferencia `g_1`. Por tanto
    `F` es una función sobre el círculo y la continuidad certificada en un entorno de `±π`
@@ -161,9 +208,10 @@ construye así, con las capacidades definidas en el
    - en penetración: `COMPLETE` con una componente periódica cerrada;
    - en mordedura: `COMPLETE` con **una** componente, el arco `[t_c + β, t_c − β + 2π]` con
      ambos extremos cerrados, que cruza la costura;
-   - en el valor crítico, y en una banda alrededor que el presupuesto no resuelva:
-     `NOT_ESTABLISHED` con una banda `UNRESOLVED` explícita alrededor de `t_c`, sin componente
-     inventada.
+   - en el valor crítico: `COMPLETE` con una componente periódica cerrada y un parámetro
+     singular certificado en `t_c`, por el certificado algebraico exacto (§3.8). Solo si ese
+     certificado no se aplica o agota su presupuesto: `NOT_ESTABLISHED` con una banda
+     `UNRESOLVED` explícita alrededor de `t_c`, sin componente inventada.
 
 La evaluación puntual de `F` dentro del corchete de una frontera no está garantizada (§3.3). El
 dibujo llega hasta la imagen del extremo `F(t*)`, que en la raíz doble es `T+` proyectado, con
@@ -172,11 +220,12 @@ la parametrización local `t = t* ± s²` (§5.2 del
 
 ### 3.6 Casos degenerados
 
-- **Valor crítico** (`β = 0`): cero doble de `D`. Las dos curvas se tocan en un punto doble, y
-  cada locus tiene allí una esquina, porque la permutación congelada pasa de una rama suave a
-  la otra. Ninguna raíz simple lo certifica; el resultado es `NOT_ESTABLISHED` con una banda
-  `UNRESOLVED`. Cerca del valor crítico (3,657 a 3,66) el producto actual dibuja **un solo
-  subtrazo a través de un hueco real** (hallazgo F-CU2-2).
+- **Valor crítico** (`β = 0`): cero doble de `D` sin cambio de signo. Las dos curvas se tocan
+  en un punto doble, y cada locus tiene allí una esquina, porque la selección pasa de una rama
+  analítica a la otra. No hay pérdida de existencia ni de continuidad; ninguna prueba de raíz
+  simple lo certifica, pero sí el certificado algebraico exacto (§3.8). Cerca del valor crítico
+  (3,657 a 3,66) el producto actual dibuja **un solo subtrazo a través de un hueco real**
+  (hallazgo F-CU2-2).
 - **`rbCone > 7,5735`** (el deslizador llega a 10): en conductores aislados, `k_1`/`l_1`,
   `h_1`/`m_1` y `b_1`/`n_1` coinciden como verticales. Son puntos aislados de no existencia
   causados por la construcción, no por la geometría. Tienen que dar no existencia puntual o
@@ -194,6 +243,132 @@ Hallazgo F-CU2-3: mientras la regla de publicación oculta el locus, su evaluaci
 la última definición publicada. En el sondeo, con excCyl = 3,96, 4,0, 4,5 y 5,0 y el conductor
 dentro del hueco, los recorridos y los extremos evaluados eran idénticos a los de 3,95, aunque
 la revisión avanzaba. Un consumidor que evalúe un locus no publicado ve geometría obsoleta.
+
+### 3.8 Certificación del valor crítico de la mordedura (P1)
+
+#### 3.8.1 Geometría y estructura
+
+El valor crítico es la configuración en que `g_1` es tangente a la tangente `T_A` desde `P` a
+`p`: `h_A = rbCylinder`, es decir `excCyl·cos θp = rbCone − rbCylinder`. En el espacio, el plano
+auxiliar que contiene `T_A` es tangente a la vez al cono y al cilindro: las superficies se tocan
+en un punto y la curva de intersección tiene allí un punto doble.
+
+En esa configuración, por §3.2,
+
+`D(t) = |PB|² · 2 rbCylinder · sen²((t − t_c)/2) · ℓ_B(t)`, con
+`ℓ_B(t) ≥ h_B − rbCylinder = 2 (rbCone − rbCylinder) = 7`.
+
+Es la factorización `D = g (t − t_c)² H(t)` que la instrucción proponía como ilustración, ahora
+deducida de la construcción: `D ≥ 0` en todo el círculo, `D = 0` solo en `t_c`, con multiplicidad
+exactamente 2.
+
+| Cuestión (instrucción §3.1) | Resultado |
+|---|---|
+| 1. Expresión de `D(t; μ)` | §3.2: `|PB|²` por las distancias de `N(t)` a las dos tangentes desde `P` |
+| 2. Condición crítica | `g_1` tangente a `T_A`: `h_A = rbCylinder` |
+| 3. Multiplicidad en el conductor | 2 en `t_c`; ninguna otra raíz |
+| 4. Signo de `D` a ambos lados | positivo a los dos lados |
+| 5. `Q` y `R` cuando `D = 0` | existen y coinciden en `λ = −b′/a`; están en el rayo porque `c > 0` (`P` exterior) y `b′ < 0` |
+| 6. Continuidad de cada rama seleccionada | `λ_Q = (−b′ − √D)/a`, con `√D = |PB|·√(2 rbCylinder·ℓ_B)·|sen((t − t_c)/2)|`: continua y no derivable en `t_c` |
+| 7. Puntos derivados de `o`, `v`, `w` y `a_1` | existen y son continuos: los rayos desde `H` e `I` nunca limitan (§3.2) |
+| 8. Topología | tabla siguiente |
+
+| Configuración | `o`, `v`, `w`, `a_1` |
+|---|---|
+| Penetración (`h_A > rbCylinder`) | cada locus, una componente periódica cerrada y regular; dos curvas espaciales separadas |
+| Crítica (`h_A = rbCylinder`) | cada locus, una componente periódica cerrada y continua, con un parámetro singular certificado en `t_c`; `o(t_c) = v(t_c)` y `w(t_c) = a_1(t_c)`: las dos curvas espaciales se tocan en el punto doble |
+| Mordedura (`h_A < rbCylinder`) | cada locus, un arco con extremos cerrados en `t_c ± β` que cruza la costura; `o` y `v` comparten los extremos, como `w` y `a_1`: una sola curva espacial |
+
+**Relación de las ramas.** Las ramas analíticas `λ_± = (−b′ ± s(t))/a`, con la raíz con signo
+`s(t) = |PB|·√(2 rbCylinder·ℓ_B)·sen((t − t_c)/2)`, se cruzan transversalmente en `t_c`. La
+regla del algoritmo (raíz de `λ` menor, §3.4) pasa de una a otra en `t_c`. Como `PN(t_c)` es
+tangente común a `p` y a `g_1`, la dirección de la recta es estacionaria en `t_c`: `Q` llega al
+punto de tangencia y vuelve sobre `p`, con tangentes laterales opuestas (giro de 180° en la
+configuración sintética de §3.8.3). Los loci combinan `Q` o `R` con `N`, que se mueve con
+regularidad, y tienen en `t_c` una **esquina**, no un pliegue. En la configuración binary64 más
+próxima por el lado de la penetración, el giro medido en `t_c` es de 133,7° para `o` y `v` y de
+147,3° para `w` y `a_1`, estable entre `h` = 10⁻³ y 10⁻⁵ (§8).
+
+| Distinción (instrucción §3.1) | En el modelo |
+|---|---|
+| aparición o desaparición de dos raíces simples | al pasar de penetración a mordedura, el cero doble se desdobla en dos raíces simples reales `t_c ± β` |
+| raíz doble aislada de un predicado de validez | en el valor crítico, `D ≥ 0` con un cero doble aislado: el predicado se cumple en todo el círculo |
+| tangencia geométrica | `PN(t_c)` es tangente común a `p` y a `g_1`; en el espacio, cono y cilindro son tangentes |
+| punto singular de la parametrización | `λ_Q` no es derivable en `t_c` y `Q` invierte su movimiento sobre `p` |
+| cambio de regularidad sin pérdida de continuidad | los cuatro loci: continuos, con una esquina en `t_c` |
+| pérdida real de existencia o continuidad | solo en la mordedura, en `(t_c − β, t_c + β)`; nunca en el valor crítico |
+
+#### 3.8.2 Técnicas de certificación estudiadas
+
+| Técnica | Aplicabilidad | Qué puede probar |
+|---|---|---|
+| A. Factorización estructural | `D` de una recta por un punto fijo exterior `P` y un punto que recorre una circunferencia fija | el signo de cada factor a partir de dos márgenes escalares, `h − r` y `h + r`; las raíces en forma cerrada, `τ ± arccos(h/r)` |
+| B. Punto estacionario de `D` | cualquier `D` con envolventes de `D′` y `D″` | existencia y unicidad del mínimo `t*` (Krawczyk sobre `D′`, con una envolvente de `D″` que excluye el cero) y el signo de `D(t*)` cuando su envolvente lo excluye. Nunca `D(t*) = 0` |
+| C. Intervalos para raíces múltiples | — | ninguna multiplicidad exacta: un cero doble desaparece con perturbaciones arbitrariamente pequeñas, y los métodos verificados solo prueban que un problema **perturbado** tiene una raíz múltiple (Rump y Graillat, *Verified error bounds for multiple roots of systems of nonlinear equations*, Numerical Algorithms, 2010) |
+| D. Información constructiva exacta | constantes capturadas en binary64, que son racionales exactos (`certified-construction-model` §3), y conductor sobre una circunferencia | con `u = tan(t/2)`, `(1 + u²)²·D` es un polinomio de grado 4 con coeficientes racionales exactos. El máximo común divisor con su derivada y la sucesión de Sturm dan **exactamente** el número de raíces reales, sus multiplicidades y el signo entre ellas; `t = ±π` se trata aparte |
+
+Solo D puede establecer la igualdad del caso crítico. A lo explica y da las referencias
+analíticas; B sirve, para casos estrictos, donde D no se aplica. La incidencia tangencial no es
+información constructiva adicional en el modelo del autor: el valor crítico no está construido,
+sino que lo produce un deslizador.
+
+#### 3.8.3 Configuración crítica exacta frente a binary64
+
+La referencia semántica son los racionales binary64 de las constantes capturadas
+(`certified-construction-model` §3). Resultado del método D sobre las configuraciones capturadas
+del modelo (sondeo, §8):
+
+| Configuración | Definición | En el modelo del autor |
+|---|---|---|
+| matemáticamente crítica | `h_A = rbCylinder` exactamente, con las constantes capturadas | no es representable: no hay raíz doble en ningún valor binary64 de `excCyl` |
+| valores representables más próximos | los binary64 entre los que cambia la clasificación | `0x1.d416bb67a38bbp1` (3,6569437271164964): penetración, sin raíces reales. `0x1.d416bb67a38bcp1` (3,656943727116497): mordedura, dos raíces simples separadas 2,4·10⁻⁸ |
+| ligeramente anterior | `h_A > rbCylinder` | penetración, decidida exactamente |
+| ligeramente posterior | `h_A < rbCylinder` | mordedura, decidida exactamente; hueco de anchura `≈ 2√(2 |h_A − r| / r)` |
+| no decidible dentro del presupuesto | — | ninguna: de 2 a 53 ms por configuración, con coeficientes de hasta 217 bits |
+
+Ningún binary64 de `excCyl` es exactamente crítico. Con `P`, `B` y los radios capturados fijos,
+el margen `h_A − rbCylinder` es una función afín y estrictamente monótona de `C_c.y`
+(`C_c.x = B.x` exactamente), y `C_c.y = fl(B.y + excCyl)` no decrece con `excCyl`. El margen es
+positivo en `0x1.d416bb67a38bbp1` y negativo en el binary64 siguiente, `0x1.d416bb67a38bcp1`, de
+modo que no se anula en ningún valor representable.
+
+Consecuencias (hallazgo F-CU2-9):
+
+- la fórmula cerrada evaluada en `double` clasifica como penetración el primer valor de
+  mordedura: cerca del valor crítico ni siquiera la referencia analítica decide en coma flotante;
+- el evaluador devuelve `Q` y `R` definidos en `t_c` en todas esas configuraciones, también
+  dentro del hueco exacto, por su tolerancia de tangencia (§3.3). La existencia la decide el
+  certificado, no el evaluador.
+
+Las constantes capturadas no cumplen exactamente las relaciones ideales: `P.y` difiere de `B.y`
+en una unidad de la última cifra (hallazgo F-CU2-10). El certificado usa los valores capturados;
+las fórmulas cerradas son referencias.
+
+**Construcción sintética reproducible.** El valor crítico exacto exige datos que lo conserven en
+aritmética racional. Con enteros:
+
+- `p` de centro `(0, 0)` y radio 25; `P = (−25, 50)`, con tangentes `3x + 4y = 125` y `x = −25`;
+- `g_1` de centro `(35, −45)` y radio 40, tangente interior a la primera.
+
+El método D prueba una sola raíz real, de multiplicidad 2, en `u = 1/2` (`t = atan2(4, 3)`), con
+`D ≥ 0` a ambos lados. Con radio `40 + 2⁻ᵏ` hay dos raíces simples y con `40 − 2⁻ᵏ` ninguna,
+para `k` hasta 200 (raíces separadas `≈ 2⁻¹⁰⁰`). Con `g_1` de centro `(83, 19)` y radio 40,
+tangente exterior, prueba un punto aislado de existencia: cero doble con `D ≤ 0` a ambos lados.
+
+Una tangencia que la construcción calcula con redondeo, por ejemplo un radio definido como la
+distancia de un centro a una tangente, se captura redondeada y se certifica como su configuración
+redondeada. Conservar la relación exigiría capturar simbólicamente el subgrafo independiente del
+conductor; no se propone para `CU2`.
+
+#### 3.8.4 Resultado
+
+El caso crítico tiene un certificado: el certificado algebraico exacto del
+[diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §4.6. Establece la
+existencia en todo el círculo, la multiplicidad 2 en `t_c`, la inclusión de `t_c` en la
+componente, la relación de las ramas a ambos lados y la completitud. En el modelo del autor
+decide exactamente cualquier valor de `excCyl`: penetración o mordedura. `NOT_ESTABLISHED`
+queda como fallo cerrado cuando el certificado no se aplica (predicado que no es de primer
+nivel) o agota su presupuesto.
 
 ## 4. Segunda familia: `e_1` y `o_1` (conductor `E_1` sobre `p`)
 
@@ -222,15 +397,40 @@ Ambos loci existen en todo el círculo:
 Cada uno de estos hechos es un predicado uniforme que la clase v3 certifica sobre todo el
 dominio. La completitud se demuestra; no se hereda del conductor.
 
-### 4.3 Pliegues de `e_1`
+### 4.3 Pliegues de `e_1` (P3)
 
-Por la simetría del cono respecto del plano de `i`, `e_1(t) = e_1(−t)`. La velocidad medida es
-exactamente 0 en t = 0 y 1,3·10⁻⁷ en t = ±π: son **puntos estacionarios**, y la imagen es un
-arco recorrido dos veces que se pliega en `M_1` y en (1,60844, 10,13096). El giro de 180° de
-B06 es real. Para teselarlo sin bajar la calidad hace falta certificar un pliegue aislado:
-envolvente de la primera derivada que contiene el cero y envolvente de la segunda que lo
-excluye (chorros de segundo orden, §5 del diseño). La simetría es propia de esta configuración
-y no sirve de certificado estructural.
+**Simetría demostrada.** La simetría respecto de `i` deja invariante `e_1`:
+`e_1(−t) = e_1(t)`. Prueba sobre la construcción:
+
+- el conductor `E_1 = B + rbCone (cos t, sin t)` recorre `p`, cuyo centro `B` está en `i`, y la
+  simetría respecto de `i`, que es horizontal, lleva `t` a `−t`;
+- `F_1 = Intersect(h, p_1)`, con `p_1` la vertical por `E_1`, solo depende de `x(E_1)`, que la
+  simetría conserva;
+- `d_1 = Circle(I, E_1)` tiene radio `|I E_1|`, invariante porque `I` está en `i`, y
+  `H_1 = Intersect(d_1, i, 1)` solo depende de ese radio y del estado de selección (§3.4);
+- `I_1`, `s_1`, `G_1`, `t_1` y `q_1 = Ray(H, F_1)` dependen de `F_1` y `H_1`, y
+  `J_1 = Intersect(q_1, t_1)` también.
+
+La prueba usa hechos exactos de las constantes capturadas, que el sondeo comprueba: `h` e `i`
+horizontales y `k` vertical con coeficientes nulos exactos, `I.y = B.y`, y el conductor
+parametrizado con los ejes propios de `p` iguales a `(1, 0)` y `(0, 1)`. Medido:
+`max|e_1(t) − e_1(−t)|` = 6,4·10⁻¹⁵, y `o_1` es simétrica respecto de `i` con el mismo error.
+
+**Pliegues.** De `e_1(−t) = e_1(t)` se sigue `F′(0) = −F′(0)`, luego `F′(0) = 0`, y lo mismo en
+`t = π`: son puntos estacionarios exactos. Las segundas diferencias dan `|F″(0)|` ≈ 3,93 y
+`|F″(π)|` ≈ 1,27, es decir, pliegues no degenerados (§8). La velocidad de 1,3·10⁻⁷ que se midió
+«en `t = ±π`» se tomó en `t = ±(π − 10⁻⁷)`: es `|F″(π)|·10⁻⁷` y confirma `F′(π) = 0`. Por la
+simetría, las dos mitades recorren el mismo arco con tangentes laterales opuestas: la imagen se
+pliega en `M_1` y en (1,60844, 10,13096), y el giro de 180° de B06 es real.
+
+**Certificación.** Una envolvente de `F′` que contiene el cero no prueba que exista un punto
+estacionario: para una curva plana, `F′(t) = 0` son dos ecuaciones con una incógnita, que
+genéricamente no tienen solución. El procedimiento del
+[diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §5 establece por separado
+la existencia (simetría estructural verificada sobre el programa capturado), el aislamiento
+(una componente de `F″` excluye el cero en una caja), la no degeneración (`F″(t₀) ≠ 0`), la
+continuidad y la naturaleza del pliegue (tangentes laterales opuestas). Sin esa simetría, un
+giro cerrado no es un pliegue certificado.
 
 `o_1` es regular: velocidad mínima 1,60.
 
@@ -245,8 +445,11 @@ Programa de clase v3 con:
 - operaciones de clase v1.
 
 Ningún predicado cambia de signo, y la función es de la configuración actual: `COMPLETE` con
-una componente periódica cerrada para cada locus. `o_1` conserva la componente `[−π, π)` que
-referencia `N_1 = Point(o_1, text2, v_1)` (decisión E-3 sobre el linaje).
+una componente periódica cerrada para cada locus. Las selecciones de `H_1` y `G_1` proceden del
+estado de sus algoritmos (§3.4). La descomposición certificada de `o_1` es una sola componente
+periódica cerrada igual al dominio, la misma que cita el selector guardado de
+`N_1 = Point(o_1, text2, v_1)`: la correspondencia es estructural, por igualdad de la
+descomposición, y no por contención (decisión E-3 revisada).
 
 ## 5. `e_2` y la longitud orientada
 
@@ -267,8 +470,11 @@ totales en sus entradas.
 - `w_1` es continua en `±π`: 6,61623 frente a 6,62023 en `π ∓ 10⁻³`, distancia de costura
   `e_2` de 2,0·10⁻⁹.
 - Por tanto `e_2` es **una componente abierta** `[t_N, t_N + 2π)`. Con `zero-length` es cerrada
-  en el origen y abierta en el otro extremo; con `full-cycle`, al revés. Sus dos extremos son el
-  mismo punto espacial y la componente **no es periódica**.
+  en el origen y abierta en el otro extremo; con `full-cycle`, al revés. Sus dos extremos
+  corresponden al mismo punto espacial y al mismo parámetro canónico `t_N`, pero son dos límites
+  laterales distintos, `t_N⁺` y `t_N⁻`, separados `L` en el plano: no se identifican y la
+  componente **no es periódica** ([diseño del evento](pre_g9b_cu2_oriented_length_event_design.md)
+  §4.4).
 
 ### 5.3 Certificación sin usar el valor de la longitud
 
@@ -296,8 +502,9 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 |---|---|---|---|---|
 | `o`, `v`, `w`, `a_1` | penetración (`|excCyl| < 3,65694`) | `D > 0` uniforme | `COMPLETE`, una componente periódica cerrada | clase v3 (rayos, recta–circunferencia con rama), periodicidad estructural |
 | `o`, `v`, `w`, `a_1` | mordedura | `D` con dos raíces simples | `COMPLETE`, un arco cerrado que cruza la costura | lo anterior + `UNIFORMLY_INVALID` + transiciones certificadas + arcos circulares |
-| `o`, `v`, `w`, `a_1` | valor crítico | cero doble de `D` | `NOT_ESTABLISHED` con banda `UNRESOLVED` | ninguna (fallo cerrado) |
-| `e_1` | todos | predicados uniformes | `COMPLETE`, una componente periódica cerrada; pliegues certificados en 0 y `±π` | clase v3 + chorros de segundo orden |
+| `o`, `v`, `w`, `a_1` | valor crítico (solo con datos que lo representen exactamente) | cero doble de `D` sin cambio de signo | `COMPLETE`, una componente periódica cerrada con un parámetro singular certificado en `t_c` | certificado algebraico exacto |
+| `o`, `v`, `w`, `a_1` | binary64 contiguos al valor crítico | `D` sin raíces o con dos raíces simples a 10⁻⁸ | penetración o mordedura, decididas exactamente | certificado algebraico exacto |
+| `e_1` | todos | predicados uniformes | `COMPLETE`, una componente periódica cerrada; pliegues certificados en 0 y `±π` | clase v3 + simetría estructural + chorros de segundo orden |
 | `o_1` | todos | predicados uniformes | `COMPLETE`, una componente periódica cerrada | clase v3 |
 | `e_2` | todos | evento estructural de la longitud orientada | `COMPLETE`, una componente abierta `[t_N, t_N + 2π)` | certificado estructural de la función métrica + operaciones afines totales (macros) |
 
@@ -312,6 +519,10 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 | F-CU2-5 | La raíz de la costura de `e_1 ∩ c_1`, fijada en `CU0` como `TRANSVERSE_ESTABLISHED`, es geométricamente una tangencia (`h` no cambia de signo; `e_1` es simétrica también respecto de `t = π`) | observación para `CU3`: «la raíz transversal de la costura se conserva» conservaría un artefacto |
 | F-CU2-6 | El manifiesto del corpus describe el cilindro como vertical; es oblicuo (generatrices frontales a 40°) | corrección documental del manifiesto en un paquete autorizado; no afecta a las referencias |
 | F-CU2-7 | La propuesta E de `CU0` certificaba `e_2` a través del valor de `d_2`, que es de clase 3 | `CU2` certifica la topología de `e_2` con hechos estructurales de la función métrica (§5.3) |
+| F-CU2-8 | La salida de una intersección recta–circunferencia es una raíz bruta, ordenada por el parámetro a lo largo de la dirección algorítmica de la recta, a través de una permutación que es estado del algoritmo; esa permutación se reinicializa por cercanía al crear, cargar y en `updateConstruction`, también en la copia del corte de cada revisión. Con un solo punto en los caminos (`G_1`), el algoritmo no sale de la inicialización y compacta (§3.4) | la regla de raíz se lee del estado del algoritmo y es entrada de la revisión; la copia del corte debe reproducir el estado del algoritmo vivo, o la selección falla cerrada |
+| F-CU2-9 | Cerca del valor crítico la clasificación exacta cambia entre dos binary64 consecutivos; la fórmula cerrada en `double` clasifica mal el primer valor de mordedura, y el evaluador da puntos dentro del hueco exacto (§3.8.3) | la existencia la decide un certificado exacto; el evaluador no es frontera ni prueba de existencia |
+| F-CU2-10 | Las constantes capturadas no cumplen exactamente las relaciones ideales: `P.y` difiere de `B.y` en una unidad de la última cifra | el certificado usa los valores capturados; las fórmulas cerradas son solo referencias |
+| F-CU2-11 | En el valor crítico la raíz seleccionada `Q` invierte su movimiento sobre `p` y los loci tienen una esquina de 133,7° (`o`, `v`) y 147,3° (`w`, `a_1`), sin pérdida de continuidad (§3.8.1) | el certificado publica un parámetro singular; el dibujo lo trata como vértice exacto, sin unirlo ni suavizarlo |
 
 ## 8. Reproducibilidad del sondeo
 
@@ -327,4 +538,24 @@ temporal de la sesión. Hace lo siguiente:
 4. mide el orden de `Q` y `R` a lo largo del rayo en 48 conductores, la continuidad en la
    costura y la velocidad paramétrica (diferencias centrales con `h` = 10⁻⁶, 4 000 muestras).
 
-El sondeo no modifica el repositorio ni el modelo versionado.
+La revisión focalizada añadió dos sondeos de investigación con el mismo procedimiento:
+
+1. **Caso crítico y simetría.**
+   - Lee las constantes capturadas y comprueba sus relaciones exactas (coeficientes de `h`, `i`
+     y `k`, `P.y` frente a `B.y`, `I.y`, ejes propios de `p`, parametrización del conductor).
+   - Contrasta la factorización de §3.2 en 1 000 conductores para excCyl 2,9, 3,7 y 4,0.
+   - Clasifica exactamente, con aritmética racional (`BigInteger`, máximo común divisor y
+     sucesión de Sturm del polinomio en `u = tan(t/2)`), excCyl ∈ {2,9; 3,6; 3,65; 3,656;
+     3,6569; 3,65694; 3,656943727; 3,657; 3,66; 3,7; 4,0; 5,0} y los trece binary64 centrados
+     en el valor crítico calculado en `double`, junto con las configuraciones sintéticas enteras
+     de §3.8.3.
+   - Comprueba en `t_c` si el evaluador define `Q` y `R`.
+   - Lee por reflexión, sin modificarlo, el estado de selección de `AlgoIntersectLineConic`
+     tras la carga, tras `updateConstruction` con el conductor en el hueco y tras saltos del
+     conductor.
+   - Mide la simetría de `e_1` y `o_1` y las segundas diferencias en 0 y `π`.
+2. **Esquinas y selecciones simples.** Mide el giro de `o`, `v`, `w` y `a_1` en `t_c` con
+   `h` = 10⁻³ a 10⁻⁶ en cinco configuraciones de penetración, la más próxima
+   `0x1.d416bb67a38bbp1`, y lee el estado de los algoritmos padre de `H_1` y `G_1`.
+
+Ningún sondeo modifica el repositorio ni el modelo versionado.

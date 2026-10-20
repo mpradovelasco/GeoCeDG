@@ -6,6 +6,8 @@ AUTHORIZED.**
 - **Origin.** Prepared by the `PRE-G9B-CU2` preparation that the author authorized on
   2026-10-20 ([`CU1` closeout record](../../../docs/validation/pre_g9b_cu1_closeout_record.md) §7).
   Preparation base: `27bf652f176e57ced3807b82afe14fc00b7586a9` (`CU1` documentary closeout).
+  Revised by the author's focused review P1–P5 of 2026-10-20, on the published preparation
+  candidate `60d546441dcca5355edfe296ee8a0a521f8a3565`.
 - **Normative candidate.** [`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
   amendments A2.1-R to A2.6, and
   [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) (PROPOSED).
@@ -14,8 +16,9 @@ AUTHORIZED.**
   [oriented length event design](../../../docs/architecture/pre_g9b_cu2_oriented_length_event_design.md);
   [consumption and representation](../../../docs/architecture/pre_g9b_cu2_consumption_and_representation.md).
 - **Validation.** [validation matrix](../../../docs/validation/pre_g9b_cu2_validation_matrix.md),
-  gates GC-1–GC-7.
-- **Analysis.** [author model certification analysis](../../../docs/architecture/pre_g9b_cu2_author_model_certification_analysis.md).
+  gates GC-1–GC-8.
+- **Analysis.** [author model certification analysis](../../../docs/architecture/pre_g9b_cu2_author_model_certification_analysis.md),
+  including the critical bite (§3.8) and the folds of `e_1` (§4.3).
 - **Decisions.** [`CU2` decision sheet](../../../docs/validation/pre_g9b_cu2_author_decision_sheet.md).
   Choices marked **[D-CU2-n]** or **[E-n]** apply only as the author decides them.
 
@@ -30,27 +33,33 @@ Nothing here authorizes implementation.
 Replace the compatibility existence certificate of Locus V2 with the hybrid certification of
 amendments A2.1-R and A2.2-R:
 
-- four evidence levels, with exploratory evidence that never gains authority;
+- four evidence levels, with exploratory evidence that never gains authority, and
+  completeness only as a certified cover;
 - continuity of the traced map as a component requirement;
-- arcs on periodic domains and one closure authority;
-- computational undefinedness kept apart from certified nonexistence;
-- the class v3 construction program, with typed box outcomes and certified transitions;
-- structural totality and periodicity, and second-order jets for folds **[D-CU2-6]**.
+- arcs on periodic domains with distinct one-sided ends, and one closure authority;
+- existence, evaluation and representation kept as distinct facts;
+- the class v3 construction program, with the selection read from the algorithm's state
+  **[D-CU2-17]**, typed box outcomes and certified transitions;
+- the exact algebraic certificate of first-level predicates, which certifies multiple roots
+  such as the critical bite value **[D-CU2-16]**;
+- structural totality and periodicity, and folds certified by structural symmetry with
+  second-order jets **[D-CU2-6]**.
 
-Add the structural certificate of a metric function and its `ORIGIN_WRAP` event
-(A2.3-R), the publication rule (H01), structural component lineage with selector migration
-**[E-3]**, the migration of every consumer to the existence structure (A2.5), and the render
-and export topology and tessellation policy v2 (A2.4-R, A2.6).
+Add the structural certificate of a metric function and its `ORIGIN_WRAP` event with two
+one-sided ends (A2.3-R), the publication rule (H01), structural component lineage with
+selector resolution by demonstrated correspondence **[E-3]**, the migration of every consumer
+to the existence structure (A2.5), and the render and export topology, tessellation policy v2
+and declared fidelity (A2.4-R, A2.6).
 
-The phase corrects B07, H01, B10.2 and B06 against gates GC-1–GC-6. It fails closed: what it
-cannot prove stays `NOT_ESTABLISHED` or `UNRESOLVED`, and a class-3 length is never a rigorous
-input of a certificate.
+The phase corrects B07, H01, B10.2 and B06 against gates GC-1–GC-6 and GC-8. It fails closed:
+what it cannot prove stays `NOT_ESTABLISHED` or `UNRESOLVED`, and a class-3 length is never a
+rigorous input of a certificate.
 
 <!-- geocedg-field: implementation_base -->
 ## Implementation base
 
 The exact commit and tree named by the `CU2` implementation authorization **[D-CU2-13]**;
-it is expected to be this preparation candidate or its author-approved closeout
+it is expected to be the candidate of the focused review or its author-approved closeout
 descendant. Moving branch names are context only.
 
 Entry gate:
@@ -58,7 +67,7 @@ Entry gate:
 - exact base identity and a clean worktree;
 - local, tracking and live remote `main` as recorded by the authorization;
 - the approved texts of A2.1-R to A2.6, ADR 0038 and the decisions **[D-CU2-1]** to
-  **[D-CU2-15]** and **[E-1]** to **[E-3]**;
+  **[D-CU2-17]** and **[E-1]** to **[E-3]**;
 - development runs of `verify.ps1 -Profile PHASE -Phase PRE-G9B-CU0` and
   `-Phase PRE-G9B-CU1` accepted on the base.
 
@@ -100,12 +109,15 @@ In the same step, set ADR 0038 to the status the author decides.
 **Kernel**, under `source/shared/common/src/main/java/org/geocedg/common/kernel/`:
 
 - `locus/`:
-  - `LocusExistenceStructure2D`: arcs, boundary kinds, typed coverage causes and the
-    closure query; removal of `completeCompatibility` in step T11;
+  - `LocusExistenceStructure2D`: arcs with one-sided ends, boundary kinds, singular
+    parameters, typed coverage causes and the closure query; removal of
+    `completeCompatibility` in step T11;
   - `LocusBranch2D` and `LocusV2Factory`: the explicit certificates of **[D-CU2-7]**;
   - `LocusComponentLineage2D` and `LocusLineage2D`: structural lineage;
   - `LocusPrincipalBranchSelector2D` and `LocusInstrumentation2D`;
-  - new classes for the hybrid certifier and the exploratory evidence.
+  - new classes for the hybrid certifier, the exact algebraic certificate (exact rationals and
+    polynomials, real-root structure, first-level predicates, degeneration evidence), the
+    structural-symmetry fold certificate and the exploratory evidence.
 - `locus/intersection/`:
   - `ConstructionIntervalModel2D` and the certified interval model family: the class v3
     capture, enclosures, typed box outcomes and second-order jets, with v1 and v2 programs
@@ -116,7 +128,7 @@ In the same step, set ADR 0038 to the status the author decides.
     periodic components). No solver or tolerance change.
 - `locus/metric/`: route resolver, engine, position binder and the periodic-cycle tests of
   the capabilities, reading the existence structure; the structural certificate and the
-  `ORIGIN_WRAP` event in the rich result.
+  `ORIGIN_WRAP` event, with its one-sided ends, in the rich result.
 - `locus/interaction/LocusPointInteractionResolver2D`: reading the existence structure.
 - `algos/`: `AlgoDependentPointLocusV2` (hybrid certifier and publication rule),
   `AlgoLocusV2`, `AlgoNestedLocusV2`, `AlgoLocusSimilarityTransform2D`, `AlgoSplineV2`,
@@ -124,10 +136,14 @@ In the same step, set ADR 0038 to the status the author decides.
   `AlgoLocusBetweenMetricV2` only to expose the event.
 - `geos/GeoLocusV2`: publication state and instrumentation accessors only.
 
+**Inherited classes:** read-only accessors of the selection state in
+`org/geogebra/common/kernel/algos/AlgoIntersectLineConic` and `AlgoIntersectSingle`,
+registered as modifications **[D-CU2-17]**. No change of their behaviour.
+
 **Rendering and export:**
 
 - `source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusRenderCache2D`:
-  render topology and policy v2 **[D-CU2-10]**;
+  render topology, policy v2, singular vertices and declared fidelity **[D-CU2-10]**;
 - `source/shared/common/src/main/java/org/geocedg/common/export/`:
   `SemanticCurveExportAdapter2D` and `AdaptiveCurveApproximationBuilder2D`;
 - `source/desktop/desktop/src/main/java/org/geocedg/desktop/export/`: the Locus V2 path of
@@ -136,7 +152,8 @@ In the same step, set ADR 0038 to the status the author decides.
 
 **Tests:**
 
-- new focused, adversarial and regression tests per the validation matrix;
+- new focused, adversarial and regression tests per the validation matrix, including the
+  integer critical configuration and its neighbours;
 - the declared conformance updates of existing tests inventoried in strategy §5;
 - the inversion of `pins.B07`, `pins.H01`, `pins.B06` and `pins.B10.2` in the `CU0` tests
   and baseline, through strategy §5 with a re-baseline record **[D-CU2-14]**.
@@ -157,7 +174,8 @@ In the same step, set ADR 0038 to the status the author decides.
 
 **Owned by `CU3`:**
 
-- structural points, tangent-root materialization and tangency classification;
+- structural points, tangent-root materialization and tangency classification; a certified
+  singular parameter or fold never creates a point;
 - intersection solvers, residual tolerances and the intersection engine (H02, H06);
 - the seam-root observation F-CU2-5;
 - new public tools.
@@ -171,10 +189,16 @@ In the same step, set ADR 0038 to the status the author decides.
 **Other packages and areas:**
 
 - any user-interface change beyond **[E-1]**;
-- the document format, beyond the lazy rewrite of component selectors **[E-3]**;
+- the document format, and any rewrite of persisted selectors or user objects such as
+  `text2`;
 - the durable dependency projection of ADR 0029;
+- inferring a selection, a correspondence or a continuity by proximity, label, index or
+  coordinates;
+- writing the selection state of inherited algorithms, or any other change of inherited
+  classes beyond registered read-only accessors;
+- tolerances that turn a near-tangency into a tangency, and the symbolic capture of
+  driver-independent relations;
 - the legacy GeoGebra interval package, which must not be used as a certificate;
-- inherited upstream classes beyond registered read-only accessors;
 - the compatibility certificate as a fallback for any locus;
 - M08 and M09;
 - the book;
@@ -182,9 +206,10 @@ In the same step, set ADR 0038 to the status the author decides.
 
 ## Architectural placement
 
-Existence, continuity, closure and lineage belong to the shared Java kernel (`AGENTS.md`
-§4). Rendering and export approximations derive from the kernel certificate and never decide
-topology. No geometric truth moves to the user interface, an exporter or a script.
+Existence, continuity, closure, selection identity and lineage belong to the shared Java
+kernel (`AGENTS.md` §4). Rendering and export approximations derive from the kernel
+certificate, declare their fidelity and never decide topology. No geometric truth moves to the
+user interface, an exporter or a script.
 
 ## Required design/specification
 
@@ -198,16 +223,26 @@ The following hold:
 
 - existence, continuity and boundaries are certified only by rigorous means, never by
   sampling, pointwise validity or rendering;
+- a multiple root is certified only by the exact algebraic certificate; interval enclosures
+  never prove a multiplicity, and a near-tangency is never declared a tangency by tolerance;
+- the captured binary64 constants are the semantic reference: a tangency computed with
+  rounding is certified as its rounded configuration;
+- a double zero of a validity predicate without sign change keeps existence and continuity;
+  it is a certified singular parameter, not a boundary;
+- a fold is certified only by its five separate proofs; an enclosure of `F′` that contains zero
+  certifies nothing;
 - a curve is closed only when its component is a certified closed periodic component; the
-  periodicity of the driver never closes it;
+  periodicity of the driver never closes it, and the two ends of an open full-length arc are
+  never identified;
 - a structural discontinuity with valid evaluations on both sides is a boundary;
 - end inclusion follows the semantics of the boundary predicate;
-- a double root of a validity predicate (the critical bite value) stays an unresolved band;
-- a computational failure is never certified nonexistence;
-- certificates are deterministic per revision and policy and independent of view, zoom and
-  DPI;
-- component identity follows structural lineage, never coordinates, list order or endpoint
-  bits;
+- a computational failure is never certified nonexistence, a valid evaluation is never
+  existence, and certified existence is never a guarantee of coordinates;
+- certificates are deterministic per revision and policy and independent of view, zoom, DPI
+  and query order;
+- the durable identity of a result, the semantic identity of its selection and the lineage of
+  a component are distinct; identity never follows coordinates, list order, endpoint bits or
+  proximity;
 - `LocusLength` semantics do not change.
 
 <!-- geocedg-field: required_checks -->
@@ -236,8 +271,9 @@ Then the `certification` and `tessellation` benchmarks before and after, with co
 
 The executable authority is the active recovery contract of `verification-levels.md`
 together with `verify.ps1` and `verification-registry.json`. Report exact commands,
-exit codes, run identifiers, result hashes and log paths. Gates GC-1–GC-6 are acceptance
-criteria of the phase; GC-7 and the external DXF check are informative.
+exit codes, run identifiers, result hashes and log paths. Gates GC-1–GC-6 and GC-8 are
+acceptance criteria of the phase; GC-7, the time of GC-8 and the external DXF check are
+informative.
 
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
@@ -245,7 +281,7 @@ criteria of the phase; GC-7 and the external DXF check are informative.
 Nothing in this file authorizes implementation. A separate author instruction must:
 
 - approve the normative proposal, ADR 0038 and the decisions **[D-CU2-1]** to
-  **[D-CU2-15]** and **[E-1]** to **[E-3]**;
+  **[D-CU2-17]** and **[E-1]** to **[E-3]**;
 - name the exact base commit and tree;
 - authorize the implementation.
 
@@ -259,15 +295,16 @@ instruction naming the exact accepted commit.
 
 ## Compatibility and serialization
 
-No document-format change: certificates, exploratory evidence and metric events are
-recomputed and not serialized. Persisted component selectors are resolved by unique
-containment and rewritten lazily on save; ambiguous ones become unresolved with a typed
+No document-format change: certificates, exploratory evidence, metric events and selection
+states are recomputed and not serialized. Persisted component selectors resolve by
+demonstrated structural correspondence and are never rewritten; unresolved ones carry a typed
 cause. Drawn and exported vertices change as declared conformance. Exports of `e_2` become
 open. `LocusLength` values and the coordinates of `e_2` do not change.
 
 ## Integration obligations
 
-- Register new source and test files in `docs/upstream/modified-files.yml`.
+- Register new source and test files, and the read-only accessors in inherited classes, in
+  `docs/upstream/modified-files.yml`.
 - Keep `final.shared` and `final.desktop` green without weakened tests.
 - Update the inventory only through the official updater with executed evidence.
 - Record every changed numerical reference in the re-baseline record.
@@ -282,7 +319,7 @@ author's closeout record is the sole authority for approval.
 
 - the incorporated specification amendments and the ADR status;
 - the tests and the re-baseline record;
-- benchmark evidence before and after;
+- benchmark evidence before and after, including the cost of the exact certificate;
 - the candidate report and its mirror, with:
   - the gate values;
   - the verification evidence (`STATIC`, `INFRA_UNIT`, the three `PHASE` runs and
@@ -297,7 +334,13 @@ The stop conditions of strategy §4 apply, in particular:
 
 - the class v3 does not certify a locus of the author's model where the analysis predicts
   it, within the approved budget ranges;
+- the exact algebraic certificate does not apply to a predicate that the author's model
+  needs, or exhausts its approved budget;
+- the evaluator slice does not reproduce the live selection state in the author's model, or
+  reproducing it would need writing into inherited classes;
 - certifying `e_2` would need the value of a length;
+- resolving a persisted selector would need rewriting persisted content or associating it by
+  containment without a demonstrated correspondence;
 - a correction needs a change to a `CU1` or `CU3` contract;
 - a `preserve` value moves beyond its tolerance, or a numerical reference would change
   without a re-baseline record;

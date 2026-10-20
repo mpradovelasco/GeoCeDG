@@ -6,6 +6,7 @@
 | Estado | `CU2 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false`; `TECHNICAL_CANDIDATE_STATE = FROZEN`; `AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT` |
 | Antecedentes | [propuesta E de `CU0`](pre_g9b_cu0_hybrid_certification_proposal.md) §6; enmienda candidata A2.4; decisión DC-6 (2026-10-19: criterios de teselación con límites justificados por pruebas; 10° y profundidad 4 son candidatos) |
 | Documentos hermanos | [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
+| Revisión | 2026-10-20, revisión documental focalizada: principio 5 y §3 (disponibilidad, P5), §5.1 a §5.3 (parámetros singulares, pliegues y extremos no evaluables, P1–P3), §5.6 nuevo y §6 (fidelidad declarada) |
 
 ## 1. Principios
 
@@ -20,6 +21,10 @@
    `getValidDomainComponents()`, que solo tiene contenido con `COMPLETE`, ni el indicador
    `PERIODIC` del proveedor. Hoy la elección de vista explica la mayoría de las divergencias
    (§2).
+5. **Fidelidad declarada (P5).** El dibujo y las exportaciones declaran su fidelidad efectiva y
+   fallan explícitamente cuando no pueden representar un resultado. Nunca inventan un punto, una
+   unión ni un extremo; la existencia certificada no es una garantía de sus coordenadas
+   ([diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §3.4).
 
 ## 2. Estado actual por consumidor
 
@@ -45,7 +50,7 @@ Referencias al código en `27bf652f`. Prefijos: `L` = `kernel/locus`, `A` = `ker
 
 | Consumidor | Nivel | Regla |
 |---|---|---|
-| Dibujo | 3 | Cada componente certificada se dibuja hasta sus fronteras certificadas (§5). Ningún segmento cruza una banda `UNRESOLVED`, un intervalo de no existencia certificada ni una discontinuidad estructural. Se cierra solo una componente periódica cerrada. La evidencia exploratoria, si la aprueba la decisión E-1, se dibuja con estilo propio solo en bandas `UNRESOLVED` y nunca se une a una componente |
+| Dibujo | 3 | Cada componente certificada se dibuja hasta sus fronteras certificadas (§5). Ningún segmento cruza una banda `UNRESOLVED`, un intervalo de no existencia certificada ni una discontinuidad estructural. Se cierra solo una componente periódica cerrada. Un punto que no se puede evaluar no se interpola: el trazo se corta allí con una marca. La evidencia exploratoria, si la aprueba la decisión E-1, se dibuja con estilo propio solo en bandas `UNRESOLVED` y nunca se une a una componente |
 | Métrica total | 4 | Suma sobre componentes. Una componente periódica cerrada aporta un ciclo; una componente abierta, su longitud. Con `NOT_ESTABLISHED`, `NOT_ESTABLISHED` |
 | Ruta entre posiciones | 3 | Las dos direcciones deben estar en la misma componente certificada. Dentro de un arco que cruza la costura, la ruta sigue el arco (no exige una componente completa). `full-cycle` y `wrap-to-start` exigen una componente periódica cerrada |
 | Extremos semánticos y ocurrencia generadora | 3 | Dirección contenida en una componente certificada, aunque sea local (decisión E-2). La ocurrencia generadora publica los eventos estructurales ([evento](pre_g9b_cu2_oriented_length_event_design.md) §4) |
@@ -54,8 +59,8 @@ Referencias al código en `27bf652f`. Prefijos: `L` = `kernel/locus`, `A` = `ker
 | Selector de rama principal | 3 | Opera sobre componentes certificadas, no sobre la lista completa |
 | Composición de loci dependientes | — | La existencia del dependiente compone la del origen: dominio de un soporte locus igual a las componentes del origen (arcos incluidos) y completitud no mayor que la del origen (ADR 0027). Un nodo métrico aporta solo su certificado estructural; un valor de clase 3 nunca es entrada rigurosa |
 | Transformaciones por semejanza | — | La imagen hereda explícitamente la estructura de existencia: cobertura, maximalidad, completitud, linaje transportado y autoridad de cierre (`AlgoLocusSimilarityTransform2D` ya la copia, 87-95; se declara en `similarity-transformations`) |
-| DXF | 3, con fidelidad incompleta y anexo cuando no hay 4 | Un `LWPOLYLINE` por componente certificada, en el orden del arco aunque cruce la costura. Marca cerrada (código 70) solo para una componente periódica cerrada. Extremos abiertos de tipo estructural, con el vértice del límite lateral (§5.3); nunca se descarta la componente. Con `NOT_ESTABLISHED`: fidelidad incompleta con anexo obligatorio y estricta en cada componente declarada (`existence-components` §12). Las bandas `UNRESOLVED` no se interpolan |
-| LaTeX (PGF, PSTricks, Asymptote) | 3 | Las mismas reglas de topología. `-- cycle`, `\pspolygon` o `--cycle` solo para una componente periódica cerrada. Las reglas de la decisión DQ-C5, que hoy viven solo en un registro de validación, pasan a una especificación durable (decisión D-CU2-11) |
+| DXF | 3, con fidelidad incompleta y anexo cuando no hay 4 | Un `LWPOLYLINE` por componente certificada, en el orden del arco aunque cruce la costura. Marca cerrada (código 70) solo para una componente periódica cerrada. Extremos abiertos de tipo estructural, con el vértice del límite lateral (§5.3); nunca se descarta la componente. Un extremo que no se puede evaluar termina en el último vértice evaluado y el anexo declara su estado. Con `NOT_ESTABLISHED`: fidelidad incompleta con anexo obligatorio y estricta en cada componente declarada (`existence-components` §12). Las bandas `UNRESOLVED` no se interpolan |
+| LaTeX (PGF, PSTricks, Asymptote) | 3 | Las mismas reglas de topología. `-- cycle`, `\pspolygon` o `--cycle` solo para una componente periódica cerrada. Los extremos no evaluables se declaran en comentarios y hacen la exportación incompleta. Las reglas de la decisión DQ-C5, que hoy viven solo en un registro de validación, pasan a una especificación durable (decisión D-CU2-11) |
 
 ## 4. Vistas heredadas y migración
 
@@ -80,17 +85,19 @@ Política versionada, determinista para cada vista:
    - ángulo de giro entre cuerdas consecutivas ≤ `θ_max` (candidato 10°);
    - la desviación se mide sin acotar la proyección: distancia a la recta de la cuerda más
      distancia a sus extremos, para que un tramo casi degenerado no cuente como plano.
-3. **Exención:** el criterio de ángulo se exime solo en una banda paramétrica mínima alrededor
-   de un pliegue o una cúspide **certificados** (chorros de segundo orden, diseño de
-   certificación §5). `e_1` tiene dos, en `t = 0` y `t = ±π`.
+3. **Exención:** el criterio de ángulo se exime solo en dos casos **certificados**: en una banda
+   paramétrica mínima alrededor de un pliegue (las cinco pruebas del diseño de certificación
+   §5; `e_1` tiene dos, en `t = 0` y `t = ±π`) y en el vértice de un parámetro singular (la
+   esquina de una raíz doble, diseño §4.6), que se dibuja como vértice exacto. Un giro cerrado sin
+   certificar, como el de un valor binary64 contiguo al crítico, se refina como cualquier otro.
 4. **Giro alto no certificado:** se refina hasta la resolución del parámetro y se registra un
    diagnóstico. No se exime ni se inventa continuidad.
 5. **Presupuesto:** los vértices por vista tienen un tope versionado. Al agotarlo, el dibujo se
    hace más grueso de forma determinista, con diagnóstico, sin cruzar fronteras y sin pasar
    nunca a muestras uniformes.
 6. **Sin retorno a muestras uniformes.** Dentro de una componente certificada la existencia está
-   probada. Un fallo de evaluación de un punto es computacional (diseño §3.3): se marca como tal
-   y no se convierte en hueco de existencia.
+   probada. Un fallo de evaluación de un punto es computacional (diseño §3.3 y §3.4): se marca
+   como tal, no se convierte en hueco de existencia y no se interpola a través de él.
 
 ### 5.2 Aproximación a fronteras de raíz cuadrada
 
@@ -102,11 +109,17 @@ Las fronteras `λ = 0` de un rayo no son singulares. Las fronteras abiertas sing
 nulo) se acercan por dentro hasta la resolución, con marca tipada, porque el límite puede no
 existir.
 
+En un parámetro singular de multiplicidad 2 (el valor crítico de la mordedura), el vértice es
+`F(t_c)`, calculado con la raíz doble `λ = −b′/a`, sin raíz cuadrada. Los tramos de los dos lados
+llegan a ese vértice con sus tangentes laterales y no se suavizan: la esquina es geométrica
+([análisis](pre_g9b_cu2_author_model_certification_analysis.md) §3.8.1).
+
 ### 5.3 Extremos de discontinuidad estructural
 
 En una frontera de evento (por ejemplo `e_2` en `t_N`), el límite lateral existe. Se evalúa con
 la política de misma posición opuesta: en `e_2`, `w_1(t_N⁻) = L`. El dibujo y la exportación
-terminan exactamente en ese límite.
+terminan exactamente en ese límite. Si su cálculo falla, terminan en el último vértice evaluado y
+lo declaran: nunca extrapolan (diseño de certificación §3.4).
 
 ### 5.4 Constantes (DC-6)
 
@@ -137,11 +150,28 @@ La teselación puede depender de la vista (tolerancia en píxeles), pero nunca c
 definición, los dominios, las claves, la revisión ni las evaluaciones semánticas
 (`locus-v2-semantics.md`). Con las mismas entradas y la misma vista, los vértices son idénticos.
 
+### 5.6 Disponibilidad numérica y fidelidad declarada (P5)
+
+Cada aproximación de dibujo o de exportación lleva su fidelidad efectiva, por componente:
+
+| Fidelidad | Cuándo |
+|---|---|
+| completa | todos los tramos cumplen la política y los extremos se evaluaron |
+| parcial | hay cortes por puntos no evaluables, extremos no evaluados o engrosamiento por presupuesto; se enumeran con su causa |
+| fallida | ni siquiera la aproximación más gruesa admisible cabe en el presupuesto, o no se pudo evaluar ningún tramo; la componente no se representa y se informa |
+
+La fidelidad del dibujo se expone a la instrumentación y al inspector; la de las exportaciones,
+en el anexo DXF y en los comentarios y la clasificación LaTeX. Las situaciones y sus reglas están
+en el [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §3.4.
+
 ## 6. Aproximaciones de exportación
 
 - Mismas reglas de componentes, fronteras y cierre que el dibujo (§3).
 - El constructor adaptativo acepta extremos abiertos con límite (§5.3) en vez de descartar la
-  componente.
+  componente. Un extremo abierto o no evaluable se exporta hasta el último vértice evaluado; su
+  estado se declara en el anexo DXF o en los comentarios LaTeX, y la exportación es incompleta
+  (`INCOMPLETE_WITH_CERTIFIED_COMPONENTS` en LaTeX, fidelidad incompleta en DXF).
+- Los parámetros singulares certificados se exportan como vértices exactos (§5.2).
 - La profundidad mínima vale también para componentes abiertas.
 - El residuo de cierre se mide contra el certificado de cierre, no contra una identidad trivial.
 - La tolerancia de exportación sigue en unidades del modelo (0,001 por defecto). Si el criterio
@@ -151,5 +181,6 @@ definición, los dominios, las claves, la revisión ni las evaluaciones semánti
 
 Los tokens de intersección, los selectores de puntos, las posiciones métricas y el estado de
 interacción usan el linaje estructural de la componente (diseño §7), no los bits de sus extremos
-ni su índice en una lista. Los selectores persistidos se migran por contención única, con fallo
-cerrado.
+ni su índice en una lista. Los selectores persistidos se resuelven solo por una correspondencia
+estructural demostrada, que la contención única valida pero no crea; no se reescriben, y ante
+ambigüedad fallan cerrados (diseño §7).

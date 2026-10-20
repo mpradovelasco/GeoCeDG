@@ -7,6 +7,7 @@
 | Antecedentes | [análisis D de `CU0`](pre_g9b_cu0_oriented_length_analysis.md); enmienda candidata A2.3 de las [enmiendas de `CU0`](pre_g9b_cu0_candidate_normative_amendments.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) §5 |
 | Contratos afectados | `locus-v2-metrics.md` v1.5 §22, §24.5 y §25.5; `locus-v2-existence-components.md` §3, §7 y §8 |
 | Normativa propuesta | enmienda A2.3-R de la [propuesta normativa](pre_g9b_cu2_normative_proposal.md) |
+| Revisión | 2026-10-20, revisión documental focalizada: §4.4 nuevo (extremos laterales, P2) y disponibilidad numérica de los límites (§5 y §6, P5) |
 
 ## 1. Problema
 
@@ -78,7 +79,8 @@ Una consulta `LocusLength(L, A, B)` publica un **evento de envoltura del origen*
 | `source` | clave revisable de la componente `C` y su linaje estructural | exacto |
 | `driverParameter` | la dirección canónica de `A` en `C` | exacto: es una dirección semántica, no una raíz numérica |
 | `direction` | `FORWARD` o `BACKWARD` | exacto |
-| `sameSide` | `ZERO_LENGTH` (el origen pertenece al tramo que empieza) o `FULL_CYCLE` (pertenece al que acaba) | exacto |
+| `sameSide` | política de misma posición de la ruta: `ZERO_LENGTH` (el origen pertenece al tramo que empieza) o `FULL_CYCLE` (pertenece al que acaba); decide qué extremo lateral es el incluido (§4.4) | exacto |
+| `ends` | los dos extremos laterales del corte, `t_A⁺` (inicio del arco) y `t_A⁻` (final), cada uno con su inclusión y su límite lateral (§4.4) | exacto |
 | `jumpPositive` | `CERTIFIED` si una cuerda con redondeo exterior entre dos puntos certificados de `C` es positiva; si no, `NOT_ESTABLISHED` | riguroso |
 | `jumpValue` | referencia al resultado de la longitud total de `C`, con su clase de garantía | la de ese resultado (clase 3 en el modelo del autor) |
 
@@ -97,6 +99,26 @@ Viaja en el resultado rico, no en el escalar `Length`.
 | `C` solo localmente certificada (no completa) | sin envoltura (no hay círculo completo); valen las fronteras certificadas de `C` |
 | `jumpPositive = NOT_ESTABLISHED` | el dependiente no puede certificar la discontinuidad: banda `UNRESOLVED` en `t_A`, completitud `NOT_ESTABLISHED` |
 | rutas explícitas entre dos posiciones fijas | no dependen del conductor y no generan eventos |
+
+### 4.4 Extremos laterales (P2)
+
+El corte se aproxima por dos lados, `t_A⁺` (desde parámetros mayores) y `t_A⁻` (desde
+parámetros menores). Los dos comparten la dirección canónica del conductor, pero no el valor de
+la longitud orientada: con `zero-length`, `w_1(t_A⁺) = 0` y `w_1(t_A⁻) = L`.
+
+| Concepto | En `e_2` |
+|---|---|
+| dirección semántica canónica | `t_A`, la dirección de `N_1` en `[−π, π)`, común a los dos extremos |
+| lado del corte | `+` para el inicio del arco (coordenada de arco `s = 0`) y `−` para el final (`s → 2π`) |
+| política de inclusión | con `zero-length` se incluye el inicio y se excluye el final; con `full-cycle`, al revés |
+| límite lateral | existe a cada lado, porque `w_1` es continua por cada lado y `L` es finita; el extremo excluido solo se consulta como límite, con su lado explícito |
+| pertenencia | `t` pertenece si hay una coordenada de arco incluida `s ≡ t − t_A (mód 2π)`. En un arco de longitud `2π` con un solo extremo incluido es única: `t_A` cae en `s = 0` con `zero-length` y en `s = 2π` con `full-cycle` |
+| continuidad | en el arco abierto y, por un lado, en el extremo incluido; nunca a través del corte |
+| identidad y linaje | dos extremos distintos con fuentes distintas, `(ORIGIN_WRAP de w_1, +)` y `(ORIGIN_WRAP de w_1, −)`; el linaje de la componente es la clave de rama más esas dos fuentes |
+
+La canonicalización módulo `2π` nunca identifica los dos extremos: el excluido no es imagen de
+ningún parámetro canónico. Que sus coordenadas coincidieran, o que el conductor sea periódico, no
+crearía continuidad entre ellos; en `e_2` además distan `L` en el plano.
 
 ## 5. Certificación de un locus que depende de una longitud orientada
 
@@ -119,18 +141,23 @@ El productor dependiente certifica `e_2` componiendo hechos estructurales:
 
 En ningún paso interviene el valor estimado de `L` o de `w_1(t)`. Los valores de `e_2` son
 estimaciones bajo el contrato de estimación de `CU1` (D-CU1-2): la estructura de existencia se
-certifica y las coordenadas se declaran estimadas. Si la estimación de `w_1(t)` falla por
-presupuesto en algún `t`, ese punto queda con estado de evaluación `NOT_ESTABLISHED`
-(computacional). No se convierte en no existencia, porque la existencia ya está certificada
-(diseño de certificación §3.3).
+certifica y las coordenadas se declaran estimadas.
+
+**Existencia frente a disponibilidad (P5).** El certificado prueba que `e_2(t)` existe en todo el
+arco y que existen sus dos límites laterales (diseño de certificación §3.4, capas 1 y 2). No
+prueba que se puedan calcular. Si la estimación de `w_1(t)` falla por presupuesto en algún `t`,
+ese punto queda con estado de evaluación `EVALUATION_FAILED` y causa computacional; si falla el
+cálculo de un límite lateral, ese extremo queda sin evaluar. Ninguno de los dos casos se convierte
+en no existencia, porque la existencia ya está certificada, y ninguno autoriza a inventar un punto
+o un extremo.
 
 ## 6. Consecuencias por consumidor
 
 | Consumidor | Consecuencia |
 |---|---|
-| Dibujo | polilínea abierta de `e_2(t_A⁺)` a `e_2((t_A + 2π)⁻)`; sin segmento de cierre |
-| DXF | un `LWPOLYLINE` abierto por la componente, en el orden del arco |
-| LaTeX | un trazo abierto |
+| Dibujo | polilínea abierta de `e_2(t_A⁺)` a `e_2((t_A + 2π)⁻)`; sin segmento de cierre. Si un extremo no se puede evaluar, el trazo termina en el último vértice evaluado, con marca de extremo no evaluado |
+| DXF | un `LWPOLYLINE` abierto por la componente, en el orden del arco; el anexo declara el estado de cada extremo |
+| LaTeX | un trazo abierto; los comentarios declaran el estado de cada extremo |
 | Métrica de `e_2` | longitud sobre la componente abierta; sin ciclo completo ni `wrap-to-start`; la clase es la de su estimación (`L-CU1-E2-LENGTH`) |
 | Intersecciones con `e_2` | marco de fase del arco `[t_A, t_A + 2π)`, sin cuarentena de costura (no es periódica); las raíces en sus extremos siguen la política de extremos abiertos o cerrados |
 | Puntos semánticos sobre `e_2` | direcciones canónicas en `[−π, π)`; la pertenencia a la componente se decide sobre el arco |
@@ -141,7 +168,9 @@ presupuesto en algún `t`, ese punto queda con estado de evaluación `NOT_ESTABL
 - Arrastrar el conductor no cambia la revisión, el evento ni la componente (A1.1-R de `CU1`).
 - Cambiar `v_1` o el selector de `N_1` desplaza `t_A`: revisión nueva, componente con el mismo
   linaje estructural y fronteras nuevas.
-- Recertificar `o_1` debe mantener resoluble el selector de `N_1` (decisión E-3).
+- Recertificar `o_1` debe mantener resoluble el selector de `N_1` por correspondencia
+  estructural, no por contención (decisión E-3 revisada).
+- Los dos extremos del arco tienen identidades distintas (§4.4); ninguna revisión los fusiona.
 
 ## 8. Alternativas descartadas
 
@@ -155,7 +184,7 @@ presupuesto en algún `t`, ese punto queda con estado de evaluación `NOT_ESTABL
 
 ## 9. Validación
 
-Filas V-E2-1 a V-E2-7 de la [matriz de validación](../validation/pre_g9b_cu2_validation_matrix.md):
+Filas V-E2-1 a V-E2-9 de la [matriz de validación](../validation/pre_g9b_cu2_validation_matrix.md):
 
 - `e_2` como una componente abierta;
 - valores idénticos;
@@ -165,4 +194,8 @@ Filas V-E2-1 a V-E2-7 de la [matriz de validación](../validation/pre_g9b_cu2_va
   en un conductor no cambia la estructura de existencia, solo el estado de evaluación de ese
   punto;
 - casos de §4.3;
-- identidad del evento al arrastrar el conductor y al cambiar `v_1` (§7).
+- identidad del evento al arrastrar el conductor y al cambiar `v_1` (§7);
+- extremos laterales distintos, pertenencia de `t_A` según la política y límites laterales con
+  consulta explícita (§4.4);
+- extremo no evaluable: el trazo y las exportaciones terminan en el último vértice evaluado y lo
+  declaran, sin extrapolar (§5).
