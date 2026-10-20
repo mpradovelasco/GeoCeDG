@@ -1365,3 +1365,49 @@ provenance.
   curves. Its hypotheses are recorded and accessible in the rich result.
 - **Certified classes.** Validation demonstrates that every certified bound
   contains an independent reference value, through every auxiliary operation.
+
+### 25.12 Implementation definitions of the CU1 candidate
+
+The CU1 technical candidate fixes the following definitions, which §25.1–§25.9 leave
+open. They belong to the candidate under author review.
+
+1. **Extent.** `S` is the largest distance from the start point of the component to
+   the points of its minimum partition (§25.3b). It is invariant under translations
+   and rotations and scales with every similarity.
+2. **Leaf acceptance.** A leaf is accepted when its reported error does not exceed
+   its share of `τ`, so every accepted estimate is admissible (§25.4). The reported
+   error is the larger of the safety factor times the level difference and the
+   inconsistency of the probe:
+   - evaluator-only: the length by which the inscribed polyline, refined by the
+     probe point, exceeds the corrected value;
+   - differential: the difference between the speed at the probe and its quartic
+     interpolant through the five samples of the leaf, times the leaf width.
+3. **Cells below the parameter resolution.** A cell born narrower than its
+   refinement stencil, such as a route end a few units in the last place from a leaf
+   boundary or a knot, has no representable interior parameter. Its chord, or its
+   trapezoid, is accepted under the recorded hypothesis that no feature is narrower
+   than the parameter resolution, without a demonstrated order. A leaf that reaches
+   the resolution through refinement fails with `PARAMETER_RESOLUTION_REACHED`
+   (§25.3e).
+4. **Similarity images (N1).** An image is measured through its source with the
+   tolerance `min(τ_source, τ_image / λ_upper)`. A stricter tolerance can only weaken
+   the class, and the scaled error meets the tolerance of the image.
+5. **Consistency of certificates.** A class 1 or class 2 enclosure whose upper bound,
+   plus `τ`, is exceeded by the inscribed polyline of the minimum partition does not
+   describe the evaluated curve; the certification fails closed.
+6. **Outward rounding.** Sums and products round outward according to their exact
+   rounding error (TwoSum, Dekker's product), so an exact operation stays exact;
+   outside the range where that error is exact, and for divisions, the result moves
+   one adjacent binary64 value outward.
+7. **Class 2 work.** Boxes are split until each lies within its share of `τ`. The
+   construction stops early, and keeps the enclosure as evidence, when the predicted
+   box count exceeds the box budget; for each box over its share, the prediction is
+   the square root of its width-to-share ratio.
+8. **Direction reversals (N3).** A reversal of direction close to a sample, such as the
+   turning point of the foot of a perpendicular, hides the same overshoot from every
+   refinement level, so the level difference cannot reveal it. The evaluator-only
+   estimator detects consecutive chords, longer than the rounding noise of their points,
+   that turn by more than a right angle. It locates the extremum of the projection of the
+   curve on the incoming chord by a golden-section search and uses it as a partition
+   boundary. The hypotheses record the number of located reversals and that no
+   unlocated reversal lies between consecutive samples.

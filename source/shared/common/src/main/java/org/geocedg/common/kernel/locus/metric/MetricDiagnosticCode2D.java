@@ -29,5 +29,14 @@ public enum MetricDiagnosticCode2D {
 	INCOMPLETE_AGGREGATE,
 	GAP_PRESERVED,
 	P1_FAILURE,
-	WORK_BUDGET_EXHAUSTED
+	WORK_BUDGET_EXHAUSTED,
+	/** PRE-G9B-CU1 section 25.3e: a refinement consistency check failed persistently. */
+	CONSISTENCY_NOT_ESTABLISHED,
+	/** PRE-G9B-CU1 section 25.3e: refinement reached the parameter resolution. */
+	PARAMETER_RESOLUTION_REACHED,
+	/**
+	 * PRE-G9B-CU1 sections 25.1 to 25.4: a certified capability failed closed or its
+	 * enclosure is wider than the tolerance; informational.
+	 */
+	CERTIFICATION_NOT_ESTABLISHED
 }

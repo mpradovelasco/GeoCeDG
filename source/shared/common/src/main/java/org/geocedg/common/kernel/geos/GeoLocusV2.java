@@ -131,6 +131,18 @@ public final class GeoLocusV2 extends GeoElement
 	}
 
 	/**
+	 * Declares this geo a nested copy inside the reconstruction slice owned by
+	 * another locus: its slice builds, revisions, evaluator calls and metric
+	 * component builds become nested work of that owner (PRE-G9B-CU1).
+	 *
+	 * @param owner instrumentation of the locus that owns the slice
+	 */
+	public void attachNestedWorkParent(LocusInstrumentation2D owner) {
+		instrumentation.attachNestedParent(owner);
+		metricInstrumentation.attachNestedSink(owner);
+	}
+
+	/**
 	 * Acquires the narrow per-source metric-state owner seam. No dependency edge
 	 * or query/result authority is stored here.
 	 *

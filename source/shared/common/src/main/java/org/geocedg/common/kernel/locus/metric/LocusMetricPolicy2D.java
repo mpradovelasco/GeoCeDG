@@ -24,6 +24,7 @@ public final class LocusMetricPolicy2D {
 	private final MetricMultiplicityPolicy multiplicityPolicy;
 	private final ImproperLimitPolicy2D improperLimitPolicy;
 	private final EvaluatorOnlyPolicy evaluatorOnlyPolicy;
+	private final MetricEstimatorPolicy2D estimatorPolicy;
 
 	/** Creates one immutable policy; every field participates in key equality. */
 	public LocusMetricPolicy2D(double absoluteTolerance, double relativeTolerance,
@@ -32,6 +33,23 @@ public final class LocusMetricPolicy2D {
 			MetricMultiplicityPolicy multiplicityPolicy,
 			ImproperLimitPolicy2D improperLimitPolicy,
 			EvaluatorOnlyPolicy evaluatorOnlyPolicy) {
+		this(absoluteTolerance, relativeTolerance, workBudget,
+				metricAlgorithmVersion, metricPolicyVersion, tolerancePolicyVersion,
+				multiplicityPolicy, improperLimitPolicy, evaluatorOnlyPolicy, null);
+	}
+
+	/**
+	 * Creates a policy that also fixes the PRE-G9B-CU1 estimator constants
+	 * ({@code locus-v2-metrics.md} section 25); {@code null} keeps the pre-CU1 policy.
+	 */
+	public LocusMetricPolicy2D(double absoluteTolerance, double relativeTolerance,
+			MetricWorkBudget2D workBudget, String metricAlgorithmVersion,
+			String metricPolicyVersion, String tolerancePolicyVersion,
+			MetricMultiplicityPolicy multiplicityPolicy,
+			ImproperLimitPolicy2D improperLimitPolicy,
+			EvaluatorOnlyPolicy evaluatorOnlyPolicy,
+			MetricEstimatorPolicy2D estimatorPolicy) {
+		this.estimatorPolicy = estimatorPolicy;
 		if (!Double.isFinite(absoluteTolerance) || absoluteTolerance <= 0
 				|| !Double.isFinite(relativeTolerance) || relativeTolerance < 0
 				|| metricAlgorithmVersion == null
@@ -89,6 +107,51 @@ public final class LocusMetricPolicy2D {
 				MetricMultiplicityPolicy.CONSTRUCTIVE_TRAVERSAL_LENGTH,
 				new ImproperLimitPolicy2D("g9u0-improper-limit/v1", 12, 0.25),
 				EvaluatorOnlyPolicy.ESTIMATED_WITH_EXPLICIT_ASSUMPTIONS);
+	}
+
+	/**
+	 * PRE-G9B-CU1 public metric policy v2 ({@code locus-v2-metrics.md} section 25):
+	 * guarantee classes, estimator v2, tolerance-conditioned admissibility and
+	 * memoized typed failures. The requested tolerances are unchanged.
+	 *
+	 * @return versioned public metric policy v2
+	 */
+	public static LocusMetricPolicy2D cu1PublicV2() {
+		return new LocusMetricPolicy2D(DEFAULT_ABSOLUTE_TOLERANCE,
+				DEFAULT_RELATIVE_TOLERANCE,
+				new MetricWorkBudget2D(DEFAULT_MAXIMUM_EVALUATIONS,
+						DEFAULT_MAXIMUM_SUBDIVISIONS, DEFAULT_MAXIMUM_DEPTH),
+				"cu1-metric-total-variation/v2", "cu1-metric-policy/v2",
+				"cu1-abs-rel-component/v2",
+				MetricMultiplicityPolicy.CONSTRUCTIVE_TRAVERSAL_LENGTH,
+				new ImproperLimitPolicy2D("cu1-improper-limit/v2", 12, 0.25),
+				EvaluatorOnlyPolicy.ESTIMATED_WITH_EXPLICIT_ASSUMPTIONS,
+				MetricEstimatorPolicy2D.cu1Default());
+	}
+
+	/** @return estimator v2 constants, or {@code null} for a pre-CU1 policy */
+	public MetricEstimatorPolicy2D getEstimatorPolicy() {
+		return estimatorPolicy;
+	}
+
+	/**
+	 * @return a copy with another work budget; tests and benchmarks use it to
+	 *         exercise budget exhaustion deterministically
+	 */
+	public LocusMetricPolicy2D withWorkBudget(MetricWorkBudget2D budget) {
+		return new LocusMetricPolicy2D(absoluteTolerance, relativeTolerance, budget,
+				metricAlgorithmVersion, metricPolicyVersion, tolerancePolicyVersion,
+				multiplicityPolicy, improperLimitPolicy, evaluatorOnlyPolicy,
+				estimatorPolicy);
+	}
+
+	/** @return a copy with other estimator v2 constants */
+	public LocusMetricPolicy2D withEstimatorPolicy(
+			MetricEstimatorPolicy2D policy) {
+		return new LocusMetricPolicy2D(absoluteTolerance, relativeTolerance,
+				workBudget, metricAlgorithmVersion, metricPolicyVersion,
+				tolerancePolicyVersion, multiplicityPolicy, improperLimitPolicy,
+				evaluatorOnlyPolicy, policy);
 	}
 
 	public double getAbsoluteTolerance() {
@@ -155,7 +218,8 @@ public final class LocusMetricPolicy2D {
 				&& tolerancePolicyVersion.equals(policy.tolerancePolicyVersion)
 				&& multiplicityPolicy == policy.multiplicityPolicy
 				&& improperLimitPolicy.equals(policy.improperLimitPolicy)
-				&& evaluatorOnlyPolicy == policy.evaluatorOnlyPolicy;
+				&& evaluatorOnlyPolicy == policy.evaluatorOnlyPolicy
+				&& Objects.equals(estimatorPolicy, policy.estimatorPolicy);
 	}
 
 	@Override
@@ -164,6 +228,6 @@ public final class LocusMetricPolicy2D {
 				Double.doubleToLongBits(relativeTolerance), workBudget,
 				metricAlgorithmVersion, metricPolicyVersion,
 				tolerancePolicyVersion, multiplicityPolicy, improperLimitPolicy,
-				evaluatorOnlyPolicy);
+				evaluatorOnlyPolicy, estimatorPolicy);
 	}
 }

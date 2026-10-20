@@ -34,6 +34,7 @@ import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricCoverage;
 import org.geocedg.common.kernel.locus.metric.MetricErrorEvidence2D;
 import org.geocedg.common.kernel.locus.metric.MetricEvaluatorMethod2D;
+import org.geocedg.common.kernel.locus.metric.MetricGuaranteeClass2D;
 import org.geocedg.common.kernel.locus.metric.MetricIntegrationResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricMethod2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
@@ -116,6 +117,14 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 				.getProvenance().getLocusIdentity());
 		assertEquals(ellipse.getLocusIdentity(), ellipseMetric.getMetricResult()
 				.getProvenance().getLocusIdentity());
+		// The certified affine segment is structural; the expression-driven
+		// circle and ellipse are estimates (PRE-G9B-CU1, guarantee classes).
+		assertEquals(MetricGuaranteeClass2D.STRUCTURAL,
+				segment.getMetricResult().getGuaranteeClass());
+		assertEquals(MetricGuaranteeClass2D.ESTIMATED,
+				circleMetric.getMetricResult().getGuaranteeClass());
+		assertEquals(MetricGuaranteeClass2D.ESTIMATED,
+				ellipseMetric.getMetricResult().getGuaranteeClass());
 		assertFalse(GeoNumeric.class.isInstance(segment));
 
 		LocusMetricResult2D analytic = analyticTotal("m04-analytic", 0, 4,
@@ -423,7 +432,20 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		assertNotNull(rich.getEvaluatorMethod());
 		assertNotNull(rich.getMetricMethod());
 		assertNotNull(rich.getErrorEvidence());
-		assertFalse(rich.getErrorEvidence().getAssumptions().isEmpty());
+		// PRE-G9B-CU1 conformance (locus-v2-metrics.md 25.1): an estimate records
+		// its hypotheses; a structural or certified value records its rigorous
+		// enclosure instead, and both record the requested tolerance.
+		if (rich.getErrorEvidence().getNumericGuarantee().orElseThrow()
+				== NumericGuarantee.ESTIMATED_ERROR) {
+			assertFalse(rich.getErrorEvidence().getAssumptions().isEmpty());
+		} else {
+			assertEquals(NumericGuarantee.CERTIFIED_ERROR_BOUND,
+					rich.getErrorEvidence().getNumericGuarantee().orElseThrow());
+			assertTrue(rich.getErrorEvidence().getRigorousEnclosure().orElseThrow()
+					.contains(rich.getMetricValue().getFiniteValue().orElseThrow()));
+		}
+		assertTrue(rich.getErrorEvidence().getRequestedTolerance().isPresent());
+		assertTrue(rich.isScalarAdmissible());
 		assertNotNull(rich.getProvenance());
 		assertFalse(rich.getContributions().isEmpty());
 	}

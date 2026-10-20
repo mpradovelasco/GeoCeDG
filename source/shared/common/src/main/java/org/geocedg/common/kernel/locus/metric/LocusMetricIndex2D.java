@@ -21,6 +21,13 @@ public final class LocusMetricIndex2D {
 	private final LocusMetricInstrumentation2D instrumentation;
 	private final Map<LocusMetricIndexKey2D, LocusMetricComponentState2D> entries =
 			new LinkedHashMap<>();
+	/**
+	 * PRE-G9B-CU1 ({@code locus-v2-metrics.md} section 25.7): deterministic failures
+	 * memoized under their complete key, so the same key is never rebuilt until it
+	 * changes. A failure caused by a caller's session limit is never stored.
+	 */
+	private final Map<LocusMetricIndexKey2D, Object> failures =
+			new LinkedHashMap<>();
 	private final Set<LocusMetricIndexKey2D> activeBuilds = new HashSet<>();
 	private long hits;
 	private long misses;
@@ -57,6 +64,15 @@ public final class LocusMetricIndex2D {
 			instrumentation.recordIndexHit();
 			return cached;
 		}
+		Object failure = failures.get(key);
+		if (failure != null) {
+			hits++;
+			instrumentation.recordIndexHit();
+			if (failure instanceof LocusMetricComponentBuildException) {
+				throw (LocusMetricComponentBuildException) failure;
+			}
+			return (LocusMetricComponentState2D) failure;
+		}
 		misses++;
 		instrumentation.recordIndexMiss();
 		if (!activeBuilds.add(key)) {
@@ -75,6 +91,7 @@ public final class LocusMetricIndex2D {
 					!= MetricComputationStatus.SUCCESS) {
 				failedBuilds++;
 				instrumentation.recordComponentStateBuildFailure();
+				rememberFailure(key, candidate);
 				return candidate;
 			}
 			if (entries.size() >= capacity) {
@@ -88,6 +105,11 @@ public final class LocusMetricIndex2D {
 			entries.put(key, candidate);
 			builds++;
 			return candidate;
+		} catch (LocusMetricComponentBuildException exception) {
+			failedBuilds++;
+			instrumentation.recordComponentStateBuildFailure();
+			rememberFailure(key, exception);
+			throw exception;
 		} catch (RuntimeException exception) {
 			failedBuilds++;
 			instrumentation.recordComponentStateBuildFailure();
@@ -106,6 +128,9 @@ public final class LocusMetricIndex2D {
 		entries.entrySet().removeIf(entry ->
 				entry.getKey().getLocusIdentity().equals(locusIdentity)
 						&& entry.getKey().getSemanticRevision() != currentRevision);
+		failures.keySet().removeIf(key ->
+				key.getLocusIdentity().equals(locusIdentity)
+						&& key.getSemanticRevision() != currentRevision);
 		recordInvalidation(before - entries.size());
 	}
 
@@ -115,6 +140,8 @@ public final class LocusMetricIndex2D {
 		long before = entries.size();
 		entries.entrySet().removeIf(entry ->
 				entry.getKey().getLocusIdentity().equals(locusIdentity));
+		failures.keySet().removeIf(key ->
+				key.getLocusIdentity().equals(locusIdentity));
 		recordInvalidation(before - entries.size());
 	}
 
@@ -123,7 +150,23 @@ public final class LocusMetricIndex2D {
 		assertThread();
 		long removed = entries.size();
 		entries.clear();
+		failures.clear();
 		recordInvalidation(removed);
+	}
+
+	/** @return whether a deterministic failure is memoized for the key */
+	public boolean containsFailure(LocusMetricIndexKey2D key) {
+		assertThread();
+		return failures.containsKey(key);
+	}
+
+	private void rememberFailure(LocusMetricIndexKey2D key, Object failure) {
+		if (failures.size() >= capacity) {
+			Iterator<LocusMetricIndexKey2D> iterator = failures.keySet().iterator();
+			iterator.next();
+			iterator.remove();
+		}
+		failures.put(key, failure);
 	}
 
 	public int getCapacity() {

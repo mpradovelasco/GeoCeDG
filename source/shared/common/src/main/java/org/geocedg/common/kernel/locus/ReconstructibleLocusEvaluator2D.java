@@ -73,11 +73,27 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private final GeoElement isolatedCoordinate;
 	private final GeoElement isolatedSupport;
 	private final double[][] certifiedAffineCoefficients;
+	private final long sliceScope = LocusEvaluationSession2D.newSliceScope();
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
 			SemanticGeneratorDescriptor1D descriptor,
 			Collection<GeoElement> reconstructionSlice) {
+		this(construction, descriptor, reconstructionSlice, null);
+	}
+
+	/**
+	 * Builds one immutable identity-addressed construction slice whose nested
+	 * Locus V2 copies report their work to the owner's instrumentation
+	 * (PRE-G9B-CU1).
+	 *
+	 * @param nestedWorkOwner instrumentation of the locus that owns the slice,
+	 *        or {@code null}
+	 */
+	public ReconstructibleLocusEvaluator2D(Construction construction,
+			SemanticGeneratorDescriptor1D descriptor,
+			Collection<GeoElement> reconstructionSlice,
+			LocusInstrumentation2D nestedWorkOwner) {
 		Objects.requireNonNull(construction);
 		this.descriptor = Objects.requireNonNull(descriptor);
 		SpatialIdentityRegistry sourceRegistry = construction
@@ -146,16 +162,30 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		isolatedSupport = descriptor.getSupportId() == null ? null
 				: requiredCopy(descriptor.getSupportId());
 		validateTypedFamily();
+		if (nestedWorkOwner != null) {
+			for (GeoElement geo : isolatedConstruction.getGeoSetConstructionOrder()) {
+				if (geo instanceof GeoLocusV2) {
+					((GeoLocusV2) geo).attachNestedWorkParent(nestedWorkOwner);
+				}
+			}
+		}
 		resetExternalState();
 	}
 
+	/**
+	 * Evaluates one canonical parameter. The slice was synchronized with its
+	 * inputs once, when it was built for the current revision; a point query only
+	 * applies the driver coordinate and updates the driver-dependent subgraph
+	 * (PRE-G9B-CU1, {@code locus-v2-semantics.md} v1.2). Services that run inside
+	 * that update open slice-scoped child sessions of {@code session}.
+	 */
 	@Override
 	public synchronized LocusEvaluation2D evaluate(LocusDefinition2D definition,
 			LocusBranch2D branch, double canonicalParameter,
 			LocusEvaluationSession2D session) {
 		try {
-			resetExternalState();
-			applyCoordinate(canonicalParameter);
+			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope,
+					() -> applyCoordinate(canonicalParameter));
 			GeoElement pointGeo = isolatedDependentPoint.toGeoElement();
 			if (!pointGeo.isDefined() || isolatedDependentPoint.isInfinite()
 					|| !Double.isFinite(isolatedDependentPoint.getInhomX())

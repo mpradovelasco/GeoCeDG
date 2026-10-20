@@ -168,9 +168,49 @@ public final class LocusMetricResult2D {
 		}
 		Optional<NumericGuarantee> guarantee =
 				errorEvidence.getNumericGuarantee();
-		return guarantee.isPresent()
-				&& guarantee.get()
-						!= NumericGuarantee.FLOATING_POINT_UNCERTIFIED;
+		if (guarantee.isEmpty()
+				|| guarantee.get() == NumericGuarantee.FLOATING_POINT_UNCERTIFIED) {
+			return false;
+		}
+		// PRE-G9B-CU1 (locus-v2-metrics.md section 25.4): under a policy that records its
+		// requested tolerance, a certified value needs a certified error and an
+		// estimate an estimated error not exceeding it. Without a recorded
+		// tolerance the pre-CU1 rule applies.
+		Optional<Double> tolerance = errorEvidence.getRequestedTolerance();
+		if (tolerance.isEmpty()
+				|| guarantee.get() == NumericGuarantee.EXACT_ARITHMETIC) {
+			return true;
+		}
+		double amount = errorEvidence.getEstablishedAbsoluteAmount();
+		return !Double.isNaN(amount) && amount <= tolerance.get();
+	}
+
+	/**
+	 * @return guarantee class of this result ({@code locus-v2-metrics.md} section 25.1)
+	 */
+	public MetricGuaranteeClass2D getGuaranteeClass() {
+		if (metricValue.getKind() != MetricValueKind.FINITE
+				|| computationStatus != MetricComputationStatus.SUCCESS) {
+			return MetricGuaranteeClass2D.NOT_ESTABLISHED;
+		}
+		Optional<NumericGuarantee> guarantee =
+				errorEvidence.getNumericGuarantee();
+		if (guarantee.isEmpty()) {
+			return MetricGuaranteeClass2D.NOT_ESTABLISHED;
+		}
+		switch (guarantee.get()) {
+		case EXACT_ARITHMETIC:
+			return MetricGuaranteeClass2D.STRUCTURAL;
+		case CERTIFIED_ERROR_BOUND:
+			return metricMethod == MetricMethod2D.CLOSED_FORM
+					? MetricGuaranteeClass2D.STRUCTURAL
+					: MetricGuaranteeClass2D.CERTIFIED_ENCLOSURE;
+		case ESTIMATED_ERROR:
+			return MetricGuaranteeClass2D.ESTIMATED;
+		case FLOATING_POINT_UNCERTIFIED:
+		default:
+			return MetricGuaranteeClass2D.UNCERTIFIED;
+		}
 	}
 
 	private static List<LocusMetricContribution2D> immutableContributions(

@@ -11,14 +11,25 @@ import java.util.Objects;
 public final class MetricDiagnostic2D {
 	private final MetricDiagnosticCode2D code;
 	private final String message;
+	private final MetricWorkLimit2D workLimit;
 
 	/** Creates a non-empty diagnostic. */
 	public MetricDiagnostic2D(MetricDiagnosticCode2D code, String message) {
+		this(code, message, MetricWorkLimit2D.NONE);
+	}
+
+	/**
+	 * Creates a diagnostic that carries the typed work dimension it concerns
+	 * ({@code locus-v2-metrics.md} section 25.7).
+	 */
+	public MetricDiagnostic2D(MetricDiagnosticCode2D code, String message,
+			MetricWorkLimit2D workLimit) {
 		this.code = Objects.requireNonNull(code);
 		if (message == null || message.trim().isEmpty()) {
 			throw new IllegalArgumentException("A metric diagnostic needs a message");
 		}
 		this.message = message;
+		this.workLimit = Objects.requireNonNull(workLimit);
 	}
 
 	public MetricDiagnosticCode2D getCode() {
@@ -29,18 +40,24 @@ public final class MetricDiagnostic2D {
 		return message;
 	}
 
+	/** @return exhausted work dimension, or {@code NONE} */
+	public MetricWorkLimit2D getWorkLimit() {
+		return workLimit;
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof MetricDiagnostic2D)) {
 			return false;
 		}
 		MetricDiagnostic2D diagnostic = (MetricDiagnostic2D) other;
-		return code == diagnostic.code && message.equals(diagnostic.message);
+		return code == diagnostic.code && message.equals(diagnostic.message)
+				&& workLimit == diagnostic.workLimit;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(code, message);
+		return Objects.hash(code, message, workLimit);
 	}
 
 	@Override

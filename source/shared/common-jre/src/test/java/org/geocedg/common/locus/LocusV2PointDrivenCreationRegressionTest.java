@@ -63,7 +63,9 @@ class LocusV2PointDrivenCreationRegressionTest
 
 		assertTrue(locus.getInstrumentation().getDependencyUpdates()
 				> dependencyUpdates);
-		assertTrue(locus.getSemanticRevision() > revision);
+		// PRE-G9B-CU1 conformance (locus-v2-semantics.md v1.2, decision D-CU1-8):
+		// moving only the driver is not a semantic change and keeps the revision.
+		assertEquals(revision, locus.getSemanticRevision());
 		assertEquals(persistentId,
 				locus.getPersistentLocusId().toExternalForm());
 		assertMidpoint(fixture);

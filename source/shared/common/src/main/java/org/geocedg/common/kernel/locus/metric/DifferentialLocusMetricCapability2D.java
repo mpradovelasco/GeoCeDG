@@ -132,7 +132,7 @@ public final class DifferentialLocusMetricCapability2D
 			LocusMetricPolicy2D policy,
 			LocusMetricInstrumentation2D instrumentation) {
 		try (LocusEvaluationSession2D session =
-				LocusEvaluationSession2D.reference()) {
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
 			LocusDifferentialEvaluator2D current = evaluator(definition);
 			if (current == null || !current.supportsDifferential(definition)) {
 				throw new ArithmeticException(

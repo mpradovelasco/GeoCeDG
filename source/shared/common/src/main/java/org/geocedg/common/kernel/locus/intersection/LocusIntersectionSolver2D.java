@@ -104,7 +104,7 @@ public final class LocusIntersectionSolver2D {
 					query.getPolicy().getWorkBudget()
 							.getMaximumSemanticEvaluations());
 			try (LocusEvaluationSession2D session =
-					LocusEvaluationSession2D.memoizing(sessionCapacity)) {
+					LocusEvaluationSession2D.openServiceSession(true, sessionCapacity)) {
 				IntersectionCapabilityContext2D context =
 						new IntersectionCapabilityContext2D(query, definition,
 								target, session, instrumentation);

@@ -12,8 +12,6 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
-import org.geocedg.common.kernel.locus.metric.DifferentialLocusMetricCapability2D;
-import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricComponentBuildException;
 import org.geocedg.common.kernel.locus.metric.LocusMetricEngine2D;
@@ -26,6 +24,7 @@ import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnostic2D;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
+import org.geocedg.common.kernel.locus.metric.PolicyV2LocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.PublicLocusMetricTraversalPolicy2D;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -38,9 +37,6 @@ import org.geogebra.common.kernel.geos.GeoText;
 
 /** Reconstructible public rich metric between two exact semantic positions. */
 public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
-	private static final String CAPABILITY =
-			"g9s1-public-evaluator-route-metric/v1";
-
 	private final GeoLocusV2 source;
 	private final GeoPoint start;
 	private final GeoPoint target;
@@ -48,14 +44,10 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private final GeoText boundaryPolicyInput;
 	private final GeoText samePositionPolicyInput;
 	private final GeoLocusMetricResult result;
-	private final LocusMetricPolicy2D policy =
-			LocusMetricPolicy2D.publicExperimental();
+	private final LocusMetricPolicy2D policy = LocusMetricPolicy2D.cu1PublicV2();
 	private final LocusMetricCapabilityHierarchy2D capabilities =
 			new LocusMetricCapabilityHierarchy2D(List.of(
-					new DifferentialLocusMetricCapability2D(
-							"g9s1-public-semantic-differential/v1"),
-					EvaluatorOnlyLocusMetricCapability2D
-							.withDirectRouteRefinement(CAPABILITY)));
+					new PolicyV2LocusMetricCapability2D()));
 	private final LocusMetricEngine2D engine = new LocusMetricEngine2D();
 	private final LocusMetricPositionBinder2D positionBinder =
 			new LocusMetricPositionBinder2D();

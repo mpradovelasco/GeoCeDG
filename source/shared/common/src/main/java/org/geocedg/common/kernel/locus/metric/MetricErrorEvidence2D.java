@@ -22,6 +22,8 @@ public final class MetricErrorEvidence2D {
 	private final String method;
 	private final List<String> assumptions;
 	private final Optional<String> certificateMetadata;
+	private final Optional<Double> requestedTolerance;
+	private final Optional<MetricEnclosure2D> rigorousEnclosure;
 
 	/** Creates structurally consistent metric error evidence. */
 	public MetricErrorEvidence2D(Optional<NumericGuarantee> numericGuarantee,
@@ -29,6 +31,23 @@ public final class MetricErrorEvidence2D {
 			MetricErrorAmount2D relativeEvidence, MetricErrorEvidenceScope scope,
 			String method, List<String> assumptions,
 			Optional<String> certificateMetadata) {
+		this(numericGuarantee, absoluteEvidence, relativeEvidence, scope, method,
+				assumptions, certificateMetadata, Optional.empty(),
+				Optional.empty());
+	}
+
+	/**
+	 * Creates evidence that also records the requested absolute tolerance and
+	 * any rigorous enclosure of the quantity (PRE-G9B-CU1,
+	 * {@code locus-v2-metrics.md} section 25.4).
+	 */
+	public MetricErrorEvidence2D(Optional<NumericGuarantee> numericGuarantee,
+			MetricErrorAmount2D absoluteEvidence,
+			MetricErrorAmount2D relativeEvidence, MetricErrorEvidenceScope scope,
+			String method, List<String> assumptions,
+			Optional<String> certificateMetadata,
+			Optional<Double> requestedTolerance,
+			Optional<MetricEnclosure2D> rigorousEnclosure) {
 		this.numericGuarantee = Objects.requireNonNull(numericGuarantee);
 		this.absoluteEvidence = Objects.requireNonNull(absoluteEvidence);
 		this.relativeEvidence = Objects.requireNonNull(relativeEvidence);
@@ -39,7 +58,50 @@ public final class MetricErrorEvidence2D {
 		this.method = method;
 		this.assumptions = immutableStrings(assumptions);
 		this.certificateMetadata = Objects.requireNonNull(certificateMetadata);
+		this.requestedTolerance = Objects.requireNonNull(requestedTolerance);
+		if (requestedTolerance.isPresent() && !(requestedTolerance.get() >= 0
+				&& Double.isFinite(requestedTolerance.get()))) {
+			throw new IllegalArgumentException(
+					"A requested tolerance must be finite and non-negative");
+		}
+		this.rigorousEnclosure = Objects.requireNonNull(rigorousEnclosure);
 		validateShape();
+	}
+
+	/** @return copy recording the requested absolute tolerance */
+	public MetricErrorEvidence2D withRequestedTolerance(double tolerance) {
+		return new MetricErrorEvidence2D(numericGuarantee, absoluteEvidence,
+				relativeEvidence, scope, method, assumptions, certificateMetadata,
+				Optional.of(tolerance), rigorousEnclosure);
+	}
+
+	/** @return copy retaining a rigorous enclosure as evidence */
+	public MetricErrorEvidence2D withRigorousEnclosure(
+			MetricEnclosure2D enclosure) {
+		return new MetricErrorEvidence2D(numericGuarantee, absoluteEvidence,
+				relativeEvidence, scope, method, assumptions, certificateMetadata,
+				requestedTolerance, Optional.of(enclosure));
+	}
+
+	/** @return requested absolute tolerance, when the policy records one */
+	public Optional<Double> getRequestedTolerance() {
+		return requestedTolerance;
+	}
+
+	/** @return rigorous enclosure retained as evidence, if any */
+	public Optional<MetricEnclosure2D> getRigorousEnclosure() {
+		return rigorousEnclosure;
+	}
+
+	/**
+	 * @return established absolute error amount, or {@code NaN} when it is not
+	 *         established
+	 */
+	public double getEstablishedAbsoluteAmount() {
+		return absoluteEvidence instanceof EstablishedMetricErrorAmount2D
+				? ((EstablishedMetricErrorAmount2D) absoluteEvidence)
+						.getNonNegativeFiniteAmount()
+				: Double.NaN;
 	}
 
 	/**
@@ -163,13 +225,16 @@ public final class MetricErrorEvidence2D {
 				&& relativeEvidence.equals(evidence.relativeEvidence)
 				&& scope == evidence.scope && method.equals(evidence.method)
 				&& assumptions.equals(evidence.assumptions)
-				&& certificateMetadata.equals(evidence.certificateMetadata);
+				&& certificateMetadata.equals(evidence.certificateMetadata)
+				&& requestedTolerance.equals(evidence.requestedTolerance)
+				&& rigorousEnclosure.equals(evidence.rigorousEnclosure);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(numericGuarantee, absoluteEvidence, relativeEvidence,
-				scope, method, assumptions, certificateMetadata);
+				scope, method, assumptions, certificateMetadata, requestedTolerance,
+				rigorousEnclosure);
 	}
 
 	private void validateShape() {

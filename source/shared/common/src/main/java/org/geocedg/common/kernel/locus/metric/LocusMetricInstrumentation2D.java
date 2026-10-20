@@ -5,8 +5,11 @@
 
 package org.geocedg.common.kernel.locus.metric;
 
+import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
+
 /** Kernel-thread-confined functional counters; no wall-clock authority. */
 public final class LocusMetricInstrumentation2D {
+	private LocusInstrumentation2D nestedSink;
 	private long componentStateBuilds;
 	private long componentStateBuildFailures;
 	private long integratorCalls;
@@ -31,6 +34,28 @@ public final class LocusMetricInstrumentation2D {
 		componentStateBuilds++;
 		activeBuilds++;
 		maximumActiveBuilds = Math.max(maximumActiveBuilds, activeBuilds);
+		if (nestedSink != null) {
+			nestedSink.recordNestedMetricComponentBuild();
+		}
+	}
+
+	/**
+	 * Reports the component builds of this locus copy, which lives inside a
+	 * reconstruction slice, as nested work of the locus that owns the slice
+	 * (PRE-G9B-CU1, {@code locus-v2-semantics.md} v1.2).
+	 *
+	 * @param sink owner instrumentation of the enclosing slice
+	 */
+	public void attachNestedSink(LocusInstrumentation2D sink) {
+		if (sink == null || nestedSink == sink) {
+			return;
+		}
+		if (nestedSink != null) {
+			throw new IllegalStateException(
+					"A nested metric reports to one slice owner only");
+		}
+		nestedSink = sink;
+		sink.recordNestedMetricComponentBuilds(componentStateBuilds);
 	}
 
 	void recordComponentStateBuildFinished() {

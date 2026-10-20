@@ -60,7 +60,7 @@ public final class LocusMetricPositionBinder2D {
 					continue;
 				}
 				try (LocusEvaluationSession2D session =
-						LocusEvaluationSession2D.reference()) {
+						LocusEvaluationSession2D.openServiceSession(false, 1)) {
 					LocusEvaluation2D evaluation = definition.evaluate(
 							branch.getBranchKey(), parameter, session);
 					if (evaluation.isValid()) {

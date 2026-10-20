@@ -23,6 +23,7 @@ public final class LocusMetricIndexKey2D {
 	private final ImproperLimitPolicy2D improperLimitPolicy;
 	private final EvaluatorOnlyPolicy evaluatorOnlyPolicy;
 	private final MetricWorkBudget2D workBudget;
+	private final String estimatorPolicySignature;
 
 	/** Creates a complete revision-scoped component key. */
 	public LocusMetricIndexKey2D(String locusIdentity, long semanticRevision,
@@ -53,6 +54,8 @@ public final class LocusMetricIndexKey2D {
 		this.improperLimitPolicy = policy.getImproperLimitPolicy();
 		this.evaluatorOnlyPolicy = policy.getEvaluatorOnlyPolicy();
 		this.workBudget = policy.getWorkBudget();
+		this.estimatorPolicySignature = policy.getEstimatorPolicy() == null
+				? "none" : policy.getEstimatorPolicy().toString();
 	}
 
 	public String getLocusIdentity() {
@@ -134,7 +137,8 @@ public final class LocusMetricIndexKey2D {
 				&& multiplicityPolicy == key.multiplicityPolicy
 				&& improperLimitPolicy.equals(key.improperLimitPolicy)
 				&& evaluatorOnlyPolicy == key.evaluatorOnlyPolicy
-				&& workBudget.equals(key.workBudget);
+				&& workBudget.equals(key.workBudget)
+				&& estimatorPolicySignature.equals(key.estimatorPolicySignature);
 	}
 
 	@Override
@@ -145,7 +149,8 @@ public final class LocusMetricIndexKey2D {
 				tolerancePolicyVersion,
 				Double.doubleToLongBits(absoluteTolerance),
 				Double.doubleToLongBits(relativeTolerance), multiplicityPolicy,
-				improperLimitPolicy, evaluatorOnlyPolicy, workBudget);
+				improperLimitPolicy, evaluatorOnlyPolicy, workBudget,
+				estimatorPolicySignature);
 	}
 
 	@Override
@@ -158,6 +163,7 @@ public final class LocusMetricIndexKey2D {
 				+ Double.toHexString(absoluteTolerance) + "/"
 				+ Double.toHexString(relativeTolerance) + "/"
 				+ multiplicityPolicy + "/" + improperLimitPolicy + "/"
-				+ evaluatorOnlyPolicy + "/" + workBudget;
+				+ evaluatorOnlyPolicy + "/" + workBudget + "/"
+				+ estimatorPolicySignature;
 	}
 }

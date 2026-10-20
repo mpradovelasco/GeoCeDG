@@ -28,6 +28,7 @@ public final class LocusMetricComponentState2D {
 	private final MetricRectifiability rectifiability;
 	private final MetricErrorEvidence2D componentErrorEvidence;
 	private final List<MetricDiagnostic2D> diagnostics;
+	private final Object capabilityExtension;
 
 	/** Creates a deeply immutable component-level state. */
 	public LocusMetricComponentState2D(LocusMetricIndexKey2D indexKey,
@@ -40,6 +41,27 @@ public final class LocusMetricComponentState2D {
 			MetricRectifiability rectifiability,
 			MetricErrorEvidence2D componentErrorEvidence,
 			List<MetricDiagnostic2D> diagnostics) {
+		this(indexKey, componentExtent, adaptivePartition, arcCoordinateEvidence,
+				capabilityMetadata, completeComponentValue, computationStatus,
+				rectifiability, componentErrorEvidence, diagnostics, null);
+	}
+
+	/**
+	 * Creates a state carrying immutable capability-specific data that only the
+	 * capability that built it interprets (PRE-G9B-CU1 policy v2: leaf points,
+	 * certified boxes or structural rates for local route queries).
+	 */
+	public LocusMetricComponentState2D(LocusMetricIndexKey2D indexKey,
+			LocusInterval2D componentExtent,
+			MetricComponentPartition2D adaptivePartition,
+			MetricArcCoordinateEvidence2D arcCoordinateEvidence,
+			MetricCapabilityMetadata2D capabilityMetadata,
+			MetricValue2D completeComponentValue,
+			MetricComputationStatus computationStatus,
+			MetricRectifiability rectifiability,
+			MetricErrorEvidence2D componentErrorEvidence,
+			List<MetricDiagnostic2D> diagnostics, Object capabilityExtension) {
+		this.capabilityExtension = capabilityExtension;
 		this.indexKey = Objects.requireNonNull(indexKey);
 		this.componentExtent = Objects.requireNonNull(componentExtent);
 		this.adaptivePartition = Objects.requireNonNull(adaptivePartition);
@@ -108,6 +130,11 @@ public final class LocusMetricComponentState2D {
 
 	public List<MetricDiagnostic2D> getDiagnostics() {
 		return diagnostics;
+	}
+
+	/** @return immutable capability-specific data, or {@code null} */
+	public Object getCapabilityExtension() {
+		return capabilityExtension;
 	}
 
 	public long getApproximateRetainedBytes() {

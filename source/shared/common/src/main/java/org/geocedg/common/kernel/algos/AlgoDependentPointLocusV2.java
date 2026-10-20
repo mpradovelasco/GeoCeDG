@@ -31,6 +31,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
 import org.geocedg.common.kernel.locus.LocusV2DomainDescriptor;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
@@ -60,6 +61,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private SemanticGeneratorDescriptor1D descriptor;
 	private SemanticGeneratorDomainProvider1D provider;
 	private ReconstructibleLocusEvaluator2D evaluator;
+	private String sliceFingerprint;
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -120,7 +122,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			}
 		}
 		try {
-			rebuildEvaluatorFromCurrentSlice();
+			synchronizeEvaluatorWithCurrentSlice();
 			return true;
 		} catch (RuntimeException exception) {
 			return false;
@@ -151,8 +153,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				candidateRevision, DefinitionStatus.VALID, provider,
 				Collections.singletonList(branch), evaluator,
 				Determinism.POINTWISE_DETERMINISTIC,
-				evaluator.getEvaluatorSignature() + "|dependency-update="
-						+ candidateRevision,
+				evaluator.getEvaluatorSignature() + "|slice=" + sliceFingerprint,
 				getLocus().getInstrumentation());
 	}
 
@@ -225,7 +226,36 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		return Collections.unmodifiableList(result);
 	}
 
-	private void rebuildEvaluatorFromCurrentSlice() {
+	/**
+	 * Keeps the published evaluator while the semantic snapshot is unchanged and
+	 * rebuilds the slice once when it changes (PRE-G9B-CU1,
+	 * {@code locus-v2-semantics.md} v1.2). The snapshot is the generator
+	 * descriptor plus the exact fingerprint of the non-driver slice inputs; the
+	 * driver position is not part of it, so moving only the driver keeps the
+	 * revision, the evaluator and every revision-keyed cache.
+	 */
+	private void synchronizeEvaluatorWithCurrentSlice() {
+		SemanticGeneratorDescriptor1D candidate = currentDescriptor();
+		List<GeoElement> slice = getReconstructionSliceGeos();
+		String fingerprint = ReconstructionSliceFingerprint2D.compute(slice,
+				java.util.Arrays.asList(state, coordinate));
+		if (evaluator != null && descriptor != null
+				&& candidate.getSemanticSignature()
+						.equals(descriptor.getSemanticSignature())
+				&& fingerprint.equals(sliceFingerprint)) {
+			return;
+		}
+		ReconstructibleLocusEvaluator2D rebuilt =
+				new ReconstructibleLocusEvaluator2D(cons, candidate, slice,
+						getLocus().getInstrumentation());
+		descriptor = candidate;
+		provider = new SemanticGeneratorDomainProvider1D(candidate);
+		evaluator = rebuilt;
+		sliceFingerprint = fingerprint;
+		getLocus().getInstrumentation().recordSliceBuild();
+	}
+
+	private SemanticGeneratorDescriptor1D currentDescriptor() {
 		SpatialIdentityRegistry registry = cons.getSpatialIdentityRegistry();
 		DomainSnapshot domain = resolveDomain();
 		List<GeoElement> required = getDurableDependencyGeos();
@@ -251,24 +281,15 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 					.append('@').append(record.getDefinitionRevision())
 					.append(':').append(record.getTopologyRevision());
 		}
-		SemanticGeneratorDescriptor1D candidate =
-				new SemanticGeneratorDescriptor1D(family,
-						requireId(dependentPoint.toGeoElement()), requireId(state),
-						requireId(coordinate), optionalId(support),
-						optionalId(domainInput), optionalId(supportBranchInput),
-						domain.supportBranchKey, domain.declared,
-						domain.components, domain.orientation, domain.periodic,
-						domain.epsilon, dependencyIds,
-						revisionSignature.toString());
-		// Rebuild on every normal-DAG update. Unregistered predecessor values are
-		// captured by the reconstructed slice, while identity authority remains
-		// confined to the direct durable roots above.
-		ReconstructibleLocusEvaluator2D rebuilt =
-				new ReconstructibleLocusEvaluator2D(cons, candidate,
-						getReconstructionSliceGeos());
-		descriptor = candidate;
-		provider = new SemanticGeneratorDomainProvider1D(candidate);
-		evaluator = rebuilt;
+		// Unregistered predecessor values are covered by the slice fingerprint,
+		// while identity authority remains confined to the direct durable roots.
+		return new SemanticGeneratorDescriptor1D(family,
+				requireId(dependentPoint.toGeoElement()), requireId(state),
+				requireId(coordinate), optionalId(support),
+				optionalId(domainInput), optionalId(supportBranchInput),
+				domain.supportBranchKey, domain.declared,
+				domain.components, domain.orientation, domain.periodic,
+				domain.epsilon, dependencyIds, revisionSignature.toString());
 	}
 
 	private DomainSnapshot resolveDomain() {

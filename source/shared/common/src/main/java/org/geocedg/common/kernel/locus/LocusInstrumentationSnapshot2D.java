@@ -24,8 +24,13 @@ public final class LocusInstrumentationSnapshot2D {
 	private final long renderEvaluations;
 	private final long wholeLocusRegenerations;
 	private final Map<String, Long> evaluatorCallsByLocus;
+	private final long equivalentRecomputes;
+	private final long nestedSliceBuilds;
+	private final long nestedRevisionPublications;
+	private final long nestedMetricComponentBuilds;
+	private final long nestedEvaluatorCalls;
 
-	/** Creates immutable evidence from all current instrumentation dimensions. */
+	/** Creates immutable evidence from the pre-CU1 instrumentation dimensions. */
 	public LocusInstrumentationSnapshot2D(long evaluatorCalls,
 			long dependencySliceBuilds, long dependencySliceSynchronizations,
 			long dependencyUpdates, long duplicatedRequests, long sessionHits,
@@ -33,6 +38,30 @@ public final class LocusInstrumentationSnapshot2D {
 			long revisionConsumptions, long renderEvaluations,
 			long wholeLocusRegenerations,
 			Map<String, Long> evaluatorCallsByLocus) {
+		this(evaluatorCalls, dependencySliceBuilds, dependencySliceSynchronizations,
+				dependencyUpdates, duplicatedRequests, sessionHits, sessionMisses,
+				revisionPublications, revisionConsumptions, renderEvaluations,
+				wholeLocusRegenerations, evaluatorCallsByLocus, 0, 0, 0, 0, 0);
+	}
+
+	/**
+	 * Creates immutable evidence including the PRE-G9B-CU1 equivalent-recompute
+	 * and aggregated nested-work counters.
+	 */
+	public LocusInstrumentationSnapshot2D(long evaluatorCalls,
+			long dependencySliceBuilds, long dependencySliceSynchronizations,
+			long dependencyUpdates, long duplicatedRequests, long sessionHits,
+			long sessionMisses, long revisionPublications,
+			long revisionConsumptions, long renderEvaluations,
+			long wholeLocusRegenerations,
+			Map<String, Long> evaluatorCallsByLocus, long equivalentRecomputes,
+			long nestedSliceBuilds, long nestedRevisionPublications,
+			long nestedMetricComponentBuilds, long nestedEvaluatorCalls) {
+		this.equivalentRecomputes = equivalentRecomputes;
+		this.nestedSliceBuilds = nestedSliceBuilds;
+		this.nestedRevisionPublications = nestedRevisionPublications;
+		this.nestedMetricComponentBuilds = nestedMetricComponentBuilds;
+		this.nestedEvaluatorCalls = nestedEvaluatorCalls;
 		this.evaluatorCalls = evaluatorCalls;
 		this.dependencySliceBuilds = dependencySliceBuilds;
 		this.dependencySliceSynchronizations = dependencySliceSynchronizations;
@@ -95,5 +124,25 @@ public final class LocusInstrumentationSnapshot2D {
 
 	public Map<String, Long> getEvaluatorCallsByLocus() {
 		return evaluatorCallsByLocus;
+	}
+
+	public long getEquivalentRecomputes() {
+		return equivalentRecomputes;
+	}
+
+	public long getNestedSliceBuilds() {
+		return nestedSliceBuilds;
+	}
+
+	public long getNestedRevisionPublications() {
+		return nestedRevisionPublications;
+	}
+
+	public long getNestedMetricComponentBuilds() {
+		return nestedMetricComponentBuilds;
+	}
+
+	public long getNestedEvaluatorCalls() {
+		return nestedEvaluatorCalls;
 	}
 }

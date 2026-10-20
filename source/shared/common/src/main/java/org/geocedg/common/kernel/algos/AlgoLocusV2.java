@@ -98,6 +98,7 @@ public abstract class AlgoLocusV2 extends AlgoElement
 			locus.getInstrumentation().recordRevisionPublication();
 		} else {
 			locus.restoreDefinedStateAfterEquivalentRecompute();
+			locus.getInstrumentation().recordEquivalentRecompute();
 		}
 	}
 

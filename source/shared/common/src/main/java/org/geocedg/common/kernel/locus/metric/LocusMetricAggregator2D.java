@@ -196,12 +196,14 @@ public final class LocusMetricAggregator2D {
 				coverage == MetricCoverage.COMPLETE
 						? MetricErrorEvidenceScope.COMPLETE_VALUE
 						: MetricErrorEvidenceScope.REPORTED_PARTIAL_VALUE;
+		Optional<Double> tolerance = sumTolerances(contributions);
+		Optional<MetricEnclosure2D> enclosure = sumEnclosures(contributions);
 		if (!amountsEstablished) {
 			return new MetricErrorEvidence2D(Optional.of(weakest),
 					new NotEstablishedMetricErrorAmount2D(),
 					new NotEstablishedMetricErrorAmount2D(), scope,
 					"aggregate of component error evidence", assumptions,
-					Optional.empty());
+					Optional.empty(), tolerance, enclosure);
 		}
 		double finiteValue = value.getFiniteValue().orElseThrow();
 		double relative = finiteValue == 0 ? 0 : absolute / finiteValue;
@@ -209,9 +211,54 @@ public final class LocusMetricAggregator2D {
 				&& assumptions.isEmpty()) {
 			assumptions.add("component estimates use their declared assumptions");
 		}
-		return MetricErrorEvidence2D.established(weakest, absolute, relative,
+		MetricErrorEvidence2D established = MetricErrorEvidence2D.established(
+				weakest, absolute, relative,
 				"stable sum of component error evidence", assumptions,
 				Optional.empty(), scope);
+		if (tolerance.isPresent()) {
+			established = established.withRequestedTolerance(tolerance.get());
+		}
+		if (enclosure.isPresent()) {
+			established = established.withRigorousEnclosure(enclosure.get());
+		}
+		return established;
+	}
+
+	/**
+	 * PRE-G9B-CU1 (sections 25.3a and 25.9): the requested tolerance of an aggregate is the
+	 * sum of the shares of its contributions, recorded only when every
+	 * contribution records one.
+	 */
+	private static Optional<Double> sumTolerances(
+			List<LocusMetricContribution2D> contributions) {
+		double sum = 0;
+		for (LocusMetricContribution2D contribution : contributions) {
+			Optional<Double> share =
+					contribution.getErrorEvidence().getRequestedTolerance();
+			if (share.isEmpty()) {
+				return Optional.empty();
+			}
+			sum += share.get();
+		}
+		return Optional.of(sum);
+	}
+
+	/**
+	 * PRE-G9B-CU1 (section 25.4): rigorous enclosures add outward; the aggregate keeps
+	 * one only when every contribution carries one.
+	 */
+	private static Optional<MetricEnclosure2D> sumEnclosures(
+			List<LocusMetricContribution2D> contributions) {
+		MetricEnclosure2D sum = null;
+		for (LocusMetricContribution2D contribution : contributions) {
+			Optional<MetricEnclosure2D> enclosure =
+					contribution.getErrorEvidence().getRigorousEnclosure();
+			if (enclosure.isEmpty()) {
+				return Optional.empty();
+			}
+			sum = sum == null ? enclosure.get() : sum.plus(enclosure.get());
+		}
+		return Optional.ofNullable(sum);
 	}
 
 	private static NumericGuarantee weakest(NumericGuarantee left,

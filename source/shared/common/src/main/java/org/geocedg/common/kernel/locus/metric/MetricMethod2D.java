@@ -11,5 +11,7 @@ public enum MetricMethod2D {
 	ADAPTIVE_DIFFERENTIAL_QUADRATURE,
 	ADAPTIVE_EVALUATOR_METRIC,
 	IMPROPER_LIMIT,
+	/** PRE-G9B-CU1 section 25.1 class 2: rigorous cone enclosure. */
+	CERTIFIED_CONE_ENCLOSURE,
 	NONE
 }

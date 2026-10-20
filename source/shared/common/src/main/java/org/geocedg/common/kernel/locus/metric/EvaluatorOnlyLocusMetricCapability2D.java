@@ -98,7 +98,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 		Context context = new Context(definition, branch.getBranchKey(),
 				policy, instrumentation);
 		try (LocusEvaluationSession2D session =
-				LocusEvaluationSession2D.reference()) {
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
 			context.session = session;
 			double lower = component.getLower();
 			double upper = component.getUpper();
@@ -116,6 +116,9 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 							MetricDiagnosticCode2D.WORK_BUDGET_EXHAUSTED,
 							"Evaluator-only component exceeded "
 									+ exception.limit)));
+		} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
+			// A caller's session limit depends on the caller: never memoized.
+			throw exception;
 		} catch (LocusMetricComponentBuildException exception) {
 			throw exception;
 		} catch (RuntimeException exception) {
@@ -342,7 +345,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 		Context context = new Context(currentDefinition, state.getBranchKey(),
 				policy, instrumentation);
 		try (LocusEvaluationSession2D session =
-				LocusEvaluationSession2D.reference()) {
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
 			context.session = session;
 			double middle = midpoint(lower, upper);
 			LocusPoint2D start = context.evaluate(lower);
@@ -364,6 +367,8 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 							MetricDiagnosticCode2D.WORK_BUDGET_EXHAUSTED,
 							"Evaluator-only route exceeded "
 									+ exception.limit)));
+		} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
+			throw exception;
 		} catch (LocusMetricComponentBuildException exception) {
 			throw exception;
 		} catch (RuntimeException exception) {

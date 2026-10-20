@@ -26,7 +26,8 @@ import org.junit.jupiter.api.io.TempDir;
  * (reference evidence, not normative): B10.1, the per-point rebuild of the nested copy of
  * {@code o_1} and of its metric index (owner CU1); B10.2, the compatibility certificate that
  * declares {@code e_2} one closed periodic component and the render segment across the
- * oriented-length reset (owner CU2).
+ * oriented-length reset (owner CU2). PRE-G9B-CU1 inverted B10.1; the committed baseline keeps
+ * its pinned signature as historical evidence.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -48,19 +49,22 @@ class PreG9BCu0CompositionCharacterizationTest {
 		PreG9BCu0Baseline.assertMatches("preserve.e_2",
 				PreG9BCu0Baseline.at(baseline, "preserve", "e_2"), values.get("e_2"),
 				PreG9BCu0References.LENGTH_TOLERANCE);
+		// PRE-G9B-CU1 inversion of B10.1 (locus-v2-semantics.md v1.2): a point query of e_2
+		// reuses the nested copy of o_1 and its metric states, and the outer slice of e_2 is
+		// built once per revision and counted.
 		Map<?, ?> pin = (Map<?, ?>) values.get("B10.1");
 		for (Object step : (List<?>) pin.get("single_point_evaluations")) {
 			Map<?, ?> row = (Map<?, ?>) step;
-			assertTrue(((Number) row.get("nested_revision_delta")).longValue() >= 1,
-					PreG9BCu0Baseline.pinMessage("B10.1", "CU1",
-							"one point query of e_2 republishes the nested copy of o_1"));
-			assertTrue(((Number) row.get("nested_metric_builds_delta")).longValue() >= 1,
-					PreG9BCu0Baseline.pinMessage("B10.1", "CU1",
-							"one point query of e_2 rebuilds the nested metric index"));
+			assertEquals(0L, ((Number) row.get("nested_revision_delta")).longValue(),
+					PreG9BCu0Baseline.inversionMessage("B10.1", "CU1",
+							"one point query of e_2 keeps the nested copy of o_1"));
+			assertEquals(0L, ((Number) row.get("nested_metric_builds_delta")).longValue(),
+					PreG9BCu0Baseline.inversionMessage("B10.1", "CU1",
+							"one point query of e_2 reuses the nested metric states"));
 		}
-		assertEquals(0L, ((Number) pin.get("outer_dependency_slice_builds")).longValue(),
-				PreG9BCu0Baseline.pinMessage("B10.1", "CU1",
-						"the outer slice counters do not see the nested work"));
+		assertEquals(1L, ((Number) pin.get("outer_dependency_slice_builds")).longValue(),
+				PreG9BCu0Baseline.inversionMessage("B10.1", "CU1",
+						"the outer slice is built once and counted"));
 	}
 
 	@Test

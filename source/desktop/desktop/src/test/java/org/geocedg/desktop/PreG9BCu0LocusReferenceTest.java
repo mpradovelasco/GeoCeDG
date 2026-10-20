@@ -24,7 +24,8 @@ import org.junit.jupiter.api.io.TempDir;
  * PRE-G9B-CU0 references of the author model without {@code e_2} (derived variant, see
  * {@link PreG9BCu0Corpus#withoutE2}): preserved geometric facts and the characterization pins
  * of B06, B07, H01, H03 and B08/B09. Preserved values must survive the corrections of the
- * track; pins name their owning package and are inverted or replaced by it.
+ * track; pins name their owning package and are inverted or replaced by it. PRE-G9B-CU1
+ * inverted H03; the committed baseline keeps its pinned signature as historical evidence.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -49,12 +50,15 @@ class PreG9BCu0LocusReferenceTest {
 		PreG9BCu0Baseline.assertMatches("preserve.loci",
 				PreG9BCu0Baseline.at(baseline, "preserve", "loci"), values.get("loci"),
 				PreG9BCu0References.POINT_TOLERANCE);
+		// PRE-G9B-CU1 inversion of H03 (locus-v2-semantics.md v1.2, decision D-CU1-8): a pure
+		// driver move is not a semantic change of o_1.
 		Map<?, ?> churn = (Map<?, ?>) values.get("H03");
-		assertTrue(((Number) churn.get("o_1_revision_delta_on_driver_move")).longValue() >= 1,
-				PreG9BCu0Baseline.pinMessage("H03", "CU1", "a pure driver move republishes o_1"));
-		assertTrue(((Number) churn.get("o_1_metric_builds_delta_on_driver_move")).longValue()
-				>= 1, PreG9BCu0Baseline.pinMessage("H03", "CU1",
-						"a pure driver move rebuilds the metric index of o_1"));
+		assertEquals(0L, ((Number) churn.get("o_1_revision_delta_on_driver_move")).longValue(),
+				PreG9BCu0Baseline.inversionMessage("H03", "CU1",
+						"a pure driver move keeps the revision of o_1"));
+		assertEquals(0L, ((Number) churn.get("o_1_metric_builds_delta_on_driver_move"))
+				.longValue(), PreG9BCu0Baseline.inversionMessage("H03", "CU1",
+						"a pure driver move keeps the metric states of o_1"));
 	}
 
 	/**

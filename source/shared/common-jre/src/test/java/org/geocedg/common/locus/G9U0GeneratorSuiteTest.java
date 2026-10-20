@@ -356,15 +356,28 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void g21NestedQueryCountersAreDeterministic() {
-		GeoLocusV2 locus = createParabola();
+		// PRE-G9B-CU1 conformance (locus-v2-semantics.md v1.2, decision D-CU1-8):
+		// an update without a semantic change keeps the revision and the metric
+		// component state, so it repeats no evaluator work; identical semantic
+		// changes repeat identical, positive work.
+		add("k=1");
+		GeoLocusV2 locus = createScalarLocus("L", "s", "Q", "(s,k*s^2)",
+				"{false,{-2,2,true,true}}");
 		var metric = totalMetric(locus);
+		GeoNumeric coefficient = (GeoNumeric) requireLookup("k");
 		locus.getInstrumentation().reset();
 		locus.getParentAlgorithm().update();
 		metric.getParentAlgorithm().update();
+		assertEquals(0, locus.getInstrumentation().getEvaluatorCalls());
+		locus.getInstrumentation().reset();
+		coefficient.setValue(2);
+		coefficient.updateCascade();
 		long first = locus.getInstrumentation().getEvaluatorCalls();
+		coefficient.setValue(1);
+		coefficient.updateCascade();
 		locus.getInstrumentation().reset();
-		locus.getParentAlgorithm().update();
-		metric.getParentAlgorithm().update();
+		coefficient.setValue(2);
+		coefficient.updateCascade();
 		long second = locus.getInstrumentation().getEvaluatorCalls();
 		assertTrue(first > 0);
 		assertEquals(first, second);

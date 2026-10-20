@@ -89,6 +89,10 @@ public final class LocusMetricIntegrator2D {
 					context.subdivisions,
 					"Deterministic metric work budget exhausted: "
 							+ exception.limit);
+		} catch (org.geocedg.common.kernel.locus.LocusEvaluationSession2D
+				.EvaluationWorkLimitException exception) {
+			// A caller's session limit depends on the caller: never memoized.
+			throw exception;
 		} catch (RuntimeException exception) {
 			return failure(MetricComputationStatus.NUMERICAL_FAILURE,
 					MetricWorkLimit2D.NONE, lower, upper, context.evaluations,

@@ -54,6 +54,14 @@ final class PreG9BCu0Baseline {
 				+ " not a normative expectation): " + detail;
 	}
 
+	/**
+	 * Message of a pin inverted by its owning package: the committed baseline keeps the
+	 * pinned signature as historical evidence and the test asserts the corrected behaviour.
+	 */
+	static String inversionMessage(String incidence, String owner, String detail) {
+		return "PIN " + incidence + " INVERTED BY " + owner + ": " + detail;
+	}
+
 	/** Structural equality with absolute numeric tolerance; {@code where} names the path. */
 	static void assertMatches(String where, Object expected, Object actual, double tolerance)
 			throws JSONException {

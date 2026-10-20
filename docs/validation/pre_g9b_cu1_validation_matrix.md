@@ -120,3 +120,33 @@ Clase `INTEGRATED_PHASE` (C1-3). El candidato congelado se verifica con:
   clasificación sea honesta.
 - La certificación de `o_1` y de `e_2`, que depende de la clase v3 de `CU2` (DEP-1).
 - El rendimiento en máquinas distintas: G8 es informativa.
+
+## 5. Notas del candidato de implementación (2026-10-20)
+
+La implementación ejecutó la matriz con estas precisiones, que el
+[informe del candidato](pre_g9b_cu1_implementation_candidate_report.md) detalla:
+
+- **V-CACHE-1.** `excCyl` no es antecesor de la cadena `o_1 → d_2 → e_2`: solo alimenta la
+  familia del cilindro. El cambio que debe invalidar es el del punto libre `D_1`, antecesor
+  de `o_1`; el de `excCyl` comprueba que un cambio fuera de la cadena no publica revisión ni
+  reconstruye estados (G1).
+- **V-INV-1.** Con escala 1, una traslación de `10⁶` sitúa el redondeo de las coordenadas
+  (`ulp(10⁶) ≈ 1,2·10⁻¹⁰`) por encima de las cuotas de las hojas: la estimación de clase 3
+  falla cerrada con `CONSISTENCY_NOT_ESTABLISHED`. Hasta `10⁵` se conservan la clase, el valor y
+  el trabajo, y las escalas `10³` y `10⁶` trasladadas `10⁶` cumplen la fila. La clase 1 no se ve
+  afectada. Queda fijado por prueba y como decisión autoral pendiente.
+- **V-MET-STRUCT-1 y V-CERT-RIGOR.** La referencia rigurosa es la longitud semántica exacta del
+  programa capturado, calculada en aritmética decimal: el dominio binario64
+  `[−fl(π), fl(π)]` es `2,4·10⁻¹⁶` más corto que `2π`. `2π·λ·r` se comprueba como verdad
+  geométrica con tolerancia relativa `10⁻¹⁴`.
+- **V-MET-STRUCT-2.** El certificado afín del proveedor reconoce solo las formas directas
+  `(u, c)`, `(c, u)` y `(u, u)`. Una expresión afín como `(2u+1, 3u−1)` sigue siendo una
+  estimación honesta, también fijada por prueba.
+- **N3, inversiones de dirección.** El pie de una perpendicular invierte su dirección dos
+  veces; una inversión próxima a una muestra oculta el mismo exceso a todos los niveles. El
+  estimador localiza las inversiones y las usa como fronteras de la partición
+  (`locus-v2-metrics.md` §25.12).
+- **V-CU0-2.** Los pines `B10.1`, `H03` y `H10_H11` se invierten sin renombrar métodos, de modo
+  que las identidades de la selección `pre-g9b-cu0.desktop` no cambian. La línea base de `CU0`
+  conserva las firmas fijadas como evidencia histórica y ningún valor `preserve` cambia fuera de
+  sus tolerancias.

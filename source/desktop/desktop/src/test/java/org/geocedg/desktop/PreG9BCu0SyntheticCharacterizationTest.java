@@ -53,25 +53,31 @@ class PreG9BCu0SyntheticCharacterizationTest {
 		JSONObject baseline = PreG9BCu0Baseline.load();
 		Map<String, Object> pin = PreG9BR6PlusF3Fixtures.onEdt(
 				PreG9BCu0References::metricConformance);
-		PreG9BCu0Baseline.assertMatches("pins.H10_H11",
-				baseline.getJSONObject("pins").get("H10_H11"), pin, 1e-9);
-		for (Object row : ((Map<?, ?>) pin.get("sinus_on_unit_segment")).values()) {
-			Map<?, ?> values = (Map<?, ?>) row;
-			assertTrue((Double) values.get("reference_length") > 4);
-			assertEquals(1.0, (Double) values.get("reported_length"), 1e-9,
-					PreG9BCu0Baseline.pinMessage("H10", "CU1",
-							"the reported length is the chord, not the arc length"));
+		// PRE-G9B-CU1 inversion of H10/H11 (locus-v2-metrics.md 25): the geometric truth
+		// recorded by the baseline is unchanged, and the reported lengths now reach it. The
+		// baseline keeps the pinned chord lengths and missing values as historical evidence.
+		JSONObject pinned = baseline.getJSONObject("pins").getJSONObject("H10_H11");
+		Map<?, ?> sinus = (Map<?, ?>) pin.get("sinus_on_unit_segment");
+		for (Object key : sinus.keySet()) {
+			Map<?, ?> values = (Map<?, ?>) sinus.get(key);
+			double reference = (Double) values.get("reference_length");
+			assertEquals(pinned.getJSONObject("sinus_on_unit_segment")
+					.getJSONObject(String.valueOf(key)).getDouble("reference_length"),
+					reference, 1e-9, "reference " + key);
+			assertTrue(reference > 4);
+			assertEquals(reference, (Double) values.get("reported_length"), 1e-7,
+					PreG9BCu0Baseline.inversionMessage("H10", "CU1",
+							key + ": the reported length is the arc length, not the chord"));
 		}
 		Map<?, ?> circles = (Map<?, ?>) pin.get("circle_radius");
-		for (String radius : new String[] {"1.0", "7.0"}) {
+		for (String radius : new String[] {"1.0", "7.0", "8.0", "20.0"}) {
 			Map<?, ?> values = (Map<?, ?>) circles.get(radius);
-			assertEquals((Double) values.get("reference_length"),
-					(Double) values.get("reported_length"), 1e-6, "radius " + radius);
-		}
-		for (String radius : new String[] {"8.0", "20.0"}) {
-			assertEquals(null, ((Map<?, ?>) circles.get(radius)).get("reported_length"),
-					PreG9BCu0Baseline.pinMessage("H11", "CU1", "radius " + radius
-							+ ": the metric work budget is exhausted"));
+			double reference = (Double) values.get("reference_length");
+			assertEquals(pinned.getJSONObject("circle_radius").getJSONObject(radius)
+					.getDouble("reference_length"), reference, 1e-9, "reference " + radius);
+			assertEquals(reference, (Double) values.get("reported_length"),
+					1e-12 * reference, PreG9BCu0Baseline.inversionMessage("H11", "CU1",
+							"radius " + radius + ": the structural length is defined"));
 		}
 	}
 

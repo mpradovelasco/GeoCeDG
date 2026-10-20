@@ -6444,19 +6444,19 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0LocusReferenceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU0 preserved references and pins of the author model without e_2: locus samples, oriented length, branch ends, contacts, B06, B07, H01, H03 and B08/B09.",
+      "purpose": "PRE-G9B-CU0 preserved references and pins of the author model without e_2: locus samples, oriented length, branch ends, contacts, B06, B07, H01, H03 and B08/B09. PRE-G9B-CU1 inverts H03.",
       "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0CompositionCharacterizationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU0 complete author model: preserved e_2 points and pins of B10.1 (nested rebuild per point query) and B10.2 (closed periodic certificate and render segment across the oriented-length reset).",
+      "purpose": "PRE-G9B-CU0 complete author model: preserved e_2 points and pins of B10.1 (nested rebuild per point query) and B10.2 (closed periodic certificate and render segment across the oriented-length reset). PRE-G9B-CU1 inverts B10.1.",
       "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0SyntheticCharacterizationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion.",
+      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion. PRE-G9B-CU1 inverts H10 and H11.",
       "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
     },
     {
@@ -6470,6 +6470,102 @@
       "change": "added",
       "purpose": "PRE-G9B-CU0 integrity of the initial user-guide coverage matrix: every profile action once, every cited anchor present in its edition, consistent totals.",
       "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructionSliceFingerprint2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 exact deterministic fingerprint of a reconstruction slice (A1.1-R): the slice is rebuilt and a revision is published only when a non-driver input changes.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedCurveEnclosure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 read-only public facade over the certified interval curve models for the class 2 metric enclosure; the models and their contract are unchanged.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/CertifiedConeEnclosure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 certified cone enclosure of class 2 over the certified interval curve models (section 25.1).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricEstimator2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 estimator v2 of class 3, evaluator-only and differential (sections 25.3 and 25.7, N3).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricEnclosure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 rigorous metric enclosure retained as evidence of the rich result (section 25.4).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricEstimatorPolicy2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 versioned estimator v2 constants: minimum depth, probe fraction, safety factor and enclosure box budget (section 25.3).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricGuaranteeClass2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 metric guarantee classes (section 25.1).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricLinearPart2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 outward 2x2 linear parts with rigorous singular-value bounds for structural identities and similarity length factors (sections 25.1 and 25.6).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricOutwardArithmetic2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 outward-rounded binary64 operations of the certified metric classes (N5).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricOutwardInterval2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 closed outward intervals of the certified metric classes (N5).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/PolicyV2LocusMetricCapability2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 public metric capability of policy v2: capability order, tolerance-conditioned evidence, similarity images (N1) and between-position routes on cached states (section 25).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/StructuralLocusMetric2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 structural metric identities of class 1 from certified affine coefficients and captured construction programs (section 25.1).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu1EstimatorTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 estimator v2: coherent estimates, adversarial curves, invariance regimes, determinism and memoized budget failures (V-MET-EST, V-ADV, V-INV, V-DET-1, V-BUD-1).",
+      "authority": "docs/validation/pre_g9b_cu1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu1MetricClassesTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 metric guarantee classes: structural driver similarities and affine images, similarity images (N1), certified enclosures, SplineV2 and scalar admissibility (V-MET-STRUCT, V-MET-ENCL, V-TRANS-1, V-CERT-RIGOR, V-ADM-1).",
+      "authority": "docs/validation/pre_g9b_cu1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu1RevisionAndSessionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 revisions per non-driver input class, random slices and slice-scoped sessions (V-REV-2, V-REV-3, V-SESS-1, V-SESS-2).",
+      "authority": "docs/validation/pre_g9b_cu1_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu1AcceptanceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU1 acceptance on the author model: driver-move stability, nested slice reuse and local work of e_2, cache invalidation against a fresh document, estimate contract, length of o_1 and its budget share (V-REV-1, V-SLICE-1, V-NEST-1, V-NEST-2, V-CACHE-1, V-DAG-1, V-MET-EST-3).",
+      "authority": "docs/validation/pre_g9b_cu1_validation_matrix.md"
     }
   ]
 }
