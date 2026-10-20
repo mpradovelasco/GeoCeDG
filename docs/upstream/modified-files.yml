@@ -6126,7 +6126,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusE3IsoABorderDesktopTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-E3 Desktop tests in child JVMs: profile, tool and undo, unit gate, capture and reopen, frame rules, link lifecycle, producer precedence, coherence, physical export, indicators, Classic surface, legacy coexistence and EN/ES names; it also hosts the child-JVM execution of the E3 GGBScript matrix rows. PRE-G9B-R6-plus-F1: catalog count 131. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F3: catalog pin 133.",
+      "purpose": "PRE-G9B-R6-plus-E3 Desktop tests in child JVMs: profile, tool and undo, unit gate, capture and reopen, frame rules, link lifecycle, producer precedence, coherence, physical export, indicators, Classic surface, legacy coexistence and EN/ES names; it also hosts the child-JVM execution of the E3 GGBScript matrix rows. PRE-G9B-R6-plus-F1: catalog count 131. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F3: catalog pin 133. PRE-G9B-CU1 (author decision D-CU1-R6): the tool scenario commits an undo baseline and awaits the creation's asynchronous undo store before undoing. Authority: docs/validation/pre_g9b_cu1_corrective_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_e3_candidate_report.md"
     },
     {

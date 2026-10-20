@@ -84,6 +84,8 @@ class PreG9BR6PlusE3IsoABorderDesktopTest {
 	/** Scenario prefix that executes GGBScript matrix rows of one test method. */
 	static final String MATRIX_ROWS = "matrixRows-";
 	private static final int SCENARIO_TIMEOUT_SECONDS = 300;
+	/** Bound of the wait for an undo store event; it only reports a missing store. */
+	private static final int UNDO_STORE_TIMEOUT_SECONDS = 60;
 	private static final String DASH = String.valueOf((char) 0x2014);
 
 	@TempDir
@@ -440,13 +442,26 @@ class PreG9BR6PlusE3IsoABorderDesktopTest {
 
 		void tool() throws Exception {
 			AppGeoCeDG app = app(mm(), DrawingScale.of(1, 50));
-			FakePrompt prompt = prompt(app, 3, true, DrawingScale.of(1, 50), true, true,
-					false);
+			final FakePrompt prompt = prompt(app, 3, true, DrawingScale.of(1, 50), true,
+					true, false);
 			GeoPoint p = (GeoPoint) eval(app, "P=(10,20)");
+			// The Desktop undo manager stores every undo point on its own thread: the
+			// history starts from a committed baseline, and Undo runs only after the
+			// creation's store has landed (PRE-G9B-CU1, decision D-CU1-R6).
+			UndoManagerD undo = (UndoManagerD) app.getKernel().getConstruction()
+					.getUndoManager();
+			try (UndoManagerD.PreparedUndoBaseline baseline = undo.prepareUndoBaseline()) {
+				undo.commitUndoBaseline(baseline);
+			}
+			CountDownLatch stored = new CountDownLatch(1);
+			undo.addUndoInfoStoredListener(stored::countDown);
 			app.setMode(EuclidianConstants.MODE_ISO_A_BORDER);
 			AtomicInteger commits = new AtomicInteger();
 			assertTrue(click(controller(app), p, commits));
 			assertEquals(1, commits.get(), "one undo point");
+			assertTrue(stored.await(UNDO_STORE_TIMEOUT_SECONDS, TimeUnit.SECONDS),
+					"the creation stored its undo point");
+			assertEquals(1, undo.getHistorySize(), "one undo step after the baseline");
 			assertEquals(EuclidianConstants.MODE_MOVE, app.getMode(), "one-shot mode");
 			AlgoIsoABorder algo = only(app);
 			assertEquals(DrawingScale.of(1, 50), prompt.offered.scale(),
@@ -470,6 +485,8 @@ class PreG9BR6PlusE3IsoABorderDesktopTest {
 					+ " a5=\"1.0\" a6=\"true\"/>"), xml);
 			app.getKernel().undo();
 			assertEquals(0, sheets(app).size(), "undo removes the whole sheet");
+			assertNotNull(app.getKernel().lookupLabel("P"),
+					"undo keeps the construction before the creation");
 			app.getKernel().redo();
 			assertEquals(1, sheets(app).size());
 			// a single preselected point skips the click; the registry stores one undo point
