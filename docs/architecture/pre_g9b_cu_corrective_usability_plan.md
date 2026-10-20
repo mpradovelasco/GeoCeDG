@@ -5,7 +5,7 @@
 | Carácter | Plan vivo del track `PRE-G9B-CU`. No es especificación normativa: las decisiones arquitectónicas se incorporan a sus especificaciones mediante el procedimiento de revisión y aprobación |
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
-| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); preparación arquitectónica, normativa y técnica de `CU2` autorizada sin implementación; `CU3`–`CU10` **no autorizados** |
+| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); preparación arquitectónica, normativa y técnica de `CU2` ejecutada como candidato pendiente de revisión autoral ([informe](../validation/pre_g9b_cu2_preparation_candidate_report.md)), sin implementación autorizada; `CU3`–`CU10` **no autorizados** |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
 | Evidencia | [informe de caracterización inicial](../validation/pre_g9b_cu_characterization_evidence_report.md); [informe del candidato CU0](../validation/pre_g9b_cu0_baseline_candidate_report.md); [línea base geométrica](../../geocedg/validation/pre-g9b-cu/cu0-geometric-reference-baseline.json) |
@@ -155,9 +155,16 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
 - **Estado:** preparación arquitectónica, normativa y técnica autorizada el 2026-10-20 por
   la instrucción de cierre de `CU1` (§2.2), desde el cierre exacto de `CU1`; implementación
   no autorizada. Las propuestas normativas de la preparación serán candidatas hasta su
-  aprobación específica.
-- **Prerrequisitos:** `CU1`; aprobación de la especificación de certificación híbrida
-  (DA-1) y de las decisiones E-1 a E-3 y D-1.
+  aprobación específica. El candidato de preparación se ejecutó el 2026-10-20 en la rama
+  local `phase/pre-g9b-cu2-preparation` y está pendiente de revisión autoral
+  ([informe](../validation/pre_g9b_cu2_preparation_candidate_report.md),
+  [propuesta normativa](pre_g9b_cu2_normative_proposal.md),
+  [estrategia](pre_g9b_cu2_implementation_strategy.md),
+  [matriz](../validation/pre_g9b_cu2_validation_matrix.md),
+  [hoja de decisiones](../validation/pre_g9b_cu2_author_decision_sheet.md)).
+- **Prerrequisitos:** `CU1`; aprobación de la propuesta normativa de `CU2`, del ADR 0038 y
+  de las decisiones D-CU2-1 a D-CU2-15 y E-1 a E-3. E-0 y D-1 de `CU0` quedan sustituidas
+  por D-CU2-1 a D-CU2-3.
 - **Condiciones de la autorización de 2026-10-20:** la certificación no se deriva solo del
   muestreo y la evidencia exploratoria no adquiere autoridad semántica; ADR 0027 y la
   independencia entre admisibilidad local y completitud global se preservan; una longitud
@@ -288,9 +295,10 @@ modifican.
 
 Las decisiones C1-0 a C1-4 quedaron resueltas el 2026-10-20 (§2.1), y las de `CU1`
 (D-CU1-1 a D-CU1-12 y D-CU1-R1 a D-CU1-R6) con su cierre (§2.2). Las decisiones de la
-preparación de `CU2` se reunirán en su propia hoja de decisiones. Las de `CU0` que afectan a
-`CU2`/`CU3` siguen en la
-[hoja de decisiones](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
+preparación de `CU2` están en su
+[hoja de decisiones](../validation/pre_g9b_cu2_author_decision_sheet.md), que recoge también
+E-1 a E-3 de `CU0`. Las de `CU0` que afectan a `CU3` siguen en la
+[hoja de decisiones de `CU0`](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
 precisión de `OBS-CU0-CU3-TANGENT-EXISTENCE` sobre F-2; el texto de las enmiendas
 candidatas de `CU0` está en las
 [enmiendas normativas candidatas](pre_g9b_cu0_candidate_normative_amendments.md).
