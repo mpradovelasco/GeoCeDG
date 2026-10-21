@@ -6698,6 +6698,114 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T3 on the author model: class-v3 programs of every slice within the step limit and the selection rules of its intersections (V-V3-4, V-SEL-1 to V-SEL-5, V-COINC-1).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/CircleDriverRootStructure2DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of CircleDriverRootStructure2D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/ExactPolynomial1DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of ExactPolynomial1D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/ExactRational2DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of ExactRational2D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/RealRootStructure1DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of RealRootStructure1D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/SegmentDriverRootStructure2DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of SegmentDriverRootStructure2D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/SquareFreeDecomposition1DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of SquareFreeDecomposition1D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/SturmSequence1DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of SturmSequence1D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/exact/TrigonometricPolynomial2DTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: tests of TrigonometricPolynomial2D (exact algebraic certificate, design section 4.6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/CircleDriverRootStructure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): exact classification of a first-level predicate over a circle driver, with the seam analysed exactly.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/ExactBudget1D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): versioned work budget of the exact certificate (coefficient bits and bisections).",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/ExactBudgetExhaustedException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): typed exhaustion of the exact-certificate budget, which decides nothing.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/ExactPolynomial1D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): univariate polynomials over exact rationals: arithmetic, derivative, division, greatest common divisor and exact signs.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/ExactRational2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): exact rationals over BigInteger, built from binary64 values without rounding.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/RealRootStructure1D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): exact real-root structure: isolating rational intervals, multiplicities, gap signs and work counters (method exact-univariate-sturm/v1).",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/SegmentDriverRootStructure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): exact classification of a first-level predicate over a segment driver.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/SquareFreeDecomposition1D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): square-free decomposition (Yun) giving the multiplicity classes of the roots.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/SturmSequence1D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): Sturm sequence of a square-free polynomial for exact counts of distinct real roots.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/TrigonometricPolynomial2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): polynomials in cos t and sin t with exact coefficients and their tangent half-angle form.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     }
   ]
 }
