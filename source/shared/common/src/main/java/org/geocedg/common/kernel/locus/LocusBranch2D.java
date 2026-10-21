@@ -33,7 +33,8 @@ public final class LocusBranch2D {
 			Set<BranchProperty> properties, LocusQuality2D quality) {
 		this(branchKey, declaredDriverDomain,
 				LocusExistenceStructure2D.completeCompatibility(branchKey,
-						declaredDriverDomain, validDomainComponents),
+						declaredDriverDomain, validDomainComponents,
+						properties != null && properties.contains(BranchProperty.PERIODIC)),
 				orientation, provenance, lineage, properties, quality);
 	}
 
@@ -71,7 +72,10 @@ public final class LocusBranch2D {
 	}
 
 	/**
-	 * Compatibility view of globally complete continuous-valid components.
+	 * Compatibility view of globally complete continuous-valid components. Since
+	 * PRE-G9B-CU2 it is a legacy adapter: an arc is one lifted interval from its start,
+	 * point components are never listed, and closure is decided only by
+	 * {@link LocusExistenceStructure2D#isClosedPeriodic()}.
 	 *
 	 * @return complete components, or an empty list when global completeness is
 	 *         not established
@@ -91,7 +95,7 @@ public final class LocusBranch2D {
 
 	/**
 	 * @return locally certified continuous-valid intervals, irrespective of global
-	 *         completeness
+	 *         completeness; a legacy adapter like {@link #getValidDomainComponents()}
 	 */
 	public List<LocusInterval2D> getCertifiedContinuousValidComponents() {
 		return componentIntervals();

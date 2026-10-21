@@ -6596,6 +6596,48 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T1, D-CU2-20-R focal characterization on the author model: one-ulp changes of excCyl, exact independent inputs of every model slice and the line-conic selection states (V-REV-EXACT-1, F-CU2-8, F-CU2-14).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusEvidenceNature2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: nature of the proof of each existence fact (exact, rigorous interval, numerical under hypotheses, exploratory, none); only the first two certify (locus-v2-existence-components.md section 15.1).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBoundarySource2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: structural source of a component end or isolated root (operation, predicate, side), the lineage of a boundary (sections 15.4 and 15.6).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBoundary2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: typed end of a certified component (domain end, certified transition, structural event, unresolved band edge, periodic closure) with inclusion and nature (sections 15.2 and 15.3).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusCoverageCause2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: typed causes of coverage, separating certified nonexistence from computational undefinedness (section 15.5).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusPointComponent2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: point component, an entity of its own with a certified enclosure of the isolated parameter, structural source, closed inclusion, zero length and position state; declared and not drawn (section 15.4, D-CU2-19).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusExploratoryEvidence2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: exploratory evidence as a typed sibling of the existence structure, derived per revision and policy, never persisted, never certifying (section 15.1).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2ExistenceStructureV2Test.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T2: arcs crossing the seam, full-length open arcs, the single closure query, point components at an interior root and at the seam, exploratory evidence, typed causes and the compatibility certificate without legacy change (V-ARC-2, V-LVL-2, V-POINT-1).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

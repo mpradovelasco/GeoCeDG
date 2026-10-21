@@ -14,7 +14,11 @@ import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBoundary2D;
+import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
+import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
@@ -202,9 +206,13 @@ public final class SelectedRootContinuousDomainCertifier2D {
 					? descriptor.getDeclaredDomain().isUpperClosed() : certified;
 			LocusInterval2D interval = new LocusInterval2D(first.lower,
 					last.upper, lowerClosed, upperClosed);
-			coverage.add(new Coverage(interval, certified
-					? CoverageState.CERTIFIED_EXISTS : CoverageState.UNRESOLVED,
-					certified ? METHOD : "unresolved-selected-root-transition/v1"));
+			coverage.add(certified
+					? new Coverage(interval, CoverageState.CERTIFIED_EXISTS,
+							LocusCoverageCause2D.PREDICATES_CERTIFIED_TRUE,
+							LocusEvidenceNature2D.RIGOROUS_INTERVAL, METHOD)
+					: new Coverage(interval, CoverageState.UNRESOLVED,
+							LocusCoverageCause2D.NOT_CERTIFIED, LocusEvidenceNature2D.NONE,
+							"unresolved-selected-root-transition/v1"));
 			if (certified) {
 				SelectedRootIntervalCertificate2D certificate =
 						new SelectedRootIntervalCertificate2D(family.rootToken,
@@ -216,7 +224,11 @@ public final class SelectedRootContinuousDomainCertifier2D {
 				components.add(new ContinuousComponent(interval,
 						certificate.getEvidenceKey(), certificate.getBoundaryEvidence(),
 						Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
-						"outward-binary64-interval/v1"));
+						"outward-binary64-interval/v1").withTypedBoundaries(
+								gridEnd(start == 0, true, interval.isLowerClosed()),
+								gridEnd(end == cells.size(), false,
+										interval.isUpperClosed()),
+								LocusEvidenceNature2D.RIGOROUS_INTERVAL));
 			}
 			start = end;
 		}
@@ -225,6 +237,23 @@ public final class SelectedRootContinuousDomainCertifier2D {
 				descriptor.getDeclaredDomain(), 0, coverage, components,
 				Completeness.NOT_ESTABLISHED,
 				"locus-existence/selected-root-hybrid/v1");
+	}
+
+	/**
+	 * End of a run of certified grid cells: a declared domain end, or the edge of the
+	 * adjacent unresolved band (PRE-G9B-CU2).
+	 */
+	private static LocusBoundary2D gridEnd(boolean domainEnd, boolean lower,
+			boolean included) {
+		if (domainEnd) {
+			return new LocusBoundary2D(LocusBoundary2D.Kind.DOMAIN_END,
+					lower ? LocusBoundarySource2D.declaredLower()
+							: LocusBoundarySource2D.declaredUpper(),
+					included, LocusEvidenceNature2D.EXACT);
+		}
+		return new LocusBoundary2D(LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE,
+				new LocusBoundarySource2D("selected-root-grid", "unresolved-cell",
+						lower ? "lower" : "upper"), included, LocusEvidenceNature2D.NONE);
 	}
 
 	private static boolean excludesSelectedOrientation(SplineIntervalModel2D model,

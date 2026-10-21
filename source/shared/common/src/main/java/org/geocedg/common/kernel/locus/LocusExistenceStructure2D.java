@@ -17,6 +17,13 @@ import java.util.Objects;
  *
  * <p>Canonical order is traversal order only. Neither interval position nor
  * component ordinal is identity.</p>
+ *
+ * <p>PRE-G9B-CU2 ({@code locus-v2-existence-components.md} section 15): on a periodic
+ * domain a component may be an arc with two distinct one-sided ends; point components are
+ * a kind of their own; every coverage assertion carries a typed cause and every fact the
+ * nature of its proof; the closed-periodic flag of the certificate is the single closure
+ * authority. The legacy interval views are adapters: an arc that crosses the seam is
+ * returned as one lifted interval, and point components never appear in them.</p>
  */
 public final class LocusExistenceStructure2D {
 	/** Whether the finite component inventory is globally established. */
@@ -29,7 +36,12 @@ public final class LocusExistenceStructure2D {
 	public enum CoverageState {
 		CERTIFIED_EXISTS,
 		CERTIFIED_DOES_NOT_EXIST,
-		UNRESOLVED
+		UNRESOLVED,
+		/**
+		 * Existence holds exactly at the point components inside the interval and
+		 * nowhere else in it (PRE-G9B-CU2, section 15.4).
+		 */
+		CERTIFIED_ISOLATED_POINTS
 	}
 
 	/** Whether a certified component is known maximal. */
@@ -38,18 +50,47 @@ public final class LocusExistenceStructure2D {
 		LOCAL_CERTIFIED_SUBINTERVAL
 	}
 
+	/** Topology of the canonical driver domain (PRE-G9B-CU2, section 15.3). */
+	public enum DomainTopology {
+		/** A bounded interval: components are intervals. */
+		BOUNDED,
+		/**
+		 * A periodic, half-open domain: components may be arcs that cross the seam, whose
+		 * representative is the included end of the domain.
+		 */
+		PERIODIC
+	}
+
 	/** One interval-wide existence assertion and its reconstructible evidence. */
 	public static final class Coverage {
 		private final LocusInterval2D interval;
 		private final CoverageState state;
 		private final String evidence;
+		private final LocusCoverageCause2D cause;
+		private final LocusEvidenceNature2D nature;
 
-		/** Creates one immutable interval-wide coverage assertion. */
+		/** Creates one immutable interval-wide coverage assertion without a typed cause. */
 		public Coverage(LocusInterval2D interval, CoverageState state,
 				String evidence) {
+			this(interval, state, LocusCoverageCause2D.UNTYPED,
+					LocusEvidenceNature2D.NONE, evidence);
+		}
+
+		/**
+		 * Creates one immutable interval-wide coverage assertion with its typed cause and
+		 * the nature of its proof.
+		 */
+		public Coverage(LocusInterval2D interval, CoverageState state,
+				LocusCoverageCause2D cause, LocusEvidenceNature2D nature, String evidence) {
 			this.interval = Objects.requireNonNull(interval);
 			this.state = Objects.requireNonNull(state);
+			this.cause = Objects.requireNonNull(cause);
+			this.nature = Objects.requireNonNull(nature);
 			this.evidence = requireText(evidence, "Coverage evidence");
+			if (!cause.admits(state)) {
+				throw new IllegalArgumentException("Coverage cause " + cause
+						+ " cannot justify " + state);
+			}
 		}
 
 		/** @return certified parameter interval */
@@ -67,23 +108,58 @@ public final class LocusExistenceStructure2D {
 			return evidence;
 		}
 
+		/** @return typed cause of the assertion */
+		public LocusCoverageCause2D getCause() {
+			return cause;
+		}
+
+		/** @return nature of the proof of the assertion */
+		public LocusEvidenceNature2D getNature() {
+			return nature;
+		}
+
 		private String signature() {
-			return interval + ":" + state + ":" + evidence;
+			return interval + ":" + state + ":" + cause + ":" + nature + ":" + evidence;
 		}
 	}
 
-	/** One revision-local continuous-valid component certificate. */
+	/**
+	 * One revision-local certified component of positive length: an interval, or an arc
+	 * of a periodic domain given by its canonical start and end parameters.
+	 */
 	public static final class ContinuousComponent {
 		private final LocusInterval2D interval;
 		private final String evidenceKey;
 		private final String boundaryEvidence;
 		private final Maximality maximality;
 		private final String numericGuarantee;
+		private final LocusInterval2D periodicDomain;
+		private final double start;
+		private final double end;
+		private final boolean fullLength;
+		private final LocusBoundary2D lowerBoundary;
+		private final LocusBoundary2D upperBoundary;
+		private final LocusEvidenceNature2D nature;
 
-		/** Creates one revision-local continuous-valid component certificate. */
+		/**
+		 * Creates one revision-local continuous-valid component certificate recorded
+		 * without typed boundaries.
+		 */
 		public ContinuousComponent(LocusInterval2D interval, String evidenceKey,
 				String boundaryEvidence, Maximality maximality,
 				String numericGuarantee) {
+			this(interval, evidenceKey, boundaryEvidence, maximality, numericGuarantee,
+					null, interval.getLower(), interval.getUpper(), false,
+					LocusBoundary2D.untyped(interval.isLowerClosed()),
+					LocusBoundary2D.untyped(interval.isUpperClosed()),
+					LocusEvidenceNature2D.NONE);
+		}
+
+		private ContinuousComponent(LocusInterval2D interval, String evidenceKey,
+				String boundaryEvidence, Maximality maximality, String numericGuarantee,
+				LocusInterval2D periodicDomain, double start, double end,
+				boolean fullLength, LocusBoundary2D lowerBoundary,
+				LocusBoundary2D upperBoundary, LocusEvidenceNature2D nature) {
 			this.interval = Objects.requireNonNull(interval);
 			this.evidenceKey = requireText(evidenceKey, "Component evidence key");
 			this.boundaryEvidence = requireText(boundaryEvidence,
@@ -91,9 +167,142 @@ public final class LocusExistenceStructure2D {
 			this.maximality = Objects.requireNonNull(maximality);
 			this.numericGuarantee = requireText(numericGuarantee,
 					"Numeric guarantee");
+			this.periodicDomain = periodicDomain;
+			this.start = start;
+			this.end = end;
+			this.fullLength = fullLength;
+			this.lowerBoundary = Objects.requireNonNull(lowerBoundary);
+			this.upperBoundary = Objects.requireNonNull(upperBoundary);
+			this.nature = Objects.requireNonNull(nature);
 		}
 
-		/** @return certified oriented interval */
+		/**
+		 * Creates a typed interval component.
+		 *
+		 * @param interval certified interval of positive length
+		 * @param lower lower end, whose inclusion is that of the interval
+		 * @param upper upper end, whose inclusion is that of the interval
+		 * @param maximality whether the component is known maximal
+		 * @param nature nature of the proof of existence and continuity
+		 * @param evidenceKey revision-local evidence key; never a durable identity
+		 * @return interval component
+		 */
+		public static ContinuousComponent interval(LocusInterval2D interval,
+				LocusBoundary2D lower, LocusBoundary2D upper, Maximality maximality,
+				LocusEvidenceNature2D nature, String evidenceKey) {
+			if (!(interval.getLower() < interval.getUpper())) {
+				throw new IllegalArgumentException(
+						"A component interval has positive length");
+			}
+			if (lower.isIncluded() != interval.isLowerClosed()
+					|| upper.isIncluded() != interval.isUpperClosed()) {
+				throw new IllegalArgumentException(
+						"End inclusion must follow the boundaries");
+			}
+			if (lower.getKind() == LocusBoundary2D.Kind.PERIODIC_CLOSURE
+					|| upper.getKind() == LocusBoundary2D.Kind.PERIODIC_CLOSURE) {
+				throw new IllegalArgumentException("Only a full-length arc closes");
+			}
+			return new ContinuousComponent(interval, evidenceKey,
+					lower.getSignature() + ";" + upper.getSignature(), maximality,
+					nature.name(), null, interval.getLower(), interval.getUpper(), false,
+					lower, upper, nature);
+		}
+
+		/**
+		 * Creates a typed arc of a periodic, half-open canonical domain.
+		 *
+		 * @param periodicDomain periodic canonical domain
+		 * @param start canonical start parameter, at arc coordinate {@code s = 0}
+		 * @param end canonical end parameter, at arc coordinate {@code s = length}: equal
+		 *        to the start exactly for a full-length arc, and below it for an arc that
+		 *        crosses the seam
+		 * @param fullLength whether the arc has the length of the period
+		 * @param startBoundary start end of the arc
+		 * @param endBoundary end end of the arc
+		 * @param maximality whether the component is known maximal
+		 * @param nature nature of the proof of existence and continuity
+		 * @param evidenceKey revision-local evidence key; never a durable identity
+		 * @return arc component
+		 */
+		public static ContinuousComponent arc(LocusInterval2D periodicDomain,
+				double start, double end, boolean fullLength,
+				LocusBoundary2D startBoundary, LocusBoundary2D endBoundary,
+				Maximality maximality, LocusEvidenceNature2D nature, String evidenceKey) {
+			if (periodicDomain.isLowerClosed() == periodicDomain.isUpperClosed()
+					|| !(periodicDomain.getLower() < periodicDomain.getUpper())) {
+				throw new IllegalArgumentException(
+						"A periodic canonical domain is half-open and nonempty");
+			}
+			if (!periodicDomain.contains(start, 0) || !periodicDomain.contains(end, 0)) {
+				throw new IllegalArgumentException(
+						"Arc ends must be canonical parameters of the periodic domain");
+			}
+			if (fullLength != (start == end)) {
+				throw new IllegalArgumentException(
+						"Only a full-length arc starts and ends at the same parameter");
+			}
+			boolean closingStart = startBoundary.getKind()
+					== LocusBoundary2D.Kind.PERIODIC_CLOSURE;
+			boolean closingEnd = endBoundary.getKind()
+					== LocusBoundary2D.Kind.PERIODIC_CLOSURE;
+			if (closingStart != closingEnd || closingStart && !fullLength) {
+				throw new IllegalArgumentException(
+						"A periodic closure needs a full-length arc with both closing ends");
+			}
+			if (fullLength && !closingStart && startBoundary.isIncluded()
+					&& endBoundary.isIncluded()) {
+				throw new IllegalArgumentException(
+						"The two ends of an open full-length arc are never identified");
+			}
+			double period = periodicDomain.getUpper() - periodicDomain.getLower();
+			LocusInterval2D lifted;
+			if (closingStart && start == seam(periodicDomain)) {
+				lifted = periodicDomain;
+			} else if (fullLength) {
+				lifted = new LocusInterval2D(start, start + period,
+						closingStart || startBoundary.isIncluded(),
+						!closingEnd && endBoundary.isIncluded());
+			} else {
+				lifted = new LocusInterval2D(start, end > start ? end : end + period,
+						startBoundary.isIncluded(), endBoundary.isIncluded());
+			}
+			return new ContinuousComponent(lifted, evidenceKey,
+					startBoundary.getSignature() + ";" + endBoundary.getSignature(),
+					maximality, nature.name(), periodicDomain, start, end, fullLength,
+					startBoundary, endBoundary, nature);
+		}
+
+		/**
+		 * Types the ends of an interval component recorded by a certifier that predates
+		 * PRE-G9B-CU2, keeping its recorded evidence texts.
+		 *
+		 * @param lower lower end, whose inclusion is that of the interval
+		 * @param upper upper end, whose inclusion is that of the interval
+		 * @param proofNature nature of the proof of existence and continuity
+		 * @return the same component with typed ends
+		 */
+		public ContinuousComponent withTypedBoundaries(LocusBoundary2D lower,
+				LocusBoundary2D upper, LocusEvidenceNature2D proofNature) {
+			if (periodicDomain != null
+					|| lower.getKind() == LocusBoundary2D.Kind.PERIODIC_CLOSURE
+					|| upper.getKind() == LocusBoundary2D.Kind.PERIODIC_CLOSURE) {
+				throw new IllegalArgumentException("Only interval ends are typed here");
+			}
+			if (lower.isIncluded() != interval.isLowerClosed()
+					|| upper.isIncluded() != interval.isUpperClosed()) {
+				throw new IllegalArgumentException(
+						"End inclusion must follow the boundaries");
+			}
+			return new ContinuousComponent(interval, evidenceKey, boundaryEvidence,
+					maximality, numericGuarantee, null, start, end, false, lower, upper,
+					proofNature);
+		}
+
+		/**
+		 * @return certified interval; for an arc, the lifted interval from its start, whose
+		 *         upper end exceeds the canonical domain when the arc crosses the seam
+		 */
 		public LocusInterval2D getInterval() {
 			return interval;
 		}
@@ -120,33 +329,214 @@ public final class LocusExistenceStructure2D {
 			return numericGuarantee;
 		}
 
+		/** @return whether the component is an arc of a periodic domain */
+		public boolean isArc() {
+			return periodicDomain != null;
+		}
+
+		/** @return canonical start parameter: the lower end of an interval */
+		public double getStart() {
+			return start;
+		}
+
+		/** @return canonical end parameter: the upper end of an interval */
+		public double getEnd() {
+			return end;
+		}
+
+		/** @return whether the arc has the length of the period */
+		public boolean isFullLength() {
+			return fullLength;
+		}
+
+		/** @return whether the arc crosses the seam of its periodic domain */
+		public boolean crossesSeam() {
+			return periodicDomain != null && !fullLength && end < start;
+		}
+
+		/**
+		 * @return whether this is a certified closed periodic component: a full-length arc
+		 *         with certified continuity at its closing point
+		 */
+		public boolean isClosedPeriodic() {
+			return fullLength
+					&& lowerBoundary.getKind() == LocusBoundary2D.Kind.PERIODIC_CLOSURE;
+		}
+
+		/** @return lower end of an interval, or start end of an arc ({@code s = 0}) */
+		public LocusBoundary2D getLowerBoundary() {
+			return lowerBoundary;
+		}
+
+		/** @return upper end of an interval, or end end of an arc ({@code s = length}) */
+		public LocusBoundary2D getUpperBoundary() {
+			return upperBoundary;
+		}
+
+		/** @return nature of the proof of existence and continuity */
+		public LocusEvidenceNature2D getNature() {
+			return nature;
+		}
+
+		/** @return arc length, or interval length for an interval component */
+		public double getLength() {
+			if (periodicDomain == null) {
+				return interval.getUpper() - interval.getLower();
+			}
+			double period = periodicDomain.getUpper() - periodicDomain.getLower();
+			return fullLength ? period : end > start ? end - start : end - start + period;
+		}
+
+		/**
+		 * Tests membership of one canonical parameter, without any tolerance: on an arc a
+		 * parameter belongs when an included arc coordinate exists.
+		 *
+		 * @return whether the parameter belongs to the component
+		 */
+		public boolean contains(double canonicalParameter) {
+			return !Double.isNaN(getArcCoordinate(canonicalParameter));
+		}
+
+		/**
+		 * @return the unique included arc coordinate {@code s} of the canonical parameter,
+		 *         measured from the start; {@code NaN} when it does not belong. On a
+		 *         full-length open arc the shared parameter of the two ends maps to the
+		 *         included end only; the excluded end is reached only as a one-sided limit.
+		 */
+		public double getArcCoordinate(double canonicalParameter) {
+			double t = canonicalParameter;
+			if (periodicDomain == null) {
+				return interval.contains(t, 0) ? t - start : Double.NaN;
+			}
+			if (!periodicDomain.contains(t, 0)) {
+				return Double.NaN;
+			}
+			double period = periodicDomain.getUpper() - periodicDomain.getLower();
+			if (fullLength) {
+				if (t != start) {
+					return t > start ? t - start : t - start + period;
+				}
+				if (isClosedPeriodic() || lowerBoundary.isIncluded()) {
+					return 0;
+				}
+				return upperBoundary.isIncluded() ? period : Double.NaN;
+			}
+			if (t == start) {
+				return lowerBoundary.isIncluded() ? 0 : Double.NaN;
+			}
+			if (t == end) {
+				return upperBoundary.isIncluded() ? getLength() : Double.NaN;
+			}
+			if (end > start) {
+				return t > start && t < end ? t - start : Double.NaN;
+			}
+			if (t > start) {
+				return t - start;
+			}
+			return t < end ? t - start + period : Double.NaN;
+		}
+
+		/** @return the canonical intervals covered by the component, split at the seam */
+		private List<LocusInterval2D> canonicalPieces() {
+			if (periodicDomain == null || !fullLength && end > start) {
+				return Collections.singletonList(periodicDomain == null ? interval
+						: new LocusInterval2D(start, end, lowerBoundary.isIncluded(),
+								upperBoundary.isIncluded()));
+			}
+			double lower = periodicDomain.getLower();
+			double upper = periodicDomain.getUpper();
+			boolean lowerClosed = periodicDomain.isLowerClosed();
+			boolean upperClosed = periodicDomain.isUpperClosed();
+			List<LocusInterval2D> pieces = new ArrayList<>();
+			if (fullLength) {
+				boolean closing = isClosedPeriodic();
+				boolean shared = closing || lowerBoundary.isIncluded()
+						|| upperBoundary.isIncluded();
+				if (start == seam(periodicDomain)) {
+					pieces.add(new LocusInterval2D(lower, upper,
+							lowerClosed && shared, upperClosed && shared));
+					return pieces;
+				}
+				if (start > lower) {
+					pieces.add(new LocusInterval2D(lower, start, lowerClosed,
+							!closing && upperBoundary.isIncluded()));
+				}
+				if (start < upper) {
+					pieces.add(new LocusInterval2D(start, upper,
+							closing || lowerBoundary.isIncluded(), upperClosed));
+				}
+				return pieces;
+			}
+			if (end > lower || upperBoundary.isIncluded() && lowerClosed) {
+				pieces.add(new LocusInterval2D(lower, end, lowerClosed,
+						upperBoundary.isIncluded()));
+			}
+			if (start < upper || lowerBoundary.isIncluded() && upperClosed) {
+				pieces.add(new LocusInterval2D(start, upper, lowerBoundary.isIncluded(),
+						upperClosed));
+			}
+			return pieces;
+		}
+
 		private String signature() {
-			return interval + ":" + evidenceKey + ":" + boundaryEvidence + ":"
-					+ maximality + ":" + numericGuarantee;
+			StringBuilder signature = new StringBuilder(interval.toString()).append(':')
+					.append(evidenceKey).append(':').append(boundaryEvidence).append(':')
+					.append(maximality).append(':').append(numericGuarantee);
+			if (periodicDomain != null) {
+				signature.append(":arc[").append(Double.toHexString(start)).append(',')
+						.append(Double.toHexString(end)).append(',')
+						.append(fullLength ? "full" : "partial").append(']');
+			}
+			return signature.append(':').append(lowerBoundary.getSignature()).append(':')
+					.append(upperBoundary.getSignature()).append(':').append(nature)
+					.toString();
 		}
 	}
 
 	private final String branchKey;
 	private final LocusInterval2D canonicalDomain;
+	private final DomainTopology topology;
 	private final long semanticRevision;
 	private final List<Coverage> coverage;
 	private final List<ContinuousComponent> components;
+	private final List<LocusPointComponent2D> pointComponents;
 	private final Completeness completeness;
 	private final String certifierContract;
 
-	/** Creates validated immutable semantic evidence. */
+	/** Creates validated immutable semantic evidence on a bounded domain. */
 	public LocusExistenceStructure2D(String branchKey,
 			LocusInterval2D canonicalDomain, long semanticRevision,
 			List<Coverage> coverage, List<ContinuousComponent> components,
 			Completeness completeness, String certifierContract) {
+		this(branchKey, canonicalDomain, DomainTopology.BOUNDED, semanticRevision,
+				coverage, components, Collections.emptyList(), completeness,
+				certifierContract);
+	}
+
+	/**
+	 * Creates validated immutable semantic evidence with the domain topology and the point
+	 * components (PRE-G9B-CU2).
+	 */
+	public LocusExistenceStructure2D(String branchKey,
+			LocusInterval2D canonicalDomain, DomainTopology topology,
+			long semanticRevision, List<Coverage> coverage,
+			List<ContinuousComponent> components,
+			List<LocusPointComponent2D> pointComponents, Completeness completeness,
+			String certifierContract) {
 		this.branchKey = requireText(branchKey, "Branch key");
 		this.canonicalDomain = Objects.requireNonNull(canonicalDomain);
+		this.topology = Objects.requireNonNull(topology);
+		if (topology == DomainTopology.PERIODIC
+				&& canonicalDomain.isLowerClosed() == canonicalDomain.isUpperClosed()) {
+			throw new IllegalArgumentException("A periodic canonical domain is half-open");
+		}
 		if (semanticRevision < 0) {
 			throw new IllegalArgumentException("Semantic revision cannot be negative");
 		}
 		this.semanticRevision = semanticRevision;
 		this.coverage = immutableCoverage(coverage, canonicalDomain);
-		this.components = immutableComponents(components, canonicalDomain);
+		this.components = immutableComponents(components, canonicalDomain, topology);
+		this.pointComponents = immutablePoints(pointComponents);
 		this.completeness = Objects.requireNonNull(completeness);
 		this.certifierContract = requireText(certifierContract,
 				"Certifier contract");
@@ -154,23 +544,61 @@ public final class LocusExistenceStructure2D {
 	}
 
 	/**
-	 * @return complete compatibility evidence for the proven components
+	 * @return complete compatibility evidence for the proven components, on a bounded
+	 *         domain
 	 */
 	public static LocusExistenceStructure2D completeCompatibility(String branchKey,
 			LocusInterval2D canonicalDomain, List<LocusInterval2D> intervals) {
+		return completeCompatibility(branchKey, canonicalDomain, intervals, false);
+	}
+
+	/**
+	 * Expresses the provider-compatibility certificate in the PRE-G9B-CU2 model without
+	 * changing any legacy view: its facts have no proof ({@link LocusEvidenceNature2D#NONE}),
+	 * and on a periodic domain a single component equal to the domain is the closed
+	 * periodic arc that the legacy closure rule assumed. Step T11 of PRE-G9B-CU2 retires the
+	 * compatibility certificate.
+	 *
+	 * @param periodic whether the canonical domain is periodic
+	 * @return complete compatibility evidence for the provider components
+	 */
+	public static LocusExistenceStructure2D completeCompatibility(String branchKey,
+			LocusInterval2D canonicalDomain, List<LocusInterval2D> intervals,
+			boolean periodic) {
+		boolean periodicDomain = topologyOf(canonicalDomain, periodic)
+				== DomainTopology.PERIODIC;
 		ArrayList<LocusInterval2D> ordered = new ArrayList<>(intervals);
 		ordered.sort(Comparator.comparingDouble(LocusInterval2D::getLower));
 		ArrayList<Coverage> coverage = completeCoverage(canonicalDomain, ordered);
 		ArrayList<ContinuousComponent> components = new ArrayList<>();
+		boolean closedPeriodic = periodicDomain && ordered.size() == 1
+				&& ordered.get(0).equals(canonicalDomain);
 		int index = 0;
 		for (LocusInterval2D interval : ordered) {
 			String key = "provider-component/" + index++;
-			components.add(new ContinuousComponent(interval, key,
-					"provider-endpoints/v1", Maximality.ESTABLISHED,
-					"provider-contract"));
+			if (closedPeriodic) {
+				double seam = seam(canonicalDomain);
+				LocusBoundary2D closure = new LocusBoundary2D(
+						LocusBoundary2D.Kind.PERIODIC_CLOSURE, new LocusBoundarySource2D(
+								"provider-contract", "periodic-closure", "seam"),
+						true, LocusEvidenceNature2D.NONE);
+				components.add(new ContinuousComponent(canonicalDomain, key,
+						"provider-endpoints/v1", Maximality.ESTABLISHED,
+						"provider-contract", canonicalDomain, seam, seam, true, closure,
+						closure, LocusEvidenceNature2D.NONE));
+			} else {
+				components.add(new ContinuousComponent(interval, key,
+						"provider-endpoints/v1", Maximality.ESTABLISHED,
+						"provider-contract", null, interval.getLower(),
+						interval.getUpper(), false,
+						providerEnd("lower", interval.isLowerClosed()),
+						providerEnd("upper", interval.isUpperClosed()),
+						LocusEvidenceNature2D.NONE));
+			}
 		}
-		return new LocusExistenceStructure2D(branchKey, canonicalDomain, 0,
-				coverage, components, Completeness.COMPLETE,
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain,
+				periodicDomain ? DomainTopology.PERIODIC : DomainTopology.BOUNDED, 0,
+				coverage, components, Collections.emptyList(), Completeness.COMPLETE,
 				"locus-existence/provider-compatibility/v1");
 	}
 
@@ -179,10 +607,22 @@ public final class LocusExistenceStructure2D {
 	 */
 	public static LocusExistenceStructure2D notEstablished(String branchKey,
 			LocusInterval2D canonicalDomain, String evidence) {
-		return new LocusExistenceStructure2D(branchKey, canonicalDomain, 0,
-				List.of(new Coverage(canonicalDomain, CoverageState.UNRESOLVED,
-						evidence)), Collections.emptyList(),
-				Completeness.NOT_ESTABLISHED,
+		return notEstablished(branchKey, canonicalDomain, DomainTopology.BOUNDED,
+				LocusCoverageCause2D.NOT_CERTIFIED, evidence);
+	}
+
+	/**
+	 * @param topology topology of the canonical domain
+	 * @param cause typed cause of the unresolved coverage
+	 * @return unresolved evidence without a manufactured empty-domain assertion
+	 */
+	public static LocusExistenceStructure2D notEstablished(String branchKey,
+			LocusInterval2D canonicalDomain, DomainTopology topology,
+			LocusCoverageCause2D cause, String evidence) {
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology, 0,
+				List.of(new Coverage(canonicalDomain, CoverageState.UNRESOLVED, cause,
+						LocusEvidenceNature2D.NONE, evidence)), Collections.emptyList(),
+				Collections.emptyList(), Completeness.NOT_ESTABLISHED,
 				"locus-existence/shared-certifier/v1");
 	}
 
@@ -196,6 +636,11 @@ public final class LocusExistenceStructure2D {
 		return canonicalDomain;
 	}
 
+	/** @return topology of the canonical driver domain */
+	public DomainTopology getTopology() {
+		return topology;
+	}
+
 	/** @return source semantic revision to which this evidence is bound */
 	public long getSemanticRevision() {
 		return semanticRevision;
@@ -206,9 +651,14 @@ public final class LocusExistenceStructure2D {
 		return coverage;
 	}
 
-	/** @return canonical ordered locally certified components */
+	/** @return canonical ordered locally certified components of positive length */
 	public List<ContinuousComponent> getContinuousValidComponents() {
 		return components;
+	}
+
+	/** @return point components in canonical order (PRE-G9B-CU2, section 15.4) */
+	public List<LocusPointComponent2D> getPointComponents() {
+		return pointComponents;
 	}
 
 	/** @return global component-inventory completeness */
@@ -222,6 +672,31 @@ public final class LocusExistenceStructure2D {
 	}
 
 	/**
+	 * Single closure authority of every consumer (PRE-G9B-CU2, section 15.3): a branch is
+	 * closed only when its certificate has exactly one component, a certified closed
+	 * periodic arc, and no point component. The provider's periodicity never closes it.
+	 *
+	 * @return whether the branch is a certified closed periodic curve
+	 */
+	public boolean isClosedPeriodic() {
+		return topology == DomainTopology.PERIODIC && components.size() == 1
+				&& pointComponents.isEmpty() && components.get(0).isClosedPeriodic();
+	}
+
+	/**
+	 * @return the component of positive length that contains the canonical parameter, or
+	 *         {@code null}; a point component is never selected by a parameter
+	 */
+	public ContinuousComponent getComponentContaining(double canonicalParameter) {
+		for (ContinuousComponent component : components) {
+			if (component.contains(canonicalParameter)) {
+				return component;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * @return the same evidence bound to the published semantic revision
 	 */
 	public LocusExistenceStructure2D bindToRevision(long revision) {
@@ -229,8 +704,9 @@ public final class LocusExistenceStructure2D {
 			throw new IllegalArgumentException("Published revision must be positive");
 		}
 		return semanticRevision == revision ? this
-				: new LocusExistenceStructure2D(branchKey, canonicalDomain, revision,
-						coverage, components, completeness, certifierContract);
+				: new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+						revision, coverage, components, pointComponents, completeness,
+						certifierContract);
 	}
 
 	/**
@@ -239,30 +715,46 @@ public final class LocusExistenceStructure2D {
 	public String getSemanticSignature() {
 		StringBuilder signature = new StringBuilder(certifierContract)
 				.append('|').append(branchKey).append('|').append(canonicalDomain)
-				.append('|').append(completeness);
+				.append('|').append(topology).append('|').append(completeness);
 		for (Coverage item : coverage) {
 			signature.append("|coverage=").append(item.signature());
 		}
 		for (ContinuousComponent component : components) {
 			signature.append("|component=").append(component.signature());
 		}
+		for (LocusPointComponent2D point : pointComponents) {
+			signature.append("|point=").append(point.getSignature());
+		}
 		return signature.toString();
+	}
+
+	/**
+	 * @return {@code PERIODIC} for a periodic, half-open canonical domain; {@code BOUNDED}
+	 *         otherwise
+	 */
+	public static DomainTopology topologyOf(LocusInterval2D canonicalDomain,
+			boolean periodic) {
+		return periodic && canonicalDomain.isLowerClosed() != canonicalDomain.isUpperClosed()
+				? DomainTopology.PERIODIC : DomainTopology.BOUNDED;
+	}
+
+	/** @return representative of the seam of a half-open periodic domain */
+	private static double seam(LocusInterval2D periodicDomain) {
+		return periodicDomain.isLowerClosed() ? periodicDomain.getLower()
+				: periodicDomain.getUpper();
 	}
 
 	private void validateConsistency() {
 		for (ContinuousComponent component : components) {
-			boolean covered = false;
-			for (Coverage item : coverage) {
-				if (item.state == CoverageState.CERTIFIED_EXISTS
-						&& contains(item.interval, component.interval)) {
-					covered = true;
-					break;
+			for (LocusInterval2D piece : component.canonicalPieces()) {
+				if (!coveredBy(piece, CoverageState.CERTIFIED_EXISTS)) {
+					throw new IllegalArgumentException(
+							"Continuous component lacks existence coverage");
 				}
 			}
-			if (!covered) {
-				throw new IllegalArgumentException(
-						"Continuous component lacks existence coverage");
-			}
+		}
+		for (LocusPointComponent2D point : pointComponents) {
+			validatePoint(point);
 		}
 		if (completeness == Completeness.COMPLETE) {
 			if (coverage.isEmpty() || !coversCanonicalDomain(coverage,
@@ -270,13 +762,62 @@ public final class LocusExistenceStructure2D {
 				throw new IllegalArgumentException(
 						"Complete existence evidence must cover the canonical domain");
 			}
+			for (Coverage item : coverage) {
+				if (item.state == CoverageState.UNRESOLVED) {
+					throw new IllegalArgumentException(
+							"Complete existence evidence has no unresolved coverage");
+				}
+			}
 			for (ContinuousComponent component : components) {
 				if (component.maximality != Maximality.ESTABLISHED) {
 					throw new IllegalArgumentException(
 							"Complete components must have established maximality");
 				}
 			}
+			for (LocusPointComponent2D point : pointComponents) {
+				if (point.getMaximality() != Maximality.ESTABLISHED) {
+					throw new IllegalArgumentException(
+							"Complete point components must have established maximality");
+				}
+			}
 		}
+	}
+
+	/**
+	 * A point enclosure lies in the canonical domain; on a periodic domain the enclosure of
+	 * a root at the seam may exceed the included end that represents the seam by one ulp,
+	 * because the exact seam is in general not a binary64 value.
+	 */
+	private void validatePoint(LocusPointComponent2D point) {
+		boolean periodic = topology == DomainTopology.PERIODIC;
+		double domainLower = canonicalDomain.getLower();
+		double domainUpper = canonicalDomain.getUpper();
+		double floor = periodic && canonicalDomain.isLowerClosed()
+				? Math.nextDown(domainLower) : domainLower;
+		double ceiling = periodic && canonicalDomain.isUpperClosed()
+				? Math.nextUp(domainUpper) : domainUpper;
+		double lower = Math.max(point.getParameterLower(), domainLower);
+		double upper = Math.min(point.getParameterUpper(), domainUpper);
+		if (point.getParameterLower() < floor || point.getParameterUpper() > ceiling
+				|| upper < lower || !canonicalDomain.contains(lower, 0)
+				|| !canonicalDomain.contains(upper, 0)) {
+			throw new IllegalArgumentException(
+					"Point component lies outside the canonical domain");
+		}
+		if (!coveredBy(new LocusInterval2D(lower, upper, true, true),
+				CoverageState.CERTIFIED_ISOLATED_POINTS)) {
+			throw new IllegalArgumentException(
+					"Point component lacks isolated-point coverage");
+		}
+	}
+
+	private boolean coveredBy(LocusInterval2D piece, CoverageState state) {
+		for (Coverage item : coverage) {
+			if (item.state == state && contains(item.interval, piece)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean coversCanonicalDomain(List<Coverage> items,
@@ -306,6 +847,12 @@ public final class LocusExistenceStructure2D {
 						|| outer.isLowerClosed() || !inner.isLowerClosed())
 				&& (outer.getUpper() > inner.getUpper()
 						|| outer.isUpperClosed() || !inner.isUpperClosed());
+	}
+
+	private static LocusBoundary2D providerEnd(String side, boolean included) {
+		return new LocusBoundary2D(LocusBoundary2D.Kind.DOMAIN_END,
+				new LocusBoundarySource2D("provider-contract", "declared-component-end",
+						side), included, LocusEvidenceNature2D.NONE);
 	}
 
 	private static ArrayList<Coverage> completeCoverage(
@@ -338,11 +885,13 @@ public final class LocusExistenceStructure2D {
 						previousInterval.getLower(), component.getUpper(),
 						previousInterval.isLowerClosed(), component.isUpperClosed()),
 						CoverageState.CERTIFIED_EXISTS,
+						LocusCoverageCause2D.PROVIDER_CONTRACT, LocusEvidenceNature2D.NONE,
 						"provider-interval-contract/v1"));
 				return;
 			}
 		}
 		result.add(new Coverage(component, CoverageState.CERTIFIED_EXISTS,
+				LocusCoverageCause2D.PROVIDER_CONTRACT, LocusEvidenceNature2D.NONE,
 				"provider-interval-contract/v1"));
 	}
 
@@ -351,6 +900,7 @@ public final class LocusExistenceStructure2D {
 		if (lower < upper || lower == upper && lowerClosed && upperClosed) {
 			result.add(new Coverage(new LocusInterval2D(lower, upper, lowerClosed,
 					upperClosed), CoverageState.CERTIFIED_DOES_NOT_EXIST,
+					LocusCoverageCause2D.PROVIDER_COMPLEMENT, LocusEvidenceNature2D.NONE,
 					"provider-complement-contract/v1"));
 		}
 	}
@@ -365,12 +915,33 @@ public final class LocusExistenceStructure2D {
 	}
 
 	private static List<ContinuousComponent> immutableComponents(
-			List<ContinuousComponent> input, LocusInterval2D domain) {
+			List<ContinuousComponent> input, LocusInterval2D domain,
+			DomainTopology topology) {
 		ArrayList<ContinuousComponent> copy = new ArrayList<>(
 				Objects.requireNonNull(input));
-		copy.sort(Comparator.comparingDouble(item -> item.interval.getLower()));
-		validateIntervals(copy.stream().map(item -> item.interval).toList(), domain,
-				true);
+		copy.sort(Comparator.comparingDouble(item -> item.start));
+		ArrayList<LocusInterval2D> pieces = new ArrayList<>();
+		for (ContinuousComponent component : copy) {
+			if (component.periodicDomain != null && (topology != DomainTopology.PERIODIC
+					|| !component.periodicDomain.equals(domain))) {
+				throw new IllegalArgumentException(
+						"An arc belongs to the periodic canonical domain of its structure");
+			}
+			pieces.addAll(component.canonicalPieces());
+		}
+		pieces.sort(Comparator.comparingDouble(LocusInterval2D::getLower));
+		validateIntervals(pieces, domain, true);
+		return Collections.unmodifiableList(copy);
+	}
+
+	private static List<LocusPointComponent2D> immutablePoints(
+			List<LocusPointComponent2D> input) {
+		ArrayList<LocusPointComponent2D> copy = new ArrayList<>(
+				Objects.requireNonNull(input));
+		for (LocusPointComponent2D point : copy) {
+			Objects.requireNonNull(point);
+		}
+		copy.sort(Comparator.comparingDouble(LocusPointComponent2D::getParameterLower));
 		return Collections.unmodifiableList(copy);
 	}
 

@@ -17,6 +17,7 @@ import java.util.Set;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
@@ -164,10 +165,14 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	}
 
 	private LocusExistenceStructure2D fallbackExistenceStructure() {
+		LocusExistenceStructure2D.DomainTopology topology =
+				LocusExistenceStructure2D.topologyOf(descriptor.getDeclaredDomain(),
+						descriptor.isPeriodic());
 		if (dependsOnSelectedIntersectionRoot()) {
 			return LocusExistenceStructure2D.notEstablished(
 					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(),
+					descriptor.getDeclaredDomain(), topology,
+					LocusCoverageCause2D.NOT_CERTIFIED,
 					"selected-root-continuity-not-established");
 		}
 		if (family == SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT
@@ -183,13 +188,15 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 							!= LocusExistenceStructure2D.Completeness.COMPLETE) {
 				return LocusExistenceStructure2D.notEstablished(
 						SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-						descriptor.getDeclaredDomain(),
+						descriptor.getDeclaredDomain(), topology,
+						LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
 						"upstream-locus-coverage-not-established");
 			}
 		}
 		return LocusExistenceStructure2D.completeCompatibility(
 				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-				descriptor.getDeclaredDomain(), descriptor.getValidComponents());
+				descriptor.getDeclaredDomain(), descriptor.getValidComponents(),
+				descriptor.isPeriodic());
 	}
 
 	private boolean dependsOnSelectedIntersectionRoot() {
