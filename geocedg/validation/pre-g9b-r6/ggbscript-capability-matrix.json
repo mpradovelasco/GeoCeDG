@@ -124,7 +124,7 @@
     {"fixture_id":"circle-path","statements":["A1=(1,1)","B1=(2.56,4.78)","c1=Circle(A1,B1)","C1=Point(c1)","g1=Line(C1,xAxis)","D1=Intersect(g1,yAxis)","E1=Midpoint(D1,C1)"],"recompute_driver":"A1","trigger":"btn=Button(\"run\")"},
     {"fixture_id":"scalar-generator","statements":["k=0.5","s=0","Q=(s,k*s)","D={false,{-2,2,true,true}}"],"recompute_driver":"k","trigger":"btn=Button(\"run\")"},
     {"fixture_id":"mapped-generator","statements":["k=1","t=0.25","u=t^2","Q=(u,u+k)","D={false,{-1,1,true,true}}"],"recompute_driver":"k","trigger":"btn=Button(\"run\")"},
-    {"fixture_id":"scalar-locus","statements":["k=0.5","s=0","Q=(s,k*s)","D={false,{-2,2,true,true}}","L=LocusV2(Q,s,D)","P1=Point(L,\"generator.main\",-1)","P2=Point(L,\"generator.main\",1)"],"recompute_driver":"k","trigger":"btn=Button(\"run\")"},
+    {"fixture_id":"scalar-locus","statements":["k=0.5","c=Circle((0,0),1)","S=Point(c)","Q=S+(0,k)","L=LocusV2(Q,S)","P1=Point(L,\"generator.main\",-1)","P2=Point(L,\"generator.main\",1)"],"recompute_driver":"k","trigger":"btn=Button(\"run\")"},
     {"fixture_id":"spline-points","statements":["A=(-2,0)","B=(-2/3,0)","C=(2/3,0)","D=(2,0)","w(x,y)=sqrt(x^2+y^2)+0.5"],"recompute_driver":"B","trigger":"btn=Button(\"run\")"},
     {"fixture_id":"spline-line","statements":["A=(-2,0)","B=(0,0)","C=(2,0)","S=SplineV2({A,B,C},3)","g:x=0"],"recompute_driver":"A","trigger":"btn=Button(\"run\")"},
     {"fixture_id":"spline-line-result","statements":["A=(-2,0)","B=(0,0)","C=(2,0)","S=SplineV2({A,B,C},3)","g:x=0","R=Intersect(S,g)"],"recompute_driver":"A","trigger":"btn=Button(\"run\")"},

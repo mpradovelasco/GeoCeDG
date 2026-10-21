@@ -26,19 +26,12 @@ public final class LocusBranch2D {
 	private final Set<BranchProperty> properties;
 	private final LocusQuality2D quality;
 
-	/** Creates an immutable branch snapshot. */
-	public LocusBranch2D(String branchKey, LocusInterval2D declaredDriverDomain,
-			List<LocusInterval2D> validDomainComponents, Orientation orientation,
-			String provenance, LocusLineage2D lineage,
-			Set<BranchProperty> properties, LocusQuality2D quality) {
-		this(branchKey, declaredDriverDomain,
-				LocusExistenceStructure2D.completeCompatibility(branchKey,
-						declaredDriverDomain, validDomainComponents,
-						properties != null && properties.contains(BranchProperty.PERIODIC)),
-				orientation, provenance, lineage, properties, quality);
-	}
-
-	/** Creates a branch with explicit existence/continuity evidence. */
+	/**
+	 * Creates a branch with explicit existence/continuity evidence. Since PRE-G9B-CU2 step
+	 * T11 every producer supplies its certificate: the hybrid certificate of a dependent
+	 * producer or the explicit certificate of a static or analytic producer ({@code
+	 * locus-v2-existence-components.md} section 15.7); no certificate is implied.
+	 */
 	public LocusBranch2D(String branchKey, LocusInterval2D declaredDriverDomain,
 			LocusExistenceStructure2D existenceStructure,
 			Orientation orientation, String provenance, LocusLineage2D lineage,

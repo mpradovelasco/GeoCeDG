@@ -305,7 +305,7 @@ class LocusMetricProductiveLifecycleTest extends BaseUnitTest {
 						G7BMetricFixtures.EPS_DOMAIN);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(BRANCH, provider,
 				"g7b-lifecycle/v1",
-				EnumSet.of(BranchProperty.FINITE));
+				EnumSet.of(BranchProperty.FINITE), LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		GeoNumeric source = new GeoNumeric(getConstruction(), 1);
 		source.setLabel("g7bMetricSource");
 		GeoLocusV2 locus = LocusV2Factory.createAnalytic(LocusV2Mode.V2,

@@ -198,8 +198,10 @@ final class CertifiedConstructionCapture2D {
 				metrics.put(index + 1, rich);
 			}
 		}
-		return new Outcome(Optional.of(new CertifiedConstructionProgram2D(driver,
+		Outcome outcome = new Outcome(Optional.of(new CertifiedConstructionProgram2D(driver,
 				constants, domain, walk.steps)), null, metrics, walk.origins);
+		outcome.intersectionNodes.putAll(walk.top.intersections);
+		return outcome;
 	}
 
 	private static double[] circle(GeoElement state, GeoElement support,
@@ -1221,10 +1223,19 @@ final class CertifiedConstructionCapture2D {
 		private final String refusal;
 		private final Map<Integer, AlgoLocusBetweenMetricV2> metricSources;
 		private final List<StepOrigin> origins;
+		private final Map<AlgoElement, Integer> intersectionNodes = new IdentityHashMap<>();
 
 		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal,
 				Map<Integer, AlgoLocusBetweenMetricV2> metricSources) {
 			this(program, refusal, metricSources, List.of());
+		}
+
+		/**
+		 * @return node of the line-circle step of each captured intersection of the slice,
+		 *         {@code 1} for the first step
+		 */
+		Map<AlgoElement, Integer> getIntersectionNodes() {
+			return Collections.unmodifiableMap(intersectionNodes);
 		}
 
 		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal,

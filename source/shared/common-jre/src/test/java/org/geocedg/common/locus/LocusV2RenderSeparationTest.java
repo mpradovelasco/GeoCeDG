@@ -95,7 +95,7 @@ class LocusV2RenderSeparationTest extends BaseUnitTest {
 		double endpoint = Math.PI / 2;
 		ExplicitNumericDomainProvider2D provider = provider(-endpoint, endpoint,
 				false, false);
-		LocusBranch2D branch = new LocusBranch2D(BRANCH_KEY,
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH_KEY,
 				provider.getDeclaredDomain(),
 				Collections.singletonList(provider.getDeclaredDomain()),
 				Orientation.INCREASING, "unbounded-tangent/v1",
@@ -127,7 +127,7 @@ class LocusV2RenderSeparationTest extends BaseUnitTest {
 	@Test
 	void disconnectedValidComponentsProduceSeparateRenderSubpaths() {
 		ExplicitNumericDomainProvider2D provider = provider(-1, 1, true, true);
-		LocusBranch2D branch = new LocusBranch2D(BRANCH_KEY,
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH_KEY,
 				provider.getDeclaredDomain(), Arrays.asList(
 						new LocusInterval2D(-1, -0.1, true, true),
 						new LocusInterval2D(0.1, 1, true, true)),
@@ -143,8 +143,12 @@ class LocusV2RenderSeparationTest extends BaseUnitTest {
 				(source, semanticBranch, parameter, session) ->
 						new LocusPoint2D(parameter, 1 / parameter),
 				"discontinuous-reciprocal/v1");
+		// PRE-G9B-CU2 declared conformity (T9 rule P5 on the explicit certificate of T11):
+		// the declared gap is certified nonexistence, which the evaluated point never overrides.
 		assertEquals(org.geocedg.common.kernel.locus.LocusSemanticMetadata2D
-				.EvaluationStatus.OUT_OF_DOMAIN, evaluate(locus, 0).getStatus());
+				.EvaluationStatus.DEPENDENCY_UNDEFINED, evaluate(locus, 0).getStatus());
+		assertTrue(evaluate(locus, 0).getDiagnostic().startsWith(
+				org.geocedg.common.kernel.locus.LocusDefinition2D.CERTIFIED_NONEXISTENCE));
 		LocusRenderData2D data = new LocusRenderCache2D().getOrBuild(locus,
 				new LocusRenderPolicy2D(1, 800, 600, 100, 100, 32));
 		assertEquals(2, data.getVertices().stream()
@@ -155,7 +159,7 @@ class LocusV2RenderSeparationTest extends BaseUnitTest {
 		ExplicitNumericDomainProvider2D provider = provider(-1, 1, true, true);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(BRANCH_KEY,
 				provider, "render-separation-fixture/v1",
-				EnumSet.noneOf(BranchProperty.class));
+				EnumSet.noneOf(BranchProperty.class), LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		GeoLocusV2 locus = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				getConstruction(), "render-parabola-" + hashCode(),
 				new GeoNumeric(getConstruction(), 1), provider,

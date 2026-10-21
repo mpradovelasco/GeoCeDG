@@ -73,6 +73,44 @@ public final class LocusComponentLineage2D {
 				: create(structure.getBranchKey(), component.getInterval());
 	}
 
+	/**
+	 * Key under which the intersection roots of a component are identified (decision E-3,
+	 * applied to persisted root tokens; PRE-G9B-CU2 step T11). When the decomposition is the
+	 * whole declared domain, the key of that domain, which the root tokens persisted before
+	 * PRE-G9B-CU2 cite, corresponds to the component by equality of the decomposition, and it
+	 * stays the identity key; any other component is identified by its lineage key.
+	 *
+	 * @param structure certified structure of the branch
+	 * @param component one of its continuous components
+	 * @return identity key of the roots on the component
+	 */
+	public static String identityKey(LocusExistenceStructure2D structure,
+			ContinuousComponent component) {
+		return isWholeDomain(structure)
+				? create(structure.getBranchKey(), structure.getCanonicalDomain())
+				: of(structure, component);
+	}
+
+	/**
+	 * Equality of the decomposition with the whole declared domain (decision E-3): the
+	 * structure is one closed periodic component, or, on a bounded domain, one interval
+	 * component equal to the domain; an open arc of full length is not the closed curve that
+	 * a key of the whole domain cites.
+	 *
+	 * @param structure certified structure of the branch
+	 * @return whether its decomposition is the whole declared domain
+	 */
+	public static boolean isWholeDomain(LocusExistenceStructure2D structure) {
+		if (structure.isClosedPeriodic()) {
+			return true;
+		}
+		List<ContinuousComponent> components = structure.getContinuousValidComponents();
+		return structure.getTopology() == LocusExistenceStructure2D.DomainTopology.BOUNDED
+				&& components.size() == 1 && structure.getPointComponents().isEmpty()
+				&& !components.get(0).isArc()
+				&& components.get(0).getInterval().equals(structure.getCanonicalDomain());
+	}
+
 	/** @return lineage key of a point component: the branch and the source of its root */
 	public static String of(LocusExistenceStructure2D structure,
 			LocusPointComponent2D point) {

@@ -654,13 +654,12 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 				Completeness.INCOMPLETE, notEstablished.getFiniteSolutions());
 		assertTrue(incomplete.findPointAdmissibleSolution(token).isPresent());
 
-		add("t=0");
-		add("QT=(t,t^2)");
-		add("DT={false,{-2,2,true,true}}");
-		add("LT=LocusV2(QT,t,DT)");
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11; the same parabola is certified from its focus and directrix.
+		certifiedParabola();
 		add("tangentAxis:y=0");
 		GeoLocusIntersectionResult tangent =
-				add("RT=Intersect(LT,tangentAxis)");
+				add("RT=Intersect(L,tangentAxis)");
 		LocusIntersectionResult2D tangentResult = tangent.getIntersectionResult();
 		assertEquals(1, tangentResult.getFiniteSolutions().size());
 		LocusIntersectionSolution2D ambiguous = ambiguous(
@@ -679,20 +678,21 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 				add("RV=Intersect(LV,unisolatedAxis)");
 		LocusIntersectionResult2D unisolatedResult =
 				unisolated.getIntersectionResult();
-		assertFalse(unisolatedResult.getFiniteSolutions().isEmpty());
-		assertTrue(unisolatedResult.getFiniteSolutions().stream().allMatch(
-				solution -> solution.getRevisionEvidence()
-						.getLocalIsolationStatus()
-						== LocalIsolationStatus.NOT_ESTABLISHED));
-		assertTrue(unisolatedResult.getFiniteSolutions().stream().allMatch(
-				solution -> !unisolatedResult.findPointAdmissibleSolution(
-						solution.getIdentity().getRootToken()).isPresent()));
+		// PRE-G9B-CU2 declared conformity: (v,abs(v)) is outside class v3 since step T11, so
+		// its existence is not established and the intersection has no root at all, still
+		// less an admissible one.
+		assertTrue(unisolatedResult.getFiniteSolutions().isEmpty());
+		assertTrue(unisolatedResult.getDiagnostics().stream().anyMatch(diagnostic ->
+				diagnostic.getCode() == DiagnosticCode.COVERAGE_NOT_ESTABLISHED),
+				unisolatedResult.getDiagnostics().toString());
 	}
 
 	@Test
 	void disappearanceNewAppearanceAndTangencyRemainFailClosed() {
 		add("h=1");
-		GeoLocusIntersectionResult rich = intersect(createParabola(), "y=h");
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11; the same parabola is certified from its focus and directrix.
+		GeoLocusIntersectionResult rich = intersect(certifiedParabola(), "y=h");
 		LocusIntersectionResult2D initial = rich.getIntersectionResult();
 		assertEquals(2, initial.getFiniteSolutions().size());
 		final Set<String> initialTokens = tokens(rich);
@@ -765,10 +765,12 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 				.map(solution -> solution.getRevisionEvidence()
 						.getSemanticParameter())
 				.sorted().toList();
-		assertEquals(0, parameters.get(0), 2E-10);
-		assertEquals(Math.PI, parameters.get(1), 2E-10);
-		assertTrue(parameters.stream().allMatch(parameter -> parameter >= 0
-				&& parameter < 2 * Math.PI));
+		// PRE-G9B-CU2 declared conformity: the certified circle of createPeriodicCircle has
+		// the canonical domain [-pi, pi), whose seam -pi is the root at (-1, 0).
+		assertEquals(-Math.PI, parameters.get(0), 2E-10);
+		assertEquals(0, parameters.get(1), 2E-10);
+		assertTrue(parameters.stream().allMatch(parameter -> parameter >= -Math.PI
+				&& parameter < Math.PI));
 		assertEquals(2, solutions.stream()
 				.map(solution -> Double.doubleToLongBits(solution
 						.getRevisionEvidence().getSemanticParameter()))
@@ -788,9 +790,11 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		List<LocusIntersectionSolution2D> initial = rich.getIntersectionResult()
 				.getFiniteSolutions();
 		assertEquals(2, initial.size());
+		// PRE-G9B-CU2 declared conformity: the seam of the certified circle is at -pi, so
+		// the root that crosses it is the one near (-1, 0), from pi - 0.1 to -pi + 0.1.
 		LocusIntersectionSolution2D nearLowerSeam = initial.stream()
 				.filter(solution -> solution.getRevisionEvidence()
-						.getSemanticParameter() < Math.PI / 2)
+						.getSemanticParameter() > Math.PI / 2)
 				.findFirst().orElseThrow();
 		String seamToken = nearLowerSeam.getIdentity().getRootToken();
 		GeoPoint seamPoint = materialize("seamPoint", rich, nearLowerSeam);
@@ -804,7 +808,7 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		LocusIntersectionSolution2D continued = rich
 				.findExactPointAdmissibleSolution(seamToken).orElseThrow();
 		assertTrue(continued.getRevisionEvidence().getSemanticParameter()
-				> 3 * Math.PI / 2);
+				< -Math.PI / 2);
 		assertEquals(IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED,
 				continued.getIdentity().getIdentityStatus());
 	}
@@ -812,7 +816,12 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 	@Test
 	void stableTransverseMotionUsesDeterministicCurrentSelectors() {
 		add("stableHeight=1");
-		GeoLocusIntersectionResult rich = intersect(createParabola(),
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11. The parabola certified from its focus and directrix is a dependent locus,
+		// whose numerical root germ is not established at every step of this motion (an
+		// intersection-engine limitation reserved to CU3); a SplineV2, certified by its
+		// contract, interpolates the parabola with analytic spans.
+		GeoLocusIntersectionResult rich = intersect(parabolaSpline(),
 				"y=stableHeight");
 		List<LocusIntersectionSolution2D> initial = rich.getIntersectionResult()
 				.getFiniteSolutions();
@@ -869,13 +878,15 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		List<LocusIntersectionSolution2D> initial = rich.getIntersectionResult()
 				.getFiniteSolutions();
 		assertEquals(2, initial.size());
+		// PRE-G9B-CU2 declared conformity: on the certified circle of [-pi, pi) the roots of
+		// the line at angle a are a and a - pi; the names keep the roots of [0, 2 pi).
 		LocusIntersectionSolution2D lowerParameterRoot = initial.stream()
 				.filter(solution -> solution.getRevisionEvidence()
-						.getSemanticParameter() < Math.PI)
+						.getSemanticParameter() > 0)
 				.findFirst().orElseThrow();
 		LocusIntersectionSolution2D upperParameterRoot = initial.stream()
 				.filter(solution -> solution.getRevisionEvidence()
-						.getSemanticParameter() > Math.PI)
+						.getSemanticParameter() < 0)
 				.findFirst().orElseThrow();
 		String lowerToken = lowerParameterRoot.getIdentity().getRootToken();
 		String upperToken = upperParameterRoot.getIdentity().getRootToken();
@@ -941,10 +952,10 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 
 	@Test
 	void repeatedDeterministicSelectorsUseIntrinsicSemanticRank() {
-		add("multi=0");
-		add("M=(multi,(multi^2-1)*(multi^2-4))");
-		add("multiDomain={false,{-3,3,true,true}}");
-		add("multiLocus=LocusV2(M,multi,multiDomain)");
+		// PRE-G9B-CU2 declared conformity: the scalar polynomial generator is outside class v3
+		// since step T11; a SplineV2, certified by its contract, interpolates the same values
+		// at dense nodes, none of them a root.
+		add("multiLocus=" + polynomialSpline("3"));
 		add("multiHeight=0");
 		add("multiAxis:y=multiHeight");
 		GeoLocusIntersectionResult rich = add(
@@ -974,12 +985,9 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 
 	@Test
 	void rankedCollisionGroupAppearanceAndDisappearanceInvalidatesWithoutShift() {
-		add("cardinalityParameter=0");
-		add("CardinalityGenerator=(cardinalityParameter,"
-				+ "(cardinalityParameter^2-1)*(cardinalityParameter^2-4))");
-		add("cardinalityDomain={false,{-3,3,true,true}}");
-		add("cardinalityLocus=LocusV2(CardinalityGenerator,"
-				+ "cardinalityParameter,cardinalityDomain)");
+		// PRE-G9B-CU2 declared conformity: the scalar polynomial generator is outside class v3
+		// since step T11; a SplineV2, certified by its contract, interpolates the same values.
+		add("cardinalityLocus=" + polynomialSpline("3"));
 		GeoNumeric height = add("cardinalityHeight=0");
 		add("cardinalityAxis:y=cardinalityHeight");
 		GeoLocusIntersectionResult rich = add(
@@ -1014,14 +1022,13 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 	@Test
 	void existingTwoRootPointsReactivateAfterFourRootTopologyRecurrence()
 			throws Exception {
-		add("reactivationParameter=0");
-		add("ReactivationGenerator=(reactivationParameter,"
-				+ "(reactivationParameter^2-1)*(reactivationParameter^2-4))");
+		// PRE-G9B-CU2 declared conformity: the scalar polynomial generator is outside class v3
+		// since step T11; a SplineV2, certified by its contract, interpolates the same values
+		// on [-bound, bound], with the nodes around -2 and 2 only while the bound exceeds 2.
 		add("reactivationBound=1.5");
-		add("reactivationDomain={false,{-reactivationBound,"
-				+ "reactivationBound,true,true}}");
-		add("reactivationLocus=LocusV2(ReactivationGenerator,"
-				+ "reactivationParameter,reactivationDomain)");
+		add("reactivationLocus=SplineV2(If(reactivationBound>2,"
+				+ polynomialNodes("reactivationBound", true) + ","
+				+ polynomialNodes("reactivationBound", false) + "),3)");
 		add("reactivationAxis:y=0");
 		GeoLocusIntersectionResult rich = add(
 				"reactivationResult=Intersect(reactivationLocus,reactivationAxis)");
@@ -1080,14 +1087,18 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 	@Test
 	void reversingProviderOrientationNeverTransfersRankedTokensWithoutMap() {
 		final GeoBoolean reverse = add("reverseDomain=false");
+		// PRE-G9B-CU2 declared conformity: the scalar polynomial generator is outside class v3
+		// since step T11, and a SplineV2 has no provider orientation of its own. The roles are
+		// exchanged: the certified direct affine generator (s,0), whose declared domain reverses
+		// its orientation as the polynomial's did, crosses the implicit curve
+		// y = (x^2-1)(x^2-4) at the same four roots, two of each germ class, all ranked.
 		add("orientationParameter=0");
-		add("OrientationGenerator=(orientationParameter,"
-				+ "(orientationParameter^2-1)*(orientationParameter^2-4))");
+		add("OrientationGenerator=(orientationParameter,0)");
 		add("orientationDomain=If(reverseDomain,"
 				+ "{false,{3,-3,true,true}},{false,{-3,3,true,true}})");
 		add("orientationLocus=LocusV2(OrientationGenerator,"
 				+ "orientationParameter,orientationDomain)");
-		add("orientationAxis:y=0");
+		add("orientationAxis=ImplicitCurve(y-(x^2-1)*(x^2-4))");
 		GeoLocusIntersectionResult rich = add(
 				"orientationResult=Intersect(orientationLocus,orientationAxis)");
 		assertEquals(4, rich.getIntersectionResult().getFiniteSolutions().size());
@@ -1118,15 +1129,16 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 	@Test
 	void rankedPeriodicSeamInvalidatesInsteadOfRotatingOpaqueTokens() {
 		final GeoNumeric phase = add("rankedPhase=0");
-		add("rankedPeriodicParameter=0");
-		add("RankedPeriodicGenerator=(cos(rankedPeriodicParameter+rankedPhase),"
-				+ "sin(2*(rankedPeriodicParameter+rankedPhase))"
-				+ "+0.2*sin(rankedPeriodicParameter+rankedPhase)"
-				+ "+0.1*cos(rankedPeriodicParameter+rankedPhase))");
-		add("rankedPeriodicDomain={true,{0,2*pi,true,false}}");
-		add("rankedPeriodicLocus=LocusV2(RankedPeriodicGenerator,"
-				+ "rankedPeriodicParameter,rankedPeriodicDomain)");
-		add("rankedPeriodicAxis:y=0");
+		// PRE-G9B-CU2 declared conformity: the periodic scalar generator is outside class v3
+		// since step T11. The certified circle of a point of a circle rotated by the phase
+		// (class v1) shifts its parameterization as the phase did, and an ellipse crosses it
+		// at the angles +-0.05 and pi +- 0.05, two crossings of each germ, so that the
+		// roots near (-1, 0) cross the seam -pi of [-pi, pi) as the phase decreases.
+		add("rankedPeriodicCircle=Circle((0,0),1)");
+		add("rankedPeriodicDriver=Point(rankedPeriodicCircle)");
+		add("RankedPeriodicGenerator=Rotate(rankedPeriodicDriver,rankedPhase)");
+		add("rankedPeriodicLocus=LocusV2(RankedPeriodicGenerator,rankedPeriodicDriver)");
+		add("rankedPeriodicAxis=Ellipse((-0.8703846,0),(0.8703846,0),1.0037776)");
 		GeoLocusIntersectionResult rich = add(
 				"rankedPeriodicResult=Intersect(rankedPeriodicLocus,"
 						+ "rankedPeriodicAxis)");
@@ -1258,7 +1270,9 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 	@Test
 	void mergeCandidateParentKeysRemainExplicitAndNonAdmissible() {
 		add("mergeHeight=1");
-		GeoLocusIntersectionResult rich = intersect(createParabola(),
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11; the same parabola is certified from its focus and directrix.
+		GeoLocusIntersectionResult rich = intersect(certifiedParabola(),
 				"y=mergeHeight");
 		LocusIntersectionResult2D before = rich.getIntersectionResult();
 		assertEquals(2, before.getFiniteSolutions().size());
@@ -1924,6 +1938,57 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 			assertInteriorPeriodicRoots(locus, rich, context);
 		}
 		return java.util.Objects.requireNonNull(current);
+	}
+
+	/**
+	 * @return a SplineV2 that interpolates (x^2-1)(x^2-4) at -bound, at the odd multiples of
+	 *         1/8 between -23/8 and 23/8, and at bound
+	 */
+	private static String polynomialSpline(String bound) {
+		return "SplineV2(" + polynomialNodes(bound, true) + ",3)";
+	}
+
+	/**
+	 * The nodes are dense, so that the chordal SplineV2 stays the graph of the polynomial, and
+	 * none of them is a root, so that every root is a transverse crossing inside a span. With
+	 * the outer nodes and a bound below 23/8 the end nodes lie inside the odd multiples, so the
+	 * spline folds back near its ends, where the polynomial is positive: its crossings of
+	 * {@code y = 0} are still the four roots of the polynomial.
+	 *
+	 * @param bound outer abscissa, a number or a numeric label
+	 * @param withOuterRoots whether the nodes around the outer roots -2 and 2, from 13/8 to
+	 *        23/8 in absolute value, are kept
+	 * @return the nodes of (x^2-1)(x^2-4) on [-bound, bound] as a list of points
+	 */
+	private static String polynomialNodes(String bound, boolean withOuterRoots) {
+		StringBuilder nodes = new StringBuilder("{").append(polynomialNode("-(" + bound
+				+ ")"));
+		int limit = withOuterRoots ? 23 : 11;
+		for (int numerator = -limit; numerator <= limit; numerator += 2) {
+			nodes.append(',').append(polynomialNode("(" + numerator + "/8)"));
+		}
+		return nodes.append(',').append(polynomialNode("(" + bound + ")")).append('}')
+				.toString();
+	}
+
+	private static String polynomialNode(String abscissa) {
+		return "(" + abscissa + ",((" + abscissa + ")^2-1)*((" + abscissa + ")^2-4))";
+	}
+
+	/**
+	 * @return the SplineV2 {@code L} that interpolates y = x^2 at the odd multiples of 1/14
+	 *         between -29/14 and 29/14: its crossings with y = h, 1 <= h <= 4, are transverse
+	 *         and inside its spans
+	 */
+	private GeoLocusV2 parabolaSpline() {
+		StringBuilder nodes = new StringBuilder("{");
+		for (int numerator = -29; numerator <= 29; numerator += 2) {
+			nodes.append(numerator == -29 ? "" : ",").append("((").append(numerator)
+					.append("/14),(").append(numerator).append("/14)^2)");
+		}
+		GeoLocusV2 locus = add("L=SplineV2(" + nodes.append('}') + ",3)");
+		assertNotNull(locus);
+		return locus;
 	}
 
 	private ReactivationSnapshot runTwoFourTwoRecurrence(String seed,

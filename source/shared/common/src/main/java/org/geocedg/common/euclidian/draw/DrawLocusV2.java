@@ -7,17 +7,27 @@ package org.geocedg.common.euclidian.draw;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GRectangle;
+import org.geogebra.common.awt.GShape;
 import org.geogebra.common.euclidian.Drawable;
+import org.geogebra.common.euclidian.EuclidianStatic;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.euclidian.GeneralPathClipped;
+import org.geogebra.common.plugin.EuclidianStyleConstants;
 
 /** Dedicated G6B drawable derived exclusively from the semantic evaluator. */
 public final class DrawLocusV2 extends Drawable {
+	/** Opacity of the distinct style of exploratory evidence (decision E-1). */
+	private static final int EXPLORATORY_ALPHA = 128;
 	private final GeoLocusV2 locus;
 	private final LocusRenderCache2D renderCache = new LocusRenderCache2D();
 	private GeneralPathClipped path;
+	private GeneralPathClipped exploratoryPath;
+	private GBasicStroke exploratoryStroke;
+	private GShape exploratoryShape;
+	private boolean certifiedVertices;
 	private boolean visible;
 	private boolean labelVisible;
 
@@ -71,6 +81,13 @@ public final class DrawLocusV2 extends Drawable {
 				path.lineTo(x, y);
 			}
 		}
+		if (labelVisible && !labelPositionSet && !data.getExploratoryVertices().isEmpty()) {
+			// A locus drawn only as exploratory evidence keeps its label on that evidence.
+			LocusPoint2D point = data.getExploratoryVertices().get(0).getPoint();
+			xLabel = (int) view.toScreenCoordXd(point.getX());
+			yLabel = (int) view.toScreenCoordYd(point.getY());
+			labelPositionSet = true;
+		}
 		if (labelVisible && labelPositionSet) {
 			labelDesc = locus.getLabelDescription();
 			xLabel += 5;
@@ -79,7 +96,37 @@ public final class DrawLocusV2 extends Drawable {
 		} else {
 			labelVisible = false;
 		}
-		visible = view.intersects(path.getGeneralPath());
+		certifiedVertices = !data.getVertices().isEmpty();
+		updateExploratoryPath(data);
+		visible = view.intersects(path.getGeneralPath()) || exploratoryPath != null
+				&& view.intersects(exploratoryPath.getGeneralPath());
+	}
+
+	/**
+	 * Exploratory evidence of the unresolved bands (decision E-1): its own path, drawn with
+	 * a distinct dotted, translucent style and never joined to a certified component.
+	 */
+	private void updateExploratoryPath(LocusRenderData2D data) {
+		exploratoryShape = null;
+		if (data.getExploratoryVertices().isEmpty()) {
+			exploratoryPath = null;
+			return;
+		}
+		if (exploratoryPath == null) {
+			exploratoryPath = new GeneralPathClipped(view);
+		}
+		exploratoryPath.resetWithThickness(locus.getLineThickness());
+		exploratoryStroke = EuclidianStatic.getStroke(objStroke.getLineWidth(),
+				EuclidianStyleConstants.LINE_TYPE_DOTTED);
+		for (LocusRenderData2D.Vertex vertex : data.getExploratoryVertices()) {
+			double x = view.toScreenCoordXd(vertex.getPoint().getX());
+			double y = view.toScreenCoordYd(vertex.getPoint().getY());
+			if (vertex.startsSubpath()) {
+				exploratoryPath.moveTo(x, y);
+			} else {
+				exploratoryPath.lineTo(x, y);
+			}
+		}
 	}
 
 	private boolean isOnScreen(double x, double y) {
@@ -99,6 +146,11 @@ public final class DrawLocusV2 extends Drawable {
 		graphics.setPaint(getObjectColor());
 		graphics.setStroke(objStroke);
 		path.draw(graphics);
+		if (exploratoryPath != null) {
+			graphics.setPaint(getObjectColor().deriveWithAlpha(EXPLORATORY_ALPHA));
+			graphics.setStroke(exploratoryStroke);
+			exploratoryPath.draw(graphics);
+		}
 		if (labelVisible) {
 			graphics.setFont(view.getFontLine());
 			graphics.setPaint(locus.getLabelColor());
@@ -116,17 +168,43 @@ public final class DrawLocusV2 extends Drawable {
 		if (strokedShape == null) {
 			strokedShape = objStroke.createStrokedShape(path.getGeneralPath(), 256);
 		}
-		return strokedShape.intersects(x - hitThreshold, y - hitThreshold,
+		if (strokedShape.intersects(x - hitThreshold, y - hitThreshold,
+				2 * hitThreshold, 2 * hitThreshold)) {
+			return true;
+		}
+		// Exploratory evidence selects the object only; it is no path of the locus.
+		if (exploratoryPath == null) {
+			return false;
+		}
+		if (exploratoryShape == null) {
+			exploratoryShape = objStroke.createStrokedShape(
+					exploratoryPath.getGeneralPath(), 256);
+		}
+		return exploratoryShape.intersects(x - hitThreshold, y - hitThreshold,
 				2 * hitThreshold, 2 * hitThreshold);
 	}
 
 	@Override
 	public boolean isInside(GRectangle rectangle) {
-		return path != null && rectangle.contains(path.getBounds());
+		if (path == null) {
+			return false;
+		}
+		if (exploratoryPath == null) {
+			return rectangle.contains(path.getBounds());
+		}
+		return (!certifiedVertices || rectangle.contains(path.getBounds()))
+				&& rectangle.contains(exploratoryPath.getBounds());
 	}
 
 	@Override
 	public GRectangle getBounds() {
-		return visible && path != null ? path.getBounds() : null;
+		if (!visible || path == null) {
+			return null;
+		}
+		if (exploratoryPath == null) {
+			return path.getBounds();
+		}
+		return certifiedVertices ? path.getBounds().union(exploratoryPath.getBounds())
+				: exploratoryPath.getBounds();
 	}
 }

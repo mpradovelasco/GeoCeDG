@@ -6,8 +6,8 @@
 package org.geocedg.common.kernel.algos;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
-import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.V2RedefineContractSource;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -88,14 +88,16 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	public final void compute() {
 		locus.getInstrumentation().recordDependencyUpdate();
 		if (!isSemanticPublicationReady()) {
-			locus.setUndefined();
+			// PRE-G9B-CU2 (locus-v2-semantics.md, publication; finding F-CU2-3): a recompute
+			// that does not publish discards the previous definition.
+			locus.discardSemanticDefinition();
 			return;
 		}
-		long candidateRevision = Math.max(1, locus.getSemanticRevision() + 1);
-		// PRE-G9B-CU2 gates GC-1 to GC-3 and GC-6: every candidate computes its
-		// existence certificate, so the candidate is built inside a counted scope.
-		LocusDefinition2D candidate = LocusCertificationScope2D.certify(
-				locus.getInstrumentation(), () -> createCandidate(candidateRevision));
+		long candidateRevision = locus.getNextSemanticRevision();
+		// PRE-G9B-CU2 gates GC-1 to GC-3 and GC-6: a producer that computes an existence
+		// certificate counts it inside its own scope, once per revision
+		// (LocusCertificationScope2D); building a candidate from it is not a computation.
+		LocusDefinition2D candidate = createCandidate(candidateRevision);
 		LocusDefinition2D current = locus.getSemanticDefinition();
 		if (current == null || !current.hasSameSemanticContent(candidate)) {
 			locus.publishSemanticDefinition(candidate.withRevision(candidateRevision));
@@ -107,6 +109,18 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	}
 
 	protected abstract LocusDefinition2D createCandidate(long candidateRevision);
+
+	/**
+	 * Exploratory evidence of the unresolved bands of one branch of the published
+	 * definition (PRE-G9B-CU2, decision E-1); producers without unresolved bands derive
+	 * none.
+	 *
+	 * @param branchKey branch of the published definition
+	 * @return evidence, or {@code null}
+	 */
+	public LocusExploratoryEvidence2D getExploratoryEvidence(String branchKey) {
+		return null;
+	}
 
 	/**
 	 * @return whether all durable/reconstructible inputs needed by this parent are

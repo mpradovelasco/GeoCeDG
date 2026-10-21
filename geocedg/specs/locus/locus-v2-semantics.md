@@ -315,6 +315,33 @@ procedure restores is detected and fails explicitly: the revision is published w
 reconstruction with rounded values is never treated as identical to the original. The general
 persistence format is not changed; the reconstruction contract is versioned and deterministic.
 
+**Selection settlement (normative precision D-CU2-T11-R1 of D-CU2-17 and D-CU2-20-R).** A copy
+reconstructed with the driver where an inherited intersection cannot finish its first
+initialization (no two distinct roots on its paths) may leave that intersection unsettled while
+the live one is settled. When every other authoritative input is reproduced, the copy may be
+settled by its own inherited computation at deterministic auxiliary driver parameters that do
+not depend on the live driver position (contract `selection-settlement/v1`). The selection state
+is never written, the live construction is never touched, and the copy is validated again
+exactly, every selection state included; a settlement that does not reproduce the live state
+fails explicitly with `SELECTION_NOT_REPRODUCED`. Auxiliary parameters are never evidence of
+existence, continuity, identity or completeness. After a faithful validation, no point query
+makes an output depend on the order of earlier queries: an intersection of the copy that
+completes its first initialization during a query is settled at once at that parameter, is never
+declared to reproduce the live state, and each later query checks its outputs against the
+selection rule of the revision and fails explicitly when they would differ.
+
+**Selection-independent nonexistence (normative precision D-CU2-T11-R1).** Certifying a selected
+construction requires every selection to be reproduced. A proof of nonexistence does not need
+the selections that the copy does not reproduce when it uses none of them: if every remaining
+discrepancy is such a selection and the class-v3 model proves, on boxes covering the whole
+canonical domain, the falsity of validity predicates that do not depend on those selections (a
+predicate of a step that does not depend on their selected outputs, or the discriminant of one of
+those intersections), the revision is published with existence `COMPLETE`, no component and the
+coverage cause `SELECTION_INDEPENDENT_NONEXISTENCE`. The evaluator keeps failing with
+`SELECTION_NOT_REPRODUCED` and no selection state is declared reproduced. Existence, partial
+nonexistence or any undecided box keeps the revision `NOT_ESTABLISHED`; this is never a general
+bypass of the reconstruction fidelity rule.
+
 **Persistence and reopen.** The exact fidelity of an internal copy with respect to the captured
 live state and the fidelity of the persisted format on save and reopen are distinct properties.
 This contract attributes no bit-for-bit round trip to the persisted format beyond what its own

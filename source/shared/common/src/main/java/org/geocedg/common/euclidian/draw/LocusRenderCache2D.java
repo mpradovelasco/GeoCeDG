@@ -23,6 +23,9 @@ import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
+import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
@@ -179,13 +182,18 @@ public final class LocusRenderCache2D {
 	 * Drawing policy {@value LocusRenderPolicy2D#VERSION}: every certified component of
 	 * every branch at the finest coarsening level whose vertices fit the budget of the view;
 	 * at the coarsest level, the components are admitted in kernel order while they fit and
-	 * the others fail explicitly. Point components are declared and never drawn.
+	 * the others fail explicitly. Point components are declared and never drawn. The
+	 * exploratory evidence of the unresolved bands is drawn apart (decision E-1).
 	 */
 	private static LocusRenderData2D buildVersion2(GeoLocusV2 locus,
 			LocusDefinition2D definition, LocusRenderPolicy2D policy,
 			LocusEvaluationSession2D session) {
 		List<LocusComponentTessellator2D> tessellators = new ArrayList<>();
 		List<Mark> declarations = new ArrayList<>();
+		List<LocusRenderData2D.Vertex> exploratory = new ArrayList<>();
+		for (LocusBranch2D branch : definition.getBranches()) {
+			appendExploratoryEvidence(locus, branch, session, exploratory, declarations);
+		}
 		for (LocusBranch2D branch : definition.getBranches()) {
 			LocusExistenceStructure2D structure = branch.getExistenceStructure();
 			for (ContinuousComponent component : structure.getContinuousValidComponents()) {
@@ -222,15 +230,81 @@ public final class LocusRenderCache2D {
 				outcomes.add(outcome);
 			}
 			if (fits) {
-				return assemble(locus, policy, outcomes, declarations, level);
+				return assemble(locus, policy, outcomes, declarations, level, exploratory);
 			}
 		}
 		throw new IllegalStateException("The coarsest level always assembles");
 	}
 
+	/**
+	 * Exploratory evidence of the unresolved bands of a branch (decision E-1;
+	 * presentation version 2): the valid runs that its producer explored, each chain of
+	 * consecutive runs in its own subpath through the explored samples, only inside the
+	 * unresolved coverage and never joined to a component. One mark declares each band
+	 * drawn this way.
+	 */
+	private static void appendExploratoryEvidence(GeoLocusV2 locus, LocusBranch2D branch,
+			LocusEvaluationSession2D session, List<LocusRenderData2D.Vertex> vertices,
+			List<Mark> marks) {
+		LocusExploratoryEvidence2D evidence = locus.getExploratoryEvidence(
+				branch.getBranchKey());
+		if (evidence == null) {
+			return;
+		}
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		for (Coverage band : structure.getCoverage()) {
+			if (band.getState() != CoverageState.UNRESOLVED) {
+				continue;
+			}
+			boolean drawn = false;
+			// Parameter of the last vertex of the open chain, NaN when none is open.
+			double chainEnd = Double.NaN;
+			for (LocusInterval2D run : evidence.getValidRuns()) {
+				if (!band.getInterval().contains(run.getLower(), 0)
+						|| !band.getInterval().contains(run.getUpper(), 0)) {
+					continue;
+				}
+				boolean continues = run.getLower() == chainEnd;
+				if (!continues) {
+					continues = appendExploratoryVertex(locus, branch, run.getLower(), true,
+							session, vertices);
+				}
+				chainEnd = appendExploratoryVertex(locus, branch, run.getUpper(), !continues,
+						session, vertices) ? run.getUpper() : Double.NaN;
+				drawn = true;
+			}
+			if (drawn) {
+				marks.add(new Mark(MarkKind.EXPLORATORY_EVIDENCE,
+						LocusComponentTessellator2D.componentKey(branch.getBranchKey(),
+								"unresolved-band"),
+						band.getInterval().getLower() + (band.getInterval().getUpper()
+								- band.getInterval().getLower()) / 2,
+						"band " + band.getInterval() + "; " + evidence.getMethod() + " ("
+								+ evidence.getPolicyVersion() + ")"));
+			}
+		}
+	}
+
+	/**
+	 * @return whether the explored sample evaluated to a vertex; when it does not, the next
+	 *         vertex starts a new subpath, and nothing is interpolated
+	 */
+	private static boolean appendExploratoryVertex(GeoLocusV2 locus, LocusBranch2D branch,
+			double parameter, boolean startsSubpath, LocusEvaluationSession2D session,
+			List<LocusRenderData2D.Vertex> vertices) {
+		LocusEvaluation2D evaluation = locus.evaluateForRender(branch.getBranchKey(),
+				parameter, session);
+		if (!evaluation.isValid()) {
+			return false;
+		}
+		vertices.add(new LocusRenderData2D.Vertex(evaluation.getPoint(), parameter,
+				startsSubpath));
+		return true;
+	}
+
 	private static LocusRenderData2D assemble(GeoLocusV2 locus, LocusRenderPolicy2D policy,
 			List<LocusComponentTessellator2D.Outcome> outcomes, List<Mark> declarations,
-			int level) {
+			int level, List<LocusRenderData2D.Vertex> exploratory) {
 		List<LocusRenderData2D.Vertex> vertices = new ArrayList<>();
 		List<Mark> marks = new ArrayList<>();
 		List<ComponentFidelity> components = new ArrayList<>();
@@ -241,7 +315,7 @@ public final class LocusRenderCache2D {
 		}
 		marks.addAll(declarations);
 		return new LocusRenderData2D(locus.getSemanticRevision(), policy, vertices, marks,
-				components, level);
+				components, level, exploratory);
 	}
 
 	/**

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * PRE-G9B-CU2 step T8 on the author model: structural lineage of the shadow certificates
+ * PRE-G9B-CU2 step T8 on the author model: structural lineage of the certificates
  * and resolution of the persisted selector of {@code N_1} ({@code
  * locus-v2-existence-components.md} section 15.6; certification design section 7, decision
  * E-3 revised). Matrix rows V-LIN-1, V-LIN-2, V-LIN-3, V-LIN-5, V-LIN-6 and V-E2-7. The
@@ -161,14 +161,18 @@ class PreG9BCu2AuthorModelLineageTest {
 	 * V-LIN-6: a document whose first-family locus bites when it is certified, with a
 	 * selector citing the complete component and its parameter inside the new arc: the
 	 * selector stays unresolved with a typed cause, because the decomposition changed with
-	 * no recorded transition from the cited component; containment creates nothing.
+	 * no recorded transition from the cited component; containment creates nothing. Since
+	 * step T11 a document is certified when it is opened, so the biting document is saved
+	 * and reopened.
 	 */
 	@Test
 	void containmentCreatesNoCorrespondence() throws Exception {
 		Map<String, String> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
-			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
-			PreG9BCu0Corpus.movePathPoint(app, "N", -1);
-			PreG9BCu0Corpus.setNumber(app, "excCyl", 3.7);
+			AppGeoCeDG edited = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			PreG9BCu0Corpus.movePathPoint(edited, "N", -1);
+			PreG9BCu0Corpus.setNumber(edited, "excCyl", 3.7);
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(edited, work,
+					"bite"));
 			Map<String, String> values = new LinkedHashMap<>();
 			for (String label : FIRST_FAMILY) {
 				AlgoDependentPointLocusV2 algorithm = algorithm(app, label);

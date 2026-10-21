@@ -43,6 +43,12 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * copy. Selection and label states are never written (D-CU2-17); a discrepancy in them is
  * never restored. A slice with a remaining discrepancy is unfaithful, and its evaluator fails
  * explicitly; the copy is never an authority over the live construction.</p>
+ *
+ * <p>The report pairs every live line-conic intersection with its copy, so that the evaluator
+ * can settle the copy's own inherited computation and validate it again
+ * ({@code selection-settlement/v1}, normative precision D-CU2-T11-R1), and it types a copy
+ * intersection that a point query took out of its first initialization as departed, never as
+ * reproduced.</p>
  */
 public final class ReconstructionFidelity2D {
 	/** Version of the reconstruction fidelity contract. */
@@ -111,21 +117,86 @@ public final class ReconstructionFidelity2D {
 		}
 	}
 
+	/**
+	 * One line-conic intersection of the slice, as the validation paired the live algorithm
+	 * with its copy; the selection states are read through the read-only accessors and never
+	 * written (D-CU2-17).
+	 */
+	public static final class SelectionPair {
+		private final String owner;
+		private final AlgoIntersectLineConic live;
+		private final AlgoIntersectLineConic copy;
+
+		private SelectionPair(String owner, AlgoIntersectLineConic live,
+				AlgoIntersectLineConic copy) {
+			this.owner = owner;
+			this.live = live;
+			this.copy = copy;
+		}
+
+		/** @return label of the compared output, or its input path */
+		public String getOwner() {
+			return owner;
+		}
+
+		/** @return live intersection */
+		public AlgoIntersectLineConic getLive() {
+			return live;
+		}
+
+		/** @return intersection of the copy */
+		public AlgoIntersectLineConic getCopy() {
+			return copy;
+		}
+
+		/** @return whether the live intersection has a settled permutation */
+		public boolean isLiveSettled() {
+			return isSettled(live);
+		}
+
+		/** @return whether the live intersection is still in its first initialization */
+		public boolean isLiveFirstPending() {
+			return live.isSelectionFirstIntersectionPending();
+		}
+	}
+
 	/** Typed result of one validation. */
 	public static final class Report {
 		private final List<Discrepancy> discrepancies;
 		private final List<String> unsettledSelections;
+		private final List<SelectionPair> selectionPairs;
+		private final List<String> departedSelections;
 		private final int compared;
 		private final int restorations;
 
-		private Report(List<Discrepancy> discrepancies, List<String> unsettledSelections,
-				int compared, int restorations) {
+		private Report(Pass pass, int compared, int restorations) {
 			this.discrepancies = Collections.unmodifiableList(
-					new ArrayList<>(discrepancies));
+					new ArrayList<>(pass.discrepancies));
 			this.unsettledSelections = Collections.unmodifiableList(
-					new ArrayList<>(unsettledSelections));
+					new ArrayList<>(pass.unsettled));
+			this.selectionPairs = Collections.unmodifiableList(new ArrayList<>(pass.pairs));
+			this.departedSelections = Collections.unmodifiableList(
+					new ArrayList<>(pass.departed));
 			this.compared = compared;
 			this.restorations = restorations;
+		}
+
+		/**
+		 * @return every line-conic intersection compared, with its live algorithm and its
+		 *         copy, in slice order
+		 */
+		public List<SelectionPair> getSelectionPairs() {
+			return selectionPairs;
+		}
+
+		/**
+		 * @return intersections whose copy left its first initialization through a point
+		 *         query and was settled at that parameter by the evaluator, while the live one
+		 *         is still in its first initialization (D-CU2-T11-R1); never reported as
+		 *         reproduced, and never a discrepancy
+		 */
+		public List<String> getDepartedSelections() {
+			return departedSelections;
 		}
 
 		/**
@@ -171,7 +242,8 @@ public final class ReconstructionFidelity2D {
 		@Override
 		public String toString() {
 			return (isFaithful() ? "faithful" : "unfaithful " + discrepancies)
-					+ ":compared=" + compared + ":restorations=" + restorations;
+					+ ":compared=" + compared + ":restorations=" + restorations
+					+ (departedSelections.isEmpty() ? "" : ":departed=" + departedSelections);
 		}
 	}
 
@@ -191,20 +263,55 @@ public final class ReconstructionFidelity2D {
 	 */
 	public static Report validate(Collection<GeoElement> liveSlice, Construction isolated,
 			Collection<GeoElement> driverRoots, boolean restore) {
+		return validate(liveSlice, isolated, driverRoots, restore, Set.of());
+	}
+
+	/**
+	 * Validates a reconstructed slice whose copy intersections may have left their first
+	 * initialization through point queries (D-CU2-T11-R1).
+	 *
+	 * @param departed copy intersections that the evaluator settled at the parameter of the
+	 *        query that completed their first initialization; a pair whose live intersection
+	 *        is still in its first initialization and whose copy is in exactly that settled
+	 *        state is reported as departed, not as a discrepancy
+	 * @return typed validation report
+	 */
+	public static Report validate(Collection<GeoElement> liveSlice, Construction isolated,
+			Collection<GeoElement> driverRoots, boolean restore,
+			Set<AlgoIntersectLineConic> departed) {
 		List<GeoElement> ordered = new ArrayList<>(Objects.requireNonNull(liveSlice));
 		ordered.sort(CONSTRUCTION_ORDER);
 		Set<GeoElement> driverDependent = ReconstructionExactState2D.driverDependent(
 				ordered, driverRoots);
-		Pass first = new Pass(isolated, driverDependent, restore);
+		Pass first = new Pass(isolated, driverDependent, restore, departed);
 		first.compare(ordered);
 		if (!restore || first.restorations == 0) {
-			return new Report(first.discrepancies, first.unsettled, first.compared, 0);
+			return new Report(first, first.compared, 0);
 		}
 		first.refresh();
-		Pass second = new Pass(isolated, driverDependent, false);
+		Pass second = new Pass(isolated, driverDependent, false, departed);
 		second.compare(ordered);
-		return new Report(second.discrepancies, second.unsettled, first.compared,
-				first.restorations);
+		return new Report(second, first.compared, first.restorations);
+	}
+
+	/**
+	 * @return whether the intersection has a settled permutation: out of its first
+	 *         initialization and with no permutation pending
+	 */
+	public static boolean isSettled(AlgoIntersectLineConic intersection) {
+		return !intersection.isSelectionFirstIntersectionPending()
+				&& !intersection.isSelectionPermutationPending();
+	}
+
+	/**
+	 * @return whether the intersection is settled in the identity permutation, the only
+	 *         state that a settlement of its first initialization by the inherited computation
+	 *         can produce (D-CU2-T11-R1)
+	 */
+	public static boolean isSettledIdentity(AlgoIntersectLineConic intersection) {
+		int[] permutation = intersection.getSelectionPermutation();
+		return isSettled(intersection) && permutation != null && permutation.length == 2
+				&& permutation[0] == 0 && permutation[1] == 1;
 	}
 
 	/** One comparison pass over the slice. */
@@ -212,9 +319,14 @@ public final class ReconstructionFidelity2D {
 		private final Construction isolated;
 		private final Set<GeoElement> driverDependent;
 		private final boolean restore;
+		private final Set<AlgoIntersectLineConic> departedCopies;
 		private final List<Discrepancy> discrepancies = new ArrayList<>();
 		private final List<String> unsettled = new ArrayList<>();
+		private final List<SelectionPair> pairs = new ArrayList<>();
+		private final List<String> departed = new ArrayList<>();
 		private final Set<AlgoElement> visited =
+				Collections.newSetFromMap(new IdentityHashMap<>());
+		private final Set<AlgoElement> pairedCopies =
 				Collections.newSetFromMap(new IdentityHashMap<>());
 		private final List<GeoElement> restoredValues = new ArrayList<>();
 		private final List<AlgoElement> restoredAlgorithms = new ArrayList<>();
@@ -222,10 +334,11 @@ public final class ReconstructionFidelity2D {
 		private int restorations;
 
 		private Pass(Construction isolated, Set<GeoElement> driverDependent,
-				boolean restore) {
+				boolean restore, Set<AlgoIntersectLineConic> departedCopies) {
 			this.isolated = isolated;
 			this.driverDependent = driverDependent;
 			this.restore = restore;
+			this.departedCopies = departedCopies;
 		}
 
 		private void compare(List<GeoElement> ordered) {
@@ -394,13 +507,23 @@ public final class ReconstructionFidelity2D {
 			if (live instanceof AlgoIntersectLineConic) {
 				AlgoIntersectLineConic liveLineConic = (AlgoIntersectLineConic) live;
 				AlgoIntersectLineConic copyLineConic = (AlgoIntersectLineConic) copy;
+				if (pairedCopies.add(copyLineConic)) {
+					pairs.add(new SelectionPair(owner, liveLineConic, copyLineConic));
+				}
 				String liveState = selectionState(liveLineConic);
 				String copyState = selectionState(copyLineConic);
 				if (liveLineConic.isSelectionFirstIntersectionPending()) {
 					// The rule of a first initialization is the compaction of the roots on
 					// the paths; the copy reproduces it only while it is still initializing.
+					// A copy that a point query took out of it, settled at that parameter by
+					// the evaluator, is typed as departed and never as reproduced.
 					if (!copyLineConic.isSelectionFirstIntersectionPending()) {
-						add(owner, DiscrepancyKind.SELECTION, liveState, copyState);
+						if (departedCopies.contains(copyLineConic)
+								&& isSettledIdentity(copyLineConic)) {
+							departed.add(owner);
+						} else {
+							add(owner, DiscrepancyKind.SELECTION, liveState, copyState);
+						}
 					}
 				} else if (liveLineConic.isSelectionPermutationPending()) {
 					// The next live computation sets the permutation by proximity, so there

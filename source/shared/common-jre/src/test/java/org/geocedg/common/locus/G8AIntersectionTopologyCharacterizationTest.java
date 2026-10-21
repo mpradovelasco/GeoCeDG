@@ -115,8 +115,12 @@ class G8AIntersectionTopologyCharacterizationTest extends BaseUnitTest {
 				new FactorizationProof(1,
 						List.of(new RootProof("isolated-root", 0, 1)), false,
 						"declared isolated incidence"), false);
-		assertEquals(DomainLocation.ISOLATED_COMPONENT,
-				hit.solutions().get(0).classification().domainLocation());
+		// PRE-G9B-CU2 declared conformity (locus-v2-existence-components.md section 15.4):
+		// the explicit certificate of step T11 makes the isolated declared parameter a point
+		// component, which a binary64 parameter never addresses, so the factorization
+		// evaluates nothing there and materializes no root on it.
+		assertEquals(1, isolated.getExistenceStructure().getPointComponents().size());
+		assertTrue(hit.solutions().isEmpty());
 
 		LocusBranch2D empty = branch("empty", provider, List.of());
 		GeoLocusV2 emptyLocus = locus("g8a-empty", provider, List.of(empty),
@@ -244,13 +248,14 @@ class G8AIntersectionTopologyCharacterizationTest extends BaseUnitTest {
 			ExplicitNumericDomainProvider2D provider) {
 		return LocusV2Factory.fullDomainBranch(key, provider,
 				"g8a-topology-lineage/v1",
-				Collections.singleton(BranchProperty.FINITE));
+				Collections.singleton(BranchProperty.FINITE),
+				LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 	}
 
 	private static LocusBranch2D branch(String key,
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusInterval2D> components) {
-		return new LocusBranch2D(key, provider.getDeclaredDomain(), components,
+		return LocusV2TestBranches.branch(key, provider.getDeclaredDomain(), components,
 				Orientation.INCREASING, "g8a-topology-lineage/v1",
 				LocusLineage2D.unchanged(), EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());

@@ -155,21 +155,16 @@ class PreG9BCu1MetricClassesTest extends G9U0PublicSurfaceTestBase {
 				.multiply(new BigDecimal(4)), describe(affine));
 		assertAdmissible(affine, "scalar affine");
 
-		// Class 1 needs provider-owned certificate material: an affine expression outside
-		// the certified direct forms stays an honest estimate of the same length.
+		// Class 1 needs provider-owned certificate material. PRE-G9B-CU2 declared conformity
+		// (step T11): an affine expression outside the certified direct forms is outside
+		// class v3 (limitation L-CU1-AFFINE-FORMS), so its existence is not established and
+		// its total length is refused instead of estimated.
 		add("w=0");
 		add("Qb=(2w+1,3w-1)");
 		add("Db={false,{-2,2,true,true}}");
 		add("Lb=LocusV2(Qb,w,Db)");
 		LocusMetricResult2D expression = rich("Mb=LocusLength(Lb)");
-		assertEquals(MetricGuaranteeClass2D.ESTIMATED, expression.getGuaranteeClass(),
-				describe(expression));
-		assertTrue(expression.getErrorEvidence().getRigorousEnclosure().isEmpty(),
-				describe(expression));
-		assertEquals(4 * Math.sqrt(13), value(expression),
-				expression.getErrorEvidence().getEstablishedAbsoluteAmount()
-						+ 4 * Math.ulp(4 * Math.sqrt(13)), describe(expression));
-		assertAdmissible(expression, "affine expression");
+		assertNoTotalWithoutExistence(expression, "affine expression");
 	}
 
 	/**
@@ -183,10 +178,10 @@ class PreG9BCu1MetricClassesTest extends G9U0PublicSurfaceTestBase {
 		add("P=Point(c)");
 		add("Q=P+(0,0)");
 		GeoLocusV2 circle = add("L=LocusV2(Q,P)");
-		add("s=Segment((0,0),(1,0))");
-		add("R=Point(s)");
-		add("W=(x(R),sin(2*pi*x(R)))");
-		GeoLocusV2 sine = add("K=LocusV2(W,R)");
+		// PRE-G9B-CU2 declared conformity (step T11): the expression-driven sine is outside
+		// class v3 and has no total length; the certified parabola, whose length is an
+		// honest estimate, is the non-structural source.
+		GeoLocusV2 sine = certifiedParabola("K", "W", "imageParabola");
 		String[][] images = {{"Translate(%s,(3,-2))", "1"},
 				{"Rotate(%s,pi/3,(1,2))", "1"}, {"Reflect(%s,y=x)", "1"},
 				{"Reflect(%s,(1,2))", "1"}, {"Dilate(%s,2,(1,1))", "2"},
@@ -288,12 +283,18 @@ class PreG9BCu1MetricClassesTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(scalar.isDefined());
 		assertEquals(value(lineRich), scalar.getValue(), 0);
 
+		// PRE-G9B-CU2 declared conformity (step T11): the scalar (t,sin(t)) is outside class
+		// v3 and has no total length, so the adapter publishes nothing for it; the certified
+		// parabola is the non-structural admissible source.
 		add("t=0");
 		add("Qt=(t,sin(t))");
 		add("Dt={false,{0,3,true,true}}");
 		add("Lt=LocusV2(Qt,t,Dt)");
-		GeoNumeric estimated = add("b=Length(Lt)");
-		LocusMetricResult2D estimate = rich("Mt=LocusLength(Lt)");
+		assertFalse(((GeoNumeric) add("bt=Length(Lt)")).isDefined());
+		certifiedParabola("Lk", "Qk", "adapterParabola");
+		// The rich result of bt=Length(Lt) took the label b.
+		GeoNumeric estimated = add("bk=Length(Lk)");
+		LocusMetricResult2D estimate = rich("Mt=LocusLength(Lk)");
 		assertEquals(MetricGuaranteeClass2D.ESTIMATED, estimate.getGuaranteeClass());
 		assertTrue(estimated.isDefined());
 		assertEquals(value(estimate), estimated.getValue(), 0);

@@ -22,10 +22,17 @@ public enum LocusCoverageCause2D {
 	PREDICATE_CERTIFIED_FALSE(CoverageState.CERTIFIED_DOES_NOT_EXIST),
 	/** A dependency's own certificate establishes nonexistence on the interval. */
 	DEPENDENCY_CERTIFIED_NONEXISTENT(CoverageState.CERTIFIED_DOES_NOT_EXIST),
+	/**
+	 * Validity predicates that use no selection the slice copy does not reproduce are
+	 * certified false on the whole canonical domain (normative precision D-CU2-T11-R1).
+	 */
+	SELECTION_INDEPENDENT_NONEXISTENCE(CoverageState.CERTIFIED_DOES_NOT_EXIST),
 	/** The provider's own contract excludes the interval from its components. */
 	PROVIDER_COMPLEMENT(CoverageState.CERTIFIED_DOES_NOT_EXIST),
 	/** Existence holds at isolated parameters only, as point components. */
 	ISOLATED_EVEN_ROOT(CoverageState.CERTIFIED_ISOLATED_POINTS),
+	/** The provider's own contract asserts existence at an isolated parameter only. */
+	PROVIDER_ISOLATED_POINT(CoverageState.CERTIFIED_ISOLATED_POINTS),
 	/** The interval is the certified enclosure of one root that bounds a component. */
 	CERTIFIED_BOUNDARY_ENCLOSURE(CoverageState.CERTIFIED_BOUNDARY),
 	/** A versioned work budget was exhausted. */

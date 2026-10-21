@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.SemanticCurveExportAdapter2D;
 import org.geocedg.common.export.SemanticCurveExportAdapter2D.Component;
 import org.geocedg.common.export.SemanticCurveExportAdapter2D.SourceResult;
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
@@ -64,6 +66,7 @@ import org.geocedg.common.kernel.locus.LocusSimilarityEvaluator2D;
 import org.geocedg.common.kernel.locus.LocusSimilarityTransform2D;
 import org.geocedg.common.kernel.locus.LocusV2Factory;
 import org.geocedg.common.kernel.locus.LocusV2Mode;
+import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DomainLocation;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionTokenLineage2D;
@@ -102,6 +105,7 @@ import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -293,22 +297,49 @@ class PreG9BCu2ConsumerMigrationTest extends BaseUnitTest {
 				bind(unresolved, 0.5).getEvaluationStatus());
 	}
 
-	/** V-CON-6: a dependent locus on a locus support inherits its arc, never more. */
+	/**
+	 * V-CON-6 on the published certificates (step T11): a dependent locus on a locus support
+	 * takes the support's components, an arc across the seam included, as its declared
+	 * domain, and its completeness never exceeds the support's. A locus support is outside
+	 * class v3, so the dependent's own existence is not established: no compatibility
+	 * certificate composes the support's components into it any more.
+	 */
 	@Test
 	void aDependentOnALocusSupportInheritsTheArc() {
-		LocusExistenceStructure2D support = bite(START, END);
-		LocusExistenceStructure2D dependent = LocusExistenceStructure2D
-				.compatibilityInherited("dependent.main", support);
-		assertEquals(1, dependent.getContinuousValidComponents().size());
-		ContinuousComponent arc = dependent.getContinuousValidComponents().get(0);
-		assertTrue(arc.crossesSeam());
-		assertEquals(START, arc.getStart());
-		assertEquals(END, arc.getEnd());
-		assertFalse(dependent.isClosedPeriodic());
-		assertEquals(support.getCompleteness(), dependent.getCompleteness());
-		assertFalse(arc.getNature().certifies(), "the dependent's own validity is unproved");
-		assertEquals(LocusComponentLineage2D.create("dependent.main", arc.getInterval()),
-				LocusComponentLineage2D.of(dependent, arc));
+		add("c=Circle((0,0),1)");
+		GeoPoint driver = add("P=Point(c)");
+		driver.setCoords(1, 0, 1);
+		driver.updateRepaint();
+		add("d=Circle((2,0),3/2)");
+		add("g=Line((0,0),P)");
+		add("X=Intersect(d,g,1)");
+		GeoLocusV2 support = add("L=LocusV2(X,P)");
+		LocusExistenceStructure2D origin = support.getSemanticDefinition()
+				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+				.getExistenceStructure();
+		assertEquals(Completeness.COMPLETE, origin.getCompleteness(),
+				origin.getSemanticSignature());
+		assertTrue(origin.getContinuousValidComponents().stream()
+				.anyMatch(ContinuousComponent::crossesSeam), origin.getSemanticSignature());
+		add("u=0");
+		add("S=Point(L,\"" + SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY + "\",u)");
+		add("Y=S+(1,0)");
+		GeoLocusV2 dependent = add("M=LocusV2(Y,S)");
+		List<LocusInterval2D> pieces = new ArrayList<>();
+		for (ContinuousComponent component : origin.getContinuousValidComponents()) {
+			pieces.addAll(component.getCanonicalPieces());
+		}
+		// The declared domain lists the pieces in canonical order of their lower ends.
+		pieces.sort(java.util.Comparator.comparingDouble(LocusInterval2D::getLower));
+		assertEquals(pieces, ((AlgoDependentPointLocusV2) dependent.getParentAlgorithm())
+				.getGeneratorDescriptor().getValidComponents());
+		LocusExistenceStructure2D structure = dependent.getSemanticDefinition()
+				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+				.getExistenceStructure();
+		assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness());
+		assertTrue(structure.getContinuousValidComponents().isEmpty());
+		assertEquals(LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
+				structure.getCoverage().get(0).getCause());
 	}
 
 	/**

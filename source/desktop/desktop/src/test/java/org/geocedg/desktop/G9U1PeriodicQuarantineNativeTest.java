@@ -50,14 +50,22 @@ import org.junit.jupiter.api.io.TempDir;
 /** Native R4 single-locus periodic quarantine, not the distinct R1 pair lifecycle. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class G9U1PeriodicQuarantineNativeTest {
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the periodic scalar double cover
+	 * (cos(2u+a), sin(2u+a)) is outside class v3. The foot of the perpendicular from (1, 0)
+	 * to the line through the origin and the driver rotated by a is the certified double cover
+	 * (1/2 + cos(2t+2a)/2, sin(2t+2a)/2) of a circle: it crosses y = 0 four times per period,
+	 * twice at each of two positions, with the phase 2a.
+	 */
+	private static final String[] COMMANDS = {"a=0.1", "c=Circle((0,0),1)", "P=Point(c)",
+		"Pa=Rotate(P,a)", "r=Line((0,0),Pa)", "F=Intersect(r,PerpendicularLine((1,0),r))",
+		"L=LocusV2(F,P)", "axis:y=0", "R=Intersect(L,axis)"};
 
 	@Test
 	void actualPeriodicQuarantineRoundTripsAndReactivatesOriginalPoints(
 			@TempDir Path directory) throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
-		for (String command : new String[] {"a=0.2", "u=0",
-				"Q=(cos(2*u+a),sin(2*u+a))", "D={true,{0,2*pi,true,false}}",
-				"L=LocusV2(Q,u,D)", "axis:y=0", "R=Intersect(L,axis)"}) {
+		for (String command : COMMANDS) {
 			eval(app, command);
 		}
 		GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult) lookup(app, "R");
@@ -234,9 +242,7 @@ class G9U1PeriodicQuarantineNativeTest {
 	private static Quarantined quarantinedSeed(Path directory, String name)
 			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
-		for (String command : new String[] {"a=0.2", "u=0",
-				"Q=(cos(2*u+a),sin(2*u+a))", "D={true,{0,2*pi,true,false}}",
-				"L=LocusV2(Q,u,D)", "axis:y=0", "R=Intersect(L,axis)"}) {
+		for (String command : COMMANDS) {
 			eval(app, command);
 		}
 		GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult) lookup(app, "R");
@@ -376,9 +382,10 @@ class G9U1PeriodicQuarantineNativeTest {
 				.filter(GeoPoint.class::isInstance).count();
 	}
 
-	private static void move(AppGeoCeDG app, double value) {
+	/** Sets the phase of the double cover, which is twice the angle a of its rotation. */
+	private static void move(AppGeoCeDG app, double phase) {
 		GeoNumeric parameter = (GeoNumeric) lookup(app, "a");
-		parameter.setValue(value);
+		parameter.setValue(phase / 2);
 		parameter.updateCascade();
 	}
 }

@@ -40,7 +40,9 @@ class PostG9U1A3CompatibleV2RedefineTest
 		activateUndo();
 		add("s=0");
 		add("Q=(s,0)");
-		add("Q2=(s,2*s)");
+		// PRE-G9B-CU2 step T11, declared conformity: (s,2*s) is not a direct affine map, so it
+		// is outside class v3 and no semantic point addresses it; (s,s) is certified.
+		add("Q2=(s,s)");
 		add("D={false,{-2,2,true,true}}");
 		add("K=LocusV2(Q2,s,D)");
 		GeoLocusV2 source = add("L=LocusV2(Q,s,D)");

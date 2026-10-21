@@ -37,6 +37,7 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusEvaluator2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
@@ -251,8 +252,10 @@ final class G9U0R6SemanticLocusPointInteractionTest
 
 	@Test
 	void r609PeriodicSeamUsesCanonicalParameterAndNearestIntrinsicLift() {
+		// PRE-G9B-CU2 step T11, declared conformity: the certified circle has the canonical
+		// domain [-pi, pi), whose seam is the point (-1, 0); the motion crosses it backwards.
 		GeoLocusV2 circle = createPeriodicCircle();
-		LocusPointInteractionResult2D initial = resolve(circle, 1, 0, 1E-5);
+		LocusPointInteractionResult2D initial = resolve(circle, -1, 0, 1E-5);
 		assertEquals(LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 				initial.getStatus(), initial.getDiagnostic());
 		assertEquals(SearchCoverage.BOUNDED_EVALUATOR_SEARCH,
@@ -264,7 +267,7 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		AlgoSemanticLocusPoint2D parent = semanticParent(point);
 		LocusSemanticAddress2D before = parent.getSemanticAddress();
 
-		double angle = -0.05;
+		double angle = -Math.PI - 0.05;
 		LocusPointInteractionResult2D moved =
 				LocusV2PublicOperations.moveInteractiveSemanticPoint(point,
 						Math.cos(angle), Math.sin(angle), policy(1E-4));
@@ -280,7 +283,7 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		assertEquals(2 * Math.PI + angle, address.getCanonicalParameter(), 2E-7);
 		assertEquals(SeamSide.INTERIOR, address.getSeamSide());
 		assertEquals(before, parent.getSemanticAddress());
-		assertEquals(1, point.getInhomX(), 1E-10);
+		assertEquals(-1, point.getInhomX(), 1E-10);
 		assertEquals(0, point.getInhomY(), 1E-10);
 		assertTrue(point.isDefined());
 		assertDiscoveredCandidatesForwardVerified(circle, moved, Math.cos(angle),
@@ -479,7 +482,11 @@ final class G9U0R6SemanticLocusPointInteractionTest
 
 	@Test
 	void r618TransformedGeneralLocusUsesEvaluatorFallbackWhenPolynomialIsUnsupported() {
-		GeoLocusV2 source = createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the image of the scalar parabola, outside
+		// class v3, has no certified component to search, so the resolver stopped at its
+		// barrier with no candidate; the image of the certified parabola, whose evaluator is
+		// not piecewise polynomial either, is searched by the evaluator fallback.
+		GeoLocusV2 source = certifiedParabola();
 		GeoLocusV2 translated = add("T=Translate(L,(3,4))");
 		PiecewisePolynomialLocus2D advertisedWrapper = assertInstanceOf(
 				PiecewisePolynomialLocus2D.class,
@@ -494,8 +501,7 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		assertEquals(SearchCoverage.BOUNDED_EVALUATOR_SEARCH,
 				result.getSearchCoverage());
 		assertNull(result.getUniqueCandidate());
-		assertDiscoveredCandidatesForwardVerified(translated, result, 3.5, 4.3,
-				0.1);
+		assertAllCandidatesForwardVerified(translated, result, 3.5, 4.3, 0.1);
 		assertNotEquals(source.getPersistentLocusId(),
 				translated.getPersistentLocusId());
 	}
@@ -637,8 +643,10 @@ final class G9U0R6SemanticLocusPointInteractionTest
 
 	@Test
 	void r624VersionedAddressStateRoundTripPreservesPeriodicSemanticEvidence() {
+		// PRE-G9B-CU2 step T11, declared conformity: the seam of the certified circle of
+		// [-pi, pi) is the point (-1, 0).
 		GeoLocusV2 circle = createPeriodicCircle();
-		LocusPointInteractionResult2D seedResult = resolve(circle, 1, 0, 1E-6);
+		LocusPointInteractionResult2D seedResult = resolve(circle, -1, 0, 1E-6);
 		assertEquals(LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 				seedResult.getStatus(), seedResult.getDiagnostic());
 		LocusSemanticAddress2D seed = onlyDiscoveredCandidate(seedResult)
@@ -648,7 +656,7 @@ final class G9U0R6SemanticLocusPointInteractionTest
 				seed.getBranchKey(), seed.getComponentLineageKey(),
 				seed.getCanonicalParameter(), -1, SeamSide.UPPER_APPROACH);
 		LocusPointInteractionResult2D liftedResult = resolver.resolve(
-				new LocusPointInteractionQuery2D(circle, 1, 0, policy(1E-6),
+				new LocusPointInteractionQuery2D(circle, -1, 0, policy(1E-6),
 						liftedSeam));
 		assertEquals(LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 				liftedResult.getStatus(), liftedResult.getDiagnostic());
@@ -824,8 +832,16 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		assertTrue(overflow.isDefined());
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.reference()) {
-			assertEquals(EvaluationStatus.NON_FINITE,
-					overflow.evaluate(BRANCH, 0.5, session).getStatus());
+			// PRE-G9B-CU2 (locus-v2-existence-components.md section 15.5): the image of the
+			// certified line exists at 0.5, so its non-finite evaluation is a computational
+			// failure, never nonexistence.
+			LocusEvaluation2D overflowEvaluation = overflow.evaluate(BRANCH, 0.5, session);
+			assertEquals(EvaluationStatus.EVALUATION_FAILED, overflowEvaluation.getStatus());
+			assertTrue(overflowEvaluation.getDiagnostic().startsWith(
+					LocusDefinition2D.COMPUTATIONAL_FAILURE), overflowEvaluation.getDiagnostic());
+			assertTrue(overflowEvaluation.getDiagnostic().contains(
+					"evaluator " + EvaluationStatus.NON_FINITE),
+					overflowEvaluation.getDiagnostic());
 		}
 		CertifiedAffineLocus2D unavailable = assertInstanceOf(
 				CertifiedAffineLocus2D.class,
@@ -881,12 +897,12 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		GeoLocusV2 locus = createLine();
 		LocusDefinition2D publicDefinition = locus.getSemanticDefinition();
 		LocusBranch2D publicBranch = publicDefinition.getBranches().get(0);
-		LocusBranch2D branchZ = new LocusBranch2D("r6/branch-z",
+		LocusBranch2D branchZ = LocusV2TestBranches.branch("r6/branch-z",
 				publicBranch.getDeclaredDriverDomain(),
 				publicBranch.getValidDomainComponents(), publicBranch.getOrientation(),
 				"r6/branch-z/semantic-v1", publicBranch.getLineage(),
 				publicBranch.getProperties(), publicBranch.getQuality());
-		LocusBranch2D branchA = new LocusBranch2D("r6/branch-a",
+		LocusBranch2D branchA = LocusV2TestBranches.branch("r6/branch-a",
 				publicBranch.getDeclaredDriverDomain(),
 				publicBranch.getValidDomainComponents(), publicBranch.getOrientation(),
 				"r6/branch-a/semantic-v1", publicBranch.getLineage(),
@@ -924,12 +940,19 @@ final class G9U0R6SemanticLocusPointInteractionTest
 
 	@Test
 	void r630CuspWithZeroSemanticSpeedCannotClaimUniqueAddress() {
-		add("r6CuspT=0");
-		add("r6CuspQ=Point({r6CuspT^2,r6CuspT^3})");
-		add("r6CuspD={false,{-1,1,true,true}}");
-		GeoLocusV2 cusp = add("r6Cusp=LocusV2(r6CuspQ,r6CuspT,r6CuspD)");
+		// PRE-G9B-CU2 step T11, declared conformity: the scalar cusp (t^2, t^3) is outside
+		// class v3. The pedal curve of the unit circle with respect to its point (1, 0), the
+		// foot of the perpendicular from (1, 0) to the tangent at the driver, is a certified
+		// cardioid (class v1) whose cusp (1, 0) has zero semantic speed.
+		add("r6CuspCircle=Circle((0,0),1)");
+		add("R6CuspDriver=Point(r6CuspCircle)");
+		add("r6CuspRadius=Line((0,0),R6CuspDriver)");
+		add("r6CuspTangent=PerpendicularLine(R6CuspDriver,r6CuspRadius)");
+		add("r6CuspNormal=PerpendicularLine((1,0),r6CuspTangent)");
+		add("R6CuspQ=Intersect(r6CuspTangent,r6CuspNormal)");
+		GeoLocusV2 cusp = add("r6Cusp=LocusV2(R6CuspQ,R6CuspDriver)");
 
-		LocusPointInteractionResult2D result = resolve(cusp, 0, 0, 1E-6);
+		LocusPointInteractionResult2D result = resolve(cusp, 1, 0, 1E-6);
 
 		assertEquals(LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 				result.getStatus(), result.getDiagnostic());
@@ -1180,14 +1203,26 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		assertEquals(accepted, parent.getSemanticAddress());
 		assertNull(parent.getCurrentSemanticAddress());
 
+		// PRE-G9B-CU2 step T11 (locus-v2-existence-components.md section 15.6): the published
+		// certificate keys a declared component by the sources of its ends, so moving them
+		// keeps its lineage; the second loss is a component that no longer contains -1.5.
 		editGeoElement(requireLookup("D"),
-				"D={false,{-1.75,-1.25,true,true},{1,2,true,true}}");
+				"D={false,{-1.25,-1.1,true,true},{1,2,true,true}}");
 		point = assertInstanceOf(GeoPoint.class, requireLookup("P"));
 		parent = semanticParent(point);
 		parent.compute();
 		assertFalse(point.isDefined());
 		assertEquals(accepted, parent.getSemanticAddress());
 		assertNull(parent.getCurrentSemanticAddress());
+
+		// The displaced component that contains -1.5 again keeps the lineage of its declared
+		// ends, so the point rebinds to its accepted address.
+		editGeoElement(requireLookup("D"),
+				"D={false,{-1.75,-1.25,true,true},{1,2,true,true}}");
+		point = assertInstanceOf(GeoPoint.class, requireLookup("P"));
+		assertTrue(point.isDefined());
+		assertEquals(accepted, semanticParent(point).getSemanticAddress());
+		assertEquals(-1.5, point.getInhomX(), 1E-8);
 
 		editGeoElement(requireLookup("D"),
 				"D={false,{-2,-1,true,true},{1,2,true,true}}");
@@ -1435,7 +1470,7 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		LocusBranch2D previousBranch = previous.getBranches().get(0);
 		LocusInterval2D left = new LocusInterval2D(-2, 0, true, true);
 		LocusInterval2D right = new LocusInterval2D(0, 2, true, true);
-		LocusBranch2D sharedEndpointBranch = new LocusBranch2D(BRANCH,
+		LocusBranch2D sharedEndpointBranch = LocusV2TestBranches.branch(BRANCH,
 				previousBranch.getDeclaredDriverDomain(), List.of(left, right),
 				previousBranch.getOrientation(), previousBranch.getProvenance(),
 				previousBranch.getLineage(), previousBranch.getProperties(),
@@ -1482,7 +1517,7 @@ final class G9U0R6SemanticLocusPointInteractionTest
 		assertNull(semanticParent(unqualified).getSemanticAddress());
 
 		LocusDefinition2D ordered = locus.getSemanticDefinition();
-		LocusBranch2D reversedBranch = new LocusBranch2D(BRANCH,
+		LocusBranch2D reversedBranch = LocusV2TestBranches.branch(BRANCH,
 				previousBranch.getDeclaredDriverDomain(), List.of(right, left),
 				previousBranch.getOrientation(), previousBranch.getProvenance(),
 				previousBranch.getLineage(), previousBranch.getProperties(),
@@ -1808,12 +1843,15 @@ final class G9U0R6SemanticLocusPointInteractionTest
 					candidate.getSourceRevision());
 			LocusBranch2D branch = definition.getBranch(address.getBranchKey());
 			assertNotNull(branch);
-			assertTrue(branch.getValidDomainComponents().stream().anyMatch(component ->
+			// PRE-G9B-CU2 step T11: the address cites the lineage key of a certified component
+			// of the published certificate (locus-v2-existence-components.md section 15.6).
+			LocusExistenceStructure2D structure = branch.getExistenceStructure();
+			assertTrue(structure.getContinuousValidComponents().stream().anyMatch(component ->
 					address.getComponentLineageKey().equals(
-							LocusComponentLineage2D.create(
-									branch.getBranchKey(), component))
+							LocusComponentLineage2D.of(structure, component))
 							&& component.contains(address.getCanonicalParameter(),
-									definition.getProvider().getDomainEpsilon())));
+									definition.getProvider().getDomainEpsilon())),
+					address.getComponentLineageKey());
 			try (LocusEvaluationSession2D session =
 					LocusEvaluationSession2D.reference()) {
 				LocusEvaluation2D forward = definition.evaluate(

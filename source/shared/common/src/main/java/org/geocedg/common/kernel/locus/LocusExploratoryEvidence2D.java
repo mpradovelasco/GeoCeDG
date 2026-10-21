@@ -102,6 +102,31 @@ public final class LocusExploratoryEvidence2D {
 		return LocusEvidenceNature2D.EXPLORATORY;
 	}
 
+	/**
+	 * @param declared components that a generator declares for its driver domain
+	 * @return the same evidence without what lies outside every declared component
+	 */
+	public LocusExploratoryEvidence2D restrictedTo(List<LocusInterval2D> declared) {
+		return new LocusExploratoryEvidence2D(branchKey, semanticRevision, method,
+				policyVersion, work, inside(validRuns, declared),
+				inside(bracketedTransitions, declared), inside(suspectedJumps, declared));
+	}
+
+	private static List<LocusInterval2D> inside(List<LocusInterval2D> intervals,
+			List<LocusInterval2D> declared) {
+		List<LocusInterval2D> kept = new ArrayList<>();
+		for (LocusInterval2D interval : intervals) {
+			for (LocusInterval2D component : declared) {
+				if (component.contains(interval.getLower(), 0)
+						&& component.contains(interval.getUpper(), 0)) {
+					kept.add(interval);
+					break;
+				}
+			}
+		}
+		return kept;
+	}
+
 	private static List<LocusInterval2D> immutable(List<LocusInterval2D> intervals) {
 		ArrayList<LocusInterval2D> copy = new ArrayList<>(Objects.requireNonNull(intervals));
 		for (LocusInterval2D interval : copy) {

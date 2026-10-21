@@ -66,9 +66,15 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 	// R2-L09
 	@Test
 	void addingMovingStylingAndDeletingCrossingLineCannotSplitTheLocus() {
-		GeoLocusV2 locus = createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the scalar parabola is outside class v3,
+		// so the witness would compare empty drawings and an intersection without roots; the
+		// certified parabola keeps a drawn subpath, two roots on y=1 and a finite length.
+		GeoLocusV2 locus = certifiedParabola();
 		GeoLocusMetricResult metric = totalMetric(locus);
 		GeoLocusIntersectionResult intersection = intersect(locus, "y=1");
+		assertEquals(2, intersection.getIntersectionResult().getFiniteSolutions().size());
+		assertTrue(metric.getMetricResult().getMetricValue().getFiniteValue().isPresent());
+		assertFalse(subpathFingerprint(locus).isEmpty());
 		CrossingWitness witness = CrossingWitness.capture(locus, metric,
 				intersection);
 		final GeoNumeric shift = add("lineShift=0");
@@ -143,7 +149,9 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void exactCanonicalRenderTopologySurvivesAllCrossingFixtures()
 			throws Exception {
-		GeoLocusV2 locus = createParabola();
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11 and draws no certified component; the same parabola is certified.
+		GeoLocusV2 locus = certifiedParabola();
 		String expected = fingerprint(locus);
 		final String expectedSubpaths = subpathFingerprint(locus);
 		assertEquals(1, subpathCount(locus));
@@ -247,7 +255,9 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(2, subpathCount(disconnected));
 
 		add("openT=0");
-		add("OpenQ=(openT,openT^3)");
+		// PRE-G9B-CU2 declared conformity: (t,t^3) is outside class v3 since step T11; the
+		// direct affine diagonal keeps the open declared components.
+		add("OpenQ=(openT,openT)");
 		add("OpenD={false,{-2,-1,false,false},{1,2,false,false}}");
 		GeoLocusV2 open = add("Open=LocusV2(OpenQ,openT,OpenD)");
 		assertNotNull(open);
@@ -294,7 +304,7 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 				new ExplicitNumericDomainProvider2D("r2-unbounded-parameter/v1",
 						new LocusInterval2D(-endpoint, endpoint, false, false),
 						Orientation.INCREASING, false, 1E-14);
-		LocusBranch2D branch = new LocusBranch2D("r2.unbounded.main",
+		LocusBranch2D branch = LocusV2TestBranches.branch("r2.unbounded.main",
 				provider.getDeclaredDomain(),
 				Collections.singletonList(provider.getDeclaredDomain()),
 				Orientation.INCREASING, "r2-unbounded/v1",
@@ -436,11 +446,16 @@ class G9U0R2LocusRenderContinuityTest extends G9U0PublicSurfaceTestBase {
 		}
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the periodic scalar circle is outside class
+	 * v3; the circle traced by a point of a circle is certified closed and periodic on
+	 * [-pi, pi).
+	 */
 	private GeoLocusV2 createMinimizedPeriodicLocus() {
-		add("miniT=0");
-		add("MiniQ=(cos(miniT),sin(miniT))");
-		add("MiniD={true,{0,2*pi,true,false}}");
-		GeoLocusV2 locus = add("Mini=LocusV2(MiniQ,miniT,MiniD)");
+		add("miniCircle=Circle((0,0),1)");
+		add("MiniDriver=Point(miniCircle)");
+		add("MiniQ=MiniDriver+(0,0)");
+		GeoLocusV2 locus = add("Mini=LocusV2(MiniQ,MiniDriver)");
 		assertNotNull(locus);
 		return locus;
 	}

@@ -211,7 +211,8 @@ public final class LocusPairIntersectionContext2D {
 						IntersectionCapabilityContext2D.componentKey(
 								branch.getBranchKey(), index),
 						components.get(index),
-						LocusComponentLineage2D.of(structure, components.get(index))));
+						LocusComponentLineage2D.identityKey(structure,
+								components.get(index))));
 			}
 		}
 		return Collections.unmodifiableList(result);

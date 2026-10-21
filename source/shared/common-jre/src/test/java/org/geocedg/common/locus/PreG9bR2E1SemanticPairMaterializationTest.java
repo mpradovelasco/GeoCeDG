@@ -157,10 +157,15 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 		assertEquals(0, point.getInhomX(), 1E-12);
 		assertEquals(0, point.getInhomY(), 1E-12);
 
-		add("u=0");
-		add("W=(u,u^2-1)");
-		add("F={false,{-2,2,true,true}}");
-		add("P=LocusV2(W,u,F)");
+		// PRE-G9B-CU2 step T11, declared conformity: the scalar parabola is outside class v3
+		// and has no certified component; the circle of radius 3/2 traced by a line-circle
+		// intersection is certified (class v3) but has no interval curve model.
+		add("pc=Circle((0,0),1)");
+		add("PD=Point(pc)");
+		add("pg=Line((0,0),PD)");
+		add("pd=Circle((0,0),3/2)");
+		add("PX=Intersect(pd,pg,1)");
+		add("P=LocusV2(PX,PD)");
 		GeoLocusIntersectionResult parabola = add("RP=Intersect(L,P)");
 		assertFalse(parabola.getIntersectionResult().getFiniteSolutions().isEmpty());
 		assertTrue(eligible(parabola).isEmpty());
@@ -276,7 +281,11 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 			GeoLocusIntersectionResult rich = add("R" + locus + "=Intersect(d," + locus + ")");
 			assertNotNull(rich.getIntersectionResult(), locus);
 			assertTrue(eligible(rich).isEmpty(), locus + "\n" + diagnostic(rich));
-			assertTrue(diagnostic(rich).contains("no certified interval curve model"),
+			// PRE-G9B-CU2 step T11: the expression point is outside class v3, so its locus
+			// has no certified component and its coverage is not established; the
+			// line-conic slice is certified but has no certified interval curve model.
+			assertTrue(diagnostic(rich).contains("expression".equals(locus)
+					? "COVERAGE_NOT_ESTABLISHED" : "no certified interval curve model"),
 					locus + "\n" + diagnostic(rich));
 		}
 	}

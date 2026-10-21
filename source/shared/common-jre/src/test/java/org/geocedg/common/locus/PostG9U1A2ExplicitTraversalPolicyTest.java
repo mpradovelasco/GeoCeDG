@@ -123,8 +123,10 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 	@Test
 	void periodicSeamAndSamePositionPoliciesUseSemanticAddresses() {
 		createPeriodicCircle();
-		add("A=Point(L,\"" + BRANCH + "\",5.5)");
-		add("B=Point(L,\"" + BRANCH + "\",0.5)");
+		// PRE-G9B-CU2 step T11, declared conformity: the certified circle has the canonical
+		// domain [-pi, pi), whose seam is at -pi; the forward route from 2.5 to -2.5 crosses it.
+		add("A=Point(L,\"" + BRANCH + "\",2.5)");
+		add("B=Point(L,\"" + BRANCH + "\",-2.5)");
 		GeoLocusMetricResult forward = add("F=LocusLength(L,A,B,"
 				+ "\"forward\",\"strict\",\"zero-length\")");
 		GeoLocusMetricResult reverse = add("R=LocusLength(L,A,B,"

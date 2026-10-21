@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusBranchSnapshot2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
@@ -40,6 +41,12 @@ import org.geogebra.common.kernel.geos.GeoSegment;
 final class LocusV2LaboratoryFixtures {
 	private static final double EPS_DOMAIN = 1E-14;
 	private static final String MAIN_BRANCH = "laboratory.sheet.main";
+	/**
+	 * Contract of the explicit existence certificates of the fixtures (PRE-G9B-CU2,
+	 * D-CU2-7): each fixture defines its locus as its analytic point function on the
+	 * components it declares, so the certificate cites the fixture.
+	 */
+	private static final String LABORATORY_CONTRACT = "locus-v2-laboratory-fixture/v1";
 	private static final GColor[] COLORS = {
 			GColor.BLUE, GColor.DARK_GREEN, GColor.MAGENTA, GColor.ORANGE,
 			GColor.DARK_RED, GColor.PURPLE, GColor.CYAN
@@ -128,9 +135,11 @@ final class LocusV2LaboratoryFixtures {
 		ExplicitNumericDomainProvider2D provider = numeric(
 				"laboratory-discontinuity-t/v1", -3, 3, true, true, false);
 		LocusBranch2D branch = new LocusBranch2D(MAIN_BRANCH,
-				provider.getDeclaredDomain(), Arrays.asList(
-						new LocusInterval2D(-3, -0.25, true, true),
-						new LocusInterval2D(0.25, 3, true, true)),
+				provider.getDeclaredDomain(), LocusExistenceStructure2D.providerProved(
+						MAIN_BRANCH, provider.getDeclaredDomain(), Arrays.asList(
+								new LocusInterval2D(-3, -0.25, true, true),
+								new LocusInterval2D(0.25, 3, true, true)),
+						false, false, LABORATORY_CONTRACT),
 				Orientation.INCREASING, "laboratory-discontinuity/v1",
 				LocusLineage2D.unchanged(), EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());
@@ -150,7 +159,7 @@ final class LocusV2LaboratoryFixtures {
 				"laboratory-unbounded-t/v1", -1.55, 1.55, false, false, false);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(MAIN_BRANCH,
 				provider, "laboratory-unbounded/v1",
-				EnumSet.of(BranchProperty.UNBOUNDED));
+				EnumSet.of(BranchProperty.UNBOUNDED), LABORATORY_CONTRACT);
 		GeoNumeric source = new GeoNumeric(construction, 0);
 		GeoLocusV2 locus = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				construction, "laboratory.unbounded", source, provider,
@@ -244,7 +253,9 @@ final class LocusV2LaboratoryFixtures {
 	private static LocusBranch2D topologyBranch(String key,
 			LocusDriverDomainProvider2D provider, List<LocusInterval2D> components,
 			LocusLineage2D lineage) {
-		return new LocusBranch2D(key, provider.getDeclaredDomain(), components,
+		return new LocusBranch2D(key, provider.getDeclaredDomain(),
+				LocusExistenceStructure2D.providerProved(key, provider.getDeclaredDomain(),
+						components, false, false, LABORATORY_CONTRACT),
 				Orientation.INCREASING, "laboratory-topology/v1", lineage,
 				EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());
@@ -262,7 +273,7 @@ final class LocusV2LaboratoryFixtures {
 			LocusDriverDomainProvider2D provider) {
 		return Collections.singletonList(LocusV2Factory.fullDomainBranch(MAIN_BRANCH,
 				provider, "locus-v2-laboratory/v1",
-				EnumSet.noneOf(BranchProperty.class)));
+				EnumSet.noneOf(BranchProperty.class), LABORATORY_CONTRACT));
 	}
 
 	/** Immutable fixture collection retained by the diagnostic panel. */

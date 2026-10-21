@@ -114,17 +114,25 @@ class G9U0ToolSurfaceTest {
 		assertTrue(app.getSelectionManager().getSelectedGeos().isEmpty());
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the figure eight (sin(s),sin(2s)) is outside
+	 * class v3; the foot of the perpendicular from (1,0) to the line through the origin and a
+	 * point P of the unit circle covers its circle twice, so the parameters t and t - pi
+	 * address two semantic points with the same coordinates, as 0 and pi did on the eight.
+	 */
 	@Test
 	void t01aPointToolRequiresExplicitPreimageDialog() throws IOException {
 		AppGeoCeDG app = enabledApp();
-		eval(app, "s=0");
-		eval(app, "Q=(sin(s),sin(2*s))");
-		eval(app, "D={false,{0,pi,true,true}}");
-		GeoLocusV2 locus = (GeoLocusV2) eval(app, "L=LocusV2(Q,s,D)");
+		eval(app, "c=Circle((0,0),1)");
+		eval(app, "P=Point(c)");
+		eval(app, "l=Line((0,0),P)");
+		eval(app, "m=PerpendicularLine((1,0),l)");
+		eval(app, "F=Intersect(l,m)");
+		GeoLocusV2 locus = (GeoLocusV2) eval(app, "L=LocusV2(F,P)");
 		GeoPoint first = (GeoPoint) eval(app,
-				"A=Point(L,\"" + BRANCH + "\",0)");
+				"A=Point(L,\"" + BRANCH + "\",0.5)");
 		GeoPoint second = (GeoPoint) eval(app,
-				"B=Point(L,\"" + BRANCH + "\",pi)");
+				"B=Point(L,\"" + BRANCH + "\",0.5-pi)");
 		var firstAddress = ((AlgoSemanticLocusPoint2D)
 				first.getParentAlgorithm()).getSemanticAddress();
 		var secondAddress = ((AlgoSemanticLocusPoint2D)

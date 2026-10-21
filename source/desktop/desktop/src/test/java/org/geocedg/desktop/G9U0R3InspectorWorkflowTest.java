@@ -161,14 +161,19 @@ class G9U0R3InspectorWorkflowTest {
 				.getIdentity().getRootToken(), parent.getSelectedRootToken());
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar point (s,b) with a free offset b is
+	 * not a direct affine map and is outside class v3; a point of the segment from (-2,0) to
+	 * (2,0) translated by (0,b) traces the same horizontal segment as a certified locus.
+	 */
 	@Test
 	void i06ExactTokenPointSurvivesEstablishedRecompute() {
 		AppGeoCeDG app = enabledApp();
 		GeoNumeric verticalOffset = (GeoNumeric) eval(app, "b=0");
-		eval(app, "s=0");
-		eval(app, "Q=(s,b)");
-		eval(app, "D={false,{-2,2,true,true}}");
-		eval(app, "L=LocusV2(Q,s,D)");
+		eval(app, "G=Segment((-2,0),(2,0))");
+		eval(app, "P=Point(G)");
+		eval(app, "Q=P+(0,b)");
+		eval(app, "L=LocusV2(Q,P)");
 		GeoLocusIntersectionResult rich = createLineIntersection(app, "R",
 				"u:x=0");
 		app.getSelectionManager().addSelectedGeo(rich);
@@ -479,13 +484,18 @@ class G9U0R3InspectorWorkflowTest {
 				label + "=Intersect(L," + lineLabel + ")");
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the parabola (s^2,s) is outside class v3; the
+	 * certified diagonal (s,s) on the same two components meets the circle of radius sqrt(2)
+	 * once in each of them, at s = -1 and s = 1, as the parabola met x = 1.
+	 */
 	private static GeoLocusIntersectionResult createDoubleIntersection(
 			AppGeoCeDG app, String label) {
 		eval(app, "s=0");
-		eval(app, "Q=(s^2,s)");
+		eval(app, "Q=(s,s)");
 		eval(app, "D={false,{-2,0,true,false},{0,2,false,true}}");
 		eval(app, "L=LocusV2(Q,s,D)");
-		eval(app, "u:x=1");
+		eval(app, "u:x^2+y^2=2");
 		return (GeoLocusIntersectionResult) eval(app,
 				label + "=Intersect(L,u)");
 	}

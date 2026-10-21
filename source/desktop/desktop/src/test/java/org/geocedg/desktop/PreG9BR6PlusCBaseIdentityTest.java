@@ -41,6 +41,7 @@ import org.geocedg.common.export.GeometryExportModel.SelectionMode;
 import org.geocedg.common.export.GeometryExportPreflight;
 import org.geocedg.common.export.GeometryExportRequest;
 import org.geocedg.common.export.GeometryExportService;
+import org.geocedg.common.export.SourceExportOutcome;
 import org.geocedg.desktop.export.DxfFidelityManifestWriter;
 import org.geocedg.desktop.export.DxfPreparedOutput;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -79,23 +80,11 @@ import org.junit.jupiter.api.io.TempDir;
 class PreG9BR6PlusCBaseIdentityTest {
 
 	/** Recorded on a git archive of e613502831e3b412780d69424d4a1e433a4ae688. */
+	// PRE-G9B-CU2 step T11 conformity: the base entries g9x1.locus.components (dxf d8c1223b,
+	// core fb8dc4b6, sidecar f16f327c) and g9x1.locus.closed (dxf 3d2200a3, core 302b8319,
+	// sidecar c43e26d3, aeb007cf since step T10) were exports of scalar loci outside class v3,
+	// whose existence is no longer established; see assertDeclaredNonexistence.
 	private static final String[][] BASE = {
-		{"g9x1.locus.components.dxf",
-				"d8c1223b1ec8f529ae2eec7dbad1be622926fa3be40942013dda76901c2c935a"},
-		{"g9x1.locus.components.dxf.core",
-				"fb8dc4b676e39ae0719bda4524bfc7df9236b358c23b13e3dd5539e975094fa7"},
-		{"g9x1.locus.components.sidecar",
-				"f16f327cf6e8d4e77c7bc233699776afca2499d03b3a6a26752c882659460e3b"},
-		{"g9x1.locus.closed.dxf",
-				"3d2200a3e1bb1698bf9857bc378501bfa71f2285a79ace900afddb6f75206e4c"},
-		{"g9x1.locus.closed.dxf.core",
-				"302b83191cba0a449ccb4f3a025e12d379e99e2bb9c2432fe4cc4b171fd4fb88"},
-		// PRE-G9B-CU2 conformity (A2.6, V-DXF-3): the closure residual of the closed locus
-		// is measured against its closure certificate and recorded; the base digest
-		// c43e26d3283a62dcfa7f57e512bbf21e52f26002cc243fa02443005054074f48 is reproduced
-		// exactly by the trivial identity without the residual field (step T10 probe).
-		{"g9x1.locus.closed.sidecar",
-				"aeb007cf8a14092b92fadca9be48c7ff2bee0720c785485335ca6bf936d88bc9"},
 		{"g9x1.spline.dxf",
 				"d2a4780754b8ccebc07b9148d09d536496482ba9bb588bead993a91ada8ea407"},
 		{"g9x1.spline.dxf.core",
@@ -149,6 +138,24 @@ class PreG9BR6PlusCBaseIdentityTest {
 			base.put(entry[0], entry[1]);
 		}
 		assertEquals(base, digests);
+	}
+
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar loci of the scene, the two
+	 * components of (s,s^2/4) and the periodic circle (cos(t),sin(t)), are outside class v3,
+	 * so their existence is not established; a strict export, which admits no partial output,
+	 * declares them and writes nothing (V-DXF-2), while the other outputs keep the base bytes.
+	 */
+	private static void assertDeclaredNonexistence(GeometryExportService service,
+			GeoElement locus) {
+		GeometryExportPreflight preflight = service.preflight(List.of(locus),
+				SelectionMode.CURRENT_SELECTION, request(0.01));
+		assertFalse(preflight.isWritable(), locus.getLabelSimple());
+		assertTrue(preflight.getModel().getEntities().isEmpty(), locus.getLabelSimple());
+		assertEquals(List.of(SourceExportOutcome.Reason.EXISTENCE_NOT_ESTABLISHED),
+				preflight.getModel().getOutcomes().stream()
+						.map(SourceExportOutcome::getReason).toList(),
+				locus.getLabelSimple());
 	}
 
 	@Test
@@ -213,10 +220,10 @@ class PreG9BR6PlusCBaseIdentityTest {
 		GeoElement closed = eval(app, "C=LocusV2(P,t,E)");
 		GeoElement spline = eval(app, "S=SplineV2({(0,0),(1,1),(2,0),(3,1)},3)");
 		GeoElement function = eval(app, "f(x)=x^2/3");
-		putG9x1(digests, service, "g9x1.locus.components", components,
-				request(0.01));
-		putG9x1(digests, service, "g9x1.locus.closed", closed,
-				request(0.01));
+		// The scalar loci keep their place in the scene, so the automatic colours of the
+		// other sources do not change; their own export is declared (step T11).
+		assertDeclaredNonexistence(service, components);
+		assertDeclaredNonexistence(service, closed);
 		putG9x1(digests, service, "g9x1.spline", spline,
 				request(0.001));
 		putG9x1(digests, service, "g9x1.function", function,

@@ -58,13 +58,18 @@ import org.geogebra.common.properties.impl.objects.ThicknessProperty;
 import org.geogebra.common.util.InternalClipboard;
 import org.junit.jupiter.api.Test;
 
+/**
+ * R2 presentation scenarios. PRE-G9B-CU2 declared conformity (step T11): the scalar parabola
+ * {@code (s,s^2)} is outside class v3 and draws no certified component, so every scenario
+ * draws the same parabola certified from its focus and directrix.
+ */
 class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	private static final int COPY_LINE_OPACITY = 102;
 
 	// R2-L01
 	@Test
 	void ordinaryColorsRepaintWithoutSemanticMutation() throws Exception {
-		GeoLocusV2 locus = createParabola();
+		GeoLocusV2 locus = certifiedParabola();
 		GeoLocusMetricResult metric = totalMetric(locus);
 		GeoLocusIntersectionResult intersection = intersect(locus, "y=1");
 		SemanticWitness witness = SemanticWitness.capture(locus, metric,
@@ -91,7 +96,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void minDefaultAndLargeThicknessAreScaleIndependentPresentation()
 			throws Exception {
-		GeoLocusV2 locus = createParabola();
+		GeoLocusV2 locus = certifiedParabola();
 		GeoLocusMetricResult metric = totalMetric(locus);
 		GeoLocusIntersectionResult intersection = intersect(locus, "y=1");
 		SemanticWitness witness = SemanticWitness.capture(locus, metric,
@@ -124,7 +129,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void everyOrdinaryLineTypePersistsWithoutChangingSubpaths()
 			throws Exception {
-		GeoLocusV2 locus = canonicalReopen(createParabola());
+		GeoLocusV2 locus = canonicalReopen(certifiedParabola());
 		PersistentGeoId identity = locus.getPersistentLocusId();
 		long revision = locus.getSemanticRevision();
 
@@ -155,7 +160,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void propertiesExposeLineControlsForSingleAndCompatibleMultiselection()
 			throws Exception {
-		GeoLocusV2 locus = createParabola();
+		GeoLocusV2 locus = certifiedParabola();
 		final GeoElement line = add("ordinaryLine:y=0");
 		GeoElementPropertiesFactory factory = new GeoElementPropertiesFactory();
 
@@ -185,7 +190,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void completePresentationPersistsAcrossTwoNativeXmlReopens()
 			throws Exception {
-		GeoLocusV2 locus = canonicalReopen(createParabola());
+		GeoLocusV2 locus = canonicalReopen(certifiedParabola());
 		PersistentGeoId identity = locus.getPersistentLocusId();
 		long revision = locus.getSemanticRevision();
 		Class<?> parentType = locus.getParentAlgorithm().getClass();
@@ -219,7 +224,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	// R2-L06
 	@Test
 	void clipboardCopyPreservesStyleAndRemapsOwnedIdsInBothScopes() {
-		GeoLocusV2 source = createParabola();
+		GeoLocusV2 source = certifiedParabola();
 		PersistentGeoId sourceId = source.getPersistentLocusId();
 		final String sourceProvider = source.getSemanticDefinition().getProvider()
 				.getSemanticSignature();
@@ -271,7 +276,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void everyHostUndoablePresentationPropertyRestoresWithoutNewIdentity()
 			throws Exception {
-		GeoLocusV2 locus = canonicalReopen(createParabola());
+		GeoLocusV2 locus = canonicalReopen(certifiedParabola());
 		GeoLocusMetricResult metric = totalMetric(locus);
 		GeoLocusIntersectionResult intersection = intersect(locus, "y=1");
 		final DurableSemanticWitness witness = DurableSemanticWitness.capture(locus,
@@ -330,7 +335,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void everyPresentationMutationPreservesTheCompleteSemanticWitness()
 			throws Exception {
-		GeoLocusV2 locus = createParabola();
+		GeoLocusV2 locus = certifiedParabola();
 		GeoLocusMetricResult metric = totalMetric(locus);
 		GeoLocusIntersectionResult intersection = intersect(locus, "y=1");
 		SemanticWitness witness = SemanticWitness.capture(locus, metric,
@@ -372,7 +377,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	// R2-L13
 	@Test
 	void visibilityPersistsAndParticipatesInOrdinaryUndoRedo() throws Exception {
-		GeoLocusV2 locus = canonicalReopen(createParabola());
+		GeoLocusV2 locus = canonicalReopen(certifiedParabola());
 		final PersistentGeoId identity = locus.getPersistentLocusId();
 		final long revision = locus.getSemanticRevision();
 		assertTrue(draw(locus, 80).shapeDraws > 0);
@@ -407,7 +412,7 @@ class G9U0R2LocusPresentationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void everySupportedLabelModeDrawsAndPersistsWithStyleAndCopy()
 			throws Exception {
-		GeoLocusV2 locus = canonicalReopen(createParabola());
+		GeoLocusV2 locus = canonicalReopen(certifiedParabola());
 		final long revision = locus.getSemanticRevision();
 		locus.setCaption("R2 curve label");
 		int[] modes = {GeoElementND.LABEL_NAME, GeoElementND.LABEL_NAME_VALUE,

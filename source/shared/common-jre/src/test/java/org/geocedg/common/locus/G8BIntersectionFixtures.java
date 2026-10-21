@@ -142,7 +142,7 @@ final class G8BIntersectionFixtures {
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusInterval2D> components,
 			EnumSet<BranchProperty> properties) {
-		return new LocusBranch2D(branchKey, provider.getDeclaredDomain(),
+		return LocusV2TestBranches.branch(branchKey, provider.getDeclaredDomain(),
 				components, provider.getOrientation(), branchKey + "/semantic-v1",
 				LocusLineage2D.unchanged(), properties,
 				LocusQuality2D.analyticDoubleSemantic());

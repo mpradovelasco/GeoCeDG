@@ -138,12 +138,17 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void e01TranslationPreservesSemanticAddressAndDomain() {
-		GeoLocusV2 source = createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the scalar parabola is outside class v3,
+		// so the branch contract would compare two empty lists of certified components; the
+		// certified parabola reaches x = 0.5 at u = 0.625.
+		GeoLocusV2 source = certifiedParabola();
 		GeoLocusV2 image = add("T=Translate(L,(3,-2))");
 		assertSame(source.getSemanticDefinition().getProvider(),
 				image.getSemanticDefinition().getProvider());
+		assertFalse(image.getSemanticDefinition().getBranches().get(0)
+				.getValidDomainComponents().isEmpty());
 		assertBranchContract(source, image);
-		assertPoint(image, 0.5, 3.5, -1.75);
+		assertPoint(image, 0.625, 3.5, -1.75);
 	}
 
 	@Test
@@ -199,7 +204,10 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 		LocusEvaluation2D invalidSource = evaluate(source, 0);
 		LocusEvaluation2D invalidImage = evaluate(image, 0);
 		assertEquals(invalidSource.getStatus(), invalidImage.getStatus());
-		assertEquals(EvaluationStatus.NON_FINITE, evaluate(image, 2).getStatus());
+		// PRE-G9B-CU2 declared conformity (T9 rule P5): an overflow inside a certified
+		// component is a computational failure, never nonexistence.
+		assertEquals(EvaluationStatus.EVALUATION_FAILED, evaluate(image, 2).getStatus());
+		assertNull(evaluate(image, 2).getPoint());
 
 		factor.setValue(Double.POSITIVE_INFINITY);
 		factor.updateCascade();
@@ -227,7 +235,10 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void m01CollapsedOpenDomainHasTruthfulRichZeroLength() {
-		createScalarLocus("L", "s", "Q", "(s,s^2)",
+		// PRE-G9B-CU2 declared conformity: (s,s^2) is outside class v3 and has no certified
+		// component since step T11; the collapsed image needs a certified source, here the
+		// direct affine diagonal (s,s).
+		createScalarLocus("L", "s", "Q", "(s,s)",
 				"{false,{-2,2,false,false}}");
 		GeoLocusV2 image = add("T=Dilate(L,0,(4,5))");
 		GeoLocusMetricResult metric = totalMetric(image);
@@ -266,15 +277,19 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(2, metricValue(add("Mp=LocusLength(L,P0,P1)")), 1E-9);
 		assertEquals(6, metricValue(add("Mtp=LocusLength(T,TP0,TP1)")), 1E-8);
 
-		add("w=0");
-		add("Qc=(cos(w),sin(w))");
-		add("Dc={true,{0,2*pi,true,false}}");
-		add("Cyc=LocusV2(Qc,w,Dc)");
+		// PRE-G9B-CU2 declared conformity: a periodic scalar locus is outside class v3 and has
+		// no certified component since step T11; the same unit circle, driven by a point on a
+		// circle, is certified closed with the parameters (cos t, sin t) of [-pi, pi). The
+		// route runs from pi/2 to 3*pi/2 (canonical -pi/2), across the seam at -pi.
+		add("cw=Circle((0,0),1)");
+		add("W=Point(cw)");
+		add("Qc=W+(0,0)");
+		add("Cyc=LocusV2(Qc,W)");
 		add("CycT=Rotate(Cyc,pi/3)");
-		add("C0=Point(Cyc,\"" + BRANCH + "\",3*pi/2)");
-		add("C1=Point(Cyc,\"" + BRANCH + "\",pi/2)");
-		add("CT0=Point(CycT,\"" + BRANCH + "\",3*pi/2)");
-		add("CT1=Point(CycT,\"" + BRANCH + "\",pi/2)");
+		add("C0=Point(Cyc,\"" + BRANCH + "\",pi/2)");
+		add("C1=Point(Cyc,\"" + BRANCH + "\",3*pi/2)");
+		add("CT0=Point(CycT,\"" + BRANCH + "\",pi/2)");
+		add("CT1=Point(CycT,\"" + BRANCH + "\",3*pi/2)");
 		assertEquals(Math.PI,
 				metricValue(add("Mc=LocusLength(Cyc,C0,C1)")), 2E-7);
 		assertEquals(Math.PI,
@@ -433,18 +448,27 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void x04EverySupportedTargetFamilyConsumesTheTransformedEvaluator() {
-		createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the image of the scalar parabola, outside
+		// class v3, is refused before any evaluation by every family; the image of the
+		// certified parabola is certified, and the families evaluate it.
+		certifiedParabola();
 		GeoLocusV2 transformed = add("T=Rotate(L,pi/7,(1,-2))");
+		assertFalse(transformed.getSemanticDefinition().getBranches().get(0)
+				.getValidDomainComponents().isEmpty());
 		List<GeoLocusIntersectionResult> results =
 				allPublicIntersectionFamilies(transformed);
 		assertEquals(10, results.size());
 		assertTrue(results.stream().allMatch(result ->
 				result.getIntersectionResult() != null));
+		assertTrue(results.stream().anyMatch(result ->
+				result.getIntersectionResult().getWork().getSemanticEvaluations() > 0));
 	}
 
 	@Test
 	void p01SaveReopenPreservesCommandIdentityAndDurableOutput() {
-		createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the certified parabola replaces the
+		// scalar one, outside class v3; it reaches (0.5, 0.25) at u = 0.625.
+		certifiedParabola();
 		GeoLocusV2 image = add("T=Rotate(L,pi/3,(1,2))");
 		PersistentGeoId id = image.getPersistentLocusId();
 		String xml = getApp().getXML();
@@ -454,7 +478,7 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(reopened.isDefined());
 		assertEquals(id, reopened.getPersistentLocusId());
 		assertEquals(Commands.Rotate, reopened.getParentAlgorithm().getClassName());
-		assertPoint(reopened, 0.5,
+		assertPoint(reopened, 0.625,
 				1 + Math.cos(Math.PI / 3) * -0.5
 						- Math.sin(Math.PI / 3) * -1.75,
 				2 + Math.sin(Math.PI / 3) * -0.5

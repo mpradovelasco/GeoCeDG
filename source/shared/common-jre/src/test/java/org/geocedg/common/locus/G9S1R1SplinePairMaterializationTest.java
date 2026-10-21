@@ -342,11 +342,16 @@ final class G9S1R1SplinePairMaterializationTest extends G9U0PublicSurfaceTestBas
 		// ADR 0028: a generic locus without a certified interval curve model stays
 		// rich-only and says why. The former direct scalar affine fixture (0,t) is
 		// now certified and is covered by PreG9bR2E1SemanticPairMaterializationTest.
+		// PRE-G9B-CU2 step T11, declared conformity: the expression (t^3/8,t) is outside
+		// class v3 and has no certified component; the circle of radius 3/2 traced by a
+		// line-circle intersection is certified (class v3) but has no interval curve model.
 		createLine();
-		add("t=0");
-		add("V=(t^3/8,t)");
-		add("E={false,{-2,2,true,true}}");
-		add("T=LocusV2(V,t,E)");
+		add("tc=Circle((0,0),1)");
+		add("TD=Point(tc)");
+		add("tg=Line((0,0),TD)");
+		add("td=Circle((0,0),3/2)");
+		add("TX=Intersect(td,tg,1)");
+		add("T=LocusV2(TX,TD)");
 		GeoLocusIntersectionResult rich = add("R=Intersect(L,T)");
 		assertFalse(rich.getIntersectionResult().getFiniteSolutions().isEmpty());
 		assertTrue(eligible(rich).isEmpty());

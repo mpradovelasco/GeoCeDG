@@ -260,7 +260,7 @@ class LocusV2HardeningBenchmarkTest extends BaseUnitTest {
 	private static LocusBranch2D branch(
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusInterval2D> components) {
-		return new LocusBranch2D(BRANCH_KEY, provider.getDeclaredDomain(),
+		return LocusV2TestBranches.branch(BRANCH_KEY, provider.getDeclaredDomain(),
 				components, Orientation.INCREASING, "g6r-benchmark/v1",
 				LocusLineage2D.unchanged(), EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());

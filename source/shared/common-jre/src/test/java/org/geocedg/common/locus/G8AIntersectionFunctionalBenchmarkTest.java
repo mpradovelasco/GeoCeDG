@@ -275,7 +275,7 @@ class G8AIntersectionFunctionalBenchmarkTest extends BaseUnitTest {
 						Orientation.INCREASING, false, 1E-14);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(NESTED_BRANCH,
 				provider, "g8a-nested-lineage/v1",
-				EnumSet.noneOf(BranchProperty.class));
+				EnumSet.noneOf(BranchProperty.class), LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		List<LocusBranch2D> branches = Collections.singletonList(branch);
 		GeoNumeric source = new GeoNumeric(getConstruction(), 1);
 		List<GeoLocusV2> loci = new ArrayList<>();

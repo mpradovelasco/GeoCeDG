@@ -763,6 +763,30 @@ desaparece cuando el conductor cae en un hueco, aunque el locus exista en un arc
    componente que desaparece por un cambio de definición deja indefinido el punto que dependía de
    él, pero no la mera posición actual del conductor.
 
+**Precisiones de la implementación (T11, 2026-10-21).** Ninguna cambia la regla:
+
+- **Entradas de definición.** Son los elementos del corte que no son el estado ni la coordenada
+  del conductor ni dependen de ellos (`AlgoDependentPointLocusV2.getDefinitionInputs`). Un
+  recálculo que no publica descarta la definición (`GeoLocusV2.discardSemanticDefinition`), y la
+  revisión siguiente es siempre mayor que la última publicada, aunque entre ambas no haya habido
+  definición.
+- **Lectura de una construcción completa.** Al leer un documento, deshacer o rehacer, restaurar
+  tras un fallo o reconstruir tras una edición o una redefinición, las identidades se adjuntan
+  antes de que el lector aplique sus listas finales y antes de la actualización completa con la
+  que termina la lectura; en ese momento una intersección recta-cónica del corte ya inicializada
+  aún no ha fijado su permutación (selección no asentada, §8.1, precisión de T3). Un locus cuyo
+  corte tiene una selección así no se publica al adjuntar su identidad: la actualización que
+  termina la lectura asienta la selección y publica la primera revisión una sola vez. Publicarlo
+  antes daba una revisión transitoria `NOT_ESTABLISHED` con su exploración, una segunda
+  reconstrucción del corte, un segundo certificado y una transición de linaje desde ese certificado
+  transitorio (la fijación B10.1 invertida por `CU1` y V-LIN-5 lo detectaron). Sin selección por
+  asentar se publica al adjuntar, como hasta ahora, y los dependientes que se calculan durante la
+  lectura (resultados de intersección con su libro mayor persistido) ven la definición. Una
+  importación del portapapeles no termina con esa actualización y publica siempre al adjuntar.
+  El registro de identidades informa de la lectura en curso con un accesor de solo lectura
+  (`SpatialIdentityRegistry.isPublishingConstructionRestore`); las construcciones de macro, que no
+  terminan con esa actualización, quedan fuera.
+
 ## 7. Linaje e identidad (P4, E-3)
 
 Se distinguen tres identidades:
@@ -832,6 +856,28 @@ que `unchanged()`. Propuesta (decisión E-3 revisada):
   única del parámetro valida; si no, `NO_CORRESPONDENCE`, `NOT_CONTAINED` o `AMBIGUOUS`. Con las
   estructuras de compatibilidad publicadas hoy las claves son las antiguas y el resultado coincide
   con el actual; el punto semántico y el selector de rama principal lo usan desde T9.
+
+**Precisión de la implementación (T11, 2026-10-21): identidad de las raíces de intersección.**
+Con los certificados publicados, las claves estructurales sustituyen a las de extremos binary64,
+y los tokens de raíz persistidos antes de `CU2` citan la clave antigua de su componente. El
+libro mayor de tokens compara esas claves literalmente, de modo que, al abrir un documento
+anterior, las asignaciones persistidas no se reanudaban y los puntos de intersección materializados
+quedaban indefinidos (modelo DXF del autor `TestExport1.cedg` del corpus S1: los puntos de
+intersección sobre sus dos SplineV2 y lo que depende de ellos, el locus `m` incluido). La decisión
+E-3 rige para todo selector persistido: cuando la descomposición es el
+dominio declarado completo, la clave del dominio corresponde a la componente por igualdad de la
+descomposición. Las raíces de intersección se identifican por
+`LocusComponentLineage2D.identityKey`: la clave del dominio completo cuando la descomposición es el
+dominio completo (`isWholeDomain`, la misma comprobación que usa el resolvedor de selectores) y la
+clave de linaje en cualquier otro caso. Así los tokens persistidos sobre componentes de dominio
+completo (SplineV2, curvas cerradas certificadas, loci escalares de una componente) se reanudan sin
+reescribirse, el documento recargado es idéntico byte a byte al de la base y los tokens nuevos de
+esas componentes tienen la misma forma; los de cualquier otra componente usan la clave estructural,
+y un token persistido sobre una componente parcial que no tiene correspondencia demostrada queda
+latente, con fallo cerrado. La usan el resolvedor de identidad de raíces, el germen de raíz, el
+resolvedor de componentes del resolvedor de intersecciones y el contexto de pares; la ocurrencia
+generadora, el punto semántico, la interacción y el selector de rama principal siguen con
+`LocusComponentLineage2D.of`.
 
 ## 8. Determinismo, presupuestos y coste
 
@@ -934,6 +980,138 @@ detiene y se presenta una propuesta correctiva independiente.
   correspondencia demostrada: no se restaura, y el locus queda `NOT_ESTABLISHED` con causa
   `RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED`.
 
+**Precisión de la implementación (T11, 2026-10-21).** La parte estructural de la huella excluye
+también las etiquetas de estado de dibujo que el lector de documentos aplica solo después de leer
+toda la construcción (`animation`, `condition`, `objColor`, `dynamicCaption`, `startPoint`,
+`linkedGeo`): nunca cambian un valor del corte, la huella no usa datos de dibujo, y con ellas, en
+cuanto la publicación dejó de depender del punto trazado (§6), cada locus del modelo del autor
+cuyo corte tiene un punto sobre un camino con paso de animación propio se reconstruía y
+certificaba dos veces al abrir el documento (sonda de T11: la estructura cambiaba solo en
+`animation step` 0.1 → 1 de los puntos `B`, `C` y `H`). Ninguna otra parte cambia.
+
+**Precisión normativa D-CU2-T11-R1 (decisión del autor, 2026-10-21): asentamiento determinista de
+la selección de la copia e inexistencia independiente de la selección.** Resuelve la condición de
+parada §11.4 de T11. Precisa D-CU2-17 y D-CU2-20-R sin cambiar sus contratos de identidad,
+certificación, persistencia ni selección; el texto normativo está en `locus-v2-semantics.md`
+(enmienda v1.3).
+
+*Causa raíz.* La reconstrucción (fase 3) carga el corte con el conductor en su posición viva. Una
+intersección recta–circunferencia sale de su primera inicialización solo en un cálculo que
+encuentra dos raíces distintas en ambos caminos (`count > 1 && !P[0].isEqual(P[1])`,
+TRAC-4272). Si el algoritmo vivo ya está asentado (`firstIntersection` e `isPermutationNeeded`
+falsos) y el conductor vivo está donde no hay dos raíces distintas en los caminos (un hueco, o la
+raíz doble de `t_c` en el lado de mordedura), la copia termina la reconstrucción en su primera
+inicialización y la fase 5 detecta la diferencia. Reproducción (sondas de T11): el modelo del autor
+con `excCyl` 3,96, 4,0 o 7,0 fijado en vivo con el conductor guardado (`t = 0,6456`) y
+V-REV-EXACT-1 con el conductor en `t_c` en el binary64 de mordedura; en los cuatro loci de la
+primera familia, `Q/R` (rayo–circunferencia) está vivo en `[0, 1]` asentada y en la copia en
+primera inicialización. Un documento reabierto en esos estados es fiel, porque su algoritmo vivo
+también está en primera inicialización.
+
+*Contrato del asentamiento (`selection-settlement/v1`).*
+
+1. **Precondiciones.** Tras la validación con las restauraciones admitidas de la fase 5 no queda
+   ninguna discrepancia de valor, valor en línea, literal, estructura, copia ausente ni
+   etiquetado, y toda discrepancia restante es de selección de una intersección recta–cónica
+   cuyo algoritmo vivo está asentado y cuya copia no lo está (`firstIntersection` o
+   `isPermutationNeeded` ciertos). La intersección de la copia tiene dos salidas, no es el caso
+   especial de una intersección existente y su núcleo no es continuo. Si falta una condición, no
+   hay asentamiento y la selección falla cerrada como hasta ahora.
+2. **Algoritmos afectados y orden.** Los objetivos son esas intersecciones de la copia. Un único
+   barrido los atiende a la vez: cada parámetro auxiliar actualiza el subgrafo de la copia que
+   depende del conductor, en orden de construcción y exactamente como una consulta puntual, sin
+   la reinicialización por cercanía heredada (F-CU2-8).
+3. **Política de parámetros.** `t_k = a + (b − a)·φ₂(k)`, `k = 1, …, 63`, donde `[a, b]` es el
+   dominio declarado del generador y `φ₂` el inverso radical en base 2 (1/2, 1/4, 3/4, 1/8, …):
+   los 63 puntos interiores de la malla diádica de nivel 6, siempre en ese orden. No intervienen
+   la posición viva del conductor ni las consultas.
+4. **Justificación.** Un objetivo completa su primera inicialización en un parámetro donde la
+   copia encuentra dos raíces distintas en los caminos; un segundo cálculo con las mismas
+   entradas ejecuta la asignación por cercanía contra los puntos que acaba de guardar (distancia
+   cero en la diagonal y positiva fuera de ella, porque las raíces son distintas) y deja asentada
+   la permutación identidad. Por tanto el estado obtenido no depende del parámetro concreto. Los
+   63 parámetros cortan todo intervalo abierto del dominio de longitud mayor que `(b − a)/32`: si
+   el conjunto de parámetros con dos raíces distintas en los caminos no contiene ninguno, el
+   barrido puede no asentar y la selección falla cerrada. El asentamiento solo produce la
+   identidad; una permutación viva distinta, como `[1, 0]`, no se reproduce por asentamiento y
+   falla cerrada (la reproduce la propia reconstrucción cuando la carga la alcanza, como `J/K`
+   en el modelo).
+5. **Evaluaciones, terminación y efectos.** Dos actualizaciones por parámetro (a lo sumo 126)
+   más una de restauración. Termina en el primer parámetro tras el que ningún objetivo queda sin
+   asentar, o al agotar la secuencia. Solo actúa sobre la construcción aislada: nunca escribe el
+   estado de selección (D-CU2-17) ni toca la construcción viva; no calcula huellas, no publica
+   revisiones, no abre el ámbito de certificación y no usa valores métricos como evidencia. Si un
+   parámetro saca de su primera inicialización una intersección de la copia cuyo algoritmo vivo
+   sigue en ella, la copia ya no la reproduce y el asentamiento termina con fallo tipado. Causas
+   de fallo: `budget-exhausted`, `first-pending-initialized`, `state-differs` (la validación
+   posterior sigue encontrando una diferencia, por ejemplo una permutación viva `[1, 0]`),
+   `computation-failed` y `restoration-differs`. Contadores públicos (`LocusCertificationWork2D`):
+   `SELECTION_SETTLEMENT`, `SELECTION_SETTLEMENT_PARAMETER` y `SELECTION_SETTLEMENT_FAILURE`; el
+   resultado tipado del asentamiento de la revisión es consultable en el evaluador y aparece en la
+   evidencia de `SELECTION_NOT_REPRODUCED` (`selection-settlement/v1=<causa>`).
+6. **Restauración.** Antes del barrido se guarda el estado exacto del conductor de la copia (los
+   bits del número, o las coordenadas homogéneas y el parámetro de camino del punto); después se
+   restauran esos bits, sin recalcular las coordenadas desde el parámetro, y se actualiza una vez
+   el subgrafo dependiente. El barrido no toca entradas autoritativas.
+7. **Validación.** Tras restaurar, la validación completa de la fase 5 se repite: la revisión es
+   fiel solo si no queda ninguna discrepancia, en particular si cada intersección de la copia
+   tiene exactamente la permutación y los indicadores de inicialización del vivo. Si no, la
+   causa es `SELECTION_NOT_REPRODUCED` y la evidencia nombra el resultado del asentamiento.
+8. **Independencia del orden de consultas.** Tras una validación fiel, cada intersección de la
+   copia está asentada como la viva, y entonces su permutación ya no cambia (los cálculos no
+   continuos la usan y la copia nunca reinicializa por cercanía), o sigue en su primera
+   inicialización, como la viva. En el primer caso la salida de una consulta depende solo del
+   parámetro. En el segundo, la primera consulta que completa la primera inicialización de la
+   copia va seguida en el acto de un segundo cálculo en el mismo parámetro, con el efecto del
+   punto 4; esa salida de la inicialización se registra y se cuenta. Desde entonces el estado
+   de la copia difiere del vivo y nunca se declara reproducido: es un estado tipado de salida
+   (identidad asentada por el propio evaluador), que una revalidación reconoce como tal, y cada
+   consulta comprueba que las salidas de esa intersección son las de la regla capturada para la
+   revisión, la compactación en orden bruto de las raíces que están en los caminos. Con la
+   identidad eso equivale exactamente a que toda salida definida esté en ambos caminos y a que la
+   salida 0 no esté indefinida con la 1 definida; si no se cumple, la consulta falla con
+   `SELECTION_NOT_REPRODUCED`. Ninguna consulta depende, pues, del orden de las anteriores.
+   Contadores: `SELECTION_DEPARTURE` y `SELECTION_DEPARTURE_REFUSAL`. Sondas de T11: con la
+   recta y la circunferencia completas la compactación coincide con la identidad y ninguna
+   consulta se rechaza; con un segmento cuya única raíz en el camino es la bruta 1, las consultas
+   de esa zona fallan cerradas en lugar de devolver otra raíz.
+
+Los parámetros auxiliares solo rehidratan el estado computacional heredado de la copia: no son
+evidencia de existencia, continuidad, identidad ni completitud, y una permutación nunca se
+sustituye por otra por la cercanía de sus soluciones.
+
+*Inexistencia independiente de la selección (`selection-independent-nonexistence/v1`).* La
+certificación de una construcción seleccionada exige la correspondencia semántica de cada
+selección (fase 5). Una prueba de inexistencia independiente de la selección no la exige para las
+intersecciones cuya selección no se reproduce, y solo puede concluir que el locus no existe en
+ningún punto del dominio:
+
+- **Aplicabilidad.** Las únicas discrepancias restantes tras el asentamiento son de selección de
+  intersecciones recta–cónica (conjunto `U`); todas las entradas autoritativas son fieles. El
+  programa de clase v3 se captura de la copia tal como está; la selección de las intersecciones
+  de `U` que contiene nunca se usa como evidencia.
+- **Predicados admisibles.** `D(U)` es el conjunto de pasos que leen, directa o
+  transitivamente, una salida indexada de una intersección de `U`. Una caja solo cuenta si el
+  modelo de cajas la declara `UNIFORMLY_INVALID` por un predicado de un paso fuera de `D(U)`; en
+  una intersección de `U` o en una salida indexada suya, donde el modelo evalúa el discriminante,
+  solo por ese discriminante, que no depende de la raíz seleccionada (sonda de T11: el modelo lo
+  atribuye a la salida indexada). Con `D(t) < 0` la intersección no tiene raíces brutas y ninguna
+  permutación ni compactación crea una salida; como todo paso del programa es antecesor del
+  punto trazado y las operaciones de la clase son estrictas, el punto trazado no existe en la
+  caja.
+- **Conclusión.** Solo si cajas así cubren todo el dominio canónico (subdivisión diádica desde la
+  profundidad mínima de la política, con su presupuesto de cajas y su resolución), el
+  certificado se publica `COMPLETE`, sin componentes, con cobertura `CERTIFIED_DOES_NOT_EXIST` y
+  causa `SELECTION_INDEPENDENT_NONEXISTENCE`, cuya evidencia nombra los predicados decisivos y
+  las intersecciones de `U`. Una caja válida, indecisa o decidida por un predicado de `D(U)`, o
+  el agotamiento del presupuesto, deja la revisión `NOT_ESTABLISHED` con
+  `SELECTION_NOT_REPRODUCED`: nunca se publica inexistencia parcial ni existencia con una
+  selección no reproducida.
+- **Estado declarado.** El informe de fidelidad conserva la discrepancia de selección y el
+  evaluador sigue fallando con `SELECTION_NOT_REPRODUCED`; el certificado no declara reproducido
+  ningún estado. No es un atajo general de la validación de fidelidad: la vía solo concluye «no
+  existe ningún punto» y solo en esas condiciones.
+
 - El certificador de 512 celdas fijas de SplineV2 (`SelectedRootContinuousDomainCertifier2D`)
   queda sustituido por el certificador de cajas sobre su modelo de intervalos, o se conserva como
   caso particular (decisión D-CU2-9). Hoy:
@@ -959,6 +1137,34 @@ la ocurrencia generadora exige `COMPLETE`. Orden seguro:
 
 Un locus que no se pueda certificar queda `NOT_ESTABLISHED`, con sus componentes locales o sin
 ellas: falla cerrado y no vuelve a la compatibilidad.
+
+**Precisiones de la implementación (T11, 2026-10-21).**
+
+- **Productores dependientes.** Publican el certificado híbrido de la revisión, calculado una vez
+  por revisión dentro de su ámbito contado y compartido por todos los consumidores; la exploración
+  que alimenta la evidencia exploratoria (E-1) se cuenta aparte (GC-6). Para un generador escalar
+  con componentes declaradas, o un locus sobre un soporte locus, el certificado se restringe a las
+  componentes declaradas: fuera de ellas no hay parámetro del conductor y la inexistencia es exacta
+  por la declaración; dentro se conserva cada hecho, un intervalo que corta un hueco declarado
+  termina en los extremos declarados, y un arco que un hueco declarado cortaría no se corta: nada
+  dentro de lo declarado queda certificado (conservador). Sin componentes declaradas, el
+  recubrimiento es `COMPLETE` y vacío.
+- **Productores estáticos y analíticos (D-CU2-7).** SegmentPath (`segment-path-producer/v1`),
+  SplineV2 (`spline-v2-interpolation/v1`, cierre probado solo por la igualdad exacta de sus extremos
+  primero y último) y los fixtures de laboratorio y de prueba publican el certificado explícito
+  `locus-existence/provider-proved/v1`, de naturaleza `EXACT`, que cita su contrato en la evidencia
+  de recubrimiento; el origen de sus fronteras es el token canónico `provider-contract`. Un
+  intervalo declarado de longitud cero es una componente puntual (§3.5), con la causa tipada
+  `PROVIDER_ISOLATED_POINT` (el contrato del proveedor afirma existencia solo en ese parámetro),
+  nunca un intervalo de longitud cero; un parámetro binary64 no la direcciona y una intersección no
+  la materializa ni declara un conjunto completo mientras no la excluya.
+- **Retirada.** `completeCompatibility`, `compatibilityInherited` y el constructor de rama por
+  lista de componentes desaparecen; ningún productor publica ya el contrato
+  `locus-existence/provider-compatibility/v1`.
+- **Raíz seleccionada de SplineV2 (D-CU2-9).** El certificador v2 cubre todas las cartas monótonas,
+  sin depender de la raíz actual, certifica la última celda del dominio semiabierto y une a través
+  de la costura, por la celda elevada, las componentes que la tocan: el locus `m` del modelo DXF
+  del autor publica un arco que cruza la costura en lugar de dos componentes.
 
 ## 10. Relación con `CU3`
 

@@ -18,13 +18,16 @@ import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
+import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.DomainTopology;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Maximality;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
@@ -41,18 +44,29 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
 
 /**
  * Bounded structural interval capability for an exact selected SplineV2/line
- * root driven by a point on a circle.
+ * root driven by a point on a circle, a particular case of the hybrid existence
+ * contract (PRE-G9B-CU2, decision D-CU2-9, option A).
  *
  * <p>The fixed grid partitions parameter space only. A cell is published only
  * when outward interval evaluation proves existence, uniqueness under the
  * retained selector germ and continuation throughout the whole cell. Point
  * samples never certify a cell.</p>
+ *
+ * <p>The certificate depends only on the revision, never on the current root:
+ * every maximal monotone chart of the spline with the selected orientation is
+ * considered, so that moving only the driver changes nothing (A1.1-R). The last
+ * cell of the half-open periodic domain is certified like any other, and two
+ * runs that meet at the seam are joined only when a lifted cell across the seam
+ * is certified with the same chart.</p>
  */
 public final class SelectedRootContinuousDomainCertifier2D {
+	/** Contract of the certificate, a particular case of the hybrid contract. */
+	public static final String CONTRACT = "locus-existence/selected-root-hybrid/v2";
 	private static final int DRIVER_CELL_COUNT = 512;
 	private static final int SOURCE_MAX_DEPTH = 14;
 	private static final String METHOD =
-			"selected-spline-parallel-line/outward-interval/v1";
+			"selected-spline-parallel-line/outward-interval/v2";
+	private static final int UNRESOLVED = -1;
 
 	private SelectedRootContinuousDomainCertifier2D() {
 		// Static shared-kernel capability.
@@ -67,6 +81,7 @@ public final class SelectedRootContinuousDomainCertifier2D {
 			SemanticGeneratorDescriptor1D descriptor,
 			GeoPointND dependentPoint, GeoElement state, GeoElement support) {
 		if (descriptor.getFamily() != SemanticGeneratorFamily1D.CIRCLE_POINT
+				|| !descriptor.isPeriodic()
 				|| !(support instanceof GeoConic)
 				|| ((GeoConic) support).getType()
 						!= GeoConicNDConstants.CONIC_CIRCLE) {
@@ -80,9 +95,7 @@ public final class SelectedRootContinuousDomainCertifier2D {
 			return Optional.of(certifyFamily(descriptor, (GeoConic) support,
 					family));
 		} catch (ArithmeticException | IllegalArgumentException exception) {
-			return Optional.of(LocusExistenceStructure2D.notEstablished(
-					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(),
+			return Optional.of(notEstablished(descriptor,
 					"selected-root-interval-proof-refused/"
 							+ exception.getClass().getSimpleName()));
 		}
@@ -91,122 +104,142 @@ public final class SelectedRootContinuousDomainCertifier2D {
 	private static LocusExistenceStructure2D certifyFamily(
 			SemanticGeneratorDescriptor1D descriptor, GeoConic circle,
 			SelectedRootFamily family) {
-		LocusDefinitionEvidence evidence = sourceEvidence(family);
+		String branchKey = sourceBranchKey(family);
 		SplineIntervalModel2D model = SplineIntervalModel2D.capture(
-				evidence.source.getSemanticDefinition(), evidence.branchKey);
+				family.source.getSemanticDefinition(), branchKey);
 		if (model == null || !model.isStructural()
 				|| family.selector.hasIntrinsicPhase()) {
-			return LocusExistenceStructure2D.notEstablished(
-					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(),
+			return notEstablished(descriptor,
 					"selected-root-family-lacks-structural-unique-selector");
 		}
 		TransverseOrientation orientation = PublicTargetIntersectionCapability2D
 				.currentPublicRootOrientation(
 						family.selector.getCurrentRootGerm()).orElse(null);
 		if (orientation == null) {
-			return LocusExistenceStructure2D.notEstablished(
-					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(),
+			return notEstablished(descriptor,
 					"selected-root-transverse-orientation-not-established");
 		}
-		double[] knots = model.getKnots();
-		int owningSpan = owningSpan(knots, evidence.currentRootParameter);
-		if (owningSpan < 0) {
-			return LocusExistenceStructure2D.notEstablished(
-					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(),
-					"selected-root-parameter-outside-structural-spline");
-		}
-
 		double normalX = family.baseLine.getX();
 		double normalY = family.baseLine.getY();
 		if (!Double.isFinite(normalX) || !Double.isFinite(normalY)
 				|| normalX == 0 && normalY == 0) {
 			throw new ArithmeticException("No finite line normal");
 		}
-		int firstSpan = owningSpan;
-		int lastSpan = owningSpan;
-		while (firstSpan > 0 && hasOrientation(model, knots[firstSpan - 1],
-				knots[firstSpan], normalX, normalY, orientation)) {
-			firstSpan--;
-		}
-		while (lastSpan + 1 < knots.length - 1
-				&& hasOrientation(model, knots[lastSpan + 1],
-						knots[lastSpan + 2], normalX, normalY, orientation)) {
-			lastSpan++;
-		}
-		double rootLower = knots[firstSpan];
-		double rootUpper = knots[lastSpan + 1];
-		if (!hasOrientation(model, rootLower, rootUpper, normalX, normalY,
-				orientation)
-				|| !model.isSmooth(new SplineOutwardInterval2D(rootLower,
-						rootUpper))) {
-			return LocusExistenceStructure2D.notEstablished(
-					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(),
+		List<Chart> charts = charts(model, normalX, normalY, orientation);
+		if (charts.isEmpty()) {
+			return notEstablished(descriptor,
 					"selected-root-monotone-chart-not-established");
 		}
-		SplineOutwardInterval2D rootStart = project(model.evaluatePoint(rootLower,
-				false), normalX, normalY);
-		SplineOutwardInterval2D rootEnd = project(model.evaluatePoint(rootUpper,
-				false), normalX, normalY);
 		LocusInterval2D canonical = descriptor.getDeclaredDomain();
-		ArrayList<CellState> cells = new ArrayList<>();
+		double period = canonical.getUpper() - canonical.getLower();
+		double[] knots = model.getKnots();
 		int[] work = {0};
+		double[] lowers = new double[DRIVER_CELL_COUNT];
+		double[] uppers = new double[DRIVER_CELL_COUNT];
+		int[] owners = new int[DRIVER_CELL_COUNT];
 		for (int index = 0; index < DRIVER_CELL_COUNT; index++) {
-			double lower = canonical.getLower()
-					+ (canonical.getUpper() - canonical.getLower()) * index
-							/ DRIVER_CELL_COUNT;
-			double upper = index + 1 == DRIVER_CELL_COUNT
-					? canonical.getUpper()
-					: canonical.getLower()
-						+ (canonical.getUpper() - canonical.getLower())
-								* (index + 1) / DRIVER_CELL_COUNT;
-			SplineOutwardInterval2D target = projectCircle(circle, normalX,
-					normalY, lower, upper);
-			boolean inside = strictlyBetween(target, rootStart, rootEnd,
-					orientation);
-			boolean remainderSafe = inside
-					&& excludesSelectedOrientation(model, knots[0], rootLower,
-						target, normalX, normalY, orientation, 0, work)
-					&& excludesSelectedOrientation(model, rootUpper,
-						knots[knots.length - 1], target, normalX, normalY,
-						orientation, 0, work);
-			// A half-open canonical seam is never closed merely for export. Keep the
-			// final grid cell unresolved so every local component has evaluable,
-			// owned endpoints and no epsilon endpoint substitution is needed.
-			boolean ownsUpper = index + 1 < DRIVER_CELL_COUNT
-					|| canonical.isUpperClosed();
-			cells.add(new CellState(lower, upper,
-					remainderSafe && ownsUpper));
+			lowers[index] = canonical.getLower()
+					+ period * index / DRIVER_CELL_COUNT;
+			uppers[index] = index + 1 == DRIVER_CELL_COUNT ? canonical.getUpper()
+					: canonical.getLower() + period * (index + 1) / DRIVER_CELL_COUNT;
+			owners[index] = owner(model, knots, charts, circle, normalX, normalY,
+					orientation, lowers[index], uppers[index], work);
 		}
-		return assemble(descriptor, family, evidence, rootLower, rootUpper,
-				cells, work[0]);
+		// Adjacent certified cells of different charts cannot both hold; neither is joined.
+		for (int index = 1; index < DRIVER_CELL_COUNT; index++) {
+			if (owners[index] != UNRESOLVED && owners[index - 1] != UNRESOLVED
+					&& owners[index] != owners[index - 1]) {
+				owners[index] = UNRESOLVED;
+			}
+		}
+		int last = DRIVER_CELL_COUNT - 1;
+		// The seam joins the last and the first cells only through a lifted cell that
+		// contains it and that the same chart certifies.
+		boolean seamJoined = owners[last] != UNRESOLVED && owners[last] == owners[0]
+				&& owner(model, knots, charts, circle, normalX, normalY, orientation,
+						lowers[last], uppers[0] + period, work) == owners[0];
+		if (owners[last] != UNRESOLVED && owners[0] != UNRESOLVED && !seamJoined) {
+			owners[last] = UNRESOLVED;
+		}
+		return assemble(descriptor, family, model, charts, lowers, uppers, owners,
+				seamJoined, Math.max(1, work[0]));
+	}
+
+	/**
+	 * @return every maximal run of spans whose projected derivative certifies the selected
+	 *         orientation on the whole run, where the spline is smooth
+	 */
+	private static List<Chart> charts(SplineIntervalModel2D model, double normalX,
+			double normalY, TransverseOrientation orientation) {
+		double[] knots = model.getKnots();
+		List<Chart> charts = new ArrayList<>();
+		int span = 0;
+		while (span + 1 < knots.length) {
+			if (!hasOrientation(model, knots[span], knots[span + 1], normalX, normalY,
+					orientation)) {
+				span++;
+				continue;
+			}
+			int first = span;
+			while (span + 2 < knots.length && hasOrientation(model, knots[span + 1],
+					knots[span + 2], normalX, normalY, orientation)) {
+				span++;
+			}
+			double lower = knots[first];
+			double upper = knots[span + 1];
+			if (hasOrientation(model, lower, upper, normalX, normalY, orientation)
+					&& model.isSmooth(new SplineOutwardInterval2D(lower, upper))) {
+				charts.add(new Chart(lower, upper,
+						project(model.evaluatePoint(lower, false), normalX, normalY),
+						project(model.evaluatePoint(upper, false), normalX, normalY)));
+			}
+			span++;
+		}
+		return charts;
+	}
+
+	/**
+	 * @return the chart that holds the unique root of the selected orientation for every
+	 *         driver parameter of the cell, or {@link #UNRESOLVED}
+	 */
+	private static int owner(SplineIntervalModel2D model, double[] knots,
+			List<Chart> charts, GeoConic circle, double normalX, double normalY,
+			TransverseOrientation orientation, double lower, double upper, int[] work) {
+		SplineOutwardInterval2D target = projectCircle(circle, normalX, normalY, lower,
+				upper);
+		for (int index = 0; index < charts.size(); index++) {
+			Chart chart = charts.get(index);
+			if (strictlyBetween(target, chart.start, chart.end, orientation)
+					&& excludesSelectedOrientation(model, knots[0], chart.lower, target,
+							normalX, normalY, orientation, 0, work)
+					&& excludesSelectedOrientation(model, chart.upper,
+							knots[knots.length - 1], target, normalX, normalY,
+							orientation, 0, work)) {
+				return index;
+			}
+		}
+		return UNRESOLVED;
 	}
 
 	private static LocusExistenceStructure2D assemble(
 			SemanticGeneratorDescriptor1D descriptor, SelectedRootFamily family,
-			LocusDefinitionEvidence source, double rootLower, double rootUpper,
-			List<CellState> cells, int workCount) {
+			SplineIntervalModel2D model, List<Chart> charts, double[] lowers,
+			double[] uppers, int[] owners, boolean seamJoined, int workCount) {
+		LocusInterval2D domain = descriptor.getDeclaredDomain();
+		String key = SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY;
+		int count = owners.length;
 		ArrayList<Coverage> coverage = new ArrayList<>();
-		ArrayList<ContinuousComponent> components = new ArrayList<>();
 		int start = 0;
-		while (start < cells.size()) {
-			boolean certified = cells.get(start).certified;
+		while (start < count) {
+			boolean certified = owners[start] != UNRESOLVED;
 			int end = start + 1;
-			while (end < cells.size()
-					&& cells.get(end).certified == certified) {
+			while (end < count && (owners[end] != UNRESOLVED) == certified) {
 				end++;
 			}
-			CellState first = cells.get(start);
-			CellState last = cells.get(end - 1);
-			boolean lowerClosed = start == 0
-					? descriptor.getDeclaredDomain().isLowerClosed() : certified;
-			boolean upperClosed = end == cells.size()
-					? descriptor.getDeclaredDomain().isUpperClosed() : certified;
-			LocusInterval2D interval = new LocusInterval2D(first.lower,
-					last.upper, lowerClosed, upperClosed);
+			boolean lowerClosed = start == 0 ? domain.isLowerClosed() : certified;
+			boolean upperClosed = end == count ? domain.isUpperClosed() : certified;
+			LocusInterval2D interval = new LocusInterval2D(lowers[start], uppers[end - 1],
+					lowerClosed, upperClosed);
 			coverage.add(certified
 					? new Coverage(interval, CoverageState.CERTIFIED_EXISTS,
 							LocusCoverageCause2D.PREDICATES_CERTIFIED_TRUE,
@@ -214,47 +247,96 @@ public final class SelectedRootContinuousDomainCertifier2D {
 					: new Coverage(interval, CoverageState.UNRESOLVED,
 							LocusCoverageCause2D.NOT_CERTIFIED, LocusEvidenceNature2D.NONE,
 							"unresolved-selected-root-transition/v1"));
-			if (certified) {
-				SelectedRootIntervalCertificate2D certificate =
-						new SelectedRootIntervalCertificate2D(family.rootToken,
-								family.selector, source.source.getSemanticRevision(),
-								interval, new LocusInterval2D(rootLower, rootUpper,
-										true, true), METHOD,
-								"bounded-grid-boundary; adjacent unresolved cells are not crossed",
-								Math.max(1, workCount));
-				components.add(new ContinuousComponent(interval,
-						certificate.getEvidenceKey(), certificate.getBoundaryEvidence(),
-						Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
-						"outward-binary64-interval/v1").withTypedBoundaries(
-								gridEnd(start == 0, true, interval.isLowerClosed()),
-								gridEnd(end == cells.size(), false,
-										interval.isUpperClosed()),
-								LocusEvidenceNature2D.RIGOROUS_INTERVAL));
-			}
 			start = end;
 		}
-		return new LocusExistenceStructure2D(
-				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-				descriptor.getDeclaredDomain(), 0, coverage, components,
-				Completeness.NOT_ESTABLISHED,
-				"locus-existence/selected-root-hybrid/v1");
+		ArrayList<ContinuousComponent> components = new ArrayList<>();
+		boolean whole = seamJoined;
+		for (int owner : owners) {
+			whole &= owner != UNRESOLVED;
+		}
+		if (whole) {
+			Chart chart = charts.get(owners[0]);
+			double seam = domain.getLower();
+			LocusBoundary2D closure = new LocusBoundary2D(
+					LocusBoundary2D.Kind.PERIODIC_CLOSURE, new LocusBoundarySource2D(
+							"selected-root-grid", "periodic-closure", "seam"),
+					true, LocusEvidenceNature2D.RIGOROUS_INTERVAL);
+			components.add(ContinuousComponent.arc(domain, seam, seam, true, closure,
+					closure, Maximality.ESTABLISHED, LocusEvidenceNature2D.RIGOROUS_INTERVAL,
+					evidenceKey(family, model, domain, chart, workCount)));
+			return new LocusExistenceStructure2D(key, domain, DomainTopology.PERIODIC, 0,
+					coverage, components, List.of(), Completeness.COMPLETE, CONTRACT);
+		}
+		// Runs of certified cells in cyclic order, starting after an unresolved cell.
+		int first = 0;
+		while (owners[first] != UNRESOLVED) {
+			first++;
+		}
+		int offset = 1;
+		while (offset <= count) {
+			int index = (first + offset) % count;
+			if (owners[index] == UNRESOLVED) {
+				offset++;
+				continue;
+			}
+			int runStart = index;
+			int length = 1;
+			while (offset + length <= count
+					&& owners[(first + offset + length) % count] != UNRESOLVED) {
+				length++;
+			}
+			int runEnd = (runStart + length - 1) % count;
+			Chart chart = charts.get(owners[runStart]);
+			LocusBoundary2D lower = bandEdge(true, true);
+			// The domain end at the seam is open: a run that reaches it ends before it.
+			boolean upperIncluded = runEnd != count - 1;
+			LocusBoundary2D upper = bandEdge(false, upperIncluded);
+			if (runEnd < runStart) {
+				// The run crosses the seam, which the lifted seam cell certified.
+				components.add(ContinuousComponent.arc(domain, lowers[runStart],
+						uppers[runEnd], false, lower, upper,
+						Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
+						LocusEvidenceNature2D.RIGOROUS_INTERVAL,
+						evidenceKey(family, model, new LocusInterval2D(lowers[runStart],
+								uppers[runEnd] + (domain.getUpper() - domain.getLower()),
+								true, true), chart, workCount)));
+			} else {
+				LocusInterval2D interval = new LocusInterval2D(lowers[runStart],
+						uppers[runEnd], true, upperIncluded);
+				components.add(ContinuousComponent.interval(interval, lower, upper,
+						Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
+						LocusEvidenceNature2D.RIGOROUS_INTERVAL,
+						evidenceKey(family, model, interval, chart, workCount)));
+			}
+			offset += length;
+		}
+		return new LocusExistenceStructure2D(key, domain, DomainTopology.PERIODIC, 0,
+				coverage, components, List.of(), Completeness.NOT_ESTABLISHED, CONTRACT);
 	}
 
-	/**
-	 * End of a run of certified grid cells: a declared domain end, or the edge of the
-	 * adjacent unresolved band (PRE-G9B-CU2).
-	 */
-	private static LocusBoundary2D gridEnd(boolean domainEnd, boolean lower,
-			boolean included) {
-		if (domainEnd) {
-			return new LocusBoundary2D(LocusBoundary2D.Kind.DOMAIN_END,
-					lower ? LocusBoundarySource2D.declaredLower()
-							: LocusBoundarySource2D.declaredUpper(),
-					included, LocusEvidenceNature2D.EXACT);
-		}
+	private static String evidenceKey(SelectedRootFamily family,
+			SplineIntervalModel2D model, LocusInterval2D driver, Chart chart,
+			int workCount) {
+		return new SelectedRootIntervalCertificate2D(family.rootToken, family.selector,
+				family.source.getSemanticRevision(), driver,
+				new LocusInterval2D(chart.lower, chart.upper, true, true), METHOD,
+				"bounded-grid-boundary; adjacent unresolved cells are not crossed",
+				workCount).getEvidenceKey();
+	}
+
+	/** @return the end of a run of certified cells at the edge of an unresolved band */
+	private static LocusBoundary2D bandEdge(boolean lower, boolean included) {
 		return new LocusBoundary2D(LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE,
 				new LocusBoundarySource2D("selected-root-grid", "unresolved-cell",
 						lower ? "lower" : "upper"), included, LocusEvidenceNature2D.NONE);
+	}
+
+	private static LocusExistenceStructure2D notEstablished(
+			SemanticGeneratorDescriptor1D descriptor, String evidence) {
+		return LocusExistenceStructure2D.notEstablished(
+				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+				descriptor.getDeclaredDomain(), DomainTopology.PERIODIC,
+				LocusCoverageCause2D.NOT_CERTIFIED, evidence);
 	}
 
 	private static boolean excludesSelectedOrientation(SplineIntervalModel2D model,
@@ -401,89 +483,66 @@ public final class SelectedRootContinuousDomainCertifier2D {
 		if (selector == null) {
 			return null;
 		}
-		return new SelectedRootFamily(intersection.getSource(), rich, token,
-				selector, (GeoLine) parallel.getInput(1));
+		return new SelectedRootFamily(intersection.getSource(), token, selector,
+				(GeoLine) parallel.getInput(1));
 	}
 
-	private static LocusDefinitionEvidence sourceEvidence(
-			SelectedRootFamily family) {
-		LocusIntersectionSolution2D solution = family.rich
-				.findExactPointAdmissibleSolution(family.rootToken).orElseThrow();
-		String branchKey = solution.getRevisionEvidence().getBranchSnapshotKey();
-		LocusBranch2D branch = family.source.getSemanticDefinition()
-				.getBranch(branchKey);
-		LocusExistenceStructure2D structure = branch == null ? null
-				: branch.getExistenceStructure();
-		if (structure == null || structure.getCompleteness() != Completeness.COMPLETE
-				|| structure.getContinuousValidComponents().size() != 1
-				|| !structure.getPointComponents().isEmpty()) {
-			throw new IllegalArgumentException(
-					"Selected source branch lacks one complete structural component");
-		}
-		// The structural lineage that the root token cites (PRE-G9B-CU2).
-		String lineage = LocusComponentLineage2D.of(structure,
-				structure.getContinuousValidComponents().get(0));
-		if (!lineage.equals(family.selector.getComponentLineage())) {
-			throw new IllegalArgumentException(
-					"Selected root lineage disagrees with its source component");
-		}
-		return new LocusDefinitionEvidence(family.source, branchKey,
-				solution.getRevisionEvidence().getSemanticParameter());
-	}
-
-	private static int owningSpan(double[] knots, double parameter) {
-		for (int index = 0; index + 1 < knots.length; index++) {
-			if (parameter >= knots[index]
-					&& (parameter < knots[index + 1]
-							|| index + 2 == knots.length
-									&& parameter == knots[index + 1])) {
-				return index;
+	/**
+	 * The source branch that the retained selector cites, independent of the current root
+	 * (A1.1-R): its one complete component carries the selector's lineage key, or equals the
+	 * whole declared domain that an earlier key cites (E-3, equality of the decomposition).
+	 */
+	private static String sourceBranchKey(SelectedRootFamily family) {
+		LocusDefinition2D definition = family.source.getSemanticDefinition();
+		if (definition != null) {
+			for (LocusBranch2D branch : definition.getBranches()) {
+				LocusExistenceStructure2D structure = branch.getExistenceStructure();
+				if (structure.getCompleteness() != Completeness.COMPLETE
+						|| structure.getContinuousValidComponents().size() != 1
+						|| !structure.getPointComponents().isEmpty()) {
+					continue;
+				}
+				String retained = family.selector.getComponentLineage();
+				if (retained.equals(LocusComponentLineage2D.of(structure,
+						structure.getContinuousValidComponents().get(0)))
+						|| LocusComponentSelectorResolver2D.citesWholeDomain(retained,
+								structure)) {
+					return branch.getBranchKey();
+				}
 			}
 		}
-		return -1;
+		throw new IllegalArgumentException(
+				"Selected source branch lacks one complete structural component");
 	}
 
-	private static final class CellState {
+	/** A maximal monotone chart of the spline with its projected end values. */
+	private static final class Chart {
 		private final double lower;
 		private final double upper;
-		private final boolean certified;
+		private final SplineOutwardInterval2D start;
+		private final SplineOutwardInterval2D end;
 
-		private CellState(double lower, double upper, boolean certified) {
+		private Chart(double lower, double upper, SplineOutwardInterval2D start,
+				SplineOutwardInterval2D end) {
 			this.lower = lower;
 			this.upper = upper;
-			this.certified = certified;
+			this.start = start;
+			this.end = end;
 		}
 	}
 
 	private static final class SelectedRootFamily {
 		private final GeoLocusV2 source;
-		private final GeoLocusIntersectionResult rich;
 		private final String rootToken;
 		private final IntersectionRootDeterministicSelector2D selector;
 		private final GeoLine baseLine;
 
-		private SelectedRootFamily(GeoLocusV2 source,
-				GeoLocusIntersectionResult rich, String rootToken,
-				IntersectionRootDeterministicSelector2D selector,
-				GeoLine baseLine) {
+		private SelectedRootFamily(GeoLocusV2 source, String rootToken,
+				IntersectionRootDeterministicSelector2D selector, GeoLine baseLine) {
 			this.source = source;
-			this.rich = rich;
 			this.rootToken = rootToken;
 			this.selector = selector;
 			this.baseLine = baseLine;
-		}
-	}
-
-	private static final class LocusDefinitionEvidence {
-		private final GeoLocusV2 source;
-		private final String branchKey;
-		private final double currentRootParameter;
-
-		private LocusDefinitionEvidence(GeoLocusV2 source, String branchKey,
-				double currentRootParameter) {
-			this.source = source;
-			this.branchKey = branchKey;
-			this.currentRootParameter = currentRootParameter;
 		}
 	}
 }

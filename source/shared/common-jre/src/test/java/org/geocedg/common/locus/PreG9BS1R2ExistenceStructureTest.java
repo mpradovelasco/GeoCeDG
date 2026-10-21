@@ -245,7 +245,7 @@ class PreG9BS1R2ExistenceStructureTest extends BaseUnitTest {
 
 	private static LocusBranch2D compatibilityBranch(
 			List<LocusInterval2D> intervals) {
-		return new LocusBranch2D(BRANCH, CANONICAL, intervals,
+		return LocusV2TestBranches.branch(BRANCH, CANONICAL, intervals,
 				Orientation.INCREASING, "fixture-provider/v1",
 				LocusLineage2D.unchanged(), EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());

@@ -33,11 +33,13 @@ import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusEvaluator2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Result;
@@ -49,9 +51,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 /**
  * PRE-G9B-CU2 step T10: drawing policy {@value LocusRenderPolicy2D#VERSION} on the author
- * model, with the shadow certificates published in place of the compatibility certificate as
- * step T11 will, in the author's view. Matrix rows V-B06-1, V-B06-2, V-B06-3, V-REP-1 and
- * V-AVAIL-2 (model part). The CU0 references of {@code pins.B06} and {@code pins.B07} are
+ * model, in the author's view, with the certificates that step T11 publishes. Matrix rows
+ * V-B06-1, V-B06-2, V-B06-3, V-REP-1 and V-AVAIL-2 (model part). The CU0 references of {@code pins.B06} and {@code pins.B07} are
  * inverted in step T12.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
@@ -142,6 +143,83 @@ class PreG9BCu2AuthorModelRepresentationTest {
 	}
 
 	/**
+	 * V-B07-1 (step T11; inverts {@code pins.B07} of CU0): in the bites at excCyl 3.7, 3.85 and
+	 * 3.9 each locus of the first family is drawn as one open stroke along its certified arc
+	 * across the seam, whose end vertices lie within 0.75 px of the images of the certified
+	 * ends, which enclose the analytic ends (until CU2 the stroke stopped 6 to 24 px short).
+	 */
+	@Test
+	void aBiteIsDrawnToTheImagesOfItsCertifiedEnds() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+			Map<String, Object> values = new LinkedHashMap<>();
+			for (double excCyl : new double[] {3.7, 3.85, 3.9}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				for (String label : FIRST_FAMILY) {
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					ContinuousComponent arc = certificate(locus).getStructure()
+							.getContinuousValidComponents().get(0);
+					LocusDefinition2D definition = locus.getSemanticDefinition();
+					LocusPoint2D start = componentEnd(definition, arc, false);
+					LocusPoint2D end = componentEnd(definition, arc, true);
+					List<Vertex> vertices = new LocusRenderCache2D().getOrBuild(locus,
+							PreG9BCu0Corpus.authorPolicy()).getVertices();
+					values.put(label + "@" + excCyl, arc.crossesSeam() + "/"
+							+ vertices.stream().filter(Vertex::startsSubpath).count() + "/"
+							+ (distance(vertices.get(0).getPoint(), start) * SCALE <= 0.75) + "/"
+							+ (distance(vertices.get(vertices.size() - 1).getPoint(), end)
+									* SCALE <= 0.75));
+				}
+			}
+			return values;
+		});
+		for (Map.Entry<String, Object> entry : row.entrySet()) {
+			assertEquals("true/1/true/true", entry.getValue(), entry.getKey() + " " + row);
+		}
+	}
+
+	/**
+	 * V-B07-3 (F-CU2-2): near the critical value, at excCyl 3.657, 3.66 and the first
+	 * binary64 of the bite, the real gap between the two transitions is never bridged: one
+	 * stroke along the arc, open, with no vertex inside the certified nonexistence.
+	 */
+	@Test
+	void noStrokeBridgesTheRealGapNearTheCriticalValue() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+			Map<String, Object> values = new LinkedHashMap<>();
+			for (double excCyl : new double[] {3.657, 3.66,
+				Double.longBitsToDouble(0x400d416bb67a38bcL)}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				for (String label : FIRST_FAMILY) {
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					LocusExistenceStructure2D structure = certificate(locus).getStructure();
+					List<Vertex> vertices = new LocusRenderCache2D().getOrBuild(locus,
+							PreG9BCu0Corpus.authorPolicy()).getVertices();
+					LocusDriverDomainProvider2D provider = locus.getSemanticDefinition()
+							.getProvider();
+					long inGap = vertices.stream().filter(vertex -> structure.getCoverage()
+							.stream().anyMatch(item -> item.getState()
+									== CoverageState.CERTIFIED_DOES_NOT_EXIST
+									&& item.getInterval().contains(provider.canonicalize(
+											vertex.getSemanticParameter()), 0))).count();
+					values.put(label + "@" + excCyl, structure.getContinuousValidComponents()
+							.size() + "/" + vertices.stream().filter(Vertex::startsSubpath)
+									.count() + "/" + inGap + "/" + (distance(vertices.get(0)
+											.getPoint(), vertices.get(vertices.size() - 1)
+											.getPoint()) > 0));
+				}
+			}
+			return values;
+		});
+		for (Map.Entry<String, Object> entry : row.entrySet()) {
+			assertEquals("1/1/0/true", entry.getValue(), entry.getKey() + " " + row);
+		}
+	}
+
+	/**
 	 * V-REP-1: the excluded end of {@code e_2} at {@code t_N} is drawn to its one-sided limit
 	 * {@code w_1(t_N^-) = L}, within the chord tolerance of the curve just below it; the
 	 * included start is the image of {@code t_N}; there is no closing segment.
@@ -225,8 +303,9 @@ class PreG9BCu2AuthorModelRepresentationTest {
 	// ---------------------------------------------------------------- helpers
 
 	/**
-	 * Publishes the shadow certificate of a locus in place of the compatibility certificate,
-	 * as step T11 will, with the live evaluator unless another is given, and draws it.
+	 * Publishes the certificate of a locus again, with the live evaluator unless another is
+	 * given (a test policy), and draws it. Step T11 publishes the same certificate; the
+	 * republication only installs the test policy.
 	 */
 	private static LocusRenderData2D publishAndRender(AppGeoCeDG app, String label,
 			LocusEvaluator2D evaluator, LocusRenderPolicy2D policy) {
@@ -395,6 +474,29 @@ class PreG9BCu2AuthorModelRepresentationTest {
 		return strokes(drawing) + ":" + ends + ":" + closed;
 	}
 
+	/**
+	 * @return the image of one end of a certified component: its evaluation or, where the
+	 *         evaluation of the binary64 end fails (the lifted end of an arc across the seam
+	 *         canonicalizes one rounding outside the arc), the limit-form enclosure of the
+	 *         certified transition that the representation uses (consumption design 5.2)
+	 */
+	private static LocusPoint2D componentEnd(LocusDefinition2D definition,
+			ContinuousComponent component, boolean upper) {
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
+			LocusEvaluation2D evaluation = definition.evaluateComponentEnd(PreG9BCu0Corpus.MAIN,
+					upper ? component.getEnd() : component.getStart(), upper, session);
+			if (evaluation.isValid()) {
+				return evaluation.getPoint();
+			}
+		}
+		LocusBoundaryImage2D image = definition.encloseBoundaryImage(PreG9BCu0Corpus.MAIN,
+				upper ? component.getUpperBoundary() : component.getLowerBoundary());
+		if (!image.isEnclosed()) {
+			throw new IllegalStateException(image.getDiagnostic());
+		}
+		return image.getPoint();
+	}
+
 	private static LocusPoint2D evaluate(LocusDefinition2D definition, double parameter) {
 		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
 			LocusEvaluation2D evaluation = definition.evaluate(PreG9BCu0Corpus.MAIN, parameter,
@@ -415,7 +517,7 @@ class PreG9BCu2AuthorModelRepresentationTest {
 		Result result = ((AlgoDependentPointLocusV2) locus.getParentAlgorithm())
 				.getHybridExistenceCertificate();
 		if (result == null) {
-			throw new IllegalStateException("No shadow certificate");
+			throw new IllegalStateException("No certificate");
 		}
 		return result;
 	}

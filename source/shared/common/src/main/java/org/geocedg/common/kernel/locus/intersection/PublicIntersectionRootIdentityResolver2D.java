@@ -1091,9 +1091,9 @@ public final class PublicIntersectionRootIdentityResolver2D {
 							evidence.getResolvedValidComponentKey())) {
 				LocusExistenceStructure2D.ContinuousComponent certified =
 						components.get(index);
-				// Structural lineage and the single closure authority (PRE-G9B-CU2).
+				// Identity key (E-3) and the single closure authority (PRE-G9B-CU2).
 				return new ComponentAddress(
-						LocusComponentLineage2D.of(structure, certified),
+						LocusComponentLineage2D.identityKey(structure, certified),
 						branch.getBranchKey(), certified, branch.getOrientation(),
 						structure.isClosedPeriodic());
 			}

@@ -16,10 +16,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operand;
@@ -30,6 +34,7 @@ import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -37,6 +42,7 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousCompo
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
@@ -49,6 +55,9 @@ import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D.Ori
 import org.geocedg.common.kernel.locus.metric.LocusMetricPolicy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricWorkBudget2D;
+import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,8 +70,9 @@ import org.junit.jupiter.api.io.TempDir;
  * V-TR-4 (certificate part), V-CRIT-5 and V-CRIT-7 to V-CRIT-10 (model parts), V-COMPL-1,
  * V-E2-1, V-E2-4 and V-E2-5 (certificate parts), and gates GC-4, GC-6 and GC-8. Every
  * boundary is compared with the analytic reference {@code t_c +- beta} evaluated with 50
- * digits from the captured parameters of the model, never with pointwise validity. The
- * certificates stay in shadow until step T11.
+ * digits from the captured parameters of the model, never with pointwise validity. Step
+ * T11 publishes the certificates; the tests read the published certificate of each revision,
+ * and rows V-PUB-1 to V-PUB-4 check the publication rule.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -107,9 +117,14 @@ class PreG9BCu2AuthorModelCertificationTest {
 				values.put(label + ".folds", folds(result));
 			}
 			GeoLocusV2 e2 = PreG9BCu0Corpus.locus(app, "e_2");
+			// Since step T11 the certificate is computed when the revision is published, while
+			// the document opens: GC-6 counts the reads since the creation of e_2, with the
+			// single certificate computation of its revision, and none when it is read.
 			long reads = metricReads(e2);
 			Result result = certificate(app, "e_2");
-			values.put("e_2.reads", metricReads(e2) - reads);
+			values.put("e_2.reads", reads + "/" + (metricReads(e2) - reads) + "/"
+					+ e2.getInstrumentation().getCertificationWork(
+							LocusCertificationWork2D.CERTIFICATE_COMPUTATION));
 			values.put("e_2", shape(result));
 			values.put("e_2.budgets", budgets(result));
 			values.put("e_2.stationary", stationary(result));
@@ -160,7 +175,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 		for (String label : List.of("o", "v", "w", "a_1", "o_1")) {
 			assertEquals("", row.get(label + ".folds"), label + " " + row);
 		}
-		assertEquals(0L, row.get("e_2.reads"), "GC-6 " + row);
+		assertEquals("0/0/1", row.get("e_2.reads"), "GC-6 " + row);
 		assertEquals("COMPLETE/false/0/0", row.get("e_2"), row.toString());
 		assertEquals("within", row.get("e_2.budgets"), row.toString());
 		assertEquals("true/0.0/0.0/ESTABLISHED/0.0", row.get("e_2.arc"), row.toString());
@@ -244,10 +259,211 @@ class PreG9BCu2AuthorModelCertificationTest {
 	}
 
 	/**
+	 * V-PUB-1 (step T11; inverts {@code pins.H01} of CU0): at excCyl 4.0 the saved driver lies
+	 * in the gap, where the traced point {@code W} is undefined; the four loci are published
+	 * all the same, each {@code COMPLETE} and one arc across the seam whose closed ends enclose
+	 * the analytic ends {@code t_c +- beta}.
+	 */
+	@Test
+	void theLociArePublishedWhileTheSavedDriverIsInTheGap() throws Exception {
+		List<String> failures = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			PreG9BCu0Corpus.setNumber(app, "excCyl", 4.0);
+			List<String> problems = new ArrayList<>();
+			if (app.getKernel().lookupLabel("W").isDefined()) {
+				problems.add("the traced point W is defined at the saved driver");
+			}
+			BigDecimal[] reference = reference(app, 5, 1.5, 4.0);
+			for (String label : FIRST_FAMILY) {
+				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+				Result result = certificate(app, label);
+				LocusExistenceStructure2D structure = result.getStructure();
+				LocusDefinition2D definition = locus.getSemanticDefinition();
+				// The definition binds the certificate structure to its revision.
+				if (!locus.isDefined() || definition == null || !definition
+						.getBranch(PreG9BCu0Corpus.MAIN).getExistenceStructure()
+						.getSemanticSignature().equals(structure.getSemanticSignature())) {
+					problems.add(label + " is not published");
+					continue;
+				}
+				List<ContinuousComponent> components = structure.getContinuousValidComponents();
+				if (!"COMPLETE/false/2/0".equals(shape(result)) || components.size() != 1
+						|| !components.get(0).crossesSeam()
+						|| !encloses(components.get(0).getLowerBoundary(),
+								reference[1].doubleValue())
+						|| !encloses(components.get(0).getUpperBoundary(),
+								reference[0].doubleValue())) {
+					problems.add(label + " " + shape(result) + " " + coverage(structure));
+				}
+			}
+			return problems;
+		});
+		assertEquals(List.of(), failures);
+	}
+
+	/**
+	 * V-PUB-2 (F-CU2-3): with the saved driver, which enters the gap from excCyl
+	 * 3.958845384, every value of excCyl publishes a revision of its own whose certificates
+	 * and points are, bit for bit, those of the same document saved and opened again.
+	 */
+	@Test
+	void everyRevisionPublishesItsOwnGeometry() throws Exception {
+		List<String> failures = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			List<String> problems = new ArrayList<>();
+			Map<String, Long> revisions = new LinkedHashMap<>();
+			int step = 0;
+			for (double excCyl : new double[] {3.95, 3.96, 4.0, 4.5, 5.0}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				String live = published(app);
+				AppGeoCeDG reopened = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app,
+						work, "revision-" + step++));
+				String fresh = published(reopened);
+				if (!live.equals(fresh)) {
+					problems.add(excCyl + " live " + live + " reopened " + fresh);
+				}
+				for (String label : FIRST_FAMILY) {
+					long revision = PreG9BCu0Corpus.locus(app, label).getSemanticRevision();
+					Long previous = revisions.put(label, revision);
+					if (previous != null && revision <= previous) {
+						problems.add(excCyl + " " + label + " kept revision " + revision);
+					}
+				}
+			}
+			return problems;
+		});
+		assertEquals(List.of(), failures);
+	}
+
+	/**
+	 * V-PUB-3 (D-CU2-8; D-CU2-T11-R1 section 3): beyond excCyl 6.7915 the discriminant is
+	 * negative on the whole circle (the test raises the slider bound, which is
+	 * {@code rbCone}); each locus of the first family is published and valid,
+	 * {@code COMPLETE} with no component, its total length is zero and its intersection with
+	 * a line is a complete empty set. After the dynamic change the settlement cannot
+	 * reproduce the live selection, the copy is never declared faithful and the proof of
+	 * nonexistence uses no unreproduced selection; the same document saved and opened again
+	 * is faithful and publishes the same result from its ordinary certificate.
+	 */
+	@Test
+	void anEmptyCertifiedCoverIsPublishedComplete() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			GeoNumeric excCyl = (GeoNumeric) app.getKernel().lookupLabel("excCyl");
+			excCyl.setIntervalMax(new MyDouble(app.getKernel(), 10));
+			PreG9BCu0Corpus.setNumber(app, "excCyl", 7.0);
+			Map<String, Object> values = new LinkedHashMap<>();
+			values.put("excCyl", excCyl.getValue());
+			G9U1TestApp.eval(app, "emptyCoverLine:y=0");
+			for (String label : FIRST_FAMILY) {
+				G9U1TestApp.eval(app, "emptyCoverTotal" + label.replace("_", "")
+						+ "=LocusLength(" + label + ")");
+				G9U1TestApp.eval(app, "emptyCoverCut" + label.replace("_", "") + "=Intersect("
+						+ label + ",emptyCoverLine)");
+				values.put(label, emptyCover(app, label));
+			}
+			AppGeoCeDG reopened = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work,
+					"empty-cover"));
+			values.put("reopened excCyl",
+					((GeoNumeric) reopened.getKernel().lookupLabel("excCyl")).getValue());
+			for (String label : FIRST_FAMILY) {
+				values.put("reopened " + label, emptyCover(reopened, label));
+			}
+			return values;
+		});
+		assertEquals(7.0, row.get("excCyl"), row.toString());
+		assertEquals(7.0, row.get("reopened excCyl"), row.toString());
+		for (String label : FIRST_FAMILY) {
+			assertEquals("true/VALID/COMPLETE/0/0/0.0/EMPTY/COMPLETE/budget-exhausted/false/"
+					+ "[CERTIFIED_DOES_NOT_EXIST:SELECTION_INDEPENDENT_NONEXISTENCE]",
+					row.get(label), row.toString());
+			assertEquals("true/VALID/COMPLETE/0/0/0.0/EMPTY/COMPLETE/not-needed/true/"
+					+ "[CERTIFIED_DOES_NOT_EXIST:PREDICATE_CERTIFIED_FALSE]",
+					row.get("reopened " + label), row.toString());
+		}
+	}
+
+	/**
+	 * One row of V-PUB-3: publication, completeness, components, total length and cut, then
+	 * the settlement outcome, the fidelity of the slice copy and the states and causes of the
+	 * coverage.
+	 */
+	private static String emptyCover(AppGeoCeDG app, String label)
+			throws ReflectiveOperationException {
+		GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		LocusExistenceStructure2D structure = definition.getBranch(PreG9BCu0Corpus.MAIN)
+				.getExistenceStructure();
+		String name = label.replace("_", "");
+		GeoLocusMetricResult total = (GeoLocusMetricResult) app.getKernel()
+				.lookupLabel("emptyCoverTotal" + name);
+		GeoLocusIntersectionResult cut = (GeoLocusIntersectionResult) app.getKernel()
+				.lookupLabel("emptyCoverCut" + name);
+		ReconstructibleLocusEvaluator2D evaluator = evaluator(locus);
+		Set<String> causes = new TreeSet<>();
+		for (Coverage item : structure.getCoverage()) {
+			causes.add(item.getState() + ":" + item.getCause());
+		}
+		return locus.isDefined() + "/" + definition.getDefinitionStatus() + "/"
+				+ structure.getCompleteness() + "/"
+				+ structure.getContinuousValidComponents().size() + "/"
+				+ structure.getPointComponents().size() + "/"
+				+ total.getMetricResult().getMetricValue().getFiniteValue().orElse(-1) + "/"
+				+ cut.getIntersectionResult().getGeometryKind() + "/"
+				+ cut.getIntersectionResult().getCompletenessEvidence().getCompleteness() + "/"
+				+ evaluator.getSettlementOutcome().getToken() + "/"
+				+ evaluator.isReconstructionFaithful() + "/" + causes;
+	}
+
+	/**
+	 * V-PUB-4 (H01, F-CU2-3): a free point of the slice that is undefined is an undefined
+	 * definition input: the locus is undefined and its previous definition is discarded, so
+	 * no consumer reads stale geometry; defining the point again publishes a new revision.
+	 */
+	@Test
+	void anUndefinedDefinitionInputLeavesNoStaleDefinition() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+			GeoLocusV2 o = PreG9BCu0Corpus.locus(app, "o");
+			GeoPoint free = null;
+			for (GeoElement input : ((AlgoDependentPointLocusV2) o.getParentAlgorithm())
+					.getDefinitionInputs()) {
+				if (input instanceof GeoPoint && input.isIndependent()) {
+					free = (GeoPoint) input;
+					break;
+				}
+			}
+			Map<String, Object> values = new LinkedHashMap<>();
+			values.put("free", free != null);
+			long revision = o.getSemanticRevision();
+			double x = free.getInhomX();
+			double y = free.getInhomY();
+			free.setUndefined();
+			free.updateRepaint();
+			values.put("undefined", !o.isDefined() && o.getSemanticDefinition() == null);
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
+				o.evaluate(PreG9BCu0Corpus.MAIN, 0, session);
+				values.put("stale", true);
+			} catch (IllegalStateException expected) {
+				values.put("stale", false);
+			}
+			free.setCoords(x, y, 1);
+			free.updateRepaint();
+			values.put("republished", o.isDefined() && o.getSemanticRevision() > revision);
+			return values;
+		});
+		assertEquals(true, row.get("free"), row.toString());
+		assertEquals(true, row.get("undefined"), row.toString());
+		assertEquals(false, row.get("stale"), row.toString());
+		assertEquals(true, row.get("republished"), row.toString());
+	}
+
+	/**
 	 * V-TR-4 (certificate part): pointwise validity is not a boundary. At excCyl 3.7 the
-	 * evaluator still returns valid points beyond the exact end of the arc, inside the
-	 * measured excess, where the certificate states nonexistence by the negative
-	 * discriminant.
+	 * evaluator of the slice still returns valid points beyond the exact end of the arc,
+	 * inside the measured excess, where the certificate states nonexistence by the negative
+	 * discriminant. Since step T11 the certificate is published, and the published locus
+	 * refuses such a point (F-CU2-1): the evaluator of the slice is read directly.
 	 */
 	@Test
 	void pointwiseValidityBeyondTheExactEndIsNotExistence() throws Exception {
@@ -257,6 +473,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 			PreG9BCu0Corpus.setNumber(app, "excCyl", 3.7);
 			Map<String, Object> values = new LinkedHashMap<>();
 			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, "o");
+			ReconstructibleLocusEvaluator2D slice = evaluator(locus);
 			LocusExistenceStructure2D structure = certificate(app, "o").getStructure();
 			LocusBoundary2D end = structure.getContinuousValidComponents().get(0)
 					.getUpperBoundary();
@@ -266,7 +483,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 				// Offsets from the measured excess down to 2^-24 of it, beyond the enclosure.
 				for (int exponent = 0; exponent <= 24 && Double.isNaN(valid); exponent++) {
 					double parameter = outside + Math.scalb(VALIDITY_EXCESS, -exponent);
-					if (locus.evaluate(PreG9BCu0Corpus.MAIN, parameter, session).isValid()) {
+					if (slice.evaluate(null, null, parameter, session).isValid()) {
 						valid = parameter;
 					}
 				}
@@ -274,12 +491,16 @@ class PreG9BCu2AuthorModelCertificationTest {
 				values.put("state", Double.isNaN(valid) ? "none"
 						: coverageAt(structure, valid).getState() + ":"
 								+ coverageAt(structure, valid).getEvidence());
+				values.put("published", Double.isNaN(valid) ? "none"
+						: locus.evaluate(PreG9BCu0Corpus.MAIN, valid, session).getStatus());
 			}
 			return values;
 		});
 		assertTrue(!Double.isNaN((Double) row.get("valid")), row.toString());
 		assertTrue(((String) row.get("state")).startsWith("CERTIFIED_DOES_NOT_EXIST:")
 				&& ((String) row.get("state")).endsWith("DISCRIMINANT_NEGATIVE"),
+				row.toString());
+		assertEquals(EvaluationStatus.DEPENDENCY_UNDEFINED, row.get("published"),
 				row.toString());
 	}
 
@@ -708,6 +929,31 @@ class PreG9BCu2AuthorModelCertificationTest {
 				&& reference <= boundary.getEnclosureUpper();
 	}
 
+	/** @return the published certificates and points of the first family, bit for bit */
+	private static String published(AppGeoCeDG app) {
+		StringBuilder text = new StringBuilder();
+		for (String label : FIRST_FAMILY) {
+			LocusDefinition2D definition = PreG9BCu0Corpus.locus(app, label)
+					.getSemanticDefinition();
+			text.append(label).append('=').append(definition.getBranch(PreG9BCu0Corpus.MAIN)
+					.getExistenceStructure().getSemanticSignature());
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(16)) {
+				for (double t : new double[] {-Math.PI, -2, -1, 0, 1, 2, 3}) {
+					LocusEvaluation2D evaluation = definition.evaluate(PreG9BCu0Corpus.MAIN, t,
+							session);
+					text.append('|').append(evaluation.getStatus());
+					if (evaluation.isValid()) {
+						text.append(':').append(Double.toHexString(evaluation.getPoint().getX()))
+								.append(',')
+								.append(Double.toHexString(evaluation.getPoint().getY()));
+					}
+				}
+			}
+			text.append(';');
+		}
+		return text.toString();
+	}
+
 	private static String shape(Result result) {
 		LocusExistenceStructure2D structure = result.getStructure();
 		return structure.getCompleteness() + "/" + structure.isClosedPeriodic() + "/"
@@ -802,7 +1048,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 		Result result = ((AlgoDependentPointLocusV2) PreG9BCu0Corpus.locus(app, label)
 				.getParentAlgorithm()).getHybridExistenceCertificate();
 		if (result == null) {
-			throw new IllegalStateException("No shadow certificate for " + label);
+			throw new IllegalStateException("No certificate for " + label);
 		}
 		return result;
 	}

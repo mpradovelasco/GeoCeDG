@@ -451,6 +451,15 @@ returned by the evaluator is not published as valid.
 A certified cover that is empty is `COMPLETE` with no component; the definition remains valid
 (`locus-v2-semantics.md`, section "PRE-G9B-CU2 amendment").
 
+Normative precision D-CU2-T11-R1: a predicate certified false establishes nonexistence
+independently of a selection that the slice copy does not reproduce only when the predicate
+belongs to a step that does not depend on the selected outputs of that intersection, or is the
+discriminant of that intersection itself. Such a proof is admitted only when it covers the whole
+canonical domain; its coverage carries the distinct cause `SELECTION_INDEPENDENT_NONEXISTENCE`,
+and the selection is never declared reproduced (`locus-v2-semantics.md`, "Selection-independent
+nonexistence"). Certified existence, partial nonexistence and component boundaries always need
+every selection to be reproduced.
+
 ### 15.6 Identities, lineage and selectors
 
 The durable identity of a construction result, the semantic identity of its selection and the

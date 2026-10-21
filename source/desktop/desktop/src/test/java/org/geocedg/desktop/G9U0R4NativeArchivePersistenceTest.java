@@ -165,14 +165,14 @@ class G9U0R4NativeArchivePersistenceTest {
 	void nativeCedgPreservesDormantAndReactivatedExistingPoints(
 			@TempDir Path temporaryDirectory) throws Exception {
 		AppGeoCeDG app = enabledApp();
-		eval(app, "reactivationParameter=0");
-		eval(app, "ReactivationGenerator=(reactivationParameter,"
-				+ "(reactivationParameter^2-1)*(reactivationParameter^2-4))");
+		// PRE-G9B-CU2 declared conformity: the scalar polynomial generator is outside class v3
+		// since step T11; a SplineV2, certified by its contract, interpolates (x^2-1)(x^2-4)
+		// on [-bound, bound] at dense nodes, none of them a root, with the nodes around -2
+		// and 2 only while the bound exceeds 2.
 		eval(app, "reactivationBound=1.5");
-		eval(app, "reactivationDomain={false,{-reactivationBound,"
-				+ "reactivationBound,true,true}}");
-		eval(app, "reactivationLocus=LocusV2(ReactivationGenerator,"
-				+ "reactivationParameter,reactivationDomain)");
+		eval(app, "reactivationLocus=SplineV2(If(reactivationBound>2,"
+				+ polynomialNodes("reactivationBound", true) + ","
+				+ polynomialNodes("reactivationBound", false) + "),3)");
 		eval(app, "reactivationAxis:y=0");
 		GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult) eval(app,
 				"reactivationResult=Intersect(reactivationLocus,reactivationAxis)");
@@ -238,6 +238,28 @@ class G9U0R4NativeArchivePersistenceTest {
 		assertPersistedPoints(reopenedActive, activeRich, pointTokens);
 		assertEquals(constructionSize, reopenedActive.getKernel().getConstruction()
 				.getGeoSetConstructionOrder().size());
+	}
+
+	/**
+	 * @param bound outer abscissa, a number or a numeric label
+	 * @param withOuterRoots whether the nodes around the outer roots -2 and 2, from 13/8 to
+	 *        23/8 in absolute value, are kept
+	 * @return the nodes of (x^2-1)(x^2-4) on [-bound, bound], at the odd multiples of 1/8 and
+	 *         at the bounds, as a list of points
+	 */
+	private static String polynomialNodes(String bound, boolean withOuterRoots) {
+		StringBuilder nodes = new StringBuilder("{").append(polynomialNode("-(" + bound
+				+ ")"));
+		int limit = withOuterRoots ? 23 : 11;
+		for (int numerator = -limit; numerator <= limit; numerator += 2) {
+			nodes.append(',').append(polynomialNode("(" + numerator + "/8)"));
+		}
+		return nodes.append(',').append(polynomialNode("(" + bound + ")")).append('}')
+				.toString();
+	}
+
+	private static String polynomialNode(String abscissa) {
+		return "(" + abscissa + ",((" + abscissa + ")^2-1)*((" + abscissa + ")^2-4))";
 	}
 
 	private static void assertPersistedPoints(AppGeoCeDG app,

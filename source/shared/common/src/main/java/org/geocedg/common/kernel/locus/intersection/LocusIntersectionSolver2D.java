@@ -517,7 +517,7 @@ public final class LocusIntersectionSolver2D {
 			if (IntersectionCapabilityContext2D.componentKey(branchKey, index)
 					.equals(componentKey)) {
 				return new ComponentAddress(components.get(index),
-						LocusComponentLineage2D.of(structure, components.get(index)),
+						LocusComponentLineage2D.identityKey(structure, components.get(index)),
 						structure.isClosedPeriodic());
 			}
 		}

@@ -7,6 +7,7 @@ package org.geocedg.common.locus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,6 +62,10 @@ class G9U0R5SemanticTransformEdgeCasesTest
 		assertPoint(image, BRANCH, 0, 1, -3);
 		assertPoint(image, BRANCH, 2 * Math.PI, 1, -3);
 		assertPoint(image, BRANCH, Math.PI / 2, 3, -5);
+		// PRE-G9B-CU2 step T11: the seam of the certified circle is at -pi (the canonical
+		// domain [-pi, pi)); both sides of it have the same image.
+		assertPoint(image, BRANCH, -Math.PI, 5, -3);
+		assertPoint(image, BRANCH, Math.PI, 5, -3);
 	}
 
 	@Test
@@ -73,7 +78,9 @@ class G9U0R5SemanticTransformEdgeCasesTest
 		assertBranchStructure(source, collapsed, BRANCH);
 		assertBranchStructure(collapsed, rotated, BRANCH);
 		assertBranchStructure(rotated, image, BRANCH);
-		assertEquals(EvaluationStatus.OUT_OF_DOMAIN,
+		// PRE-G9B-CU2 declared conformity (T9 rule P5 on the certificate of T11): the
+		// declared gap is certified nonexistence.
+		assertEquals(EvaluationStatus.DEPENDENCY_UNDEFINED,
 				evaluate(image, BRANCH, 0).getStatus());
 		assertPoint(image, BRANCH, -1.5, -2, 8);
 		assertPoint(image, BRANCH, 1.5, -2, 8);
@@ -91,7 +98,9 @@ class G9U0R5SemanticTransformEdgeCasesTest
 
 	@Test
 	void decreasingOrientationAndNegativeScalePreserveSemanticAddress() {
-		GeoLocusV2 source = createScalarLocus("L", "s", "Q", "(s,s^2)",
+		// PRE-G9B-CU2 declared conformity: (s,s^2) is outside class v3 and has no certified
+		// component since step T11; the direct affine diagonal (s,s) is certified.
+		GeoLocusV2 source = createScalarLocus("L", "s", "Q", "(s,s)",
 				"{false,{2,-2,true,true}}");
 		GeoLocusV2 image = add("T=Dilate(L,-3,(1,2))");
 
@@ -100,14 +109,14 @@ class G9U0R5SemanticTransformEdgeCasesTest
 		assertBranchStructure(source, image, BRANCH);
 		assertEquals(Orientation.DECREASING,
 				image.getSemanticDefinition().getBranch(BRANCH).getOrientation());
-		assertPoint(image, BRANCH, 0.5, 2.5, 7.25);
+		assertPoint(image, BRANCH, 0.5, 2.5, 6.5);
 
 		GeoPoint sourcePoint = add("P=Point(L,\"" + BRANCH + "\",0.5)");
 		GeoPoint imagePoint = add("TP=Point(T,\"" + BRANCH + "\",0.5)");
 		assertEquals(sourcePoint.getInhomX(), 0.5, 1E-10);
-		assertEquals(sourcePoint.getInhomY(), 0.25, 1E-10);
+		assertEquals(sourcePoint.getInhomY(), 0.5, 1E-10);
 		assertEquals(imagePoint.getInhomX(), 2.5, 1E-10);
-		assertEquals(imagePoint.getInhomY(), 7.25, 1E-10);
+		assertEquals(imagePoint.getInhomY(), 6.5, 1E-10);
 		assertEquals(3 * metricValue(totalMetric(source)),
 				metricValue(add("MT=LocusLength(T)")), 1E-6);
 	}
@@ -120,8 +129,11 @@ class G9U0R5SemanticTransformEdgeCasesTest
 		GeoLocusV2 image = add("T=Rotate(L,pi,A)");
 
 		assertTrue(image.isDefined());
-		assertEquals(EvaluationStatus.NON_FINITE,
+		// PRE-G9B-CU2 declared conformity (T9 rule P5): an overflow inside a certified
+		// component is a computational failure, never nonexistence.
+		assertEquals(EvaluationStatus.EVALUATION_FAILED,
 				evaluate(image, BRANCH, 0.5).getStatus());
+		assertNull(evaluate(image, BRANCH, 0.5).getPoint());
 
 		centerX.setValue(1);
 		centerX.updateCascade();
@@ -150,9 +162,10 @@ class G9U0R5SemanticTransformEdgeCasesTest
 		assertBranchStructure(source, image, LOWER_BRANCH);
 		assertPoint(image, UPPER_BRANCH, -1, 2, 5);
 		assertPoint(image, LOWER_BRANCH, 1, 4, 3);
-		assertEquals(EvaluationStatus.OUT_OF_DOMAIN,
+		// PRE-G9B-CU2 declared conformity (T9 rule P5 on the certificate of T11).
+		assertEquals(EvaluationStatus.DEPENDENCY_UNDEFINED,
 				evaluate(image, UPPER_BRANCH, 1).getStatus());
-		assertEquals(EvaluationStatus.OUT_OF_DOMAIN,
+		assertEquals(EvaluationStatus.DEPENDENCY_UNDEFINED,
 				evaluate(image, LOWER_BRANCH, -1).getStatus());
 	}
 
@@ -277,7 +290,7 @@ class G9U0R5SemanticTransformEdgeCasesTest
 	private static LocusBranch2D fixtureBranch(String key,
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusInterval2D> components, EnumSet<BranchProperty> properties) {
-		return new LocusBranch2D(key, provider.getDeclaredDomain(), components,
+		return LocusV2TestBranches.branch(key, provider.getDeclaredDomain(), components,
 				provider.getOrientation(), "r5-edge-fixture/v1",
 				LocusLineage2D.unchanged(), properties,
 				LocusQuality2D.analyticDoubleSemantic());

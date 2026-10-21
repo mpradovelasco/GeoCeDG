@@ -36,8 +36,9 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * <ul>
  * <li>structure: the serialized definition of every algorithm and the serialized options of
  * every dependent element, without the tags of its derived value, which its inputs and its
- * definition determine; a free element enters only by its kind and label, because its
- * serialized form is representation only;</li>
+ * definition determine, and without the tags of its drawing state that the file loader
+ * applies only after the whole construction is read; a free element enters only by its kind
+ * and label, because its serialized form is representation only;</li>
  * <li>values: the exact binary64 bits of every independent element, of every unlabelled
  * input of an algorithm and of every number literal of a definition;</li>
  * <li>selection: the selection state of every line-conic intersection, read through
@@ -59,6 +60,14 @@ public final class ReconstructionSliceFingerprint2D {
 	 */
 	private static final Pattern DERIVED_VALUE_TAG = Pattern.compile(
 			"<(?:coords|value|matrix|eigenvectors|pathParameter|regionParameters)\\b[^>]*/>");
+	/**
+	 * Tags of drawing state that the file loader applies after the whole construction is
+	 * read, once the slice has been published (animation, visibility condition, dynamic
+	 * colour and caption, start point, linked input): they never change a value of the
+	 * slice, and keeping them would publish a second revision of every locus after loading.
+	 */
+	private static final Pattern DEFERRED_DRAWING_TAG = Pattern.compile(
+			"<(?:animation|condition|objColor|dynamicCaption|startPoint|linkedGeo)\\b[^>]*/>");
 	private static final Comparator<GeoElement> CONSTRUCTION_ORDER =
 			Comparator.comparingInt(GeoElement::getConstructionIndex)
 					.thenComparingLong(GeoElement::getID);
@@ -195,7 +204,8 @@ public final class ReconstructionSliceFingerprint2D {
 			} else {
 				XMLStringBuilder element = new XMLStringBuilder(new StringBuilder());
 				geo.getXML(false, element);
-				text = DERIVED_VALUE_TAG.matcher(element.toString()).replaceAll("");
+				text = DEFERRED_DRAWING_TAG.matcher(DERIVED_VALUE_TAG.matcher(
+						element.toString()).replaceAll("")).replaceAll("");
 				if (!driverDependent.contains(geo)) {
 					// Derived, but not always a function of the slice inputs: a random
 					// value changes on recomputation and must publish a revision.

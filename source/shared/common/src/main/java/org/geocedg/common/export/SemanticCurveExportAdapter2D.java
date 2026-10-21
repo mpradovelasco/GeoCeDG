@@ -36,6 +36,8 @@ import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -71,6 +73,8 @@ public final class SemanticCurveExportAdapter2D {
 	 * (PRE-G9B-CU2, consumption design section 6).
 	 */
 	static final int LOCUS_MINIMUM_DEPTH = 2;
+	/** Gaps of failed evaluations at which one certified component may be cut, at most. */
+	static final int MAXIMUM_CUTS = 16;
 	/**
 	 * An excluded end without a limit is approached to the component length times 2^-28,
 	 * the approach of the drawing (16 initial spans halved 24 times).
@@ -349,21 +353,24 @@ public final class SemanticCurveExportAdapter2D {
 					double residual = semanticClosure ? closureResidual(definition,
 							branch.getBranchKey(), component, exportStart, exportEnd,
 							session) : Double.NaN;
-					CurveEvaluator2D evaluator = parameter -> {
+					EvaluationRecorder evaluator = new EvaluationRecorder(parameter -> {
 						EndReach fixed = parameter == lower.parameter ? lower
 								: parameter == upper.parameter ? upper : null;
 						if (fixed != null && fixed.point != null) {
-							return finitePoint(fixed.point.getX(), fixed.point.getY());
+							return new Evaluated(finitePoint(fixed.point.getX(),
+									fixed.point.getY()), null);
 						}
-						return locusEvaluation(definition, branch.getBranchKey(), component,
+						return locusEvaluated(definition, branch.getBranchKey(), component,
 								parameter, session);
-					};
-					components.add(approximate(locus, sourceId, sourceOrdinal,
-							componentOrdinal++, revision, scope, address,
-							approximationDomain, semanticClosure, residual, singular,
-							LOCUS_MINIMUM_DEPTH, evaluator, request, ledger, entityPrefix,
-							complete ? SemanticCoverage.COMPLETE : SemanticCoverage
-									.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED, declarations));
+					});
+					List<Component> parts = approximateParts(new PartRequest(locus, sourceId,
+							sourceOrdinal, componentOrdinal, revision, scope, address,
+							semanticClosure, residual, singular, evaluator, request, ledger,
+							entityPrefix, complete ? SemanticCoverage.COMPLETE : SemanticCoverage
+									.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED, declarations),
+							approximationDomain);
+					components.addAll(parts);
+					componentOrdinal += parts.size();
 				}
 				// A point component is declared, never exported as a path (D-CU2-19).
 				for (LocusPointComponent2D point : structure.getPointComponents()) {
@@ -372,14 +379,59 @@ public final class SemanticCurveExportAdapter2D {
 					componentOrdinal++;
 				}
 			}
-			if (componentOrdinal == 0) {
-				components.add(failure(locus, sourceId, revision, scope,
-						new ComponentAddress(null, "valid-domain"),
-						Reason.MISSING_DOMAIN,
-						"Locus V2 exposes no valid semantic component.", null));
+			// PRE-G9B-CU2 step T11: a certified empty cover has nothing to export and nothing
+			// missing (D-CU2-8); a locus without any certified component whose existence is
+			// not established is declared, never a failure (V-DXF-2).
+			if (componentOrdinal == 0 && !isCertifiedEmpty(definition)) {
+				components.add(existenceNotEstablished(locus, sourceId, revision, scope,
+						definition));
 			}
 		}
 		return new SourceResult(sourceId, components, guard);
+	}
+
+	/** @return whether every branch has a complete certificate without any component */
+	private static boolean isCertifiedEmpty(LocusDefinition2D definition) {
+		for (LocusBranch2D branch : definition.getBranches()) {
+			LocusExistenceStructure2D structure = branch.getExistenceStructure();
+			if (structure.getCompleteness() != Completeness.COMPLETE
+					|| !structure.getContinuousValidComponents().isEmpty()
+					|| !structure.getPointComponents().isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @return the declaration of a Locus V2 that has no certified component and whose
+	 *         existence is not established ({@code dxf-curve-fidelity-and-approximation.md},
+	 *         PRE-G9B-CU2 amendment; V-DXF-2): nothing is exported, its exploratory evidence
+	 *         never is, the output is incomplete and the export is not blocked
+	 */
+	private static Component existenceNotEstablished(GeoElement geo, String sourceId,
+			long sourceRevision, IdentityScope scope, LocusDefinition2D definition) {
+		StringBuilder bands = new StringBuilder();
+		for (LocusBranch2D branch : definition.getBranches()) {
+			for (Coverage item : branch.getExistenceStructure().getCoverage()) {
+				if (item.getState() == CoverageState.UNRESOLVED) {
+					bands.append(bands.length() == 0 ? "" : "; ")
+							.append(branch.getBranchKey()).append(' ')
+							.append(item.getInterval()).append(' ').append(item.getCause());
+				}
+			}
+		}
+		String message = "The existence of the Locus V2 is not established (" + bands
+				+ "): no certified component is exported, and its exploratory evidence"
+				+ " never is.";
+		SourceExportOutcome outcome = new SourceExportOutcome(sourceId,
+				geo.getGeoClassType().name(), geo.getLabelSimple(), sourceRevision,
+				geo.isEuclidianVisible(), scope,
+				new ComponentAddress(null, "existence-not-established"), Fidelity.DECLARED,
+				Reason.EXISTENCE_NOT_ESTABLISHED, null, null, message);
+		Diagnostic diagnostic = new Diagnostic(sourceId, geo.getGeoClassType().name(),
+				DiagnosticCode.EXISTENCE_NOT_ESTABLISHED, message);
+		return new Component(outcome, null, diagnostic, null);
 	}
 
 	private void adaptRequestedLocusDomains(GeoLocusV2 locus,
@@ -488,6 +540,239 @@ public final class SemanticCurveExportAdapter2D {
 				Reason.NONE, neutralId, result.toApproximationEvidence(), null,
 				semanticCoverage, declarations);
 		return new Component(outcome, entity, null, null);
+	}
+
+	/**
+	 * Approximates one certified component of a Locus V2 and cuts it where one of its points
+	 * cannot be evaluated (PRE-G9B-CU2, A2.4-R to A2.6; consumption design sections 5.6 and
+	 * 6; continuation of step T11 under D-CU2-T11-R1). A failed evaluation inside a certified
+	 * component is computational, not a gap of existence: the failure is located by bisection
+	 * up to the resolution of the parameter, the parts on both sides are approximated
+	 * separately, never joined or interpolated across it, and every part declares the gap
+	 * with its cause, so the export is incomplete. A component whose only part fails, or whose
+	 * approximation fails for any other reason, keeps the failure of the shared builder.
+	 *
+	 * @return the emitted parts in traversal order, or one failure
+	 */
+	private List<Component> approximateParts(PartRequest part, SemanticDomain domain) {
+		List<double[]> pending = new ArrayList<>();
+		pending.add(new double[] {domain.getStartParameter(), domain.getEndParameter()});
+		List<double[]> ranges = new ArrayList<>();
+		List<String> gaps = new ArrayList<>();
+		List<Result> results = new ArrayList<>();
+		Result failed = null;
+		double resolution = Math.abs(domain.getEndParameter() - domain.getStartParameter())
+				* Math.scalb(1.0, -RESOLUTION_BITS);
+		while (!pending.isEmpty()) {
+			double[] range = pending.remove(0);
+			boolean whole = gaps.isEmpty() && pending.isEmpty() && ranges.isEmpty();
+			part.evaluator.reset();
+			Result result = approximationBuilder.approximate(part.evaluator,
+					new SemanticDomain(domain.getKey(), range[0], range[1], true, true),
+					whole && part.semanticClosure, part.closureResidual,
+					inside(part.singular, range), LOCUS_MINIMUM_DEPTH, part.request,
+					part.ledger);
+			double failure = part.evaluator.failedParameter;
+			if (result.isSuccess()) {
+				insert(ranges, results, range, result);
+				continue;
+			}
+			if (gaps.size() >= MAXIMUM_CUTS || Double.isNaN(failure)
+					|| !(Math.min(range[0], range[1]) < failure
+							&& failure < Math.max(range[0], range[1]))) {
+				failed = result;
+				break;
+			}
+			String cause = part.evaluator.failure;
+			double before = edge(part.evaluator, range[0], failure, resolution, true);
+			double after = edge(part.evaluator, failure, range[1], resolution, false);
+			gaps.add((cause.startsWith(EvaluationStatus.EVALUATION_FAILED.name())
+					|| cause.startsWith(EvaluationStatus.NON_FINITE.name())
+							? "COMPUTATIONAL_GAP" : "EVALUATION_GAP")
+					+ ": the evaluation fails between " + before + " and " + after
+					+ " inside the certified component (" + cause
+					+ "); the path is cut there and never interpolated");
+			if (before != range[0]) {
+				pending.add(new double[] {range[0], before});
+			}
+			if (after != range[1]) {
+				pending.add(new double[] {after, range[1]});
+			}
+		}
+		if (failed != null || results.isEmpty()) {
+			Result reason = failed != null ? failed : approximationBuilder.approximate(
+					part.evaluator, domain, part.semanticClosure, part.closureResidual,
+					part.singular, LOCUS_MINIMUM_DEPTH, part.request, part.ledger);
+			return List.of(failure(part.geo, part.sourceId, part.sourceRevision, part.scope,
+					part.address, reason.getReason(), failureMessage(reason.getReason()),
+					reason.toApproximationEvidence()));
+		}
+		List<String> declarations = new ArrayList<>(part.declarations);
+		declarations.addAll(gaps);
+		List<Component> parts = new ArrayList<>();
+		for (int index = 0; index < results.size(); index++) {
+			ComponentAddress address = results.size() == 1 ? part.address
+					: new ComponentAddress(part.address.getBranchKey(),
+							part.address.getComponentKey() + "/part-" + index,
+							ranges.get(index)[0], ranges.get(index)[1],
+							index > 0 || part.address.isStartIncluded(),
+							index + 1 < results.size() || part.address.isEndIncluded());
+			parts.add(emitted(part, part.componentOrdinal + index, address,
+					results.get(index), declarations));
+		}
+		return parts;
+	}
+
+	/** Inserts a successful part in traversal order. */
+	private static void insert(List<double[]> ranges, List<Result> results, double[] range,
+			Result result) {
+		boolean increasing = range[0] <= range[1];
+		int index = 0;
+		while (index < ranges.size() && (increasing ? ranges.get(index)[0] < range[0]
+				: ranges.get(index)[0] > range[0])) {
+			index++;
+		}
+		ranges.add(index, range);
+		results.add(index, result);
+	}
+
+	/** @return the singular vertices strictly inside the range */
+	private static List<RequiredVertex> inside(List<RequiredVertex> vertices, double[] range) {
+		List<RequiredVertex> inside = new ArrayList<>();
+		for (RequiredVertex vertex : vertices) {
+			if (Math.min(range[0], range[1]) < vertex.getParameter()
+					&& vertex.getParameter() < Math.max(range[0], range[1])) {
+				inside.add(vertex);
+			}
+		}
+		return inside;
+	}
+
+	/**
+	 * Locates the edge of a run of failed evaluations by bisection, up to the resolution of
+	 * the parameter.
+	 *
+	 * @param validFirst whether {@code from} is the valid side
+	 * @return the valid parameter nearest to the run
+	 */
+	private static double edge(EvaluationRecorder evaluator, double from, double to,
+			double resolution, boolean validFirst) {
+		double valid = validFirst ? from : to;
+		double invalid = validFirst ? to : from;
+		for (int step = 0; step < 2 * RESOLUTION_BITS; step++) {
+			double middle = valid / 2 + invalid / 2;
+			if (!(Math.min(valid, invalid) < middle && middle < Math.max(valid, invalid))
+					|| Math.abs(invalid - valid) <= resolution) {
+				break;
+			}
+			if (evaluator.probe(middle)) {
+				valid = middle;
+			} else {
+				invalid = middle;
+			}
+		}
+		return valid;
+	}
+
+	private Component emitted(PartRequest part, int componentOrdinal, ComponentAddress address,
+			Result result, List<String> declarations) {
+		String neutralId = part.entityPrefix + part.sourceOrdinal + ":" + componentOrdinal;
+		Entity entity = new Entity(neutralId, part.sourceId,
+				part.geo.getGeoClassType().name(), part.geo.getLabelSimple(),
+				layerName(part.geo.getLayer()), style(part.geo), Exactness.APPROXIMATE,
+				part.request.getRequestedTolerance(), result.toPolylineGeometry());
+		SourceExportOutcome outcome = new SourceExportOutcome(part.sourceId,
+				part.geo.getGeoClassType().name(), part.geo.getLabelSimple(),
+				part.sourceRevision, part.geo.isEuclidianVisible(), part.scope, address,
+				Fidelity.APPROXIMATE, Reason.NONE, neutralId, result.toApproximationEvidence(),
+				null, part.semanticCoverage, declarations);
+		return new Component(outcome, entity, null, null);
+	}
+
+	/** Everything one certified component needs to be approximated in parts. */
+	private static final class PartRequest {
+		private final GeoElement geo;
+		private final String sourceId;
+		private final int sourceOrdinal;
+		private final int componentOrdinal;
+		private final long sourceRevision;
+		private final IdentityScope scope;
+		private final ComponentAddress address;
+		private final boolean semanticClosure;
+		private final double closureResidual;
+		private final List<RequiredVertex> singular;
+		private final EvaluationRecorder evaluator;
+		private final GeometryExportRequest request;
+		private final WorkLedger ledger;
+		private final String entityPrefix;
+		private final SemanticCoverage semanticCoverage;
+		private final List<String> declarations;
+
+		private PartRequest(GeoElement geo, String sourceId, int sourceOrdinal,
+				int componentOrdinal, long sourceRevision, IdentityScope scope,
+				ComponentAddress address, boolean semanticClosure, double closureResidual,
+				List<RequiredVertex> singular, EvaluationRecorder evaluator,
+				GeometryExportRequest request, WorkLedger ledger, String entityPrefix,
+				SemanticCoverage semanticCoverage, List<String> declarations) {
+			this.geo = geo;
+			this.sourceId = sourceId;
+			this.sourceOrdinal = sourceOrdinal;
+			this.componentOrdinal = componentOrdinal;
+			this.sourceRevision = sourceRevision;
+			this.scope = scope;
+			this.address = address;
+			this.semanticClosure = semanticClosure;
+			this.closureResidual = closureResidual;
+			this.singular = singular;
+			this.evaluator = evaluator;
+			this.request = request;
+			this.ledger = ledger;
+			this.entityPrefix = entityPrefix;
+			this.semanticCoverage = semanticCoverage;
+			this.declarations = declarations;
+		}
+	}
+
+	/** One evaluation for the builder with the typed cause of its failure. */
+	private static final class Evaluated {
+		private final CurveEvaluation2D evaluation;
+		private final String cause;
+
+		private Evaluated(CurveEvaluation2D evaluation, String cause) {
+			this.evaluation = evaluation;
+			this.cause = cause;
+		}
+	}
+
+	/** Evaluator of one component that records its first failed evaluation. */
+	private static final class EvaluationRecorder implements CurveEvaluator2D {
+		private final java.util.function.DoubleFunction<Evaluated> source;
+		private double failedParameter = Double.NaN;
+		private String failure;
+
+		private EvaluationRecorder(java.util.function.DoubleFunction<Evaluated> source) {
+			this.source = source;
+		}
+
+		@Override
+		public CurveEvaluation2D evaluate(double parameter) {
+			Evaluated evaluated = source.apply(parameter);
+			if (!evaluated.evaluation.isValid() && Double.isNaN(failedParameter)) {
+				failedParameter = parameter;
+				failure = evaluated.cause;
+			}
+			return evaluated.evaluation;
+		}
+
+		/** @return whether the parameter evaluates, without recording a failure */
+		private boolean probe(double parameter) {
+			return source.apply(parameter).evaluation.isValid();
+		}
+
+		private void reset() {
+			failedParameter = Double.NaN;
+			failure = null;
+		}
 	}
 
 	/**
@@ -734,6 +1019,24 @@ public final class SemanticCurveExportAdapter2D {
 		return finitePoint(x, y);
 	}
 
+	/** @return the evaluation for the builder, with the status and diagnostic of a failure */
+	private static Evaluated locusEvaluated(LocusDefinition2D definition, String branchKey,
+			LocusInterval2D component, double parameter, LocusEvaluationSession2D session) {
+		boolean end = parameter == component.getLower()
+				|| parameter == component.getUpper();
+		LocusEvaluation2D evaluation = end
+				? definition.evaluateInComponent(branchKey, component, parameter, session)
+				: definition.evaluate(branchKey, parameter, session);
+		if (!evaluation.isValid()) {
+			return new Evaluated(CurveEvaluation2D.invalid(locusReason(evaluation.getStatus())),
+					evaluation.getStatus() + ": " + evaluation.getDiagnostic());
+		}
+		CurveEvaluation2D point = finitePoint(evaluation.getPoint().getX(),
+				evaluation.getPoint().getY());
+		return new Evaluated(point, point.isValid() ? null
+				: EvaluationStatus.NON_FINITE + ": non-finite coordinates");
+	}
+
 	private static Reason locusReason(EvaluationStatus status) {
 		switch (status) {
 		case NON_FINITE:
@@ -913,6 +1216,8 @@ public final class SemanticCurveExportAdapter2D {
 			return DiagnosticCode.DEGENERATE;
 		case DUPLICATE_COMPONENT:
 			return DiagnosticCode.DUPLICATE_COMPONENT;
+		case EXISTENCE_NOT_ESTABLISHED:
+			return DiagnosticCode.EXISTENCE_NOT_ESTABLISHED;
 		case UNSUPPORTED_FAMILY:
 			return DiagnosticCode.UNSUPPORTED;
 		case NONE:

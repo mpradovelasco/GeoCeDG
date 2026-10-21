@@ -97,6 +97,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	private SpatialLifecycleRuntime lifecycleRuntime;
 	private long mutationEpoch;
 	private long graphPublicationEpoch;
+	private boolean publishingConstructionRestore;
 	private RedefinePublicationLease activeRedefinePublicationLease;
 	private final Set<SpatialRedefineContext> pendingRedefineCompletions =
 			Collections.newSetFromMap(
@@ -3279,6 +3280,19 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	/** @return deterministic macro-template closure section XML */
 	public String writeMacroTemplateClosure(Collection<GeoElement> templateGeos) {
 		return writeClosureSection(templateGeos);
+	}
+
+	/**
+	 * Whether the identities being published belong to a parse that restores the whole
+	 * construction: a native document, an undo or redo, a rollback, or the rebuild of an
+	 * edit or a redefinition, but never a clipboard import. In the main construction such a
+	 * parse ends with an update of the whole construction (PRE-G9B-CU2, publication after
+	 * reading a document).
+	 *
+	 * @return whether such a publication is in progress
+	 */
+	public boolean isPublishingConstructionRestore() {
+		return publishingConstructionRestore;
 	}
 
 	/** @return a version-one two-stage load session for the explicit purpose */
@@ -7478,13 +7492,19 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					throw exception;
 				}
 			}
-			if (redefineRebuildToken != null) {
-				commitRedefineRebuildLoad();
-			} else if (purpose == LoadPurpose.ORDINARY_EDIT_REBUILD) {
-				publishBatch(certifyOrdinaryEditFrontiers(stagedRecords, attachments,
-						ordinaryEditSteps), attachments, false, false, true);
-			} else {
-				publishBatch(stagedRecords, attachments, false, false, true);
+			boolean previousRestorePublication = publishingConstructionRestore;
+			publishingConstructionRestore = true;
+			try {
+				if (redefineRebuildToken != null) {
+					commitRedefineRebuildLoad();
+				} else if (purpose == LoadPurpose.ORDINARY_EDIT_REBUILD) {
+					publishBatch(certifyOrdinaryEditFrontiers(stagedRecords, attachments,
+							ordinaryEditSteps), attachments, false, false, true);
+				} else {
+					publishBatch(stagedRecords, attachments, false, false, true);
+				}
+			} finally {
+				publishingConstructionRestore = previousRestorePublication;
 			}
 			for (SpatialIdentityRecord record : stagedRecords) {
 				instrumentation.recordRestore(record.getId().getKind());

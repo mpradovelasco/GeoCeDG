@@ -112,7 +112,7 @@ class LocusV2ValueContractsTest {
 	@Test
 	void branchIdentityIsNotAValidComponentIdentity() {
 		ExplicitNumericDomainProvider2D provider = numeric(-1, 1, false);
-		LocusBranch2D branch = new LocusBranch2D("fixture.sheet.main",
+		LocusBranch2D branch = LocusV2TestBranches.branch("fixture.sheet.main",
 				provider.getDeclaredDomain(), Arrays.asList(
 						new LocusInterval2D(-1, -0.25, true, true),
 						new LocusInterval2D(0.25, 1, true, true)),

@@ -147,6 +147,29 @@ comportamiento visible con el certificado de compatibilidad publicado:
   con causa tipada (`ISOLATED_POINT`, «point component»); las intersecciones no declaran `EMPTY`
   ni una cobertura completa mientras el origen tenga componentes puntuales.
 
+**Precisiones de la implementación (T11, 2026-10-21): consumidores sobre los certificados
+publicados.** Ninguna cambia una regla de §3:
+
+- **Loci fuera de la clase v3.** Un locus escalar cuyo punto no es afín directo, un locus escalar
+  periódico, un locus sobre un soporte locus, un punto definido por una expresión arbitraria o una
+  raíz seleccionada fuera de D-CU2-9 publican `NOT_ESTABLISHED` sin componentes. Sus consumidores
+  lo reflejan sin inferir nada: ningún punto semántico ni posición métrica lo direcciona, la
+  longitud total se rechaza como agregado incompleto (`INVALID_QUERY`, `NOT_ESTABLISHED`), una
+  intersección es `UNRESOLVED` sin raíces finitas («COVERAGE_NOT_ESTABLISHED: No local component
+  is certified…»), la exportación lo declara (§6) y el dibujo muestra solo su evidencia
+  exploratoria (§5).
+- **Componentes puntuales del proveedor.** Un parámetro aislado que un contrato de proveedor
+  declara es una componente puntual: la evaluación con su parámetro binary64 es `OUT_OF_DOMAIN`, la
+  vista heredada de componentes válidas no lo lista y una intersección queda `UNRESOLVED` y
+  `NOT_ESTABLISHED` («Point components of the source are not excluded rigorously»), sin raíz
+  materializada.
+- **Evaluación publicada (P5).** El evaluador del corte sigue dando puntos más allá del extremo
+  exacto de un arco, dentro del exceso medido (V-TR-4); la definición publicada los rechaza
+  (`DEPENDENCY_UNDEFINED`, `CERTIFIED_NONEXISTENCE` y `EVALUATOR_DISAGREEMENT`), y una evaluación no
+  finita dentro de una componente probada es `EVALUATION_FAILED` con causa `COMPUTATIONAL_FAILURE`.
+  Las referencias que miden la validez puntual del evaluador la leen en el evaluador del corte, no
+  en la definición publicada.
+
 ## 5. Representación y teselación (B06)
 
 ### 5.1 Política de dibujo v2
@@ -294,6 +317,14 @@ en el [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §
   detiene y retrocede donde el rayo es tangente a la circunferencia del conductor; ninguna simetría
   lo certifica (D-CU2-6), de modo que su giro se refina hasta la resolución y se declara.
 
+**Precisión de la implementación (T11, 2026-10-21): evidencia exploratoria visible (E-1).** La
+evidencia exploratoria del certificado publicado (las corridas de muestras válidas dentro de las
+bandas `UNRESOLVED`, 32 muestras por banda) se dibuja como un trazo propio, encadenado solo dentro
+de cada corrida, con el estilo de la curva en punteado y opacidad 128, nunca unido a una componente
+certificada. Sus vértices llevan la marca `EXPLORATORY_EVIDENCE` y la fidelidad del dibujo es
+`PARTIAL`; el trazo exploratorio admite la selección del objeto, pero no crea ni direcciona puntos y
+no entra en los límites certificados del dibujo.
+
 ## 6. Aproximaciones de exportación
 
 - Mismas reglas de componentes, fronteras y cierre que el dibujo (§3).
@@ -334,6 +365,23 @@ el dibujo:
   `representation_declaration`. Los comentarios LaTeX añaden «declared …» a la línea de cada
   componente.
 
+**Precisión de la implementación (T11, 2026-10-21).** Un locus con recubrimiento certificado vacío
+no produce resultado. Un locus `NOT_ESTABLISHED` sin componentes produce un resultado declarado
+(`DECLARED`, razón `EXISTENCE_NOT_ESTABLISHED`, diagnóstico del mismo nombre), incompleto, con anexo
+obligatorio y sin geometría; no bloquea la regla estricta de DXF (V-DXF-2), y una solicitud que no
+admite salida parcial lo rechaza como cualquier exportación incompleta.
+
+**Precisión de la implementación (T11, decisión D-CU2-T11-R1, 2026-10-21): cortes por puntos no
+evaluables.** Un punto de una componente certificada cuya evaluación falla no descarta por sí
+solo la componente, como ya hacía el dibujo (§5.1, regla 6): la exportación localiza el fallo
+por bisección hasta la resolución del parámetro, aproxima por separado las partes de ambos
+lados, sin unirlas ni interpolar a través del fallo y sin cerrarlas, y cada parte declara el
+hueco (`COMPUTATIONAL_GAP` o `EVALUATION_GAP`) con sus parámetros, el estado y el diagnóstico;
+la exportación es incompleta y el anexo obligatorio. Se cortan como mucho dieciséis huecos por
+componente. En el modelo del autor, la copia de `w_1` informa `LIMIT_NOT_ESTABLISHED` en
+intervalos estrechos del conductor de `e_2` (limitación del motor métrico de `CU1`, que esta
+fase no cambia): `e_2` se exporta en tres partes abiertas con dos huecos declarados.
+
 ## 7. Identidad en los consumidores
 
 Los tokens de intersección, los selectores de puntos, las posiciones métricas y el estado de
@@ -357,3 +405,10 @@ ambigüedad fallan cerrados (diseño §7).
   `LocusComponentSelectorResolver2D`, con la tolerancia del proveedor en la contención que
   valida; las direcciones nuevas, las raíces de intersección, el germen de raíz y la ocurrencia
   generadora citan `LocusComponentLineage2D.of`.
+
+**Precisión de la implementación (T11, 2026-10-21).** Las raíces de intersección y su germen
+citan ahora `LocusComponentLineage2D.identityKey`: la clave del dominio completo cuando la
+descomposición es el dominio declarado completo (igualdad de la descomposición, E-3) y la clave de
+linaje en cualquier otro caso, para que los tokens persistidos antes de `CU2` sobre esas
+componentes se reanuden sin reescribirse
+([diseño](pre_g9b_cu2_hybrid_certification_design.md) §7, precisión de T11).

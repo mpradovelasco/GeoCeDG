@@ -98,6 +98,12 @@ public final class HybridExistenceCertifier2D {
 	/** Method of the exploratory evidence of unresolved bands. */
 	public static final String EXPLORATION_METHOD = "uniform-validity-samples-bisection/v1";
 
+	/**
+	 * Contract of a proof of nonexistence that uses no selection that the slice copy does not
+	 * reproduce (normative precision D-CU2-T11-R1).
+	 */
+	public static final String SELECTION_INDEPENDENT_CONTRACT =
+			"selection-independent-nonexistence/v1";
 	private static final String EVIDENCE = "hybrid/v1:";
 	private static final int NARROWING_LIMIT = 256;
 
@@ -607,6 +613,23 @@ public final class HybridExistenceCertifier2D {
 		public String getDiagnostic() {
 			return diagnostic;
 		}
+
+		/**
+		 * The same certificate restricted to the components that the generator declares for
+		 * its driver domain ({@link LocusExistenceStructure2D#restrictedTo}); the exploratory
+		 * evidence keeps only what lies inside them, and the computation evidence is kept.
+		 *
+		 * @param declared disjoint declared components of the driver domain
+		 * @param declarationEvidence evidence of the declaration
+		 * @return the restricted certificate
+		 */
+		public Result restrictedTo(List<LocusInterval2D> declared,
+				String declarationEvidence) {
+			return new Result(structure.restrictedTo(declared, declarationEvidence),
+					exploration == null ? null : exploration.restrictedTo(declared), roots,
+					exactEvidence, stationaryPoints, boxes, transitions, bands,
+					policySignature, diagnostic);
+		}
 	}
 
 	/**
@@ -691,6 +714,147 @@ public final class HybridExistenceCertifier2D {
 				Collections.singletonList(domain), sampler, policy, instrumentation);
 		return new Result(structure, exploration, List.of(), List.of(), List.of(), 0, 0, 1,
 				policy.getSignature(), null);
+	}
+
+	/**
+	 * Certificate of a particular case of the contract computed by its own certifier
+	 * (decision D-CU2-9, option A: the selected SplineV2 root of {@code
+	 * SelectedRootContinuousDomainCertifier2D}): its structure is published as it is, with
+	 * the exploratory evidence of its unresolved bands.
+	 *
+	 * @param structure structure of the particular certifier
+	 * @param sampler pointwise validity for exploratory evidence, or {@code null}
+	 * @param policy versioned constants and budgets of the exploration
+	 * @param instrumentation counters of the locus, or {@code null}
+	 * @return certificate with its evidence
+	 */
+	public static Result particular(LocusExistenceStructure2D structure, Sampler sampler,
+			Policy policy, LocusInstrumentation2D instrumentation) {
+		List<LocusInterval2D> bands = new ArrayList<>();
+		for (Coverage item : structure.getCoverage()) {
+			if (item.getState() == CoverageState.UNRESOLVED) {
+				bands.add(item.getInterval());
+				record(instrumentation, LocusCertificationWork2D.UNRESOLVED_BAND);
+			}
+		}
+		LocusExploratoryEvidence2D exploration = explore(structure.getBranchKey(), bands,
+				sampler, policy, instrumentation);
+		return new Result(structure, exploration, List.of(), List.of(), List.of(), 0, 0,
+				bands.size(), policy.getSignature(), null);
+	}
+
+	/**
+	 * Proves that a locus has no point on its whole canonical domain without using the
+	 * selection of the intersections that the slice copy does not reproduce
+	 * ({@value #SELECTION_INDEPENDENT_CONTRACT}; normative precision D-CU2-T11-R1 of
+	 * D-CU2-17 and D-CU2-20-R). Every box of a dyadic cover of the domain, from the minimum
+	 * depth of the policy down to its resolution and within its box budget, must be uniformly
+	 * invalid by a predicate of a step that does not depend on a selected output of those
+	 * intersections, or by the discriminant of one of them: without raw roots no permutation
+	 * and no compaction creates an output, and every step of the program precedes the traced
+	 * point, so the traced point does not exist. A valid box, an undecided box, a box decided
+	 * by any other predicate or an exhausted budget proves nothing, and no partial result is
+	 * returned.
+	 *
+	 * @param model box model of the program captured from the copy as it is
+	 * @param unreproduced nodes of the line-circle steps whose selection is not reproduced
+	 * @param operations durable identity token of each step, which the evidence names
+	 * @param domain canonical driver domain of the branch
+	 * @param periodic whether the domain is periodic
+	 * @param branchKey branch key of the structure
+	 * @param policy versioned constants and budgets
+	 * @param instrumentation counters of the locus, or {@code null}
+	 * @return the complete certificate with no component, or empty without a proof
+	 */
+	public static Optional<Result> selectionIndependentNonexistence(
+			ConstructionBoxModel2D model, Set<Integer> unreproduced, List<String> operations,
+			LocusInterval2D domain, boolean periodic, String branchKey, Policy policy,
+			LocusInstrumentation2D instrumentation) {
+		List<CertifiedConstructionProgram2D.Step> steps = model.getProgram().getSteps();
+		// An indexed output of an unreproduced intersection is its selected root: only its
+		// discriminant, which concerns no root, is independent of the selection. A step that
+		// reads such an output, or reads a step that does, transitively, depends on it.
+		boolean[] selectedOutput = new boolean[steps.size() + 1];
+		boolean[] selectionDependent = new boolean[steps.size() + 1];
+		for (int node = 1; node <= steps.size(); node++) {
+			CertifiedConstructionProgram2D.Step step = steps.get(node - 1);
+			for (CertifiedConstructionProgram2D.Operand operand : step.getOperands()) {
+				int source = operand.getKind() == CertifiedConstructionProgram2D.OperandKind.NODE
+						? operand.getNode() : 0;
+				if (source <= 0) {
+					continue;
+				}
+				if (unreproduced.contains(source)) {
+					if (step.getOperation()
+							== CertifiedConstructionProgram2D.Operation.INTERSECTION_OUTPUT) {
+						selectedOutput[node] = true;
+					} else {
+						selectionDependent[node] = true;
+					}
+				}
+				if (selectedOutput[source] || selectionDependent[source]) {
+					selectionDependent[node] = true;
+				}
+			}
+		}
+		double width = domain.getUpper() - domain.getLower();
+		double resolution = width * Math.scalb(1.0, -policy.deltaExponent);
+		int initial = 1 << policy.minimumDepth;
+		List<double[]> pending = new ArrayList<>();
+		for (int index = initial - 1; index >= 0; index--) {
+			pending.add(new double[] {domain.getLower() + width * index / initial,
+					index + 1 == initial ? domain.getUpper()
+							: domain.getLower() + width * (index + 1) / initial});
+		}
+		Set<String> deciding = new TreeSet<>();
+		long boxes = 0;
+		while (!pending.isEmpty()) {
+			double[] box = pending.remove(pending.size() - 1);
+			if (++boxes > policy.boxBudget) {
+				return Optional.empty();
+			}
+			record(instrumentation, LocusCertificationWork2D.EXISTENCE_BOX);
+			ConstructionBoxOutcome2D outcome = model.evaluate(box[0], box[1]);
+			if (outcome.getKind() == Kind.VALID) {
+				return Optional.empty();
+			}
+			int step = outcome.getStep();
+			if (outcome.getKind() == Kind.UNIFORMLY_INVALID && step >= 1
+					&& step <= steps.size() && !selectionDependent[step]
+					&& (!unreproduced.contains(step) && !selectedOutput[step]
+							|| outcome.getPredicate()
+									== ConstructionValidityPredicate2D.DISCRIMINANT)) {
+				deciding.add(outcome.getInvalidReason() + "@" + operation(operations, step));
+				continue;
+			}
+			double middle = box[0] / 2 + box[1] / 2;
+			if (!(box[1] - box[0] > resolution) || !(middle > box[0] && middle < box[1])) {
+				return Optional.empty();
+			}
+			pending.add(new double[] {middle, box[1]});
+			pending.add(new double[] {box[0], middle});
+		}
+		StringBuilder evidence = new StringBuilder(EVIDENCE)
+				.append(SELECTION_INDEPENDENT_CONTRACT).append(":deciding=")
+				.append(String.join(",", deciding)).append(";unreproduced=");
+		String separator = "";
+		for (int node : unreproduced) {
+			evidence.append(separator).append(operation(operations, node));
+			separator = ",";
+		}
+		DomainTopology topology = LocusExistenceStructure2D.topologyOf(domain, periodic);
+		LocusExistenceStructure2D structure = new LocusExistenceStructure2D(branchKey, domain,
+				topology, 0, List.of(new Coverage(domain, CoverageState.CERTIFIED_DOES_NOT_EXIST,
+						LocusCoverageCause2D.SELECTION_INDEPENDENT_NONEXISTENCE,
+						LocusEvidenceNature2D.RIGOROUS_INTERVAL, evidence.toString())),
+				List.of(), List.of(), Completeness.COMPLETE, CONTRACT);
+		return Optional.of(new Result(structure, null, List.of(), List.of(), List.of(), boxes,
+				0, 0, policy.getSignature(), null));
+	}
+
+	private static String operation(List<String> operations, int node) {
+		return node >= 1 && node <= operations.size() ? operations.get(node - 1)
+				: "class-v3-step-" + node;
 	}
 
 	/**

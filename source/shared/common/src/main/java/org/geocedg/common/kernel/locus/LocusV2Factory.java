@@ -28,13 +28,17 @@ public final class LocusV2Factory {
 	}
 
 	/**
-	 * Creates one stable branch whose valid domain is the full provider domain.
+	 * Creates one stable branch of a static or analytic producer whose contract proves
+	 * existence and continuity on the whole provider domain, across the seam of a periodic
+	 * one; its certificate is the explicit certificate of that contract ({@code
+	 * locus-v2-existence-components.md} section 15.7; decision D-CU2-7, option A).
 	 *
+	 * @param providerContract versioned contract of the producer that proves the facts
 	 * @return immutable branch descriptor
 	 */
 	public static LocusBranch2D fullDomainBranch(String branchKey,
 			LocusDriverDomainProvider2D provider, String provenance,
-			Set<BranchProperty> additionalProperties) {
+			Set<BranchProperty> additionalProperties, String providerContract) {
 		EnumSet<BranchProperty> properties = additionalProperties.isEmpty()
 				? EnumSet.noneOf(BranchProperty.class)
 				: EnumSet.copyOf(additionalProperties);
@@ -45,7 +49,10 @@ public final class LocusV2Factory {
 			properties.add(BranchProperty.PERIODIC);
 		}
 		return new LocusBranch2D(branchKey, provider.getDeclaredDomain(),
-				Collections.singletonList(provider.getDeclaredDomain()),
+				LocusExistenceStructure2D.providerProved(branchKey,
+						provider.getDeclaredDomain(),
+						Collections.singletonList(provider.getDeclaredDomain()),
+						provider.isPeriodic(), provider.isPeriodic(), providerContract),
 				provider.getOrientation(), provenance, LocusLineage2D.unchanged(),
 				properties, LocusQuality2D.analyticDoubleSemantic());
 	}

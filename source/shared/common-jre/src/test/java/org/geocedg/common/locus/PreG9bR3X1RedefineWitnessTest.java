@@ -156,9 +156,12 @@ class PreG9bR3X1RedefineWitnessTest extends PreG9bR3RedefineTestBase {
 		assertEquals(ids("C"), record("E").getDependencies());
 		GeoLocusIntersectionResult e = rich("e");
 		assertTrue(eligible(e).isEmpty());
-		assertFalse(e.getIntersectionResult().getFiniteSolutions().isEmpty());
+		// PRE-G9B-CU2 step T11, declared conformity: the expression point is outside class
+		// v3, so the redefined locus has no certified component and no root at all; its
+		// coverage is not established.
+		assertTrue(e.getIntersectionResult().getFiniteSolutions().isEmpty());
 		assertTrue(e.getIntersectionResult().getDiagnostics().toString()
-				.contains("no certified interval curve model"));
+				.contains("COVERAGE_NOT_ESTABLISHED"));
 		// The claim stays dormant; the point is never moved to another root.
 		assertFalse(point("X").isDefined());
 		assertEquals(pointId, id("X"));

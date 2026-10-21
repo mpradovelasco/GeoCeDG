@@ -140,7 +140,8 @@ class LocusV2LifecycleHardeningTest extends BaseUnitTest {
 						new LocusInterval2D(-1, 1, true, true),
 						Orientation.INCREASING, false, 1E-14);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(BRANCH_KEY,
-				provider, "g6r-lifecycle/v1", EnumSet.of(BranchProperty.FINITE));
+				provider, "g6r-lifecycle/v1", EnumSet.of(BranchProperty.FINITE),
+				LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		List<LocusBranch2D> branches = Collections.singletonList(branch);
 		GeoNumeric source = new GeoNumeric(getConstruction(), 0);
 		List<GeoLocusV2> loci = new ArrayList<>();

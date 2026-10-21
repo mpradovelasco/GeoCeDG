@@ -26,6 +26,14 @@ import java.util.Objects;
  * returned as one lifted interval, and point components never appear in them.</p>
  */
 public final class LocusExistenceStructure2D {
+	/**
+	 * Contract of the explicit certificate of a static or analytic producer ({@code
+	 * locus-v2-existence-components.md} section 15.7).
+	 */
+	public static final String PROVIDER_PROVED_CONTRACT = "locus-existence/provider-proved/v1";
+	/** Origin token of the ends and closures that a producer's contract declares. */
+	private static final String PROVIDER_SOURCE = "provider-contract";
+
 	/** Whether the finite component inventory is globally established. */
 	public enum Completeness {
 		COMPLETE,
@@ -664,114 +672,217 @@ public final class LocusExistenceStructure2D {
 	}
 
 	/**
-	 * @return complete compatibility evidence for the proven components, on a bounded
-	 *         domain
-	 */
-	public static LocusExistenceStructure2D completeCompatibility(String branchKey,
-			LocusInterval2D canonicalDomain, List<LocusInterval2D> intervals) {
-		return completeCompatibility(branchKey, canonicalDomain, intervals, false);
-	}
-
-	/**
-	 * Expresses the provider-compatibility certificate in the PRE-G9B-CU2 model without
-	 * changing any legacy view: its facts have no proof ({@link LocusEvidenceNature2D#NONE}),
-	 * and on a periodic domain a single component equal to the domain is the closed
-	 * periodic arc that the legacy closure rule assumed. Step T11 of PRE-G9B-CU2 retires the
-	 * compatibility certificate.
+	 * Explicit certificate of a static or analytic producer whose own contract proves
+	 * existence and continuity on the components it declares ({@code
+	 * locus-v2-existence-components.md} section 15.7; decision D-CU2-7, option A; ADR 0027).
+	 * Every fact cites that contract and is an exact structural proof: the components exist,
+	 * their complement in the canonical domain does not, and their ends are the ends the
+	 * contract declares. On a periodic domain a single component equal to the domain is the
+	 * closed periodic arc only when the contract proves continuity across the seam;
+	 * otherwise it is the open arc of full length from the seam. This replaces the
+	 * provider-compatibility certificate, retired by step T11 of PRE-G9B-CU2.
 	 *
+	 * @param branchKey branch key
+	 * @param canonicalDomain canonical driver domain of the provider
+	 * @param intervals disjoint components that the contract proves
 	 * @param periodic whether the canonical domain is periodic
-	 * @return complete compatibility evidence for the provider components
+	 * @param closureProved whether the contract proves continuity across the seam of a
+	 *        periodic domain whose single component is the whole domain
+	 * @param providerContract versioned contract of the producer that proves the facts
+	 * @return complete explicit certificate of the producer
 	 */
-	public static LocusExistenceStructure2D completeCompatibility(String branchKey,
+	public static LocusExistenceStructure2D providerProved(String branchKey,
 			LocusInterval2D canonicalDomain, List<LocusInterval2D> intervals,
-			boolean periodic) {
+			boolean periodic, boolean closureProved, String providerContract) {
+		requireText(providerContract, "Provider contract");
 		boolean periodicDomain = topologyOf(canonicalDomain, periodic)
 				== DomainTopology.PERIODIC;
 		ArrayList<LocusInterval2D> ordered = new ArrayList<>(intervals);
 		ordered.sort(Comparator.comparingDouble(LocusInterval2D::getLower));
-		ArrayList<Coverage> coverage = completeCoverage(canonicalDomain, ordered);
+		ArrayList<Coverage> coverage = completeCoverage(canonicalDomain, ordered,
+				providerContract);
 		ArrayList<ContinuousComponent> components = new ArrayList<>();
-		boolean closedPeriodic = periodicDomain && ordered.size() == 1
+		ArrayList<LocusPointComponent2D> points = new ArrayList<>();
+		boolean wholePeriodic = periodicDomain && ordered.size() == 1
 				&& ordered.get(0).equals(canonicalDomain);
 		int index = 0;
 		for (LocusInterval2D interval : ordered) {
 			String key = "provider-component/" + index++;
-			if (closedPeriodic) {
+			if (interval.getLower() == interval.getUpper()) {
+				// An isolated declared parameter is a point component, never a zero-length
+				// interval (section 15.4); its position is not part of the declaration.
+				points.add(new LocusPointComponent2D(interval.getLower(), interval.getUpper(),
+						new LocusBoundarySource2D(PROVIDER_SOURCE, "declared-isolated-parameter",
+								"point"), Maximality.ESTABLISHED, LocusEvidenceNature2D.EXACT,
+						key, null));
+			} else if (wholePeriodic) {
 				double seam = seam(canonicalDomain);
-				LocusBoundary2D closure = new LocusBoundary2D(
+				LocusBoundary2D start = closureProved ? new LocusBoundary2D(
 						LocusBoundary2D.Kind.PERIODIC_CLOSURE, new LocusBoundarySource2D(
-								"provider-contract", "periodic-closure", "seam"),
-						true, LocusEvidenceNature2D.NONE);
-				components.add(new ContinuousComponent(canonicalDomain, key,
-						"provider-endpoints/v1", Maximality.ESTABLISHED,
-						"provider-contract", canonicalDomain, seam, seam, true, closure,
-						closure, LocusEvidenceNature2D.NONE));
+								PROVIDER_SOURCE, "periodic-closure", "seam"),
+						true, LocusEvidenceNature2D.EXACT)
+						: providerEnd("lower", canonicalDomain.isLowerClosed());
+				LocusBoundary2D end = closureProved ? start
+						: providerEnd("upper", canonicalDomain.isUpperClosed());
+				components.add(ContinuousComponent.arc(canonicalDomain, seam, seam, true,
+						start, end, Maximality.ESTABLISHED, LocusEvidenceNature2D.EXACT,
+						key));
 			} else {
-				components.add(new ContinuousComponent(interval, key,
-						"provider-endpoints/v1", Maximality.ESTABLISHED,
-						"provider-contract", null, interval.getLower(),
-						interval.getUpper(), false,
+				components.add(ContinuousComponent.interval(interval,
 						providerEnd("lower", interval.isLowerClosed()),
 						providerEnd("upper", interval.isUpperClosed()),
-						LocusEvidenceNature2D.NONE));
+						Maximality.ESTABLISHED, LocusEvidenceNature2D.EXACT, key));
 			}
 		}
 		return new LocusExistenceStructure2D(branchKey, canonicalDomain,
 				periodicDomain ? DomainTopology.PERIODIC : DomainTopology.BOUNDED, 0,
-				coverage, components, Collections.emptyList(), Completeness.COMPLETE,
-				"locus-existence/provider-compatibility/v1");
+				coverage, components, points, Completeness.COMPLETE,
+				PROVIDER_PROVED_CONTRACT);
 	}
 
 	/**
-	 * Provider-compatibility evidence of a dependent locus on a locus support whose
-	 * components are not all intervals of the canonical order (PRE-G9B-CU2, consumption
-	 * design section 3; ADR 0027): the dependent takes the components of the support with
-	 * their shapes, arcs across the seam and open arcs of full length included, the
-	 * support's coverage and its completeness, never more. Its facts have no proof of the
-	 * dependent's own validity ({@link LocusEvidenceNature2D#NONE}); step T11 of PRE-G9B-CU2
-	 * retires the compatibility certificate.
+	 * The same evidence restricted to the components that a generator declares for its
+	 * driver domain (PRE-G9B-CU2 step T11; ADR 0027): outside them the locus has no driver
+	 * parameter, so its nonexistence is exact by the declaration; inside them every fact is
+	 * kept, and an interval component that a declared gap cuts ends at the declared ends. An
+	 * arc is never cut: when a declared gap would cut one, nothing inside the declared
+	 * components is certified any more (conservative).
 	 *
-	 * @param branchKey branch key of the dependent
-	 * @param support existence structure of the support branch, without point components
-	 * @return compatibility evidence that composes the support's existence
+	 * @param declared disjoint declared components of the driver domain
+	 * @param declarationEvidence evidence of the declaration
+	 * @return the restricted evidence
 	 */
-	public static LocusExistenceStructure2D compatibilityInherited(String branchKey,
-			LocusExistenceStructure2D support) {
-		if (!support.pointComponents.isEmpty()) {
-			throw new IllegalArgumentException(
-					"A support with point components is not composed");
+	public LocusExistenceStructure2D restrictedTo(List<LocusInterval2D> declared,
+			String declarationEvidence) {
+		ArrayList<LocusInterval2D> ordered = new ArrayList<>(declared);
+		ordered.sort(Comparator.comparingDouble(LocusInterval2D::getLower));
+		ArrayList<ContinuousComponent> kept = new ArrayList<>();
+		boolean cutArc = false;
+		for (ContinuousComponent component : components) {
+			if (component.isArc()) {
+				if (insideOne(component.canonicalPieces(), ordered)) {
+					kept.add(component);
+				} else {
+					cutArc = true;
+				}
+				continue;
+			}
+			int piece = 0;
+			for (LocusInterval2D interval : ordered) {
+				LocusInterval2D part = intersection(component.interval, interval);
+				if (part == null || !(part.getLower() < part.getUpper())) {
+					continue;
+				}
+				if (part.equals(component.interval)) {
+					kept.add(component);
+					continue;
+				}
+				boolean sameLower = part.getLower() == component.interval.getLower()
+						&& part.isLowerClosed() == component.interval.isLowerClosed();
+				boolean sameUpper = part.getUpper() == component.interval.getUpper()
+						&& part.isUpperClosed() == component.interval.isUpperClosed();
+				kept.add(ContinuousComponent.interval(part,
+						sameLower ? component.lowerBoundary
+								: declaredEnd("lower", part.isLowerClosed()),
+						sameUpper ? component.upperBoundary
+								: declaredEnd("upper", part.isUpperClosed()),
+						component.maximality, component.nature,
+						component.evidenceKey + "/declared-piece-" + piece++));
+			}
 		}
-		ArrayList<Coverage> coverage = new ArrayList<>();
-		for (Coverage item : support.coverage) {
-			LocusCoverageCause2D cause = item.state == CoverageState.CERTIFIED_EXISTS
-					? LocusCoverageCause2D.PROVIDER_CONTRACT
-					: item.state == CoverageState.CERTIFIED_DOES_NOT_EXIST
-							? LocusCoverageCause2D.PROVIDER_COMPLEMENT
-							: item.state == CoverageState.UNRESOLVED
-									? LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED
-									: item.cause;
-			coverage.add(new Coverage(item.interval, item.state, cause,
-					LocusEvidenceNature2D.NONE, "provider-support-contract/v1"));
+		ArrayList<Coverage> restricted = new ArrayList<>();
+		for (Coverage item : coverage) {
+			for (LocusInterval2D interval : ordered) {
+				LocusInterval2D part = intersection(item.interval, interval);
+				if (part == null) {
+					continue;
+				}
+				restricted.add(cutArc && item.state != CoverageState.CERTIFIED_DOES_NOT_EXIST
+						? new Coverage(part, CoverageState.UNRESOLVED,
+								LocusCoverageCause2D.NOT_CERTIFIED, LocusEvidenceNature2D.NONE,
+								"declared-components-cut-an-arc")
+						: new Coverage(part, item.state, item.cause, item.nature,
+								item.evidence));
+			}
 		}
-		ArrayList<ContinuousComponent> components = new ArrayList<>();
-		int index = 0;
-		for (ContinuousComponent component : support.components) {
-			components.add(new ContinuousComponent(component.interval,
-					"provider-component/" + index++, "provider-endpoints/v1",
-					component.maximality, "provider-contract", component.periodicDomain,
-					component.start, component.end, component.fullLength,
-					unproved(component.lowerBoundary), unproved(component.upperBoundary),
-					LocusEvidenceNature2D.NONE));
+		double cursor = canonicalDomain.getLower();
+		boolean cursorOwned = canonicalDomain.isLowerClosed();
+		for (LocusInterval2D interval : ordered) {
+			addGap(restricted, cursor, interval.getLower(), cursorOwned,
+					!interval.isLowerClosed(), declarationEvidence);
+			cursor = interval.getUpper();
+			cursorOwned = !interval.isUpperClosed();
 		}
-		return new LocusExistenceStructure2D(branchKey, support.canonicalDomain,
-				support.topology, 0, coverage, components, Collections.emptyList(),
-				support.completeness, "locus-existence/provider-compatibility/v1");
+		addGap(restricted, cursor, canonicalDomain.getUpper(), cursorOwned,
+				canonicalDomain.isUpperClosed(), declarationEvidence);
+		if (cutArc) {
+			return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+					semanticRevision, restricted, Collections.emptyList(),
+					Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+					Completeness.NOT_ESTABLISHED, certifierContract);
+		}
+		ArrayList<LocusPointComponent2D> points = new ArrayList<>();
+		for (LocusPointComponent2D point : pointComponents) {
+			if (insideOne(List.of(new LocusInterval2D(point.getParameterLower(),
+					point.getParameterUpper(), true, true)), ordered)) {
+				points.add(point);
+			}
+		}
+		ArrayList<LocusSingularParameter2D> singular = new ArrayList<>();
+		for (LocusSingularParameter2D parameter : singularParameters) {
+			if (insideOne(List.of(new LocusInterval2D(parameter.getParameterLower(),
+					parameter.getParameterUpper(), true, true)), ordered)) {
+				singular.add(parameter);
+			}
+		}
+		ArrayList<LocusCertifiedFold2D> folds = new ArrayList<>();
+		for (LocusCertifiedFold2D fold : certifiedFolds) {
+			if (insideOne(List.of(new LocusInterval2D(fold.getParameterLower(),
+					fold.getParameterUpper(), true, true)), ordered)) {
+				folds.add(fold);
+			}
+		}
+		// Without any declared component the whole domain is certified nonexistence.
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+				semanticRevision, restricted, kept, points, singular, folds,
+				ordered.isEmpty() ? Completeness.COMPLETE : completeness, certifierContract);
 	}
 
-	/** @return the same end of a support, without a proof for the dependent */
-	private static LocusBoundary2D unproved(LocusBoundary2D end) {
-		return new LocusBoundary2D(end.getKind(), end.getSource(), end.isBinaryEndIncluded(),
-				LocusEvidenceNature2D.NONE);
+	/** @return a component end that the declared driver domain imposes */
+	private static LocusBoundary2D declaredEnd(String side, boolean included) {
+		return new LocusBoundary2D(LocusBoundary2D.Kind.DOMAIN_END,
+				new LocusBoundarySource2D(PROVIDER_SOURCE, "declared-component-end", side),
+				included, LocusEvidenceNature2D.EXACT);
+	}
+
+	/** @return whether every piece lies inside one of the declared intervals */
+	private static boolean insideOne(List<LocusInterval2D> pieces,
+			List<LocusInterval2D> declared) {
+		for (LocusInterval2D piece : pieces) {
+			boolean inside = false;
+			for (LocusInterval2D interval : declared) {
+				inside |= contains(interval, piece);
+			}
+			if (!inside) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** @return the intersection of two intervals, or {@code null} when it is empty */
+	private static LocusInterval2D intersection(LocusInterval2D first,
+			LocusInterval2D second) {
+		double lower = Math.max(first.getLower(), second.getLower());
+		boolean lowerClosed = (first.getLower() != lower || first.isLowerClosed())
+				&& (second.getLower() != lower || second.isLowerClosed());
+		double upper = Math.min(first.getUpper(), second.getUpper());
+		boolean upperClosed = (first.getUpper() != upper || first.isUpperClosed())
+				&& (second.getUpper() != upper || second.isUpperClosed());
+		if (lower > upper || lower == upper && !(lowerClosed && upperClosed)) {
+			return null;
+		}
+		return new LocusInterval2D(lower, upper, lowerClosed, upperClosed);
 	}
 
 	/**
@@ -1112,31 +1223,41 @@ public final class LocusExistenceStructure2D {
 						|| outer.isUpperClosed() || !inner.isUpperClosed());
 	}
 
+	/**
+	 * @return an end that the contract of the producer declares; the source is a token, the
+	 *         contract itself is cited by the coverage evidence
+	 */
 	private static LocusBoundary2D providerEnd(String side, boolean included) {
 		return new LocusBoundary2D(LocusBoundary2D.Kind.DOMAIN_END,
-				new LocusBoundarySource2D("provider-contract", "declared-component-end",
-						side), included, LocusEvidenceNature2D.NONE);
+				new LocusBoundarySource2D(PROVIDER_SOURCE, "declared-component-end", side),
+				included, LocusEvidenceNature2D.EXACT);
 	}
 
-	private static ArrayList<Coverage> completeCoverage(
-			LocusInterval2D domain, List<LocusInterval2D> components) {
+	private static ArrayList<Coverage> completeCoverage(LocusInterval2D domain,
+			List<LocusInterval2D> components, String providerContract) {
 		ArrayList<Coverage> result = new ArrayList<>();
 		double cursor = domain.getLower();
 		boolean cursorOwned = domain.isLowerClosed();
 		for (LocusInterval2D component : components) {
 			addGap(result, cursor, component.getLower(), cursorOwned,
-					!component.isLowerClosed());
-			addExistence(result, component);
+					!component.isLowerClosed(), providerContract);
+			addExistence(result, component, providerContract);
 			cursor = component.getUpper();
 			cursorOwned = !component.isUpperClosed();
 		}
 		addGap(result, cursor, domain.getUpper(), cursorOwned,
-				domain.isUpperClosed());
+				domain.isUpperClosed(), providerContract);
 		return result;
 	}
 
 	private static void addExistence(List<Coverage> result,
-			LocusInterval2D component) {
+			LocusInterval2D component, String providerContract) {
+		if (component.getLower() == component.getUpper()) {
+			result.add(new Coverage(component, CoverageState.CERTIFIED_ISOLATED_POINTS,
+					LocusCoverageCause2D.PROVIDER_ISOLATED_POINT, LocusEvidenceNature2D.EXACT,
+					providerContract));
+			return;
+		}
 		if (!result.isEmpty()) {
 			Coverage previous = result.get(result.size() - 1);
 			LocusInterval2D previousInterval = previous.interval;
@@ -1148,30 +1269,33 @@ public final class LocusExistenceStructure2D {
 						previousInterval.getLower(), component.getUpper(),
 						previousInterval.isLowerClosed(), component.isUpperClosed()),
 						CoverageState.CERTIFIED_EXISTS,
-						LocusCoverageCause2D.PROVIDER_CONTRACT, LocusEvidenceNature2D.NONE,
-						"provider-interval-contract/v1"));
+						LocusCoverageCause2D.PROVIDER_CONTRACT, LocusEvidenceNature2D.EXACT,
+						providerContract));
 				return;
 			}
 		}
 		result.add(new Coverage(component, CoverageState.CERTIFIED_EXISTS,
-				LocusCoverageCause2D.PROVIDER_CONTRACT, LocusEvidenceNature2D.NONE,
-				"provider-interval-contract/v1"));
+				LocusCoverageCause2D.PROVIDER_CONTRACT, LocusEvidenceNature2D.EXACT,
+				providerContract));
 	}
 
 	private static void addGap(List<Coverage> result, double lower, double upper,
-			boolean lowerClosed, boolean upperClosed) {
+			boolean lowerClosed, boolean upperClosed, String providerContract) {
 		if (lower < upper || lower == upper && lowerClosed && upperClosed) {
 			result.add(new Coverage(new LocusInterval2D(lower, upper, lowerClosed,
 					upperClosed), CoverageState.CERTIFIED_DOES_NOT_EXIST,
-					LocusCoverageCause2D.PROVIDER_COMPLEMENT, LocusEvidenceNature2D.NONE,
-					"provider-complement-contract/v1"));
+					LocusCoverageCause2D.PROVIDER_COMPLEMENT, LocusEvidenceNature2D.EXACT,
+					providerContract));
 		}
 	}
 
 	private static List<Coverage> immutableCoverage(List<Coverage> input,
 			LocusInterval2D domain) {
 		ArrayList<Coverage> copy = new ArrayList<>(Objects.requireNonNull(input));
-		copy.sort(Comparator.comparingDouble(item -> item.interval.getLower()));
+		// At one lower end a closed end precedes an open one: the point [a, a] of a declared
+		// gap comes before (a, b] (PRE-G9B-CU2 step T11, restrictedTo).
+		copy.sort(Comparator.comparingDouble((Coverage item) -> item.interval.getLower())
+				.thenComparing(item -> !item.interval.isLowerClosed()));
 		validateIntervals(copy.stream().map(item -> item.interval).toList(), domain,
 				false);
 		return Collections.unmodifiableList(copy);

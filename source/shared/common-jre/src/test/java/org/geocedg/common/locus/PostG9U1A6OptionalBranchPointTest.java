@@ -86,7 +86,7 @@ class PostG9U1A6OptionalBranchPointTest extends G9U0PublicSurfaceTestBase {
 		assertThrows(AssertionError.class, () -> add("Gap=Point(S,0)"));
 		LocusDefinition2D definition = shared.getSemanticDefinition();
 		LocusBranch2D branch = definition.getBranches().get(0);
-		LocusBranch2D sharedEndpoint = new LocusBranch2D(branch.getBranchKey(),
+		LocusBranch2D sharedEndpoint = LocusV2TestBranches.branch(branch.getBranchKey(),
 				branch.getDeclaredDriverDomain(), List.of(
 						new LocusInterval2D(-2, 0, true, true),
 						new LocusInterval2D(0, 2, true, true)),
@@ -233,7 +233,7 @@ class PostG9U1A6OptionalBranchPointTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	private static LocusBranch2D branchLike(LocusBranch2D source, String key) {
-		return new LocusBranch2D(key, source.getDeclaredDriverDomain(),
+		return LocusV2TestBranches.branch(key, source.getDeclaredDriverDomain(),
 				source.getValidDomainComponents(), source.getOrientation(),
 				key + "/semantic-v1", source.getLineage(), source.getProperties(),
 				source.getQuality());

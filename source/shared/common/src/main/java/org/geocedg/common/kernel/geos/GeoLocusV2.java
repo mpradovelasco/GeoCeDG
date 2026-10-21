@@ -6,10 +6,12 @@
 package org.geocedg.common.kernel.geos;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
+import org.geocedg.common.kernel.algos.AlgoLocusV2;
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -21,6 +23,7 @@ import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
+import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.arithmetic.ValueType;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
@@ -36,6 +39,8 @@ public final class GeoLocusV2 extends GeoElement
 	private final LocusInstrumentation2D instrumentation;
 	private final LocusMetricInstrumentation2D metricInstrumentation;
 	private LocusDefinition2D definition;
+	/** Highest revision ever published, kept when a definition is discarded. */
+	private long lastPublishedRevision;
 	private boolean explicitlyUndefined;
 	private LocusMetricSharedOwner2D metricOwner;
 	private String metricOwnerIdentity;
@@ -122,6 +127,28 @@ public final class GeoLocusV2 extends GeoElement
 		return getSemanticDefinition() == null ? 0 : definition.getSemanticRevision();
 	}
 
+	/**
+	 * @return revision of the next publication: above every revision published before,
+	 *         also after a discarded definition, so that no revision-keyed state is reused
+	 */
+	public long getNextSemanticRevision() {
+		return lastPublishedRevision + 1;
+	}
+
+	/**
+	 * Exploratory evidence of the unresolved bands of one branch of the current definition
+	 * (PRE-G9B-CU2, decision E-1), derived by its producer per revision and never part of
+	 * the definition, its revision or its persistence.
+	 *
+	 * @param branchKey branch of the current definition
+	 * @return evidence, or {@code null} when undefined or when the producer derives none
+	 */
+	public LocusExploratoryEvidence2D getExploratoryEvidence(String branchKey) {
+		AlgoElement parent = getParentAlgorithm();
+		return isDefined() && parent instanceof AlgoLocusV2
+				? ((AlgoLocusV2) parent).getExploratoryEvidence(branchKey) : null;
+	}
+
 	public LocusInstrumentation2D getInstrumentation() {
 		return instrumentation;
 	}
@@ -174,7 +201,8 @@ public final class GeoLocusV2 extends GeoElement
 			throw new IllegalArgumentException("Definition identity does not match geo");
 		}
 		if (definition != null && semanticDefinition.getSemanticRevision()
-				<= definition.getSemanticRevision()) {
+				<= definition.getSemanticRevision()
+				|| semanticDefinition.getSemanticRevision() <= lastPublishedRevision) {
 			throw new IllegalArgumentException("Semantic revisions must increase");
 		}
 		if (metricOwner != null && !metricOwner.isReleased()) {
@@ -182,7 +210,19 @@ public final class GeoLocusV2 extends GeoElement
 					semanticDefinition.getSemanticRevision());
 		}
 		definition = semanticDefinition;
+		lastPublishedRevision = semanticDefinition.getSemanticRevision();
 		explicitlyUndefined = false;
+	}
+
+	/**
+	 * Discards the current definition after a recompute that does not publish (PRE-G9B-CU2,
+	 * {@code locus-v2-semantics.md}, publication; finding F-CU2-3): the locus is undefined
+	 * and no consumer can evaluate the previous definition. The next publication still
+	 * takes a higher revision.
+	 */
+	public void discardSemanticDefinition() {
+		definition = null;
+		setUndefined();
 	}
 
 	/**

@@ -553,7 +553,10 @@ class PreG9BR6PlusBPictureFidelityTest {
 		text.setFontSizeMultiplier(3);
 		color(text, TEXT);
 		eval(app, "sv=20");
-		eval(app, "Qv=(sv,10.8+0.1*sin(4*sv))");
+		// PRE-G9B-CU2 step T11, declared conformity: the wavy scalar curve is outside class v3
+		// and is drawn only as dotted exploratory evidence; the certified segment (sv,10.8)
+		// keeps an opaque Locus V2 stroke in the same area.
+		eval(app, "Qv=(sv,10.8)");
 		eval(app, "Dv={false,{20,23,true,true}}");
 		color(eval(app, "LV=LocusV2(Qv,sv,Dv)"), LOCUS_V2).setLineThickness(9);
 		for (String label : new String[] {"Qv", "sv", "Dv"}) {

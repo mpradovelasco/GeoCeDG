@@ -23,6 +23,7 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionPolicy2D.ResidualTolerance;
@@ -174,8 +175,12 @@ class PreG9bR3X1CertifiedExpressionPointModelTest extends BaseUnitTest {
 				Operation.EXPRESSION_TRANSLATE,
 				List.of(CertifiedConstructionProgram2D.Operand.node(0)), 0, Double.NaN));
 		// Through the public path an undefined or nonfinite vector makes the traced
-		// point undefined, so the locus is undefined and no pair root is admissible.
-		// The capture rule itself is pinned on live geos by PreG9bR3X1CaptureBoundaryTest.
+		// point undefined, and no pair root is admissible. PRE-G9B-CU2 step T11 (H01): the
+		// locus is published while its definition inputs are defined, so an undefined vector
+		// leaves it unpublished, while a nonfinite vector, which GeoGebra defines, publishes
+		// a certificate that is not established, because the capture refuses the nonfinite
+		// translation. The capture rule itself is pinned on live geos by
+		// PreG9bR3X1CaptureBoundaryTest.
 		driver();
 		add("u=(1,0)");
 		add("E=C+u");
@@ -191,7 +196,15 @@ class PreG9bR3X1CertifiedExpressionPointModelTest extends BaseUnitTest {
 			u.setCoords(vector[0], vector[1], 0);
 			u.updateCascade();
 			assertFalse(lookup("E").isDefined(), "vector " + vector[0]);
-			assertFalse(locus.isDefined(), "vector " + vector[0]);
+			if (Double.isNaN(vector[0])) {
+				assertFalse(locus.isDefined(), "vector " + vector[0]);
+			} else {
+				assertTrue(locus.isDefined(), "vector " + vector[0]);
+				assertEquals(LocusExistenceStructure2D.Completeness.NOT_ESTABLISHED,
+						locus.getSemanticDefinition().getBranches().get(0)
+								.getExistenceStructure().getCompleteness(),
+						"vector " + vector[0]);
+			}
 			assertEquals(0, admissibleRoots(rich), "vector " + vector[0]);
 			u.setCoords(1, 0, 0);
 			u.updateCascade();

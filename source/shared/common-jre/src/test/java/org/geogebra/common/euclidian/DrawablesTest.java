@@ -43,6 +43,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 import org.geocedg.common.kernel.locus.LocusV2Factory;
 import org.geocedg.common.kernel.locus.LocusV2Mode;
+import org.geocedg.common.locus.LocusV2TestBranches;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GGraphicsCommon;
@@ -141,7 +142,8 @@ class DrawablesTest extends BaseUnitTest {
 						new LocusInterval2D(-1, 1, true, true),
 						Orientation.INCREASING, false, 1E-14);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch("main", provider,
-				"drawable-fixture/v1", EnumSet.noneOf(BranchProperty.class));
+				"drawable-fixture/v1", EnumSet.noneOf(BranchProperty.class),
+				LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		GeoLocusV2 locusV2 = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				construction, "drawable-v2", new GeoNumeric(construction, 1), provider,
 				Collections.singletonList(branch), (source, semanticBranch, parameter,

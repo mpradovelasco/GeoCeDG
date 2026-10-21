@@ -33,9 +33,15 @@ import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
 
-/** Focused read-only Locus V2 export contract tests for G9X1. */
+/**
+ * Focused read-only Locus V2 export contract tests for G9X1. PRE-G9B-CU2 step T11, declared
+ * conformity: an export follows the published certificate, and the scalar loci of these
+ * fixtures that are outside class v3 (a parabola, a non-injective map, a periodic expression,
+ * a non-literal coordinate) are replaced by certified constructions with the same property.
+ */
 class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	private final GeometryExportService service = new GeometryExportService();
@@ -47,7 +53,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l01OneEntityIsEmittedPerSemanticComponent() { // X1-L01
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,-1,true,true},{1,2,true,true}}");
 		GeometryExportPreflight preflight = preflight(locus, request());
 
@@ -84,7 +90,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l03SemanticComponentOrientationIsPreserved() { // X1-L03
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{2,-2,true,true}}");
 		GeometryExportPreflight preflight = preflight(locus, request());
 		PolylineGeometry polyline = polyline(preflight, 0);
@@ -100,20 +106,32 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 		}
 	}
 
+	/**
+	 * The two arcs of the unit circle where the vertical line through the driver meets the
+	 * segment from (-1/2, 0) to (1/2, 0) are two certified components with the same image,
+	 * traversed in opposite directions.
+	 */
 	@Test
 	void l04CoincidentConstructiveComponentsRemainDistinct() { // X1-L04
-		GeoLocusV2 locus = createLocus("(s^2,0)",
-				"{false,{-2,-1,true,true},{1,2,true,true}}");
+		add("c=Circle((0,0),1)");
+		add("P=Point(c)");
+		add("v=PerpendicularLine(P,Line((0,0),(1,0)))");
+		add("h=Segment((-1/2,0),(1/2,0))");
+		add("Q=Intersect(v,h)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
 		GeometryExportPreflight preflight = preflight(locus, request());
 		PolylineGeometry first = polyline(preflight, 0);
 		PolylineGeometry second = polyline(preflight, 1);
 		SourceExportOutcome firstOutcome = preflight.getModel().getOutcomes().get(0);
 		SourceExportOutcome secondOutcome = preflight.getModel().getOutcomes().get(1);
 
-		assertEquals(4, first(first).getX(), 0);
-		assertEquals(1, last(first).getX(), 0);
-		assertEquals(1, first(second).getX(), 0);
-		assertEquals(4, last(second).getX(), 0);
+		assertEquals(-0.5, first(first).getX(), 1E-9);
+		assertEquals(0.5, last(first).getX(), 1E-9);
+		assertEquals(0.5, first(second).getX(), 1E-9);
+		assertEquals(-0.5, last(second).getX(), 1E-9);
+		for (PolylineGeometry polyline : Arrays.asList(first, second)) {
+			assertTrue(polyline.getVertices().stream().allMatch(vertex -> vertex.getY() == 0));
+		}
 		assertEquals(firstOutcome.getSourceId(), secondOutcome.getSourceId());
 		assertNotEquals(firstOutcome.getNeutralEntityId(),
 				secondOutcome.getNeutralEntityId());
@@ -121,10 +139,13 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 				secondOutcome.getComponentAddress().getComponentKey());
 	}
 
+	/** The circle traced by a point of a circle: its canonical domain is [-pi, pi). */
 	@Test
 	void l05TypedFullPeriodEvidenceClosesThePolyline() { // X1-L05
-		GeoLocusV2 locus = createLocus("(cos(s),sin(s))",
-				"{true,{0,2*pi,true,false}}");
+		add("c=Circle((0,0),1)");
+		add("P=Point(c)");
+		add("Q=P+(0,0)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
 		GeometryExportPreflight preflight = preflight(locus, request());
 		PolylineGeometry polyline = polyline(preflight, 0);
 		ComponentAddress address = onlyOutcome(preflight).getComponentAddress();
@@ -141,26 +162,31 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 				.getBranchKey();
 		GeometryExportRequest explicitPeriod = GeometryExportRequest.builder(0.01)
 				.addSourceSemanticDomain(sourceId, new SemanticDomain(branchKey,
-						"full-period", 0, 2 * Math.PI, true, true))
+						"full-period", -Math.PI, Math.PI, true, true))
 				.build();
 		GeometryExportPreflight explicit = preflight(locus, explicitPeriod);
 		assertTrue(explicit.isWritable());
 		assertTrue(polyline(explicit, 0).isClosed());
 	}
 
+	/**
+	 * An open SplineV2 whose last point is 1E-7 from its first: its explicit certificate
+	 * declares no closure, and the proximity of its ends infers none. Closer ends are not an
+	 * open SplineV2: ends equal within the point precision of the kernel but not bit for bit
+	 * are rejected (the SplineV2 is undefined).
+	 */
 	@Test
 	void l06EndpointProximityDoesNotInferClosure() { // X1-L06
-		GeoLocusV2 locus = createLocus("(cos(s),sin(s))",
-				"{false,{0,2*pi,true,true}}");
+		GeoLocusV2 locus = add("L=SplineV2({(1,0),(0,1),(-1,0),(0,-1),(1,1E-7)},3)");
 		GeometryExportPreflight preflight = preflight(locus, request());
 		PolylineGeometry polyline = polyline(preflight, 0);
 
 		assertFalse(polyline.isClosed());
-		assertTrue(distance(first(polyline), last(polyline)) < 1E-12);
+		assertTrue(distance(first(polyline), last(polyline)) < 1E-6);
 		assertEquals(0, onlyOutcome(preflight).getComponentAddress()
 				.getParameterStart(), 0);
-		assertEquals(2 * Math.PI, onlyOutcome(preflight).getComponentAddress()
-				.getParameterEnd(), 1E-14);
+		assertEquals(1, onlyOutcome(preflight).getComponentAddress()
+				.getParameterEnd(), 0);
 	}
 
 	/**
@@ -171,7 +197,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 	 */
 	@Test
 	void l07OpenComponentWithoutClosedExportDomainIsRejected() { // X1-L07
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,2,false,false}}");
 		GeometryExportPreflight preflight = preflight(locus, request());
 		SourceExportOutcome outcome = onlyOutcome(preflight);
@@ -190,7 +216,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l08ExplicitClosedSourceSubdomainIsAccepted() { // X1-L08
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,2,false,false}}");
 		String sourceId = G9X1GeometryExportAdapter.requestSourceId(locus, 0);
 		String branchKey = locus.getSemanticDefinition().getBranches().get(0)
@@ -234,20 +260,22 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 		// PRE-G9B-CU2 declared conformance (strategy section 5.5): moving only the driver
 		// keeps the revision (CU1 A1.1-R, CU2 gate GC-1); the revision change comes from a
 		// non-driver input. The base passed here through a representation artifact of the
-		// v1 fingerprint.
-		add("k=0");
-		GeoLocusV2 locus = createLocus("(s,k)",
-				"{false,{-2,2,true,true}}");
+		// v1 fingerprint. Step T11: the scalar (s,k) is outside class v3, so the certified
+		// circle traced by a point of a circle of radius r is used.
+		add("r=1");
+		add("c=Circle((0,0),r)");
+		GeoPoint driver = add("P=Point(c)");
+		add("Q=P+(0,0)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
 		long revision = locus.getSemanticRevision();
-		GeoNumeric driver = (GeoNumeric) lookup("s");
-		driver.setValue(0.75);
+		driver.setCoords(0, 1, 1);
 		driver.updateCascade();
 		assertEquals(revision, locus.getSemanticRevision());
 
 		GeometryExportPreflight preflight = preflight(locus, request());
 		assertTrue(preflight.isSourceRevisionCurrent());
-		GeoNumeric input = (GeoNumeric) lookup("k");
-		input.setValue(0.25);
+		GeoNumeric input = (GeoNumeric) lookup("r");
+		input.setValue(1.25);
 		input.updateCascade();
 
 		assertTrue(locus.getSemanticRevision() > revision);
@@ -259,7 +287,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l10ExportNeverReadsRenderOrViewportAuthority() { // X1-L10
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,2,true,true}}");
 		locus.getInstrumentation().reset();
 		getApp().getActiveEuclidianView().setCoordSystem(341, 217, 43, 29);
@@ -278,7 +306,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l11ExportLeavesGeometryDagXmlAndUndoUnchanged() { // X1-L11
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,2,true,true}}");
 		activateUndo();
 		getApp().storeUndoInfo();
@@ -311,7 +339,7 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l12ExportIsDeterministicAcrossRecomputeAndReopen() { // X1-L12
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,2,true,true}}");
 		String identity = locus.getLocusIdentity();
 		GeometryExportPreflight initial = preflight(locus, request());

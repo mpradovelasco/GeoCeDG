@@ -74,8 +74,11 @@ final class G7BMetricFixtures {
 	 * A periodic fixture with the certified closure that periodic route semantics need
 	 * since PRE-G9B-CU2 (single closure authority): the half-open canonical domain
 	 * {@code [-4, 4)} of a periodic provider and one component equal to it, which the
-	 * provider-compatibility certificate records as the closed periodic arc. A periodic
-	 * provider alone never closes a component.
+	 * explicit certificate of the test fixture contract ({@link LocusV2TestBranches}) declares
+	 * closed. The closure is a declaration of the fixture, not a property of its point
+	 * function: with {@code (t, 0)} the two ends differ, so a route that crosses the seam
+	 * proves that the closure comes from the certificate and never from Cartesian equality.
+	 * A periodic provider alone never closes a component.
 	 */
 	static LocusDefinition2D periodicDefinition(String identity, long revision,
 			DoubleFunction<LocusPoint2D> function) {
@@ -83,7 +86,7 @@ final class G7BMetricFixtures {
 		ExplicitNumericDomainProvider2D provider =
 				new ExplicitNumericDomainProvider2D("g7b-parameter/v1", domain,
 						Orientation.INCREASING, true, EPS_DOMAIN);
-		LocusBranch2D branch = new LocusBranch2D(BRANCH, domain, List.of(domain),
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH, domain, List.of(domain),
 				Orientation.INCREASING, "g7b-fixture/v1", LocusLineage2D.unchanged(),
 				EnumSet.of(BranchProperty.FINITE, BranchProperty.PERIODIC),
 				LocusQuality2D.analyticDoubleSemantic());
@@ -105,7 +108,7 @@ final class G7BMetricFixtures {
 			List<LocusInterval2D> components) {
 		EnumSet<BranchProperty> properties =
 				EnumSet.of(BranchProperty.FINITE);
-		return new LocusBranch2D(key,
+		return LocusV2TestBranches.branch(key,
 				new LocusInterval2D(lower, upper, true, true), components,
 				Orientation.INCREASING, "g7b-fixture/v1",
 				LocusLineage2D.unchanged(), properties,

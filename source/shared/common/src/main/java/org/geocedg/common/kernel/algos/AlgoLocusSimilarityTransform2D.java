@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
@@ -64,6 +65,17 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 		} catch (RuntimeException exception) {
 			return false;
 		}
+	}
+
+	/**
+	 * The image inherits the existence structure of its source with its unresolved bands,
+	 * so it explores them with the source's exploratory evidence (decision E-1), evaluated
+	 * through the transform.
+	 */
+	@Override
+	public LocusExploratoryEvidence2D getExploratoryEvidence(String branchKey) {
+		return sourceSnapshot != null && sourceSnapshot == source.getSemanticDefinition()
+				? source.getExploratoryEvidence(branchKey) : null;
 	}
 
 	@Override

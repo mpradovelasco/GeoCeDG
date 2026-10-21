@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
@@ -38,6 +39,8 @@ public final class AlgoSplineV2 extends AlgoLocusV2 {
 	private static final double DOMAIN_EPSILON = 1E-12;
 	private static final String PROVENANCE =
 			"semantic-spline-v2/piecewise-polynomial/v1";
+	/** Contract of the explicit existence certificate of a SplineV2 (D-CU2-7). */
+	public static final String PROVIDER_CONTRACT = "spline-v2-interpolation/v1";
 
 	private final GeoList points;
 	private final GeoNumberValue degree;
@@ -96,8 +99,14 @@ public final class AlgoSplineV2 extends AlgoLocusV2 {
 				EvaluationMethod.ANALYTIC_EVALUATION,
 				RepresentationRole.SEMANTIC_RESULT,
 				NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
+		// The polynomial spans are evaluated on the whole normalized domain, and equal first
+		// and last points declare the closed periodic form (semantic-spline-2d.md sections 1
+		// to 3): the explicit certificate of D-CU2-7 cites that contract.
 		LocusBranch2D branch = new LocusBranch2D(BRANCH_KEY, domain,
-				Collections.singletonList(domain), Orientation.INCREASING,
+				LocusExistenceStructure2D.providerProved(BRANCH_KEY, domain,
+						Collections.singletonList(domain), periodic, periodic,
+						PROVIDER_CONTRACT),
+				Orientation.INCREASING,
 				PROVENANCE + "|degree=" + model.getDegree() + "|spans="
 						+ model.getSpanCount(),
 				LocusLineage2D.unchanged(), properties, quality);

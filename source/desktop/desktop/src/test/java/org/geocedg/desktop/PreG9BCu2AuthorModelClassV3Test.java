@@ -137,8 +137,9 @@ class PreG9BCu2AuthorModelClassV3Test {
 	 * V-SEL-2, step T3: with excCyl 4.0 the program needs no valid sample; with the driver
 	 * moved into the gap, where no output is defined, the program of the revision is present
 	 * and identical, and a document saved there and reopened keeps it after the next valid
-	 * position. A document reopened with the driver in the gap builds no slice at the base
-	 * (CU0 pin {@code H01}); the publication rule of step T11 completes the row.
+	 * position. A document reopened with the driver in the gap built no slice at the base
+	 * (CU0 pin {@code H01}); with the publication rule of step T11 it builds the slice of its
+	 * first revision there.
 	 */
 	@Test
 	void theRuleIsCapturedWithoutAnyValidSample() throws Exception {
@@ -180,7 +181,7 @@ class PreG9BCu2AuthorModelClassV3Test {
 		});
 		assertEquals(false, row.get("defined_in_gap"), row.toString());
 		assertEquals(true, row.get("same_in_gap"), row.toString());
-		assertEquals(false, row.get("evaluator_in_gap"), row.toString());
+		assertEquals(true, row.get("evaluator_in_gap"), row.toString());
 		assertEquals(1L, row.get("settling_revisions"), row.toString());
 		assertEquals(1L, row.get("later_revisions"), row.toString());
 		for (Object rule : ((Map<?, ?>) row.get("rules_after_reopen")).values()) {

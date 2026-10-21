@@ -72,6 +72,13 @@ Implementation precision (`CU2` step T10, 2026-10-21): the comment of an exporte
 appends `declared` and each of its representation declarations; a point component is reported
 with the fidelity `DECLARED`, never as a failure, and makes its source incomplete.
 
+Implementation precision (`CU2` step T11, author decision D-CU2-T11-R1, 2026-10-21): a point of
+a certified component whose evaluation fails cuts the component into open paths that are never
+joined or interpolated across the failure, each declaring the gap (`COMPUTATIONAL_GAP` or
+`EVALUATION_GAP`) in its comment, as the DXF export does
+([`dxf-curve-fidelity-and-approximation.md`](dxf-curve-fidelity-and-approximation.md)); the
+export is then `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`.
+
 ## 6. Out of scope
 
 Physical scale and units remain governed by the unit-system specification and ADR 0032. This

@@ -22,6 +22,12 @@ import java.util.stream.Collectors;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
@@ -67,23 +73,35 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		add("Q=(t,t+1)");
 		add("D={false,{-1,1,true,true}}");
 		GeoLocusV2 locus = add("L=LocusV2(Q,t,s,D)");
-		totalMetric(locus);
+		// PRE-G9B-CU2 step T11, declared conformity: the scalar state t = s^2 is outside class
+		// v3, so its total length is refused before any evaluation; evaluating points of the
+		// locus, which its evaluator still does, exercises the evaluation transaction.
+		locus.getInstrumentation().reset();
+		try (LocusEvaluationSession2D session = new LocusEvaluationSession2D(false, 1)) {
+			for (double parameter : new double[] {-0.5, 0, 0.75}) {
+				locus.evaluate(BRANCH, parameter, session);
+			}
+		}
+		assertTrue(locus.getInstrumentation().getEvaluatorCalls() > 0);
 		assertEquals(0.25, ((GeoNumeric) requireLookup("s")).getDouble(), 0);
 		assertEquals(0.0625, ((GeoNumeric) requireLookup("t")).getDouble(), 0);
 	}
 
 	@Test
 	void g04NonInjectivePeriodicAndDiscontinuousMappingsKeepTrueCoordinate() {
+		// PRE-G9B-CU2 declared conformity: a scalar state other than the true coordinate is
+		// outside class v3 (the scalar program is the direct affine certificate only), so
+		// since step T11 these loci are published NOT_ESTABLISHED and their semantic points,
+		// which need a certified component, are undefined. The true coordinate is still the
+		// coordinate input, and the declared domain still decides where nothing exists.
 		add("s=0");
 		add("t=s^2");
 		add("Q=(t,0)");
 		add("D={false,{-2,2,true,true}}");
 		GeoLocusV2 nonInjective = add("L=LocusV2(Q,t,s,D)");
-		GeoPoint negative = add("Pn=Point(L,\"" + BRANCH + "\",-1)");
-		GeoPoint positive = add("Pp=Point(L,\"" + BRANCH + "\",1)");
-		assertEquals(negative.getInhomX(), positive.getInhomX(), 0);
-		assertNotEquals(address(negative).getCanonicalParameter(),
-				address(positive).getCanonicalParameter());
+		assertNotEstablishedOutsideClass(nonInjective);
+		assertFalse(add("Pn=Point(L,\"" + BRANCH + "\",-1)").isDefined());
+		assertFalse(add("Pp=Point(L,\"" + BRANCH + "\",1)").isDefined());
 		assertSame(requireLookup("s"), nonInjective.getParentAlgorithm()
 				.getInput(2));
 
@@ -92,20 +110,35 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		add("Qp=(tp,cos(sp))");
 		add("Dp={true,{0,2*pi,true,false}}");
 		GeoLocusV2 periodic = add("Lp=LocusV2(Qp,tp,sp,Dp)");
-		GeoPoint seam0 = add("Pp0=Point(Lp,\"" + BRANCH + "\",0)");
-		GeoPoint seam1 = add("Pp1=Point(Lp,\"" + BRANCH + "\",2*pi)");
 		assertTrue(periodic.getSemanticDefinition().getProvider().isPeriodic());
-		assertNotEquals(address(seam0).getPeriodicLift(),
-				address(seam1).getPeriodicLift());
+		assertNotEstablishedOutsideClass(periodic);
+		assertFalse(add("Pp0=Point(Lp,\"" + BRANCH + "\",0)").isDefined());
 
 		add("sd=1");
 		add("td=1/sd");
 		add("Qd=(td,sd)");
 		add("Dd={false,{-2,-0.1,true,true},{0.1,2,true,true}}");
 		GeoLocusV2 discontinuous = add("Ld=LocusV2(Qd,td,sd,Dd)");
-		assertEquals(2, discontinuous.getSemanticDefinition().getBranches()
-				.get(0).getValidDomainComponents().size());
+		assertEquals(List.of(CoverageState.UNRESOLVED,
+				CoverageState.CERTIFIED_DOES_NOT_EXIST, CoverageState.UNRESOLVED),
+				discontinuous.getSemanticDefinition().getBranches().get(0)
+						.getExistenceStructure().getCoverage().stream()
+						.map(Coverage::getState).toList());
 		assertFalse(add("Pd=Point(Ld,\"" + BRANCH + "\",0)").isDefined());
+	}
+
+	/**
+	 * PRE-G9B-CU2 step T11: a locus outside class v3 is published, not established, without
+	 * a certified component; it never falls back to a compatibility certificate.
+	 */
+	private static void assertNotEstablishedOutsideClass(GeoLocusV2 locus) {
+		assertTrue(locus.isDefined());
+		LocusExistenceStructure2D structure = locus.getSemanticDefinition().getBranches()
+				.get(0).getExistenceStructure();
+		assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness());
+		assertTrue(structure.getContinuousValidComponents().isEmpty());
+		assertEquals(LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
+				structure.getCoverage().get(0).getCause());
 	}
 
 	@Test
@@ -182,10 +215,11 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void g11SelfIntersectionKeepsDistinctSemanticPreimages() {
-		GeoLocusV2 locus = createScalarLocus("L", "s", "Q",
-				"(sin(s),sin(2*s))", "{false,{0,pi,true,true}}");
-		GeoPoint first = semanticPoint(locus, 0);
-		GeoPoint second = add("P2=Point(L,\"" + BRANCH + "\",pi)");
+		// PRE-G9B-CU2 declared conformity: (sin(s),sin(2*s)) is outside class v3 since step
+		// T11; the certified projection maps the preimages pi/3 and -pi/3 to one position.
+		GeoLocusV2 locus = projectedCircle();
+		GeoPoint first = semanticPoint(locus, Math.PI / 3);
+		GeoPoint second = add("P2=Point(L,\"" + BRANCH + "\",-pi/3)");
 		AlgoSemanticLocusPoint2D firstParent =
 				(AlgoSemanticLocusPoint2D) first.getParentAlgorithm();
 		AlgoSemanticLocusPoint2D secondParent =
@@ -213,7 +247,10 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(point.isDefined());
 		editGeoElement(requireLookup("D"), "D={false,{1,2,true,true}}");
 		assertFalse(((GeoPoint) requireLookup("P")).isDefined());
-		assertFalse(((GeoLocusV2) requireLookup("L2")).isDefined());
+		// PRE-G9B-CU2 declared conformity (H01): the position of the driver never decides
+		// publication, so the locus on the support stays published while its driver point
+		// is withdrawn.
+		assertTrue(((GeoLocusV2) requireLookup("L2")).isDefined());
 		editGeoElement(requireLookup("D"),
 				"D={false,{-2,-1,true,true},{1,2,true,true}}");
 		GeoPoint restored = (GeoPoint) requireLookup("P");
@@ -233,6 +270,15 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 				second.getParentAlgorithm()).getSemanticAddress();
 		assertEquals(first.getInhomX(), second.getInhomX(), 1E-14);
 		assertNotEquals(a.getPeriodicLift(), b.getPeriodicLift());
+		// PRE-G9B-CU2 step T11: the seam of the certified circle is at -pi; the two sides of
+		// it are the same point with distinct lifts.
+		GeoPoint seamStart = add("P3=Point(L,\"" + BRANCH + "\",-pi)");
+		GeoPoint seamEnd = add("P4=Point(L,\"" + BRANCH + "\",pi)");
+		assertEquals(seamStart.getInhomX(), seamEnd.getInhomX(), 1E-14);
+		assertEquals(seamStart.getInhomY(), seamEnd.getInhomY(), 1E-14);
+		assertNotEquals(((AlgoSemanticLocusPoint2D) seamStart.getParentAlgorithm())
+				.getSemanticAddress().getPeriodicLift(), ((AlgoSemanticLocusPoint2D) seamEnd
+						.getParentAlgorithm()).getSemanticAddress().getPeriodicLift());
 	}
 
 	@Test
@@ -274,9 +320,14 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		semanticPoint(first, 0.2);
 		add("Q2=(x(P),x(P)+1)");
 		GeoLocusV2 second = add("L2=LocusV2(Q2,P)");
-		add("P2=Point(L2,\"" + BRANCH + "\",0.3)");
+		GeoPoint nested = add("P2=Point(L2,\"" + BRANCH + "\",0.3)");
+		// PRE-G9B-CU2 declared conformity: a locus on a locus support is outside class v3
+		// since step T11, so the point on it has no certified component and is undefined
+		// before the rejected redefinition as after it.
+		assertFalse(nested.isDefined());
 		assertCycleRedefinitionRejected(first, "LocusV2(P2,s,D)",
-				List.of("L", "P", "Q", "s", "D", "L2", "P2", "Q2"));
+				List.of("L", "P", "Q", "s", "D", "L2", "Q2"));
+		assertFalse(requireLookup("P2").isDefined());
 		assertTrue(((GeoLocusV2) requireLookup("L2")).isDefined());
 	}
 
@@ -292,8 +343,11 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void g19RealClipboardCopyWithinAndAcrossConstructionsUsesFreshIds() {
-		GeoLocusV2 locus = createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the point on the scalar parabola, outside
+		// class v3, was undefined; the certified line keeps the copied points defined.
+		GeoLocusV2 locus = createLine();
 		GeoPoint point = semanticPoint(locus, 0.5);
+		assertTrue(point.isDefined());
 		Set<PersistentGeoId> sourceIds = identityIds(getConstruction()
 				.getSpatialIdentityRegistry().getRecords());
 		String clipboard = InternalClipboard.getTextToSave(getApp(),
@@ -307,6 +361,9 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(localCopies.stream().map(record -> getConstruction()
 				.getSpatialIdentityRegistry().getGeo(record.getId()))
 				.anyMatch(GeoLocusV2.class::isInstance));
+		assertTrue(localCopies.stream().map(record -> getConstruction()
+				.getSpatialIdentityRegistry().getGeo(record.getId()))
+				.anyMatch(geo -> geo instanceof GeoPoint && geo.isDefined()));
 
 		AppCommon target = AppCommonFactory.create(new AppConfigGeoCeDG(true));
 		paste(target, clipboard);
@@ -318,14 +375,20 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(target.getKernel().getConstruction()
 				.getGeoSetConstructionOrder().stream()
 				.anyMatch(GeoLocusV2.class::isInstance));
+		assertTrue(target.getKernel().getConstruction()
+				.getGeoSetConstructionOrder().stream()
+				.anyMatch(geo -> geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D
+						&& geo.isDefined()));
 	}
 
 	@Test
 	void g20UndoRedoRestoresTheSameOperationIdentityGraph() {
 		activateUndo();
 		getApp().storeUndoInfo();
-		GeoLocusV2 locus = createParabola();
-		semanticPoint(locus, 0.5);
+		// PRE-G9B-CU2 step T11, declared conformity: the point on the scalar parabola, outside
+		// class v3, was undefined; on the certified line it is defined.
+		GeoLocusV2 locus = createLine();
+		assertTrue(semanticPoint(locus, 0.5).isDefined());
 		getApp().storeUndoInfo();
 		final String createdXml = getApp().getXML();
 		Set<PersistentGeoId> createdIds = identityIds(getConstruction()
@@ -360,9 +423,14 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		// an update without a semantic change keeps the revision and the metric
 		// component state, so it repeats no evaluator work; identical semantic
 		// changes repeat identical, positive work.
+		// PRE-G9B-CU2 declared conformity: (s,k*s^2) is outside class v3 since step T11; a
+		// certified circle whose radius is the non-driver input k has an estimated total
+		// length that evaluates the locus.
 		add("k=1");
-		GeoLocusV2 locus = createScalarLocus("L", "s", "Q", "(s,k*s^2)",
-				"{false,{-2,2,true,true}}");
+		add("ck=Circle((0,0),k)");
+		add("Sk=Point(ck)");
+		add("Q=Sk+(0,0)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,Sk)");
 		var metric = totalMetric(locus);
 		GeoNumeric coefficient = (GeoNumeric) requireLookup("k");
 		locus.getInstrumentation().reset();

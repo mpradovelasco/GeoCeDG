@@ -6932,6 +6932,30 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T10: an open end exported and declared in the DXF sidecar (schema version 3) and in the LaTeX comments with an incomplete classification, and the drawing fidelity shown by the definition inspector.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/LocusV2TestBranches.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T11: test fixture helper that builds Locus V2 branches with an explicit provider-proved existence structure (test-fixture contract locus-v2-test-fixture/v1), replacing the retired LocusBranch2D list constructor and the compatibility certificate in the shared tests.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelExportTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T11: DXF and LaTeX exports of the author model follow the published certificates (one LWPOLYLINE or path per certified component, closure only for closed periodic components, e_2 open and cut at its declared computational gaps), the LaTeX documents compile, an unevaluated excluded end of e_2 is declared and never extrapolated, and the LaTeX tests cite the durable specification (V-DXF-1, V-E2-3, V-E2-9, V-AVAIL-3, V-TEX-1, V-TEX-2).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelSelectionSettlementTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T11, author decision D-CU2-T11-R1: on the author model, one-ulp changes of excCyl with the driver at t = -1, at t_c and inside the gap reproduce the live selection state of Q/R (settling it where needed) and the certificate of the driver at t = -1; the settlement reads the live construction only and keeps the semantic identities (V-REV-EXACT-1, V-SEL-1).",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2SelectionSettlementTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T11, author decision D-CU2-T11-R1: the settlement of the inherited selection of a reconstructed slice (selection-settlement/v1) on synthetic line-circle constructions with live permutations [0, 1] and [1, 0], first initializations in a gap, at a double root and on a segment; departures by point queries in any order; reopen, undo and redo; driver-only moves; and the selection-independent nonexistence proof of a globally empty domain (V-SEL-6, V-SEL-7, V-COINC-3, V-COINC-8, V-PUB-3).",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
     }
   ]
 }

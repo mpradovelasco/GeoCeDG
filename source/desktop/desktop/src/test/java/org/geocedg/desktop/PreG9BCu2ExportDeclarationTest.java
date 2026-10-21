@@ -34,6 +34,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@code latex-semantic-curve-export.md} section 5): a certified component with an excluded
  * end is exported, not dropped; what its path does not represent is declared in the DXF
  * sidecar (schema version 3) and in the LaTeX comments, and the export is incomplete.
+ * Step T11, declared conformity: the scalar parabola is outside class v3, so the fixtures
+ * use the certified direct affine generator {@code (s,s)}, with the same open end.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -52,7 +54,7 @@ class PreG9BCu2ExportDeclarationTest {
 		AppGeoCeDG app = G9U1TestApp.create();
 		final EuclidianView view = sized(app.getEuclidianView1());
 		eval(app, "s=0");
-		GeoElement point = eval(app, "Q=(s,s^2)");
+		GeoElement point = eval(app, "Q=(s,s)");
 		point.setEuclidianVisible(false);
 		point.updateRepaint();
 		eval(app, "D={false,{-2,-1,false,true}}");
@@ -96,7 +98,7 @@ class PreG9BCu2ExportDeclarationTest {
 		AppGeoCeDG app = G9U1TestApp.create();
 		EuclidianView view = sized(app.getEuclidianView1());
 		eval(app, "s=0");
-		eval(app, "Q=(s,s^2)");
+		eval(app, "Q=(s,s)");
 		eval(app, "D={false,{-2,-1,false,true}}");
 		GeoElement locus = eval(app, "L=LocusV2(Q,s,D)");
 		view.updateAllDrawables(true);

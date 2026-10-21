@@ -141,20 +141,31 @@ class G9U0CommandSurfaceTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void c09EvaluatorTransactionRestoresDriverState() {
-		GeoLocusV2 locus = createParabola();
-		GeoNumeric driver = (GeoNumeric) requireLookup("s");
-		driver.setValue(0.375);
+		// PRE-G9B-CU2 step T11, declared conformity: the total length of the scalar parabola,
+		// outside class v3, is refused before any evaluation; the estimated length of the
+		// certified parabola evaluates the locus while its driver keeps its state.
+		GeoLocusV2 locus = certifiedParabola();
+		GeoPoint driver = (GeoPoint) requireLookup("ParabolaDriver");
+		driver.setCoords(-0.5, -0.25, 1);
 		driver.updateCascade();
+		double x = driver.getInhomX();
+		double y = driver.getInhomY();
+		locus.getInstrumentation().reset();
 		GeoLocusMetricResult metric = totalMetric(locus);
 		assertTrue(metric.isDefined());
-		assertEquals(0.375, driver.getDouble(), 0);
+		assertTrue(locus.getInstrumentation().getEvaluatorCalls() > 0);
+		assertEquals(x, driver.getInhomX(), 0);
+		assertEquals(y, driver.getInhomY(), 0);
 	}
 
 	@Test
 	void c10SemanticCommandDoesNotReadRenderOrViewportState() {
-		GeoLocusV2 locus = createParabola();
+		// PRE-G9B-CU2 step T11, declared conformity: the certified parabola, whose estimated
+		// length evaluates the locus, replaces the scalar one, outside class v3.
+		GeoLocusV2 locus = certifiedParabola();
 		locus.getInstrumentation().reset();
 		totalMetric(locus);
+		assertTrue(locus.getInstrumentation().getEvaluatorCalls() > 0);
 		assertEquals(0, locus.getInstrumentation().getRenderEvaluations());
 		assertEquals(0, locus.getInstrumentation().getWholeLocusRegenerations());
 	}

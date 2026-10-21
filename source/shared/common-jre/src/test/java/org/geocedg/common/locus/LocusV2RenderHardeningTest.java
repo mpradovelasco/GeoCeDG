@@ -86,7 +86,7 @@ class LocusV2RenderHardeningTest extends BaseUnitTest {
 	void adaptiveSamplingPreservesComponentsPeriodicSeamAndUnboundedClipping() {
 		ExplicitNumericDomainProvider2D discontinuousProvider = provider(-1, 1,
 				false);
-		LocusBranch2D discontinuousBranch = new LocusBranch2D(BRANCH_KEY,
+		LocusBranch2D discontinuousBranch = LocusV2TestBranches.branch(BRANCH_KEY,
 				discontinuousProvider.getDeclaredDomain(), Arrays.asList(
 						new LocusInterval2D(-1, -0.1, true, true),
 						new LocusInterval2D(0.1, 1, true, true)),
@@ -109,7 +109,7 @@ class LocusV2RenderHardeningTest extends BaseUnitTest {
 				Math.PI, true);
 		LocusBranch2D periodicBranch = LocusV2Factory.fullDomainBranch(BRANCH_KEY,
 				periodicProvider, "g6r-periodic/v1",
-				EnumSet.noneOf(BranchProperty.class));
+				EnumSet.noneOf(BranchProperty.class), LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		GeoLocusV2 circle = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				getConstruction(), "adaptive-circle",
 				new GeoNumeric(getConstruction(), 0), periodicProvider,
@@ -128,7 +128,7 @@ class LocusV2RenderHardeningTest extends BaseUnitTest {
 				new ExplicitNumericDomainProvider2D("unbounded-parameter/v1",
 						new LocusInterval2D(-endpoint, endpoint, false, false),
 						Orientation.INCREASING, false, 1E-14);
-		LocusBranch2D unboundedBranch = new LocusBranch2D(BRANCH_KEY,
+		LocusBranch2D unboundedBranch = LocusV2TestBranches.branch(BRANCH_KEY,
 				unboundedProvider.getDeclaredDomain(),
 				Collections.singletonList(unboundedProvider.getDeclaredDomain()),
 				Orientation.INCREASING, "g6r-unbounded/v1",
@@ -184,7 +184,7 @@ class LocusV2RenderHardeningTest extends BaseUnitTest {
 		ExplicitNumericDomainProvider2D provider = provider(-1, 1, false);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(BRANCH_KEY,
 				provider, "g6r-render-hardening/v1",
-				EnumSet.noneOf(BranchProperty.class));
+				EnumSet.noneOf(BranchProperty.class), LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		return LocusV2Factory.createAnalytic(LocusV2Mode.V2, getConstruction(),
 				identity, source, provider, Collections.singletonList(branch),
 				(value, semanticBranch, parameter, session) ->

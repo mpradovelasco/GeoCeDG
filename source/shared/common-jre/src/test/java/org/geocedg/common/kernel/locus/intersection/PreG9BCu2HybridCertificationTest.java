@@ -68,8 +68,8 @@ import org.junit.jupiter.api.Test;
  * PRE-G9B-CU2 step T4: the hybrid existence certifier ({@code locus-existence/hybrid/v1};
  * {@code locus-v2-existence-components.md} section 15; {@code
  * locus-v2-certified-construction-model.md} sections 10.5 to 10.9) on synthetic
- * constructions, through the shadow certificate of each revision. Matrix rows V-TOT-1,
- * V-PER-1 (synthetic part), V-CRIT-1 to V-CRIT-6 and V-CRIT-10, V-TR-2, V-POINT-1,
+ * constructions, through the certificate of each revision (published since step T11). Matrix
+ * rows V-TOT-1, V-PER-1 (synthetic part), V-CRIT-1 to V-CRIT-6 and V-CRIT-10, V-TR-2, V-POINT-1,
  * V-POINT-2, V-POINT-4 and V-POINT-6 (certificate parts), V-COINC-1, V-COINC-2, V-COINC-4,
  * V-COINC-5 and V-COINC-7 (certificate parts), V-LVL-1, V-LVL-3 (structure part), V-COMPL-1,
  * V-V3-3 and V-V3-4 (existence parts), and gates GC-4 and GC-8.
@@ -436,10 +436,15 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			assertNotNull(result.getExploration(), label);
 			assertTrue(result.getExploration().getWork() > 0, label);
 			assertFalse(result.getExploration().getNature().certifies());
-			// The published structure keeps its own contract until step T11.
-			assertNotEquals(HybridExistenceCertifier2D.CONTRACT, locus(label)
-					.getSemanticDefinition().getBranch(BRANCH).getExistenceStructure()
-					.getCertifierContract(), label);
+			// Since step T11 the certificate is the published structure: never a fallback.
+			LocusExistenceStructure2D published = locus(label).getSemanticDefinition()
+					.getBranch(BRANCH).getExistenceStructure();
+			assertEquals(HybridExistenceCertifier2D.CONTRACT,
+					published.getCertifierContract(), label);
+			assertEquals(structure.getCoverage().get(0).getEvidence(),
+					published.getCoverage().get(0).getEvidence(), label);
+			assertSame(result.getExploration(), locus(label).getExploratoryEvidence(BRANCH),
+					label);
 		}
 	}
 
@@ -521,18 +526,25 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
-	 * GC-2 and GC-3 (shadow part): the certificate is computed once per revision and shared;
-	 * moving the driver neither recomputes nor changes it; a new revision recomputes it.
+	 * GC-2 and GC-3: the certificate is computed once per revision, when the revision is
+	 * published (step T11), and shared; reading it, moving the driver or recomputing does
+	 * not recompute or change it; a new revision recomputes it.
 	 */
 	@Test
 	void theShadowCertificateIsComputedOncePerRevision() {
 		add("rr=40+2^(-10)");
 		critical("rr");
-		long before = work("lq", LocusCertificationWork2D.EXISTENCE_BOX);
-		Result result = certificate("lq");
+		long certificates = work("lq", LocusCertificationWork2D.CERTIFICATE_COMPUTATION);
 		long boxes = work("lq", LocusCertificationWork2D.EXISTENCE_BOX);
-		assertEquals(result.getExistenceBoxes(), boxes - before);
+		Result result = certificate("lq");
+		assertTrue(result.getExistenceBoxes() > 0);
+		assertTrue(boxes >= result.getExistenceBoxes(), "computed when published");
+		assertEquals(boxes, work("lq", LocusCertificationWork2D.EXISTENCE_BOX));
+		assertEquals(certificates,
+				work("lq", LocusCertificationWork2D.CERTIFICATE_COMPUTATION));
 		assertSame(result, certificate("lq"));
+		getKernel().updateConstruction(false);
+		assertSame(result, certificate("lq"), "an equivalent recompute keeps it");
 		moveDriver((GeoPoint) lookup("N"), 2.5);
 		moveDriver((GeoPoint) lookup("N"), CRITICAL);
 		assertSame(result, certificate("lq"));

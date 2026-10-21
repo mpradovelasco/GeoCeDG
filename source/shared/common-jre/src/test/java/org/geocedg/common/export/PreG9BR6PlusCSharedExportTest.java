@@ -65,8 +65,9 @@ import org.junit.jupiter.api.Test;
  * PRE-G9B-R6-plus-C shared export contracts: DXF units and the usm sidecar rule
  * (DQ-C11), hidden layers written OFF and 60 = 1 (DQ-C2, DQ-C3), B1 export-area
  * participation with the conservative certified test (DQ-C13), the staleness
- * inputs, the extracted semantic adapter (C10), the LaTeX result model (DQ-C5)
- * and the physical scale (C4).
+ * inputs, the extracted semantic adapter (C10), the LaTeX result model of the durable
+ * specification {@code geocedg/specs/export/latex-semantic-curve-export.md}, section 3
+ * (decision D-CU2-11, matrix row V-TEX-2), and the physical scale (C4).
  */
 class PreG9BR6PlusCSharedExportTest extends BaseUnitTest {
 
@@ -336,10 +337,13 @@ class PreG9BR6PlusCSharedExportTest extends BaseUnitTest {
 				"a proof that does not close within the budget keeps the component");
 		LocusDefinition2D expressionDefinition = expression.getSemanticDefinition();
 		LocusBranch2D expressionBranch = expressionDefinition.getBranches().get(0);
+		// PRE-G9B-CU2 step T11: the expression locus is outside class v3, so it has no
+		// certified component; its declared domain is tried instead.
+		assertTrue(expressionBranch.getExistenceStructure().getContinuousValidComponents()
+				.isEmpty());
 		Status uncertified = CertifiedComponentAreaDisjointness2D.prove(
 				expressionDefinition, expressionBranch.getBranchKey(),
-				expressionBranch.getExistenceStructure().getContinuousValidComponents()
-						.get(0).getInterval(), 10, 13, 10, 13, 4096);
+				expressionBranch.getDeclaredDriverDomain(), 10, 13, 10, 13, 4096);
 		assertTrue(uncertified == Status.NO_CERTIFIED_MODEL
 				|| uncertified == Status.PROVEN_DISJOINT, uncertified.toString());
 
@@ -407,10 +411,15 @@ class PreG9BR6PlusCSharedExportTest extends BaseUnitTest {
 
 	// ------------------------------------------------------ T-SEMANTIC-ADAPTER
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar parabola and the periodic
+	 * scalar circle are outside class v3; the certified direct affine map {@code (s,s)} and
+	 * the circle traced by a point of a circle keep the two properties.
+	 */
 	@Test
 	void theSemanticAdapterKeepsComponentsGapsOrientationAndRevision() {
 		GeoNumeric k = add("k=1");
-		GeoLocusV2 locus = createLocus("(s,s^2)",
+		GeoLocusV2 locus = createLocus("(s,s)",
 				"{false,{-2,-k,true,true},{k,2,true,true}}");
 		SemanticCurveExportAdapter2D adapter = new SemanticCurveExportAdapter2D();
 		GeometryExportRequest request = approximateRequest();
@@ -439,10 +448,10 @@ class PreG9BR6PlusCSharedExportTest extends BaseUnitTest {
 		k.updateCascade();
 		assertFalse(result.isCurrent(), "a changed source makes the result stale");
 
-		add("t=0");
-		add("P=(cos(t),sin(t))");
-		add("E={true,{0,2*pi,true,false}}");
-		GeoLocusV2 circle = add("C=LocusV2(P,t,E)");
+		add("cc=Circle((0,0),1)");
+		add("CP=Point(cc)");
+		add("CQ=CP+(0,0)");
+		GeoLocusV2 circle = add("C=LocusV2(CQ,CP)");
 		SourceResult closed = adapter.adaptLocus(circle, 1, request,
 				new AdaptiveCurveApproximationBuilder2D.WorkLedger(request), "test:",
 				SemanticCurveExportAdapter2D.ALL_COMPONENTS);
@@ -509,10 +518,16 @@ class PreG9BR6PlusCSharedExportTest extends BaseUnitTest {
 				Collections.<SourceClass>emptyList(), false, false));
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar parabola is outside class v3, so
+	 * the certified circle traced by a point of a circle exhausts the evaluation budget.
+	 */
 	@Test
 	void dxfKeepsTheStrictWritabilityRule() {
-		GeoLocusV2 locus = createLocus("(s,s^2)", "{false,{-2,-1,true,true},"
-				+ "{1,2,true,true}}");
+		add("c=Circle((0,0),1)");
+		add("P=Point(c)");
+		add("Q=P+(0,0)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
 		GeometryExportRequest budget = GeometryExportRequest.builder(1E-9)
 				.maximumEvaluations(8).build();
 		GeometryExportPreflight preflight = service.preflight(

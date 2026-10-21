@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +32,15 @@ import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.MacroKernel;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.PathParameter;
 import org.geogebra.common.kernel.SetRandomValue;
 import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
@@ -46,6 +50,7 @@ import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
@@ -72,6 +77,16 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private static final Comparator<ConstructionElement> RECONSTRUCTION_ORDER =
 			Comparator.comparingInt(ConstructionElement::getConstructionIndex)
 					.thenComparingLong(ConstructionElement::getID);
+	/**
+	 * Version of the settlement of the inherited selection of a reconstructed slice
+	 * (normative precision D-CU2-T11-R1 of D-CU2-17 and D-CU2-20-R).
+	 */
+	public static final String SELECTION_SETTLEMENT = "selection-settlement/v1";
+	/**
+	 * Auxiliary driver parameters of a settlement: the interior points of the dyadic grid of
+	 * level 6 of the declared domain, in radical-inverse order.
+	 */
+	public static final int SETTLEMENT_PARAMETERS = 63;
 
 	private final SemanticGeneratorDescriptor1D descriptor;
 	private final Construction isolatedConstruction;
@@ -94,6 +109,14 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private List<CertifiedConstructionCapture2D.StepOrigin> programV3Origins = List.of();
 	private List<String> operationIdentitiesV3;
 	private ConstructionBoxModel2D boxModelV3;
+	/** Copy intersections settled by a point query that ended their first initialization. */
+	private final Set<AlgoIntersectLineConic> departedSelections =
+			Collections.newSetFromMap(new IdentityHashMap<>());
+	/** Copy intersections in their first initialization, like their live ones. */
+	private List<AlgoIntersectLineConic> departureWatch = List.of();
+	private SettlementOutcome settlement = SettlementOutcome.NOT_NEEDED;
+	private int settlementParameters;
+	private boolean selectionLost;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -216,6 +239,27 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	}
 
 	/**
+	 * @return outcome of the settlement of the inherited selection of this revision
+	 *         ({@value #SELECTION_SETTLEMENT})
+	 */
+	public synchronized SettlementOutcome getSettlementOutcome() {
+		return settlement;
+	}
+
+	/** @return auxiliary driver parameters computed by the settlements of this revision */
+	public synchronized int getSettlementParameters() {
+		return settlementParameters;
+	}
+
+	/**
+	 * @return copy intersections that a point query took out of their first initialization
+	 *         and that the evaluator settled at that parameter
+	 */
+	public synchronized int getDepartedSelections() {
+		return departedSelections.size();
+	}
+
+	/**
 	 * Evaluates one canonical parameter. The slice was synchronized with its
 	 * inputs once, when it was built for the current revision; a point query only
 	 * applies the driver coordinate and updates the driver-dependent subgraph
@@ -232,8 +276,17 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					"RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED: " + fidelity);
 		}
 		try {
-			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope,
-					() -> applyCoordinate(canonicalParameter));
+			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope, () -> {
+				applyCoordinate(canonicalParameter);
+				settleDepartures(() -> applyCoordinate(canonicalParameter));
+			});
+			String departure = departureRefusal();
+			if (departure != null) {
+				recordWork(LocusCertificationWork2D.SELECTION_DEPARTURE_REFUSAL, 1);
+				return LocusEvaluation2D.invalid(
+						LocusSemanticMetadata2D.EvaluationStatus.EVALUATION_FAILED, QUALITY,
+						"SELECTION_NOT_REPRODUCED: " + departure);
+			}
 			GeoElement pointGeo = isolatedDependentPoint.toGeoElement();
 			if (!pointGeo.isDefined() || isolatedDependentPoint.isInfinite()
 					|| !Double.isFinite(isolatedDependentPoint.getInhomX())
@@ -421,6 +474,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			captureCertifiedProgram() {
 		try {
 			resetExternalState();
+			settleDepartures(this::updateCopy);
 			fidelity = validateFidelity();
 		} catch (RuntimeException exception) {
 			return Optional.empty();
@@ -484,7 +538,11 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	/** Captures the class-v3 program of the freshly validated slice; never throws. */
 	private Optional<CertifiedConstructionProgram2D> captureV3() {
 		if (!fidelity.isFaithful()) {
-			programV3Refusal = "reconstruction-fidelity-not-established";
+			// The evidence names the outcome of an attempted settlement (D-CU2-T11-R1).
+			programV3Refusal = "reconstruction-fidelity-not-established"
+					+ (settlement == SettlementOutcome.NOT_NEEDED
+							|| settlement == SettlementOutcome.NOT_APPLICABLE ? ""
+									: ";" + SELECTION_SETTLEMENT + "=" + settlement.getToken());
 			return Optional.empty();
 		}
 		if (!fidelity.getUnsettledSelections().isEmpty()) {
@@ -512,28 +570,113 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	 */
 	public synchronized List<String> getOperationIdentitiesV3() {
 		if (operationIdentitiesV3 == null) {
-			// The slice carries the durable identities of its live geos.
-			SpatialIdentityRegistry registry =
-					isolatedConstruction.getSpatialIdentityRegistry();
-			List<String> identities = new ArrayList<>();
-			Map<String, Integer> counts = new LinkedHashMap<>();
-			for (int index = 0; index < programV3Origins.size(); index++) {
-				CertifiedConstructionCapture2D.StepOrigin origin = programV3Origins.get(index);
-				PersistentGeoId id = origin.getAnchor() == null ? null
-						: registry.getPersistentGeoId(origin.getAnchor());
-				if (id == null) {
-					identities.add("class-v3-step-" + (index + 1) + "-" + origin.getOperation());
-					continue;
-				}
-				String base = id.toExternalForm() + origin.getMacroPath();
-				int ordinal = counts.merge(base + "-" + origin.getOperation(), 1, Integer::sum)
-						- 1;
-				identities.add(base + (ordinal == 0 ? "" : "-" + ordinal) + "-"
-						+ origin.getOperation());
-			}
-			operationIdentitiesV3 = Collections.unmodifiableList(identities);
+			operationIdentitiesV3 = operationIdentities(programV3Origins);
 		}
 		return operationIdentitiesV3;
+	}
+
+	private List<String> operationIdentities(
+			List<CertifiedConstructionCapture2D.StepOrigin> origins) {
+		// The slice carries the durable identities of its live geos.
+		SpatialIdentityRegistry registry = isolatedConstruction.getSpatialIdentityRegistry();
+		List<String> identities = new ArrayList<>();
+		Map<String, Integer> counts = new LinkedHashMap<>();
+		for (int index = 0; index < origins.size(); index++) {
+			CertifiedConstructionCapture2D.StepOrigin origin = origins.get(index);
+			PersistentGeoId id = origin.getAnchor() == null ? null
+					: registry.getPersistentGeoId(origin.getAnchor());
+			if (id == null) {
+				identities.add("class-v3-step-" + (index + 1) + "-" + origin.getOperation());
+				continue;
+			}
+			String base = id.toExternalForm() + origin.getMacroPath();
+			int ordinal = counts.merge(base + "-" + origin.getOperation(), 1, Integer::sum)
+					- 1;
+			identities.add(base + (ordinal == 0 ? "" : "-" + ordinal) + "-"
+					+ origin.getOperation());
+		}
+		return Collections.unmodifiableList(identities);
+	}
+
+	/**
+	 * Class-v3 program of a revision whose only remaining discrepancies are selections of
+	 * line-conic intersections, for a proof of nonexistence that uses none of those
+	 * selections ({@code selection-independent-nonexistence/v1}, normative precision
+	 * D-CU2-T11-R1). The program is captured from the copy as it is; the selection that it
+	 * holds for those intersections is never evidence, and the revision stays unfaithful.
+	 *
+	 * @return the program with the nodes of the unreproduced intersections, or empty when the
+	 *         revision is faithful, when a discrepancy is anything else, or when the capture
+	 *         refuses the copy
+	 */
+	public synchronized Optional<SelectionIndependentProgram>
+			captureSelectionIndependentProgram() {
+		if (fidelity.isFaithful()) {
+			return Optional.empty();
+		}
+		Map<String, ReconstructionFidelity2D.SelectionPair> pairs = new LinkedHashMap<>();
+		for (ReconstructionFidelity2D.SelectionPair pair : fidelity.getSelectionPairs()) {
+			pairs.put(pair.getOwner(), pair);
+		}
+		Set<AlgoElement> unreproduced = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (ReconstructionFidelity2D.Discrepancy discrepancy : fidelity.getDiscrepancies()) {
+			ReconstructionFidelity2D.SelectionPair pair = discrepancy.getKind()
+					== ReconstructionFidelity2D.DiscrepancyKind.SELECTION
+							? pairs.get(discrepancy.getElement()) : null;
+			if (pair == null) {
+				return Optional.empty();
+			}
+			unreproduced.add(pair.getCopy());
+		}
+		CertifiedConstructionCapture2D.Outcome outcome =
+				CertifiedConstructionCapture2D.captureWithReason(descriptor,
+						isolatedDependentPoint.toGeoElement(), isolatedState, isolatedSupport,
+						certifiedAffineCoefficients, true);
+		if (!outcome.getProgram().isPresent()) {
+			return Optional.empty();
+		}
+		Set<Integer> nodes = new TreeSet<>();
+		for (AlgoElement copy : unreproduced) {
+			Integer node = outcome.getIntersectionNodes().get(copy);
+			if (node == null) {
+				return Optional.empty();
+			}
+			nodes.add(node);
+		}
+		return Optional.of(new SelectionIndependentProgram(outcome.getProgram().get(), nodes,
+				operationIdentities(outcome.getOrigins())));
+	}
+
+	/**
+	 * Program captured from a copy whose listed line-circle steps do not reproduce the live
+	 * selection (D-CU2-T11-R1); only a proof that uses none of those selections may read it.
+	 */
+	public static final class SelectionIndependentProgram {
+		private final CertifiedConstructionProgram2D program;
+		private final Set<Integer> unreproducedNodes;
+		private final List<String> operations;
+
+		private SelectionIndependentProgram(CertifiedConstructionProgram2D program,
+				Set<Integer> unreproducedNodes, List<String> operations) {
+			this.program = program;
+			this.unreproducedNodes = Collections.unmodifiableSet(unreproducedNodes);
+			this.operations = operations;
+		}
+
+		/** @return program captured from the copy as it is */
+		public CertifiedConstructionProgram2D getProgram() {
+			return program;
+		}
+
+		/** @return nodes of the line-circle steps whose selection is not reproduced */
+		public Set<Integer> getUnreproducedNodes() {
+			return unreproducedNodes;
+		}
+
+		/** @return durable identity token of each step, in program order */
+		public List<String> getOperations() {
+			return operations;
+		}
 	}
 
 	private double[][] directScalarAffineCertificate() {
@@ -605,23 +748,308 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	}
 
 	/**
-	 * Validates the copy against the live slice, restores the admitted discrepancies and
-	 * counts the work (PRE-G9B-CU2, D-CU2-20-R).
+	 * Validates the copy against the live slice, restores the admitted discrepancies, settles
+	 * the inherited selection of the copy where the contract admits it and counts the work
+	 * (PRE-G9B-CU2, D-CU2-20-R; {@value #SELECTION_SETTLEMENT}, D-CU2-T11-R1).
 	 */
 	private ReconstructionFidelity2D.Report validateFidelity() {
 		ReconstructionFidelity2D.Report report = ReconstructionFidelity2D.validate(
-				liveSlice, isolatedConstruction, liveDriverRoots, true);
+				liveSlice, isolatedConstruction, liveDriverRoots, true, departedSelections);
+		recordWork(LocusCertificationWork2D.FIDELITY_VALIDATION, 1);
+		recordWork(LocusCertificationWork2D.FIDELITY_RESTORATION, report.getRestorations());
+		List<AlgoIntersectLineConic> targets = settlementTargets(report);
+		if (!targets.isEmpty()) {
+			recordWork(LocusCertificationWork2D.SELECTION_SETTLEMENT, 1);
+			SettlementOutcome outcome = settle(targets, report);
+			report = ReconstructionFidelity2D.validate(liveSlice, isolatedConstruction,
+					liveDriverRoots, false, departedSelections);
+			recordWork(LocusCertificationWork2D.FIDELITY_VALIDATION, 1);
+			if (outcome == SettlementOutcome.SETTLED && !report.isFaithful()) {
+				outcome = SettlementOutcome.STATE_DIFFERS;
+			}
+			if (outcome != SettlementOutcome.SETTLED) {
+				recordWork(LocusCertificationWork2D.SELECTION_SETTLEMENT_FAILURE, 1);
+			}
+			settlement = outcome;
+		} else if (!report.isFaithful()) {
+			settlement = SettlementOutcome.NOT_APPLICABLE;
+		}
+		if (!report.isFaithful()) {
+			recordWork(LocusCertificationWork2D.FIDELITY_FAILURE, 1);
+		}
+		departureWatch = initializingCopies(report);
+		return report;
+	}
+
+	private void recordWork(LocusCertificationWork2D kind, int count) {
 		if (fidelityOwner != null) {
-			fidelityOwner.recordCertificationWork(
-					LocusCertificationWork2D.FIDELITY_VALIDATION);
-			fidelityOwner.recordCertificationWork(
-					LocusCertificationWork2D.FIDELITY_RESTORATION, report.getRestorations());
-			if (!report.isFaithful()) {
-				fidelityOwner.recordCertificationWork(
-						LocusCertificationWork2D.FIDELITY_FAILURE);
+			fidelityOwner.recordCertificationWork(kind, count);
+		}
+	}
+
+	/**
+	 * Precondition 1 of {@value #SELECTION_SETTLEMENT}: every remaining discrepancy is the
+	 * selection of a line-conic intersection whose live algorithm is settled and whose copy
+	 * is not, with two outputs, no existing intersection and a kernel that is not continuous.
+	 *
+	 * @return intersections of the copy to settle, or an empty list when the contract does
+	 *         not admit a settlement
+	 */
+	private static List<AlgoIntersectLineConic> settlementTargets(
+			ReconstructionFidelity2D.Report report) {
+		if (report.isFaithful()) {
+			return List.of();
+		}
+		Map<String, ReconstructionFidelity2D.SelectionPair> pairs = new LinkedHashMap<>();
+		for (ReconstructionFidelity2D.SelectionPair pair : report.getSelectionPairs()) {
+			pairs.put(pair.getOwner(), pair);
+		}
+		List<AlgoIntersectLineConic> targets = new ArrayList<>();
+		for (ReconstructionFidelity2D.Discrepancy discrepancy : report.getDiscrepancies()) {
+			ReconstructionFidelity2D.SelectionPair pair = discrepancy.getKind()
+					== ReconstructionFidelity2D.DiscrepancyKind.SELECTION
+							? pairs.get(discrepancy.getElement()) : null;
+			if (pair == null || !pair.isLiveSettled()
+					|| ReconstructionFidelity2D.isSettled(pair.getCopy())
+					|| !settleable(pair.getCopy())) {
+				return List.of();
+			}
+			targets.add(pair.getCopy());
+		}
+		return targets;
+	}
+
+	private static boolean settleable(AlgoIntersectLineConic copy) {
+		return copy.getIntersectionPoints().length == 2 && copy.existingIntersections() == 0
+				&& !copy.getKernel().isContinuous();
+	}
+
+	/**
+	 * @return copy intersections in their first initialization like their live ones, which a
+	 *         point query may take out of it
+	 */
+	private static List<AlgoIntersectLineConic> initializingCopies(
+			ReconstructionFidelity2D.Report report) {
+		List<AlgoIntersectLineConic> copies = new ArrayList<>();
+		for (ReconstructionFidelity2D.SelectionPair pair : report.getSelectionPairs()) {
+			AlgoIntersectLineConic copy = pair.getCopy();
+			if (pair.isLiveFirstPending() && copy.isSelectionFirstIntersectionPending()
+					&& copy.getIntersectionPoints().length == 2) {
+				copies.add(copy);
 			}
 		}
-		return report;
+		return copies;
+	}
+
+	/**
+	 * Settles the targets through the inherited computation of the copy at the auxiliary
+	 * parameters of {@value #SELECTION_SETTLEMENT}: two computations per parameter, in a
+	 * fixed order, until no target is left unsettled; the exact driver state of the copy is
+	 * restored afterwards. The live construction and every selection state are only read.
+	 *
+	 * @return typed outcome, before the validation that follows
+	 */
+	private SettlementOutcome settle(List<AlgoIntersectLineConic> targets,
+			ReconstructionFidelity2D.Report report) {
+		List<AlgoIntersectLineConic> initializing = initializingCopies(report);
+		DriverState saved = new DriverState();
+		SettlementOutcome outcome = SettlementOutcome.BUDGET_EXHAUSTED;
+		LocusInterval2D domain = descriptor.getDeclaredDomain();
+		double width = domain.getUpper() - domain.getLower();
+		try {
+			for (int index = 1; index <= SETTLEMENT_PARAMETERS; index++) {
+				double parameter = domain.getLower() + width * radicalInverse(index);
+				applyCoordinate(parameter);
+				applyCoordinate(parameter);
+				settlementParameters++;
+				recordWork(LocusCertificationWork2D.SELECTION_SETTLEMENT_PARAMETER, 1);
+				if (leftFirstInitialization(initializing)) {
+					outcome = SettlementOutcome.FIRST_PENDING_INITIALIZED;
+					break;
+				}
+				if (targets.stream().allMatch(ReconstructionFidelity2D::isSettled)) {
+					outcome = SettlementOutcome.SETTLED;
+					break;
+				}
+			}
+		} catch (RuntimeException exception) {
+			outcome = SettlementOutcome.COMPUTATION_FAILED;
+		}
+		if (!saved.restore()) {
+			outcome = SettlementOutcome.RESTORATION_DIFFERS;
+		}
+		return outcome;
+	}
+
+	/** @return {@code k}-th term of the base-2 radical inverse sequence: 1/2, 1/4, 3/4, ... */
+	static double radicalInverse(int index) {
+		double value = 0;
+		double scale = 0.5;
+		for (int rest = index; rest > 0; rest >>= 1) {
+			if ((rest & 1) != 0) {
+				value += scale;
+			}
+			scale /= 2;
+		}
+		return value;
+	}
+
+	private static boolean leftFirstInitialization(List<AlgoIntersectLineConic> copies) {
+		for (AlgoIntersectLineConic copy : copies) {
+			if (!copy.isSelectionFirstIntersectionPending()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Settles at once, by a second computation at the same parameter, every watched copy
+	 * intersection that the last computation took out of its first initialization, so that
+	 * no later query depends on which query did it (D-CU2-T11-R1, step 8).
+	 *
+	 * @param recompute the computation to repeat
+	 */
+	private void settleDepartures(Runnable recompute) {
+		List<AlgoIntersectLineConic> leaving = new ArrayList<>();
+		for (AlgoIntersectLineConic copy : departureWatch) {
+			if (!departedSelections.contains(copy)
+					&& !copy.isSelectionFirstIntersectionPending()) {
+				leaving.add(copy);
+			}
+		}
+		if (leaving.isEmpty()) {
+			return;
+		}
+		recompute.run();
+		for (AlgoIntersectLineConic copy : leaving) {
+			if (ReconstructionFidelity2D.isSettledIdentity(copy)) {
+				departedSelections.add(copy);
+				recordWork(LocusCertificationWork2D.SELECTION_DEPARTURE, 1);
+			} else {
+				selectionLost = true;
+			}
+		}
+	}
+
+	/**
+	 * @return why the outputs of a departed intersection are not those of the selection
+	 *         rule of the revision, the compaction of the roots on the paths in raw order, or
+	 *         {@code null}; with the identity permutation they are exactly when every defined
+	 *         output lies on both paths and output 0 is not undefined with output 1 defined
+	 */
+	private String departureRefusal() {
+		if (selectionLost) {
+			return "a departed intersection did not settle in the identity permutation";
+		}
+		for (AlgoIntersectLineConic copy : departedSelections) {
+			GeoPoint[] points = copy.getIntersectionPoints();
+			boolean first = points[0].isDefined();
+			boolean second = points[1].isDefined();
+			if (first && !onBothPaths(copy, points[0])
+					|| second && !onBothPaths(copy, points[1]) || !first && second) {
+				return "the outputs of a departed intersection differ from the compaction"
+						+ " rule of the revision";
+			}
+		}
+		return null;
+	}
+
+	/** @return whether the driver of the slice is a number, as {@link #applyCoordinate} sets */
+	private boolean scalarDriver() {
+		return descriptor.getFamily() == SemanticGeneratorFamily1D.SCALAR_STATE
+				|| descriptor.getFamily() == SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT;
+	}
+
+	private static boolean onBothPaths(AlgoIntersectLineConic intersection, GeoPoint point) {
+		return intersection.getLine().isIntersectionPointIncident(point, Kernel.MIN_PRECISION)
+				&& intersection.getConic().isIntersectionPointIncident(point,
+						Kernel.MIN_PRECISION);
+	}
+
+	/** Typed outcome of the selection settlement of a revision (D-CU2-T11-R1). */
+	public enum SettlementOutcome {
+		/** The copy reproduced every selection without a settlement. */
+		NOT_NEEDED("not-needed"),
+		/** A discrepancy outside the contract: no settlement is attempted. */
+		NOT_APPLICABLE("not-applicable"),
+		/** Every target settled and the copy was validated faithful. */
+		SETTLED("settled"),
+		/** No auxiliary parameter of the sequence settled every target. */
+		BUDGET_EXHAUSTED("budget-exhausted"),
+		/** An auxiliary parameter initialized an intersection whose live one is initializing. */
+		FIRST_PENDING_INITIALIZED("first-pending-initialized"),
+		/** The validation after the settlement still found a difference. */
+		STATE_DIFFERS("state-differs"),
+		/** The inherited computation failed at an auxiliary parameter. */
+		COMPUTATION_FAILED("computation-failed"),
+		/** The exact driver state of the copy could not be restored. */
+		RESTORATION_DIFFERS("restoration-differs");
+
+		private final String token;
+
+		SettlementOutcome(String token) {
+			this.token = token;
+		}
+
+		/** @return token of the outcome in evidence and diagnostics */
+		public String getToken() {
+			return token;
+		}
+	}
+
+	/**
+	 * Exact driver state of the copy, restored after a settlement (D-CU2-T11-R1, step 6):
+	 * the bits of the coordinate number, or the homogeneous coordinates and the path
+	 * parameter of the driver point, assigned back without recomputing the position from the
+	 * path parameter.
+	 */
+	private final class DriverState {
+		private final double value;
+		private final double x;
+		private final double y;
+		private final double z;
+		private final PathParameter path;
+
+		private DriverState() {
+			if (scalarDriver()) {
+				value = ((GeoNumeric) isolatedCoordinate).getValue();
+				x = Double.NaN;
+				y = Double.NaN;
+				z = Double.NaN;
+				path = null;
+			} else {
+				GeoPoint point = (GeoPoint) isolatedState;
+				value = Double.NaN;
+				x = point.x;
+				y = point.y;
+				z = point.z;
+				path = new PathParameter(point.getPathParameter());
+			}
+		}
+
+		/** @return whether the driver state is restored bit for bit */
+		private boolean restore() {
+			if (path == null) {
+				GeoNumeric number = (GeoNumeric) isolatedCoordinate;
+				number.setValue(value);
+				number.updateCascade();
+				return Double.doubleToRawLongBits(number.getValue())
+						== Double.doubleToRawLongBits(value);
+			}
+			GeoPoint point = (GeoPoint) isolatedState;
+			point.getPathParameter().set(path);
+			point.x = x;
+			point.y = y;
+			point.z = z;
+			point.updateCoords();
+			point.updateCascade();
+			return Double.doubleToRawLongBits(point.x) == Double.doubleToRawLongBits(x)
+					&& Double.doubleToRawLongBits(point.y) == Double.doubleToRawLongBits(y)
+					&& Double.doubleToRawLongBits(point.z) == Double.doubleToRawLongBits(z)
+					&& Double.doubleToRawLongBits(point.getPathParameter().getT())
+							== Double.doubleToRawLongBits(path.getT());
+		}
 	}
 
 	private void resetExternalState() {

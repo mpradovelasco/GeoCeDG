@@ -111,17 +111,21 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 		assertNotEquals(tokens(forward), tokens(reverse));
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the expression point is outside class v3,
+	 * so its locus has no certified component, its intersection has no root at all and its
+	 * coverage is not established; no pair token is issued.
+	 */
 	@Test
 	void anUncertifiedExpressionIssuesNoPairToken() {
 		witness();
 		add("Ex=(x(C)/2,y(C))");
 		add("ex=LocusV2(Ex,C)");
 		GeoLocusIntersectionResult rich = add("Rx=Intersect(d,ex)");
-		assertFalse(rich.getIntersectionResult().getFiniteSolutions().isEmpty());
+		assertTrue(rich.getIntersectionResult().getFiniteSolutions().isEmpty());
 		assertTrue(eligible(rich).isEmpty(), diagnostic(rich));
 		assertTrue(rich.getTokenLedgerState().startsWith("4|"), rich.getTokenLedgerState());
-		assertTrue(diagnostic(rich).contains("no certified interval curve model"),
-				diagnostic(rich));
+		assertTrue(diagnostic(rich).contains("COVERAGE_NOT_ESTABLISHED"), diagnostic(rich));
 		assertTrue(evaluator("ex").captureCertifiedProgram().isEmpty());
 	}
 

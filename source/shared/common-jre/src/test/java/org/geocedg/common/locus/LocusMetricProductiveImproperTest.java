@@ -196,7 +196,7 @@ class LocusMetricProductiveImproperTest {
 						G7BMetricFixtures.EPS_DOMAIN);
 		LocusInterval2D valid = new LocusInterval2D(-4, 4,
 				closedEndpoints, closedEndpoints);
-		LocusBranch2D branch = new LocusBranch2D(G7BMetricFixtures.BRANCH,
+		LocusBranch2D branch = LocusV2TestBranches.branch(G7BMetricFixtures.BRANCH,
 				provider.getDeclaredDomain(), List.of(valid),
 				Orientation.INCREASING, "unbounded-transform/v1",
 				LocusLineage2D.unchanged(),

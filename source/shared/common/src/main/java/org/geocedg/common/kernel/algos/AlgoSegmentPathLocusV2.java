@@ -29,6 +29,9 @@ import org.geogebra.common.kernel.geos.GeoSegment;
  * recompute and never uses public PathParameter as semantic identity.
  */
 public final class AlgoSegmentPathLocusV2 extends AlgoLocusV2 {
+	/** Contract of the explicit existence certificate of a segment path (D-CU2-7). */
+	public static final String PROVIDER_CONTRACT = "segment-path-producer/v1";
+
 	@Override
 	public String getV2RedefineContractId() {
 		return "locus-v2/internal/segment-path/v1";
@@ -74,9 +77,11 @@ public final class AlgoSegmentPathLocusV2 extends AlgoLocusV2 {
 				: new LocusPoint2D(0, 0);
 		StablePathDomainProvider2D provider = StablePathDomainProvider2D.segment(
 				"segment-native-t/v1", start, end, domainEpsilon);
+		// The segment provider maps every parameter of [0, 1] to a point of the segment and
+		// the pilot point function is total: the explicit certificate of D-CU2-7 cites it.
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(
 				"segment.sheet.main", provider, "stable-segment-path-provider/v1",
-				EnumSet.noneOf(BranchProperty.class));
+				EnumSet.noneOf(BranchProperty.class), PROVIDER_CONTRACT);
 		return new LocusDefinition2D(locusIdentity, candidateRevision,
 				valid ? DefinitionStatus.VALID : DefinitionStatus.DRIVER_INVALID,
 				provider, valid ? Collections.singletonList(branch)

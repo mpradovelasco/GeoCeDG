@@ -100,7 +100,12 @@ public final class GeometryExportModel {
 		STALE_SOURCE_REVISION,
 		DUPLICATE_COMPONENT,
 		/** Source is outside the typed complete-construction population. */
-		OUTSIDE_GEOMETRIC_POPULATION
+		OUTSIDE_GEOMETRIC_POPULATION,
+		/**
+		 * A Locus V2 whose existence is not established has no certified component to export
+		 * (PRE-G9B-CU2, V-DXF-2).
+		 */
+		EXISTENCE_NOT_ESTABLISHED
 	}
 
 	/** Immutable 2D coordinate or vector. */

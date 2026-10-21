@@ -25,6 +25,8 @@ import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
+import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
@@ -50,6 +52,9 @@ import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
@@ -73,12 +78,13 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private ReconstructibleLocusEvaluator2D evaluator;
 	private String sliceFingerprint;
 	private ReconstructionSliceFingerprint2D.Snapshot sliceSnapshot;
-	private ReconstructibleLocusEvaluator2D shadowEvaluator;
-	private HybridExistenceCertifier2D.Result shadowCertificate;
+	private ReconstructibleLocusEvaluator2D certifiedEvaluator;
+	private String certifiedLimitation;
+	private HybridExistenceCertifier2D.Result certificate;
 	private ReconstructibleLocusEvaluator2D routeFactsEvaluator;
 	private double routeLengthBound = Double.NaN;
-	private String shadowSelection;
-	private List<LocusLineage2D> shadowLineage = List.of();
+	private String certifiedSelection;
+	private List<LocusLineage2D> certificateLineage = List.of();
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -128,13 +134,28 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				domainInput, supportBranchInput);
 	}
 
+	/**
+	 * Publication rule of PRE-G9B-CU2 (H01; {@code locus-v2-semantics.md}, section
+	 * "PRE-G9B-CU2 amendment"): the locus is published when its definition inputs are
+	 * defined; whether the traced point is defined at the current driver position never
+	 * affects publication. While a construction is read as a whole, a locus whose slice has an
+	 * intersection with an unsettled selection is published by the update that ends the read.
+	 */
 	@Override
 	protected boolean isSemanticPublicationReady() {
 		if (getLocus().getPersistentLocusId() == null) {
 			return false;
 		}
-		for (GeoElement dependency : getDurableDependencyGeos()) {
-			if (!dependency.isDefined()) {
+		if (!kernel.isMacroKernel()
+				&& cons.getSpatialIdentityRegistry().isPublishingConstructionRestore()
+				&& hasUnsettledSelection()) {
+			// The revision published now would be a transient one, never certified (unsettled
+			// selection); the update of the whole construction that ends the read settles the
+			// selection and publishes the first revision once.
+			return false;
+		}
+		for (GeoElement input : getDefinitionInputs()) {
+			if (!input.isDefined()) {
 				return false;
 			}
 		}
@@ -144,6 +165,46 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		} catch (RuntimeException exception) {
 			return false;
 		}
+	}
+
+	/**
+	 * @return whether a line-conic intersection of the slice is initialized but has not set
+	 *         its permutation yet, which its next computation does (read-only accessors of
+	 *         D-CU2-17; {@code ReconstructionFidelity2D} calls such a selection unsettled)
+	 */
+	private boolean hasUnsettledSelection() {
+		for (GeoElement geo : getReconstructionSliceGeos()) {
+			AlgoElement parent = geo.getParentAlgorithm();
+			if (parent instanceof AlgoIntersectSingle) {
+				parent = ((AlgoIntersectSingle) parent).getSourceIntersection();
+			}
+			if (parent instanceof AlgoIntersectLineConic) {
+				AlgoIntersectLineConic intersection = (AlgoIntersectLineConic) parent;
+				if (!intersection.isSelectionFirstIntersectionPending()
+						&& intersection.isSelectionPermutationPending()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Definition inputs of the publication rule: the elements of the reconstruction slice
+	 * that are neither the driver nor depend on it. They are not the durable dependency
+	 * projection of ADR 0029, which does not change.
+	 *
+	 * @return definition inputs in construction order
+	 */
+	public List<GeoElement> getDefinitionInputs() {
+		ArrayList<GeoElement> inputs = new ArrayList<>();
+		for (GeoElement geo : getReconstructionSliceGeos()) {
+			if (geo != state && geo != coordinate && !geo.isChildOf(state)
+					&& !geo.isChildOf(coordinate)) {
+				inputs.add(geo);
+			}
+		}
+		return Collections.unmodifiableList(inputs);
 	}
 
 	@Override
@@ -157,16 +218,15 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				EvaluationMethod.DETERMINISTIC_NUMERIC_DEPENDENCY,
 				RepresentationRole.SEMANTIC_RESULT,
 				NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
-		LocusExistenceStructure2D existence = !evaluator.isReconstructionFaithful()
-				? unfaithfulReconstruction()
-				: SelectedRootContinuousDomainCertifier2D.certify(descriptor,
-						dependentPoint, state, support).orElseGet(() ->
-						fallbackExistenceStructure());
+		// PRE-G9B-CU2 step T11 (locus-v2-existence-components.md section 15.7): the
+		// certificate of the revision is published; a locus that cannot be certified is
+		// NOT_ESTABLISHED and never falls back to a compatibility certificate.
+		HybridExistenceCertifier2D.Result published = getHybridExistenceCertificate();
 		LocusBranch2D branch = new LocusBranch2D(
 				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-				descriptor.getDeclaredDomain(), existence,
-				descriptor.getOrientation(), PROVENANCE,
-				LocusLineage2D.unchanged(), properties, quality);
+				descriptor.getDeclaredDomain(), published.getStructure(),
+				descriptor.getOrientation(), PROVENANCE, branchLineage(), properties,
+				quality);
 		return new LocusDefinition2D(getLocus().getLocusIdentity(),
 				candidateRevision, DefinitionStatus.VALID, provider,
 				Collections.singletonList(branch), evaluator,
@@ -181,10 +241,11 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	}
 
 	/**
-	 * Hybrid existence certificate of the current revision (contract
-	 * {@value HybridExistenceCertifier2D#CONTRACT}, ADR 0038), computed once per revision
-	 * and shared by every caller. It is kept in shadow: the published existence structure
-	 * stays the current one until step T11 of PRE-G9B-CU2 replaces it.
+	 * Existence certificate of the current revision, the one this producer publishes
+	 * (contract {@value HybridExistenceCertifier2D#CONTRACT}, ADR 0038; {@code
+	 * locus-v2-existence-components.md} section 15.7), computed once per revision inside a
+	 * counted scope and shared by every consumer. A selected SplineV2 root is certified by
+	 * its particular case of the contract (D-CU2-9).
 	 *
 	 * @return certificate of the current revision, or {@code null} before the slice of the
 	 *         first revision is built
@@ -194,72 +255,188 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		if (current == null || descriptor == null) {
 			return null;
 		}
-		if (shadowEvaluator != current) {
-			LocusExistenceStructure2D previous = shadowCertificate == null ? null
-					: shadowCertificate.getStructure();
-			String previousSelection = shadowSelection;
-			shadowCertificate = LocusCertificationScope2D.certify(
-					getLocus().getInstrumentation(), () -> hybridCertificate(current));
-			shadowSelection = current.captureCertifiedProgramV3()
+		String limitation = upstreamLimitation();
+		if (certifiedEvaluator != current
+				|| !Objects.equals(certifiedLimitation, limitation)) {
+			LocusExistenceStructure2D previous = certificate == null ? null
+					: certificate.getStructure();
+			String previousSelection = certifiedSelection;
+			certificate = LocusCertificationScope2D.certify(getLocus().getInstrumentation(),
+					() -> declared(certificate(current, limitation), limitation));
+			certifiedSelection = current.captureCertifiedProgramV3()
 					.map(CertifiedConstructionProgram2D::getSelectionSignature).orElse(null);
-			shadowLineage = LocusComponentLineage2D.transitions(previous,
-					shadowCertificate.getStructure(),
-					Objects.equals(previousSelection, shadowSelection));
-			shadowEvaluator = current;
+			certificateLineage = LocusComponentLineage2D.transitions(previous,
+					certificate.getStructure(),
+					Objects.equals(previousSelection, certifiedSelection));
+			certifiedEvaluator = current;
+			certifiedLimitation = limitation;
 		}
-		return shadowCertificate;
+		return certificate;
 	}
 
 	/**
-	 * Lineage transitions of the components of the hybrid certificate from the previous one
-	 * computed for this locus ({@code locus-v2-existence-components.md} section 15.6), kept in
-	 * shadow with it; the first certificate after loading relates to nothing earlier.
+	 * Lineage transitions of the components of the certificate from the previous one
+	 * computed for this locus ({@code locus-v2-existence-components.md} section 15.6); the
+	 * first certificate after loading relates to nothing earlier.
 	 *
 	 * @return transitions into the current certificate, empty before the first one
 	 */
 	public List<LocusLineage2D> getHybridLineage() {
-		return getHybridExistenceCertificate() == null ? List.of() : shadowLineage;
+		return getHybridExistenceCertificate() == null ? List.of() : certificateLineage;
 	}
 
-	private HybridExistenceCertifier2D.Result hybridCertificate(
-			ReconstructibleLocusEvaluator2D current) {
+	/**
+	 * Exploratory evidence of the unresolved bands of the published certificate (decision
+	 * E-1); it is not part of the definition and never certifies.
+	 */
+	@Override
+	public LocusExploratoryEvidence2D getExploratoryEvidence(String branchKey) {
+		HybridExistenceCertifier2D.Result current = certificate;
+		return current == null || certifiedEvaluator != evaluator
+				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)
+						? null : current.getExploration();
+	}
+
+	/**
+	 * Lineage of the published branch: the transition into the components of the current
+	 * certificate, that is the last of {@link #getHybridLineage()}; a disappearance that has
+	 * a separate appearance stays in that list.
+	 */
+	private LocusLineage2D branchLineage() {
+		LocusLineage2D lineage = LocusLineage2D.unchanged();
+		for (LocusLineage2D transition : certificateLineage) {
+			lineage = transition;
+		}
+		return lineage;
+	}
+
+	private HybridExistenceCertifier2D.Result certificate(
+			ReconstructibleLocusEvaluator2D current, String limitation) {
 		LocusInterval2D domain = descriptor.getDeclaredDomain();
+		boolean periodic = descriptor.isPeriodic();
 		String key = SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY;
 		HybridExistenceCertifier2D.Policy policy = HybridExistenceCertifier2D.Policy.DEFAULT;
+		LocusInstrumentation2D instrumentation = getLocus().getInstrumentation();
 		if (!current.isReconstructionFaithful()) {
-			// Evaluations of an unfaithful slice fail explicitly: nothing to explore.
-			return HybridExistenceCertifier2D.notEstablished(domain, descriptor.isPeriodic(),
-					key, current.getFidelityReport().isSelectionOnly()
+			// A proof that uses no unreproduced selection may still establish that no point
+			// exists on the whole domain (normative precision D-CU2-T11-R1); otherwise the
+			// evaluations of an unfaithful slice fail explicitly: nothing to explore.
+			Optional<HybridExistenceCertifier2D.Result> empty =
+					selectionIndependentNonexistence(current, domain, periodic, key, policy,
+							instrumentation);
+			if (empty.isPresent()) {
+				return empty.get();
+			}
+			return HybridExistenceCertifier2D.notEstablished(domain, periodic, key,
+					current.getFidelityReport().isSelectionOnly()
 							? LocusCoverageCause2D.SELECTION_NOT_REPRODUCED
 							: LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
-					current.getProgramV3Refusal(), null, policy,
-					getLocus().getInstrumentation());
+					current.getProgramV3Refusal(), null, policy, instrumentation);
 		}
-		LocusDefinition2D definition = getLocus().getSemanticDefinition();
-		LocusBranch2D branch = definition == null
-				|| definition.getEvaluatorCapability() != current ? null
-						: definition.getBranch(key);
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.openServiceSession(false, 1)) {
-			HybridExistenceCertifier2D.Sampler sampler = branch == null ? null
-					: parameter -> current.evaluate(definition, branch, parameter, session)
-							.isValid();
+			// Pointwise validity of the slice, the only input of exploratory evidence; the
+			// reconstructible evaluator reads neither a definition nor a branch.
+			HybridExistenceCertifier2D.Sampler sampler = parameter ->
+					LocusCertificationScope2D.explore(() -> current.evaluate(null, null,
+							parameter, session).isValid());
+			Optional<LocusExistenceStructure2D> selectedRoot =
+					SelectedRootContinuousDomainCertifier2D.certify(descriptor,
+							dependentPoint, state, support);
+			if (selectedRoot.isPresent()) {
+				return HybridExistenceCertifier2D.particular(selectedRoot.get(), sampler,
+						policy, instrumentation);
+			}
+			if (limitation != null) {
+				return HybridExistenceCertifier2D.notEstablished(domain, periodic, key,
+						LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED, limitation, sampler,
+						policy, instrumentation);
+			}
+			if (dependsOnSelectedIntersectionRoot()) {
+				return HybridExistenceCertifier2D.notEstablished(domain, periodic, key,
+						LocusCoverageCause2D.NOT_CERTIFIED,
+						"selected-root-continuity-not-established", sampler, policy,
+						instrumentation);
+			}
 			Optional<CertifiedConstructionProgram2D> program =
 					current.captureCertifiedProgramV3();
 			if (!program.isPresent()) {
 				String refusal = current.getProgramV3Refusal();
-				return HybridExistenceCertifier2D.notEstablished(domain,
-						descriptor.isPeriodic(), key, "unsettled-selection".equals(refusal)
+				return HybridExistenceCertifier2D.notEstablished(domain, periodic, key,
+						"unsettled-selection".equals(refusal)
 								? LocusCoverageCause2D.NOT_CERTIFIED
 								: LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
 						refusal == null ? "outside-class" : refusal, sampler, policy,
-						getLocus().getInstrumentation());
+						instrumentation);
 			}
 			return HybridExistenceCertifier2D.certify(
 					new ConstructionBoxModel2D(program.get()), current.getMetricStructuresV3(),
-					current.getOperationIdentitiesV3(), domain, descriptor.isPeriodic(), key,
-					sampler, policy, getLocus().getInstrumentation());
+					current.getOperationIdentitiesV3(), domain, periodic, key, sampler, policy,
+					instrumentation);
 		}
+	}
+
+	/**
+	 * Nonexistence on the whole domain proved without the selections that the slice copy
+	 * does not reproduce ({@code selection-independent-nonexistence/v1}, normative precision
+	 * D-CU2-T11-R1): applicable only when every remaining discrepancy is the selection of a
+	 * line-conic intersection; never a general bypass of the fidelity validation.
+	 *
+	 * @return the complete certificate with no component, or empty without such a proof
+	 */
+	private static Optional<HybridExistenceCertifier2D.Result> selectionIndependentNonexistence(
+			ReconstructibleLocusEvaluator2D current, LocusInterval2D domain, boolean periodic,
+			String key, HybridExistenceCertifier2D.Policy policy,
+			LocusInstrumentation2D instrumentation) {
+		if (!current.getFidelityReport().isSelectionOnly()) {
+			return Optional.empty();
+		}
+		return current.captureSelectionIndependentProgram().flatMap(program ->
+				HybridExistenceCertifier2D.selectionIndependentNonexistence(
+						new ConstructionBoxModel2D(program.getProgram()),
+						program.getUnreproducedNodes(), program.getOperations(), domain,
+						periodic, key, policy, instrumentation));
+	}
+
+	/**
+	 * The certificate restricted to the components that the generator declares for its
+	 * driver domain, a scalar domain list or the components of a complete locus support:
+	 * outside them the locus has no driver parameter (ADR 0027). A support whose components
+	 * are not established declares nothing, so nothing is restricted.
+	 */
+	private HybridExistenceCertifier2D.Result declared(HybridExistenceCertifier2D.Result result,
+			String limitation) {
+		List<LocusInterval2D> components = descriptor.getValidComponents();
+		if (limitation != null || components.size() == 1
+				&& components.get(0).equals(descriptor.getDeclaredDomain())) {
+			return result;
+		}
+		return result.restrictedTo(components, family.getProviderId() + "/declared-components");
+	}
+
+	/**
+	 * The limitation that a dependent on a locus support declares (consumption design
+	 * section 3; ADR 0027): its completeness is never above the support's, and a support
+	 * with point components is not composed.
+	 *
+	 * @return the limitation, or {@code null} when the support is complete without point
+	 *         components or the locus has no locus support
+	 */
+	private String upstreamLimitation() {
+		if (family != SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT
+				|| !(support instanceof GeoLocusV2) || descriptor == null) {
+			return null;
+		}
+		LocusDefinition2D sourceDefinition = ((GeoLocusV2) support).getSemanticDefinition();
+		LocusBranch2D sourceBranch = sourceDefinition == null
+				|| descriptor.getSupportBranchKey() == null ? null
+						: sourceDefinition.getBranch(descriptor.getSupportBranchKey());
+		if (sourceBranch == null || sourceBranch.getExistenceStructure().getCompleteness()
+				!= LocusExistenceStructure2D.Completeness.COMPLETE) {
+			return "upstream-locus-coverage-not-established";
+		}
+		return sourceBranch.getExistenceStructure().getPointComponents().isEmpty() ? null
+				: "upstream-point-components-not-composed";
 	}
 
 	/**
@@ -272,12 +449,12 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	 * @return {@code {chord, lengthBound}}, each {@code NaN} when not certified
 	 */
 	public double[] getRouteSourceFacts(double origin) {
-		HybridExistenceCertifier2D.Result certificate = getHybridExistenceCertificate();
-		ReconstructibleLocusEvaluator2D current = shadowEvaluator;
+		HybridExistenceCertifier2D.Result published = getHybridExistenceCertificate();
+		ReconstructibleLocusEvaluator2D current = certifiedEvaluator;
 		Optional<CertifiedConstructionProgram2D> program = current == null
 				? Optional.empty() : current.captureCertifiedProgramV3();
-		if (certificate == null || !program.isPresent()
-				|| !certificate.getStructure().isClosedPeriodic()) {
+		if (published == null || !program.isPresent()
+				|| !published.getStructure().isClosedPeriodic()) {
 			return new double[] {Double.NaN, Double.NaN};
 		}
 		ConstructionBoxModel2D model = new ConstructionBoxModel2D(program.get());
@@ -288,76 +465,6 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		}
 		return new double[] {RouteSourceFacts2D.chordLowerBound(model, domain, origin),
 			routeLengthBound};
-	}
-
-	/**
-	 * A slice whose copy does not reproduce its authoritative inputs certifies nothing and
-	 * its evaluations fail explicitly (PRE-G9B-CU2, D-CU2-20-R).
-	 */
-	private LocusExistenceStructure2D unfaithfulReconstruction() {
-		return LocusExistenceStructure2D.notEstablished(
-				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-				descriptor.getDeclaredDomain(),
-				LocusExistenceStructure2D.topologyOf(descriptor.getDeclaredDomain(),
-						descriptor.isPeriodic()),
-				evaluator.getFidelityReport().isSelectionOnly()
-						? LocusCoverageCause2D.SELECTION_NOT_REPRODUCED
-						: LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
-				"reconstruction-fidelity-not-established");
-	}
-
-	private LocusExistenceStructure2D fallbackExistenceStructure() {
-		LocusExistenceStructure2D.DomainTopology topology =
-				LocusExistenceStructure2D.topologyOf(descriptor.getDeclaredDomain(),
-						descriptor.isPeriodic());
-		if (dependsOnSelectedIntersectionRoot()) {
-			return LocusExistenceStructure2D.notEstablished(
-					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-					descriptor.getDeclaredDomain(), topology,
-					LocusCoverageCause2D.NOT_CERTIFIED,
-					"selected-root-continuity-not-established");
-		}
-		if (family == SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT
-				&& support instanceof GeoLocusV2) {
-			LocusDefinition2D sourceDefinition =
-					((GeoLocusV2) support).getSemanticDefinition();
-			LocusBranch2D sourceBranch = sourceDefinition == null
-					|| descriptor.getSupportBranchKey() == null ? null
-							: sourceDefinition.getBranch(
-									descriptor.getSupportBranchKey());
-			if (sourceBranch == null || sourceBranch.getExistenceStructure()
-					.getCompleteness()
-							!= LocusExistenceStructure2D.Completeness.COMPLETE) {
-				return LocusExistenceStructure2D.notEstablished(
-						SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-						descriptor.getDeclaredDomain(), topology,
-						LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
-						"upstream-locus-coverage-not-established");
-			}
-			// The dependent composes the existence of its support (PRE-G9B-CU2,
-			// consumption design section 3): never complete over a point component, and
-			// arcs are inherited with their shape, never split or closed.
-			LocusExistenceStructure2D supportStructure = sourceBranch.getExistenceStructure();
-			if (!supportStructure.getPointComponents().isEmpty()) {
-				return LocusExistenceStructure2D.notEstablished(
-						SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-						descriptor.getDeclaredDomain(), topology,
-						LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
-						"upstream-point-components-not-composed");
-			}
-			for (LocusExistenceStructure2D.ContinuousComponent component
-					: supportStructure.getContinuousValidComponents()) {
-				if (!component.followsCanonicalOrder()) {
-					return LocusExistenceStructure2D.compatibilityInherited(
-							SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-							supportStructure);
-				}
-			}
-		}
-		return LocusExistenceStructure2D.completeCompatibility(
-				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
-				descriptor.getDeclaredDomain(), descriptor.getValidComponents(),
-				descriptor.isPeriodic());
 	}
 
 	private boolean dependsOnSelectedIntersectionRoot() {

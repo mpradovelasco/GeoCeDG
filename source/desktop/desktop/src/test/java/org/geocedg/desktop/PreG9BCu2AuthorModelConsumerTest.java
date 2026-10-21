@@ -10,20 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
-import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
-import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Result;
 import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResolver2D;
@@ -34,14 +31,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * PRE-G9B-CU2 step T9: consumers of the author model read the existence structure, with the
- * shadow certificates injected into definitions that keep the live evaluators while the
- * compatibility certificate is still published (consumption design sections 3 to 5.3): the
- * chain {@code o_1 -> w_1 -> d_2 -> e_2} stays defined (V-CON-10), the excluded end of
- * {@code e_2} is its one-sided limit through the explicit query of the slice, never the image
- * of {@code t_N} (P2, precursor of V-E2-8), and a point of the evaluator inside a certified
- * gap is not published as valid (V-AVAIL-1). Step T11 reruns them on published
- * certificates.
+ * PRE-G9B-CU2 steps T9 and T11: consumers of the author model read the existence structure
+ * of the published certificates (consumption design sections 3 to 5.3): the chain
+ * {@code o_1 -> w_1 -> d_2 -> e_2} stays defined (V-CON-10), the excluded end of {@code e_2}
+ * is its one-sided limit through the explicit query of the slice, never the image of
+ * {@code t_N} (P2, precursor of V-E2-8), and a point of the evaluator of the slice inside a
+ * certified gap is not published as valid (V-AVAIL-1). Step T9 ran them on the shadow
+ * certificates injected into definitions with the live evaluators.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -108,7 +104,7 @@ class PreG9BCu2AuthorModelConsumerTest {
 			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
 					PreG9BCu0Corpus.CEDG, work));
 			GeoLocusV2 e2 = PreG9BCu0Corpus.locus(app, "e_2");
-			LocusDefinition2D certified = injected(e2, certificate(e2).getStructure());
+			LocusDefinition2D certified = published(e2);
 			Map<String, Object> values = new LinkedHashMap<>();
 			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(16)) {
 				LocusEvaluation2D start = certified.evaluateComponentEnd(PreG9BCu0Corpus.MAIN,
@@ -144,10 +140,10 @@ class PreG9BCu2AuthorModelConsumerTest {
 	}
 
 	/**
-	 * V-AVAIL-1: at the first binary64 of the bite, the evaluator of {@code o} returns a point
-	 * inside the certified gap around {@code t_c} (F-CU2-1); with the certificate the point is
-	 * not published as valid: {@code DEPENDENCY_UNDEFINED}, certified nonexistence and the
-	 * disagreement of the evaluator.
+	 * V-AVAIL-1: at the first binary64 of the bite, the evaluator of the slice of {@code o}
+	 * returns a point inside the certified gap around {@code t_c} (F-CU2-1); the published
+	 * locus does not publish it as valid: {@code DEPENDENCY_UNDEFINED}, certified nonexistence
+	 * and the disagreement of the evaluator.
 	 */
 	@Test
 	void anEvaluatorPointInACertifiedGapIsNotPublished() throws Exception {
@@ -169,10 +165,10 @@ class PreG9BCu2AuthorModelConsumerTest {
 			if (gap != null) {
 				double inside = gap.getInterval().getLower() / 2
 						+ gap.getInterval().getUpper() / 2;
-				LocusDefinition2D certified = injected(o, structure);
+				LocusDefinition2D certified = published(o);
 				try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
-					values.put("live", o.evaluate(PreG9BCu0Corpus.MAIN, inside, session)
-							.getStatus().name());
+					values.put("live", certified.getEvaluatorCapability().evaluate(null, null,
+							inside, session).getStatus().name());
 					LocusEvaluation2D evaluation = certified.evaluate(PreG9BCu0Corpus.MAIN,
 							inside, session);
 					values.put("certified", evaluation.getStatus().name());
@@ -190,30 +186,23 @@ class PreG9BCu2AuthorModelConsumerTest {
 	}
 
 	/**
-	 * A definition with the live evaluator and the shadow certificate, as step T11 will
-	 * publish it.
+	 * @return the published definition, after checking that it publishes the certificate of
+	 *         its revision (step T11); the definition binds the structure to its revision, so
+	 *         the two compare by their content signature
 	 */
-	private static LocusDefinition2D injected(GeoLocusV2 locus,
-			LocusExistenceStructure2D structure) {
-		LocusDefinition2D published = locus.getSemanticDefinition();
-		LocusBranch2D branch = published.getBranch(PreG9BCu0Corpus.MAIN);
-		LocusBranch2D certified = new LocusBranch2D(branch.getBranchKey(),
-				branch.getDeclaredDriverDomain(), structure, branch.getOrientation(),
-				branch.getProvenance(), branch.getLineage(), branch.getProperties(),
-				branch.getQuality());
-		return new LocusDefinition2D(published.getLocusIdentity(),
-				published.getSemanticRevision(), published.getDefinitionStatus(),
-				published.getProvider(), List.of(certified),
-				published.getEvaluatorCapability(), published.getDeterminism(),
-				"t9-injected|" + structure.getCertifierContract(),
-				new LocusInstrumentation2D());
+	private static LocusDefinition2D published(GeoLocusV2 locus) {
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		assertEquals(certificate(locus).getStructure().getSemanticSignature(),
+				definition.getBranch(PreG9BCu0Corpus.MAIN).getExistenceStructure()
+						.getSemanticSignature());
+		return definition;
 	}
 
 	private static Result certificate(GeoLocusV2 locus) {
 		Result result = ((AlgoDependentPointLocusV2) locus.getParentAlgorithm())
 				.getHybridExistenceCertificate();
 		if (result == null) {
-			throw new IllegalStateException("No shadow certificate");
+			throw new IllegalStateException("No certificate");
 		}
 		return result;
 	}

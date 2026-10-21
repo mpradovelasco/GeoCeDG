@@ -151,7 +151,7 @@ class LocusV2SessionHardeningTest {
 				new ExplicitNumericDomainProvider2D("session-parameter/v1",
 						new LocusInterval2D(-1, 1, true, true),
 						Orientation.INCREASING, false, 1E-14);
-		LocusBranch2D branch = new LocusBranch2D(BRANCH_KEY,
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH_KEY,
 				provider.getDeclaredDomain(),
 				Collections.singletonList(provider.getDeclaredDomain()),
 				Orientation.INCREASING, "g6r-session-fixture/v1",

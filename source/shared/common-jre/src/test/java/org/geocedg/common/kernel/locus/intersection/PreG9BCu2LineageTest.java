@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
  * retained selectors ({@code locus-v2-existence-components.md} section 15.6; certification
  * design section 7, decision E-3 revised), on the synthetic critical configuration. Matrix
  * rows V-LIN-1, V-LIN-2, V-LIN-4, V-LIN-5 and V-LIN-6 (synthetic parts); the author model
- * is in {@code PreG9BCu2AuthorModelLineageTest}. The certificates are still in shadow; the
- * consumers read them from step T9.
+ * is in {@code PreG9BCu2AuthorModelLineageTest}. The consumers read the certificates from
+ * step T9, and step T11 publishes them.
  */
 class PreG9BCu2LineageTest extends BaseUnitTest {
 	private static final String BRANCH = "generator.main";

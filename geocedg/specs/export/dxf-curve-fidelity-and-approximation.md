@@ -300,3 +300,15 @@ which is also a `representation_declaration` warning; a point component is an ou
 fidelity `declared` with reason `degenerate_source`, which never blocks the strict request; the
 preflight counts the declared components; and the approximation evidence of a closed path
 carries its closure residual. A version-2 sidecar keeps its meaning.
+
+**Implementation precision (`CU2` step T11, author decision D-CU2-T11-R1, 2026-10-21).** A point
+of a certified component whose evaluation fails is a computational fact, not a gap of
+existence, and never discards the component by itself: the failure is located by bisection up
+to the resolution of the parameter (component length × 2⁻⁵²), the parts on both sides are
+approximated separately, one `LWPOLYLINE` each, never joined or interpolated across the failure
+and never closed, and every part carries the declaration `COMPUTATIONAL_GAP` (a computational
+failure) or `EVALUATION_GAP` (any other undefined evaluation) with the parameters of the gap and
+the evaluation status and diagnostic, which makes the output incomplete with the mandatory
+sidecar. At most sixteen gaps are cut in one component; beyond them, or when the approximation
+fails for any other reason, the component keeps the failure of the shared builder. A failure
+that no evaluation of the export reaches is not detected.

@@ -22,7 +22,8 @@ public final class SourceExportOutcome {
 		INVALID,
 		/**
 		 * Not emitted by contract and never a failure: a point component of a Locus V2,
-		 * declared with its evidence and never exported as a path (PRE-G9B-CU2, D-CU2-19);
+		 * declared with its evidence and never exported as a path (PRE-G9B-CU2, D-CU2-19),
+		 * or a Locus V2 without a certified component whose existence is not established;
 		 * the output is then incomplete.
 		 */
 		DECLARED
@@ -42,7 +43,12 @@ public final class SourceExportOutcome {
 		UNDEFINED_SOURCE,
 		NOT_2D,
 		DEGENERATE_SOURCE,
-		DUPLICATE_COMPONENT
+		DUPLICATE_COMPONENT,
+		/**
+		 * A Locus V2 whose existence is not established and that has no certified component:
+		 * declared, never a failure (PRE-G9B-CU2, V-DXF-2).
+		 */
+		EXISTENCE_NOT_ESTABLISHED
 	}
 
 	/** Scope in which the reported source identifier remains stable. */

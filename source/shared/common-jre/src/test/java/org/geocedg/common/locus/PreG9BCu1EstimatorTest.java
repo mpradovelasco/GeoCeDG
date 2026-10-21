@@ -75,14 +75,20 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 					frequency * Math.cos(frequency * x)), 0, 1, 1 << 16);
 			assertCoherentEstimate(rich, reference, "k=" + k);
 		}
-		// The product path: the same curves as public point-driven Locus V2.
+		// The product path. PRE-G9B-CU2 declared conformity (step T11): the public sine
+		// (x(P),sin(4*pi*x(P))) is outside class v3, so its existence is not established and
+		// its total length is refused; the estimator is exercised on the public path by the
+		// certified parabola y = x^2, -2 <= x <= 2.
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
 		add("Q=(x(P),sin(4*pi*x(P)))");
 		add("L=LocusV2(Q,P)");
 		GeoLocusMetricResult metric = add("M=LocusLength(L)");
-		assertCoherentEstimate(metric.getMetricResult(), simpson(x -> Math.hypot(1,
-				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16), "public k=2");
+		assertNoTotalWithoutExistence(metric.getMetricResult(), "public k=2");
+		certifiedParabola("Lp", "Qp", "publicParabola");
+		GeoLocusMetricResult parabola = add("Mp=LocusLength(Lp)");
+		assertCoherentEstimate(parabola.getMetricResult(), simpson(x -> Math.hypot(1, 2 * x),
+				-2, 2, 1 << 16), "public parabola");
 	}
 
 	/** V-MET-EST-2 (H12): evaluator-only circles and a constructed ellipse. */
@@ -143,15 +149,17 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 				x -> new LocusPoint2D(x, Math.floor(4 * x)));
 		assertNotCertified(steps, "floor");
 
+		// PRE-G9B-CU2 declared conformity (step T11): the public aliasing and floor curves are
+		// outside class v3, so they are never even estimated: their total length is refused.
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
 		add("Q=(x(P),sin(2*pi*1048576*x(P)))");
 		add("L=LocusV2(Q,P)");
-		assertNotCertified(((GeoLocusMetricResult) add("M=LocusLength(L)"))
+		assertNoTotalWithoutExistence(((GeoLocusMetricResult) add("M=LocusLength(L)"))
 				.getMetricResult(), "public aliasing");
 		add("F=(x(P),floor(4*x(P)))");
 		add("Lf=LocusV2(F,P)");
-		assertNotCertified(((GeoLocusMetricResult) add("Mf=LocusLength(Lf)"))
+		assertNoTotalWithoutExistence(((GeoLocusMetricResult) add("Mf=LocusLength(Lf)"))
 				.getMetricResult(), "public floor");
 	}
 
@@ -280,10 +288,9 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 	/** V-INV-2: results are bitwise independent of the view. */
 	@Test
 	void resultsDoNotDependOnTheView() {
-		add("t=0");
-		add("Qt=(t,sin(t))");
-		add("Dt={false,{0,3,true,true}}");
-		add("Lt=LocusV2(Qt,t,Dt)");
+		// PRE-G9B-CU2 declared conformity (step T11): the public scalar (t,sin(t)) is outside
+		// class v3 and has no total length; the certified parabola is estimated publicly.
+		certifiedParabola("Lt", "Qt", "firstParabola");
 		final LocusMetricResult2D first = ((GeoLocusMetricResult) add("M1=LocusLength(Lt)"))
 				.getMetricResult();
 		getApp().getEuclidianView1().setCoordSystem(400, 300, 250, 250);
@@ -291,10 +298,7 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		getKernel().updateConstruction(false);
 		LocusMetricResult2D recomputed = ((GeoLocusMetricResult) lookup("M1"))
 				.getMetricResult();
-		add("u=0");
-		add("Qu=(u,sin(u))");
-		add("Du={false,{0,3,true,true}}");
-		add("Lu=LocusV2(Qu,u,Du)");
+		certifiedParabola("Lu", "Qu", "secondParabola");
 		LocusMetricResult2D second = ((GeoLocusMetricResult) add("M2=LocusLength(Lu)"))
 				.getMetricResult();
 		for (LocusMetricResult2D other : List.of(recomputed, second)) {
@@ -377,7 +381,7 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		ExplicitNumericDomainProvider2D provider = new ExplicitNumericDomainProvider2D(
 				"cu1-estimator-parameter/v1", domain, Orientation.INCREASING, false,
 				1E-14);
-		LocusBranch2D branch = new LocusBranch2D(G7BMetricFixtures.BRANCH, domain,
+		LocusBranch2D branch = LocusV2TestBranches.branch(G7BMetricFixtures.BRANCH, domain,
 				List.of(domain), Orientation.INCREASING, "cu1-estimator-fixture/v1",
 				LocusLineage2D.unchanged(), EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());

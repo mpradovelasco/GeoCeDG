@@ -160,7 +160,10 @@ class PreG9BS1AuthorDxfReproductionTest {
 		assertEquals(definition.getSemanticRevision(),
 				branch.getExistenceStructure().getSemanticRevision());
 		assertTrue(branch.getValidDomainComponents().isEmpty());
-		assertEquals(2,
+		// PRE-G9B-CU2 (D-CU2-9, published in step T11): the selected-root certificate v2
+		// certifies the last cell and joins the two former components across the seam of the
+		// periodic domain into one certified arc, which ends at the edges of the unresolved band.
+		assertEquals(1,
 				branch.getCertifiedContinuousValidComponents().size());
 		assertTrue(branch.getExistenceStructure().getCoverage().stream()
 				.anyMatch(item -> item.getState() == CoverageState.UNRESOLVED
@@ -171,14 +174,9 @@ class PreG9BS1AuthorDxfReproductionTest {
 				.getContinuousValidComponents();
 		assertTrue(certificates.stream().allMatch(item -> item.getEvidenceKey()
 				.startsWith("selected-root-interval/v1|root-token=")));
-		assertEquals(certificates.get(0).getEvidenceKey().substring(0,
-				certificates.get(0).getEvidenceKey().indexOf("|driver=")),
-				certificates.get(1).getEvidenceKey().substring(0,
-						certificates.get(1).getEvidenceKey().indexOf("|driver=")));
+		assertTrue(certificates.get(0).crossesSeam());
 		assertTrue(certificates.stream().allMatch(item -> item.getBoundaryEvidence()
-				.contains("adjacent unresolved cells are not crossed")));
-		assertTrue(branch.getCertifiedContinuousValidComponents().get(0).getUpper()
-				< branch.getCertifiedContinuousValidComponents().get(1).getLower());
+				.contains("UNRESOLVED_BAND_EDGE")));
 		assertFalse(branch.getCertifiedContinuousValidComponents().stream()
 				.anyMatch(item -> item.contains(-Math.PI / 2, 0)));
 		LocusInterval2D component = branch.getDeclaredDriverDomain();
@@ -225,9 +223,9 @@ class PreG9BS1AuthorDxfReproductionTest {
 				GeometryExportRequest.builder(0.001).build());
 		assertTrue(locusPreflight.isWritable());
 		assertEquals(0, locusPreflight.getInvalidCount());
-		assertEquals(2, locusPreflight.getApproximateCount());
-		assertEquals(2, locusPreflight.getModel().getEntities().size());
-		assertEquals(2, locusPreflight.getIncompleteSemanticCoverageCount());
+		assertEquals(1, locusPreflight.getApproximateCount());
+		assertEquals(1, locusPreflight.getModel().getEntities().size());
+		assertEquals(1, locusPreflight.getIncompleteSemanticCoverageCount());
 		assertTrue(locusPreflight.hasIncompleteSemanticCoverage());
 		assertTrue(locusPreflight.isSidecarRequired());
 		assertTrue(locusPreflight.getModel().getOutcomes().stream()
@@ -244,7 +242,7 @@ class PreG9BS1AuthorDxfReproductionTest {
 								outcome.getComponentAddress().isEndIncluded()))
 						.toList());
 		var locusEncoding = service.encode(locusPreflight);
-		assertEquals(2, entityCount(locusEncoding.getDxfText(), "LWPOLYLINE"));
+		assertEquals(1, entityCount(locusEncoding.getDxfText(), "LWPOLYLINE"));
 		DxfPreparedOutput locusPaired = new DxfFidelityManifestWriter().prepare(
 				locusPreflight, locusEncoding);
 		String locusManifest = new String(locusPaired.getManifest().getBytes(),
@@ -276,9 +274,9 @@ class PreG9BS1AuthorDxfReproductionTest {
 				SelectionMode.CURRENT_SELECTION,
 				GeometryExportRequest.builder(0.001).build());
 		assertTrue(combined.isWritable());
-		assertEquals(4, combined.getApproximateCount());
+		assertEquals(3, combined.getApproximateCount());
 		assertEquals(0, combined.getInvalidCount());
-		assertEquals(4, combined.getModel().getEntities().size());
+		assertEquals(3, combined.getModel().getEntities().size());
 		List<GeoElement> sources = sources(app);
 		GeometryExportPreflight complete = service.preflight(sources,
 				SelectionMode.COMPLETE_CONSTRUCTION,
@@ -325,7 +323,8 @@ class PreG9BS1AuthorDxfReproductionTest {
 					+ diagnostic.getMessage());
 		}
 		assertEquals(26, complete.getExactCount());
-		assertEquals(4, complete.getApproximateCount());
+		// PRE-G9B-CU2 (D-CU2-9): the locus contributes one certified arc instead of two.
+		assertEquals(3, complete.getApproximateCount());
 		assertEquals(0, complete.getUnsupportedCount());
 		assertEquals(0, complete.getInvalidCount());
 		assertEquals(15, complete.getExcludedPopulationCount());

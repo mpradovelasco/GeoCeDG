@@ -122,9 +122,10 @@ public final class GeoCeDGDefinitionInspector {
 			LocusExistenceStructure2D structure = branch.getExistenceStructure();
 			for (LocusExistenceStructure2D.ContinuousComponent component
 					: structure.getContinuousValidComponents()) {
-				// PRE-G9B-CU2: the structural lineage; an arc across the seam, or an open
+				// PRE-G9B-CU2: the identity key of the component (E-3), the one its semantic
+				// addresses and intersection roots cite; an arc across the seam, or an open
 				// arc of full length, is shown with its ends and its closure.
-				String lineage = LocusComponentLineage2D.of(structure, component);
+				String lineage = LocusComponentLineage2D.identityKey(structure, component);
 				String shape = component.followsCanonicalOrder() ? ""
 						: " arc[" + component.getStart() + ", " + component.getEnd()
 								+ ", length " + component.getLength()

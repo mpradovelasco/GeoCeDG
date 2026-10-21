@@ -252,10 +252,15 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void p05NativeSaveReopenSaveIsByteIdentical() throws Exception {
-		GeoLocusV2 locus = createParabola();
-		semanticPoint(locus, 0.5);
-		totalMetric(locus);
-		intersect(locus, "y=1");
+		// PRE-G9B-CU2 step T11, declared conformity: with the scalar parabola, outside class
+		// v3, the round trip carried an undefined point, a refused length and no root; the
+		// certified parabola carries a defined point, a finite length and two roots.
+		GeoLocusV2 locus = certifiedParabola();
+		assertTrue(semanticPoint(locus, 0.625).isDefined());
+		assertTrue(totalMetric(locus).getMetricResult().getMetricValue().getFiniteValue()
+				.isPresent());
+		assertEquals(2, intersect(locus, "y=1").getIntersectionResult().getFiniteSolutions()
+				.size());
 		String first = getApp().getXML();
 		getApp().getXMLio().processXMLString(first, true, false, false);
 		assertEquals(first, getApp().getXML());
@@ -387,8 +392,12 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void p07CrossConstructionCopyUsesFreshTargetOwnedClosure() {
-		GeoLocusV2 locus = createParabola();
-		GeoPoint point = semanticPoint(locus, 0.5);
+		// PRE-G9B-CU2 step T11, declared conformity: the point on the scalar parabola, outside
+		// class v3, was undefined; on the certified parabola the point and its copy are
+		// defined.
+		GeoLocusV2 locus = certifiedParabola();
+		GeoPoint point = semanticPoint(locus, 0.625);
+		assertTrue(point.isDefined());
 		String clipboard = InternalClipboard.getTextToSave(getApp(),
 				Collections.singletonList(point), text -> text);
 		AppCommon target = AppCommonFactory.create(new AppConfigGeoCeDG(true));
@@ -397,6 +406,9 @@ class G9U0PersistenceCompatibilityTest extends G9U0PublicSurfaceTestBase {
 		assertFalse(copyRecords(targetConstruction).isEmpty());
 		assertTrue(targetConstruction.getGeoSetConstructionOrder().stream()
 				.anyMatch(GeoLocusV2.class::isInstance));
+		assertTrue(targetConstruction.getGeoSetConstructionOrder().stream()
+				.anyMatch(geo -> geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D
+						&& geo.isDefined()));
 	}
 
 	@Test

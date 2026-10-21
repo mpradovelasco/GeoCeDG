@@ -720,6 +720,11 @@ class PreG9BR6PlusA2HiddenLayerPersistenceTest {
 
 	// ---------------------------------------------------------------- T-INVARIANCE
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar parabola (s,s^2) is outside class
+	 * v3 and has no certified component; the certified diagonal (s,s) keeps a branch with two
+	 * components.
+	 */
 	@Test
 	void geometryIsInvariantUnderEveryLayerRoute() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
@@ -727,7 +732,7 @@ class PreG9BR6PlusA2HiddenLayerPersistenceTest {
 				"s", "Q", "D", "L", "S");
 		for (String command : new String[] {"A=(0,0)", "B=(4,1)", "C=(1,3)", "E=(5,0)",
 				"f=Line(A,B)", "c=Circle(A,2)", "poly=Polygon(A,B,C)", "d=Distance(A,B)",
-				"t=Slider(0,1,0.1)", "M=(t,t^2)", "s=0", "Q=(s,s^2)",
+				"t=Slider(0,1,0.1)", "M=(t,t^2)", "s=0", "Q=(s,s)",
 				"D={false,{-2,-0.5,true,true},{0.5,2,true,true}}", "L=LocusV2(Q,s,D)",
 				"S=SplineV2({A,B,C,E},3)"}) {
 			eval(app, command);

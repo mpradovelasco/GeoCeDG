@@ -245,7 +245,7 @@ class PreG9BCu1RevisionAndSessionTest extends G9U0PublicSurfaceTestBase {
 		ExplicitNumericDomainProvider2D provider = new ExplicitNumericDomainProvider2D(
 				"cu1-session-parameter/v1", new LocusInterval2D(-1, 1, true, true),
 				Orientation.INCREASING, false, 1E-14);
-		LocusBranch2D branch = new LocusBranch2D(BRANCH_KEY, provider.getDeclaredDomain(),
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH_KEY, provider.getDeclaredDomain(),
 				Collections.singletonList(provider.getDeclaredDomain()),
 				Orientation.INCREASING, "cu1-session-fixture/v1",
 				LocusLineage2D.unchanged(), EnumSet.of(BranchProperty.FINITE),

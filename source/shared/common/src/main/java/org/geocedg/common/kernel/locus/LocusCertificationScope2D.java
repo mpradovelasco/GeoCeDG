@@ -22,6 +22,8 @@ import java.util.function.Supplier;
  */
 public final class LocusCertificationScope2D {
 	private static final Deque<LocusInstrumentation2D> OPEN = new ArrayDeque<>();
+	/** Owner of the exploratory evaluations, which are never reads of a certificate. */
+	private static final LocusInstrumentation2D EXPLORATION = new LocusInstrumentation2D();
 
 	private LocusCertificationScope2D() {
 		// Utility class.
@@ -55,14 +57,32 @@ public final class LocusCertificationScope2D {
 	 */
 	public static void recordMetricRead() {
 		LocusInstrumentation2D owner = OPEN.peek();
-		if (owner != null) {
+		if (owner != null && owner != EXPLORATION) {
 			owner.recordCertificationWork(
 					LocusCertificationWork2D.METRIC_READ_DURING_CERTIFICATION);
 		}
 	}
 
+	/**
+	 * Runs evaluations that explore the unresolved bands of a certificate: exploratory
+	 * evidence never certifies ({@code locus-v2-existence-components.md} section 15.1), so
+	 * the metric values it computes are not reads of the certificate (gate GC-6).
+	 *
+	 * @param exploration exploratory evaluations
+	 * @return exploration result
+	 */
+	public static <T> T explore(Supplier<T> exploration) {
+		Objects.requireNonNull(exploration);
+		OPEN.push(EXPLORATION);
+		try {
+			return exploration.get();
+		} finally {
+			OPEN.pop();
+		}
+	}
+
 	/** @return whether a certificate computation is open on this thread */
 	public static boolean isOpen() {
-		return !OPEN.isEmpty();
+		return !OPEN.isEmpty() && OPEN.peek() != EXPLORATION;
 	}
 }

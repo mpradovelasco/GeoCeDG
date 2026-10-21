@@ -142,7 +142,8 @@ class LocusMetricProductiveNestedTest extends BaseUnitTest {
 						Orientation.INCREASING, false,
 						G7BMetricFixtures.EPS_DOMAIN);
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(BRANCH, provider,
-				"g7b-nested/v1", EnumSet.of(BranchProperty.FINITE));
+				"g7b-nested/v1", EnumSet.of(BranchProperty.FINITE),
+				LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		return LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				getConstruction(), identity, source, provider,
 				Collections.singletonList(branch),

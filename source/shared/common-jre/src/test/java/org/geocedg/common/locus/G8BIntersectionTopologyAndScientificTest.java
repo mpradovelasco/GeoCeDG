@@ -27,7 +27,6 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionOverlapEvidence2
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
-import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DomainLocation;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionCapability2D;
@@ -122,9 +121,15 @@ class G8BIntersectionTopologyAndScientificTest extends BaseUnitTest {
 		AlgoLocusIntersectionV2 point = complete(isolatedFixture, add("x=0"),
 				"isolated", List.of(G8BIntersectionFixtures.Root.simple(
 						isolated.getBranchKey(), isolatedComponent, 0, "isolated")));
-		assertEquals(DomainLocation.ISOLATED_COMPONENT,
-				point.getResult().getIntersectionResult().getFiniteSolutions().get(0)
-						.getClassification().getDomainLocation());
+		// PRE-G9B-CU2 declared conformity (locus-v2-existence-components.md sections 15.4 and
+		// 15.8): the isolated declared parameter is a point component of the explicit
+		// certificate of step T11; it materializes no intersection, and the result never
+		// claims a complete set while that component is not excluded rigorously.
+		LocusIntersectionResult2D pointResult = point.getResult().getIntersectionResult();
+		assertTrue(pointResult.getFiniteSolutions().isEmpty());
+		assertEquals(GeometryKind.UNRESOLVED, pointResult.getGeometryKind());
+		assertEquals(Completeness.NOT_ESTABLISHED,
+				pointResult.getCompletenessEvidence().getCompleteness());
 
 		LocusBranch2D empty = G8BIntersectionFixtures.branch(identity + "/empty",
 				provider, List.of(), EnumSet.noneOf(BranchProperty.class));

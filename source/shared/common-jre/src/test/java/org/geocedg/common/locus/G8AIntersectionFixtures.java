@@ -89,7 +89,7 @@ final class G8AIntersectionFixtures {
 		String branchKey = identity + "/branch-main";
 		LocusBranch2D branch = LocusV2Factory.fullDomainBranch(branchKey,
 				provider, identity + "/semantic-v1",
-				EnumSet.of(BranchProperty.FINITE));
+				EnumSet.of(BranchProperty.FINITE), LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		GeoNumeric source = new GeoNumeric(construction, 0);
 		GeoLocusV2 locus = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				construction, identity, source, provider,

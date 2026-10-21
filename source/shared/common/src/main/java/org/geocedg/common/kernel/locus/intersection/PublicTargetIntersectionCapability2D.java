@@ -105,8 +105,8 @@ public final class PublicTargetIntersectionCapability2D
 			IntersectionCapabilityContext2D context,
 			IntersectionCandidate2D candidate,
 			Optional<String> transverseGerm) {
-		// The germ cites the structural lineage of its component (PRE-G9B-CU2).
-		String lineage = LocusComponentLineage2D.of(context.getDefinition()
+		// The germ cites the identity key of its component (PRE-G9B-CU2, E-3).
+		String lineage = LocusComponentLineage2D.identityKey(context.getDefinition()
 				.getBranch(candidate.getBranchKey()).getExistenceStructure(),
 				exactComponent(context, candidate));
 		Optional<String> currentGerm = transverseGerm.map(germ ->

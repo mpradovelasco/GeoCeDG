@@ -62,7 +62,9 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void m01ExplicitSemanticPointCarriesDurableAddress() {
-		GeoLocusV2 locus = createParabola();
+		// PRE-G9B-CU2 declared conformity: a semantic point needs a certified component, and
+		// the parabola (s,s^2) is outside class v3 since step T11; the address is the same.
+		GeoLocusV2 locus = createLine();
 		GeoPoint point = semanticPoint(locus, 0.5);
 		AlgoSemanticLocusPoint2D parent =
 				(AlgoSemanticLocusPoint2D) point.getParentAlgorithm();
@@ -73,10 +75,12 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void m02SelfIntersectionPositionsRemainDifferentPreimages() {
-		GeoLocusV2 locus = createScalarLocus("L", "s", "Q",
-				"(sin(s),sin(2*s))", "{false,{0,pi,true,true}}");
-		GeoPoint first = semanticPoint(locus, 0);
-		GeoPoint second = add("P2=Point(L,\"" + BRANCH + "\",pi)");
+		// PRE-G9B-CU2 declared conformity: (sin(s),sin(2*s)) is outside class v3 since step
+		// T11; the orthogonal projection of a point of a circle onto a line (class v1) is
+		// certified and maps the two preimages t and -t to one position.
+		GeoLocusV2 locus = projectedCircle();
+		GeoPoint first = semanticPoint(locus, Math.PI / 3);
+		GeoPoint second = add("P2=Point(L,\"" + BRANCH + "\",-pi/3)");
 		AlgoSemanticLocusPoint2D a =
 				(AlgoSemanticLocusPoint2D) first.getParentAlgorithm();
 		AlgoSemanticLocusPoint2D b =
@@ -99,10 +103,13 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void m04RichTotalLengthIsNonnumericAuthority() {
 		GeoLocusMetricResult segment = totalMetric(createLine());
-		add("c=0");
-		add("Qc=(cos(c),sin(c))");
-		add("Dc={true,{0,2*pi,true,false}}");
-		GeoLocusV2 circle = add("Lc=LocusV2(Qc,c,Dc)");
+		// PRE-G9B-CU2 declared conformity: periodic scalar loci are outside class v3 since
+		// step T11, so the unit circle is driven by a point of a circle (class v2) and the
+		// expression-driven ellipse, which keeps no certified component, has no total length.
+		add("cc=Circle((0,0),1)");
+		add("C=Point(cc)");
+		add("Qc=C+(0,0)");
+		GeoLocusV2 circle = add("Lc=LocusV2(Qc,C)");
 		GeoLocusMetricResult circleMetric = add("Mc=LocusLength(Lc)");
 		add("e=0");
 		add("Qe=(3*cos(e),2*sin(e))");
@@ -112,18 +119,21 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 
 		assertRichTotal(segment, 4, 1E-10);
 		assertRichTotal(circleMetric, 2 * Math.PI, 2E-7);
-		assertRichTotal(ellipseMetric, 15.86543958929059, 2E-6);
 		assertEquals(circle.getLocusIdentity(), circleMetric.getMetricResult()
 				.getProvenance().getLocusIdentity());
 		assertEquals(ellipse.getLocusIdentity(), ellipseMetric.getMetricResult()
 				.getProvenance().getLocusIdentity());
-		// The certified affine segment is structural; the expression-driven
-		// circle and ellipse are estimates (PRE-G9B-CU1, guarantee classes).
+		assertEquals(MetricComputationStatus.INVALID_QUERY,
+				ellipseMetric.getMetricResult().getComputationStatus());
+		assertFalse(ellipseMetric.getMetricResult().getMetricValue().getFiniteValue()
+				.isPresent());
+		// The certified affine segment and the driver circle are structural (PRE-G9B-CU1,
+		// guarantee classes); the unproven ellipse is not established.
 		assertEquals(MetricGuaranteeClass2D.STRUCTURAL,
 				segment.getMetricResult().getGuaranteeClass());
-		assertEquals(MetricGuaranteeClass2D.ESTIMATED,
+		assertEquals(MetricGuaranteeClass2D.STRUCTURAL,
 				circleMetric.getMetricResult().getGuaranteeClass());
-		assertEquals(MetricGuaranteeClass2D.ESTIMATED,
+		assertEquals(MetricGuaranteeClass2D.NOT_ESTABLISHED,
 				ellipseMetric.getMetricResult().getGuaranteeClass());
 		assertFalse(GeoNumeric.class.isInstance(segment));
 
@@ -168,12 +178,15 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(TraversalOutcome.DISCONTINUITY_ENCOUNTERED,
 				acrossGap.getMetricResult().getTraversalOutcome().orElseThrow());
 
-		add("w=0");
-		add("Qw=(cos(w),sin(w))");
-		add("Dw={true,{0,2*pi,true,false}}");
-		add("Lw=LocusV2(Qw,w,Dw)");
-		add("Pw1=Point(Lw,\"" + BRANCH + "\",3*pi/2)");
-		add("Pw2=Point(Lw,\"" + BRANCH + "\",pi/2)");
+		// PRE-G9B-CU2 declared conformity: the periodic scalar circle is outside class v3
+		// since step T11; the certified circle of a point of a circle has its seam at -pi,
+		// which the route from pi/2 to -pi/2 wraps.
+		add("cw=Circle((0,0),1)");
+		add("W=Point(cw)");
+		add("Qw=W+(0,0)");
+		add("Lw=LocusV2(Qw,W)");
+		add("Pw1=Point(Lw,\"" + BRANCH + "\",pi/2)");
+		add("Pw2=Point(Lw,\"" + BRANCH + "\",-pi/2)");
 		GeoLocusMetricResult wrapped = add(
 				"Mwrap=LocusLength(Lw,Pw1,Pw2)");
 		assertEquals(TraversalOutcome.TARGET_REACHED,
@@ -358,10 +371,12 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void m11DevelopedAndDirectLineMetricAgree() {
-		add("sd=0");
-		add("Qdirect=(cos(sd),sin(sd))");
-		add("Ddirect={true,{0,2*pi,true,false}}");
-		GeoLocusV2 direct = add("Ldirect=LocusV2(Qdirect,sd,Ddirect)");
+		// PRE-G9B-CU2 declared conformity: the periodic scalar circle is outside class v3
+		// since step T11; the direct circle is driven by a point of a circle (class v2).
+		add("cd=Circle((0,0),1)");
+		add("Sd=Point(cd)");
+		add("Qdirect=Sd+(0,0)");
+		GeoLocusV2 direct = add("Ldirect=LocusV2(Qdirect,Sd)");
 		GeoLocusMetricResult directMetric = add(
 				"Mdirect=LocusLength(Ldirect)");
 

@@ -532,6 +532,124 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 						.map(Component::getOutcome).collect(Collectors.toList())));
 	}
 
+	/**
+	 * V-B07-4 (decision E-1, approved): exploratory evidence is drawn in its own vertex list,
+	 * with the mark {@code EXPLORATORY_EVIDENCE} and a partial drawing fidelity, only inside
+	 * the unresolved bands of the published certificate, never in a subpath of a certified
+	 * component, and it is never exported. A locus outside class v3 (V-LVL-1) draws nothing
+	 * else; the unlabelled second output of the critical configuration draws its local
+	 * component and, apart, the evidence of the band around the coincident root.
+	 */
+	@Test
+	void exploratoryEvidenceIsDrawnApartAndOnlyInsideItsBands() {
+		add("s=0");
+		add("X=(s,s^2)");
+		add("D={false,{-2,2,true,true}}");
+		add("lx=LocusV2(X,s,D)");
+		LocusRenderData2D outside = render(locus("lx"), policy(40));
+		assertTrue(outside.getVertices().isEmpty());
+		assertFalse(outside.getExploratoryVertices().isEmpty());
+		assertEquals(Fidelity.PARTIAL, outside.getFidelity());
+		assertFalse(marks(outside, MarkKind.EXPLORATORY_EVIDENCE).isEmpty());
+		assertExploratoryInsideBands("lx", outside);
+		List<Component> declaredComponents = adapt(locus("lx")).getComponents();
+		assertEquals(1, declaredComponents.size());
+		Component declared = declaredComponents.get(0);
+		assertFalse(declared.isEmitted());
+		assertEquals(SourceExportOutcome.Reason.EXISTENCE_NOT_ESTABLISHED,
+				declared.getOutcome().getReason());
+
+		critical("40");
+		add("t2=Ray(P,N)");
+		add("R2=Intersect(p,t2,2)");
+		add("lr2=LocusV2(R2,N)");
+		LocusRenderData2D band = render(locus("lr2"), policy(40));
+		assertFalse(band.getVertices().isEmpty());
+		assertFalse(band.getExploratoryVertices().isEmpty());
+		assertExploratoryInsideBands("lr2", band);
+		LocusExistenceStructure2D structure = locus("lr2").getSemanticDefinition()
+				.getBranch(BRANCH).getExistenceStructure();
+		java.util.Set<String> certified = new java.util.HashSet<>();
+		for (Vertex vertex : band.getVertices()) {
+			certified.add(vertex.getPoint().getX() + "," + vertex.getPoint().getY());
+		}
+		for (Vertex vertex : band.getExploratoryVertices()) {
+			assertFalse(certified.contains(vertex.getPoint().getX() + ","
+					+ vertex.getPoint().getY()), "never joined to a component");
+		}
+		long emitted = adapt(locus("lr2")).getComponents().stream()
+				.filter(Component::isEmitted).count();
+		assertEquals(structure.getContinuousValidComponents().size(), emitted,
+				"the evidence is never exported");
+	}
+
+	/**
+	 * V-DXF-2: a locus outside class v3 has no certified component; its strict DXF output is a
+	 * declaration ({@code EXISTENCE_NOT_ESTABLISHED}), never a path and never a failure, so
+	 * the output of another source stays writable with the mandatory sidecar. A locus whose
+	 * existence is not established but which has locally certified components exports each of
+	 * them within the strict tolerance, incomplete, with the mandatory sidecar.
+	 */
+	@Test
+	void aLocusWithoutEstablishedExistenceIsDeclaredWithTheMandatorySidecar() {
+		add("s=0");
+		add("X=(s,s^2)");
+		add("D={false,{-2,2,true,true}}");
+		add("lx=LocusV2(X,s,D)");
+		add("u=0");
+		add("Y=(u,u)");
+		add("E={false,{-2,2,true,true}}");
+		add("ly=LocusV2(Y,u,E)");
+		GeometryExportPreflight mixed = new GeometryExportService().preflight(
+				List.of(locus("lx"), locus("ly")), SelectionMode.CURRENT_SELECTION,
+				GeometryExportRequest.builder(0.01).build());
+		assertTrue(mixed.isWritable());
+		assertTrue(mixed.isSidecarRequired());
+		assertEquals(1, mixed.getDeclaredCount());
+		assertEquals(1, mixed.getModel().getEntities().size());
+		SourceExportOutcome declared = mixed.getModel().getOutcomes().stream()
+				.filter(outcome -> "lx".equals(outcome.getLabel())).findFirst().orElseThrow();
+		assertEquals(SourceExportOutcome.Fidelity.DECLARED, declared.getFidelity());
+		assertEquals(SourceExportOutcome.Reason.EXISTENCE_NOT_ESTABLISHED, declared.getReason());
+		assertFalse(declared.isEmitted());
+		assertTrue(declared.isIncomplete());
+
+		critical("40");
+		add("t2=Ray(P,N)");
+		add("R2=Intersect(p,t2,2)");
+		add("lr2=LocusV2(R2,N)");
+		assertEquals(Completeness.NOT_ESTABLISHED, locus("lr2").getSemanticDefinition()
+				.getBranch(BRANCH).getExistenceStructure().getCompleteness());
+		GeometryExportPreflight local = new GeometryExportService().preflight(
+				List.of(locus("lr2")), SelectionMode.CURRENT_SELECTION,
+				GeometryExportRequest.builder(0.01).build());
+		assertTrue(local.isWritable());
+		assertTrue(local.isSidecarRequired());
+		assertFalse(local.getModel().getEntities().isEmpty());
+		for (SourceExportOutcome outcome : local.getModel().getOutcomes()) {
+			assertTrue(outcome.isEmitted(), outcome.getMessage());
+			assertEquals(SourceExportOutcome.SemanticCoverage
+					.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED, outcome.getSemanticCoverage());
+			assertTrue(outcome.isIncomplete());
+			assertEquals(0.01, outcome.getApproximationEvidence().getRequestedTolerance());
+		}
+	}
+
+	/** Every exploratory vertex lies inside an unresolved band of the published certificate. */
+	private void assertExploratoryInsideBands(String label, LocusRenderData2D drawing) {
+		LocusDefinition2D definition = locus(label).getSemanticDefinition();
+		LocusExistenceStructure2D structure = definition.getBranch(BRANCH)
+				.getExistenceStructure();
+		for (Vertex vertex : drawing.getExploratoryVertices()) {
+			double parameter = definition.getProvider().canonicalize(
+					vertex.getSemanticParameter());
+			Coverage coverage = structure.getCoverageAt(parameter);
+			assertNotNull(coverage, label + " t=" + parameter);
+			assertEquals(CoverageState.UNRESOLVED, coverage.getState(), label + " t="
+					+ parameter);
+		}
+	}
+
 	// ---------------------------------------------------------------- fixtures
 
 	private static LocusPoint2D evaluate(LocusDefinition2D definition, String branchKey,
@@ -593,8 +711,9 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 	}
 
 	/**
-	 * Publishes the shadow certificate of a dependent locus in place of the compatibility
-	 * certificate, as step T11 will, keeping the live evaluator unless another is given.
+	 * Publishes the certificate of a dependent locus again, keeping the live evaluator unless
+	 * another is given (a test policy). Step T11 publishes the same certificate; the
+	 * republication only installs the test policy.
 	 */
 	private void publishCertificate(String label, LocusEvaluator2D evaluator) {
 		GeoLocusV2 locus = locus(label);

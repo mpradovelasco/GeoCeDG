@@ -142,56 +142,95 @@ class PreG9BCu2ExistenceStructureV2Test {
 						Collections.emptyList(), Completeness.COMPLETE, "fixture/v1"));
 	}
 
-	/** The compatibility certificate keeps its legacy views in the new model. */
+	/**
+	 * Step T11 (D-CU2-7, option A): the explicit certificate of a static or analytic producer
+	 * cites the contract that proves it in every fact; it closes a periodic domain only when
+	 * that contract proves the closure, and otherwise is the open arc of full length. It
+	 * replaces the retired provider-compatibility certificate.
+	 */
 	@Test
-	void compatibilityIsExpressedInTheNewModelWithoutLegacyChange() {
-		LocusExistenceStructure2D periodicCompatibility =
-				LocusExistenceStructure2D.completeCompatibility(BRANCH, CIRCLE,
-						List.of(CIRCLE), true);
-		ContinuousComponent component =
-				periodicCompatibility.getContinuousValidComponents().get(0);
+	void theProviderCertificateCitesItsContract() {
+		String contract = "fixture-producer/v1";
+		LocusExistenceStructure2D closed = LocusExistenceStructure2D.providerProved(BRANCH,
+				CIRCLE, List.of(CIRCLE), true, true, contract);
+		ContinuousComponent component = closed.getContinuousValidComponents().get(0);
 		assertEquals(CIRCLE, component.getInterval());
 		assertEquals("provider-component/0", component.getEvidenceKey());
-		assertEquals("provider-endpoints/v1", component.getBoundaryEvidence());
-		assertEquals("provider-contract", component.getNumericGuarantee());
 		assertEquals(Maximality.ESTABLISHED, component.getMaximality());
-		assertEquals("locus-existence/provider-compatibility/v1",
-				periodicCompatibility.getCertifierContract());
-		assertEquals(Completeness.COMPLETE, periodicCompatibility.getCompleteness());
-		assertEquals(LocusEvidenceNature2D.NONE, component.getNature());
-		assertTrue(periodicCompatibility.isClosedPeriodic());
-		assertEquals("provider-interval-contract/v1",
-				periodicCompatibility.getCoverage().get(0).getEvidence());
+		assertEquals(LocusExistenceStructure2D.PROVIDER_PROVED_CONTRACT,
+				closed.getCertifierContract());
+		assertEquals(Completeness.COMPLETE, closed.getCompleteness());
+		assertEquals(LocusEvidenceNature2D.EXACT, component.getNature());
+		assertTrue(closed.isClosedPeriodic());
+		assertEquals("provider-contract",
+				component.getLowerBoundary().getSource().getOrigin());
+		assertEquals(contract, closed.getCoverage().get(0).getEvidence());
 		assertEquals(LocusCoverageCause2D.PROVIDER_CONTRACT,
-				periodicCompatibility.getCoverage().get(0).getCause());
+				closed.getCoverage().get(0).getCause());
+		assertEquals(LocusEvidenceNature2D.EXACT, closed.getCoverage().get(0).getNature());
+
+		LocusExistenceStructure2D open = LocusExistenceStructure2D.providerProved(BRANCH,
+				CIRCLE, List.of(CIRCLE), true, false, contract);
+		ContinuousComponent arc = open.getContinuousValidComponents().get(0);
+		assertFalse(open.isClosedPeriodic(), "a periodic provider alone never closes");
+		assertTrue(arc.isArc());
+		assertEquals(LocusBoundary2D.Kind.DOMAIN_END, arc.getLowerBoundary().getKind());
+		assertFalse(arc.getUpperBoundary().isBinaryEndIncluded());
 
 		LocusInterval2D left = new LocusInterval2D(-2, -1, true, true);
 		LocusInterval2D right = new LocusInterval2D(1, 2, true, false);
 		LocusInterval2D bounded = new LocusInterval2D(-3, 3, true, true);
-		LocusExistenceStructure2D boundedCompatibility =
-				LocusExistenceStructure2D.completeCompatibility(BRANCH, bounded,
-						List.of(right, left));
-		assertEquals(List.of(left, right), boundedCompatibility
+		LocusExistenceStructure2D boundedCertificate = LocusExistenceStructure2D
+				.providerProved(BRANCH, bounded, List.of(right, left), false, false,
+						contract);
+		assertEquals(List.of(left, right), boundedCertificate
 				.getContinuousValidComponents().stream()
 				.map(ContinuousComponent::getInterval).toList());
-		assertEquals(DomainTopology.BOUNDED, boundedCompatibility.getTopology());
-		assertFalse(boundedCompatibility.isClosedPeriodic());
-		assertEquals(List.of("provider-complement-contract/v1",
-				"provider-interval-contract/v1", "provider-complement-contract/v1",
-				"provider-interval-contract/v1", "provider-complement-contract/v1"),
-				boundedCompatibility.getCoverage().stream().map(Coverage::getEvidence)
+		assertEquals(DomainTopology.BOUNDED, boundedCertificate.getTopology());
+		assertFalse(boundedCertificate.isClosedPeriodic());
+		assertEquals(List.of(CoverageState.CERTIFIED_DOES_NOT_EXIST,
+				CoverageState.CERTIFIED_EXISTS, CoverageState.CERTIFIED_DOES_NOT_EXIST,
+				CoverageState.CERTIFIED_EXISTS, CoverageState.CERTIFIED_DOES_NOT_EXIST),
+				boundedCertificate.getCoverage().stream().map(Coverage::getState)
 						.toList());
+		assertTrue(boundedCertificate.getCoverage().stream()
+				.allMatch(item -> contract.equals(item.getEvidence())));
 
 		LocusInterval2D upperSeam = new LocusInterval2D(0, 1, false, true);
-		LocusExistenceStructure2D upperSeamCompatibility =
-				LocusExistenceStructure2D.completeCompatibility(BRANCH, upperSeam,
-						List.of(upperSeam), true);
-		assertTrue(upperSeamCompatibility.isClosedPeriodic());
-		assertEquals(upperSeam, upperSeamCompatibility.getContinuousValidComponents()
+		LocusExistenceStructure2D upperSeamCertificate = LocusExistenceStructure2D
+				.providerProved(BRANCH, upperSeam, List.of(upperSeam), true, true,
+						contract);
+		assertTrue(upperSeamCertificate.isClosedPeriodic());
+		assertEquals(upperSeam, upperSeamCertificate.getContinuousValidComponents()
 				.get(0).getInterval());
-		assertFalse(LocusExistenceStructure2D.completeCompatibility(BRANCH, CIRCLE,
+		assertFalse(LocusExistenceStructure2D.providerProved(BRANCH, CIRCLE,
 				List.of(new LocusInterval2D(-Math.PI, 0, true, false),
-						new LocusInterval2D(0.5, 1, true, true)), true).isClosedPeriodic());
+						new LocusInterval2D(0.5, 1, true, true)), true, true, contract)
+				.isClosedPeriodic());
+	}
+
+	/**
+	 * Step T11: restricted to declared components that share an excluded end, as the scalar
+	 * domain [-2, 0) and (0, 2], the certificate keeps one component in each and certifies
+	 * the excluded point [0, 0] as nonexistence by the declaration, ordered before (0, 2].
+	 */
+	@Test
+	void declaredComponentsSharingAnExcludedEndAreRestrictedInOrder() {
+		LocusInterval2D domain = new LocusInterval2D(-2, 2, true, true);
+		LocusInterval2D left = new LocusInterval2D(-2, 0, true, false);
+		LocusInterval2D right = new LocusInterval2D(0, 2, false, true);
+		LocusExistenceStructure2D restricted = LocusExistenceStructure2D.providerProved(
+				BRANCH, domain, List.of(domain), false, false, "fixture-producer/v1")
+				.restrictedTo(List.of(right, left), "fixture/declared-components");
+		assertEquals(Completeness.COMPLETE, restricted.getCompleteness());
+		assertEquals(List.of(left, right), restricted.getContinuousValidComponents().stream()
+				.map(ContinuousComponent::getInterval).toList());
+		assertEquals(List.of(left, new LocusInterval2D(0, 0, true, true), right),
+				restricted.getCoverage().stream().map(Coverage::getInterval).toList());
+		Coverage gap = restricted.getCoverage().get(1);
+		assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST, gap.getState());
+		assertEquals(LocusCoverageCause2D.PROVIDER_COMPLEMENT, gap.getCause());
+		assertEquals("fixture/declared-components", gap.getEvidence());
 	}
 
 	/** V-POINT-1: a point component is an entity of its own, never an interval. */

@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 
 import org.geocedg.common.export.SemanticExportClassification.ExportClass;
 import org.geocedg.common.export.SemanticExportClassification.SourceClass;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.common.kernel.units.UnitToken;
 import org.geocedg.desktop.export.DrawingScale;
@@ -45,12 +46,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * PRE-G9B-R6-plus-C LaTeX contracts (C9, C10-C14; DQ-C4, DQ-C5, DQ-C12, DQ-C13):
- * PSTricks, PGF/TikZ and Asymptote start from the single export area and write
- * bound edits as MANUAL; they follow effective visibility; with a construction unit
- * their units are fb(c) * 100 * a / b; Locus V2 and Spline V2 are written as one
- * path per certified component with deterministic disclosure comments and the C14
- * result model; failures are never silent.
+ * PRE-G9B-R6-plus-C LaTeX contracts (C9, C10-C14; DQ-C13): PSTricks, PGF/TikZ and
+ * Asymptote start from the single export area and write bound edits as MANUAL; they follow
+ * effective visibility; with a construction unit their units are fb(c) * 100 * a / b; Locus
+ * V2 and Spline V2 are written as one path per certified component with deterministic
+ * disclosure comments and the C14 result model; failures are never silent. The tolerance,
+ * partial output, classification, report and certified topology rules are those of the
+ * durable specification {@code geocedg/specs/export/latex-semantic-curve-export.md},
+ * sections 2 to 5 (decision D-CU2-11, matrix row V-TEX-2).
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -156,19 +159,25 @@ class PreG9BR6PlusCLatexExportTest {
 
 	// -------------------------------------------------------- T-LATEX-SEMANTIC
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar loci (s,s^2/4) and
+	 * (cos(t)+3,sin(t)+1) are outside class v3; the certified direct affine map (s,s) on two
+	 * components and the circle traced by a point of a circle centred at (3, 1) keep the two
+	 * open components of L and the closed component of C.
+	 */
 	@Test
 	void locusV2IsWrittenAsOnePathPerCertifiedComponentInEveryDialect()
 			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		final EuclidianView view = sized(app.getEuclidianView1());
 		eval(app, "s=0");
-		eval(app, "Q=(s,s^2/4)");
+		eval(app, "Q=(s,s)");
 		eval(app, "D={false,{-2,-1,true,true},{1,2,true,true}}");
 		eval(app, "L=LocusV2(Q,s,D)");
-		eval(app, "t=0");
-		eval(app, "P=(cos(t)+3,sin(t)+1)");
-		eval(app, "E={true,{0,2*pi,true,false}}");
-		eval(app, "C=LocusV2(P,t,E)");
+		eval(app, "c=Circle((3,1),1)");
+		eval(app, "T=Point(c)");
+		eval(app, "P=T+(0,0)");
+		eval(app, "C=LocusV2(P,T)");
 		String pgf = generate(exporter(app, "pgf"), view);
 		assertTrue(pgf.startsWith("% GeoCeDG export classification: COMPLETE; "
 				+ "semantic curves (Locus V2, Spline V2): 2 source(s), tolerance 0.001 "
@@ -221,7 +230,9 @@ class PreG9BR6PlusCLatexExportTest {
 				.filter(item -> "m".equals(item.getLabel())).findFirst().orElseThrow();
 		assertEquals(SourceClass.INCOMPLETE_WITH_CERTIFIED_COMPONENTS,
 				locus.getSourceClass());
-		assertEquals(2, locus.getEmittedCount(), "locally certified components emitted");
+		// PRE-G9B-CU2 (D-CU2-9, published in step T11): the two locally certified components
+		// of m are joined across the seam into one arc.
+		assertEquals(1, locus.getEmittedCount(), "locally certified components emitted");
 		assertTrue(code.contains("% Incomplete: some semantic output is locally "
 				+ "certified only or failed"), code);
 		assertTrue(code.contains("coverage LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED"),
@@ -230,15 +241,23 @@ class PreG9BR6PlusCLatexExportTest {
 		assertEquals(constructionBefore, app.getXML(), "the construction is untouched");
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the scalar parabola is outside class v3; the
+	 * two certified arcs traced where the horizontal line through a point of the unit circle
+	 * meets the circle of radius 1/2 are curved components that the impossible tolerance
+	 * makes fail.
+	 */
 	@Test
 	void failedComponentsAreDisclosedAndNeverBridged() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
-		EuclidianView view = sized(app.getEuclidianView1());
+		final EuclidianView view = sized(app.getEuclidianView1());
 		eval(app, "A=(5,5)");
-		eval(app, "s=0");
-		eval(app, "Q=(s,s^2)");
-		eval(app, "D={false,{-2,-1,true,true},{1,2,true,true}}");
-		eval(app, "L=LocusV2(Q,s,D)");
+		eval(app, "c=Circle((0,0),1)");
+		eval(app, "P=Point(c)");
+		eval(app, "h=Line(P,P+(1,0))");
+		eval(app, "d=Circle((0,0),1/2)");
+		eval(app, "Q=Intersect(d,h,1)");
+		eval(app, "L=LocusV2(Q,P)");
 		GeoGebraExport export = exporter(app, "pgf");
 		LatexSemanticExportSupport support = support(export);
 		support.setTolerance(1E-300);
@@ -250,18 +269,19 @@ class PreG9BR6PlusCLatexExportTest {
 		assertEquals(ExportClass.INCOMPLETE_WITH_CERTIFIED_COMPONENTS,
 				result.getExportClass(), "the point is other admissible content");
 		assertTrue(code.contains("[WORK_LIMIT]"), code);
-		assertFalse(code.contains("\\draw [") && code.contains("(-1.,1.)-- (1.,1.)"),
-				"never bridged");
+		assertEquals(0, report.getEmittedCount(), "never bridged");
 		assertTrue(result.reportText().contains("[WORK_LIMIT]"));
 
 		AppGeoCeDG lonely = G9U1TestApp.create();
-		EuclidianView lonelyView = sized(lonely.getEuclidianView1());
-		eval(lonely, "s=0");
-		GeoElement point = eval(lonely, "Q=(s,s^2)");
+		final EuclidianView lonelyView = sized(lonely.getEuclidianView1());
+		eval(lonely, "c=Circle((0,0),1)");
+		eval(lonely, "P=Point(c)");
+		GeoElement point = eval(lonely, "Q=P+(0,0)");
 		point.setEuclidianVisible(false);
 		point.updateRepaint();
-		eval(lonely, "D={false,{-2,-1,true,true}}");
-		eval(lonely, "L=LocusV2(Q,s,D)");
+		lonely.getKernel().lookupLabel("P").setEuclidianVisible(false);
+		lonely.getKernel().lookupLabel("c").setEuclidianVisible(false);
+		eval(lonely, "L=LocusV2(Q,P)");
 		GeoGebraExport only = exporter(lonely, "pgf");
 		support(only).setTolerance(1E-300);
 		assertEquals("", generate(only, lonelyView),
@@ -276,9 +296,14 @@ class PreG9BR6PlusCLatexExportTest {
 		EuclidianView view = sized(app.getEuclidianView1());
 		final GeoNumeric k = (GeoNumeric) eval(app, "k=1");
 		eval(app, "s=0");
-		eval(app, "Q=(s,s^2/4)");
+		// PRE-G9B-CU2 step T11, declared conformity: (s,s^2/4) is outside class v3, so the
+		// stale source only carried a declaration; the certified diagonal has a component.
+		eval(app, "Q=(s,s)");
 		eval(app, "D={false,{-2,-k,true,true}}");
 		eval(app, "L=LocusV2(Q,s,D)");
+		assertFalse(((GeoLocusV2) app.getKernel().lookupLabel("L")).getSemanticDefinition()
+				.getBranches().get(0).getExistenceStructure().getContinuousValidComponents()
+				.isEmpty());
 		GeoGebraExport export = exporter(app, "pgf");
 		LatexSemanticExportSupport support = support(export);
 		support.setTolerance(Double.NaN);

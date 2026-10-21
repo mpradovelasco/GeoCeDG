@@ -262,7 +262,8 @@ class G9U0R5NativeArchivePersistenceTest {
 		factor.setValue(3);
 		factor.updateCascade();
 		assertTrue(reopenedDilation.getSemanticRevision() > revision);
-		assertPoint(reopenedDilation, 0.5, -4.5, 2.75);
+		// The parameter 0.5 of the certified parabola is its vertex (0, 0).
+		assertPoint(reopenedDilation, 0.5, -6, 2);
 	}
 
 	@Test
@@ -498,11 +499,23 @@ class G9U0R5NativeArchivePersistenceTest {
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
+	/**
+	 * The certified parabola y = x^2, -2 <= x <= 2 (PRE-G9B-CU2 step T11, declared
+	 * conformity): the scalar (s,s^2) is outside class v3, so the same curve is built from its
+	 * focus and directrix, driven by a point of a segment of the directrix, with the
+	 * parameter u = (x + 2) / 4 of [0, 1].
+	 */
 	private static GeoLocusV2 createParabola(App app) {
-		eval(app, "s=0");
-		eval(app, "Q=(s,s^2)");
-		eval(app, "D={false,{-2,2,true,true}}");
-		return (GeoLocusV2) eval(app, "L=LocusV2(Q,s,D)");
+		eval(app, "ParabolaFocus=(0,1/4)");
+		eval(app, "parabolaLine=Line((-2,-1/4),(2,-1/4))");
+		eval(app, "parabolaDirectrix=Segment((-2,-1/4),(2,-1/4))");
+		eval(app, "ParabolaDriver=Point(parabolaDirectrix)");
+		eval(app, "parabolaNormal=PerpendicularLine(ParabolaDriver,parabolaLine)");
+		eval(app, "parabolaChord=Line(ParabolaFocus,ParabolaDriver)");
+		eval(app, "ParabolaMiddle=Midpoint(ParabolaFocus,ParabolaDriver)");
+		eval(app, "parabolaBisector=PerpendicularLine(ParabolaMiddle,parabolaChord)");
+		eval(app, "Q=Intersect(parabolaNormal,parabolaBisector)");
+		return (GeoLocusV2) eval(app, "L=LocusV2(Q,ParabolaDriver)");
 	}
 
 	private static GeoLocusV2 createLine(App app) {

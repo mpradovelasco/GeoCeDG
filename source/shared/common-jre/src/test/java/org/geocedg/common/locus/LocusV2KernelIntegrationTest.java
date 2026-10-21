@@ -134,17 +134,25 @@ class LocusV2KernelIntegrationTest extends BaseUnitTest {
 		componentControl.updateCascade();
 		assertTopology(locus, DefinitionStatus.VALID, "root", 2,
 				LineageTransition.UNCHANGED);
-		assertEquals(EvaluationStatus.OUT_OF_DOMAIN,
-				locus.evaluate("root", 0, LocusEvaluationSession2D.reference())
-						.getStatus());
+		// PRE-G9B-CU2 declared conformity (T9 rule P5 on the explicit certificate of T11):
+		// the provider's gap is certified nonexistence, which no evaluated point overrides.
+		LocusEvaluation2D gap = locus.evaluate("root", 0, LocusEvaluationSession2D.reference());
+		assertEquals(EvaluationStatus.DEPENDENCY_UNDEFINED, gap.getStatus());
+		assertTrue(gap.getDiagnostic().startsWith(LocusDefinition2D.CERTIFIED_NONEXISTENCE));
 
 		componentControl.setValue(1);
 		componentControl.updateCascade();
-		assertTopology(locus, DefinitionStatus.VALID, "root", 2,
+		// PRE-G9B-CU2 declared conformity (locus-v2-existence-components.md section 15.4):
+		// the two isolated parameters are point components of the explicit certificate of
+		// step T11, never intervals of length zero, so the compatibility view of the valid
+		// domain lists none of them.
+		assertTopology(locus, DefinitionStatus.VALID, "root", 0,
 				LineageTransition.UNCHANGED);
+		assertEquals(2, locus.getSemanticDefinition().getBranch("root")
+				.getExistenceStructure().getPointComponents().size());
 		assertTrue(locus.getSemanticDefinition().getBranch("root")
-				.getValidDomainComponents().stream()
-				.allMatch(interval -> interval.getLower() == interval.getUpper()));
+				.getExistenceStructure().getPointComponents().stream()
+				.allMatch(point -> point.getParameterLower() == point.getParameterUpper()));
 
 		componentControl.setValue(1.25);
 		componentControl.updateCascade();
@@ -227,7 +235,8 @@ class LocusV2KernelIntegrationTest extends BaseUnitTest {
 
 		LocusBranch2D collapsedBranch = LocusV2Factory.fullDomainBranch(
 				BRANCH_KEY, provider, "collapsed-image/v1",
-				EnumSet.of(BranchProperty.COLLAPSED_IMAGE));
+				EnumSet.of(BranchProperty.COLLAPSED_IMAGE),
+				LocusV2TestBranches.TEST_FIXTURE_CONTRACT);
 		GeoLocusV2 collapsed = LocusV2Factory.createAnalytic(LocusV2Mode.V2,
 				getConstruction(), "collapsed-image", source, provider,
 				Collections.singletonList(collapsedBranch),
@@ -386,8 +395,15 @@ class LocusV2KernelIntegrationTest extends BaseUnitTest {
 	void typedInvalidEvaluationsNeverCarryStaleCoordinates() {
 		ExplicitNumericDomainProvider2D provider = numeric(-1, 1, false, true);
 		LocusInstrumentation2D instrumentation = new LocusInstrumentation2D();
+		// PRE-G9B-CU2 declared conformity: a fixture whose evaluator never gives a point
+		// proves no existence, so its branch is not established and keeps the typed status
+		// (inside a proved component P5 would make it a computational failure).
 		LocusDefinition2D nonFinite = new LocusDefinition2D("non-finite", 1,
-				DefinitionStatus.VALID, provider, branches(provider),
+				DefinitionStatus.VALID, provider, Collections.singletonList(
+						LocusV2TestBranches.unproved(BRANCH_KEY, provider.getDeclaredDomain(),
+								Orientation.INCREASING, "g6b-controlled-fixture/v1",
+								EnumSet.of(BranchProperty.FINITE),
+								LocusQuality2D.analyticDoubleSemantic())),
 				(definition, branch, parameter, session) -> LocusEvaluation2D.invalid(
 						EvaluationStatus.NON_FINITE, branch.getQuality(),
 						"Controlled non-finite fixture"),
@@ -567,7 +583,7 @@ class LocusV2KernelIntegrationTest extends BaseUnitTest {
 			ExplicitNumericDomainProvider2D provider) {
 		return Collections.singletonList(LocusV2Factory.fullDomainBranch(
 				BRANCH_KEY, provider, "g6b-controlled-fixture/v1",
-				EnumSet.noneOf(BranchProperty.class)));
+				EnumSet.noneOf(BranchProperty.class), LocusV2TestBranches.TEST_FIXTURE_CONTRACT));
 	}
 
 	private static LocusBranchSnapshot2D topologySnapshot(
@@ -655,7 +671,7 @@ class LocusV2KernelIntegrationTest extends BaseUnitTest {
 	private static LocusBranch2D branch(String key,
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusInterval2D> components, LocusLineage2D lineage) {
-		return new LocusBranch2D(key, provider.getDeclaredDomain(), components,
+		return LocusV2TestBranches.branch(key, provider.getDeclaredDomain(), components,
 				Orientation.INCREASING, "g6a-topology-fixture/v1", lineage,
 				EnumSet.of(BranchProperty.FINITE),
 				LocusQuality2D.analyticDoubleSemantic());

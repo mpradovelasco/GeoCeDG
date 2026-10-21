@@ -171,13 +171,20 @@ class G9U1SemanticPointInteractionTest {
 		assertEquals(2, point.getInhomX(), 1E-8);
 	}
 
+	/**
+	 * PRE-G9B-CU2 step T11, declared conformity: the periodic scalar circle (cos(u),sin(u)) is
+	 * outside class v3 and draws no certified stroke; the circle traced by a point of the unit
+	 * circle is a certified closed periodic component with the same stroke.
+	 */
 	@Test
 	void closedCurveInteriorIsNotAStrokeHit() {
 		AppGeoCeDG app = app();
-		eval(app, "u=0");
-		eval(app, "Q=(cos(u),sin(u))");
-		eval(app, "D={true,{0,2*pi,true,false}}");
-		GeoLocusV2 circle = (GeoLocusV2) eval(app, "L=LocusV2(Q,u,D)");
+		eval(app, "k=Circle((0,0),1)");
+		eval(app, "K=Point(k)");
+		eval(app, "Q=K+(0,0)");
+		app.getKernel().lookupLabel("k").setEuclidianVisible(false);
+		app.getKernel().lookupLabel("K").setEuclidianVisible(false);
+		GeoLocusV2 circle = (GeoLocusV2) eval(app, "L=LocusV2(Q,K)");
 		circle.setEuclidianVisible(true);
 		EuclidianView view = app.getEuclidianView1();
 		DrawLocusV2 drawable = new DrawLocusV2(view, circle);

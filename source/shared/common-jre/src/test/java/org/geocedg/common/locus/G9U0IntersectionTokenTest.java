@@ -137,18 +137,26 @@ class G9U0IntersectionTokenTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void i06LocallyUnisolatedRootCannotBecomeAPoint() {
-		GeoLocusV2 locus = createScalarLocus("L", "s", "Q",
-				"(s,abs(s))", "{false,{-1,1,true,true}}");
-		GeoLocusIntersectionResult result = intersect(locus, "y=0");
+		// PRE-G9B-CU2 step T11, declared conformity: the corner of (s,abs(s)) is outside class
+		// v3, whose intersections have no finite root since T11, so the assertion below would
+		// hold vacuously; the certified parabola touches y=0 at its vertex, a root whose local
+		// isolation is not established either.
+		GeoLocusIntersectionResult result = intersect(certifiedParabola(), "y=0");
+		assertEquals(1, value(result).getFiniteSolutions().size());
 		assertTrue(value(result).getFiniteSolutions().stream().allMatch(solution ->
 				solution.getRevisionEvidence().getLocalIsolationStatus()
 						== LocalIsolationStatus.NOT_ESTABLISHED));
+		assertTrue(value(result).getFiniteSolutions().stream().allMatch(solution ->
+				value(result).findPointAdmissibleSolution(
+						solution.getIdentity().getRootToken()).isEmpty()));
 	}
 
 	@Test
 	void i07TangentAndNearTangentRootsAreTopologicallyDistinct() {
 		add("a=0");
-		GeoLocusIntersectionResult result = intersect(createParabola(), "y=a");
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11; the same parabola is certified from its focus and directrix.
+		GeoLocusIntersectionResult result = intersect(certifiedParabola(), "y=a");
 		assertEquals(1, value(result).getFiniteSolutions().size());
 		assertTrue(value(result).getFiniteSolutions().stream().allMatch(solution ->
 				value(result).findPointAdmissibleSolution(
@@ -296,8 +304,11 @@ class G9U0IntersectionTokenTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void i14StableSemanticPreimageRetainsExactTokenContinuation() {
 		add("b=0");
-		GeoLocusV2 locus = createScalarLocus("L", "s", "Q", "(s,b)",
-				"{false,{-2,2,true,true}}");
+		// PRE-G9B-CU2 declared conformity: (s,b) is not a direct affine scalar map, so it is
+		// outside class v3 since step T11; the certified line (s,0) translated by (0,b)
+		// keeps its certificate and the same semantic parameters.
+		createScalarLocus("L0", "s", "Q", "(s,0)", "{false,{-2,2,true,true}}");
+		GeoLocusV2 locus = add("L=Translate(L0,(0,b))");
 		GeoLocusIntersectionResult result = intersect(locus, "x=0");
 		Set<String> before = tokens(value(result));
 		String oldToken = before.iterator().next();
@@ -357,7 +368,9 @@ class G9U0IntersectionTokenTest extends G9U0PublicSurfaceTestBase {
 						.orElseThrow()).isEmpty());
 
 		add("a=1");
-		GeoLocusIntersectionResult result = intersect(createParabola(), "y=a");
+		// PRE-G9B-CU2 declared conformity: the scalar parabola is outside class v3 since
+		// step T11; the same parabola is certified from its focus and directrix.
+		GeoLocusIntersectionResult result = intersect(certifiedParabola(), "y=a");
 		Set<String> before = tokens(value(result));
 		((org.geogebra.common.kernel.geos.GeoNumeric) requireLookup("a"))
 				.setValue(0);

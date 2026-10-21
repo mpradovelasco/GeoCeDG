@@ -141,20 +141,23 @@ public final class LocusComponentSelectorResolver2D {
 	}
 
 	/**
-	 * Equality of the decomposition with a selector that cites the whole declared domain:
-	 * the structure is one closed periodic component, or, on a bounded domain, one interval
-	 * component equal to the domain; an open arc of full length is not the closed curve that
-	 * such a selector cites.
+	 * Equality of the decomposition (decision E-3) for a consumer that holds no parameter to
+	 * validate it: the retained key cites the whole declared domain and the structure is
+	 * that whole domain, whose one component contains every parameter.
+	 *
+	 * @param retainedKey lineage key the selector retains
+	 * @param structure current certified structure of the branch
+	 * @return whether the key corresponds to the one whole-domain component
 	 */
+	public static boolean citesWholeDomain(String retainedKey,
+			LocusExistenceStructure2D structure) {
+		return isWholeDomain(structure) && retainedKey.equals(LocusComponentLineage2D
+				.create(structure.getBranchKey(), structure.getCanonicalDomain()));
+	}
+
+	/** Equality of the decomposition with a selector that cites the whole declared domain. */
 	private static boolean isWholeDomain(LocusExistenceStructure2D structure) {
-		if (structure.isClosedPeriodic()) {
-			return true;
-		}
-		List<ContinuousComponent> components = structure.getContinuousValidComponents();
-		return structure.getTopology() == LocusExistenceStructure2D.DomainTopology.BOUNDED
-				&& components.size() == 1 && structure.getPointComponents().isEmpty()
-				&& !components.get(0).isArc()
-				&& components.get(0).getInterval().equals(structure.getCanonicalDomain());
+		return LocusComponentLineage2D.isWholeDomain(structure);
 	}
 
 	/** Unique containment of the parameter validates a demonstrated correspondence. */

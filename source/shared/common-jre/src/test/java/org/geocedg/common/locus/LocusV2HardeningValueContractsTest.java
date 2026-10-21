@@ -148,7 +148,7 @@ class LocusV2HardeningValueContractsTest {
 	private static LocusBranch2D branch(
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusInterval2D> components) {
-		return new LocusBranch2D("hardening.sheet.main",
+		return LocusV2TestBranches.branch("hardening.sheet.main",
 				provider.getDeclaredDomain(), components, Orientation.INCREASING,
 				"g6r-value-contract/v1", LocusLineage2D.unchanged(),
 				EnumSet.of(BranchProperty.FINITE),

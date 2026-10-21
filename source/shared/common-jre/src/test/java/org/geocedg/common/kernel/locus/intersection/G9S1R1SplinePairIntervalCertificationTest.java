@@ -52,6 +52,7 @@ import org.geocedg.common.kernel.locus.intersection.SplinePairIntervalCertificat
 		.RootCertificate;
 import org.geocedg.common.kernel.spline.SplinePolynomialModel2D;
 import org.geocedg.common.kernel.spline.SplineSemanticEvaluator2D;
+import org.geocedg.common.locus.LocusV2TestBranches;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -577,7 +578,7 @@ final class G9S1R1SplinePairIntervalCertificationTest {
 		if (periodic) {
 			properties.add(BranchProperty.PERIODIC);
 		}
-		LocusBranch2D branch = new LocusBranch2D(BRANCH, domain, List.of(domain),
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH, domain, List.of(domain),
 				Orientation.INCREASING, "exact-represented-coefficient-test",
 				LocusLineage2D.unchanged(), properties, LocusQuality2D.analyticDoubleSemantic());
 		SplineSemanticEvaluator2D evaluator = new SplineSemanticEvaluator2D(BRANCH, model);

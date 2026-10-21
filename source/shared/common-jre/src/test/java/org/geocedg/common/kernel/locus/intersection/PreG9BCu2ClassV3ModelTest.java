@@ -355,8 +355,8 @@ class PreG9BCu2ClassV3ModelTest extends BaseUnitTest {
 				.getUnsettledSelections());
 		assertTrue(evaluator("lq").captureCertifiedProgramV3().isEmpty());
 		assertTrue(evaluator("lz").captureCertifiedProgramV3().isEmpty());
-		// The existence outcome of a slice without program is the shadow certificate's
-		// (step T4): NOT_ESTABLISHED with its typed cause.
+		// The existence outcome of a slice without program is the certificate's (step T4,
+		// published since step T11): NOT_ESTABLISHED with its typed cause.
 		getKernel().setContinuous(true);
 		assertFalse(getKernel().isContinuous());
 		getKernel().updateConstruction(false);
@@ -371,7 +371,7 @@ class PreG9BCu2ClassV3ModelTest extends BaseUnitTest {
 	/**
 	 * V-V3-4, synthetic part: the driver-dependent step limit of class v3 is versioned and
 	 * counted after macro expansion; a slice above it has no program, whose existence outcome
-	 * the shadow certificate of step T4 types.
+	 * the certificate of step T4, published since step T11, types.
 	 */
 	@Test
 	void theStepLimitIsVersionedAfterMacroExpansion() throws Exception {

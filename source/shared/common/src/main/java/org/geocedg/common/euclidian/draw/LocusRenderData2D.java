@@ -71,7 +71,12 @@ public final class LocusRenderData2D {
 		/** The component does not fit the vertex budget even at its coarsest; not drawn. */
 		VERTEX_BUDGET_EXHAUSTED,
 		/** A point component is declared and never drawn (D-CU2-19). */
-		POINT_COMPONENT_NOT_DRAWN
+		POINT_COMPONENT_NOT_DRAWN,
+		/**
+		 * Exploratory evidence of an unresolved band is drawn with its own style, never
+		 * joined to a component and never exported (decision E-1).
+		 */
+		EXPLORATORY_EVIDENCE
 	}
 
 	/** Effective fidelity of the drawing of one component. */
@@ -220,22 +225,25 @@ public final class LocusRenderData2D {
 	private final List<Mark> marks;
 	private final List<ComponentFidelity> components;
 	private final int coarseningLevel;
+	private final List<Vertex> exploratoryVertices;
 
 	LocusRenderData2D(long semanticRevision, LocusRenderPolicy2D policy,
 			List<Vertex> vertices) {
 		this(semanticRevision, policy, vertices, Collections.emptyList(),
-				Collections.emptyList(), 0);
+				Collections.emptyList(), 0, Collections.emptyList());
 	}
 
 	LocusRenderData2D(long semanticRevision, LocusRenderPolicy2D policy,
 			List<Vertex> vertices, List<Mark> marks, List<ComponentFidelity> components,
-			int coarseningLevel) {
+			int coarseningLevel, List<Vertex> exploratoryVertices) {
 		this.semanticRevision = semanticRevision;
 		this.policy = policy;
 		this.vertices = Collections.unmodifiableList(new ArrayList<>(vertices));
 		this.marks = Collections.unmodifiableList(new ArrayList<>(marks));
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.coarseningLevel = coarseningLevel;
+		this.exploratoryVertices = Collections.unmodifiableList(
+				new ArrayList<>(exploratoryVertices));
 	}
 
 	public long getSemanticRevision() {
@@ -246,8 +254,17 @@ public final class LocusRenderData2D {
 		return policy;
 	}
 
+	/** @return vertices of the certified components */
 	public List<Vertex> getVertices() {
 		return vertices;
+	}
+
+	/**
+	 * @return vertices of the exploratory evidence of the unresolved bands, in their own
+	 *         subpaths, drawn with a distinct style and never joined to a component (E-1)
+	 */
+	public List<Vertex> getExploratoryVertices() {
+		return exploratoryVertices;
 	}
 
 	/** @return typed marks in component order */

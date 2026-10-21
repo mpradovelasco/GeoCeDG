@@ -36,6 +36,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LocalIsolationStatus;
 import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluator2D;
+import org.geocedg.common.locus.LocusV2TestBranches;
 import org.junit.jupiter.api.Test;
 
 /** Focused semantic-span pair isolation tests independent of render sampling. */
@@ -284,7 +285,7 @@ final class PiecewisePolynomialPairIntersectionCapability2DTest {
 		if (periodic) {
 			properties.add(BranchProperty.PERIODIC);
 		}
-		LocusBranch2D branch = new LocusBranch2D(BRANCH, domain,
+		LocusBranch2D branch = LocusV2TestBranches.branch(BRANCH, domain,
 				List.of(domain), Orientation.INCREASING,
 				identity + "/polynomial-branch", LocusLineage2D.unchanged(),
 				properties, LocusQuality2D.analyticDoubleSemantic());
