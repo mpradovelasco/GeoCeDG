@@ -6866,6 +6866,24 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T7: shadow certificates of the author model against the 50-digit analytic ends t_c +- beta (V-PER-1, V-PER-3, V-FOLD-1 to V-FOLD-3, V-ARC-1, V-ARC-2, V-TR-1, V-TR-4, V-CRIT-5 and V-CRIT-7 to V-CRIT-10 model parts, V-COMPL-1, V-E2-1, V-E2-4 and V-E2-5 certificate parts, GC-4, GC-6, GC-8).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusComponentSelectorResolver2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T8: resolution of a retained component selector only through a demonstrated structural correspondence (same lineage key, equality of the decomposition or a recorded split or merge), validated by unique containment, with typed outcomes (decision E-3 revised).",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2LineageTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T8: structural lineage keys, typed transitions and selector resolution on the synthetic critical configuration (V-LIN-1, V-LIN-2, V-LIN-4, V-LIN-5, V-LIN-6 synthetic parts).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelLineageTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T8: lineage of the shadow certificates of the author model and resolution of the persisted selector of N_1 (V-LIN-1, V-LIN-2, V-LIN-3, V-LIN-5, V-LIN-6, V-E2-7).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

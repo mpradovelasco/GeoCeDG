@@ -517,7 +517,8 @@ class PreG9BCu2AuthorModelCertificationTest {
 				long reads = metricReads(e2);
 				Result again = LocusCertificationScope2D.certify(e2.getInstrumentation(), () ->
 						HybridExistenceCertifier2D.certify(new ConstructionBoxModel2D(program),
-								evaluator.getMetricStructuresV3(), program.getDomain(), true,
+								evaluator.getMetricStructuresV3(),
+								evaluator.getOperationIdentitiesV3(), program.getDomain(), true,
 								PreG9BCu0Corpus.MAIN, null, Policy.DEFAULT, null));
 				values.put("reads", metricReads(e2) - reads);
 				values.put("identical", again.getStructure().getSemanticSignature()

@@ -805,6 +805,34 @@ que `unchanged()`. Propuesta (decisión E-3 revisada):
   persistido no se reescribe; `text2`, además, es un objeto del usuario. Reescribirlo sería un
   cambio de contrato persistente que necesita su propia autorización.
 
+**Precisiones de la implementación (T8, 2026-10-21).** Ninguna cambia la decisión E-3:
+
+- **Identidad de la operación.** La fuente de una frontera nombra la operación con la identidad
+  durable del objeto vivo que su copia en el corte reproduce (el registro de identidades del corte
+  la conserva), seguida, dentro de una macro expandida, de los índices de construcción de sus
+  objetos internos, de un ordinal entre los pasos de ese objeto con la misma operación y de la
+  operación. Una entrada métrica toma la identidad de su longitud rica. El modelo de identidades
+  solo registra los objetos que participan en Locus V2; un paso cuyo objeto no tiene identidad
+  durable conserva su dirección en el programa determinista del corte (`class-v3-step-N`), que no
+  cambia mientras no cambie la construcción del corte (limitación declarada).
+- **Clave de linaje.** `LocusComponentLineage2D.of` da la clave de rama más las fuentes de los dos
+  extremos; la componente periódica cerrada de una rama es `periodic-closure`. Un extremo sin
+  tipo (anterior a `CU2`) o el borde de una banda no resuelta no es una fuente estructural, y dos
+  componentes con las mismas fuentes no se distinguen estructuralmente: en esos casos la clave es
+  la antigua de extremos binary64, que no afirma linaje. Los ordinales de raíz `root-k` de las
+  componentes puntuales dependen de la carta (un cruce de la costura los reordena).
+- **Transiciones.** Entre dos certificados de la misma rama: claves persistentes, sin cambio;
+  solo nuevas, `APPEARED`; solo desaparecidas, `DISAPPEARED`; desde la componente cerrada,
+  `SPLIT` (también en un solo arco: la regla de forma de `LocusLineage2D` admite ahora un hijo);
+  hacia la componente cerrada, `MERGED` (un solo padre); cualquier otro cambio, o un cambio de la
+  regla de selección, se registra como desaparición y aparición, sin relación. El primer
+  certificado tras abrir un documento no tiene padres.
+- **Resolución.** `LocusComponentSelectorResolver2D` aplica la regla: misma clave, igualdad de la
+  descomposición o transición registrada `SPLIT`/`MERGED` desde la clave retenida; la contención
+  única del parámetro valida; si no, `NO_CORRESPONDENCE`, `NOT_CONTAINED` o `AMBIGUOUS`. Con las
+  estructuras de compatibilidad publicadas hoy las claves son las antiguas y el resultado coincide
+  con el actual; el punto semántico y el selector de rama principal lo usan desde T9.
+
 ## 8. Determinismo, presupuestos y coste
 
 - Las particiones son diádicas sobre el dominio y dependen solo de él y de la versión de la

@@ -5,9 +5,12 @@
 
 package org.geocedg.common.kernel.locus;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +104,13 @@ final class CertifiedConstructionCapture2D {
 	private final Map<Macro, AlgoMacro> computedInstances = new IdentityHashMap<>();
 	/** Rich length of each structural metric input whose structure applies to the driver. */
 	private final Map<Step, AlgoLocusBetweenMetricV2> metricSources = new IdentityHashMap<>();
+	/** Captured geos whose steps are being built, innermost first, and their scopes. */
+	private final Deque<GeoElement> anchorGeos = new ArrayDeque<>();
+	private final Deque<Scope> anchorScopes = new ArrayDeque<>();
+	/** Anchor of the next step instead of the captured geo: the rich length of an input. */
+	private GeoElement pendingAnchor;
+	/** Structural origin of each step, in program order. */
+	private final List<StepOrigin> origins = new ArrayList<>();
 
 	private CertifiedConstructionCapture2D(GeoElement state, boolean classV3) {
 		this.state = state;
@@ -189,7 +199,7 @@ final class CertifiedConstructionCapture2D {
 			}
 		}
 		return new Outcome(Optional.of(new CertifiedConstructionProgram2D(driver,
-				constants, domain, walk.steps)), null, metrics);
+				constants, domain, walk.steps)), null, metrics, walk.origins);
 	}
 
 	private static double[] circle(GeoElement state, GeoElement support,
@@ -274,17 +284,24 @@ final class CertifiedConstructionCapture2D {
 			throw new Refusal();
 		}
 		int index;
-		if (classV3 && parent.getClass() == AlgoMacro.class) {
-			index = expand((AlgoMacro) parent, geo, scope);
-		} else if (classV3 && parent.getClass() == AlgoIntersectLineConic.class) {
-			int pair = intersection((AlgoIntersectLineConic) parent, scope);
-			index = add(new Step(Operation.INTERSECTION_OUTPUT,
-					List.of(Operand.node(pair)), outputIndex(parent, geo)));
-		} else {
-			if (parent.getOutputLength() != 1 || parent.getOutput(0) != geo) {
-				throw new Refusal();
+		anchorGeos.push(geo);
+		anchorScopes.push(scope);
+		try {
+			if (classV3 && parent.getClass() == AlgoMacro.class) {
+				index = expand((AlgoMacro) parent, geo, scope);
+			} else if (classV3 && parent.getClass() == AlgoIntersectLineConic.class) {
+				int pair = intersection((AlgoIntersectLineConic) parent, scope);
+				index = add(new Step(Operation.INTERSECTION_OUTPUT,
+						List.of(Operand.node(pair)), outputIndex(parent, geo)));
+			} else {
+				if (parent.getOutputLength() != 1 || parent.getOutput(0) != geo) {
+					throw new Refusal();
+				}
+				index = add(step(parent, scope));
 			}
-			index = add(step(parent, scope));
+		} finally {
+			anchorGeos.pop();
+			anchorScopes.pop();
 		}
 		scope.nodes.put(geo, index);
 		return index;
@@ -296,7 +313,37 @@ final class CertifiedConstructionCapture2D {
 			throw new Refusal(STEP_LIMIT);
 		}
 		steps.add(step);
+		origins.add(origin(step));
 		return steps.size();
+	}
+
+	/**
+	 * Structural origin of a new step ({@code locus-v2-existence-components.md} section
+	 * 15.6): the captured geo of the slice whose definition produced it, followed inside an
+	 * expanded macro by the construction index of each internal geo, and its operation. A
+	 * structural metric input is anchored at its rich length.
+	 */
+	private StepOrigin origin(Step step) {
+		GeoElement anchor = pendingAnchor;
+		pendingAnchor = null;
+		List<String> inner = new ArrayList<>();
+		if (anchor == null) {
+			Iterator<GeoElement> geos = anchorGeos.iterator();
+			Iterator<Scope> scopes = anchorScopes.iterator();
+			while (geos.hasNext() && anchor == null) {
+				GeoElement geo = geos.next();
+				if (scopes.next() == top) {
+					anchor = geo;
+				} else {
+					inner.add("-m" + geo.getConstructionIndex());
+				}
+			}
+		}
+		StringBuilder path = new StringBuilder();
+		for (int index = inner.size() - 1; index >= 0; index--) {
+			path.append(inner.get(index));
+		}
+		return new StepOrigin(anchor, path.toString(), step.getOperation().name());
 	}
 
 	private Step step(AlgoElement parent, Scope scope) {
@@ -765,6 +812,8 @@ final class CertifiedConstructionCapture2D {
 			descriptor.append("|policy=").append(((GeoText) token).getTextString());
 		}
 		Step step = new Step(Operation.METRIC_INPUT, endpoints, descriptor.toString());
+		// The events of the length belong to the rich length, not to its scalar view.
+		pendingAnchor = rich.getOutput(0).toGeoElement();
 		AlgoElement source = rich.getInput(0).toGeoElement().getParentAlgorithm();
 		if (!dependent[1] && dependent[2] && source instanceof AlgoDependentPointLocusV2
 				&& source.getInput(0).toGeoElement() == rich.getInput(2).toGeoElement()
@@ -1135,17 +1184,56 @@ final class CertifiedConstructionCapture2D {
 		}
 	}
 
+	/**
+	 * Structural origin of one step: the captured geo of the slice that anchors it, the path
+	 * of construction indices inside expanded macros, and its operation.
+	 */
+	static final class StepOrigin {
+		private final GeoElement anchor;
+		private final String macroPath;
+		private final String operation;
+
+		private StepOrigin(GeoElement anchor, String macroPath, String operation) {
+			this.anchor = anchor;
+			this.macroPath = macroPath;
+			this.operation = operation;
+		}
+
+		/** @return captured geo of the slice, or {@code null} */
+		GeoElement getAnchor() {
+			return anchor;
+		}
+
+		/** @return construction indices inside expanded macros, as {@code -m<k>} tokens */
+		String getMacroPath() {
+			return macroPath;
+		}
+
+		/** @return operation of the step */
+		String getOperation() {
+			return operation;
+		}
+	}
+
 	/** Typed outcome of a capture: the program, or the reason of its refusal. */
 	static final class Outcome {
 		private final Optional<CertifiedConstructionProgram2D> program;
 		private final String refusal;
 		private final Map<Integer, AlgoLocusBetweenMetricV2> metricSources;
+		private final List<StepOrigin> origins;
 
 		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal,
 				Map<Integer, AlgoLocusBetweenMetricV2> metricSources) {
+			this(program, refusal, metricSources, List.of());
+		}
+
+		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal,
+				Map<Integer, AlgoLocusBetweenMetricV2> metricSources,
+				List<StepOrigin> origins) {
 			this.program = program;
 			this.refusal = refusal;
 			this.metricSources = Collections.unmodifiableMap(metricSources);
+			this.origins = Collections.unmodifiableList(new ArrayList<>(origins));
 		}
 
 		/**
@@ -1154,6 +1242,11 @@ final class CertifiedConstructionCapture2D {
 		 */
 		Map<Integer, AlgoLocusBetweenMetricV2> getMetricSources() {
 			return metricSources;
+		}
+
+		/** @return structural origin of each step of the program, in program order */
+		List<StepOrigin> getOrigins() {
+			return origins;
 		}
 
 		/** @return captured program, or empty when refused */

@@ -63,15 +63,17 @@ public final class LocusLineage2D {
 			}
 			break;
 		case SPLIT:
-			if (parentKeys.size() != 1 || childKeys.size() < 2) {
+			// One child: a closed component opened by a gap (PRE-G9B-CU2, E-3).
+			if (parentKeys.size() != 1 || childKeys.isEmpty()) {
 				throw new IllegalArgumentException(
-						"Split lineage needs one parent and at least two children");
+						"Split lineage needs one parent and at least one child");
 			}
 			break;
 		case MERGED:
-			if (parentKeys.size() < 2 || childKeys.size() != 1) {
+			// One parent: an arc whose ends join into a closed component.
+			if (parentKeys.isEmpty() || childKeys.size() != 1) {
 				throw new IllegalArgumentException(
-						"Merged lineage needs at least two parents and one child");
+						"Merged lineage needs at least one parent and one child");
 			}
 			break;
 		default:

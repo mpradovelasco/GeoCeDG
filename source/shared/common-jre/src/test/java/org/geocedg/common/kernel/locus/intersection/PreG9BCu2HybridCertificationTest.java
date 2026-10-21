@@ -498,13 +498,26 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 
 	/**
 	 * V-CRIT-10: certificates, exact evidence and roots are identical bit for bit on a new
-	 * construction with the same state.
+	 * construction with the same state. Since step T8 a boundary source names its operation
+	 * by the durable identity of its geo, which a new construction allocates anew; those
+	 * identities are the only part compared up to renaming.
 	 */
 	@Test
 	void certificatesAreDeterministic() {
 		List<String> first = signatures();
 		getKernel().clearConstruction(true);
-		assertEquals(first, signatures());
+		assertEquals(withoutDurableIdentities(first),
+				withoutDurableIdentities(signatures()));
+		assertTrue(first.stream().anyMatch(text -> text.contains("geo:")),
+				"the sources name durable operation identities");
+	}
+
+	private static List<String> withoutDurableIdentities(List<String> signatures) {
+		List<String> result = new ArrayList<>();
+		for (String signature : signatures) {
+			result.add(signature.replaceAll("geo:[0-9a-f]{32}", "geo:*"));
+		}
+		return result;
 	}
 
 	/**

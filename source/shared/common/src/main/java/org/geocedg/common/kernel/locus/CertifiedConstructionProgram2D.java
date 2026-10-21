@@ -364,6 +364,24 @@ public final class CertifiedConstructionProgram2D {
 		return nodeKinds[node];
 	}
 
+	/**
+	 * @return canonical text of the selection rule of the program (section 10.2): the mode,
+	 *         raw root order and label state of every line-circle intersection and the output
+	 *         that every indexed step selects, in program order
+	 */
+	public String getSelectionSignature() {
+		StringBuilder signature = new StringBuilder();
+		for (int index = 0; index < steps.size(); index++) {
+			Step step = steps.get(index);
+			if (step.operation == Operation.LINE_CIRCLE
+					|| step.operation == Operation.INTERSECTION_OUTPUT) {
+				signature.append(index + 1).append(step.operation.name())
+						.append(hex(step.parameters)).append(';');
+			}
+		}
+		return signature.toString();
+	}
+
 	/** @return deterministic certificate-material signature */
 	public String getSignature() {
 		StringBuilder signature = new StringBuilder(version).append("|driver=")

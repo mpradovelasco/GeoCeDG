@@ -645,9 +645,26 @@ public final class HybridExistenceCertifier2D {
 			Map<Integer, LocusMetricFunctionStructure2D> metrics, LocusInterval2D domain,
 			boolean periodic, String branchKey, Sampler sampler, Policy policy,
 			LocusInstrumentation2D instrumentation) {
+		return certify(model, metrics, List.of(), domain, periodic, branchKey, sampler,
+				policy, instrumentation);
+	}
+
+	/**
+	 * Certifies the program of one revision whose steps have durable operation identities,
+	 * which name the structural sources of its boundaries ({@code
+	 * locus-v2-existence-components.md} section 15.6).
+	 *
+	 * @param operations durable identity token of each step in program order; a step without
+	 *        one keeps its revision-local program address
+	 * @return certificate with its evidence
+	 */
+	public static Result certify(ConstructionBoxModel2D model,
+			Map<Integer, LocusMetricFunctionStructure2D> metrics, List<String> operations,
+			LocusInterval2D domain, boolean periodic, String branchKey, Sampler sampler,
+			Policy policy, LocusInstrumentation2D instrumentation) {
 		return new Run(Objects.requireNonNull(model), Objects.requireNonNull(metrics),
-				Objects.requireNonNull(domain), periodic, branchKey, sampler,
-				Objects.requireNonNull(policy), instrumentation).certify();
+				Objects.requireNonNull(operations), Objects.requireNonNull(domain), periodic,
+				branchKey, sampler, Objects.requireNonNull(policy), instrumentation).certify();
 	}
 
 	/**
@@ -879,6 +896,7 @@ public final class HybridExistenceCertifier2D {
 		private final ConstructionBoxModel2D model;
 		private final CertifiedConstructionProgram2D program;
 		private final Map<Integer, LocusMetricFunctionStructure2D> metrics;
+		private final List<String> operations;
 		private final List<Integer> metricNodes;
 		private final Set<Double> eventParameters = new TreeSet<>();
 		private final LocusInterval2D domain;
@@ -900,11 +918,13 @@ public final class HybridExistenceCertifier2D {
 		private String diagnostic;
 
 		Run(ConstructionBoxModel2D model, Map<Integer, LocusMetricFunctionStructure2D> metrics,
-				LocusInterval2D domain, boolean periodic, String branchKey, Sampler sampler,
-				Policy policy, LocusInstrumentation2D instrumentation) {
+				List<String> operations, LocusInterval2D domain, boolean periodic,
+				String branchKey, Sampler sampler, Policy policy,
+				LocusInstrumentation2D instrumentation) {
 			this.model = model;
 			this.program = model.getProgram();
 			this.metrics = metrics;
+			this.operations = operations;
 			this.metricNodes = model.metricInputs();
 			this.domain = domain;
 			this.branchKey = branchKey;
@@ -1177,6 +1197,17 @@ public final class HybridExistenceCertifier2D {
 		}
 
 		private String metricToken(int node) {
+			return operation(node);
+		}
+
+		/**
+		 * @return durable identity token of the step, or its revision-local program address
+		 *         when the caller supplied none
+		 */
+		private String operation(int node) {
+			if (node - 1 < operations.size()) {
+				return operations.get(node - 1);
+			}
 			return "class-v3-step-" + node + "-"
 					+ program.getSteps().get(node - 1).getOperation().name();
 		}
@@ -2524,9 +2555,8 @@ public final class HybridExistenceCertifier2D {
 		}
 
 		private LocusBoundarySource2D source(Target target, String side) {
-			return new LocusBoundarySource2D("class-v3-step-" + target.step + "-"
-					+ program.getSteps().get(target.step - 1).getOperation().name(),
-					predicateToken(target), side);
+			return new LocusBoundarySource2D(operation(target.step), predicateToken(target),
+					side);
 		}
 	}
 

@@ -88,6 +88,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private String programV3Refusal;
 	private Map<Integer, AlgoLocusBetweenMetricV2> programV3MetricSources = Map.of();
 	private Map<Integer, LocusMetricFunctionStructure2D> metricStructuresV3;
+	private List<CertifiedConstructionCapture2D.StepOrigin> programV3Origins = List.of();
+	private List<String> operationIdentitiesV3;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -375,7 +377,43 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 						certifiedAffineCoefficients, true);
 		programV3Refusal = outcome.getRefusal();
 		programV3MetricSources = outcome.getMetricSources();
+		programV3Origins = outcome.getOrigins();
 		return outcome.getProgram();
+	}
+
+	/**
+	 * Durable operation identity of each step of the class-v3 program
+	 * ({@code locus-v2-existence-components.md} section 15.6): the durable identity of the
+	 * live geo that its captured copy reproduces, followed by its path inside expanded macros,
+	 * an ordinal among the steps of that geo with the same operation, and the operation. A
+	 * step whose anchor has no durable identity keeps its revision-local program address.
+	 *
+	 * @return token of each step in program order, valid as a boundary source origin
+	 */
+	public synchronized List<String> getOperationIdentitiesV3() {
+		if (operationIdentitiesV3 == null) {
+			// The slice carries the durable identities of its live geos.
+			SpatialIdentityRegistry registry =
+					isolatedConstruction.getSpatialIdentityRegistry();
+			List<String> identities = new ArrayList<>();
+			Map<String, Integer> counts = new LinkedHashMap<>();
+			for (int index = 0; index < programV3Origins.size(); index++) {
+				CertifiedConstructionCapture2D.StepOrigin origin = programV3Origins.get(index);
+				PersistentGeoId id = origin.getAnchor() == null ? null
+						: registry.getPersistentGeoId(origin.getAnchor());
+				if (id == null) {
+					identities.add("class-v3-step-" + (index + 1) + "-" + origin.getOperation());
+					continue;
+				}
+				String base = id.toExternalForm() + origin.getMacroPath();
+				int ordinal = counts.merge(base + "-" + origin.getOperation(), 1, Integer::sum)
+						- 1;
+				identities.add(base + (ordinal == 0 ? "" : "-" + ordinal) + "-"
+						+ origin.getOperation());
+			}
+			operationIdentitiesV3 = Collections.unmodifiableList(identities);
+		}
+		return operationIdentitiesV3;
 	}
 
 	private double[][] directScalarAffineCertificate() {

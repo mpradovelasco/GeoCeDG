@@ -20,6 +20,7 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -76,6 +77,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private HybridExistenceCertifier2D.Result shadowCertificate;
 	private ReconstructibleLocusEvaluator2D routeFactsEvaluator;
 	private double routeLengthBound = Double.NaN;
+	private String shadowSelection;
+	private List<LocusLineage2D> shadowLineage = List.of();
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -192,11 +195,30 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			return null;
 		}
 		if (shadowEvaluator != current) {
+			LocusExistenceStructure2D previous = shadowCertificate == null ? null
+					: shadowCertificate.getStructure();
+			String previousSelection = shadowSelection;
 			shadowCertificate = LocusCertificationScope2D.certify(
 					getLocus().getInstrumentation(), () -> hybridCertificate(current));
+			shadowSelection = current.captureCertifiedProgramV3()
+					.map(CertifiedConstructionProgram2D::getSelectionSignature).orElse(null);
+			shadowLineage = LocusComponentLineage2D.transitions(previous,
+					shadowCertificate.getStructure(),
+					Objects.equals(previousSelection, shadowSelection));
 			shadowEvaluator = current;
 		}
 		return shadowCertificate;
+	}
+
+	/**
+	 * Lineage transitions of the components of the hybrid certificate from the previous one
+	 * computed for this locus ({@code locus-v2-existence-components.md} section 15.6), kept in
+	 * shadow with it; the first certificate after loading relates to nothing earlier.
+	 *
+	 * @return transitions into the current certificate, empty before the first one
+	 */
+	public List<LocusLineage2D> getHybridLineage() {
+		return getHybridExistenceCertificate() == null ? List.of() : shadowLineage;
 	}
 
 	private HybridExistenceCertifier2D.Result hybridCertificate(
@@ -235,8 +257,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			}
 			return HybridExistenceCertifier2D.certify(
 					new ConstructionBoxModel2D(program.get()), current.getMetricStructuresV3(),
-					domain, descriptor.isPeriodic(), key, sampler, policy,
-					getLocus().getInstrumentation());
+					current.getOperationIdentitiesV3(), domain, descriptor.isPeriodic(), key,
+					sampler, policy, getLocus().getInstrumentation());
 		}
 	}
 
