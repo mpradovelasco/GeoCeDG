@@ -1,11 +1,12 @@
 # Locus V2 semantic contract
 
-- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20)**
-- Version: `1.2`
+- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.3 AMENDMENT (PUBLICATION, EXACT FINGERPRINT AND RECONSTRUCTION FIDELITY, D-CU2-20-R) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Version: `1.3`
 - Approval date: 2026-08-11
 - Roadmap gate: G6A `PASS`; G6B `PASS`; G6 `PASS`
 - Affected layer: shared Java kernel semantics; derived rendering
-- Architecture decision: Accepted ADR 0006
+- Architecture decision: Accepted ADR 0006; existence and continuity: Accepted
+  ADR 0027 and ADR 0038 (accepted as architecture on 2026-10-21)
 
 ## Objective
 
@@ -258,6 +259,70 @@ public instrumentation:
   calls.
 
 Duration is never a counter.
+
+### PRE-G9B-CU2 amendment (v1.3): publication, exact fingerprint and reconstruction fidelity
+
+Normative text of the publication rule of amendment A2.1-R of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md) and of
+the author's precision D-CU2-20-R, approved as architecture by the author on 2026-10-21 with
+ADR 0027, ADR 0038 and decision D-CU2-8, option A
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
+D-CU2-20-R is a conformance amendment of the `CU1` snapshot rule above; it does not reopen the
+`CU1` closeout. The text belongs to the `CU2` technical candidate until the author reviews that
+candidate. Existence, evaluation and representation are separated in
+`locus-v2-existence-components.md` §15.5.
+
+**Publication.** A Locus V2 is published when its definition inputs (every input that is not the
+driver, together with the subgraph that does not depend on the driver) are defined. Whether the
+traced point is defined at the current driver position never affects publication. Existence
+over the driver domain is stated only by the existence certificate. A defined definition whose
+certified cover is empty is published as valid, `COMPLETE`, with no component. A recompute that
+does not publish discards the previous semantic definition; no consumer may evaluate a stale
+definition.
+
+**Exact fingerprint.** The fingerprint of the semantic snapshot of a reconstructible definition
+is versioned and exact. It distinguishes every semantically relevant change of the non-driver
+inputs, including a change of one unit in the last place of a binary64 value. It covers, where
+they apply:
+
+- the structural definition of every algorithm of the slice;
+- the authoritative inputs, that is the values of its independent elements and of the literals
+  of its definitions, in an exact binary64 representation;
+- the selection state of every selection that affects the geometry (permutation and
+  initialization flags) and the label state of every output whose label decides its effective
+  definition;
+- the versions of the reconstruction policy and of the reconstruction contract.
+
+The fingerprint is never based on the identity of runtime objects, on proximity, on a
+circumstantial construction index or on a graphical representation, and it never replaces a
+durable identity. A change that only moves the driver keeps the revision while the semantic
+snapshot does not change. A real transition of an inherited selection state is a snapshot
+change, distinguished with a typed cause from a geometrically equivalent recompute. A
+certificate is valid only for the revision whose fingerprint it cites and is never reused for a
+state that its fingerprint does not distinguish.
+
+**Reconstruction fidelity.** The isolated slice is a copy for evaluation and certification,
+never an authority over the original. Before a certificate is published or an evaluator is
+reused for a revision, the slice must be shown to reproduce exactly the authoritative inputs
+that this contract requires: the binary64 values of the independent elements and literals that
+it reads, and the selection and label states of its selections. Authoritative inputs are
+distinguished from derived results, which the slice recomputes through its own dependency graph.
+A restoration of an exact value from the live original into the copy is admitted only where its
+correctness is demonstrated, and never in the opposite direction. A discrepancy that no admitted
+procedure restores is detected and fails explicitly: the revision is published with existence
+`NOT_ESTABLISHED` and a typed cause, no certificate is published, and the evaluator reports
+`EVALUATION_FAILED` with that cause instead of evaluating a different configuration. A
+reconstruction with rounded values is never treated as identical to the original. The general
+persistence format is not changed; the reconstruction contract is versioned and deterministic.
+
+**Persistence and reopen.** The exact fidelity of an internal copy with respect to the captured
+live state and the fidelity of the persisted format on save and reopen are distinct properties.
+This contract attributes no bit-for-bit round trip to the persisted format beyond what its own
+contract establishes. After reopening, the snapshot and every certificate correspond to the
+state actually reloaded. A precision that persistence does not keep is a characterized
+limitation; it never justifies associating the reloaded state with the certificates of the
+previous state. A correction that would require a change of the persisted format is outside
+this amendment.
 
 ## Forward compatibility of derived semantic services
 

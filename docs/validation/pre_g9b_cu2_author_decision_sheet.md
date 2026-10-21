@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Decisiones necesarias para aprobar la arquitectura de `CU2` y autorizar su implementación. No registra ninguna decisión tomada por el agente |
-| Estado | `PENDING AUTHOR DECISIONS`; `selfApproved=false` |
-| Contexto | [informe del candidato de preparación](pre_g9b_cu2_preparation_candidate_report.md); [propuesta normativa](../architecture/pre_g9b_cu2_normative_proposal.md); [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) |
+| Estado | `AUTHOR DECISIONS RECORDED` el 2026-10-21: todas las decisiones de esta hoja tienen disposición autoral en el [registro de aprobación](pre_g9b_cu2_author_architecture_approval_record.md), que es su única autoridad; D-CU2-20 se adoptó ampliada como D-CU2-20-R. Esta hoja conserva las preguntas y recomendaciones tal como se presentaron; `selfApproved=false` |
+| Contexto | [informe del candidato de preparación](pre_g9b_cu2_preparation_candidate_report.md); [propuesta normativa](../architecture/pre_g9b_cu2_normative_proposal.md); [ADR 0038 (ACCEPTED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) |
 | Revisión | 2026-10-20, revisión focalizada P1–P5: D-CU2-1 a D-CU2-6 y E-3 reformuladas; D-CU2-16 y D-CU2-17 nuevas. Cierre de coherencia C1–C3 (2026-10-20): D-CU2-18 a D-CU2-20 nuevas, D-CU2-16 precisada (C3), mandato editorial E1 registrado como obligación del track (§1) |
 
 ## 1. Ya decidido (no requiere nueva decisión)

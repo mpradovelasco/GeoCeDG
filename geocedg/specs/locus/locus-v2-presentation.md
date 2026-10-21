@@ -1,10 +1,14 @@
 # Specification: Locus V2 ordinary presentation and render continuity
 
-- Status: **NORMATIVE / AUTHOR APPROVED**
-- Version: 1
+- Status: **NORMATIVE / AUTHOR APPROVED** (version 1); **PRE-G9B-CU2 VERSION 2
+  AMENDMENT ("PRE-G9B-CU2 amendment (version 2)" below) — ARCHITECTURE AUTHOR
+  APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL
+  CANDIDATE, PENDING AUTHOR REVIEW**
+- Version: 2
 - Owners: GeoCeDG project owner
 - Roadmap gate: G9U0-R2 planning/design `PASS — AUTHOR APPROVED`;
-  implementation not authorized / not started
+  implementation not authorized / not started (statement of the version 1
+  design gate; the roadmap records the later G9U0 refinements)
 - Affected layer: shared `GeoElement` presentation capability, Euclidian render,
   Desktop Properties/style integration, persistence and lifecycle tests
 - Productive implementation: **not authorized / not started**
@@ -201,3 +205,46 @@ Stop for author review if:
 
 This specification is approved normative design authority. It makes no
 productive implementation or observable-product claim.
+
+## PRE-G9B-CU2 amendment (version 2): render topology, tessellation and declared fidelity
+
+Normative text of amendment A2.4-R of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038 and the decisions D-CU2-4,
+D-CU2-10, D-CU2-19 and E-1
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
+It refines the render continuity contract above for the existence structure of
+`locus-v2-existence-components.md` §15 and belongs to the `CU2` technical candidate until the
+author reviews that candidate. The style contract of version 1 is unchanged.
+
+**Render topology.** Rendering is derived from the existence structure. Each certified
+component is tessellated up to its certified boundaries. No render segment crosses an
+unresolved band, a certified nonexistence interval or a structural discontinuity. A curve is
+closed only when its component is certified closed periodic. A new subpath starts only at the
+start of a component. Rendering never falls back to uniform sampling and never infers a join, a
+closure or a discontinuity from samples. A point that cannot be evaluated is never
+interpolated: the path is cut there with a computational-gap mark. Exploratory evidence, when
+its display is enabled, is drawn with a distinct style only inside unresolved bands and is
+never joined to a component nor exported as authoritative geometry. A point component is never
+drawn as a segment or a curve; presentation version 2 declares it, with its parameter enclosure
+and the status of its position, and does not draw it.
+
+**Tessellation policy.** The render policy is versioned and deterministic per view. A span is
+accepted when its chord deviation and its turning angle with the adjacent span are both within
+versioned limits, after a versioned minimum depth. The turning limit is waived only in a
+minimal parameter band around a certified fold and at the vertex of a certified singular
+parameter, which is drawn as an exact vertex. Near a certified discriminant transition the
+tessellation uses a local square-root reparametrization and ends at the boundary image; at a
+structural discontinuity it ends at the one-sided limit, or at the last evaluated vertex, with
+a mark, when that limit cannot be evaluated. A vertex budget per view coarsens the result
+deterministically, never crossing a boundary.
+
+The approved ranges of the versioned constants (D-CU2-10) are: minimum depth 2 to 6, maximal
+turning angle 5 to 20 degrees and vertex budget per view 1 024 to 16 384; the technical
+candidate fixes their values with reproducible benchmark evidence. The turning criterion
+applies to drawing; exports keep their approximation tolerance in model units and the topology
+of the certificate.
+
+**Declared fidelity.** Each rendering or export approximation declares its effective fidelity
+per component (complete, partial or failed) with its causes, and fails explicitly when it
+cannot represent a result. It never invents a point, a join or an end.

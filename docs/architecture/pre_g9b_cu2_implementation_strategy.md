@@ -3,12 +3,12 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Diseño de implementación candidato para `CU2`. No autoriza ningún cambio de código |
-| Estado | `CU2 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false` |
+| Estado | Estrategia aprobada para la implementación por la decisión autoral de 2026-10-21 ([registro](../validation/pre_g9b_cu2_author_architecture_approval_record.md)), con la precisión D-CU2-20-R incorporada en T1 y T3 y las condiciones de parada de §4.1; `selfApproved=false` |
 | Normas | [propuesta normativa](pre_g9b_cu2_normative_proposal.md) (A2.1-R a A2.6); [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) |
 | Diseños | [certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](pre_g9b_cu2_consumption_and_representation.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
 | Validación | [matriz de validación y criterios de aceptación](../validation/pre_g9b_cu2_validation_matrix.md) |
 | Rutas | abreviadas desde `source/shared/common/src/main/java/org/geocedg/common/kernel/` |
-| Revisión | 2026-10-20, revisión focalizada P1–P5: T3, T4, T5, T7, T8, T10 y T11 ajustados, condiciones de parada 12 a 14 y efecto previsto en el valor crítico. Cierre de coherencia C1–C3 (2026-10-20): T2, T3, T4, T9 y T10 ajustados, condiciones de parada 15 a 17, causas, efecto previsto, riesgos y fuera de alcance. El orden y la numeración T0–T13 no cambian |
+| Revisión | 2026-10-20, revisión focalizada P1–P5: T3, T4, T5, T7, T8, T10 y T11 ajustados, condiciones de parada 12 a 14 y efecto previsto en el valor crítico. Cierre de coherencia C1–C3 (2026-10-20): T2, T3, T4, T9 y T10 ajustados, condiciones de parada 15 a 17, causas, efecto previsto, riesgos y fuera de alcance. Aprobación autoral (2026-10-21, paso T0): D-CU2-20-R en T1 y T3, §4.1, y corrección de la atribución de F-CU2-12. El orden y la numeración T0–T13 no cambian |
 
 ## 1. Causas
 
@@ -27,7 +27,7 @@
 | Selección (P4) | la salida de una intersección recta–circunferencia es una raíz bruta elegida por una permutación que es estado del algoritmo; se reinicializa por cercanía al crear, al cargar y en cada `updateConstruction`, también en la copia del corte de cada revisión | `org/geogebra/common/kernel/algos/AlgoIntersectLineConic.java:224-235, 268-281, 467-562`; `org/geogebra/common/kernel/Construction.java:1474-1496`; `locus/ReconstructibleLocusEvaluator2D.java:133-143, 334-346` |
 | Valor crítico (P1) | ninguna prueba de raíz simple certifica un cero doble, y el evaluador declara tangente lo que está a menos de su tolerancia | `org/geogebra/common/kernel/algos/AlgoIntersectLineConic.java:617-640, 703-704, 741-746`; [análisis](pre_g9b_cu2_author_model_certification_analysis.md) §3.8 |
 | Salidas en raíces coincidentes (C1) | la segunda salida sin etiqueta se anula cuando coincide con la primera dentro de 10⁻⁸; su definición cerca de una raíz coincidente es dispersa y difiere entre el vivo y el corte (F-CU2-13) | `org/geogebra/common/kernel/algos/AlgoIntersect.java:40-45`; `AlgoIntersectLineConic.java:280`; `AlgoIntersectSingle.java:236-279`; análisis §3.9 |
-| Huella de la revisión (F-CU2-12) | la huella de `CU1` toma la serialización XML con 15 cifras significativas: un cambio de un ulp no publica revisión y el corte queda obsoleto | `locus/ReconstructionSliceFingerprint2D.java`; `org/geogebra/common/kernel/StringTemplate.java:309-325`; análisis §3.9 |
+| Huella y fidelidad del corte (F-CU2-12, corregido el 2026-10-21) | la huella de `CU1` no incluye el estado de selección ni el de etiquetado; un literal sin texto original puede escribirse con 15 cifras; nada valida que el corte reproduzca sus entradas autoritativas. Los valores numéricos sí se escriben exactos (`Double.toString`) | `locus/ReconstructionSliceFingerprint2D.java`; `locus/ReconstructibleLocusEvaluator2D.java`; `org/geogebra/common/io/XMLStringBuilder.java` (`attr(String, double)`); `org/geogebra/common/kernel/StringTemplate.java:309-325`; diseño de certificación §8.1 |
 | Componentes puntuales (C2) | la estructura de existencia solo tiene intervalos de longitud positiva: una existencia reducida a un parámetro aislado no se puede expresar | `locus/LocusExistenceStructure2D.java`; diseño de certificación §3.5 |
 | Consumidores | vistas heredadas (`getValidDomainComponents()`, `PERIODIC`) e inconsistencia índice/tamaño en `resolveOpenBoundary` | [consumo](pre_g9b_cu2_consumption_and_representation.md) §2; `LocusMetricRouteResolver2D.java:180-184` |
 
@@ -60,6 +60,10 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
   dibujo por vista y lecturas de valores métricos durante una certificación (GC-6).
 - Escenarios `certification` y `tessellation` en el arnés de `CU0`
   (`tools/benchmark/pre-g9b-cu/`), medidos antes de cualquier cambio de comportamiento.
+- D-CU2-20-R, caracterización focal: pruebas de la huella y de la fidelidad del corte sobre la
+  base (cambios de un ulp, literales sin texto original, argumentos literales en línea, estado de
+  selección y de etiquetado) y contadores de huellas, reconstrucciones, validaciones,
+  restauraciones y fallos de fidelidad ([diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §8.1).
 - Este paso no cambia ningún comportamiento.
 
 ### T2 — Estructura de existencia v2
@@ -94,16 +98,20 @@ D-CU2-11. El ADR 0038 pasa al estado que fije el autor. Diseño antes que códig
   solo lectura registrados como modificaciones; huella de la revisión con ese estado;
   comparación con el algoritmo vivo en cada sincronización, con fallo cerrado si difieren;
   compactación solo donde el número de raíces en los caminos está probado.
-- Huella exacta de la revisión (F-CU2-12), solo si el autor aprueba D-CU2-20: valores binary64
-  exactos en lugar de la serialización de 15 cifras, en `ReconstructionSliceFingerprint2D`. Sin
-  esa decisión, la condición de parada 16.
+- D-CU2-20-R, corrección (puerta temprana y bloqueante): huella
+  `reconstruction-slice-fingerprint/v2` en `ReconstructionSliceFingerprint2D` con los bits
+  binary64 de las entradas autoritativas, el estado de selección y de etiquetado y las versiones
+  de política y contrato; validación de fidelidad del corte con restauración admitida y fallo
+  explícito, según el ciclo de vida de [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md)
+  §8.1. Se completa con su validación focal antes de que ningún certificado de T4 se considere
+  válido o se publique.
 - Envolventes de valor y primera derivada con redondeo exterior para cada capacidad nueva.
 - Resultado de caja `VALID`, `UNIFORMLY_INVALID` con causa tipada o `UNRESOLVED`, en lugar de
   la excepción, solo en el camino v3; `UNIFORMLY_INVALID` por intervalos solo para
   desigualdades estrictas.
 - Límite versionado de pasos dependientes del conductor tras expandir macros (D-CU2-5).
 - Pruebas: V-V3-1 a V-V3-4, V-SEL-1 a V-SEL-7, V-UNIF-1, V-COINC-1, V-COINC-2, V-COINC-8 y
-  V-REV-EXACT-1.
+  V-REV-EXACT-1 a V-REV-EXACT-10.
 
 ### T4 — Certificador híbrido en sombra
 
@@ -286,11 +294,21 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 15. un locus del modelo del autor dependiera de una segunda salida sin etiqueta en una raíz
     coincidente, la copia del corte no reprodujera el etiquetado del vivo, o mantener la
     continuidad exigiera sustituir una salida por su valor límite o por otra salida (D-CU2-18);
-16. la huella de la revisión no distinguiera un cambio de entrada y la corrección de D-CU2-20 no
-    estuviera autorizada: ningún certificado se reutiliza entre estados que la huella no
-    distingue;
+16. la huella de la revisión no distinguiera un cambio de entrada o el corte no reprodujera sus
+    entradas autoritativas con las modificaciones que autoriza D-CU2-20-R: ningún certificado se
+    reutiliza ni se publica entre estados que la huella no distingue;
 17. un consumidor necesitara materializar o dibujar una componente puntual más allá de lo que
     fije D-CU2-19 (`CU3`).
+
+### 4.1 Condiciones adicionales de la autorización de 2026-10-21
+
+Rigen además las doce condiciones de parada de la decisión autoral
+([registro](../validation/pre_g9b_cu2_author_architecture_approval_record.md) §9), entre ellas: no
+poder garantizar la exactitud de las instantáneas o la fidelidad de la reconstrucción con las
+modificaciones autorizadas; un cambio de un ulp que no invalide un estado semánticamente
+distinto; que D-CU2-20-R exija cambiar la persistencia o el comportamiento heredado; y que la
+verificación exigible supere la clase aprobada (`VERIFICATION_ESCALATION_REQUEST`). Ante
+cualquiera: diagnóstico, evidencia, alternativas mínimas y decisión autoral necesaria.
 
 ## 5. Procedimiento para fijaciones y referencias (C1-4)
 
@@ -321,7 +339,7 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 | Los mismos cerca del valor crítico (3,657–3,66) | un subtrazo a través de un hueco real (F-CU2-2) | transiciones certificadas exactamente; ninguna unión | V-B07-3 |
 | Los mismos en los binary64 contiguos al valor crítico | `COMPLETE` de compatibilidad; el evaluador define puntos dentro del hueco exacto | penetración o mordedura decididas exactamente; los puntos del evaluador en el hueco no se publican como válidos | V-CRIT-7 |
 | Los mismos en el valor crítico, en una configuración que lo represente exactamente | — (no representable con el deslizador) | `COMPLETE`, una componente periódica cerrada con un parámetro singular certificado en `t_c`; `{Q, R}` etiquetadas, definidas e iguales en `t_c` | V-CRIT-1, V-COINC-1 |
-| Los mismos tras un cambio de un ulp de excCyl | sin revisión nueva; el corte conserva el valor anterior (F-CU2-12) | revisión nueva y corte con el valor exacto, si se aprueba D-CU2-20 | V-REV-EXACT-1 |
+| Los mismos tras un cambio de un ulp de excCyl | revisión nueva y corte exacto con el conductor fuera de la degeneración; sin republicación con el punto trazado indefinido (H01) | revisión nueva y corte exacto en cualquier posición del conductor, con la fidelidad validada y el estado de selección en la huella (D-CU2-20-R) | V-REV-EXACT-1 a V-REV-EXACT-10 |
 | Construcciones con una segunda salida sin etiqueta (fuera del modelo) | `COMPLETE` de compatibilidad; definición dispersa cerca de la raíz coincidente | banda `UNRESOLVED` y `NOT_ESTABLISHED`, con componentes locales | V-COINC-2 |
 | Existencia reducida a un parámetro aislado (fuera del modelo) | `COMPLETE` de compatibilidad con una componente `[−π, π)` | componente puntual declarada, sin dibujo | V-POINT-1 a V-POINT-6 |
 | Los mismos a excCyl 4,0 con el conductor guardado | no publicados | publicados, `COMPLETE`, un arco | `pins.H01` invertida |
@@ -343,7 +361,7 @@ El trabajo se detiene y se presenta al autor, sin rodeos ni debilitamientos, si:
 | Migración de identidad de componentes | linaje estructural, correspondencia estructural demostrada (la contención solo la valida) y fallo cerrado |
 | Selección dependiente del estado heredado | lectura del estado del algoritmo, comparación con el algoritmo vivo y fallo cerrado si difieren (condición 13) |
 | Supresión heredada de una segunda salida sin etiqueta | banda `UNRESOLVED`; nunca sustitución por el valor límite ni por otra salida (condición 15) |
-| Huella inexacta de `CU1` | corrección en T3 si se aprueba D-CU2-20; si no, parada (condición 16) |
+| Huella incompleta o corte infiel (D-CU2-20-R) | caracterización en T1, corrección en T3 antes de T4; parada si exige cambiar persistencia, comportamiento heredado o identidad durable (condición 16 y §4.1) |
 | Cambio de vértices en dibujo y exportaciones | conformidad declarada por prueba; DXF y LaTeX con la misma topología |
 | Pruebas que dependen de la compatibilidad | inventario y conformidad declarada (§5) |
 | Dependencia de `CU3` | parada y presentación (§4, condición 5) |

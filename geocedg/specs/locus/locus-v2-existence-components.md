@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** |
-| Version | `1.0` |
-| Phase | `PRE-G9B-S1-R2` |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| Version | `1.1` |
+| Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
 | Parent | [Locus V2 semantic contract](locus-v2-semantics.md) |
-| Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md) |
-| Product implementation | **I1--I3 PASS — AUTHOR APPROVED** |
+| Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md); [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md), accepted as architecture on 2026-10-21 |
+| Product implementation | v1.0: **I1--I3 PASS — AUTHOR APPROVED**; v1.1: `CU2` technical candidate, pending author review |
 
 ## 1. Purpose
 
@@ -235,6 +235,9 @@ components to equal the whole canonical interval. Reconstructible dependency
 IDs and revision signatures remain inputs to currentness; no hidden graph is
 introduced.
 
+v1.1 note: no class named `LocusContinuousDomainCertifier2D` was implemented.
+The shared certifier role is realised by the hybrid certifier of §15.7.
+
 ## 10. Migration of `getValidDomainComponents()`
 
 The existing accessor is overloaded: producers often use it as nominal domain,
@@ -255,6 +258,9 @@ Migration order:
 No implementation may silently return locally certified intervals through the
 legacy accessor to a global consumer.
 
+v1.1 note: §15.7 retires the compatibility certificate and §15.8 replaces the
+legacy accessor as a topology authority for every consumer.
+
 ## 11. Consumer admissibility
 
 | Consumer | Local certified component with global `NOT_ESTABLISHED` | Complete claim |
@@ -267,6 +273,8 @@ legacy accessor to a global consumer.
 | Nested LocusV2 | May consume local intervals only while propagating incompleteness | Cannot promote to complete downstream domain |
 | Analysis | Allowed when completeness metadata is retained | Consumer-specific |
 | DXF | Allowed only as explicitly incomplete semantic fidelity with mandatory sidecar | Complete-locus wording requires `COMPLETE` |
+
+v1.1 note: §15.8 refines this table for arcs, one-sided ends and point components.
 
 ## 12. DXF read-only contract
 
@@ -324,3 +332,174 @@ Implementation must stop for a new author decision if the witness requires a
 general redesign of root-token identity, if no interval predicate can certify
 its selected-root family, or if local-incomplete consumption cannot preserve
 the explicit completeness axis.
+
+## 15. PRE-G9B-CU2 amendment (v1.1): hybrid certification
+
+Normative text of amendment A2.1-R and of the consumer contract of A2.5 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 together with
+[ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md)
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
+It extends sections 2 to 5, 7, 8, 11 and 12 and keeps ADR 0027 unchanged, including the
+independence of local admissibility from global completeness. The text belongs to the `CU2`
+technical candidate until the author reviews that candidate. The construction class, the
+transitions and the exact algebraic certificate are in
+[`locus-v2-certified-construction-model.md`](locus-v2-certified-construction-model.md) §10;
+publication and the exact fingerprint are in [`locus-v2-semantics.md`](locus-v2-semantics.md).
+
+### 15.1 Evidence levels and nature of evidence
+
+Locus V2 existence evidence has four levels:
+
+1. `POINT_VALID`: one valid evaluation at one parameter. It implies nothing about any
+   interval.
+2. `EXPLORATORY`: sampled valid runs, validity transitions bracketed by bisection and
+   suspected jumps, with method, policy version and work recorded. It is a separate typed
+   structure, derived per revision and policy, not persisted and not part of the semantic
+   snapshot. It is never promoted to a component, a completeness claim or an identity, it
+   has no authority over the dependency graph, and it is never exported.
+3. `LOCAL_CERTIFIED`: a certified component (§15.2), maximal or a local subinterval with
+   explicit unresolved bands.
+4. `COMPLETE`: a certified cover of the whole canonical domain by certified components,
+   certified nonexistence and certified boundaries, with finitely many components. The union
+   of the certified sets is the whole domain; completeness is never inferred from explored
+   boxes being valid or from not having found other components.
+
+A finite exploration never establishes level 3 or 4.
+
+Each certified fact records the nature of its proof: exact symbolic or algebraic proof,
+rigorous interval arithmetic, numerical verification under stated hypotheses, exploratory
+evidence, or none. Only the first two certify. A numerical verification under hypotheses is
+an estimate under its own contract, exploratory evidence has no authority, and the absence of
+evidence yields `UNRESOLVED` or `NOT_ESTABLISHED`.
+
+### 15.2 Certified component
+
+A parameter set `I` is a certified component of a branch when every validity predicate of
+its construction is certified true on `I`, every captured selection is the same rule on `I`,
+the traced map is continuous on `I`, and each end of `I` is a declared domain end, a certified
+transition, a structural event or the edge of an unresolved band. A structural discontinuity
+with valid evaluations on both sides is a boundary, never an interior point. A certified
+singular parameter, an even-multiplicity zero of a validity predicate that keeps its sign, is
+interior to the component. End inclusion follows the semantics of the boundary predicate, not
+pointwise evaluation. A certified component is an interval or arc of positive length, or a
+point component (§15.4).
+
+A component is never declared continuous, nor its locus `COMPLETE`, only because the
+geometric equation has a double root when the indexed output that defines the traced point is
+undefined at that parameter (`locus-v2-certified-construction-model.md` §10.3).
+
+### 15.3 Arcs on periodic domains and one-sided ends
+
+On a periodic canonical domain a component is an arc given by its canonical start, its length
+in `(0, period]` and the inclusion of each end. An arc of full length whose traced map is
+certified continuous at its closing point is a closed periodic component; any other arc,
+including a full-length arc with a structural discontinuity at its closing point, is open.
+Each arc carries its arc coordinate `s` in `[0, length]` from its start. A canonical parameter
+`t` belongs to the arc when an included coordinate `s = t - start (mod period)` exists; on a
+full-length arc with one included end this coordinate is unique. Component order is canonical
+start order and is never identity.
+
+The two ends of a full-length open arc share a canonical parameter and are distinct ends: each
+has its side, its inclusion, its one-sided limit and its boundary source. The excluded end is
+never the image of a canonical parameter; it is reached only through an explicit one-sided
+limit query. Canonicalization never identifies the two ends, and continuity between them is
+never inferred from coinciding coordinates or from a periodic driver.
+
+Closure is decided only by the certificate. The provider's periodicity never closes a
+component, and the single closure authority of every consumer is the certificate's own
+closed-periodic flag (§15.8).
+
+### 15.4 Point components
+
+When a certificate proves that existence reduces to an isolated parameter `t*`, for example an
+even-multiplicity zero of a validity predicate that is nonpositive on both sides, the set
+`{t*}` is a point component: a kind of component of its own, never an interval or arc of
+positive length. It carries a certified enclosure of `t*`, which in general is not a binary64
+value, and the structural source of the isolated root (operation, predicate and root). Its
+inclusion is closed. Its continuity is trivial and asserts no continuation and no direction.
+It is maximal when certified nonexistence bounds it on both sides, and local otherwise; a cover
+by point components, other components and certified nonexistence is `COMPLETE`. Its lineage is
+its branch key and its structural source; appearance, disappearance and change of dimension
+(point to arc, when the even root splits into two simple roots that bound an arc, and arc to
+point) are typed lineage transitions. Its length is zero and it contributes zero to every
+total; a route exists only within it and measures zero. Membership and selection use its
+structural address, never equality with a binary64 parameter, and its existence never depends
+on a binary64 parameter that represents its address exactly. Its position is a certified
+enclosure of the limit form where one exists; otherwise it exists with its position
+unavailable. It is never represented as a segment or a curve, and a consumer that does not
+support point components declares the limitation and fails explicitly. A point component is
+never confused with a certified singular parameter, which is interior to a component of
+positive length. It creates no public point object and materializes no intersection. In this
+version point components are declared in results and in the inspector, with their evidence
+and lineage, and are not drawn.
+
+### 15.5 Existence, evaluation and representation
+
+Coverage `CERTIFIED_DOES_NOT_EXIST` requires a validity predicate certified false, or a
+dependency whose own certificate establishes nonexistence. A dependency that is undefined
+because its computation failed, for example a metric of class `NOT_ESTABLISHED` or an estimate
+above its tolerance, yields `UNRESOLVED` coverage when the failure decides existence, and only
+an `EVALUATION_FAILED` point status with a computational cause when existence is already
+certified. Mathematical existence and certified topology (stated by the certificate),
+numerical availability (the evaluator) and representation availability (rendering and export)
+are distinct facts, and none is inferred from another: a valid evaluation never proves
+existence, a failed one never proves nonexistence, and certified existence is never a
+numerical guarantee of coordinates. Where the certificate establishes nonexistence, a point
+returned by the evaluator is not published as valid.
+
+A certified cover that is empty is `COMPLETE` with no component; the definition remains valid
+(`locus-v2-semantics.md`, section "PRE-G9B-CU2 amendment").
+
+### 15.6 Identities, lineage and selectors
+
+The durable identity of a construction result, the semantic identity of its selection and the
+lineage of a component are distinct. The semantic identity of a selection is the rule that maps
+the inputs to the selected result: the algorithm and its version, the raw root order and the
+algorithm's selection state; it is an input of the revision. The lineage of a component is its
+branch key together with the ordered sources of its boundaries:
+`(durable operation identity, predicate kind, side)` for a certified transition,
+`(event source, side)` for a structural event, or the declared domain end. Moving a boundary
+without changing its source keeps the lineage. Appearance, disappearance, split and merge of
+components are typed lineage transitions. No revision, recompute or temporary change of
+existence rebuilds an association by label, index, coordinates or proximity. A persisted
+component selector resolves only through a demonstrated structural correspondence: equality of
+the decomposition, or a recorded lineage transition from the cited component under the same
+selection rule. Unique containment of its parameter validates that correspondence and never
+creates one. Without it the selector is unresolved and its point undefined with a typed cause.
+Resolution never rewrites the persisted selector.
+
+This replaces, for certified components, the revision-local address of §8: component ordinal,
+interval ordering and boundary bits remain non-identity.
+
+### 15.7 Producer and certifier
+
+Dependent producers publish the certificate of the hybrid certifier, contract
+`locus-existence/hybrid/v1`, computed once per published revision and shared by every consumer.
+A locus that cannot be certified is `NOT_ESTABLISHED`, with or without local components; it
+never falls back to a compatibility certificate. Static and analytic producers publish an
+explicit provider certificate only when their own contract proves existence and continuity on
+the whole declared domain, and the certificate cites that contract. The compatibility
+certificate `locus-existence/provider-compatibility/v1` is retired.
+
+### 15.8 Consumer admissibility
+
+Every consumer reads the existence structure. Local consumers accept a certified component
+containing their parameters; global consumers require `COMPLETE`. Operations that need
+continuity or a route require a certified component, even a local one; pointwise validity is
+admitted only for operations that need an isolated point. Periodic semantics (full cycle, wrap
+to start, seam quarantine, lift and seam side) apply only to a certified closed periodic
+component; the ends of an open arc are addressed through their one-sided limits. The
+compatibility view of valid domain components never decides topology.
+
+A point component contributes zero to totals and to routes. A consumer that addresses a
+component through a binary64 parameter (semantic points, interaction, metric positions,
+principal branch) cannot select it and fails explicitly with a typed cause. An intersection
+never reports `EMPTY` or a complete set while it has not excluded a point component of its
+input rigorously, and a dependent locus whose support has a point component declares the
+limitation and is not `COMPLETE`. No consumer treats a point component as an arc.
+
+DXF and LaTeX exports follow the topology of the certificate:
+[`dxf-curve-fidelity-and-approximation.md`](../export/dxf-curve-fidelity-and-approximation.md)
+section "PRE-G9B-CU2 amendment" and
+[`latex-semantic-curve-export.md`](../export/latex-semantic-curve-export.md).

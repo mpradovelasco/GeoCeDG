@@ -634,14 +634,58 @@ que `unchanged()`. Propuesta (decisión E-3 revisada):
   política de `CU1`: los contadores deciden y los tiempos informan.
 - El certificado algebraico exacto (§4.6) cuesta de 2 a 53 ms por predicado en el modelo del
   autor y se calcula una vez por revisión, con su propio presupuesto de bits y bisecciones.
-- **Exactitud de la huella (hallazgo F-CU2-12).** El certificado de una revisión solo es válido si
-  la revisión cambia con cualquier cambio de sus entradas. La huella de `CU1`
-  (`ReconstructionSliceFingerprint2D`) toma la serialización XML, cuyos números tienen 15 cifras
-  significativas (`StringTemplate.java:309-325`): el sondeo muestra que un cambio de un ulp de
-  `excCyl` no publica revisión y que el corte conserva el valor anterior. Contradice la «exact
-  fingerprint» de `locus-v2-semantics.md` v1.2 y dejaría obsoletos los certificados de los
-  binary64 contiguos al valor crítico. La corrección (huella con los valores binary64 exactos)
-  toca un componente de `CU1` y queda como decisión (D-CU2-20).
+- **Exactitud de la huella y fidelidad del corte (F-CU2-12 corregido; D-CU2-20-R).** El
+  certificado de una revisión solo es válido si la revisión cambia con cualquier cambio
+  semánticamente relevante de sus entradas y si el corte reproduce exactamente las entradas
+  autoritativas. La caracterización del 2026-10-21 corrigió F-CU2-12: los valores numéricos se
+  escriben con `Double.toString` (`XMLStringBuilder.attr(String, double)`), exacto en ida y vuelta,
+  y un cambio de un ulp de `excCyl` publica revisión con la copia exacta; la observación anterior
+  venía de H01 y F-CU2-3. Las lagunas reales y su ciclo de vida corregido están en §8.1.
+
+### 8.1 Ciclo de vida de captura, reconstrucción, validación y publicación (D-CU2-20-R)
+
+Descripción previa al código que exige D-CU2-20-R. Se basa en la lectura de
+`AlgoDependentPointLocusV2.synchronizeEvaluatorWithCurrentSlice`,
+`ReconstructionSliceFingerprint2D.compute`, `ReconstructibleLocusEvaluator2D` (constructor y
+`resetExternalState`), `Macro.buildMacroXML` y `MacroKernel.loadXML`, y en el sondeo
+`Cu2FidelityProbe` del directorio temporal de la sesión.
+
+**Estado actual (`CU1`).** En cada recálculo del algoritmo padre:
+
+1. `getReconstructionSliceGeos()` reúne los elementos del corte: los predecesores del punto
+   trazado, del estado, de la coordenada, del soporte y de las entradas de dominio.
+2. La huella v1 es el SHA-256 de la serialización XML de los algoritmos y elementos del corte en
+   orden de construcción, con los atributos numéricos de los elementos dependientes del conductor
+   neutralizados. No incluye el estado de selección de los algoritmos de intersección ni el
+   etiquetado de las salidas auxiliares.
+3. Si el descriptor o la huella cambian, el corte se reconstruye: `Macro.buildMacroXML` escribe el
+   XML de los elementos con la plantilla XML ordinaria y `MacroKernel.loadXML` lo carga en un
+   `MacroKernel` aislado. Los valores de los elementos (`<value val>`, `<coords>`) se escriben con
+   `Double.toString` y son exactos; los literales con texto original conservan ese texto; un
+   literal `MyDouble` sin texto original se escribe con la plantilla XML, de 15 cifras
+   significativas, y un argumento literal en línea de un comando se convierte en un elemento
+   independiente sin etiqueta del corte.
+4. `resetExternalState` copia los valores de las dependencias durables independientes y llama a
+   `updateConstruction`, que reinicializa por cercanía el estado de selección (F-CU2-8).
+5. Nada compara el corte con el estado vivo antes de evaluar o de capturar un programa.
+
+**Ciclo corregido.**
+
+| Fase | Contenido | Autoridad |
+|---|---|---|
+| 1. Captura de la instantánea | huella `reconstruction-slice-fingerprint/v2`: la parte estructural de v1; los bits binary64 de los valores de los elementos independientes y de los literales de las definiciones del corte, codificados en hexadecimal; el estado de selección (permutación e indicadores de inicialización) de cada intersección del corte y el etiquetado de sus salidas, leídos con accesores de solo lectura; las versiones de la política de reconstrucción y del contrato de certificación. Nunca identidad de objetos Java, índices circunstanciales, posición del conductor ni datos de dibujo | algoritmo padre, sobre el estado vivo |
+| 2. Decisión de revisión | descriptor y huella iguales: recálculo equivalente, sin reconstrucción ni revisión. Distintos: reconstrucción. Un cambio del estado heredado de selección (por ejemplo, el fin de una primera inicialización) es un cambio de instantánea con causa tipada; un recálculo con el mismo estado no publica revisión | algoritmo padre |
+| 3. Reconstrucción | `Macro.buildMacroXML` y `MacroKernel.loadXML`, sin cambios upstream y sin cambio del formato persistido | `MacroKernel` aislado |
+| 4. Restauración admitida | solo del original vivo a la copia, nunca al revés, y solo donde la correspondencia es la propia de la reconstrucción: dependencias durables por su identidad; elementos independientes por la etiqueta con la que el propio XML del corte los definió; argumentos literales en línea por su posición de entrada en el algoritmo copiado de la misma salida; hojas `MyDouble` por recorrido paralelo de árboles de expresión de estructura idéntica. Cada restauración es una asignación de valor exacta seguida de la actualización del grafo de la copia | evaluador |
+| 5. Validación de fidelidad | comparación exacta, por bits, de cada entrada autoritativa viva con su copia, y del estado de selección y de etiquetado de cada intersección. Resultado tipado: fiel, o no fiel con la lista de discrepancias (elemento, clase de valor, causa) | evaluador |
+| 6. Publicación | fiel: revisión publicada con el evaluador; el certificado (en sombra hasta T11) cita la huella. No fiel: revisión publicada con existencia `NOT_ESTABLISHED` y causa `RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED`, sin certificado, y evaluaciones `EVALUATION_FAILED` con esa causa | algoritmo padre |
+| 7. Reapertura, deshacer y rehacer | el documento recargado es el estado vivo; la instantánea se captura de él y el certificado le corresponde. La pérdida de precisión de un formato persistido, si existe, se caracteriza; nunca se asocian certificados del estado anterior | ciclo normal de carga |
+
+Contadores públicos nuevos (T1): huellas calculadas, reconstrucciones, validaciones de fidelidad,
+restauraciones y fallos de fidelidad. Pruebas: filas V-REV-EXACT de la
+[matriz](../validation/pre_g9b_cu2_validation_matrix.md). Si la fidelidad exigiera cambiar el
+formato persistido, el comportamiento heredado o la identidad durable, la implementación se
+detiene y se presenta una propuesta correctiva independiente.
 - El certificador de 512 celdas fijas de SplineV2 (`SelectedRootContinuousDomainCertifier2D`)
   queda sustituido por el certificador de cajas sobre su modelo de intervalos, o se conserva como
   caso particular (decisión D-CU2-9). Hoy:
@@ -689,5 +733,5 @@ raíces tangentes ni cambios del motor de intersecciones. La precisión
 | Un predicado necesario no es de primer nivel y tiene una raíz múltiple | cajas y punto estacionario; `UNRESOLVED` si no deciden; parar si ocurre en el modelo del autor |
 | La copia del corte no reproduce el estado de selección del algoritmo vivo | selección `NOT_ESTABLISHED` con diagnóstico; parar si ocurre en el modelo del autor |
 | Un locus del modelo del autor depende de una segunda salida sin etiqueta en una raíz coincidente, o la copia no reproduce el etiquetado | banda `UNRESOLVED` y `NOT_ESTABLISHED` (§4.7); parar y presentar la decisión D-CU2-18, sin sustituir la salida por su límite |
-| La huella de la revisión no cambia con un cambio de entrada (hallazgo F-CU2-12) | ningún certificado se reutiliza entre estados que la huella no distingue; parar si la corrección no está autorizada (D-CU2-20) |
+| La huella no distingue un cambio de entrada o el corte no reproduce sus entradas autoritativas (D-CU2-20-R) | ningún certificado se reutiliza ni se publica entre estados que la huella no distingue; fallo explícito ante una discrepancia no restaurable; parar si la corrección exige cambiar persistencia, comportamiento heredado o identidad durable (§8.1) |
 | Coste del certificado exacto con coeficientes grandes | presupuesto de bits y bisecciones; `UNRESOLVED` tipado |

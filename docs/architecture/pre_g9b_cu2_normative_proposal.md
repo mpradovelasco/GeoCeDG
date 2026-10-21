@@ -3,11 +3,11 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Propuesta normativa candidata. **No modifica ninguna especificación ni ADR vigente**: los textos se incorporan a sus documentos solo tras la aprobación autoral, como primer paso (T0) de la implementación de `CU2` |
-| Estado | `CU2 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false` |
+| Estado | Enmiendas A2.1-R a A2.6 **aprobadas por el autor** el 2026-10-21 con la precisión D-CU2-20-R ([registro](../validation/pre_g9b_cu2_author_architecture_approval_record.md)) e incorporadas a sus especificaciones de destino en el paso T0; el texto incorporado pertenece al candidato técnico de `CU2`, pendiente de revisión autoral; `selfApproved=false` |
 | Sustituye | las enmiendas candidatas A2.1 a A2.4 de [`CU0`](pre_g9b_cu0_candidate_normative_amendments.md). Las enmiendas de `CU3` (A3.x) no cambian |
 | Encargo | [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md) §7; revisión focalizada P1–P5 del autor (2026-10-20) |
 | Fundamento | [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](pre_g9b_cu2_consumption_and_representation.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
-| ADR candidato | [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md), que extiende el ADR 0027 |
+| ADR | [ADR 0038](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md), que extiende el ADR 0027, aceptado como decisión arquitectónica el 2026-10-21 |
 
 Los textos normativos se proponen en inglés, como sus especificaciones de destino.
 
@@ -48,7 +48,7 @@ normativa y registro del programa de apéndices científicos»). La arquitectura
 | Naturaleza de la evidencia | ADR 0038; `existence-components` §7 | **aclaración** | separa prueba exacta, intervalos rigurosos, verificación bajo hipótesis, exploración y falta de evidencia, y las constantes binary64 capturadas de las relaciones ideales (C3) |
 | Componentes puntuales | `existence-components` §2–§3, §8 y §11; `metrics`; `presentation` | **ampliación** | no hay entidad para una existencia reducida a un parámetro aislado, que no es un arco de longitud positiva (C2) |
 | Salidas efectivas en raíces coincidentes | `certified-construction-model` §3 y §9; `existence-components` §4 | **ampliación** | la regla heredada anula la segunda salida sin etiqueta que coincide con la primera: la existencia de la raíz no implica la de la salida (C1, hallazgo F-CU2-13) |
-| Huella exacta de la revisión | `semantics`, «exact fingerprint» (A1.1-R) | **conformidad** | la huella de `CU1` toma la serialización XML de 15 cifras significativas, y un cambio de un ulp no publica revisión (hallazgo F-CU2-12) |
+| Huella exacta de la revisión y fidelidad del corte | `semantics`, «exact fingerprint» (A1.1-R) | **conformidad** | la huella de `CU1` no incluye el estado de selección ni el de etiquetado, y nada valida la fidelidad del corte; la atribución inicial de F-CU2-12 a una serialización de 15 cifras se corrigió el 2026-10-21. Precisión autoral D-CU2-20-R |
 | Puntos estacionarios certificados y parámetros singulares | `certified-construction-model`; `presentation` | **ampliación** | una envolvente de `F′` que contiene el cero no prueba un pliegue (P3) |
 | Totalidad y periodicidad estructurales | `existence-components` §7 (autoridad 1); `certified-construction-model` §7 | **ampliación** | §7 de `certified-construction-model` declara periodo 0 y ninguna identificación periódica |
 | Autoridad única de cierre | `existence-components` §12; `presentation`; `metrics` §22; `intersections` | **conformidad** (§12 ya exige el certificado para el DXF) **y ampliación** a todos los consumidores | hoy cinco predicados distintos |
@@ -406,7 +406,8 @@ presenta los valores elegidos con su evidencia.
   (D-CU1-2) y la estabilidad de revisiones (A1.1-R). La regla de publicación es coherente con
   A1.1-R: no depende del conductor. El estado de selección se añade a la huella de la revisión
   sin cambiar su regla. La huella exacta es conformidad con A1.1-R, pero su corrección toca
-  `ReconstructionSliceFingerprint2D`, un componente de `CU1` (decisión D-CU2-20).
+  `ReconstructionSliceFingerprint2D` y la reconstrucción del corte, componentes de `CU1`
+  (precisión autoral D-CU2-20-R, autorizada dentro de `CU2` sin reabrir el cierre de `CU1`).
 - **`CU3`:** `CU2` no define puntos estructurales, contactos ni materialización de raíces
   tangentes. Las fronteras certificadas, los parámetros singulares, las componentes puntuales
   y los chorros de segundo orden son entradas para `CU3`; una componente puntual no crea ningún

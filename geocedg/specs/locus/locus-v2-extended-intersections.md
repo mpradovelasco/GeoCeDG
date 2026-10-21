@@ -266,3 +266,16 @@ After complete verification the author approved it and closed G8 globally.
 This satisfies the 2D incidence gate for a separately authorized G9 design;
 G9 productive implementation remains unauthorized. The typed limits above
 remain normative and do not claim universal curve support.
+
+## PRE-G9B-CU2 scope note (A2.5): certified topology of the sources
+
+Scope note of amendment A2.5 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
+it belongs to the `CU2` technical candidate until the author reviews that candidate. The rules
+of the scope note at the end of [`locus-v2-intersections.md`](locus-v2-intersections.md) apply
+to every Locus V2 source of an extended target or of a locus pair: certified components, arc
+phase frames, seam quarantine only on certified closed periodic components, point components
+never treated as arcs, and `EMPTY` or complete sets only with `COMPLETE` sources and the
+rigorous exclusion of their point components.

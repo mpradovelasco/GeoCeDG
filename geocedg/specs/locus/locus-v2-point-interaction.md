@@ -1,6 +1,6 @@
 # Locus V2 semantic point interaction
 
-- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED**
+- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (§17) — ARCHITECTURE AUTHOR APPROVED (2026-10-21), PENDING THE CU2 CANDIDATE REVIEW**
 - Version: 2
 - Phase: **G9U0-R6 + POST-G9U1-A6**
 - Architectural layer: shared Java kernel
@@ -389,3 +389,24 @@ is exact. The numeric argument is borrowed user construction state and is
 never hidden or removed by that role. The [A6 validation matrix](../../../docs/validation/post_g9u1_a6_optional_branch_point_validation_matrix.md)
 is the retained candidate traceability record. The separately issued author
 approval closes POST-G9U1-A6 without reinterpreting the historical R6 result.
+
+## 17. PRE-G9B-CU2 scope note (A2.5): containing component and selectors
+
+Scope note of amendment A2.5 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038 and the decisions E-2 and
+E-3 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
+it belongs to the `CU2` technical candidate until the author reviews that candidate.
+
+- A semantic point and its interaction resolve their parameter in exactly one certified
+  component, even a local one, of the existence structure
+  (`locus-v2-existence-components.md` §15). Creation and dragging read the same structure, and
+  dragging never crosses a gap. Pointwise validity alone is admitted only for an operation that
+  needs an isolated point.
+- Periodic semantics (lift and seam side) apply only to a certified closed periodic component;
+  on an open arc the address is resolved on the arc coordinate.
+- A point component cannot be selected through a binary64 parameter; the point is undefined
+  with a typed cause.
+- A persisted component selector resolves only through a demonstrated structural
+  correspondence (`locus-v2-existence-components.md` §15.6); unique containment validates it
+  and never creates it. Resolution never rewrites the persisted selector or user content.

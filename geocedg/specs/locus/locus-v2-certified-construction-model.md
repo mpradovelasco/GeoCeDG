@@ -2,9 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | `1.1` (`certified-construction-program/v1` and `certified-construction-program/v2`) |
-| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) |
-| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment |
+| Version | `1.2` (`certified-construction-program/v1`, `/v2` and `/v3`) |
+| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) and by `PRE-G9B-CU2` (§10) |
+| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21 |
+| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -224,6 +225,9 @@ A similarity image of a modeled source is modeled by composing the same
 captured `LocusSimilarityTransform2D` maps that the spline model applies, with
 the same shared implementation.
 
+v1.2 note: the period row applies to programs of class v1 and v2. A program of
+class v3 may claim the periodic identification of its driver circle under §10.8.
+
 ## 8. Lifecycle and versioning
 
 The program is recaptured for every certification from the current evaluator.
@@ -238,6 +242,7 @@ The version of a captured program is derived from its steps:
 |---|---|
 | every step is an operation of §5 | `certified-construction-program/v1`; the signature is unchanged |
 | at least one step is the operation of §5.2 | `certified-construction-program/v2` |
+| at least one step or driver form of §10.1 | `certified-construction-program/v3` |
 
 No program is relabeled merely because the implementation evolves, and no
 document changes: a newer build may certify more current constructions at run
@@ -260,3 +265,165 @@ Outside §5.2 in particular: arbitrary coordinate expressions such as
 expressions or reference a geo, polar, complex-number and 3D literals, and
 `GeoVector3D`. The scalar family keeps its v1 rule: its program is only the
 direct affine certificate, and §5.2 applies to point-driven slices.
+
+v1.2 note: class v3 (§10) admits the line–circle intersection, ray- and
+segment-bounded operands, multi-output steps, vector operations, macro expansion
+and a structural metric input under its own rules. The exclusions of this
+section remain for classes v1 and v2; continuous-mode intersections,
+reference-point selections and conic–conic intersections remain outside every
+class.
+
+## 10. PRE-G9B-CU2 amendment (v1.2): class v3 and existence certification
+
+Normative text of amendment A2.2-R of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 together with ADR 0038 and the
+decisions D-CU2-2, D-CU2-5, D-CU2-6, D-CU2-16, D-CU2-17 and D-CU2-18
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
+The text belongs to the `CU2` technical candidate until the author reviews that candidate.
+Programs of class v1 and v2 and their consumers (§1 to §9) are unchanged.
+
+### 10.1 Class v3
+
+A program of class v3 has its own version identifier; v1 and v2 programs are not relabelled.
+Class v3 adds, strictly for the constructions that the existence certificate needs:
+
+- rays and segments, as a line with a parameter-membership validity predicate;
+- circles by centre and constant radius, and by centre and point;
+- line–circle intersection, including indexed single outputs (§10.2);
+- algorithms with several outputs, as one step with indexed outputs;
+- scalar multiples of vectors, dot products, unit vectors of vectors with a nonzero validity
+  predicate, and point-plus-vector;
+- expansion of a macro whose internal steps are all in the class;
+- a structural metric input (`locus-v2-metrics.md` §26), which contributes its structural
+  certificate and never its value;
+- second-order derivative enclosures for the operations of the class, used for the isolation
+  and non-degeneracy of stationary points.
+
+Class v3 is captured from the evaluator's isolated slice under the reconstruction fidelity
+rule of `locus-v2-semantics.md` (section "PRE-G9B-CU2 amendment"): a slice whose fidelity is
+not established yields no program.
+
+### 10.2 Selection state
+
+Each output of a line–circle intersection is defined by its algorithm, never by a sample: the
+raw roots are ordered by the parameter along the algorithm's line direction, and the output is
+selected through the algorithm's selection state (its permutation, its initialization flags and
+the label state of its outputs). The capture reads that state through read-only accessors, and
+the revision fingerprint includes it. At every revision synchronization the evaluator slice
+must reproduce the selection state of the live algorithm; otherwise the selection is
+`NOT_ESTABLISHED` with a typed diagnostic. The state is never written into an algorithm and is
+never replaced by a geometric heuristic. An algorithm still in its initialization selects by
+compaction of the roots that lie on its limited paths; this rule is certified only where the
+number of such roots is proven constant, and a change of that number is a selection boundary.
+
+A change of the live selection state, including the end of the initialization, changes the
+fingerprint and publishes a revision with a typed diagnostic. A real transition of the
+inherited state during a first initialization may publish one such revision; repeated
+recomputes in an unchanged state never publish further revisions. Continuous-mode
+intersections and reference-point selections stay outside the class.
+
+### 10.3 Effective outputs at coincident roots
+
+The mathematical existence of a root, its multiplicity, the semantic identity of the selected
+solution, the effective definition of the output that defines the traced point, its
+availability in the evaluator slice, the continuity of the one-sided limits and the continuity
+of the selected construction are distinct facts, and none is inferred from another. A
+component is never declared continuous, and its locus never `COMPLETE`, only because the
+geometric equation has a double root, when the indexed output that defines the traced point is
+undefined at that parameter. Where the inherited algorithm sets an unlabelled second output
+undefined because it coincides with the first within a tolerance, the effective definition of
+that output near a coincident root depends on tolerance and rounding: the certificate states
+neither existence nor continuity of that output across the coincident root, and publishes
+around it an unresolved band with a typed cause, bounded by conservative first-level
+predicates; outside the band the output exists where its validity predicates are certified.
+Where both outputs are labelled in the live construction and in the slice, the inherited rule
+does not apply and the double root is classified by the exact certificate. A certified limit
+value at a coincident root is evidence, never an available output, and no output identity is
+ever replaced by another because their points coincide. The inherited suppression rule is not
+changed.
+
+### 10.4 Box outcome
+
+Evaluating a program on a parameter box yields `VALID` (every validity predicate certified
+true), `UNIFORMLY_INVALID` with a typed reason (`DISCRIMINANT_NEGATIVE`,
+`RAY_PARAMETER_NEGATIVE`, `SEGMENT_PARAMETER_OUTSIDE`, `ZERO_DIRECTION`, `ZERO_RADIUS`,
+`DIVISOR_ZERO`) or `UNRESOLVED`. Only `UNIFORMLY_INVALID` may produce
+`CERTIFIED_DOES_NOT_EXIST`. Interval enclosures establish it only for strict-inequality
+predicates; an equality predicate (vanishing divisor, direction or radius) is uniformly invalid
+only through an exact structural identity, and an enclosure that contains zero yields
+`UNRESOLVED`.
+
+### 10.5 Certified transitions
+
+A transition is certified when the validity predicate `P` of one identified operation changes
+sign across a bracket and an enclosure of `P'` over the bracket excludes zero; the bracket is
+narrowed to width at most `delta`. The end is closed for a discriminant root and for a ray or
+segment parameter root, and open for a vanishing divisor, direction or radius. When the
+enclosures of `P` and `P'` both contain zero on a box that cannot be subdivided further within
+the budget, the box is decided by the exact algebraic certificate, when `P` is first-level, or
+by an isolated stationary point of `P` (a simple root of `P'` certified with an enclosure of
+`P''` that excludes zero) at which the enclosure of `P` excludes zero; otherwise it is an
+unresolved band.
+
+### 10.6 Exact algebraic certificate
+
+A validity predicate is first-level when its inputs are captured constants and points that
+depend rationally on the driver, and the driver runs on a circle or a segment. Its captured
+constants are exact rationals; with `u = tan(t/2)` it becomes a polynomial with exact rational
+coefficients, and `t = +-pi` is evaluated separately. Square-free factorization and Sturm
+sequences in exact integer arithmetic give its real roots, their multiplicities and the signs
+between them. An odd-multiplicity root with a sign change is a certified transition with a
+closed end. An even-multiplicity root with a nonnegative predicate on both sides is a certified
+singular parameter, interior to its component. An even-multiplicity root with a nonpositive
+predicate on both sides is an isolated point of existence, a point component
+(`locus-v2-existence-components.md` §15.4). Simple-root isolation (a sign change with a
+derivative enclosure that excludes zero) never certifies a multiple root; in class v3 the
+multiple roots of first-level predicates are certified by this certificate, and those of other
+predicates remain unresolved. The certificate decides the configuration defined by the captured
+binary64 constants, never an ideal geometric relation that the construction computes with
+rounding. Exhausting the certificate budget yields `UNRESOLVED`.
+
+The evidence records the method version, the coefficient fingerprint, the degree, the maximal
+coefficient bits, the width bound, the bisections used and the result. It depends only on the
+captured constants and on the method version.
+
+### 10.7 Certified stationary points
+
+A stationary point of the traced map is certified only by separate proofs of: existence, from
+an exact structural symmetry `sigma` of the driver domain with `F o sigma = F`, verified step by
+step on the captured program; isolation, from an enclosure of one component of `F''` that
+excludes zero on a box around it; non-degeneracy, `F''(t0) != 0`; continuity, as an interior
+point of a certified component; and, for a fold, opposite one-sided tangents. An enclosure of
+`F'` that contains zero certifies nothing. Without these proofs a high turn is not a certified
+fold. Second-order enclosures serve these proofs only; they do not extend `CU2` to the
+materialization of tangencies.
+
+### 10.8 Structural totality and periodicity
+
+An operation is structurally total when it is defined and continuous for every valid input; the
+total operations form a versioned table. A program whose driver is a point of a circle and
+whose operations are functions of their current inputs, with captured selections certified
+constant on each component, defines a function on the circle: its boxes may wrap the seam, and
+it may claim the periodic identification of its driver circle. The identification belongs to
+the real semantic map: outward enclosures of the real driver functions absorb the binary64 seam
+gap that §7 records for the evaluator. Otherwise the period is `0` and no periodic
+identification is claimed.
+
+### 10.9 Versioned constants and budgets
+
+The step limit applies to driver-dependent steps after macro expansion. It and the following
+constants are versioned; the author approved their ranges (D-CU2-5) and the technical candidate
+fixes their values with reproducible benchmark evidence:
+
+| Constant | Approved range |
+|---|---|
+| Transition bracket width `delta` | `2^-48` to `2^-32` times the period |
+| Existence boxes per branch and revision | 1 024 to 16 384 |
+| Minimum existence depth | 4 to 8 |
+| Driver-dependent step limit (class v3) | 128 to 512 |
+| Maximal intermediate coefficient bits of the exact certificate | 1 024 to 16 384 |
+| Exact bisections per root | 256 to 2 048 |
+
+Exhausting a budget yields a typed `UNRESOLVED`; it never yields certified existence or
+nonexistence.

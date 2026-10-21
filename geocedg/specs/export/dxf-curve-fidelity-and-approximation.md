@@ -3,7 +3,8 @@
 | Field | Value |
 |---|---|
 | Status | **NORMATIVE / AUTHOR APPROVED** (version `1.0`); the version `1.1` amendment below is a `PRE-G9B-R6-plus-C` technical candidate pending author review |
-| Version | `1.1` (2026-10-04: units, hidden layers, explicit export area and sidecar schema version 2; author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`, `DQ-C13`) |
+| Version | `1.2` (2026-10-21: certified topology of Locus V2 components, section 10, `PRE-G9B-CU2`); `1.1` (2026-10-04: units, hidden layers, explicit export area and sidecar schema version 2; author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`, `DQ-C13`) |
+| `CU2` amendment status | Section 10: **ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
 | Phase | G9X1 design; implementation not authorized |
 | Scope | Read-only 2D DXF fidelity, approximation, preflight, and sidecar contract |
 | Hard dependencies | [G5 geometry export foundation](geometry-export-foundation.md) and approved internal G6-G8 semantic source contracts |
@@ -266,3 +267,28 @@ Executing G9U0 before X1
 remains the recommended product-integration schedule because it supplies a
 normal public source and cross-save identity. G9U0 is not a hard semantic X1
 dependency, and implementation remains designed but not authorized after G9P.
+
+## 10. PRE-G9B-CU2 amendment: certified topology of Locus V2 components
+
+Normative text of amendment A2.6 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038 and decision D-CU2-4
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
+It refines §3 to §8 for the existence structure of
+[`locus-v2-existence-components.md`](../locus/locus-v2-existence-components.md) §15 and belongs
+to the `CU2` technical candidate until the author reviews that candidate. DXF keeps the accepted
+strict G9X1 fidelity contract; the approximation tolerance stays in model units.
+
+**Export topology.** An export approximation follows the render topology: one open or closed
+path per certified component, in arc order across the seam, closed only for a certified closed
+periodic component, and ending at certified boundary images or one-sided limits. A component
+with an open end is exported, not dropped. An end that cannot be evaluated is exported up to the
+last evaluated vertex and declared in the sidecar, and the export is then incomplete. Certified
+singular parameters are exported as exact vertices. Without `COMPLETE`, export uses incomplete
+fidelity with its mandatory sidecar, and every exported component remains strict. A point
+component is never exported as a path: the sidecar declares it, with its parameter enclosure and
+the status of its position, and the export is then incomplete.
+
+For DXF this means: one `LWPOLYLINE` per certified component; the closed flag (group code 70)
+only for a certified closed periodic component; the closure residual measured against the
+closure certificate; exploratory evidence never exported; unresolved bands never interpolated.

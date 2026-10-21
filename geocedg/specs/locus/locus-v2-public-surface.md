@@ -356,6 +356,13 @@ Moving the point within an unchanged support does not by itself redefine the
 generator contract; support/domain/mapping/external-parameter changes follow
 normal revision rules.
 
+PRE-G9B-CU2 scope note (A2.1-R; architecture author approved on 2026-10-21,
+pending the review of the `CU2` technical candidate): a point becomes undefined
+when its component disappears through a change of the definition, never because
+of the current position of the driver; publication follows
+`locus-v2-semantics.md`, section "PRE-G9B-CU2 amendment (v1.3)", and components
+follow `locus-v2-existence-components.md` §15.
+
 ### 6.4 Nesting and cycle rejection
 
 Every dependency edge is registered through the ordinary `AlgoElement`/

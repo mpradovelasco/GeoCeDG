@@ -1,7 +1,7 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20)**
-- Version: `1.5`
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Version: `1.6`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -1415,3 +1415,54 @@ not by themselves a mathematical certification.
    curve on the incoming chord by a golden-section search and uses it as a partition
    boundary. The hypotheses record the number of located reversals and that no
    unlocated reversal lies between consecutive samples.
+
+## 26. PRE-G9B-CU2 normative amendment: structural certificate of a metric function and certified topology of metric consumers
+
+Normative text of amendment A2.3-R and of the metric part of A2.5 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038 and decision D-CU2-3,
+option A ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
+It belongs to the `CU2` technical candidate until the author reviews that candidate. No
+`LocusLength` value, traversal policy, same-position policy, order or direction changes.
+
+### 26.1 Structural certificate of a metric function
+
+For `LocusLength(L, A, B)` whose target `B` is the generator occurrence of the driver of `L`
+(§24.5) and whose origin `A` is a fixed semantic position on a certified component `C`, the
+rich result publishes, as revision-scoped derived data that is not persisted, the structure of
+the function of the driver it defines: its definition domain (where the route exists), its
+continuity away from its events, and its events. These structural facts derive only from the
+certified structure of `C`, from semantic addresses and from the route policy; they never
+derive from the computed value.
+
+### 26.2 Origin wrap event
+
+When `C` is a certified closed periodic component, the structure contains one event
+`ORIGIN_WRAP` at the driver parameter equal to the canonical address of `A`, with the traversal
+direction, the same-position policy, its two one-sided ends, a reference to the total length of
+`C` with its own guarantee class, and `jumpPositive`. `jumpPositive` is `CERTIFIED` when an
+outward-rounded chord between two certified points of `C` is positive; otherwise it is
+`NOT_ESTABLISHED`. The two ends of the cut share the canonical address of `A` and are distinct:
+each carries its side, its inclusion under the same-position policy and its one-sided limit. The
+certificate establishes that both limits exist; their numerical evaluation is a separate fact.
+The event changes the value of no query.
+
+### 26.3 Clarification of §25.5
+
+A class-3 value is never a rigorous input of a certificate. The structural certificate of a
+metric function is not a value and may be used by an existence certificate.
+
+### 26.4 Certified topology of metric consumers
+
+These rules refine §22, §23.4, §24.4 and §24.5 for the existence structure of
+`locus-v2-existence-components.md` §15:
+
+- an endpoint address (§23.4, §24.4, §24.5) requires a certified component, even a local one,
+  that contains the canonical parameter; zero or several containing components remain
+  `UNRESOLVED_INVALID`;
+- a total length and the `full-cycle` and `wrap-to-start` policies of §22 require `COMPLETE`
+  or a certified closed periodic component; on an open arc the route follows the arc
+  coordinate across the canonical seam and its ends are reached through their one-sided
+  limits;
+- a point component contributes zero to every total and admits only a route of length zero
+  within itself; it cannot be addressed through a binary64 parameter.

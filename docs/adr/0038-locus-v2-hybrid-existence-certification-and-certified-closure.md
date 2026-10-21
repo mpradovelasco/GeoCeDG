@@ -1,10 +1,16 @@
 # ADR 0038 — Locus V2 hybrid existence certification and certified closure
 
-- Status: **PROPOSED** (`PRE-G9B-CU2` preparation candidate pending author review; not
-  author approved; the number is provisional until acceptance)
+- Status: **ACCEPTED — ARCHITECTURE AUTHOR APPROVED WITH PRECISION D-CU2-20-R** (author
+  instruction "GeoCeDG — PRE-G9B-CU2. Aprobación autoral de la arquitectura y autorización
+  condicionada de implementación", 2026-10-21;
+  [approval record](../validation/pre_g9b_cu2_author_architecture_approval_record.md)). This is
+  an architectural decision: the text incorporated into the specifications at step T0 belongs
+  to the `CU2` technical candidate, which is pending author review; acceptance does not mean
+  that `CU2` is implemented or verified.
 - Date: 2026-10-20; revised the same day by the focused review P1–P5 requested by the author
-  and by the coherence closeout C1–C3
-- Phase: `PRE-G9B-CU2` (preparation authorized on 2026-10-20; implementation not authorized)
+  and by the coherence closeout C1–C3; accepted on 2026-10-21
+- Phase: `PRE-G9B-CU2` (preparation authorized on 2026-10-20; implementation authorized on
+  2026-10-21 on the exact base `070af6f902cd0be291247e73efb5629ef2a39eba`)
 - Extends: [ADR 0027](0027-locus-v2-existence-and-continuous-valid-components.md). Its four
   axes, its consumer rules and the independence of local admissibility from global
   completeness are preserved unchanged.
@@ -16,15 +22,23 @@
   - the author's focused review of the preparation candidate (2026-10-20): the general
     direction is favourable; five precisions P1–P5 before approval;
   - the author's coherence closeout instruction (2026-10-20): effective outputs at coincident
-    roots (C1), point components (C2) and the precision of the evidence claims (C3).
-- Parent authority:
-  - [existence and continuous-valid components](../../geocedg/specs/locus/locus-v2-existence-components.md) v1.0;
-  - [certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md) v1.1;
-  - [metric contract](../../geocedg/specs/locus/locus-v2-metrics.md) v1.5, §22, §24.5 and §25;
-  - [semantic contract](../../geocedg/specs/locus/locus-v2-semantics.md) v1.2;
+    roots (C1), point components (C2) and the precision of the evidence claims (C3);
+  - the author's architecture approval (2026-10-21): amendments A2.1-R to A2.6 and this ADR
+    approved with the mandatory precision D-CU2-20-R (decision 17), decisions D-CU2-1 to
+    D-CU2-20-R and E-1 to E-3 disposed, implementation authorized on an exact base.
+- Parent authority (versions that incorporate the approved text at T0):
+  - [existence and continuous-valid components](../../geocedg/specs/locus/locus-v2-existence-components.md) v1.1, §15;
+  - [certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md) v1.2, §10;
+  - [metric contract](../../geocedg/specs/locus/locus-v2-metrics.md) v1.6, §26;
+  - [semantic contract](../../geocedg/specs/locus/locus-v2-semantics.md) v1.3;
+  - [presentation](../../geocedg/specs/locus/locus-v2-presentation.md) version 2;
   - ADR 0027, ADR 0028, ADR 0029 and ADR 0037.
-- Normative candidate: [`CU2` normative proposal](../architecture/pre_g9b_cu2_normative_proposal.md)
-  §2–§7 (amendments A2.1-R to A2.6)
+- Normative text: [`CU2` normative proposal](../architecture/pre_g9b_cu2_normative_proposal.md)
+  §2–§7 (amendments A2.1-R to A2.6), incorporated into the specifications above, into the
+  scope notes of the consumer specifications, into
+  [`dxf-curve-fidelity-and-approximation.md`](../../geocedg/specs/export/dxf-curve-fidelity-and-approximation.md)
+  §10 and into the new
+  [`latex-semantic-curve-export.md`](../../geocedg/specs/export/latex-semantic-curve-export.md)
 - Evidence: [author model certification analysis](../architecture/pre_g9b_cu2_author_model_certification_analysis.md);
   [hybrid certification design](../architecture/pre_g9b_cu2_hybrid_certification_design.md);
   [oriented length event design](../architecture/pre_g9b_cu2_oriented_length_event_design.md);
@@ -88,9 +102,20 @@ The coherence closeout added three more:
   labelled, live and in the slices, so at the double root both are defined and equal;
 - an exact certificate can reduce existence to an isolated parameter, which no interval or
   arc of positive length represents;
-- the `CU1` revision fingerprint serializes numbers with 15 significant digits: a one-ulp
-  change of a captured constant publishes no revision and leaves the slice stale, against the
-  exact fingerprint of the semantic contract.
+- the revision fingerprint and the reconstruction of the evaluator slice have no stated
+  fidelity contract: the fingerprint omits the selection and label states, and nothing
+  establishes that the slice reproduces exactly the authoritative inputs it reads.
+
+The coherence closeout first reported that a one-ulp change of a captured constant published
+no revision because the fingerprint serialized numbers with 15 significant digits. The
+characterization at the start of the implementation (2026-10-21) showed that this attribution
+was wrong: numeric element values serialize exactly, and the observed stale slice came from the
+`H01` publication rule (the traced point was undefined at the driver position, so the locus was
+not republished and the stale definition was evaluated, finding F-CU2-3). With the driver away
+from the degeneracy every one-ulp change publishes a revision and the slice copy is exact. The
+remaining gaps are the selection and label states, literals whose value has no original text,
+which the XML template may write with fewer digits than an exact round trip needs, and the
+absence of any fidelity validation. Decision 17 (D-CU2-20-R) closes them.
 
 ## Decision
 
@@ -178,9 +203,26 @@ The coherence closeout added three more:
     output suppressed by the inherited rule gets an unresolved band around the coincident root;
     its certified limit value is evidence, never an available output, and no output identity is
     replaced by another because their points coincide. The inherited rule is not changed.
-17. **Exact revision fingerprint.** The fingerprint changes with every change of a definition
-    input, down to one unit in the last place of a captured binary64 value and including the
-    selection state. A certificate is valid only for the revision whose fingerprint it cites.
+17. **Exact revision fingerprint and reconstruction fidelity (D-CU2-20-R).** The fingerprint
+    of a reconstructible definition is versioned and exact: it changes with every
+    semantically relevant change of a non-driver input, down to one unit in the last place of
+    a binary64 value, and it covers the structural definitions, the authoritative inputs in an
+    exact binary64 representation, the selection state that affects the geometry, the label
+    state that decides effective outputs, and the versions of the reconstruction policy and
+    contract. It is never based on runtime object identity, proximity, a circumstantial
+    construction index or a graphical representation, and it never replaces durable
+    identities. Driver-only moves keep the revision while the snapshot is unchanged; a real
+    transition of an inherited selection state is distinguished from an equivalent recompute.
+    Before a certificate is published or an evaluator reused, the isolated slice must be shown
+    to reproduce the authoritative inputs exactly; an exact restoration from the live original
+    into the copy is admitted only where its correctness is demonstrated, never in the opposite
+    direction; an unrestorable discrepancy fails explicitly (existence `NOT_ESTABLISHED` with a
+    typed cause, no certificate, evaluations failed with that cause). The fidelity of an
+    internal copy and the fidelity of the persisted format are distinct; after reopening, the
+    certificate corresponds to the reloaded state. The persisted format does not change. A
+    certificate is valid only for the revision whose fingerprint it cites. This is a
+    conformance amendment of the `CU1` snapshot contract, authorized inside `CU2`, and an early
+    blocking gate of the implementation.
 18. **Nature of the evidence.** Each certified fact records the nature of its proof: exact
     symbolic or algebraic, rigorous interval arithmetic, numerical verification under stated
     hypotheses, exploratory, or none. Only the first two certify; the third is an estimate
@@ -206,8 +248,10 @@ The coherence closeout added three more:
   authorization.
 - Point components are declared and never drawn as curves in `CU2`; their materialization
   belongs to `CU3`.
-- Certificates are reused per revision only once the fingerprint is exact; its correction
-  touches a `CU1` component and needs its own author decision.
+- Revision exactness and reconstruction fidelity are an early blocking gate: characterized in
+  step T1 and corrected in step T3, before any certificate of step T4 is valid or published.
+  The correction touches `CU1` components as an authorized conformance amendment, without
+  reopening the `CU1` closeout and without changing serialization or inherited behaviour.
 - The evaluator is not an authority on existence: its tangency tolerance yields points inside
   exact gaps, which are not published as valid.
 - Existing tests that depend on the compatibility certificate change as declared conformance,
@@ -247,8 +291,13 @@ The coherence closeout added three more:
   upstream behaviour change.
 - **Substitute the other output when one is undefined at a coincident root:** rejected. It
   replaces an output identity because of a spatial coincidence.
-- **Keep the 15-digit serialized fingerprint:** rejected. Configurations one ulp apart on
-  either side of a critical value would share a revision and a certificate.
+- **Keep the `CU1` fingerprint and an unvalidated reconstruction:** rejected. A selection or
+  label state change, or a literal written with fewer digits than an exact round trip needs,
+  would let two different configurations share a revision, or let a certificate describe a
+  configuration other than the live one.
+- **Change the persisted format to carry exact values:** not adopted. Internal exactness is
+  achieved by validation and demonstrated restoration; a format change needs its own
+  authorization.
 - **A tolerance that declares near-tangency as tangency:** rejected. It turns a configuration
   with a real gap into a continuous one.
 - **Certify `e_2` through the value of `d_2`** (proposal E of `CU0`): rejected. It would use a

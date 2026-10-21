@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED** |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5, LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21), PENDING THE CU2 CANDIDATE REVIEW** |
 | Version | `1.2` with bounded G9U0-R4 refinement |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
@@ -983,3 +983,25 @@ G8 = PASS — AUTHOR APPROVED
 G9 DESIGN = AUTHORIZED — NOT STARTED
 G9 IMPLEMENTATION = NOT AUTHORIZED — NOT STARTED
 ```
+
+## PRE-G9B-CU2 scope note (A2.5): certified topology of the source
+
+Scope note of amendment A2.5 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
+it belongs to the `CU2` technical candidate until the author reviews that candidate. Solvers,
+residual tolerances and the intersection engine are unchanged (they belong to `CU3`).
+
+- A Locus V2 source is read through its existence structure
+  (`locus-v2-existence-components.md` §15). Locally verified roots require a certified
+  component, even a local one, that contains their parameters; `EMPTY` and any claim of a
+  complete solution set require `COMPLETE` (§7.3 unchanged).
+- The phase frame of a source component is the arc coordinate of that component. The periodic
+  seam quarantine of §6.2 and §6.3 applies only to a certified closed periodic component; the
+  ends of an open arc are addressed through their one-sided limits.
+- A point component of a source is never treated as an arc. An intersection never reports
+  `EMPTY` or a complete set while it has not excluded a point component of its source
+  rigorously; otherwise its result is incomplete with a typed cause.
+- Tokens and selectors use the structural lineage of components
+  (`locus-v2-existence-components.md` §15.6), never boundary bits or list order.

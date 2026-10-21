@@ -1,6 +1,6 @@
 # Locus V2 2D similarity transformations
 
-- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED**
+- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21), PENDING THE CU2 CANDIDATE REVIEW**
 - Phase: **G9U0-R5**
 - Implementation: **PASS — AUTHOR APPROVED**
 - Semantic base: accepted
@@ -343,3 +343,17 @@ frontend auto-materialization without UI/list/marker rank authority;
 professional-menu/tool, visual-identity, existing-host `Continuity = OFF`
 GeoCeDG product invariant with Classic
 configurability, and two logical GeoCeDG branding-role contracts.
+
+## PRE-G9B-CU2 scope note (A2.5): inherited existence structure
+
+Scope note of amendment A2.5 of the
+[`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
+approved as architecture by the author on 2026-10-21 with ADR 0038
+([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
+it belongs to the `CU2` technical candidate until the author reviews that candidate.
+
+The image of a similarity transformation inherits explicitly the existence structure of its
+source (`locus-v2-existence-components.md` §15): coverage, maximality, completeness, the
+transported lineage, the closure authority, arcs with their one-sided ends, and point
+components with their parameter enclosure, whose position enclosure is transformed. The image
+never recomputes or widens the topology of its source.
