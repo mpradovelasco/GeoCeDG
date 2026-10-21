@@ -8,6 +8,8 @@ package org.geocedg.common.kernel.locus.intersection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
@@ -78,6 +80,11 @@ public final class ConstructionBoxModel2D {
 	private static final Object UNKNOWN = new Object();
 	/** A value that is never enclosed: a structural metric input and what it reaches. */
 	private static final Object METRIC_OPAQUE = new Object();
+	/**
+	 * A structural metric input whose structural certificate defines it on the box, and what
+	 * total steps reach from it: defined and continuous, its value never enclosed.
+	 */
+	private static final Object METRIC_DEFINED = new Object();
 	/** A value assumed valid whose enclosure is unbounded on the box. */
 	private static final Object ASSUMED_OPAQUE = new Object();
 
@@ -251,7 +258,53 @@ public final class ConstructionBoxModel2D {
 	 */
 	ConstructionBoxOutcome2D evaluateCertifying(SplineOutwardInterval2D box,
 			boolean periodic) {
-		return new Run(periodic, Mode.FIRST_ORDER, null, List.of(), true).evaluate(box);
+		return evaluateCertifying(box, periodic, Set.of());
+	}
+
+	/**
+	 * Evaluates the program on a box for existence certification, with structural metric
+	 * inputs whose structural certificates define them on the box: such an input and the
+	 * total steps it reaches are defined without a value, and a valid outcome then has no
+	 * enclosure of the traced point.
+	 *
+	 * @param definedMetrics nodes of the metric inputs defined on the box
+	 * @return typed outcome
+	 */
+	ConstructionBoxOutcome2D evaluateCertifying(SplineOutwardInterval2D box,
+			boolean periodic, Set<Integer> definedMetrics) {
+		Run run = new Run(periodic, Mode.FIRST_ORDER, null, List.of(), true);
+		run.definedMetrics = definedMetrics;
+		return run.evaluate(box);
+	}
+
+	/**
+	 * Encloses the traced point on a box with given enclosures of the values of metric
+	 * inputs, such as the rigorous bounds of the one-sided limits of a length at a
+	 * structural event. The enclosures are inputs of the evaluation, never values that
+	 * a metric query computed.
+	 *
+	 * @param values enclosure {@code {lower, upper}} of the value of each metric input node
+	 * @return {@code {x, y}} enclosures of the traced point, or {@code null} when the box is
+	 *         not valid with these values
+	 */
+	SplineOutwardInterval2D[] encloseWithMetricValues(SplineOutwardInterval2D box,
+			boolean periodic, Map<Integer, double[]> values) {
+		Run run = new Run(periodic, Mode.VALUE_ONLY, null, List.of());
+		run.metricValues = values;
+		ConstructionBoxOutcome2D outcome = run.evaluate(box);
+		return outcome.kind == ConstructionBoxOutcome2D.Kind.VALID ? outcome.value : null;
+	}
+
+	/** @return nodes of the structural metric inputs, in program order */
+	List<Integer> metricInputs() {
+		List<Integer> nodes = new ArrayList<>();
+		List<Step> steps = program.getSteps();
+		for (int index = 0; index < steps.size(); index++) {
+			if (steps.get(index).getOperation() == Operation.METRIC_INPUT) {
+				nodes.add(index + 1);
+			}
+		}
+		return nodes;
 	}
 
 	/**
@@ -319,7 +372,22 @@ public final class ConstructionBoxModel2D {
 	 */
 	ConstructionBoxOutcome2D evaluateAssuming(SplineOutwardInterval2D box,
 			List<Target> assumed, boolean periodic) {
-		return new Run(periodic, Mode.VALUE_ONLY, null, assumed).evaluate(box);
+		return evaluateAssuming(box, assumed, periodic, Set.of());
+	}
+
+	/**
+	 * Evaluates the program on a box assuming several validity predicates, with structural
+	 * metric inputs defined on the box; see {@link #evaluateAssuming(SplineOutwardInterval2D,
+	 * List, boolean)} and {@link #evaluateCertifying(SplineOutwardInterval2D, boolean, Set)}.
+	 *
+	 * @param definedMetrics nodes of the metric inputs defined on the box
+	 * @return typed outcome
+	 */
+	ConstructionBoxOutcome2D evaluateAssuming(SplineOutwardInterval2D box,
+			List<Target> assumed, boolean periodic, Set<Integer> definedMetrics) {
+		Run run = new Run(periodic, Mode.VALUE_ONLY, null, assumed);
+		run.definedMetrics = definedMetrics;
+		return run.evaluate(box);
 	}
 
 	/**
@@ -506,6 +574,10 @@ public final class ConstructionBoxModel2D {
 		private SplineOutwardInterval2D radius;
 		/** Traced point of a valid box. */
 		private PointJet traced;
+		/** Metric inputs that their structural certificates define on the box. */
+		private Set<Integer> definedMetrics = Set.of();
+		/** Given enclosures of metric input values, or {@code null}. */
+		private Map<Integer, double[]> metricValues;
 
 		Run(boolean periodic, Mode mode, Target capture, List<Target> assumed) {
 			this(periodic, mode, capture, assumed, false);
@@ -580,7 +652,7 @@ public final class ConstructionBoxModel2D {
 					} else {
 						nodes[node] = UNKNOWN;
 						if (unresolved == null) {
-							unresolved = (opaque == METRIC_OPAQUE
+							unresolved = (opaque == METRIC_OPAQUE || opaque == METRIC_DEFINED
 									? new Stop(Unresolved.METRIC_VALUE, null, STEP_PREDICATE,
 											"A step that is not total reads a metric value")
 									: new Stop(Unresolved.ENCLOSURE, null, STEP_PREDICATE,
@@ -624,7 +696,7 @@ public final class ConstructionBoxModel2D {
 						steps.size(), null, STEP_PREDICATE,
 						"The structural metric input contributes no value", evaluations);
 			}
-			if (output == ASSUMED_OPAQUE) {
+			if (output == ASSUMED_OPAQUE || output == METRIC_DEFINED) {
 				return ConstructionBoxOutcome2D.valid(null, null,
 						String.join(",", selection), evaluations);
 			}
@@ -648,7 +720,10 @@ public final class ConstructionBoxModel2D {
 				if (value == UNKNOWN) {
 					return UNKNOWN;
 				}
-				if (value == METRIC_OPAQUE || value == ASSUMED_OPAQUE && found == null) {
+				// An undecided metric value dominates a defined one, which dominates an
+				// assumed unbounded value.
+				if (value == METRIC_OPAQUE || value == METRIC_DEFINED && found != METRIC_OPAQUE
+						|| value == ASSUMED_OPAQUE && found == null) {
 					found = value;
 				}
 			}
@@ -763,7 +838,12 @@ public final class ConstructionBoxModel2D {
 						: PointJet.unit(base.inhomX.subtract(offset.x),
 								base.inhomY.subtract(offset.y));
 			case METRIC_INPUT:
-				return METRIC_OPAQUE;
+				if (metricValues != null && metricValues.containsKey(node)) {
+					double[] bounds = metricValues.get(node);
+					return new Jet(new SplineOutwardInterval2D(bounds[0], bounds[1]), null,
+							null);
+				}
+				return definedMetrics.contains(node) ? METRIC_DEFINED : METRIC_OPAQUE;
 			default:
 				return transform(step, point(operands.get(0)));
 			}

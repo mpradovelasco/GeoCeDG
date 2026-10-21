@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
@@ -48,6 +50,10 @@ import org.geocedg.common.kernel.locus.exact.TrigonometricPolynomial2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D.PredicateEnclosure;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D.Target;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Kind;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Unresolved;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D.OriginWrap;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D.Piece;
 
 /**
  * Hybrid existence certifier of a dependent-point locus (contract {@value #CONTRACT};
@@ -73,6 +79,16 @@ import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Kin
  * positive length ends at the closed inner bound of the enclosure of its boundary root.
  * Exploratory evidence of the unresolved bands is a sibling of the structure and never
  * certifies anything.</p>
+ *
+ * <p>A structural metric input contributes the structural certificate of its length
+ * ({@code locus-v2-metrics.md} section 26), never its value: where the route is defined, it
+ * and the total steps it reaches are defined without a value; where it is certified
+ * undefined, the traced point does not exist; elsewhere the cell is an unresolved band.
+ * The partition is cut exactly at the ends of the pieces of the structure. An origin wrap
+ * is a zero-width event cell: the components on both sides end there with distinct
+ * structural ends, which certifies the discontinuity only when the enclosures of the
+ * traced point at the two one-sided limits of the length, {@code 0} and the rigorous
+ * bounds of the total length, are disjoint; otherwise the event is a band.</p>
  */
 public final class HybridExistenceCertifier2D {
 	/** Contract of the certificates of this certifier. */
@@ -606,9 +622,32 @@ public final class HybridExistenceCertifier2D {
 	public static Result certify(ConstructionBoxModel2D model, LocusInterval2D domain,
 			boolean periodic, String branchKey, Sampler sampler, Policy policy,
 			LocusInstrumentation2D instrumentation) {
-		return new Run(Objects.requireNonNull(model), Objects.requireNonNull(domain),
-				periodic, branchKey, sampler, Objects.requireNonNull(policy),
-				instrumentation).certify();
+		return certify(model, Map.of(), domain, periodic, branchKey, sampler, policy,
+				instrumentation);
+	}
+
+	/**
+	 * Certifies the program of one revision whose metric inputs have structural
+	 * certificates.
+	 *
+	 * @param model box model of the class-v3 program of the revision
+	 * @param metrics structural certificate of each metric input node that has one; the
+	 *        other metric inputs stay undecided
+	 * @param domain canonical driver domain of the branch
+	 * @param periodic whether the domain is periodic
+	 * @param branchKey branch key of the structure
+	 * @param sampler pointwise validity for exploratory evidence, or {@code null}
+	 * @param policy versioned constants and budgets
+	 * @param instrumentation counters of the locus, or {@code null}
+	 * @return certificate with its evidence
+	 */
+	public static Result certify(ConstructionBoxModel2D model,
+			Map<Integer, LocusMetricFunctionStructure2D> metrics, LocusInterval2D domain,
+			boolean periodic, String branchKey, Sampler sampler, Policy policy,
+			LocusInstrumentation2D instrumentation) {
+		return new Run(Objects.requireNonNull(model), Objects.requireNonNull(metrics),
+				Objects.requireNonNull(domain), periodic, branchKey, sampler,
+				Objects.requireNonNull(policy), instrumentation).certify();
 	}
 
 	/**
@@ -709,7 +748,12 @@ public final class HybridExistenceCertifier2D {
 		/** The enclosure of one certified transition root. */
 		BOUNDARY,
 		/** The enclosure of one isolated root at which existence holds. */
-		ISOLATED
+		ISOLATED,
+		/**
+		 * A certified structural event of a metric input: a zero-width cell at its exact
+		 * parameter, or the seam cell for an event at the start of the circle.
+		 */
+		EVENT
 	}
 
 	/** A certified root of one predicate, placed in the cell coordinates. */
@@ -783,6 +827,20 @@ public final class HybridExistenceCertifier2D {
 		private LocusEvidenceNature2D nature = LocusEvidenceNature2D.NONE;
 		private String evidence = "";
 		private double[] position;
+		/** Metric inputs that their structures define on the cell. */
+		private Set<Integer> metricDefined = Set.of();
+		/** Whether the structure of a metric input excludes the route on the cell. */
+		private boolean metricUndefined;
+		/** Cause of a metric input that its structure does not decide, or {@code null}. */
+		private LocusCoverageCause2D metricCause;
+		private String metricEvidence;
+		/** Whether the cell is a structural event of a metric input. */
+		private boolean event;
+		private double eventParameter;
+		/** End of the component below an event, or {@code null}. */
+		private LocusBoundary2D eventBelow;
+		/** End of the component above an event, or {@code null}. */
+		private LocusBoundary2D eventAbove;
 
 		Cell(double lower, double upper, List<Target> assumed, Set<Target> exactApplied) {
 			this.lower = lower;
@@ -792,7 +850,23 @@ public final class HybridExistenceCertifier2D {
 		}
 
 		Cell child(double from, double to) {
-			return new Cell(from, to, assumed, exactApplied);
+			Cell child = new Cell(from, to, assumed, exactApplied);
+			child.copyMetric(this);
+			return child;
+		}
+
+		/** Sub-cells lie inside the same pieces of every metric structure. */
+		void copyMetric(Cell other) {
+			metricDefined = other.metricDefined;
+			metricUndefined = other.metricUndefined;
+			metricCause = other.metricCause;
+			metricEvidence = other.metricEvidence;
+		}
+
+		boolean sameMetric(Cell other) {
+			return metricDefined.equals(other.metricDefined)
+					&& metricUndefined == other.metricUndefined
+					&& metricCause == other.metricCause;
 		}
 
 		boolean isFinal() {
@@ -804,6 +878,9 @@ public final class HybridExistenceCertifier2D {
 	private static final class Run {
 		private final ConstructionBoxModel2D model;
 		private final CertifiedConstructionProgram2D program;
+		private final Map<Integer, LocusMetricFunctionStructure2D> metrics;
+		private final List<Integer> metricNodes;
+		private final Set<Double> eventParameters = new TreeSet<>();
 		private final LocusInterval2D domain;
 		private final boolean circle;
 		private final String branchKey;
@@ -822,11 +899,13 @@ public final class HybridExistenceCertifier2D {
 		private boolean exhausted;
 		private String diagnostic;
 
-		Run(ConstructionBoxModel2D model, LocusInterval2D domain, boolean periodic,
-				String branchKey, Sampler sampler, Policy policy,
-				LocusInstrumentation2D instrumentation) {
+		Run(ConstructionBoxModel2D model, Map<Integer, LocusMetricFunctionStructure2D> metrics,
+				LocusInterval2D domain, boolean periodic, String branchKey, Sampler sampler,
+				Policy policy, LocusInstrumentation2D instrumentation) {
 			this.model = model;
 			this.program = model.getProgram();
+			this.metrics = metrics;
+			this.metricNodes = model.metricInputs();
 			this.domain = domain;
 			this.branchKey = branchKey;
 			this.sampler = sampler;
@@ -848,18 +927,36 @@ public final class HybridExistenceCertifier2D {
 				return total();
 			}
 			int count = 1 << policy.minimumDepth;
-			double[] cuts = new double[count + 1];
+			TreeSet<Double> cuts = new TreeSet<>();
 			for (int index = 0; index <= count; index++) {
-				cuts[index] = index == count ? domain.getUpper()
-						: domain.getLower() + period * index / count;
+				cuts.add(index == count ? domain.getUpper()
+						: domain.getLower() + period * index / count);
 			}
-			for (int index = 0; index < count; index++) {
-				cells.add(new Cell(cuts[index], cuts[index + 1], List.of(), Set.of()));
+			// The metric structures cut the partition exactly at the ends of their pieces.
+			Map<Double, Cell> events = metricEvents(cuts);
+			Double previous = null;
+			for (double cut : cuts) {
+				if (previous != null) {
+					Cell event = events.get(previous);
+					if (event != null && previous > domain.getLower()) {
+						cells.add(event);
+					}
+					cells.add(new Cell(previous, cut, List.of(), Set.of()));
+				}
+				previous = cut;
 			}
 			if (circle) {
 				// The seam cell covers the canonical circle from Math.PI, below pi, to
-				// -Math.PI + 2 pi, above pi: no canonical parameter lies strictly inside.
-				cells.add(new Cell(Math.PI, seamUpper, List.of(), Set.of()));
+				// -Math.PI + 2 pi, above pi: no canonical parameter lies strictly inside. An
+				// event at the start of the circle is that cell.
+				Cell event = events.get(domain.getLower());
+				cells.add(event != null ? event : new Cell(Math.PI, seamUpper, List.of(),
+						Set.of()));
+			}
+			for (Cell cell : cells) {
+				if (!cell.event) {
+					assignMetric(cell);
+				}
 			}
 			boolean progress = true;
 			while (progress && !exhausted) {
@@ -927,6 +1024,228 @@ public final class HybridExistenceCertifier2D {
 					LocusEvidenceNature2D.EXACT);
 		}
 
+		/**
+		 * Adds the interior ends of the pieces of every certified metric structure to the
+		 * cuts and builds the event cells: one per origin wrap, and one where a defined piece
+		 * meets an undefined one at an exact binary64 parameter.
+		 *
+		 * @return event cells by their canonical parameter
+		 */
+		private Map<Double, Cell> metricEvents(TreeSet<Double> cuts) {
+			Map<Double, Cell> events = new TreeMap<>();
+			for (int node : metricNodes) {
+				LocusMetricFunctionStructure2D structure = metrics.get(node);
+				if (structure == null || !structure.isCertified()) {
+					continue;
+				}
+				List<Piece> pieces = structure.getPieces();
+				for (Piece piece : pieces) {
+					addCut(cuts, piece.getInterval().getLower());
+					addCut(cuts, piece.getInterval().getUpper());
+				}
+				String token = metricToken(node);
+				for (OriginWrap wrap : structure.getEvents()) {
+					double at = normalized(wrap.getDriverParameter());
+					addCut(cuts, at);
+					putEvent(events, at, wrapEvent(node, token, wrap, at));
+				}
+				for (int index = 0; index < pieces.size(); index++) {
+					boolean seam = index + 1 == pieces.size();
+					if (seam && !circle) {
+						break;
+					}
+					Piece below = pieces.get(index);
+					Piece above = pieces.get(seam ? 0 : index + 1);
+					double at = seam ? domain.getLower() : below.getInterval().getUpper();
+					boolean adjacent = seam
+							? below.getInterval().getUpper() == domain.getUpper()
+									&& above.getInterval().getLower() == domain.getLower()
+							: above.getInterval().getLower() == at;
+					boolean belowDefined = below.getState() == LocusMetricFunctionStructure2D
+							.State.DEFINED;
+					boolean aboveDefined = above.getState() == LocusMetricFunctionStructure2D
+							.State.DEFINED;
+					boolean belowUndefined = below.getState() == LocusMetricFunctionStructure2D
+							.State.UNDEFINED;
+					boolean aboveUndefined = above.getState() == LocusMetricFunctionStructure2D
+							.State.UNDEFINED;
+					if (!adjacent || !(belowDefined && aboveUndefined
+							|| belowUndefined && aboveDefined)) {
+						continue;
+					}
+					Cell event = eventCell(at);
+					event.state = State.EVENT;
+					event.nature = LocusEvidenceNature2D.EXACT;
+					event.evidence = "route-domain:" + token;
+					// At the seam the defined side below ends at its last canonical parameter.
+					event.eventBelow = belowDefined ? structuralEnd(token, "ROUTE_DOMAIN", "upper",
+							seam || below.getInterval().isUpperClosed()) : null;
+					event.eventAbove = aboveDefined ? structuralEnd(token, "ROUTE_DOMAIN", "lower",
+							above.getInterval().isLowerClosed()) : null;
+					putEvent(events, at, event);
+				}
+			}
+			eventParameters.addAll(events.keySet());
+			return events;
+		}
+
+		private void addCut(TreeSet<Double> cuts, double cut) {
+			double value = normalized(cut);
+			if (domain.getLower() < value && value < domain.getUpper()) {
+				cuts.add(value);
+			}
+		}
+
+		private static double normalized(double value) {
+			return value == 0 ? 0 : value;
+		}
+
+		/** Two events at one parameter certify nothing there: a band, which fails closed. */
+		private void putEvent(Map<Double, Cell> events, double at, Cell event) {
+			if (events.containsKey(at)) {
+				diagnostic = "Coincident structural events at " + Double.toHexString(at);
+				Cell band = eventCell(at);
+				band.event = false;
+				band(band, LocusCoverageCause2D.NOT_CERTIFIED, "coincident-structural-events");
+				events.put(at, band);
+				return;
+			}
+			events.put(at, event);
+		}
+
+		/**
+		 * The origin wrap of a metric input: two distinct structural ends when the jump of
+		 * the traced point is certified, band edges otherwise.
+		 */
+		private Cell wrapEvent(int node, String token, OriginWrap wrap, double at) {
+			Cell cell = eventCell(at);
+			boolean start = wrap.isStartIncluded();
+			if (wrap.isJumpPositive() && outputJumps(node, wrap, at)) {
+				cell.state = State.EVENT;
+				cell.nature = LocusEvidenceNature2D.EXACT;
+				cell.evidence = "origin-wrap:" + token;
+				cell.eventAbove = wrap.end(token, true);
+				cell.eventBelow = wrap.end(token, false);
+			} else {
+				band(cell, LocusCoverageCause2D.NOT_CERTIFIED,
+						"origin-wrap-jump-not-established:" + token);
+				cell.eventAbove = new LocusBoundary2D(LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE,
+						new LocusBoundarySource2D(token, "ORIGIN_WRAP", "start"), start,
+						LocusEvidenceNature2D.NONE);
+				cell.eventBelow = new LocusBoundary2D(LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE,
+						new LocusBoundarySource2D(token, "ORIGIN_WRAP", "end"), !start,
+						LocusEvidenceNature2D.NONE);
+			}
+			return cell;
+		}
+
+		/**
+		 * The traced point jumps at the event when its enclosures at the two one-sided
+		 * limits of the length, {@code 0} and the rigorous bounds of the total length of the
+		 * source, are disjoint: the total steps are continuous in the length, so the two
+		 * one-sided limits of the traced point differ. No metric value is read.
+		 */
+		private boolean outputJumps(int node, OriginWrap wrap, double at) {
+			if (metricNodes.size() != 1 || !spend() || !spend()) {
+				return false;
+			}
+			SplineOutwardInterval2D box = SplineOutwardInterval2D.point(at);
+			SplineOutwardInterval2D[] restart = model.encloseWithMetricValues(box, circle,
+					Map.of(node, new double[] {0, 0}));
+			SplineOutwardInterval2D[] full = model.encloseWithMetricValues(box, circle,
+					Map.of(node, new double[] {wrap.getJumpLowerBound(),
+						wrap.getJumpUpperBound()}));
+			return restart != null && full != null
+					&& (restart[0].disjoint(full[0]) || restart[1].disjoint(full[1]));
+		}
+
+		private static LocusBoundary2D structuralEnd(String token, String kind, String side,
+				boolean included) {
+			return new LocusBoundary2D(LocusBoundary2D.Kind.STRUCTURAL_EVENT,
+					new LocusBoundarySource2D(token, kind, side), included,
+					LocusEvidenceNature2D.EXACT);
+		}
+
+		/** @return a zero-width cell at an interior parameter, or the seam cell at -pi */
+		private Cell eventCell(double at) {
+			Cell cell = circle && at == domain.getLower()
+					? new Cell(Math.PI, seamUpper, List.of(), Set.of())
+					: new Cell(at, at, List.of(), Set.of());
+			cell.event = true;
+			cell.eventParameter = at;
+			return cell;
+		}
+
+		private String metricToken(int node) {
+			return "class-v3-step-" + node + "-"
+					+ program.getSteps().get(node - 1).getOperation().name();
+		}
+
+		/** Records the state of every metric input on a cell, from its structure. */
+		private void assignMetric(Cell cell) {
+			Set<Integer> defined = new TreeSet<>();
+			for (int node : metricNodes) {
+				LocusMetricFunctionStructure2D structure = metrics.get(node);
+				if (structure == null) {
+					unknown(cell, LocusCoverageCause2D.NOT_CERTIFIED,
+							"metric-input-without-structure");
+					continue;
+				}
+				if (!structure.isCertified()) {
+					unknown(cell, structure.getCause(), "metric-structure-not-established");
+					continue;
+				}
+				LocusMetricFunctionStructure2D.State state = stateOn(structure, cell);
+				if (state == LocusMetricFunctionStructure2D.State.DEFINED) {
+					defined.add(node);
+				} else if (state == LocusMetricFunctionStructure2D.State.UNDEFINED) {
+					cell.metricUndefined = true;
+				} else if (state == LocusMetricFunctionStructure2D.State.UNRESOLVED) {
+					unknown(cell, LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
+							"metric-source-unresolved");
+				} else if (state == LocusMetricFunctionStructure2D.State.BOUNDARY) {
+					// Finiteness of the route at the exact root is not certified.
+					unknown(cell, LocusCoverageCause2D.NOT_CERTIFIED,
+							"metric-route-at-source-boundary");
+				} else {
+					unknown(cell, LocusCoverageCause2D.NOT_CERTIFIED,
+							"metric-structure-not-uniform");
+				}
+			}
+			cell.metricDefined = Collections.unmodifiableSet(defined);
+		}
+
+		private static void unknown(Cell cell, LocusCoverageCause2D cause, String evidence) {
+			if (cell.metricCause == null) {
+				cell.metricCause = cause;
+				cell.metricEvidence = evidence;
+			}
+		}
+
+		/**
+		 * @return the state of the piece that holds the whole cell, its ends at events
+		 *         aside; on the seam cell the common state of the two canonical sides of the
+		 *         seam; {@code null} when no piece holds it
+		 */
+		private LocusMetricFunctionStructure2D.State stateOn(
+				LocusMetricFunctionStructure2D structure, Cell cell) {
+			if (circle && cell.lower == Math.PI && cell.upper == seamUpper) {
+				Piece last = structure.pieceContaining(Math.nextDown(domain.getUpper()));
+				Piece first = structure.pieceContaining(domain.getLower());
+				return last == null || first == null || last.getState() != first.getState()
+						? null : first.getState();
+			}
+			Piece piece = structure.pieceContaining(cell.lower + (cell.upper - cell.lower) / 2);
+			return piece != null && covers(piece, cell.lower) && covers(piece, cell.upper)
+					? piece.getState() : null;
+		}
+
+		private boolean covers(Piece piece, double parameter) {
+			LocusInterval2D interval = piece.getInterval();
+			return interval.contains(parameter, 0) || eventParameters.contains(parameter)
+					|| parameter == domain.getUpper() && interval.getUpper() == parameter;
+		}
+
 		private boolean spend() {
 			if (boxes >= policy.boxBudget) {
 				exhausted = true;
@@ -938,15 +1257,15 @@ public final class HybridExistenceCertifier2D {
 		}
 
 		private ConstructionBoxOutcome2D run(double lower, double upper,
-				List<Target> assumed) {
+				List<Target> assumed, Set<Integer> definedMetrics) {
 			if (!spend()) {
 				return null;
 			}
 			SplineOutwardInterval2D box = new SplineOutwardInterval2D(lower, upper);
 			if (!assumed.isEmpty()) {
-				return model.evaluateAssuming(box, assumed, circle);
+				return model.evaluateAssuming(box, assumed, circle, definedMetrics);
 			}
-			return model.evaluateCertifying(box, circle);
+			return model.evaluateCertifying(box, circle, definedMetrics);
 		}
 
 		private PredicateEnclosure enclose(double lower, double upper, Target target) {
@@ -976,7 +1295,16 @@ public final class HybridExistenceCertifier2D {
 
 		/** Evaluates a cell; a predicate certified elsewhere is assumed where needed. */
 		private void evaluate(Cell cell) {
-			ConstructionBoxOutcome2D outcome = run(cell.lower, cell.upper, List.of());
+			if (cell.metricUndefined) {
+				// The traced point reads the metric input, whose route is certified undefined.
+				cell.state = State.INVALID;
+				cell.cause = LocusCoverageCause2D.DEPENDENCY_CERTIFIED_NONEXISTENT;
+				cell.nature = LocusEvidenceNature2D.RIGOROUS_INTERVAL;
+				cell.evidence = "metric-route-certified-undefined";
+				return;
+			}
+			ConstructionBoxOutcome2D outcome = run(cell.lower, cell.upper, List.of(),
+					cell.metricDefined);
 			if (outcome == null) {
 				return;
 			}
@@ -988,7 +1316,7 @@ public final class HybridExistenceCertifier2D {
 							+ outcome;
 					return;
 				}
-				outcome = run(cell.lower, cell.upper, cell.assumed);
+				outcome = run(cell.lower, cell.upper, cell.assumed, cell.metricDefined);
 				if (outcome == null) {
 					return;
 				}
@@ -1034,7 +1362,8 @@ public final class HybridExistenceCertifier2D {
 			Root root = cell.root;
 			List<Target> assumed = new ArrayList<>(cell.assumed);
 			assumed.add(root.target);
-			ConstructionBoxOutcome2D outcome = run(cell.lower, cell.upper, assumed);
+			ConstructionBoxOutcome2D outcome = run(cell.lower, cell.upper, assumed,
+					cell.metricDefined);
 			if (outcome == null) {
 				return;
 			}
@@ -1098,7 +1427,12 @@ public final class HybridExistenceCertifier2D {
 				return refine(index, causeOf(outcome), false);
 			default:
 				// A structural metric value or a box outside the domain: refining never helps.
-				return band(cell, causeOf(outcome), describe(outcome));
+				// A metric input that its structure does not decide keeps the typed cause of
+				// the structure.
+				boolean metric = outcome.unresolved == Unresolved.METRIC_VALUE
+						&& cell.metricCause != null;
+				return band(cell, metric ? cell.metricCause : causeOf(outcome),
+						describe(outcome) + (metric ? ";" + cell.metricEvidence : ""));
 			}
 		}
 
@@ -1163,7 +1497,8 @@ public final class HybridExistenceCertifier2D {
 		/** A certified neighbour; a pending one is not, or a band would split everywhere. */
 		private static boolean isDecided(Cell cell) {
 			return cell != null && (cell.state == State.VALID || cell.state == State.INVALID
-					|| cell.state == State.BOUNDARY || cell.state == State.ISOLATED);
+					|| cell.state == State.BOUNDARY || cell.state == State.ISOLATED
+					|| cell.state == State.EVENT);
 		}
 
 		private void replace(int index, int count, List<Cell> pieces) {
@@ -1552,6 +1887,10 @@ public final class HybridExistenceCertifier2D {
 				if (original != cell && original.root != null) {
 					return conflict(cell, "Overlapping root enclosures");
 				}
+				if (original.event || !original.sameMetric(cell)) {
+					// A root enclosure across a cut of a metric structure: never merged.
+					return conflict(cell, "A root enclosure overlaps a metric structure cut");
+				}
 			}
 			lower = Math.max(lower, originals.get(0).lower);
 			upper = Math.min(upper, originals.get(originals.size() - 1).upper);
@@ -1568,6 +1907,7 @@ public final class HybridExistenceCertifier2D {
 				}
 				Cell piece = new Cell(from, to, common(originals, from, to),
 						Set.of(target));
+				piece.copyMetric(cell);
 				if (segment.root != null) {
 					piece.root = segment.root;
 				} else {
@@ -1946,6 +2286,21 @@ public final class HybridExistenceCertifier2D {
 		/** @return whether the component of the run of valid cells is maximal */
 		private boolean component(int first, int last, List<ContinuousComponent> components) {
 			int size = cells.size();
+			int outside = (first - 1 + size) % size;
+			if (circle && (last + 1) % size == outside && cells.get(outside).event) {
+				// Every cell but one event: a full-length open arc that starts and ends at the
+				// event, with its two distinct ends (section 15.3).
+				Cell event = cells.get(outside);
+				LocusBoundary2D lower = boundary(event, true);
+				LocusBoundary2D upper = boundary(event, false);
+				boolean maximal = lower.getKind() != LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE
+						&& upper.getKind() != LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE;
+				components.add(ContinuousComponent.arc(domain, event.eventParameter,
+						event.eventParameter, true, lower, upper, maximal ? Maximality.ESTABLISHED
+								: Maximality.LOCAL_CERTIFIED_SUBINTERVAL, runNature(first, last),
+						"hybrid-component/" + components.size()));
+				return maximal;
+			}
 			Cell firstCell = cells.get(first);
 			Cell lastCell = cells.get(last);
 			boolean seamFirst = circle && first == size - 1;
@@ -2001,6 +2356,14 @@ public final class HybridExistenceCertifier2D {
 			if (next == null) {
 				return domainEnd(lower);
 			}
+			if (next.event) {
+				LocusBoundary2D end = lower ? next.eventAbove : next.eventBelow;
+				if (end == null) {
+					throw new IllegalStateException(
+							"A valid cell borders a structural event without its end");
+				}
+				return end;
+			}
 			String side = lower ? "lower" : "upper";
 			switch (next.state) {
 			case BOUNDARY:
@@ -2031,25 +2394,52 @@ public final class HybridExistenceCertifier2D {
 			Cell seam = circle ? cells.get(size) : null;
 			for (int index = 0; index < size; index++) {
 				Cell cell = cells.get(index);
+				if (cell.event) {
+					// An event holds no parameter of its own: the side whose end includes its
+					// parameter owns it.
+					continue;
+				}
 				double lower = cell.lower;
 				double upper = Math.min(cell.upper, domain.getUpper());
 				boolean lowerClosed;
-				if (index == 0) {
+				if (index == 0 && circle && seam.event) {
+					lowerClosed = ownerAbove(seam);
+					if (!lowerClosed) {
+						add(result, cells.get(size - 1), lower, lower, true, true);
+					}
+				} else if (index == 0) {
 					lowerClosed = circle ? priority(cell) >= priority(seam)
 							: domain.isLowerClosed();
 					if (circle && !lowerClosed) {
 						add(result, seam, lower, lower, true, true);
 					}
 				} else {
-					lowerClosed = priority(cell) > priority(cells.get(index - 1));
+					Cell previous = cells.get(index - 1);
+					lowerClosed = previous.event ? ownerAbove(previous)
+							: priority(cell) > priority(previous);
 				}
-				boolean upperClosed = index == size - 1 ? domain.isUpperClosed()
-						: priority(cell) >= priority(cells.get(index + 1));
+				boolean upperClosed;
+				if (index == size - 1) {
+					upperClosed = domain.isUpperClosed();
+				} else {
+					Cell next = cells.get(index + 1);
+					upperClosed = next.event ? !ownerAbove(next)
+							: priority(cell) >= priority(next);
+				}
 				if (lower < upper || lower == upper && lowerClosed && upperClosed) {
 					add(result, cell, lower, upper, lowerClosed, upperClosed);
 				}
 			}
 			return result;
+		}
+
+		/**
+		 * @return whether the parameter of an event belongs to the side above it: by the
+		 *         inclusion of the end above, or, without one, unless the end below includes it
+		 */
+		private static boolean ownerAbove(Cell event) {
+			return event.eventAbove != null ? event.eventAbove.isIncluded()
+					: !(event.eventBelow != null && event.eventBelow.isIncluded());
 		}
 
 		private void add(List<Coverage> result, Cell cell, double lower, double upper,
@@ -2105,7 +2495,9 @@ public final class HybridExistenceCertifier2D {
 			case VALID:
 				return LocusCoverageCause2D.PREDICATES_CERTIFIED_TRUE;
 			case INVALID:
-				return LocusCoverageCause2D.PREDICATE_CERTIFIED_FALSE;
+				// A predicate certified false, or a metric route certified undefined.
+				return cell.cause == null ? LocusCoverageCause2D.PREDICATE_CERTIFIED_FALSE
+						: cell.cause;
 			case BOUNDARY:
 				return LocusCoverageCause2D.CERTIFIED_BOUNDARY_ENCLOSURE;
 			case ISOLATED:

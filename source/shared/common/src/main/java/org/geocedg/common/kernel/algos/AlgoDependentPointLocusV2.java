@@ -43,6 +43,7 @@ import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
+import org.geocedg.common.kernel.locus.intersection.RouteSourceFacts2D;
 import org.geocedg.common.kernel.locus.intersection.SelectedRootContinuousDomainCertifier2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -73,6 +74,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private ReconstructionSliceFingerprint2D.Snapshot sliceSnapshot;
 	private ReconstructibleLocusEvaluator2D shadowEvaluator;
 	private HybridExistenceCertifier2D.Result shadowCertificate;
+	private ReconstructibleLocusEvaluator2D routeFactsEvaluator;
+	private double routeLengthBound = Double.NaN;
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -231,10 +234,38 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 						getLocus().getInstrumentation());
 			}
 			return HybridExistenceCertifier2D.certify(
-					new ConstructionBoxModel2D(program.get()), domain,
-					descriptor.isPeriodic(), key, sampler, policy,
+					new ConstructionBoxModel2D(program.get()), current.getMetricStructuresV3(),
+					domain, descriptor.isPeriodic(), key, sampler, policy,
 					getLocus().getInstrumentation());
 		}
+	}
+
+	/**
+	 * Rigorous facts of this locus as the source of an oriented length ({@code
+	 * locus-v2-metrics.md} section 26), from the class-v3 program of the current revision:
+	 * a lower bound of a chord from the origin, and the upper bound of the length of a
+	 * closed periodic certificate, computed once per revision. Neither reads a metric value.
+	 *
+	 * @param origin canonical address of the origin of the route
+	 * @return {@code {chord, lengthBound}}, each {@code NaN} when not certified
+	 */
+	public double[] getRouteSourceFacts(double origin) {
+		HybridExistenceCertifier2D.Result certificate = getHybridExistenceCertificate();
+		ReconstructibleLocusEvaluator2D current = shadowEvaluator;
+		Optional<CertifiedConstructionProgram2D> program = current == null
+				? Optional.empty() : current.captureCertifiedProgramV3();
+		if (certificate == null || !program.isPresent()
+				|| !certificate.getStructure().isClosedPeriodic()) {
+			return new double[] {Double.NaN, Double.NaN};
+		}
+		ConstructionBoxModel2D model = new ConstructionBoxModel2D(program.get());
+		LocusInterval2D domain = descriptor.getDeclaredDomain();
+		if (routeFactsEvaluator != current) {
+			routeLengthBound = RouteSourceFacts2D.lengthUpperBound(model, domain);
+			routeFactsEvaluator = current;
+		}
+		return new double[] {RouteSourceFacts2D.chordLowerBound(model, domain, origin),
+			routeLengthBound};
 	}
 
 	/**

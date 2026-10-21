@@ -428,6 +428,56 @@ Con esto se cumple el requisito de la instrucción de cierre de `CU1`: una longi
 no se convierte en evidencia rigurosa. Lo certificado es la topología del dependiente; sus
 coordenadas siguen siendo estimaciones bajo el contrato de estimación (D-CU1-2).
 
+**Precisiones de la implementación (T6, 2026-10-21).** Ninguna cambia un valor, una política, un
+orden ni una dirección de `LocusLength`:
+
+- **Certificado `metric-function-structure/v1`.** `LocusMetricFunctionStructure2D` publica piezas
+  del dominio canónico del conductor (`DEFINED`, `UNDEFINED`, `UNRESOLVED` y `BOUNDARY`, esta
+  última el encierro de la frontera certificada lejana de una fuente abierta) y los eventos
+  `ORIGIN_WRAP`. Lo calcula `AlgoLocusBetweenMetricV2.getFunctionStructure()` una vez por
+  certificado de la fuente, dirección del origen y política, solo cuando el destino es la ocurrencia
+  generadora del conductor de la fuente y el origen es un punto semántico de la fuente cuyas demás
+  entradas no descienden del conductor en el grafo (criterio conservador). En otro caso la
+  estructura queda `NOT_ESTABLISHED` con causa tipada.
+- **Rectificabilidad (`route-source-facts/v1`).** Una fuente periódica cerrada solo define la
+  longitud con una cota superior rigurosa `L <= Σ anchura · (|x′| + |y′|)` sobre una cubierta del
+  círculo de 64 cajas más la caja de costura, refinada hasta `2⁻²⁴` y 2 048 cajas con
+  envolventes de primer orden; sin cota la estructura no se establece. Una fuente con parámetros
+  singulares suele quedar así (limitación).
+- **`jumpPositive`.** Cuerda con redondeo exterior entre el punto trazado en `t_A` y en
+  `t_A + k·periodo/4` (`k = 1..3`): la mayor separación de encierros disjuntos es la cota inferior
+  del salto; el evento guarda `[cuerda, cota]` y la referencia a la longitud total, que solo se
+  resuelve por consulta explícita (`resolveJumpValue`), nunca en un certificado.
+- **Fuente abierta.** Solo con política estricta y `zero-length`: la ruta está definida desde el
+  origen, cerrada en él, hasta la cota interior del extremo lejano, cruzando la costura si el arco
+  la cruza; detrás del origen es inalcanzable (`UNDEFINED`). La finitud de la ruta en la raíz exacta
+  lejana no se certifica: su encierro es una banda del dependiente y su componente queda local
+  (limitación). Las demás políticas sobre fuentes abiertas quedan `NOT_ESTABLISHED`.
+- **Captura.** La entrada métrica de clase v3 recibe la estructura cuando su origen es fijo y su
+  destino es la ocurrencia generadora de una fuente conducida por el mismo punto conductor del
+  corte; el evaluador la calcula de forma perezosa, dentro del ámbito de certificación, a partir de
+  la longitud rica de su propio corte. Un valor métrico que no depende del conductor no es una
+  constante del programa: la captura lo rechaza con `metric-value-constant` (contrato §10.1,
+  `locus-v2-metrics.md` §26.3 y condición de T4–T7 de la autorización).
+- **Certificador.** Los extremos de las piezas cortan la partición exactamente. Un `ORIGIN_WRAP`,
+  o el paso de una pieza definida a una no definida en un binary64, es una celda de evento de anchura
+  cero, o la celda de costura si está en `−π`, con dos extremos distintos `(paso METRIC_INPUT,
+  ORIGIN_WRAP o ROUTE_DOMAIN, lado)`. La discontinuidad del punto trazado se certifica solo si sus
+  encierros con la longitud en `0` y en `[cuerda, cota]` son disjuntos, con las operaciones totales
+  continuas en la longitud; si no, el evento es una banda cuyos extremos conservan su inclusión.
+  Donde la estructura define la ruta, la entrada y los pasos totales que alcanza quedan definidos
+  sin valor; donde la excluye, el punto trazado no existe (`DEPENDENCY_CERTIFIED_NONEXISTENT`);
+  donde no decide, banda con la causa de la estructura. Si todas las celdas salvo el evento son
+  válidas, la componente es el arco abierto de longitud completa que empieza y acaba en el evento.
+- **Simetría.** Una entrada métrica nunca es fija en `fold-symmetry/v1`: su valor depende del
+  parámetro del conductor a través de la dirección de su destino, no de los valores que lee.
+- **Sondeo del modelo del autor (fijado en pruebas en T7).** `e_2`: `COMPLETE`, un arco abierto de
+  longitud completa en `t_N = 0`, cerrado en el origen y abierto en el otro extremo, 67 cajas,
+  0 lecturas métricas; `w_1`: salto certificado en `[3,22; 56,37]`, `jumpValue` 13,2365 `ESTIMATED`.
+- **Valores en vivo.** Hasta T9 y T11 la longitud en vivo de una fuente abierta sigue leyendo la
+  estructura de compatibilidad publicada (B07): la estructura en sombra puede declarar la ruta donde
+  el valor vivo aún falla.
+
 ### 4.6 Certificado algebraico exacto de predicados de primer nivel (P1)
 
 **Aplicabilidad.** Un predicado es de primer nivel cuando sus entradas son constantes capturadas

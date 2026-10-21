@@ -12,6 +12,7 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operand;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.OperandKind;
+import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operation;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
 
 /**
@@ -70,8 +71,12 @@ final class ConstructionSymmetry2D {
 		boolean[] fixed = new boolean[steps.size() + 1];
 		for (int index = 0; index < steps.size(); index++) {
 			Step step = steps.get(index);
-			fixed[index + 1] = readsFixedNodesOnly(step, fixed)
-					|| readsTheDriverSymmetrically(step, mirror, program);
+			// A metric input is a function of the driver parameter through the address of
+			// its target, not of the values it reads: a length from a fixed origin is never
+			// invariant under a reflection of the parameter.
+			fixed[index + 1] = step.getOperation() != Operation.METRIC_INPUT
+					&& (readsFixedNodesOnly(step, fixed)
+							|| readsTheDriverSymmetrically(step, mirror, program));
 		}
 		return fixed[steps.size()];
 	}

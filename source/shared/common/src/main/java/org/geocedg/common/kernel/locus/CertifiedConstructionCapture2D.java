@@ -6,13 +6,17 @@
 package org.geocedg.common.kernel.locus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operand;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operation;
@@ -82,12 +86,21 @@ final class CertifiedConstructionCapture2D {
 	static final String STEP_LIMIT = "step-limit-exceeded";
 	/** Refusal of a shape outside the requested class. */
 	static final String OUTSIDE_CLASS = "outside-class";
+	/**
+	 * Refusal of a driver-independent value that a metric query computed: class v3 admits
+	 * a metric only through its structural certificate, never through its value
+	 * ({@code locus-v2-certified-construction-model.md} section 10.1; {@code
+	 * locus-v2-metrics.md} section 26.3).
+	 */
+	static final String METRIC_VALUE_CONSTANT = "metric-value-constant";
 
 	private final GeoElement state;
 	private final boolean classV3;
 	private final Scope top = new Scope(null, null);
 	private final List<Step> steps = new ArrayList<>();
 	private final Map<Macro, AlgoMacro> computedInstances = new IdentityHashMap<>();
+	/** Rich length of each structural metric input whose structure applies to the driver. */
+	private final Map<Step, AlgoLocusBetweenMetricV2> metricSources = new IdentityHashMap<>();
 
 	private CertifiedConstructionCapture2D(GeoElement state, boolean classV3) {
 		this.state = state;
@@ -132,47 +145,51 @@ final class CertifiedConstructionCapture2D {
 			switch (descriptor.getFamily()) {
 			case SCALAR_STATE:
 				if (affine == null || descriptor.isPeriodic()) {
-					return new Outcome(Optional.empty(), OUTSIDE_CLASS);
+					return new Outcome(Optional.empty(), OUTSIDE_CLASS, Map.of());
 				}
 				return new Outcome(Optional.of(new CertifiedConstructionProgram2D(
 						Driver.SCALAR_AFFINE, new double[] {affine[0][0], affine[0][1],
-								affine[1][0], affine[1][1]}, domain, List.of())), null);
+								affine[1][0], affine[1][1]}, domain, List.of())), null,
+						Map.of());
 			case CIRCLE_POINT:
-				return captured(program(Driver.CIRCLE, circle(state, support, false), domain,
-						dependentPoint, state, classV3));
+				return program(Driver.CIRCLE, circle(state, support, false), domain,
+						dependentPoint, state, classV3);
 			case CIRCULAR_ARC_POINT:
-				return captured(program(Driver.CIRCULAR_ARC, circle(state, support, true),
-						domain, dependentPoint, state, classV3));
+				return program(Driver.CIRCULAR_ARC, circle(state, support, true), domain,
+						dependentPoint, state, classV3);
 			case SEGMENT_POINT:
-				return captured(program(Driver.SEGMENT, segment(state, support), domain,
-						dependentPoint, state, classV3));
+				return program(Driver.SEGMENT, segment(state, support), domain,
+						dependentPoint, state, classV3);
 			default:
-				return new Outcome(Optional.empty(), OUTSIDE_CLASS);
+				return new Outcome(Optional.empty(), OUTSIDE_CLASS, Map.of());
 			}
 		} catch (Refusal refusal) {
-			return new Outcome(Optional.empty(), refusal.reason);
+			return new Outcome(Optional.empty(), refusal.reason, Map.of());
 		} catch (RuntimeException exception) {
 			// Malformed programs and unexpected shapes also mean no program.
 			return new Outcome(Optional.empty(),
-					"unexpected-shape:" + exception.getClass().getSimpleName());
+					"unexpected-shape:" + exception.getClass().getSimpleName(), Map.of());
 		}
 	}
 
-	private static Outcome captured(Optional<CertifiedConstructionProgram2D> program) {
-		return new Outcome(program, program.isPresent() ? null : OUTSIDE_CLASS);
-	}
-
-	private static Optional<CertifiedConstructionProgram2D> program(Driver driver,
-			double[] constants, LocusInterval2D domain, GeoElement dependentPoint,
-			GeoElement state, boolean classV3) {
+	private static Outcome program(Driver driver, double[] constants,
+			LocusInterval2D domain, GeoElement dependentPoint, GeoElement state,
+			boolean classV3) {
 		CertifiedConstructionCapture2D walk =
 				new CertifiedConstructionCapture2D(state, classV3);
 		int output = walk.node(dependentPoint, walk.top);
 		if (output == 0 || output != walk.steps.size()) {
-			return Optional.empty();
+			return new Outcome(Optional.empty(), OUTSIDE_CLASS, Map.of());
 		}
-		return Optional.of(new CertifiedConstructionProgram2D(driver, constants,
-				domain, walk.steps));
+		Map<Integer, AlgoLocusBetweenMetricV2> metrics = new LinkedHashMap<>();
+		for (int index = 0; index < walk.steps.size(); index++) {
+			AlgoLocusBetweenMetricV2 rich = walk.metricSources.get(walk.steps.get(index));
+			if (rich != null) {
+				metrics.put(index + 1, rich);
+			}
+		}
+		return new Outcome(Optional.of(new CertifiedConstructionProgram2D(driver,
+				constants, domain, walk.steps)), null, metrics);
 	}
 
 	private static double[] circle(GeoElement state, GeoElement support,
@@ -604,6 +621,7 @@ final class CertifiedConstructionCapture2D {
 			if (dependsOnDriver(value, scope)) {
 				throw new Refusal();
 			}
+			requireNoMetricValue(value, scope);
 			scope.refreshConstants();
 			GeoVec2D literal = ((MyVecNode) value).getVector();
 			if (((MyVecNode) value).hasPolarCoords() || !Double.isFinite(literal.getX())
@@ -654,6 +672,7 @@ final class CertifiedConstructionCapture2D {
 	 * evaluator itself computes for it (contract sections 2 and 3, rule 2).
 	 */
 	private Operand constantVectorValue(ExpressionNode expression, Scope scope) {
+		requireNoMetricValue(expression, scope);
 		scope.refreshConstants();
 		ExpressionValue result = expression.evaluate(StringTemplate.defaultTemplate);
 		if (!(result instanceof VectorValue)) {
@@ -685,6 +704,7 @@ final class CertifiedConstructionCapture2D {
 			return Operand.scalar(number(geo, scope));
 		}
 		if (value instanceof ExpressionNode && !dependsOnDriver(value, scope)) {
+			requireNoMetricValue(value, scope);
 			scope.refreshConstants();
 			ExpressionValue result = ((ExpressionNode) value)
 					.evaluate(StringTemplate.defaultTemplate);
@@ -716,7 +736,9 @@ final class CertifiedConstructionCapture2D {
 	 * Class v3 (contract section 10.1): the length between two positions of a locus
 	 * contributes its structural certificate and never its value. Only the
 	 * driver-dependent endpoints are operands; the source locus does not depend on the
-	 * driver position.
+	 * driver position. The structure of the length applies to the driver of the program
+	 * when its origin is fixed and its target is the generator occurrence of a source
+	 * locus driven by the same driver point ({@code locus-v2-metrics.md} section 26.1).
 	 */
 	private Step metricInput(AlgoLocusMetricScalarAdapter adapter) {
 		AlgoElement rich = adapter.getRichInput().getParentAlgorithm();
@@ -725,12 +747,13 @@ final class CertifiedConstructionCapture2D {
 		}
 		List<Operand> endpoints = new ArrayList<>();
 		StringBuilder descriptor = new StringBuilder("LocusLength");
+		boolean[] dependent = new boolean[3];
 		for (int index = 1; index <= 2; index++) {
 			GeoElement endpoint = rich.getInput(index).toGeoElement();
-			boolean dependent = top.dependent(endpoint);
+			dependent[index] = top.dependent(endpoint);
 			descriptor.append(index == 1 ? "|start=" : "|target=")
-					.append(dependent ? "node" : "constant");
-			if (dependent) {
+					.append(dependent[index] ? "node" : "constant");
+			if (dependent[index]) {
 				endpoints.add(pointNode(endpoint, top));
 			}
 		}
@@ -741,7 +764,47 @@ final class CertifiedConstructionCapture2D {
 			}
 			descriptor.append("|policy=").append(((GeoText) token).getTextString());
 		}
-		return new Step(Operation.METRIC_INPUT, endpoints, descriptor.toString());
+		Step step = new Step(Operation.METRIC_INPUT, endpoints, descriptor.toString());
+		AlgoElement source = rich.getInput(0).toGeoElement().getParentAlgorithm();
+		if (!dependent[1] && dependent[2] && source instanceof AlgoDependentPointLocusV2
+				&& source.getInput(0).toGeoElement() == rich.getInput(2).toGeoElement()
+				&& source.getInput(1).toGeoElement() == state) {
+			metricSources.put(step, (AlgoLocusBetweenMetricV2) rich);
+		}
+		return step;
+	}
+
+	/**
+	 * Refuses a constant whose value a metric query computed, inside a macro through the
+	 * actual inputs of its instance.
+	 */
+	private void requireNoMetricValue(GeoElement geo, Scope scope) {
+		if (scope.metricDerived(geo)) {
+			throw new Refusal(METRIC_VALUE_CONSTANT);
+		}
+	}
+
+	/** Refuses an expression that reads a value a metric query computed. */
+	private void requireNoMetricValue(ExpressionValue expression, Scope scope) {
+		ExpressionValue value = unwrap(expression);
+		if (value instanceof GeoElement) {
+			requireNoMetricValue((GeoElement) value, scope);
+		} else if (value instanceof ExpressionNode) {
+			ExpressionNode node = (ExpressionNode) value;
+			requireNoMetricValue(node.getLeft(), scope);
+			if (node.getRight() != null) {
+				requireNoMetricValue(node.getRight(), scope);
+			}
+		} else if (value instanceof MyVecNode) {
+			requireNoMetricValue(((MyVecNode) value).getX(), scope);
+			requireNoMetricValue(((MyVecNode) value).getY(), scope);
+		}
+	}
+
+	private static boolean isMetricAlgorithm(AlgoElement algorithm) {
+		return algorithm instanceof AlgoLocusMetricV2
+				|| algorithm instanceof AlgoLocusBetweenMetricV2
+				|| algorithm instanceof AlgoLocusMetricScalarAdapter;
 	}
 
 	private static double literalNumber(ExpressionValue component) {
@@ -902,6 +965,9 @@ final class CertifiedConstructionCapture2D {
 		if (geo == null || scope.dependent(geo)) {
 			throw new Refusal();
 		}
+		if (classV3) {
+			requireNoMetricValue(geo, scope);
+		}
 		GeoElement value = scope.constantValue(geo);
 		if (value == state || !value.isDefined()) {
 			throw new Refusal();
@@ -947,6 +1013,7 @@ final class CertifiedConstructionCapture2D {
 		private final Map<GeoElement, Integer> nodes = new IdentityHashMap<>();
 		private final Map<AlgoElement, Integer> intersections = new IdentityHashMap<>();
 		private final Map<GeoElement, Boolean> dependence = new IdentityHashMap<>();
+		private final Map<GeoElement, Boolean> metric = new IdentityHashMap<>();
 		private final Map<AlgoMacro, Scope> children = new IdentityHashMap<>();
 
 		private Scope(AlgoMacro instance, Scope parent) {
@@ -1007,6 +1074,30 @@ final class CertifiedConstructionCapture2D {
 		}
 
 		/**
+		 * @return whether a metric query computed the value of the geo or of one of its
+		 *         ancestors, followed through locus outputs and macro instance inputs
+		 */
+		private boolean metricDerived(GeoElement geo) {
+			GeoElement actual = actualInput(geo);
+			if (actual != null) {
+				return parent.metricDerived(actual);
+			}
+			Boolean known = metric.get(geo);
+			if (known != null) {
+				return known;
+			}
+			metric.put(geo, false);
+			AlgoElement algorithm = geo.getParentAlgorithm();
+			boolean result = algorithm != null && isMetricAlgorithm(algorithm);
+			for (int index = 0; algorithm != null && !result
+					&& index < algorithm.getInputLength(); index++) {
+				result = metricDerived(algorithm.getInput(index).toGeoElement());
+			}
+			metric.put(geo, result);
+			return result;
+		}
+
+		/**
 		 * @return the geo holding a constant's value; inside a macro the shared macro
 		 *         construction is first set to this instance's own state
 		 */
@@ -1048,10 +1139,21 @@ final class CertifiedConstructionCapture2D {
 	static final class Outcome {
 		private final Optional<CertifiedConstructionProgram2D> program;
 		private final String refusal;
+		private final Map<Integer, AlgoLocusBetweenMetricV2> metricSources;
 
-		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal) {
+		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal,
+				Map<Integer, AlgoLocusBetweenMetricV2> metricSources) {
 			this.program = program;
 			this.refusal = refusal;
+			this.metricSources = Collections.unmodifiableMap(metricSources);
+		}
+
+		/**
+		 * @return the rich length, in the isolated slice, of each structural metric input
+		 *         node whose structural certificate applies to the driver of the program
+		 */
+		Map<Integer, AlgoLocusBetweenMetricV2> getMetricSources() {
+			return metricSources;
 		}
 
 		/** @return captured program, or empty when refused */

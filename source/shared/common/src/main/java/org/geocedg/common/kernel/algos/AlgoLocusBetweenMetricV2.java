@@ -10,15 +10,20 @@ import java.util.List;
 import org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D.Family;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricComponentBuildException;
 import org.geocedg.common.kernel.locus.metric.LocusMetricEngine2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricIndexMode;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPolicy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResults2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnostic2D;
@@ -26,6 +31,7 @@ import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
 import org.geocedg.common.kernel.locus.metric.PolicyV2LocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.PublicLocusMetricTraversalPolicy2D;
+import org.geocedg.common.kernel.locus.metric.TotalLocusMetricQuery;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.Construction;
@@ -58,6 +64,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private Family retainedTargetFamily;
 	private String retainedStartOccurrenceKey;
 	private String retainedTargetOccurrenceKey;
+	private LocusMetricFunctionStructure2D functionStructure;
+	private HybridExistenceCertifier2D.Result structureCertificate;
+	private String structureKey;
 
 	/** Creates and publishes one public between-position rich query. */
 	public AlgoLocusBetweenMetricV2(Construction construction, String label,
@@ -228,6 +237,99 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 
 	public GeoLocusMetricResult getResult() {
 		return result;
+	}
+
+	/**
+	 * Structural certificate of this length as a function of the driver of its source
+	 * ({@code locus-v2-metrics.md} section 26), bound to the current revision of the
+	 * source and never persisted. It exists when the target is the generator occurrence of
+	 * the driver of the source and the origin is a semantic point of the source whose
+	 * address does not depend on that driver. It reads the hybrid certificate of the source,
+	 * the address of the origin, the route policy and rigorous enclosures of the source
+	 * program; it never reads a metric value and changes no query.
+	 *
+	 * @return structure of the length; not established when it does not apply
+	 */
+	public LocusMetricFunctionStructure2D getFunctionStructure() {
+		AlgoElement parent = source.getParentAlgorithm();
+		if (!(parent instanceof AlgoDependentPointLocusV2)) {
+			return LocusMetricFunctionStructure2D.notEstablished(
+					LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
+					"source-without-hybrid-certificate");
+		}
+		AlgoDependentPointLocusV2 locus = (AlgoDependentPointLocusV2) parent;
+		if (locus.getInput(0).toGeoElement() != target) {
+			return LocusMetricFunctionStructure2D.notEstablished(
+					LocusCoverageCause2D.NOT_CERTIFIED, "target-not-the-generator-occurrence");
+		}
+		AlgoElement origin = start.getParentAlgorithm();
+		if (!(origin instanceof AlgoSemanticLocusPoint2D)
+				|| ((AlgoSemanticLocusPoint2D) origin).getSource() != source
+				|| dependsOnDriver(origin, locus.getInput(1).toGeoElement())) {
+			return LocusMetricFunctionStructure2D.notEstablished(
+					LocusCoverageCause2D.NOT_CERTIFIED, "origin-not-a-fixed-semantic-position");
+		}
+		PublicLocusMetricTraversalPolicy2D traversal;
+		try {
+			traversal = currentTraversalPolicy();
+		} catch (IllegalArgumentException exception) {
+			return LocusMetricFunctionStructure2D.notEstablished(
+					LocusCoverageCause2D.NOT_CERTIFIED, "traversal-policy-not-defined");
+		}
+		LocusSemanticAddress2D address =
+				((AlgoSemanticLocusPoint2D) origin).getCurrentSemanticAddress();
+		HybridExistenceCertifier2D.Result certificate = locus.getHybridExistenceCertificate();
+		if (address == null || certificate == null) {
+			return LocusMetricFunctionStructure2D.notEstablished(
+					LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
+					"source-certificate-or-origin-not-current");
+		}
+		double parameter = address.getCanonicalParameter();
+		String key = traversal.getDirection() + "|" + traversal.getBoundaryPolicy() + "|"
+				+ traversal.getSamePositionPolicy() + "|"
+				+ Double.doubleToLongBits(parameter == 0 ? 0 : parameter);
+		if (structureCertificate != certificate || !key.equals(structureKey)) {
+			double[] facts = locus.getRouteSourceFacts(parameter);
+			functionStructure = LocusMetricFunctionStructure2D.derive(
+					certificate.getStructure(), parameter, traversal.getDirection(),
+					traversal.getBoundaryPolicy(), traversal.getSamePositionPolicy(), facts[0],
+					facts[1], "LocusLength(" + source.getLocusIdentity() + ")@revision-"
+							+ source.getSemanticRevision());
+			structureCertificate = certificate;
+			structureKey = key;
+		}
+		return functionStructure;
+	}
+
+	/**
+	 * Resolves the jump value reference of an origin wrap: the total length of the source,
+	 * with its own guarantee class. It is an explicit metric query, never an input of any
+	 * certificate.
+	 *
+	 * @return total length of the source, or {@code null} without a current definition
+	 */
+	public LocusMetricResult2D resolveJumpValue() {
+		LocusDefinition2D definition = source.getSemanticDefinition();
+		if (definition == null || !source.isDefined()) {
+			return null;
+		}
+		ensureOwnerLease();
+		long revision = Math.max(1, source.getSemanticRevision());
+		return engine.compute(new TotalLocusMetricQuery(source.getLocusIdentity(), revision,
+				policy), definition, capabilities, ownerLease.getOwner(),
+				LocusMetricIndexMode.LAZY_COMPONENT_REVISION, source.getMetricInstrumentation(),
+				currentConsumerIdentity() + "/origin-wrap-jump-value");
+	}
+
+	/** @return whether an input of the origin other than the source follows the driver */
+	private boolean dependsOnDriver(AlgoElement origin, GeoElement driver) {
+		for (int index = 0; index < origin.getInputLength(); index++) {
+			GeoElement input = origin.getInput(index).toGeoElement();
+			if (input != source && (input == driver || input.isChildOf(driver))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

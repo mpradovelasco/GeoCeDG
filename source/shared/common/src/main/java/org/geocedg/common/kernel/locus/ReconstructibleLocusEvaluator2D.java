@@ -7,6 +7,7 @@ package org.geocedg.common.kernel.locus;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,12 +17,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.ConstructionFidelity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationMethod;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.kernel.Construction;
@@ -83,6 +86,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private ReconstructionFidelity2D.Report fidelity;
 	private final Optional<CertifiedConstructionProgram2D> programV3;
 	private String programV3Refusal;
+	private Map<Integer, AlgoLocusBetweenMetricV2> programV3MetricSources = Map.of();
+	private Map<Integer, LocusMetricFunctionStructure2D> metricStructuresV3;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -333,6 +338,27 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		return programV3Refusal;
 	}
 
+	/**
+	 * Structural certificates of the metric inputs of the class-v3 program of this revision
+	 * ({@code locus-v2-metrics.md} section 26), by program node, computed once from the rich
+	 * lengths of the isolated slice. Only an input whose origin is fixed and whose target is
+	 * the generator occurrence of a source driven by the same driver point has one; the
+	 * computation never reads a metric value.
+	 *
+	 * @return structure of each eligible metric input node
+	 */
+	public synchronized Map<Integer, LocusMetricFunctionStructure2D> getMetricStructuresV3() {
+		if (metricStructuresV3 == null) {
+			Map<Integer, LocusMetricFunctionStructure2D> structures = new LinkedHashMap<>();
+			for (Map.Entry<Integer, AlgoLocusBetweenMetricV2> entry
+					: programV3MetricSources.entrySet()) {
+				structures.put(entry.getKey(), entry.getValue().getFunctionStructure());
+			}
+			metricStructuresV3 = Collections.unmodifiableMap(structures);
+		}
+		return metricStructuresV3;
+	}
+
 	/** Captures the class-v3 program of the freshly validated slice; never throws. */
 	private Optional<CertifiedConstructionProgram2D> captureV3() {
 		if (!fidelity.isFaithful()) {
@@ -348,6 +374,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 						isolatedDependentPoint.toGeoElement(), isolatedState, isolatedSupport,
 						certifiedAffineCoefficients, true);
 		programV3Refusal = outcome.getRefusal();
+		programV3MetricSources = outcome.getMetricSources();
 		return outcome.getProgram();
 	}
 

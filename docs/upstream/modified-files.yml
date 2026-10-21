@@ -6842,6 +6842,24 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T5: certified stationary points on synthetic constructions (V-FOLD-1 to V-FOLD-4): symmetry verified on the captured constants, isolation and non-degeneracy by second-order enclosures, and degenerate stationary points never certified as folds.",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricFunctionStructure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T6: structural certificate of the function of the driver that a between-position length defines (metric-function-structure/v1): defined, undefined, unresolved and boundary pieces and the origin wrap event with rigorous bounds of its jump, derived from the certified structure of the source and never from a computed length.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RouteSourceFacts2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T6: rigorous facts of the source of an oriented length (route-source-facts/v1): an outward-rounded chord lower bound and an upper bound of the length of a closed periodic source from enclosures of its speed, without reading any metric value.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2MetricStructureTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T6: structural certificate of a length and certification of a locus that depends on it on synthetic constructions (V-CMP-1, V-UND-1, V-E2-4, V-E2-6 and V-E2-8 structure parts, GC-6), metric constants refused and metric inputs never symmetric.",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }
