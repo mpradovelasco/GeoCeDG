@@ -577,6 +577,32 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 | `o_1` | todos | predicados uniformes | `COMPLETE`, una componente periódica cerrada | clase v3 |
 | `e_2` | todos | evento estructural de la longitud orientada | `COMPLETE`, una componente abierta `[t_N, t_N + 2π)` | certificado estructural de la función métrica + operaciones afines totales (macros) |
 
+**Precisiones de la implementación (T7, 2026-10-21).** Certificados en sombra del modelo,
+verificados en `PreG9BCu2AuthorModelCertificationTest` y comparados con la referencia
+`t_c ± β` evaluada con 50 cifras a partir de las constantes capturadas, nunca con la validez
+puntual:
+
+- A los parámetros del autor, `o`, `v`, `w`, `a_1`, `e_1` y `o_1` son `COMPLETE` con una
+  componente periódica cerrada (65 a 67 cajas); `e_1` tiene pliegues certificados en `0` y en la
+  costura, y ningún otro locus tiene puntos estacionarios. `e_2` es `COMPLETE`, un arco abierto de
+  longitud completa en `t_N = 0`, cerrado en el origen y abierto en el otro extremo, con extremos
+  `ORIGIN_WRAP` distintos, 67 cajas y 0 lecturas métricas; el salto de `w_1` está certificado en
+  `[3,22; 56,37]` y su valor, 13,2365, es una referencia de clase `ESTIMATED`.
+- En las nueve mordeduras de V-TR-1 cada locus de la primera familia es un arco que cruza la
+  costura, con dos transiciones exactas cerradas cuyos corchetes, de anchura menor que `δ`,
+  contienen `t_c ± β`; la validez puntual del evaluador sigue más allá de la raíz exacta, donde
+  el certificado declara no existencia (F-CU2-1).
+- Los trece binary64 centrados en el valor crítico se clasifican exactamente (penetración hasta
+  `0x1.d416bb67a38bbp1`, mordedura desde `0x1.d416bb67a38bcp1`), sin raíz doble ni pliegue, con los
+  presupuestos exactos respetados, y una segunda pasada reproduce cada certificado bit a bit. Con
+  `rbCylinder` = 2,0 o `α_cyl` = 35° el valor crítico se desplaza según la fórmula y la
+  clasificación lo sigue; deshacer y rehacer restauran los certificados de una construcción recién
+  abierta.
+- Con un presupuesto de prueba de la longitud que hace fallar la estimación de `w_1` en el corte de
+  `e_2`, el punto deja de evaluarse (hoy `DEPENDENCY_UNDEFINED`; su clasificación como
+  `EVALUATION_FAILED` es el paso T9) y la estructura recalculada es idéntica, sin lecturas
+  métricas.
+
 ## 7. Hallazgos
 
 | Id | Hallazgo | Consecuencia para `CU2` |
@@ -595,6 +621,7 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 | F-CU2-12 | Corregido el 2026-10-21 (§3.9): el cambio de un ulp sin revisión se debió a H01 y F-CU2-3, no a la serialización, que es exacta para los valores numéricos. Precisión de T1: la huella no incluye el estado de selección (el etiquetado de las salidas entra a través del XML del algoritmo), un literal angular sin texto original se escribe en grados y su copia puede diferir en un ulp, y la fidelidad del corte no se valida | D-CU2-20-R: huella exacta y versionada con estado de selección y de etiquetado, y validación de fidelidad del corte con fallo explícito |
 | F-CU2-13 | GeoGebra anula una segunda salida sin etiqueta que coincide con la primera dentro de 10⁻⁸; cerca de una raíz coincidente la definición efectiva es dispersa y difiere entre el vivo y el corte (§3.9) | el certificado no declara continuidad a través de esa banda: `UNRESOLVED` acotada y `NOT_ESTABLISHED` global para los loci afectados (D-CU2-18) |
 | F-CU2-14 | En el modelo, `J/K = Intersect(p, i)` tiene la permutación `[1, 0]` en el vivo y en el corte: la salida `J` es la raíz bruta 1 (§3.9) | el estado de selección no es la identidad en general; la captura lo lee (P4) |
+| F-CU2-15 | Detectado en T7 (2026-10-21): con `rbCone` = 8 y 10, el rayo `n_1` desde `I` y la vertical `b_1` por `J_1` se cortan en el origen del rayo en dos conductores de `o_1`; el certificado deja allí bandas `UNRESOLVED` de menos de 10⁻⁹ (pertenencia al rayo no decidida) y `o_1` queda `NOT_ESTABLISHED`. El certificado en sombra del commit de T6 (`ea24c77b`) declaraba entonces inalcanzable, y `e_2` inexistente, todo lo que quedaba pasado el borde de la banda | una ruta estricta solo se detiene en una frontera certificada; pasado el borde de una banda la alcanzabilidad queda `UNRESOLVED` y `e_2` no afirma ninguna no existencia (V-PER-3; corregido en T7, sin efecto publicado porque el certificado sigue en sombra) |
 
 ## 8. Reproducibilidad del sondeo
 

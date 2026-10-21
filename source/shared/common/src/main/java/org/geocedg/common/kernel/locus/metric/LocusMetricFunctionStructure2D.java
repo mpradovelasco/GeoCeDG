@@ -320,11 +320,47 @@ public final class LocusMetricFunctionStructure2D {
 				: component.getLowerBoundary();
 		List<Piece> defined = definedPieces(domain, component, origin, forward);
 		List<Piece> pieces = new ArrayList<>(defined);
+		Reach reach = new Reach(far, origin, forward,
+				source.getTopology() == LocusExistenceStructure2D.DomainTopology.PERIODIC);
 		for (Coverage coverage : source.getCoverage()) {
-			addOutside(pieces, coverage, defined, far, forward);
+			addOutside(pieces, coverage, defined, reach);
 		}
 		pieces.sort((a, b) -> Double.compare(a.interval.getLower(), b.interval.getLower()));
 		return certified(pieces, List.of(), evidence);
+	}
+
+	/**
+	 * Where a strict route from the origin cannot reach. It stops at the far end of the
+	 * origin component only when that end is certified: a transition, a domain end or a
+	 * structural event. Past the edge of an unresolved band the source may continue, so
+	 * reachability there is unresolved; on a bounded domain the part behind the origin is
+	 * unreachable in any case, because the route never wraps.
+	 */
+	private static final class Reach {
+		private final LocusBoundary2D far;
+		private final double origin;
+		private final boolean forward;
+		private final boolean stops;
+		private final boolean periodic;
+
+		Reach(LocusBoundary2D far, double origin, boolean forward, boolean periodic) {
+			this.far = far;
+			this.origin = origin;
+			this.forward = forward;
+			this.periodic = periodic;
+			LocusBoundary2D.Kind kind = far.getKind();
+			stops = kind == LocusBoundary2D.Kind.CERTIFIED_TRANSITION
+					|| kind == LocusBoundary2D.Kind.DOMAIN_END
+					|| kind == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
+		}
+
+		/** @return whether the route certainly cannot reach the part */
+		boolean unreachable(double lower, double upper) {
+			if (stops) {
+				return true;
+			}
+			return !periodic && (forward ? upper <= origin : lower >= origin);
+		}
 	}
 
 	/**
@@ -365,10 +401,13 @@ public final class LocusMetricFunctionStructure2D {
 	/**
 	 * Adds the parts of one coverage item of the source outside the defined part: its
 	 * unresolved coverage stays unresolved, the enclosure of the far boundary of the origin
-	 * component carries that boundary, and everything else is unreachable by a strict route.
+	 * component carries that boundary, and the rest is unreachable by a strict route where
+	 * the route certainly stops, unresolved elsewhere.
 	 */
 	private static void addOutside(List<Piece> pieces, Coverage coverage, List<Piece> defined,
-			LocusBoundary2D far, boolean forward) {
+			Reach reach) {
+		LocusBoundary2D far = reach.far;
+		boolean forward = reach.forward;
 		LocusInterval2D interval = coverage.getInterval();
 		List<double[]> remaining = new ArrayList<>();
 		remaining.add(new double[] {interval.getLower(), interval.getUpper(),
@@ -380,25 +419,27 @@ public final class LocusMetricFunctionStructure2D {
 			}
 			remaining = next;
 		}
-		State state;
-		LocusBoundary2D boundary = null;
-		if (coverage.getState() == CoverageState.UNRESOLVED) {
-			state = State.UNRESOLVED;
-		} else if (coverage.getState() == CoverageState.CERTIFIED_BOUNDARY && far.hasEnclosure()
+		boolean farEnclosure = coverage.getState() == CoverageState.CERTIFIED_BOUNDARY
+				&& reach.stops && far.hasEnclosure()
 				&& interval.getLower() <= far.getEnclosureUpper()
-				&& far.getEnclosureLower() <= interval.getUpper()) {
-			state = State.BOUNDARY;
-			boundary = far;
-		} else {
-			state = State.UNDEFINED;
-		}
+				&& far.getEnclosureLower() <= interval.getUpper();
 		for (double[] part : remaining) {
 			boolean lowerClosed = part[2] == 1;
 			boolean upperClosed = part[3] == 1;
-			if (part[0] < part[1] || part[0] == part[1] && lowerClosed && upperClosed) {
-				pieces.add(new Piece(new LocusInterval2D(part[0], part[1], lowerClosed,
-						upperClosed), state, boundary, forward));
+			if (!(part[0] < part[1] || part[0] == part[1] && lowerClosed && upperClosed)) {
+				continue;
 			}
+			State state;
+			if (coverage.getState() == CoverageState.UNRESOLVED) {
+				state = State.UNRESOLVED;
+			} else if (farEnclosure) {
+				state = State.BOUNDARY;
+			} else {
+				state = reach.unreachable(part[0], part[1]) ? State.UNDEFINED
+						: State.UNRESOLVED;
+			}
+			pieces.add(new Piece(new LocusInterval2D(part[0], part[1], lowerClosed,
+					upperClosed), state, state == State.BOUNDARY ? far : null, forward));
 		}
 	}
 

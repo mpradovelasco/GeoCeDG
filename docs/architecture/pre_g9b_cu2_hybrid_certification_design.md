@@ -450,9 +450,14 @@ orden ni una dirección de `LocusLength`:
   resuelve por consulta explícita (`resolveJumpValue`), nunca en un certificado.
 - **Fuente abierta.** Solo con política estricta y `zero-length`: la ruta está definida desde el
   origen, cerrada en él, hasta la cota interior del extremo lejano, cruzando la costura si el arco
-  la cruza; detrás del origen es inalcanzable (`UNDEFINED`). La finitud de la ruta en la raíz exacta
-  lejana no se certifica: su encierro es una banda del dependiente y su componente queda local
-  (limitación). Las demás políticas sobre fuentes abiertas quedan `NOT_ESTABLISHED`.
+  la cruza. Se detiene allí solo si ese extremo es una frontera certificada (transición, extremo
+  del dominio o evento estructural): entonces el resto es inalcanzable (`UNDEFINED`). Pasado el
+  borde de una banda `UNRESOLVED` la fuente puede continuar, y la alcanzabilidad de todo lo demás
+  queda `UNRESOLVED`; en un dominio acotado, la parte detrás del origen es inalcanzable en
+  cualquier caso, porque la ruta no da la vuelta (corrección de T7, hallazgo F-CU2-15). La
+  finitud de la ruta en la raíz exacta lejana no se certifica: su encierro es una banda del
+  dependiente y su componente queda local (limitación). Las demás políticas sobre fuentes
+  abiertas quedan `NOT_ESTABLISHED`.
 - **Captura.** La entrada métrica de clase v3 recibe la estructura cuando su origen es fijo y su
   destino es la ocurrencia generadora de una fuente conducida por el mismo punto conductor del
   corte; el evaluador la calcula de forma perezosa, dentro del ámbito de certificación, a partir de

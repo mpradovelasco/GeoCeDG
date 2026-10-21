@@ -284,8 +284,9 @@ class PreG9BCu2MetricStructureTest extends BaseUnitTest {
 	/**
 	 * V-E2-6 (source only locally certified): the unlabelled second output of the exact
 	 * critical configuration is certified only around its band. There is no wrap; the route
-	 * from the origin is defined up to the edge of the band, the band stays unresolved, and
-	 * the part of the arc behind the origin is unreachable.
+	 * from the origin is defined up to the edge of the band. Past that edge the source may
+	 * continue, so the band and everything the route would reach through it, the part of the
+	 * arc behind the origin included, stay unresolved: nothing is certified unreachable.
 	 */
 	@Test
 	void aLocallyCertifiedSourceKeepsItsBandUnresolved() {
@@ -315,10 +316,11 @@ class PreG9BCu2MetricStructureTest extends BaseUnitTest {
 		double critical = Math.atan2(4, 3);
 		assertEquals(LocusMetricFunctionStructure2D.State.UNRESOLVED,
 				structure.pieceContaining(critical).getState());
-		assertEquals(LocusMetricFunctionStructure2D.State.UNDEFINED,
+		assertEquals(LocusMetricFunctionStructure2D.State.UNRESOLVED,
 				structure.pieceContaining(1.5).getState());
 		for (Piece piece : pieces.subList(1, pieces.size() - 1)) {
-			assertNotEquals(LocusMetricFunctionStructure2D.State.DEFINED, piece.getState());
+			assertEquals(LocusMetricFunctionStructure2D.State.UNRESOLVED, piece.getState(),
+					structure.toString());
 		}
 	}
 

@@ -6860,6 +6860,12 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T6: structural certificate of a length and certification of a locus that depends on it on synthetic constructions (V-CMP-1, V-UND-1, V-E2-4, V-E2-6 and V-E2-8 structure parts, GC-6), metric constants refused and metric inputs never symmetric.",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelCertificationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T7: shadow certificates of the author model against the 50-digit analytic ends t_c +- beta (V-PER-1, V-PER-3, V-FOLD-1 to V-FOLD-3, V-ARC-1, V-ARC-2, V-TR-1, V-TR-4, V-CRIT-5 and V-CRIT-7 to V-CRIT-10 model parts, V-COMPL-1, V-E2-1, V-E2-4 and V-E2-5 certificate parts, GC-4, GC-6, GC-8).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }
