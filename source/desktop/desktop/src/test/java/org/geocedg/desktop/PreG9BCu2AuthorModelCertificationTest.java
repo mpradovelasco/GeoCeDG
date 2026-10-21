@@ -29,6 +29,7 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -103,6 +104,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 				values.put(label, shape(result));
 				values.put(label + ".budgets", budgets(result));
 				values.put(label + ".stationary", stationary(result));
+				values.put(label + ".folds", folds(result));
 			}
 			GeoLocusV2 e2 = PreG9BCu0Corpus.locus(app, "e_2");
 			long reads = metricReads(e2);
@@ -148,8 +150,15 @@ class PreG9BCu2AuthorModelCertificationTest {
 		}
 		assertEquals("FOLD:HORIZONTAL:-0x1.921fb54442d19p1,FOLD:HORIZONTAL:0x0.0p0",
 				row.get("e_1.stationary"), row.toString());
+		// PRE-G9B-CU2 step T10: the structure publishes both folds of e_1 with their isolation
+		// bands, the only turn exemptions of its drawing besides singular vertices (V-B06-2).
+		assertEquals("-0x1.921fb54442d19p1:true,0x0.0p0:true", row.get("e_1.folds"),
+				row.toString());
 		for (String label : List.of("o", "v", "w", "a_1", "o_1", "e_2")) {
 			assertEquals("", row.get(label + ".stationary"), label + " " + row);
+		}
+		for (String label : List.of("o", "v", "w", "a_1", "o_1")) {
+			assertEquals("", row.get(label + ".folds"), label + " " + row);
 		}
 		assertEquals(0L, row.get("e_2.reads"), "GC-6 " + row);
 		assertEquals("COMPLETE/false/0/0", row.get("e_2"), row.toString());
@@ -729,6 +738,20 @@ class PreG9BCu2AuthorModelCertificationTest {
 			text.append(text.length() == 0 ? "" : ",").append(point.getKind()).append(':')
 					.append(point.getSymmetry().substring(point.getSymmetry().indexOf(':') + 1))
 					.append(':').append(Double.toHexString(point.getParameterLower()));
+		}
+		return text.toString();
+	}
+
+	/** @return the published folds, each with whether its band is the isolation box of a fold */
+	private static String folds(Result result) {
+		StringBuilder text = new StringBuilder();
+		for (LocusCertifiedFold2D fold : result.getStructure().getCertifiedFolds()) {
+			boolean band = result.getStationaryPoints().stream().anyMatch(point ->
+					point.getKind() == CertifiedStationaryPoint.StationaryKind.FOLD
+							&& point.getIsolationLower() == fold.getBandLower()
+							&& point.getIsolationUpper() == fold.getBandUpper());
+			text.append(text.length() == 0 ? "" : ",")
+					.append(Double.toHexString(fold.getParameterLower())).append(':').append(band);
 		}
 		return text.toString();
 	}

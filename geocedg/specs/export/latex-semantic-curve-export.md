@@ -68,6 +68,10 @@ An export approximation follows the render topology of
   `INCOMPLETE_WITH_CERTIFIED_COMPONENTS`;
 - exploratory evidence is never exported.
 
+Implementation precision (`CU2` step T10, 2026-10-21): the comment of an exported component
+appends `declared` and each of its representation declarations; a point component is reported
+with the fidelity `DECLARED`, never as a failure, and makes its source incomplete.
+
 ## 6. Out of scope
 
 Physical scale and units remain governed by the unit-system specification and ADR 0032. This

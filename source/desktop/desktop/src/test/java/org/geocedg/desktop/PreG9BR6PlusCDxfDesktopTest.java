@@ -134,8 +134,9 @@ class PreG9BR6PlusCDxfDesktopTest {
 				encoding);
 		String manifest = new String(output.getManifest().getBytes(),
 				StandardCharsets.UTF_8);
+		// PRE-G9B-CU2 conformity (A2.6): schema version 3 adds the representation declarations.
 		assertTrue(manifest.startsWith("{\"schema\":\"org.geocedg.dxf.fidelity-manifest\","
-				+ "\"schema_version\":2,"));
+				+ "\"schema_version\":3,"));
 		assertTrue(manifest.contains("\"source_unit\":\"mm\",\"target_unit\":\"mm\","
 				+ "\"insunits\":4,"), manifest);
 		assertTrue(manifest.contains("\"units\":{\"metadata_schema\":"

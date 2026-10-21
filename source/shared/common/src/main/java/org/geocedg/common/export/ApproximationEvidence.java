@@ -33,6 +33,7 @@ public final class ApproximationEvidence {
 	private final long segments;
 	private final long vertices;
 	private final int maximumDepth;
+	private final Double closureResidual;
 
 	/**
 	 * Creates a complete deterministic approximation work record.
@@ -50,6 +51,24 @@ public final class ApproximationEvidence {
 	public ApproximationEvidence(Method method, double requestedTolerance,
 			Double achievedError, Guarantee guarantee, long evaluations,
 			long subdivisions, long segments, long vertices, int maximumDepth) {
+		this(method, requestedTolerance, achievedError, guarantee, evaluations,
+				subdivisions, segments, vertices, maximumDepth, null);
+	}
+
+	/**
+	 * Creates a work record that also states the closure residual of a closed path.
+	 *
+	 * @param closureResidual distance at the closing point of a closed path, measured
+	 *        against its closure certificate (PRE-G9B-CU2, A2.6); null for an open path
+	 */
+	public ApproximationEvidence(Method method, double requestedTolerance,
+			Double achievedError, Guarantee guarantee, long evaluations,
+			long subdivisions, long segments, long vertices, int maximumDepth,
+			Double closureResidual) {
+		if (closureResidual != null) {
+			assertNonNegative(closureResidual, "closure residual");
+		}
+		this.closureResidual = closureResidual;
 		this.method = require(method, "method");
 		assertPositive(requestedTolerance, "requested tolerance");
 		if (achievedError != null) {
@@ -113,6 +132,14 @@ public final class ApproximationEvidence {
 
 	public int getMaximumDepth() {
 		return maximumDepth;
+	}
+
+	/**
+	 * @return distance at the closing point of a closed path, measured against its closure
+	 *         certificate, or null for an open path
+	 */
+	public Double getClosureResidual() {
+		return closureResidual;
 	}
 
 	private static void assertPositive(double value, String name) {

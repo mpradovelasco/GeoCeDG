@@ -452,6 +452,10 @@ public final class LatexSemanticExportSupport {
 					.append(evidence.getAchievedError()).append(", coverage ")
 					.append(outcome.getSemanticCoverage()).append(", vertices ")
 					.append(evidence.getVertices());
+			// PRE-G9B-CU2 (A2.6): what the path does not represent is declared.
+			for (String declaration : outcome.getDeclarations()) {
+				line.append("; declared ").append(declaration);
+			}
 		} else {
 			line.append(" [").append(outcome.getReason()).append("] ")
 					.append(outcome.getMessage());

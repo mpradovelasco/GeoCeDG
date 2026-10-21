@@ -44,8 +44,12 @@ public final class DxfFidelityManifestWriter {
 	 * PRE-G9B-R6-plus-C (DQ-C11): version 2 adds the unit metadata, the hidden
 	 * layers, the export area and the outside-area records. A version-1 sidecar
 	 * keeps its own meaning (unitless coordinates) and is never reinterpreted.
+	 * PRE-G9B-CU2 (A2.6): version 3 adds the representation declarations of each
+	 * outcome, the declared components (the point components of a Locus V2, never
+	 * exported as paths) with their count, and the closure residual of a closed path
+	 * measured against its closure certificate. A version-2 sidecar keeps its meaning.
 	 */
-	private static final int SCHEMA_VERSION = 2;
+	private static final int SCHEMA_VERSION = 3;
 	private static final String UNIT_METADATA_SCHEMA =
 			"org.geocedg.dxf.unit-metadata";
 	private static final int UNIT_METADATA_VERSION = 1;
@@ -311,6 +315,7 @@ public final class DxfFidelityManifestWriter {
 		value.put("unsupported_components", preflight.getUnsupportedCount());
 		value.put("invalid_components", preflight.getInvalidCount());
 		value.put("omitted_components", preflight.getOmittedCount());
+		value.put("declared_components", preflight.getDeclaredCount());
 		value.put("hidden_sources", preflight.getHiddenCount());
 		value.put("outside_geometric_population",
 				preflight.getExcludedPopulationCount());
@@ -344,6 +349,7 @@ public final class DxfFidelityManifestWriter {
 					lower(outcome.getSemanticCoverage()));
 			value.put("reason", lower(outcome.getReason()));
 			value.put("message", outcome.getMessage());
+			value.put("declarations", new ArrayList<Object>(outcome.getDeclarations()));
 			value.put("emitted", outcome.isEmitted());
 			value.put("neutral_entity_id", outcome.getNeutralEntityId());
 			EntityEncoding actual = outcome.isEmitted()
@@ -392,6 +398,7 @@ public final class DxfFidelityManifestWriter {
 		value.put("segments", evidence.getSegments());
 		value.put("vertices", evidence.getVertices());
 		value.put("maximum_depth", evidence.getMaximumDepth());
+		value.put("closure_residual", evidence.getClosureResidual());
 		return value;
 	}
 
@@ -432,6 +439,11 @@ public final class DxfFidelityManifestWriter {
 						outcome.getComponentAddress().getComponentKey(),
 						"This component is certified locally; the DXF does not "
 								+ "claim complete locus coverage."));
+			}
+			for (String declaration : outcome.getDeclarations()) {
+				values.add(warning("representation_declaration", outcome.getSourceId(),
+						outcome.getComponentAddress().getBranchKey(),
+						outcome.getComponentAddress().getComponentKey(), declaration));
 			}
 			if (!outcome.isVisible()) {
 				values.add(warning("hidden_source_included", outcome.getSourceId(),

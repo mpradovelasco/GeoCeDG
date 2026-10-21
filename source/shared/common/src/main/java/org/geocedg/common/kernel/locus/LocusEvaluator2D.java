@@ -11,6 +11,8 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 public interface LocusEvaluator2D {
 	/** Diagnostic prefix of an excluded end whose one-sided limit is not evaluated. */
 	String ONE_SIDED_LIMIT_NOT_AVAILABLE = "ONE_SIDED_LIMIT_NOT_AVAILABLE";
+	/** Diagnostic prefix of a certified root whose image the limit form does not enclose. */
+	String LIMIT_FORM_NOT_AVAILABLE = "LIMIT_FORM_NOT_AVAILABLE";
 
 	/**
 	 * Evaluates one already validated, provider-canonical parameter.
@@ -40,5 +42,24 @@ public interface LocusEvaluator2D {
 		return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
 				branch.getQuality(), ONE_SIDED_LIMIT_NOT_AVAILABLE
 						+ ": the evaluator has no one-sided limit capability");
+	}
+
+	/**
+	 * Encloses the image of a certified root that belongs to a component of the branch, a
+	 * transition end or a singular parameter, with the limit form of the certificate
+	 * (PRE-G9B-CU2, certification design section 3.4). It serves representation only, where
+	 * the evaluator does not define the point at the root; an evaluator without the
+	 * capability fails explicitly.
+	 *
+	 * @param parameterLower lower bound of the certified enclosure of the root parameter
+	 * @param parameterUpper upper bound of the certified enclosure of the root parameter
+	 * @param source structural source of the root
+	 * @return enclosed image, or an unavailable one with its typed reason
+	 */
+	default LocusBoundaryImage2D encloseBoundaryImage(LocusDefinition2D definition,
+			LocusBranch2D branch, double parameterLower, double parameterUpper,
+			LocusBoundarySource2D source) {
+		return LocusBoundaryImage2D.notAvailable(LIMIT_FORM_NOT_AVAILABLE
+				+ ": the evaluator has no limit form");
 	}
 }

@@ -128,7 +128,10 @@ class LocusV2HardeningBenchmarkTest extends BaseUnitTest {
 		RenderMeasurement adaptiveMeasurement = measureRender(line, adaptive);
 
 		assertEquals(257, uniformMeasurement.vertices);
-		assertEquals(5, adaptiveMeasurement.vertices);
+		// PRE-G9B-CU2 conformity (B06, D-CU2-10): drawing policy v2 starts every component
+		// from 2^d_min spans, and a line needs no further vertex.
+		assertEquals((1 << LocusRenderPolicy2D.DEFAULT_MINIMUM_DEPTH) + 1,
+				adaptiveMeasurement.vertices);
 		assertEquals(0, uniformMeasurement.warmEvaluations);
 		assertEquals(0, adaptiveMeasurement.warmEvaluations);
 		assertTrue(adaptiveMeasurement.coldEvaluations

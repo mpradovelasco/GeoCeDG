@@ -20,11 +20,18 @@ import java.util.concurrent.Callable;
 
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
 import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
+import org.geocedg.common.euclidian.draw.LocusRenderData2D;
+import org.geocedg.common.euclidian.draw.LocusRenderPolicy2D;
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentationSnapshot2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.desktop.awt.GGraphics2DD;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
@@ -528,8 +535,142 @@ class PreG9BCu0Harness {
 			bench.put("views", zooms);
 			return null;
 		});
+		// PRE-G9B-CU2 step T10: the constants of drawing policy v2 on the certificates that
+		// step T11 publishes, at the author's parameters and in a bite (D-CU2-10 ranges).
+		bench.put("policy_version", LocusRenderPolicy2D.VERSION);
+		bench.put("candidates", onEdt(() -> candidates(file)));
 		Files.writeString(output.resolve("tessellation-bench.json"),
 				PreG9BCu0References.json(bench), StandardCharsets.UTF_8);
+	}
+
+	/** Minimum depths and largest turns of the approved D-CU2-10 ranges. */
+	private static final int[] DEPTHS = {2, 3, 4, 5, 6};
+	private static final double[] TURNS = {5, 10, 15, 20};
+	private static final double[] ZOOMS = {1, 2, 4};
+
+	/**
+	 * Draws every model locus with every candidate pair of constants and an unlimited
+	 * budget (16 384 vertices), with its shadow certificate published as step T11 will.
+	 *
+	 * @return one row per configuration, locus, zoom and candidate
+	 */
+	private static List<Object> candidates(File file) {
+		AppGeoCeDG app = PreG9BCu0Corpus.open(file);
+		List<Object> rows = new ArrayList<>();
+		for (String configuration : List.of("author", "bite-3.85")) {
+			if ("bite-3.85".equals(configuration)) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", 3.85);
+			}
+			for (String label : MODEL_LOCI) {
+				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+				if ("bite-3.85".equals(configuration) && !List.of("o", "v", "w", "a_1")
+						.contains(label)) {
+					continue;
+				}
+				publishCertificate(locus);
+				for (double zoom : ZOOMS) {
+					LocusRenderPolicy2D view = LocusRenderPolicy2D.adaptive(1,
+							PreG9BCu0Corpus.AUTHOR_WIDTH, PreG9BCu0Corpus.AUTHOR_HEIGHT,
+							PreG9BCu0Corpus.AUTHOR_SCALE * zoom,
+							PreG9BCu0Corpus.AUTHOR_SCALE * zoom, 32, 0.75, 12);
+					for (int depth : DEPTHS) {
+						for (double turn : TURNS) {
+							long evaluations = locus.getInstrumentation().snapshot()
+									.getRenderEvaluations();
+							long start = System.nanoTime();
+							LocusRenderData2D data = new LocusRenderCache2D().getOrBuild(locus,
+									view.withConstants(depth, turn, 16384));
+							Map<String, Object> row = new LinkedHashMap<>();
+							row.put("configuration", configuration);
+							row.put("locus", label);
+							row.put("zoom", zoom);
+							row.put("minimum_depth", depth);
+							row.put("maximum_turn_degrees", turn);
+							row.put("vertices", data.getVertices().size());
+							row.put("render_evaluations", locus.getInstrumentation().snapshot()
+									.getRenderEvaluations() - evaluations);
+							row.put("largest_turn_outside_exemptions",
+									largestTurn(data, PreG9BCu0Corpus.AUTHOR_SCALE * zoom));
+							row.put("fidelity", data.getFidelity().name());
+							row.put("marks", data.getMarks().size());
+							row.put("build_ms", millis(start));
+							rows.add(row);
+						}
+					}
+				}
+			}
+		}
+		return rows;
+	}
+
+	/** Publishes the shadow certificate in place of the compatibility one, as T11 will. */
+	private static void publishCertificate(GeoLocusV2 locus) {
+		HybridExistenceCertifier2D.Result result = ((AlgoDependentPointLocusV2) locus
+				.getParentAlgorithm()).getHybridExistenceCertificate();
+		LocusExistenceStructure2D structure = result.getStructure();
+		LocusDefinition2D published = locus.getSemanticDefinition();
+		LocusBranch2D branch = published.getBranch(PreG9BCu0Corpus.MAIN);
+		LocusBranch2D certified = new LocusBranch2D(branch.getBranchKey(),
+				branch.getDeclaredDriverDomain(), structure, branch.getOrientation(),
+				branch.getProvenance(), branch.getLineage(), branch.getProperties(),
+				branch.getQuality());
+		locus.publishSemanticDefinition(new LocusDefinition2D(published.getLocusIdentity(),
+				published.getSemanticRevision() + 1, published.getDefinitionStatus(),
+				published.getProvider(), List.of(certified), published.getEvaluatorCapability(),
+				published.getDeterminism(), "t10-bench|" + structure.getCertifierContract(),
+				locus.getInstrumentation()));
+	}
+
+	/**
+	 * @return largest turn in degrees between visible chords (above a millionth of a pixel)
+	 *         of one stroke, outside the certified exemptions
+	 */
+	private static double largestTurn(LocusRenderData2D data, double scale) {
+		List<LocusRenderData2D.Vertex> vertices = data.getVertices();
+		double largest = 0;
+		for (int index = 1; index + 1 < vertices.size(); index++) {
+			int previous = visible(vertices, index, -1, scale);
+			int next = visible(vertices, index, 1, scale);
+			if (previous < 0 || next < 0) {
+				continue;
+			}
+			boolean exempt = false;
+			for (int inside = previous + 1; inside < next; inside++) {
+				exempt |= vertices.get(inside).getTurnExemption()
+						!= LocusRenderData2D.TurnExemption.NONE;
+			}
+			if (exempt) {
+				continue;
+			}
+			LocusPoint2D a = vertices.get(previous).getPoint();
+			LocusPoint2D v = vertices.get(index).getPoint();
+			LocusPoint2D b = vertices.get(next).getPoint();
+			double x1 = v.getX() - a.getX();
+			double y1 = v.getY() - a.getY();
+			double x2 = b.getX() - v.getX();
+			double y2 = b.getY() - v.getY();
+			largest = Math.max(largest, Math.toDegrees(Math.atan2(
+					Math.abs(x1 * y2 - y1 * x2), x1 * x2 + y1 * y2)));
+		}
+		return largest;
+	}
+
+	private static int visible(List<LocusRenderData2D.Vertex> vertices, int index, int step,
+			double scale) {
+		LocusPoint2D point = vertices.get(index).getPoint();
+		for (int current = index + step; current >= 0 && current < vertices.size();
+				current += step) {
+			if (step > 0 ? vertices.get(current).startsSubpath()
+					: vertices.get(current + 1).startsSubpath()) {
+				return -1;
+			}
+			LocusPoint2D other = vertices.get(current).getPoint();
+			if (Math.hypot(other.getX() - point.getX(), other.getY() - point.getY()) * scale
+					> 1e-6) {
+				return current;
+			}
+		}
+		return -1;
 	}
 
 	private static Map<String, Object> benchHeader(String scenario) {

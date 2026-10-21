@@ -24,6 +24,8 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationMethod;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -91,6 +93,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private Map<Integer, LocusMetricFunctionStructure2D> metricStructuresV3;
 	private List<CertifiedConstructionCapture2D.StepOrigin> programV3Origins = List.of();
 	private List<String> operationIdentitiesV3;
+	private ConstructionBoxModel2D boxModelV3;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -286,6 +289,32 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		} finally {
 			metric.setOppositeSamePositionForLimit(false);
 		}
+	}
+
+	/**
+	 * Encloses the image of a certified root of the class-v3 program of this revision with the
+	 * limit form of the certificate (certification design section 3.4): the box model of the
+	 * program assumes the predicate of the root on its certified enclosure. The source names
+	 * the step by the durable operation identity the certificate used.
+	 */
+	@Override
+	public synchronized LocusBoundaryImage2D encloseBoundaryImage(
+			LocusDefinition2D definition, LocusBranch2D branch, double parameterLower,
+			double parameterUpper, LocusBoundarySource2D source) {
+		if (!programV3.isPresent()) {
+			return LocusBoundaryImage2D.notAvailable(LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE
+					+ ": no class-v3 program (" + programV3Refusal + ")");
+		}
+		if (boxModelV3 == null) {
+			boxModelV3 = new ConstructionBoxModel2D(programV3.get());
+		}
+		double[] enclosure = HybridExistenceCertifier2D.encloseRootImage(boxModelV3,
+				getOperationIdentitiesV3(), source, parameterLower, parameterUpper,
+				descriptor.isPeriodic());
+		return enclosure == null ? LocusBoundaryImage2D.notAvailable(
+				LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE
+						+ ": the limit form does not enclose the image of " + source)
+				: LocusBoundaryImage2D.enclosed(enclosure);
 	}
 
 	/**

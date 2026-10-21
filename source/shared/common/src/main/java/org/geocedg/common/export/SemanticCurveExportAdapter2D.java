@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D.CurveEvaluation2D;
 import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D.CurveEvaluator2D;
+import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D.RequiredVertex;
 import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D.Result;
 import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D.WorkLedger;
 import org.geocedg.common.export.GeometryExportModel.AreaExclusion;
@@ -27,6 +28,7 @@ import org.geocedg.common.export.SourceExportOutcome.Reason;
 import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
+import org.geocedg.common.kernel.locus.LocusBoundaryImage2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
@@ -35,10 +37,12 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Determinism;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
+import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -62,6 +66,18 @@ public final class SemanticCurveExportAdapter2D {
 
 	/** Neutral entity identifier prefix used by the G9X1 DXF path. */
 	public static final String G9X1_ENTITY_PREFIX = "entity:g9x1:";
+	/**
+	 * Minimum subdivision depth of every certified Locus V2 component, open or closed
+	 * (PRE-G9B-CU2, consumption design section 6).
+	 */
+	static final int LOCUS_MINIMUM_DEPTH = 2;
+	/**
+	 * An excluded end without a limit is approached to the component length times 2^-28,
+	 * the approach of the drawing (16 initial spans halved 24 times).
+	 */
+	static final int OPEN_END_APPROACH_BITS = 28;
+	/** A bisection stops at the component length times 2^-52. */
+	private static final int RESOLUTION_BITS = 52;
 
 	/**
 	 * Export-area participation of one certified component. DXF applies the
@@ -260,7 +276,8 @@ public final class SemanticCurveExportAdapter2D {
 			}
 			int componentOrdinal = 0;
 			for (LocusBranch2D branch : definition.getBranches()) {
-				List<ContinuousComponent> certified = branch.getExistenceStructure()
+				LocusExistenceStructure2D structure = branch.getExistenceStructure();
+				List<ContinuousComponent> certified = structure
 						.getContinuousValidComponents();
 				for (int branchComponent = 0;
 						branchComponent < certified.size(); branchComponent++) {
@@ -280,8 +297,7 @@ public final class SemanticCurveExportAdapter2D {
 							|| isLimitEnd(certificate.getUpperBoundary());
 					boolean startClosed = increasing ? lowerEvaluable : upperEvaluable;
 					boolean endClosed = increasing ? upperEvaluable : lowerEvaluable;
-					boolean complete = branch.getExistenceStructure().getCompleteness()
-							== Completeness.COMPLETE;
+					boolean complete = structure.getCompleteness() == Completeness.COMPLETE;
 					String componentKey = complete ? "component-" + branchComponent
 							: certificate.getEvidenceKey();
 					ComponentAddress address = new ComponentAddress(
@@ -303,17 +319,57 @@ public final class SemanticCurveExportAdapter2D {
 						continue;
 					}
 					boolean semanticClosure = hasFullPeriodClosure(branch, component);
+					// PRE-G9B-CU2 (A2.6): each end is reached as the certificate states it,
+					// or the export stops at the last evaluated vertex and declares it.
+					EndReach lower = reachEnd(definition, branch.getBranchKey(), certificate,
+							component, false, semanticClosure, session);
+					EndReach upper = reachEnd(definition, branch.getBranchKey(), certificate,
+							component, true, semanticClosure, session);
+					if (lower.reason != null || upper.reason != null) {
+						Reason reason = lower.reason != null ? lower.reason : upper.reason;
+						components.add(failure(locus, sourceId, revision, scope, address,
+								reason, failureMessage(reason), null));
+						componentOrdinal++;
+						continue;
+					}
+					List<String> declarations = new ArrayList<>();
+					if (lower.declaration != null) {
+						declarations.add(lower.declaration);
+					}
+					if (upper.declaration != null) {
+						declarations.add(upper.declaration);
+					}
+					double exportStart = increasing ? lower.parameter : upper.parameter;
+					double exportEnd = increasing ? upper.parameter : lower.parameter;
+					List<RequiredVertex> singular = singularVertices(definition,
+							branch.getBranchKey(), structure, component, exportStart,
+							exportEnd, declarations);
 					SemanticDomain approximationDomain = new SemanticDomain(componentKey,
-							start, end, semanticClosure || startClosed,
-							semanticClosure || endClosed);
-					CurveEvaluator2D evaluator = parameter -> locusEvaluation(definition,
-							branch.getBranchKey(), component, parameter, session);
+							exportStart, exportEnd, true, true);
+					double residual = semanticClosure ? closureResidual(definition,
+							branch.getBranchKey(), component, exportStart, exportEnd,
+							session) : Double.NaN;
+					CurveEvaluator2D evaluator = parameter -> {
+						EndReach fixed = parameter == lower.parameter ? lower
+								: parameter == upper.parameter ? upper : null;
+						if (fixed != null && fixed.point != null) {
+							return finitePoint(fixed.point.getX(), fixed.point.getY());
+						}
+						return locusEvaluation(definition, branch.getBranchKey(), component,
+								parameter, session);
+					};
 					components.add(approximate(locus, sourceId, sourceOrdinal,
 							componentOrdinal++, revision, scope, address,
-							approximationDomain, semanticClosure, evaluator, request,
-							ledger, entityPrefix, complete ? SemanticCoverage.COMPLETE
-									: SemanticCoverage
-											.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED));
+							approximationDomain, semanticClosure, residual, singular,
+							LOCUS_MINIMUM_DEPTH, evaluator, request, ledger, entityPrefix,
+							complete ? SemanticCoverage.COMPLETE : SemanticCoverage
+									.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED, declarations));
+				}
+				// A point component is declared, never exported as a path (D-CU2-19).
+				for (LocusPointComponent2D point : structure.getPointComponents()) {
+					components.add(declared(locus, sourceId, revision, scope,
+							branch.getBranchKey(), point));
+					componentOrdinal++;
 				}
 			}
 			if (componentOrdinal == 0) {
@@ -393,8 +449,29 @@ public final class SemanticCurveExportAdapter2D {
 			CurveEvaluator2D evaluator, GeometryExportRequest request,
 			WorkLedger ledger, String entityPrefix,
 			SemanticCoverage semanticCoverage) {
+		return approximate(geo, sourceId, sourceOrdinal, componentOrdinal, sourceRevision,
+				scope, address, domain, semanticClosure, Double.NaN, Collections.emptyList(),
+				semanticClosure ? 2 : 0, evaluator, request, ledger, entityPrefix,
+				semanticCoverage, Collections.emptyList());
+	}
+
+	/**
+	 * Approximates one certified component of a Locus V2 through the shared builder
+	 * (PRE-G9B-CU2, A2.6), with the closure residual measured against its certificate, its
+	 * exact singular vertices and its representation declarations.
+	 *
+	 * @return emitted component or failure with evidence
+	 */
+	private Component approximate(GeoElement geo, String sourceId, int sourceOrdinal,
+			int componentOrdinal, long sourceRevision, IdentityScope scope,
+			ComponentAddress address, SemanticDomain domain, boolean semanticClosure,
+			double closureResidual, List<RequiredVertex> requiredVertices, int minimumDepth,
+			CurveEvaluator2D evaluator, GeometryExportRequest request, WorkLedger ledger,
+			String entityPrefix, SemanticCoverage semanticCoverage,
+			List<String> declarations) {
 		Result result = approximationBuilder.approximate(evaluator, domain,
-				semanticClosure, request, ledger);
+				semanticClosure, closureResidual, requiredVertices, minimumDepth, request,
+				ledger);
 		if (!result.isSuccess()) {
 			return failure(geo, sourceId, sourceRevision, scope, address,
 					result.getReason(), failureMessage(result.getReason()),
@@ -409,8 +486,207 @@ public final class SemanticCurveExportAdapter2D {
 				geo.getGeoClassType().name(), geo.getLabelSimple(), sourceRevision,
 				geo.isEuclidianVisible(), scope, address, Fidelity.APPROXIMATE,
 				Reason.NONE, neutralId, result.toApproximationEvidence(), null,
-				semanticCoverage);
+				semanticCoverage, declarations);
 		return new Component(outcome, entity, null, null);
+	}
+
+	/**
+	 * @return a point component declared with its parameter enclosure and the status of its
+	 *         position, never exported as a path and never a failure (D-CU2-19)
+	 */
+	private static Component declared(GeoElement geo, String sourceId, long sourceRevision,
+			IdentityScope scope, String branchKey, LocusPointComponent2D point) {
+		ComponentAddress address = new ComponentAddress(branchKey,
+				"point-component/" + point.getEvidenceKey(), point.getParameterLower(),
+				point.getParameterUpper(), true, true);
+		String message = "Point component, declared and never exported as a path: parameter"
+				+ " enclosure [" + point.getParameterLower() + ", " + point.getParameterUpper()
+				+ "]; position " + point.getPositionState()
+				+ (point.getPositionState()
+						== LocusPointComponent2D.PositionState.CERTIFIED_ENCLOSURE
+								? " " + java.util.Arrays.toString(point.getPositionEnclosure())
+								: "")
+				+ ".";
+		SourceExportOutcome outcome = new SourceExportOutcome(sourceId,
+				geo.getGeoClassType().name(), geo.getLabelSimple(), sourceRevision,
+				geo.isEuclidianVisible(), scope, address, Fidelity.DECLARED,
+				Reason.DEGENERATE_SOURCE, null, null, message);
+		Diagnostic diagnostic = new Diagnostic(sourceId, geo.getGeoClassType().name(),
+				DiagnosticCode.DEGENERATE, message);
+		return new Component(outcome, null, diagnostic, null);
+	}
+
+	/** Where the export of a component reaches one of its ends, and what it declares. */
+	private static final class EndReach {
+		private final double parameter;
+		private final Point2D point;
+		private final String declaration;
+		private final Reason reason;
+
+		private EndReach(double parameter, Point2D point, String declaration,
+				Reason reason) {
+			this.parameter = parameter;
+			this.point = point;
+			this.declaration = declaration;
+			this.reason = reason;
+		}
+	}
+
+	/**
+	 * Reaches one end of a certified component (PRE-G9B-CU2, A2.6): an evaluable end is
+	 * its evaluation or its one-sided limit; an included certified transition that the
+	 * evaluator does not define is the limit form of its certificate; any other end that
+	 * cannot be evaluated is replaced by the last evaluated parameter, located by bisection
+	 * from inside up to the resolution, and declared; an excluded end without a limit is
+	 * approached from inside and declared.
+	 */
+	private static EndReach reachEnd(LocusDefinition2D definition, String branchKey,
+			ContinuousComponent certificate, LocusInterval2D component, boolean upper,
+			boolean closure, LocusEvaluationSession2D session) {
+		double end = upper ? component.getUpper() : component.getLower();
+		LocusBoundary2D boundary = upper ? certificate.getUpperBoundary()
+				: certificate.getLowerBoundary();
+		String side = upper ? "upper" : "lower";
+		if (closure || boundary.isBinaryEndIncluded() || isLimitEnd(boundary)) {
+			CurveEvaluation2D evaluation = locusEvaluation(definition, branchKey, component,
+					end, session);
+			if (evaluation.isValid()) {
+				return new EndReach(end, null, null, null);
+			}
+			if (!closure && boundary.isBinaryEndIncluded()) {
+				LocusBoundaryImage2D image = definition.encloseBoundaryImage(branchKey,
+						boundary);
+				if (image.isEnclosed()) {
+					return new EndReach(end, new Point2D(image.getPoint().getX(),
+							image.getPoint().getY()), null, null);
+				}
+			}
+			return lastEvaluated(definition, branchKey, component, end, session,
+					"END_NOT_EVALUATED: the " + side + " end " + end + " is not evaluated ("
+							+ evaluation.getReason() + ")");
+		}
+		double approach = Math.scalb(component.getUpper() - component.getLower(),
+				-OPEN_END_APPROACH_BITS);
+		double near = upper ? end - approach : end + approach;
+		CurveEvaluation2D evaluation = locusEvaluation(definition, branchKey, component, near,
+				session);
+		if (evaluation.isValid()) {
+			return new EndReach(near, null, "OPEN_END_APPROACHED: the excluded " + side
+					+ " end " + end + " is approached to " + near, null);
+		}
+		return lastEvaluated(definition, branchKey, component, near, session,
+				"END_NOT_EVALUATED: the excluded " + side + " end " + end
+						+ " is not evaluated near " + near + " (" + evaluation.getReason() + ")");
+	}
+
+	/**
+	 * @return the last evaluated parameter from the middle of the component toward a failed
+	 *         one, up to the resolution of the parameter, with its declaration; or the
+	 *         failure of a component whose middle is not evaluated either
+	 */
+	private static EndReach lastEvaluated(LocusDefinition2D definition, String branchKey,
+			LocusInterval2D component, double failed, LocusEvaluationSession2D session,
+			String declaration) {
+		double length = component.getUpper() - component.getLower();
+		double valid = component.getLower() + length / 2;
+		CurveEvaluation2D middle = locusEvaluation(definition, branchKey, component, valid,
+				session);
+		if (!middle.isValid()) {
+			return new EndReach(Double.NaN, null, null, middle.getReason());
+		}
+		double invalid = failed;
+		double resolution = Math.scalb(length, -RESOLUTION_BITS);
+		while (Math.abs(invalid - valid) > resolution) {
+			double probe = valid + (invalid - valid) / 2;
+			if (probe == valid || probe == invalid) {
+				break;
+			}
+			if (locusEvaluation(definition, branchKey, component, probe, session).isValid()) {
+				valid = probe;
+			} else {
+				invalid = probe;
+			}
+		}
+		return new EndReach(valid, null, declaration + "; exported to the last evaluated"
+				+ " vertex at " + valid, null);
+	}
+
+	/**
+	 * @return the exact vertices of the certified singular parameters inside the exported
+	 *         range, from the limit form of the certificate, in domain order; a singular
+	 *         parameter without one is declared
+	 */
+	private static List<RequiredVertex> singularVertices(LocusDefinition2D definition,
+			String branchKey, LocusExistenceStructure2D structure, LocusInterval2D component,
+			double exportStart, double exportEnd, List<String> declarations) {
+		LocusInterval2D domain = structure.getCanonicalDomain();
+		double period = structure.getTopology()
+				== LocusExistenceStructure2D.DomainTopology.PERIODIC
+						? domain.getUpper() - domain.getLower() : 0;
+		double low = Math.min(exportStart, exportEnd);
+		double high = Math.max(exportStart, exportEnd);
+		List<RequiredVertex> vertices = new ArrayList<>();
+		for (LocusSingularParameter2D singular : structure.getSingularParameters()) {
+			double middle = singular.getParameterLower()
+					+ (singular.getParameterUpper() - singular.getParameterLower()) / 2;
+			double lifted = Double.NaN;
+			for (double candidate : new double[] {middle, middle + period, middle - period}) {
+				if (component.getLower() <= candidate && candidate <= component.getUpper()) {
+					lifted = candidate;
+					break;
+				}
+			}
+			if (!(low < lifted && lifted < high)) {
+				continue;
+			}
+			LocusBoundaryImage2D image = definition.encloseSingularImage(branchKey, singular);
+			if (!image.isEnclosed()) {
+				declarations.add("SINGULAR_VERTEX_NOT_EXACT: the singular parameter " + middle
+						+ " has no exact image (" + image.getDiagnostic() + ")");
+				continue;
+			}
+			vertices.add(new RequiredVertex(lifted, new Point2D(image.getPoint().getX(),
+					image.getPoint().getY())));
+		}
+		vertices.sort((first, second) -> exportStart < exportEnd
+				? Double.compare(first.getParameter(), second.getParameter())
+				: Double.compare(second.getParameter(), first.getParameter()));
+		return vertices;
+	}
+
+	/**
+	 * @return the distance between the start and the curve just before the closing point,
+	 *         which the closure certificate identifies with the start (A2.6), or infinity
+	 *         when either is not evaluated
+	 */
+	static double closureResidual(LocusDefinition2D definition, String branchKey,
+			LocusInterval2D component, double exportStart, double exportEnd,
+			LocusEvaluationSession2D session) {
+		double before = closureProbe(exportStart, exportEnd,
+				definition.getProvider().getDomainEpsilon());
+		CurveEvaluation2D start = locusEvaluation(definition, branchKey, component,
+				exportStart, session);
+		CurveEvaluation2D last = locusEvaluation(definition, branchKey, component, before,
+				session);
+		if (!start.isValid() || !last.isValid()) {
+			return Double.POSITIVE_INFINITY;
+		}
+		return Math.hypot(start.getPoint().getX() - last.getPoint().getX(),
+				start.getPoint().getY() - last.getPoint().getY());
+	}
+
+	/**
+	 * @param domainEpsilon provider tolerance of the domain, which excludes a band at its
+	 *        open end
+	 * @return the parameter at which the closure residual of a closed path is measured:
+	 *         before the closing point by four ulps, so that its canonicalization never rounds
+	 *         onto the start and measures the trivial identity, and by twice the domain
+	 *         tolerance, so that it belongs to the domain
+	 */
+	static double closureProbe(double exportStart, double exportEnd, double domainEpsilon) {
+		double step = Math.max(4 * Math.max(Math.ulp(exportEnd), Math.ulp(exportStart)),
+				2 * domainEpsilon);
+		return exportEnd > exportStart ? exportEnd - step : exportEnd + step;
 	}
 
 	/**

@@ -6896,6 +6896,42 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T9: consumers of the author model with the shadow certificates injected into definitions that keep the live evaluators: the chain o_1, w_1, d_2, e_2 stays defined, the excluded end of e_2 is its one-sided limit through the slice, and an evaluator point in a certified gap is not published as valid (V-CON-10, V-AVAIL-1, precursor of V-E2-8).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusCertifiedFold2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T10: certified non-degenerate fold published with the existence structure (parameter enclosure, isolation band, verified symmetry, certifying nature), the only band where a drawing may waive its turning criterion besides certified singular vertices.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusBoundaryImage2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T10: outward enclosure of the image of a certified included transition or singular parameter computed with the limit form of the certificate (locus-limit-form/v1), a representation input for exact drawing and export vertices, never an evaluation.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/euclidian/draw/LocusComponentTessellator2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T10: drawing policy locus-render-policy/v2 of one certified component: minimum depth, unclamped chord deviation, turn between visible chords with certified fold and singular-vertex exemptions, refinement to the parameter resolution with typed marks, square-root spans at discriminant transitions, limit-form and one-sided-limit ends, failure cuts by bisection, open-end approach and deterministic budget coarsening.",
+      "authority": "geocedg/specs/locus/locus-v2-presentation.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2RepresentationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T10: representation of certified components on synthetic certificates: limit forms, exact unsmoothed singular vertex, square-root ends, computational cuts, budget coarsening, partial results, point components, and the export rules of A2.6 (closure residual against the certificate, open ends declared, unevaluated one-sided limits, exact singular vertices, declared point components) (V-REP-2, V-REP-3, V-B07-2, V-AVAIL-2 to V-AVAIL-6, V-DXF-3, V-POINT-5).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelRepresentationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T10: drawing policy v2 on the author model with the shadow certificates published: bounded turns outside the certified folds of e_1, determinism and view-invariant topology, the one-sided limit end of e_2, and a failing length cut with computational marks (V-B06-1 to V-B06-3, V-REP-1, V-AVAIL-2).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2ExportDeclarationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T10: an open end exported and declared in the DXF sidecar (schema version 3) and in the LaTeX comments with an incomplete classification, and the drawing fidelity shown by the definition inspector.",
+      "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     }
   ]
 }

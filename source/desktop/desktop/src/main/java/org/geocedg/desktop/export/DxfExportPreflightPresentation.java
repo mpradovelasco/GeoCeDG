@@ -407,6 +407,10 @@ public final class DxfExportPreflightPresentation {
 						+ ": locally certified component; exported output is not "
 						+ "the complete locus; sidecar required.");
 			}
+			for (String declaration : outcome.getDeclarations()) {
+				lines.add("REPRESENTATION_DECLARATION " + outcome.getSourceId() + "/"
+						+ component + ": " + declaration + "; sidecar required.");
+			}
 			if (!outcome.isVisible()) {
 				lines.add("HIDDEN_SOURCE_INCLUDED " + outcome.getSourceId() + "/"
 						+ component + ": source remains included.");

@@ -140,6 +140,18 @@ public final class LocusBoundary2D {
 	}
 
 	/**
+	 * @return whether the end is an enclosed certified transition of a line-circle
+	 *         discriminant, where the traced point may have a square-root singularity in the
+	 *         driver parameter (PRE-G9B-CU2, consumption design section 5.2): a representation
+	 *         approaches it in the coordinate {@code s} with {@code t = t* + s^2}
+	 */
+	public boolean isSquareRootTransition() {
+		return kind == Kind.CERTIFIED_TRANSITION && enclosure != null
+				&& ConstructionValidityPredicate2D.DISCRIMINANT.name()
+						.equals(source.getPredicate());
+	}
+
+	/**
 	 * @return whether the binary64 end of the component belongs to it: the safe inner end
 	 *         of an enclosed root always does; otherwise the end inclusion decides
 	 */

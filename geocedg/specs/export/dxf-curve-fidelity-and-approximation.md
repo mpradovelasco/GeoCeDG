@@ -292,3 +292,11 @@ the status of its position, and the export is then incomplete.
 For DXF this means: one `LWPOLYLINE` per certified component; the closed flag (group code 70)
 only for a certified closed periodic component; the closure residual measured against the
 closure certificate; exploratory evidence never exported; unresolved bands never interpolated.
+
+**Implementation precision (`CU2` step T10, 2026-10-21).** The sidecar states these facts in
+`schema_version` 3 of `org.geocedg.dxf.fidelity-manifest`: each outcome lists its representation
+declarations (`END_NOT_EVALUATED`, `OPEN_END_APPROACHED`, `SINGULAR_VERTEX_NOT_EXACT`), each of
+which is also a `representation_declaration` warning; a point component is an outcome of
+fidelity `declared` with reason `degenerate_source`, which never blocks the strict request; the
+preflight counts the declared components; and the approximation evidence of a closed path
+carries its closure residual. A version-2 sidecar keeps its meaning.

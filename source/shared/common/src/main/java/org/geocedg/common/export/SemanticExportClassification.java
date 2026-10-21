@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.geocedg.common.export.SourceExportOutcome.Reason;
-import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 
 /**
  * PRE-G9B-R6-plus-C (C14, author direction {@code DQ-C5}): the export-layer
@@ -57,8 +56,8 @@ public final class SemanticExportClassification {
 		for (SourceExportOutcome outcome : outcomes) {
 			if (outcome.isEmitted()) {
 				emitted++;
-				if (outcome.getSemanticCoverage()
-						== SemanticCoverage.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED) {
+				// PRE-G9B-CU2 (A2.6): locally certified, or emitted with a declaration.
+				if (outcome.isIncomplete()) {
 					incomplete = true;
 				}
 			} else {

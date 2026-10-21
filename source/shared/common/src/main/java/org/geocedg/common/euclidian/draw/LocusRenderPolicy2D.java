@@ -10,14 +10,40 @@ import java.util.Objects;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.main.App;
 
-/** View-owned tessellation policy, excluded from semantic contracts. */
+/**
+ * View-owned tessellation policy, excluded from semantic contracts.
+ *
+ * <p>PRE-G9B-CU2 ({@code locus-v2-presentation.md}, "PRE-G9B-CU2 amendment (version 2)";
+ * decision D-CU2-10): the adaptive strategy is the versioned drawing policy {@value #VERSION}
+ * of every product view. A span is accepted when its chord deviation and its turn with the
+ * adjacent spans are within the limits, after the minimum depth; the turn is waived only in a
+ * certified fold band and at a certified singular vertex; a vertex budget per view coarsens
+ * the drawing deterministically. The uniform strategy is a reference of the tests that predate
+ * version 2; no product view uses it and the adaptive strategy never falls back to it.</p>
+ */
 public final class LocusRenderPolicy2D {
 	/** Render-only sampling strategies; neither is semantic geometry. */
 	public enum SamplingStrategy {
+		/** Uniform samples: a test reference that predates presentation version 2. */
 		UNIFORM_REFERENCE,
+		/** Drawing policy {@value LocusRenderPolicy2D#VERSION}. */
 		ADAPTIVE_VISUAL
 	}
 
+	/** Version of the adaptive drawing policy of presentation version 2. */
+	public static final String VERSION = "locus-render-policy/v2";
+	/**
+	 * Depth {@code d_min} of the initial partition of every component: {@code 2^d_min} spans
+	 * (D-CU2-10, approved range 2 to 6).
+	 */
+	public static final int DEFAULT_MINIMUM_DEPTH = 4;
+	/**
+	 * Largest turn {@code theta_max} between consecutive chords outside the certified
+	 * exemptions, in degrees (D-CU2-10, approved range 5 to 20).
+	 */
+	public static final double DEFAULT_MAXIMUM_TURN_DEGREES = 10;
+	/** Vertices of one locus in one view (D-CU2-10, approved range 1 024 to 16 384). */
+	public static final int DEFAULT_VERTEX_BUDGET = 4096;
 	private static final int MIN_SAMPLES = 32;
 	private static final int MAX_SAMPLES = 512;
 	private static final double DEFAULT_VISUAL_TOLERANCE_PIXELS = 0.75;
@@ -31,18 +57,22 @@ public final class LocusRenderPolicy2D {
 	private final SamplingStrategy samplingStrategy;
 	private final long visualToleranceBits;
 	private final int maximumAdaptiveDepth;
+	private final int minimumDepth;
+	private final long maximumTurnBits;
+	private final int vertexBudget;
 
-	/** Creates an immutable render-only policy. */
+	/** Creates an immutable uniform reference policy. */
 	public LocusRenderPolicy2D(int viewId, int width, int height,
 			double xScale, double yScale, int samplesPerComponent) {
 		this(viewId, width, height, xScale, yScale, samplesPerComponent,
-				SamplingStrategy.UNIFORM_REFERENCE, 0, 0);
+				SamplingStrategy.UNIFORM_REFERENCE, 0, 0, 0, 0, 0);
 	}
 
 	private LocusRenderPolicy2D(int viewId, int width, int height,
 			double xScale, double yScale, int samplesPerComponent,
 			SamplingStrategy samplingStrategy, double visualTolerancePixels,
-			int maximumAdaptiveDepth) {
+			int maximumAdaptiveDepth, int minimumDepth, double maximumTurnDegrees,
+			int vertexBudget) {
 		if (width < 0 || height < 0 || !Double.isFinite(xScale)
 				|| !Double.isFinite(yScale) || xScale == 0 || yScale == 0
 				|| samplesPerComponent < 2 || samplingStrategy == null) {
@@ -50,7 +80,10 @@ public final class LocusRenderPolicy2D {
 		}
 		if (samplingStrategy == SamplingStrategy.ADAPTIVE_VISUAL
 				&& (!Double.isFinite(visualTolerancePixels)
-						|| visualTolerancePixels <= 0 || maximumAdaptiveDepth < 2)) {
+						|| visualTolerancePixels <= 0 || maximumAdaptiveDepth < 2
+						|| minimumDepth < 1 || minimumDepth > 12
+						|| !(maximumTurnDegrees > 0 && maximumTurnDegrees <= 180)
+						|| vertexBudget < 2)) {
 			throw new IllegalArgumentException("Invalid adaptive render policy");
 		}
 		this.viewId = viewId;
@@ -62,11 +95,18 @@ public final class LocusRenderPolicy2D {
 		this.samplingStrategy = samplingStrategy;
 		this.visualToleranceBits = Double.doubleToLongBits(visualTolerancePixels);
 		this.maximumAdaptiveDepth = maximumAdaptiveDepth;
+		this.minimumDepth = minimumDepth;
+		this.maximumTurnBits = Double.doubleToLongBits(maximumTurnDegrees);
+		this.vertexBudget = vertexBudget;
 	}
 
 	/**
-	 * Creates an adaptive visual policy while retaining a uniform fallback budget.
+	 * Creates the adaptive drawing policy {@value #VERSION} with the versioned constants.
 	 *
+	 * @param fallbackSamplesPerComponent retained for the signature; version 2 never falls
+	 *        back to uniform samples
+	 * @param maximumAdaptiveDepth retained for the signature; version 2 refines up to the
+	 *        resolution of the parameter
 	 * @return render-only adaptive policy
 	 */
 	public static LocusRenderPolicy2D adaptive(int viewId, int width, int height,
@@ -74,11 +114,35 @@ public final class LocusRenderPolicy2D {
 			double visualTolerancePixels, int maximumAdaptiveDepth) {
 		return new LocusRenderPolicy2D(viewId, width, height, xScale, yScale,
 				fallbackSamplesPerComponent, SamplingStrategy.ADAPTIVE_VISUAL,
-				visualTolerancePixels, maximumAdaptiveDepth);
+				visualTolerancePixels, maximumAdaptiveDepth, DEFAULT_MINIMUM_DEPTH,
+				DEFAULT_MAXIMUM_TURN_DEGREES, DEFAULT_VERTEX_BUDGET);
 	}
 
 	/**
-	 * Derives a bounded visual sampling budget from one Euclidian view.
+	 * @param budget vertices of one locus in this view
+	 * @return the same adaptive policy with another vertex budget
+	 */
+	public LocusRenderPolicy2D withVertexBudget(int budget) {
+		return withConstants(minimumDepth, getMaximumTurnDegrees(), budget);
+	}
+
+	/**
+	 * @param depth depth {@code d_min} of the initial partition
+	 * @param turnDegrees largest turn between consecutive chords outside the exemptions
+	 * @param budget vertices of one locus in this view
+	 * @return the same adaptive policy with other drawing constants
+	 */
+	public LocusRenderPolicy2D withConstants(int depth, double turnDegrees, int budget) {
+		if (samplingStrategy != SamplingStrategy.ADAPTIVE_VISUAL) {
+			throw new IllegalStateException("Only the adaptive policy has drawing constants");
+		}
+		return new LocusRenderPolicy2D(viewId, width, height, getXScale(), getYScale(),
+				samplesPerComponent, samplingStrategy, getVisualTolerancePixels(),
+				maximumAdaptiveDepth, depth, turnDegrees, budget);
+	}
+
+	/**
+	 * Derives the drawing policy of one Euclidian view.
 	 *
 	 * @return immutable view-owned render policy
 	 */
@@ -94,9 +158,8 @@ public final class LocusRenderPolicy2D {
 	}
 
 	/**
-	 * @return default bounded adaptive policy derived from one view; while the
-	 *         view is exported at a higher output resolution, the visual
-	 *         tolerance and the budget follow the output pixels
+	 * @return default adaptive policy derived from one view; while the view is exported at a
+	 *         higher output resolution, the visual tolerance follows the output pixels
 	 *         (PRE-G9B-R6-plus-B, 2026-10-02)
 	 */
 	public static LocusRenderPolicy2D adaptiveFrom(EuclidianView view) {
@@ -155,8 +218,30 @@ public final class LocusRenderPolicy2D {
 		return maximumAdaptiveDepth;
 	}
 
+	/** @return depth {@code d_min} of the initial partition of a component */
+	public int getMinimumDepth() {
+		return minimumDepth;
+	}
+
+	/** @return largest turn between consecutive chords outside the exemptions, in degrees */
+	public double getMaximumTurnDegrees() {
+		return Double.longBitsToDouble(maximumTurnBits);
+	}
+
+	/** @return vertices of one locus in this view */
+	public int getVertexBudget() {
+		return vertexBudget;
+	}
+
+	/** @return version of the drawing policy, or the name of the uniform reference */
+	public String getVersion() {
+		return samplingStrategy == SamplingStrategy.ADAPTIVE_VISUAL ? VERSION
+				: "uniform-reference/v1";
+	}
+
 	/**
-	 * Render-only inset for open or presentation-clipped endpoints.
+	 * Render-only inset for open or presentation-clipped endpoints of the uniform
+	 * reference.
 	 *
 	 * @return dimensionless fraction of the component parameter span
 	 */
@@ -176,13 +261,16 @@ public final class LocusRenderPolicy2D {
 				&& samplesPerComponent == that.samplesPerComponent
 				&& samplingStrategy == that.samplingStrategy
 				&& visualToleranceBits == that.visualToleranceBits
-				&& maximumAdaptiveDepth == that.maximumAdaptiveDepth;
+				&& maximumAdaptiveDepth == that.maximumAdaptiveDepth
+				&& minimumDepth == that.minimumDepth
+				&& maximumTurnBits == that.maximumTurnBits
+				&& vertexBudget == that.vertexBudget;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(viewId, width, height, xScaleBits, yScaleBits,
 				samplesPerComponent, samplingStrategy, visualToleranceBits,
-				maximumAdaptiveDepth);
+				maximumAdaptiveDepth, minimumDepth, maximumTurnBits, vertexBudget);
 	}
 }

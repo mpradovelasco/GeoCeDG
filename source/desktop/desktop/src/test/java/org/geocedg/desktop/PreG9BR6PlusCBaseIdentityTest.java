@@ -90,8 +90,12 @@ class PreG9BR6PlusCBaseIdentityTest {
 				"3d2200a3e1bb1698bf9857bc378501bfa71f2285a79ace900afddb6f75206e4c"},
 		{"g9x1.locus.closed.dxf.core",
 				"302b83191cba0a449ccb4f3a025e12d379e99e2bb9c2432fe4cc4b171fd4fb88"},
+		// PRE-G9B-CU2 conformity (A2.6, V-DXF-3): the closure residual of the closed locus
+		// is measured against its closure certificate and recorded; the base digest
+		// c43e26d3283a62dcfa7f57e512bbf21e52f26002cc243fa02443005054074f48 is reproduced
+		// exactly by the trivial identity without the residual field (step T10 probe).
 		{"g9x1.locus.closed.sidecar",
-				"c43e26d3283a62dcfa7f57e512bbf21e52f26002cc243fa02443005054074f48"},
+				"aeb007cf8a14092b92fadca9be48c7ff2bee0720c785485335ca6bf936d88bc9"},
 		{"g9x1.spline.dxf",
 				"d2a4780754b8ccebc07b9148d09d536496482ba9bb588bead993a91ada8ea407"},
 		{"g9x1.spline.dxf.core",
@@ -344,12 +348,17 @@ class PreG9BR6PlusCBaseIdentityTest {
 	 * Removes the build provenance and the declared version-2 additions so that a
 	 * sidecar of an unspecified document without area or hidden layer can be
 	 * compared with its version-1 base. The paired DXF hash covers the session
-	 * identity; the DXF itself is compared without it.
+	 * identity; the DXF itself is compared without it. PRE-G9B-CU2 (A2.6): the empty
+	 * version-3 additions are removed too; a declaration or a measured closure residual
+	 * is kept and changes the digest.
 	 */
 	static String normalizeSidecar(String manifest) {
 		return withoutSessionIdentity(manifest)
 				.replaceAll("\"sha256\":\"[0-9a-f]{64}\"", "\"sha256\":\"paired-dxf\"")
-				.replace("\"schema_version\":2,", "\"schema_version\":1,")
+				.replace("\"schema_version\":3,", "\"schema_version\":1,")
+				.replace("\"declared_components\":0,", "")
+				.replace("\"declarations\":[],", "")
+				.replace(",\"closure_residual\":null", "")
 				.replaceAll("\"application\":\\{[^}]*\\},", "")
 				.replace(",\"insunits\":0,\"sha256\"", ",\"sha256\"")
 				.replaceAll("\"units\":\\{\"metadata_schema\":[^}]*\\},", "")

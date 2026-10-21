@@ -163,6 +163,12 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 				.getParameterEnd(), 1E-14);
 	}
 
+	/**
+	 * X1-L07, superseded for Locus V2 by PRE-G9B-CU2 (A2.6; DXF specification section 10): a
+	 * component with open ends is no longer rejected with {@code MISSING_DOMAIN} but exported,
+	 * each excluded end approached from inside and declared, with the mandatory sidecar. The
+	 * method keeps its name and selection identity.
+	 */
 	@Test
 	void l07OpenComponentWithoutClosedExportDomainIsRejected() { // X1-L07
 		GeoLocusV2 locus = createLocus("(s,s^2)",
@@ -170,12 +176,16 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 		GeometryExportPreflight preflight = preflight(locus, request());
 		SourceExportOutcome outcome = onlyOutcome(preflight);
 
-		assertFalse(preflight.isWritable());
+		assertTrue(preflight.isWritable());
 		assertTrue(preflight.isSidecarRequired());
-		assertEquals(1, preflight.getInvalidCount());
-		assertEquals(Fidelity.INVALID, outcome.getFidelity());
-		assertEquals(Reason.MISSING_DOMAIN, outcome.getReason());
-		assertTrue(preflight.getModel().getEntities().isEmpty());
+		assertEquals(0, preflight.getInvalidCount());
+		assertEquals(Fidelity.APPROXIMATE, outcome.getFidelity());
+		assertEquals(Reason.NONE, outcome.getReason());
+		assertEquals(2, outcome.getDeclarations().size(), outcome.getDeclarations().toString());
+		assertTrue(outcome.getDeclarations().stream().allMatch(declaration ->
+				declaration.startsWith("OPEN_END_APPROACHED")));
+		assertTrue(outcome.isIncomplete());
+		assertEquals(1, preflight.getModel().getEntities().size());
 	}
 
 	@Test

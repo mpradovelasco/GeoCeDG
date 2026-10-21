@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus.intersection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -15,7 +16,9 @@ import java.util.List;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.CertifiedStationaryPoint;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.CertifiedStationaryPoint.StationaryKind;
@@ -137,6 +140,52 @@ class PreG9BCu2FoldCertificationTest extends BaseUnitTest {
 		assertTrue(Double.isNaN(zero.getIsolationLower()));
 		assertNull(zero.getSecondDerivative());
 		assertEquals(LocusEvidenceNature2D.EXACT, zero.getNature());
+	}
+
+	/**
+	 * PRE-G9B-CU2 step T10 (V-B06-2, certificate part): the existence structure publishes the
+	 * non-degenerate folds with their isolation bands, the only bands where a drawing may waive
+	 * its turning criterion; the degenerate stationary point is never published as a fold. The
+	 * band of the fold at the seam holds the canonical parameters on both sides of it, modulo
+	 * the period, and nothing far from it.
+	 */
+	@Test
+	void theStructurePublishesOnlyTheNonDegenerateFolds() {
+		add("c=Circle((0,0),1)");
+		add("N=Point(c)");
+		add("v=Line(N,Line((0,0),(0,1)))");
+		add("P1=Intersect(v,Line((0,0),(1,0)))");
+		add("P2=Rotate(P1,pi/2,(0,0))");
+		add("h2=PerpendicularLine(P2,Line((0,0),(0,1)))");
+		add("P3=Intersect(h2,Line((1,0),(1,1)))");
+		add("Q=Intersect(Line((0,0),P3),v)");
+		add("X=Intersect(Line(Q,Line((0,0),(1,2))),Line((0,0),(1,0)))");
+		add("lx=LocusV2(X,N)");
+		Result result = certificate("lx");
+		List<LocusCertifiedFold2D> folds = result.getStructure().getCertifiedFolds();
+		assertEquals(1, folds.size(), folds.toString());
+		CertifiedStationaryPoint seam = result.getStationaryPoints().get(0);
+		LocusCertifiedFold2D fold = folds.get(0);
+		assertEquals(seam.getParameterLower(), fold.getParameterLower());
+		assertEquals(seam.getParameterUpper(), fold.getParameterUpper());
+		assertEquals(seam.getIsolationLower(), fold.getBandLower());
+		assertEquals(seam.getIsolationUpper(), fold.getBandUpper());
+		assertEquals(seam.getSymmetry(), fold.getSymmetry());
+		assertEquals(LocusEvidenceNature2D.RIGOROUS_INTERVAL, fold.getNature());
+		assertTrue(fold.containsCanonical(-Math.PI, PERIOD));
+		assertTrue(fold.containsCanonical(Math.nextDown(Math.PI), PERIOD));
+		assertFalse(fold.containsCanonical(0, PERIOD));
+		assertFalse(fold.containsCanonical(-Math.PI + 0.1, PERIOD));
+		LocusExistenceStructure2D structure = result.getStructure();
+		assertTrue(structure.getSemanticSignature().contains("|fold=" + fold.getSignature()));
+		assertEquals(fold.getSignature(), structure.bindToRevision(7).getCertifiedFolds().get(0)
+				.getSignature());
+		// The symmetric locus of the first fixture publishes both folds.
+		add("c2=Circle((0,0),2)");
+		add("N2=Point(c2)");
+		add("X2=Intersect(Line(N2,Line((0,0),(0,1))),Line((0,3),(1,3)))");
+		add("lx2=LocusV2(X2,N2)");
+		assertEquals(2, certificate("lx2").getStructure().getCertifiedFolds().size());
 	}
 
 	/**

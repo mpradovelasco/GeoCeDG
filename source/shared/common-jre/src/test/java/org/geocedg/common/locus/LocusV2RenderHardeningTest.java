@@ -49,7 +49,10 @@ class LocusV2RenderHardeningTest extends BaseUnitTest {
 				adaptive(128, 200));
 
 		assertEquals(129, uniform.getVertices().size());
-		assertEquals(5, adaptive.getVertices().size());
+		// PRE-G9B-CU2 conformity (B06, D-CU2-10): drawing policy v2 starts every component
+		// from 2^d_min spans, and a line needs no further vertex.
+		assertEquals((1 << LocusRenderPolicy2D.DEFAULT_MINIMUM_DEPTH) + 1,
+				adaptive.getVertices().size());
 		assertEquals(revision, line.getSemanticRevision());
 		assertEquals(before, evaluate(line, 0.375));
 		assertEquals(revision, adaptive.getSemanticRevision());

@@ -22,9 +22,11 @@ import java.util.TreeSet;
 
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
+import org.geocedg.common.kernel.locus.ConstructionValidityPredicate2D;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -691,6 +693,73 @@ public final class HybridExistenceCertifier2D {
 				policy.getSignature(), null);
 	}
 
+	/**
+	 * Encloses the image of a certified root of a validity predicate with the limit form of the
+	 * certificate (certification design section 3.4; consumption design section 5.2): the
+	 * program is evaluated on the certified enclosure of the root assuming its predicate, so
+	 * that a discriminant enters through its clamped square root and the double root of a
+	 * tangency, {@code lambda = -b'/a}, never takes the square root of a negative rounding. Only
+	 * a predicate whose root belongs to its component has a limit form; a vanishing divisor,
+	 * direction or radius has none, because the limit may not exist.
+	 *
+	 * @param model box model of the class-v3 program of the revision
+	 * @param operations durable identity token of each step, as the certificate named the
+	 *        sources of its roots
+	 * @param source structural source of the root
+	 * @param lower lower bound of the certified enclosure of the root parameter
+	 * @param upper upper bound of the certified enclosure of the root parameter
+	 * @param periodic whether the domain is periodic
+	 * @return {@code {xLower, xUpper, yLower, yUpper}}, an outward enclosure of the image of
+	 *         every parameter of the enclosure where the predicate holds, or {@code null} when
+	 *         the limit form does not enclose it
+	 */
+	public static double[] encloseRootImage(ConstructionBoxModel2D model,
+			List<String> operations, LocusBoundarySource2D source, double lower, double upper,
+			boolean periodic) {
+		Target target = target(model, operations, source);
+		if (target == null || target.predicate.isEquality()
+				|| !target.predicate.isClosedAtRoot() || !(lower <= upper)) {
+			return null;
+		}
+		ConstructionBoxOutcome2D outcome = model.evaluateAssuming(
+				new SplineOutwardInterval2D(lower, upper), target, periodic);
+		if (outcome.kind != Kind.VALID || outcome.value == null) {
+			return null;
+		}
+		return new double[] {outcome.value[0].lower, outcome.value[0].upper,
+			outcome.value[1].lower, outcome.value[1].upper};
+	}
+
+	/**
+	 * @return the predicate that a structural source names ({@link #predicateToken}), or
+	 *         {@code null} when the source names no root of the program
+	 */
+	private static Target target(ConstructionBoxModel2D model, List<String> operations,
+			LocusBoundarySource2D source) {
+		int node = operations.indexOf(source.getOrigin()) + 1;
+		String token = source.getPredicate();
+		if (node < 1 || node > model.getProgram().getSteps().size()
+				|| token.endsWith("-coincidence-band")) {
+			return null;
+		}
+		int member = token.indexOf("-member-");
+		int index = ConstructionBoxModel2D.STEP_PREDICATE;
+		String name = token;
+		if (member > 0) {
+			try {
+				index = Integer.parseInt(token.substring(member + "-member-".length()));
+			} catch (NumberFormatException exception) {
+				return null;
+			}
+			name = token.substring(0, member);
+		}
+		try {
+			return new Target(node, ConstructionValidityPredicate2D.valueOf(name), index);
+		} catch (IllegalArgumentException exception) {
+			return null;
+		}
+	}
+
 	private static void record(LocusInstrumentation2D instrumentation,
 			LocusCertificationWork2D work) {
 		if (instrumentation != null) {
@@ -1032,6 +1101,7 @@ public final class HybridExistenceCertifier2D {
 					domain, topology, 0, coverage, List.of(component), List.of(), List.of(),
 					Completeness.COMPLETE, CONTRACT);
 			List<CertifiedStationaryPoint> stationary = stationaryPoints(structure);
+			structure = structure.withCertifiedFolds(folds(stationary));
 			return new Result(structure, null, List.of(), List.of(), stationary, boxes, 0, 0,
 					policy.getSignature(), null);
 		}
@@ -2078,6 +2148,11 @@ public final class HybridExistenceCertifier2D {
 				return failed(exception.getMessage(), roots);
 			}
 			List<CertifiedStationaryPoint> stationary = stationaryPoints(structure);
+			try {
+				structure = structure.withCertifiedFolds(folds(stationary));
+			} catch (IllegalArgumentException exception) {
+				return failed(exception.getMessage(), roots);
+			}
 			LocusExploratoryEvidence2D exploration = explore(branchKey, bands, sampler,
 					policy, instrumentation);
 			return new Result(structure, exploration, roots, exactEvidence, stationary, boxes,
@@ -2131,6 +2206,24 @@ public final class HybridExistenceCertifier2D {
 			}
 			points.sort((a, b) -> Double.compare(a.parameterLower, b.parameterLower));
 			return points;
+		}
+
+		/**
+		 * @return the non-degenerate folds, which the structure publishes as the only bands
+		 *         where a drawing may waive its turning criterion (consumption design section
+		 *         5.1); a degenerate stationary point is never one
+		 */
+		private static List<LocusCertifiedFold2D> folds(
+				List<CertifiedStationaryPoint> stationary) {
+			List<LocusCertifiedFold2D> folds = new ArrayList<>();
+			for (CertifiedStationaryPoint point : stationary) {
+				if (point.getKind() == CertifiedStationaryPoint.StationaryKind.FOLD) {
+					folds.add(new LocusCertifiedFold2D(point.getParameterLower(),
+							point.getParameterUpper(), point.getIsolationLower(),
+							point.getIsolationUpper(), point.getSymmetry(), point.getNature()));
+				}
+			}
+			return folds;
 		}
 
 		/**

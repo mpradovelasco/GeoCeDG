@@ -565,6 +565,7 @@ public final class LocusExistenceStructure2D {
 	private final List<ContinuousComponent> components;
 	private final List<LocusPointComponent2D> pointComponents;
 	private final List<LocusSingularParameter2D> singularParameters;
+	private final List<LocusCertifiedFold2D> certifiedFolds;
 	private final Completeness completeness;
 	private final String certifierContract;
 
@@ -603,6 +604,24 @@ public final class LocusExistenceStructure2D {
 			List<LocusPointComponent2D> pointComponents,
 			List<LocusSingularParameter2D> singularParameters, Completeness completeness,
 			String certifierContract) {
+		this(branchKey, canonicalDomain, topology, semanticRevision, coverage, components,
+				pointComponents, singularParameters, Collections.emptyList(), completeness,
+				certifierContract);
+	}
+
+	/**
+	 * Creates validated immutable semantic evidence with the certified folds of the traced
+	 * map interior to its components (PRE-G9B-CU2, certification design section 5), which a
+	 * drawing reads for its only turn exemption besides singular parameters.
+	 */
+	public LocusExistenceStructure2D(String branchKey,
+			LocusInterval2D canonicalDomain, DomainTopology topology,
+			long semanticRevision, List<Coverage> coverage,
+			List<ContinuousComponent> components,
+			List<LocusPointComponent2D> pointComponents,
+			List<LocusSingularParameter2D> singularParameters,
+			List<LocusCertifiedFold2D> certifiedFolds, Completeness completeness,
+			String certifierContract) {
 		this.branchKey = requireText(branchKey, "Branch key");
 		this.canonicalDomain = Objects.requireNonNull(canonicalDomain);
 		this.topology = Objects.requireNonNull(topology);
@@ -623,10 +642,25 @@ public final class LocusExistenceStructure2D {
 		singular.sort(Comparator.comparingDouble(
 				LocusSingularParameter2D::getParameterLower));
 		this.singularParameters = Collections.unmodifiableList(singular);
+		ArrayList<LocusCertifiedFold2D> folds = new ArrayList<>(
+				Objects.requireNonNull(certifiedFolds));
+		folds.forEach(Objects::requireNonNull);
+		folds.sort(Comparator.comparingDouble(LocusCertifiedFold2D::getParameterLower));
+		this.certifiedFolds = Collections.unmodifiableList(folds);
 		this.completeness = Objects.requireNonNull(completeness);
 		this.certifierContract = requireText(certifierContract,
 				"Certifier contract");
 		validateConsistency();
+	}
+
+	/**
+	 * @param folds certified folds of the traced map, interior to the components
+	 * @return the same evidence with the certified folds
+	 */
+	public LocusExistenceStructure2D withCertifiedFolds(List<LocusCertifiedFold2D> folds) {
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+				semanticRevision, coverage, components, pointComponents, singularParameters,
+				folds, completeness, certifierContract);
 	}
 
 	/**
@@ -807,6 +841,14 @@ public final class LocusExistenceStructure2D {
 		return singularParameters;
 	}
 
+	/**
+	 * @return certified non-degenerate folds of the traced map interior to the components,
+	 *         in canonical order (PRE-G9B-CU2, certification design section 5)
+	 */
+	public List<LocusCertifiedFold2D> getCertifiedFolds() {
+		return certifiedFolds;
+	}
+
 	/** @return global component-inventory completeness */
 	public Completeness getCompleteness() {
 		return completeness;
@@ -896,7 +938,7 @@ public final class LocusExistenceStructure2D {
 		return semanticRevision == revision ? this
 				: new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
 						revision, coverage, components, pointComponents, singularParameters,
-						completeness, certifierContract);
+						certifiedFolds, completeness, certifierContract);
 	}
 
 	/**
@@ -917,6 +959,9 @@ public final class LocusExistenceStructure2D {
 		}
 		for (LocusSingularParameter2D singular : singularParameters) {
 			signature.append("|singular=").append(singular.getSignature());
+		}
+		for (LocusCertifiedFold2D fold : certifiedFolds) {
+			signature.append("|fold=").append(fold.getSignature());
 		}
 		return signature.toString();
 	}
@@ -955,6 +1000,13 @@ public final class LocusExistenceStructure2D {
 			if (!coveredBy(enclosure, CoverageState.CERTIFIED_EXISTS)) {
 				throw new IllegalArgumentException(
 						"Singular parameter lacks existence coverage");
+			}
+		}
+		for (LocusCertifiedFold2D fold : certifiedFolds) {
+			LocusInterval2D enclosure = clippedEnclosure(fold.getParameterLower(),
+					fold.getParameterUpper(), "Fold");
+			if (!coveredBy(enclosure, CoverageState.CERTIFIED_EXISTS)) {
+				throw new IllegalArgumentException("Fold lacks existence coverage");
 			}
 		}
 		if (completeness == Completeness.COMPLETE) {

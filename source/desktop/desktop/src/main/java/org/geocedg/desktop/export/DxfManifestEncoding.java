@@ -15,10 +15,11 @@ import java.util.regex.Pattern;
 /** Validated deterministic UTF-8 encoding of one DXF fidelity manifest. */
 public final class DxfManifestEncoding {
 
-	// PRE-G9B-R6-plus-C (DQ-C11): the writer emits schema version 2 only
+	// PRE-G9B-R6-plus-C (DQ-C11): the writer emitted schema version 2; PRE-G9B-CU2 (A2.6):
+	// it emits schema version 3 only
 	private static final String HEADER =
 			"{\"schema\":\"org.geocedg.dxf.fidelity-manifest\","
-					+ "\"schema_version\":2,";
+					+ "\"schema_version\":3,";
 	private static final Pattern SHA_256 = Pattern.compile("[0-9a-f]{64}");
 	private final byte[] bytes;
 	private final String dxfSha256;

@@ -61,8 +61,9 @@ class G9X1DxfManifestTest extends BaseUnitTest {
 
 		assertTrue(manifest.startsWith(
 				"{\"schema\":\"org.geocedg.dxf.fidelity-manifest\","));
-		// PRE-G9B-R6-plus-C (DQ-C11): explicit schema evolution to version 2
-		assertContains(manifest, "\"schema_version\":2");
+		// PRE-G9B-R6-plus-C (DQ-C11): explicit schema evolution to version 2; PRE-G9B-CU2
+		// conformity (A2.6): version 3 adds the representation declarations
+		assertContains(manifest, "\"schema_version\":3");
 		assertContains(manifest, "\"name\":\"GeoCeDG\"");
 		assertContains(manifest, "\"version\":\"test-1.0\"");
 		assertContains(manifest,

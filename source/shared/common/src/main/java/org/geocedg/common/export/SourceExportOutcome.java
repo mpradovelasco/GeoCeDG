@@ -5,6 +5,10 @@
 
 package org.geocedg.common.export;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Immutable fidelity classification for one revision-local source component.
  */
@@ -15,7 +19,13 @@ public final class SourceExportOutcome {
 		EXACT,
 		APPROXIMATE,
 		UNSUPPORTED,
-		INVALID
+		INVALID,
+		/**
+		 * Not emitted by contract and never a failure: a point component of a Locus V2,
+		 * declared with its evidence and never exported as a path (PRE-G9B-CU2, D-CU2-19);
+		 * the output is then incomplete.
+		 */
+		DECLARED
 	}
 
 	/** Orthogonal machine-readable explanation of an outcome. */
@@ -64,6 +74,7 @@ public final class SourceExportOutcome {
 	private final ApproximationEvidence approximationEvidence;
 	private final String message;
 	private final SemanticCoverage semanticCoverage;
+	private final List<String> declarations;
 
 	/**
 	 * Creates a complete per-component outcome.
@@ -98,6 +109,30 @@ public final class SourceExportOutcome {
 			String neutralEntityId,
 			ApproximationEvidence approximationEvidence, String message,
 			SemanticCoverage semanticCoverage) {
+		this(sourceId, sourceType, label, sourceRevision, visible, identityScope,
+				componentAddress, fidelity, reason, neutralEntityId, approximationEvidence,
+				message, semanticCoverage, Collections.emptyList());
+	}
+
+	/**
+	 * Creates an outcome with the representation declarations of its component
+	 * (PRE-G9B-CU2, A2.6): an end exported up to its last evaluated vertex, an excluded end
+	 * approached from inside, or a singular vertex without its exact image. An emitted
+	 * outcome with a declaration is incomplete.
+	 *
+	 * @param declarations deterministic declarations, in component order
+	 */
+	public SourceExportOutcome(String sourceId, String sourceType, String label,
+			long sourceRevision, boolean visible, IdentityScope identityScope,
+			ComponentAddress componentAddress, Fidelity fidelity, Reason reason,
+			String neutralEntityId,
+			ApproximationEvidence approximationEvidence, String message,
+			SemanticCoverage semanticCoverage, List<String> declarations) {
+		this.declarations = Collections.unmodifiableList(new ArrayList<>(
+				require(declarations, "declarations")));
+		for (String declaration : this.declarations) {
+			requireText(declaration, "declaration");
+		}
 		this.sourceId = requireText(sourceId, "source id");
 		this.sourceType = requireText(sourceType, "source type");
 		this.label = optionalText(label, "label");
@@ -171,6 +206,21 @@ public final class SourceExportOutcome {
 
 	public boolean isEmitted() {
 		return fidelity == Fidelity.EXACT || fidelity == Fidelity.APPROXIMATE;
+	}
+
+	/** @return representation declarations of the component, in component order */
+	public List<String> getDeclarations() {
+		return declarations;
+	}
+
+	/**
+	 * @return whether this output does not claim its component completely: a locally
+	 *         certified component, an emitted component with a declaration, or a declared
+	 *         component without a path
+	 */
+	public boolean isIncomplete() {
+		return semanticCoverage == SemanticCoverage.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED
+				|| !declarations.isEmpty() || fidelity == Fidelity.DECLARED;
 	}
 
 	private void validateState() {

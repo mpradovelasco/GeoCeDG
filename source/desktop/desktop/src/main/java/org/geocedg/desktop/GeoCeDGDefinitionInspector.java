@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.euclidian.draw.LocusRenderData2D;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -19,6 +21,7 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geogebra.common.euclidian.DrawableND;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.desktop.main.AppD;
 
@@ -142,6 +145,30 @@ public final class GeoCeDGDefinitionInspector {
 			details.append("  existence completeness: ")
 					.append(branch.getExistenceStructure().getCompleteness())
 					.append('\n');
+		}
+		appendDrawingFidelity(app, locus, details);
+	}
+
+	/**
+	 * PRE-G9B-CU2 (consumption design section 5.6): the declared fidelity of the drawing in
+	 * the active view, per component, with its typed marks.
+	 */
+	private static void appendDrawingFidelity(AppD app, GeoLocusV2 locus,
+			StringBuilder details) {
+		DrawableND drawable = app.getActiveEuclidianView().getDrawableFor(locus);
+		LocusRenderData2D drawing = drawable instanceof DrawLocusV2
+				? ((DrawLocusV2) drawable).getRenderCache().getLastBuild() : null;
+		if (drawing == null) {
+			return;
+		}
+		details.append("  drawing fidelity: ").append(drawing.getFidelity()).append(" (")
+				.append(drawing.getPolicy().getVersion()).append(")\n");
+		for (LocusRenderData2D.ComponentFidelity component
+				: drawing.getComponentFidelities()) {
+			details.append("    ").append(component).append('\n');
+		}
+		for (LocusRenderData2D.Mark mark : drawing.getMarks()) {
+			details.append("    ").append(mark).append('\n');
 		}
 	}
 

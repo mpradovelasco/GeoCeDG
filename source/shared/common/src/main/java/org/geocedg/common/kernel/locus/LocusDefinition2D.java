@@ -225,6 +225,64 @@ public final class LocusDefinition2D {
 		return evaluate(branchKey, parameter, session);
 	}
 
+	/**
+	 * Encloses the image of a certified end of a component with the limit form of the
+	 * certificate (PRE-G9B-CU2, certification design section 3.4), for a representation whose
+	 * evaluation of the end fails. Only an enclosed certified transition whose exact root
+	 * belongs to the component qualifies: an excluded end has no limit form, because its limit
+	 * may not exist.
+	 *
+	 * @param end end of a certified component of the branch
+	 * @return enclosed image, or an unavailable one with its typed reason
+	 */
+	public LocusBoundaryImage2D encloseBoundaryImage(String branchKey, LocusBoundary2D end) {
+		if (end.getKind() != LocusBoundary2D.Kind.CERTIFIED_TRANSITION || !end.hasEnclosure()
+				|| !end.isIncluded() || !end.getNature().certifies()) {
+			return LocusBoundaryImage2D.notAvailable(LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE
+					+ ": the end is not an included certified transition");
+		}
+		return image(branchKey, end.getEnclosureLower(), end.getEnclosureUpper(),
+				end.getSource());
+	}
+
+	/**
+	 * Encloses the image of a certified singular parameter with the limit form of the
+	 * certificate, the exact vertex of a representation (consumption design section 5.2).
+	 *
+	 * @param singular certified singular parameter of the branch
+	 * @return enclosed image, or an unavailable one with its typed reason
+	 */
+	public LocusBoundaryImage2D encloseSingularImage(String branchKey,
+			LocusSingularParameter2D singular) {
+		if (!singular.getNature().certifies()) {
+			return LocusBoundaryImage2D.notAvailable(LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE
+					+ ": the singular parameter is not certified");
+		}
+		return image(branchKey, singular.getParameterLower(), singular.getParameterUpper(),
+				singular.getSource());
+	}
+
+	private LocusBoundaryImage2D image(String branchKey, double parameterLower,
+			double parameterUpper, LocusBoundarySource2D source) {
+		LocusBranch2D branch = branchesByKey.get(branchKey);
+		LocusEvaluation2D refusal = refusal(branchKey, branch);
+		if (refusal != null) {
+			return LocusBoundaryImage2D.notAvailable(LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE
+					+ ": " + refusal.getDiagnostic());
+		}
+		try {
+			LocusBoundaryImage2D image = evaluator.encloseBoundaryImage(this, branch,
+					parameterLower, parameterUpper, source);
+			return image == null ? LocusBoundaryImage2D.notAvailable(
+					LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE + ": evaluator returned null")
+					: image;
+		} catch (RuntimeException exception) {
+			return LocusBoundaryImage2D.notAvailable(LocusEvaluator2D.LIMIT_FORM_NOT_AVAILABLE
+					+ ": " + exception.getClass().getSimpleName() + ": "
+					+ exception.getMessage());
+		}
+	}
+
 	/** @return refusal of every evaluation of the definition or branch, or {@code null} */
 	private LocusEvaluation2D refusal(String branchKey, LocusBranch2D branch) {
 		LocusQuality2D quality = branch == null ? LocusQuality2D.analyticDoubleSemantic()

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.geocedg.common.export.SourceExportOutcome.Fidelity;
-import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 
 /**
  * Immutable result of adapting and classifying one requested export before any
@@ -33,6 +32,7 @@ public final class GeometryExportPreflight {
 	private final int approximateCount;
 	private final int unsupportedCount;
 	private final int invalidCount;
+	private final int declaredCount;
 	private final int hiddenCount;
 	private final int excludedPopulationCount;
 	private final int incompleteSemanticCoverageCount;
@@ -53,11 +53,12 @@ public final class GeometryExportPreflight {
 		int approximate = 0;
 		int unsupported = 0;
 		int invalid = 0;
+		int declared = 0;
 		int incompleteCoverage = 0;
 		Set<String> hiddenSources = new LinkedHashSet<>();
 		for (SourceExportOutcome outcome : model.getOutcomes()) {
-			if (outcome.getSemanticCoverage()
-					== SemanticCoverage.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED) {
+			// PRE-G9B-CU2 (A2.6): a declaration of a Locus V2 component is incompleteness too.
+			if (outcome.isIncomplete()) {
 				incompleteCoverage++;
 			}
 			if (!outcome.isVisible()) {
@@ -77,6 +78,9 @@ public final class GeometryExportPreflight {
 			case INVALID:
 				invalid++;
 				break;
+			case DECLARED:
+				declared++;
+				break;
 			default:
 				throw new IllegalStateException("Unknown export fidelity");
 			}
@@ -85,6 +89,7 @@ public final class GeometryExportPreflight {
 		approximateCount = approximate;
 		unsupportedCount = unsupported;
 		invalidCount = invalid;
+		declaredCount = declared;
 		hiddenCount = hiddenSources.size();
 		excludedPopulationCount = (int) model.getDiagnostics().stream()
 				.filter(item -> item.getCode()
@@ -129,6 +134,14 @@ public final class GeometryExportPreflight {
 	/** @return requested components that will not be emitted */
 	public int getOmittedCount() {
 		return unsupportedCount + invalidCount;
+	}
+
+	/**
+	 * @return components declared without a path by contract, such as the point components
+	 *         of a Locus V2 (PRE-G9B-CU2, D-CU2-19); never failures and never blocking
+	 */
+	public int getDeclaredCount() {
+		return declaredCount;
 	}
 
 	public int getHiddenCount() {

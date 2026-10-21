@@ -221,6 +221,18 @@ Aceptación (filas V-B06-1 a V-B06-3 de la
 - el número de vértices y el coste quedan dentro del presupuesto;
 - la semántica es idéntica con cualquier zoom o DPI.
 
+**Constantes fijadas (T10, 2026-10-21).** `d_min = 4`, `θ_max = 10°` y 4 096 vértices por locus y
+vista, dentro de los intervalos de D-CU2-10. Banco `tessellation` del arnés de `CU0`
+(`run-harness.ps1 -Scenario tessellation`), con los certificados en sombra publicados como hará
+T11: 660 dibujos (los siete loci del modelo a los parámetros del autor y la primera familia en
+mordedura, `excCyl = 3,85`; zoom ×1, ×2 y ×4; `d_min` de 2 a 6; `θ_max` de 5° a 20°). Todos los
+dibujos son completos y cumplen su `θ_max`. Con las constantes elegidas: `o` 63 vértices, `v` 62,
+`w` 72–74, `a_1` 57, `e_1` 17–19, `o_1` 51–53, `e_2` 23–39 y, en mordedura, de 36 a 55; giro
+máximo fuera de las exenciones 9,61°. `d_min` 2 y 3 cuestan casi lo mismo que 4, que protege del
+aliasing con 16 tramos iniciales; 5 y 6 añaden vértices sin mejora. El máximo de cualquier
+candidato es 147 vértices (`d_min = 6`, `θ_max = 5°`), muy por debajo del presupuesto, que deja
+margen para construcciones con más componentes o zoom mayor.
+
 ### 5.5 Determinismo
 
 La teselación puede depender de la vista (tolerancia en píxeles), pero nunca cambia el estado de
@@ -241,6 +253,47 @@ La fidelidad del dibujo se expone a la instrumentación y al inspector; la de la
 en el anexo DXF y en los comentarios y la clasificación LaTeX. Las situaciones y sus reglas están
 en el [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §3.4.
 
+**Precisiones de la implementación (T10, 2026-10-21).** Ninguna cambia una regla de §5.1 a §5.6:
+
+- **Política `locus-render-policy/v2`.** La estrategia adaptativa de cada vista es la política
+  v2; la estrategia uniforme queda solo como referencia de las pruebas anteriores a la versión 2 y
+  ningún dibujo del producto la usa ni recurre a ella. El teselador por componente parte de
+  `2^d_min` tramos sobre el intervalo elevado, mide la desviación sin acotar con el punto medio y
+  el giro entre cuerdas consecutivas en píxeles, y refina hasta la resolución del parámetro
+  (longitud de la componente × 2⁻⁵²), donde un defecto restante se marca
+  (`UNCERTIFIED_TURN`, `DEVIATION_AT_RESOLUTION`).
+- **Cuerdas visibles.** El giro se mide entre las cuerdas más cercanas de al menos 10⁻⁶ px: un
+  grupo de vértices coincidentes se juzga como el punto que dibuja. Sin esta regla, un punto
+  estacionario no certificado quedaba oculto bajo cuerdas de 10⁻¹⁴ px, sin refinar ni declarar.
+- **Pliegues.** La estructura de existencia publica los pliegues no degenerados del certificado
+  (`LocusCertifiedFold2D`: envolvente del parámetro, banda de aislamiento, simetría y naturaleza
+  `RIGOROUS_INTERVAL`); un punto estacionario degenerado nunca se publica como pliegue. El dibujo
+  garantiza un vértice en cada banda y exime solo los vértices de la banda.
+- **Forma límite (`locus-limit-form/v1`).** El evaluador reconstruible evalúa el programa de clase
+  v3 en la envolvente certificada de la raíz suponiendo su predicado (`evaluateAssuming`); solo
+  una transición certificada incluida y un parámetro singular certificado la tienen, nunca un
+  extremo excluido. El vértice singular es el centro de la envolvente de su imagen; un extremo
+  incluido que el evaluador no define es la forma límite de su transición.
+- **Fallos y extremos.** Un fallo se localiza por bisección desde cada lado hasta la resolución;
+  el tramo entre dos fallos se sondea hasta el tramo inicial × 2⁻⁴. Un extremo excluido sin límite
+  se aproxima con 24 bisecciones del tramo inicial y se marca. La causa de un hueco es
+  `COMPUTATIONAL_GAP` cuando la evaluación falló por cálculo (componente probada) y
+  `EVALUATION_GAP` en otro caso.
+- **Presupuesto.** Los niveles de engrosamiento 1 a 8 duplican por nivel la tolerancia de cuerda
+  y el giro máximo (hasta 180°) y acotan la profundidad bajo el tramo inicial (48 menos 6 por
+  nivel); en el nivel 8 se admiten las componentes en orden mientras caben y las demás fallan con
+  `VERTEX_BUDGET_EXHAUSTED`.
+- **Exposición.** Los datos de dibujo llevan las marcas, la fidelidad de cada componente, la
+  exención y el origen de cada vértice y el nivel de engrosamiento; la caché de cada vista cuenta
+  dibujos parciales, engrosados y componentes fallidas y conserva el último dibujo.
+- **Hallazgo de canonicalización.** Los proveedores calculan el parámetro canónico como
+  `lower + (p − lower)`, que puede mover un parámetro del dominio un ulp (preexistente, sin
+  corrección en `CU2`); el dibujo y la exportación no dependen de la evaluación exacta de un
+  extremo: si falla, usan la forma límite o el último vértice evaluado y lo declaran.
+- **Punto estacionario no certificado.** En la configuración crítica sintética el punto trazado se
+  detiene y retrocede donde el rayo es tangente a la circunferencia del conductor; ninguna simetría
+  lo certifica (D-CU2-6), de modo que su giro se refina hasta la resolución y se declara.
+
 ## 6. Aproximaciones de exportación
 
 - Mismas reglas de componentes, fronteras y cierre que el dibujo (§3).
@@ -255,6 +308,31 @@ en el [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md) §
 - El residuo de cierre se mide contra el certificado de cierre, no contra una identidad trivial.
 - La tolerancia de exportación sigue en unidades del modelo (0,001 por defecto). Si el criterio
   de giro de §5.1 se aplica también a la exportación lo decide D-CU2-10.
+
+**Precisiones de la implementación (T10, 2026-10-21).** D-CU2-10 dejó el criterio de giro solo en
+el dibujo:
+
+- **Extremos.** Cada extremo de una componente certificada se alcanza con su evaluación, su límite
+  lateral o la forma límite de su transición incluida; si no, la exportación se detiene en el
+  último parámetro evaluado, hallado por bisección desde el centro de la componente hasta la
+  resolución, y lo declara (`END_NOT_EVALUATED`). Un extremo excluido sin límite se aproxima a la
+  longitud de la componente × 2⁻²⁸, como el dibujo, y se declara (`OPEN_END_APPROACHED`). Las
+  declaraciones viajan en el resultado de cada componente, que entonces es incompleto.
+- **Vértices exactos.** Cada parámetro singular certificado dentro del tramo exportado parte el
+  dominio y aporta la imagen de su forma límite como vértice; sin forma límite se declara
+  (`SINGULAR_VERTEX_NOT_EXACT`).
+- **Profundidad mínima.** Las componentes Locus V2 abiertas y cerradas se refinan al menos hasta
+  la profundidad 2; las demás fuentes del constructor compartido conservan su regla.
+- **Residuo de cierre.** Se mide entre el inicio y la curva justo antes del punto de cierre, a
+  cuatro ulps y al doble de `eps_domain`, de modo que la canonicalización no lo devuelva al
+  inicio, y se registra en la evidencia de aproximación.
+- **Componentes puntuales.** Se declaran con la fidelidad `DECLARED` (nunca un fallo) y la razón
+  `DEGENERATE_SOURCE`, con su envolvente y el estado de su posición; no bloquean la regla estricta
+  de DXF y hacen obligatorio el anexo.
+- **Anexo DXF, versión 3 del esquema.** Añade las declaraciones de cada resultado, las componentes
+  declaradas y su número y el residuo de cierre; cada declaración es además un aviso
+  `representation_declaration`. Los comentarios LaTeX añaden «declared …» a la línea de cada
+  componente.
 
 ## 7. Identidad en los consumidores
 

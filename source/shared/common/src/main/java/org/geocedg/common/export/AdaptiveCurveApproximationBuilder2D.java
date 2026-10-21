@@ -123,6 +123,37 @@ public final class AdaptiveCurveApproximationBuilder2D {
 		}
 	}
 
+	/**
+	 * A vertex that the approximation keeps at a parameter strictly inside its domain, with a
+	 * point given by the caller instead of an evaluation: the exact image of a certified
+	 * singular parameter (PRE-G9B-CU2, A2.6). The spans on its two sides are refined apart.
+	 */
+	public static final class RequiredVertex {
+		private final double parameter;
+		private final Point2D point;
+
+		/**
+		 * @param parameter parameter of the vertex
+		 * @param point exact point of the vertex
+		 */
+		public RequiredVertex(double parameter, Point2D point) {
+			if (!Double.isFinite(parameter) || point == null) {
+				throw new IllegalArgumentException(
+						"A required vertex needs a parameter and a point");
+			}
+			this.parameter = parameter;
+			this.point = point;
+		}
+
+		public double getParameter() {
+			return parameter;
+		}
+
+		public Point2D getPoint() {
+			return point;
+		}
+	}
+
 	/** Immutable all-or-nothing result for one semantic component. */
 	public static final class Result {
 		private final List<Point2D> vertices;
@@ -135,11 +166,20 @@ public final class AdaptiveCurveApproximationBuilder2D {
 		private final long segments;
 		private final long evidenceVertices;
 		private final int maximumDepthReached;
+		private final Double closureResidual;
 
 		private Result(List<Point2D> vertices, boolean closed, Reason reason,
 				double requestedTolerance, Double achievedEstimate, long evaluations,
 				long subdivisions, long segments, long evidenceVertices,
 				int maximumDepthReached) {
+			this(vertices, closed, reason, requestedTolerance, achievedEstimate, evaluations,
+					subdivisions, segments, evidenceVertices, maximumDepthReached, null);
+		}
+
+		private Result(List<Point2D> vertices, boolean closed, Reason reason,
+				double requestedTolerance, Double achievedEstimate, long evaluations,
+				long subdivisions, long segments, long evidenceVertices,
+				int maximumDepthReached, Double closureResidual) {
 			this.vertices = Collections.unmodifiableList(new ArrayList<>(vertices));
 			this.closed = closed;
 			this.reason = reason;
@@ -150,6 +190,12 @@ public final class AdaptiveCurveApproximationBuilder2D {
 			this.segments = segments;
 			this.evidenceVertices = evidenceVertices;
 			this.maximumDepthReached = maximumDepthReached;
+			this.closureResidual = closureResidual;
+		}
+
+		/** @return closure residual of a closed result, or null */
+		public Double getClosureResidual() {
+			return closureResidual;
 		}
 
 		public boolean isSuccess() {
@@ -212,7 +258,7 @@ public final class AdaptiveCurveApproximationBuilder2D {
 			return new ApproximationEvidence(Method.ORIENTED_DYADIC_REFINEMENT,
 					requestedTolerance, achievedEstimate, Guarantee.ESTIMATED_ERROR,
 					evaluations, subdivisions, segments, evidenceVertices,
-					maximumDepthReached);
+					maximumDepthReached, closureResidual);
 		}
 	}
 
@@ -240,7 +286,28 @@ public final class AdaptiveCurveApproximationBuilder2D {
 	public Result approximate(CurveEvaluator2D evaluator, SemanticDomain domain,
 			boolean semanticClosure, GeometryExportRequest request,
 			WorkLedger ledger) {
-		if (evaluator == null || request == null || ledger == null) {
+		return approximate(evaluator, domain, semanticClosure, Double.NaN,
+				Collections.emptyList(), semanticClosure ? 2 : 0, request, ledger);
+	}
+
+	/**
+	 * Approximates one certified component of a Locus V2 (PRE-G9B-CU2, A2.6): the closure
+	 * residual is measured by the caller against the closure certificate, required vertices
+	 * split the domain, and a minimum depth applies to open components too.
+	 *
+	 * @param closureResidual distance between the start and the curve just before the
+	 *        closing point, measured against the closure certificate; {@code NaN} measures
+	 *        the start against the evaluated end
+	 * @param requiredVertices vertices strictly inside the domain, in domain order
+	 * @param minimumDepth subdivision depth below which no span is accepted
+	 * @return all-or-nothing component result
+	 */
+	public Result approximate(CurveEvaluator2D evaluator, SemanticDomain domain,
+			boolean semanticClosure, double closureResidual,
+			List<RequiredVertex> requiredVertices, int minimumDepth,
+			GeometryExportRequest request, WorkLedger ledger) {
+		if (evaluator == null || request == null || ledger == null
+				|| requiredVertices == null || minimumDepth < 0) {
 			throw new IllegalArgumentException(
 					"Evaluator, request, and work ledger are required");
 		}
@@ -258,19 +325,39 @@ public final class AdaptiveCurveApproximationBuilder2D {
 			return failure(request, Reason.MISSING_DOMAIN, 0, 0, 0);
 		}
 
-		State state = new State(evaluator, request, ledger,
-				semanticClosure ? 2 : 0);
+		State state = new State(evaluator, request, ledger, minimumDepth);
 		double start = domain.getStartParameter();
 		double end = domain.getEndParameter();
 		Point2D startPoint = state.evaluate(start);
 		Point2D endPoint = state.evaluate(end);
-		double midpointParameter = midpoint(start, end);
-		Point2D midpoint = state.evaluate(midpointParameter);
+		List<Double> cuts = new ArrayList<>();
+		List<Point2D> points = new ArrayList<>();
+		cuts.add(start);
+		points.add(startPoint);
+		for (RequiredVertex vertex : requiredVertices) {
+			double previous = cuts.get(cuts.size() - 1);
+			if (!(Math.min(previous, end) < vertex.getParameter()
+					&& vertex.getParameter() < Math.max(previous, end))) {
+				throw new IllegalArgumentException(
+						"Required vertices lie strictly inside the domain, in its order");
+			}
+			cuts.add(vertex.getParameter());
+			points.add(vertex.getPoint());
+		}
+		cuts.add(end);
+		points.add(endPoint);
+		List<Point2D> midpoints = new ArrayList<>();
+		for (int piece = 0; piece + 1 < cuts.size(); piece++) {
+			midpoints.add(state.evaluate(midpoint(cuts.get(piece), cuts.get(piece + 1))));
+		}
 		if (state.hasFailed()) {
 			return state.failureResult();
 		}
 		state.addFirst(startPoint);
-		state.refine(start, end, startPoint, endPoint, midpoint, 0);
+		for (int piece = 0; piece + 1 < cuts.size(); piece++) {
+			state.refine(cuts.get(piece), cuts.get(piece + 1), points.get(piece),
+					points.get(piece + 1), midpoints.get(piece), 0);
+		}
 		if (state.hasFailed()) {
 			return state.failureResult();
 		}
@@ -278,13 +365,15 @@ public final class AdaptiveCurveApproximationBuilder2D {
 			state.fail(Reason.DEGENERATE_SOURCE);
 			return state.failureResult();
 		}
+		Double residual = null;
 		if (semanticClosure) {
-			double closureResidual = distance(startPoint, endPoint);
-			if (closureResidual > request.getRequestedTolerance()) {
+			residual = Double.isNaN(closureResidual) ? distance(startPoint, endPoint)
+					: closureResidual;
+			if (!(residual <= request.getRequestedTolerance())) {
 				state.fail(Reason.DISCONTINUITY_UNRESOLVED);
 				return state.failureResult();
 			}
-			if (!state.includeClosureResidual(closureResidual)) {
+			if (!state.includeClosureResidual(residual)) {
 				state.fail(Reason.TOLERANCE_NOT_ESTABLISHED);
 				return state.failureResult();
 			}
@@ -293,7 +382,7 @@ public final class AdaptiveCurveApproximationBuilder2D {
 				return state.failureResult();
 			}
 		}
-		return state.successResult(semanticClosure);
+		return state.successResult(semanticClosure, residual);
 	}
 
 	private static Result failure(GeometryExportRequest request, Reason reason,
@@ -516,7 +605,7 @@ public final class AdaptiveCurveApproximationBuilder2D {
 					segments, vertices.size(), maximumDepthReached);
 		}
 
-		private Result successResult(boolean semanticClosure) {
+		private Result successResult(boolean semanticClosure, Double closureResidual) {
 			List<Point2D> emitted = new ArrayList<>(vertices);
 			if (semanticClosure && emitted.size() > 2
 					&& distance(emitted.get(0), emitted.get(emitted.size() - 1))
@@ -527,7 +616,7 @@ public final class AdaptiveCurveApproximationBuilder2D {
 			return new Result(emitted, semanticClosure, Reason.NONE,
 					request.getRequestedTolerance(), maximumEstimatedDeviation,
 					evaluations, subdivisions, segments, emitted.size(),
-					maximumDepthReached);
+					maximumDepthReached, closureResidual);
 		}
 	}
 }
