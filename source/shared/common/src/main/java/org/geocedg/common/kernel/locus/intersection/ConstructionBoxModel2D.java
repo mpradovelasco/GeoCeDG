@@ -274,6 +274,28 @@ public final class ConstructionBoxModel2D {
 	}
 
 	/**
+	 * Encloses the traced point and its first two derivatives on a box on which the program
+	 * is valid ({@code locus-v2-certified-construction-model.md} section 10.7: second-order
+	 * enclosures serve the isolation and non-degeneracy of stationary points only).
+	 *
+	 * @param periodic whether the box may wrap the seam of a circle driver
+	 * @return {@code {value, first, second}}, each with the x and y enclosures, or
+	 *         {@code null} when the box is not valid or a derivative is not enclosed
+	 */
+	SplineOutwardInterval2D[][] encloseTraced(SplineOutwardInterval2D box, boolean periodic) {
+		Run run = new Run(periodic, Mode.SECOND_ORDER, null, List.of());
+		if (run.evaluate(box).kind != ConstructionBoxOutcome2D.Kind.VALID
+				|| run.traced == null || run.traced.inhomX.second == null
+				|| run.traced.inhomY.second == null) {
+			return null;
+		}
+		Jet x = run.traced.inhomX;
+		Jet y = run.traced.inhomY;
+		return new SplineOutwardInterval2D[][] {{x.value, y.value},
+			{x.derivative, y.derivative}, {x.second, y.second}};
+	}
+
+	/**
 	 * Evaluates the program on a box assuming that one validity predicate holds: its value
 	 * is restricted to its valid set, and every other predicate is decided by value
 	 * enclosures only. A valid outcome certifies existence on the part of the box where the
@@ -482,6 +504,8 @@ public final class ConstructionBoxModel2D {
 		private int node;
 		/** Radius of the box around its midpoint, for the centred form. */
 		private SplineOutwardInterval2D radius;
+		/** Traced point of a valid box. */
+		private PointJet traced;
 
 		Run(boolean periodic, Mode mode, Target capture, List<Target> assumed) {
 			this(periodic, mode, capture, assumed, false);
@@ -605,6 +629,7 @@ public final class ConstructionBoxModel2D {
 						String.join(",", selection), evaluations);
 			}
 			PointJet point = (PointJet) output;
+			traced = point;
 			return ConstructionBoxOutcome2D.valid(
 					new SplineOutwardInterval2D[] {point.inhomX.value, point.inhomY.value},
 					point.inhomX.derivative == null ? null : new SplineOutwardInterval2D[] {

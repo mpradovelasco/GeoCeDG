@@ -654,6 +654,31 @@ lo trata como un vértice exacto (consumo §5.1).
 
 `CU3` reutilizará estos chorros para los contactos tangentes; `CU2` no los materializa.
 
+**Precisiones de la implementación (T5, 2026-10-21).** Ninguna cambia las cinco pruebas:
+
+- **Tabla de operaciones `fold-symmetry/v1`.** Un conductor circular sin términos cruzados en sus
+  ejes capturados (`x` solo depende de `cos t` e `y` de `sin t`) admite dos reflexiones: en la
+  horizontal por el centro (`t → −t`, puntos fijos `0` y `π`) y en la vertical (`t → π − t`,
+  puntos fijos `±π/2`). Un paso es fijo, con el mismo valor exacto en `t` y en `σ(t)`, si todos
+  los pasos que lee son fijos, o si lee el conductor solo a través de una magnitud que la
+  reflexión conserva: la recta por el conductor perpendicular al espejo (paralela a una recta
+  constante perpendicular al espejo, o perpendicular a una paralela) y la circunferencia por el
+  conductor con centro constante sobre el espejo, por igualdad exacta de los binary64 capturados.
+  El punto trazado es simétrico si su paso es fijo; cualquier otro uso del conductor deja el
+  programa sin simetría (V-FOLD-2, V-FOLD-3).
+- **Pruebas 2 y 3.** Cajas de aislamiento alrededor del punto fijo, de `2⁻⁸` a `2⁻³⁰` periodos,
+  en las que el modelo de cajas encierra el punto trazado con sus derivadas primera y segunda; la
+  primera caja en la que una componente de `F″` excluye el cero certifica a la vez el aislamiento
+  y la no degeneración. Esa caja es la única banda donde el dibujo podrá eximir el giro (paso T9).
+  Sus cajas cuentan en el presupuesto y en el contador de cajas del certificado.
+- **Prueba 4.** La imagen canónica de la caja está en existencia certificada y dentro de una sola
+  componente, también alrededor de la costura.
+- **Prueba 5.** Se sigue de las anteriores; el certificado registra la componente y la envolvente
+  de `F″` en la caja, que dan las direcciones opuestas de las tangentes laterales.
+- **Punto estacionario degenerado.** Con la simetría y la prueba 4, pero sin caja en la que una
+  componente de `F″` excluya el cero, el punto estacionario está demostrado (`F′(t₀) = 0`) y nunca
+  se certifica como pliegue no degenerado (V-FOLD-4).
+
 ## 6. Regla de publicación (H01)
 
 Hoy la publicación exige que el punto trazado esté definido en la posición actual del conductor

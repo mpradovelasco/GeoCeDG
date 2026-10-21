@@ -6830,6 +6830,18 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T4: hybrid certifier on synthetic constructions (V-TOT-1, V-PER-1, V-CRIT-1 to V-CRIT-6, V-CRIT-10, V-TR-2, V-POINT-1, V-POINT-2, V-POINT-4, V-POINT-6, V-COINC-1, V-COINC-2, V-COINC-4, V-COINC-5, V-COINC-7, V-LVL-1, V-LVL-3, V-COMPL-1, V-V3-3, V-V3-4, GC-4, GC-8), with the soundness of the centred form against a 60-digit reference.",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionSymmetry2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T5: exact structural symmetry of a class-v3 program with a circle driver, verified step by step with the versioned operation table fold-symmetry/v1 (steps that read only fixed steps, the line through the driver perpendicular to the mirror, the circle centred on the mirror through the driver).",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2FoldCertificationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T5: certified stationary points on synthetic constructions (V-FOLD-1 to V-FOLD-4): symmetry verified on the captured constants, isolation and non-degeneracy by second-order enclosures, and degenerate stationary points never certified as folds.",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

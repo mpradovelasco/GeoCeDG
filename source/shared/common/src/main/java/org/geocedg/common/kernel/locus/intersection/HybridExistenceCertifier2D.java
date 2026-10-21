@@ -97,11 +97,12 @@ public final class HybridExistenceCertifier2D {
 		/**
 		 * Default policy: brackets of width {@code 2^-40} periods, 4 096 boxes per branch and
 		 * revision, minimum depth 6, interior band refinement to depth 8, the default exact
-		 * budget (4 096 coefficient bits, 512 bisections per root) and 32 exploratory samples
-		 * per band with 24 bisections per transition.
+		 * budget (4 096 coefficient bits, 512 bisections per root), 32 exploratory samples
+		 * per band with 24 bisections per transition, and fold isolation boxes from
+		 * {@code 2^-8} down to {@code 2^-30} periods.
 		 */
 		public static final Policy DEFAULT = new Policy(VERSION, 40, 4_096, 6, 8,
-				ExactBudget1D.DEFAULT, 32, 24);
+				ExactBudget1D.DEFAULT, 32, 24, 8, 30);
 
 		private final String version;
 		private final int deltaExponent;
@@ -111,13 +112,17 @@ public final class HybridExistenceCertifier2D {
 		private final ExactBudget1D exactBudget;
 		private final int explorationSamples;
 		private final int explorationBisections;
+		private final int foldWidestExponent;
+		private final int foldNarrowestExponent;
 
 		private Policy(String version, int deltaExponent, int boxBudget, int minimumDepth,
 				int bandDepth, ExactBudget1D exactBudget, int explorationSamples,
-				int explorationBisections) {
+				int explorationBisections, int foldWidestExponent,
+				int foldNarrowestExponent) {
 			if (deltaExponent < 1 || boxBudget < 1 || minimumDepth < 0
 					|| bandDepth < minimumDepth || explorationSamples < 2
-					|| explorationBisections < 0) {
+					|| explorationBisections < 0 || foldWidestExponent < 1
+					|| foldNarrowestExponent < foldWidestExponent) {
 				throw new IllegalArgumentException("Invalid hybrid certification policy");
 			}
 			this.version = version;
@@ -128,6 +133,8 @@ public final class HybridExistenceCertifier2D {
 			this.exactBudget = Objects.requireNonNull(exactBudget);
 			this.explorationSamples = explorationSamples;
 			this.explorationBisections = explorationBisections;
+			this.foldWidestExponent = foldWidestExponent;
+			this.foldNarrowestExponent = foldNarrowestExponent;
 		}
 
 		/**
@@ -137,7 +144,7 @@ public final class HybridExistenceCertifier2D {
 		public Policy withBoxBudget(int budget) {
 			return new Policy(version + "+boxes=" + budget, deltaExponent, budget,
 					minimumDepth, bandDepth, exactBudget, explorationSamples,
-					explorationBisections);
+					explorationBisections, foldWidestExponent, foldNarrowestExponent);
 		}
 
 		/**
@@ -148,7 +155,7 @@ public final class HybridExistenceCertifier2D {
 			return new Policy(version + "+exact=" + budget.maximumCoefficientBits() + "/"
 					+ budget.maximumBisectionsPerRoot(), deltaExponent, boxBudget,
 					minimumDepth, bandDepth, budget, explorationSamples,
-					explorationBisections);
+					explorationBisections, foldWidestExponent, foldNarrowestExponent);
 		}
 
 		/**
@@ -159,7 +166,7 @@ public final class HybridExistenceCertifier2D {
 		public Policy withExploration(int samples, int bisections) {
 			return new Policy(version + "+exploration=" + samples + "/" + bisections,
 					deltaExponent, boxBudget, minimumDepth, bandDepth, exactBudget, samples,
-					bisections);
+					bisections, foldWidestExponent, foldNarrowestExponent);
 		}
 
 		/** @return exponent {@code k} of the bracket width {@code 2^-k} periods */
@@ -193,7 +200,128 @@ public final class HybridExistenceCertifier2D {
 					+ "|depth=" + minimumDepth + "|band-depth=" + bandDepth + "|exact-bits="
 					+ exactBudget.maximumCoefficientBits() + "|exact-bisections="
 					+ exactBudget.maximumBisectionsPerRoot() + "|exploration="
-					+ explorationSamples + "/" + explorationBisections;
+					+ explorationSamples + "/" + explorationBisections + "|fold-boxes=2^-"
+					+ foldWidestExponent + "..2^-" + foldNarrowestExponent;
+		}
+	}
+
+	/**
+	 * A certified stationary point of the traced map ({@code
+	 * locus-v2-certified-construction-model.md} section 10.7; certification design section
+	 * 5). Its existence comes from an exact structural symmetry {@code sigma} with
+	 * {@code F o sigma = F} at a fixed point {@code t0} of {@code sigma} interior to a
+	 * certified component. A fold adds isolation and non-degeneracy: on an isolation box
+	 * around {@code t0} one component of {@code F''} excludes zero, so {@code t0} is the only
+	 * stationary point there and the one-sided tangents are the opposite directions of
+	 * {@code F''(t0)}. A degenerate stationary point has no such box: its existence is
+	 * proven, never a non-degenerate fold.
+	 */
+	public static final class CertifiedStationaryPoint {
+		/** Kind of the stationary point. */
+		public enum StationaryKind {
+			/** A non-degenerate fold: the curve turns back along the same arc. */
+			FOLD,
+			/** A stationary point proven by the symmetry whose non-degeneracy is not. */
+			DEGENERATE
+		}
+
+		private final StationaryKind kind;
+		private final String mirror;
+		private final double parameterLower;
+		private final double parameterUpper;
+		private final double isolationLower;
+		private final double isolationUpper;
+		private final int axis;
+		private final double[] secondDerivative;
+
+		CertifiedStationaryPoint(StationaryKind kind, String mirror, double parameterLower,
+				double parameterUpper, double isolationLower, double isolationUpper, int axis,
+				double[] secondDerivative) {
+			this.kind = kind;
+			this.mirror = mirror;
+			this.parameterLower = parameterLower;
+			this.parameterUpper = parameterUpper;
+			this.isolationLower = isolationLower;
+			this.isolationUpper = isolationUpper;
+			this.axis = axis;
+			this.secondDerivative = secondDerivative;
+		}
+
+		/** @return kind of the stationary point */
+		public StationaryKind getKind() {
+			return kind;
+		}
+
+		/** @return verified mirror of the symmetry, as named by its operation table */
+		public String getSymmetry() {
+			return ConstructionSymmetry2D.VERSION + ":" + mirror;
+		}
+
+		/** @return lower bound of the canonical enclosure of {@code t0} */
+		public double getParameterLower() {
+			return parameterLower;
+		}
+
+		/** @return upper bound of the canonical enclosure of {@code t0} */
+		public double getParameterUpper() {
+			return parameterUpper;
+		}
+
+		/**
+		 * @return lower end of the isolation box, the band where a turn of the curve is
+		 *         certified; {@code NaN} for a degenerate point
+		 */
+		public double getIsolationLower() {
+			return isolationLower;
+		}
+
+		/** @return upper end of the isolation box; {@code NaN} for a degenerate point */
+		public double getIsolationUpper() {
+			return isolationUpper;
+		}
+
+		/** @return 0 or 1 for the component of {@code F''} that excludes zero; -1 if none */
+		public int getAxis() {
+			return axis;
+		}
+
+		/**
+		 * @return {@code {x''Lower, x''Upper, y''Lower, y''Upper}} on the isolation box, the
+		 *         directions of the one-sided tangents; {@code null} for a degenerate point
+		 */
+		public double[] getSecondDerivative() {
+			return secondDerivative == null ? null : secondDerivative.clone();
+		}
+
+		/**
+		 * @return {@link LocusEvidenceNature2D#EXACT} for the existence of a degenerate
+		 *         point; {@link LocusEvidenceNature2D#RIGOROUS_INTERVAL} for a fold, whose
+		 *         isolation rests on interval enclosures
+		 */
+		public LocusEvidenceNature2D getNature() {
+			return kind == StationaryKind.FOLD ? LocusEvidenceNature2D.RIGOROUS_INTERVAL
+					: LocusEvidenceNature2D.EXACT;
+		}
+
+		/** @return canonical text of the stationary point */
+		public String getSignature() {
+			StringBuilder signature = new StringBuilder(kind.name()).append('[')
+					.append(Double.toHexString(parameterLower)).append(',')
+					.append(Double.toHexString(parameterUpper)).append("]:").append(getSymmetry());
+			if (kind == StationaryKind.FOLD) {
+				signature.append(":isolation[").append(Double.toHexString(isolationLower))
+						.append(',').append(Double.toHexString(isolationUpper)).append("]:axis=")
+						.append(axis);
+				for (double bound : secondDerivative) {
+					signature.append(',').append(Double.toHexString(bound));
+				}
+			}
+			return signature.toString();
+		}
+
+		@Override
+		public String toString() {
+			return getSignature();
 		}
 	}
 
@@ -388,6 +516,7 @@ public final class HybridExistenceCertifier2D {
 		private final LocusExploratoryEvidence2D exploration;
 		private final List<CertifiedRoot> roots;
 		private final List<ExactEvidence> exactEvidence;
+		private final List<CertifiedStationaryPoint> stationaryPoints;
 		private final long boxes;
 		private final int transitions;
 		private final int bands;
@@ -395,12 +524,15 @@ public final class HybridExistenceCertifier2D {
 		private final String diagnostic;
 
 		Result(LocusExistenceStructure2D structure, LocusExploratoryEvidence2D exploration,
-				List<CertifiedRoot> roots, List<ExactEvidence> exactEvidence, long boxes,
-				int transitions, int bands, String policySignature, String diagnostic) {
+				List<CertifiedRoot> roots, List<ExactEvidence> exactEvidence,
+				List<CertifiedStationaryPoint> stationaryPoints, long boxes, int transitions,
+				int bands, String policySignature, String diagnostic) {
 			this.structure = structure;
 			this.exploration = exploration;
 			this.roots = Collections.unmodifiableList(new ArrayList<>(roots));
 			this.exactEvidence = Collections.unmodifiableList(new ArrayList<>(exactEvidence));
+			this.stationaryPoints = Collections.unmodifiableList(
+					new ArrayList<>(stationaryPoints));
 			this.boxes = boxes;
 			this.transitions = transitions;
 			this.bands = bands;
@@ -426,6 +558,11 @@ public final class HybridExistenceCertifier2D {
 		/** @return evidence of every exact certificate computed */
 		public List<ExactEvidence> getExactEvidence() {
 			return exactEvidence;
+		}
+
+		/** @return certified stationary points of the traced map, in parameter order */
+		public List<CertifiedStationaryPoint> getStationaryPoints() {
+			return stationaryPoints;
 		}
 
 		/** @return existence boxes evaluated, point boxes included */
@@ -494,7 +631,7 @@ public final class HybridExistenceCertifier2D {
 		record(instrumentation, LocusCertificationWork2D.UNRESOLVED_BAND);
 		LocusExploratoryEvidence2D exploration = explore(branchKey,
 				Collections.singletonList(domain), sampler, policy, instrumentation);
-		return new Result(structure, exploration, List.of(), List.of(), 0, 0, 1,
+		return new Result(structure, exploration, List.of(), List.of(), List.of(), 0, 0, 1,
 				policy.getSignature(), null);
 	}
 
@@ -777,7 +914,8 @@ public final class HybridExistenceCertifier2D {
 			LocusExistenceStructure2D structure = new LocusExistenceStructure2D(branchKey,
 					domain, topology, 0, coverage, List.of(component), List.of(), List.of(),
 					Completeness.COMPLETE, CONTRACT);
-			return new Result(structure, null, List.of(), List.of(), 0, 0, 0,
+			List<CertifiedStationaryPoint> stationary = stationaryPoints(structure);
+			return new Result(structure, null, List.of(), List.of(), stationary, boxes, 0, 0,
 					policy.getSignature(), null);
 		}
 
@@ -1568,9 +1706,10 @@ public final class HybridExistenceCertifier2D {
 			} catch (IllegalArgumentException exception) {
 				return failed(exception.getMessage(), roots);
 			}
+			List<CertifiedStationaryPoint> stationary = stationaryPoints(structure);
 			LocusExploratoryEvidence2D exploration = explore(branchKey, bands, sampler,
 					policy, instrumentation);
-			return new Result(structure, exploration, roots, exactEvidence, boxes,
+			return new Result(structure, exploration, roots, exactEvidence, stationary, boxes,
 					transitions, bands.size(), policy.getSignature(), diagnostic);
 		}
 
@@ -1585,8 +1724,122 @@ public final class HybridExistenceCertifier2D {
 					Completeness.NOT_ESTABLISHED, CONTRACT);
 			record(instrumentation, LocusCertificationWork2D.UNRESOLVED_BAND);
 			return new Result(structure, explore(branchKey, List.of(domain), sampler,
-					policy, instrumentation), roots, exactEvidence, boxes, 0, 1,
+					policy, instrumentation), roots, exactEvidence, List.of(), boxes, 0, 1,
 					policy.getSignature(), detail);
+		}
+
+		/**
+		 * Certifies the stationary points at the fixed points of every verified symmetry of a
+		 * circle program (certification design section 5): existence by the symmetry at a
+		 * fixed point interior to a certified component; a fold when, on an isolation box from
+		 * the widest of the policy down to the narrowest, one component of {@code F''}
+		 * excludes zero.
+		 */
+		private List<CertifiedStationaryPoint> stationaryPoints(
+				LocusExistenceStructure2D structure) {
+			List<CertifiedStationaryPoint> points = new ArrayList<>();
+			if (!circle) {
+				return points;
+			}
+			double halfPi = Math.PI / 2;
+			for (ConstructionSymmetry2D.Mirror mirror
+					: ConstructionSymmetry2D.invariantMirrors(program)) {
+				double[][] fixed = mirror == ConstructionSymmetry2D.Mirror.HORIZONTAL
+						? new double[][] {{0, 0, 0, 0}, {Math.PI, seamUpper, -seamUpper,
+							-Math.PI}}
+						: new double[][] {{halfPi, Math.nextUp(halfPi), halfPi,
+							Math.nextUp(halfPi)}, {-Math.nextUp(halfPi), -halfPi,
+								-Math.nextUp(halfPi), -halfPi}};
+				for (double[] parameter : fixed) {
+					CertifiedStationaryPoint point = stationaryPoint(structure, mirror,
+							parameter);
+					if (point != null) {
+						points.add(point);
+					}
+				}
+			}
+			points.sort((a, b) -> Double.compare(a.parameterLower, b.parameterLower));
+			return points;
+		}
+
+		/**
+		 * @param parameter enclosure {@code {lower, upper}} of the fixed point {@code t0}
+		 *        in the cell coordinates, followed by its canonical enclosure
+		 */
+		private CertifiedStationaryPoint stationaryPoint(LocusExistenceStructure2D structure,
+				ConstructionSymmetry2D.Mirror mirror, double[] parameter) {
+			boolean interior = false;
+			for (int exponent = policy.foldWidestExponent;
+					exponent <= policy.foldNarrowestExponent; exponent++) {
+				double width = Math.scalb(period, -exponent);
+				double lower = Math.nextDown(parameter[0] - width);
+				double upper = Math.nextUp(parameter[1] + width);
+				if (!insideOneComponent(structure, lower, upper)) {
+					continue;
+				}
+				interior = true;
+				if (!spend()) {
+					break;
+				}
+				SplineOutwardInterval2D[][] jets = model.encloseTraced(
+						new SplineOutwardInterval2D(lower, upper), true);
+				if (jets == null) {
+					continue;
+				}
+				for (int axis = 0; axis < 2; axis++) {
+					if (!jets[2][axis].containsZero()) {
+						return new CertifiedStationaryPoint(
+								CertifiedStationaryPoint.StationaryKind.FOLD, mirror.name(),
+								parameter[2], parameter[3], lower, upper, axis, new double[] {
+									jets[2][0].lower, jets[2][0].upper, jets[2][1].lower,
+									jets[2][1].upper});
+					}
+				}
+			}
+			return interior ? new CertifiedStationaryPoint(
+					CertifiedStationaryPoint.StationaryKind.DEGENERATE, mirror.name(),
+					parameter[2], parameter[3], Double.NaN, Double.NaN, -1, null) : null;
+		}
+
+		/**
+		 * @return whether the canonical image of the box lies in certified existence inside one
+		 *         component: the fixed point is then interior to it and the traced map is
+		 *         differentiable there (proof 4)
+		 */
+		private boolean insideOneComponent(LocusExistenceStructure2D structure, double lower,
+				double upper) {
+			List<double[]> pieces = new ArrayList<>();
+			if (lower < domain.getLower()) {
+				// Shifted by the binary64 period, below the real one: a larger image.
+				pieces.add(new double[] {lower + period, domain.getUpper()});
+				pieces.add(new double[] {domain.getLower(), upper});
+			} else if (upper >= domain.getUpper()) {
+				pieces.add(new double[] {lower, domain.getUpper()});
+				pieces.add(new double[] {domain.getLower(), upper - period});
+			} else {
+				pieces.add(new double[] {lower, upper});
+			}
+			ContinuousComponent component = null;
+			for (double[] piece : pieces) {
+				double last = piece[1] >= domain.getUpper() ? Math.nextDown(domain.getUpper())
+						: piece[1];
+				for (double end : new double[] {piece[0], last}) {
+					ContinuousComponent containing = structure.getComponentContaining(end);
+					if (containing == null || component != null && containing != component) {
+						return false;
+					}
+					component = containing;
+				}
+				for (Coverage coverage : structure.getCoverage()) {
+					LocusInterval2D interval = coverage.getInterval();
+					boolean overlaps = interval.getLower() <= last
+							&& interval.getUpper() >= piece[0];
+					if (overlaps && coverage.getState() != CoverageState.CERTIFIED_EXISTS) {
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 
 		/** Roots of equality predicates that exact certificates locate inside bands. */
