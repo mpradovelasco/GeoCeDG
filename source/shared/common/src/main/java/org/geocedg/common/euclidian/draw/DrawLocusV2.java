@@ -29,6 +29,11 @@ public final class DrawLocusV2 extends Drawable {
 		update();
 	}
 
+	/** @return render cache of this view; callers only read its counters */
+	public LocusRenderCache2D getRenderCache() {
+		return renderCache;
+	}
+
 	@Override
 	public void update() {
 		visible = locus.isDefined() && locus.isEuclidianVisible();

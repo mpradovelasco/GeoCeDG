@@ -387,7 +387,7 @@ y, a más tardar, en el expediente de `CU10`.
 | Descripción matemática | Un Locus V2 se evalúa sobre un corte de la construcción sincronizado una vez por revisión. La revisión cambia con las entradas de definición y no con la posición del conductor, de modo que mover el conductor no recalcula los certificados. La huella de la revisión debe ser exacta |
 | Alcance y generalidad | implementado en `CU1`; la exactitud de la huella es un hallazgo de `CU2` (F-CU2-12) |
 | Hipótesis | entradas con estado determinista |
-| Degeneraciones y límites | estado heredado que cambia con el conductor (primera inicialización en una raíz doble, D-CU2-18); huella de 15 cifras significativas (F-CU2-12, D-CU2-20) |
+| Degeneraciones y límites | estado heredado que cambia con el conductor (primera inicialización en una raíz doble, D-CU2-18); estado de selección fuera de la huella y literales angulares sin texto original reconstruidos con otro valor (F-CU2-12, corregido; D-CU2-20-R) |
 | Ejemplo o modelo | puertas GC-1 y GC-2 y V-REV-EXACT-1 de la matriz de `CU2` |
 | Referencias | por completar |
 | Cobertura y cuestiones abiertas | semántica de revisiones y reutilización de certificados |

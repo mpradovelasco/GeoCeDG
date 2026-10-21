@@ -29,6 +29,9 @@ public final class LocusRenderCache2D {
 	private long misses;
 	private long evictions;
 	private long builds;
+	private long builtVertices;
+	private int lastBuildVertices;
+	private int maximumBuildVertices;
 
 	/**
 	 * Returns or derives render data for the exact view policy and revision.
@@ -46,6 +49,9 @@ public final class LocusRenderCache2D {
 		misses++;
 		LocusRenderData2D built = build(locus, policy);
 		builds++;
+		lastBuildVertices = built.getVertices().size();
+		builtVertices += lastBuildVertices;
+		maximumBuildVertices = Math.max(maximumBuildVertices, lastBuildVertices);
 		if (entries.size() == MAX_ENTRIES) {
 			CacheKey oldest = entries.keySet().iterator().next();
 			entries.remove(oldest);
@@ -74,6 +80,21 @@ public final class LocusRenderCache2D {
 
 	public long getBuilds() {
 		return builds;
+	}
+
+	/** @return drawing vertices of all builds (PRE-G9B-CU2 gate GC-5) */
+	public long getBuiltVertices() {
+		return builtVertices;
+	}
+
+	/** @return drawing vertices of the most recent build, one view and revision */
+	public int getLastBuildVertices() {
+		return lastBuildVertices;
+	}
+
+	/** @return largest vertex count of one build, one view and revision */
+	public int getMaximumBuildVertices() {
+		return maximumBuildVertices;
 	}
 
 	/** Drops view-specific data without touching semantic state. */

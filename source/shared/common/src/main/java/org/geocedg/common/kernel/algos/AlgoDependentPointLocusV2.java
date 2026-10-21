@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
@@ -239,6 +240,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		List<GeoElement> slice = getReconstructionSliceGeos();
 		String fingerprint = ReconstructionSliceFingerprint2D.compute(slice,
 				java.util.Arrays.asList(state, coordinate));
+		getLocus().getInstrumentation().recordCertificationWork(
+				LocusCertificationWork2D.FINGERPRINT_COMPUTATION);
 		if (evaluator != null && descriptor != null
 				&& candidate.getSemanticSignature()
 						.equals(descriptor.getSemanticSignature())

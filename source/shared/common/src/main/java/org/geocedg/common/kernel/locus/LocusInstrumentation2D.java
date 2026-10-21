@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,6 +17,10 @@ import java.util.Map;
  * reconstruction slice reports its slice builds, revision publications,
  * evaluator calls and metric component builds to the locus that owns the slice,
  * which aggregates them as nested work.</p>
+ *
+ * <p>PRE-G9B-CU2: certification and revision work
+ * ({@link LocusCertificationWork2D}) is counted per kind and aggregated as
+ * nested work in the same way.</p>
  */
 public final class LocusInstrumentation2D {
 	private long evaluatorCalls;
@@ -36,6 +41,10 @@ public final class LocusInstrumentation2D {
 	private long nestedEvaluatorCalls;
 	private LocusInstrumentation2D nestedParent;
 	private final Map<String, Long> evaluatorCallsByLocus = new LinkedHashMap<>();
+	private final EnumMap<LocusCertificationWork2D, Long> certificationWork =
+			new EnumMap<>(LocusCertificationWork2D.class);
+	private final EnumMap<LocusCertificationWork2D, Long> nestedCertificationWork =
+			new EnumMap<>(LocusCertificationWork2D.class);
 
 	/** Records one semantic evaluator invocation for a locus identity. */
 	public void recordEvaluatorCall(String locusIdentity) {
@@ -100,6 +109,21 @@ public final class LocusInstrumentation2D {
 		recordNestedMetricComponentBuilds(1);
 	}
 
+	/** Records one unit of certification or revision work (PRE-G9B-CU2). */
+	public void recordCertificationWork(LocusCertificationWork2D kind) {
+		recordCertificationWork(kind, 1);
+	}
+
+	/** Records units of certification or revision work (PRE-G9B-CU2). */
+	public void recordCertificationWork(LocusCertificationWork2D kind, long count) {
+		if (count > 0) {
+			certificationWork.merge(kind, count, Long::sum);
+			if (nestedParent != null) {
+				nestedParent.recordNestedCertificationWork(kind, count);
+			}
+		}
+	}
+
 	/** Records one downstream consumption of an upstream semantic revision. */
 	public void recordRevisionConsumption() {
 		revisionConsumptions++;
@@ -131,6 +155,10 @@ public final class LocusInstrumentation2D {
 				revisionPublications + nestedRevisionPublications);
 		parent.recordNestedEvaluatorCalls(evaluatorCalls + nestedEvaluatorCalls);
 		parent.recordNestedMetricComponentBuilds(nestedMetricComponentBuilds);
+		for (LocusCertificationWork2D kind : LocusCertificationWork2D.values()) {
+			parent.recordNestedCertificationWork(kind,
+					getCertificationWork(kind) + getNestedCertificationWork(kind));
+		}
 	}
 
 	/** @return owner instrumentation of the enclosing slice, or {@code null} */
@@ -173,6 +201,28 @@ public final class LocusInstrumentation2D {
 				nestedParent.recordNestedMetricComponentBuilds(count);
 			}
 		}
+	}
+
+	private void recordNestedCertificationWork(LocusCertificationWork2D kind,
+			long count) {
+		if (count > 0) {
+			nestedCertificationWork.merge(kind, count, Long::sum);
+			if (nestedParent != null) {
+				nestedParent.recordNestedCertificationWork(kind, count);
+			}
+		}
+	}
+
+	/** @return certification or revision work recorded by this locus */
+	public long getCertificationWork(LocusCertificationWork2D kind) {
+		Long count = certificationWork.get(kind);
+		return count == null ? 0 : count;
+	}
+
+	/** @return certification or revision work of nested locus copies */
+	public long getNestedCertificationWork(LocusCertificationWork2D kind) {
+		Long count = nestedCertificationWork.get(kind);
+		return count == null ? 0 : count;
 	}
 
 	public long getEvaluatorCalls() {
@@ -251,7 +301,8 @@ public final class LocusInstrumentation2D {
 				revisionPublications, revisionConsumptions, renderEvaluations,
 				wholeLocusRegenerations, evaluatorCallsByLocus,
 				equivalentRecomputes, nestedSliceBuilds, nestedRevisionPublications,
-				nestedMetricComponentBuilds, nestedEvaluatorCalls);
+				nestedMetricComponentBuilds, nestedEvaluatorCalls, certificationWork,
+				nestedCertificationWork);
 	}
 
 	/** Resets evidence counters without changing semantic state. */
@@ -273,5 +324,7 @@ public final class LocusInstrumentation2D {
 		nestedMetricComponentBuilds = 0;
 		nestedEvaluatorCalls = 0;
 		evaluatorCallsByLocus.clear();
+		certificationWork.clear();
+		nestedCertificationWork.clear();
 	}
 }

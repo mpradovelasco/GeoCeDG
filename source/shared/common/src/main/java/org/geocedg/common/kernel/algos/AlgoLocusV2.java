@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.algos;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.V2RedefineContractSource;
 import org.geogebra.common.kernel.Construction;
@@ -91,7 +92,10 @@ public abstract class AlgoLocusV2 extends AlgoElement
 			return;
 		}
 		long candidateRevision = Math.max(1, locus.getSemanticRevision() + 1);
-		LocusDefinition2D candidate = createCandidate(candidateRevision);
+		// PRE-G9B-CU2 gates GC-1 to GC-3 and GC-6: every candidate computes its
+		// existence certificate, so the candidate is built inside a counted scope.
+		LocusDefinition2D candidate = LocusCertificationScope2D.certify(
+				locus.getInstrumentation(), () -> createCandidate(candidateRevision));
 		LocusDefinition2D current = locus.getSemanticDefinition();
 		if (current == null || !current.hasSameSemanticContent(candidate)) {
 			locus.publishSemanticDefinition(candidate.withRevision(candidateRevision));

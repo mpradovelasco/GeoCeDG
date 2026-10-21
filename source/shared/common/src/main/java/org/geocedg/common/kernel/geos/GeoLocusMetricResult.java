@@ -7,6 +7,7 @@ package org.geocedg.common.kernel.geos;
 
 import java.util.Objects;
 
+import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricValueKind;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -68,7 +69,12 @@ public final class GeoLocusMetricResult extends GeoElement
 		return sourceSemanticRevision;
 	}
 
+	/**
+	 * @return current rich metric result; a read while an existence certificate is
+	 *         computed is counted for PRE-G9B-CU2 gate GC-6
+	 */
 	public LocusMetricResult2D getMetricResult() {
+		LocusCertificationScope2D.recordMetricRead();
 		return metricResult;
 	}
 

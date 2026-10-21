@@ -231,3 +231,12 @@ texto original puede escribirse con menos cifras de las que exige un round-trip 
 valida la fidelidad del corte. El
 [análisis](../architecture/pre_g9b_cu2_author_model_certification_analysis.md) §3.9 y §7 y el
 [diseño](../architecture/pre_g9b_cu2_hybrid_certification_design.md) §8 recogen la corrección.
+
+**Precisión de la caracterización de T1 (2026-10-21).** Las pruebas focales de T1 precisan dos
+afirmaciones del párrafo anterior, sin cambiar ninguna decisión: (a) los literales sin texto
+original no angulares se escriben exactos (`Kernel.format` con `GEOGEBRA_XML` usa
+`MyDouble.toString`); solo los angulares, que el XML escribe en grados, pueden reconstruirse con
+otro valor (0,4097 rad vuelve un ulp por encima y el locus evalúa otra configuración); (b) el
+etiquetado de las salidas entra en la huella a través del XML de cada algoritmo del corte (renombrar
+una salida cambia la huella); el estado de selección, que no se serializa, no entra. D-CU2-20-R
+sigue cubriendo las dos carencias y la falta de validación de la fidelidad.

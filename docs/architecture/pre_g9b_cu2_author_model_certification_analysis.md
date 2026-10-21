@@ -430,9 +430,14 @@ cambia y vuelve al mismo valor cuando el valor vuelve, que la copia de `excCyl` 
 idéntica bit a bit al valor vivo, y que mover solo el conductor conserva la revisión. Los valores
 numéricos se serializan con `Double.toString`, exacto en ida y vuelta, y los literales escritos
 por el usuario conservan su texto original. Las lagunas reales de la huella y del corte son
-otras: el estado de selección y el de etiquetado no forman parte de la huella; un literal cuyo
-valor no tiene texto original puede escribirse con 15 cifras significativas; y nada valida que el
-corte reproduzca sus entradas autoritativas. La decisión autoral D-CU2-20-R las cubre.
+otras, y la caracterización de T1 (2026-10-21) las precisa: el estado de selección de las
+intersecciones no se serializa y no forma parte de la huella, mientras que el etiquetado de sus
+salidas sí entra, a través del XML del algoritmo (renombrar una salida cambia la huella); los
+literales sin texto original se escriben exactos (`MyDouble.toString`), salvo los angulares, que
+el XML escribe en grados (`Kernel.formatAngle`), de modo que su copia puede diferir del valor vivo
+(0,4097 rad vuelve un ulp por encima, y 15 de 16 evaluaciones del locus difieren en unos
+9·10⁻¹⁶); y nada valida que el corte reproduzca sus entradas autoritativas. La decisión autoral
+D-CU2-20-R las cubre.
 
 ## 4. Segunda familia: `e_1` y `o_1` (conductor `E_1` sobre `p`)
 
@@ -587,7 +592,7 @@ propuesta de `CU0` (E §6; D §10), que certificaba `e_2` a través de `d_2` (§
 | F-CU2-9 | Cerca del valor crítico la clasificación exacta cambia entre dos binary64 consecutivos; la fórmula cerrada en `double` clasifica mal el primer valor de mordedura, y el evaluador da puntos dentro del hueco exacto (§3.8.3) | la existencia la decide un certificado exacto; el evaluador no es frontera ni prueba de existencia |
 | F-CU2-10 | Las constantes capturadas no cumplen exactamente las relaciones ideales: `P.y` difiere de `B.y` en una unidad de la última cifra | el certificado usa los valores capturados; las fórmulas cerradas son solo referencias |
 | F-CU2-11 | En el valor crítico la raíz seleccionada `Q` invierte su movimiento sobre `p` y los loci tienen una esquina de 133,7° (`o`, `v`) y 147,3° (`w`, `a_1`), sin pérdida de continuidad (§3.8.1) | el certificado publica un parámetro singular; el dibujo lo trata como vértice exacto, sin unirlo ni suavizarlo |
-| F-CU2-12 | Corregido el 2026-10-21 (§3.9): el cambio de un ulp sin revisión se debió a H01 y F-CU2-3, no a la serialización, que es exacta para los valores numéricos. La huella no incluye el estado de selección ni el de etiquetado, un literal sin texto original puede escribirse con 15 cifras y la fidelidad del corte no se valida | D-CU2-20-R: huella exacta y versionada con estado de selección y de etiquetado, y validación de fidelidad del corte con fallo explícito |
+| F-CU2-12 | Corregido el 2026-10-21 (§3.9): el cambio de un ulp sin revisión se debió a H01 y F-CU2-3, no a la serialización, que es exacta para los valores numéricos. Precisión de T1: la huella no incluye el estado de selección (el etiquetado de las salidas entra a través del XML del algoritmo), un literal angular sin texto original se escribe en grados y su copia puede diferir en un ulp, y la fidelidad del corte no se valida | D-CU2-20-R: huella exacta y versionada con estado de selección y de etiquetado, y validación de fidelidad del corte con fallo explícito |
 | F-CU2-13 | GeoGebra anula una segunda salida sin etiqueta que coincide con la primera dentro de 10⁻⁸; cerca de una raíz coincidente la definición efectiva es dispersa y difiere entre el vivo y el corte (§3.9) | el certificado no declara continuidad a través de esa banda: `UNRESOLVED` acotada y `NOT_ESTABLISHED` global para los loci afectados (D-CU2-18) |
 | F-CU2-14 | En el modelo, `J/K = Intersect(p, i)` tiene la permutación `[1, 0]` en el vivo y en el corte: la salida `J` es la raíz bruta 1 (§3.9) | el estado de selección no es la identidad en general; la captura lo lee (P4) |
 

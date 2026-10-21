@@ -656,15 +656,22 @@ Descripción previa al código que exige D-CU2-20-R. Se basa en la lectura de
    trazado, del estado, de la coordenada, del soporte y de las entradas de dominio.
 2. La huella v1 es el SHA-256 de la serialización XML de los algoritmos y elementos del corte en
    orden de construcción, con los atributos numéricos de los elementos dependientes del conductor
-   neutralizados. No incluye el estado de selección de los algoritmos de intersección ni el
-   etiquetado de las salidas auxiliares.
+   neutralizados. No incluye el estado de selección de los algoritmos de intersección, que no se
+   serializa; el etiquetado de sus salidas entra solo a través del XML del algoritmo (renombrar
+   una salida cambia la huella). Resume la representación serializada y no los valores: un
+   número escrito por el usuario al que se asigna por programa su mismo valor pierde su
+   expresión literal, y la huella cambia y publica una revisión con el mismo estado semántico
+   (caracterización de T1).
 3. Si el descriptor o la huella cambian, el corte se reconstruye: `Macro.buildMacroXML` escribe el
    XML de los elementos con la plantilla XML ordinaria y `MacroKernel.loadXML` lo carga en un
    `MacroKernel` aislado. Los valores de los elementos (`<value val>`, `<coords>`) se escriben con
    `Double.toString` y son exactos; los literales con texto original conservan ese texto; un
-   literal `MyDouble` sin texto original se escribe con la plantilla XML, de 15 cifras
-   significativas, y un argumento literal en línea de un comando se convierte en un elemento
-   independiente sin etiqueta del corte.
+   literal `MyDouble` sin texto original también se escribe exacto (`Kernel.format` con
+   `GEOGEBRA_XML` usa `MyDouble.toString`), salvo si es angular: `Kernel.formatAngle` lo escribe en
+   grados (`Math.toDegrees`, `checkInteger`, `checkDecimalFraction`), y la copia puede diferir del
+   valor vivo (caracterización de T1: 0,4097 rad vuelve un ulp por encima). Un argumento literal en
+   línea de un comando se convierte en un elemento independiente sin etiqueta del corte, y su valor
+   se reproduce exacto en los casos medidos.
 4. `resetExternalState` copia los valores de las dependencias durables independientes y llama a
    `updateConstruction`, que reinicializa por cercanía el estado de selección (F-CU2-8).
 5. Nada compara el corte con el estado vivo antes de evaluar o de capturar un programa.
@@ -673,7 +680,7 @@ Descripción previa al código que exige D-CU2-20-R. Se basa en la lectura de
 
 | Fase | Contenido | Autoridad |
 |---|---|---|
-| 1. Captura de la instantánea | huella `reconstruction-slice-fingerprint/v2`: la parte estructural de v1; los bits binary64 de los valores de los elementos independientes y de los literales de las definiciones del corte, codificados en hexadecimal; el estado de selección (permutación e indicadores de inicialización) de cada intersección del corte y el etiquetado de sus salidas, leídos con accesores de solo lectura; las versiones de la política de reconstrucción y del contrato de certificación. Nunca identidad de objetos Java, índices circunstanciales, posición del conductor ni datos de dibujo | algoritmo padre, sobre el estado vivo |
+| 1. Captura de la instantánea | huella `reconstruction-slice-fingerprint/v2`: la parte estructural de v1; los bits binary64 de los valores de los elementos independientes y de los literales de las definiciones del corte, codificados en hexadecimal; el estado de selección (permutación e indicadores de inicialización) de cada intersección del corte y el etiquetado de sus salidas, leídos con accesores de solo lectura; las versiones de la política de reconstrucción y del contrato de certificación. Independiente de la representación: un mismo valor, escrito como literal o asignado por programa, da la misma huella (V-REV-EXACT-2). Nunca identidad de objetos Java, índices circunstanciales, posición del conductor ni datos de dibujo | algoritmo padre, sobre el estado vivo |
 | 2. Decisión de revisión | descriptor y huella iguales: recálculo equivalente, sin reconstrucción ni revisión. Distintos: reconstrucción. Un cambio del estado heredado de selección (por ejemplo, el fin de una primera inicialización) es un cambio de instantánea con causa tipada; un recálculo con el mismo estado no publica revisión | algoritmo padre |
 | 3. Reconstrucción | `Macro.buildMacroXML` y `MacroKernel.loadXML`, sin cambios upstream y sin cambio del formato persistido | `MacroKernel` aislado |
 | 4. Restauración admitida | solo del original vivo a la copia, nunca al revés, y solo donde la correspondencia es la propia de la reconstrucción: dependencias durables por su identidad; elementos independientes por la etiqueta con la que el propio XML del corte los definió; argumentos literales en línea por su posición de entrada en el algoritmo copiado de la misma salida; hojas `MyDouble` por recorrido paralelo de árboles de expresión de estructura idéntica. Cada restauración es una asignación de valor exacta seguida de la actualización del grafo de la copia | evaluador |

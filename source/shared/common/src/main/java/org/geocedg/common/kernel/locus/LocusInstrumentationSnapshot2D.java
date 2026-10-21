@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +30,8 @@ public final class LocusInstrumentationSnapshot2D {
 	private final long nestedRevisionPublications;
 	private final long nestedMetricComponentBuilds;
 	private final long nestedEvaluatorCalls;
+	private final Map<LocusCertificationWork2D, Long> certificationWork;
+	private final Map<LocusCertificationWork2D, Long> nestedCertificationWork;
 
 	/** Creates immutable evidence from the pre-CU1 instrumentation dimensions. */
 	public LocusInstrumentationSnapshot2D(long evaluatorCalls,
@@ -57,6 +60,32 @@ public final class LocusInstrumentationSnapshot2D {
 			Map<String, Long> evaluatorCallsByLocus, long equivalentRecomputes,
 			long nestedSliceBuilds, long nestedRevisionPublications,
 			long nestedMetricComponentBuilds, long nestedEvaluatorCalls) {
+		this(evaluatorCalls, dependencySliceBuilds, dependencySliceSynchronizations,
+				dependencyUpdates, duplicatedRequests, sessionHits, sessionMisses,
+				revisionPublications, revisionConsumptions, renderEvaluations,
+				wholeLocusRegenerations, evaluatorCallsByLocus, equivalentRecomputes,
+				nestedSliceBuilds, nestedRevisionPublications,
+				nestedMetricComponentBuilds, nestedEvaluatorCalls,
+				Collections.emptyMap(), Collections.emptyMap());
+	}
+
+	/**
+	 * Creates immutable evidence including the PRE-G9B-CU2 certification and
+	 * revision work, own and nested.
+	 */
+	public LocusInstrumentationSnapshot2D(long evaluatorCalls,
+			long dependencySliceBuilds, long dependencySliceSynchronizations,
+			long dependencyUpdates, long duplicatedRequests, long sessionHits,
+			long sessionMisses, long revisionPublications,
+			long revisionConsumptions, long renderEvaluations,
+			long wholeLocusRegenerations,
+			Map<String, Long> evaluatorCallsByLocus, long equivalentRecomputes,
+			long nestedSliceBuilds, long nestedRevisionPublications,
+			long nestedMetricComponentBuilds, long nestedEvaluatorCalls,
+			Map<LocusCertificationWork2D, Long> certificationWork,
+			Map<LocusCertificationWork2D, Long> nestedCertificationWork) {
+		this.certificationWork = copyWork(certificationWork);
+		this.nestedCertificationWork = copyWork(nestedCertificationWork);
 		this.equivalentRecomputes = equivalentRecomputes;
 		this.nestedSliceBuilds = nestedSliceBuilds;
 		this.nestedRevisionPublications = nestedRevisionPublications;
@@ -144,5 +173,25 @@ public final class LocusInstrumentationSnapshot2D {
 
 	public long getNestedEvaluatorCalls() {
 		return nestedEvaluatorCalls;
+	}
+
+	/** @return certification or revision work recorded by the locus itself */
+	public long getCertificationWork(LocusCertificationWork2D kind) {
+		Long count = certificationWork.get(Objects.requireNonNull(kind));
+		return count == null ? 0 : count;
+	}
+
+	/** @return certification or revision work of nested locus copies */
+	public long getNestedCertificationWork(LocusCertificationWork2D kind) {
+		Long count = nestedCertificationWork.get(Objects.requireNonNull(kind));
+		return count == null ? 0 : count;
+	}
+
+	private static Map<LocusCertificationWork2D, Long> copyWork(
+			Map<LocusCertificationWork2D, Long> work) {
+		EnumMap<LocusCertificationWork2D, Long> copy =
+				new EnumMap<>(LocusCertificationWork2D.class);
+		copy.putAll(Objects.requireNonNull(work));
+		return Collections.unmodifiableMap(copy);
 	}
 }

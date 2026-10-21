@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
-    [ValidateSet('references', 'composition', 'windowed')]
+    [ValidateSet('references', 'composition', 'certification', 'tessellation', 'windowed')]
     [string]$Scenario,
     [string]$OutputDirectory,
     [switch]$Dense,
@@ -9,7 +9,8 @@ param(
 )
 
 # PRE-G9B-CU0 reproducible harness runner. Runs one scenario of
-# org.geocedg.desktop.PreG9BCu0Harness (references, composition) or
+# org.geocedg.desktop.PreG9BCu0Harness (references, composition, and the PRE-G9B-CU2
+# certification and tessellation scenarios) or
 # org.geocedg.desktop.PreG9BCu0WindowedHarness (windowed) through the Desktop test task with
 # harness.init.gradle, writes the scenario output and run metadata to a fresh
 # directory (default: ignored artifacts/benchmarks/pre-g9b-cu/), then recompiles the

@@ -103,8 +103,9 @@ The coherence closeout added three more:
 - an exact certificate can reduce existence to an isolated parameter, which no interval or
   arc of positive length represents;
 - the revision fingerprint and the reconstruction of the evaluator slice have no stated
-  fidelity contract: the fingerprint omits the selection and label states, and nothing
-  establishes that the slice reproduces exactly the authoritative inputs it reads.
+  fidelity contract: the fingerprint omits the selection state and carries the label state
+  only through the serialized algorithms, and nothing establishes that the slice reproduces
+  exactly the authoritative inputs it reads.
 
 The coherence closeout first reported that a one-ulp change of a captured constant published
 no revision because the fingerprint serialized numbers with 15 significant digits. The
@@ -113,9 +114,12 @@ was wrong: numeric element values serialize exactly, and the observed stale slic
 `H01` publication rule (the traced point was undefined at the driver position, so the locus was
 not republished and the stale definition was evaluated, finding F-CU2-3). With the driver away
 from the degeneracy every one-ulp change publishes a revision and the slice copy is exact. The
-remaining gaps are the selection and label states, literals whose value has no original text,
-which the XML template may write with fewer digits than an exact round trip needs, and the
-absence of any fidelity validation. Decision 17 (D-CU2-20-R) closes them.
+characterization of step T1 (2026-10-21) states the remaining gaps precisely: the selection state
+of the intersection algorithms is not serialized, so it is not in the fingerprint, while the
+labels of their outputs are, through the serialized algorithm; literals without original text
+are written exactly, except angle literals, which the XML writes in degrees, so that the copy
+can differ from the live value (one ulp in the measured case); and no fidelity validation
+exists. Decision 17 (D-CU2-20-R) closes them.
 
 ## Decision
 

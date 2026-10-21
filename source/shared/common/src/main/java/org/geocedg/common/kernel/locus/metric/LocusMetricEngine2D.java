@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.ConstructionFidelity;
@@ -55,6 +56,7 @@ public final class LocusMetricEngine2D {
 			LocusMetricIndexMode indexMode,
 			LocusMetricInstrumentation2D instrumentation,
 			String consumerToken) {
+		LocusCertificationScope2D.recordMetricRead();
 		if (!query.getLocusIdentity().equals(definition.getLocusIdentity())
 				|| query.getSemanticRevision()
 						!= definition.getSemanticRevision()) {

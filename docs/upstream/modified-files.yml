@@ -6566,6 +6566,36 @@
       "change": "added",
       "purpose": "PRE-G9B-CU1 acceptance on the author model: driver-move stability, nested slice reuse and local work of e_2, cache invalidation against a fresh document, estimate contract, length of o_1 and its budget share (V-REV-1, V-SLICE-1, V-NEST-1, V-NEST-2, V-CACHE-1, V-DAG-1, V-MET-EST-3).",
       "authority": "docs/validation/pre_g9b_cu1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusCertificationWork2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T1: kinds of certification and revision work counted by the locus instrumentation for gates GC-1 to GC-6 and D-CU2-20-R (certificate computations, boxes, transitions, unresolved bands, exploratory traversals, metric reads during certification, fingerprints, fidelity validations, restorations and failures).",
+      "authority": "docs/architecture/pre_g9b_cu2_implementation_strategy.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusCertificationScope2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T1: open scope of one existence-certificate computation; it counts the computation and every metric value computed or read inside it (gates GC-1 to GC-3 and GC-6) and changes no behaviour.",
+      "authority": "docs/architecture/pre_g9b_cu2_implementation_strategy.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2CertificationInstrumentationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T1: certification scopes, nested aggregation, kernel producers, metric reads inside a certificate and render-cache vertex counters.",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2SliceFidelityCharacterizationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T1, D-CU2-20-R focal characterization on synthetic constructions: one-ulp revisions, driver-only moves, inline and programmatic literals, the angle-literal gap, output labels, representation-only changes and the line-conic selection state (V-REV-EXACT-1 to V-REV-EXACT-6 at the base).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelSliceFidelityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T1, D-CU2-20-R focal characterization on the author model: one-ulp changes of excCyl, exact independent inputs of every model slice and the line-conic selection states (V-REV-EXACT-1, F-CU2-8, F-CU2-14).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

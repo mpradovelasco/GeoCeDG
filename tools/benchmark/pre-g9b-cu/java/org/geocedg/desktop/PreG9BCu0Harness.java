@@ -18,8 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.geocedg.common.euclidian.draw.DrawLocusV2;
+import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusInstrumentationSnapshot2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.desktop.awt.GGraphics2DD;
@@ -39,12 +43,18 @@ import org.junit.jupiter.api.io.TempDir;
  * <li>{@code composition}: the nested Locus V2 / metric composition bench of {@code e_2},
  * with deterministic work counters and informational timings, with and without {@code e_2}.
  * </li>
+ * <li>{@code certification} (PRE-G9B-CU2, step T1): certification and revision work of the
+ * model loci for gates GC-1 to GC-3 and GC-6 under driver-only moves, non-driver changes and
+ * consumer queries.</li>
+ * <li>{@code tessellation} (PRE-G9B-CU2, step T1): drawing vertices of the model loci per
+ * view and zoom for gate GC-5.</li>
  * </ul>
  *
  * <p>The {@code windowed} scenario runs in {@link PreG9BCu0WindowedHarness}, outside the
  * embedded-host lifecycle, because it starts the real product.
  */
-@EnabledIfSystemProperty(named = "geocedg.cu0.harness", matches = "references|composition")
+@EnabledIfSystemProperty(named = "geocedg.cu0.harness",
+		matches = "references|composition|certification|tessellation")
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
@@ -62,6 +72,8 @@ class PreG9BCu0Harness {
 		case "references" -> references(output);
 		case "composition" -> composition(output,
 				Boolean.getBoolean("geocedg.cu0.dense"));
+		case "certification" -> certification(output);
+		case "tessellation" -> tessellation(output);
 		default -> throw new IllegalArgumentException("Unknown scenario " + scenario);
 		}
 	}
@@ -364,6 +376,171 @@ class PreG9BCu0Harness {
 		row.put("max_consecutive_distance", maxStep);
 		row.put("max_at_t", atT);
 		return row;
+	}
+
+	// ---------------------------------------------------------------- certification bench
+
+	/** Loci of the author model, in construction order. */
+	private static final List<String> MODEL_LOCI = List.of("o", "v", "w", "a_1", "e_1", "o_1",
+			"e_2");
+	/** Critical driver parameter of the first family (analysis section 3.8). */
+	private static final double T_CRITICAL = 1.2767651295307840;
+	/** Penetration and bite sides of the critical value of excCyl, one ulp apart. */
+	private static final double PENETRATION = Double.longBitsToDouble(0x400d416bb67a38bbL);
+	private static final double BITE = Double.longBitsToDouble(0x400d416bb67a38bcL);
+
+	private void certification(Path output) throws Exception {
+		Map<String, Object> bench = benchHeader("certification");
+		File file = PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work);
+		onEdt(() -> {
+			long start = System.nanoTime();
+			AppGeoCeDG app = PreG9BCu0Corpus.open(file);
+			bench.put("load_ms", millis(start));
+			EuclidianView view = authorView(app);
+			paint(view);
+			bench.put("after_load", certificationCounters(app));
+			double n = PreG9BCu0Corpus.pathParameter(app, "N");
+			double e1 = PreG9BCu0Corpus.pathParameter(app, "E_1");
+			List<Object> steps = new ArrayList<>();
+			steps.add(certificationStep(app, "GC-1 drag N to -1",
+					() -> PreG9BCu0Corpus.movePathPoint(app, "N", -1.0)));
+			steps.add(certificationStep(app, "GC-1 drag N to t_c",
+					() -> PreG9BCu0Corpus.movePathPoint(app, "N", T_CRITICAL)));
+			steps.add(certificationStep(app, "GC-1 drag N back",
+					() -> PreG9BCu0Corpus.movePathPoint(app, "N", n)));
+			steps.add(certificationStep(app, "GC-1 drag E_1 +0.05",
+					() -> PreG9BCu0Corpus.movePathPoint(app, "E_1", e1 + 0.05)));
+			steps.add(certificationStep(app, "GC-1 drag E_1 back",
+					() -> PreG9BCu0Corpus.movePathPoint(app, "E_1", e1)));
+			steps.add(certificationStep(app, "GC-2 excCyl 2.9 -> 3.0",
+					() -> PreG9BCu0Corpus.setNumber(app, "excCyl", 3.0)));
+			steps.add(certificationStep(app, "GC-2 excCyl 3.0 -> 2.9",
+					() -> PreG9BCu0Corpus.setNumber(app, "excCyl", 2.9)));
+			steps.add(certificationStep(app, "GC-2 rbCone 5 -> 5.1",
+					() -> PreG9BCu0Corpus.setNumber(app, "rbCone", 5.1)));
+			steps.add(certificationStep(app, "GC-2 rbCone 5.1 -> 5",
+					() -> PreG9BCu0Corpus.setNumber(app, "rbCone", 5)));
+			steps.add(certificationStep(app, "GC-2 excCyl to the penetration side",
+					() -> PreG9BCu0Corpus.setNumber(app, "excCyl", PENETRATION)));
+			steps.add(certificationStep(app, "GC-2 excCyl one ulp to the bite side",
+					() -> PreG9BCu0Corpus.setNumber(app, "excCyl", BITE)));
+			steps.add(certificationStep(app, "GC-2 excCyl back to 2.9",
+					() -> PreG9BCu0Corpus.setNumber(app, "excCyl", 2.9)));
+			steps.add(certificationStep(app, "GC-3 paint the author view",
+					() -> paint(view)));
+			steps.add(certificationStep(app, "GC-3 total length of o_1",
+					() -> PreG9BCu0References.totalLength(app, "o_1")));
+			steps.add(certificationStep(app, "GC-3 point queries of e_2", () -> {
+				try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+					for (double t : new double[] {-3, -1, -1e-3, 1e-3, 1, 3}) {
+						PreG9BCu0Corpus.point(PreG9BCu0Corpus.locus(app, "e_2"), t, session);
+					}
+				}
+			}));
+			bench.put("steps", steps);
+			return null;
+		});
+		Files.writeString(output.resolve("certification-bench.json"),
+				PreG9BCu0References.json(bench), StandardCharsets.UTF_8);
+	}
+
+	private static Map<String, Object> certificationStep(AppGeoCeDG app, String action,
+			Runnable change) {
+		Map<String, Map<String, Object>> before = certificationCounters(app);
+		long start = System.nanoTime();
+		change.run();
+		Map<String, Object> row = new LinkedHashMap<>();
+		row.put("action", action);
+		row.put("ms", millis(start));
+		Map<String, Object> deltas = new LinkedHashMap<>();
+		for (Map.Entry<String, Map<String, Object>> entry
+				: certificationCounters(app).entrySet()) {
+			Map<String, Object> previous = before.get(entry.getKey());
+			deltas.put(entry.getKey(), previous == null ? entry.getValue()
+					: delta(previous, entry.getValue()));
+		}
+		row.put("counter_deltas", deltas);
+		return row;
+	}
+
+	private static Map<String, Map<String, Object>> certificationCounters(AppGeoCeDG app) {
+		Map<String, Map<String, Object>> all = new LinkedHashMap<>();
+		for (String label : MODEL_LOCI) {
+			if (!(app.getKernel().lookupLabel(label) instanceof GeoLocusV2 locus)) {
+				continue;
+			}
+			LocusInstrumentationSnapshot2D snapshot = locus.getInstrumentation().snapshot();
+			Map<String, Object> row = new LinkedHashMap<>();
+			row.put("semantic_revision", locus.getSemanticRevision());
+			row.put("revision_publications", snapshot.getRevisionPublications());
+			row.put("slice_builds", snapshot.getDependencySliceBuilds());
+			row.put("equivalent_recomputes", snapshot.getEquivalentRecomputes());
+			row.put("nested_slice_builds", snapshot.getNestedSliceBuilds());
+			for (LocusCertificationWork2D kind : LocusCertificationWork2D.values()) {
+				String name = kind.name().toLowerCase(java.util.Locale.ROOT);
+				row.put(name, snapshot.getCertificationWork(kind));
+				row.put("nested_" + name, snapshot.getNestedCertificationWork(kind));
+			}
+			all.put(label, row);
+		}
+		return all;
+	}
+
+	// ---------------------------------------------------------------- tessellation bench
+
+	private void tessellation(Path output) throws Exception {
+		Map<String, Object> bench = benchHeader("tessellation");
+		File file = PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work);
+		onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(file);
+			EuclidianView view = authorView(app);
+			List<Object> zooms = new ArrayList<>();
+			for (double zoom : new double[] {1, 2, 4}) {
+				double cx = PreG9BCu0Corpus.AUTHOR_WIDTH / 2.0;
+				double cy = PreG9BCu0Corpus.AUTHOR_HEIGHT / 2.0;
+				view.setCoordSystem(cx - (cx - PreG9BCu0Corpus.AUTHOR_X_ZERO) * zoom,
+						cy - (cy - PreG9BCu0Corpus.AUTHOR_Y_ZERO) * zoom,
+						PreG9BCu0Corpus.AUTHOR_SCALE * zoom,
+						PreG9BCu0Corpus.AUTHOR_SCALE * zoom);
+				long start = System.nanoTime();
+				paint(view);
+				Map<String, Object> row = new LinkedHashMap<>();
+				row.put("zoom", zoom);
+				row.put("paint_ms", millis(start));
+				Map<String, Object> loci = new LinkedHashMap<>();
+				for (String label : MODEL_LOCI) {
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					if (!(view.getDrawableFor(locus) instanceof DrawLocusV2 drawable)) {
+						loci.put(label, "no drawable");
+						continue;
+					}
+					LocusRenderCache2D cache = drawable.getRenderCache();
+					Map<String, Object> counts = new LinkedHashMap<>();
+					counts.put("last_build_vertices", cache.getLastBuildVertices());
+					counts.put("maximum_build_vertices", cache.getMaximumBuildVertices());
+					counts.put("built_vertices", cache.getBuiltVertices());
+					counts.put("builds", cache.getBuilds());
+					loci.put(label, counts);
+				}
+				row.put("loci", loci);
+				zooms.add(row);
+			}
+			bench.put("views", zooms);
+			return null;
+		});
+		Files.writeString(output.resolve("tessellation-bench.json"),
+				PreG9BCu0References.json(bench), StandardCharsets.UTF_8);
+	}
+
+	private static Map<String, Object> benchHeader(String scenario) {
+		Map<String, Object> bench = new LinkedHashMap<>();
+		bench.put("scenario", scenario);
+		bench.put("source_commit", System.getProperty("geocedg.cu0.commit"));
+		bench.put("java_runtime", System.getProperty("java.runtime.version"));
+		bench.put("os", System.getProperty("os.name") + " " + System.getProperty("os.version"));
+		bench.put("processors", Runtime.getRuntime().availableProcessors());
+		bench.put("timing_status", "informational; work counters are the reproducible measure");
+		return bench;
 	}
 
 	private static EuclidianView authorView(AppGeoCeDG app) {
