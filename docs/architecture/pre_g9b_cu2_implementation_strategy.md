@@ -4,7 +4,7 @@
 |---|---|
 | Carácter | Diseño de implementación candidato para `CU2`. No autoriza ningún cambio de código |
 | Estado | Estrategia aprobada para la implementación por la decisión autoral de 2026-10-21 ([registro](../validation/pre_g9b_cu2_author_architecture_approval_record.md)), con la precisión D-CU2-20-R incorporada en T1 y T3 y las condiciones de parada de §4.1; `selfApproved=false` |
-| Normas | [propuesta normativa](pre_g9b_cu2_normative_proposal.md) (A2.1-R a A2.6); [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) |
+| Normas | [propuesta normativa](pre_g9b_cu2_normative_proposal.md) (A2.1-R a A2.6); [ADR 0038 (ACCEPTED, 2026-10-21)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) |
 | Diseños | [certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](pre_g9b_cu2_consumption_and_representation.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
 | Validación | [matriz de validación y criterios de aceptación](../validation/pre_g9b_cu2_validation_matrix.md) |
 | Rutas | abreviadas desde `source/shared/common/src/main/java/org/geocedg/common/kernel/` |

@@ -422,7 +422,8 @@ presenta los valores elegidos con su evidencia.
 
 ## 10. Borradores
 
-- [ADR 0038 (PROPOSED)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md).
+- [ADR 0038](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md):
+  borrador de la preparación, `ACCEPTED` como decisión arquitectónica el 2026-10-21.
 - Versiones de destino: `locus-v2-existence-components.md` 1.1,
   `locus-v2-certified-construction-model.md` 1.2, `locus-v2-metrics.md` 1.6,
   `locus-v2-presentation.md` 2 y `locus-v2-semantics.md` 1.3, más las notas de A2.5 y A2.6.
