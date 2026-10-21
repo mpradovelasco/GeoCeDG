@@ -6668,6 +6668,36 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T3: admitted restorations, reopening with the characterized precision loss, undo and redo, reproducibility, propagation and extreme values, and typed rebuild causes (V-REV-EXACT-4, V-REV-EXACT-7 to V-REV-EXACT-10).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ConstructionValidityPredicate2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3: typed validity predicates of the class-v3 construction programs (discriminant, ray and segment parameters, direction, radius, divisor) with their typed invalid reason, equality kind and end inclusion at a root.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionBoxModel2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3: typed box evaluation of certified construction programs of every class: exact validity predicates decided on the box (VALID, UNIFORMLY_INVALID or UNRESOLVED with a typed reason), outward value and first-derivative enclosures for the class-v3 operations, structural identities for the equality predicates and the conservative band of an unlabelled second output.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionBoxOutcome2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3: typed outcome of one box evaluation with its deciding step and predicate, the evaluated predicates and the coverage cause it justifies; only a uniformly invalid box justifies certified nonexistence.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2ClassV3ModelTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3: class-v3 capture and box model (V-V3-1 to V-V3-4, V-UNIF-1, V-SEL-1, V-SEL-6, V-SEL-7, V-COINC-1, V-COINC-2, V-COINC-8), with an independent 60-digit reference and the unchanged class-v1 and class-v2 programs.",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelClassV3Test.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3 on the author model: class-v3 programs of every slice within the step limit and the selection rules of its intersections (V-V3-4, V-SEL-1 to V-SEL-5, V-COINC-1).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

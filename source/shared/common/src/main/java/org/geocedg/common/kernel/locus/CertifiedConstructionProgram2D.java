@@ -7,8 +7,10 @@ package org.geocedg.common.kernel.locus;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Immutable construction program of the certified construction class
@@ -24,8 +26,18 @@ public final class CertifiedConstructionProgram2D {
 	public static final String VERSION = "certified-construction-program/v1";
 	/** Version of a program with an expression-point translation (section 5.2). */
 	public static final String VERSION_V2 = "certified-construction-program/v2";
-	/** Upper bound on captured steps. */
+	/**
+	 * Version of a program with a step, an operand or a size of class v3 (section 10.1,
+	 * PRE-G9B-CU2).
+	 */
+	public static final String VERSION_V3 = "certified-construction-program/v3";
+	/** Upper bound on captured steps of classes v1 and v2. */
 	public static final int MAXIMUM_STEPS = 64;
+	/**
+	 * Versioned upper bound on the driver-dependent steps of a class-v3 program after
+	 * macro expansion (section 10.9; decision D-CU2-5 approves 128 to 512).
+	 */
+	public static final int MAXIMUM_STEPS_V3 = 256;
 
 	/** Driver families of class v1. */
 	public enum Driver {
@@ -45,46 +57,117 @@ public final class CertifiedConstructionProgram2D {
 		}
 	}
 
+	/** Kinds of program nodes; rays and segments are lines with a membership predicate. */
+	public enum NodeKind {
+		POINT, LINE, RAY, SEGMENT, CIRCLE,
+		/** Both raw roots of a line-circle intersection with its selection rule. */
+		INTERSECTION, VECTOR, SCALAR;
+
+		/** @return whether the node is a line, possibly bounded */
+		public boolean isLine() {
+			return this == LINE || this == RAY || this == SEGMENT;
+		}
+	}
+
 	/** Operations with their output kind, parameter count and class version. */
 	public enum Operation {
-		JOIN(false, 0), PARALLEL(false, 0), PERPENDICULAR(false, 0),
-		MEET(true, 0), MIDPOINT(true, 0), TRANSLATE(true, 2), ROTATE(true, 2),
-		ROTATE_ABOUT(true, 4), MIRROR_POINT(true, 2), MIRROR_LINE(true, 6),
-		DILATE(true, 3),
+		JOIN(NodeKind.LINE, 0, 1), PARALLEL(NodeKind.LINE, 0, 1),
+		PERPENDICULAR(NodeKind.LINE, 0, 1), MEET(NodeKind.POINT, 0, 1),
+		MIDPOINT(NodeKind.POINT, 0, 1), TRANSLATE(NodeKind.POINT, 2, 1),
+		ROTATE(NodeKind.POINT, 2, 1), ROTATE_ABOUT(NodeKind.POINT, 4, 1),
+		MIRROR_POINT(NodeKind.POINT, 2, 1), MIRROR_LINE(NodeKind.POINT, 6, 1),
+		DILATE(NodeKind.POINT, 3, 1),
 		/**
 		 * Class v2 (section 5.2): {@code P + V}, {@code V + P} or {@code P - V} of an
 		 * expression point; parameters ux,uy, with {@code u = -V} for a difference.
 		 */
-		EXPRESSION_TRANSLATE(true, 2, true);
+		EXPRESSION_TRANSLATE(NodeKind.POINT, 2, 2),
+		/** Class v3: ray from its first point through its second. */
+		RAY(NodeKind.RAY, 0, 3),
+		/** Class v3: segment from its first point to its second. */
+		SEGMENT(NodeKind.SEGMENT, 0, 3),
+		/** Class v3: circle by centre and constant radius; parameter r. */
+		CIRCLE_RADIUS(NodeKind.CIRCLE, 1, 3),
+		/** Class v3: circle by centre through a point. */
+		CIRCLE_THROUGH(NodeKind.CIRCLE, 0, 3),
+		/**
+		 * Class v3 (section 10.2): both raw roots of a line and a circle; parameters
+		 * mode (0 permutation, 1 compaction), p0, p1, labelled0, labelled1.
+		 */
+		LINE_CIRCLE(NodeKind.INTERSECTION, 5, 3),
+		/** Class v3: one indexed output of an intersection; parameter index. */
+		INTERSECTION_OUTPUT(NodeKind.POINT, 1, 3),
+		/** Class v3: direction of a line, unit when normalized; parameter normalize. */
+		UNIT_VECTOR_LINE(NodeKind.VECTOR, 1, 3),
+		/** Class v3: direction of a vector, unit when normalized; parameter normalize. */
+		UNIT_VECTOR(NodeKind.VECTOR, 1, 3),
+		/** Class v3: vector from the first point to the second. */
+		VECTOR_POINTS(NodeKind.VECTOR, 0, 3),
+		/** Class v3: scalar multiple of a vector. */
+		SCALE(NodeKind.VECTOR, 0, 3),
+		/** Class v3: dot product of two vectors. */
+		DOT(NodeKind.SCALAR, 0, 3),
+		/** Class v3: point plus or minus a vector, a unit point; parameter sign. */
+		POINT_PLUS_VECTOR(NodeKind.POINT, 1, 3),
+		/**
+		 * Class v3 (section 10.1): a structural metric input whose value is never
+		 * evidence; its descriptor names the metric.
+		 */
+		METRIC_INPUT(NodeKind.SCALAR, 0, 3);
 
-		private final boolean pointOutput;
+		private final NodeKind output;
 		private final int parameterCount;
-		private final boolean classV2;
+		private final int classVersion;
 
-		Operation(boolean pointOutput, int parameterCount) {
-			this(pointOutput, parameterCount, false);
-		}
-
-		Operation(boolean pointOutput, int parameterCount, boolean classV2) {
-			this.pointOutput = pointOutput;
+		Operation(NodeKind output, int parameterCount, int classVersion) {
+			this.output = output;
 			this.parameterCount = parameterCount;
-			this.classV2 = classV2;
+			this.classVersion = classVersion;
 		}
 
 		/** @return whether the operation's output node is a point */
 		public boolean producesPoint() {
-			return pointOutput;
+			return output == NodeKind.POINT;
 		}
 
 		/** @return whether the operation belongs to class v2 only */
 		public boolean isClassV2() {
-			return classV2;
+			return classVersion == 2;
+		}
+
+		/** @return kind of the operation's output node */
+		public NodeKind getOutputKind() {
+			return output;
+		}
+
+		/** @return lowest class that admits the operation */
+		public int getClassVersion() {
+			return classVersion;
 		}
 	}
 
-	/** Operand kinds: an earlier node, or a captured constant point or line. */
+	/**
+	 * Operand kinds: an earlier node, or a captured constant. Constants other than a
+	 * point and a line belong to class v3.
+	 */
 	public enum OperandKind {
-		NODE, POINT, LINE
+		NODE(null), POINT(NodeKind.POINT), LINE(NodeKind.LINE),
+		/** Ray a,b,c with its start point ox,oy; direction (b,-a). */
+		RAY(NodeKind.RAY),
+		/** Segment a,b,c with its start point ox,oy; end at start plus (b,-a). */
+		SEGMENT(NodeKind.SEGMENT),
+		/** Circle of matrix (1,1,A2,0,A4,A5); values A2,A4,A5. */
+		CIRCLE(NodeKind.CIRCLE),
+		/** Vector x,y. */
+		VECTOR(NodeKind.VECTOR),
+		/** Number value. */
+		SCALAR(NodeKind.SCALAR);
+
+		private final NodeKind nodeKind;
+
+		OperandKind(NodeKind nodeKind) {
+			this.nodeKind = nodeKind;
+		}
 	}
 
 	/** One operand of a step. */
@@ -118,6 +201,28 @@ public final class CertifiedConstructionProgram2D {
 			return new Operand(OperandKind.LINE, -1, a, b, c);
 		}
 
+		/** @return captured constant ray or segment with its start point (class v3) */
+		public static Operand bounded(boolean ray, double a, double b, double c,
+				double startX, double startY) {
+			return new Operand(ray ? OperandKind.RAY : OperandKind.SEGMENT, -1, a, b, c,
+					startX, startY);
+		}
+
+		/** @return captured constant circle of matrix (1,1,A2,0,A4,A5) (class v3) */
+		public static Operand circle(double a2, double a4, double a5) {
+			return new Operand(OperandKind.CIRCLE, -1, a2, a4, a5);
+		}
+
+		/** @return captured constant vector (class v3) */
+		public static Operand vector(double x, double y) {
+			return new Operand(OperandKind.VECTOR, -1, x, y);
+		}
+
+		/** @return captured constant number (class v3) */
+		public static Operand scalar(double value) {
+			return new Operand(OperandKind.SCALAR, -1, value);
+		}
+
 		public OperandKind getKind() {
 			return kind;
 		}
@@ -142,14 +247,26 @@ public final class CertifiedConstructionProgram2D {
 		private final Operation operation;
 		private final List<Operand> operands;
 		private final double[] parameters;
+		private final String descriptor;
 
 		/** Creates one step; parameters follow the construction-model contract. */
 		public Step(Operation operation, List<Operand> operands,
 				double... parameters) {
+			this(operation, operands, null, parameters);
+		}
+
+		/**
+		 * Creates one step with a descriptor, which only a structural metric input
+		 * carries (class v3).
+		 */
+		public Step(Operation operation, List<Operand> operands, String descriptor,
+				double... parameters) {
 			this.operation = Objects.requireNonNull(operation);
 			this.operands = Collections.unmodifiableList(new ArrayList<>(operands));
 			this.parameters = finite(parameters.clone());
-			if (this.parameters.length != operation.parameterCount) {
+			this.descriptor = descriptor;
+			if (this.parameters.length != operation.parameterCount
+					|| (descriptor != null) != (operation == Operation.METRIC_INPUT)) {
 				throw new IllegalArgumentException("Parameter count mismatch");
 			}
 		}
@@ -166,13 +283,22 @@ public final class CertifiedConstructionProgram2D {
 		public double getParameter(int index) {
 			return parameters[index];
 		}
+
+		/** @return descriptor of a structural metric input, otherwise {@code null} */
+		public String getDescriptor() {
+			return descriptor;
+		}
 	}
+
+	private static final Set<NodeKind> LINES =
+			EnumSet.of(NodeKind.LINE, NodeKind.RAY, NodeKind.SEGMENT);
+	private static final Set<NodeKind> POINTS = EnumSet.of(NodeKind.POINT);
 
 	private final Driver driver;
 	private final double[] driverConstants;
 	private final LocusInterval2D domain;
 	private final List<Step> steps;
-	private final boolean[] pointNodes;
+	private final NodeKind[] nodeKinds;
 	private final String version;
 
 	/** Creates one validated program; the last node is the dependent point. */
@@ -183,23 +309,23 @@ public final class CertifiedConstructionProgram2D {
 		this.domain = Objects.requireNonNull(domain);
 		this.steps = Collections.unmodifiableList(new ArrayList<>(steps));
 		if (this.driverConstants.length != driver.constantCount
-				|| this.steps.size() > MAXIMUM_STEPS
+				|| this.steps.size() > MAXIMUM_STEPS_V3
 				|| driver == Driver.SCALAR_AFFINE && !this.steps.isEmpty()) {
 			throw new IllegalArgumentException("Malformed construction program");
 		}
-		pointNodes = new boolean[this.steps.size() + 1];
-		pointNodes[0] = true;
-		boolean classV2 = false;
+		nodeKinds = new NodeKind[this.steps.size() + 1];
+		nodeKinds[0] = NodeKind.POINT;
+		int classVersion = this.steps.size() > MAXIMUM_STEPS ? 3 : 1;
 		for (int index = 0; index < this.steps.size(); index++) {
 			Step step = this.steps.get(index);
-			validate(step, index + 1);
-			pointNodes[index + 1] = step.operation.producesPoint();
-			classV2 |= step.operation.isClassV2();
+			classVersion = Math.max(classVersion, Math.max(step.operation.classVersion,
+					validate(step, index + 1)));
+			nodeKinds[index + 1] = step.operation.output;
 		}
-		if (!pointNodes[pointNodes.length - 1]) {
+		if (nodeKinds[nodeKinds.length - 1] != NodeKind.POINT) {
 			throw new IllegalArgumentException("The program output is not a point");
 		}
-		version = classV2 ? VERSION_V2 : VERSION;
+		version = classVersion == 3 ? VERSION_V3 : classVersion == 2 ? VERSION_V2 : VERSION;
 	}
 
 	public Driver getDriver() {
@@ -207,8 +333,8 @@ public final class CertifiedConstructionProgram2D {
 	}
 
 	/**
-	 * @return {@link #VERSION_V2} when a step needs class v2, otherwise
-	 *         {@link #VERSION}
+	 * @return {@link #VERSION_V3} when a step, an operand or the size needs class v3,
+	 *         {@link #VERSION_V2} when a step needs class v2, otherwise {@link #VERSION}
 	 */
 	public String getVersion() {
 		return version;
@@ -228,9 +354,14 @@ public final class CertifiedConstructionProgram2D {
 		return steps;
 	}
 
-	/** @return whether a node is a point (otherwise a line) */
+	/** @return whether a node is a point */
 	public boolean isPointNode(int node) {
-		return pointNodes[node];
+		return nodeKinds[node] == NodeKind.POINT;
+	}
+
+	/** @return kind of a node */
+	public NodeKind getNodeKind(int node) {
+		return nodeKinds[node];
 	}
 
 	/** @return deterministic certificate-material signature */
@@ -244,50 +375,135 @@ public final class CertifiedConstructionProgram2D {
 						.append(step.operands.get(index).signature());
 			}
 			signature.append(')').append(hex(step.parameters));
+			if (step.descriptor != null) {
+				signature.append('{').append(step.descriptor).append('}');
+			}
 		}
 		return signature.toString();
 	}
 
-	private void validate(Step step, int node) {
+	/** @return lowest class version that admits the step */
+	private int validate(Step step, int node) {
 		List<Operand> operands = step.operands;
 		switch (step.operation) {
 		case JOIN:
 		case MIDPOINT:
-			requireOperands(operands, node, true, true);
-			break;
+		case RAY:
+		case SEGMENT:
+		case CIRCLE_THROUGH:
+		case VECTOR_POINTS:
+			return requireOperands(operands, node, POINTS, POINTS);
 		case PARALLEL:
 		case PERPENDICULAR:
-			requireOperands(operands, node, true, false);
-			break;
+			return requireOperands(operands, node, POINTS, LINES);
 		case MEET:
-			requireOperands(operands, node, false, false);
-			break;
+			return requireOperands(operands, node, LINES, LINES);
+		case LINE_CIRCLE:
+			requireSelection(step);
+			return requireOperands(operands, node, LINES, EnumSet.of(NodeKind.CIRCLE));
+		case INTERSECTION_OUTPUT:
+			requireFlag(step.parameters[0]);
+			if (operands.size() != 1 || operands.get(0).kind != OperandKind.NODE) {
+				throw new IllegalArgumentException("An output needs an intersection node");
+			}
+			return requireOperands(operands, node, EnumSet.of(NodeKind.INTERSECTION));
+		case UNIT_VECTOR_LINE:
+			requireFlag(step.parameters[0]);
+			return requireOperands(operands, node, LINES);
+		case UNIT_VECTOR:
+			requireFlag(step.parameters[0]);
+			return requireOperands(operands, node, EnumSet.of(NodeKind.VECTOR));
+		case SCALE:
+			return requireOperands(operands, node, EnumSet.of(NodeKind.SCALAR),
+					EnumSet.of(NodeKind.VECTOR));
+		case DOT:
+			return requireOperands(operands, node, EnumSet.of(NodeKind.VECTOR),
+					EnumSet.of(NodeKind.VECTOR));
+		case POINT_PLUS_VECTOR:
+			if (Math.abs(step.parameters[0]) != 1) {
+				throw new IllegalArgumentException("Malformed vector sign");
+			}
+			return requireOperands(operands, node, POINTS, EnumSet.of(NodeKind.VECTOR));
+		case CIRCLE_RADIUS:
+			if (!(step.parameters[0] > 0)) {
+				throw new IllegalArgumentException("Nonpositive circle radius");
+			}
+			return requireOperands(operands, node, POINTS);
+		case METRIC_INPUT:
+			if (operands.isEmpty() || step.descriptor.isEmpty()) {
+				throw new IllegalArgumentException("Malformed structural metric input");
+			}
+			List<Set<NodeKind>> endpoints = new ArrayList<>();
+			for (int index = 0; index < operands.size(); index++) {
+				endpoints.add(POINTS);
+			}
+			return requireOperands(operands, node, endpoints);
 		default:
-			requireOperands(operands, node, true);
-			break;
+			return requireOperands(operands, node, POINTS);
 		}
 	}
 
-	private void requireOperands(List<Operand> operands, int node,
-			boolean... points) {
-		if (operands.size() != points.length) {
+	private static void requireSelection(Step step) {
+		double mode = step.parameters[0];
+		double first = step.parameters[1];
+		double second = step.parameters[2];
+		requireFlag(step.parameters[3]);
+		requireFlag(step.parameters[4]);
+		boolean permutation = mode == 0 && (first == 0 && second == 1
+				|| first == 1 && second == 0);
+		boolean compaction = mode == 1 && first == 0 && second == 1;
+		if (!permutation && !compaction) {
+			throw new IllegalArgumentException("Malformed intersection selection");
+		}
+	}
+
+	private static void requireFlag(double value) {
+		if (value != 0 && value != 1) {
+			throw new IllegalArgumentException("Malformed flag parameter");
+		}
+	}
+
+	@SafeVarargs
+	private final int requireOperands(List<Operand> operands, int node,
+			Set<NodeKind>... kinds) {
+		return requireOperands(operands, node, List.of(kinds));
+	}
+
+	/** @return lowest class version that admits the operand kinds */
+	private int requireOperands(List<Operand> operands, int node,
+			List<Set<NodeKind>> kinds) {
+		if (operands.size() != kinds.size()) {
 			throw new IllegalArgumentException("Operand count mismatch");
 		}
 		boolean dependent = false;
-		for (int index = 0; index < points.length; index++) {
+		int classVersion = 1;
+		for (int index = 0; index < kinds.size(); index++) {
 			Operand operand = operands.get(index);
+			NodeKind kind;
 			if (operand.kind == OperandKind.NODE) {
-				if (operand.node >= node || pointNodes[operand.node] != points[index]) {
+				if (operand.node >= node) {
 					throw new IllegalArgumentException("Operand node kind mismatch");
 				}
+				kind = nodeKinds[operand.node];
 				dependent = true;
-			} else if ((operand.kind == OperandKind.POINT) != points[index]) {
-				throw new IllegalArgumentException("Operand constant kind mismatch");
+			} else {
+				kind = operand.kind.nodeKind;
+				if (operand.kind != OperandKind.POINT && operand.kind != OperandKind.LINE) {
+					classVersion = 3;
+				}
+			}
+			if (!kinds.get(index).contains(kind)) {
+				throw new IllegalArgumentException(operand.kind == OperandKind.NODE
+						? "Operand node kind mismatch" : "Operand constant kind mismatch");
+			}
+			if (kind == NodeKind.RAY || kind == NodeKind.SEGMENT) {
+				classVersion = 3;
 			}
 		}
 		if (!dependent) {
 			throw new IllegalArgumentException("A step must depend on the driver");
 		}
+		return classVersion;
 	}
 
 	private static double[] finite(double[] values) {

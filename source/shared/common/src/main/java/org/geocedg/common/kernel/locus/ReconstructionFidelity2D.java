@@ -114,14 +114,27 @@ public final class ReconstructionFidelity2D {
 	/** Typed result of one validation. */
 	public static final class Report {
 		private final List<Discrepancy> discrepancies;
+		private final List<String> unsettledSelections;
 		private final int compared;
 		private final int restorations;
 
-		private Report(List<Discrepancy> discrepancies, int compared, int restorations) {
+		private Report(List<Discrepancy> discrepancies, List<String> unsettledSelections,
+				int compared, int restorations) {
 			this.discrepancies = Collections.unmodifiableList(
 					new ArrayList<>(discrepancies));
+			this.unsettledSelections = Collections.unmodifiableList(
+					new ArrayList<>(unsettledSelections));
 			this.compared = compared;
 			this.restorations = restorations;
+		}
+
+		/**
+		 * @return intersections whose live permutation the next computation sets by
+		 *         proximity; their selection is not established and no class-v3 program
+		 *         reads it (contract section 10.2)
+		 */
+		public List<String> getUnsettledSelections() {
+			return unsettledSelections;
 		}
 
 		/** @return whether the copy reproduces every authoritative input exactly */
@@ -185,12 +198,13 @@ public final class ReconstructionFidelity2D {
 		Pass first = new Pass(isolated, driverDependent, restore);
 		first.compare(ordered);
 		if (!restore || first.restorations == 0) {
-			return new Report(first.discrepancies, first.compared, 0);
+			return new Report(first.discrepancies, first.unsettled, first.compared, 0);
 		}
 		first.refresh();
 		Pass second = new Pass(isolated, driverDependent, false);
 		second.compare(ordered);
-		return new Report(second.discrepancies, first.compared, first.restorations);
+		return new Report(second.discrepancies, second.unsettled, first.compared,
+				first.restorations);
 	}
 
 	/** One comparison pass over the slice. */
@@ -199,6 +213,7 @@ public final class ReconstructionFidelity2D {
 		private final Set<GeoElement> driverDependent;
 		private final boolean restore;
 		private final List<Discrepancy> discrepancies = new ArrayList<>();
+		private final List<String> unsettled = new ArrayList<>();
 		private final Set<AlgoElement> visited =
 				Collections.newSetFromMap(new IdentityHashMap<>());
 		private final List<GeoElement> restoredValues = new ArrayList<>();
@@ -379,14 +394,20 @@ public final class ReconstructionFidelity2D {
 			if (live instanceof AlgoIntersectLineConic) {
 				AlgoIntersectLineConic liveLineConic = (AlgoIntersectLineConic) live;
 				AlgoIntersectLineConic copyLineConic = (AlgoIntersectLineConic) copy;
-				// A pending live selection has no effective rule yet, so there is nothing
-				// to reproduce; when it settles, the selection part of the snapshot
-				// changes, the slice is rebuilt and this comparison runs again.
-				boolean livePending = liveLineConic.isSelectionPermutationPending()
-						|| liveLineConic.isSelectionFirstIntersectionPending();
 				String liveState = selectionState(liveLineConic);
 				String copyState = selectionState(copyLineConic);
-				if (!livePending && !liveState.equals(copyState)) {
+				if (liveLineConic.isSelectionFirstIntersectionPending()) {
+					// The rule of a first initialization is the compaction of the roots on
+					// the paths; the copy reproduces it only while it is still initializing.
+					if (!copyLineConic.isSelectionFirstIntersectionPending()) {
+						add(owner, DiscrepancyKind.SELECTION, liveState, copyState);
+					}
+				} else if (liveLineConic.isSelectionPermutationPending()) {
+					// The next live computation sets the permutation by proximity, so there
+					// is no rule to reproduce yet; when it settles, the selection part of the
+					// snapshot changes, the slice is rebuilt and this comparison runs again.
+					unsettled.add(owner);
+				} else if (!liveState.equals(copyState)) {
 					add(owner, DiscrepancyKind.SELECTION, liveState, copyState);
 				}
 			}

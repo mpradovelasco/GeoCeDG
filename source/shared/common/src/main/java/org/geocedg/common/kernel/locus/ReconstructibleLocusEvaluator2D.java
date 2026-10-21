@@ -28,6 +28,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.MacroKernel;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.SetRandomValue;
 import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.ConstructionElement;
@@ -80,6 +81,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private final List<GeoElement> liveDriverRoots = new ArrayList<>();
 	private final LocusInstrumentation2D fidelityOwner;
 	private ReconstructionFidelity2D.Report fidelity;
+	private final Optional<CertifiedConstructionProgram2D> programV3;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -185,6 +187,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		}
 		resetExternalState();
 		fidelity = validateFidelity();
+		programV3 = captureV3();
 	}
 
 	/**
@@ -302,6 +305,33 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 				certifiedAffineCoefficients);
 	}
 
+	/**
+	 * Returns the certified construction program of class v3 of this evaluator's own
+	 * isolated slice, for existence certification
+	 * ({@code locus-v2-certified-construction-model.md} section 10.1). It is captured once,
+	 * when the slice is built for its revision and validated: the selection state of the
+	 * copy then derives from the live inputs only, and no later point query, whose order
+	 * would otherwise reach the inherited proximity reinitialization of the copy (F-CU2-8),
+	 * changes it. A slice whose fidelity is not established, or whose live selection is not
+	 * yet settled, yields no program.
+	 *
+	 * @return program of the revision, or empty when the slice is outside the class
+	 */
+	public synchronized Optional<CertifiedConstructionProgram2D>
+			captureCertifiedProgramV3() {
+		return programV3;
+	}
+
+	/** Captures the class-v3 program of the freshly validated slice; never throws. */
+	private Optional<CertifiedConstructionProgram2D> captureV3() {
+		if (!fidelity.isFaithful() || !fidelity.getUnsettledSelections().isEmpty()) {
+			return Optional.empty();
+		}
+		return CertifiedConstructionCapture2D.capture(descriptor,
+				isolatedDependentPoint.toGeoElement(), isolatedState, isolatedSupport,
+				certifiedAffineCoefficients, true);
+	}
+
 	private double[][] directScalarAffineCertificate() {
 		if (descriptor.getFamily() != SemanticGeneratorFamily1D.SCALAR_STATE) {
 			return null;
@@ -401,7 +431,28 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			copy.set(original);
 			copy.update();
 		}
-		isolatedConstruction.updateConstruction(false);
+		updateCopy();
+	}
+
+	/**
+	 * Updates the copy as {@code Construction.updateConstruction(false)} does, without its
+	 * reinitialization of the inherited selection state by proximity (F-CU2-8): the copy
+	 * keeps the selection state with which its revision was validated, whatever point
+	 * queries reached it before (PRE-G9B-CU2, D-CU2-20-R, phase 4).
+	 */
+	private void updateCopy() {
+		for (int index = 0; index < isolatedConstruction.steps(); index++) {
+			ConstructionElement element = isolatedConstruction.getConstructionElement(index);
+			if (element.isIndependent()) {
+				element.update();
+			}
+		}
+		for (AlgoElement algorithm : new ArrayList<>(isolatedConstruction.getAlgoList())) {
+			if (!(algorithm instanceof SetRandomValue) || !((SetRandomValue) algorithm)
+					.setRandomValue(algorithm.getOutput(0))) {
+				algorithm.update();
+			}
+		}
 	}
 
 	private void validateTypedFamily() {

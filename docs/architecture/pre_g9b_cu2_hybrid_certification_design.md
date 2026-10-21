@@ -273,6 +273,51 @@ Reglas:
   con un paso fuera de la clase no se certifica: queda `NOT_ESTABLISHED` con evidencia
   exploratoria visible.
 
+**Precisiones de la implementación (T3, 2026-10-21).** Ninguna cambia las reglas aprobadas:
+
+- **Semántica de los predicados.** Los predicados de validez de la clase v3 son los exactos de
+  `certified-construction-model` §10.4 (`ConstructionValidityPredicate2D`). Una tolerancia heredada
+  que restringe la definición dentro de su conjunto de validez (definición de recta y de punto,
+  tipo circunferencia `r ≥ 10⁻⁸`, rama de normalización de coeficientes, supresión de una segunda
+  salida sin etiqueta) deja la caja `UNRESOLVED` con causa tipada y nunca certifica existencia.
+  Una tolerancia heredada que solo amplía la definición más allá del predicado exacto (ventana de
+  tangencia de la intersección recta–cónica, tolerancia de incidencia de los caminos limitados) es
+  exceso de evaluación y nunca frontera (hallazgo F-CU2-1).
+- **Selección.** La captura lee el estado de la copia del corte, validado contra el vivo: una
+  permutación asentada (modo 0) o una primera inicialización pendiente (modo 1, compactación en
+  orden bruto de las raíces que están en los caminos). Una permutación viva que la siguiente
+  evaluación fijará por cercanía no tiene regla establecida: el informe de fidelidad la anota y no
+  hay programa. Quedan sin programa el caso especial de una intersección ya existente
+  (`existingIntersections() ≠ 0`), las intersecciones dentro de una macro (su construcción es
+  compartida por todas sus instancias, y su estado de selección no pertenece a ninguna), la
+  selección por punto de referencia, una recta definida como tangente y el modo continuo, que la
+  política del producto mantiene desactivado.
+- **Una captura por revisión.** El programa de clase v3 se captura una vez, al construir y validar
+  el corte de la revisión, y no depende del orden de las consultas posteriores (V-SEL-6).
+- **Constantes.** Una subexpresión en línea que no depende del conductor es una constante en la
+  frontera máxima independiente del conductor, con el valor binary64 que calcula el propio
+  evaluador (`certified-construction-model` §2 y §3, regla 2). Las constantes internas de una
+  macro se leen después de recalcular la propia instancia, porque la construcción de la macro es
+  compartida.
+- **Dependencia del conductor.** La salida de un locus no depende de la posición del conductor:
+  los elementos derivados de ella se clasifican por sus demás entradas, como en la huella v2.
+- **Entrada métrica.** Un `LocusLength` entre dos posiciones, con su adaptador escalar, es un paso
+  `METRIC_INPUT` cuyo valor nunca se evalúa: una caja que lo necesita queda `UNRESOLVED`
+  (`METRIC_VALUE`) hasta el certificado estructural de T6.
+- **Banda de una segunda salida sin etiqueta.** Conservadora y de primer nivel:
+  `D ≤ 10⁻³·máx(a², b², c²)`, que contiene la ventana de tangencia heredada
+  (`D ≤ 4·10⁻⁵·máx(a², b², c²)` para toda tolerancia de reintento y toda normalización de la
+  recta), o `D ≤ 10⁻¹⁰·(s² + r²·(a² + b²))`, que cubre el redondeo del discriminante heredado.
+- **Límite de pasos.** 256 pasos dependientes del conductor tras expandir las macros (rango
+  aprobado de 128 a 512, D-CU2-5). Un programa de más de 64 pasos es de clase v3. Evidencia del
+  sondeo de T3: los cortes del modelo tienen 10 (`o`, `v`), 13 (`w`, `a_1`, `e_1`), 16 (`o_1`)
+  y 27 pasos (`e_2`, con las dos macros expandidas); una caja cuesta 7,7 µs con 64 pasos, 10,4 µs
+  con 128 y 18,9 µs con 256 (JVM en régimen), así que con el presupuesto máximo aprobado de
+  16 384 cajas una rama y revisión cuesta como mucho unos 0,31 s.
+- **Clases v1 y v2.** Un programa sin pasos de la clase v3 capturado por la vía v3 es el mismo
+  programa, con la misma versión y la misma firma, y el modelo de cajas reproduce bit a bit sus
+  envolventes de valor y derivada.
+
 ### 4.2 Totalidad estructural (autoridad 1)
 
 Una operación es **estructuralmente total** sobre su dominio de entrada si está definida y es
@@ -708,10 +753,17 @@ detiene y se presenta una propuesta correctiva independiente.
   conservan el orden de sus argumentos;
 - un valor aleatorio se restaura con la interfaz pública del propio algoritmo
   (`SetRandomValue`), que es una asignación exacta y no escribe estado de selección;
-- una selección viva todavía pendiente (permutación sin inicializar o primera intersección por
-  establecer) no tiene regla efectiva que reproducir y no se compara; cuando se establece,
-  cambia la parte de selección de la huella, el corte se reconstruye y la comparación se
-  repite;
+- una selección viva en su primera inicialización tiene por regla la compactación de las raíces
+  que están en los caminos, y la copia la reproduce solo si también sigue en su primera
+  inicialización; una permutación viva que la siguiente evaluación fijará por cercanía no tiene
+  regla que reproducir: no se compara, el informe la anota como selección no asentada y no hay
+  programa de clase v3; cuando se asienta, cambia la parte de selección de la huella, el corte se
+  reconstruye y la comparación se repite (precisión de T3b);
+- la actualización de la copia después de restaurar es la de `updateConstruction(false)` sin su
+  reinicialización del estado de selección por cercanía: la copia conserva el estado con el que
+  se validó su revisión, cualesquiera que sean las consultas que la alcanzaron después. Con la
+  reinicialización (F-CU2-8), una recaptura tras consultas en un hueco desplazaba la permutación
+  de la copia y hacía infiel la revisión según el orden de las consultas (sondeo de T3b);
 - un literal angular sin texto original cuyo árbol reconstruido tiene otra forma no tiene
   correspondencia demostrada: no se restaura, y el locus queda `NOT_ESTABLISHED` con causa
   `RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED`.
