@@ -16,7 +16,8 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
-import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.desktop.main.AppD;
@@ -115,12 +116,28 @@ public final class GeoCeDGDefinitionInspector {
 				semanticDefinition.getProvider().getProviderId(), "");
 		for (LocusBranch2D branch : semanticDefinition.getBranches()) {
 			appendField(app, details, "Definition.Branch", branch.getBranchKey(), "");
-			for (LocusInterval2D component
-					: branch.getCertifiedContinuousValidComponents()) {
-				String lineage = LocusComponentLineage2D.create(branch.getBranchKey(),
-						component);
+			LocusExistenceStructure2D structure = branch.getExistenceStructure();
+			for (LocusExistenceStructure2D.ContinuousComponent component
+					: structure.getContinuousValidComponents()) {
+				// PRE-G9B-CU2: the structural lineage; an arc across the seam, or an open
+				// arc of full length, is shown with its ends and its closure.
+				String lineage = LocusComponentLineage2D.of(structure, component);
+				String shape = component.followsCanonicalOrder() ? ""
+						: " arc[" + component.getStart() + ", " + component.getEnd()
+								+ ", length " + component.getLength()
+								+ (component.crossesSeam() ? ", crosses seam" : "")
+								+ (component.isClosedPeriodic() ? ", closed" : ", open") + "]";
 				appendField(app, details, "Definition.Component",
-						lineage + " " + component, "  ");
+						lineage + " " + component.getInterval() + shape, "  ");
+			}
+			// Point components are declared, never drawn (D-CU2-19).
+			for (LocusPointComponent2D point : structure.getPointComponents()) {
+				appendField(app, details, "Definition.Component",
+						LocusComponentLineage2D.of(structure, point) + " point["
+								+ point.getParameterLower() + ", "
+								+ point.getParameterUpper() + "] source "
+								+ point.getSource().getSignature() + " position "
+								+ point.getPositionState(), "  ");
 			}
 			details.append("  existence completeness: ")
 					.append(branch.getExistenceStructure().getCompleteness())

@@ -7,6 +7,7 @@ package org.geocedg.common.kernel.locus.metric;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 
 /** Deterministic revision-scoped valid-component key utility. */
@@ -46,6 +47,19 @@ public final class LocusMetricComponentKey2D {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Finds the certified component owned by a component key, with its arc shape
+	 * (PRE-G9B-CU2), or {@code null}.
+	 *
+	 * @return matching component of the existence structure or {@code null}
+	 */
+	public static LocusExistenceStructure2D.ContinuousComponent findComponent(
+			LocusDefinition2D definition, LocusBranch2D branch, String componentKey) {
+		int index = indexOf(definition, branch, componentKey);
+		return index < 0 ? null
+				: branch.getExistenceStructure().getContinuousValidComponents().get(index);
 	}
 
 	/**

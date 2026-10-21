@@ -12,10 +12,13 @@ import java.util.Map;
 
 import org.geocedg.common.euclidian.draw.LocusRenderPolicy2D.SamplingStrategy;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
@@ -113,9 +116,10 @@ public final class LocusRenderCache2D {
 		try (LocusEvaluationSession2D session =
 				new LocusEvaluationSession2D(true, 4096)) {
 			for (LocusBranch2D branch : definition.getBranches()) {
-				for (LocusInterval2D component
-						: branch.getCertifiedContinuousValidComponents()) {
-					appendComponent(locus, definition, branch, component, policy,
+				LocusExistenceStructure2D structure = branch.getExistenceStructure();
+				for (ContinuousComponent component
+						: structure.getContinuousValidComponents()) {
+					appendComponent(locus, branch, structure, component, policy,
 							session, vertices);
 				}
 			}
@@ -124,52 +128,54 @@ public final class LocusRenderCache2D {
 				vertices);
 	}
 
-	private static void appendComponent(GeoLocusV2 locus,
-			LocusDefinition2D definition, LocusBranch2D branch,
-			LocusInterval2D component, LocusRenderPolicy2D policy,
-			LocusEvaluationSession2D session,
+	/**
+	 * Draws one certified component over its lifted range (PRE-G9B-CU2, consumption design
+	 * sections 3 and 5.3): it reaches its closing point only as the certified closed periodic
+	 * component, the single closure authority; an excluded structural-event end is drawn to
+	 * its one-sided limit; any other excluded end keeps the inset.
+	 */
+	private static void appendComponent(GeoLocusV2 locus, LocusBranch2D branch,
+			LocusExistenceStructure2D structure, ContinuousComponent certified,
+			LocusRenderPolicy2D policy, LocusEvaluationSession2D session,
 			List<LocusRenderData2D.Vertex> vertices) {
+		LocusInterval2D component = certified.getInterval();
 		double lower = component.getLower();
 		double upper = component.getUpper();
 		double span = upper - lower;
 		double inset = span * policy.getEndpointInsetFraction();
 		boolean unbounded = branch.getProperties()
 				.contains(BranchProperty.UNBOUNDED);
-		boolean fullPeriodicCycle = hasFullPeriodClosure(definition, branch,
-				component);
-		if (unbounded || (!component.isLowerClosed() && !fullPeriodicCycle)) {
+		boolean fullPeriodicCycle = structure.isClosedPeriodic()
+				&& certified.isClosedPeriodic();
+		if (unbounded || (!component.isLowerClosed() && !fullPeriodicCycle
+				&& !isLimitEnd(certified.getLowerBoundary()))) {
 			lower += inset;
 		}
-		if (unbounded || (!component.isUpperClosed() && !fullPeriodicCycle)) {
+		if (unbounded || (!component.isUpperClosed() && !fullPeriodicCycle
+				&& !isLimitEnd(certified.getUpperBoundary()))) {
 			upper -= inset;
 		}
 		if (!(lower <= upper)) {
 			return;
 		}
 		if (policy.getSamplingStrategy() == SamplingStrategy.ADAPTIVE_VISUAL
-				&& appendAdaptiveComponent(locus, branch, lower, upper, policy,
-						session, vertices)) {
+				&& appendAdaptiveComponent(locus, branch, component, lower, upper,
+						policy, session, vertices)) {
 			return;
 		}
-		appendUniformComponent(locus, branch, lower, upper, policy, session,
-				vertices);
+		appendUniformComponent(locus, branch, component, lower, upper, policy,
+				session, vertices);
 	}
 
-	private static boolean hasFullPeriodClosure(LocusDefinition2D definition,
-			LocusBranch2D branch, LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getExistenceStructure().getCompleteness()
-						== org.geocedg.common.kernel.locus.LocusExistenceStructure2D
-								.Completeness.COMPLETE
-				&& branch.getCertifiedContinuousValidComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(definition.getProvider().getDeclaredDomain());
+	/** @return whether an excluded end is a structural event reached as a limit */
+	private static boolean isLimitEnd(LocusBoundary2D end) {
+		return !end.isBinaryEndIncluded()
+				&& end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
 	}
 
 	private static void appendUniformComponent(GeoLocusV2 locus,
-			LocusBranch2D branch, double lower, double upper,
-			LocusRenderPolicy2D policy, LocusEvaluationSession2D session,
+			LocusBranch2D branch, LocusInterval2D component, double lower,
+			double upper, LocusRenderPolicy2D policy, LocusEvaluationSession2D session,
 			List<LocusRenderData2D.Vertex> vertices) {
 		boolean startsSubpath = true;
 		int samples = policy.getSamplesPerComponent();
@@ -177,7 +183,7 @@ public final class LocusRenderCache2D {
 			double ratio = index / (double) samples;
 			double parameter = lower + ratio * (upper - lower);
 			LocusEvaluation2D evaluation = locus.evaluateForRender(
-					branch.getBranchKey(), parameter, session);
+					branch.getBranchKey(), component, parameter, session);
 			if (evaluation.isValid()) {
 				vertices.add(new LocusRenderData2D.Vertex(evaluation.getPoint(),
 						parameter, startsSubpath));
@@ -189,20 +195,20 @@ public final class LocusRenderCache2D {
 	}
 
 	private static boolean appendAdaptiveComponent(GeoLocusV2 locus,
-			LocusBranch2D branch, double lower, double upper,
-			LocusRenderPolicy2D policy, LocusEvaluationSession2D session,
+			LocusBranch2D branch, LocusInterval2D component, double lower,
+			double upper, LocusRenderPolicy2D policy, LocusEvaluationSession2D session,
 			List<LocusRenderData2D.Vertex> vertices) {
 		LocusEvaluation2D lowerEvaluation = locus.evaluateForRender(
-				branch.getBranchKey(), lower, session);
+				branch.getBranchKey(), component, lower, session);
 		LocusEvaluation2D upperEvaluation = locus.evaluateForRender(
-				branch.getBranchKey(), upper, session);
+				branch.getBranchKey(), component, upper, session);
 		if (!lowerEvaluation.isValid() || !upperEvaluation.isValid()) {
 			return false;
 		}
 		List<LocusRenderData2D.Vertex> adaptive = new ArrayList<>();
 		adaptive.add(new LocusRenderData2D.Vertex(lowerEvaluation.getPoint(), lower,
 				true));
-		if (!subdivide(locus, branch, lower, lowerEvaluation, upper,
+		if (!subdivide(locus, branch, component, lower, lowerEvaluation, upper,
 				upperEvaluation, 0, policy, session, adaptive)) {
 			return false;
 		}
@@ -211,8 +217,8 @@ public final class LocusRenderCache2D {
 	}
 
 	private static boolean subdivide(GeoLocusV2 locus, LocusBranch2D branch,
-			double lower, LocusEvaluation2D lowerEvaluation, double upper,
-			LocusEvaluation2D upperEvaluation, int depth,
+			LocusInterval2D component, double lower, LocusEvaluation2D lowerEvaluation,
+			double upper, LocusEvaluation2D upperEvaluation, int depth,
 			LocusRenderPolicy2D policy, LocusEvaluationSession2D session,
 			List<LocusRenderData2D.Vertex> vertices) {
 		double midpoint = lower + (upper - lower) / 2;
@@ -222,7 +228,7 @@ public final class LocusRenderCache2D {
 			return true;
 		}
 		LocusEvaluation2D midpointEvaluation = locus.evaluateForRender(
-				branch.getBranchKey(), midpoint, session);
+				branch.getBranchKey(), component, midpoint, session);
 		if (!midpointEvaluation.isValid()) {
 			return false;
 		}
@@ -235,10 +241,10 @@ public final class LocusRenderCache2D {
 					upper, false));
 			return true;
 		}
-		return subdivide(locus, branch, lower, lowerEvaluation, midpoint,
+		return subdivide(locus, branch, component, lower, lowerEvaluation, midpoint,
 				midpointEvaluation, depth + 1, policy, session, vertices)
-				&& subdivide(locus, branch, midpoint, midpointEvaluation, upper,
-						upperEvaluation, depth + 1, policy, session, vertices);
+				&& subdivide(locus, branch, component, midpoint, midpointEvaluation,
+						upper, upperEvaluation, depth + 1, policy, session, vertices);
 	}
 
 	private static double screenChordError(LocusPoint2D lower,

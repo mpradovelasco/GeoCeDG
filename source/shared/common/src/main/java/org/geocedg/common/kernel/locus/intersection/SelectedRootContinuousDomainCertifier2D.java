@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -411,12 +412,17 @@ public final class SelectedRootContinuousDomainCertifier2D {
 		String branchKey = solution.getRevisionEvidence().getBranchSnapshotKey();
 		LocusBranch2D branch = family.source.getSemanticDefinition()
 				.getBranch(branchKey);
-		if (branch == null || branch.getValidDomainComponents().size() != 1) {
+		LocusExistenceStructure2D structure = branch == null ? null
+				: branch.getExistenceStructure();
+		if (structure == null || structure.getCompleteness() != Completeness.COMPLETE
+				|| structure.getContinuousValidComponents().size() != 1
+				|| !structure.getPointComponents().isEmpty()) {
 			throw new IllegalArgumentException(
 					"Selected source branch lacks one complete structural component");
 		}
-		String lineage = IntersectionTokenLineage2D.stableComponentLineage(
-				branchKey, branch.getValidDomainComponents().get(0));
+		// The structural lineage that the root token cites (PRE-G9B-CU2).
+		String lineage = LocusComponentLineage2D.of(structure,
+				structure.getContinuousValidComponents().get(0));
 		if (!lineage.equals(family.selector.getComponentLineage())) {
 			throw new IllegalArgumentException(
 					"Selected root lineage disagrees with its source component");

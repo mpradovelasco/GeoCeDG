@@ -5,13 +5,17 @@
 
 package org.geocedg.common.kernel.algos;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
+import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchSelector2D;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
@@ -108,7 +112,10 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				point.setUndefined();
 				return;
 			}
-			if (!principalState.matches(principalAddress)) {
+			LocusBranch2D principalBranch = definition == null ? null
+					: definition.getBranch(principalAddress.getBranchKey());
+			if (principalBranch == null || !principalState.resolves(principalAddress,
+					principalBranch, definition.getProvider().getDomainEpsilon())) {
 				point.setUndefined();
 				return;
 			}
@@ -147,7 +154,7 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		String retainedComponentLineage = persistedState != null
 				? persistedState.getComponentLineageKey()
 				: principalState != null ? principalState.getComponentLineageKey() : null;
-		LocusInterval2D component = containingComponent(branch, canonical, provider,
+		ContinuousComponent component = containingComponent(branch, canonical, provider,
 				retainedComponentLineage);
 		if (component == null) {
 			point.setUndefined();
@@ -157,7 +164,8 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		LocusSemanticAddress2D candidate = persistedAddress != null
 				? persistedAddress : principalAddress != null ? principalAddress
 				: new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
-						branchKey, componentLineage(branchKey, component), canonical,
+						branchKey, LocusComponentLineage2D.of(branch.getExistenceStructure(),
+								component), canonical,
 						lift, seamSide(provider, rawParameter, canonical, lift));
 		long rawBits = Double.doubleToLongBits(rawParameter == 0 ? 0 : rawParameter);
 		boolean sameAddressInputs = previousRawParameterBits == rawBits
@@ -300,36 +308,34 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		return Commands.Point;
 	}
 
-	private static LocusInterval2D containingComponent(LocusBranch2D branch,
+	/**
+	 * The certified component of the position (consumption design section 3): a retained
+	 * selector resolves only through a demonstrated structural correspondence
+	 * ({@code locus-v2-existence-components.md} section 15.6); without one, the parameter
+	 * must lie in exactly one certified component. A point component is never selected.
+	 */
+	private static ContinuousComponent containingComponent(LocusBranch2D branch,
 			double parameter, LocusDriverDomainProvider2D provider,
 			String retainedComponentLineage) {
-		LocusInterval2D unqualified = null;
-		LocusInterval2D qualified = null;
-		for (LocusInterval2D component
-				: branch.getCertifiedContinuousValidComponents()) {
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		if (retainedComponentLineage != null) {
+			LocusComponentSelectorResolver2D.Resolution resolution =
+					LocusComponentSelectorResolver2D.resolve(retainedComponentLineage,
+							structure, Collections.singletonList(branch.getLineage()),
+							parameter, provider.getDomainEpsilon());
+			return resolution.getStatus().isResolved() ? resolution.getComponent() : null;
+		}
+		ContinuousComponent unqualified = null;
+		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
 			if (!component.contains(parameter, provider.getDomainEpsilon())) {
 				continue;
 			}
-			if (retainedComponentLineage != null) {
-				if (retainedComponentLineage.equals(componentLineage(
-						branch.getBranchKey(), component))) {
-					if (qualified != null) {
-						return null;
-					}
-					qualified = component;
-				}
-			} else if (unqualified != null) {
+			if (unqualified != null) {
 				return null;
-			} else {
-				unqualified = component;
 			}
+			unqualified = component;
 		}
-		return retainedComponentLineage == null ? unqualified : qualified;
-	}
-
-	private static String componentLineage(String branchKey,
-			LocusInterval2D component) {
-		return LocusComponentLineage2D.create(branchKey, component);
+		return unqualified;
 	}
 
 	private static Long periodicLift(LocusDriverDomainProvider2D provider,
@@ -430,7 +436,10 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				LocusSemanticAddress2D current =
 						LocusPrincipalBranchSelector2D.select(source,
 								parameterInput.getDouble());
-				if (principalState.matches(current)) {
+				LocusBranch2D branch = definition == null ? null
+						: definition.getBranch(current.getBranchKey());
+				if (branch != null && principalState.resolves(current, branch,
+						definition.getProvider().getDomainEpsilon())) {
 					lastAcceptedAddress = current;
 				}
 			} catch (IllegalArgumentException exception) {

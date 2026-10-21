@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
-import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
@@ -77,6 +78,20 @@ public final class LocusIntersectionSolver2D {
 						List.of(new IntersectionDiagnostic2D(
 								DiagnosticCode.DOMAIN_EXCLUSION_ESTABLISHED,
 								"Semantic definition has no valid components")));
+			}
+			if (allComponents(definition).isEmpty() && hasPointComponents(definition)) {
+				// A point component is never excluded by an empty interval inventory
+				// (locus-v2-existence-components.md section 15.8).
+				return publish(binding, ComputationStatus.SUCCESS,
+						Completeness.NOT_ESTABLISHED, CompletenessMethod.NOT_ESTABLISHED,
+						GeometryKind.UNRESOLVED, SupportLevel.CERTIFIED,
+						NumericGuarantee.CERTIFIED_ERROR_BOUND,
+						Collections.emptyList(), Collections.emptyList(),
+						Collections.emptyList(), instrumentation,
+						List.of(new IntersectionDiagnostic2D(
+								DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
+								"Point components of the source are not excluded "
+										+ "rigorously")));
 			}
 			if (allComponents(definition).isEmpty()) {
 				return publish(binding, ComputationStatus.SUCCESS,
@@ -145,6 +160,7 @@ public final class LocusIntersectionSolver2D {
 		List<String> allComponents = context.getAllComponentKeys();
 		if (completeness == Completeness.COMPLETE
 				&& (!domainComplete(context.getDefinition())
+						|| hasPointComponents(context.getDefinition())
 						|| !sameCoverage(allComponents,
 								candidateSet.getCoveredComponentKeys()))) {
 			completeness = Completeness.INCOMPLETE;
@@ -232,7 +248,7 @@ public final class LocusIntersectionSolver2D {
 		}
 		double canonical = context.getDefinition().getProvider()
 				.canonicalize(candidate.getSemanticParameter());
-		if (!address.interval.contains(canonical,
+		if (!address.component.contains(canonical,
 				context.getDefinition().getProvider().getDomainEpsilon())) {
 			context.getInstrumentation().recordRejectedCandidate();
 			return Verification.unresolved();
@@ -272,8 +288,7 @@ public final class LocusIntersectionSolver2D {
 		}
 		context.getInstrumentation().recordVerifiedSolution();
 		IntersectionTokenLineage2D tokenLineage =
-				IntersectionTokenLineage2D.forSingleComponent(
-						candidate.getBranchKey(), address.interval,
+				IntersectionTokenLineage2D.forComponentLineage(address.lineage,
 						candidate.getContinuationKey());
 		OptionalDouble lifted = candidate.getLiftedPeriodicParameter();
 		IntersectionParameterInterval2D interval =
@@ -318,7 +333,7 @@ public final class LocusIntersectionSolver2D {
 				new IntersectionClassification2D(candidate.getContactClass(),
 						candidate.getMultiplicityStatus(),
 						candidate.getEstablishedMultiplicity(),
-						domainLocation(context, address.interval, canonical),
+						domainLocation(context, address, canonical),
 						membership.isIncludedBoundary(), Regularity.UNKNOWN);
 		IntersectionRootLineage2D lineage = new IntersectionRootLineage2D(
 				candidate.getLineageEventKind(), Collections.emptyList(),
@@ -496,13 +511,14 @@ public final class LocusIntersectionSolver2D {
 		if (branch == null) {
 			return null;
 		}
-		for (int index = 0;
-				index < branch.getCertifiedContinuousValidComponents().size();
-				index++) {
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		List<ContinuousComponent> components = structure.getContinuousValidComponents();
+		for (int index = 0; index < components.size(); index++) {
 			if (IntersectionCapabilityContext2D.componentKey(branchKey, index)
 					.equals(componentKey)) {
-				return new ComponentAddress(
-						branch.getCertifiedContinuousValidComponents().get(index));
+				return new ComponentAddress(components.get(index),
+						LocusComponentLineage2D.of(structure, components.get(index)),
+						structure.isClosedPeriodic());
 			}
 		}
 		return null;
@@ -514,23 +530,35 @@ public final class LocusIntersectionSolver2D {
 						== LocusExistenceStructure2D.Completeness.COMPLETE);
 	}
 
+	/** @return whether a branch has a point component that no root search covers */
+	private static boolean hasPointComponents(LocusDefinition2D definition) {
+		return definition.getBranches().stream().anyMatch(branch ->
+				!branch.getExistenceStructure().getPointComponents().isEmpty());
+	}
+
+	/**
+	 * Location of a root on its certified component: the seam quarantine applies only to a
+	 * certified closed periodic component (consumption design section 3); the included ends
+	 * of an arc are its start and end.
+	 */
 	private static DomainLocation domainLocation(
-			IntersectionCapabilityContext2D context, LocusInterval2D interval,
+			IntersectionCapabilityContext2D context, ComponentAddress address,
 			double parameter) {
 		double tolerance = context.getQuery().getPolicy()
 				.getRootParameterTolerance().getValue();
-		if (interval.getLower() == interval.getUpper()) {
+		ContinuousComponent component = address.component;
+		if (component.getInterval().getLower() == component.getInterval().getUpper()) {
 			return DomainLocation.ISOLATED_COMPONENT;
 		}
-		if (context.getDefinition().getProvider().isPeriodic()
+		if (address.closedPeriodic
 				&& Math.abs(parameter - context.getDefinition().getProvider()
 						.getDeclaredDomain().getLower()) <= tolerance) {
 			return DomainLocation.PERIODIC_SEAM;
 		}
-		if (interval.isLowerClosed()
-				&& Math.abs(parameter - interval.getLower()) <= tolerance
-				|| interval.isUpperClosed()
-				&& Math.abs(parameter - interval.getUpper()) <= tolerance) {
+		if (component.getLowerBoundary().isBinaryEndIncluded()
+				&& Math.abs(parameter - component.getStart()) <= tolerance
+				|| component.getUpperBoundary().isBinaryEndIncluded()
+				&& Math.abs(parameter - component.getEnd()) <= tolerance) {
 			return DomainLocation.INCLUDED_ENDPOINT;
 		}
 		return DomainLocation.INTERIOR;
@@ -541,10 +569,15 @@ public final class LocusIntersectionSolver2D {
 	}
 
 	private static final class ComponentAddress {
-		private final LocusInterval2D interval;
+		private final ContinuousComponent component;
+		private final String lineage;
+		private final boolean closedPeriodic;
 
-		ComponentAddress(LocusInterval2D interval) {
-			this.interval = interval;
+		ComponentAddress(ContinuousComponent component, String lineage,
+				boolean closedPeriodic) {
+			this.component = component;
+			this.lineage = lineage;
+			this.closedPeriodic = closedPeriodic;
 		}
 	}
 

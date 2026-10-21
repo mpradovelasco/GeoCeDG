@@ -14,7 +14,6 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusParameterPartition2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 
 /** Deterministic differential-quadrature capability. */
 public final class DifferentialLocusMetricCapability2D
@@ -76,7 +75,7 @@ public final class DifferentialLocusMetricCapability2D
 			return zeroState(branch, component, key);
 		}
 		if ((!component.isLowerClosed() || !component.isUpperClosed())
-				&& !isPeriodicFundamentalCycle(definition, branch, component)) {
+				&& !branch.hasEvaluableEnds(component)) {
 			return unresolvedImproperState(branch, component, key);
 		}
 		MetricIntegrationResult2D integration = integrate(definition,
@@ -288,8 +287,7 @@ public final class DifferentialLocusMetricCapability2D
 		LocusInterval2D extent = state.getComponentExtent();
 		LocusBranch2D branch = currentDefinition == null ? null
 				: currentDefinition.getBranch(state.getBranchKey());
-		if (branch != null && isPeriodicFundamentalCycle(currentDefinition,
-				branch, extent)) {
+		if (branch != null && branch.hasEvaluableEnds(extent)) {
 			return false;
 		}
 		return !extent.isLowerClosed()
@@ -302,16 +300,6 @@ public final class DifferentialLocusMetricCapability2D
 										== extent.getUpper()
 								|| segment.getEndCanonicalParameter()
 										== extent.getUpper());
-	}
-
-	private static boolean isPeriodicFundamentalCycle(
-			LocusDefinition2D definition, LocusBranch2D branch,
-			LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(definition.getProvider().getDeclaredDomain());
 	}
 
 	private static LocusMetricComponentBuildException buildFailure(

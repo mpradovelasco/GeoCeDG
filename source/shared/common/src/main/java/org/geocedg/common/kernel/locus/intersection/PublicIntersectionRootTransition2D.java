@@ -13,8 +13,8 @@ import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LineageEventKind;
@@ -139,11 +139,11 @@ public final class PublicIntersectionRootTransition2D {
 		if (branch == null) {
 			return false;
 		}
-		for (int index = 0;
-				index < branch.getCertifiedContinuousValidComponents().size();
-				index++) {
-			LocusInterval2D component = branch
-					.getCertifiedContinuousValidComponents().get(index);
+		List<LocusExistenceStructure2D.ContinuousComponent> components =
+				branch.getExistenceStructure().getContinuousValidComponents();
+		for (int index = 0; index < components.size(); index++) {
+			LocusExistenceStructure2D.ContinuousComponent certified = components.get(index);
+			LocusInterval2D component = certified.getInterval();
 			if (!IntersectionCapabilityContext2D.componentKey(
 					branch.getBranchKey(), index).equals(
 							current.getResolvedValidComponentKey())) {
@@ -158,8 +158,17 @@ public final class PublicIntersectionRootTransition2D {
 					span / subdivisions);
 			double delta = current.getSemanticParameter()
 					- previous.getSemanticParameter();
-			if (hasCompletePeriodicSeam(definition, branch, component)
-					&& span > 0) {
+			if (!certified.followsCanonicalOrder()) {
+				// Inside an arc across the seam the step is measured on the arc
+				// (PRE-G9B-CU2); it never wraps.
+				double epsilon = definition.getProvider().getDomainEpsilon();
+				delta = certified.getArcCoordinate(current.getSemanticParameter(), epsilon)
+						- certified.getArcCoordinate(previous.getSemanticParameter(), epsilon);
+				if (Double.isNaN(delta)) {
+					return false;
+				}
+			}
+			if (hasCompletePeriodicSeam(branch) && span > 0) {
 				delta -= Math.rint(delta / span) * span;
 				if (Math.abs(Math.abs(delta) - span / 2) <= policy
 						.getContinuationTolerance().getValue()) {
@@ -171,14 +180,9 @@ public final class PublicIntersectionRootTransition2D {
 		return false;
 	}
 
-	private static boolean hasCompletePeriodicSeam(
-			LocusDefinition2D definition, LocusBranch2D branch,
-			LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(definition.getProvider().getDeclaredDomain());
+	/** Single closure authority ({@code locus-v2-existence-components.md} section 15.8). */
+	private static boolean hasCompletePeriodicSeam(LocusBranch2D branch) {
+		return branch.getExistenceStructure().isClosedPeriodic();
 	}
 
 	private boolean eligiblePrior(LocusIntersectionSolution2D solution) {

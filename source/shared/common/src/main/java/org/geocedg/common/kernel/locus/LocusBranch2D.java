@@ -122,7 +122,9 @@ public final class LocusBranch2D {
 	}
 
 	/**
-	 * Tests valid-domain membership using provider-owned eps_domain.
+	 * Tests valid-domain membership using provider-owned eps_domain on the components of the
+	 * existence structure; an arc lifted past its domain is tested on its arc coordinate
+	 * (PRE-G9B-CU2). A point component is never selected by a parameter.
 	 *
 	 * @return whether the canonical parameter belongs to a valid component
 	 */
@@ -131,12 +133,52 @@ public final class LocusBranch2D {
 		if (!provider.contains(canonicalParameter)) {
 			return false;
 		}
-		for (LocusInterval2D component : componentIntervals()) {
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: existenceStructure.getContinuousValidComponents()) {
 			if (component.contains(canonicalParameter, provider.getDomainEpsilon())) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @return the certified component whose lifted interval is the extent, or {@code null}
+	 */
+	public LocusExistenceStructure2D.ContinuousComponent getComponentWithExtent(
+			LocusInterval2D extent) {
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: existenceStructure.getContinuousValidComponents()) {
+			if (component.getInterval().equals(extent)) {
+				return component;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Whether a consumer that traverses the component with this extent can evaluate both of
+	 * its ends (PRE-G9B-CU2): an included binary64 end, the closing point of a certified
+	 * closed periodic branch (the single closure authority, never the provider's
+	 * periodicity), or an excluded structural event, whose one-sided limit the certificate
+	 * establishes and {@link LocusDefinition2D#evaluateComponentEnd} evaluates.
+	 *
+	 * @return whether both ends of the component are evaluable
+	 */
+	public boolean hasEvaluableEnds(LocusInterval2D extent) {
+		LocusExistenceStructure2D.ContinuousComponent component =
+				getComponentWithExtent(extent);
+		if (component == null) {
+			return false;
+		}
+		return existenceStructure.isClosedPeriodic()
+				|| isEvaluable(component.getLowerBoundary())
+						&& isEvaluable(component.getUpperBoundary());
+	}
+
+	private static boolean isEvaluable(LocusBoundary2D end) {
+		return end.isBinaryEndIncluded()
+				|| end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
 	}
 
 	/**

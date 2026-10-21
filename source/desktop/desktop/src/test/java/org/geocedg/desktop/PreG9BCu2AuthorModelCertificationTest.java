@@ -491,8 +491,8 @@ class PreG9BCu2AuthorModelCertificationTest {
 	 * V-E2-5 (certificate part) and GC-6: with a test policy whose work budget makes the
 	 * estimate of {@code w_1} fail in the slice of {@code e_2} at one driver value, that point
 	 * is not evaluated, and the existence structure recomputed meanwhile is identical, with
-	 * no metric value read; restoring the policy restores the point. Its classification as
-	 * {@code EVALUATION_FAILED} is the separation of existence and evaluation of step T9.
+	 * no metric value read; restoring the policy restores the point. Since step T9 the point
+	 * is an {@code EVALUATION_FAILED}, a computational failure, never nonexistence (P5).
 	 */
 	@Test
 	void aFailingLengthEstimateLeavesTheCertificateUnchanged() throws Exception {
@@ -531,7 +531,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 			values.put("exists", coverageAt(before.getStructure(), 1).getState().name());
 			return values;
 		});
-		assertTrue(!"VALID".equals(row.get("failing")), row.toString());
+		assertEquals("EVALUATION_FAILED", row.get("failing"), row.toString());
 		assertEquals("LIMIT_NOT_ESTABLISHED", row.get("length"), row.toString());
 		assertEquals(0L, row.get("reads"), "GC-6 " + row);
 		assertEquals(true, row.get("identical"), row.toString());

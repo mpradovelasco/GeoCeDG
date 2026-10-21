@@ -148,8 +148,9 @@ class LocusMetricProductiveBenchmarkTest {
 			assertEquals(1, open.owner.statistics().getBuilds());
 		}
 
-		Trace periodic = trace(line("periodic-route", 1, true,
-				G7BMetricFixtures.components(-4, 4)));
+		// Periodic routes need a certified closed component (PRE-G9B-CU2).
+		Trace periodic = trace(G7BMetricFixtures.periodicDefinition("periodic-route", 1,
+				parameter -> new LocusPoint2D(parameter, 0)));
 		try (LocusMetricOwnerLease2D lease =
 				periodic.owner.acquireLease()) {
 			for (int index = 0; index < 100; index++) {

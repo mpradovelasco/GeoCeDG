@@ -10,9 +10,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
@@ -153,6 +155,13 @@ public final class LocusPairIntersectionContext2D {
 			}
 		}
 		double span = component.getUpper() - component.getLower();
+		// An arc lifted past the canonical domain addresses its canonical parameters
+		// after the seam in its lifted range (PRE-G9B-CU2).
+		LocusInterval2D domain = definition.getProvider().getDeclaredDomain();
+		if (definition.getProvider().isPeriodic() && parameter < component.getLower()
+				&& component.getUpper() > domain.getUpper()) {
+			parameter += domain.getUpper() - domain.getLower();
+		}
 		double step = Math.max(16 * rootTolerance,
 				Math.max(Math.ulp(parameter) * 32, span * 1E-6));
 		double lower = Math.max(component.getLower(), parameter - step);
@@ -194,13 +203,15 @@ public final class LocusPairIntersectionContext2D {
 			LocusDefinition2D definition) {
 		ArrayList<ComponentAddress> result = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			List<LocusInterval2D> components =
-					branch.getCertifiedContinuousValidComponents();
+			LocusExistenceStructure2D structure = branch.getExistenceStructure();
+			List<LocusExistenceStructure2D.ContinuousComponent> components =
+					structure.getContinuousValidComponents();
 			for (int index = 0; index < components.size(); index++) {
 				result.add(new ComponentAddress(branch.getBranchKey(),
 						IntersectionCapabilityContext2D.componentKey(
 								branch.getBranchKey(), index),
-						components.get(index)));
+						components.get(index),
+						LocusComponentLineage2D.of(structure, components.get(index))));
 			}
 		}
 		return Collections.unmodifiableList(result);
@@ -224,12 +235,26 @@ public final class LocusPairIntersectionContext2D {
 		private final String branchKey;
 		private final String componentKey;
 		private final LocusInterval2D interval;
+		private final LocusExistenceStructure2D.ContinuousComponent component;
+		private final String lineage;
 
 		ComponentAddress(String branchKey, String componentKey,
-				LocusInterval2D interval) {
+				LocusExistenceStructure2D.ContinuousComponent component, String lineage) {
 			this.branchKey = branchKey;
 			this.componentKey = componentKey;
-			this.interval = interval;
+			this.interval = component.getInterval();
+			this.component = component;
+			this.lineage = lineage;
+		}
+
+		/** @return certified component, with its arc shape and typed ends */
+		public LocusExistenceStructure2D.ContinuousComponent getComponent() {
+			return component;
+		}
+
+		/** @return structural lineage of the component (PRE-G9B-CU2) */
+		public String getLineage() {
+			return lineage;
 		}
 
 		public String getBranchKey() {

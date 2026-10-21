@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
+import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -276,9 +277,9 @@ public final class LocusPairIntersectionSolver2D {
 				candidate.getFirstBranchKey(), candidate.getFirstComponentKey(),
 				candidate.getSecondBranchKey(), candidate.getSecondComponentKey());
 		String token = tokenSource.nextToken(candidate.getSolutionLineageKey(),
-				IntersectionTokenLineage2D.forCanonicalComponentPair(
-						candidate.getFirstBranchKey(), firstComponent.getInterval(),
-						candidate.getSecondBranchKey(), secondComponent.getInterval(),
+				IntersectionTokenLineage2D.forComponentLineagePair(
+						candidate.getFirstBranchKey(), firstComponent.getLineage(),
+						candidate.getSecondBranchKey(), secondComponent.getLineage(),
 						candidate.getContinuationKey()));
 		boolean identityEstablished = candidate.getContinuationKey().isPresent()
 				&& candidate.getLocalIsolation().getStatus()
@@ -523,12 +524,18 @@ public final class LocusPairIntersectionSolver2D {
 						== DefinitionStatus.EMPTY_DOMAIN;
 	}
 
+	/**
+	 * Empty only with a complete inventory without any component; a point component is
+	 * never excluded by an empty interval inventory (PRE-G9B-CU2, section 15.8).
+	 */
 	private static boolean empty(LocusDefinition2D definition) {
 		return definition.getDefinitionStatus() == DefinitionStatus.EMPTY_DOMAIN
 				|| domainComplete(definition)
 						&& definition.getBranches().stream().allMatch(branch ->
-								branch.getCertifiedContinuousValidComponents()
-										.isEmpty());
+								branch.getExistenceStructure().getContinuousValidComponents()
+										.isEmpty()
+										&& branch.getExistenceStructure()
+												.getPointComponents().isEmpty());
 	}
 
 	private static boolean domainComplete(LocusDefinition2D definition) {
@@ -550,7 +557,7 @@ public final class LocusPairIntersectionSolver2D {
 
 	private static boolean contains(ComponentAddress component,
 			LocusDefinition2D definition, double parameter) {
-		return component.getInterval().contains(parameter,
+		return component.getComponent().contains(parameter,
 				definition.getProvider().getDomainEpsilon());
 	}
 
@@ -601,16 +608,16 @@ public final class LocusPairIntersectionSolver2D {
 			LocusPairIntersectionContext2D context, ComponentAddress first,
 			ComponentAddress second, double firstParameter,
 			double secondParameter) {
-		if (seam(context.getFirstDefinition(), firstParameter,
+		if (seam(context.getFirstDefinition(), first, firstParameter,
 				context.getQuery().getPolicy().getFirstRootTolerance().getValue())
-				|| seam(context.getSecondDefinition(), secondParameter,
+				|| seam(context.getSecondDefinition(), second, secondParameter,
 						context.getQuery().getPolicy().getSecondRootTolerance()
 								.getValue())) {
 			return DomainLocation.PERIODIC_SEAM;
 		}
-		if (endpoint(first.getInterval(), firstParameter,
+		if (endpoint(first, firstParameter,
 				context.getQuery().getPolicy().getFirstRootTolerance().getValue())
-				|| endpoint(second.getInterval(), secondParameter,
+				|| endpoint(second, secondParameter,
 						context.getQuery().getPolicy().getSecondRootTolerance()
 								.getValue())) {
 			return DomainLocation.INCLUDED_ENDPOINT;
@@ -618,18 +625,22 @@ public final class LocusPairIntersectionSolver2D {
 		return DomainLocation.INTERIOR;
 	}
 
-	private static boolean seam(LocusDefinition2D definition,
+	/** The seam quarantine applies only to a certified closed periodic component. */
+	private static boolean seam(LocusDefinition2D definition, ComponentAddress component,
 			double parameter, double tolerance) {
-		return definition.getProvider().isPeriodic()
+		LocusBranch2D branch = definition.getBranch(component.getBranchKey());
+		return branch != null && branch.getExistenceStructure().isClosedPeriodic()
 				&& Math.abs(parameter - definition.getProvider()
 						.getDeclaredDomain().getLower()) <= tolerance;
 	}
 
-	private static boolean endpoint(LocusInterval2D interval,
-			double parameter, double tolerance) {
-		return interval.isLowerClosed()
-				&& Math.abs(parameter - interval.getLower()) <= tolerance
-				|| interval.isUpperClosed()
-						&& Math.abs(parameter - interval.getUpper()) <= tolerance;
+	/** @return whether the parameter is at an included end of the certified component */
+	private static boolean endpoint(ComponentAddress component, double parameter,
+			double tolerance) {
+		LocusExistenceStructure2D.ContinuousComponent certified = component.getComponent();
+		return certified.getLowerBoundary().isBinaryEndIncluded()
+				&& Math.abs(parameter - certified.getStart()) <= tolerance
+				|| certified.getUpperBoundary().isBinaryEndIncluded()
+						&& Math.abs(parameter - certified.getEnd()) <= tolerance;
 	}
 }

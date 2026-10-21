@@ -47,10 +47,11 @@ public final class LocusComponentLineage2D {
 	 * of its two ends, independent of the binary64 position of its boundaries, so that moving
 	 * a boundary without changing its source keeps the key. The closed periodic component of
 	 * a branch has no boundary and one key. A component with an untyped end, recorded before
-	 * PRE-G9B-CU2, or with the edge of an unresolved band, which is no structural source,
-	 * keeps the key of {@link #create(String, LocusInterval2D)}; so does a component whose
-	 * two sources another component of the same structure shares, since nothing structural
-	 * tells them apart.
+	 * PRE-G9B-CU2, with the edge of an unresolved band, which is no structural source, or with
+	 * an end or closure that no proof certifies, such as those of the provider-compatibility
+	 * certificate, keeps the key of {@link #create(String, LocusInterval2D)}; so does a
+	 * component whose two sources another component of the same structure shares, since
+	 * nothing structural tells them apart.
 	 *
 	 * @param structure certified structure of the branch
 	 * @param component one of its continuous components
@@ -93,7 +94,8 @@ public final class LocusComponentLineage2D {
 	/** @return structural key, or {@code null} when an end has no structural source */
 	private static String structural(String branchKey, ContinuousComponent component) {
 		if (component.isClosedPeriodic()) {
-			return branchKey + CLOSURE;
+			return component.getLowerBoundary().getNature().certifies()
+					? branchKey + CLOSURE : null;
 		}
 		LocusBoundary2D lower = component.getLowerBoundary();
 		LocusBoundary2D upper = component.getUpperBoundary();
@@ -109,7 +111,7 @@ public final class LocusComponentLineage2D {
 		case DOMAIN_END:
 		case CERTIFIED_TRANSITION:
 		case STRUCTURAL_EVENT:
-			return true;
+			return boundary.getNature().certifies();
 		default:
 			return false;
 		}

@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
@@ -103,9 +105,10 @@ public final class PublicTargetIntersectionCapability2D
 			IntersectionCapabilityContext2D context,
 			IntersectionCandidate2D candidate,
 			Optional<String> transverseGerm) {
-		LocusInterval2D component = exactComponent(context, candidate);
-		String lineage = IntersectionTokenLineage2D.stableComponentLineage(
-				candidate.getBranchKey(), component);
+		// The germ cites the structural lineage of its component (PRE-G9B-CU2).
+		String lineage = LocusComponentLineage2D.of(context.getDefinition()
+				.getBranch(candidate.getBranchKey()).getExistenceStructure(),
+				exactComponent(context, candidate));
 		Optional<String> currentGerm = transverseGerm.map(germ ->
 				CURRENT_TRANSVERSE_GERM_PREFIX + framed(lineage) + framed(germ));
 		if (!currentGerm.isPresent()) {
@@ -150,7 +153,7 @@ public final class PublicTargetIntersectionCapability2D
 		if (!evaluation.isValid() || evaluation.getPoint() == null) {
 			return Optional.empty();
 		}
-		LocusInterval2D component = exactComponent(context, candidate);
+		LocusInterval2D component = exactComponent(context, candidate).getInterval();
 		TargetContactEvidence2D contact = context.evaluateContact(
 				evaluation.getPoint(), context.evaluateDifferential(
 						candidate.getBranchKey(), candidate.getSemanticParameter(),
@@ -267,14 +270,14 @@ public final class PublicTargetIntersectionCapability2D
 		}
 	}
 
-	private static LocusInterval2D exactComponent(
+	private static LocusExistenceStructure2D.ContinuousComponent exactComponent(
 			IntersectionCapabilityContext2D context,
 			IntersectionCandidate2D candidate) {
 		LocusBranch2D branch = context.getDefinition().getBranch(
 				candidate.getBranchKey());
 		if (branch != null) {
-			List<LocusInterval2D> components =
-					branch.getCertifiedContinuousValidComponents();
+			List<LocusExistenceStructure2D.ContinuousComponent> components =
+					branch.getExistenceStructure().getContinuousValidComponents();
 			for (int index = 0; index < components.size(); index++) {
 				if (candidate.getComponentKey().equals(
 						IntersectionCapabilityContext2D.componentKey(

@@ -334,6 +334,25 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 						LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
 						"upstream-locus-coverage-not-established");
 			}
+			// The dependent composes the existence of its support (PRE-G9B-CU2,
+			// consumption design section 3): never complete over a point component, and
+			// arcs are inherited with their shape, never split or closed.
+			LocusExistenceStructure2D supportStructure = sourceBranch.getExistenceStructure();
+			if (!supportStructure.getPointComponents().isEmpty()) {
+				return LocusExistenceStructure2D.notEstablished(
+						SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+						descriptor.getDeclaredDomain(), topology,
+						LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
+						"upstream-point-components-not-composed");
+			}
+			for (LocusExistenceStructure2D.ContinuousComponent component
+					: supportStructure.getContinuousValidComponents()) {
+				if (!component.followsCanonicalOrder()) {
+					return LocusExistenceStructure2D.compatibilityInherited(
+							SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+							supportStructure);
+				}
+			}
 		}
 		return LocusExistenceStructure2D.completeCompatibility(
 				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
@@ -478,9 +497,18 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				throw new IllegalArgumentException(
 						"The declared Locus V2 support branch is not current");
 			}
-			return new DomainSnapshot(branch.getDeclaredDriverDomain(),
-					branch.getValidDomainComponents(), branch.getOrientation(),
-					definition.getProvider().isPeriodic(),
+			// The canonical pieces of the complete inventory of the support; an arc
+			// across the seam is composed by the existence structure (PRE-G9B-CU2).
+			List<LocusInterval2D> pieces = new ArrayList<>();
+			if (branch.getExistenceStructure().getCompleteness()
+					== LocusExistenceStructure2D.Completeness.COMPLETE) {
+				for (LocusExistenceStructure2D.ContinuousComponent component
+						: branch.getExistenceStructure().getContinuousValidComponents()) {
+					pieces.addAll(component.getCanonicalPieces());
+				}
+			}
+			return new DomainSnapshot(branch.getDeclaredDriverDomain(), pieces,
+					branch.getOrientation(), definition.getProvider().isPeriodic(),
 					definition.getProvider().getDomainEpsilon(), branchKey);
 		default:
 			throw new IllegalStateException("Unsupported semantic generator family");

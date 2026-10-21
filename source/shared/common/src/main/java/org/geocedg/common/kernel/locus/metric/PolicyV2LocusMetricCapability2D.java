@@ -109,7 +109,7 @@ public final class PolicyV2LocusMetricCapability2D
 		}
 		LocusDifferentialEvaluator2D differential = differential(lineage.root);
 		if ((!component.isLowerClosed() || !component.isUpperClosed())
-				&& !isPeriodicFundamentalCycle(definition, branch, component)) {
+				&& !branch.hasEvaluableEnds(component)) {
 			if (differential != null) {
 				return improperState(key, branch, component);
 			}
@@ -227,7 +227,7 @@ public final class PolicyV2LocusMetricCapability2D
 		double lower = component.getLower();
 		double upper = component.getUpper();
 		LocusMetricEstimator2D estimator = new LocusMetricEstimator2D(root,
-				branchKey, differential == null ? Mode.EVALUATOR_ONLY
+				branchKey, component, differential == null ? Mode.EVALUATOR_ONLY
 						: Mode.DIFFERENTIAL,
 				differential, session, estimatorPolicy, policy.getWorkBudget(),
 				instrumentation);
@@ -486,7 +486,7 @@ public final class PolicyV2LocusMetricCapability2D
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.openServiceSession(false, 1)) {
 			LocusMetricEstimator2D estimator = new LocusMetricEstimator2D(
-					lineage.root, branchKey, extension.mode,
+					lineage.root, branchKey, state.getComponentExtent(), extension.mode,
 					extension.mode == Mode.DIFFERENTIAL ? differential(lineage.root)
 							: null,
 					session, policy.getEstimatorPolicy(), routeBudget(policy),
@@ -552,7 +552,7 @@ public final class PolicyV2LocusMetricCapability2D
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.openServiceSession(false, 1)) {
 			LocusMetricEstimator2D estimator = new LocusMetricEstimator2D(
-					lineage.root, branchKey,
+					lineage.root, branchKey, state.getComponentExtent(),
 					differential == null ? Mode.EVALUATOR_ONLY : Mode.DIFFERENTIAL,
 					differential, session, policy.getEstimatorPolicy(),
 					policy.getWorkBudget(), instrumentation);
@@ -767,25 +767,12 @@ public final class PolicyV2LocusMetricCapability2D
 		return null;
 	}
 
-	private static boolean isPeriodicFundamentalCycle(LocusDefinition2D definition,
-			LocusBranch2D branch, LocusInterval2D component) {
-		if (!definition.getProvider().isPeriodic()
-				|| branch.getValidDomainComponents().size() != 1
-				|| !component.equals(branch.getDeclaredDriverDomain())) {
-			return false;
-		}
-		return component.isLowerClosed() != component.isUpperClosed()
-				|| branch.getProperties().contains(BranchProperty.PERIODIC)
-						&& component.equals(definition.getProvider()
-								.getDeclaredDomain());
-	}
-
 	private boolean touchesExcludedBoundary(LocusMetricComponentState2D state,
 			LocusMetricRouteSegment2D segment) {
 		LocusInterval2D extent = state.getComponentExtent();
 		LocusDefinition2D definition = coherentDefinition(state);
 		LocusBranch2D branch = definition.getBranch(state.getBranchKey());
-		if (branch != null && isPeriodicFundamentalCycle(definition, branch, extent)) {
+		if (branch != null && branch.hasEvaluableEnds(extent)) {
 			return false;
 		}
 		return !extent.isLowerClosed()

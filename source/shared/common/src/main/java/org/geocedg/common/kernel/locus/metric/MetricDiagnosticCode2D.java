@@ -38,5 +38,10 @@ public enum MetricDiagnosticCode2D {
 	 * PRE-G9B-CU1 sections 25.1 to 25.4: a certified capability failed closed or its
 	 * enclosure is wider than the tolerance; informational.
 	 */
-	CERTIFICATION_NOT_ESTABLISHED
+	CERTIFICATION_NOT_ESTABLISHED,
+	/**
+	 * PRE-G9B-CU2 section 26.4: the policy needs a certified closed periodic component or a
+	 * complete inventory that the existence structure does not establish.
+	 */
+	TOPOLOGY_NOT_ESTABLISHED
 }

@@ -18,10 +18,11 @@ import java.util.OptionalInt;
 import java.util.Set;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ComputationStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
@@ -253,9 +254,8 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			LocusIntersectionTokenLedger2D.Evaluation evaluation) {
 		LocusIntersectionSolution2D solution = root.solution;
 		IntersectionTokenLineage2D tokenLineage =
-				IntersectionTokenLineage2D.forSingleComponent(
-						root.component.branchKey, root.component.interval,
-						Optional.empty());
+				IntersectionTokenLineage2D.forComponentLineage(
+						root.component.stableLineage, Optional.empty());
 		String handle = evaluation.revisionLocalHandle(tokenLineage,
 				solution.getRevisionEvidence());
 		IntersectionRootIdentity2D old = solution.getIdentity();
@@ -285,9 +285,8 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			List<String> parentTokens) {
 		LocusIntersectionSolution2D solution = root.solution;
 		IntersectionTokenLineage2D tokenLineage =
-				IntersectionTokenLineage2D.forSingleComponent(
-						root.component.branchKey, root.component.interval,
-						Optional.empty());
+				IntersectionTokenLineage2D.forComponentLineage(
+						root.component.stableLineage, Optional.empty());
 		String handle = evaluation.revisionLocalHandle(tokenLineage,
 				solution.getRevisionEvidence());
 		IntersectionRootIdentity2D old = solution.getIdentity();
@@ -349,8 +348,8 @@ public final class PublicIntersectionRootIdentityResolver2D {
 				continue;
 			}
 			IntersectionTokenLineage2D tokenLineage =
-					IntersectionTokenLineage2D.forSingleComponent(
-							address.branchKey, address.interval, Optional.empty());
+					IntersectionTokenLineage2D.forComponentLineage(
+							address.stableLineage, Optional.empty());
 			String handle = evaluation.revisionLocalHandle(tokenLineage,
 					solution.getRevisionEvidence());
 			guarded.set(index, failClosedTopology(solution, handle,
@@ -491,14 +490,26 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			IntersectionParameterInterval2D interval =
 					evidence.getIsolatingInterval();
 			if (!Double.isFinite(parameter)
-					|| !root.component.interval.contains(parameter,
+					|| !root.component.certified.contains(parameter,
 							provider.getDomainEpsilon())
 					|| !interval.contains(parameter,
 							provider.getDomainEpsilon())) {
 				return Optional.empty();
 			}
+			// The phase frame of an arc across the seam is its arc (PRE-G9B-CU2).
+			LocusInterval2D domain = provider.getDeclaredDomain();
+			double period = domain.getUpper() - domain.getLower();
+			double liftedParameter = root.component.lifted(parameter, period);
+			double liftedLower = root.component.lifted(interval.getLower(), period);
+			double liftedUpper = root.component.lifted(interval.getUpper(), period);
+			if (liftedLower != interval.getLower() || liftedUpper != interval.getUpper()) {
+				if (!(liftedLower <= liftedUpper)) {
+					return Optional.empty();
+				}
+				interval = new IntersectionParameterInterval2D(liftedLower, liftedUpper);
+			}
 			Optional<PhaseInterval> phase = phaseInterval(root.component,
-					interval, parameter, provider.getDomainEpsilon());
+					interval, liftedParameter, provider.getDomainEpsilon());
 			if (!phase.isPresent()) {
 				return Optional.empty();
 			}
@@ -1071,33 +1082,23 @@ public final class PublicIntersectionRootIdentityResolver2D {
 		if (branch == null) {
 			return null;
 		}
-		for (int index = 0;
-				index < branch.getCertifiedContinuousValidComponents().size();
-				index++) {
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		List<LocusExistenceStructure2D.ContinuousComponent> components =
+				structure.getContinuousValidComponents();
+		for (int index = 0; index < components.size(); index++) {
 			if (IntersectionCapabilityContext2D.componentKey(
 					branch.getBranchKey(), index).equals(
 							evidence.getResolvedValidComponentKey())) {
-				LocusInterval2D interval = branch
-						.getCertifiedContinuousValidComponents().get(index);
+				LocusExistenceStructure2D.ContinuousComponent certified =
+						components.get(index);
+				// Structural lineage and the single closure authority (PRE-G9B-CU2).
 				return new ComponentAddress(
-						IntersectionTokenLineage2D.stableComponentLineage(
-								branch.getBranchKey(), interval),
-						branch.getBranchKey(), interval, branch.getOrientation(),
-						hasCompletePeriodicCycle(definition, branch, interval));
+						LocusComponentLineage2D.of(structure, certified),
+						branch.getBranchKey(), certified, branch.getOrientation(),
+						structure.isClosedPeriodic());
 			}
 		}
 		return null;
-	}
-
-	private static boolean hasCompletePeriodicCycle(
-			LocusDefinition2D definition, LocusBranch2D branch,
-			LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(
-						definition.getProvider().getDeclaredDomain());
 	}
 
 	private static IntersectionRootAddressProof2D addressProof(
@@ -1124,17 +1125,28 @@ public final class PublicIntersectionRootIdentityResolver2D {
 		private final String stableLineage;
 		private final String branchKey;
 		private final LocusInterval2D interval;
+		private final LocusExistenceStructure2D.ContinuousComponent certified;
 		private final Orientation orientation;
 		private final boolean completePeriodicCycle;
 
 		ComponentAddress(String stableLineage, String branchKey,
-				LocusInterval2D interval, Orientation orientation,
-				boolean completePeriodicCycle) {
+				LocusExistenceStructure2D.ContinuousComponent certified,
+				Orientation orientation, boolean completePeriodicCycle) {
 			this.stableLineage = stableLineage;
 			this.branchKey = branchKey;
-			this.interval = interval;
+			this.interval = certified.getInterval();
+			this.certified = certified;
 			this.orientation = orientation;
 			this.completePeriodicCycle = completePeriodicCycle;
+		}
+
+		/**
+		 * @return the parameter in the lifted range of the component: on an arc across the
+		 *         seam a canonical parameter after the seam lies one period above it
+		 */
+		double lifted(double parameter, double period) {
+			return !certified.followsCanonicalOrder() && parameter < interval.getLower()
+					? parameter + period : parameter;
 		}
 	}
 

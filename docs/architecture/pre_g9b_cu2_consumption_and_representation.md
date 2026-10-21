@@ -102,6 +102,51 @@ etiquetadas y la raíz doble es un parámetro singular (§5.2).
 - Las tres pruebas de ciclo periódico de las capacidades métricas pasan a la autoridad única de
   cierre.
 
+**Precisiones de la implementación (T9, 2026-10-21).** Ninguna cambia una regla de §3 ni el
+comportamiento visible con el certificado de compatibilidad publicado:
+
+- **Pertenencia.** Una componente cuyo intervalo elevado está en el dominio canónico y sigue su
+  orden (un intervalo, un arco parcial que no cruza la costura o la componente periódica cerrada
+  desde la costura) se prueba con la tolerancia `eps_domain` del proveedor, como las vistas
+  heredadas; cualquier otro arco, sin tolerancia, por su coordenada de arco. Las búsquedas por
+  intervalos canónicos (interacción, soportes locus) recorren las piezas canónicas del arco, que
+  conservan su clave de linaje.
+- **Autoridad de cierre.** Las nueve reglas privadas de cierre (tres pruebas de ciclo de las
+  capacidades métricas, el resolvedor de rutas, la transición y la identidad de raíces, las
+  capacidades polinómica y de objetivos extendidos y la interacción), el dibujo y la exportación
+  leen `isClosedPeriodic()`. Tres pruebas heredadas usaban un proveedor periódico sobre un dominio
+  cerrado sin la propiedad `PERIODIC`; sus fijaciones pasan a un dominio periódico semiabierto
+  con la componente cerrada de compatibilidad, y una aserción nueva comprueba que el proveedor
+  periódico por sí solo no cierra.
+- **Rutas.** En un arco que cruza la costura la ruta sigue el arco en el intervalo elevado de la
+  componente, sin partirse ni dar la vuelta; en un arco abierto de un dominio periódico,
+  `wrap-to-start` se rechaza con el diagnóstico `TOPOLOGY_NOT_ESTABLISHED` y `stop-at-end` exige
+  `COMPLETE`. `resolveOpenBoundary` toma el índice y el tamaño de la misma lista y exige
+  `COMPLETE` (V-CON-8). Los dominios acotados conservan `wrap-to-start` sobre una sola componente
+  (`locus-v2-metrics.md` §7 y §22).
+- **Límites laterales.** `LocusDefinition2D.evaluateComponentEnd` evalúa un extremo incluido como
+  imagen de su parámetro y un extremo excluido solo con la consulta explícita
+  `LocusEvaluator2D.evaluateOneSidedLimit`; `evaluateInComponent` la aplica a los extremos del
+  intervalo elevado cuando son eventos estructurales excluidos (métrica, dibujo y exportación). El
+  evaluador reconstruible la implementa para `ORIGIN_WRAP`: evalúa en el origen la copia de la
+  longitud con la política de misma posición opuesta (§5.3) y la restaura; cualquier otro extremo
+  excluido falla con `ONE_SIDED_LIMIT_NOT_AVAILABLE`, sin extrapolar. Las imágenes por semejanza
+  transforman el límite de su origen. Los demás extremos excluidos conservan en el dibujo el
+  recorte actual hasta T10.
+- **Existencia y evaluación (P5).** La definición no publica como válido un punto en una no
+  existencia certificada por una prueba (`DEPENDENCY_UNDEFINED`, causa
+  `CERTIFIED_NONEXISTENCE` y `EVALUATOR_DISAGREEMENT` si el evaluador dio un punto) y convierte en
+  `EVALUATION_FAILED` computacional un fallo dentro de una componente probada; el evaluador
+  reconstruible clasifica como computacional el punto indefinido cuyo corte tiene una longitud que
+  falló por cálculo (`NUMERICAL_FAILURE`, `LIMIT_NOT_ESTABLISHED` o `UNSUPPORTED`). Los hechos sin
+  prueba (compatibilidad) no cambian nada.
+- **Composición.** Un locus dependiente sobre un soporte locus completo cuyas componentes no
+  siguen el orden canónico hereda sus componentes con su forma, arcos incluidos, y su completitud,
+  con naturaleza `NONE`; con componentes puntuales en el soporte queda `NOT_ESTABLISHED`.
+- **Componentes puntuales.** El vinculador de posiciones y el selector de rama principal fallan
+  con causa tipada (`ISOLATED_POINT`, «point component»); las intersecciones no declaran `EMPTY`
+  ni una cobertura completa mientras el origen tenga componentes puntuales.
+
 ## 5. Representación y teselación (B06)
 
 ### 5.1 Política de dibujo v2
@@ -218,3 +263,19 @@ interacción usan el linaje estructural de la componente (diseño §7), no los b
 ni su índice en una lista. Los selectores persistidos se resuelven solo por una correspondencia
 estructural demostrada, que la contención única valida pero no crea; no se reescriben, y ante
 ambigüedad fallan cerrados (diseño §7).
+
+**Precisiones de la implementación (T9, 2026-10-21).**
+
+- La clave estructural exige que cada extremo, o el cierre, tenga una prueba que certifique
+  (`EXACT` o `RIGOROUS_INTERVAL`); los extremos del certificado de compatibilidad no la tienen y
+  conservan la clave antigua de extremos binary64, de modo que con la compatibilidad publicada
+  las claves y los resultados son los actuales (hallazgo F-CU2-16 del
+  [análisis](pre_g9b_cu2_author_model_certification_analysis.md)).
+- La igualdad de la descomposición también vale en un dominio acotado: el selector cita el
+  dominio declarado completo y la estructura es una sola componente igual a él; un arco abierto
+  de longitud completa no es la curva cerrada que ese selector cita.
+- El punto semántico, el selector de rama principal, el vinculador de posiciones, las
+  operaciones públicas y la interacción resuelven el selector retenido con
+  `LocusComponentSelectorResolver2D`, con la tolerancia del proveedor en la contención que
+  valida; las direcciones nuevas, las raíces de intersección, el germen de raíz y la ocurrencia
+  generadora citan `LocusComponentLineage2D.of`.

@@ -349,8 +349,9 @@ class G8BIntersectionKernelTest extends BaseUnitTest {
 
 	@Test
 	void periodicSeamIsCanonicalizedAndPublishedOnce() {
-		G8BIntersectionFixtures.Fixture fixture = G8BIntersectionFixtures.single(
-				getConstruction(), "periodic", 0, 2 * Math.PI, true, true, true,
+		// The seam belongs to a certified closed periodic component (PRE-G9B-CU2).
+		G8BIntersectionFixtures.Fixture fixture = G8BIntersectionFixtures.singlePeriodic(
+				getConstruction(), "periodic", 0, 2 * Math.PI,
 				(source, branch, parameter) -> new LocusPoint2D(
 						Math.cos(parameter), Math.sin(parameter)));
 		LocusIntersectionResult2D result = complete(fixture, add("x=1"),

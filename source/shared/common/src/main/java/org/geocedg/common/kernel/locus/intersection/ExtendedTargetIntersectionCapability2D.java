@@ -19,7 +19,6 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
@@ -471,17 +470,17 @@ public final class ExtendedTargetIntersectionCapability2D
 		return result;
 	}
 
+	/**
+	 * Seam semantics only on the certified closed periodic component of the branch, the
+	 * single closure authority ({@code locus-v2-existence-components.md} section 15.8).
+	 */
 	private static boolean hasCompletePeriodicSeam(
 			IntersectionCapabilityContext2D context, String branchKey,
 			LocusInterval2D component) {
 		LocusBranch2D branch = context.getDefinition().getBranch(branchKey);
-		return context.getDefinition().getProvider().isPeriodic()
-				&& branch != null
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(context.getDefinition().getProvider()
-						.getDeclaredDomain());
+		return branch != null && branch.getExistenceStructure().isClosedPeriodic()
+				&& component.equals(branch.getExistenceStructure()
+						.getContinuousValidComponents().get(0).getInterval());
 	}
 
 	private static boolean isStrongerLocalization(Origin candidate,

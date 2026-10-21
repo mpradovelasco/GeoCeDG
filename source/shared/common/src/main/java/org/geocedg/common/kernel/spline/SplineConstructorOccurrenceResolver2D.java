@@ -14,6 +14,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
@@ -138,8 +139,14 @@ public final class SplineConstructorOccurrenceResolver2D {
 		if (branch == null) {
 			return null;
 		}
-		LocusInterval2D selected = null;
-		for (LocusInterval2D component : branch.getValidDomainComponents()) {
+		// The complete inventory of the existence structure (PRE-G9B-CU2).
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		if (structure.getCompleteness() != LocusExistenceStructure2D.Completeness.COMPLETE) {
+			return null;
+		}
+		LocusExistenceStructure2D.ContinuousComponent selected = null;
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: structure.getContinuousValidComponents()) {
 			if (component.contains(canonical, provider.getDomainEpsilon())) {
 				if (selected != null) {
 					return null;
@@ -153,8 +160,8 @@ public final class SplineConstructorOccurrenceResolver2D {
 		long lift = periodicLift(provider, rawParameter);
 		SeamSide side = seamSide(provider, rawParameter, canonical, lift);
 		return new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
-				branch.getBranchKey(), LocusComponentLineage2D.create(
-						branch.getBranchKey(), selected), canonical, lift, side);
+				branch.getBranchKey(), LocusComponentLineage2D.of(structure, selected),
+				canonical, lift, side);
 	}
 
 	private static long periodicLift(LocusDriverDomainProvider2D provider,

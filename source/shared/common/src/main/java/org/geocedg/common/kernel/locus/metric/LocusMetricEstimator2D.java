@@ -12,6 +12,7 @@ import java.util.List;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 
 /**
@@ -53,6 +54,7 @@ final class LocusMetricEstimator2D {
 
 	private final LocusDefinition2D definition;
 	private final String branchKey;
+	private final LocusInterval2D componentExtent;
 	private final Mode mode;
 	private final LocusDifferentialEvaluator2D differential;
 	private final LocusEvaluationSession2D session;
@@ -65,12 +67,13 @@ final class LocusMetricEstimator2D {
 	private boolean lastRejectionByProbe;
 
 	LocusMetricEstimator2D(LocusDefinition2D definition, String branchKey,
-			Mode mode, LocusDifferentialEvaluator2D differential,
-			LocusEvaluationSession2D session,
+			LocusInterval2D componentExtent, Mode mode,
+			LocusDifferentialEvaluator2D differential, LocusEvaluationSession2D session,
 			MetricEstimatorPolicy2D estimatorPolicy, MetricWorkBudget2D budget,
 			LocusMetricInstrumentation2D instrumentation) {
 		this.definition = definition;
 		this.branchKey = branchKey;
+		this.componentExtent = componentExtent;
 		this.mode = mode;
 		this.differential = differential;
 		this.session = session;
@@ -489,8 +492,9 @@ final class LocusMetricEstimator2D {
 	private LocusPoint2D point(double parameter) {
 		chargeEvaluation();
 		instrumentation.recordEvaluatorCall();
-		LocusEvaluation2D evaluation =
-				definition.evaluate(branchKey, parameter, session);
+		// An excluded event end of the component is its one-sided limit (PRE-G9B-CU2).
+		LocusEvaluation2D evaluation = definition.evaluateInComponent(branchKey,
+				componentExtent, parameter, session);
 		if (!evaluation.isValid()) {
 			throw new EstimatorFailure(MetricComputationStatus.NUMERICAL_FAILURE,
 					MetricDiagnosticCode2D.EVALUATION_FAILED, MetricWorkLimit2D.NONE,

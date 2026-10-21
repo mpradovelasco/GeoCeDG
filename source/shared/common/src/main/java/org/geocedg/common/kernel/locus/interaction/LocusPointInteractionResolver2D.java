@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus.interaction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -14,10 +15,13 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedAffineLocus2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
+import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusParameterPartition2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
@@ -470,7 +474,7 @@ public final class LocusPointInteractionResolver2D {
 				continue;
 			}
 			boolean ownedUpper = index == subdivisions
-					&& (!segment.last || isPeriodicCycle(definition,
+					&& (!segment.last || isPeriodicCycle(segment.branch,
 							segment.component)
 							|| !segment.component.isUpperClosed());
 			if (ownedUpper) {
@@ -609,7 +613,7 @@ public final class LocusPointInteractionResolver2D {
 					NumericGuarantee.ESTIMATED_ERROR,
 					"The component contains one explicit semantic address");
 		}
-		Neighborhood neighborhood = neighborhood(query, definition, component,
+		Neighborhood neighborhood = neighborhood(query, definition, branch, component,
 				canonical, cellLower, cellUpper);
 		Sample left = neighborhood.hasLeft
 				? sample(query, definition, branch, neighborhood.left, session) : null;
@@ -783,7 +787,7 @@ public final class LocusPointInteractionResolver2D {
 	}
 
 	private static Neighborhood neighborhood(LocusPointInteractionQuery2D query,
-			LocusDefinition2D definition, LocusInterval2D component,
+			LocusDefinition2D definition, LocusBranch2D branch, LocusInterval2D component,
 			double canonical, double cellLower, double cellUpper) {
 		double span = component.getUpper() - component.getLower();
 		double scale = Math.max(1, Math.max(Math.abs(component.getLower()),
@@ -799,7 +803,7 @@ public final class LocusPointInteractionResolver2D {
 		if (rightCell > minimumStep) {
 			proposed = Math.min(proposed, rightCell / 2);
 		}
-		boolean periodic = isPeriodicCycle(definition, component);
+		boolean periodic = isPeriodicCycle(branch, component);
 		double epsilon = definition.getProvider().getDomainEpsilon();
 		boolean hasLeft = periodic
 				|| canonical > component.getLower() + epsilon;
@@ -1026,8 +1030,48 @@ public final class LocusPointInteractionResolver2D {
 								: SeamSide.UPPER_APPROACH
 						: SeamSide.INTERIOR;
 		return new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
-				branch.getBranchKey(), LocusComponentLineage2D.create(
-						branch.getBranchKey(), component), canonical, lift, seam);
+				branch.getBranchKey(), lineageKey(branch, component), canonical, lift,
+				seam);
+	}
+
+	/**
+	 * @return the certified component that covers a canonical piece searched by this
+	 *         resolver, or {@code null}; the pieces of one arc belong to one component
+	 */
+	private static ContinuousComponent owner(LocusBranch2D branch, LocusInterval2D piece) {
+		for (ContinuousComponent component
+				: branch.getExistenceStructure().getContinuousValidComponents()) {
+			if (component.getCanonicalPieces().contains(piece)) {
+				return component;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return lineage key of the component that covers the piece
+	 *         ({@code locus-v2-existence-components.md} section 15.6)
+	 */
+	private static String lineageKey(LocusBranch2D branch, LocusInterval2D piece) {
+		ContinuousComponent component = owner(branch, piece);
+		return component == null
+				? LocusComponentLineage2D.create(branch.getBranchKey(), piece)
+				: LocusComponentLineage2D.of(branch.getExistenceStructure(), component);
+	}
+
+	/**
+	 * @return current lineage key of the component to which the retained selector of the
+	 *         current address resolves, or {@code null} without a demonstrated
+	 *         correspondence
+	 */
+	private static String resolvedCurrentKey(LocusSemanticAddress2D current,
+			LocusBranch2D branch, double domainEpsilon) {
+		LocusComponentSelectorResolver2D.Resolution resolution =
+				LocusComponentSelectorResolver2D.resolve(current.getComponentLineageKey(),
+						branch.getExistenceStructure(),
+						Collections.singletonList(branch.getLineage()),
+						current.getCanonicalParameter(), domainEpsilon);
+		return resolution.getStatus().isResolved() ? resolution.getLineageKey() : null;
 	}
 
 	private static boolean currentAddressMatches(
@@ -1046,18 +1090,10 @@ public final class LocusPointInteractionResolver2D {
 		if (branch == null) {
 			return false;
 		}
-		LocusInterval2D component = null;
-		for (LocusInterval2D candidate
-				: branch.getCertifiedContinuousValidComponents()) {
-			if (current.getComponentLineageKey().equals(
-					LocusComponentLineage2D.create(branch.getBranchKey(), candidate))) {
-				component = candidate;
-				break;
-			}
-		}
-		if (component == null || !provider.contains(current.getCanonicalParameter())
-				|| !component.contains(current.getCanonicalParameter(),
-						provider.getDomainEpsilon())
+		// A retained component selector resolves only through a demonstrated structural
+		// correspondence, validated by unique containment (PRE-G9B-CU2, section 15.6).
+		if (resolvedCurrentKey(current, branch, provider.getDomainEpsilon()) == null
+				|| !provider.contains(current.getCanonicalParameter())
 				|| Double.doubleToLongBits(current.getCanonicalParameter())
 						!= Double.doubleToLongBits(provider.canonicalize(
 								current.getCanonicalParameter()))) {
@@ -1093,9 +1129,14 @@ public final class LocusPointInteractionResolver2D {
 	private static boolean matchesCurrentComponent(
 			LocusPointInteractionQuery2D query, LocusBranch2D branch,
 			LocusInterval2D component) {
-		return query.getCurrentAddress().isEmpty()
-				|| query.getCurrentAddress().get().getComponentLineageKey().equals(
-						LocusComponentLineage2D.create(branch.getBranchKey(), component));
+		if (query.getCurrentAddress().isEmpty()) {
+			return true;
+		}
+		String resolved = resolvedCurrentKey(query.getCurrentAddress().get(), branch,
+				query.getSource().getSemanticDefinition() == null ? 0
+						: query.getSource().getSemanticDefinition().getProvider()
+								.getDomainEpsilon());
+		return resolved != null && resolved.equals(lineageKey(branch, component));
 	}
 
 	private static List<SemanticSegment> semanticSegments(
@@ -1155,10 +1196,15 @@ public final class LocusPointInteractionResolver2D {
 		return lower ? boundary + offset : boundary - offset;
 	}
 
-	private static boolean isPeriodicCycle(LocusDefinition2D definition,
+	/**
+	 * Periodic semantics apply only to a certified closed periodic component, the single
+	 * closure authority ({@code locus-v2-existence-components.md} section 15.8).
+	 */
+	private static boolean isPeriodicCycle(LocusBranch2D branch,
 			LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& component.equals(definition.getProvider().getDeclaredDomain());
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		return structure.isClosedPeriodic() && structure.getContinuousValidComponents()
+				.get(0).getCanonicalPieces().contains(component);
 	}
 
 	private static List<PolynomialSpan> polynomialSpans(
@@ -1250,11 +1296,23 @@ public final class LocusPointInteractionResolver2D {
 		return false;
 	}
 
+	/**
+	 * The canonical pieces of the components to search: every certified component with a
+	 * current address, only a complete inventory without one; an arc that crosses the seam
+	 * is searched on its canonical pieces, which keep its lineage key.
+	 */
 	private static List<LocusInterval2D> componentsForQuery(
 			LocusPointInteractionQuery2D query, LocusBranch2D branch) {
-		return query.getCurrentAddress().isPresent()
-				? branch.getCertifiedContinuousValidComponents()
-				: branch.getValidDomainComponents();
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		if (query.getCurrentAddress().isEmpty() && structure.getCompleteness()
+				!= LocusExistenceStructure2D.Completeness.COMPLETE) {
+			return List.of();
+		}
+		ArrayList<LocusInterval2D> pieces = new ArrayList<>();
+		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
+			pieces.addAll(component.getCanonicalPieces());
+		}
+		return pieces;
 	}
 
 	private static double snapToSpanBoundary(double parameter, double lower,

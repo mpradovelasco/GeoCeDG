@@ -6884,6 +6884,18 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T8: lineage of the shadow certificates of the author model and resolution of the persisted selector of N_1 (V-LIN-1, V-LIN-2, V-LIN-3, V-LIN-5, V-LIN-6, V-E2-7).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2ConsumerMigrationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T9: consumers of the existence structure on certified structures injected into the unit circle (arc across the seam, closed periodic, open full-length arc, local band, point components): single closure authority, routes and totals on arcs, intersections on arcs, positions and certified nonexistence, composition on locus supports, similarity images and one-sided limits, open boundaries, principal selector and point components (V-CON-1 to V-CON-9, V-AVAIL-1, V-POINT-5, V-POINT-6).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu2AuthorModelConsumerTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T9: consumers of the author model with the shadow certificates injected into definitions that keep the live evaluators: the chain o_1, w_1, d_2, e_2 stays defined, the excluded end of e_2 is its one-sided limit through the slice, and an evaluator point in a certified gap is not published as valid (V-CON-10, V-AVAIL-1, precursor of V-E2-8).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

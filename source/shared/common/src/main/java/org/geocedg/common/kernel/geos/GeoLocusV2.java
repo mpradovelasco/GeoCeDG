@@ -11,6 +11,7 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.metric.LocusMetricInstrumentation2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
@@ -217,6 +218,25 @@ public final class GeoLocusV2 extends GeoElement
 			double semanticParameter, LocusEvaluationSession2D session) {
 		instrumentation.recordRenderEvaluation();
 		return evaluate(branchKey, semanticParameter, session);
+	}
+
+	/**
+	 * Render entry point that traverses one certified component (PRE-G9B-CU2): an excluded
+	 * structural-event end of its lifted range is evaluated as its one-sided limit
+	 * ({@link LocusDefinition2D#evaluateInComponent}).
+	 *
+	 * @param componentExtent lifted interval of the component
+	 * @return semantic evaluation consumed only by derived rendering
+	 */
+	public LocusEvaluation2D evaluateForRender(String branchKey,
+			LocusInterval2D componentExtent, double semanticParameter,
+			LocusEvaluationSession2D session) {
+		instrumentation.recordRenderEvaluation();
+		if (definition == null) {
+			throw new IllegalStateException("Locus V2 has no semantic definition");
+		}
+		return definition.evaluateInComponent(branchKey, componentExtent,
+				semanticParameter, session);
 	}
 
 	@Override

@@ -69,6 +69,36 @@ public final class IntersectionTokenLineage2D {
 				solutionLineage(pair, continuationKey), pair, continuationKey);
 	}
 
+	/**
+	 * Creates public token material for one certified component from its structural
+	 * lineage ({@link LocusComponentLineage2D#of}), so that a token survives a boundary
+	 * that moves without changing its source (PRE-G9B-CU2); for components without a
+	 * structural source the lineage is the branch-plus-domain one.
+	 *
+	 * @return stable single-component solution lineage
+	 */
+	public static IntersectionTokenLineage2D forComponentLineage(
+			String componentLineage, Optional<String> continuationKey) {
+		return new IntersectionTokenLineage2D(
+				solutionLineage(componentLineage, continuationKey), componentLineage,
+				continuationKey);
+	}
+
+	/**
+	 * Creates source-order-independent token material for one pair of certified
+	 * components from their structural lineages (PRE-G9B-CU2).
+	 *
+	 * @return stable canonical component-pair solution lineage
+	 */
+	public static IntersectionTokenLineage2D forComponentLineagePair(
+			String firstBranchKey, String firstLineage, String secondBranchKey,
+			String secondLineage, Optional<String> continuationKey) {
+		String pair = LocusPairIdentity2D.componentPair(firstBranchKey, firstLineage,
+				secondBranchKey, secondLineage);
+		return new IntersectionTokenLineage2D(
+				solutionLineage(pair, continuationKey), pair, continuationKey);
+	}
+
 	/** @return stable branch-plus-domain component lineage */
 	public static String stableComponentLineage(String branchKey,
 			LocusInterval2D interval) {

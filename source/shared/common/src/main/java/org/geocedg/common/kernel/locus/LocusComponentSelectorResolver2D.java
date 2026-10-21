@@ -17,10 +17,10 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.LineageTransition
  * ({@code locus-v2-existence-components.md} section 15.6; certification design section 7,
  * decision E-3 revised). A selector resolves only through a demonstrated structural
  * correspondence: the same lineage key, equality of the decomposition (the cited component
- * was the whole declared domain and the structure is one closed periodic component), or a
- * recorded lineage transition from the cited component. Unique containment of the parameter
- * then validates the correspondence; it never creates one. Resolution never rewrites the
- * retained selector.
+ * was the whole declared domain and the structure is one closed periodic component or, on a
+ * bounded domain, one component equal to the domain), or a recorded lineage transition from
+ * the cited component. Unique containment of the parameter then validates the
+ * correspondence; it never creates one. Resolution never rewrites the retained selector.
  */
 public final class LocusComponentSelectorResolver2D {
 	/** Outcome of a resolution. */
@@ -86,6 +86,22 @@ public final class LocusComponentSelectorResolver2D {
 	 */
 	public static Resolution resolve(String retainedKey, LocusExistenceStructure2D structure,
 			List<LocusLineage2D> transitions, double parameter) {
+		return resolve(retainedKey, structure, transitions, parameter, 0);
+	}
+
+	/**
+	 * Resolves with the provider tolerance of the domain in the validating containment
+	 * ({@link ContinuousComponent#contains(double, double)}), for consumers that read it.
+	 *
+	 * @param retainedKey lineage key the selector retains
+	 * @param structure current certified structure of the branch
+	 * @param transitions lineage transitions recorded into this structure
+	 * @param parameter canonical parameter of the selected position
+	 * @param domainEpsilon provider-owned domain tolerance
+	 * @return resolution with its typed outcome
+	 */
+	public static Resolution resolve(String retainedKey, LocusExistenceStructure2D structure,
+			List<LocusLineage2D> transitions, double parameter, double domainEpsilon) {
 		Objects.requireNonNull(retainedKey);
 		List<ContinuousComponent> same = new ArrayList<>();
 		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
@@ -94,12 +110,14 @@ public final class LocusComponentSelectorResolver2D {
 			}
 		}
 		if (!same.isEmpty()) {
-			return validate(Status.RESOLVED_BY_KEY, same, structure, parameter);
+			return validate(Status.RESOLVED_BY_KEY, same, structure, parameter,
+					domainEpsilon);
 		}
-		if (structure.isClosedPeriodic() && retainedKey.equals(LocusComponentLineage2D
+		if (isWholeDomain(structure) && retainedKey.equals(LocusComponentLineage2D
 				.create(structure.getBranchKey(), structure.getCanonicalDomain()))) {
 			return validate(Status.RESOLVED_BY_DECOMPOSITION_EQUALITY,
-					structure.getContinuousValidComponents(), structure, parameter);
+					structure.getContinuousValidComponents(), structure, parameter,
+					domainEpsilon);
 		}
 		for (LocusLineage2D transition : transitions) {
 			boolean related = transition.getTransition() == LineageTransition.SPLIT
@@ -116,18 +134,35 @@ public final class LocusComponentSelectorResolver2D {
 			}
 			if (!children.isEmpty()) {
 				return validate(Status.RESOLVED_BY_LINEAGE_TRANSITION, children, structure,
-						parameter);
+						parameter, domainEpsilon);
 			}
 		}
 		return new Resolution(Status.NO_CORRESPONDENCE, null, null);
 	}
 
+	/**
+	 * Equality of the decomposition with a selector that cites the whole declared domain:
+	 * the structure is one closed periodic component, or, on a bounded domain, one interval
+	 * component equal to the domain; an open arc of full length is not the closed curve that
+	 * such a selector cites.
+	 */
+	private static boolean isWholeDomain(LocusExistenceStructure2D structure) {
+		if (structure.isClosedPeriodic()) {
+			return true;
+		}
+		List<ContinuousComponent> components = structure.getContinuousValidComponents();
+		return structure.getTopology() == LocusExistenceStructure2D.DomainTopology.BOUNDED
+				&& components.size() == 1 && structure.getPointComponents().isEmpty()
+				&& !components.get(0).isArc()
+				&& components.get(0).getInterval().equals(structure.getCanonicalDomain());
+	}
+
 	/** Unique containment of the parameter validates a demonstrated correspondence. */
 	private static Resolution validate(Status status, List<ContinuousComponent> candidates,
-			LocusExistenceStructure2D structure, double parameter) {
+			LocusExistenceStructure2D structure, double parameter, double domainEpsilon) {
 		ContinuousComponent found = null;
 		for (ContinuousComponent candidate : candidates) {
-			if (candidate.contains(parameter)) {
+			if (candidate.contains(parameter, domainEpsilon)) {
 				if (found != null) {
 					return new Resolution(Status.AMBIGUOUS, null, null);
 				}

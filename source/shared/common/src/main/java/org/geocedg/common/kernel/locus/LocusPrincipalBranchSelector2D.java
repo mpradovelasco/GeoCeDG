@@ -50,8 +50,12 @@ public final class LocusPrincipalBranchSelector2D {
 			throw new IllegalArgumentException("No eligible semantic component");
 		}
 		LocusBranch2D branch = definition.getBranches().get(0);
-		LocusInterval2D selected = null;
-		for (LocusInterval2D component : branch.getValidDomainComponents()) {
+		// PRE-G9B-CU2 (consumption design section 3): the certified components, local ones
+		// included; a point component is never addressed by a binary64 parameter.
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		LocusExistenceStructure2D.ContinuousComponent selected = null;
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: structure.getContinuousValidComponents()) {
 			if (component.contains(canonical, provider.getDomainEpsilon())) {
 				if (selected != null) {
 					throw new IllegalArgumentException(
@@ -61,7 +65,10 @@ public final class LocusPrincipalBranchSelector2D {
 			}
 		}
 		if (selected == null) {
-			throw new IllegalArgumentException("No eligible semantic component");
+			throw new IllegalArgumentException(
+					structure.getPointComponentEnclosing(canonical) != null
+							? "A point component is never addressed by a binary64 parameter"
+							: "No eligible semantic component");
 		}
 		Long lift = periodicLift(provider, rawParameter, canonical);
 		if (lift == null) {
@@ -69,8 +76,7 @@ public final class LocusPrincipalBranchSelector2D {
 					"Principal-branch periodic address is not established");
 		}
 		return new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
-				branch.getBranchKey(),
-				LocusComponentLineage2D.create(branch.getBranchKey(), selected),
+				branch.getBranchKey(), LocusComponentLineage2D.of(structure, selected),
 				canonical, lift,
 				seamSide(provider, rawParameter, canonical, lift));
 	}

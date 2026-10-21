@@ -76,10 +76,16 @@ class LocusMetricProductiveRouteTest {
 				G7BMetricFixtures.components(-4, 4)), 1, 1,
 				TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
 				SamePositionPolicy.FULL_CYCLE);
-		LocusMetricRoute2D periodic = resolve(line(true,
+		LocusMetricRoute2D periodic = resolve(periodicLine(), 1, 1,
+				TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
+				SamePositionPolicy.FULL_CYCLE);
+		// A periodic provider alone never closes a component (PRE-G9B-CU2).
+		LocusMetricRoute2D uncertified = resolve(line(true,
 				G7BMetricFixtures.components(-4, 4)), 1, 1,
 				TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
 				SamePositionPolicy.FULL_CYCLE);
+		assertEquals(MetricRouteStatus.INVALID_QUERY,
+				uncertified.getRouteStatus());
 		assertEquals(MetricRouteStatus.INVALID_QUERY, open.getRouteStatus());
 		assertEquals(MetricRouteStatus.RESOLVED,
 				periodic.getRouteStatus());
@@ -90,8 +96,7 @@ class LocusMetricProductiveRouteTest {
 
 	@Test
 	void periodicSeamIsResolvedWithoutCartesianEqualityInference() {
-		LocusDefinition2D definition = line(true,
-				G7BMetricFixtures.components(-4, 4));
+		LocusDefinition2D definition = periodicLine();
 		LocusMetricRoute2D route = resolve(definition, 3, -3,
 				TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
 				SamePositionPolicy.ZERO_LENGTH);
@@ -239,6 +244,11 @@ class LocusMetricProductiveRouteTest {
 	private static LocusDefinition2D line(boolean periodic,
 			List<LocusInterval2D> components) {
 		return G7BMetricFixtures.definition("route", 1, periodic, components,
+				parameter -> new LocusPoint2D(parameter, 0));
+	}
+
+	private static LocusDefinition2D periodicLine() {
+		return G7BMetricFixtures.periodicDefinition("route", 1,
 				parameter -> new LocusPoint2D(parameter, 0));
 	}
 }

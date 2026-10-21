@@ -393,16 +393,13 @@ public final class LocusV2PublicOperations {
 		if (branch == null) {
 			return false;
 		}
-		for (LocusInterval2D component
-				: branch.getCertifiedContinuousValidComponents()) {
-			if (address.getComponentLineageKey().equals(
-					LocusComponentLineage2D.create(branch.getBranchKey(), component))
-					&& component.contains(address.getCanonicalParameter(),
-							provider.getDomainEpsilon())) {
-				return true;
-			}
-		}
-		return false;
+		// A retained component selector resolves only through a demonstrated structural
+		// correspondence (locus-v2-existence-components.md section 15.6).
+		return LocusComponentSelectorResolver2D.resolve(address.getComponentLineageKey(),
+				branch.getExistenceStructure(),
+				Collections.singletonList(branch.getLineage()),
+				address.getCanonicalParameter(), provider.getDomainEpsilon()).getStatus()
+				.isResolved();
 	}
 
 	private static double rawParameter(LocusDefinition2D definition,

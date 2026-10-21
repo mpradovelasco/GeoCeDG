@@ -25,6 +25,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
 import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
+import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.kernel.Construction;
@@ -234,6 +235,15 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			if (!pointGeo.isDefined() || isolatedDependentPoint.isInfinite()
 					|| !Double.isFinite(isolatedDependentPoint.getInhomX())
 					|| !Double.isFinite(isolatedDependentPoint.getInhomY())) {
+				String computational = computationalMetricFailure();
+				if (computational != null) {
+					// PRE-G9B-CU2, P5: a computational failure of a dependency is not
+					// nonexistence (locus-v2-existence-components.md section 15.5).
+					return LocusEvaluation2D.invalid(
+							LocusSemanticMetadata2D.EvaluationStatus.EVALUATION_FAILED,
+							QUALITY, LocusDefinition2D.COMPUTATIONAL_FAILURE + ": "
+									+ computational);
+				}
 				return LocusEvaluation2D.invalid(
 						LocusSemanticMetadata2D.EvaluationStatus.DEPENDENCY_UNDEFINED,
 						QUALITY, "Dependent point is undefined or nonfinite");
@@ -247,6 +257,87 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					QUALITY, exception.getClass().getSimpleName() + ": "
 							+ exception.getMessage());
 		}
+	}
+
+	/**
+	 * Evaluates the one-sided limit at the excluded end of an origin wrap of a length of the
+	 * slice ({@code locus-v2-metrics.md} section 26.2): the length is continuous on each side
+	 * and its limit on the excluded side is its value at the origin under the opposite
+	 * same-position policy, which the copy of the length uses for this one evaluation
+	 * (consumption design section 5.3). Any other excluded end fails explicitly.
+	 */
+	@Override
+	public synchronized LocusEvaluation2D evaluateOneSidedLimit(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusExistenceStructure2D.ContinuousComponent component,
+			boolean upperEnd, LocusEvaluationSession2D session) {
+		LocusBoundary2D end = upperEnd ? component.getUpperBoundary()
+				: component.getLowerBoundary();
+		double parameter = upperEnd ? component.getEnd() : component.getStart();
+		AlgoLocusBetweenMetricV2 metric = originWrapMetric(end, parameter, upperEnd);
+		if (metric == null) {
+			return LocusEvaluation2D.invalid(
+					LocusSemanticMetadata2D.EvaluationStatus.EVALUATION_FAILED, QUALITY,
+					LocusEvaluator2D.ONE_SIDED_LIMIT_NOT_AVAILABLE + ": " + end.getKind() + " "
+							+ end.getSource());
+		}
+		metric.setOppositeSamePositionForLimit(true);
+		try {
+			return evaluate(definition, branch, parameter, session);
+		} finally {
+			metric.setOppositeSamePositionForLimit(false);
+		}
+	}
+
+	/**
+	 * @return the copy of the length whose certified origin wrap is the excluded end, or
+	 *         {@code null}
+	 */
+	private AlgoLocusBetweenMetricV2 originWrapMetric(LocusBoundary2D end, double parameter,
+			boolean upperEnd) {
+		if (end.isBinaryEndIncluded()
+				|| end.getKind() != LocusBoundary2D.Kind.STRUCTURAL_EVENT
+						&& end.getKind() != LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE
+				|| !"ORIGIN_WRAP".equals(end.getSource().getPredicate())
+				|| !(upperEnd ? "end" : "start").equals(end.getSource().getSide())) {
+			return null;
+		}
+		int node = getOperationIdentitiesV3().indexOf(end.getSource().getOrigin()) + 1;
+		AlgoLocusBetweenMetricV2 metric = programV3MetricSources.get(node);
+		LocusMetricFunctionStructure2D structure = getMetricStructuresV3().get(node);
+		if (metric == null || structure == null) {
+			return null;
+		}
+		for (LocusMetricFunctionStructure2D.OriginWrap wrap : structure.getEvents()) {
+			// The excluded side is the one the persisted same-position policy leaves out.
+			if (wrap.getDriverParameter() == parameter
+					&& wrap.isStartIncluded() == upperEnd) {
+				return metric;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return description of a computational failure of a length of the slice on which
+	 *         the traced point depends, or {@code null} when none failed computationally
+	 */
+	private String computationalMetricFailure() {
+		GeoElement pointGeo = isolatedDependentPoint.toGeoElement();
+		for (AlgoElement algorithm : isolatedConstruction.getAlgoList()) {
+			if (!(algorithm instanceof AlgoLocusBetweenMetricV2)) {
+				continue;
+			}
+			AlgoLocusBetweenMetricV2 metric = (AlgoLocusBetweenMetricV2) algorithm;
+			MetricComputationStatus status = metric.getCurrentComputationStatus();
+			if ((status == MetricComputationStatus.NUMERICAL_FAILURE
+					|| status == MetricComputationStatus.LIMIT_NOT_ESTABLISHED
+					|| status == MetricComputationStatus.UNSUPPORTED)
+					&& pointGeo.isChildOf(metric.getResult())) {
+				return "dependency length " + metric.getResult().getLabelSimple() + " "
+						+ status;
+			}
+		}
+		return null;
 	}
 
 	/** @return deterministic evaluator reconstruction signature */

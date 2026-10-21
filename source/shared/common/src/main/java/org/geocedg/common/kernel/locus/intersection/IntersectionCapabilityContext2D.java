@@ -167,6 +167,13 @@ public final class IntersectionCapabilityContext2D {
 			}
 		}
 		double span = component.getUpper() - component.getLower();
+		// An arc lifted past the canonical domain addresses its canonical parameters
+		// after the seam in its lifted range (PRE-G9B-CU2).
+		LocusInterval2D domain = definition.getProvider().getDeclaredDomain();
+		if (definition.getProvider().isPeriodic() && parameter < component.getLower()
+				&& component.getUpper() > domain.getUpper()) {
+			parameter += domain.getUpper() - domain.getLower();
+		}
 		double rootTolerance = query.getPolicy().getRootParameterTolerance()
 				.getValue();
 		double step = Math.max(16 * rootTolerance,

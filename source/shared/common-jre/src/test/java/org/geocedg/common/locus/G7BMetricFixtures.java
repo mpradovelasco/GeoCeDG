@@ -70,6 +70,32 @@ final class G7BMetricFixtures {
 				"g7b-fixture-evaluator/v1", new LocusInstrumentation2D());
 	}
 
+	/**
+	 * A periodic fixture with the certified closure that periodic route semantics need
+	 * since PRE-G9B-CU2 (single closure authority): the half-open canonical domain
+	 * {@code [-4, 4)} of a periodic provider and one component equal to it, which the
+	 * provider-compatibility certificate records as the closed periodic arc. A periodic
+	 * provider alone never closes a component.
+	 */
+	static LocusDefinition2D periodicDefinition(String identity, long revision,
+			DoubleFunction<LocusPoint2D> function) {
+		LocusInterval2D domain = new LocusInterval2D(-4, 4, true, false);
+		ExplicitNumericDomainProvider2D provider =
+				new ExplicitNumericDomainProvider2D("g7b-parameter/v1", domain,
+						Orientation.INCREASING, true, EPS_DOMAIN);
+		LocusBranch2D branch = new LocusBranch2D(BRANCH, domain, List.of(domain),
+				Orientation.INCREASING, "g7b-fixture/v1", LocusLineage2D.unchanged(),
+				EnumSet.of(BranchProperty.FINITE, BranchProperty.PERIODIC),
+				LocusQuality2D.analyticDoubleSemantic());
+		return new LocusDefinition2D(identity, revision, DefinitionStatus.VALID,
+				provider, List.of(branch),
+				(definition, current, parameter, session) ->
+						LocusEvaluation2D.valid(function.apply(parameter),
+								Regularity.UNKNOWN, current.getQuality()),
+				Determinism.POINTWISE_DETERMINISTIC,
+				"g7b-fixture-evaluator/v1", new LocusInstrumentation2D());
+	}
+
 	static LocusDefinition2D emptyDefinition(String identity, long revision) {
 		return definitionWithBranches(identity, revision, false, List.of(),
 				parameter -> new LocusPoint2D(0, 0));

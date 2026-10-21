@@ -104,8 +104,24 @@ public final class LocusSimilarityEvaluator2D implements LocusEvaluator2D,
 	public LocusEvaluation2D evaluate(LocusDefinition2D definition,
 			LocusBranch2D branch, double canonicalParameter,
 			LocusEvaluationSession2D session) {
-		LocusEvaluation2D source = sourceDefinition.evaluate(branch.getBranchKey(),
-				canonicalParameter, session);
+		return image(sourceDefinition.evaluate(branch.getBranchKey(), canonicalParameter,
+				session));
+	}
+
+	/**
+	 * The image inherits the components of its source with their ends
+	 * ({@code locus-v2-similarity-transformations.md}): the limit at an end of an image
+	 * component is the image of the limit at the same end of the source.
+	 */
+	@Override
+	public LocusEvaluation2D evaluateOneSidedLimit(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusExistenceStructure2D.ContinuousComponent component,
+			boolean upperEnd, LocusEvaluationSession2D session) {
+		return image(sourceDefinition.evaluateComponentEnd(branch.getBranchKey(),
+				upperEnd ? component.getEnd() : component.getStart(), upperEnd, session));
+	}
+
+	private LocusEvaluation2D image(LocusEvaluation2D source) {
 		if (!source.isValid()) {
 			return LocusEvaluation2D.invalid(source.getStatus(),
 					transformedQuality(source.getQuality()), source.getDiagnostic());

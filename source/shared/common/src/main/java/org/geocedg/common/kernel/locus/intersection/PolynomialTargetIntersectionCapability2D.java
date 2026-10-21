@@ -15,8 +15,8 @@ import java.util.OptionalInt;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
@@ -108,16 +108,18 @@ final class PolynomialTargetIntersectionCapability2D
 								"Spline structural capture unavailable; floating fallback "
 										+ "cannot certify roots")));
 			}
-			List<LocusInterval2D> components =
-					branch.getCertifiedContinuousValidComponents();
+			List<LocusExistenceStructure2D.ContinuousComponent> components =
+					branch.getExistenceStructure().getContinuousValidComponents();
 			for (int componentIndex = 0; componentIndex < components.size();
 					componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(
 						branch.getBranchKey(), componentIndex);
 				examinedComponents.add(componentKey);
-				LocusInterval2D component = components.get(componentIndex);
-				boolean periodicCycle = isPeriodicFundamentalCycle(context,
-						branch, component);
+				LocusExistenceStructure2D.ContinuousComponent certified =
+						components.get(componentIndex);
+				LocusInterval2D component = certified.getInterval();
+				// Single closure authority (locus-v2-existence-components.md section 15.8).
+				boolean periodicCycle = branch.getExistenceStructure().isClosedPeriodic();
 				int spanCount = source.getPolynomialSpanCount(
 						branch.getBranchKey());
 				for (int span = 0; span < spanCount; span++) {
@@ -125,7 +127,7 @@ final class PolynomialTargetIntersectionCapability2D
 							branch.getBranchKey(), span);
 					double upper = source.getPolynomialSpanUpper(
 							branch.getBranchKey(), span);
-					if (!belongsToComponent(component, lower, upper,
+					if (!belongsToComponent(certified, lower, upper,
 							context.getDefinition().getProvider().getDomainEpsilon())) {
 						continue;
 					}
@@ -530,21 +532,12 @@ final class PolynomialTargetIntersectionCapability2D
 		return parameter;
 	}
 
-	private static boolean belongsToComponent(LocusInterval2D component,
-			double lower, double upper, double epsilon) {
+	/** Canonical spans belong to a component by their midpoint, on its arc if any. */
+	private static boolean belongsToComponent(
+			LocusExistenceStructure2D.ContinuousComponent component, double lower,
+			double upper, double epsilon) {
 		double middle = lower + (upper - lower) / 2;
 		return component.contains(middle, epsilon);
-	}
-
-	private static boolean isPeriodicFundamentalCycle(
-			IntersectionCapabilityContext2D context, LocusBranch2D branch,
-			LocusInterval2D component) {
-		return context.getDefinition().getProvider().isPeriodic()
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getValidDomainComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(context.getDefinition().getProvider()
-						.getDeclaredDomain());
 	}
 
 	private static void validateTarget(double[][] target) {

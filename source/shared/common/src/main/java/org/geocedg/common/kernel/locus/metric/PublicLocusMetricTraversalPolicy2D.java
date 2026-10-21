@@ -61,6 +61,19 @@ public final class PublicLocusMetricTraversalPolicy2D {
 		return samePositionPolicy;
 	}
 
+	/**
+	 * The same route with the opposite same-position policy, whose value at the origin is
+	 * the one-sided limit of the excluded end of its origin wrap
+	 * ({@code locus-v2-metrics.md} section 26.2).
+	 *
+	 * @return policy with the same direction and boundary policy
+	 */
+	public PublicLocusMetricTraversalPolicy2D withOppositeSamePosition() {
+		return new PublicLocusMetricTraversalPolicy2D(direction, boundaryPolicy,
+				samePositionPolicy == SamePositionPolicy.ZERO_LENGTH
+						? SamePositionPolicy.FULL_CYCLE : SamePositionPolicy.ZERO_LENGTH);
+	}
+
 	private static TraversalDirection parseDirection(String token) {
 		switch (normalized(token, "direction")) {
 		case FORWARD:

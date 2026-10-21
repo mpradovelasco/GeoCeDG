@@ -87,7 +87,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 			return zeroState(branch, component, key);
 		}
 		if ((!component.isLowerClosed() || !component.isUpperClosed())
-				&& !isPeriodicFundamentalCycle(definition, branch, component)) {
+				&& !branch.hasEvaluableEnds(component)) {
 			throw new LocusMetricComponentBuildException(
 					MetricComputationStatus.LIMIT_NOT_ESTABLISHED,
 					Collections.singletonList(new MetricDiagnostic2D(
@@ -95,7 +95,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 							"Evaluator-only improper component limit is not "
 									+ "established")));
 		}
-		Context context = new Context(definition, branch.getBranchKey(),
+		Context context = new Context(definition, branch.getBranchKey(), component,
 				policy, instrumentation);
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.openServiceSession(false, 1)) {
@@ -129,15 +129,6 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 							"Evaluator-only refinement failed: "
 									+ exception.getClass().getSimpleName())));
 		}
-	}
-
-	private static boolean isPeriodicFundamentalCycle(
-			LocusDefinition2D definition, LocusBranch2D branch,
-			LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& branch.getValidDomainComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.isLowerClosed() != component.isUpperClosed();
 	}
 
 	@Override
@@ -343,7 +334,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 					Collections.emptyList());
 		}
 		Context context = new Context(currentDefinition, state.getBranchKey(),
-				policy, instrumentation);
+				state.getComponentExtent(), policy, instrumentation);
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.openServiceSession(false, 1)) {
 			context.session = session;
@@ -446,6 +437,7 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 	private static final class Context {
 		private final LocusDefinition2D definition;
 		private final String branchKey;
+		private final LocusInterval2D extent;
 		private final LocusMetricPolicy2D policy;
 		private final LocusMetricInstrumentation2D instrumentation;
 		private final List<Leaf> leaves = new ArrayList<>();
@@ -454,10 +446,11 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 		private long subdivisions;
 
 		private Context(LocusDefinition2D definition, String branchKey,
-				LocusMetricPolicy2D policy,
+				LocusInterval2D extent, LocusMetricPolicy2D policy,
 				LocusMetricInstrumentation2D instrumentation) {
 			this.definition = definition;
 			this.branchKey = branchKey;
+			this.extent = extent;
 			this.policy = policy;
 			this.instrumentation = instrumentation;
 		}
@@ -470,8 +463,8 @@ public final class EvaluatorOnlyLocusMetricCapability2D
 			}
 			evaluations++;
 			instrumentation.recordEvaluatorCall();
-			LocusEvaluation2D evaluation =
-					definition.evaluate(branchKey, parameter, session);
+			LocusEvaluation2D evaluation = definition.evaluateInComponent(branchKey,
+					extent, parameter, session);
 			if (!evaluation.isValid()) {
 				throw new LocusMetricComponentBuildException(
 						MetricComputationStatus.NUMERICAL_FAILURE,

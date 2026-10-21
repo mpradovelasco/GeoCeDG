@@ -26,14 +26,15 @@ import org.geocedg.common.export.SourceExportOutcome.IdentityScope;
 import org.geocedg.common.export.SourceExportOutcome.Reason;
 import org.geocedg.common.export.SourceExportOutcome.SemanticCoverage;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Determinism;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
@@ -271,10 +272,14 @@ public final class SemanticCurveExportAdapter2D {
 							: component.getUpper();
 					double end = increasing ? component.getUpper()
 							: component.getLower();
-					boolean startClosed = increasing ? component.isLowerClosed()
-							: component.isUpperClosed();
-					boolean endClosed = increasing ? component.isUpperClosed()
-							: component.isLowerClosed();
+					// An excluded structural-event end is exported to its one-sided limit
+					// (PRE-G9B-CU2, consumption design section 5.3).
+					boolean lowerEvaluable = component.isLowerClosed()
+							|| isLimitEnd(certificate.getLowerBoundary());
+					boolean upperEvaluable = component.isUpperClosed()
+							|| isLimitEnd(certificate.getUpperBoundary());
+					boolean startClosed = increasing ? lowerEvaluable : upperEvaluable;
+					boolean endClosed = increasing ? upperEvaluable : lowerEvaluable;
 					boolean complete = branch.getExistenceStructure().getCompleteness()
 							== Completeness.COMPLETE;
 					String componentKey = complete ? "component-" + branchComponent
@@ -297,13 +302,12 @@ public final class SemanticCurveExportAdapter2D {
 						componentOrdinal++;
 						continue;
 					}
-					boolean semanticClosure = hasFullPeriodClosure(definition, branch,
-							component);
+					boolean semanticClosure = hasFullPeriodClosure(branch, component);
 					SemanticDomain approximationDomain = new SemanticDomain(componentKey,
 							start, end, semanticClosure || startClosed,
 							semanticClosure || endClosed);
 					CurveEvaluator2D evaluator = parameter -> locusEvaluation(definition,
-							branch.getBranchKey(), parameter, session);
+							branch.getBranchKey(), component, parameter, session);
 					components.add(approximate(locus, sourceId, sourceOrdinal,
 							componentOrdinal++, revision, scope, address,
 							approximationDomain, semanticClosure, evaluator, request,
@@ -362,9 +366,10 @@ public final class SemanticCurveExportAdapter2D {
 				continue;
 			}
 			CurveEvaluator2D evaluator = parameter -> locusEvaluation(definition,
-					decision.branch.getBranchKey(), parameter, session);
-			boolean semanticClosure = hasFullPeriodClosure(definition,
-					decision.branch, decision.component)
+					decision.branch.getBranchKey(), decision.component, parameter,
+					session);
+			boolean semanticClosure = hasFullPeriodClosure(decision.branch,
+					decision.component)
 					&& sameOrientedInterval(domain, decision.branch,
 							decision.component);
 			components.add(approximate(locus, sourceId, sourceOrdinal, ordinal,
@@ -436,9 +441,15 @@ public final class SemanticCurveExportAdapter2D {
 	}
 
 	private static CurveEvaluation2D locusEvaluation(LocusDefinition2D definition,
-			String branchKey, double parameter, LocusEvaluationSession2D session) {
-		LocusEvaluation2D evaluation = definition.evaluate(branchKey, parameter,
-				session);
+			String branchKey, LocusInterval2D component, double parameter,
+			LocusEvaluationSession2D session) {
+		// Only an end of the component may be the excluded end of a structural event,
+		// whose one-sided limit is evaluated explicitly (PRE-G9B-CU2).
+		boolean end = parameter == component.getLower()
+				|| parameter == component.getUpper();
+		LocusEvaluation2D evaluation = end
+				? definition.evaluateInComponent(branchKey, component, parameter, session)
+				: definition.evaluate(branchKey, parameter, session);
 		if (!evaluation.isValid()) {
 			return CurveEvaluation2D.invalid(locusReason(evaluation.getStatus()));
 		}
@@ -468,15 +479,22 @@ public final class SemanticCurveExportAdapter2D {
 		return CurveEvaluation2D.valid(new Point2D(x, y));
 	}
 
-	private static boolean hasFullPeriodClosure(LocusDefinition2D definition,
-			LocusBranch2D branch, LocusInterval2D component) {
-		return definition.getProvider().isPeriodic()
-				&& branch.getProperties().contains(BranchProperty.PERIODIC)
-				&& branch.getExistenceStructure().getCompleteness()
-						== Completeness.COMPLETE
-				&& branch.getCertifiedContinuousValidComponents().size() == 1
-				&& component.equals(branch.getDeclaredDriverDomain())
-				&& component.equals(definition.getProvider().getDeclaredDomain());
+	/**
+	 * Single closure authority ({@code locus-v2-existence-components.md} section 15.8): the
+	 * component closes only as the certified closed periodic component of its branch.
+	 */
+	private static boolean hasFullPeriodClosure(LocusBranch2D branch,
+			LocusInterval2D component) {
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		return structure.isClosedPeriodic()
+				&& component.equals(structure.getContinuousValidComponents().get(0)
+						.getInterval());
+	}
+
+	/** @return whether an excluded end is a structural event reached as a limit */
+	private static boolean isLimitEnd(LocusBoundary2D end) {
+		return !end.isBinaryEndIncluded()
+				&& end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
 	}
 
 	private static LocusDomainDecision validateLocusDomain(
@@ -547,7 +565,7 @@ public final class SemanticCurveExportAdapter2D {
 	private static boolean isTypedFullPeriodOverride(
 			LocusDefinition2D definition, LocusBranch2D branch,
 			LocusInterval2D component, SemanticDomain domain) {
-		return hasFullPeriodClosure(definition, branch, component)
+		return hasFullPeriodClosure(branch, component)
 				&& sameOrientedInterval(domain, branch, component);
 	}
 

@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.locus;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Objects;
 
 /** Versioned hidden state for one retained principal-branch selection. */
@@ -97,6 +98,32 @@ public final class LocusPrincipalBranchState2D {
 			return branchKey.equals(address.getBranchKey())
 					&& componentLineageKey.equals(address.getComponentLineageKey())
 					&& providerVersion.equals(address.getProviderVersion());
+		}
+
+		/**
+		 * @param branch current branch of the address
+		 * @param domainEpsilon provider-owned domain tolerance
+		 * @return whether the current address is this retained selector, or lies in the
+		 *         component to which its retained component resolves through a demonstrated
+		 *         structural correspondence ({@code locus-v2-existence-components.md}
+		 *         section 15.6); the retained selector is never rewritten
+		 */
+		public boolean resolves(LocusSemanticAddress2D address, LocusBranch2D branch,
+				double domainEpsilon) {
+			if (matches(address)) {
+				return true;
+			}
+			if (!branchKey.equals(address.getBranchKey())
+					|| !providerVersion.equals(address.getProviderVersion())) {
+				return false;
+			}
+			LocusComponentSelectorResolver2D.Resolution resolution =
+					LocusComponentSelectorResolver2D.resolve(componentLineageKey,
+							branch.getExistenceStructure(),
+							Collections.singletonList(branch.getLineage()),
+							address.getCanonicalParameter(), domainEpsilon);
+			return resolution.getStatus().isResolved()
+					&& resolution.getLineageKey().equals(address.getComponentLineageKey());
 		}
 
 		private static String requireNonempty(String value) {

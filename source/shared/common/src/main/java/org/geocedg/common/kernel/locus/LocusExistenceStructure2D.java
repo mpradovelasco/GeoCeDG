@@ -408,6 +408,60 @@ public final class LocusExistenceStructure2D {
 		}
 
 		/**
+		 * Membership with the provider tolerance of the domain, for consumers that read it
+		 * (PRE-G9B-CU2, consumption design section 4): an interval, a partial arc whose lifted
+		 * interval lies in its domain and a closed periodic arc from the seam test that
+		 * interval with the tolerance, as the legacy views did; any other arc, which crosses
+		 * the seam or is an open arc of full length, tests its arc coordinate exactly
+		 * ({@link #contains(double)}).
+		 *
+		 * @param domainEpsilon provider-owned domain tolerance
+		 * @return whether the parameter belongs to the component
+		 */
+		public boolean contains(double canonicalParameter, double domainEpsilon) {
+			return !Double.isNaN(getArcCoordinate(canonicalParameter, domainEpsilon));
+		}
+
+		/**
+		 * Arc coordinate under the membership of {@link #contains(double, double)}: the
+		 * offset from the start of a component tested as an interval, which follows the
+		 * canonical order, and the exact arc coordinate of any other arc.
+		 *
+		 * @param domainEpsilon provider-owned domain tolerance
+		 * @return arc coordinate, or {@code NaN} when the parameter does not belong
+		 */
+		public double getArcCoordinate(double canonicalParameter, double domainEpsilon) {
+			if (followsCanonicalOrder()) {
+				return interval.contains(canonicalParameter, domainEpsilon)
+						? canonicalParameter - start : Double.NaN;
+			}
+			return getArcCoordinate(canonicalParameter);
+		}
+
+		/**
+		 * @return the canonical intervals that the component covers, in canonical order: its
+		 *         own interval when {@link #contains(double, double)} tests it as an
+		 *         interval, otherwise its pieces split at the seam, for consumers that search
+		 *         canonical intervals; they belong to this one component
+		 */
+		public List<LocusInterval2D> getCanonicalPieces() {
+			return followsCanonicalOrder() ? Collections.singletonList(interval)
+					: canonicalPieces();
+		}
+
+		/**
+		 * @return whether the lifted interval lies in the canonical domain and follows its
+		 *         order, so that canonical parameters are its own coordinates: an interval,
+		 *         a partial arc that does not cross the seam, or a closed periodic arc from
+		 *         the seam; otherwise consumers use the arc coordinate
+		 */
+		public boolean followsCanonicalOrder() {
+			return periodicDomain == null
+					|| !fullLength && interval.getUpper() <= periodicDomain.getUpper()
+					|| isClosedPeriodic() && start == seam(periodicDomain);
+		}
+
+		/**
 		 * @return the unique included arc coordinate {@code s} of the canonical parameter,
 		 *         measured from the start; {@code NaN} when it does not belong. On a
 		 *         full-length open arc the shared parameter of the two ends maps to the
@@ -635,6 +689,58 @@ public final class LocusExistenceStructure2D {
 	}
 
 	/**
+	 * Provider-compatibility evidence of a dependent locus on a locus support whose
+	 * components are not all intervals of the canonical order (PRE-G9B-CU2, consumption
+	 * design section 3; ADR 0027): the dependent takes the components of the support with
+	 * their shapes, arcs across the seam and open arcs of full length included, the
+	 * support's coverage and its completeness, never more. Its facts have no proof of the
+	 * dependent's own validity ({@link LocusEvidenceNature2D#NONE}); step T11 of PRE-G9B-CU2
+	 * retires the compatibility certificate.
+	 *
+	 * @param branchKey branch key of the dependent
+	 * @param support existence structure of the support branch, without point components
+	 * @return compatibility evidence that composes the support's existence
+	 */
+	public static LocusExistenceStructure2D compatibilityInherited(String branchKey,
+			LocusExistenceStructure2D support) {
+		if (!support.pointComponents.isEmpty()) {
+			throw new IllegalArgumentException(
+					"A support with point components is not composed");
+		}
+		ArrayList<Coverage> coverage = new ArrayList<>();
+		for (Coverage item : support.coverage) {
+			LocusCoverageCause2D cause = item.state == CoverageState.CERTIFIED_EXISTS
+					? LocusCoverageCause2D.PROVIDER_CONTRACT
+					: item.state == CoverageState.CERTIFIED_DOES_NOT_EXIST
+							? LocusCoverageCause2D.PROVIDER_COMPLEMENT
+							: item.state == CoverageState.UNRESOLVED
+									? LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED
+									: item.cause;
+			coverage.add(new Coverage(item.interval, item.state, cause,
+					LocusEvidenceNature2D.NONE, "provider-support-contract/v1"));
+		}
+		ArrayList<ContinuousComponent> components = new ArrayList<>();
+		int index = 0;
+		for (ContinuousComponent component : support.components) {
+			components.add(new ContinuousComponent(component.interval,
+					"provider-component/" + index++, "provider-endpoints/v1",
+					component.maximality, "provider-contract", component.periodicDomain,
+					component.start, component.end, component.fullLength,
+					unproved(component.lowerBoundary), unproved(component.upperBoundary),
+					LocusEvidenceNature2D.NONE));
+		}
+		return new LocusExistenceStructure2D(branchKey, support.canonicalDomain,
+				support.topology, 0, coverage, components, Collections.emptyList(),
+				support.completeness, "locus-existence/provider-compatibility/v1");
+	}
+
+	/** @return the same end of a support, without a proof for the dependent */
+	private static LocusBoundary2D unproved(LocusBoundary2D end) {
+		return new LocusBoundary2D(end.getKind(), end.getSource(), end.isBinaryEndIncluded(),
+				LocusEvidenceNature2D.NONE);
+	}
+
+	/**
 	 * @return unresolved evidence without a manufactured empty-domain assertion
 	 */
 	public static LocusExistenceStructure2D notEstablished(String branchKey,
@@ -731,6 +837,50 @@ public final class LocusExistenceStructure2D {
 		for (ContinuousComponent component : components) {
 			if (component.contains(canonicalParameter)) {
 				return component;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param upperEnd whether the end is the upper end of an interval or the end of an arc;
+	 *        otherwise the lower end or the start
+	 * @return the component of positive length with that end at the canonical parameter, or
+	 *         {@code null}; ends are compared by their binary64 parameters, without tolerance
+	 */
+	public ContinuousComponent getComponentWithEnd(double canonicalParameter,
+			boolean upperEnd) {
+		for (ContinuousComponent component : components) {
+			if ((upperEnd ? component.getEnd() : component.getStart()) == canonicalParameter) {
+				return component;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the point component whose parameter enclosure contains the canonical
+	 *         parameter, or {@code null}; a consumer that addresses components by a binary64
+	 *         parameter reports it as a typed cause and never selects it (section 15.8)
+	 */
+	public LocusPointComponent2D getPointComponentEnclosing(double canonicalParameter) {
+		for (LocusPointComponent2D point : pointComponents) {
+			if (point.getParameterLower() <= canonicalParameter
+					&& canonicalParameter <= point.getParameterUpper()) {
+				return point;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the coverage assertion whose interval contains the canonical parameter, or
+	 *         {@code null}; membership is exact
+	 */
+	public Coverage getCoverageAt(double canonicalParameter) {
+		for (Coverage item : coverage) {
+			if (item.interval.contains(canonicalParameter, 0)) {
+				return item;
 			}
 		}
 		return null;

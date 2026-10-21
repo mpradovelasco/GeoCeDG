@@ -18,6 +18,12 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 
 /** Immutable semantic definition published for one locus revision. */
 public final class LocusDefinition2D {
+	/** Diagnostic cause of a point in certified nonexistence (PRE-G9B-CU2, P5). */
+	public static final String CERTIFIED_NONEXISTENCE = "CERTIFIED_NONEXISTENCE";
+	/** Diagnostic of an evaluator point that the certificate contradicts. */
+	public static final String EVALUATOR_DISAGREEMENT = "EVALUATOR_DISAGREEMENT";
+	/** Diagnostic cause of a failed evaluation where existence is certified. */
+	public static final String COMPUTATIONAL_FAILURE = "COMPUTATIONAL_FAILURE";
 	private final String locusIdentity;
 	private final long semanticRevision;
 	private final DefinitionStatus definitionStatus;
@@ -109,6 +115,118 @@ public final class LocusDefinition2D {
 			LocusEvaluationSession2D session) {
 		Objects.requireNonNull(session);
 		LocusBranch2D branch = branchesByKey.get(branchKey);
+		LocusEvaluation2D refusal = refusal(branchKey, branch);
+		if (refusal != null) {
+			return refusal;
+		}
+		LocusQuality2D quality = branch.getQuality();
+		double canonical = provider.canonicalize(semanticParameter);
+		if (!provider.contains(canonical)) {
+			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
+					"Parameter is outside the canonical branch domain");
+		}
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		LocusExistenceStructure2D.Coverage coverage = structure.getCoverageAt(canonical);
+		boolean certifiedNonexistence = coverage != null
+				&& coverage.getState()
+						== LocusExistenceStructure2D.CoverageState.CERTIFIED_DOES_NOT_EXIST
+				&& coverage.getNature().certifies();
+		if (!certifiedNonexistence && structure.getCompleteness()
+				== LocusExistenceStructure2D.Completeness.COMPLETE
+				&& !branch.containsValidParameter(canonical, provider)) {
+			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
+					"Parameter lies outside the complete existence domain");
+		}
+		return reconcile(branch, canonical, certifiedNonexistence ? coverage : null,
+				session.evaluate(this, branch, canonical));
+	}
+
+	/**
+	 * Evaluates one end of a certified component of a branch
+	 * ({@code locus-v2-existence-components.md} section 15.3): the image of its canonical
+	 * parameter when the binary64 end belongs to the component, otherwise its one-sided limit
+	 * through the evaluator's explicit query. Canonicalization never stands in for an
+	 * excluded end, which is the image of no canonical parameter.
+	 *
+	 * @param canonicalParameter canonical parameter of the end: the start or end of an arc,
+	 *        or the lower or upper end of an interval
+	 * @param upperEnd whether the end is the upper end of an interval or the end of an arc;
+	 *        otherwise the lower end or the start
+	 * @return typed evaluation of the end; {@code OUT_OF_DOMAIN} when no certified
+	 *         component of the branch has that end
+	 */
+	public LocusEvaluation2D evaluateComponentEnd(String branchKey,
+			double canonicalParameter, boolean upperEnd, LocusEvaluationSession2D session) {
+		Objects.requireNonNull(session);
+		LocusBranch2D branch = branchesByKey.get(branchKey);
+		LocusEvaluation2D refusal = refusal(branchKey, branch);
+		if (refusal != null) {
+			return refusal;
+		}
+		LocusExistenceStructure2D.ContinuousComponent component = branch
+				.getExistenceStructure().getComponentWithEnd(canonicalParameter, upperEnd);
+		if (component == null) {
+			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN,
+					branch.getQuality(), "No certified component has that end");
+		}
+		LocusBoundary2D end = upperEnd ? component.getUpperBoundary()
+				: component.getLowerBoundary();
+		if (component.isClosedPeriodic() || end.isBinaryEndIncluded()) {
+			return evaluate(branchKey, canonicalParameter, session);
+		}
+		instrumentation.recordEvaluatorCall(locusIdentity);
+		try {
+			LocusEvaluation2D result = evaluator.evaluateOneSidedLimit(this, branch,
+					component, upperEnd, session);
+			return result == null ? LocusEvaluation2D.invalid(
+					EvaluationStatus.EVALUATION_FAILED, branch.getQuality(),
+					LocusEvaluator2D.ONE_SIDED_LIMIT_NOT_AVAILABLE
+							+ ": evaluator returned null") : result;
+		} catch (RuntimeException exception) {
+			return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
+					branch.getQuality(), LocusEvaluator2D.ONE_SIDED_LIMIT_NOT_AVAILABLE + ": "
+							+ exception.getClass().getSimpleName() + ": "
+							+ exception.getMessage());
+		}
+	}
+
+	/**
+	 * Evaluates a parameter of the lifted range of one certified component, as consumers
+	 * that traverse a component do (PRE-G9B-CU2): an end of the range that is the excluded
+	 * end of a structural event is its one-sided limit ({@link #evaluateComponentEnd}),
+	 * never the image of the canonical parameter that it shares with the other end; every
+	 * other parameter is evaluated as {@link #evaluate} does.
+	 *
+	 * @param componentExtent lifted interval of a component of the branch
+	 * @return typed semantic evaluation
+	 */
+	public LocusEvaluation2D evaluateInComponent(String branchKey,
+			LocusInterval2D componentExtent, double parameter,
+			LocusEvaluationSession2D session) {
+		LocusBranch2D branch = branchesByKey.get(branchKey);
+		boolean lowerEnd = parameter == componentExtent.getLower();
+		if (branch != null && (lowerEnd || parameter == componentExtent.getUpper())) {
+			for (LocusExistenceStructure2D.ContinuousComponent component
+					: branch.getExistenceStructure().getContinuousValidComponents()) {
+				if (!component.getInterval().equals(componentExtent)) {
+					continue;
+				}
+				LocusBoundary2D end = lowerEnd ? component.getLowerBoundary()
+						: component.getUpperBoundary();
+				if (!component.isClosedPeriodic() && !end.isBinaryEndIncluded()
+						&& end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT) {
+					return evaluateComponentEnd(branchKey,
+							lowerEnd ? component.getStart() : component.getEnd(), !lowerEnd,
+							session);
+				}
+				break;
+			}
+		}
+		return evaluate(branchKey, parameter, session);
+	}
+
+	/** @return refusal of every evaluation of the definition or branch, or {@code null} */
+	private LocusEvaluation2D refusal(String branchKey, LocusBranch2D branch) {
 		LocusQuality2D quality = branch == null ? LocusQuality2D.analyticDoubleSemantic()
 				: branch.getQuality();
 		if (definitionStatus != DefinitionStatus.VALID) {
@@ -129,18 +247,42 @@ public final class LocusDefinition2D {
 			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
 					"Unknown branch key: " + branchKey);
 		}
-		double canonical = provider.canonicalize(semanticParameter);
-		if (!provider.contains(canonical)) {
-			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
-					"Parameter is outside the canonical branch domain");
+		return null;
+	}
+
+	/**
+	 * Separates existence from evaluation ({@code locus-v2-existence-components.md}
+	 * section 15.5): a point that the evaluator returns where the certificate establishes
+	 * nonexistence is not published as valid, and a failure where the certificate
+	 * establishes existence is computational. Facts without a certifying proof change
+	 * nothing.
+	 *
+	 * @param nonexistence certified nonexistence that covers the parameter, or {@code null}
+	 */
+	private static LocusEvaluation2D reconcile(LocusBranch2D branch, double canonical,
+			LocusExistenceStructure2D.Coverage nonexistence, LocusEvaluation2D result) {
+		if (nonexistence != null) {
+			return LocusEvaluation2D.invalid(EvaluationStatus.DEPENDENCY_UNDEFINED,
+					result.getQuality(), CERTIFIED_NONEXISTENCE + ": "
+							+ nonexistence.getCause() + (result.isValid()
+									? "; " + EVALUATOR_DISAGREEMENT + ": the evaluator returned"
+											+ " a point where the certificate establishes"
+											+ " nonexistence"
+									: "; evaluator: " + result.getStatus()));
 		}
-		if (branch.getExistenceStructure().getCompleteness()
-				== LocusExistenceStructure2D.Completeness.COMPLETE
-				&& !branch.containsValidParameter(canonical, provider)) {
-			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
-					"Parameter lies outside the complete existence domain");
+		if (result.isValid() || result.getStatus() == EvaluationStatus.EVALUATION_FAILED
+				|| result.getStatus() == EvaluationStatus.UNSUPPORTED_NONDETERMINISM) {
+			return result;
 		}
-		return session.evaluate(this, branch, canonical);
+		LocusExistenceStructure2D.ContinuousComponent component = branch
+				.getExistenceStructure().getComponentContaining(canonical);
+		if (component == null || !component.getNature().certifies()) {
+			return result;
+		}
+		return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
+				result.getQuality(), COMPUTATIONAL_FAILURE + ": existence is certified at the"
+						+ " parameter; evaluator " + result.getStatus() + ": "
+						+ result.getDiagnostic());
 	}
 
 	LocusEvaluation2D compute(LocusBranch2D branch, double canonicalParameter,

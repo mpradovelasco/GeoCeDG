@@ -75,8 +75,8 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 			EnumSet<BranchProperty> properties = sourceBranch.getProperties().isEmpty()
 					? EnumSet.noneOf(BranchProperty.class)
 					: EnumSet.copyOf(sourceBranch.getProperties());
-			if (transformSnapshot.isCollapsed()
-					&& !sourceBranch.getCertifiedContinuousValidComponents().isEmpty()) {
+			if (transformSnapshot.isCollapsed() && !sourceBranch.getExistenceStructure()
+					.getContinuousValidComponents().isEmpty()) {
 				properties.add(BranchProperty.COLLAPSED_IMAGE);
 			}
 			LocusQuality2D quality = new LocusQuality2D(

@@ -102,6 +102,22 @@ final class G8BIntersectionFixtures {
 		return create(construction, identity, provider, List.of(branch), curve);
 	}
 
+	/**
+	 * A periodic fixture with the certified closure that seam semantics need since
+	 * PRE-G9B-CU2 (single closure authority): a half-open periodic canonical domain and
+	 * one component equal to it, recorded by the provider-compatibility certificate as
+	 * the closed periodic arc. A periodic provider alone never closes a component.
+	 */
+	static Fixture singlePeriodic(Construction construction, String identity,
+			double lower, double upper, Curve curve) {
+		ExplicitNumericDomainProvider2D provider = provider(identity, lower,
+				upper, true, false, true, Orientation.INCREASING);
+		LocusBranch2D branch = branch(identity + "/branch-main", provider,
+				List.of(provider.getDeclaredDomain()),
+				EnumSet.of(BranchProperty.FINITE, BranchProperty.PERIODIC));
+		return create(construction, identity, provider, List.of(branch), curve);
+	}
+
 	static Fixture create(Construction construction, String identity,
 			ExplicitNumericDomainProvider2D provider,
 			List<LocusBranch2D> branches, Curve curve) {

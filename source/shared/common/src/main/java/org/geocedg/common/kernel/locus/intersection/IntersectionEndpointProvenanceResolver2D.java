@@ -18,6 +18,8 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
@@ -226,8 +228,10 @@ public final class IntersectionEndpointProvenanceResolver2D {
 		LocusDriverDomainProvider2D provider = definition.getProvider();
 		double raw = evidence.getSemanticParameter();
 		double canonical = provider.canonicalize(raw);
+		// One list for the index and the key: the certified components (PRE-G9B-CU2).
 		int selected = branch == null || !Double.isFinite(canonical) ? -1
-				: uniqueComponent(branch.getValidDomainComponents(), canonical,
+				: uniqueComponent(branch.getExistenceStructure()
+						.getContinuousValidComponents(), canonical,
 						provider.getDomainEpsilon());
 		LocusSemanticAddress2D address = selected < 0 ? null
 				: addressFromRawParameter(definition, sourceId, branch.getBranchKey(), raw);
@@ -253,8 +257,9 @@ public final class IntersectionEndpointProvenanceResolver2D {
 
 	/**
 	 * Builds the section 23.4 address of one raw branch parameter on the addressed
-	 * source: provider canonicalization, exactly one containing valid component,
-	 * and the A1 periodic lift and seam side. Shared by the section 24 families.
+	 * source: provider canonicalization, exactly one containing certified component,
+	 * even a local one (PRE-G9B-CU2, decision E-2), and the A1 periodic lift and seam
+	 * side. Shared by the section 24 families.
 	 *
 	 * @return current address, or {@code null} without a unique containing
 	 *         component
@@ -271,7 +276,8 @@ public final class IntersectionEndpointProvenanceResolver2D {
 		if (!Double.isFinite(canonical)) {
 			return null;
 		}
-		List<LocusInterval2D> components = branch.getValidDomainComponents();
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		List<ContinuousComponent> components = structure.getContinuousValidComponents();
 		int selected = uniqueComponent(components, canonical,
 				provider.getDomainEpsilon());
 		if (selected < 0) {
@@ -280,13 +286,12 @@ public final class IntersectionEndpointProvenanceResolver2D {
 		long lift = periodicLift(provider, raw);
 		SeamSide seam = seamSide(provider, raw, canonical, lift);
 		return new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
-				branch.getBranchKey(), LocusComponentLineage2D.create(
-						branch.getBranchKey(), components.get(selected)), canonical,
-				lift, seam);
+				branch.getBranchKey(), LocusComponentLineage2D.of(structure,
+						components.get(selected)), canonical, lift, seam);
 	}
 
 	/** @return index of the only containing component, or negative */
-	private static int uniqueComponent(List<LocusInterval2D> components,
+	private static int uniqueComponent(List<ContinuousComponent> components,
 			double canonical, double epsilon) {
 		int selected = -1;
 		for (int index = 0; index < components.size(); index++) {

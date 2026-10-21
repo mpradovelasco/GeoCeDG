@@ -67,6 +67,7 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 	private LocusMetricFunctionStructure2D functionStructure;
 	private HybridExistenceCertifier2D.Result structureCertificate;
 	private String structureKey;
+	private boolean oppositeSamePosition;
 
 	/** Creates and publishes one public between-position rich query. */
 	public AlgoLocusBetweenMetricV2(Construction construction, String label,
@@ -141,7 +142,8 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 		}
 		try {
 			PublicLocusMetricTraversalPolicy2D traversalPolicy =
-					currentTraversalPolicy();
+					oppositeSamePosition ? currentTraversalPolicy().withOppositeSamePosition()
+							: currentTraversalPolicy();
 			EndpointResolution startResolution = resolveEndpoint(start,
 					retainedStartFamily, retainedStartOccurrenceKey);
 			EndpointResolution targetResolution = resolveEndpoint(target,
@@ -319,6 +321,28 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 				policy), definition, capabilities, ownerLease.getOwner(),
 				LocusMetricIndexMode.LAZY_COMPONENT_REVISION, source.getMetricInstrumentation(),
 				currentConsumerIdentity() + "/origin-wrap-jump-value");
+	}
+
+	/**
+	 * Makes the following computations use the opposite same-position policy. Only the
+	 * one-sided limit query of an evaluator slice sets it, around one evaluation of the
+	 * excluded end of an origin wrap, whose limit is the value of the opposite policy at the
+	 * origin (consumption design section 5.3); the query restores it at once and the next
+	 * evaluation of the slice recomputes the length with the persisted policy.
+	 *
+	 * @param opposite whether the opposite same-position policy applies
+	 */
+	public void setOppositeSamePositionForLimit(boolean opposite) {
+		oppositeSamePosition = opposite;
+	}
+
+	/**
+	 * @return current computation status of this length, or {@code null} when it has
+	 *         published none; the status of a failure tells whether it is computational
+	 */
+	public MetricComputationStatus getCurrentComputationStatus() {
+		LocusMetricResult2D current = result.isDefined() ? result.getMetricResult() : null;
+		return current == null ? null : current.getComputationStatus();
 	}
 
 	/** @return whether an input of the origin other than the source follows the driver */

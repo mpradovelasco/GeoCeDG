@@ -34,8 +34,8 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentationSnapshot2D;
-import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
 import org.geocedg.common.kernel.locus.metric.EvaluatorOnlyLocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
@@ -143,12 +143,12 @@ final class LocusV2LaboratoryController {
 				currentMetrics(entry, definition);
 		LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(128);
 		for (LocusBranch2D branch : definition.getBranches()) {
-			List<LocusInterval2D> components =
-					branch.getCertifiedContinuousValidComponents();
+			List<LocusExistenceStructure2D.ContinuousComponent> components =
+					branch.getExistenceStructure().getContinuousValidComponents();
 			if (!components.isEmpty()) {
-				double lower = components.get(0).getLower();
-				double upper = components.get(0).getUpper();
-				double parameter = lower + (upper - lower) / 2;
+				// The middle of the first component along its arc (PRE-G9B-CU2).
+				double parameter = definition.getProvider().canonicalize(
+						components.get(0).getStart() + components.get(0).getLength() / 2);
 				locus.evaluate(branch.getBranchKey(), parameter, session);
 				locus.evaluate(branch.getBranchKey(), parameter, session);
 			}
@@ -251,19 +251,16 @@ final class LocusV2LaboratoryController {
 			return null;
 		}
 		LocusBranch2D branch = definition.getBranches().get(0);
-		if (branch.getCertifiedContinuousValidComponents().isEmpty()) {
+		if (branch.getExistenceStructure().getContinuousValidComponents().isEmpty()) {
 			return null;
 		}
-		LocusInterval2D component = branch
-				.getCertifiedContinuousValidComponents().get(0);
-		double start = component.getLower()
-				+ (component.getUpper() - component.getLower()) * 0.25;
-		double target = component.getLower()
-				+ (component.getUpper() - component.getLower()) * 0.75;
-		if (component.getLower() == component.getUpper()) {
-			start = component.getLower();
-			target = start;
-		}
+		// Positions at a quarter and three quarters along the arc (PRE-G9B-CU2).
+		LocusExistenceStructure2D.ContinuousComponent component = branch
+				.getExistenceStructure().getContinuousValidComponents().get(0);
+		double start = definition.getProvider().canonicalize(component.getStart()
+				+ component.getLength() * 0.25);
+		double target = definition.getProvider().canonicalize(component.getStart()
+				+ component.getLength() * 0.75);
 		LocusMetricPositionBinder2D binder =
 				new LocusMetricPositionBinder2D();
 		MetricPositionBinding2D startBinding = binder.bind(

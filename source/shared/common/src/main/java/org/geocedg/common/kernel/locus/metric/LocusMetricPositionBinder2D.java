@@ -6,14 +6,16 @@
 package org.geocedg.common.kernel.locus.metric;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
-import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
+import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
-import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 
 /** Explicit binder; no Cartesian proximity repair exists. */
 public final class LocusMetricPositionBinder2D {
@@ -46,43 +48,57 @@ public final class LocusMetricPositionBinder2D {
 					"Constructive branch is absent in this revision");
 		}
 		double parameter = position.getProviderCanonicalParameter();
-		for (int index = 0;
-				index < branch.getCertifiedContinuousValidComponents().size();
-				index++) {
-			LocusInterval2D component =
-					branch.getCertifiedContinuousValidComponents().get(index);
-			if (component.contains(parameter,
-					definition.getProvider().getDomainEpsilon())) {
-				if (position.getComponentLineageKey() != null
-						&& !position.getComponentLineageKey().equals(
-								LocusComponentLineage2D.create(
-										branch.getBranchKey(), component))) {
-					continue;
-				}
-				try (LocusEvaluationSession2D session =
-						LocusEvaluationSession2D.openServiceSession(false, 1)) {
-					LocusEvaluation2D evaluation = definition.evaluate(
-							branch.getBranchKey(), parameter, session);
-					if (evaluation.isValid()) {
-						return new MetricPositionBinding2D(position,
-								definition.getSemanticRevision(),
-								Optional.of(LocusMetricComponentKey2D.create(
-										definition, branch, index)),
-								MetricPositionEvaluationStatus.VALID,
-								Optional.of(evaluation.getPoint()),
-								Collections.emptyList());
-					}
-					return invalid(position, definition.getSemanticRevision(),
-							MetricPositionEvaluationStatus.EVALUATION_FAILED,
-							MetricDiagnosticCode2D.EVALUATION_FAILED,
-							evaluation.getDiagnostic());
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		List<ContinuousComponent> components = structure.getContinuousValidComponents();
+		double epsilon = definition.getProvider().getDomainEpsilon();
+		ContinuousComponent component = null;
+		if (position.getComponentLineageKey() != null) {
+			// A retained component selector resolves only through a demonstrated
+			// structural correspondence (locus-v2-existence-components.md section 15.6).
+			LocusComponentSelectorResolver2D.Resolution resolution =
+					LocusComponentSelectorResolver2D.resolve(
+							position.getComponentLineageKey(), structure,
+							Collections.singletonList(branch.getLineage()), parameter,
+							epsilon);
+			component = resolution.getStatus().isResolved() ? resolution.getComponent()
+					: null;
+		} else {
+			for (ContinuousComponent candidate : components) {
+				if (candidate.contains(parameter, epsilon)) {
+					component = candidate;
+					break;
 				}
 			}
 		}
-		return invalid(position, definition.getSemanticRevision(),
-				MetricPositionEvaluationStatus.POSITION_OUTSIDE_DOMAIN,
-				MetricDiagnosticCode2D.POSITION_OUTSIDE_DOMAIN,
-				"Canonical parameter is outside every valid component");
+		if (component == null) {
+			return structure.getPointComponentEnclosing(parameter) != null
+					? invalid(position, definition.getSemanticRevision(),
+							MetricPositionEvaluationStatus.POSITION_OUTSIDE_DOMAIN,
+							MetricDiagnosticCode2D.ISOLATED_POINT,
+							"A point component is never addressed by a binary64 parameter")
+					: invalid(position, definition.getSemanticRevision(),
+							MetricPositionEvaluationStatus.POSITION_OUTSIDE_DOMAIN,
+							MetricDiagnosticCode2D.POSITION_OUTSIDE_DOMAIN,
+							"Canonical parameter is outside every valid component");
+		}
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
+			LocusEvaluation2D evaluation = definition.evaluate(
+					branch.getBranchKey(), parameter, session);
+			if (evaluation.isValid()) {
+				return new MetricPositionBinding2D(position,
+						definition.getSemanticRevision(),
+						Optional.of(LocusMetricComponentKey2D.create(
+								definition, branch, components.indexOf(component))),
+						MetricPositionEvaluationStatus.VALID,
+						Optional.of(evaluation.getPoint()),
+						Collections.emptyList());
+			}
+			return invalid(position, definition.getSemanticRevision(),
+					MetricPositionEvaluationStatus.EVALUATION_FAILED,
+					MetricDiagnosticCode2D.EVALUATION_FAILED,
+					evaluation.getDiagnostic());
+		}
 	}
 
 	/**

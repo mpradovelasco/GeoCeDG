@@ -16,7 +16,6 @@ import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusParameterMap2D;
 import org.geocedg.common.kernel.locus.LocusPointTransform2D;
-import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Determinism;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
@@ -103,10 +102,7 @@ public final class AlgoNestedLocusV2 extends AlgoLocusV2 {
 								LocusExistenceStructure2D.notEstablished(
 										branch.getBranchKey(),
 										branch.getDeclaredDriverDomain(),
-										LocusExistenceStructure2D.topologyOf(
-												branch.getDeclaredDriverDomain(),
-												branch.getProperties().contains(
-														BranchProperty.PERIODIC)),
+										branch.getExistenceStructure().getTopology(),
 										LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
 										"nested-upstream-coverage-not-established"),
 								branch.getOrientation(), branch.getProvenance(),
