@@ -7,6 +7,7 @@ package org.geocedg.common.locus;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,9 +19,13 @@ import java.util.List;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -48,10 +53,11 @@ import org.junit.jupiter.api.Test;
  * reconstruction slice of a dependent-point Locus V2 reproduces the inputs it reads, measured
  * by exact bits and by comparing slice evaluations with the live construction.
  *
- * <p>The characterization reads the isolated slice reflectively, and the selection state of
- * the inherited intersection algorithm likewise, until the read-only accessors of step T3
- * (D-CU2-17) exist. The test that pins the angle-literal gap is inverted by the fidelity
- * validation of step T3.</p>
+ * <p>The characterization reads the isolated slice reflectively. Step T3 inverted the two
+ * base gaps that T1 pinned: a representation-only change no longer changes the fingerprint
+ * (fingerprint v2), and an angle literal that the serialized slice cannot reproduce makes the
+ * locus fail explicitly instead of evaluating another configuration (fidelity validation).
+ * </p>
  */
 class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 	private static final double[] DRIVER_PARAMETERS = {-3.0, -2.2, -1.1, -0.3, 0.4, 1.3, 2.1,
@@ -72,9 +78,6 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 		GeoLocusV2 locus = add("l=LocusV2(Q,P)");
 		GeoNumeric radius = assertInstanceOf(GeoNumeric.class, lookup("r"));
 		double base = radius.getValue();
-		// A value set by program replaces the typed literal; the round trip below keeps
-		// that representation (see representationOnlyChangesPublishARevisionAtTheBase).
-		setValue(radius, base);
 		String baseFingerprint = fingerprint(locus);
 		long revision = locus.getSemanticRevision();
 		long builds = locus.getInstrumentation().getDependencySliceBuilds();
@@ -91,13 +94,13 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 	}
 
 	/**
-	 * Base over-sensitivity of the v1 fingerprint (V-REV-EXACT-2): it hashes the serialized
-	 * representation, so setting a typed number to its own value by program removes its
-	 * literal expression, changes the fingerprint and publishes a revision with the same
-	 * semantic state. Step T3 inverts this test.
+	 * V-REV-EXACT-2: the v2 fingerprint is independent of the representation. Setting a
+	 * typed number to its own value by program removes its literal expression and adds
+	 * options to its serialized form; the fingerprint and the revision do not change. The v1
+	 * fingerprint published a revision here (T1 characterization).
 	 */
 	@Test
-	void representationOnlyChangesPublishARevisionAtTheBase() throws Exception {
+	void representationOnlyChangesKeepTheFingerprintAndTheRevision() throws Exception {
 		add("r=3.6569437271164964");
 		add("c=Circle((0,0),r)");
 		add("P=Point(c)");
@@ -106,9 +109,11 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 		GeoNumeric radius = assertInstanceOf(GeoNumeric.class, lookup("r"));
 		String typed = fingerprint(locus);
 		long revision = locus.getSemanticRevision();
+		long builds = locus.getInstrumentation().getDependencySliceBuilds();
 		setValue(radius, radius.getValue());
-		assertNotEquals(typed, fingerprint(locus));
-		assertEquals(revision + 1, locus.getSemanticRevision());
+		assertEquals(typed, fingerprint(locus));
+		assertEquals(revision, locus.getSemanticRevision());
+		assertEquals(builds, locus.getInstrumentation().getDependencySliceBuilds());
 	}
 
 	/** V-REV-EXACT-6, synthetic: moving only the driver keeps the revision and the slice. */
@@ -160,12 +165,14 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 	}
 
 	/**
-	 * Base gap of D-CU2-20-R: an angle literal without original text is serialized in
-	 * degrees ({@code Kernel.formatAngle}), so the slice copy reads another binary64 value
-	 * and evaluates another configuration without any failure. Step T3 inverts this test.
+	 * V-REV-EXACT-4: an angle literal without original text is serialized in degrees
+	 * ({@code Kernel.formatAngle}); its copy reads another binary64 value from an expression of
+	 * another shape, so no admitted restoration exists. The slice is unfaithful: the branch is
+	 * {@code NOT_ESTABLISHED} with a typed cause and every evaluation fails explicitly. At the
+	 * base the copy evaluated another configuration silently (T1 characterization).
 	 */
 	@Test
-	void programmaticAngleLiteralsAreNotReproducedExactlyAtTheBase() throws Exception {
+	void anUnreproducibleAngleLiteralFailsExplicitly() throws Exception {
 		add("c=Circle((0,0),3.6569437271164964)");
 		add("P=Point(c)");
 		MyDouble literal = new MyDouble(getKernel(), 0.4097);
@@ -182,7 +189,27 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 		GeoElement copy = copy(locus, "ang");
 		assertEquals("num:0x1.a3886594af4f1p-2", exact(live));
 		assertEquals("num:0x1.a3886594af4f2p-2", exact(copy));
-		assertTrue(countEvaluationsDifferingFromTheLiveConstruction(locus, "Q") > 0);
+		ReconstructibleLocusEvaluator2D evaluator = (ReconstructibleLocusEvaluator2D) field(
+				parent(locus), "evaluator");
+		assertFalse(evaluator.isReconstructionFaithful());
+		LocusExistenceStructure2D existence = locus.getSemanticDefinition().getBranches()
+				.get(0).getExistenceStructure();
+		assertEquals(LocusExistenceStructure2D.Completeness.NOT_ESTABLISHED,
+				existence.getCompleteness());
+		assertEquals(LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
+				existence.getCoverage().get(0).getCause());
+		assertTrue(existence.getContinuousValidComponents().isEmpty());
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+			for (double parameter : DRIVER_PARAMETERS) {
+				LocusEvaluation2D evaluation = locus.getSemanticDefinition().evaluate(
+						existence.getBranchKey(), parameter, session);
+				assertFalse(evaluation.isValid());
+				assertEquals(LocusSemanticMetadata2D.EvaluationStatus.EVALUATION_FAILED,
+						evaluation.getStatus());
+			}
+		}
+		assertTrue(locus.getInstrumentation().getCertificationWork(
+				LocusCertificationWork2D.FIDELITY_FAILURE) >= 1);
 	}
 
 	/** The labels of the outputs of a slice algorithm enter the v1 fingerprint. */
@@ -218,8 +245,11 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 		assertTrue(!xml.toString().contains("permutation"), xml.toString());
 		AlgoIntersectLineConic copy = assertInstanceOf(AlgoIntersectLineConic.class,
 				copy(locus, lookup("S_1").getLabelSimple()).getParentAlgorithm());
-		assertArrayEquals((int[]) field(live, "permutation"),
-				(int[]) field(copy, "permutation"));
+		assertArrayEquals(live.getSelectionPermutation(), copy.getSelectionPermutation());
+		assertEquals(live.isSelectionFirstIntersectionPending(),
+				copy.isSelectionFirstIntersectionPending());
+		assertEquals(live.isSelectionPermutationPending(),
+				copy.isSelectionPermutationPending());
 		assertSliceEvaluatesTheLiveConstruction(locus, "M");
 	}
 
@@ -227,11 +257,6 @@ class PreG9BCu2SliceFidelityCharacterizationTest extends BaseUnitTest {
 			throws Exception {
 		List<String> differing = evaluationsDifferingFromTheLiveConstruction(locus, point);
 		assertTrue(differing.isEmpty(), differing.toString());
-	}
-
-	private int countEvaluationsDifferingFromTheLiveConstruction(GeoLocusV2 locus,
-			String pointLabel) throws Exception {
-		return evaluationsDifferingFromTheLiveConstruction(locus, pointLabel).size();
 	}
 
 	private List<String> evaluationsDifferingFromTheLiveConstruction(GeoLocusV2 locus,

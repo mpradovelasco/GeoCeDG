@@ -693,6 +693,29 @@ restauraciones y fallos de fidelidad. Pruebas: filas V-REV-EXACT de la
 [matriz](../validation/pre_g9b_cu2_validation_matrix.md). Si la fidelidad exigiera cambiar el
 formato persistido, el comportamiento heredado o la identidad durable, la implementación se
 detiene y se presenta una propuesta correctiva independiente.
+
+**Precisiones de la implementación (T3, 2026-10-21).** Ninguna cambia el ciclo:
+
+- la huella v2 tiene cuatro partes con resumen propio (estructura, valores exactos, selección y
+  etiquetado), de modo que la causa de cada reconstrucción queda tipada; la estructura excluye
+  la forma serializada de los elementos libres y las etiquetas de valor derivado de los
+  dependientes (`coords`, `value`, `matrix`, `eigenvectors`, `pathParameter`,
+  `regionParameters`), y los valores exactos incluyen, además de las entradas autoritativas, los
+  valores derivados que no dependen del conductor, porque un valor aleatorio cambia al
+  recalcular sin cambiar ninguna entrada;
+- las entradas sin etiqueta de un algoritmo definido por una expresión se recorren en el orden
+  de su árbol, porque la reconstrucción no conserva el orden de sus entradas; las de un comando
+  conservan el orden de sus argumentos;
+- un valor aleatorio se restaura con la interfaz pública del propio algoritmo
+  (`SetRandomValue`), que es una asignación exacta y no escribe estado de selección;
+- una selección viva todavía pendiente (permutación sin inicializar o primera intersección por
+  establecer) no tiene regla efectiva que reproducir y no se compara; cuando se establece,
+  cambia la parte de selección de la huella, el corte se reconstruye y la comparación se
+  repite;
+- un literal angular sin texto original cuyo árbol reconstruido tiene otra forma no tiene
+  correspondencia demostrada: no se restaura, y el locus queda `NOT_ESTABLISHED` con causa
+  `RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED`.
+
 - El certificador de 512 celdas fijas de SplineV2 (`SelectedRootContinuousDomainCertifier2D`)
   queda sustituido por el certificador de cajas sobre su modelo de intervalos, o se conserva como
   caso particular (decisión D-CU2-9). Hoy:

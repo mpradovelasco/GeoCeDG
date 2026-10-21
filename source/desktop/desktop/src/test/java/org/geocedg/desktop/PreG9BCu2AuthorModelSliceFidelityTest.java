@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
@@ -38,9 +40,9 @@ import org.junit.jupiter.api.io.TempDir;
  * PRE-G9B-CU2 step T1, D-CU2-20-R focal characterization on the author model at the base:
  * one-ulp changes of {@code excCyl} away from the degeneracy (V-REV-EXACT-1), the exactness
  * of every independent input read by the slices of the model loci, and the selection state
- * of their line-conic intersections (F-CU2-8, F-CU2-14). The isolated slices and the
- * inherited selection state are read reflectively until the read-only accessors of step T3
- * (D-CU2-17) exist.
+ * of their line-conic intersections (F-CU2-8, F-CU2-14), read through the read-only accessors
+ * of step T3 (D-CU2-17). Step T3 adds the fidelity validation of every model slice
+ * (V-REV-EXACT-4). The isolated slices are read reflectively.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -72,6 +74,8 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 			List<String> fingerprints = new ArrayList<>();
 			List<Boolean> exactCopies = new ArrayList<>();
 			fingerprints.add(fingerprint(app, o, "N"));
+			long valueChanges = o.getInstrumentation().getSliceChanges(
+					ReconstructionSliceFingerprint2D.Change.VALUES);
 			for (double value : new double[] {BITE, PENETRATION, BITE}) {
 				long revision = o.getSemanticRevision();
 				PreG9BCu0Corpus.setNumber(app, "excCyl", value);
@@ -84,9 +88,12 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 			values.put("revision_deltas", revisionDeltas);
 			values.put("fingerprints", fingerprints);
 			values.put("exact_copies", exactCopies);
+			values.put("value_changes", o.getInstrumentation().getSliceChanges(
+					ReconstructionSliceFingerprint2D.Change.VALUES) - valueChanges);
 			return values;
 		});
 		assertEquals(List.of(1L, 1L, 1L), row.get("revision_deltas"), row.toString());
+		assertEquals(3L, row.get("value_changes"), row.toString());
 		assertEquals(List.of(true, true, true), row.get("exact_copies"), row.toString());
 		List<?> fingerprints = (List<?>) row.get("fingerprints");
 		assertNotEquals(fingerprints.get(0), fingerprints.get(1), row.toString());
@@ -139,10 +146,11 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 					XMLStringBuilder xml = new XMLStringBuilder(new StringBuilder());
 					live.getXML(xml, false);
 					assertFalse(xml.toString().contains("permutation"), xml.toString());
-					AlgoElement copy = copy(locus, output.getLabelSimple())
-							.getParentAlgorithm();
-					int[] livePermutation = (int[]) field(live, "permutation");
-					int[] copyPermutation = (int[]) field(copy, "permutation");
+					AlgoIntersectLineConic copy = (AlgoIntersectLineConic) copy(locus,
+							output.getLabelSimple()).getParentAlgorithm();
+					int[] livePermutation = ((AlgoIntersectLineConic) live)
+							.getSelectionPermutation();
+					int[] copyPermutation = copy.getSelectionPermutation();
 					assertArrayEquals(livePermutation, copyPermutation,
 							label + " " + output.getLabelSimple());
 					states.put(output.getLabelSimple(), Arrays.toString(livePermutation));
@@ -152,6 +160,43 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 			return values;
 		});
 		assertTrue(row.toString().contains("[1, 0]"), row.toString());
+	}
+
+	/**
+	 * V-REV-EXACT-4 on the complete author model: the slice of every locus, including the
+	 * nested composition of {@code e_2}, is validated and faithful, with no failure.
+	 */
+	@Test
+	void everySliceOfTheCompleteModelIsReconstructedFaithfully() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			Map<String, Object> values = new LinkedHashMap<>();
+			for (String label : List.of("o", "v", "w", "a_1", "e_1", "o_1", "e_2")) {
+				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+				AlgoDependentPointLocusV2 parent =
+						(AlgoDependentPointLocusV2) locus.getParentAlgorithm();
+				ReconstructibleLocusEvaluator2D evaluator = (ReconstructibleLocusEvaluator2D)
+						field(parent, "evaluator");
+				Map<String, Object> state = new LinkedHashMap<>();
+				state.put("report", evaluator.getFidelityReport().toString());
+				state.put("failures", locus.getInstrumentation().getCertificationWork(
+						LocusCertificationWork2D.FIDELITY_FAILURE));
+				for (ReconstructionSliceFingerprint2D.Change change
+						: ReconstructionSliceFingerprint2D.Change.values()) {
+					state.put(change.name(), locus.getInstrumentation()
+							.getSliceChanges(change));
+				}
+				state.put("revision", locus.getSemanticRevision());
+				values.put(label, state);
+			}
+			return values;
+		});
+		for (Object value : row.values()) {
+			Map<?, ?> state = (Map<?, ?>) value;
+			assertTrue(state.get("report").toString().startsWith("faithful"), row.toString());
+			assertEquals(0L, state.get("failures"), row.toString());
+		}
 	}
 
 	private static Map<String, Object> compareIndependentInputs(AppGeoCeDG app,

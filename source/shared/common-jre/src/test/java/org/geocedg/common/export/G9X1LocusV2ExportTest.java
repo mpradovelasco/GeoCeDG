@@ -221,15 +221,24 @@ class G9X1LocusV2ExportTest extends BaseUnitTest {
 
 	@Test
 	void l09LocusRevisionChangeInvalidatesPreflight() { // X1-L09
-		GeoLocusV2 locus = createLocus("(s,0)",
+		// PRE-G9B-CU2 declared conformance (strategy section 5.5): moving only the driver
+		// keeps the revision (CU1 A1.1-R, CU2 gate GC-1); the revision change comes from a
+		// non-driver input. The base passed here through a representation artifact of the
+		// v1 fingerprint.
+		add("k=0");
+		GeoLocusV2 locus = createLocus("(s,k)",
 				"{false,{-2,2,true,true}}");
-		GeometryExportPreflight preflight = preflight(locus, request());
 		long revision = locus.getSemanticRevision();
 		GeoNumeric driver = (GeoNumeric) lookup("s");
-		assertTrue(preflight.isSourceRevisionCurrent());
-
 		driver.setValue(0.75);
 		driver.updateCascade();
+		assertEquals(revision, locus.getSemanticRevision());
+
+		GeometryExportPreflight preflight = preflight(locus, request());
+		assertTrue(preflight.isSourceRevisionCurrent());
+		GeoNumeric input = (GeoNumeric) lookup("k");
+		input.setValue(0.25);
+		input.updateCascade();
 
 		assertTrue(locus.getSemanticRevision() > revision);
 		assertFalse(preflight.isSourceRevisionCurrent());

@@ -100,6 +100,35 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 		return Commands.Intersect;
 	}
 
+	/**
+	 * GeoCeDG PRE-G9B-CU2 (D-CU2-17): read-only access to the selection state, for the
+	 * revision fingerprint and the fidelity validation of a reconstructed slice.
+	 *
+	 * @return copy of the permutation from raw roots to output points, or null before
+	 *         it is initialized
+	 */
+	public int[] getSelectionPermutation() {
+		return permutation == null ? null : permutation.clone();
+	}
+
+	/**
+	 * GeoCeDG PRE-G9B-CU2 (D-CU2-17): read-only access to the selection state.
+	 *
+	 * @return whether the first intersection is still to be established
+	 */
+	public boolean isSelectionFirstIntersectionPending() {
+		return firstIntersection;
+	}
+
+	/**
+	 * GeoCeDG PRE-G9B-CU2 (D-CU2-17): read-only access to the selection state.
+	 *
+	 * @return whether the next computation initializes the permutation again
+	 */
+	public boolean isSelectionPermutationPending() {
+		return isPermutationNeeded;
+	}
+
 	@Override
 	public int getRelatedModeID() {
 		return EuclidianConstants.MODE_INTERSECT;

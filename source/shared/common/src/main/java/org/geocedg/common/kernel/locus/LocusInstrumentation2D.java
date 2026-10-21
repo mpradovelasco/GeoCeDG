@@ -45,6 +45,8 @@ public final class LocusInstrumentation2D {
 			new EnumMap<>(LocusCertificationWork2D.class);
 	private final EnumMap<LocusCertificationWork2D, Long> nestedCertificationWork =
 			new EnumMap<>(LocusCertificationWork2D.class);
+	private final EnumMap<ReconstructionSliceFingerprint2D.Change, Long> sliceChanges =
+			new EnumMap<>(ReconstructionSliceFingerprint2D.Change.class);
 
 	/** Records one semantic evaluator invocation for a locus identity. */
 	public void recordEvaluatorCall(String locusIdentity) {
@@ -213,6 +215,20 @@ public final class LocusInstrumentation2D {
 		}
 	}
 
+	/**
+	 * Records the typed cause of one slice rebuild: the first changed part of the exact
+	 * slice snapshot (PRE-G9B-CU2, D-CU2-18 and D-CU2-20-R).
+	 */
+	public void recordSliceChange(ReconstructionSliceFingerprint2D.Change change) {
+		sliceChanges.merge(change, 1L, Long::sum);
+	}
+
+	/** @return slice rebuilds caused by a change of the given snapshot part */
+	public long getSliceChanges(ReconstructionSliceFingerprint2D.Change change) {
+		Long count = sliceChanges.get(change);
+		return count == null ? 0 : count;
+	}
+
 	/** @return certification or revision work recorded by this locus */
 	public long getCertificationWork(LocusCertificationWork2D kind) {
 		Long count = certificationWork.get(kind);
@@ -326,5 +342,6 @@ public final class LocusInstrumentation2D {
 		evaluatorCallsByLocus.clear();
 		certificationWork.clear();
 		nestedCertificationWork.clear();
+		sliceChanges.clear();
 	}
 }

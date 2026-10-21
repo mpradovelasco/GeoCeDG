@@ -5,9 +5,11 @@
 
 package org.geocedg.common.kernel.locus;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -74,6 +76,10 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private final GeoElement isolatedSupport;
 	private final double[][] certifiedAffineCoefficients;
 	private final long sliceScope = LocusEvaluationSession2D.newSliceScope();
+	private final List<GeoElement> liveSlice = new ArrayList<>();
+	private final List<GeoElement> liveDriverRoots = new ArrayList<>();
+	private final LocusInstrumentation2D fidelityOwner;
+	private ReconstructionFidelity2D.Report fidelity;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -140,6 +146,14 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					"Could not reconstruct the durable Locus V2 evaluator slice",
 					exception);
 		}
+		for (ConstructionElement element : elements) {
+			if (element instanceof GeoElement) {
+				liveSlice.add((GeoElement) element);
+			}
+		}
+		liveDriverRoots.add(originals.get(descriptor.getStateId()));
+		liveDriverRoots.add(originals.get(descriptor.getCoordinateId()));
+		fidelityOwner = nestedWorkOwner;
 		isolatedConstruction = macroKernel.getConstruction();
 		SpatialIdentityRegistry isolatedRegistry = isolatedConstruction
 				.getSpatialIdentityRegistry();
@@ -170,6 +184,20 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			}
 		}
 		resetExternalState();
+		fidelity = validateFidelity();
+	}
+
+	/**
+	 * @return whether the slice copy reproduces every authoritative input it reads
+	 *         (PRE-G9B-CU2, D-CU2-20-R)
+	 */
+	public synchronized boolean isReconstructionFaithful() {
+		return fidelity.isFaithful();
+	}
+
+	/** @return report of the last fidelity validation of the slice copy */
+	public synchronized ReconstructionFidelity2D.Report getFidelityReport() {
+		return fidelity;
 	}
 
 	/**
@@ -183,6 +211,11 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	public synchronized LocusEvaluation2D evaluate(LocusDefinition2D definition,
 			LocusBranch2D branch, double canonicalParameter,
 			LocusEvaluationSession2D session) {
+		if (!fidelity.isFaithful()) {
+			return LocusEvaluation2D.invalid(
+					LocusSemanticMetadata2D.EvaluationStatus.EVALUATION_FAILED, QUALITY,
+					"RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED: " + fidelity);
+		}
 		try {
 			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope,
 					() -> applyCoordinate(canonicalParameter));
@@ -209,7 +242,9 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	public String getEvaluatorSignature() {
 		return "reconstructible-construction-slice/v1|"
 				+ descriptor.getSemanticSignature() + "|affine="
-				+ getCertifiedAffineSignature();
+				+ getCertifiedAffineSignature() + "|fidelity="
+				+ ReconstructionFidelity2D.VERSION + ":"
+				+ (fidelity.isFaithful() ? "faithful" : "unfaithful");
 	}
 
 	@Override
@@ -255,7 +290,11 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			captureCertifiedProgram() {
 		try {
 			resetExternalState();
+			fidelity = validateFidelity();
 		} catch (RuntimeException exception) {
+			return Optional.empty();
+		}
+		if (!fidelity.isFaithful()) {
 			return Optional.empty();
 		}
 		return CertifiedConstructionCapture2D.capture(descriptor,
@@ -329,6 +368,26 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		default:
 			throw new IllegalStateException("Unsupported semantic generator family");
 		}
+	}
+
+	/**
+	 * Validates the copy against the live slice, restores the admitted discrepancies and
+	 * counts the work (PRE-G9B-CU2, D-CU2-20-R).
+	 */
+	private ReconstructionFidelity2D.Report validateFidelity() {
+		ReconstructionFidelity2D.Report report = ReconstructionFidelity2D.validate(
+				liveSlice, isolatedConstruction, liveDriverRoots, true);
+		if (fidelityOwner != null) {
+			fidelityOwner.recordCertificationWork(
+					LocusCertificationWork2D.FIDELITY_VALIDATION);
+			fidelityOwner.recordCertificationWork(
+					LocusCertificationWork2D.FIDELITY_RESTORATION, report.getRestorations());
+			if (!report.isFaithful()) {
+				fidelityOwner.recordCertificationWork(
+						LocusCertificationWork2D.FIDELITY_FAILURE);
+			}
+		}
+		return report;
 	}
 
 	private void resetExternalState() {

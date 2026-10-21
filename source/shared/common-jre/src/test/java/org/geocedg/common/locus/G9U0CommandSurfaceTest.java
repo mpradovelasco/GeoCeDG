@@ -186,12 +186,21 @@ class G9U0CommandSurfaceTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void c14BranchTopologyUpdatePreservesDurableOutputIdentity() {
-		GeoLocusV2 locus = createDisconnectedLine();
+		// PRE-G9B-CU2 declared conformance (strategy section 5.5): moving only the driver
+		// keeps the revision (CU1 A1.1-R, CU2 gate GC-1); the republication comes from a
+		// non-driver input. The base passed here through a representation artifact of the
+		// v1 fingerprint.
+		add("k=0");
+		GeoLocusV2 locus = createScalarLocus("L", "s", "Q", "(s,k)",
+				"{false,{-2,-1,true,true},{1,2,true,true}}");
 		Object persistent = getConstruction().getSpatialIdentityRegistry()
 				.getPersistentGeoId(locus);
 		long revision = locus.getSemanticRevision();
 		((GeoNumeric) requireLookup("s")).setValue(1.5);
 		requireLookup("s").updateCascade();
+		assertEquals(revision, locus.getSemanticRevision());
+		((GeoNumeric) requireLookup("k")).setValue(0.5);
+		requireLookup("k").updateCascade();
 		assertTrue(locus.getSemanticRevision() > revision);
 		assertEquals(persistent, getConstruction().getSpatialIdentityRegistry()
 				.getPersistentGeoId(locus));

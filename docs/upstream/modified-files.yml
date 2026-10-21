@@ -6638,6 +6638,36 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T2: arcs crossing the seam, full-length open arcs, the single closure query, point components at an interior root and at the seam, exploratory evidence, typed causes and the compatibility certificate without legacy change (V-ARC-2, V-LVL-2, V-POINT-1).",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoIntersectLineConic.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-CU2 (D-CU2-17): read-only accessors of the selection state (copy of the permutation, first-intersection and permutation-pending flags) for the exact revision fingerprint and the fidelity validation of reconstructed slices; no behaviour change and no write of the selection state.",
+      "authority": "docs/validation/pre_g9b_cu2_author_architecture_approval_record.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoIntersectSingle.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-CU2 (D-CU2-17): read-only accessors of the selected output index and of the source intersection, for the exact revision fingerprint and the fidelity validation of reconstructed slices; no behaviour change.",
+      "authority": "docs/validation/pre_g9b_cu2_author_architecture_approval_record.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructionExactState2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3 (D-CU2-20-R): exact, representation-independent state of slice inputs (binary64 bits, literals in tree order, unlabelled inputs, driver-dependent closure) shared by the fingerprint and the fidelity validation.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/ReconstructionFidelity2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3 (D-CU2-20-R): validation of a reconstructed slice against its live inputs, bit for bit, with admitted live-to-copy restoration and explicit failure; selection and label states are never written.",
+      "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2RevisionExactnessTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T3: admitted restorations, reopening with the characterized precision loss, undo and redo, reproducibility, propagation and extreme values, and typed rebuild causes (V-REV-EXACT-4, V-REV-EXACT-7 to V-REV-EXACT-10).",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

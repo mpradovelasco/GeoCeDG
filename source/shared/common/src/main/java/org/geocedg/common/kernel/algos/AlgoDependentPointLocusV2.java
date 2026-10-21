@@ -64,6 +64,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private SemanticGeneratorDomainProvider1D provider;
 	private ReconstructibleLocusEvaluator2D evaluator;
 	private String sliceFingerprint;
+	private ReconstructionSliceFingerprint2D.Snapshot sliceSnapshot;
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -142,8 +143,9 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				EvaluationMethod.DETERMINISTIC_NUMERIC_DEPENDENCY,
 				RepresentationRole.SEMANTIC_RESULT,
 				NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
-		LocusExistenceStructure2D existence =
-				SelectedRootContinuousDomainCertifier2D.certify(descriptor,
+		LocusExistenceStructure2D existence = !evaluator.isReconstructionFaithful()
+				? unfaithfulReconstruction()
+				: SelectedRootContinuousDomainCertifier2D.certify(descriptor,
 						dependentPoint, state, support).orElseGet(() ->
 						fallbackExistenceStructure());
 		LocusBranch2D branch = new LocusBranch2D(
@@ -162,6 +164,22 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	@Override
 	public Commands getClassName() {
 		return Commands.LocusV2;
+	}
+
+	/**
+	 * A slice whose copy does not reproduce its authoritative inputs certifies nothing and
+	 * its evaluations fail explicitly (PRE-G9B-CU2, D-CU2-20-R).
+	 */
+	private LocusExistenceStructure2D unfaithfulReconstruction() {
+		return LocusExistenceStructure2D.notEstablished(
+				SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+				descriptor.getDeclaredDomain(),
+				LocusExistenceStructure2D.topologyOf(descriptor.getDeclaredDomain(),
+						descriptor.isPeriodic()),
+				evaluator.getFidelityReport().isSelectionOnly()
+						? LocusCoverageCause2D.SELECTION_NOT_REPRODUCED
+						: LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
+				"reconstruction-fidelity-not-established");
 	}
 
 	private LocusExistenceStructure2D fallbackExistenceStructure() {
@@ -245,23 +263,27 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private void synchronizeEvaluatorWithCurrentSlice() {
 		SemanticGeneratorDescriptor1D candidate = currentDescriptor();
 		List<GeoElement> slice = getReconstructionSliceGeos();
-		String fingerprint = ReconstructionSliceFingerprint2D.compute(slice,
-				java.util.Arrays.asList(state, coordinate));
+		ReconstructionSliceFingerprint2D.Snapshot snapshot =
+				ReconstructionSliceFingerprint2D.snapshot(slice,
+						java.util.Arrays.asList(state, coordinate));
 		getLocus().getInstrumentation().recordCertificationWork(
 				LocusCertificationWork2D.FINGERPRINT_COMPUTATION);
 		if (evaluator != null && descriptor != null
 				&& candidate.getSemanticSignature()
 						.equals(descriptor.getSemanticSignature())
-				&& fingerprint.equals(sliceFingerprint)) {
+				&& snapshot.getDigest().equals(sliceFingerprint)) {
 			return;
 		}
 		ReconstructibleLocusEvaluator2D rebuilt =
 				new ReconstructibleLocusEvaluator2D(cons, candidate, slice,
 						getLocus().getInstrumentation());
+		getLocus().getInstrumentation().recordSliceChange(
+				snapshot.changeFrom(sliceSnapshot));
 		descriptor = candidate;
 		provider = new SemanticGeneratorDomainProvider1D(candidate);
 		evaluator = rebuilt;
-		sliceFingerprint = fingerprint;
+		sliceFingerprint = snapshot.getDigest();
+		sliceSnapshot = snapshot;
 		getLocus().getInstrumentation().recordSliceBuild();
 	}
 

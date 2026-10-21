@@ -162,6 +162,24 @@ public class AlgoIntersectSingle extends AlgoIntersect implements
 		return Commands.Intersect;
 	}
 
+	/**
+	 * GeoCeDG PRE-G9B-CU2 (D-CU2-17): read-only access to the selection state.
+	 *
+	 * @return index of the selected output of the source intersection
+	 */
+	public int getSelectedIndex() {
+		return idx;
+	}
+
+	/**
+	 * GeoCeDG PRE-G9B-CU2 (D-CU2-17): read-only access to the selection state.
+	 *
+	 * @return source intersection whose output this algorithm selects
+	 */
+	public AlgoIntersect getSourceIntersection() {
+		return algo;
+	}
+
 	@Override
 	public int getRelatedModeID() {
 		return EuclidianConstants.MODE_INTERSECT;
