@@ -6806,6 +6806,30 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): polynomials in cos t and sin t with exact coefficients and their tangent half-angle form.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSingularParameter2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: certified singular parameter of an existence structure, an even-multiplicity zero of a validity predicate that is nonnegative on both sides, interior to a component of positive length, with its enclosure, structural source, multiplicity and certifying nature.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/FirstLevelPredicate2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: exact polynomial form of a first-level validity predicate over a circle or segment driver, mirroring the formulas of the class-v3 box model with the captured binary64 constants as exact rationals, for the exact algebraic certificate.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/HybridExistenceCertifier2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: hybrid existence certifier (locus-existence/hybrid/v1) with its versioned policy: structural totality, exact certificate of first-level predicates, interval transitions and stationary points on a dyadic partition that wraps the seam, typed unresolved bands with exploratory evidence, and assembly of arcs, point components and singular parameters.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2HybridCertificationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 step T4: hybrid certifier on synthetic constructions (V-TOT-1, V-PER-1, V-CRIT-1 to V-CRIT-6, V-CRIT-10, V-TR-2, V-POINT-1, V-POINT-2, V-POINT-4, V-POINT-6, V-COINC-1, V-COINC-2, V-COINC-4, V-COINC-5, V-COINC-7, V-LVL-1, V-LVL-3, V-COMPL-1, V-V3-3, V-V3-4, GC-4, GC-8), with the soundness of the centred form against a 60-digit reference.",
+      "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     }
   ]
 }

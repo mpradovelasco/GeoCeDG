@@ -26,6 +26,8 @@ public enum LocusCoverageCause2D {
 	PROVIDER_COMPLEMENT(CoverageState.CERTIFIED_DOES_NOT_EXIST),
 	/** Existence holds at isolated parameters only, as point components. */
 	ISOLATED_EVEN_ROOT(CoverageState.CERTIFIED_ISOLATED_POINTS),
+	/** The interval is the certified enclosure of one root that bounds a component. */
+	CERTIFIED_BOUNDARY_ENCLOSURE(CoverageState.CERTIFIED_BOUNDARY),
 	/** A versioned work budget was exhausted. */
 	BUDGET_EXHAUSTED(CoverageState.UNRESOLVED),
 	/** An operation of the slice is outside the certified construction class. */

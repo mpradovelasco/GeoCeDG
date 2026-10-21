@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.locus;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -12,6 +13,12 @@ import java.util.Objects;
  * 15.2 and 15.3): its kind, its structural source, whether the end belongs to the
  * component, and the nature of its proof. End inclusion follows the semantics of the
  * boundary predicate, never pointwise evaluation.
+ *
+ * <p>The exact end of a certified transition or event is in general not a binary64 value.
+ * Such an end carries a certified enclosure of its parameter; {@link #isIncluded()} then
+ * states the inclusion of the exact end, and the binary64 end of the component is the
+ * closed inner bound of the enclosure, its safe interior (section 7: an enclosure is never
+ * rounded into an invalid region).</p>
  */
 public final class LocusBoundary2D {
 	/** Kind of a component end. */
@@ -37,6 +44,7 @@ public final class LocusBoundary2D {
 	private final LocusBoundarySource2D source;
 	private final boolean included;
 	private final LocusEvidenceNature2D nature;
+	private final double[] enclosure;
 
 	/**
 	 * @param kind kind of the end
@@ -46,13 +54,48 @@ public final class LocusBoundary2D {
 	 */
 	public LocusBoundary2D(Kind kind, LocusBoundarySource2D source, boolean included,
 			LocusEvidenceNature2D nature) {
+		this(kind, source, included, nature, null);
+	}
+
+	private LocusBoundary2D(Kind kind, LocusBoundarySource2D source, boolean included,
+			LocusEvidenceNature2D nature, double[] enclosure) {
 		this.kind = Objects.requireNonNull(kind);
 		this.source = Objects.requireNonNull(source);
 		this.included = included;
 		this.nature = Objects.requireNonNull(nature);
+		this.enclosure = enclosure;
 		if (kind == Kind.PERIODIC_CLOSURE && !included) {
 			throw new IllegalArgumentException("A periodic closure belongs to its component");
 		}
+	}
+
+	/**
+	 * Creates the end of a component at a certified root whose parameter is enclosed.
+	 *
+	 * @param kind {@link Kind#CERTIFIED_TRANSITION} or {@link Kind#STRUCTURAL_EVENT}
+	 * @param source structural source of the root
+	 * @param included whether the exact root belongs to the component
+	 * @param nature certifying nature of the proof of the root
+	 * @param parameterLower lower bound of the certified enclosure of the root
+	 * @param parameterUpper upper bound of the certified enclosure of the root, above the
+	 *        lower bound
+	 * @return enclosed end
+	 */
+	public static LocusBoundary2D enclosed(Kind kind, LocusBoundarySource2D source,
+			boolean included, LocusEvidenceNature2D nature, double parameterLower,
+			double parameterUpper) {
+		if (kind != Kind.CERTIFIED_TRANSITION && kind != Kind.STRUCTURAL_EVENT) {
+			throw new IllegalArgumentException("Only a certified root has an enclosure");
+		}
+		if (!nature.certifies()) {
+			throw new IllegalArgumentException("An enclosed root needs a certifying proof");
+		}
+		if (!Double.isFinite(parameterLower) || !Double.isFinite(parameterUpper)
+				|| !(parameterLower < parameterUpper)) {
+			throw new IllegalArgumentException("Invalid enclosure of a root parameter");
+		}
+		return new LocusBoundary2D(kind, source, included, nature,
+				new double[] {parameterLower, parameterUpper});
 	}
 
 	/** @return untyped end recorded by a pre-CU2 certifier */
@@ -81,10 +124,36 @@ public final class LocusBoundary2D {
 		return nature;
 	}
 
+	/** @return whether the end is a certified root with an enclosed parameter */
+	public boolean hasEnclosure() {
+		return enclosure != null;
+	}
+
+	/** @return lower bound of the enclosure of the root, or {@code NaN} without one */
+	public double getEnclosureLower() {
+		return enclosure == null ? Double.NaN : enclosure[0];
+	}
+
+	/** @return upper bound of the enclosure of the root, or {@code NaN} without one */
+	public double getEnclosureUpper() {
+		return enclosure == null ? Double.NaN : enclosure[1];
+	}
+
+	/**
+	 * @return whether the binary64 end of the component belongs to it: the safe inner end
+	 *         of an enclosed root always does; otherwise the end inclusion decides
+	 */
+	public boolean isBinaryEndIncluded() {
+		return enclosure != null || included;
+	}
+
 	/** @return canonical text of the end */
 	public String getSignature() {
-		return kind + ":" + source.getSignature() + ":" + (included ? "closed" : "open")
-				+ ":" + nature;
+		String signature = kind + ":" + source.getSignature() + ":"
+				+ (included ? "closed" : "open") + ":" + nature;
+		return enclosure == null ? signature : signature + ":enclosure["
+				+ Double.toHexString(enclosure[0]) + "," + Double.toHexString(enclosure[1])
+				+ "]";
 	}
 
 	@Override
@@ -94,12 +163,14 @@ public final class LocusBoundary2D {
 		}
 		LocusBoundary2D boundary = (LocusBoundary2D) other;
 		return kind == boundary.kind && source.equals(boundary.source)
-				&& included == boundary.included && nature == boundary.nature;
+				&& included == boundary.included && nature == boundary.nature
+				&& Arrays.equals(enclosure, boundary.enclosure);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(kind, source, included, nature);
+		return Objects.hash(kind, source, included, nature)
+				+ 31 * Arrays.hashCode(enclosure);
 	}
 
 	@Override

@@ -12,13 +12,17 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
@@ -37,6 +41,8 @@ import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.intersection.SelectedRootContinuousDomainCertifier2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -65,6 +71,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private ReconstructibleLocusEvaluator2D evaluator;
 	private String sliceFingerprint;
 	private ReconstructionSliceFingerprint2D.Snapshot sliceSnapshot;
+	private ReconstructibleLocusEvaluator2D shadowEvaluator;
+	private HybridExistenceCertifier2D.Result shadowCertificate;
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -164,6 +172,69 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	@Override
 	public Commands getClassName() {
 		return Commands.LocusV2;
+	}
+
+	/**
+	 * Hybrid existence certificate of the current revision (contract
+	 * {@value HybridExistenceCertifier2D#CONTRACT}, ADR 0038), computed once per revision
+	 * and shared by every caller. It is kept in shadow: the published existence structure
+	 * stays the current one until step T11 of PRE-G9B-CU2 replaces it.
+	 *
+	 * @return certificate of the current revision, or {@code null} before the slice of the
+	 *         first revision is built
+	 */
+	public HybridExistenceCertifier2D.Result getHybridExistenceCertificate() {
+		ReconstructibleLocusEvaluator2D current = evaluator;
+		if (current == null || descriptor == null) {
+			return null;
+		}
+		if (shadowEvaluator != current) {
+			shadowCertificate = LocusCertificationScope2D.certify(
+					getLocus().getInstrumentation(), () -> hybridCertificate(current));
+			shadowEvaluator = current;
+		}
+		return shadowCertificate;
+	}
+
+	private HybridExistenceCertifier2D.Result hybridCertificate(
+			ReconstructibleLocusEvaluator2D current) {
+		LocusInterval2D domain = descriptor.getDeclaredDomain();
+		String key = SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY;
+		HybridExistenceCertifier2D.Policy policy = HybridExistenceCertifier2D.Policy.DEFAULT;
+		if (!current.isReconstructionFaithful()) {
+			// Evaluations of an unfaithful slice fail explicitly: nothing to explore.
+			return HybridExistenceCertifier2D.notEstablished(domain, descriptor.isPeriodic(),
+					key, current.getFidelityReport().isSelectionOnly()
+							? LocusCoverageCause2D.SELECTION_NOT_REPRODUCED
+							: LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
+					current.getProgramV3Refusal(), null, policy,
+					getLocus().getInstrumentation());
+		}
+		LocusDefinition2D definition = getLocus().getSemanticDefinition();
+		LocusBranch2D branch = definition == null
+				|| definition.getEvaluatorCapability() != current ? null
+						: definition.getBranch(key);
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
+			HybridExistenceCertifier2D.Sampler sampler = branch == null ? null
+					: parameter -> current.evaluate(definition, branch, parameter, session)
+							.isValid();
+			Optional<CertifiedConstructionProgram2D> program =
+					current.captureCertifiedProgramV3();
+			if (!program.isPresent()) {
+				String refusal = current.getProgramV3Refusal();
+				return HybridExistenceCertifier2D.notEstablished(domain,
+						descriptor.isPeriodic(), key, "unsettled-selection".equals(refusal)
+								? LocusCoverageCause2D.NOT_CERTIFIED
+								: LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
+						refusal == null ? "outside-class" : refusal, sampler, policy,
+						getLocus().getInstrumentation());
+			}
+			return HybridExistenceCertifier2D.certify(
+					new ConstructionBoxModel2D(program.get()), domain,
+					descriptor.isPeriodic(), key, sampler, policy,
+					getLocus().getInstrumentation());
+		}
 	}
 
 	/**

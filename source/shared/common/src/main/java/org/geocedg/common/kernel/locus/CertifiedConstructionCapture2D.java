@@ -78,6 +78,11 @@ import org.geogebra.common.util.MyMath;
  * refuses every shape outside the requested class.
  */
 final class CertifiedConstructionCapture2D {
+	/** Refusal of a program that exceeds its versioned step limit. */
+	static final String STEP_LIMIT = "step-limit-exceeded";
+	/** Refusal of a shape outside the requested class. */
+	static final String OUTSIDE_CLASS = "outside-class";
+
 	private final GeoElement state;
 	private final boolean classV3;
 	private final Scope top = new Scope(null, null);
@@ -109,32 +114,52 @@ final class CertifiedConstructionCapture2D {
 	static Optional<CertifiedConstructionProgram2D> capture(
 			SemanticGeneratorDescriptor1D descriptor, GeoElement dependentPoint,
 			GeoElement state, GeoElement support, double[][] affine, boolean classV3) {
+		return captureWithReason(descriptor, dependentPoint, state, support, affine,
+				classV3).getProgram();
+	}
+
+	/**
+	 * @param classV3 whether the class-v3 operations are admitted
+	 * @return program of the isolated slice, or the typed reason of its refusal:
+	 *         {@value #STEP_LIMIT} when the program exceeds its versioned step limit,
+	 *         {@value #OUTSIDE_CLASS} for a shape outside the class, or an unexpected shape
+	 */
+	static Outcome captureWithReason(SemanticGeneratorDescriptor1D descriptor,
+			GeoElement dependentPoint, GeoElement state, GeoElement support,
+			double[][] affine, boolean classV3) {
 		try {
 			LocusInterval2D domain = descriptor.getDeclaredDomain();
 			switch (descriptor.getFamily()) {
 			case SCALAR_STATE:
 				if (affine == null || descriptor.isPeriodic()) {
-					return Optional.empty();
+					return new Outcome(Optional.empty(), OUTSIDE_CLASS);
 				}
-				return Optional.of(new CertifiedConstructionProgram2D(
+				return new Outcome(Optional.of(new CertifiedConstructionProgram2D(
 						Driver.SCALAR_AFFINE, new double[] {affine[0][0], affine[0][1],
-								affine[1][0], affine[1][1]}, domain, List.of()));
+								affine[1][0], affine[1][1]}, domain, List.of())), null);
 			case CIRCLE_POINT:
-				return program(Driver.CIRCLE, circle(state, support, false), domain,
-						dependentPoint, state, classV3);
+				return captured(program(Driver.CIRCLE, circle(state, support, false), domain,
+						dependentPoint, state, classV3));
 			case CIRCULAR_ARC_POINT:
-				return program(Driver.CIRCULAR_ARC, circle(state, support, true),
-						domain, dependentPoint, state, classV3);
+				return captured(program(Driver.CIRCULAR_ARC, circle(state, support, true),
+						domain, dependentPoint, state, classV3));
 			case SEGMENT_POINT:
-				return program(Driver.SEGMENT, segment(state, support), domain,
-						dependentPoint, state, classV3);
+				return captured(program(Driver.SEGMENT, segment(state, support), domain,
+						dependentPoint, state, classV3));
 			default:
-				return Optional.empty();
+				return new Outcome(Optional.empty(), OUTSIDE_CLASS);
 			}
+		} catch (Refusal refusal) {
+			return new Outcome(Optional.empty(), refusal.reason);
 		} catch (RuntimeException exception) {
-			// Refusal, malformed programs and unexpected shapes all mean no program.
-			return Optional.empty();
+			// Malformed programs and unexpected shapes also mean no program.
+			return new Outcome(Optional.empty(),
+					"unexpected-shape:" + exception.getClass().getSimpleName());
 		}
+	}
+
+	private static Outcome captured(Optional<CertifiedConstructionProgram2D> program) {
+		return new Outcome(program, program.isPresent() ? null : OUTSIDE_CLASS);
 	}
 
 	private static Optional<CertifiedConstructionProgram2D> program(Driver driver,
@@ -251,7 +276,7 @@ final class CertifiedConstructionCapture2D {
 	private int add(Step step) {
 		if (steps.size() >= (classV3 ? CertifiedConstructionProgram2D.MAXIMUM_STEPS_V3
 				: CertifiedConstructionProgram2D.MAXIMUM_STEPS)) {
-			throw new Refusal();
+			throw new Refusal(STEP_LIMIT);
 		}
 		steps.add(step);
 		return steps.size();
@@ -1007,9 +1032,36 @@ final class CertifiedConstructionCapture2D {
 	/** Internal refusal of a shape outside the requested class; never escapes capture. */
 	private static final class Refusal extends RuntimeException {
 		private static final long serialVersionUID = 1L;
+		private final String reason;
 
 		private Refusal() {
+			this(OUTSIDE_CLASS);
+		}
+
+		private Refusal(String reason) {
 			super(null, null, false, false);
+			this.reason = reason;
+		}
+	}
+
+	/** Typed outcome of a capture: the program, or the reason of its refusal. */
+	static final class Outcome {
+		private final Optional<CertifiedConstructionProgram2D> program;
+		private final String refusal;
+
+		private Outcome(Optional<CertifiedConstructionProgram2D> program, String refusal) {
+			this.program = program;
+			this.refusal = refusal;
+		}
+
+		/** @return captured program, or empty when refused */
+		Optional<CertifiedConstructionProgram2D> getProgram() {
+			return program;
+		}
+
+		/** @return typed reason of a refusal, or {@code null} for a captured program */
+		String getRefusal() {
+			return refusal;
 		}
 	}
 }

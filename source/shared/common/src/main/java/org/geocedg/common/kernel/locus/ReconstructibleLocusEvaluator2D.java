@@ -82,6 +82,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private final LocusInstrumentation2D fidelityOwner;
 	private ReconstructionFidelity2D.Report fidelity;
 	private final Optional<CertifiedConstructionProgram2D> programV3;
+	private String programV3Refusal;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -322,14 +323,32 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		return programV3;
 	}
 
+	/**
+	 * @return typed reason why the revision has no class-v3 program
+	 *         ({@code reconstruction-fidelity-not-established}, {@code unsettled-selection},
+	 *         {@code step-limit-exceeded}, {@code outside-class} or an unexpected shape), or
+	 *         {@code null} when it has one
+	 */
+	public synchronized String getProgramV3Refusal() {
+		return programV3Refusal;
+	}
+
 	/** Captures the class-v3 program of the freshly validated slice; never throws. */
 	private Optional<CertifiedConstructionProgram2D> captureV3() {
-		if (!fidelity.isFaithful() || !fidelity.getUnsettledSelections().isEmpty()) {
+		if (!fidelity.isFaithful()) {
+			programV3Refusal = "reconstruction-fidelity-not-established";
 			return Optional.empty();
 		}
-		return CertifiedConstructionCapture2D.capture(descriptor,
-				isolatedDependentPoint.toGeoElement(), isolatedState, isolatedSupport,
-				certifiedAffineCoefficients, true);
+		if (!fidelity.getUnsettledSelections().isEmpty()) {
+			programV3Refusal = "unsettled-selection";
+			return Optional.empty();
+		}
+		CertifiedConstructionCapture2D.Outcome outcome =
+				CertifiedConstructionCapture2D.captureWithReason(descriptor,
+						isolatedDependentPoint.toGeoElement(), isolatedState, isolatedSupport,
+						certifiedAffineCoefficients, true);
+		programV3Refusal = outcome.getRefusal();
+		return outcome.getProgram();
 	}
 
 	private double[][] directScalarAffineCertificate() {

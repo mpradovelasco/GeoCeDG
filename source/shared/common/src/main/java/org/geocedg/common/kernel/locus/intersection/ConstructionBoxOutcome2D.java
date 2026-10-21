@@ -115,8 +115,13 @@ public final class ConstructionBoxOutcome2D {
 	/** Node of the deciding step, {@code 1} for the first step; {@code -1} when none. */
 	final int step;
 	final ConstructionValidityPredicate2D predicate;
+	/** Index of the deciding predicate within its step (box model addressing). */
+	final int index;
 	final String detail;
-	/** Enclosure of the output point and of its derivative, for a valid box. */
+	/**
+	 * Enclosure of the output point and of its derivative, for a valid box; {@code null}
+	 * when an assumed predicate leaves the value unbounded, or the derivative unevaluated.
+	 */
 	final SplineOutwardInterval2D[] value;
 	final SplineOutwardInterval2D[] derivative;
 	/** Raw root selected by each intersection output, for a valid box. */
@@ -124,13 +129,14 @@ public final class ConstructionBoxOutcome2D {
 	final List<PredicateEvaluation> evaluations;
 
 	private ConstructionBoxOutcome2D(Kind kind, Unresolved unresolved, int step,
-			ConstructionValidityPredicate2D predicate, String detail,
+			ConstructionValidityPredicate2D predicate, int index, String detail,
 			SplineOutwardInterval2D[] value, SplineOutwardInterval2D[] derivative,
 			String selection, List<PredicateEvaluation> evaluations) {
 		this.kind = kind;
 		this.unresolved = unresolved;
 		this.step = step;
 		this.predicate = predicate;
+		this.index = index;
 		this.detail = detail;
 		this.value = value;
 		this.derivative = derivative;
@@ -141,22 +147,34 @@ public final class ConstructionBoxOutcome2D {
 	static ConstructionBoxOutcome2D valid(SplineOutwardInterval2D[] value,
 			SplineOutwardInterval2D[] derivative, String selection,
 			List<PredicateEvaluation> evaluations) {
-		return new ConstructionBoxOutcome2D(Kind.VALID, null, -1, null, "", value,
+		return new ConstructionBoxOutcome2D(Kind.VALID, null, -1, null, -1, "", value,
 				derivative, selection, evaluations);
 	}
 
 	static ConstructionBoxOutcome2D invalid(int step,
-			ConstructionValidityPredicate2D predicate, String detail,
+			ConstructionValidityPredicate2D predicate, int index, String detail,
 			List<PredicateEvaluation> evaluations) {
 		return new ConstructionBoxOutcome2D(Kind.UNIFORMLY_INVALID, null, step, predicate,
-				detail, null, null, "", evaluations);
+				index, detail, null, null, "", evaluations);
 	}
 
 	static ConstructionBoxOutcome2D unresolved(Unresolved reason, int step,
 			ConstructionValidityPredicate2D predicate, String detail,
 			List<PredicateEvaluation> evaluations) {
+		return unresolved(reason, step, predicate, -1, detail, evaluations);
+	}
+
+	static ConstructionBoxOutcome2D unresolved(Unresolved reason, int step,
+			ConstructionValidityPredicate2D predicate, int index, String detail,
+			List<PredicateEvaluation> evaluations) {
 		return new ConstructionBoxOutcome2D(Kind.UNRESOLVED, reason, step, predicate,
-				detail, null, null, "", evaluations);
+				index, detail, null, null, "", evaluations);
+	}
+
+	/** @return target of the deciding predicate, or {@code null} for a valid box */
+	ConstructionBoxModel2D.Target getTarget() {
+		return predicate == null ? null
+				: new ConstructionBoxModel2D.Target(step, predicate, index);
 	}
 
 	/** @return outcome of the box */

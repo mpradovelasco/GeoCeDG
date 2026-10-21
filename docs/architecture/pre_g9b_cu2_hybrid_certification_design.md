@@ -490,6 +490,64 @@ configuración redondeada (análisis §3.8.3). El certificado prueba la existenc
 raíz y su multiplicidad; que la **salida** que define el punto trazado esté realmente definida en
 ella es otra cuestión (§4.7).
 
+**Precisiones de la implementación (T4, 2026-10-21).** Certificador
+`HybridExistenceCertifier2D`, contrato `locus-existence/hybrid/v1`. Ninguna precisión cambia las
+reglas aprobadas:
+
+- **Política versionada** `hybrid-existence-policy/v1`, dentro de los rangos de D-CU2-5: corchete
+  de anchura `δ = 2⁻⁴⁰` periodos (unos 5,7·10⁻¹² en el círculo); 4 096 cajas por rama y revisión,
+  incluidas las cajas puntuales del estrechamiento; profundidad mínima 6 (64 celdas); el interior
+  de una banda se refina solo hasta la profundidad 8; presupuesto exacto de 4 096 bits y 512
+  bisecciones por raíz; evidencia exploratoria de 32 muestras por banda con 24 bisecciones por
+  transición muestreada.
+- **Partición.** Diádica sobre el dominio canónico. Con conductor circular, una celda de costura
+  `[Math.PI, nextUp(Math.PI)]`, sin ningún parámetro canónico interior, cubre el hueco binary64 del
+  dominio en la costura, de modo que las celdas cubren el círculo real entero y la continuidad en
+  la costura se certifica como en cualquier otro punto (§4.4). Solo se refinan las celdas sin
+  decidir vecinas de una celda certificada: el borde de una banda se localiza sin subdividir su
+  interior.
+- **Forma centrada.** La evaluación certificadora decide cada predicado, cada tolerancia heredada y
+  la banda de una segunda salida sin etiqueta con la intersección de la envolvente ordinaria y la
+  forma centrada `F(m) + F′(caja)·[−r, r]`: el teorema del valor medio sobre la misma fórmula y la
+  misma rama, que conserva la cota rigurosa y elimina la sobreestimación por cancelación. El borde
+  de la banda de `R2` pasó de unas 2 800 cajas a unas 240. Las demás consultas del modelo de cajas
+  no cambian, y las envolventes de las clases v1 y v2 siguen siendo idénticas bit a bit.
+- **Raíces.** Un predicado de primer nivel se clasifica una sola vez por revisión, cuando una celda
+  lo deja sin decidir: sus huecos negativos son no existencia exacta, en los positivos el
+  predicado se supone cierto, y cada envolvente de raíz es una celda propia que decide su tipo
+  (transición, parámetro singular interior o componente puntual) evaluando el resto del programa
+  con el predicado supuesto. Un predicado de desigualdad estricta que no es de primer nivel se
+  decide por monotonía (cambio de signo con `P′` que excluye el cero, estrechado por bisección
+  sobre cajas puntuales hasta `δ`) o por un punto estacionario aislado con `P″`; una raíz múltiple
+  de esos predicados queda en banda.
+- **Predicados de igualdad.** Nunca se suponen ciertos, porque alrededor de su raíz rige la
+  tolerancia heredada de definición (finitud de `GeoPoint.updateCoords`, definición de recta,
+  radio mínimo), que una caja no decide. Su raíz exacta, si el predicado es de primer nivel, se
+  registra como evento abierto dentro de la banda (V-TR-2, V-PER-3); un predicado de igualdad
+  idénticamente nulo es no existencia exacta.
+- **Representación de una frontera.** Una componente termina en el extremo interior, cerrado, de
+  la envolvente de la raíz que la limita: su interior seguro (`existence-components` §7). La
+  frontera lleva la envolvente y la inclusión del extremo exacto, y la envolvente se cubre con un
+  estado propio, `CERTIFIED_BOUNDARY`, que es la evidencia de frontera de `existence-components`
+  §5 y es compatible con `COMPLETE`; ningún extremo se redondea en silencio. Los parámetros
+  singulares forman parte de la estructura, con envolvente, fuente y multiplicidad, dentro de
+  existencia certificada.
+- **Selección por compactación.** El cambio de signo de la pertenencia de una raíz que una
+  compactación selecciona cambia la raíz seleccionada, no la existencia: no es una transición, y
+  su celda queda en banda.
+- **Fuentes.** La fuente de una raíz exacta es `root-k`, su orden canónico en el certificado
+  exacto, y distingue las raíces de un mismo predicado dentro de la revisión (V-POINT-2); la de
+  un extremo de componente es su lado. El linaje estructural entre revisiones es el paso T8.
+- **Certificado en sombra.** `AlgoDependentPointLocusV2.getHybridExistenceCertificate()` lo calcula
+  una vez por revisión, dentro de un ámbito de certificación (GC-6), y lo comparten todas las
+  consultas; mover el conductor no lo recalcula. La estructura publicada no cambia hasta T11. Sin
+  programa de clase v3 el certificado es `NOT_ESTABLISHED`, con la razón tipada de la captura
+  (`outside-class` o `step-limit-exceeded` con `OPERATION_OUTSIDE_CLASS`; `unsettled-selection`
+  con `NOT_CERTIFIED`) y evidencia exploratoria. Mientras rija H01, un locus sin revisión publicada
+  no tiene certificado (T11).
+- **Valor métrico.** Hasta T6, una caja que necesita el valor de una entrada métrica estructural
+  queda `UNRESOLVED` sin refinar.
+
 ### 4.7 Definición efectiva de las salidas en raíces coincidentes (C1)
 
 GeoGebra anula la segunda salida de una intersección cuando no tiene etiqueta y coincide con la
