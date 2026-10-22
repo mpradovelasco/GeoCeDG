@@ -32,7 +32,9 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -179,72 +181,30 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 	 * V-COINC-6 on the author model (matrix section 3.5c; corrective descendant T13-R2): the
 	 * labelled outputs {@code {Q, R}} of the model and an unlabelled second output
 	 * {@code R2 = Intersect(p, t2, 2)} of {@code t2 = Ray(P, N)}, traced by {@code lq},
-	 * {@code lr} and {@code lr2}, saved and reopened with the driver in the gap of the bite
-	 * at excCyl 3.7, capture their selection rule without a valid sample: the outputs are
-	 * undefined, the intersection stays in its first initialization, the copies reproduce it
-	 * or depart from it with a typed departure and need no settlement, the rule captured is the
-	 * compaction in raw order, and the certificates are those of the same document with the
-	 * driver at {@code t = -1}; reopened again, the same. At the last binary64 of penetration
-	 * there is no gap, and at the first binary64 of the bite the exact gap, 2.4e-8 wide, lies
-	 * inside the inherited tangency window (finding F-CU2-1): the labelled output exists at
-	 * {@code t_c}, so no driver starts there without intersection. An output undefined when it
-	 * is created cannot be labelled, so the variants are started in the gap by reopening.
+	 * {@code lr} and {@code lr2}, started with the driver where the traced output has no valid
+	 * sample: at the last binary64 of penetration, the first of the 201 drivers within 10^-8 of
+	 * {@code t_c} where the inherited rule suppresses R2; at the first binary64 of the bite,
+	 * {@code t_c}, where R2 is suppressed and the labelled outputs exist (finding F-CU2-1: the
+	 * exact gap, 2.4e-8 wide, lies inside the inherited tangency window); at excCyl 3.7,
+	 * {@code t_c}, inside the gap, where no output exists. Saved and reopened with the driver
+	 * there, and reopened again, both intersections stay in their first initialization, which
+	 * each copy reproduces with no settlement or leaves with a typed departure; the rule
+	 * captured is the compaction in raw order, the rule of the same document with the driver
+	 * at {@code t = -1} (the permutation [0, 1], both outputs labelled or both unlabelled) in
+	 * its other mode; the certificates are those of that document, bit for bit and durable
+	 * identities included. Created by command with the driver there in the model, the
+	 * unlabelled variant captures the same compaction, and the loci of the labelled outputs of
+	 * the model settle to their permutation; their certificates are the same up to the durable
+	 * identities of the new geos, named by their labels or algorithms.
 	 */
 	@Test
 	void theModelVariantsStartedInTheGapCaptureTheSameCertificates() throws Exception {
 		List<String> failures = PreG9BR6PlusF3Fixtures.onEdt(() -> {
 			List<String> problems = new ArrayList<>();
-			AppGeoCeDG bite = variants(BITE);
-			PreG9BCu0Corpus.movePathPoint(bite, "N", T_C);
-			if (!bite.getKernel().lookupLabel("Q").isDefined()) {
-				problems.add("excCyl=" + BITE + ": Q is undefined at t_c");
-			}
-			for (double excCyl : new double[] {3.7}) {
-				AppGeoCeDG app = variants(excCyl);
-				Map<String, String> reference = certificates(app);
-				PreG9BCu0Corpus.movePathPoint(app, "N", T_C);
-				for (String pass : List.of("started", "reopened")) {
-					app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work,
-							"gap-" + Double.toHexString(excCyl) + "-" + pass));
-					String context = "excCyl=" + excCyl + " " + pass + " in the gap";
-					if (app.getKernel().lookupLabel("Q").isDefined()
-							|| app.getKernel().lookupLabel("R2").isDefined()) {
-						problems.add(context + ": an output is defined in the gap");
-					}
-					if (!live(app).isSelectionFirstIntersectionPending()) {
-						problems.add(context + ": the live intersection left its first "
-								+ "initialization " + state(live(app)));
-					}
-					for (int variant = 0; variant < VARIANTS.size(); variant++) {
-						ReconstructibleLocusEvaluator2D evaluator = evaluator(
-								PreG9BCu0Corpus.locus(app, VARIANTS.get(variant)));
-						evaluator.captureCertifiedProgram();
-						if (!evaluator.isReconstructionFaithful()
-								|| !"not-needed".equals(evaluator.getSettlementOutcome()
-										.getToken())) {
-							problems.add(context + " " + VARIANTS.get(variant) + ": "
-									+ evaluator.getFidelityReport() + " "
-									+ evaluator.getSettlementOutcome());
-						}
-						if (variant < 2) {
-							String copyState = state((AlgoIntersectLineConic) copy(evaluator)
-									.lookupLabel("Q").getParentAlgorithm());
-							if (!copyState.equals(state(live(app)))
-									&& !("[0, 1]/false/false".equals(copyState)
-											&& List.of("Q").equals(evaluator.getFidelityReport()
-													.getDepartedSelections()))) {
-								problems.add(context + " " + VARIANTS.get(variant)
-										+ ": copy state " + copyState);
-							}
-						}
-					}
-					if (compaction(app) != 1) {
-						problems.add(context + ": the captured rule is not the compaction");
-					}
-					if (!reference.equals(certificates(app))) {
-						problems.add(context + ": certificates differ from the driver at t = -1 "
-								+ certificates(app) + " versus " + reference);
-					}
+			for (double excCyl : new double[] {PENETRATION, BITE, 3.7}) {
+				// Each configuration retires the embedded hosts it opened.
+				try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+					startedWithoutSample(excCyl, problems);
 				}
 			}
 			return problems;
@@ -252,55 +212,224 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 		assertEquals(List.of(), failures);
 	}
 
+	/** V-COINC-6 in one configuration of the model; records every problem. */
+	private void startedWithoutSample(double excCyl, List<String> problems) throws Exception {
+		AppGeoCeDG app = variants(excCyl);
+		Map<String, String> reference = certificates(app);
+		Map<String, String> named = new LinkedHashMap<>();
+		Map<String, String> rules = new LinkedHashMap<>();
+		for (String label : VARIANTS) {
+			named.put(label, PreG9BCu2AuthorModelSliceFidelityTest.named(reference.get(label),
+					app.getKernel().getConstruction()));
+			rules.put(label, evaluator(PreG9BCu0Corpus.locus(app, label))
+					.captureCertifiedProgramV3().orElseThrow().getSelectionSignature());
+		}
+		Map<String, String> permutations = new LinkedHashMap<>();
+		permutations.put("lq", "2LINE_CIRCLE[0x0.0p0,0x0.0p0,0x1.0p0,0x1.0p0,0x1.0p0];"
+				+ "3INTERSECTION_OUTPUT[0x0.0p0];");
+		permutations.put("lr", "2LINE_CIRCLE[0x0.0p0,0x0.0p0,0x1.0p0,0x1.0p0,0x1.0p0];"
+				+ "3INTERSECTION_OUTPUT[0x1.0p0];");
+		permutations.put("lr2", "2LINE_CIRCLE[0x0.0p0,0x0.0p0,0x1.0p0,0x0.0p0,0x0.0p0];"
+				+ "3INTERSECTION_OUTPUT[0x1.0p0];");
+		if (!permutations.equals(rules)) {
+			problems.add("excCyl=" + excCyl + ": rules at t = -1 " + rules);
+			return;
+		}
+		double start = T_C;
+		if (excCyl == PENETRATION) {
+			start = Double.NaN;
+			for (int index = -100; index <= 100 && Double.isNaN(start); index++) {
+				PreG9BCu0Corpus.movePathPoint(app, "N", T_C + index * 1e-10);
+				if (!app.getKernel().lookupLabel("R2").isDefined()) {
+					start = T_C + index * 1e-10;
+				}
+			}
+			if (Double.isNaN(start)) {
+				problems.add("excCyl=" + excCyl + ": R2 is defined at the 201 drivers");
+				return;
+			}
+		}
+		PreG9BCu0Corpus.movePathPoint(app, "N", start);
+		// The labelled outputs exist at the start except in the gap of excCyl 3.7.
+		boolean labelled = excCyl != 3.7;
+		for (String pass : List.of("started", "reopened")) {
+			app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work,
+					"start-" + Double.toHexString(excCyl) + "-" + pass));
+			String context = "excCyl=" + excCyl + " " + pass + " at " + start;
+			if (app.getKernel().lookupLabel("Q").isDefined() != labelled
+					|| app.getKernel().lookupLabel("R").isDefined() != labelled
+					|| app.getKernel().lookupLabel("R2").isDefined()) {
+				problems.add(context + ": outputs Q, R, R2 defined "
+						+ app.getKernel().lookupLabel("Q").isDefined() + ", "
+						+ app.getKernel().lookupLabel("R").isDefined() + ", "
+						+ app.getKernel().lookupLabel("R2").isDefined());
+			}
+			if (!live(app).isSelectionFirstIntersectionPending()
+					|| !source(app).isSelectionFirstIntersectionPending()) {
+				problems.add(context + ": the live intersections left their first "
+						+ "initialization " + state(live(app)) + " " + state(source(app)));
+			}
+			for (String label : VARIANTS) {
+				captured(app, context, label, "not-needed", compaction(rules.get(label)),
+						problems);
+			}
+			if (!reference.equals(certificates(app))) {
+				problems.add(context + ": certificates differ from the driver at t = -1 "
+						+ certificates(app) + " versus " + reference);
+			}
+		}
+		AppGeoCeDG created = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+		PreG9BCu0Corpus.movePathPoint(created, "N", -1);
+		PreG9BCu0Corpus.setNumber(created, "excCyl", excCyl);
+		PreG9BCu0Corpus.movePathPoint(created, "N", start);
+		for (String command : List.of("t2=Ray(P,N)", "R2=Intersect(p,t2,2)",
+				"lr2=LocusV2(R2,N)", "lq=LocusV2(Q,N)", "lr=LocusV2(R,N)")) {
+			created.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
+		String context = "excCyl=" + excCyl + " created at " + start;
+		if (created.getKernel().lookupLabel("R2").isDefined()
+				|| !source(created).isSelectionFirstIntersectionPending()) {
+			problems.add(context + ": R2 " + created.getKernel().lookupLabel("R2").isDefined()
+					+ " " + state(source(created)));
+		}
+		Map<String, String> found = certificates(created);
+		for (String label : VARIANTS) {
+			boolean indexed = "lr2".equals(label);
+			captured(created, context, label, indexed ? "not-needed" : "settled",
+					indexed ? compaction(rules.get(label)) : rules.get(label), problems);
+			String certificate = PreG9BCu2AuthorModelSliceFidelityTest.named(found.get(label),
+					created.getKernel().getConstruction());
+			if (!named.get(label).equals(certificate)) {
+				problems.add(context + " " + label + ": certificate " + certificate
+						+ " versus " + named.get(label));
+			}
+		}
+	}
+
+	/**
+	 * Records a problem unless the copy of the locus, validated again, is faithful with the
+	 * settlement outcome; reproduces the selection state of the live intersection, or a point
+	 * query of the certification took it out of the first initialization that it reproduced,
+	 * which the report types as a departure named by the first output of the intersection; and
+	 * the rule captured for the revision is the given one.
+	 */
+	private static void captured(AppGeoCeDG app, String context, String label, String outcome,
+			String rule, List<String> problems) throws Exception {
+		String where = context + " " + label;
+		ReconstructibleLocusEvaluator2D evaluator = evaluator(PreG9BCu0Corpus.locus(app, label));
+		evaluator.captureCertifiedProgram();
+		if (!evaluator.isReconstructionFaithful()
+				|| !outcome.equals(evaluator.getSettlementOutcome().getToken())) {
+			problems.add(where + ": " + evaluator.getFidelityReport() + " "
+					+ evaluator.getSettlementOutcome());
+		}
+		boolean indexed = "lr2".equals(label);
+		AlgoIntersectLineConic live = indexed ? source(app) : live(app);
+		AlgoElement parent = copy(evaluator).lookupLabel(indexed ? "R2" : "Q")
+				.getParentAlgorithm();
+		AlgoIntersectLineConic copy = (AlgoIntersectLineConic) (indexed
+				? ((AlgoIntersectSingle) parent).getSourceIntersection() : parent);
+		if (!state(live).equals(state(copy)) && !(live.isSelectionFirstIntersectionPending()
+				&& "[0, 1]/false/false".equals(state(copy))
+				&& List.of(indexed ? "R2/source" : "Q").equals(evaluator.getFidelityReport()
+						.getDepartedSelections()))) {
+			problems.add(where + ": copy state " + state(copy) + ", live " + state(live) + " "
+					+ evaluator.getFidelityReport());
+		}
+		String captured = evaluator.captureCertifiedProgramV3()
+				.map(CertifiedConstructionProgram2D::getSelectionSignature)
+				.orElse("refused " + evaluator.getProgramV3Refusal());
+		if (!rule.equals(captured)) {
+			problems.add(where + ": rule " + captured + " instead of " + rule);
+		}
+	}
+
+	/**
+	 * @return the rule with its line-circle step in compaction mode, the raw order and the
+	 *         label state unchanged
+	 */
+	private static String compaction(String rule) {
+		return rule.replace("LINE_CIRCLE[0x0.0p0,", "LINE_CIRCLE[0x1.0p0,");
+	}
+
 	/**
 	 * V-COINC-9 on the author model (matrix section 3.5c; corrective descendant T13-R2): at
 	 * the last binary64 of penetration, the first of the bite and excCyl 3.7, with the variants
-	 * of V-COINC-6 created with the driver at {@code t = -1} and started again by reopening with
-	 * the driver at {@code t_c} and at 0.3, in every sample outside the unresolved bands the
-	 * operative output of the live construction and of the slice is the root that the
-	 * certified selection designates ({@code Q} the smaller ray parameter, {@code R} and
-	 * {@code R2} the larger), against a 60-digit reference computed from the live binary64
-	 * inputs of the ray and of the circle; where the two reference roots are closer than the
-	 * error of a binary64 computation the output is that coincident root. Certified existence
-	 * has a slice output and an undefined slice output is never published. At each certified
+	 * of V-COINC-6 created with the driver at {@code t = -1}, recomputed, undone and redone,
+	 * and started again by reopening with the driver at {@code t_c} and at 0.3, in every sample
+	 * outside the unresolved bands the operative output of the live construction and of the
+	 * slice is the root that the certified selection designates ({@code Q} the smaller ray
+	 * parameter, {@code R} and {@code R2} the larger), against a 60-digit reference computed
+	 * from the live binary64 inputs of the ray and of the circle; where the two reference roots
+	 * are closer than the error of a binary64 computation the output is that coincident root,
+	 * and where the binary64 driver leaves no real root a defined output is the foot of the
+	 * double root, the inherited tangency window (finding F-CU2-1). The samples include offsets
+	 * of 10^-7 to 10^-2 from {@code t_c} and from the analytic ends of the gap, where the roots
+	 * separate. Certified existence has a slice output, an undefined slice output is never
+	 * published, and no point is published where nonexistence is certified. At each certified
 	 * end of {@code lq}, a simple root where the two roots coincide, the certified limit value
-	 * encloses the 60-digit foot of the double root and is evidence only: at the binary64
-	 * middle of its bracket the unlabelled output is the live one, and where it is undefined
-	 * neither the slice nor the published evaluation gives a point.
+	 * encloses with no tolerance the 60-digit feet of the double root at the binary64 ends and
+	 * middle of its bracket, computed from the captured constants, and is evidence only: at the
+	 * binary64 middle of its bracket the unlabelled output is the live one, and where it is
+	 * undefined neither the slice nor the published evaluation gives a point.
 	 */
 	@Test
 	void theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates() throws Exception {
 		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
 			List<String> problems = new ArrayList<>();
-			int compared = 0;
+			int[] counts = new int[2];
 			int ends = 0;
 			for (double excCyl : new double[] {PENETRATION, BITE, 3.7}) {
 				// Each configuration retires the embedded hosts it opened (heap of the
 				// final selection).
 				try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
 					AppGeoCeDG app = variants(excCyl);
-					for (double start : new double[] {Double.NaN, T_C, 0.3}) {
-						String context = "excCyl=" + excCyl + (Double.isNaN(start) ? " created"
-								: " started at " + start);
-						if (!Double.isNaN(start)) {
+					// A free number outside the construction, whose change is undone and
+					// redone.
+					app.getKernel().getAlgebraProcessor().processAlgebraCommand("spare=1",
+							false);
+					PreG9BR6PlusF3Fixtures.baseline(app);
+					for (String state : List.of("created", "recomputed", "undone", "redone",
+							"started at t_c", "started at 0.3")) {
+						if ("recomputed".equals(state)) {
+							app.getKernel().updateConstruction(false);
+						} else if ("undone".equals(state)) {
+							PreG9BCu0Corpus.setNumber(app, "spare", 2);
+							PreG9BR6PlusF3Fixtures.store(app);
+							app.getKernel().getConstruction().getUndoManager().undo();
+							PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+						} else if ("redone".equals(state)) {
+							app.getKernel().getConstruction().getUndoManager().redo();
+							PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+						} else if (state.startsWith("started")) {
+							double start = state.endsWith("t_c") ? T_C : 0.3;
 							PreG9BCu0Corpus.movePathPoint(app, "N", start);
 							app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work,
 									"start-" + Double.toHexString(excCyl) + "-" + start));
 						}
-						compared += designations(app, context, excCyl, problems);
+						String context = "excCyl=" + excCyl + " " + state;
+						double spare = ((GeoNumeric) app.getKernel().lookupLabel("spare"))
+								.getValue();
+						if (spare != ("undone".equals(state) || "created".equals(state)
+								|| "recomputed".equals(state) ? 1 : 2)) {
+							problems.add(context + ": spare=" + spare);
+						}
+						designations(app, context, excCyl, problems, counts);
 						ends += limitValues(app, context, problems);
 					}
 				}
 			}
 			Map<String, Object> values = new LinkedHashMap<>();
 			values.put("problems", problems);
-			values.put("compared", compared);
+			values.put("compared", counts[0]);
+			values.put("rootless", counts[1]);
 			values.put("ends", ends);
 			return values;
 		});
 		assertEquals(List.of(), row.get("problems"));
-		assertTrue((Integer) row.get("compared") > 5000, "compared outputs: " + row);
-		assertTrue((Integer) row.get("ends") >= 12, "certified ends: " + row);
+		assertTrue((Integer) row.get("compared") > 10000, "compared outputs: " + row);
+		assertTrue((Integer) row.get("rootless") > 0, "outputs without a real root: " + row);
+		assertTrue((Integer) row.get("ends") >= 24, "certified ends: " + row);
 	}
 
 	/** The model at excCyl with the driver at t = -1 and the two variants of section 3.5c. */
@@ -328,20 +457,12 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 		return certificates;
 	}
 
-	/** @return the compaction flag of the line-circle step that {@code lq} captured */
-	private static double compaction(AppGeoCeDG app) throws Exception {
-		for (CertifiedConstructionProgram2D.Step step : evaluator(PreG9BCu0Corpus.locus(app,
-				"lq")).captureCertifiedProgramV3().orElseThrow().getSteps()) {
-			if (step.getOperation() == CertifiedConstructionProgram2D.Operation.LINE_CIRCLE) {
-				return step.getParameter(0);
-			}
-		}
-		return Double.NaN;
-	}
-
-	/** @return number of compared outputs; records every output that is not designated */
-	private static int designations(AppGeoCeDG app, String context, double excCyl,
-			List<String> problems) throws Exception {
+	/**
+	 * Records every output that is not designated; adds the number of compared outputs, and
+	 * of those compared where the binary64 driver leaves no real root, to the counts.
+	 */
+	private static void designations(AppGeoCeDG app, String context, double excCyl,
+			List<String> problems, int[] counts) throws Exception {
 		List<Double> samples = new ArrayList<>();
 		for (int index = 0; index < 64; index++) {
 			samples.add(-Math.PI + 2 * Math.PI * (index + 0.5) / 64);
@@ -352,9 +473,12 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 			for (int index = -100; index <= 100; index++) {
 				samples.add(centre + index * 1e-10);
 			}
+			for (double offset : new double[] {1e-7, 1e-6, 3e-6, 1e-5, 1e-4, 1e-3, 1e-2}) {
+				samples.add(centre - offset);
+				samples.add(centre + offset);
+			}
 		}
 		GeoPoint driver = (GeoPoint) app.getKernel().lookupLabel("N");
-		int compared = 0;
 		for (int variant = 0; variant < VARIANTS.size(); variant++) {
 			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, VARIANTS.get(variant));
 			LocusExistenceStructure2D structure = locus.getSemanticDefinition()
@@ -374,32 +498,40 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 					String where = context + " " + VARIANTS.get(variant) + " t=" + parameter;
 					GeoPoint live = (GeoPoint) app.getKernel().lookupLabel(OUTPUTS.get(variant));
 					LocusEvaluation2D copy = slice.evaluate(null, null, parameter, copySession);
-					compared += reference.check(where + " live", live.isDefined()
+					int checked = reference.check(where + " live", live.isDefined()
 							? new double[] {live.getInhomX(), live.getInhomY()} : null,
-							ROOTS.get(variant), problems);
-					compared += reference.check(where + " slice", copy.isValid()
-							? new double[] {copy.getPoint().getX(), copy.getPoint().getY()}
-							: null, ROOTS.get(variant), problems);
+							ROOTS.get(variant), problems)
+							+ reference.check(where + " slice", copy.isValid()
+									? new double[] {copy.getPoint().getX(), copy.getPoint().getY()}
+									: null, ROOTS.get(variant), problems);
+					counts[0] += checked;
+					counts[1] += reference.hasRoots() ? 0 : checked;
+					boolean published = locus.getSemanticDefinition().evaluate(
+							PreG9BCu0Corpus.MAIN, parameter, publishedSession).isValid();
 					if (state == LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS
 							&& !copy.isValid()) {
 						problems.add(where + ": certified existence without a slice output");
 					}
-					if (!copy.isValid() && locus.getSemanticDefinition().evaluate(
-							PreG9BCu0Corpus.MAIN, parameter, publishedSession).isValid()) {
+					if (!copy.isValid() && published) {
 						problems.add(where + ": an undefined slice output is published");
+					}
+					if (state == LocusExistenceStructure2D.CoverageState.CERTIFIED_DOES_NOT_EXIST
+							&& published) {
+						problems.add(where + ": a point is published where nonexistence is"
+								+ " certified");
 					}
 				}
 			}
 		}
-		return compared;
 	}
 
 	/**
-	 * At each certified end of {@code lq} the roots coincide: its limit value encloses the
-	 * 60-digit foot of the double root. At the binary64 middle of the bracket the roots are
-	 * apart by far more than the suppression tolerance of the unlabelled output, which is then
-	 * defined and is what the slice of {@code lr2} gives; where it is undefined, nothing is
-	 * given in its place.
+	 * At each certified end of {@code lq} the roots coincide: its limit value encloses, with no
+	 * tolerance, the 60-digit feet of the double root at the binary64 ends and middle of the
+	 * bracket, computed from the captured constants. At the binary64 middle of the bracket the
+	 * roots are apart by far more than the suppression tolerance of the unlabelled output,
+	 * which is then defined and is what the slice of {@code lr2} gives; where it is undefined,
+	 * nothing is given in its place.
 	 *
 	 * @return number of checked ends
 	 */
@@ -408,7 +540,7 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 		GeoLocusV2 lq = PreG9BCu0Corpus.locus(app, "lq");
 		GeoLocusV2 lr2 = PreG9BCu0Corpus.locus(app, "lr2");
 		LocusDefinition2D definition = lq.getSemanticDefinition();
-		GeoPoint driver = (GeoPoint) app.getKernel().lookupLabel("N");
+		double[] constants = captured(evaluator(lq).captureCertifiedProgramV3().orElseThrow());
 		int ends = 0;
 		for (LocusExistenceStructure2D.ContinuousComponent component : definition
 				.getBranch(PreG9BCu0Corpus.MAIN).getExistenceStructure()
@@ -423,12 +555,16 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 						+ (end.getEnclosureUpper() - end.getEnclosureLower()) / 2;
 				LocusBoundaryImage2D image = definition.encloseBoundaryImage(
 						PreG9BCu0Corpus.MAIN, end);
-				PreG9BCu0Corpus.movePathPoint(app, "N", parameter);
-				Reference reference = Reference.of(app, driver);
-				if (!image.isEnclosed() || !reference.isFootEnclosedNear(image)) {
-					problems.add(context + ": the limit value of " + end
-							+ " does not enclose the double root " + image);
+				for (double t : new double[] {end.getEnclosureLower(), parameter,
+						end.getEnclosureUpper()}) {
+					BigDecimal[] foot = foot(constants, t);
+					if (!image.isEnclosed() || !encloses(image, foot)) {
+						problems.add(context + ": the limit value " + image + " of " + end
+								+ " does not enclose the foot (" + foot[0] + ", " + foot[1]
+								+ ") at " + t);
+					}
 				}
+				PreG9BCu0Corpus.movePathPoint(app, "N", parameter);
 				GeoPoint live = (GeoPoint) app.getKernel().lookupLabel("R2");
 				try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
 					LocusEvaluation2D slice = evaluator(lr2).evaluate(null, null, parameter,
@@ -519,8 +655,17 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 
 		/** @return 1 when an output was compared with the designated root, else 0 */
 		int check(String where, double[] output, int designated, List<String> problems) {
-			if (output == null || roots == null) {
+			if (output == null) {
 				return 0;
+			}
+			if (roots == null) {
+				// No real root at the binary64 driver: a defined output is the coincident root
+				// that the inherited tangency window gives (finding F-CU2-1), the foot.
+				if (distance(foot, output) > 4 * TOLERANCE) {
+					problems.add(where + ": output " + Arrays.toString(output)
+							+ " without a real root is not the foot " + Arrays.toString(foot));
+				}
+				return 1;
 			}
 			if (roots[0][2] < 0) {
 				problems.add(where + ": a reference root lies behind P");
@@ -534,17 +679,100 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 			return 1;
 		}
 
-		/** @return whether the image encloses the foot up to the tolerance */
-		boolean isFootEnclosedNear(LocusBoundaryImage2D image) {
-			return foot[0] >= image.getXLower() - 4 * TOLERANCE
-					&& foot[0] <= image.getXUpper() + 4 * TOLERANCE
-					&& foot[1] >= image.getYLower() - 4 * TOLERANCE
-					&& foot[1] <= image.getYUpper() + 4 * TOLERANCE;
+		/** @return whether the binary64 driver leaves two real roots */
+		boolean hasRoots() {
+			return roots != null;
 		}
 
 		private static double distance(double[] first, double[] second) {
 			return Math.hypot(first[0] - second[0], first[1] - second[1]);
 		}
+	}
+
+	/**
+	 * @return the constants that the class-v3 program captured
+	 *         ({@code locus-v2-certified-construction-model.md} section 10.6): the driver
+	 *         circle by its half axes, eigenvectors and midpoint (0 to 7), the point P (8, 9)
+	 *         and the circle p by its matrix entries A2, A4 and A5 (10 to 12)
+	 */
+	private static double[] captured(CertifiedConstructionProgram2D program) {
+		double[] constants = new double[13];
+		for (int index = 0; index < 8; index++) {
+			constants[index] = program.getDriverConstant(index);
+		}
+		int found = 0;
+		for (CertifiedConstructionProgram2D.Step step : program.getSteps()) {
+			List<CertifiedConstructionProgram2D.Operand> operands = step.getOperands();
+			if (step.getOperation() == CertifiedConstructionProgram2D.Operation.RAY
+					&& operands.get(0).getKind()
+							== CertifiedConstructionProgram2D.OperandKind.POINT) {
+				constants[8] = operands.get(0).getValue(3);
+				constants[9] = operands.get(0).getValue(4);
+				found++;
+			} else if (step.getOperation()
+					== CertifiedConstructionProgram2D.Operation.LINE_CIRCLE
+					&& operands.get(1).getKind()
+							== CertifiedConstructionProgram2D.OperandKind.CIRCLE) {
+				for (int index = 0; index < 3; index++) {
+					constants[10 + index] = operands.get(1).getValue(index);
+				}
+				found++;
+			}
+		}
+		if (found != 2) {
+			throw new IllegalStateException("program layout " + program.getSignature());
+		}
+		return constants;
+	}
+
+	/**
+	 * @return the 60-digit foot of the perpendicular from the centre of p to the line from P
+	 *         through the driver at {@code t}, the limit of a double root, from the captured
+	 *         constants and the 60-digit cosine and sine of the binary64 parameter
+	 */
+	private static BigDecimal[] foot(double[] constants, double t) {
+		MathContext context = Reference.MC;
+		BigDecimal[] k = new BigDecimal[constants.length];
+		for (int index = 0; index < constants.length; index++) {
+			k[index] = new BigDecimal(constants[index]);
+		}
+		// The driver as GeoConicND.pathChangedWithoutCheckEllipse places it.
+		BigDecimal along = k[0].multiply(series(new BigDecimal(t), true), context);
+		BigDecimal across = k[1].multiply(series(new BigDecimal(t), false), context);
+		BigDecimal dx = along.multiply(k[2], context).add(across.multiply(k[4], context), context)
+				.add(k[6], context).subtract(k[8], context);
+		BigDecimal dy = along.multiply(k[3], context).add(across.multiply(k[5], context), context)
+				.add(k[7], context).subtract(k[9], context);
+		// The circle x^2 + y^2 + 2 A4 x + 2 A5 y + A2 = 0 has the centre (-A4, -A5).
+		BigDecimal wx = k[8].add(k[11], context);
+		BigDecimal wy = k[9].add(k[12], context);
+		BigDecimal lambda = dx.multiply(wx, context).add(dy.multiply(wy, context), context)
+				.negate().divide(dx.multiply(dx, context).add(dy.multiply(dy, context), context),
+						context);
+		return new BigDecimal[] {k[8].add(lambda.multiply(dx, context), context),
+			k[9].add(lambda.multiply(dy, context), context)};
+	}
+
+	private static BigDecimal series(BigDecimal x, boolean cosine) {
+		MathContext context = Reference.MC;
+		BigDecimal square = x.multiply(x, context);
+		BigDecimal term = cosine ? BigDecimal.ONE : x;
+		BigDecimal sum = term;
+		BigDecimal limit = new BigDecimal("1e-70");
+		for (int k = cosine ? 2 : 3; term.abs().compareTo(limit) > 0; k += 2) {
+			term = term.multiply(square, context).negate()
+					.divide(BigDecimal.valueOf((long) k * (k - 1)), context);
+			sum = sum.add(term, context);
+		}
+		return sum;
+	}
+
+	/** @return whether the image encloses the point, with no tolerance */
+	private static boolean encloses(LocusBoundaryImage2D image, BigDecimal[] point) {
+		return new BigDecimal(image.getXLower()).compareTo(point[0]) <= 0
+				&& point[0].compareTo(new BigDecimal(image.getXUpper())) <= 0
+				&& new BigDecimal(image.getYLower()).compareTo(point[1]) <= 0
+				&& point[1].compareTo(new BigDecimal(image.getYUpper())) <= 0;
 	}
 
 	private static void check(AppGeoCeDG app, List<String> problems, String step,
@@ -618,6 +846,12 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 
 	private static AlgoIntersectLineConic live(AppGeoCeDG app) {
 		return (AlgoIntersectLineConic) app.getKernel().lookupLabel("Q").getParentAlgorithm();
+	}
+
+	/** @return the line-conic intersection whose second output R2 selects */
+	private static AlgoIntersectLineConic source(AppGeoCeDG app) {
+		return (AlgoIntersectLineConic) ((AlgoIntersectSingle) app.getKernel().lookupLabel("R2")
+				.getParentAlgorithm()).getSourceIntersection();
 	}
 
 	private static String state(AlgoIntersectLineConic intersection) {

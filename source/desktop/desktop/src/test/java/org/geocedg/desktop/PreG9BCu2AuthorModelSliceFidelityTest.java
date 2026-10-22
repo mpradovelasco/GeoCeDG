@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -27,6 +29,8 @@ import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -213,7 +217,12 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 	 * {@code t = -1}: every visit of the alternation {@code bb -> bc -> bb -> bc} of
 	 * {@code excCyl} has the fingerprint, the reconstructed slice, the captured program and the
 	 * certificate of the model opened anew, with the driver at the same parameter and
-	 * {@code excCyl} set once to the visited value, bit for bit, for every locus that reads it.
+	 * {@code excCyl} set once to the visited value, bit for bit, for every locus that reads it:
+	 * the first family and the two variants of matrix section 3.5c added to the model,
+	 * {@code lq} and {@code lr} of its labelled outputs and {@code lr2} of an unlabelled second
+	 * output, whose traced point is undefined at {@code t_c} in the bite.
+	 * Durable identities, which the variants of each document allocate anew, are named by the
+	 * labels of their geos, or by the algorithm and output index of an unlabelled one.
 	 */
 	@Test
 	void everyStateWithTheDriverAwayFromTheDoubleRootMatchesTheModelSetFromScratch()
@@ -250,14 +259,27 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 					problems.add("t=" + driver + " visit " + index + " ("
 							+ (visits[index] == PENETRATION ? "bb" : "bc") + "): " + difference);
 				}
+				if (driver == T_C && visits[index] == BITE
+						&& live.getKernel().lookupLabel("R2").isDefined()) {
+					problems.add("visit " + index + ": R2 is defined at t_c in the bite");
+				}
 			}
 			return problems;
 		});
 	}
 
-	/** Opens the model anew, moves the driver and sets {@code excCyl} once. */
+	/**
+	 * Opens the model anew, adds the variants of matrix section 3.5c with the driver at
+	 * {@code t = -1}, where every output is defined, then moves the driver and sets
+	 * {@code excCyl} once.
+	 */
 	private static AppGeoCeDG state(File model, double driver, double value) {
 		AppGeoCeDG app = PreG9BCu0Corpus.open(model);
+		PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+		for (String command : List.of("lq=LocusV2(Q,N)", "lr=LocusV2(R,N)", "t2=Ray(P,N)",
+				"R2=Intersect(p,t2,2)", "lr2=LocusV2(R2,N)")) {
+			app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
 		PreG9BCu0Corpus.movePathPoint(app, "N", driver);
 		PreG9BCu0Corpus.setNumber(app, "excCyl", value);
 		return app;
@@ -267,12 +289,12 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 	 * @return for each locus that reads {@code excCyl}: fingerprint of the live slice,
 	 *         fingerprint of the reconstructed copy and its fidelity, signature of the captured
 	 *         class-v3 program or its refusal, and structure, roots and exact evidence of the
-	 *         certificate, up to durable identities
+	 *         certificate, with durable identities named structurally
 	 */
 	private static String artifacts(AppGeoCeDG app) throws ReflectiveOperationException {
 		GeoElement driver = app.getKernel().lookupLabel("N");
 		StringBuilder text = new StringBuilder();
-		for (String label : FIRST_FAMILY) {
+		for (String label : List.of("o", "v", "w", "a_1", "lq", "lr", "lr2")) {
 			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
 			AlgoDependentPointLocusV2 parent =
 					(AlgoDependentPointLocusV2) locus.getParentAlgorithm();
@@ -308,7 +330,40 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 			}
 			text.append('\n');
 		}
-		return text.toString().replaceAll("geo:[0-9a-f]{32}", "geo:*");
+		return named(text.toString(), app.getKernel().getConstruction());
+	}
+
+	/**
+	 * @return the text with every durable identity replaced by the label of its geo, or by the
+	 *         algorithm, labelled inputs and output index of an unlabelled one
+	 */
+	static String named(String text, Construction construction) {
+		SpatialIdentityRegistry registry = construction.getSpatialIdentityRegistry();
+		Matcher matcher = Pattern.compile("geo:[0-9a-f]{32}").matcher(text);
+		StringBuilder named = new StringBuilder();
+		while (matcher.find()) {
+			GeoElement geo = registry.getGeo(PersistentGeoId.parse(matcher.group()));
+			matcher.appendReplacement(named, Matcher.quoteReplacement(geo == null
+					? matcher.group() : structuralName(geo)));
+		}
+		matcher.appendTail(named);
+		return named.toString();
+	}
+
+	private static String structuralName(GeoElement geo) {
+		if (geo.isLabelSet()) {
+			return geo.getLabelSimple();
+		}
+		AlgoElement parent = geo.getParentAlgorithm();
+		if (parent == null) {
+			return "unlabelled-free";
+		}
+		StringBuilder name = new StringBuilder(parent.getClass().getSimpleName()).append('(');
+		for (GeoElement input : parent.getInput()) {
+			name.append(input.isLabelSet() ? input.getLabelSimple() : "?").append(',');
+		}
+		return name.append(")#").append(Arrays.asList(parent.getOutput()).indexOf(geo))
+				.toString();
 	}
 
 	/** @return the first line that differs, or {@code null} */

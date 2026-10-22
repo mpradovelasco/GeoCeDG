@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -35,6 +37,8 @@ import org.geocedg.common.kernel.locus.ReconstructionFidelity2D;
 import org.geocedg.common.kernel.locus.ReconstructionFidelity2D.DiscrepancyKind;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
@@ -275,13 +279,15 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 	/**
 	 * V-REV-EXACT-5 (synthetic states of V-REV-EXACT-2 to V-REV-EXACT-4): each state reached
 	 * by one-ulp changes of a free number and the returns to a previous value, by a one-ulp
-	 * change of the radius of the critical configuration with labelled and unlabelled outputs,
-	 * and by a number literal without original text changed by program, and the constructions
-	 * with literals of 17 digits, inline literal arguments and an angle literal that the
-	 * persisted format writes in degrees, has the fingerprint, the reconstructed slice, the
+	 * change of the radius of the critical configuration with labelled and unlabelled outputs
+	 * (both reconstructed faithfully), by a number literal without original text changed by
+	 * program, and by an angle literal without original text changed by program, which the
+	 * persisted format writes in degrees (not faithful in both states alike), with literals of
+	 * 17 digits and inline literal arguments, has the fingerprint, the reconstructed slice, the
 	 * captured program and the certificate of the same construction built from scratch in a
 	 * new document, bit for bit. Durable identities, which a new document allocates anew, are
-	 * compared up to renaming.
+	 * named by the labels of their geos, or by the algorithm and output index of an unlabelled
+	 * one.
 	 */
 	@Test
 	void everyStateMatchesTheSameConstructionBuiltFromScratch() throws Exception {
@@ -298,20 +304,25 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 		setNumber(critical, "rr", Math.nextUp(40.0));
 		AppCommon criticalFresh = critical(Math.nextUp(40.0));
 		for (String label : List.of("lq", "lr2")) {
-			assertEquals(artifacts(criticalFresh, label, "N"), artifacts(critical, label, "N"),
-					label);
+			String reached = artifacts(critical, label, "N");
+			assertTrue(reached.contains("faithful=true"), reached);
+			assertEquals(artifacts(criticalFresh, label, "N"), reached, label);
 		}
 
 		AppCommon literal = literals(0.1);
-		MyDouble first = firstLiteral(literal.getKernel().lookupLabel("R").getDefinition());
-		first.set(Math.nextUp(0.1));
-		literal.getKernel().lookupLabel("R").updateCascade();
+		setLiteral(literal, "R", Math.nextUp(0.1));
 		assertEquals(artifacts(literals(Math.nextUp(0.1)), "lr", "P"),
 				artifacts(literal, "lr", "P"));
 
-		String angle = artifacts(angle(), "la", "P");
+		// An angle literal without original text, changed by program, which the persisted
+		// format writes in degrees: the reconstruction is not faithful in both states alike.
+		AppCommon changed = angle(0.4097);
+		setLiteral(changed, "ang", 0.4098);
+		assertEquals(Double.doubleToRawLongBits(0.4098), Double.doubleToRawLongBits(
+				((GeoNumeric) changed.getKernel().lookupLabel("ang")).getValue()));
+		String angle = artifacts(changed, "la", "P");
 		assertTrue(angle.contains("faithful=false"), angle);
-		assertEquals(artifacts(angle(), "la", "P"), angle);
+		assertEquals(artifacts(angle(0.4098), "la", "P"), angle);
 	}
 
 	/**
@@ -348,7 +359,38 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 		for (HybridExistenceCertifier2D.ExactEvidence evidence : result.getExactEvidence()) {
 			text.append("|exact=").append(evidence.getSignature());
 		}
-		return text.toString().replaceAll("geo:[0-9a-f]{32}", "geo:*");
+		return named(text.toString(), app.getKernel().getConstruction());
+	}
+
+	/**
+	 * @return the text with every durable identity, which a new document allocates anew,
+	 *         replaced by the label of its geo, or by the algorithm, labelled inputs and output
+	 *         index of an unlabelled one
+	 */
+	private static String named(String text, Construction construction) {
+		SpatialIdentityRegistry registry = construction.getSpatialIdentityRegistry();
+		Matcher matcher = Pattern.compile("geo:[0-9a-f]{32}").matcher(text);
+		StringBuilder named = new StringBuilder();
+		while (matcher.find()) {
+			GeoElement geo = registry.getGeo(PersistentGeoId.parse(matcher.group()));
+			String name = matcher.group();
+			if (geo != null && geo.isLabelSet()) {
+				name = geo.getLabelSimple();
+			} else if (geo != null && geo.getParentAlgorithm() != null) {
+				AlgoElement parent = geo.getParentAlgorithm();
+				StringBuilder algorithm = new StringBuilder(parent.getClass().getSimpleName())
+						.append('(');
+				for (GeoElement input : parent.getInput()) {
+					algorithm.append(input.isLabelSet() ? input.getLabelSimple() : "?")
+							.append(',');
+				}
+				name = algorithm.append(")#").append(java.util.Arrays.asList(parent.getOutput())
+						.indexOf(geo)).toString();
+			}
+			matcher.appendReplacement(named, Matcher.quoteReplacement(name));
+		}
+		matcher.appendTail(named);
+		return named.toString();
 	}
 
 	/** @return a new document built from the commands */
@@ -396,10 +438,10 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 	}
 
 	/** A rotation by an angle literal without original text, which XML writes in degrees. */
-	private static AppCommon angle() {
+	private static AppCommon angle(double radians) {
 		AppCommon app = document(List.of("c=Circle((0,0),3.6569437271164964)", "P=Point(c)"));
 		Kernel kernel = app.getKernel();
-		MyDouble literal = new MyDouble(kernel, 0.4097);
+		MyDouble literal = new MyDouble(kernel, radians);
 		literal.setAngle();
 		new AlgoDependentNumber(kernel.getConstruction(), new ExpressionNode(kernel, literal),
 				true).getNumber().toGeoElement().setLabel("ang");
@@ -413,6 +455,17 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 		GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel(label);
 		number.setValue(value);
 		number.updateCascade();
+	}
+
+	/**
+	 * Sets the first number literal of a definition by program, recomputes the element from
+	 * its definition and updates its dependents.
+	 */
+	private static void setLiteral(AppCommon app, String label, double value) {
+		GeoElement geo = app.getKernel().lookupLabel(label);
+		firstLiteral(geo.getDefinition()).set(value);
+		geo.getParentAlgorithm().update();
+		geo.updateCascade();
 	}
 
 	private Map<String, Object> run(AppCommon app) {

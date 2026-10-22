@@ -182,13 +182,14 @@ class PreG9BCu2LineageTest extends BaseUnitTest {
 	/**
 	 * V-POINT-3 (decision D-CU2-T13-R1): the external tangency with the radius
 	 * {@code 40 - 2^-30 -> 40 -> 40 + 2^-30 -> 40} is an empty cover, a point component, an
-	 * arc between two simple roots and the point again. The point appears; the even root that
-	 * splits into the two simple roots bounding the arc, and the two roots that join again,
-	 * are typed changes of dimension that relate the point and the arc through the operation
-	 * and predicate of their sources, never through a label, an index, a coordinate or
-	 * proximity. The driver stays where no root exists, so the selection rule does not
-	 * change. Undoing and redoing each step restores each structure and key; a reloaded
-	 * certificate relates to nothing earlier.
+	 * arc between two simple roots, exact roots of multiplicity 1 whose enclosures are the ends
+	 * of the arc, around the tangency parameter {@code atan2(-4, -3)}, and the point again. The
+	 * point appears; the even root that splits into the two simple roots bounding the arc, and
+	 * the two roots that join again, are typed changes of dimension that relate the point and
+	 * the arc through the operation and predicate of their sources, never through a label, an
+	 * index, a coordinate or proximity. The driver stays where no root exists, so the selection
+	 * rule does not change. Undoing and redoing each step restores each structure and key; a
+	 * reloaded certificate relates to nothing earlier.
 	 */
 	@Test
 	void aPointComponentChangesDimensionThroughTypedTransitions() {
@@ -221,12 +222,25 @@ class PreG9BCu2LineageTest extends BaseUnitTest {
 		assertEquals(1, split.getContinuousValidComponents().size());
 		ContinuousComponent arc = split.getContinuousValidComponents().get(0);
 		LocusBoundarySource2D root = tangency.getPointComponents().get(0).getSource();
-		for (LocusBoundary2D end : List.of(arc.getLowerBoundary(), arc.getUpperBoundary())) {
+		List<HybridExistenceCertifier2D.CertifiedRoot> roots =
+				lq.getHybridExistenceCertificate().getRoots();
+		assertEquals(2, roots.size(), roots.toString());
+		List<LocusBoundary2D> ends = List.of(arc.getLowerBoundary(), arc.getUpperBoundary());
+		for (int index = 0; index < 2; index++) {
+			LocusBoundary2D end = ends.get(index);
 			assertEquals(LocusBoundary2D.Kind.CERTIFIED_TRANSITION, end.getKind());
 			assertEquals(root.getOrigin(), end.getSource().getOrigin());
 			assertEquals(root.getPredicate(), end.getSource().getPredicate());
+			HybridExistenceCertifier2D.CertifiedRoot simple = roots.get(index);
+			assertEquals(HybridExistenceCertifier2D.CertifiedRoot.RootKind.TRANSITION,
+					simple.getKind());
+			assertEquals(1, simple.getMultiplicity());
+			assertEquals(end.getEnclosureLower(), simple.getLower());
+			assertEquals(end.getEnclosureUpper(), simple.getUpper());
 		}
-		assertTrue(arc.getStart() < arc.getEnd());
+		// The tangency parameter lies about 7e-6 inside both ends, far beyond rounding.
+		assertTrue(arc.getStart() < Math.atan2(-4, -3) && Math.atan2(-4, -3) < arc.getEnd(),
+				arc.toString());
 		final List<String> bite = keys(lq);
 		assertLineage(lq, LineageTransition.DIMENSION_CHANGED, point, bite);
 		signatures.add(split.getSemanticSignature());
@@ -248,6 +262,40 @@ class PreG9BCu2LineageTest extends BaseUnitTest {
 			getKernel().redo();
 			assertRestored(signatures.get(state == 3 ? 1 : state), stateKeys.get(state));
 		}
+	}
+
+	/**
+	 * V-POINT-3 (decision D-CU2-T13-R1), no association by label: renaming the traced output
+	 * at the point, and back at the arc, publishes revisions whose component keys and lineage
+	 * do not change, and the changes of dimension in between relate the same keys as without
+	 * any renaming.
+	 */
+	@Test
+	void renamingTheTracedOutputChangesNoKeyAndNoRelation() {
+		externalTangency(Math.atan2(-4, -3) + Math.PI);
+		GeoLocusV2 locus = assertInstanceOf(GeoLocusV2.class, lookup("lq"));
+		AlgoDependentPointLocusV2 lq = algorithm("lq");
+		radius(40);
+		final List<String> point = keys(lq);
+		assertEquals(1, point.size());
+		long revision = locus.getSemanticRevision();
+		lookup("Q").rename("S");
+		assertTrue(locus.getSemanticRevision() > revision);
+		assertEquals(point, keys(lq));
+		assertLineage(lq, LineageTransition.UNCHANGED, List.of(), List.of());
+
+		radius(40 + Math.scalb(1.0, -30));
+		final List<String> bite = keys(lq);
+		assertLineage(lq, LineageTransition.DIMENSION_CHANGED, point, bite);
+		revision = locus.getSemanticRevision();
+		lookup("S").rename("Q");
+		assertTrue(locus.getSemanticRevision() > revision);
+		assertEquals(bite, keys(lq));
+		assertLineage(lq, LineageTransition.UNCHANGED, List.of(), List.of());
+
+		radius(40);
+		assertEquals(point, keys(lq));
+		assertLineage(lq, LineageTransition.DIMENSION_CHANGED, bite, point);
 	}
 
 	/**

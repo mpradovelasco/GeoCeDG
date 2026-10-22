@@ -24,10 +24,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
+import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.ConstructionValidityPredicate2D;
@@ -74,6 +77,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.main.UndoRedoMode;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -101,6 +105,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 */
 	private static final BigDecimal UNIT = BigDecimal.valueOf(125);
 	private static final MathContext REFERENCE = new MathContext(60, RoundingMode.HALF_EVEN);
+	/** Pi to 60 digits, for the enclosure of the seam. */
+	private static final BigDecimal PI = new BigDecimal(
+			"3.14159265358979323846264338327950288419716939937510582097494");
 
 	@Override
 	public AppCommon createAppCommon() {
@@ -547,31 +554,66 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	/**
 	 * V-DET-1 (synthetic constructions of the matrix; corrective descendant T13-R4): two runs,
 	 * each on a new document loaded from the same saved construction and taken through the
-	 * same changes, give results identical bit for bit at every step: the semantic revision,
-	 * the slice fingerprint and the published branch of every locus (coverage, components with
-	 * their ends, brackets and sources, singular parameters, point components, folds and the
-	 * branch lineage), its roots, exact evidence, stationary points and box count, its lineage
-	 * keys and transitions, and the structure of every metric with its events. The saved
-	 * document carries the durable identities, so nothing is normalized. The constructions are
-	 * the critical radius with labelled and unlabelled outputs, its penetration taken to a bite
-	 * and back (split and merge), the external tangency taken from an empty cover to a point,
-	 * an arc and the point again (changes of dimension), two point components, the band of an
-	 * unlabelled output, a fold, an origin wrap, the ends of a ray, a segment and a vanishing
-	 * divisor, a structurally total locus, a locus outside the class and the bite started with
-	 * the driver in its gap. A random value is not deterministic by definition and is left
-	 * out.
+	 * same changes, then undone, redone and reopened, give results identical bit for bit at
+	 * every step: the semantic revision, the slice fingerprint and the published branch of
+	 * every locus (coverage, components with their ends, brackets and sources, singular
+	 * parameters, point components, folds and the branch lineage), its roots, exact evidence,
+	 * stationary points and box count, its lineage keys and transitions, the events of its
+	 * slice (settlement outcome, fidelity report with its departures, captured selection
+	 * rule), every image of a locus, every point of a locus and the structure of every metric
+	 * with its events. The saved document carries the durable identities, so nothing is
+	 * normalized. The constructions are the critical radius with labelled and unlabelled
+	 * outputs, started at the double root in its first initialization and taken off it, and
+	 * with similarity images; its penetration taken to a bite and back (split and merge) with a
+	 * point of the locus selected by its parameter; a copy rebuilt with the driver in a gap and
+	 * settled; the external tangency taken from an empty cover to a point, an arc and the point
+	 * again (changes of dimension), two point components, the band of an unlabelled output, a
+	 * fold, an origin wrap, the ends of a ray, a segment and a vanishing divisor, a structurally
+	 * total locus, a locus outside the class and the bite started with the driver in its gap. A
+	 * random value is not deterministic by definition and is left out.
 	 */
 	@Test
 	void twoRunsOfTheSyntheticConstructionsGiveIdenticalResults() {
 		Map<String, Runnable> builders = new LinkedHashMap<>();
-		Map<String, List<Double>> radii = new LinkedHashMap<>();
+		Map<String, List<Change>> changes = new LinkedHashMap<>();
 		builders.put("critical", () -> critical("40"));
 		builders.put("split and merge", () -> {
 			add("rr=40-2^(-10)");
 			critical("rr");
+			// A point of the locus selected by its parameter (component selectors).
+			add("v=0.3");
+			add("A=Point(lq,\"" + BRANCH + "\",v)");
 		});
-		radii.put("split and merge", List.of(40 + Math.scalb(1.0, -10),
-				40 + Math.scalb(1.0, -4), 40 - Math.scalb(1.0, -10)));
+		changes.put("split and merge", List.of(Change.radius(40 + Math.scalb(1.0, -10)),
+				Change.radius(40 + Math.scalb(1.0, -4)), Change.radius(40 - Math.scalb(1.0, -10))));
+		builders.put("first initialization at the double root", () -> {
+			critical("40");
+			moveDriver((GeoPoint) lookup("N"), CRITICAL);
+		});
+		changes.put("first initialization at the double root",
+				List.of(Change.driver(CRITICAL + 0.1), Change.driver(CRITICAL + 0.2)));
+		builders.put("settlement in a gap", () -> {
+			add("rr=0");
+			add("C=(0,rr)");
+			add("k=Circle(C,5)");
+			add("g1=Circle((0,0),20)");
+			add("N=Point(g1)");
+			add("m=Line(N,N+(1,0))");
+			moveDriver((GeoPoint) lookup("N"), 0);
+			getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"S", "T"},
+					(GeoLine) lookup("m"), (GeoConic) lookup("k"));
+			moveDriver((GeoPoint) lookup("N"), 1e-4);
+			add("ls=LocusV2(S,N)");
+		});
+		changes.put("settlement in a gap", List.of(Change.driver(Math.PI / 2),
+				Change.radius(0.5), Change.radius(0.6)));
+		builders.put("similarity images", () -> {
+			add("rr=40");
+			critical("rr");
+			add("img=Translate(lq,(1,0))");
+			add("dil=Dilate(lr,2,(0,0))");
+		});
+		changes.put("similarity images", List.of(Change.radius(40 + Math.scalb(1.0, -10))));
 		builders.put("change of dimension", () -> {
 			add("rr=40-2^(-30)");
 			add("p=Circle((0,0),25)");
@@ -585,7 +627,8 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			add("lq=LocusV2(Q,N)");
 			getKernel().updateConstruction(false);
 		});
-		radii.put("change of dimension", List.of(40.0, 40 + Math.scalb(1.0, -30), 40.0));
+		changes.put("change of dimension", List.of(Change.radius(40.0),
+				Change.radius(40 + Math.scalb(1.0, -30)), Change.radius(40.0)));
 		builders.put("point components", () -> tangency("(15,70)", "Line"));
 		builders.put("band", () -> critical("40+2^(-30)"));
 		builders.put("fold", () -> {
@@ -643,7 +686,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			builder.getValue().run();
 			String document = getApp().getXML();
 			getKernel().clearConstruction(true);
-			List<Double> steps = radii.getOrDefault(builder.getKey(), List.of());
+			List<Change> steps = changes.getOrDefault(builder.getKey(), List.of());
 			String first = run(document, steps);
 			assertEquals(first, run(document, steps), builder.getKey());
 			compared.append(first);
@@ -651,27 +694,72 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		for (String part : List.of("geo:", "|coverage=", "|component=", "|singular=",
 				"|point=", "|fold=", "TRANSITION[", "OPEN_EVENT[", "|coefficients=",
 				"ORIGIN_WRAP", "OPERATION_OUTSIDE_CLASS", "UNLABELLED_COINCIDENT_OUTPUT",
-				"SPLIT[", "MERGED[", "DIMENSION_CHANGED[")) {
+				"SPLIT[", "MERGED[", "DIMENSION_CHANGED[", "settlement=settled",
+				"2LINE_CIRCLE[0x1.0p0", " image revision=", "A point=", "undo 0", "redo 0",
+				"reopened")) {
 			assertTrue(compared.indexOf(part) >= 0, "the runs compare " + part);
+		}
+		for (String event : List.of("SELECTION_SETTLEMENT=[1-9]", "SELECTION_DEPARTURE=[1-9]",
+				"CERTIFICATE_COMPUTATION=[1-9]")) {
+			assertTrue(Pattern.compile(event).matcher(compared).find(),
+					"the runs compare the event " + event);
 		}
 	}
 
 	/**
-	 * One run of V-DET-1: a new document loaded from the saved construction, then the radius
-	 * {@code rr} set to each value in turn; the results after loading and after each change.
+	 * One run of V-DET-1: a new document loaded from the saved construction, then each change
+	 * in turn, every change undone and redone, and the document reopened; the results after
+	 * loading and after each operation.
 	 */
-	private static String run(String document, List<Double> radii) {
+	private static String run(String document, List<Change> changes) {
 		AppCommon app = AppCommonFactory.create(new AppConfigGeoCeDG(true));
 		app.setXML(document, true);
+		app.setUndoRedoMode(UndoRedoMode.GUI);
+		app.setUndoActive(true);
+		app.storeUndoInfo();
 		StringBuilder text = new StringBuilder(results(app, "loaded"));
-		for (double radius : radii) {
-			GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel("rr");
-			number.setValue(radius);
-			number.updateCascade();
-			app.getKernel().updateConstruction(false);
-			text.append(results(app, "rr=" + Double.toHexString(radius)));
+		for (Change change : changes) {
+			change.action.accept(app);
+			app.storeUndoInfo();
+			text.append(results(app, change.name));
 		}
-		return text.toString();
+		for (int step = 0; step < changes.size(); step++) {
+			app.getKernel().undo();
+			text.append(results(app, "undo " + step));
+		}
+		for (int step = 0; step < changes.size(); step++) {
+			app.getKernel().redo();
+			text.append(results(app, "redo " + step));
+		}
+		app.setXML(app.getXML(), true);
+		return text.append(results(app, "reopened")).toString();
+	}
+
+	/** A named change of a run of V-DET-1. */
+	private static final class Change {
+		private final String name;
+		private final Consumer<AppCommon> action;
+
+		private Change(String name, Consumer<AppCommon> action) {
+			this.name = name;
+			this.action = action;
+		}
+
+		/** The free radius {@code rr} set to the value. */
+		static Change radius(double value) {
+			return new Change("rr=" + Double.toHexString(value), app -> {
+				GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel("rr");
+				number.setValue(value);
+				number.updateCascade();
+				app.getKernel().updateConstruction(false);
+			});
+		}
+
+		/** The driver {@code N} moved to the parameter. */
+		static Change driver(double parameter) {
+			return new Change("N at " + Double.toHexString(parameter), app -> moveDriver(
+					(GeoPoint) app.getKernel().lookupLabel("N"), parameter));
+		}
 	}
 
 	/** @return every result of the document that a second run must reproduce bit for bit */
@@ -708,7 +796,42 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 									result.getStructure()))
 							.append("\n lineage=").append(algorithm.getHybridLineage());
 				}
+				if (locus.getSemanticDefinition() != null
+						&& locus.getSemanticDefinition().getEvaluatorCapability()
+								instanceof ReconstructibleLocusEvaluator2D) {
+					// The events of the slice: settlement, departures and the captured rule.
+					ReconstructibleLocusEvaluator2D evaluator = (ReconstructibleLocusEvaluator2D)
+							locus.getSemanticDefinition().getEvaluatorCapability();
+					text.append("\n settlement=").append(evaluator.getSettlementOutcome()
+							.getToken()).append(" fidelity=").append(evaluator.getFidelityReport())
+							.append("\n rule=").append(evaluator.captureCertifiedProgramV3()
+									.map(CertifiedConstructionProgram2D::getSelectionSignature)
+									.orElse("refused " + evaluator.getProgramV3Refusal()));
+				}
+				// The work of certification counts its events: settlements, departures.
+				text.append("\n work=");
+				for (LocusCertificationWork2D kind : LocusCertificationWork2D.values()) {
+					text.append(kind.name()).append('=').append(locus.getInstrumentation()
+							.getCertificationWork(kind)).append(' ');
+				}
 				text.append('\n');
+			} else if (geo instanceof GeoLocusV2) {
+				// An image of a locus, by a similarity or another construction on it.
+				GeoLocusV2 image = (GeoLocusV2) geo;
+				text.append(geo.getLabelSimple()).append(" image revision=")
+						.append(image.getSemanticRevision());
+				if (image.getSemanticDefinition() != null) {
+					for (LocusBranch2D branch : image.getSemanticDefinition().getBranches()) {
+						text.append("\n branch=").append(branch.getSemanticSignature());
+					}
+				}
+				text.append('\n');
+			} else if (geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D) {
+				GeoPoint point = (GeoPoint) geo;
+				text.append(geo.getLabelSimple()).append(" point=").append(point.isDefined()
+						? Double.toHexString(point.getInhomX()) + ","
+								+ Double.toHexString(point.getInhomY()) : "undefined")
+						.append('\n');
 			} else if (geo.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2) {
 				text.append(geo.getLabelSimple()).append(" metric=").append(
 						((AlgoLocusBetweenMetricV2) geo.getParentAlgorithm())
@@ -732,18 +855,20 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 
 	/**
 	 * V-INV-2 (corrective descendant T13-R4): with every constant a multiple of 125, the
-	 * critical radius, its bite and penetration at {@code 40 +- 2^-10} and the external
-	 * tangency of matrix section 1 are translated by {@code 10^3} and scaled from
-	 * {@code 10^-3} to {@code 10^3} as a whole, exactly in binary64, which the captured
-	 * constants confirm. The structure is the same: completeness, coverage states and causes,
-	 * components with their maximality, ends and boundary sources (operation, predicate and
-	 * side), singular parameters and point components; the durable operation identities of
-	 * different constructions are compared through the labels of their geos. The brackets
-	 * contain the transformed references, proved with 60-digit arithmetic on the captured
-	 * constants: {@code atan2(4, 3)} and {@code atan2(-4, -3)} by the monotony of the cosine,
-	 * the simple roots of the bite by a sign change of the discriminant; the position of the
-	 * point component encloses the transformed point (15, 20), and every certified piece
-	 * agrees with the discriminant at its samples.
+	 * critical radius, its bite and penetration at {@code 40 +- 2^-10}, the external
+	 * tangency and the line of the two point components of matrix section 1 are
+	 * translated by {@code 10^3} and scaled from {@code 10^-3} to {@code 10^3} as a whole,
+	 * exactly in binary64: the typed inputs and the captured constants are the exact
+	 * transformed constants, bit for bit. The structure is the same: completeness, coverage
+	 * states and causes, components with their maximality, ends and boundary sources
+	 * (operation, predicate and side), singular parameters and point components; the durable
+	 * operation identities of different constructions are compared through the labels of their
+	 * geos. The brackets contain the transformed references, proved with 60-digit arithmetic
+	 * on the captured constants: {@code atan2(4, 3)} and {@code atan2(-4, -3)} by the monotony
+	 * of the cosine, the seam by 60 digits of pi, the simple roots of the bite by a sign change
+	 * of the discriminant; the position of each point component encloses the transformed
+	 * point (15, 20) or, at the seam, (-25, 0), and every certified piece agrees with the
+	 * discriminant at its samples.
 	 */
 	@Test
 	void translationsAndScalesOfTheWholeConstructionKeepTheStructure() {
@@ -763,12 +888,14 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				build(configuration, transform);
 				assertExact(context, configuration, transform, inputs());
 				double[] constants = captured();
+				assertCapturedExact(context, configuration, transform, constants);
 				for (String label : configuration.loci) {
 					assertEquals(Completeness.COMPLETE, structure(label).getCompleteness(),
 							context + " " + label);
 					assertEquals(reference.get(configuration).get(label), descriptor(label),
 							context + " " + label);
-					references(context + " " + label, label, constants, transform, problems);
+					references(context + " " + label, label, configuration, constants,
+							transform, problems);
 				}
 				getKernel().clearConstruction(true);
 			}
@@ -784,13 +911,17 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * its roots; the certificate has exactly the transitions, singular parameters and point
 	 * components of that classification, each transition bracket shows a sign change of the
 	 * 60-digit discriminant of the captured constants, and every certified piece agrees with
-	 * that discriminant at its samples. The bite and the penetration, whose margin is far
-	 * above the rounding, keep their structure.
+	 * that discriminant at its samples. Independently of any classification, the 60-digit
+	 * discriminant changes sign at 4096 samples only where the certificate changes state, and
+	 * shows a double root of the right side in every singular parameter and point component.
+	 * The bite and the penetration, whose margin is far above the rounding, keep their
+	 * structure.
 	 */
 	@Test
 	void theExactCertificateClassifiesTheTransformedConstantsAsCaptured() {
 		Map<Configuration, Map<String, String>> reference = referenceDescriptors();
 		List<String> problems = new ArrayList<>();
+		int changes = 0;
 		for (Transform transform : List.of(Transform.of(BigDecimal.ONE, "0.001", "0", "0"),
 				Transform.of(BigDecimal.ONE, "1", "1000.1", "-999.7"))) {
 			for (Configuration configuration : Configuration.values()) {
@@ -814,7 +945,10 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 							structure.getSingularParameters().size(), context + " " + label);
 					assertEquals(count(roots, RealRootStructure1D.RootKind.ISOLATED_POINT),
 							structure.getPointComponents().size(), context + " " + label);
-					references(context + " " + label, label, constants, null, problems);
+					references(context + " " + label, label, configuration, constants, null,
+							problems);
+					changes += signChangesAreCertified(context + " " + label, label,
+							configuration, constants, problems);
 					if (configuration == Configuration.BITE
 							|| configuration == Configuration.PENETRATION) {
 						assertEquals(reference.get(configuration).get(label), descriptor(label),
@@ -825,6 +959,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			}
 		}
 		assertEquals(List.of(), problems);
+		assertTrue(changes > 0, "sign changes of the discriminant found: " + changes);
 	}
 
 	/**
@@ -846,12 +981,14 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				build(configuration, transform);
 				assertExact(context, configuration, transform, inputs());
 				double[] constants = captured();
+				assertCapturedExact(context, configuration, transform, constants);
 				for (String label : configuration.loci) {
 					if (structure(label).getCompleteness() == Completeness.COMPLETE) {
 						assertEquals(reference.get(configuration).get(label), descriptor(label),
 								context + " " + label);
 					}
-					references(context + " " + label, label, constants, transform, problems);
+					references(context + " " + label, label, configuration, constants,
+							transform, problems);
 				}
 				getKernel().clearConstruction(true);
 			}
@@ -873,6 +1010,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				build(configuration, identity);
 				assertExact(configuration.name(), configuration, identity, inputs());
 				double[] constants = captured();
+				assertCapturedExact(configuration.name(), configuration, identity, constants);
 				for (String label : configuration.loci) {
 					assertEquals(Completeness.COMPLETE, structure(label).getCompleteness(),
 							configuration + " " + label);
@@ -880,8 +1018,8 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 					assertEquals(loci.getOrDefault(label, descriptor), descriptor,
 							configuration + " " + label + " in both units");
 					loci.put(label, descriptor);
-					references(configuration + " " + label, label, constants, identity,
-							problems);
+					references(configuration + " " + label, label, configuration, constants,
+							identity, problems);
 				}
 				getKernel().clearConstruction(true);
 			}
@@ -893,7 +1031,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 
 	/**
 	 * The synthetic configuration with the driver at its starting parameter and the labelled
-	 * outputs traced by its loci, every constant transformed. At the tangency the second
+	 * outputs traced by its loci, every constant transformed. At the tangencies the second
 	 * output is undefined when it is created, so only {@code lq} traces it there.
 	 */
 	private void build(Configuration configuration, Transform transform) {
@@ -907,7 +1045,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				+ plain(transform.length(configuration.radius)) + ")");
 		add("N=Point(g1)");
 		moveDriver((GeoPoint) lookup("N"), configuration.driver);
-		add("t=Ray(P,N)");
+		add("t=" + configuration.line + "(P,N)");
 		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
 				(GeoLine) lookup("t"), (GeoConic) lookup("p"));
 		for (String label : configuration.loci) {
@@ -934,8 +1072,8 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * @return the constants that the class-v3 program of {@code lq} captured, which the
 	 *         certificate decides ({@code locus-v2-certified-construction-model.md} section
 	 *         10.6): the driver circle by its half axes, eigenvectors and midpoint (0 to 7),
-	 *         the point P (8, 9) and the circle p by its matrix entries A2, A4 and A5 (10 to
-	 *         12); the conic derives them from the typed inputs with rounding
+	 *         the point P of the ray or line (8, 9) and the circle p by its matrix entries A2,
+	 *         A4 and A5 (10 to 12); the conic derives them from the typed inputs with rounding
 	 */
 	private double[] captured() {
 		CertifiedConstructionProgram2D program = ((ReconstructibleLocusEvaluator2D) locus("lq")
@@ -948,7 +1086,8 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		int found = 0;
 		for (CertifiedConstructionProgram2D.Step step : program.getSteps()) {
 			List<CertifiedConstructionProgram2D.Operand> operands = step.getOperands();
-			if (step.getOperation() == CertifiedConstructionProgram2D.Operation.RAY
+			if ((step.getOperation() == CertifiedConstructionProgram2D.Operation.RAY
+					|| step.getOperation() == CertifiedConstructionProgram2D.Operation.JOIN)
 					&& operands.get(0).getKind() == CertifiedConstructionProgram2D.OperandKind
 							.POINT) {
 				constants[8] = operands.get(0).getValue(3);
@@ -966,6 +1105,29 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		}
 		assertEquals(2, found, program.getSignature());
 		return constants;
+	}
+
+	/**
+	 * The captured constants are the exact transformed constants, bit for bit: the half axes
+	 * are the radius of {@code g1}, the eigenvectors the axes, the midpoint its centre, then
+	 * the point P and the matrix entries {@code A2 = cx^2 + cy^2 - r^2}, {@code A4 = -cx} and
+	 * {@code A5 = -cy} of {@code p}.
+	 */
+	private static void assertCapturedExact(String context, Configuration configuration,
+			Transform transform, double[] constants) {
+		BigDecimal zero = BigDecimal.ZERO;
+		BigDecimal radius = transform.length(configuration.radius);
+		BigDecimal a4 = transform.x(zero).negate();
+		BigDecimal a5 = transform.y(zero).negate();
+		BigDecimal circle = transform.length(BigDecimal.valueOf(25));
+		BigDecimal[] exact = {radius, radius, BigDecimal.ONE, zero, zero, BigDecimal.ONE,
+			transform.x(configuration.centreX), transform.y(configuration.centreY),
+			transform.x(BigDecimal.valueOf(-25)), transform.y(BigDecimal.valueOf(50)),
+			a4.multiply(a4).add(a5.multiply(a5)).subtract(circle.multiply(circle)), a4, a5};
+		for (int index = 0; index < exact.length; index++) {
+			assertEquals(0, new BigDecimal(constants[index]).compareTo(exact[index]),
+					context + " captured constant " + index + " " + constants[index]);
+		}
 	}
 
 	/** The typed inputs are the exact transformed constants, bit for bit. */
@@ -1050,12 +1212,14 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * Records every statement of a certificate that the 60-digit reference of the captured
 	 * constants contradicts: a certified piece at one of its samples, a transition bracket
 	 * without a sign change of the discriminant and, for an exact transformation, a singular
-	 * parameter or point component that does not enclose the transformed reference.
+	 * parameter or point component that does not enclose the transformed reference: the
+	 * double root at {@code atan2(4, 3)}, or the point (15, 20) at {@code atan2(-4, -3)} or,
+	 * for the line of the point pair, the point (-25, 0) at the seam.
 	 *
 	 * @param transform the exact transformation, or {@code null} for rounded constants
 	 */
-	private void references(String context, String label, double[] constants,
-			Transform transform, List<String> problems) {
+	private void references(String context, String label, Configuration configuration,
+			double[] constants, Transform transform, List<String> problems) {
 		LocusExistenceStructure2D structure = structure(label);
 		for (Coverage coverage : structure.getCoverage()) {
 			CoverageState state = coverage.getState();
@@ -1068,7 +1232,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				double t = interval.getLower()
 						+ (interval.getUpper() - interval.getLower()) * sample / 6;
 				BigDecimal[] value = discriminantAt(constants, t);
-				boolean exists = value[0].signum() >= 0 && value[1].signum() > 0;
+				// A line has both roots; a ray only those ahead of P.
+				boolean exists = value[0].signum() >= 0
+						&& (!"Ray".equals(configuration.line) || value[1].signum() > 0);
 				if (exists != (state == CoverageState.CERTIFIED_EXISTS)) {
 					problems.add(context + ": " + state + " at t=" + t + " where D=" + value[0]
 							+ " and the ray test is " + value[1]);
@@ -1098,13 +1264,18 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			}
 		}
 		for (LocusPointComponent2D point : structure.getPointComponents()) {
-			if (!enclosesCosine(point.getParameterLower(), point.getParameterUpper(), false)) {
+			// The seam point of the line is the exact -pi, inside [-nextUp(pi), -pi].
+			boolean seam = "Line".equals(configuration.line)
+					&& new BigDecimal(point.getParameterLower()).compareTo(PI.negate()) <= 0
+					&& PI.negate().compareTo(new BigDecimal(point.getParameterUpper())) <= 0;
+			if (!seam && !enclosesCosine(point.getParameterLower(), point.getParameterUpper(),
+					false)) {
 				problems.add(context + ": the point component does not enclose atan2(-4, -3) "
 						+ point);
 			}
 			double[] position = point.getPositionEnclosure();
-			BigDecimal x = transform.x(BigDecimal.valueOf(15));
-			BigDecimal y = transform.y(BigDecimal.valueOf(20));
+			BigDecimal x = transform.x(BigDecimal.valueOf(seam ? -25 : 15));
+			BigDecimal y = transform.y(BigDecimal.valueOf(seam ? 0 : 20));
 			if (position == null || new BigDecimal(position[0]).compareTo(x) > 0
 					|| x.compareTo(new BigDecimal(position[1])) > 0
 					|| new BigDecimal(position[2]).compareTo(y) > 0
@@ -1113,6 +1284,125 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 						+ point);
 			}
 		}
+	}
+
+	/**
+	 * Records what the 60-digit discriminant of the captured constants contradicts,
+	 * independently of any root classification: sampled at 4096 parameters, it changes sign
+	 * with the roots ahead of P (on a ray) only where the certificate changes state or
+	 * certifies a boundary; and at both ends of the enclosure of every singular parameter (a
+	 * double root inside an arc) it is not negative with a slope from negative to positive, and
+	 * of every point component (a double root inside nonexistence) not positive with a slope
+	 * from positive to negative.
+	 *
+	 * @return number of sign changes found at the samples
+	 */
+	private int signChangesAreCertified(String context, String label,
+			Configuration configuration, double[] constants, List<String> problems) {
+		LocusExistenceStructure2D structure = structure(label);
+		boolean ray = "Ray".equals(configuration.line);
+		int samples = 4096;
+		int changes = 0;
+		double previous = -Math.PI;
+		BigDecimal[] before = discriminantAt(constants, previous);
+		for (int index = 1; index < samples; index++) {
+			double t = -Math.PI + 2 * Math.PI * index / samples;
+			BigDecimal[] value = discriminantAt(constants, t);
+			if (before[0].signum() * value[0].signum() < 0
+					&& (!ray || before[1].signum() > 0 && value[1].signum() > 0)) {
+				changes++;
+				if (!changesIn(structure, previous, t)) {
+					problems.add(context + ": the discriminant changes sign in (" + previous
+							+ ", " + t + ") where the certificate states no change");
+				}
+			}
+			previous = t;
+			before = value;
+		}
+		for (LocusSingularParameter2D singular : structure.getSingularParameters()) {
+			if (!doubleRoot(constants, singular.getParameterLower(),
+					singular.getParameterUpper(), 1)) {
+				problems.add(context + ": no double root of the discriminant with an arc on both"
+						+ " sides in " + singular);
+			}
+		}
+		for (LocusPointComponent2D point : structure.getPointComponents()) {
+			if (!doubleRoot(constants, point.getParameterLower(), point.getParameterUpper(),
+					-1)) {
+				problems.add(context + ": no double root of the discriminant with nonexistence"
+						+ " on both sides in " + point);
+			}
+		}
+		return changes;
+	}
+
+	/** @return whether the certificate changes state, or certifies a boundary, in the range */
+	private static boolean changesIn(LocusExistenceStructure2D structure, double lower,
+			double upper) {
+		for (Coverage coverage : structure.getCoverage()) {
+			LocusInterval2D interval = coverage.getInterval();
+			boolean meets = interval.getLower() <= upper && lower <= interval.getUpper();
+			if (meets && coverage.getState() != CoverageState.CERTIFIED_EXISTS
+					&& coverage.getState() != CoverageState.CERTIFIED_DOES_NOT_EXIST) {
+				return true;
+			}
+		}
+		return coverageAt(structure, lower).getState()
+				!= coverageAt(structure, upper).getState();
+	}
+
+	/**
+	 * @return whether the 60-digit discriminant has, at both binary64 ends, the sign of
+	 *         {@code side} or zero, and a slope of sign {@code -side} at the lower end and
+	 *         {@code side} at the upper one: a double root with that sign on both sides
+	 */
+	private static boolean doubleRoot(double[] constants, double lower, double upper,
+			int side) {
+		BigDecimal[] low = slopeAt(constants, lower);
+		BigDecimal[] high = slopeAt(constants, upper);
+		return low[0].signum() * side >= 0 && high[0].signum() * side >= 0
+				&& low[1].signum() * side <= 0 && high[1].signum() * side >= 0;
+	}
+
+	/**
+	 * @return the 60-digit discriminant of the line from P through the driver at {@code t}
+	 *         against {@code p}, and its derivative in {@code t}, from the captured constants
+	 */
+	private static BigDecimal[] slopeAt(double[] constants, double t) {
+		BigDecimal parameter = new BigDecimal(t);
+		BigDecimal[] k = new BigDecimal[constants.length];
+		for (int index = 0; index < constants.length; index++) {
+			k[index] = new BigDecimal(constants[index]);
+		}
+		BigDecimal cosine = series(parameter, true, REFERENCE);
+		BigDecimal sine = series(parameter, false, REFERENCE);
+		BigDecimal along = k[0].multiply(cosine, REFERENCE);
+		BigDecimal across = k[1].multiply(sine, REFERENCE);
+		BigDecimal alongSlope = k[0].multiply(sine, REFERENCE).negate();
+		BigDecimal acrossSlope = k[1].multiply(cosine, REFERENCE);
+		BigDecimal dx = along.multiply(k[2], REFERENCE).add(across.multiply(k[4], REFERENCE),
+				REFERENCE).add(k[6], REFERENCE).subtract(k[8], REFERENCE);
+		BigDecimal dy = along.multiply(k[3], REFERENCE).add(across.multiply(k[5], REFERENCE),
+				REFERENCE).add(k[7], REFERENCE).subtract(k[9], REFERENCE);
+		BigDecimal dxSlope = alongSlope.multiply(k[2], REFERENCE)
+				.add(acrossSlope.multiply(k[4], REFERENCE), REFERENCE);
+		BigDecimal dySlope = alongSlope.multiply(k[3], REFERENCE)
+				.add(acrossSlope.multiply(k[5], REFERENCE), REFERENCE);
+		BigDecimal wx = k[11].negate().subtract(k[8]);
+		BigDecimal wy = k[12].negate().subtract(k[9]);
+		BigDecimal squared = k[11].multiply(k[11]).add(k[12].multiply(k[12])).subtract(k[10]);
+		BigDecimal cross = dx.multiply(wy, REFERENCE).subtract(dy.multiply(wx, REFERENCE),
+				REFERENCE);
+		BigDecimal crossSlope = dxSlope.multiply(wy, REFERENCE)
+				.subtract(dySlope.multiply(wx, REFERENCE), REFERENCE);
+		BigDecimal discriminant = squared.multiply(dx.multiply(dx, REFERENCE)
+				.add(dy.multiply(dy, REFERENCE), REFERENCE), REFERENCE)
+				.subtract(cross.multiply(cross, REFERENCE), REFERENCE);
+		BigDecimal slope = squared.multiply(dx.multiply(dxSlope, REFERENCE)
+				.add(dy.multiply(dySlope, REFERENCE), REFERENCE), REFERENCE)
+				.subtract(cross.multiply(crossSlope, REFERENCE), REFERENCE)
+				.multiply(BigDecimal.valueOf(2), REFERENCE);
+		return new BigDecimal[] {discriminant, slope};
 	}
 
 	/**
@@ -1205,25 +1495,31 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		return value.stripTrailingZeros().toPlainString();
 	}
 
-	/** The synthetic configurations of matrix section 1 that V-INV-2 transforms. */
+	/**
+	 * The synthetic configurations of matrix section 1 that V-INV-2 transforms: rays through
+	 * the driver, and the line of the two point components.
+	 */
 	private enum Configuration {
-		CRITICAL("35", "-45", "40", 2.5, "lq", "lr"),
-		BITE("35", "-45", "40.0009765625", 2.5, "lq", "lr"),
-		PENETRATION("35", "-45", "39.9990234375", 2.5, "lq", "lr"),
-		TANGENCY("83", "19", "40", EXTERNAL, "lq");
+		CRITICAL("35", "-45", "40", 2.5, "Ray", "lq", "lr"),
+		BITE("35", "-45", "40.0009765625", 2.5, "Ray", "lq", "lr"),
+		PENETRATION("35", "-45", "39.9990234375", 2.5, "Ray", "lq", "lr"),
+		TANGENCY("83", "19", "40", EXTERNAL, "Ray", "lq"),
+		POINT_PAIR("15", "70", "40", EXTERNAL, "Line", "lq");
 
 		private final BigDecimal centreX;
 		private final BigDecimal centreY;
 		private final BigDecimal radius;
 		private final double driver;
+		private final String line;
 		private final List<String> loci;
 
 		Configuration(String centreX, String centreY, String radius, double driver,
-				String... loci) {
+				String line, String... loci) {
 			this.centreX = new BigDecimal(centreX);
 			this.centreY = new BigDecimal(centreY);
 			this.radius = new BigDecimal(radius);
 			this.driver = driver;
+			this.line = line;
 			this.loci = List.of(loci);
 		}
 	}

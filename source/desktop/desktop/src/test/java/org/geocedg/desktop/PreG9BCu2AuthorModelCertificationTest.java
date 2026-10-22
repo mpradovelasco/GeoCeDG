@@ -1055,40 +1055,64 @@ class PreG9BCu2AuthorModelCertificationTest {
 	 * {@code t = -1}; excCyl to 2.9, 3.7 and 3.85, to the last binary64 of penetration and the
 	 * first of the bite, to 7.0, where the cover is empty, and back to 2.9; then rbCone to 8,
 	 * where the construction degenerates), give results identical bit for bit at every step
-	 * for every locus of the model, {@code e_2} included: the semantic revision, the slice
-	 * fingerprint and the published branch (coverage, components with their ends, brackets and
-	 * sources, singular parameters, folds and the branch lineage), the roots, exact evidence,
-	 * stationary points and box count, the lineage keys and transitions, and the structure of
+	 * for every locus of the model, {@code e_2} included, and again after undoing and redoing
+	 * the last two changes and after reopening the saved document: the semantic revision, the
+	 * slice fingerprint and the published branch (coverage, components with their ends,
+	 * brackets and sources, singular parameters, folds and the branch lineage), the full
+	 * signatures of the roots, exact evidence and stationary points and the box count, the
+	 * lineage keys and transitions, the events of the slice (settlement outcome, fidelity
+	 * report, captured selection rule and the work of certification) and the structure of
 	 * every metric with its events. The model file carries the durable identities, so nothing
 	 * is normalized.
 	 */
 	@Test
 	void twoRunsOfTheAuthorModelGiveIdenticalResults() throws Exception {
 		File model = PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work);
-		String first = PreG9BR6PlusF3Fixtures.onEdt(() -> run(model));
-		String second = PreG9BR6PlusF3Fixtures.onEdt(() -> run(model));
+		String first = PreG9BR6PlusF3Fixtures.onEdt(() -> run(model, work));
+		String second = PreG9BR6PlusF3Fixtures.onEdt(() -> run(model, work));
 		assertEquals(first, second);
 		for (String part : List.of("e_2 revision=", "|component=", "|fold=", "TRANSITION[",
 				"|coefficients=", "ORIGIN_WRAP", "UNRESOLVED", "SPLIT[", "MERGED[",
-				"DISAPPEARED[", "APPEARED[")) {
+				"DISAPPEARED[", "APPEARED[", "settlement=", " rule=2LINE_CIRCLE",
+				"CERTIFICATE_COMPUTATION=", "undo 0", "redo 1", "reopened")) {
 			assertTrue(first.contains(part), "the runs compare " + part);
 		}
 	}
 
-	/** One run of V-DET-1 on a newly opened model. */
-	private static String run(File model) throws Exception {
-		AppGeoCeDG app = PreG9BCu0Corpus.open(model);
-		PreG9BCu0Corpus.movePathPoint(app, "N", -1);
-		StringBuilder text = new StringBuilder(results(app, "opened"));
-		double penetration = Double.longBitsToDouble(LAST_PENETRATION);
-		for (double value : new double[] {2.9, 3.7, 3.85, penetration,
-				Math.nextUp(penetration), 7.0, 2.9}) {
-			PreG9BCu0Corpus.setNumber(app, "excCyl", value);
-			text.append(results(app, "excCyl=" + Double.toHexString(value)));
+	/**
+	 * One run of V-DET-1 on a newly opened model: the changes, the last two undone and
+	 * redone, then the document saved and reopened.
+	 */
+	private static String run(File model, Path work) throws Exception {
+		// The run retires the embedded hosts it opened.
+		try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(model);
+			PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+			PreG9BR6PlusF3Fixtures.baseline(app);
+			StringBuilder text = new StringBuilder(results(app, "opened"));
+			double penetration = Double.longBitsToDouble(LAST_PENETRATION);
+			for (double value : new double[] {2.9, 3.7, 3.85, penetration,
+					Math.nextUp(penetration), 7.0, 2.9}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+				PreG9BR6PlusF3Fixtures.store(app);
+				text.append(results(app, "excCyl=" + Double.toHexString(value)));
+			}
+			PreG9BCu0Corpus.setNumber(app, "rbCone", 8);
+			PreG9BR6PlusF3Fixtures.store(app);
+			text.append(results(app, "rbCone=8"));
+			for (int step = 0; step < 2; step++) {
+				app.getKernel().getConstruction().getUndoManager().undo();
+				PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+				text.append(results(app, "undo " + step));
+			}
+			for (int step = 0; step < 2; step++) {
+				app.getKernel().getConstruction().getUndoManager().redo();
+				PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+				text.append(results(app, "redo " + step));
+			}
+			app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work, "determinism"));
+			return text.append(results(app, "reopened")).toString();
 		}
-		PreG9BCu0Corpus.setNumber(app, "rbCone", 8);
-		text.append(results(app, "rbCone=8"));
-		return text.toString();
 	}
 
 	/** @return every result of the model that a second run must reproduce bit for bit */
@@ -1111,13 +1135,39 @@ class PreG9BCu2AuthorModelCertificationTest {
 								: branch.getSemanticSignature());
 				Result result = algorithm.getHybridExistenceCertificate();
 				if (result != null) {
-					text.append("\n roots=").append(result.getRoots())
-							.append("\n exact=").append(result.getExactEvidence())
-							.append("\n stationary=").append(stationary(result))
+					StringBuilder roots = new StringBuilder();
+					result.getRoots().forEach(root -> roots.append(root.getSignature())
+							.append(';'));
+					StringBuilder exact = new StringBuilder();
+					result.getExactEvidence().forEach(evidence -> exact.append(
+							evidence.getSignature()).append(';'));
+					StringBuilder stationary = new StringBuilder();
+					result.getStationaryPoints().forEach(point -> stationary.append(
+							point.getSignature()).append(';'));
+					text.append("\n roots=").append(roots)
+							.append("\n exact=").append(exact)
+							.append("\n stationary=").append(stationary)
 							.append("\n boxes=").append(result.getExistenceBoxes())
 							.append("\n keys=").append(LocusComponentLineage2D.keys(
 									result.getStructure()))
 							.append("\n lineage=").append(algorithm.getHybridLineage());
+				}
+				if (locus.getSemanticDefinition() != null
+						&& locus.getSemanticDefinition().getEvaluatorCapability()
+								instanceof ReconstructibleLocusEvaluator2D) {
+					// The events of the slice: settlement, departures and the captured rule.
+					ReconstructibleLocusEvaluator2D evaluator = (ReconstructibleLocusEvaluator2D)
+							locus.getSemanticDefinition().getEvaluatorCapability();
+					text.append("\n settlement=").append(evaluator.getSettlementOutcome()
+							.getToken()).append(" fidelity=").append(evaluator.getFidelityReport())
+							.append("\n rule=").append(evaluator.captureCertifiedProgramV3()
+									.map(CertifiedConstructionProgram2D::getSelectionSignature)
+									.orElse("refused " + evaluator.getProgramV3Refusal()));
+				}
+				text.append("\n work=");
+				for (LocusCertificationWork2D kind : LocusCertificationWork2D.values()) {
+					text.append(kind.name()).append('=').append(locus.getInstrumentation()
+							.getCertificationWork(kind)).append(' ');
 				}
 				text.append('\n');
 			} else if (geo.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2) {

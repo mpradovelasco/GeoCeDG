@@ -310,76 +310,125 @@ class PreG9BCu2AuthorModelRepresentationTest {
 
 	/**
 	 * V-INV-1 (corrective descendant T13-R4): the zoom, the output resolution and the size of
-	 * the Graphics View are presentation parameters. The complete author model is drawn in its
-	 * real view, which is resized, zoomed and moved, and exported at 2 and 4 times its
-	 * resolution. Every change draws the loci of the view again for the new presentation:
-	 * their render caches build or their strokes move on screen. The mathematical data of
-	 * every locus of the model, which lie in the projection planes of the construction, stay
-	 * the same objects and bits: the published certificate, the semantic revision and the
-	 * slice fingerprint, the roots and exact evidence, and the points of the branch at 16
-	 * parameters; no certificate is computed, no existence box is evaluated and no slice is
-	 * built.
+	 * the Graphics View are presentation parameters. The complete author model, with the
+	 * synthetic point components and the band of an unlabelled second output of matrix
+	 * section 1 added to it, is drawn in its real view, which is resized, zoomed and moved,
+	 * and exported at 2 and 4 times its resolution, in the author's state, at excCyl 3.7, at
+	 * the first binary64 of the bite and with rbCone 8. Every change draws the loci of the
+	 * view again for the new presentation: their render caches build or their strokes move on
+	 * screen; every visible locus is drawn. The mathematical data of every locus, which lie in the
+	 * projection planes of the construction, stay the same objects and bits: the published
+	 * certificate, the semantic revision and the slice fingerprint, the roots and exact
+	 * evidence, and the points of the branch at 16 parameters; no certificate is computed, no
+	 * existence box is evaluated and no slice is built.
 	 */
 	@Test
 	void zoomOutputResolutionAndViewSizeChangeNoCertificate() throws Exception {
-		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> PreG9BCu0Corpus.open(
-				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work)));
+		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG opened = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			synthetic(opened);
+			return opened;
+		});
 		EuclidianView view = PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
 		List<String> steps = List.of("size 1200x800", "size 400x300", "zoom 500",
 				"zoom 5", "zoom 50", "export x2", "export x4");
+		Map<String, Runnable> states = new LinkedHashMap<>();
+		states.put("author", () -> { });
+		states.put("excCyl=3.7", () -> PreG9BCu0Corpus.setNumber(app, "excCyl", 3.7));
+		states.put("bite", () -> PreG9BCu0Corpus.setNumber(app, "excCyl",
+				Double.longBitsToDouble(0x400d416bb67a38bcL)));
+		states.put("rbCone=8", () -> PreG9BCu0Corpus.setNumber(app, "rbCone", 8));
 		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
 			List<String> loci = new ArrayList<>(CLOSED);
 			loci.add("e_2");
-			Map<String, Result> certificates = new LinkedHashMap<>();
-			List<String> drawn = new ArrayList<>();
-			for (String label : loci) {
-				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
-				certificates.put(label, certificate(locus));
-				if (view.getDrawableFor(locus) instanceof DrawLocusV2) {
-					drawn.add(label);
-				}
-			}
-			final String mathematics = mathematics(app, loci);
-			final String work = certificationWork(app, loci);
+			loci.add("spq");
+			loci.add("slr2");
 			Map<String, Object> values = new LinkedHashMap<>();
-			values.put("drawn", drawn);
-			Map<String, Runnable> changes = new LinkedHashMap<>();
-			changes.put(steps.get(0), () -> resize(view, 1200, 800));
-			changes.put(steps.get(1), () -> resize(view, 400, 300));
-			changes.put(steps.get(2), () -> view.setCoordSystem(300, 400, 500, 500));
-			changes.put(steps.get(3), () -> view.setCoordSystem(10, 10, 5, 5));
-			changes.put(steps.get(4), () -> view.setCoordSystem(50, 200, 50, 50));
-			changes.put(steps.get(5), () -> view.getExportImage(2));
-			changes.put(steps.get(6), () -> view.getExportImage(4));
-			String previous = presentation(view, app, drawn);
-			for (Map.Entry<String, Runnable> change : changes.entrySet()) {
-				change.getValue().run();
+			for (Map.Entry<String, Runnable> state : states.entrySet()) {
+				state.getValue().run();
 				view.updateAllDrawables(true);
-				String now = presentation(view, app, drawn);
-				values.put(change.getKey() + ".presentation", !now.equals(previous));
-				previous = now;
-				boolean same = true;
+				Map<String, Result> certificates = new LinkedHashMap<>();
+				List<String> drawn = new ArrayList<>();
+				List<String> visible = new ArrayList<>();
 				for (String label : loci) {
-					same &= certificates.get(label) == certificate(PreG9BCu0Corpus.locus(app,
-							label));
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					certificates.put(label, certificate(locus));
+					if (view.getDrawableFor(locus) instanceof DrawLocusV2) {
+						drawn.add(label);
+					}
+					if (locus.isEuclidianVisible()) {
+						visible.add(label);
+					}
 				}
-				values.put(change.getKey() + ".certificates", same);
-				values.put(change.getKey() + ".mathematics",
-						mathematics.equals(mathematics(app, loci)));
-				values.put(change.getKey() + ".work", work.equals(certificationWork(app, loci)));
+				final String mathematics = mathematics(app, loci);
+				final String work = certificationWork(app, loci);
+				values.put(state.getKey() + ".drawn", drawn.containsAll(visible)
+						&& drawn.containsAll(FIRST_FAMILY) && drawn.contains("spq")
+						&& drawn.contains("slr2") ? "all visible" : drawn + " of " + visible);
+				Map<String, Runnable> changes = new LinkedHashMap<>();
+				changes.put(steps.get(0), () -> resize(view, 1200, 800));
+				changes.put(steps.get(1), () -> resize(view, 400, 300));
+				changes.put(steps.get(2), () -> view.setCoordSystem(300, 400, 500, 500));
+				changes.put(steps.get(3), () -> view.setCoordSystem(10, 10, 5, 5));
+				changes.put(steps.get(4), () -> view.setCoordSystem(50, 200, 50, 50));
+				changes.put(steps.get(5), () -> view.getExportImage(2));
+				changes.put(steps.get(6), () -> view.getExportImage(4));
+				String previous = presentation(view, app, drawn);
+				for (Map.Entry<String, Runnable> change : changes.entrySet()) {
+					change.getValue().run();
+					view.updateAllDrawables(true);
+					String key = state.getKey() + " " + change.getKey();
+					String now = presentation(view, app, drawn);
+					values.put(key + ".presentation", !now.equals(previous));
+					previous = now;
+					boolean same = true;
+					for (String label : loci) {
+						same &= certificates.get(label) == certificate(PreG9BCu0Corpus.locus(app,
+								label));
+					}
+					values.put(key + ".certificates", same);
+					values.put(key + ".mathematics", mathematics.equals(mathematics(app, loci)));
+					values.put(key + ".work", work.equals(certificationWork(app, loci)));
+				}
 			}
 			return values;
 		});
-		assertTrue(((List<?>) row.get("drawn")).containsAll(FIRST_FAMILY), row.toString());
-		for (String step : steps) {
-			assertEquals(true, row.get(step + ".presentation"), step + " " + row);
-			assertEquals(true, row.get(step + ".certificates"), step + " " + row);
-			assertEquals(true, row.get(step + ".mathematics"), step + " " + row);
-			assertEquals(true, row.get(step + ".work"), step + " " + row);
+		for (String state : states.keySet()) {
+			assertEquals("all visible", row.get(state + ".drawn"), state + " " + row);
+			for (String step : steps) {
+				String key = state + " " + step;
+				assertEquals(true, row.get(key + ".presentation"), key + " " + row);
+				assertEquals(true, row.get(key + ".certificates"), key + " " + row);
+				assertEquals(true, row.get(key + ".mathematics"), key + " " + row);
+				assertEquals(true, row.get(key + ".work"), key + " " + row);
+			}
 		}
 	}
 
 	// ---------------------------------------------------------------- helpers
+
+	/**
+	 * Adds the synthetic constructions of matrix section 1 to the model, with labels that the
+	 * model does not use: the indexed first output of the line of the two point components
+	 * ({@code spq}) and the indexed second output of a ray of the critical configuration, with
+	 * its band ({@code slr2}).
+	 */
+	private static void synthetic(AppGeoCeDG app) {
+		for (String command : List.of("ps=Circle((0,0),25)", "Ps=(-25,50)",
+				"gs=Circle((15,70),40)", "Ns=Point(gs)", "gs2=Circle((35,-45),40)",
+				"Ns2=Point(gs2)")) {
+			app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
+		PreG9BCu0Corpus.movePathPoint(app, "Ns", Math.atan2(-4, -3));
+		PreG9BCu0Corpus.movePathPoint(app, "Ns2", 0.3);
+		for (String command : List.of("ts=Line(Ps,Ns)", "Qs=Intersect(ps,ts,1)",
+				"spq=LocusV2(Qs,Ns)", "ts2=Ray(Ps,Ns2)", "Rs2=Intersect(ps,ts2,2)",
+				"slr2=LocusV2(Rs2,Ns2)")) {
+			app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
+		app.getKernel().updateConstruction(false);
+	}
 
 	private static void resize(EuclidianView view, int width, int height) {
 		((EuclidianViewD) view).getJPanel().setSize(width, height);
