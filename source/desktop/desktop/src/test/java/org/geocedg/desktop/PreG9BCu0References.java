@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
@@ -361,10 +362,10 @@ final class PreG9BCu0References {
 			boolean previousValid = false;
 			for (int i = 0; i <= SWEEP_SAMPLES; i++) {
 				double t = a + (b - a) * i / SWEEP_SAMPLES;
-				boolean valid = PreG9BCu0Corpus.point(locus, t, session) != null;
+				boolean valid = evaluatorPoint(locus, t, session) != null;
 				if (i > 0 && valid != previousValid) {
 					double end = bisect(locus, previous, t, previousValid);
-					LocusPoint2D point = PreG9BCu0Corpus.point(locus, end, session);
+					LocusPoint2D point = evaluatorPoint(locus, end, session);
 					ends.add(list(end, point.getX(), point.getY()));
 				}
 				if (valid && Double.isNaN(runStart)) {
@@ -410,7 +411,7 @@ final class PreG9BCu0References {
 		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
 			for (int i = 0; i < 60 && Math.abs(valid - invalid) > 1e-13; i++) {
 				double middle = (valid + invalid) / 2;
-				if (PreG9BCu0Corpus.point(locus, middle, session) != null) {
+				if (evaluatorPoint(locus, middle, session) != null) {
 					valid = middle;
 				} else {
 					invalid = middle;
@@ -418,6 +419,24 @@ final class PreG9BCu0References {
 			}
 		}
 		return valid;
+	}
+
+	/**
+	 * Pointwise validity of the evaluator of the locus, which {@code preserve.branch_ends}
+	 * measures (PRE-G9B-CU2 matrix row V-TR-4: CU2 does not change the evaluator). Since step
+	 * T11 the published definition no longer returns a point where its certificate establishes
+	 * nonexistence, which includes the measured excess of the evaluator beyond an exact end
+	 * (F-CU2-1), so the branch ends are localized on the evaluator, never on the definition.
+	 * The parameter is canonicalized by the provider, as the definition does before it reads
+	 * the evaluator, so the readings are those of the baseline.
+	 */
+	private static LocusPoint2D evaluatorPoint(GeoLocusV2 locus, double t,
+			LocusEvaluationSession2D session) {
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		LocusEvaluation2D evaluation = definition.getEvaluatorCapability().evaluate(definition,
+				definition.getBranches().get(0), definition.getProvider().canonicalize(t),
+				session);
+		return evaluation.isValid() ? evaluation.getPoint() : null;
 	}
 
 	static Map<String, Object> existence(GeoLocusV2 locus) {

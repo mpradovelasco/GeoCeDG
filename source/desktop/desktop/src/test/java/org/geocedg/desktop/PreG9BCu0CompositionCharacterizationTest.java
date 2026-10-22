@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,8 +27,8 @@ import org.junit.jupiter.api.io.TempDir;
  * (reference evidence, not normative): B10.1, the per-point rebuild of the nested copy of
  * {@code o_1} and of its metric index (owner CU1); B10.2, the compatibility certificate that
  * declares {@code e_2} one closed periodic component and the render segment across the
- * oriented-length reset (owner CU2). PRE-G9B-CU1 inverted B10.1; the committed baseline keeps
- * its pinned signature as historical evidence.
+ * oriented-length reset (owner CU2). PRE-G9B-CU1 inverted B10.1 and PRE-G9B-CU2 inverted
+ * B10.2; the committed baseline keeps their pinned signatures as historical evidence.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -78,14 +79,27 @@ class PreG9BCu0CompositionCharacterizationTest {
 				"e_2 is continuous across the driver seam");
 		assertEquals(total, (Double) wrap.get("jump_distance"), 1e-4,
 				"e_2 jumps by the total length of o_1 where K_1 passes N_1");
+		// PRE-G9B-CU2 inversion of B10.2 (ORIGIN_WRAP event, decision D-CU2-3; CU2 tests
+		// PreG9BCu2AuthorModelCertificationTest
+		// .theAuthorParametersAreCertifiedFromStructuralFactsOnly and
+		// PreG9BCu2AuthorModelExportTest
+		// .eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic): the hybrid certificate
+		// proves e_2 complete as one open arc of full length from t_N = 0, the renderer does
+		// not close it, and no stroke bridges the oriented-length reset.
 		Map<?, ?> existence = (Map<?, ?>) wrap.get("existence");
-		assertEquals("COMPLETE", existence.get("completeness"), PreG9BCu0Baseline.pinMessage(
-				"B10.2", "CU2", "the dependent producer certifies completeness without proof"));
-		assertEquals(Boolean.TRUE, existence.get("full_period_closure"),
-				PreG9BCu0Baseline.pinMessage("B10.2", "CU2",
-						"the renderer closes e_2 as one periodic component"));
-		assertTrue((Double) wrap.get("render_segment_across_jump_length") > 0.5 * total,
-				PreG9BCu0Baseline.pinMessage("B10.2", "CU2",
-						"a render segment bridges the oriented-length reset"));
+		assertEquals("COMPLETE", existence.get("completeness"), PreG9BCu0Baseline
+				.inversionMessage("B10.2", "CU2", "completeness is proved"));
+		assertEquals(HybridExistenceCertifier2D.CONTRACT, existence.get("certifier_contract"),
+				PreG9BCu0Baseline.inversionMessage("B10.2", "CU2",
+						"the hybrid certificate is published"));
+		assertEquals(List.of("[0.0, " + 2 * Math.PI + ")"), existence.get("certified_components"),
+				PreG9BCu0Baseline.inversionMessage("B10.2", "CU2",
+						"one open arc of full length from t_N = 0"));
+		assertEquals(Boolean.FALSE, existence.get("full_period_closure"),
+				PreG9BCu0Baseline.inversionMessage("B10.2", "CU2",
+						"the renderer does not close e_2"));
+		assertTrue((Double) wrap.get("render_segment_across_jump_length") < 0.5 * total,
+				PreG9BCu0Baseline.inversionMessage("B10.2", "CU2",
+						"no render segment bridges the oriented-length reset"));
 	}
 }

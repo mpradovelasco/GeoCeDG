@@ -26,7 +26,7 @@
     "Ordinary Classic construction (InterCilConoObliqueTest.ggb) with free angle sliders alpha_C and alpha_{cyl} and the static text text4"
   ],
   "validity_domain": {
-    "description": "Two-view descriptive-geometry construction of an oblique cone (base circle p, centre B, radius rbCone, apex projections H and I) and a vertical cylinder (circle g_1, centre C_c, radius rbCylinder) offset by excCyl along g. The first locus family is the cone-cylinder intersection; the second is the intersection of the cone with the sphere of centre H and radius HD_1 and its development e_2. The validity of every locus is a characterization subject of PRE-G9B-CU, not an established fact.",
+    "description": "Two-view descriptive-geometry construction of an oblique cone (base circle p, centre B, radius rbCone, apex projections H and I) and an oblique cylinder (directrix circle g_1, centre C_c, radius rbCylinder; frontal generators at alpha_{cyl} = 40 degrees) offset by excCyl along g. The first locus family is the cone-cylinder intersection; the second is the intersection of the cone with the sphere of centre H and radius HD_1 and its development e_2. The validity of every locus is a characterization subject of PRE-G9B-CU, not an established fact.",
     "parameters": [
       "excCyl in [-rbCone, rbCone] (slider, step 0.1, saved value 2.9)",
       "rbCone = 5, rbCylinder = 1.5, alpha_{cone} = 47 degrees, alpha_{cyl} = 40 degrees (independent expressions)",

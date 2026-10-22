@@ -7,6 +7,7 @@ package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,6 +15,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import org.geocedg.common.euclidian.draw.LocusRenderPolicy2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geogebra.common.move.ggtapi.models.json.JSONArray;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -25,7 +28,9 @@ import org.junit.jupiter.api.io.TempDir;
  * {@link PreG9BCu0Corpus#withoutE2}): preserved geometric facts and the characterization pins
  * of B06, B07, H01, H03 and B08/B09. Preserved values must survive the corrections of the
  * track; pins name their owning package and are inverted or replaced by it. PRE-G9B-CU1
- * inverted H03; the committed baseline keeps its pinned signature as historical evidence.
+ * inverted H03 and PRE-G9B-CU2 inverted B06, B07 and H01; the committed baseline keeps their
+ * pinned signatures as historical evidence. Since PRE-G9B-CU2 the branch ends are localized
+ * on the evaluator of each locus, which they measure (matrix row V-TR-4).
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -118,28 +123,50 @@ class PreG9BCu0LocusReferenceTest {
 				}
 			}
 		}
+		// PRE-G9B-CU2 inversion of B07 (existence-components section 15; CU2 tests
+		// PreG9BCu2AuthorModelCertificationTest.everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds
+		// and PreG9BCu2AuthorModelRepresentationTest.aBiteIsDrawnToTheImagesOfItsCertifiedEnds):
+		// in a bite the hybrid certificate proves one arc across the seam that excludes the
+		// real gap, never the whole domain, and the drawing is one stroke that reaches both
+		// branch ends.
 		for (String key : List.of("3.7", "3.85", "3.9")) {
 			for (String label : PreG9BCu0References.FIRST_FAMILY) {
 				Map<?, ?> row = (Map<?, ?>) ((Map<?, ?>) sweep.get(key)).get(label);
 				String where = "excCyl=" + key + " " + label;
 				assertEquals("COMPLETE", row.get("completeness"), PreG9BCu0Baseline
-						.pinMessage("B07", "CU2", where + ": certificate claims completeness"));
-				assertEquals(List.of(row.get("declared_domain")), row.get("certified_components"),
-						PreG9BCu0Baseline.pinMessage("B07", "CU2",
-								where + ": one certified component equal to the domain"));
+						.inversionMessage("B07", "CU2", where + ": completeness is proved"));
+				assertEquals(HybridExistenceCertifier2D.CONTRACT, row.get("certifier_contract"),
+						PreG9BCu0Baseline.inversionMessage("B07", "CU2",
+								where + ": the hybrid certificate is published"));
+				List<?> components = (List<?>) row.get("certified_components");
+				assertEquals(1, components.size(), PreG9BCu0Baseline.inversionMessage("B07",
+						"CU2", where + ": one certified arc"));
+				assertNotEquals(row.get("declared_domain"), components.get(0),
+						PreG9BCu0Baseline.inversionMessage("B07", "CU2",
+								where + ": the certified arc is not the whole domain"));
+				assertEquals(Boolean.FALSE, row.get("full_period_closure"),
+						PreG9BCu0Baseline.inversionMessage("B07", "CU2",
+								where + ": the arc is not closed"));
 				assertEquals(2, ((List<?>) row.get("sampled_valid_runs")).size(),
 						where + ": sampled evidence shows a gap");
-				assertTrue((Double) row.get("max_render_gap_at_branch_end_px") > 1,
-						PreG9BCu0Baseline.pinMessage("B07", "CU2",
-								where + ": the render stops short of the branch end"));
+				assertEquals(1, ((Number) row.get("render_subpaths")).intValue(),
+						PreG9BCu0Baseline.inversionMessage("B07", "CU2",
+								where + ": the drawing is one stroke across the seam"));
+				assertTrue((Double) row.get("max_render_gap_at_branch_end_px") <= 0.75,
+						PreG9BCu0Baseline.inversionMessage("B07", "CU2",
+								where + ": the drawing reaches the branch ends (V-B07-1)"));
 			}
 		}
+		// PRE-G9B-CU2 inversion of H01 (publication rule of locus-v2-semantics.md v1.3; CU2
+		// test PreG9BCu2AuthorModelCertificationTest
+		// .theLociArePublishedWhileTheSavedDriverIsInTheGap): the loci are published although
+		// the traced point is undefined at the saved driver.
 		Map<?, ?> h01 = (Map<?, ?>) sweep.get("H01");
 		assertFalse((Boolean) h01.get("traced_point_W_defined"));
 		for (String label : PreG9BCu0References.FIRST_FAMILY) {
-			assertFalse((Boolean) ((Map<?, ?>) h01.get("defined_at_saved_driver")).get(label),
-					PreG9BCu0Baseline.pinMessage("H01", "CU2", label
-							+ " is undefined as a whole at the saved driver position"));
+			assertTrue((Boolean) ((Map<?, ?>) h01.get("defined_at_saved_driver")).get(label),
+					PreG9BCu0Baseline.inversionMessage("H01", "CU2", label
+							+ " is published at the saved driver position"));
 			assertTrue((Boolean) ((Map<?, ?>) h01.get("defined_with_driver_at_minus_one"))
 					.get(label), label + " exists elsewhere on the driver domain");
 		}
@@ -183,12 +210,17 @@ class PreG9BCu0LocusReferenceTest {
 		assertTrue((Boolean) seamRoot.get("admissible"), "the transverse seam root stays"
 				+ " materializable");
 
+		// PRE-G9B-CU2 inversion of B06 (drawing policy v2; CU2 test
+		// PreG9BCu2AuthorModelRepresentationTest.turnsAreBoundedOutsideTheCertifiedFolds): no
+		// drawing turns by more than theta_max between visible chords; e_1 turns more only at
+		// its two certified folds, which that test checks.
 		Map<?, ?> loci = (Map<?, ?>) castMap(values.get("B06")).get("loci");
-		for (String label : List.of("o", "v", "a_1")) {
+		for (String label : List.of("o", "v", "w", "a_1", "o_1")) {
 			Map<?, ?> row = (Map<?, ?>) loci.get(label);
-			assertTrue((Double) row.get("render_max_turn_degrees") > 30,
-					PreG9BCu0Baseline.pinMessage("B06", "CU2", label
-							+ ": render polygon turns by more than 30 degrees"));
+			assertTrue((Double) row.get("render_max_turn_degrees")
+					<= LocusRenderPolicy2D.DEFAULT_MAXIMUM_TURN_DEGREES,
+					PreG9BCu0Baseline.inversionMessage("B06", "CU2", label
+							+ ": the drawing turns by at most theta_max"));
 		}
 		for (Object entry : loci.values()) {
 			Map<?, ?> row = (Map<?, ?>) entry;
