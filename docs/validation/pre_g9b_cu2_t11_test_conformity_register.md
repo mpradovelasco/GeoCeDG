@@ -6,7 +6,7 @@
 | Estado | Candidato técnico del paso T11, en la rama local de implementación; pendiente de revisión autoral; `selfApproved=false` |
 | Autoridad | [estrategia de implementación](../architecture/pre_g9b_cu2_implementation_strategy.md) §5, punto 5 («Cada cambio es una conformidad declarada con su justificación»); decisión del autor D-CU2-T11-R1 (2026-10-21), §5 |
 | Base | `3e711f476` (paso T10) |
-| Revisión | 2026-10-22: resolución autoral previa a T12 (H10, V-CON-6, componente puntual y tokens históricos), §7 |
+| Revisión | 2026-10-22: resolución autoral previa a T12 (H10, V-CON-6, componente puntual y tokens históricos), §7; conformidad del fixture de la matriz GGBScript detectada en T13, §8 |
 
 Este registro declara, para cada prueba heredada que modifica el paso T11, qué fijaba, qué contrato
 aprobado justifica el cambio, qué sigue verificándose, qué cobertura puede haberse perdido y qué
@@ -1603,3 +1603,33 @@ Evidencia de la sonda de compatibilidad (documento escrito en T10 y leído en el
 - `Li` publica ahora su componente puntual en 0, y `Ri` sigue `UNRESOLVED` sin raíces, con `Xi`
   latente;
 - el locus escalar fuera de clase sigue `NOT_ESTABLISHED`, con `Po`, `Ro` y `Xo` sin resolver.
+
+## 8. Conformidad del fixture de la matriz GGBScript (detectada en T13)
+
+La ejecución de desarrollo de `INFRA_UNIT` del paso T13
+(`verification-827c8f612b76423083b8e826a1dc910b`) mostró que T11 (`ae7237c8`) cambió una entrada
+de la matriz de compatibilidad GGBScript de `PRE-G9B-R6`. El cambio no se registró aquí, y su
+huella en el catálogo de contratos estáticos no se actualizó.
+
+| Archivo | Antes | Después |
+|---|---|---|
+| `geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json`, fixture `scalar-locus` | `Q=(s,k*s)` con el generador escalar `s` en el dominio declarado `[−2, 2]`, `L=LocusV2(Q,s,D)` | `Q=S+(0,k)` con `S=Point(c)` en `c=Circle((0,0),1)`, `L=LocusV2(Q,S)` |
+
+1. **Comportamiento anterior.** El fixture trazaba un locus escalar con el certificado de
+   compatibilidad.
+2. **Contrato.** Una forma afín escalar no directa queda fuera de la clase v3 y publica
+   `NOT_ESTABLISHED` sin componentes (grupo G5). El fixture pasa a un locus trazado por un punto de
+   circunferencia, dentro de la clase v3 (como el grupo G6).
+3. **Aserción.** Solo cambian las sentencias del fixture. Las 42 filas (`Length`, `LocusLength` y
+   `Point`) y las 42 sondas de búsqueda que lo usan conservan sus veredictos y su forma, y
+   `P1=Point(L,"generator.main",-1)` y `P2=Point(L,"generator.main",1)` siguen en el fixture.
+4. **Sigue verificándose.** Las tres órdenes en todas sus superficies y locales, sobre un locus con
+   existencia certificada; `PreG9BR6CapabilityMatrixTest` lo ejecuta en `final.desktop`.
+5. **Cobertura.** **ATENCIÓN**: la matriz ya no ejercita esas órdenes sobre un locus de generador
+   escalar.
+6. **Prueba sustitutiva.** Ninguna para la matriz; los loci escalares fuera de clase y su longitud
+   condicionada están en G5, C09 y la §7.1.
+
+En T13 se actualizan la huella canónica del fichero en
+`geocedg/specs/operations/verification-static-contracts.json` (`f167fa71…` → `ee99a54f…`) y la
+huella `static_contracts` del registro de verificación.

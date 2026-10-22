@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU2",
+  "recordKind": "IMPLEMENTATION_CANDIDATE",
+  "record": "docs/validation/pre_g9b_cu2_implementation_candidate_report.md",
+  "verificationRecord": "docs/validation/pre_g9b_cu2_verification_record.md, added by a documentary descendant of the candidate",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "candidateStatus": "CU2 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW",
+  "selfApproved": false,
+  "passClaimed": false,
+  "authorCloseoutExecuted": false,
+  "authorizations": [
+    {"instruction": "GeoCeDG — PRE-G9B-CU2. Aprobación autoral de la arquitectura y autorización condicionada de implementación", "date": "2026-10-21", "record": "docs/validation/pre_g9b_cu2_author_architecture_approval_record.md"},
+    {"instruction": "D-CU2-T11-R1: deterministic settlement of the inherited selection and continuation of T11", "date": "2026-10-21"},
+    {"instruction": "Resolución autoral de las decisiones previas a T12: H10 option A, V-CON-6 option 2, point component of restrictedTo, historical tokens fail closed", "date": "2026-10-22"}
+  ],
+  "authorizedBase": {"commit": "070af6f902cd0be291247e73efb5629ef2a39eba", "tree": "49a659d8b334aae3f69c4db000cc842204e9a85f"},
+  "branch": {"name": "phase/pre-g9b-cu2-implementation", "local": true, "upstream": null, "published": false},
+  "technicalCandidateState": "FROZEN AT THE T13 COMMIT THAT ADDS THIS FILE (identity reported in the verification record)",
+  "lineage": [
+    {"commit": "0b9c7d648137b0db2b0a6fd9f1202b2c2b72e42e", "step": "T0", "role": "approved contracts before code, ADR 0038 accepted, approval record"},
+    {"commit": "9bfafbf054c84ca7b88be732023f944af1ea3761", "step": "T0", "role": "ADR 0038 status in living documents"},
+    {"commit": "cfa30bad76b9bd3b67c0bdb20b078324e1d43605", "step": "T1", "role": "certification counters, benches before, D-CU2-20-R characterization"},
+    {"commit": "9d95f13a868f4706a204fc3cd106bf95f046a11b", "step": "T2", "role": "existence structure v2 without visible change"},
+    {"commit": "2e29ba1d474c71461987969c79fe2ae7f49ba7e6", "step": "T3", "role": "exact fingerprint v2 and slice fidelity (D-CU2-20-R)"},
+    {"commit": "df4057ec6ba083a0df3cfd380f0dc8301a32ab3c", "step": "T3", "role": "class v3 of the certified construction model"},
+    {"commit": "b0618b06a2beb2c2a14e7fb32ad2b8141ff5d78d", "step": "T4", "role": "exact algebra for first-level predicates"},
+    {"commit": "91656ade4719b36b8015367e487e70b242cf8ee0", "step": "T4", "role": "hybrid existence certifier in shadow"},
+    {"commit": "2df65061d74551c23f898b5588d81537cd4e69b4", "step": "T5", "role": "certified folds of the traced map"},
+    {"commit": "ea24c77b40a6c78997e31bb7a4375893d43e59d7", "step": "T6", "role": "structural certificate of a metric function and ORIGIN_WRAP"},
+    {"commit": "00241c65fd35a8bedf879a00c31e50aac98f1bc4", "step": "T7", "role": "author model certified in shadow"},
+    {"commit": "2328aeaf3ecc9f2e1b692dd54a4b2cbbb8c1d9d8", "step": "T8", "role": "structural lineage and selector resolution"},
+    {"commit": "1ace9e4bf488f2e44c229fecbab001dd941724c3", "step": "T9", "role": "consumers read the existence structure; single closure authority"},
+    {"commit": "3e711f476bfdc5fa3fe710c34c7edceb730c2184", "step": "T10", "role": "drawing policy v2 and export approximations"},
+    {"commit": "ae7237c8ccb4b076e4e26115c8a376be56239108", "step": "T11", "role": "published certificates, selection settlement and partial exports"},
+    {"commit": "6382adfeef29ca4801acf56dcbb8078d37147ca3", "step": "author resolution before T12", "role": "H10 conditioned estimate, V-CON-6 minimal certified composition, point component"},
+    {"commit": "7f9eca77311b84ec9051186479e8e6812f0f0dcb", "step": "T12", "role": "CU0 pins inverted in place, new-baseline record, D-CU2-15 manifest wording"},
+    {"commit": "4e394dc3a6ba34f0010c061dd3416e117186e26d", "step": "T13", "role": "labels of the EXISTENCE_NOT_CERTIFIED diagnostic, found by the executed final.desktop selection"},
+    {"commit": "this commit", "step": "T13", "role": "phase registration, executed JUnit inventory, infrastructure pins, candidate report, this mirror and living documents"}
+  ],
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptanceProfiles": ["STATIC", "INFRA_UNIT", "PHASE -Phase PRE-G9B-CU2", "PHASE -Phase PRE-G9B-CU1", "PHASE -Phase PRE-G9B-CU0", "INTEGRATION"],
+  "acceptanceResults": "RECORDED IN THE VERIFICATION RECORD",
+  "finalRun": false,
+  "benches": {"scenarios": ["certification", "tessellation"], "before": "artifacts/benchmarks/pre-g9b-cu/cu2-before-{certification,tessellation}-cfa30bad", "after": "RECORDED IN THE VERIFICATION RECORD", "gc7": "INFORMATIVE"},
+  "phaseSelection": {
+    "phaseId": "PRE-G9B-CU2",
+    "requiredCheckIds": ["compile.shared.semantic", "compile.desktop.semantic", "junit.shared.pre-g9b-cu2.semantic", "junit.desktop.pre-g9b-cu2.semantic"],
+    "selections": {
+      "pre-g9b-cu2.shared": {"classes": 21, "identities": 192, "content": "the 13 PreG9BCu2* shared classes and the 8 exact-algebra classes of kernel/locus/exact"},
+      "pre-g9b-cu2.desktop": {"classes": 9, "identities": 46, "content": "the 9 PreG9BCu2* Desktop classes"}
+    },
+    "inputIdentity": {"commit": "9bfafbf054c84ca7b88be732023f944af1ea3761", "tree": "af1ad02ea9d33586b755cac17398be44ab4729fd"}
+  },
+  "junitInventory": {
+    "updater": "tools/agent/update-verification-junit-inventory.ps1",
+    "producer": "tools/agent/checks/gradle-test-evidence-producer.ps1",
+    "evidenceSource": "working tree of commit 4e394dc3a6ba34f0010c061dd3416e117186e26d with the T13 registry and inventory changes",
+    "counts": {
+      "discovery.shared": {"before": 6098, "after": 6290},
+      "final.shared": {"before": 7015, "after": 7207},
+      "discovery.desktop": {"before": 2185, "after": 2231},
+      "final.desktop": {"before": 2179, "after": 2225}
+    },
+    "registryPin": {"before": "4e1058513384f2de7c107c1e91224b4eab3ae351b750b56446d7bea56cdb07f8", "after": "6ba8034547fc9184d7e52fb5764e78c15f9860a9b7a551df6a38795cbdab5c2f"},
+    "otherSelectionsChanged": false
+  },
+  "infrastructurePins": {
+    "detectedBy": "development INFRA_UNIT verification-827c8f612b76423083b8e826a1dc910b, REJECTED_VERIFICATION_CORE, 20/22",
+    "finalCoverageTest": {"path": "tools/agent/tests/verification-final-coverage.Tests.ps1", "selections": {"before": 66, "after": 68}, "phaseSelections": {"before": 70, "after": 71}, "newCountPins": {"pre-g9b-cu2.shared": 192, "pre-g9b-cu2.desktop": 46}},
+    "staticContracts": {
+      "input": "geocedg/validation/pre-g9b-r6/ggbscript-capability-matrix.json",
+      "before": "f167fa71f6db207f07af6cbc41fe3373654f8557373059646dc5278169c9b4a3",
+      "after": "ee99a54f7b5067b26452f44938dc9352a0ed52eb7d48cebad988bc1a9a6abde3",
+      "cause": "scalar-locus fixture changed in T11 (ae7237c8) without a register entry; now in the T11 conformity register section 8",
+      "registryPin": {"before": "a670be9580c8234ccfabccd208bdf6ad2108e573dc4c2dfe655d732e8832d8ec", "after": "286d787d62b3208d6b30ff1fcd3aa188b12903f06d29755a72ef47c1f1995c6e"}
+    }
+  },
+  "tests": {
+    "addedFiles": 31,
+    "addedClassesWithTests": 30,
+    "modifiedFiles": 68,
+    "removedTests": 0,
+    "t11ConformityRegister": {"record": "docs/validation/pre_g9b_cu2_t11_test_conformity_register.md", "ownConformities": "C01-C73", "auditCorrections": 13, "groupedConformities": 7, "restoredByTheAuthorResolution": ["C35", "C57", "C58", "C60", "C62", "C63"], "registeredLimitations": ["C09", "C22/C23", "C51/C70"]}
+  },
+  "rebaseline": {
+    "record": "docs/validation/pre_g9b_cu2_t12_new_baseline_record.md",
+    "procedure": "C1-4: CU0 pins inverted in place; baseline JSON unchanged",
+    "preserve": {"leaves": 661, "identical": 621, "withinTolerance": 40, "maxAbsoluteDifference": 1.084e-7},
+    "pinsChanged": {"CU2": {"B07": 80, "H01": 4, "B06": 11, "B10.2": 5}, "CU1Retained": {"B10.1": 8, "H03": 2, "H10_H11": 7}, "CU3": 0},
+    "branchEnds": "measured on the evaluator with provider.canonicalize (V-TR-4); bitwise",
+    "manifest": "D-CU2-15 oblique-cylinder wording; model and hashes unchanged"
+  },
+  "numericalReferences": {
+    "H10": {"values": ["0x1.0c0cb3709e5a9p2", "0x1.0394199c9344fp3", "0x1.010912bcc8705p4"], "class": "ESTIMATED, conditioned (locus-v2-metrics.md 26.5)", "sameBitsAsT10AndCU1": true},
+    "o_1TotalLength": 13.236458195804072,
+    "d_2": 5.026489133092055,
+    "e_2": "one open full-length arc from t_N = 0, COMPLETE (B10.2)",
+    "biteAt3.7": "one certified arc [1.5117077290126846, 7.325007837228292] for o, v, w and a_1"
+  },
+  "constants": {
+    "transitionBracketWidth": "2^-40 periods",
+    "existenceBoxesPerBranchAndRevision": 4096,
+    "minimumExistenceDepth": 6,
+    "classV3StepLimit": 256,
+    "exactCertificateCoefficientBits": 4096,
+    "exactBisectionsPerRoot": 512,
+    "drawing": {"minimumDepth": 4, "maximumTurnDegrees": 10, "vertexBudget": 4096},
+    "certifierPolicy": "hybrid-existence-policy/v1",
+    "exploratorySamplesPerBand": 32,
+    "foldIsolationBoxes": "2^-8 to 2^-30 periods"
+  },
+  "normative": {
+    "amendments": "A2.1-R to A2.6 incorporated at T0 (versions in the approval record section 2)",
+    "precisions20261022": ["locus-v2-metrics.md 26.5 (H10)", "locus-v2-certified-construction-model.md 10.10 (V-CON-6)", "locus-v2-existence-components.md 15.7 and 15.8"],
+    "state": "candidate text pending author review",
+    "adr0038": "ACCEPTED — ARCHITECTURE AUTHOR APPROVED WITH PRECISION D-CU2-20-R"
+  },
+  "limitations": [
+    "constructions outside class v3: NOT_ESTABLISHED without components; total length is the conditioned estimate of metrics 26.5",
+    "V-CON-6 composition only over COMPLETE supports without point components and through steps of structural-totality/v1; no composed curve model",
+    "C09: byte identity of DXF exports of out-of-class scalar loci",
+    "C22 and C23: root materialization on point components belongs to CU3 (D-CU2-19)",
+    "C51 and C70: pre-CU2 documents with partial-component selectors or tokens stay latent and fail closed",
+    "C40: cross-locus root tracking on certified dependent loci belongs to CU3",
+    "e_2: two computational cuts of about 1.5e-10 where the length of w_1 is LIMIT_NOT_ESTABLISHED (CU1 metric, pre-existing), declared in drawing and export",
+    "F-CU2-17: SemanticGeneratorDomainProvider1D.canonicalize moves domain parameters by one ulp; pre-existing"
+  ],
+  "e1Register": "CU2 rows updated in the documentary descendant that records the verification (register section 8)",
+  "workspace": {"acceptanceRunsFromCleanTreeAndIndex": true},
+  "remote": {
+    "main": "48a0775e4f2f122f5e2614c62b5773777752ccd1",
+    "originMainEqualsRemoteMain": true,
+    "cu2PreparationBranch": {"name": "phase/pre-g9b-cu2-preparation", "commit": "070af6f902cd0be291247e73efb5629ef2a39eba"},
+    "cu2ImplementationBranchOnRemote": false
+  },
+  "unchanged": ["main", "tags", "releases", "geocedg_book", "AGENTS.md", "CLAUDE.md", "FIRST_AGENT_TASK.md", "ai-shell/prompts", ".github/prompts/canonical"],
+  "bootstrapImpact": "NONE; only the CU2 task prompt changed, at T0, by author instruction",
+  "guideImpact": "NONE; the guide belongs to CU9"
+}

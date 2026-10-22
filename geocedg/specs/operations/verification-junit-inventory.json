@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "b6fdc1adae5670915e53ae5ee3d0bc575e4aac33c53a1a88bc61ab8ff7a6c28f",
-      "discovered_identity_count": 6098,
-      "discovered_identities_sha256": "f59a4c64b6ce8b123412f71120f3df61abbe3e67e27a2fe11417ad55826fda22"
+      "discovery_evidence_sha256": "f9b84b30074d1c54b65ca05c0b2249476b994233407647945d7fa5a8f1b847df",
+      "discovered_identity_count": 6290,
+      "discovered_identities_sha256": "0fb8e07980ea5fa2ab598d7e1dcd6c0ac4d248b34abc0e3b20623db2504a470a"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "3deef03d11146b74ff8bbc623b6e3f52af7801c1efc63c6eb8a9adbee892b581",
-      "discovered_identity_count": 2185,
-      "discovered_identities_sha256": "7b445f72d58e05890137da52fee9b85b242755557709011d5c0362f586aac8a5"
+      "discovery_evidence_sha256": "8d9cbcc79aaf35e23a0b0327399c72368ca1eac6e0b1d78a82cbeb0d1457c42c",
+      "discovered_identity_count": 2231,
+      "discovered_identities_sha256": "153af82501aa679e06ffae24e09d286bb2157061270bb3c111cf2f5addd3460e"
     }
   ],
   "selections": [
@@ -38,8 +38,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 6098,
-      "expected_identities_sha256": "f59a4c64b6ce8b123412f71120f3df61abbe3e67e27a2fe11417ad55826fda22",
+      "expected_identity_count": 6290,
+      "expected_identities_sha256": "0fb8e07980ea5fa2ab598d7e1dcd6c0ac4d248b34abc0e3b20623db2504a470a",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2185,
-      "expected_identities_sha256": "7b445f72d58e05890137da52fee9b85b242755557709011d5c0362f586aac8a5",
+      "expected_identity_count": 2231,
+      "expected_identities_sha256": "153af82501aa679e06ffae24e09d286bb2157061270bb3c111cf2f5addd3460e",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7015,
-      "expected_identities_sha256": "b957362f9adc9d03901cb5d291440d421ab6b2c272920dad43dbe40c56dd4942",
+      "expected_identity_count": 7207,
+      "expected_identities_sha256": "94382ab6a23ec328b0d22ff35432d934d487b309f2cf0956291f5ecb0d73d6b4",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2179,
-      "expected_identities_sha256": "d7c60e0bd9242d15abf8b9271bbce86f18bdeb9b90d6b89b43e8c093d761512b",
+      "expected_identity_count": 2225,
+      "expected_identities_sha256": "1a9d207e6bb93d82a51333c71a3a1bbe660df00f428c0ec99b58fa05146b3650",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -3318,6 +3318,148 @@
         {
           "commit": "435ed78c547abf12642561c3b56a209527be535b",
           "tree": "f7b60f4b45a1f47dd970bcdcd31f1895849caeab"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu2.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.PreG9BCu2CertificationInstrumentationTest",
+        "org.geocedg.common.locus.PreG9BCu2ConditionedEstimateTest",
+        "org.geocedg.common.locus.PreG9BCu2ConsumerMigrationTest",
+        "org.geocedg.common.locus.PreG9BCu2ExistenceStructureV2Test",
+        "org.geocedg.common.locus.PreG9BCu2RepresentationTest",
+        "org.geocedg.common.locus.PreG9BCu2RevisionExactnessTest",
+        "org.geocedg.common.locus.PreG9BCu2SliceFidelityCharacterizationTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2ClassV3ModelTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2FoldCertificationTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2HybridCertificationTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2LineageTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2MetricStructureTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2SelectionSettlementTest",
+        "org.geocedg.common.kernel.locus.exact.CircleDriverRootStructure2DTest",
+        "org.geocedg.common.kernel.locus.exact.ExactPolynomial1DTest",
+        "org.geocedg.common.kernel.locus.exact.ExactRational2DTest",
+        "org.geocedg.common.kernel.locus.exact.RealRootStructure1DTest",
+        "org.geocedg.common.kernel.locus.exact.SegmentDriverRootStructure2DTest",
+        "org.geocedg.common.kernel.locus.exact.SquareFreeDecomposition1DTest",
+        "org.geocedg.common.kernel.locus.exact.SturmSequence1DTest",
+        "org.geocedg.common.kernel.locus.exact.TrigonometricPolynomial2DTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2CertificationInstrumentationTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2ConditionedEstimateTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2ConsumerMigrationTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2ExistenceStructureV2Test",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2RepresentationTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2RevisionExactnessTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2SliceFidelityCharacterizationTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2ClassV3ModelTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2FoldCertificationTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2HybridCertificationTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2LineageTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2MetricStructureTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2SelectionSettlementTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.CircleDriverRootStructure2DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.ExactPolynomial1DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.ExactRational2DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.RealRootStructure1DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.SegmentDriverRootStructure2DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.SquareFreeDecomposition1DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.SturmSequence1DTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.exact.TrigonometricPolynomial2DTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 192,
+      "expected_identities_sha256": "1381bb262b47461353190850f6ce6425c2539b02206d37553306bd60338efce2",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "9bfafbf054c84ca7b88be732023f944af1ea3761",
+          "tree": "af1ad02ea9d33586b755cac17398be44ab4729fd"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu2.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BCu2AuthorModelCertificationTest",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelClassV3Test",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelConsumerTest",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelExportTest",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelLineageTest",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelRepresentationTest",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelSelectionSettlementTest",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelSliceFidelityTest",
+        "org.geocedg.desktop.PreG9BCu2ExportDeclarationTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelCertificationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelClassV3Test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelConsumerTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelExportTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelLineageTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelRepresentationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelSelectionSettlementTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2AuthorModelSliceFidelityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu2ExportDeclarationTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 46,
+      "expected_identities_sha256": "0e020005b35587ce109ecc8e0993bfb4659d68d1e2ea2e45b32ca2339ad65c03",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "9bfafbf054c84ca7b88be732023f944af1ea3761",
+          "tree": "af1ad02ea9d33586b755cac17398be44ab4729fd"
         }
       ]
     }
