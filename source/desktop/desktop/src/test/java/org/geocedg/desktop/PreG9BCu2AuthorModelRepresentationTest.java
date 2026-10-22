@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.euclidian.draw.DrawLocusV2;
 import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
 import org.geocedg.common.euclidian.draw.LocusRenderData2D;
 import org.geocedg.common.euclidian.draw.LocusRenderData2D.Fidelity;
@@ -31,6 +32,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBoundaryImage2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
@@ -42,9 +44,14 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousCompo
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Result;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPolicy2D;
 import org.geocedg.common.kernel.locus.metric.MetricWorkBudget2D;
+import org.geogebra.common.awt.GRectangle;
+import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -53,7 +60,8 @@ import org.junit.jupiter.api.io.TempDir;
  * PRE-G9B-CU2 step T10: drawing policy {@value LocusRenderPolicy2D#VERSION} on the author
  * model, in the author's view, with the certificates that step T11 publishes. Matrix rows
  * V-B06-1, V-B06-2, V-B06-3, V-REP-1 and V-AVAIL-2 (model part). The CU0 references of {@code pins.B06} and {@code pins.B07} are
- * inverted in step T12.
+ * inverted in step T12. Corrective descendant T13-R4 (decision D-CU2-T13-R4): V-INV-1 in the
+ * real Graphics View.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -300,7 +308,155 @@ class PreG9BCu2AuthorModelRepresentationTest {
 		assertEquals(true, row.get("existence"), row.toString());
 	}
 
+	/**
+	 * V-INV-1 (corrective descendant T13-R4): the zoom, the output resolution and the size of
+	 * the Graphics View are presentation parameters. The complete author model is drawn in its
+	 * real view, which is resized, zoomed and moved, and exported at 2 and 4 times its
+	 * resolution. Every change draws the loci of the view again for the new presentation:
+	 * their render caches build or their strokes move on screen. The mathematical data of
+	 * every locus of the model, which lie in the projection planes of the construction, stay
+	 * the same objects and bits: the published certificate, the semantic revision and the
+	 * slice fingerprint, the roots and exact evidence, and the points of the branch at 16
+	 * parameters; no certificate is computed, no existence box is evaluated and no slice is
+	 * built.
+	 */
+	@Test
+	void zoomOutputResolutionAndViewSizeChangeNoCertificate() throws Exception {
+		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> PreG9BCu0Corpus.open(
+				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work)));
+		EuclidianView view = PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
+		List<String> steps = List.of("size 1200x800", "size 400x300", "zoom 500",
+				"zoom 5", "zoom 50", "export x2", "export x4");
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			List<String> loci = new ArrayList<>(CLOSED);
+			loci.add("e_2");
+			Map<String, Result> certificates = new LinkedHashMap<>();
+			List<String> drawn = new ArrayList<>();
+			for (String label : loci) {
+				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+				certificates.put(label, certificate(locus));
+				if (view.getDrawableFor(locus) instanceof DrawLocusV2) {
+					drawn.add(label);
+				}
+			}
+			final String mathematics = mathematics(app, loci);
+			final String work = certificationWork(app, loci);
+			Map<String, Object> values = new LinkedHashMap<>();
+			values.put("drawn", drawn);
+			Map<String, Runnable> changes = new LinkedHashMap<>();
+			changes.put(steps.get(0), () -> resize(view, 1200, 800));
+			changes.put(steps.get(1), () -> resize(view, 400, 300));
+			changes.put(steps.get(2), () -> view.setCoordSystem(300, 400, 500, 500));
+			changes.put(steps.get(3), () -> view.setCoordSystem(10, 10, 5, 5));
+			changes.put(steps.get(4), () -> view.setCoordSystem(50, 200, 50, 50));
+			changes.put(steps.get(5), () -> view.getExportImage(2));
+			changes.put(steps.get(6), () -> view.getExportImage(4));
+			String previous = presentation(view, app, drawn);
+			for (Map.Entry<String, Runnable> change : changes.entrySet()) {
+				change.getValue().run();
+				view.updateAllDrawables(true);
+				String now = presentation(view, app, drawn);
+				values.put(change.getKey() + ".presentation", !now.equals(previous));
+				previous = now;
+				boolean same = true;
+				for (String label : loci) {
+					same &= certificates.get(label) == certificate(PreG9BCu0Corpus.locus(app,
+							label));
+				}
+				values.put(change.getKey() + ".certificates", same);
+				values.put(change.getKey() + ".mathematics",
+						mathematics.equals(mathematics(app, loci)));
+				values.put(change.getKey() + ".work", work.equals(certificationWork(app, loci)));
+			}
+			return values;
+		});
+		assertTrue(((List<?>) row.get("drawn")).containsAll(FIRST_FAMILY), row.toString());
+		for (String step : steps) {
+			assertEquals(true, row.get(step + ".presentation"), step + " " + row);
+			assertEquals(true, row.get(step + ".certificates"), step + " " + row);
+			assertEquals(true, row.get(step + ".mathematics"), step + " " + row);
+			assertEquals(true, row.get(step + ".work"), step + " " + row);
+		}
+	}
+
 	// ---------------------------------------------------------------- helpers
+
+	private static void resize(EuclidianView view, int width, int height) {
+		((EuclidianViewD) view).getJPanel().setSize(width, height);
+		view.updateSize();
+	}
+
+	/** @return render cache builds, last build size and screen bounds of each drawn locus */
+	private static String presentation(EuclidianView view, AppGeoCeDG app, List<String> drawn) {
+		StringBuilder text = new StringBuilder();
+		for (String label : drawn) {
+			DrawLocusV2 drawable = (DrawLocusV2) view.getDrawableFor(
+					PreG9BCu0Corpus.locus(app, label));
+			GRectangle bounds = drawable.getBounds();
+			text.append(label).append(':').append(drawable.getRenderCache().getBuilds())
+					.append('/').append(drawable.getRenderCache().getLastBuildVertices())
+					.append('/').append(bounds == null ? "none" : bounds.getX() + ","
+							+ bounds.getY() + "," + bounds.getWidth() + "," + bounds.getHeight())
+					.append(';');
+		}
+		return text.toString();
+	}
+
+	/**
+	 * @return the mathematical data of each locus: semantic revision, slice fingerprint,
+	 *         certificate, roots, exact evidence and the points of the branch at 16 parameters
+	 */
+	private static String mathematics(AppGeoCeDG app, List<String> loci)
+			throws ReflectiveOperationException {
+		StringBuilder text = new StringBuilder();
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+			for (String label : loci) {
+				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+				AlgoDependentPointLocusV2 algorithm =
+						(AlgoDependentPointLocusV2) locus.getParentAlgorithm();
+				Result result = certificate(locus);
+				text.append(label).append(" revision=").append(locus.getSemanticRevision())
+						.append(" fingerprint=").append(ReconstructionSliceFingerprint2D.compute(
+								algorithm.getReconstructionSliceGeos(),
+								List.of(sliceRoot(algorithm, "state"),
+										sliceRoot(algorithm, "coordinate"))))
+						.append(" certificate=").append(result.getStructure()
+								.getSemanticSignature())
+						.append(" roots=").append(result.getRoots())
+						.append(" exact=").append(result.getExactEvidence()).append(" points=");
+				for (int index = 0; index < 16; index++) {
+					LocusPoint2D point = PreG9BCu0Corpus.point(locus,
+							-Math.PI + 2 * Math.PI * (index + 0.25) / 16, session);
+					text.append(point == null ? "undefined" : Double.toHexString(point.getX())
+							+ "," + Double.toHexString(point.getY())).append(';');
+				}
+				text.append('\n');
+			}
+		}
+		return text.toString();
+	}
+
+	/** @return certificate computations, existence boxes and slice builds of each locus */
+	private static String certificationWork(AppGeoCeDG app, List<String> loci) {
+		StringBuilder text = new StringBuilder();
+		for (String label : loci) {
+			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+			text.append(label).append('=').append(locus.getInstrumentation()
+					.getCertificationWork(LocusCertificationWork2D.CERTIFICATE_COMPUTATION))
+					.append('/').append(locus.getInstrumentation().getCertificationWork(
+							LocusCertificationWork2D.EXISTENCE_BOX))
+					.append('/').append(locus.getInstrumentation().getDependencySliceBuilds())
+					.append(';');
+		}
+		return text.toString();
+	}
+
+	private static GeoElement sliceRoot(AlgoDependentPointLocusV2 algorithm, String name)
+			throws ReflectiveOperationException {
+		Field field = AlgoDependentPointLocusV2.class.getDeclaredField(name);
+		field.setAccessible(true);
+		return (GeoElement) field.get(algorithm);
+	}
 
 	/**
 	 * Publishes the certificate of a locus again, with the live evaluator unless another is

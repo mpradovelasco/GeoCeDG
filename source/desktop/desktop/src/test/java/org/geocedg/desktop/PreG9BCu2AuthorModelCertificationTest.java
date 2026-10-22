@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -31,9 +32,11 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.OperandKin
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operation;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
+import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -44,6 +47,7 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.CertifiedStationaryPoint;
@@ -72,7 +76,8 @@ import org.junit.jupiter.api.io.TempDir;
  * boundary is compared with the analytic reference {@code t_c +- beta} evaluated with 50
  * digits from the captured parameters of the model, never with pointwise validity. Step
  * T11 publishes the certificates; the tests read the published certificate of each revision,
- * and rows V-PUB-1 to V-PUB-4 check the publication rule.
+ * and rows V-PUB-1 to V-PUB-4 check the publication rule. Corrective descendant T13-R4
+ * (decision D-CU2-T13-R4): V-DET-1 on the complete author model.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -1042,6 +1047,93 @@ class PreG9BCu2AuthorModelCertificationTest {
 				LocusCertificationWork2D.METRIC_READ_DURING_CERTIFICATION)
 				+ locus.getInstrumentation().getNestedCertificationWork(
 						LocusCertificationWork2D.METRIC_READ_DURING_CERTIFICATION);
+	}
+
+	/**
+	 * V-DET-1 on the author model (corrective descendant T13-R4): two runs, each opening the
+	 * complete model anew and taking it through the same changes (the driver to
+	 * {@code t = -1}; excCyl to 2.9, 3.7 and 3.85, to the last binary64 of penetration and the
+	 * first of the bite, to 7.0, where the cover is empty, and back to 2.9; then rbCone to 8,
+	 * where the construction degenerates), give results identical bit for bit at every step
+	 * for every locus of the model, {@code e_2} included: the semantic revision, the slice
+	 * fingerprint and the published branch (coverage, components with their ends, brackets and
+	 * sources, singular parameters, folds and the branch lineage), the roots, exact evidence,
+	 * stationary points and box count, the lineage keys and transitions, and the structure of
+	 * every metric with its events. The model file carries the durable identities, so nothing
+	 * is normalized.
+	 */
+	@Test
+	void twoRunsOfTheAuthorModelGiveIdenticalResults() throws Exception {
+		File model = PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work);
+		String first = PreG9BR6PlusF3Fixtures.onEdt(() -> run(model));
+		String second = PreG9BR6PlusF3Fixtures.onEdt(() -> run(model));
+		assertEquals(first, second);
+		for (String part : List.of("e_2 revision=", "|component=", "|fold=", "TRANSITION[",
+				"|coefficients=", "ORIGIN_WRAP", "UNRESOLVED", "SPLIT[", "MERGED[",
+				"DISAPPEARED[", "APPEARED[")) {
+			assertTrue(first.contains(part), "the runs compare " + part);
+		}
+	}
+
+	/** One run of V-DET-1 on a newly opened model. */
+	private static String run(File model) throws Exception {
+		AppGeoCeDG app = PreG9BCu0Corpus.open(model);
+		PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+		StringBuilder text = new StringBuilder(results(app, "opened"));
+		double penetration = Double.longBitsToDouble(LAST_PENETRATION);
+		for (double value : new double[] {2.9, 3.7, 3.85, penetration,
+				Math.nextUp(penetration), 7.0, 2.9}) {
+			PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+			text.append(results(app, "excCyl=" + Double.toHexString(value)));
+		}
+		PreG9BCu0Corpus.setNumber(app, "rbCone", 8);
+		text.append(results(app, "rbCone=8"));
+		return text.toString();
+	}
+
+	/** @return every result of the model that a second run must reproduce bit for bit */
+	private static String results(AppGeoCeDG app, String step) throws Exception {
+		StringBuilder text = new StringBuilder("step ").append(step).append('\n');
+		for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
+			if (geo.getParentAlgorithm() instanceof AlgoDependentPointLocusV2) {
+				AlgoDependentPointLocusV2 algorithm =
+						(AlgoDependentPointLocusV2) geo.getParentAlgorithm();
+				GeoLocusV2 locus = (GeoLocusV2) geo;
+				LocusBranch2D branch = locus.getSemanticDefinition() == null ? null
+						: locus.getSemanticDefinition().getBranch(PreG9BCu0Corpus.MAIN);
+				text.append(geo.getLabelSimple()).append(" revision=")
+						.append(locus.getSemanticRevision()).append(" fingerprint=")
+						.append(ReconstructionSliceFingerprint2D.compute(
+								algorithm.getReconstructionSliceGeos(),
+								List.of((GeoElement) field(algorithm, "state"),
+										(GeoElement) field(algorithm, "coordinate"))))
+						.append("\n branch=").append(branch == null ? "none"
+								: branch.getSemanticSignature());
+				Result result = algorithm.getHybridExistenceCertificate();
+				if (result != null) {
+					text.append("\n roots=").append(result.getRoots())
+							.append("\n exact=").append(result.getExactEvidence())
+							.append("\n stationary=").append(stationary(result))
+							.append("\n boxes=").append(result.getExistenceBoxes())
+							.append("\n keys=").append(LocusComponentLineage2D.keys(
+									result.getStructure()))
+							.append("\n lineage=").append(algorithm.getHybridLineage());
+				}
+				text.append('\n');
+			} else if (geo.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2) {
+				text.append(geo.getLabelSimple()).append(" metric=").append(
+						((AlgoLocusBetweenMetricV2) geo.getParentAlgorithm())
+								.getFunctionStructure().getSignature()).append('\n');
+			}
+		}
+		return text.toString();
+	}
+
+	private static Object field(Object target, String name)
+			throws ReflectiveOperationException {
+		Field field = AlgoDependentPointLocusV2.class.getDeclaredField(name);
+		field.setAccessible(true);
+		return field.get(target);
 	}
 
 	private static Result certificate(AppGeoCeDG app, String label) {
