@@ -8,7 +8,7 @@
 | Base autorizada | `070af6f902cd0be291247e73efb5629ef2a39eba`, árbol `49a659d8b334aae3f69c4db000cc842204e9a85f` |
 | Rama | `phase/pre-g9b-cu2-implementation` (local, sin publicar) |
 | Clase de verificación | `INTEGRATED_PHASE` (D-CU2-12): `STATIC`, `INFRA_UNIT`, `PHASE -Phase PRE-G9B-CU2`, `PHASE -Phase PRE-G9B-CU1`, `PHASE -Phase PRE-G9B-CU0` e `INTEGRATION` sobre el candidato congelado, y los bancos `certification` y `tessellation` antes y después |
-| Identidad del commit y resultados de verificación | registro de verificación `pre_g9b_cu2_verification_record.md`, que añade un commit documental descendiente (un commit no puede citar su propia identidad) |
+| Identidad del commit y resultados de verificación | [registro de verificación](pre_g9b_cu2_verification_record.md), que añade un commit documental descendiente (un commit no puede citar su propia identidad) |
 
 ## 1. Comprobación de la base
 
@@ -234,6 +234,10 @@ especificaciones enmendadas. Hallazgos registrados durante la implementación:
 - Revisión de las filas de `CU2` del registro E1, que se actualizan en el commit documental del
   registro de verificación.
 - Disposición de las limitaciones de §10 y de su propietario.
+- Las decisiones D-CU2-T13-R1 a D-CU2-T13-R3 del
+  [registro de verificación](pre_g9b_cu2_verification_record.md) §9: la transición tipada de
+  cambio de dimensión de V-POINT-3; las pruebas de V-REV-EXACT-5, V-COINC-6 y V-COINC-9; y la
+  carrera preexistente que rechazó la primera `INTEGRATION`.
 
 ## 12. Infraestructura de verificación modificada
 
