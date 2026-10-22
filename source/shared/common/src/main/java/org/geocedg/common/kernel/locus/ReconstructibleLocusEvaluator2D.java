@@ -109,6 +109,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private List<CertifiedConstructionCapture2D.StepOrigin> programV3Origins = List.of();
 	private List<String> operationIdentitiesV3;
 	private ConstructionBoxModel2D boxModelV3;
+	private final CertifiedConstructionCapture2D.Composition compositionV3;
 	/** Copy intersections settled by a point query that ended their first initialization. */
 	private final Set<AlgoIntersectLineConic> departedSelections =
 			Collections.newSetFromMap(new IdentityHashMap<>());
@@ -223,6 +224,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		resetExternalState();
 		fidelity = validateFidelity();
 		programV3 = captureV3();
+		compositionV3 = captureCompositionV3();
 	}
 
 	/**
@@ -533,6 +535,42 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 			metricStructuresV3 = Collections.unmodifiableMap(structures);
 		}
 		return metricStructuresV3;
+	}
+
+	/**
+	 * Steps from the generator point of a locus support to the traced point, for the minimal
+	 * certified composition ({@code locus-v2-certified-construction-model.md} section 10.10,
+	 * author decision V-CON-6), captured once with the class-v3 program of the revision.
+	 *
+	 * @return the steps, or empty with {@link #getCompositionRefusal()}
+	 */
+	public synchronized Optional<List<CertifiedConstructionProgram2D.Step>>
+			getCompositionStepsV3() {
+		return compositionV3.getSteps();
+	}
+
+	/**
+	 * @return typed reason why the revision has no composition steps, or {@code null} when it
+	 *         has them
+	 */
+	public synchronized String getCompositionRefusal() {
+		return compositionV3.getRefusal();
+	}
+
+	/**
+	 * Captures the composition steps of a dependent on a locus support from the freshly
+	 * validated slice, under the fidelity rules of the class-v3 program; never throws.
+	 */
+	private CertifiedConstructionCapture2D.Composition captureCompositionV3() {
+		if (descriptor.getFamily() != SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT) {
+			return CertifiedConstructionCapture2D.Composition.refused(
+					CertifiedConstructionCapture2D.OUTSIDE_CLASS);
+		}
+		if (!fidelity.isFaithful() || !fidelity.getUnsettledSelections().isEmpty()) {
+			return CertifiedConstructionCapture2D.Composition.refused(programV3Refusal);
+		}
+		return CertifiedConstructionCapture2D.captureComposition(
+				isolatedDependentPoint.toGeoElement(), isolatedState, isolatedCoordinate);
 	}
 
 	/** Captures the class-v3 program of the freshly validated slice; never throws. */

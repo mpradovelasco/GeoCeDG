@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
 | Version | `1.1` |
 | Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
@@ -485,6 +485,11 @@ interval ordering and boundary bits remain non-identity.
 
 Dependent producers publish the certificate of the hybrid certifier, contract
 `locus-existence/hybrid/v1`, computed once per published revision and shared by every consumer.
+A dependent on a complete locus support whose traced point follows the generator point through
+structurally total steps only publishes, under the same contract, the composition of its
+support's certificate
+([`locus-v2-certified-construction-model.md`](locus-v2-certified-construction-model.md) §10.10,
+author decision V-CON-6).
 A locus that cannot be certified is `NOT_ESTABLISHED`, with or without local components; it
 never falls back to a compatibility certificate. Static and analytic producers publish an
 explicit provider certificate only when their own contract proves existence and continuity on
@@ -494,7 +499,11 @@ certificate `locus-existence/provider-compatibility/v1` is retired.
 ### 15.8 Consumer admissibility
 
 Every consumer reads the existence structure. Local consumers accept a certified component
-containing their parameters; global consumers require `COMPLETE`. Operations that need
+containing their parameters; global consumers require `COMPLETE`. The single exception is the
+conditioned estimate of the total length of a construction outside class v3
+([`locus-v2-metrics.md`](locus-v2-metrics.md) §26.5, author decision H10): a class-3 estimate on
+the declared domain under the recorded hypothesis of existence and continuity there, which
+certifies nothing and changes no fact of this structure. Operations that need
 continuity or a route require a certified component, even a local one; pointwise validity is
 admitted only for operations that need an isolated point. Periodic semantics (full cycle, wrap
 to start, seam quarantine, lift and seam side) apply only to a certified closed periodic

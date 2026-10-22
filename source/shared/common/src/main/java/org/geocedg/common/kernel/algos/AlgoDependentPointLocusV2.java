@@ -64,6 +64,11 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
 /** Productive reconstructible parent for a dependent-point Locus V2. */
 public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private static final String PROVENANCE = "public-dependent-construction/v1";
+	/**
+	 * Evidence of the minimal certified composition on a locus support
+	 * ({@code locus-v2-certified-construction-model.md} section 10.10).
+	 */
+	public static final String COMPOSITION_EVIDENCE = "composed-locus-support/v1";
 
 	private final GeoPointND dependentPoint;
 	private final GeoElement state;
@@ -262,7 +267,12 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 					: certificate.getStructure();
 			String previousSelection = certifiedSelection;
 			certificate = LocusCertificationScope2D.certify(getLocus().getInstrumentation(),
-					() -> declared(certificate(current, limitation), limitation));
+					() -> {
+						HybridExistenceCertifier2D.Result composed =
+								composition(current, limitation);
+						return composed != null ? composed
+								: declared(certificate(current, limitation), limitation);
+					});
 			certifiedSelection = current.captureCertifiedProgramV3()
 					.map(CertifiedConstructionProgram2D::getSelectionSignature).orElse(null);
 			certificateLineage = LocusComponentLineage2D.transitions(previous,
@@ -415,6 +425,46 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	}
 
 	/**
+	 * Minimal certified composition of a dependent on a complete locus support
+	 * ({@code locus-v2-certified-construction-model.md} section 10.10, author decision
+	 * V-CON-6): when the captured steps from the generator point of the support to the
+	 * traced point are all structurally total, and the construction graph of the slice reads
+	 * the driver only through that point, the dependent publishes the support's
+	 * decomposition. A support that is not complete or has point components keeps its
+	 * declared limitation, and any other slice keeps the class-v3 path.
+	 *
+	 * @return the composed certificate, or {@code null} when the composition does not apply
+	 */
+	private HybridExistenceCertifier2D.Result composition(
+			ReconstructibleLocusEvaluator2D current, String limitation) {
+		if (family != SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT || limitation != null
+				|| !current.isReconstructionFaithful() || dependsOnSelectedIntersectionRoot()) {
+			return null;
+		}
+		Optional<List<CertifiedConstructionProgram2D.Step>> steps =
+				current.getCompositionStepsV3();
+		LocusBranch2D sourceBranch = supportBranch();
+		if (!steps.isPresent() || sourceBranch == null
+				|| !ConstructionBoxModel2D.isStructurallyTotal(steps.get())) {
+			return null;
+		}
+		LocusExistenceStructure2D composed = LocusExistenceStructure2D
+				.composedThroughTotalSteps(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+						sourceBranch.getExistenceStructure(), HybridExistenceCertifier2D.CONTRACT,
+						COMPOSITION_EVIDENCE + ":" + ConstructionBoxModel2D.TOTALITY_VERSION
+								+ ":steps=" + steps.get().size());
+		return HybridExistenceCertifier2D.particular(composed, null,
+				HybridExistenceCertifier2D.Policy.DEFAULT, getLocus().getInstrumentation());
+	}
+
+	/** @return the current branch of the locus support, or {@code null} */
+	private LocusBranch2D supportBranch() {
+		LocusDefinition2D sourceDefinition = ((GeoLocusV2) support).getSemanticDefinition();
+		return sourceDefinition == null || descriptor.getSupportBranchKey() == null ? null
+				: sourceDefinition.getBranch(descriptor.getSupportBranchKey());
+	}
+
+	/**
 	 * The limitation that a dependent on a locus support declares (consumption design
 	 * section 3; ADR 0027): its completeness is never above the support's, and a support
 	 * with point components is not composed.
@@ -427,10 +477,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				|| !(support instanceof GeoLocusV2) || descriptor == null) {
 			return null;
 		}
-		LocusDefinition2D sourceDefinition = ((GeoLocusV2) support).getSemanticDefinition();
-		LocusBranch2D sourceBranch = sourceDefinition == null
-				|| descriptor.getSupportBranchKey() == null ? null
-						: sourceDefinition.getBranch(descriptor.getSupportBranchKey());
+		LocusBranch2D sourceBranch = supportBranch();
 		if (sourceBranch == null || sourceBranch.getExistenceStructure().getCompleteness()
 				!= LocusExistenceStructure2D.Completeness.COMPLETE) {
 			return "upstream-locus-coverage-not-established";

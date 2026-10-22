@@ -18,6 +18,7 @@ import java.util.function.DoubleFunction;
 import java.util.function.DoubleUnaryOperator;
 
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.ExplicitNumericDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
@@ -75,16 +76,19 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 					frequency * Math.cos(frequency * x)), 0, 1, 1 << 16);
 			assertCoherentEstimate(rich, reference, "k=" + k);
 		}
-		// The product path. PRE-G9B-CU2 declared conformity (step T11): the public sine
-		// (x(P),sin(4*pi*x(P))) is outside class v3, so its existence is not established and
-		// its total length is refused; the estimator is exercised on the public path by the
-		// certified parabola y = x^2, -2 <= x <= 2.
+		// The product path: the same curves as public point-driven Locus V2. PRE-G9B-CU2
+		// decision H10 (locus-v2-metrics.md section 26.5): the public sine
+		// (x(P),sin(4*pi*x(P))) is outside class v3, so its total is the conditioned
+		// estimate of its declared domain, which certifies nothing; the certified parabola
+		// y = x^2, -2 <= x <= 2, is estimated on the same path.
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
 		add("Q=(x(P),sin(4*pi*x(P)))");
-		add("L=LocusV2(Q,P)");
+		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		GeoLocusMetricResult metric = add("M=LocusLength(L)");
-		assertNoTotalWithoutExistence(metric.getMetricResult(), "public k=2");
+		assertCoherentEstimate(metric.getMetricResult(), simpson(x -> Math.hypot(1,
+				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16), "public k=2");
+		assertConditionedWithoutAuthority(metric.getMetricResult(), sine, "public k=2");
 		certifiedParabola("Lp", "Qp", "publicParabola");
 		GeoLocusMetricResult parabola = add("Mp=LocusLength(Lp)");
 		assertCoherentEstimate(parabola.getMetricResult(), simpson(x -> Math.hypot(1, 2 * x),
@@ -149,18 +153,23 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 				x -> new LocusPoint2D(x, Math.floor(4 * x)));
 		assertNotCertified(steps, "floor");
 
-		// PRE-G9B-CU2 declared conformity (step T11): the public aliasing and floor curves are
-		// outside class v3, so they are never even estimated: their total length is refused.
+		// PRE-G9B-CU2 decision H10 (locus-v2-metrics.md section 26.5): the public aliasing
+		// and floor curves are outside class v3; their conditioned totals are never of a
+		// certified class and certify nothing.
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
 		add("Q=(x(P),sin(2*pi*1048576*x(P)))");
-		add("L=LocusV2(Q,P)");
-		assertNoTotalWithoutExistence(((GeoLocusMetricResult) add("M=LocusLength(L)"))
-				.getMetricResult(), "public aliasing");
+		GeoLocusV2 publicAliasing = add("L=LocusV2(Q,P)");
+		LocusMetricResult2D aliased = ((GeoLocusMetricResult) add("M=LocusLength(L)"))
+				.getMetricResult();
+		assertNotCertified(aliased, "public aliasing");
+		assertConditionedWithoutAuthority(aliased, publicAliasing, "public aliasing");
 		add("F=(x(P),floor(4*x(P)))");
-		add("Lf=LocusV2(F,P)");
-		assertNoTotalWithoutExistence(((GeoLocusMetricResult) add("Mf=LocusLength(Lf)"))
-				.getMetricResult(), "public floor");
+		GeoLocusV2 publicFloor = add("Lf=LocusV2(F,P)");
+		LocusMetricResult2D floored = ((GeoLocusMetricResult) add("Mf=LocusLength(Lf)"))
+				.getMetricResult();
+		assertNotCertified(floored, "public floor");
+		assertConditionedWithoutAuthority(floored, publicFloor, "public floor");
 	}
 
 	/** V-ADV-3: the honest classification holds for every minimum depth. */

@@ -1,6 +1,6 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
 - Version: `1.6`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
@@ -1461,8 +1461,44 @@ These rules refine §22, §23.4, §24.4 and §24.5 for the existence structure o
   that contains the canonical parameter; zero or several containing components remain
   `UNRESOLVED_INVALID`;
 - a total length and the `full-cycle` and `wrap-to-start` policies of §22 require `COMPLETE`
-  or a certified closed periodic component; on an open arc the route follows the arc
-  coordinate across the canonical seam and its ends are reached through their one-sided
-  limits;
+  or a certified closed periodic component, except the conditioned estimate of a total length
+  of §26.5; on an open arc the route follows the arc coordinate across the canonical seam and
+  its ends are reached through their one-sided limits;
 - a point component contributes zero to every total and admits only a route of length zero
   within itself; it cannot be addressed through a binary64 parameter.
+
+### 26.5 Conditioned estimate outside the certified class
+
+Normative precision of author decision H10, option A (author resolution before `CU2` step T12,
+2026-10-22). It belongs to the `CU2` technical candidate until the author reviews that
+candidate. It preserves the class-3 estimation of `CU1` (§25.3) for constructions outside class
+v3 without attributing certified existence or completeness to them.
+
+1. **Eligibility.** The total length of a branch that is not `COMPLETE` is a *conditioned
+   estimate* only when its existence structure establishes no fact (no component, point
+   component, singular parameter or fold) and every coverage item is either `UNRESOLVED` with
+   cause `OPERATION_OUTSIDE_CLASS`, a declared piece, or `CERTIFIED_DOES_NOT_EXIST` with cause
+   `PROVIDER_COMPLEMENT`, the complement of the declared domain. Any other cause, certified
+   nonexistence inside the declared domain and a partial certificate keep the total refused as
+   an incomplete aggregate (§26.4). Between-position queries, route policies, endpoint
+   addresses and selectors never use it.
+2. **Value.** Each declared piece is measured by the estimator v2 of §25.3 alone (§25.2, steps 3
+   and 4): no structural capability or certified enclosure is tried, and no rigorous enclosure
+   is attached. A declared piece of zero length and a collapsed image contribute an estimated
+   zero. An excluded end of a declared piece is never evaluated and keeps
+   `LIMIT_NOT_ESTABLISHED` (§16). The whole period of a periodic driver domain is measured up to
+   its closing driver position.
+3. **Class and evidence.** The result is at most `ESTIMATED` (`ESTIMATED_ERROR`). Its error
+   evidence records the estimator's hypotheses and estimated error, preceded by the hypothesis
+   that the curve exists and is continuous on each declared piece and, for a whole period, that
+   it closes at the seam; neither is certified. Each declared piece carries the diagnostic
+   `EXISTENCE_NOT_CERTIFIED`, and the provenance names the conditioned estimate.
+4. **No authority.** The conditioned estimate establishes and changes nothing outside its metric
+   result: neither existence, continuity, completeness, components, closure, intersections,
+   topology, endpoint addresses nor lineage. The existence structure keeps its unresolved
+   coverage. The value is of class 3 under §25.5 and §26.3 and is never a rigorous input.
+5. **Failures.** An estimator failure, an exhausted work budget, a limit that is not established
+   and an evaluation failure keep their typed status; the estimate never replaces them.
+6. **Scalar adapter.** §25.4 applies unchanged: the scalar publishes the value when its
+   estimated error does not exceed `τ`, as an estimate under the contract of §25.5, never as a
+   geometric certificate.

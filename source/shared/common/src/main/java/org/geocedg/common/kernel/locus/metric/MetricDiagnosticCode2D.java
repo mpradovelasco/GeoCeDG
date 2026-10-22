@@ -43,5 +43,11 @@ public enum MetricDiagnosticCode2D {
 	 * PRE-G9B-CU2 section 26.4: the policy needs a certified closed periodic component or a
 	 * complete inventory that the existence structure does not establish.
 	 */
-	TOPOLOGY_NOT_ESTABLISHED
+	TOPOLOGY_NOT_ESTABLISHED,
+	/**
+	 * PRE-G9B-CU2 section 26.5 (decision H10): a conditioned estimate on a declared piece
+	 * whose existence and continuity are not certified, because the construction is outside
+	 * class v3; informational, it never certifies.
+	 */
+	EXISTENCE_NOT_CERTIFIED
 }

@@ -89,6 +89,7 @@ public final class ConstructionBoxModel2D {
 	private static final Object ASSUMED_OPAQUE = new Object();
 
 	private final CertifiedConstructionProgram2D program;
+	private final NodeKind[] kinds;
 	private final String[] lineClass;
 	private final boolean[] zeroVector;
 	private final boolean[] unitPoint;
@@ -98,8 +99,21 @@ public final class ConstructionBoxModel2D {
 
 	/** @param program captured program of any class */
 	public ConstructionBoxModel2D(CertifiedConstructionProgram2D program) {
+		this(program, program.getSteps());
+	}
+
+	/**
+	 * The tables of steps applied to one unit point, node 0; they read neither the driver
+	 * form nor the domain of a program, which is {@code null} for a bare list of steps.
+	 */
+	private ConstructionBoxModel2D(CertifiedConstructionProgram2D program,
+			List<Step> steps) {
 		this.program = program;
-		List<Step> steps = program.getSteps();
+		kinds = new NodeKind[steps.size() + 1];
+		kinds[0] = NodeKind.POINT;
+		for (int index = 0; index < steps.size(); index++) {
+			kinds[index + 1] = steps.get(index).getOperation().getOutputKind();
+		}
 		lineClass = new String[steps.size() + 1];
 		zeroVector = new boolean[steps.size() + 1];
 		unitPoint = new boolean[steps.size() + 1];
@@ -214,6 +228,20 @@ public final class ConstructionBoxModel2D {
 	/** @return whether the step that produces the node is structurally total */
 	boolean isTotal(int node) {
 		return total[node];
+	}
+
+	/**
+	 * Whether steps applied to one point, node 0, are all structurally total under the
+	 * versioned table {@link #TOTALITY_VERSION}, which reads neither a driver form nor a
+	 * parameter box. The minimal certified composition on a locus support reads it for the
+	 * steps from the generator point of the support
+	 * ({@code locus-v2-certified-construction-model.md} section 10.10).
+	 *
+	 * @param steps captured steps whose last node is the traced point
+	 * @return whether every step is structurally total
+	 */
+	public static boolean isStructurallyTotal(List<Step> steps) {
+		return new ConstructionBoxModel2D(null, steps).isStructurallyTotal();
 	}
 
 	/**
@@ -413,7 +441,7 @@ public final class ConstructionBoxModel2D {
 
 	private boolean unitPoint(Operand operand) {
 		if (operand.getKind() == OperandKind.NODE) {
-			return program.getNodeKind(operand.getNode()) == NodeKind.POINT
+			return kinds[operand.getNode()] == NodeKind.POINT
 					&& unitPoint[operand.getNode()];
 		}
 		return operand.getKind() == OperandKind.POINT && operand.getValue(2) == 1;
@@ -447,7 +475,7 @@ public final class ConstructionBoxModel2D {
 		for (int index = 0; index < 2; index++) {
 			Operand operand = operands.get(index);
 			boolean unbounded = operand.getKind() == OperandKind.NODE
-					? program.getNodeKind(operand.getNode()) == NodeKind.LINE
+					? kinds[operand.getNode()] == NodeKind.LINE
 					: operand.getKind() == OperandKind.LINE;
 			directions[index] = unbounded ? direction(operand, false) : null;
 			if (directions[index] == null) {

@@ -104,8 +104,10 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 	void m04RichTotalLengthIsNonnumericAuthority() {
 		GeoLocusMetricResult segment = totalMetric(createLine());
 		// PRE-G9B-CU2 declared conformity: periodic scalar loci are outside class v3 since
-		// step T11, so the unit circle is driven by a point of a circle (class v2) and the
-		// expression-driven ellipse, which keeps no certified component, has no total length.
+		// step T11, so the unit circle is driven by a point of a circle (class v2). The
+		// expression-driven ellipse keeps no certified component; by decision H10
+		// (locus-v2-metrics.md section 26.5) its total is the conditioned estimate of its
+		// declared period, which certifies nothing.
 		add("cc=Circle((0,0),1)");
 		add("C=Point(cc)");
 		add("Qc=C+(0,0)");
@@ -119,22 +121,21 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 
 		assertRichTotal(segment, 4, 1E-10);
 		assertRichTotal(circleMetric, 2 * Math.PI, 2E-7);
+		assertRichTotal(ellipseMetric, 15.86543958929059, 2E-6);
 		assertEquals(circle.getLocusIdentity(), circleMetric.getMetricResult()
 				.getProvenance().getLocusIdentity());
 		assertEquals(ellipse.getLocusIdentity(), ellipseMetric.getMetricResult()
 				.getProvenance().getLocusIdentity());
-		assertEquals(MetricComputationStatus.INVALID_QUERY,
-				ellipseMetric.getMetricResult().getComputationStatus());
-		assertFalse(ellipseMetric.getMetricResult().getMetricValue().getFiniteValue()
-				.isPresent());
 		// The certified affine segment and the driver circle are structural (PRE-G9B-CU1,
-		// guarantee classes); the unproven ellipse is not established.
+		// guarantee classes); the expression-driven ellipse is an estimate.
 		assertEquals(MetricGuaranteeClass2D.STRUCTURAL,
 				segment.getMetricResult().getGuaranteeClass());
 		assertEquals(MetricGuaranteeClass2D.STRUCTURAL,
 				circleMetric.getMetricResult().getGuaranteeClass());
-		assertEquals(MetricGuaranteeClass2D.NOT_ESTABLISHED,
+		assertEquals(MetricGuaranteeClass2D.ESTIMATED,
 				ellipseMetric.getMetricResult().getGuaranteeClass());
+		assertConditionedWithoutAuthority(ellipseMetric.getMetricResult(), ellipse,
+				"ellipse");
 		assertFalse(GeoNumeric.class.isInstance(segment));
 
 		LocusMetricResult2D analytic = analyticTotal("m04-analytic", 0, 4,

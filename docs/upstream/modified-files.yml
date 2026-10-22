@@ -6956,6 +6956,12 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T11, author decision D-CU2-T11-R1: the settlement of the inherited selection of a reconstructed slice (selection-settlement/v1) on synthetic line-circle constructions with live permutations [0, 1] and [1, 0], first initializations in a gap, at a double root and on a segment; departures by point queries in any order; reopen, undo and redo; driver-only moves; and the selection-independent nonexistence proof of a globally empty domain (V-SEL-6, V-SEL-7, V-COINC-3, V-COINC-8, V-PUB-3).",
       "authority": "geocedg/specs/locus/locus-v2-semantics.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2ConditionedEstimateTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2, author decision H10 (option A) before step T12: the total length of a construction outside class v3 is a conditioned class-3 estimate on its declared domain (locus-v2-metrics.md section 26.5) that keeps the CU1 value, error and scalar admissibility and certifies nothing; only OPERATION_OUTSIDE_CLASS is eligible, a whole periodic period closes only under a recorded hypothesis, excluded ends and failures keep their typed status, and similarity images stay conditioned (H10-1 to H10-5).",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     }
   ]
 }

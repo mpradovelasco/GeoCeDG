@@ -6,7 +6,7 @@
 | Estado | `CU2 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false`; `TECHNICAL_CANDIDATE_STATE = FROZEN`; `AUTHOR_DECISION = NOT_RECORDED_IN_THIS_ARTIFACT` |
 | Antecedentes | [propuesta E de `CU0`](pre_g9b_cu0_hybrid_certification_proposal.md) §6; enmienda candidata A2.4; decisión DC-6 (2026-10-19: criterios de teselación con límites justificados por pruebas; 10° y profundidad 4 son candidatos) |
 | Documentos hermanos | [diseño de certificación](pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](pre_g9b_cu2_oriented_length_event_design.md); [análisis del modelo del autor](pre_g9b_cu2_author_model_certification_analysis.md) |
-| Revisión | 2026-10-20, revisión documental focalizada: principio 5 y §3 (disponibilidad, P5), §5.1 a §5.3 (parámetros singulares, pliegues y extremos no evaluables, P1–P3), §5.6 nuevo y §6 (fidelidad declarada). Cierre de coherencia (2026-10-20): §3.1 nuevo (componentes puntuales, C2), §3.2 nuevo (salidas efectivas en raíces coincidentes, C1), §5.2 y §6 |
+| Revisión | 2026-10-20, revisión documental focalizada: principio 5 y §3 (disponibilidad, P5), §5.1 a §5.3 (parámetros singulares, pliegues y extremos no evaluables, P1–P3), §5.6 nuevo y §6 (fidelidad declarada). Cierre de coherencia (2026-10-20): §3.1 nuevo (componentes puntuales, C2), §3.2 nuevo (salidas efectivas en raíces coincidentes, C1), §5.2 y §6. Decisiones autorales H10 y V-CON-6 (2026-10-22): filas «Métrica total» y «Composición de loci dependientes» de §3 y precisiones H10 y V-CON-6 de §4 |
 
 ## 1. Principios
 
@@ -51,13 +51,13 @@ Referencias al código en `27bf652f`. Prefijos: `L` = `kernel/locus`, `A` = `ker
 | Consumidor | Nivel | Regla |
 |---|---|---|
 | Dibujo | 3 | Cada componente certificada se dibuja hasta sus fronteras certificadas (§5). Ningún segmento cruza una banda `UNRESOLVED`, un intervalo de no existencia certificada ni una discontinuidad estructural. Se cierra solo una componente periódica cerrada. Un punto que no se puede evaluar no se interpola: el trazo se corta allí con una marca. La evidencia exploratoria, si la aprueba la decisión E-1, se dibuja con estilo propio solo en bandas `UNRESOLVED` y nunca se une a una componente |
-| Métrica total | 4 | Suma sobre componentes. Una componente periódica cerrada aporta un ciclo; una componente abierta, su longitud. Con `NOT_ESTABLISHED`, `NOT_ESTABLISHED` |
+| Métrica total | 4 | Suma sobre componentes. Una componente periódica cerrada aporta un ciclo; una componente abierta, su longitud. Con `NOT_ESTABLISHED`, `NOT_ESTABLISHED`, salvo la estimación condicionada de una construcción fuera de la clase v3 (§4, precisión H10) |
 | Ruta entre posiciones | 3 | Las dos direcciones deben estar en la misma componente certificada. Dentro de un arco que cruza la costura, la ruta sigue el arco (no exige una componente completa). `full-cycle` y `wrap-to-start` exigen una componente periódica cerrada |
 | Extremos semánticos y ocurrencia generadora | 3 | Dirección contenida en una componente certificada, aunque sea local (decisión E-2). La ocurrencia generadora publica los eventos estructurales ([evento](pre_g9b_cu2_oriented_length_event_design.md) §4) |
 | Intersecciones | 3 para raíces locales; 4 para `EMPTY` y para afirmar el conjunto completo | Sin cambios en la regla. El marco de fase es el del arco de la componente; la cuarentena de costura se aplica solo a componentes periódicas cerradas. Tokens y selectores por linaje estructural |
 | Punto semántico `Point(L, u)` y pertenencia | 3 | `u` en exactamente una componente certificada (decisión E-2). Creación y arrastre leen la misma estructura. La semántica periódica (elevación, lado de costura) solo vale en componentes periódicas cerradas; en un arco, la dirección se resuelve sobre el arco |
 | Selector de rama principal | 3 | Opera sobre componentes certificadas, no sobre la lista completa |
-| Composición de loci dependientes | — | La existencia del dependiente compone la del origen: dominio de un soporte locus igual a las componentes del origen (arcos incluidos) y completitud no mayor que la del origen (ADR 0027). Un nodo métrico aporta solo su certificado estructural; un valor de clase 3 nunca es entrada rigurosa |
+| Composición de loci dependientes | — | La existencia del dependiente compone la del origen: dominio de un soporte locus igual a las componentes del origen (arcos incluidos) y completitud no mayor que la del origen (ADR 0027). Con pasos posteriores estructuralmente totales, el dependiente hereda las componentes certificadas de un origen completo (§4, precisión V-CON-6). Un nodo métrico aporta solo su certificado estructural; un valor de clase 3 nunca es entrada rigurosa |
 | Transformaciones por semejanza | — | La imagen hereda explícitamente la estructura de existencia: cobertura, maximalidad, completitud, linaje transportado y autoridad de cierre (`AlgoLocusSimilarityTransform2D` ya la copia, 87-95; se declara en `similarity-transformations`) |
 | DXF | 3, con fidelidad incompleta y anexo cuando no hay 4 | Un `LWPOLYLINE` por componente certificada, en el orden del arco aunque cruce la costura. Marca cerrada (código 70) solo para una componente periódica cerrada. Extremos abiertos de tipo estructural, con el vértice del límite lateral (§5.3); nunca se descarta la componente. Un extremo que no se puede evaluar termina en el último vértice evaluado y el anexo declara su estado. Con `NOT_ESTABLISHED`: fidelidad incompleta con anexo obligatorio y estricta en cada componente declarada (`existence-components` §12). Las bandas `UNRESOLVED` no se interpolan |
 | LaTeX (PGF, PSTricks, Asymptote) | 3 | Las mismas reglas de topología. `-- cycle`, `\pspolygon` o `--cycle` solo para una componente periódica cerrada. Los extremos no evaluables se declaran en comentarios y hacen la exportación incompleta. Las reglas de la decisión DQ-C5, que hoy viven solo en un registro de validación, pasan a una especificación durable (decisión D-CU2-11) |
@@ -151,10 +151,12 @@ comportamiento visible con el certificado de compatibilidad publicado:
 publicados.** Ninguna cambia una regla de §3:
 
 - **Loci fuera de la clase v3.** Un locus escalar cuyo punto no es afín directo, un locus escalar
-  periódico, un locus sobre un soporte locus, un punto definido por una expresión arbitraria o una
+  periódico, un locus sobre un soporte locus (salvo la composición mínima de la precisión
+  V-CON-6), un punto definido por una expresión arbitraria o una
   raíz seleccionada fuera de D-CU2-9 publican `NOT_ESTABLISHED` sin componentes. Sus consumidores
   lo reflejan sin inferir nada: ningún punto semántico ni posición métrica lo direcciona, la
-  longitud total se rechaza como agregado incompleto (`INVALID_QUERY`, `NOT_ESTABLISHED`), una
+  longitud total se rechaza como agregado incompleto (`INVALID_QUERY`, `NOT_ESTABLISHED`; véase
+  la precisión H10, que lo sustituye por la estimación condicionada), una
   intersección es `UNRESOLVED` sin raíces finitas («COVERAGE_NOT_ESTABLISHED: No local component
   is certified…»), la exportación lo declara (§6) y el dibujo muestra solo su evidencia
   exploratoria (§5).
@@ -169,6 +171,38 @@ publicados.** Ninguna cambia una regla de §3:
   finita dentro de una componente probada es `EVALUATION_FAILED` con causa `COMPUTATIONAL_FAILURE`.
   Las referencias que miden la validez puntual del evaluador la leen en el evaluador del corte, no
   en la definición publicada.
+
+**Precisión de la decisión H10 (resolución autoral previa a T12, 2026-10-22, opción A).** Cambia
+solo la regla de la métrica total de §3. La longitud total de un locus `NOT_ESTABLISHED` únicamente
+porque su construcción está fuera de la clase v3 (toda su cobertura es `OPERATION_OUTSIDE_CLASS` o
+complemento declarado, sin ningún hecho certificado) es la estimación condicionada de
+[`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) §26.5:
+
+- clase 3 sobre las piezas declaradas, solo con el estimador v2 y sin envolvente rigurosa;
+- con las hipótesis no certificadas de existencia y continuidad en cada pieza (y de cierre en la
+  costura de un periodo completo) y el diagnóstico `EXISTENCE_NOT_CERTIFIED`;
+- con la admisibilidad escalar de `CU1` (§25.4).
+
+Cualquier otra causa de `NOT_ESTABLISHED`, la no existencia certificada dentro del dominio declarado
+y un certificado parcial mantienen el rechazo. Puntos semánticos, posiciones métricas, rutas,
+intersecciones, cierre, dibujo y exportación siguen leyendo solo la estructura de existencia, que la
+estimación no modifica.
+
+**Precisión de la decisión V-CON-6 (resolución autoral previa a T12, 2026-10-22, opción 2).**
+Concreta la fila «Composición de loci dependientes» de §3 con la composición certificada mínima de
+[`locus-v2-certified-construction-model.md`](../../geocedg/specs/locus/locus-v2-certified-construction-model.md)
+§10.10. Un locus sobre la rama `COMPLETE` y sin componentes puntuales de un soporte locus hereda la
+descomposición del soporte cuando se cumplen dos condiciones:
+
+- todos los pasos capturados desde el punto generador hasta el punto trazado son estructuralmente
+  totales según la tabla versionada `structural-totality/v1`;
+- el grafo del corte lee el motor solo a través del punto generador.
+
+La herencia conserva dominio, orientación, extremos, continuidad, completitud, identidad y linaje
+del soporte; su no existencia pasa a `DEPENDENCY_CERTIFIED_NONEXISTENT`. En cualquier otro caso el
+dependiente sigue `NOT_ESTABLISHED` y su dominio declarado nunca se convierte en componente
+certificada. Un soporte no completo o con componentes puntuales conserva la limitación declarada.
+No se amplía la clase v3 ni se introduce selección por proximidad.
 
 ## 5. Representación y teselación (B06)
 

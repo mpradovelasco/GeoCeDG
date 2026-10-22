@@ -15,6 +15,9 @@ import java.util.List;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
@@ -210,6 +213,9 @@ abstract class G9U0PublicSurfaceTestBase extends BaseUnitTest {
 	/**
 	 * PRE-G9B-CU2 step T11: the total length of a locus whose existence is not established
 	 * is refused as an incomplete aggregate; it is never an estimate of an unproven curve.
+	 * Decision H10 ({@code locus-v2-metrics.md} section 26.5) excepts only a construction
+	 * outside class v3, whose total is the conditioned estimate checked by
+	 * {@link #assertConditionedWithoutAuthority}.
 	 */
 	static void assertNoTotalWithoutExistence(LocusMetricResult2D rich, String where) {
 		String message = where + ": " + rich.getComputationStatus() + " "
@@ -221,6 +227,46 @@ abstract class G9U0PublicSurfaceTestBase extends BaseUnitTest {
 		assertFalse(rich.isScalarAdmissible(), message);
 		assertTrue(rich.getDiagnostics().stream().anyMatch(diagnostic ->
 				diagnostic.getCode() == MetricDiagnosticCode2D.INCOMPLETE_AGGREGATE), message);
+	}
+
+	/**
+	 * PRE-G9B-CU2 decision H10 ({@code locus-v2-metrics.md} section 26.5): the total length
+	 * of a locus outside class v3 is a conditioned estimate that certifies nothing. It is
+	 * never of a certified class and carries no rigorous enclosure; a value records the
+	 * uncertified existence and continuity of the declared pieces as a hypothesis and as a
+	 * typed diagnostic; and the existence structure of the locus keeps its unresolved
+	 * coverage, with no component and no completeness.
+	 */
+	static void assertConditionedWithoutAuthority(LocusMetricResult2D rich,
+			GeoLocusV2 locus, String where) {
+		String message = where + ": " + rich.getComputationStatus() + " "
+				+ rich.getGuaranteeClass() + " " + rich.getDiagnostics();
+		assertTrue(rich.getGuaranteeClass() == MetricGuaranteeClass2D.ESTIMATED
+				|| rich.getGuaranteeClass() == MetricGuaranteeClass2D.NOT_ESTABLISHED,
+				message);
+		assertTrue(rich.getErrorEvidence().getRigorousEnclosure().isEmpty(), message);
+		if (rich.getComputationStatus() == MetricComputationStatus.SUCCESS) {
+			assertEquals(MetricGuaranteeClass2D.ESTIMATED, rich.getGuaranteeClass(), message);
+			assertTrue(rich.getDiagnostics().stream().anyMatch(diagnostic ->
+					diagnostic.getCode() == MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED),
+					message);
+			assertTrue(rich.getErrorEvidence().getAssumptions().stream().anyMatch(
+					assumption -> assumption.startsWith("existence and continuity of the "
+							+ "curve on the declared piece")), message);
+		} else {
+			assertFalse(rich.isScalarAdmissible(), message);
+		}
+		for (LocusBranch2D branch : locus.getSemanticDefinition().getBranches()) {
+			LocusExistenceStructure2D structure = branch.getExistenceStructure();
+			assertEquals(LocusExistenceStructure2D.Completeness.NOT_ESTABLISHED,
+					structure.getCompleteness(), message);
+			assertTrue(structure.getContinuousValidComponents().isEmpty(), message);
+			assertTrue(structure.getPointComponents().isEmpty(), message);
+			assertTrue(structure.getCoverage().stream().allMatch(item ->
+					item.getCause() == LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS
+							|| item.getCause() == LocusCoverageCause2D.PROVIDER_COMPLEMENT),
+					message);
+		}
 	}
 
 	GeoNumeric scalarLength(GeoLocusV2 locus) {

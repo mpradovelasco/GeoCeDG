@@ -33,6 +33,23 @@ public final class LocusMetricComponentKey2D {
 	}
 
 	/**
+	 * Builds the key of a declared piece of a branch outside the certified class, measured
+	 * only by its conditioned estimate ({@code locus-v2-metrics.md} section 26.5). It never
+	 * equals the key of a certified component, so no route resolves it, and it is not
+	 * durable semantic position identity.
+	 *
+	 * @return deterministic revision-scoped key of a declared piece
+	 */
+	public static String createDeclared(LocusDefinition2D definition,
+			LocusBranch2D branch, int pieceIndex, LocusInterval2D piece) {
+		return branch.getBranchKey() + "|r=" + definition.getSemanticRevision()
+				+ "|d=" + pieceIndex + "|"
+				+ Double.toHexString(piece.getLower()) + ":"
+				+ Double.toHexString(piece.getUpper()) + ":"
+				+ piece.isLowerClosed() + ":" + piece.isUpperClosed();
+	}
+
+	/**
 	 * Finds the exact interval owned by a component key, or {@code null}.
 	 *
 	 * @return matching component extent or {@code null}

@@ -47,6 +47,10 @@ import org.geocedg.common.kernel.locus.metric.LocusMetricEstimator2D.Samples;
  * <p>Between-position routes reuse the cached component state (section 25.9): whole
  * leaves or boxes contribute their evidence and only the partial ones at the
  * route ends are refined locally.</p>
+ *
+ * <p>A declared piece of a branch outside class v3 has only the conditioned estimate of
+ * section 26.5 (PRE-G9B-CU2, decision H10): the estimator alone, under the recorded
+ * hypothesis that the curve exists and is continuous on the piece.</p>
  */
 public final class PolicyV2LocusMetricCapability2D
 		implements LocusMetricCapability2D {
@@ -125,6 +129,106 @@ public final class PolicyV2LocusMetricCapability2D
 			RootResult root = measureRoot(lineage, branch.getBranchKey(), component,
 					policy, instrumentation, session, differential);
 			return assemble(key, branch, component, policy, lineage.scale, root);
+		} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
+			// A caller's session limit depends on the caller: never memoized.
+			throw exception;
+		} catch (EstimatorFailure failure) {
+			throw failure.toBuildException();
+		} catch (LocusMetricComponentBuildException exception) {
+			throw exception;
+		} catch (RuntimeException exception) {
+			throw new LocusMetricComponentBuildException(
+					MetricComputationStatus.NUMERICAL_FAILURE,
+					Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.NUMERICAL_FAILURE,
+							"Metric policy v2 failed: "
+									+ exception.getClass().getSimpleName())));
+		}
+	}
+
+	/**
+	 * Conditioned estimate of one declared piece of a branch whose existence is not
+	 * established only because its construction is outside class v3
+	 * ({@code locus-v2-metrics.md} section 26.5, decision H10). The estimator v2 alone
+	 * measures the piece: no structural identity or certified enclosure is tried or
+	 * attached, so the state is at most class 3, and the existence and continuity of the
+	 * curve on the piece are recorded hypotheses that nothing certifies. An excluded end is
+	 * never evaluated, except the seam of a whole periodic period, which closes at its
+	 * driver position under a further hypothesis; failures keep their typed status.
+	 *
+	 * @param wholePeriod whether the piece is the whole half-open periodic domain
+	 * @return the conditioned state of the piece
+	 */
+	LocusMetricComponentState2D buildConditionedEstimateState(
+			LocusDefinition2D definition, LocusBranch2D branch, LocusInterval2D piece,
+			boolean wholePeriod, LocusMetricIndexKey2D key, LocusMetricPolicy2D policy,
+			LocusMetricInstrumentation2D instrumentation) {
+		currentDefinition = definition;
+		if (policy.getEstimatorPolicy() == null) {
+			throw new IllegalArgumentException("Metric policy v2 is required");
+		}
+		List<String> conditions = new ArrayList<>();
+		conditions.add("existence and continuity of the curve on the declared piece "
+				+ piece + " are assumed, not certified (construction outside class v3)");
+		if (wholePeriod) {
+			conditions.add("the curve closes at the seam of the periodic driver domain, "
+					+ "which is not certified");
+		}
+		MetricDiagnostic2D uncertified = new MetricDiagnostic2D(
+				MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED,
+				"Conditioned estimate: existence and continuity of the declared piece "
+						+ piece + " are not certified (construction outside class v3)");
+		Lineage lineage = Lineage.of(definition);
+		if (lineage.collapsed
+				|| branch.getProperties().contains(BranchProperty.COLLAPSED_IMAGE)) {
+			return conditionedZeroState(key, branch, piece, policy,
+					"semantic collapsed image", conditions, new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.COLLAPSED_IMAGE,
+							"Semantic component image is collapsed"), uncertified);
+		}
+		if (piece.getLower() == piece.getUpper()) {
+			return conditionedZeroState(key, branch, piece, policy,
+					"isolated declared parameter", conditions, new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.ISOLATED_POINT,
+							"An isolated declared parameter has zero length"), uncertified);
+		}
+		if (lineage.root.getBranch(branch.getBranchKey()) == null) {
+			throw new LocusMetricComponentBuildException(
+					MetricComputationStatus.NUMERICAL_FAILURE,
+					Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.BRANCH_MISSING,
+							"Similarity source lacks the image branch")));
+		}
+		LocusDifferentialEvaluator2D differential = differential(lineage.root);
+		if (!wholePeriod && (!piece.isLowerClosed() || !piece.isUpperClosed())) {
+			if (differential != null) {
+				return improperState(key, branch, piece);
+			}
+			throw new LocusMetricComponentBuildException(
+					MetricComputationStatus.LIMIT_NOT_ESTABLISHED,
+					Collections.singletonList(new MetricDiagnostic2D(
+							MetricDiagnosticCode2D.LIMIT_NOT_ESTABLISHED,
+							"Evaluator-only improper component limit is not "
+									+ "established")));
+		}
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
+			LocusMetricEstimator2D estimator = new LocusMetricEstimator2D(lineage.root,
+					branch.getBranchKey(), piece, differential == null
+							? Mode.EVALUATOR_ONLY : Mode.DIFFERENTIAL,
+					differential, session, policy.getEstimatorPolicy(),
+					policy.getWorkBudget(), instrumentation);
+			Samples samples = estimator.sample(piece.getLower(), piece.getUpper(),
+					breakpoints(lineage.root, branch.getBranchKey(), piece.getLower(),
+							piece.getUpper()));
+			double[] tolerances = tolerances(policy, lineage.scale, samples.getExtent());
+			Estimate estimate = estimator.estimate(samples, tolerances[0]);
+			List<String> hypotheses = new ArrayList<>(conditions);
+			hypotheses.addAll(estimator.hypotheses(estimate));
+			return assemble(key, branch, piece, policy, lineage.scale,
+					RootResult.conditioned(estimate, estimator.getMode(), hypotheses,
+							tolerances[0], tolerances[1],
+							Collections.singletonList(uncertified)));
 		} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
 			// A caller's session limit depends on the caller: never memoized.
 			throw exception;
@@ -329,7 +433,9 @@ public final class PolicyV2LocusMetricCapability2D
 						"Evaluated component image is collapsed"));
 			}
 			Extension extension = new Extension(Kind.ESTIMATE, root.mode,
-					differentialRoute ? "estimate-differential" : "estimate-evaluator",
+					(root.conditioned ? "conditioned-" : "")
+							+ (differentialRoute ? "estimate-differential"
+									: "estimate-evaluator"),
 					width, root.tolerance,
 					root.recordedTolerance, scale, null, null, estimate, hypotheses);
 			return state(key, branch, component, estimate.getParameters(),
@@ -431,6 +537,38 @@ public final class PolicyV2LocusMetricCapability2D
 				MetricErrorEvidence2D.exact(method)
 						.withRequestedTolerance(policy.getAbsoluteTolerance()),
 				Collections.singletonList(diagnostic), extension);
+	}
+
+	/**
+	 * Zero of a declared piece outside the certified class (section 26.5): an estimate of
+	 * class 3 under the conditions of the piece, never an exact structural zero.
+	 */
+	private LocusMetricComponentState2D conditionedZeroState(LocusMetricIndexKey2D key,
+			LocusBranch2D branch, LocusInterval2D piece, LocusMetricPolicy2D policy,
+			String method, List<String> conditions, MetricDiagnostic2D diagnostic,
+			MetricDiagnostic2D uncertified) {
+		double reference = Double.isFinite(piece.getLower()) ? piece.getLower()
+				: Double.isFinite(piece.getUpper()) ? piece.getUpper() : 0;
+		double[] parameters = {reference};
+		Extension extension = new Extension(Kind.ZERO, null, "conditioned-zero",
+				0, policy.getAbsoluteTolerance(),
+				policy.getAbsoluteTolerance(), Scale.IDENTITY, null, null, null,
+				conditions);
+		List<MetricDiagnostic2D> diagnostics = new ArrayList<>();
+		diagnostics.add(diagnostic);
+		diagnostics.add(uncertified);
+		return new LocusMetricComponentState2D(key, piece,
+				new MetricComponentPartition2D(parameters, new double[0],
+						new double[0]),
+				new MetricArcCoordinateEvidence2D(parameters, new double[] {0}),
+				new MetricCapabilityMetadata2D(VERSION,
+						MetricEvaluatorMethod2D.ANALYTIC, MetricMethod2D.CLOSED_FORM,
+						branch.getQuality().getConstructionFidelity()),
+				new FiniteMetricValue2D(0), MetricComputationStatus.SUCCESS,
+				MetricRectifiability.RECTIFIABLE,
+				estimatedEvidence(policy, 0, 0, method, conditions,
+						policy.getAbsoluteTolerance(), null),
+				diagnostics, extension);
 	}
 
 	private LocusMetricComponentState2D improperState(LocusMetricIndexKey2D key,
@@ -1006,12 +1144,13 @@ public final class PolicyV2LocusMetricCapability2D
 		private final double tolerance;
 		private final double recordedTolerance;
 		private final List<MetricDiagnostic2D> diagnostics;
+		private final boolean conditioned;
 
 		private RootResult(Kind kind, MetricEnclosure2D enclosure,
 				StructuralLocusMetric2D structural, CertifiedConeEnclosure2D cone,
 				Estimate estimate, Mode mode, List<String> hypotheses,
 				double tolerance, double recordedTolerance,
-				List<MetricDiagnostic2D> diagnostics) {
+				List<MetricDiagnostic2D> diagnostics, boolean conditioned) {
 			this.kind = kind;
 			this.enclosure = enclosure;
 			this.structural = structural;
@@ -1023,6 +1162,7 @@ public final class PolicyV2LocusMetricCapability2D
 			this.recordedTolerance = recordedTolerance;
 			this.diagnostics = Collections.unmodifiableList(
 					new ArrayList<>(diagnostics));
+			this.conditioned = conditioned;
 		}
 
 		private static RootResult certified(Kind kind, MetricEnclosure2D enclosure,
@@ -1031,7 +1171,7 @@ public final class PolicyV2LocusMetricCapability2D
 				List<MetricDiagnostic2D> diagnostics) {
 			return new RootResult(kind, enclosure, structural, cone, null, null,
 					Collections.emptyList(), tolerance, recordedTolerance,
-					diagnostics);
+					diagnostics, false);
 		}
 
 		private static RootResult estimate(Estimate estimate, Mode mode,
@@ -1039,7 +1179,15 @@ public final class PolicyV2LocusMetricCapability2D
 				double tolerance, double recordedTolerance,
 				List<MetricDiagnostic2D> diagnostics) {
 			return new RootResult(Kind.ESTIMATE, evidence, null, null, estimate,
-					mode, hypotheses, tolerance, recordedTolerance, diagnostics);
+					mode, hypotheses, tolerance, recordedTolerance, diagnostics, false);
+		}
+
+		/** Conditioned estimate of a declared piece, without rigorous evidence (26.5). */
+		private static RootResult conditioned(Estimate estimate, Mode mode,
+				List<String> hypotheses, double tolerance, double recordedTolerance,
+				List<MetricDiagnostic2D> diagnostics) {
+			return new RootResult(Kind.ESTIMATE, null, null, null, estimate,
+					mode, hypotheses, tolerance, recordedTolerance, diagnostics, true);
 		}
 	}
 

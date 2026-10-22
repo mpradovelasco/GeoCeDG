@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
@@ -96,6 +97,12 @@ final class CertifiedConstructionCapture2D {
 	 * locus-v2-metrics.md} section 26.3).
 	 */
 	static final String METRIC_VALUE_CONSTANT = "metric-value-constant";
+	/**
+	 * Refusal of a composition whose traced point reads the driver coordinate other than
+	 * through the generator point of its locus support, which the walk would take for a
+	 * constant ({@code locus-v2-certified-construction-model.md} section 10.10).
+	 */
+	static final String DRIVER_OUTSIDE_GENERATOR = "driver-outside-generator-point";
 
 	private final GeoElement state;
 	private final boolean classV3;
@@ -180,6 +187,63 @@ final class CertifiedConstructionCapture2D {
 			return new Outcome(Optional.empty(),
 					"unexpected-shape:" + exception.getClass().getSimpleName(), Map.of());
 		}
+	}
+
+	/**
+	 * Captures the steps from the generator point of a dependent on a locus support to its
+	 * traced point, for the minimal certified composition
+	 * ({@code locus-v2-certified-construction-model.md} section 10.10, author decision
+	 * V-CON-6). The walk is that of class v3 with the generator point as node 0, and the
+	 * traced point must read the driver coordinate only through that point. The versioned
+	 * totality table, not this capture, decides whether the steps compose.
+	 *
+	 * @param dependentPoint isolated traced point
+	 * @param state isolated generator point on the locus support
+	 * @param coordinate isolated driver coordinate of the generator point
+	 * @return the steps, or the typed reason of their refusal; never throws
+	 */
+	static Composition captureComposition(GeoElement dependentPoint, GeoElement state,
+			GeoElement coordinate) {
+		try {
+			if (readsCoordinate(dependentPoint, state, coordinate,
+					Collections.newSetFromMap(new IdentityHashMap<>()))) {
+				return new Composition(null, DRIVER_OUTSIDE_GENERATOR);
+			}
+			CertifiedConstructionCapture2D walk =
+					new CertifiedConstructionCapture2D(state, true);
+			int output = walk.node(dependentPoint, walk.top);
+			if (output != walk.steps.size()) {
+				return new Composition(null, OUTSIDE_CLASS);
+			}
+			return new Composition(walk.steps, null);
+		} catch (Refusal refusal) {
+			return new Composition(null, refusal.reason);
+		} catch (RuntimeException exception) {
+			return new Composition(null,
+					"unexpected-shape:" + exception.getClass().getSimpleName());
+		}
+	}
+
+	/**
+	 * @return whether the geo reads the coordinate on a path of its construction graph that
+	 *         avoids the generator point; macro instances are followed through their inputs
+	 */
+	private static boolean readsCoordinate(GeoElement geo, GeoElement state,
+			GeoElement coordinate, Set<GeoElement> visited) {
+		if (geo == state || !visited.add(geo)) {
+			return false;
+		}
+		if (geo == coordinate) {
+			return true;
+		}
+		AlgoElement parent = geo.getParentAlgorithm();
+		for (int index = 0; parent != null && index < parent.getInputLength(); index++) {
+			if (readsCoordinate(parent.getInput(index).toGeoElement(), state, coordinate,
+					visited)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static Outcome program(Driver driver, double[] constants,
@@ -1214,6 +1278,33 @@ final class CertifiedConstructionCapture2D {
 		/** @return operation of the step */
 		String getOperation() {
 			return operation;
+		}
+	}
+
+	/** Steps of a minimal certified composition, or the reason of their refusal. */
+	static final class Composition {
+		private final List<Step> steps;
+		private final String refusal;
+
+		private Composition(List<Step> steps, String refusal) {
+			this.steps = steps == null ? null
+					: Collections.unmodifiableList(new ArrayList<>(steps));
+			this.refusal = refusal;
+		}
+
+		/** @return a refused composition with its typed reason */
+		static Composition refused(String reason) {
+			return new Composition(null, reason);
+		}
+
+		/** @return steps from the generator point, or empty when refused */
+		Optional<List<Step>> getSteps() {
+			return Optional.ofNullable(steps);
+		}
+
+		/** @return typed reason of a refusal, or {@code null} for captured steps */
+		String getRefusal() {
+			return refusal;
 		}
 	}
 

@@ -5,7 +5,7 @@
 | Version | `1.2` (`certified-construction-program/v1`, `/v2` and `/v3`) |
 | Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) and by `PRE-G9B-CU2` (§10) |
 | Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21 |
-| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -114,7 +114,9 @@ its pairs stay rich-only with an explicit diagnostic.
 | `SEGMENT_POINT` | segment with length `> 0`: start inhomogeneous `(sx,sy)`, line coefficients `(a,b)` | `x = sx + t b`, `y = sy - t a` | `[0,1]` |
 | `SCALAR_STATE` | only with the existing direct scalar affine certificate `(αx,βx,αy,βy)` | output `(αx t + βx, αy t + βy)`; no steps | declared domain |
 
-`LOCUS_BRANCH_POINT` and scalar states without that certificate have no program.
+`LOCUS_BRANCH_POINT` and scalar states without that certificate have no program. A
+`LOCUS_BRANCH_POINT` dependent may still compose the certificate of its support under §10.10,
+which is not a program.
 The circle-point formula is exactly `GeoConicND.pathChangedWithoutCheckEllipse`
 followed by `coordsEVtoRW`; the arc and segment formulas are exactly
 `GeoConicPart.pathChanged` and `GeoSegment.pathChanged`, whose clamps are
@@ -427,3 +429,40 @@ fixes their values with reproducible benchmark evidence:
 
 Exhausting a budget yields a typed `UNRESOLVED`; it never yields certified existence or
 nonexistence.
+
+### 10.10 Minimal certified composition on a locus support
+
+Normative precision of author decision V-CON-6, option 2 (author resolution before `CU2` step
+T12, 2026-10-22). It belongs to the `CU2` technical candidate until the author reviews that
+candidate. It is not a program and does not extend class v3: a locus-support generator still
+has no program (§4, §9).
+
+1. **Scope.** A dependent locus whose generator is a point of a branch of a locus support
+   (`LOCUS_BRANCH_POINT`), when that branch is `COMPLETE` and has no point component. Any other
+   support keeps the declared limitation of `locus-v2-existence-components.md` §15.8.
+2. **Constructive program.** The steps from the generator point to the traced point are
+   captured from the evaluator's isolated slice with the walk of §3 and §10.1, the generator
+   point being node 0, under the reconstruction fidelity rule of §10.1. Every step must be
+   structurally total under the versioned table of §10.8 (`structural-totality/v1`): defined and
+   continuous for every input, with constant parameters.
+3. **Dependencies of the DAG.** The traced point must read the driver coordinate only through the
+   generator point. A geo that reads it on a path that avoids that point refuses the composition
+   (`driver-outside-generator-point`), because the walk would take it for a constant. A slice
+   that depends on a selected Locus V2 root is not composed.
+4. **Composition.** The traced point is then a continuous function of the generator point, so the
+   dependent exists exactly where the support branch does. Under the contract of the hybrid
+   certifier it publishes the support's decomposition, with the domain and orientation of the
+   support branch:
+   - its topology, coverage and completeness;
+   - each component with its interval or arc, its ends (kind, source, inclusion and enclosure),
+     its maximality and its nature.
+
+   The support's nonexistence becomes `DEPENDENCY_CERTIFIED_NONEXISTENT`. Lineage keys derive
+   from the same structural sources (`locus-v2-existence-components.md` §15.6), so the
+   components keep the identity and lineage of the support's. Certified singular parameters and
+   folds, facts of the support's own map, are not composed.
+5. **No promotion.** A declared domain never becomes a certified component by itself: a
+   dependent whose steps are not all structurally total, or whose traced point reads the driver
+   elsewhere, stays `NOT_ESTABLISHED` with no component. The composition provides no program
+   and no certified curve model, so the dependent's consumers use only the capabilities that do
+   not need one.

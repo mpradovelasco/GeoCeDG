@@ -20,6 +20,7 @@ import java.util.List;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -35,6 +36,7 @@ import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.LineageTransition;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 import org.junit.jupiter.api.Test;
 
@@ -231,6 +233,101 @@ class PreG9BCu2ExistenceStructureV2Test {
 		assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST, gap.getState());
 		assertEquals(LocusCoverageCause2D.PROVIDER_COMPLEMENT, gap.getCause());
 		assertEquals("fixture/declared-components", gap.getEvidence());
+	}
+
+	/**
+	 * Author resolution before step T12 (point component of {@code restrictedTo}): certified
+	 * existence that a declared isolated parameter keeps is a point component, with
+	 * isolated-point coverage at that parameter only, the maximality and nature of its
+	 * component and a lineage key of its own; never a zero-length interval and never dropped.
+	 */
+	@Test
+	void aDeclaredIsolatedParameterOfCertifiedExistenceIsAPointComponent() {
+		LocusInterval2D domain = new LocusInterval2D(-2, 2, true, true);
+		LocusInterval2D left = new LocusInterval2D(-2, -1, true, true);
+		LocusInterval2D zero = new LocusInterval2D(0, 0, true, true);
+		LocusInterval2D right = new LocusInterval2D(1, 2, true, true);
+		LocusExistenceStructure2D restricted = LocusExistenceStructure2D.providerProved(
+				BRANCH, domain, List.of(domain), false, false, "fixture-producer/v1")
+				.restrictedTo(List.of(left, zero, right), "fixture/declared-components");
+		assertEquals(Completeness.COMPLETE, restricted.getCompleteness());
+		assertEquals(List.of(left, right), restricted.getContinuousValidComponents().stream()
+				.map(ContinuousComponent::getInterval).toList());
+		assertEquals(1, restricted.getPointComponents().size());
+		LocusPointComponent2D point = restricted.getPointComponents().get(0);
+		assertEquals(0, point.getParameterLower(), 0);
+		assertEquals(0, point.getParameterUpper(), 0);
+		assertEquals(Maximality.ESTABLISHED, point.getMaximality());
+		assertTrue(point.getNature().certifies());
+		Coverage at = restricted.getCoverageAt(0);
+		assertEquals(zero, at.getInterval());
+		assertEquals(CoverageState.CERTIFIED_ISOLATED_POINTS, at.getState());
+		assertEquals(LocusCoverageCause2D.PROVIDER_ISOLATED_POINT, at.getCause());
+		for (double neighbour : new double[] {-0.5, Math.nextDown(0.0), Double.MIN_VALUE,
+				0.5}) {
+			assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST,
+					restricted.getCoverageAt(neighbour).getState(), "at " + neighbour);
+		}
+		assertNull(restricted.getComponentContaining(0));
+		assertEquals(BRANCH + "/point/" + point.getSource().getSignature(),
+				LocusComponentLineage2D.of(restricted, point));
+	}
+
+	/**
+	 * Adversarial cases of the same correction: a declared isolated parameter where
+	 * existence is certified false or unresolved yields no point component and keeps the
+	 * fact of the source; two declared isolated parameters yield two points with distinct
+	 * lineage keys; a declared component that only touches a certified component at its
+	 * closed end keeps that end as a point; and the point's disappearance is a typed lineage
+	 * transition.
+	 */
+	@Test
+	void declaredIsolatedParametersNeverInventExistence() {
+		LocusInterval2D domain = new LocusInterval2D(-2, 2, true, true);
+		LocusInterval2D zero = new LocusInterval2D(0, 0, true, true);
+		LocusExistenceStructure2D absent = LocusExistenceStructure2D.providerProved(BRANCH,
+				domain, List.of(new LocusInterval2D(-2, -1, true, true)), false, false,
+				"fixture-producer/v1").restrictedTo(List.of(zero), "fixture/declared");
+		assertTrue(absent.getPointComponents().isEmpty());
+		assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST,
+				absent.getCoverageAt(0).getState());
+
+		LocusExistenceStructure2D unresolved = LocusExistenceStructure2D.notEstablished(BRANCH,
+				domain, DomainTopology.BOUNDED, LocusCoverageCause2D.BUDGET_EXHAUSTED,
+				"fixture/unresolved").restrictedTo(List.of(zero), "fixture/declared");
+		assertTrue(unresolved.getPointComponents().isEmpty());
+		assertEquals(CoverageState.UNRESOLVED, unresolved.getCoverageAt(0).getState());
+		assertEquals(Completeness.NOT_ESTABLISHED, unresolved.getCompleteness());
+
+		LocusExistenceStructure2D whole = LocusExistenceStructure2D.providerProved(BRANCH,
+				domain, List.of(domain), false, false, "fixture-producer/v1");
+		LocusExistenceStructure2D pair = whole.restrictedTo(List.of(
+				new LocusInterval2D(-1, -1, true, true), new LocusInterval2D(1, 1, true, true)),
+				"fixture/declared");
+		assertEquals(2, pair.getPointComponents().size());
+		List<String> keys = LocusComponentLineage2D.keys(pair);
+		assertEquals(2, keys.size());
+		assertNotEquals(keys.get(0), keys.get(1));
+
+		LocusExistenceStructure2D touching = LocusExistenceStructure2D.providerProved(BRANCH,
+				domain, List.of(new LocusInterval2D(-2, 0, true, true)), false, false,
+				"fixture-producer/v1").restrictedTo(
+						List.of(new LocusInterval2D(0, 1, true, true)), "fixture/declared");
+		assertTrue(touching.getContinuousValidComponents().isEmpty());
+		assertEquals(1, touching.getPointComponents().size());
+		assertEquals(CoverageState.CERTIFIED_ISOLATED_POINTS,
+				touching.getCoverageAt(0).getState());
+		assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST,
+				touching.getCoverageAt(0.5).getState());
+		assertEquals(Completeness.COMPLETE, touching.getCompleteness());
+
+		LocusExistenceStructure2D single = whole.restrictedTo(List.of(zero),
+				"fixture/declared");
+		List<LocusLineage2D> lineage = LocusComponentLineage2D.transitions(single, absent,
+				true);
+		assertEquals(1, lineage.size());
+		assertEquals(LineageTransition.DISAPPEARED, lineage.get(0).getTransition());
+		assertEquals(LocusComponentLineage2D.keys(single), lineage.get(0).getParentKeys());
 	}
 
 	/** V-POINT-1: a point component is an entity of its own, never an interval. */

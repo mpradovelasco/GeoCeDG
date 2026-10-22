@@ -66,7 +66,9 @@ import org.geocedg.common.kernel.locus.LocusSimilarityEvaluator2D;
 import org.geocedg.common.kernel.locus.LocusSimilarityTransform2D;
 import org.geocedg.common.kernel.locus.LocusV2Factory;
 import org.geocedg.common.kernel.locus.LocusV2Mode;
+import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DomainLocation;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionTokenLineage2D;
@@ -298,29 +300,16 @@ class PreG9BCu2ConsumerMigrationTest extends BaseUnitTest {
 	}
 
 	/**
-	 * V-CON-6 on the published certificates (step T11): a dependent locus on a locus support
+	 * V-CON-6 on the published certificates: a dependent locus on a complete locus support
 	 * takes the support's components, an arc across the seam included, as its declared
-	 * domain, and its completeness never exceeds the support's. A locus support is outside
-	 * class v3, so the dependent's own existence is not established: no compatibility
-	 * certificate composes the support's components into it any more.
+	 * domain. By author decision V-CON-6 (option 2, minimal certified composition;
+	 * {@code locus-v2-certified-construction-model.md} section 10.10), a traced point that
+	 * follows the generator point through structurally total steps inherits the support's
+	 * arc, certified, with its ends, identity, lineage and completeness, never more.
 	 */
 	@Test
 	void aDependentOnALocusSupportInheritsTheArc() {
-		add("c=Circle((0,0),1)");
-		GeoPoint driver = add("P=Point(c)");
-		driver.setCoords(1, 0, 1);
-		driver.updateRepaint();
-		add("d=Circle((2,0),3/2)");
-		add("g=Line((0,0),P)");
-		add("X=Intersect(d,g,1)");
-		GeoLocusV2 support = add("L=LocusV2(X,P)");
-		LocusExistenceStructure2D origin = support.getSemanticDefinition()
-				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
-				.getExistenceStructure();
-		assertEquals(Completeness.COMPLETE, origin.getCompleteness(),
-				origin.getSemanticSignature());
-		assertTrue(origin.getContinuousValidComponents().stream()
-				.anyMatch(ContinuousComponent::crossesSeam), origin.getSemanticSignature());
+		LocusExistenceStructure2D origin = biteSupport();
 		add("u=0");
 		add("S=Point(L,\"" + SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY + "\",u)");
 		add("Y=S+(1,0)");
@@ -336,10 +325,158 @@ class PreG9BCu2ConsumerMigrationTest extends BaseUnitTest {
 		LocusExistenceStructure2D structure = dependent.getSemanticDefinition()
 				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
 				.getExistenceStructure();
-		assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness());
-		assertTrue(structure.getContinuousValidComponents().isEmpty());
-		assertEquals(LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
-				structure.getCoverage().get(0).getCause());
+		String message = structure.getSemanticSignature();
+		assertEquals(origin.getCompleteness(), structure.getCompleteness(), message);
+		assertEquals(HybridExistenceCertifier2D.CONTRACT, structure.getCertifierContract());
+		assertEquals(origin.getCanonicalDomain(), structure.getCanonicalDomain());
+		assertEquals(origin.getTopology(), structure.getTopology());
+		assertEquals(origin.getContinuousValidComponents().size(),
+				structure.getContinuousValidComponents().size(), message);
+		ContinuousComponent sourceArc = origin.getContinuousValidComponents().stream()
+				.filter(ContinuousComponent::crossesSeam).findFirst().orElseThrow();
+		ContinuousComponent arc = structure.getContinuousValidComponents().stream()
+				.filter(ContinuousComponent::crossesSeam).findFirst().orElseThrow();
+		assertEquals(sourceArc.getInterval(), arc.getInterval());
+		assertEquals(sourceArc.getStart(), arc.getStart());
+		assertEquals(sourceArc.getEnd(), arc.getEnd());
+		assertEquals(sourceArc.getLowerBoundary(), arc.getLowerBoundary());
+		assertEquals(sourceArc.getUpperBoundary(), arc.getUpperBoundary());
+		assertEquals(sourceArc.getMaximality(), arc.getMaximality());
+		assertFalse(structure.isClosedPeriodic());
+		assertTrue(arc.getNature().certifies(), "composed through structurally total steps");
+		assertEquals(LocusComponentLineage2D.keys(origin), LocusComponentLineage2D.keys(
+				structure), "the identity of the support's components is kept");
+		for (LocusExistenceStructure2D.Coverage item : structure.getCoverage()) {
+			if (item.getState() == CoverageState.CERTIFIED_DOES_NOT_EXIST) {
+				assertEquals(LocusCoverageCause2D.DEPENDENCY_CERTIFIED_NONEXISTENT,
+						item.getCause(), message);
+			}
+		}
+		// The dependent's points are the translated points of the support on the arc.
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+			double inside = (arc.getStart() + arc.getEnd() - 2 * Math.PI) / 2;
+			LocusEvaluation2D source = support().getSemanticDefinition().evaluate(
+					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY, inside, session);
+			LocusEvaluation2D image = dependent.getSemanticDefinition().evaluate(
+					SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY, inside, session);
+			assertTrue(source.isValid() && image.isValid(), image.getDiagnostic());
+			assertEquals(source.getPoint().getX() + 1, image.getPoint().getX(), 1E-12);
+			assertEquals(source.getPoint().getY(), image.getPoint().getY(), 1E-12);
+		}
+		// A rotation and a dilation with constant parameters are structurally total too.
+		add("R=Rotate(S,pi/3,(0,0))");
+		add("W=Dilate(R,2,(1,0))");
+		LocusExistenceStructure2D similar = ((GeoLocusV2) add("K=LocusV2(W,S)"))
+				.getSemanticDefinition()
+				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+				.getExistenceStructure();
+		assertEquals(Completeness.COMPLETE, similar.getCompleteness(),
+				similar.getSemanticSignature());
+		assertEquals(LocusComponentLineage2D.keys(origin), LocusComponentLineage2D.keys(
+				similar));
+	}
+
+	/**
+	 * V-CON-6, decision V-CON-6 (option 2): the composition is never a promotion of the
+	 * declared domain. A step that is not structurally total, or a traced point that reads
+	 * the driver coordinate other than through the generator point, leaves the dependent
+	 * {@code NOT_ESTABLISHED} with the support's pieces as its declared domain and no
+	 * certified component.
+	 */
+	@Test
+	void aDeclaredDomainIsNeverPromotedWithoutATotalComposition() {
+		biteSupport();
+		add("u=0");
+		add("S=Point(L,\"" + SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY + "\",u)");
+		add("A=(1,1)");
+		add("h=Line(S,A)");
+		add("k=Line((0,-3),(1,-3))");
+		add("Y=Intersect(h,k)");
+		GeoLocusV2 meet = add("M=LocusV2(Y,S)");
+		assertNotComposed(meet, "line through the generator point");
+		add("Z=S+(u,0)");
+		GeoLocusV2 reading = add("N=LocusV2(Z,S)");
+		assertNotComposed(reading, "the driver read outside the generator point");
+		assertEquals("driver-outside-generator-point", ((ReconstructibleLocusEvaluator2D)
+				reading.getSemanticDefinition().getEvaluatorCapability())
+						.getCompositionRefusal());
+	}
+
+	/**
+	 * Author resolution before step T12 (point component): the hybrid certificate of a scalar
+	 * locus whose declared domain has an isolated parameter publishes a point component there.
+	 * It is declared, never materialized: its binary64 parameter addresses no point, it adds
+	 * zero length, an intersection through it is not exhaustive, and no point object appears.
+	 */
+	@Test
+	void aDeclaredIsolatedParameterIsAPublishedPointComponent() {
+		add("s=0");
+		add("Q=(s,0)");
+		add("D={false,{-2,-1,true,true},{0,0,true,true},{1,2,true,true}}");
+		GeoLocusV2 locus = add("L=LocusV2(Q,s,D)");
+		LocusExistenceStructure2D structure = locus.getSemanticDefinition()
+				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+				.getExistenceStructure();
+		String message = structure.getSemanticSignature();
+		assertEquals(Completeness.COMPLETE, structure.getCompleteness(), message);
+		assertEquals(2, structure.getContinuousValidComponents().size(), message);
+		assertEquals(1, structure.getPointComponents().size(), message);
+		LocusPointComponent2D point = structure.getPointComponents().get(0);
+		assertEquals(0, point.getParameterLower(), 0);
+		assertTrue(point.getNature().certifies());
+		assertEquals(CoverageState.CERTIFIED_ISOLATED_POINTS,
+				structure.getCoverageAt(0).getState(), message);
+		GeoPoint addressed = add("X=Point(L,\""
+				+ SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY + "\",0)");
+		assertFalse(addressed.isDefined(), "a binary64 parameter never selects the point");
+		LocusMetricResult2D total = ((org.geocedg.common.kernel.geos.GeoLocusMetricResult)
+				add("T=LocusLength(L)")).getMetricResult();
+		assertEquals(2, total.getMetricValue().getFiniteValue().orElseThrow(),
+				total.getErrorEvidence().getEstablishedAbsoluteAmount());
+		add("v:x=0");
+		int points = getConstruction().getGeoSetConstructionOrder().size();
+		org.geocedg.common.kernel.geos.GeoLocusIntersectionResult crossing =
+				add("R=Intersect(L,v)");
+		assertTrue(crossing.getIntersectionResult().getFiniteSolutions().isEmpty());
+		assertNotEquals(GeometryKind.EMPTY, crossing.getIntersectionResult()
+				.getGeometryKind());
+		assertEquals(points + 1, getConstruction().getGeoSetConstructionOrder().size(),
+				"only the rich result is created, no point object");
+	}
+
+	private static void assertNotComposed(GeoLocusV2 locus, String where) {
+		LocusExistenceStructure2D structure = locus.getSemanticDefinition()
+				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+				.getExistenceStructure();
+		String message = where + ": " + structure.getSemanticSignature();
+		assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness(), message);
+		assertTrue(structure.getContinuousValidComponents().isEmpty(), message);
+		assertTrue(structure.getCoverage().stream().noneMatch(item ->
+				item.getState() == CoverageState.CERTIFIED_EXISTS), message);
+	}
+
+	/** The bite of a line through the origin and a circle: one arc across the seam. */
+	private LocusExistenceStructure2D biteSupport() {
+		add("c=Circle((0,0),1)");
+		GeoPoint driver = add("P=Point(c)");
+		driver.setCoords(1, 0, 1);
+		driver.updateRepaint();
+		add("d=Circle((2,0),3/2)");
+		add("g=Line((0,0),P)");
+		add("X=Intersect(d,g,1)");
+		LocusExistenceStructure2D origin = ((GeoLocusV2) add("L=LocusV2(X,P)"))
+				.getSemanticDefinition()
+				.getBranch(SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY)
+				.getExistenceStructure();
+		assertEquals(Completeness.COMPLETE, origin.getCompleteness(),
+				origin.getSemanticSignature());
+		assertTrue(origin.getContinuousValidComponents().stream()
+				.anyMatch(ContinuousComponent::crossesSeam), origin.getSemanticSignature());
+		return origin;
+	}
+
+	private GeoLocusV2 support() {
+		return (GeoLocusV2) lookup("L");
 	}
 
 	/**

@@ -111,10 +111,26 @@ public final class LocusComponentLineage2D {
 				&& components.get(0).getInterval().equals(structure.getCanonicalDomain());
 	}
 
-	/** @return lineage key of a point component: the branch and the source of its root */
+	/**
+	 * Lineage key of a point component: the branch and the source of its root. A point
+	 * whose source another point of the same structure shares, such as one of several
+	 * declared isolated parameters, keeps the key of its enclosure instead, as a component
+	 * does in {@link #of(LocusExistenceStructure2D, ContinuousComponent)}, since nothing
+	 * structural tells them apart.
+	 *
+	 * @return lineage key of the point component
+	 */
 	public static String of(LocusExistenceStructure2D structure,
 			LocusPointComponent2D point) {
-		return structure.getBranchKey() + "/point/" + point.getSource().getSignature();
+		String signature = point.getSource().getSignature();
+		for (LocusPointComponent2D other : structure.getPointComponents()) {
+			if (other != point && signature.equals(other.getSource().getSignature())) {
+				return structure.getBranchKey() + "/point/"
+						+ Double.toHexString(point.getParameterLower()) + "/"
+						+ Double.toHexString(point.getParameterUpper());
+			}
+		}
+		return structure.getBranchKey() + "/point/" + signature;
 	}
 
 	/** @return lineage keys of every component of the structure, in canonical order */

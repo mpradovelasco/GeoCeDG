@@ -14,7 +14,12 @@ import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.DomainTopology;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.ConstructionFidelity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
@@ -92,18 +97,39 @@ public final class LocusMetricEngine2D {
 			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
 			LocusMetricInstrumentation2D instrumentation,
 			String consumerToken) {
+		// A branch that is not COMPLETE has a total only when its construction is outside
+		// class v3: the conditioned estimate of its declared pieces (section 26.5).
+		Map<String, List<LocusInterval2D>> declared = new LinkedHashMap<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
 			if (branch.getExistenceStructure().getCompleteness()
-					!= org.geocedg.common.kernel.locus.LocusExistenceStructure2D
-							.Completeness.COMPLETE) {
-				return invalidQuery(query, definition,
-						MetricDiagnosticCode2D.INCOMPLETE_AGGREGATE,
-						"Total locus metric requires complete existence coverage",
-						Optional.empty());
+					== Completeness.COMPLETE) {
+				continue;
 			}
+			List<LocusInterval2D> pieces = declaredPieces(branch);
+			if (pieces.isEmpty()) {
+				return incompleteTotal(query, definition);
+			}
+			declared.put(branch.getBranchKey(), pieces);
 		}
 		List<LocusMetricContribution2D> contributions = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
+			List<LocusInterval2D> pieces = declared.get(branch.getBranchKey());
+			if (pieces != null) {
+				for (int index = 0; index < pieces.size(); index++) {
+					LocusInterval2D piece = pieces.get(index);
+					CapabilityState selected = conditionedState(definition, branch, piece,
+							LocusMetricComponentKey2D.createDeclared(definition, branch,
+									index, piece),
+							query.getPolicy(), capabilities, owner, indexMode,
+							instrumentation, consumerToken);
+					if (selected == null) {
+						return incompleteTotal(query, definition);
+					}
+					contributions.add(selected.capability.evaluateCompleteComponent(
+							selected.state, query.getPolicy(), instrumentation));
+				}
+				continue;
+			}
 			for (int index = 0;
 					index < branch.getValidDomainComponents().size(); index++) {
 				String componentKey = LocusMetricComponentKey2D.create(
@@ -168,19 +194,99 @@ public final class LocusMetricEngine2D {
 			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
 			LocusMetricInstrumentation2D instrumentation,
 			String consumerToken) {
-		LocusMetricCapability2D capability = hierarchy.select(definition, branch,
-				policy).orElseGet(() ->
-						new UnsupportedLocusMetricCapability2D(
-								"unsupported/v1"));
+		LocusMetricCapability2D capability = select(definition, branch, policy,
+				hierarchy);
+		LocusMetricIndexKey2D key = indexKey(definition, branch, componentKey,
+				policy, capability);
+		return new CapabilityState(capability, build(key, ignored ->
+				capability.buildComponentState(definition, branch, component,
+						key, policy, instrumentation), owner, indexMode,
+				instrumentation, consumerToken));
+	}
+
+	/**
+	 * State of the conditioned estimate of one declared piece (section 26.5): only the
+	 * public metric policy v2 of CU1 has one.
+	 *
+	 * @return the state, or {@code null} when the selected capability has no conditioned
+	 *         estimate
+	 */
+	private static CapabilityState conditionedState(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusInterval2D piece, String pieceKey,
+			LocusMetricPolicy2D policy, LocusMetricCapabilityHierarchy2D hierarchy,
+			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
+			LocusMetricInstrumentation2D instrumentation,
+			String consumerToken) {
+		LocusMetricCapability2D capability = select(definition, branch, policy,
+				hierarchy);
+		if (!(capability instanceof PolicyV2LocusMetricCapability2D)) {
+			return null;
+		}
+		PolicyV2LocusMetricCapability2D estimator =
+				(PolicyV2LocusMetricCapability2D) capability;
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		boolean wholePeriod = structure.getTopology() == DomainTopology.PERIODIC
+				&& piece.equals(structure.getCanonicalDomain());
+		LocusMetricIndexKey2D key = indexKey(definition, branch, pieceKey, policy,
+				capability);
+		return new CapabilityState(capability, build(key, ignored ->
+				estimator.buildConditionedEstimateState(definition, branch, piece,
+						wholePeriod, key, policy, instrumentation), owner, indexMode,
+				instrumentation, consumerToken));
+	}
+
+	/**
+	 * The declared pieces of a branch whose existence is not established only because its
+	 * construction is outside class v3 (section 26.5): no certified fact, every coverage
+	 * item unresolved by {@code OPERATION_OUTSIDE_CLASS} or the exact complement of the
+	 * declared domain. Certified nonexistence, a demonstrated discontinuity, a partial
+	 * certificate or any other cause leaves the branch without a total.
+	 *
+	 * @return the declared pieces in canonical order, or an empty list
+	 */
+	private static List<LocusInterval2D> declaredPieces(LocusBranch2D branch) {
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		if (!structure.getContinuousValidComponents().isEmpty()
+				|| !structure.getPointComponents().isEmpty()
+				|| !structure.getSingularParameters().isEmpty()
+				|| !structure.getCertifiedFolds().isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<LocusInterval2D> pieces = new ArrayList<>();
+		for (LocusExistenceStructure2D.Coverage item : structure.getCoverage()) {
+			if (item.getState() == CoverageState.UNRESOLVED
+					&& item.getCause() == LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS) {
+				pieces.add(item.getInterval());
+			} else if (item.getState() != CoverageState.CERTIFIED_DOES_NOT_EXIST
+					|| item.getCause() != LocusCoverageCause2D.PROVIDER_COMPLEMENT) {
+				return Collections.emptyList();
+			}
+		}
+		return pieces;
+	}
+
+	private static LocusMetricCapability2D select(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusMetricPolicy2D policy,
+			LocusMetricCapabilityHierarchy2D hierarchy) {
+		return hierarchy.select(definition, branch, policy).orElseGet(() ->
+				new UnsupportedLocusMetricCapability2D("unsupported/v1"));
+	}
+
+	private static LocusMetricIndexKey2D indexKey(LocusDefinition2D definition,
+			LocusBranch2D branch, String componentKey, LocusMetricPolicy2D policy,
+			LocusMetricCapability2D capability) {
 		String capabilityVersion = definition.getProvider().getProviderId()
 				+ "|" + capability.getCapabilityVersion();
-		LocusMetricIndexKey2D key = new LocusMetricIndexKey2D(
-				definition.getLocusIdentity(),
+		return new LocusMetricIndexKey2D(definition.getLocusIdentity(),
 				definition.getSemanticRevision(), branch.getBranchKey(),
 				componentKey, capabilityVersion, policy);
-		LocusMetricComponentStateBuilder2D builder = ignored ->
-				capability.buildComponentState(definition, branch, component,
-						key, policy, instrumentation);
+	}
+
+	private static LocusMetricComponentState2D build(LocusMetricIndexKey2D key,
+			LocusMetricComponentStateBuilder2D builder,
+			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
+			LocusMetricInstrumentation2D instrumentation,
+			String consumerToken) {
 		LocusMetricComponentState2D componentState;
 		if (indexMode == LocusMetricIndexMode.LAZY_COMPONENT_REVISION) {
 			componentState = owner.getOrBuildComponentState(key, builder,
@@ -196,7 +302,7 @@ public final class LocusMetricEngine2D {
 				instrumentation.recordComponentStateBuildFinished();
 			}
 		}
-		return new CapabilityState(capability, componentState);
+		return componentState;
 	}
 
 	private static LocusMetricContribution2D zeroContribution(
@@ -249,6 +355,14 @@ public final class LocusMetricEngine2D {
 				MetricUnit2D.CONSTRUCTION_LENGTH_UNIT, provenance,
 				Collections.emptyList(),
 				Collections.singletonList(diagnostic));
+	}
+
+	private static LocusMetricResult2D incompleteTotal(TotalLocusMetricQuery query,
+			LocusDefinition2D definition) {
+		return invalidQuery(query, definition,
+				MetricDiagnosticCode2D.INCOMPLETE_AGGREGATE,
+				"Total locus metric requires complete existence coverage",
+				Optional.empty());
 	}
 
 	private static LocusMetricResult2D invalidQuery(

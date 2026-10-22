@@ -6,6 +6,7 @@
 | Estado | Candidato técnico del paso T11, en la rama local de implementación; pendiente de revisión autoral; `selfApproved=false` |
 | Autoridad | [estrategia de implementación](../architecture/pre_g9b_cu2_implementation_strategy.md) §5, punto 5 («Cada cambio es una conformidad declarada con su justificación»); decisión del autor D-CU2-T11-R1 (2026-10-21), §5 |
 | Base | `3e711f476` (paso T10) |
+| Revisión | 2026-10-22: resolución autoral previa a T12 (H10, V-CON-6, componente puntual y tokens históricos), §7 |
 
 Este registro declara, para cada prueba heredada que modifica el paso T11, qué fijaba, qué contrato
 aprobado justifica el cambio, qué sigue verificándose, qué cobertura puede haberse perdido y qué
@@ -42,7 +43,8 @@ prueba la sustituye. La ejecución de las pruebas consta en el informe del paso,
     cónica–cónica; un corte así queda `NOT_ESTABLISHED` con evidencia exploratoria visible.
   - [CON] §4, precisión de T11: los loci fuera de la clase v3 publican `NOT_ESTABLISHED` sin
     componentes, ningún punto semántico los direcciona, la longitud total se rechaza
-    (`INVALID_QUERY`) y una intersección es `UNRESOLVED` sin raíces finitas.
+    (`INVALID_QUERY`) y una intersección es `UNRESOLVED` sin raíces finitas. La decisión H10
+    sustituye el rechazo de la longitud total por la estimación condicionada (§7.1).
 - **Marcas.**
   - **ATENCIÓN:** toca la identidad persistida, el libro mayor de intersecciones, la orientación o
     la costura, DXF, LaTeX, la reconstrucción o reapertura de documentos, o un límite de `CU3`.
@@ -297,7 +299,7 @@ Usuarios de `createPeriodicCircle()` cuyo cuerpo no cambia:
 6. **Prueba sustitutiva.** No procede.
 
 **C70 · `i10LongExactTokensHaveBoundedDistinctAccessibleChoices`, `i11CompactChoiceUsesAndPersistsTheCompleteExactToken`**
-(auxiliar `createDoubleIntersection`) — **ATENCIÓN** (tokens persistidos en componentes parciales)
+(auxiliar `createDoubleIntersection`) — **ATENCIÓN** (tokens persistidos en componentes parciales; limitación registrada en §7.4)
 1. **Comportamiento anterior.** `(s^2,s)` en `{-2,0}` y `{0,2}` semiabiertos, cortado por `x=1` en
    `s = ±1`.
 2. **Contrato.** Fuera de clase v3.
@@ -483,7 +485,7 @@ Solo G5 (`buildDisjointScene`).
 #### PreG9BR6PlusCBaseIdentityTest.java
 
 **C09 · `outputsThatCMustNotChangeAreTheBaseBytes`** (`BASE`, `digests`, `assertDeclaredNonexistence`) —
-**ATENCIÓN** (DXF, identidad byte a byte con la base `e6135028`)
+**ATENCIÓN** (DXF, identidad byte a byte con la base `e6135028`; limitación registrada en §7.4)
 1. **Comportamiento anterior.** Seis SHA-256 de loci escalares coincidían con la base:
    `g9x1.locus.components.{dxf,dxf.core,sidecar}`, de `(s,s^2/4)` con dos componentes, y
    `g9x1.locus.closed.{dxf,dxf.core,sidecar}`, de `(cos t, sin t)` (sidecar `aeb007cf` desde T10).
@@ -717,7 +719,7 @@ Solo G1 o G2. Ver la **ATENCIÓN** de G1 sobre `periodicDefinition`.
 Contiene G1 y G2.
 
 **C22 · `isolatedAndEmptyComponentsHaveExplicitSetSemantics`** — **ATENCIÓN** (materialización
-diferida a CU3)
+diferida a CU3; limitación registrada en §7.4)
 1. **Comportamiento anterior.** La raíz en el parámetro aislado `[0,0]` se materializaba con
    `DomainLocation.ISOLATED_COMPONENT`.
 2. **Contrato.**
@@ -732,7 +734,8 @@ diferida a CU3)
 
 #### locus/G8BIntersectionTopologyAndScientificTest.java
 
-**C23 · `isolatedEmptyAndCollapsedComponentsUseDistinctSetSemantics`** — **ATENCIÓN** (CU3)
+**C23 · `isolatedEmptyAndCollapsedComponentsUseDistinctSetSemantics`** — **ATENCIÓN** (CU3; limitación
+registrada en §7.4)
 1. **Comportamiento anterior.** La raíz de la componente aislada se publicaba como
    `ISOLATED_COMPONENT`.
 2. **Contrato.** [EXI] §15.4 y §15.8 (nunca `EMPTY` ni conjunto completo sin excluir la componente
@@ -867,7 +870,7 @@ Contiene G6 (m11).
 **C34 · `m02SelfIntersectionPositionsRemainDifferentPreimages`** — como C28: `projectedCircle()` con
 ±π/3.
 
-**C35 · `m04RichTotalLengthIsNonnumericAuthority`**
+**C35 · `m04RichTotalLengthIsNonnumericAuthority`** — restaurada por la resolución previa a T12 (§7.1)
 1. **Comportamiento anterior.** La circunferencia y la elipse escalares eran `ESTIMATED`; la elipse medía
    15,86543958929059 ± 2E-6.
 2. **Contrato.** Fuera de clase v3, con la longitud total rechazada.
@@ -1060,7 +1063,7 @@ Contiene G1 (r629 y r645), G3b (r627) y G6 (r639 y r640).
 6. **Prueba sustitutiva.** No procede.
 
 **C51 · `r638RepeatedComponentLossPreservesLastAcceptedAddressUntilRecovery`** — **ATENCIÓN**
-(identidad persistida)
+(identidad persistida; limitación registrada en §7.4)
 1. **Comportamiento anterior.** La segunda pérdida era la componente desplazada `{-1.75,-1.25}`, que
    contiene −1,5 pero tiene otra clave binary64; el punto seguía indefinido.
 2. **Contrato.** [EXI] §15.6: «Moving a boundary without changing its source keeps the lineage». [DIS]
@@ -1157,7 +1160,7 @@ Contiene G1 y G6 (`periodicSourceRetains…`).
 Contiene G1. Las tres conformidades siguientes son **ATENCIÓN** por [MAT] V-CU1-1: «Las pruebas de
 aceptación de CU1 … se mantienen».
 
-**C57 · `sineArcLengthsAreHonestEstimates`**
+**C57 · `sineArcLengthsAreHonestEstimates`** — restaurada por la resolución previa a T12 (§7.1)
 1. **Comportamiento anterior.** El seno público `(x(P),sin(4πx(P)))` se estimaba (k=2).
 2. **Contrato.** Fuera de clase v3, con la longitud total rechazada.
 3. **Aserción.** `assertCoherentEstimate(metric…, …, "public k=2")` → `assertNoTotalWithoutExistence(…)`.
@@ -1167,7 +1170,8 @@ aceptación de CU1 … se mantienen».
 5. **Cobertura.** Una curva oscilante pública.
 6. **Prueba sustitutiva.** La parte de evaluador del mismo método.
 
-**C58 · `adversarialCurvesNeverReceiveACertifiedClass`**
+**C58 · `adversarialCurvesNeverReceiveACertifiedClass`** — restaurada por la resolución previa a T12
+(§7.1)
 1. **Comportamiento anterior.** Las curvas públicas de aliasing y `floor` no recibían clase 1 o 2.
 2. **Contrato.** Como C57.
 3. **Aserción.** `assertNotCertified(…)` → `assertNoTotalWithoutExistence(…)` (dos veces).
@@ -1187,7 +1191,7 @@ aceptación de CU1 … se mantienen».
 
 Todas son **ATENCIÓN** por V-CU1-1.
 
-**C60 · `affineImagesAreStructural`**
+**C60 · `affineImagesAreStructural`** — restaurada por la resolución previa a T12 (§7.1)
 1. **Comportamiento anterior.** `(2w+1,3w-1)` era `ESTIMATED`, sin envolvente, con valor 4√13 y
    admisible.
 2. **Contrato.** [DIS] §4.1, texto aprobado: «expresiones afines no directas (`L-CU1-AFFINE-FORMS`…)»
@@ -1214,7 +1218,8 @@ Todas son **ATENCIÓN** por V-CU1-1.
 5. **Cobertura.** La fuente oscilante (un seno).
 6. **Prueba sustitutiva.** No procede.
 
-**C62 · `scalarAdapterPublishesExactlyTheAdmissibleRichValues`**
+**C62 · `scalarAdapterPublishesExactlyTheAdmissibleRichValues`** — restaurada por la resolución previa
+a T12 (§7.1)
 1. **Comportamiento anterior.** `b=Length(Lt)` de `(t,sin t)` estaba definido con `ESTIMATED`.
 2. **Contrato.** Fuera de clase v3.
 3. **Aserción.** Se añade `assertFalse(…bt=Length(Lt)…isDefined())`. La fuente estimada pasa a la
@@ -1231,7 +1236,7 @@ Solo G1.
 
 #### locus/PreG9BCu2ConsumerMigrationTest.java
 
-**C63 · `aDependentOnALocusSupportInheritsTheArc`** — **ATENCIÓN** (V-CON-6 cubierta solo en parte)
+**C63 · `aDependentOnALocusSupportInheritsTheArc`** — **ATENCIÓN** (V-CON-6 cubierta solo en parte en T11; restaurada por la resolución previa a T12, §7.2)
 1. **Comportamiento anterior.** `compatibilityInherited` (retirado) daba al dependiente una componente
    con el arco que cruza la costura, los mismos extremos, sin cerrar, con la misma completitud y la
    clave binary64.
@@ -1491,4 +1496,110 @@ y `PreG9BR6PlusCLatexExportTest`.
   generador escalar con la base), C22 y C23 (`ISOLATED_COMPONENT` ya no se ejercita; D-CU2-19 y `CU3`),
   C51 y C70 (documentos anteriores a CU2 con tokens o selectores de componentes parciales) y C63
   (V-CON-6 solo en parte: el dependiente de un soporte locus hereda el arco como dominio declarado,
-  sin componente certificada, porque el soporte locus está fuera de la clase v3).
+  sin componente certificada, porque el soporte locus está fuera de la clase v3). La resolución
+  autoral previa a T12 restaura C63 y las conformidades de H10 y registra las demás (§7).
+
+## 7. Resolución autoral previa a T12 (2026-10-22)
+
+La resolución del autor «Resolución autoral de las decisiones previas a T12» decide H10 (opción A),
+V-CON-6 (opción 2), la corrección de la componente puntual y el fallo cerrado de los tokens
+históricos. Esta sección registra su efecto en las conformidades; la ejecución consta en el informe
+del paso.
+
+### 7.1 H10: estimación condicionada (opción A)
+
+Contrato: `locus-v2-metrics.md` §26.4 (enmendado) y §26.5 (nuevo); [EXI] §15.8; [CON] §3 y §4,
+precisión H10. La longitud total de un locus `NOT_ESTABLISHED` solo por `OPERATION_OUTSIDE_CLASS` es
+una estimación de clase 3 sobre sus piezas declaradas: sin envolvente rigurosa, con las hipótesis no
+certificadas de existencia y continuidad y con el diagnóstico `EXISTENCE_NOT_CERTIFIED`. La estructura
+de existencia no cambia. Los valores públicos de H10 coinciden bit a bit con T10
+(`0x1.0c0cb3709e5a9p2`, `0x1.0394199c9344fp3` y `0x1.010912bcc8705p4`, con los mismos errores
+estimados).
+
+| Conformidad | Estado | Aserción restaurada |
+|---|---|---|
+| C57 `sineArcLengthsAreHonestEstimates` | Restaurada | `assertCoherentEstimate` del seno público k=2 (valor y error frente a Simpson) |
+| C58 `adversarialCurvesNeverReceiveACertifiedClass` | Restaurada | `assertNotCertified` del aliasing y de `floor` públicos |
+| C60 `affineImagesAreStructural` | Restaurada | `(2w+1,3w-1)`: `ESTIMATED`, sin envolvente, 4√13 dentro del error y admisible |
+| C62 `scalarAdapterPublishesExactlyTheAdmissibleRichValues` | Restaurada | `b=Length(Lt)` de `(t,sin t)` definido e igual al valor rico `ESTIMATED` |
+| C35 `m04RichTotalLengthIsNonnumericAuthority` | Restaurada (la elipse) | elipse escalar periódica `ESTIMATED`, 15,86543958929059 ± 2E-6; la circunferencia conserva el cambio de G6 |
+
+Las cinco comprueban además la ausencia de autoridad certificadora con
+`assertConditionedWithoutAuthority` (`G9U0PublicSurfaceTestBase`):
+
+- la clase es `ESTIMATED` o un fallo tipado, nunca certificada, y no hay envolvente rigurosa;
+- un valor lleva la hipótesis y el diagnóstico explícitos;
+- la estructura de existencia sigue `NOT_ESTABLISHED`, sin componentes ni puntos, con cobertura solo
+  `OPERATION_OUTSIDE_CLASS` o complemento declarado.
+
+`assertNoTotalWithoutExistence` se conserva para las causas que mantienen el rechazo. C59 y C61
+conservan su cambio de fixture, que no retiró aserciones; las fuentes oscilantes vuelven a cubrirse en
+C57 y en H10-5. La H10 de `CU0` (`PreG9BCu0SyntheticCharacterizationTest`) pasa sin modificación
+(V-CU0-2).
+
+Pruebas nuevas en `PreG9BCu2ConditionedEstimateTest` (compartida):
+
+- H10-1 `aSineOutsideClassV3IsEstimatedWithoutAnyCertifyingAuthority`: valor, error y escalar. La
+  firma de la estructura no cambia, la intersección no tiene raíces ni completitud y `Point(L, …)`
+  queda indefinido. Un locus que lee el escalar queda fuera de clase (`metric-value-constant`); el
+  mismo con una constante es `COMPLETE`.
+- H10-2 `onlyAConstructionOutsideTheClassIsEligible`: siete causas distintas, la no existencia
+  certificada interior y un certificado parcial mantienen el rechazo; las piezas declaradas suman sin
+  el complemento.
+- H10-3 `aWholePeriodClosesOnlyUnderARecordedHypothesis`: la elipse con la hipótesis de costura; una
+  curva periódica que no cierra falla y su escalar queda indefinido.
+- H10-4 `anExcludedDeclaredEndKeepsItsTypedStatus`: `LIMIT_NOT_ESTABLISHED`.
+- H10-5 `similarityImagesOfAConditionedEstimateStayConditioned`: traslación y dilatación.
+
+### 7.2 V-CON-6: composición certificada mínima (opción 2)
+
+Contrato: [CCM] §4 y §10.10 (nuevo); [EXI] §15.7; [CON] §3 y §4, precisión V-CON-6. C63 queda
+**restaurada**: `aDependentOnALocusSupportInheritsTheArc` vuelve a afirmar la herencia del arco:
+
+- una componente que cruza la costura, con el intervalo, el inicio, el fin, los extremos y la
+  maximalidad del soporte, sin cierre y con una naturaleza que certifica;
+- las mismas claves de linaje y la completitud del soporte;
+- su no existencia como `DEPENDENCY_CERTIFIED_NONEXISTENT` y puntos que son los del soporte
+  trasladados;
+- la misma composición tras un giro y una homotecia.
+
+La prueba nueva `aDeclaredDomainIsNeverPromotedWithoutATotalComposition` comprueba que un paso no
+total (una recta por el punto generador) y la lectura del motor fuera del punto generador
+(`driver-outside-generator-point`) dejan el dependiente `NOT_ESTABLISHED`, sin componentes ni
+existencia certificada.
+
+### 7.3 Componente puntual (corrección de `restrictedTo`)
+
+Defecto: al restringir un certificado a las piezas declaradas, un parámetro aislado declarado dentro
+de una componente certificada dejaba cobertura `CERTIFIED_EXISTS` en `[a,a]` sin componente. Ahora es
+una componente puntual (fuente `declared-isolated-parameter`, maximalidad y naturaleza de la
+componente) con cobertura `CERTIFIED_ISOLATED_POINTS` solo en ese parámetro. Dos puntos con la misma
+fuente se distinguen por la clave de su envolvente, como las componentes de [EXI] §15.6. No se
+materializa ningún objeto punto. Pruebas:
+
+- `aDeclaredIsolatedParameterOfCertifiedExistenceIsAPointComponent` y
+  `declaredIsolatedParametersNeverInventExistence` (`PreG9BCu2ExistenceStructureV2Test`): sin punto
+  en una no existencia o en una banda sin resolver, dos puntos con claves distintas, el contacto en un
+  extremo cerrado y la desaparición como transición tipada;
+- `aDeclaredIsolatedParameterIsAPublishedPointComponent` (`PreG9BCu2ConsumerMigrationTest`): el punto
+  no se direcciona con un binary64, la longitud total es 2 sin aporte suyo, la intersección no es
+  exhaustiva y no aparece ningún objeto punto.
+
+### 7.4 Limitaciones registradas (decisión 4: fallo cerrado)
+
+Ninguna se resuelve por coordenadas, índice, proximidad ni mera contención. Las identidades
+persistidas se conservan, los tokens quedan latentes y los diagnósticos son tipados.
+
+| Conformidad | Limitación |
+|---|---|
+| C09 | Las exportaciones DXF de loci del generador escalar fuera de clase pierden la identidad de bytes con la base: el locus sigue `NOT_ESTABLISHED` (H10 no cambia la existencia) y la exportación lo declara `EXISTENCE_NOT_ESTABLISHED` |
+| C22, C23 | La materialización de la raíz en un parámetro aislado (`ISOLATED_COMPONENT`) queda para `CU3` (D-CU2-19): la componente puntual se declara y ninguna intersección la excluye ni la materializa |
+| C51, C70 | Un documento anterior a `CU2` con un selector o token de una componente parcial (clave binary64) no se revincula: su clave difiere de la estructural y no hay correspondencia estructural demostrada, así que queda latente con fallo cerrado. La clave de todo el dominio sí resuelve (E-3) |
+
+Evidencia de la sonda de compatibilidad (documento escrito en T10 y leído en el árbol actual):
+
+- las identidades persistidas se conservan y `Pp` y `Pw` revinculan;
+- `Xw` (todo el dominio) resuelve y `Xp` (componente parcial) queda indefinido;
+- `Li` publica ahora su componente puntual en 0, y `Ri` sigue `UNRESOLVED` sin raíces, con `Xi`
+  latente;
+- el locus escalar fuera de clase sigue `NOT_ESTABLISHED`, con `Po`, `Ro` y `Xo` sin resolver.

@@ -746,7 +746,10 @@ public final class LocusExistenceStructure2D {
 	 * parameter, so its nonexistence is exact by the declaration; inside them every fact is
 	 * kept, and an interval component that a declared gap cuts ends at the declared ends. An
 	 * arc is never cut: when a declared gap would cut one, nothing inside the declared
-	 * components is certified any more (conservative).
+	 * components is certified any more (conservative). Certified existence that the
+	 * declaration reduces to one parameter, such as a declared isolated parameter inside a
+	 * certified component, is a point component with isolated-point coverage (section 15.4;
+	 * author resolution before step T12): never a zero-length interval and never dropped.
 	 *
 	 * @param declared disjoint declared components of the driver domain
 	 * @param declarationEvidence evidence of the declaration
@@ -757,6 +760,7 @@ public final class LocusExistenceStructure2D {
 		ArrayList<LocusInterval2D> ordered = new ArrayList<>(declared);
 		ordered.sort(Comparator.comparingDouble(LocusInterval2D::getLower));
 		ArrayList<ContinuousComponent> kept = new ArrayList<>();
+		ArrayList<LocusPointComponent2D> isolated = new ArrayList<>();
 		boolean cutArc = false;
 		for (ContinuousComponent component : components) {
 			if (component.isArc()) {
@@ -770,7 +774,17 @@ public final class LocusExistenceStructure2D {
 			int piece = 0;
 			for (LocusInterval2D interval : ordered) {
 				LocusInterval2D part = intersection(component.interval, interval);
-				if (part == null || !(part.getLower() < part.getUpper())) {
+				if (part == null) {
+					continue;
+				}
+				if (!(part.getLower() < part.getUpper())) {
+					if (component.nature.certifies()) {
+						isolated.add(new LocusPointComponent2D(part.getLower(),
+								part.getUpper(), new LocusBoundarySource2D(PROVIDER_SOURCE,
+										"declared-isolated-parameter", "point"),
+								component.maximality, component.nature,
+								component.evidenceKey + "/declared-point-" + piece++, null));
+					}
 					continue;
 				}
 				if (part.equals(component.interval)) {
@@ -797,12 +811,19 @@ public final class LocusExistenceStructure2D {
 				if (part == null) {
 					continue;
 				}
-				restricted.add(cutArc && item.state != CoverageState.CERTIFIED_DOES_NOT_EXIST
-						? new Coverage(part, CoverageState.UNRESOLVED,
-								LocusCoverageCause2D.NOT_CERTIFIED, LocusEvidenceNature2D.NONE,
-								"declared-components-cut-an-arc")
-						: new Coverage(part, item.state, item.cause, item.nature,
-								item.evidence));
+				if (cutArc && item.state != CoverageState.CERTIFIED_DOES_NOT_EXIST) {
+					restricted.add(new Coverage(part, CoverageState.UNRESOLVED,
+							LocusCoverageCause2D.NOT_CERTIFIED, LocusEvidenceNature2D.NONE,
+							"declared-components-cut-an-arc"));
+				} else if (item.state == CoverageState.CERTIFIED_EXISTS
+						&& isolatedAt(isolated, part)) {
+					restricted.add(new Coverage(part, CoverageState.CERTIFIED_ISOLATED_POINTS,
+							LocusCoverageCause2D.PROVIDER_ISOLATED_POINT, item.nature,
+							declarationEvidence + "|" + item.evidence));
+				} else {
+					restricted.add(new Coverage(part, item.state, item.cause, item.nature,
+							item.evidence));
+				}
 			}
 		}
 		double cursor = canonicalDomain.getLower();
@@ -828,6 +849,8 @@ public final class LocusExistenceStructure2D {
 				points.add(point);
 			}
 		}
+		points.addAll(isolated);
+		points.sort(Comparator.comparingDouble(LocusPointComponent2D::getParameterLower));
 		ArrayList<LocusSingularParameter2D> singular = new ArrayList<>();
 		for (LocusSingularParameter2D parameter : singularParameters) {
 			if (insideOne(List.of(new LocusInterval2D(parameter.getParameterLower(),
@@ -846,6 +869,68 @@ public final class LocusExistenceStructure2D {
 		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
 				semanticRevision, restricted, kept, points, singular, folds,
 				ordered.isEmpty() ? Completeness.COMPLETE : completeness, certifierContract);
+	}
+
+	/**
+	 * Existence of a dependent on a complete locus support whose traced point follows the
+	 * generator point of the support through structurally total and continuous steps only:
+	 * the minimal certified composition ({@code locus-v2-certified-construction-model.md}
+	 * section 10.10, author decision V-CON-6). The dependent exists exactly where the
+	 * support does, so it takes the support's decomposition: its domain, topology, coverage
+	 * and completeness, and its components with their shapes, ends, maximality and nature,
+	 * never more. The support's nonexistence is a certified nonexistence of a dependency
+	 * (section 15.5). Certified singular parameters and folds, facts of the support's own
+	 * map, are not composed.
+	 *
+	 * @param branchKey branch key of the dependent
+	 * @param support existence structure of a complete support branch without point
+	 *        components
+	 * @param certifierContract contract under which the dependent publishes the structure
+	 * @param evidence evidence of the composition
+	 * @return the composed structure
+	 */
+	public static LocusExistenceStructure2D composedThroughTotalSteps(String branchKey,
+			LocusExistenceStructure2D support, String certifierContract, String evidence) {
+		if (support.completeness != Completeness.COMPLETE
+				|| !support.pointComponents.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Only a complete support without point components is composed");
+		}
+		ArrayList<Coverage> coverage = new ArrayList<>();
+		for (Coverage item : support.coverage) {
+			coverage.add(item.state == CoverageState.CERTIFIED_DOES_NOT_EXIST
+					? new Coverage(item.interval, item.state,
+							LocusCoverageCause2D.DEPENDENCY_CERTIFIED_NONEXISTENT, item.nature,
+							evidence + "|" + item.evidence)
+					: new Coverage(item.interval, item.state, item.cause, item.nature,
+							evidence + "|" + item.evidence));
+		}
+		ArrayList<ContinuousComponent> components = new ArrayList<>();
+		for (ContinuousComponent component : support.components) {
+			components.add(new ContinuousComponent(component.interval,
+					evidence + "|" + component.evidenceKey, component.boundaryEvidence,
+					component.maximality, component.numericGuarantee,
+					component.periodicDomain, component.start, component.end,
+					component.fullLength, component.lowerBoundary, component.upperBoundary,
+					component.nature));
+		}
+		return new LocusExistenceStructure2D(branchKey, support.canonicalDomain,
+				support.topology, 0, coverage, components, Collections.emptyList(),
+				support.completeness, certifierContract);
+	}
+
+	/** @return whether a zero-length part is the parameter of an isolated declared point */
+	private static boolean isolatedAt(List<LocusPointComponent2D> isolated,
+			LocusInterval2D part) {
+		if (part.getLower() != part.getUpper()) {
+			return false;
+		}
+		for (LocusPointComponent2D point : isolated) {
+			if (point.getParameterLower() == part.getLower()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** @return a component end that the declared driver domain imposes */

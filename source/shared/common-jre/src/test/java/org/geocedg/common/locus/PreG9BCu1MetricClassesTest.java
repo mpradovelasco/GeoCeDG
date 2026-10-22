@@ -155,16 +155,25 @@ class PreG9BCu1MetricClassesTest extends G9U0PublicSurfaceTestBase {
 				.multiply(new BigDecimal(4)), describe(affine));
 		assertAdmissible(affine, "scalar affine");
 
-		// Class 1 needs provider-owned certificate material. PRE-G9B-CU2 declared conformity
-		// (step T11): an affine expression outside the certified direct forms is outside
-		// class v3 (limitation L-CU1-AFFINE-FORMS), so its existence is not established and
-		// its total length is refused instead of estimated.
+		// Class 1 needs provider-owned certificate material: an affine expression outside
+		// the certified direct forms stays an honest estimate of the same length. PRE-G9B-CU2
+		// decision H10 (locus-v2-metrics.md section 26.5): it is outside class v3
+		// (limitation L-CU1-AFFINE-FORMS), so the estimate is the conditioned estimate of its
+		// declared domain, which certifies nothing.
 		add("w=0");
 		add("Qb=(2w+1,3w-1)");
 		add("Db={false,{-2,2,true,true}}");
-		add("Lb=LocusV2(Qb,w,Db)");
+		GeoLocusV2 expressionLocus = add("Lb=LocusV2(Qb,w,Db)");
 		LocusMetricResult2D expression = rich("Mb=LocusLength(Lb)");
-		assertNoTotalWithoutExistence(expression, "affine expression");
+		assertEquals(MetricGuaranteeClass2D.ESTIMATED, expression.getGuaranteeClass(),
+				describe(expression));
+		assertTrue(expression.getErrorEvidence().getRigorousEnclosure().isEmpty(),
+				describe(expression));
+		assertEquals(4 * Math.sqrt(13), value(expression),
+				expression.getErrorEvidence().getEstablishedAbsoluteAmount()
+						+ 4 * Math.ulp(4 * Math.sqrt(13)), describe(expression));
+		assertAdmissible(expression, "affine expression");
+		assertConditionedWithoutAuthority(expression, expressionLocus, "affine expression");
 	}
 
 	/**
@@ -283,21 +292,19 @@ class PreG9BCu1MetricClassesTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(scalar.isDefined());
 		assertEquals(value(lineRich), scalar.getValue(), 0);
 
-		// PRE-G9B-CU2 declared conformity (step T11): the scalar (t,sin(t)) is outside class
-		// v3 and has no total length, so the adapter publishes nothing for it; the certified
-		// parabola is the non-structural admissible source.
+		// PRE-G9B-CU2 decision H10 (locus-v2-metrics.md section 26.5): the scalar (t,sin(t))
+		// is outside class v3; the adapter publishes its conditioned estimate under the CU1
+		// admissibility of section 25.4, and the estimate certifies nothing.
 		add("t=0");
 		add("Qt=(t,sin(t))");
 		add("Dt={false,{0,3,true,true}}");
-		add("Lt=LocusV2(Qt,t,Dt)");
-		assertFalse(((GeoNumeric) add("bt=Length(Lt)")).isDefined());
-		certifiedParabola("Lk", "Qk", "adapterParabola");
-		// The rich result of bt=Length(Lt) took the label b.
-		GeoNumeric estimated = add("bk=Length(Lk)");
-		LocusMetricResult2D estimate = rich("Mt=LocusLength(Lk)");
+		GeoLocusV2 sine = add("Lt=LocusV2(Qt,t,Dt)");
+		GeoNumeric estimated = add("b=Length(Lt)");
+		LocusMetricResult2D estimate = rich("Mt=LocusLength(Lt)");
 		assertEquals(MetricGuaranteeClass2D.ESTIMATED, estimate.getGuaranteeClass());
 		assertTrue(estimated.isDefined());
 		assertEquals(value(estimate), estimated.getValue(), 0);
+		assertConditionedWithoutAuthority(estimate, sine, "scalar sine");
 
 		double tolerance = 1E-9;
 		assertTrue(gate(MetricErrorEvidence2D.estimated(tolerance, 0, "estimate",
