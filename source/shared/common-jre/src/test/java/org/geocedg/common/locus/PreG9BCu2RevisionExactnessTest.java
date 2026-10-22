@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -33,11 +34,13 @@ import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionFidelity2D;
 import org.geocedg.common.kernel.locus.ReconstructionFidelity2D.DiscrepancyKind;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.MacroKernel;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
@@ -48,7 +51,9 @@ import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.MyVecNode;
+import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.plugin.Operation;
@@ -59,7 +64,9 @@ import org.junit.jupiter.api.Test;
  * reconstructed slice (V-REV-EXACT-4), reproducibility (V-REV-EXACT-8), reopening, undo and
  * redo (V-REV-EXACT-9), propagation and extreme values (V-REV-EXACT-10), and the typed causes
  * of slice rebuilds (V-REV-EXACT-7). The certificate parts of these rows are completed by the
- * steps that publish certificates.
+ * steps that publish certificates. Corrective descendant T13-R2 (decision D-CU2-T13-R2): the
+ * comparison of the synthetic states with the same constructions built from scratch
+ * (V-REV-EXACT-5, synthetic part).
  */
 class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 	private static final Comparator<ConstructionElement> RECONSTRUCTION_ORDER =
@@ -263,6 +270,149 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 				ReconstructionSliceFingerprint2D.Change.STRUCTURE) >= 1);
 		assertEquals(0, instrumentation.getCertificationWork(
 				LocusCertificationWork2D.FIDELITY_FAILURE));
+	}
+
+	/**
+	 * V-REV-EXACT-5 (synthetic states of V-REV-EXACT-2 to V-REV-EXACT-4): each state reached
+	 * by one-ulp changes of a free number and the returns to a previous value, by a one-ulp
+	 * change of the radius of the critical configuration with labelled and unlabelled outputs,
+	 * and by a number literal without original text changed by program, and the constructions
+	 * with literals of 17 digits, inline literal arguments and an angle literal that the
+	 * persisted format writes in degrees, has the fingerprint, the reconstructed slice, the
+	 * captured program and the certificate of the same construction built from scratch in a
+	 * new document, bit for bit. Durable identities, which a new document allocates anew, are
+	 * compared up to renaming.
+	 */
+	@Test
+	void everyStateMatchesTheSameConstructionBuiltFromScratch() throws Exception {
+		double radius = 3.6569437271164964;
+		double next = Math.nextUp(radius);
+		AppCommon live = document(rotation(radius));
+		for (double value : new double[] {next, radius, next}) {
+			setNumber(live, "r", value);
+			assertEquals(artifacts(document(rotation(value)), "l", "P"),
+					artifacts(live, "l", "P"), "r=" + Double.toHexString(value));
+		}
+
+		AppCommon critical = critical(40);
+		setNumber(critical, "rr", Math.nextUp(40.0));
+		AppCommon criticalFresh = critical(Math.nextUp(40.0));
+		for (String label : List.of("lq", "lr2")) {
+			assertEquals(artifacts(criticalFresh, label, "N"), artifacts(critical, label, "N"),
+					label);
+		}
+
+		AppCommon literal = literals(0.1);
+		MyDouble first = firstLiteral(literal.getKernel().lookupLabel("R").getDefinition());
+		first.set(Math.nextUp(0.1));
+		literal.getKernel().lookupLabel("R").updateCascade();
+		assertEquals(artifacts(literals(Math.nextUp(0.1)), "lr", "P"),
+				artifacts(literal, "lr", "P"));
+
+		String angle = artifacts(angle(), "la", "P");
+		assertTrue(angle.contains("faithful=false"), angle);
+		assertEquals(artifacts(angle(), "la", "P"), angle);
+	}
+
+	/**
+	 * @return fingerprint of the live slice, fingerprint of the reconstructed copy and its
+	 *         fidelity, signature of the captured class-v3 program or its refusal, and
+	 *         structure, roots and exact evidence of the certificate, up to durable identities
+	 */
+	private static String artifacts(AppCommon app, String label, String driverLabel)
+			throws Exception {
+		GeoLocusV2 locus = assertInstanceOf(GeoLocusV2.class,
+				app.getKernel().lookupLabel(label));
+		AlgoDependentPointLocusV2 parent = (AlgoDependentPointLocusV2) locus.getParentAlgorithm();
+		ReconstructibleLocusEvaluator2D evaluator = evaluator(locus);
+		GeoElement driver = app.getKernel().lookupLabel(driverLabel);
+		Field field = ReconstructibleLocusEvaluator2D.class.getDeclaredField(
+				"isolatedConstruction");
+		field.setAccessible(true);
+		Construction copy = (Construction) field.get(evaluator);
+		GeoElement copyDriver = copy.lookupLabel(driverLabel);
+		StringBuilder text = new StringBuilder("fingerprint=").append(
+				ReconstructionSliceFingerprint2D.compute(parent.getReconstructionSliceGeos(),
+						List.of(driver, driver)))
+				.append("\nslice=").append(ReconstructionSliceFingerprint2D.compute(
+						copy.getGeoSetConstructionOrder(), List.of(copyDriver, copyDriver)))
+				.append(" faithful=").append(evaluator.isReconstructionFaithful())
+				.append("\nprogram=").append(evaluator.captureCertifiedProgramV3()
+						.map(CertifiedConstructionProgram2D::getSignature)
+						.orElse("refused " + evaluator.getProgramV3Refusal()));
+		HybridExistenceCertifier2D.Result result = parent.getHybridExistenceCertificate();
+		text.append("\ncertificate=").append(result.getStructure().getSemanticSignature());
+		for (HybridExistenceCertifier2D.CertifiedRoot root : result.getRoots()) {
+			text.append("|root=").append(root.getSignature());
+		}
+		for (HybridExistenceCertifier2D.ExactEvidence evidence : result.getExactEvidence()) {
+			text.append("|exact=").append(evidence.getSignature());
+		}
+		return text.toString().replaceAll("geo:[0-9a-f]{32}", "geo:*");
+	}
+
+	/** @return a new document built from the commands */
+	private static AppCommon document(List<String> commands) {
+		AppCommon app = AppCommonFactory.create(new AppConfigGeoCeDG(true));
+		for (String command : commands) {
+			app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
+		return app;
+	}
+
+	/** A point rotated about an inline point by an inline angle literal, on a circle. */
+	private static List<String> rotation(double radius) {
+		return List.of("r=" + radius, "c=Circle((0,0),r)", "P=Point(c)",
+				"Q=Rotate(P,30deg,(1,0))", "l=LocusV2(Q,P)");
+	}
+
+	/** The synthetic critical configuration with labelled and unlabelled outputs. */
+	private static AppCommon critical(double radius) {
+		AppCommon app = document(List.of("rr=" + radius, "p=Circle((0,0),25)", "P=(-25,50)",
+				"g1=Circle((35,-45),rr)", "N=Point(g1)", "t=Ray(P,N)"));
+		Kernel kernel = app.getKernel();
+		kernel.getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+				(GeoLine) kernel.lookupLabel("t"), (GeoConic) kernel.lookupLabel("p"));
+		for (String command : List.of("lq=LocusV2(Q,N)", "t2=Ray(P,N)", "R2=Intersect(p,t2,2)",
+				"lr2=LocusV2(R2,N)")) {
+			kernel.getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
+		kernel.updateConstruction(false);
+		return app;
+	}
+
+	/** R = Q + (first, 0.2) with number literals that have no original text, set by program. */
+	private static AppCommon literals(double first) {
+		AppCommon app = document(List.of("r=3.6569437271164964", "c=Circle((0,0),r)",
+				"P=Point(c)", "Q=Rotate(P,30deg,(1,0))"));
+		Kernel kernel = app.getKernel();
+		ExpressionNode shifted = new ExpressionNode(kernel, kernel.lookupLabel("Q"),
+				Operation.PLUS, new MyVecNode(kernel, new MyDouble(kernel, first),
+						new MyDouble(kernel, 0.2)));
+		new AlgoDependentPoint(kernel.getConstruction(), shifted, false).getPoint()
+				.setLabel("R");
+		kernel.getAlgebraProcessor().processAlgebraCommand("lr=LocusV2(R,P)", false);
+		return app;
+	}
+
+	/** A rotation by an angle literal without original text, which XML writes in degrees. */
+	private static AppCommon angle() {
+		AppCommon app = document(List.of("c=Circle((0,0),3.6569437271164964)", "P=Point(c)"));
+		Kernel kernel = app.getKernel();
+		MyDouble literal = new MyDouble(kernel, 0.4097);
+		literal.setAngle();
+		new AlgoDependentNumber(kernel.getConstruction(), new ExpressionNode(kernel, literal),
+				true).getNumber().toGeoElement().setLabel("ang");
+		for (String command : List.of("Q=Rotate(P,ang,(1,1))", "la=LocusV2(Q,P)")) {
+			kernel.getAlgebraProcessor().processAlgebraCommand(command, false);
+		}
+		return app;
+	}
+
+	private static void setNumber(AppCommon app, String label, double value) {
+		GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel(label);
+		number.setValue(value);
+		number.updateCascade();
 	}
 
 	private Map<String, Object> run(AppCommon app) {

@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,9 +22,11 @@ import java.util.Map;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
+import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -42,7 +45,9 @@ import org.junit.jupiter.api.io.TempDir;
  * of every independent input read by the slices of the model loci, and the selection state
  * of their line-conic intersections (F-CU2-8, F-CU2-14), read through the read-only accessors
  * of step T3 (D-CU2-17). Step T3 adds the fidelity validation of every model slice
- * (V-REV-EXACT-4). The isolated slices are read reflectively.
+ * (V-REV-EXACT-4). The corrective descendant T13-R2 (decision D-CU2-T13-R2) adds the comparison
+ * of the states of V-REV-EXACT-1 and V-REV-EXACT-2 with the model set from scratch
+ * (V-REV-EXACT-5). The isolated slices are read reflectively.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -53,6 +58,10 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 	private static final double PENETRATION = Double.longBitsToDouble(0x400d416bb67a38bbL);
 	private static final double BITE = Double.longBitsToDouble(0x400d416bb67a38bcL);
 	private static final List<String> MODEL_LOCI = List.of("o", "v", "w", "a_1", "e_1", "o_1");
+	/** Loci of the model that read {@code excCyl}. */
+	private static final List<String> FIRST_FAMILY = List.of("o", "v", "w", "a_1");
+	/** {@code t_c} of the matrix (section 1), where the traced point is undefined. */
+	private static final double T_C = 1.2767651295;
 
 	@TempDir
 	Path work;
@@ -197,6 +206,128 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 			assertTrue(state.get("report").toString().startsWith("faithful"), row.toString());
 			assertEquals(0L, state.get("failures"), row.toString());
 		}
+	}
+
+	/**
+	 * V-REV-EXACT-5 on the states of V-REV-EXACT-1 and V-REV-EXACT-2 with the driver at
+	 * {@code t = -1}: every visit of the alternation {@code bb -> bc -> bb -> bc} of
+	 * {@code excCyl} has the fingerprint, the reconstructed slice, the captured program and the
+	 * certificate of the model opened anew, with the driver at the same parameter and
+	 * {@code excCyl} set once to the visited value, bit for bit, for every locus that reads it.
+	 */
+	@Test
+	void everyStateWithTheDriverAwayFromTheDoubleRootMatchesTheModelSetFromScratch()
+			throws Exception {
+		assertEquals(List.of(), statesAgainstScratch(-1.0));
+	}
+
+	/** V-REV-EXACT-5 as above, with the driver at {@code t_c}. */
+	@Test
+	void everyStateWithTheDriverAtTheDoubleRootMatchesTheModelSetFromScratch()
+			throws Exception {
+		assertEquals(List.of(), statesAgainstScratch(T_C));
+	}
+
+	/** @return every visit whose artifacts differ from those of the model set from scratch */
+	private List<String> statesAgainstScratch(double driver) throws Exception {
+		File model = PreG9BCu0Corpus.withoutE2(work);
+		return PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			Map<Double, String> scratch = new LinkedHashMap<>();
+			for (double value : new double[] {PENETRATION, BITE}) {
+				scratch.put(value, artifacts(state(model, driver, value)));
+			}
+			// The first visit is the state that the live model starts from.
+			AppGeoCeDG live = state(model, driver, PENETRATION);
+			double[] visits = {PENETRATION, BITE, PENETRATION, BITE};
+			List<String> problems = new ArrayList<>();
+			for (int index = 0; index < visits.length; index++) {
+				if (index > 0) {
+					PreG9BCu0Corpus.setNumber(live, "excCyl", visits[index]);
+				}
+				String difference = firstDifference(scratch.get(visits[index]),
+						artifacts(live));
+				if (difference != null) {
+					problems.add("t=" + driver + " visit " + index + " ("
+							+ (visits[index] == PENETRATION ? "bb" : "bc") + "): " + difference);
+				}
+			}
+			return problems;
+		});
+	}
+
+	/** Opens the model anew, moves the driver and sets {@code excCyl} once. */
+	private static AppGeoCeDG state(File model, double driver, double value) {
+		AppGeoCeDG app = PreG9BCu0Corpus.open(model);
+		PreG9BCu0Corpus.movePathPoint(app, "N", driver);
+		PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+		return app;
+	}
+
+	/**
+	 * @return for each locus that reads {@code excCyl}: fingerprint of the live slice,
+	 *         fingerprint of the reconstructed copy and its fidelity, signature of the captured
+	 *         class-v3 program or its refusal, and structure, roots and exact evidence of the
+	 *         certificate, up to durable identities
+	 */
+	private static String artifacts(AppGeoCeDG app) throws ReflectiveOperationException {
+		GeoElement driver = app.getKernel().lookupLabel("N");
+		StringBuilder text = new StringBuilder();
+		for (String label : FIRST_FAMILY) {
+			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+			AlgoDependentPointLocusV2 parent =
+					(AlgoDependentPointLocusV2) locus.getParentAlgorithm();
+			ReconstructibleLocusEvaluator2D evaluator =
+					(ReconstructibleLocusEvaluator2D) field(parent, "evaluator");
+			Construction copy = PreG9BCu0References.isolatedConstruction(locus);
+			GeoElement copyDriver = copy.lookupLabel("N");
+			text.append(label).append(" fingerprint=").append(
+					ReconstructionSliceFingerprint2D.compute(parent.getReconstructionSliceGeos(),
+							List.of(driver, driver)))
+					.append('\n').append(label).append(" slice=").append(
+							ReconstructionSliceFingerprint2D.compute(
+									copy.getGeoSetConstructionOrder(),
+									List.of(copyDriver, copyDriver)))
+					.append(" faithful=").append(evaluator.isReconstructionFaithful())
+					.append('\n').append(label).append(" program=").append(evaluator
+							.captureCertifiedProgramV3()
+							.map(CertifiedConstructionProgram2D::getSignature)
+							.orElse("refused " + evaluator.getProgramV3Refusal()));
+			HybridExistenceCertifier2D.Result result = parent.getHybridExistenceCertificate();
+			text.append('\n').append(label).append(" certificate=");
+			if (result == null) {
+				text.append("none");
+			} else {
+				text.append(result.getStructure().getSemanticSignature());
+				for (HybridExistenceCertifier2D.CertifiedRoot root : result.getRoots()) {
+					text.append("|root=").append(root.getSignature());
+				}
+				for (HybridExistenceCertifier2D.ExactEvidence evidence
+						: result.getExactEvidence()) {
+					text.append("|exact=").append(evidence.getSignature());
+				}
+			}
+			text.append('\n');
+		}
+		return text.toString().replaceAll("geo:[0-9a-f]{32}", "geo:*");
+	}
+
+	/** @return the first line that differs, or {@code null} */
+	private static String firstDifference(String expected, String actual) {
+		String[] left = expected.split("\n", -1);
+		String[] right = actual.split("\n", -1);
+		for (int index = 0; index < Math.max(left.length, right.length); index++) {
+			String scratch = index < left.length ? left[index] : "";
+			String visited = index < right.length ? right[index] : "";
+			if (!scratch.equals(visited)) {
+				return "scratch <" + abbreviate(scratch) + "> visited <" + abbreviate(visited)
+						+ ">";
+			}
+		}
+		return null;
+	}
+
+	private static String abbreviate(String line) {
+		return line.length() <= 400 ? line : line.substring(0, 400) + "...";
 	}
 
 	private static Map<String, Object> compareIndependentInputs(AppGeoCeDG app,
