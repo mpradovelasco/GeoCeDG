@@ -282,7 +282,10 @@ Reglas:
   salida sin etiqueta) deja la caja `UNRESOLVED` con causa tipada y nunca certifica existencia.
   Una tolerancia heredada que solo amplía la definición más allá del predicado exacto (ventana de
   tangencia de la intersección recta–cónica, tolerancia de incidencia de los caminos limitados) es
-  exceso de evaluación y nunca frontera (hallazgo F-CU2-1).
+  exceso de evaluación y nunca frontera (hallazgo F-CU2-1). *Nota del descendiente T13:* la ventana
+  de tangencia también restringe la definición cuando declara tangente una secante cuyo pie falla
+  la prueba de incidencia; ambas salidas quedan entonces indefinidas (hallazgo H-T13-C, pendiente de
+  la decisión D-CU2-T13-R7; [registro de R6](../validation/pre_g9b_cu2_r6_correction_record.md) §4).
 - **Selección.** La captura lee el estado de la copia del corte, validado contra el vivo: una
   permutación asentada (modo 0) o una primera inicialización pendiente (modo 1, compactación en
   orden bruto de las raíces que están en los caminos). Una permutación viva que la siguiente

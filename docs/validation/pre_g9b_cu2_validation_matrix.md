@@ -315,11 +315,13 @@ Una cita no demuestra el cumplimiento de la fila. La columna «Revisión» resum
 [revisión sustantiva](pre_g9b_cu2_traceability_review.md) de las filas de tipo F, A y de las
 puertas GC: «efectiva» (las pruebas que la citan aseveran cada elemento esencial), «cubierta por
 pruebas que no la citan» (las nombra la revisión), «residuo menor», «hueco confirmado» (ninguna
-prueba asevera un elemento esencial; tratamiento pendiente de la decisión D-CU2-T13-R5) y las filas
-de este descendiente, revisadas aparte (§6 de la revisión; sus hallazgos H-T13-A y H-T13-B esperan
-la decisión D-CU2-T13-R6, §9). Las filas de tipo R y B indican su vía de verificación. La
-ejecución de cada método consta en el inventario JUnit ejecutado y en el registro de verificación
-del candidato.
+prueba asevera un elemento esencial; tratamiento pendiente de la decisión D-CU2-T13-R5, con el
+[inventario de los 34 huecos](pre_g9b_cu2_r5_gap_inventory.md)) y las filas de este descendiente,
+revisadas aparte (§6 de la revisión). De sus hallazgos, D-CU2-T13-R6 corrigió H-T13-A; H-T13-B,
+detenido por un contraejemplo, y el hallazgo nuevo H-T13-C esperan la decisión D-CU2-T13-R7
+([registro de R6](pre_g9b_cu2_r6_correction_record.md)). Las filas de tipo R y B indican su vía
+de verificación. La ejecución de cada método consta en el inventario JUnit ejecutado y en el
+registro de verificación del candidato.
 
 | Fila | Tipo | Revisión | Pruebas que la citan |
 |---|---|---|---|
@@ -448,9 +450,9 @@ del candidato.
 | V-DXF-4 | B | vía de verificación | comprobación externa informativa con AutoCAD (registro de verificación) |
 | V-TEX-1 | F | hueco confirmado | `PreG9BCu2AuthorModelExportTest.latexClosesOnlyClosedPeriodicComponentsAndCompiles` |
 | V-TEX-2 | F | efectiva | `PreG9BCu2AuthorModelExportTest.theLatexTestsCiteTheDurableSpecification`, `PreG9BR6PlusCLatexExportTest` (clase), `PreG9BR6PlusCSharedExportTest` (clase) |
-| V-DET-1 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2AuthorModelCertificationTest.twoRunsOfTheAuthorModelGiveIdenticalResults`, `PreG9BCu2HybridCertificationTest.twoRunsOfTheSyntheticConstructionsGiveIdenticalResults` |
+| V-DET-1 | F | descendiente T13, abierta (§6 de la revisión) | `PreG9BCu2AuthorModelCertificationTest.twoRunsOfTheAuthorModelGiveIdenticalResults`, `PreG9BCu2HybridCertificationTest.twoRunsOfTheSyntheticConstructionsGiveIdenticalResults` |
 | V-INV-1 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2AuthorModelRepresentationTest.zoomOutputResolutionAndViewSizeChangeNoCertificate` |
-| V-INV-2 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2HybridCertificationTest.theExactCertificateClassifiesTheTransformedConstantsAsCaptured`, `PreG9BCu2HybridCertificationTest.transformationsOfOrderTenToTheSixFailClosedOrKeepTheStructure`, `PreG9BCu2HybridCertificationTest.translationsAndScalesOfTheWholeConstructionKeepTheStructure` |
+| V-INV-2 | F | descendiente T13, abierta: H-T13-B y H-T13-C ([registro de R6](pre_g9b_cu2_r6_correction_record.md)) | `PreG9BCu2HybridCertificationTest.theExactCertificateClassifiesTheTransformedConstantsAsCaptured`, `PreG9BCu2HybridCertificationTest.transformationsOfOrderTenToTheSixFailClosedOrKeepTheStructure`, `PreG9BCu2HybridCertificationTest.translationsAndScalesOfTheWholeConstructionKeepTheStructure` |
 | V-CU0-1 | R | vía de verificación | proceso: `PHASE PRE-G9B-CU0` (secciones `preserve`) |
 | V-CU0-2 | R | vía de verificación | proceso: `PHASE PRE-G9B-CU0` con las fijaciones invertidas de T12 |
 | V-CU1-1 | R | vía de verificación | proceso: `PHASE PRE-G9B-CU1` |
