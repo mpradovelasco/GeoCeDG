@@ -7,7 +7,7 @@
 | Normas | [propuesta normativa](../architecture/pre_g9b_cu2_normative_proposal.md); [ADR 0038 (ACCEPTED, 2026-10-21)](../adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md); [estrategia](../architecture/pre_g9b_cu2_implementation_strategy.md) |
 | Diseños | [certificación](../architecture/pre_g9b_cu2_hybrid_certification_design.md); [evento de la longitud orientada](../architecture/pre_g9b_cu2_oriented_length_event_design.md); [consumo y representación](../architecture/pre_g9b_cu2_consumption_and_representation.md); [análisis del modelo del autor](../architecture/pre_g9b_cu2_author_model_certification_analysis.md) |
 | Decisiones aplicadas | C1-1 (puertas por contadores) y C1-4 (`preserve` frente a `pins`) del [registro de cierre de `CU0`](pre_g9b_cu0_closeout_record.md); D-CU1-2 (contrato de estimación) del [registro de cierre de `CU1`](pre_g9b_cu1_closeout_record.md) |
-| Revisión | 2026-10-20, revisión focalizada P1–P5: filas V-CRIT (sustituyen a V-TR-3), V-FOLD (sustituyen a V-JET-1), V-SEL, V-AVAIL, V-UNIF, V-COMPL, V-E2-8, V-E2-9 y V-LIN-6; V-LIN-3 y V-LIN-4 revisadas; puerta GC-8. Cierre de coherencia C1–C3 (2026-10-20): §3.5c nuevo (V-COINC-1 a V-COINC-9, amplía V-SEL-3), §3.5d nuevo (V-POINT-1 a V-POINT-6, amplía V-CRIT-5), V-REV-EXACT-1, V-SEL-3 y V-CRIT-5 revisadas, referencias de §1 y límites de §5. Aprobación autoral (2026-10-21, paso T0): V-REV-EXACT-1 ampliada a V-REV-EXACT-1 a V-REV-EXACT-10 según D-CU2-20-R |
+| Revisión | 2026-10-20, revisión focalizada P1–P5: filas V-CRIT (sustituyen a V-TR-3), V-FOLD (sustituyen a V-JET-1), V-SEL, V-AVAIL, V-UNIF, V-COMPL, V-E2-8, V-E2-9 y V-LIN-6; V-LIN-3 y V-LIN-4 revisadas; puerta GC-8. Cierre de coherencia C1–C3 (2026-10-20): §3.5c nuevo (V-COINC-1 a V-COINC-9, amplía V-SEL-3), §3.5d nuevo (V-POINT-1 a V-POINT-6, amplía V-CRIT-5), V-REV-EXACT-1, V-SEL-3 y V-CRIT-5 revisadas, referencias de §1 y límites de §5. Aprobación autoral (2026-10-21, paso T0): V-REV-EXACT-1 ampliada a V-REV-EXACT-1 a V-REV-EXACT-10 según D-CU2-20-R. Descendiente correctivo T13 (2026-10-22, decisiones D-CU2-T13-R1, D-CU2-T13-R2 y D-CU2-T13-R4): §6 nuevo, trazabilidad de cada fila con las pruebas que la citan y su [revisión sustantiva](pre_g9b_cu2_traceability_review.md); ninguna fila cambia |
 
 ## 1. Referencias analíticas y exactas
 
@@ -299,3 +299,161 @@ Clase propuesta `INTEGRATED_PHASE` (decisión D-CU2-12). El candidato congelado 
 - La exactitud de las coordenadas de `e_2`, que son estimaciones de clase 3 (D-CU1-2).
 - El rendimiento en otras máquinas: GC-7 y el tiempo de GC-8 son informativos.
 - Los contactos tangentes y los puntos estructurales, que pertenecen a `CU3`.
+
+## 6. Trazabilidad con las pruebas efectivas
+
+Sección añadida por el descendiente correctivo T13 (decisiones autorales D-CU2-T13-R1,
+D-CU2-T13-R2 y D-CU2-T13-R4 de 2026-10-22). Las filas de §2 y §3 no cambian. Cada fila se
+relaciona con los métodos de prueba cuyo Javadoc la cita y, marcadas «(clase)», con las clases
+que la citan solo en su Javadoc de clase, en un método auxiliar o en un comentario interno; los
+rangos «V-X-1 a V-X-n» se expanden. Las clases `PreG9BCu1*` se excluyen porque citan las filas
+homónimas de la [matriz de `CU1`](pre_g9b_cu1_validation_matrix.md) (V-DET-1, V-INV-1, V-INV-2,
+V-CU0-1 a V-CU0-3 y V-PROD-1, con otro significado allí): la auditoría de T13 las contó como
+cubiertas por esas citas, y D-CU2-T13-R4 añadió las pruebas propias de V-DET-1, V-INV-1 y V-INV-2.
+
+Una cita no demuestra el cumplimiento de la fila. La columna «Revisión» resume la
+[revisión sustantiva](pre_g9b_cu2_traceability_review.md) de las filas de tipo F, A y de las
+puertas GC: «efectiva» (las pruebas que la citan aseveran cada elemento esencial), «cubierta por
+pruebas que no la citan» (las nombra la revisión), «residuo menor», «hueco confirmado» (ninguna
+prueba asevera un elemento esencial; tratamiento pendiente de la decisión D-CU2-T13-R5) y las filas
+de este descendiente, revisadas aparte (§6 de la revisión; sus hallazgos H-T13-A y H-T13-B esperan
+la decisión D-CU2-T13-R6, §9). Las filas de tipo R y B indican su vía de verificación. La
+ejecución de cada método consta en el inventario JUnit ejecutado y en el registro de verificación
+del candidato.
+
+| Fila | Tipo | Revisión | Pruebas que la citan |
+|---|---|---|---|
+| GC-1 | GC | hueco confirmado | `PreG9BCu2SelectionSettlementTest.driverMovesAndQueriesDoNotRebuildSettleOrRecertify`, `G9U0CommandSurfaceTest` (clase), `G9X1LocusV2ExportTest` (clase), `PreG9BCu2CertificationInstrumentationTest` (clase) |
+| GC-2 | GC | hueco confirmado | `PreG9BCu2HybridCertificationTest.theShadowCertificateIsComputedOncePerRevision`, `PreG9BCu2CertificationInstrumentationTest` (clase) |
+| GC-3 | GC | hueco confirmado | `PreG9BCu2HybridCertificationTest.theShadowCertificateIsComputedOncePerRevision`, `PreG9BCu2SelectionSettlementTest.driverMovesAndQueriesDoNotRebuildSettleOrRecertify`, `PreG9BCu2CertificationInstrumentationTest` (clase) |
+| GC-4 | GC | residuo menor | `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2CertificationInstrumentationTest` (clase), `PreG9BCu2HybridCertificationTest` (clase) |
+| GC-5 | GC | cubierta por pruebas que no la citan | `PreG9BCu2CertificationInstrumentationTest` (clase) |
+| GC-6 | GC | efectiva | `PreG9BCu2AuthorModelCertificationTest.aFailingLengthEstimateLeavesTheCertificateUnchanged`, `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2MetricStructureTest.anOriginWrapCutsTheDependentLocusIntoOneOpenArc`, `PreG9BCu2CertificationInstrumentationTest` (clase) |
+| GC-7 | GC | informativa (bancos) | bancos `certification` y `tessellation` antes y después (registro de verificación) |
+| GC-8 | GC | hueco confirmado | `PreG9BCu2AuthorModelCertificationTest.contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically`, `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2HybridCertificationTest` (clase) |
+| V-LVL-1 | F | hueco confirmado | `PreG9BCu2HybridCertificationTest.outOfClassLociHaveOnlyExploratoryEvidence`, `PreG9BCu2RepresentationTest.exploratoryEvidenceIsDrawnApartAndOnlyInsideItsBands` |
+| V-LVL-2 | F | hueco confirmado | `PreG9BCu2ExistenceStructureV2Test.exploratoryEvidenceNeverCertifiesAndIsOutsideTheSnapshot` |
+| V-LVL-3 | F | cubierta por pruebas que no la citan | `PreG9BCu2HybridCertificationTest.anUnlabelledSecondOutputLeavesLocalComponentsAroundABand` |
+| V-COMPL-1 | A | efectiva | `PreG9BCu2AuthorModelCertificationTest.anExhaustedBudgetIsNeverComplete`, `PreG9BCu2HybridCertificationTest.anExhaustedBudgetIsNeverComplete` |
+| V-CMP-1 | F | efectiva | `PreG9BCu2MetricStructureTest.anOriginWrapCutsTheDependentLocusIntoOneOpenArc` |
+| V-ARC-1 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds` |
+| V-ARC-2 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds`, `PreG9BCu2ExistenceStructureV2Test.anArcCrossingTheSeamIsOneComponentWithUniqueCoordinates` |
+| V-UND-1 | F | hueco confirmado | `PreG9BCu2MetricStructureTest.anUnestablishedJumpOrStructureLeavesTheDependentUnresolved` |
+| V-UNIF-1 | A | cubierta por pruebas que no la citan | `PreG9BCu2ClassV3ModelTest.equalityPredicatesAreInvalidOnlyByStructuralIdentity` |
+| V-V3-1 | F | efectiva | `PreG9BCu2ClassV3ModelTest.newCapabilitiesEncloseTheExtendedPrecisionReference` |
+| V-V3-2 | F | efectiva | `PreG9BCu2ClassV3ModelTest.everyInvalidReasonIsTypedAndOnlyItCertifiesNonexistence` |
+| V-V3-3 | F | residuo menor | `PreG9BCu2ClassV3ModelTest.outOfClassShapesHaveNoProgram`, `PreG9BCu2HybridCertificationTest.outOfClassLociHaveOnlyExploratoryEvidence` |
+| V-V3-4 | F | efectiva | `PreG9BCu2AuthorModelClassV3Test.everyModelSliceHasAClassV3ProgramWithItsAlgorithmRules`, `PreG9BCu2ClassV3ModelTest.theStepLimitIsVersionedAfterMacroExpansion`, `PreG9BCu2HybridCertificationTest.theStepLimitRefusalIsTyped` |
+| V-TR-1 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds` |
+| V-TR-2 | F | efectiva | `PreG9BCu2HybridCertificationTest.endInclusionFollowsThePredicate` |
+| V-TR-4 | R | vía de verificación | `PreG9BCu2AuthorModelCertificationTest.pointwiseValidityBeyondTheExactEndIsNotExistence`, `PreG9BCu0LocusReferenceTest` (clase), `PreG9BCu0References` (clase) |
+| V-TOT-1 | F | efectiva | `PreG9BCu2HybridCertificationTest.structuralTotalityDecidesWithoutAnyBox` |
+| V-PER-1 | F | residuo menor | `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2HybridCertificationTest.theCriticalConfigurationIsOneClosedComponentWithASingularParameter` |
+| V-PER-2 | A | efectiva | `PreG9BCu2HybridCertificationTest.outOfClassLociHaveOnlyExploratoryEvidence` |
+| V-PER-3 | A | hueco confirmado | `PreG9BCu2AuthorModelCertificationTest.constructionDegeneraciesAreBandsThatNoComponentCrosses` |
+| V-CRIT-1 | F | efectiva | `PreG9BCu2HybridCertificationTest.theCriticalConfigurationIsOneClosedComponentWithASingularParameter`, `CircleDriverRootStructure2DTest` (clase) |
+| V-CRIT-2 | F | efectiva | `PreG9BCu2HybridCertificationTest.theNeighboursOfTheCriticalRadiusArePenetrationAndBite`, `CircleDriverRootStructure2DTest` (clase) |
+| V-CRIT-3 | A | efectiva | `PreG9BCu2HybridCertificationTest.exactCertificatesSeparateArbitrarilyCloseRoots`, `CircleDriverRootStructure2DTest` (clase) |
+| V-CRIT-4 | F | efectiva | `PreG9BCu2HybridCertificationTest.theCriticalConfigurationIsOneClosedComponentWithASingularParameter`, `CircleDriverRootStructure2DTest` (clase) |
+| V-CRIT-5 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds`, `PreG9BCu2HybridCertificationTest.anExternalTangencyIsAPointComponent`, `CircleDriverRootStructure2DTest` (clase) |
+| V-CRIT-6 | F | cubierta por pruebas que no la citan | `PreG9BCu2HybridCertificationTest` (clase) |
+| V-CRIT-7 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelCertificationTest.contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically` |
+| V-CRIT-8 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelCertificationTest.undoAndRedoRestoreTheCertificates` |
+| V-CRIT-9 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.nonDriverParametersMoveTheCriticalValue` |
+| V-CRIT-10 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelCertificationTest.contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically`, `PreG9BCu2HybridCertificationTest.certificatesAreDeterministic`, `CircleDriverRootStructure2DTest` (clase) |
+| V-FOLD-1 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2FoldCertificationTest.aSymmetricLocusFoldsAtTheFixedPoints`, `PreG9BCu2FoldCertificationTest.theSymmetryIsVerifiedOnTheCapturedConstants` |
+| V-FOLD-2 | A | residuo menor | `PreG9BCu2AuthorModelCertificationTest.theFoldsOfE1RestOnTheCapturedConstants`, `PreG9BCu2FoldCertificationTest.theSymmetryIsVerifiedOnTheCapturedConstants` |
+| V-FOLD-3 | A | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2FoldCertificationTest.aClosedTurnWithoutSymmetryIsNotAFold` |
+| V-FOLD-4 | A | residuo menor | `PreG9BCu2FoldCertificationTest.aDegenerateStationaryPointIsNotAFold` |
+| V-E2-1 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2MetricStructureTest.anOriginWrapCutsTheDependentLocusIntoOneOpenArc` |
+| V-E2-2 | R | vía de verificación | referencias `preserve` de `PreG9BCu0LocusReferenceTest` y `PreG9BCu0CompositionCharacterizationTest` |
+| V-E2-3 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelExportTest.eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic`, `PreG9BCu2AuthorModelExportTest.latexClosesOnlyClosedPeriodicComponentsAndCompiles`, `PreG9BCu2AuthorModelConsumerTest` (clase) |
+| V-E2-4 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.theAuthorParametersAreCertifiedFromStructuralFactsOnly`, `PreG9BCu2MetricStructureTest.anOriginWrapCutsTheDependentLocusIntoOneOpenArc` |
+| V-E2-5 | F | hueco confirmado | `PreG9BCu2AuthorModelCertificationTest.aFailingLengthEstimateLeavesTheCertificateUnchanged`, `PreG9BCu2AuthorModelExportTest.anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated` |
+| V-E2-6 | F | efectiva | `PreG9BCu2MetricStructureTest.aLengthBetweenFixedPositionsIsNeverACertificateInput`, `PreG9BCu2MetricStructureTest.aLocallyCertifiedSourceKeepsItsBandUnresolved`, `PreG9BCu2MetricStructureTest.anIntervalSourceDefinesTheRouteFromTheOriginToItsEnd`, `PreG9BCu2MetricStructureTest.anOpenSourceArcDefinesTheRouteAcrossTheSeamToItsFarEnd`, `PreG9BCu2MetricStructureTest.anOriginAtTheSeamCutsAtTheSeam`, `PreG9BCu2MetricStructureTest.anOriginThatFollowsTheDriverHasNoStructure`, `PreG9BCu2MetricStructureTest.anUnestablishedJumpOrStructureLeavesTheDependentUnresolved`, `PreG9BCu2MetricStructureTest.theIncludedEndFollowsDirectionAndSamePosition` |
+| V-E2-7 | F | efectiva | `PreG9BCu2AuthorModelLineageTest.theEventOfE2KeepsItsLineageWhenTheOriginMoves` |
+| V-E2-8 | F | residuo menor | `PreG9BCu2AuthorModelConsumerTest.theExcludedEndOfE2IsItsOneSidedLimit`, `PreG9BCu2MetricStructureTest.theIncludedEndFollowsDirectionAndSamePosition` |
+| V-E2-9 | F | residuo menor | `PreG9BCu2AuthorModelExportTest.anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated` |
+| V-PUB-1 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.theLociArePublishedWhileTheSavedDriverIsInTheGap`, `PreG9BCu2AuthorModelSelectionSettlementTest` (clase) |
+| V-PUB-2 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.everyRevisionPublishesItsOwnGeometry` |
+| V-PUB-3 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.anEmptyCertifiedCoverIsPublishedComplete`, `PreG9BCu2SelectionSettlementTest.aGloballyEmptyDomainIsPublishedCompleteAfterADynamicChange` |
+| V-PUB-4 | F | efectiva | `PreG9BCu2AuthorModelCertificationTest.anUndefinedDefinitionInputLeavesNoStaleDefinition` |
+| V-REV-EXACT-1 | F | efectiva | `PreG9BCu2AuthorModelSelectionSettlementTest.oneUlpChangesAtEveryDriverPositionReproduceTheSelection`, `PreG9BCu2AuthorModelSliceFidelityTest.everyStateWithTheDriverAwayFromTheDoubleRootMatchesTheModelSetFromScratch`, `PreG9BCu2AuthorModelSliceFidelityTest.oneUlpChangesOfExcCylPublishRevisionsWithExactSliceCopies`, `PreG9BCu2SliceFidelityCharacterizationTest.oneUlpOfAFreeNumberPublishesARevisionWithAnExactSliceCopy`, `PreG9BCu2SelectionSettlementTest` (clase) |
+| V-REV-EXACT-2 | F | efectiva | `PreG9BCu2AuthorModelSliceFidelityTest.everyStateWithTheDriverAwayFromTheDoubleRootMatchesTheModelSetFromScratch`, `PreG9BCu2RevisionExactnessTest.everyStateMatchesTheSameConstructionBuiltFromScratch`, `PreG9BCu2SliceFidelityCharacterizationTest.representationOnlyChangesKeepTheFingerprintAndTheRevision` |
+| V-REV-EXACT-3 | F | hueco confirmado | `PreG9BCu2RevisionExactnessTest.everyStateMatchesTheSameConstructionBuiltFromScratch`, `PreG9BCu2SliceFidelityCharacterizationTest.oneUlpOfAFreeNumberPublishesARevisionWithAnExactSliceCopy` |
+| V-REV-EXACT-4 | A | efectiva | `PreG9BCu2AuthorModelSliceFidelityTest.everySliceOfTheCompleteModelIsReconstructedFaithfully`, `PreG9BCu2RevisionExactnessTest.admittedRestorationsReturnTheCopyToExactFidelity`, `PreG9BCu2RevisionExactnessTest.everyStateMatchesTheSameConstructionBuiltFromScratch`, `PreG9BCu2SliceFidelityCharacterizationTest.anUnreproducibleAngleLiteralFailsExplicitly` |
+| V-REV-EXACT-5 | F | efectiva | `PreG9BCu2AuthorModelSliceFidelityTest.everyStateWithTheDriverAtTheDoubleRootMatchesTheModelSetFromScratch`, `PreG9BCu2AuthorModelSliceFidelityTest.everyStateWithTheDriverAwayFromTheDoubleRootMatchesTheModelSetFromScratch`, `PreG9BCu2RevisionExactnessTest.everyStateMatchesTheSameConstructionBuiltFromScratch` |
+| V-REV-EXACT-6 | F | cubierta por pruebas que no la citan | `PreG9BCu2SliceFidelityCharacterizationTest.driverOnlyMovesKeepTheRevisionAndTheSlice` |
+| V-REV-EXACT-7 | A | hueco confirmado | `PreG9BCu2RevisionExactnessTest.sliceRebuildsRecordTheirTypedCause` |
+| V-REV-EXACT-8 | F | hueco confirmado | `PreG9BCu2RevisionExactnessTest.twoRunsGiveIdenticalFingerprintsAndCounters` |
+| V-REV-EXACT-9 | F | hueco confirmado | `PreG9BCu2RevisionExactnessTest.aReopenedDocumentIsReconstructedFaithfullyInItsReloadedState`, `PreG9BCu2RevisionExactnessTest.undoAndRedoRestoreSnapshotsWithTheSameContent` |
+| V-REV-EXACT-10 | A | hueco confirmado | `PreG9BCu2RevisionExactnessTest.propagationAndExtremeValuesKeepTheFingerprintExact` |
+| V-LIN-1 | F | efectiva | `PreG9BCu2AuthorModelLineageTest.movingEndsKeepTheLineageAndTheBiteIsATypedTransition`, `PreG9BCu2LineageTest.theLineageFollowsStructuralSourcesNotEnds` |
+| V-LIN-2 | F | efectiva | `PreG9BCu2AuthorModelLineageTest.movingEndsKeepTheLineageAndTheBiteIsATypedTransition`, `PreG9BCu2LineageTest.theLineageFollowsStructuralSourcesNotEnds` |
+| V-LIN-3 | R | vía de verificación | `PreG9BCu2AuthorModelLineageTest.theSelectorOfN1ResolvesByEqualityOfTheDecomposition` |
+| V-LIN-4 | A | hueco confirmado | `PreG9BCu2LineageTest.selectorsResolveOnlyThroughDemonstratedCorrespondence` |
+| V-LIN-5 | R | vía de verificación | `PreG9BCu2AuthorModelLineageTest.theFirstCertificatesAfterOpeningGuessNoLineage`, `PreG9BCu2LineageTest.theLineageFollowsStructuralSourcesNotEnds` |
+| V-LIN-6 | A | efectiva | `PreG9BCu2AuthorModelLineageTest.containmentCreatesNoCorrespondence`, `PreG9BCu2LineageTest.selectorsResolveOnlyThroughDemonstratedCorrespondence` |
+| V-SEL-1 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelClassV3Test.everyModelSliceHasAClassV3ProgramWithItsAlgorithmRules`, `PreG9BCu2AuthorModelClassV3Test.theProgramDoesNotDependOnTheDriverPosition`, `PreG9BCu2ClassV3ModelTest.theSelectionRuleIsReadFromTheAlgorithm`, `PreG9BCu2SelectionSettlementTest.aCopyRebuiltInAGapIsSettledToTheLiveState`, `PreG9BCu2AuthorModelSelectionSettlementTest` (clase) |
+| V-SEL-2 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelClassV3Test.theRuleIsCapturedWithoutAnyValidSample` |
+| V-SEL-3 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelClassV3Test.atTheTangencyBothLabelledOutputsCoincide` |
+| V-SEL-4 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelClassV3Test.penetrationAndBiteKeepTheSelectionRule` |
+| V-SEL-5 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelClassV3Test.theGapIsUniformlyInvalidWithTheSameRuleOnBothSides` |
+| V-SEL-6 | A | residuo menor | `PreG9BCu2ClassV3ModelTest.anInheritedPermutationIsReproducedInAnyQueryOrder`, `PreG9BCu2ClassV3ModelTest.aSelectionTheCopyCannotReproduceFailsClosed`, `PreG9BCu2SelectionSettlementTest.aCopyInItsFirstInitializationDepartsAtOneParameterInAnyQueryOrder`, `PreG9BCu2SelectionSettlementTest.aLivePermutationThatSettlementCannotProduceFailsClosed` |
+| V-SEL-7 | F | hueco confirmado | `PreG9BCu2ClassV3ModelTest.selectionAndLabelStatesAreReadAgainOnReopenUndoRedoAndRecompute`, `PreG9BCu2SelectionSettlementTest.theSettledStateIsReadAgainOnReopenUndoAndRedo` |
+| V-COINC-1 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelClassV3Test.atTheTangencyBothLabelledOutputsCoincide`, `PreG9BCu2ClassV3ModelTest.labelledOutputsAtTheCoincidentRootAreBothDefined`, `PreG9BCu2HybridCertificationTest.theCriticalConfigurationIsOneClosedComponentWithASingularParameter`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates`, `PreG9BCu2SelectionSettlementTest.variantsCreatedWithoutIntersectionCaptureTheSameCertificates` |
+| V-COINC-2 | A | hueco confirmado | `PreG9BCu2ClassV3ModelTest.anUnlabelledSecondOutputHasATypedUnresolvedBand`, `PreG9BCu2HybridCertificationTest.anUnlabelledSecondOutputLeavesLocalComponentsAroundABand`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates`, `PreG9BCu2SelectionSettlementTest.variantsCreatedWithoutIntersectionCaptureTheSameCertificates` |
+| V-COINC-3 | F | hueco confirmado | `PreG9BCu2SelectionSettlementTest.aDoubleRootAtTheFirstInitializationKeepsItsRuleInAnyQueryOrder`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates` |
+| V-COINC-4 | F | efectiva | `PreG9BCu2HybridCertificationTest.theNeighboursOfTheCriticalRadiusArePenetrationAndBite`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates` |
+| V-COINC-5 | F | hueco confirmado | `PreG9BCu2HybridCertificationTest.anUnlabelledSecondOutputLeavesLocalComponentsAroundABand`, `PreG9BCu2HybridCertificationTest.theNeighboursOfTheCriticalRadiusArePenetrationAndBite`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates` |
+| V-COINC-6 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2AuthorModelSelectionSettlementTest.theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates`, `PreG9BCu2AuthorModelSelectionSettlementTest.theModelVariantsStartedInTheGapCaptureTheSameCertificates`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates`, `PreG9BCu2SelectionSettlementTest.variantsCreatedWithoutIntersectionCaptureTheSameCertificates` |
+| V-COINC-7 | A | hueco confirmado | `PreG9BCu2HybridCertificationTest.anUnlabelledSecondOutputLeavesLocalComponentsAroundABand`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates` |
+| V-COINC-8 | F | hueco confirmado | `PreG9BCu2ClassV3ModelTest.selectionAndLabelStatesAreReadAgainOnReopenUndoRedoAndRecompute`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates`, `PreG9BCu2SelectionSettlementTest.theSettledStateIsReadAgainOnReopenUndoAndRedo` |
+| V-COINC-9 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2AuthorModelSelectionSettlementTest.theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates`, `PreG9BCu2SelectionSettlementTest.theOperativeOutputIsTheRootThatTheCertifiedSelectionDesignates` |
+| V-POINT-1 | F | residuo menor | `PreG9BCu2ExistenceStructureV2Test.anIsolatedParameterIsAPointComponentAndNeverAZeroLengthInterval`, `PreG9BCu2HybridCertificationTest.anExternalTangencyIsAPointComponent`, `CircleDriverRootStructure2DTest` (clase), `PreG9BCu2ConsumerMigrationTest` (clase), `PreG9BCu2RepresentationTest` (clase) |
+| V-POINT-2 | A | efectiva | `PreG9BCu2HybridCertificationTest.twoPointComponentsAreSeparatedOneAtTheSeam`, `CircleDriverRootStructure2DTest` (clase) |
+| V-POINT-3 | F | efectiva | `PreG9BCu2ExistenceStructureV2Test.aChangeOfDimensionRelatesOnlyThroughUniqueStructuralSources`, `PreG9BCu2LineageTest.aPointComponentChangesDimensionThroughTypedTransitions`, `PreG9BCu2LineageTest.renamingTheTracedOutputChangesNoKeyAndNoRelation` |
+| V-POINT-4 | F | hueco confirmado | `PreG9BCu2HybridCertificationTest.anExternalTangencyIsAPointComponent` |
+| V-POINT-5 | F | hueco confirmado | `PreG9BCu2ConsumerMigrationTest.pointComponentsAreDeclaredAndNeverAddressed`, `PreG9BCu2RepresentationTest.aPointComponentIsDeclaredAndNeverDrawn`, `PreG9BCu2RepresentationTest.aPointComponentIsDeclaredInTheExport` |
+| V-POINT-6 | F | hueco confirmado | `PreG9BCu2ConsumerMigrationTest.pointComponentsAreDeclaredAndNeverAddressed`, `PreG9BCu2HybridCertificationTest.anExternalTangencyIsAPointComponent`, `PreG9BCu2HybridCertificationTest.twoPointComponentsAreSeparatedOneAtTheSeam` |
+| V-CON-1 | F | hueco confirmado | `PreG9BCu2ConsumerMigrationTest.theCertificateIsTheSingleClosureAuthority` |
+| V-CON-2 | F | residuo menor | `PreG9BCu2ConsumerMigrationTest.routesFollowAnArcAcrossTheSeam` |
+| V-CON-3 | F | hueco confirmado | `PreG9BCu2ConsumerMigrationTest.theTotalLengthFollowsTheComponents` |
+| V-CON-4 | F | hueco confirmado | `PreG9BCu2ConsumerMigrationTest.intersectionsUseTheArcAndItsStructuralLineage` |
+| V-CON-5 | F | cubierta por pruebas que no la citan | `PreG9BCu2ConsumerMigrationTest.positionsResolveOnTheArcAndCertifiedNonexistenceIsNeverValid` |
+| V-CON-6 | F | efectiva | `PreG9BCu2ConsumerMigrationTest.aDeclaredDomainIsNeverPromotedWithoutATotalComposition`, `PreG9BCu2ConsumerMigrationTest.aDependentOnALocusSupportInheritsTheArc` |
+| V-CON-7 | F | hueco confirmado | `PreG9BCu2ConsumerMigrationTest.aSimilarityImageComposesTheStructureAndTheOneSidedLimits` |
+| V-CON-8 | F | efectiva | `PreG9BCu2ConsumerMigrationTest.anOpenBoundaryNeedsACompleteInventory` |
+| V-CON-9 | F | efectiva | `PreG9BCu2ConsumerMigrationTest.thePrincipalSelectorUsesTheLocalCertifiedComponents` |
+| V-CON-10 | R | vía de verificación | `PreG9BCu2AuthorModelConsumerTest.theGeneratingOccurrenceChainStaysDefined` |
+| V-B06-1 | F | hueco confirmado | `PreG9BCu2AuthorModelRepresentationTest.turnsAreBoundedOutsideTheCertifiedFolds`, `PreG9BCu2RepresentationTest.theSingularParameterIsAnExactUnsmoothedVertex` |
+| V-B06-2 | F | efectiva | `PreG9BCu2AuthorModelRepresentationTest.turnsAreBoundedOutsideTheCertifiedFolds`, `PreG9BCu2FoldCertificationTest.theStructurePublishesOnlyTheNonDegenerateFolds`, `PreG9BCu2RepresentationTest.theSingularParameterIsAnExactUnsmoothedVertex`, `PreG9BCu2AuthorModelCertificationTest` (clase) |
+| V-B06-3 | F | hueco confirmado | `PreG9BCu2AuthorModelRepresentationTest.drawingsAreDeterministicAndTheirTopologyViewInvariant` |
+| V-B07-1 | F | efectiva | `PreG9BCu2AuthorModelRepresentationTest.aBiteIsDrawnToTheImagesOfItsCertifiedEnds`, `PreG9BCu0LocusReferenceTest` (clase) |
+| V-B07-2 | F | hueco confirmado | `PreG9BCu2RepresentationTest.theTransitionEndsAreReachedInTheSquareRootCoordinate` |
+| V-B07-3 | A | efectiva | `PreG9BCu2AuthorModelRepresentationTest.noStrokeBridgesTheRealGapNearTheCriticalValue` |
+| V-B07-4 | F | hueco confirmado | `PreG9BCu2RepresentationTest.exploratoryEvidenceIsDrawnApartAndOnlyInsideItsBands` |
+| V-REP-1 | F | efectiva | `PreG9BCu2AuthorModelRepresentationTest.theExcludedEndOfE2IsItsOneSidedLimit` |
+| V-REP-2 | F | efectiva | `PreG9BCu2RepresentationTest.aComputationalFailureCutsTheStrokeWithAMark` |
+| V-REP-3 | F | efectiva | `PreG9BCu2RepresentationTest.theSingularParameterIsAnExactUnsmoothedVertex`, `PreG9BCu2RepresentationTest.theSingularVertexIsTheDoubleRootOfTheTangency` |
+| V-AVAIL-1 | F | efectiva | `PreG9BCu2AuthorModelConsumerTest.anEvaluatorPointInACertifiedGapIsNotPublished`, `PreG9BCu2ConsumerMigrationTest.positionsResolveOnTheArcAndCertifiedNonexistenceIsNeverValid` |
+| V-AVAIL-2 | F | efectiva | `PreG9BCu2AuthorModelRepresentationTest.aFailingLengthCutsTheStrokeOfE2`, `PreG9BCu2RepresentationTest.aComputationalFailureCutsTheStrokeWithAMark` |
+| V-AVAIL-3 | F | residuo menor | `PreG9BCu2AuthorModelExportTest.anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated`, `PreG9BCu2RepresentationTest.anUnevaluatedOneSidedLimitIsDeclared` |
+| V-AVAIL-4 | F | efectiva | `PreG9BCu2RepresentationTest.aClosedTransitionHasALimitFormImage`, `PreG9BCu2RepresentationTest.anUnevaluableEndWithoutLimitFormEndsAtTheLastEvaluatedVertex`, `PreG9BCu2RepresentationTest.theTransitionEndsAreReachedInTheSquareRootCoordinate` |
+| V-AVAIL-5 | A | efectiva | `PreG9BCu2RepresentationTest.theVertexBudgetCoarsensWithoutCrossingBoundaries` |
+| V-AVAIL-6 | F | hueco confirmado | `PreG9BCu2RepresentationTest.aComponentThatCannotBeDrawnIsListedWithItsCause` |
+| V-DXF-1 | F | cubierta por pruebas que no la citan | `PreG9BCu2AuthorModelExportTest.eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic` |
+| V-DXF-2 | F | efectiva | `PreG9BCu2RepresentationTest.aLocusWithoutEstablishedExistenceIsDeclaredWithTheMandatorySidecar`, `PreG9BR6PlusCBaseIdentityTest` (clase) |
+| V-DXF-3 | F | residuo menor | `PreG9BCu2RepresentationTest.theClosureResidualIsMeasuredAgainstTheClosureCertificate` |
+| V-DXF-4 | B | vía de verificación | comprobación externa informativa con AutoCAD (registro de verificación) |
+| V-TEX-1 | F | hueco confirmado | `PreG9BCu2AuthorModelExportTest.latexClosesOnlyClosedPeriodicComponentsAndCompiles` |
+| V-TEX-2 | F | efectiva | `PreG9BCu2AuthorModelExportTest.theLatexTestsCiteTheDurableSpecification`, `PreG9BR6PlusCLatexExportTest` (clase), `PreG9BR6PlusCSharedExportTest` (clase) |
+| V-DET-1 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2AuthorModelCertificationTest.twoRunsOfTheAuthorModelGiveIdenticalResults`, `PreG9BCu2HybridCertificationTest.twoRunsOfTheSyntheticConstructionsGiveIdenticalResults` |
+| V-INV-1 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2AuthorModelRepresentationTest.zoomOutputResolutionAndViewSizeChangeNoCertificate` |
+| V-INV-2 | F | descendiente T13 (§6 de la revisión) | `PreG9BCu2HybridCertificationTest.theExactCertificateClassifiesTheTransformedConstantsAsCaptured`, `PreG9BCu2HybridCertificationTest.transformationsOfOrderTenToTheSixFailClosedOrKeepTheStructure`, `PreG9BCu2HybridCertificationTest.translationsAndScalesOfTheWholeConstructionKeepTheStructure` |
+| V-CU0-1 | R | vía de verificación | proceso: `PHASE PRE-G9B-CU0` (secciones `preserve`) |
+| V-CU0-2 | R | vía de verificación | proceso: `PHASE PRE-G9B-CU0` con las fijaciones invertidas de T12 |
+| V-CU1-1 | R | vía de verificación | proceso: `PHASE PRE-G9B-CU1` |
+| V-CU0-3 | R | vía de verificación | proceso: [registro de conformidades](pre_g9b_cu2_t11_test_conformity_register.md) |
+| V-PROD-1 | R | vía de verificación | proceso: `INTEGRATION` (`final.shared` y `final.desktop`) |
+| V-PROD-2 | R | vía de verificación | proceso: `INTEGRATION` y escaneo de autoridad de `verify-g9x1-extended-dxf.ps1` |
