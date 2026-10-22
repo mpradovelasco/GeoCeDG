@@ -76,6 +76,14 @@ public final class LocusLineage2D {
 						"Merged lineage needs at least one parent and one child");
 			}
 			break;
+		case DIMENSION_CHANGED:
+			// A point component and the component of dimension one that replaces it, or the
+			// reverse (PRE-G9B-CU2, decision D-CU2-T13-R1).
+			if (parentKeys.size() != 1 || childKeys.size() != 1) {
+				throw new IllegalArgumentException(
+						"Dimension-changed lineage needs one parent and one child");
+			}
+			break;
 		default:
 			throw new IllegalStateException("Unhandled lineage transition");
 		}

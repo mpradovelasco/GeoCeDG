@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -386,6 +387,60 @@ class PreG9BCu2ExistenceStructureV2Test {
 		assertThrows(IllegalStateException.class, seam::getPositionEnclosure);
 	}
 
+	/**
+	 * V-POINT-3 (structure part, decision D-CU2-T13-R1): a point component and a component of
+	 * dimension one change dimension into each other only through the operation and predicate
+	 * of their sources, when exactly one component that changes on each side names them and
+	 * the selection rule is unchanged; otherwise the change fails closed as disappearance and
+	 * appearance. Neither the relation nor the keys read the binary64 ends.
+	 */
+	@Test
+	void aChangeOfDimensionRelatesOnlyThroughUniqueStructuralSources() {
+		double root = Math.atan2(-4, -3);
+		LocusExistenceStructure2D tangency = points(point(root, "root-1"));
+		LocusExistenceStructure2D bite = arcs("discriminant", root - 0.01, root + 0.01);
+		String pointKey = LocusComponentLineage2D.keys(tangency).get(0);
+		String arcKey = LocusComponentLineage2D.keys(bite).get(0);
+		assertFalse(pointKey.contains("0x"), pointKey);
+		assertFalse(arcKey.contains("0x"), arcKey);
+		assertEquals(List.of(new LocusLineage2D(LineageTransition.DIMENSION_CHANGED,
+				List.of(pointKey), List.of(arcKey))),
+				LocusComponentLineage2D.transitions(tangency, bite, true));
+		assertEquals(List.of(new LocusLineage2D(LineageTransition.DIMENSION_CHANGED,
+				List.of(arcKey), List.of(pointKey))),
+				LocusComponentLineage2D.transitions(bite, tangency, true));
+		LocusExistenceStructure2D moved = arcs("discriminant", 1.0, 2.0);
+		assertEquals(List.of(arcKey), LocusComponentLineage2D.keys(moved));
+		assertEquals(LocusComponentLineage2D.transitions(tangency, bite, true),
+				LocusComponentLineage2D.transitions(tangency, moved, true));
+
+		// A change of the selection rule relates nothing.
+		assertEquals(unrelated(List.of(pointKey), List.of(arcKey)),
+				LocusComponentLineage2D.transitions(tangency, bite, false));
+		// Another predicate of the same operation is no structural relation.
+		LocusExistenceStructure2D radius = arcs("radius", root - 0.01, root + 0.01);
+		assertEquals(unrelated(List.of(pointKey), LocusComponentLineage2D.keys(radius)),
+				LocusComponentLineage2D.transitions(tangency, radius, true));
+		// Two points of that operation and predicate: no unique relation.
+		LocusExistenceStructure2D pair = points(point(root, "root-1"), point(0.5, "root-3"));
+		assertEquals(unrelated(LocusComponentLineage2D.keys(pair), List.of(arcKey)),
+				LocusComponentLineage2D.transitions(pair, bite, true));
+		// Two components that name them: no unique relation, and no structural key either.
+		LocusExistenceStructure2D twice = arcs("discriminant", root - 0.01, root + 0.01, 1.0,
+				2.0);
+		List<String> twiceKeys = LocusComponentLineage2D.keys(twice);
+		assertTrue(twiceKeys.stream().allMatch(key -> key.contains("0x")), twiceKeys.toString());
+		assertEquals(unrelated(List.of(pointKey), twiceKeys),
+				LocusComponentLineage2D.transitions(tangency, twice, true));
+		assertEquals(unrelated(twiceKeys, List.of(pointKey)),
+				LocusComponentLineage2D.transitions(twice, tangency, true));
+		assertThrows(IllegalArgumentException.class, () -> new LocusLineage2D(
+				LineageTransition.DIMENSION_CHANGED, List.of(pointKey), List.of()));
+		assertThrows(IllegalArgumentException.class, () -> new LocusLineage2D(
+				LineageTransition.DIMENSION_CHANGED, List.of(pointKey, arcKey),
+				List.of("other")));
+	}
+
 	/** V-LVL-2: exploratory evidence is a sibling without authority over the snapshot. */
 	@Test
 	void exploratoryEvidenceNeverCertifiesAndIsOutsideTheSnapshot() {
@@ -460,6 +515,65 @@ class PreG9BCu2ExistenceStructureV2Test {
 		return new Coverage(interval, CoverageState.CERTIFIED_ISOLATED_POINTS,
 				LocusCoverageCause2D.ISOLATED_EVEN_ROOT, LocusEvidenceNature2D.EXACT,
 				"fixture-isolated");
+	}
+
+	/** @return the disappearance of every parent and the appearance of every child */
+	private static List<LocusLineage2D> unrelated(List<String> parents, List<String> children) {
+		return List.of(new LocusLineage2D(LineageTransition.DISAPPEARED, parents, List.of()),
+				new LocusLineage2D(LineageTransition.APPEARED, List.of(), children));
+	}
+
+	/** An isolated root of the discriminant of one operation at the given address. */
+	private static LocusPointComponent2D point(double root, String address) {
+		return new LocusPointComponent2D(Math.nextDown(root), Math.nextUp(root),
+				new LocusBoundarySource2D("intersection-J", "discriminant", address),
+				Maximality.ESTABLISHED, LocusEvidenceNature2D.EXACT, "point/" + address, null);
+	}
+
+	/** A complete structure of point components in increasing order. */
+	private static LocusExistenceStructure2D points(LocusPointComponent2D... points) {
+		List<Coverage> coverage = new ArrayList<>();
+		double start = -Math.PI;
+		boolean closed = true;
+		for (LocusPointComponent2D point : points) {
+			coverage.add(absent(new LocusInterval2D(start, point.getParameterLower(), closed,
+					false)));
+			coverage.add(isolated(new LocusInterval2D(point.getParameterLower(),
+					point.getParameterUpper(), true, true)));
+			start = point.getParameterUpper();
+			closed = false;
+		}
+		coverage.add(absent(new LocusInterval2D(start, Math.PI, closed, false)));
+		return periodic(coverage, Collections.emptyList(), List.of(points),
+				Completeness.COMPLETE);
+	}
+
+	/**
+	 * A complete structure of components bounded by certified transitions of one predicate of
+	 * one operation, given by increasing pairs of ends.
+	 */
+	private static LocusExistenceStructure2D arcs(String predicate, double... ends) {
+		List<Coverage> coverage = new ArrayList<>();
+		List<ContinuousComponent> components = new ArrayList<>();
+		double start = -Math.PI;
+		boolean closed = true;
+		for (int index = 0; index < ends.length; index += 2) {
+			coverage.add(absent(new LocusInterval2D(start, ends[index], closed, false)));
+			coverage.add(exists(new LocusInterval2D(ends[index], ends[index + 1], true, true)));
+			components.add(ContinuousComponent.arc(CIRCLE, ends[index], ends[index + 1], false,
+					end(predicate, "lower"), end(predicate, "upper"), Maximality.ESTABLISHED,
+					LocusEvidenceNature2D.EXACT, "arc/" + index));
+			start = ends[index + 1];
+			closed = false;
+		}
+		coverage.add(absent(new LocusInterval2D(start, Math.PI, closed, false)));
+		return periodic(coverage, components, Collections.emptyList(), Completeness.COMPLETE);
+	}
+
+	private static LocusBoundary2D end(String predicate, String side) {
+		return new LocusBoundary2D(LocusBoundary2D.Kind.CERTIFIED_TRANSITION,
+				new LocusBoundarySource2D("intersection-J", predicate, side), true,
+				LocusEvidenceNature2D.EXACT);
 	}
 
 	private static LocusBoundary2D transition(String side, boolean included) {

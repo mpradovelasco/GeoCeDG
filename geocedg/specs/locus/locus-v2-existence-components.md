@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
 | Version | `1.1` |
 | Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
@@ -434,6 +434,19 @@ positive length. It creates no public point object and materializes no intersect
 version point components are declared in results and in the inspector, with their evidence
 and lineage, and are not drawn.
 
+Normative precision D-CU2-T13-R1: a change of dimension is the lineage transition
+`DIMENSION_CHANGED`, with one parent and one child (`locus-v2-semantics.md`, "Branch identity
+and lineage"). Between two revisions with the same selection rule it relates a point component
+that disappears and a component of dimension one that appears, or the reverse, only through
+their certified structural sources: the isolated root of the point is certified and both ends
+of the other component are certified transitions of the same operation and predicate, which no
+other component that disappears or appears in that change names, and both lineage keys are the
+structural keys of those sources. The relation never reads a label, an index, a coordinate, a
+binary64 parameter or proximity, and never evaluates the point, whose position may be
+unavailable. Without that evidence, in particular when the selection rule changed, when the
+operation and predicate are shared, or when a key is not structural, nothing is related: the
+transitions are disappearance and appearance.
+
 ### 15.5 Existence, evaluation and representation
 
 Coverage `CERTIFIED_DOES_NOT_EXIST` requires a validity predicate certified false, or a
@@ -469,13 +482,14 @@ algorithm's selection state; it is an input of the revision. The lineage of a co
 branch key together with the ordered sources of its boundaries:
 `(durable operation identity, predicate kind, side)` for a certified transition,
 `(event source, side)` for a structural event, or the declared domain end. Moving a boundary
-without changing its source keeps the lineage. Appearance, disappearance, split and merge of
-components are typed lineage transitions. No revision, recompute or temporary change of
-existence rebuilds an association by label, index, coordinates or proximity. A persisted
-component selector resolves only through a demonstrated structural correspondence: equality of
-the decomposition, or a recorded lineage transition from the cited component under the same
-selection rule. Unique containment of its parameter validates that correspondence and never
-creates one. Without it the selector is unresolved and its point undefined with a typed cause.
+without changing its source keeps the lineage. Appearance, disappearance, split, merge and
+change of dimension (§15.4) of components are typed lineage transitions. No revision, recompute
+or temporary change of existence rebuilds an association by label, index, coordinates or
+proximity. A persisted component selector resolves only through a demonstrated structural
+correspondence: equality of the decomposition, or a recorded split or merge from the cited
+component under the same selection rule. A change of dimension resolves no selector, since a
+point component is never selected by a parameter (§15.4). Unique containment of its parameter
+validates that correspondence and never creates one. Without it the selector is unresolved and its point undefined with a typed cause.
 Resolution never rewrites the persisted selector.
 
 This replaces, for certified components, the revision-local address of §8: component ordinal,

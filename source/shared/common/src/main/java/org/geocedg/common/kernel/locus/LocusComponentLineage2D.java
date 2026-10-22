@@ -6,8 +6,10 @@
 package org.geocedg.common.kernel.locus;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -173,13 +175,17 @@ public final class LocusComponentLineage2D {
 
 	/**
 	 * Typed lineage transitions between two certified structures of one branch, derived from
-	 * their lineage keys alone ({@code locus-v2-existence-components.md} section 15.6;
-	 * certification design section 7). Components whose keys persist are unchanged. When the
-	 * previous structure was the closed periodic component, every new component lies in it:
-	 * a split, possibly into one arc. When the new structure is closed periodic, every
-	 * previous component lies in it: a merge. Any other change has no demonstrated relation
-	 * and is recorded as disappearance and appearance. A change of the selection rule never
-	 * relates components. No label, index, coordinate or proximity is read.
+	 * their lineage keys and the structural sources of the components that change ({@code
+	 * locus-v2-existence-components.md} sections 15.4 and 15.6; certification design section
+	 * 7). Components whose keys persist are unchanged. When the previous structure was the
+	 * closed periodic component, every new component lies in it: a split, possibly into one
+	 * arc. When the new structure is closed periodic, every previous component lies in it: a
+	 * merge. A point component and a component of dimension one change dimension into each
+	 * other when the source of the isolated root and the sources of both ends of the
+	 * component name the same operation and predicate, and no other component that changes
+	 * names them (decision D-CU2-T13-R1). Any other change has no demonstrated relation and is
+	 * recorded as disappearance and appearance. A change of the selection rule never relates
+	 * components. No label, index, coordinate or proximity is read.
 	 *
 	 * @param previous structure of the previous certificate, or {@code null} before the first
 	 * @param current structure of the current certificate
@@ -215,9 +221,109 @@ public final class LocusComponentLineage2D {
 		} else if (sameSelection && current.isClosedPeriodic()) {
 			result.add(new LocusLineage2D(LineageTransition.MERGED, parents, children));
 		} else {
-			result.add(new LocusLineage2D(LineageTransition.DISAPPEARED, parents, List.of()));
-			result.add(new LocusLineage2D(LineageTransition.APPEARED, List.of(), children));
+			List<LocusLineage2D> changes = sameSelection
+					? dimensionChanges(previous, current, parents, children) : List.of();
+			for (LocusLineage2D change : changes) {
+				parents.removeAll(change.getParentKeys());
+				children.removeAll(change.getChildKeys());
+			}
+			if (!parents.isEmpty()) {
+				result.add(new LocusLineage2D(LineageTransition.DISAPPEARED, parents,
+						List.of()));
+			}
+			result.addAll(changes);
+			if (!children.isEmpty()) {
+				result.add(new LocusLineage2D(LineageTransition.APPEARED, List.of(),
+						children));
+			}
 		}
 		return result;
+	}
+
+	/**
+	 * Changes of dimension among the components that change (decision D-CU2-T13-R1): the
+	 * even root of a point component splits into the two simple roots that bound a component
+	 * of dimension one, or those two roots join into one. The relation is demonstrated only
+	 * by the operation and predicate that the sources name, when exactly one changed parent
+	 * and one changed child name them; the root ordinal and the sides, revision-local, are not
+	 * read, and a key that is not structural relates nothing.
+	 */
+	private static List<LocusLineage2D> dimensionChanges(LocusExistenceStructure2D previous,
+			LocusExistenceStructure2D current, List<String> parents, List<String> children) {
+		Map<String, List<Named>> before = named(previous, parents);
+		Map<String, List<Named>> after = named(current, children);
+		List<LocusLineage2D> changes = new ArrayList<>();
+		for (Map.Entry<String, List<Named>> relation : before.entrySet()) {
+			List<Named> targets = after.getOrDefault(relation.getKey(), List.of());
+			if (relation.getValue().size() != 1 || targets.size() != 1) {
+				continue;
+			}
+			Named parent = relation.getValue().get(0);
+			Named child = targets.get(0);
+			if (parent.eligible && child.eligible && parent.point != child.point) {
+				changes.add(new LocusLineage2D(LineageTransition.DIMENSION_CHANGED,
+						List.of(parent.key), List.of(child.key)));
+			}
+		}
+		return changes;
+	}
+
+	/**
+	 * Groups the changed keys of a structure by each operation and predicate that a source of
+	 * the component names. A point is eligible under the structural key of its certified root;
+	 * a component of dimension one, under its structural key when both ends are certified
+	 * transitions of that one predicate.
+	 */
+	private static Map<String, List<Named>> named(LocusExistenceStructure2D structure,
+			List<String> changed) {
+		Map<String, List<Named>> named = new LinkedHashMap<>();
+		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
+			String key = of(structure, component);
+			if (!changed.contains(key) || component.isClosedPeriodic()) {
+				continue;
+			}
+			String lower = name(component.getLowerBoundary());
+			String upper = name(component.getUpperBoundary());
+			Named entry = new Named(key, false, lower != null && lower.equals(upper)
+					&& key.equals(structural(structure.getBranchKey(), component)));
+			if (lower != null) {
+				named.computeIfAbsent(lower, ignored -> new ArrayList<>()).add(entry);
+			}
+			if (upper != null && !upper.equals(lower)) {
+				named.computeIfAbsent(upper, ignored -> new ArrayList<>()).add(entry);
+			}
+		}
+		for (LocusPointComponent2D point : structure.getPointComponents()) {
+			String key = of(structure, point);
+			if (!changed.contains(key)) {
+				continue;
+			}
+			LocusBoundarySource2D source = point.getSource();
+			Named entry = new Named(key, true, point.getNature().certifies() && key.equals(
+					structure.getBranchKey() + "/point/" + source.getSignature()));
+			named.computeIfAbsent(source.getOrigin() + "|" + source.getPredicate(),
+					ignored -> new ArrayList<>()).add(entry);
+		}
+		return named;
+	}
+
+	/** @return operation and predicate of a certified transition end, or {@code null} */
+	private static String name(LocusBoundary2D boundary) {
+		return boundary.getKind() == LocusBoundary2D.Kind.CERTIFIED_TRANSITION
+				? boundary.getSource().getOrigin() + "|" + boundary.getSource().getPredicate()
+				: null;
+	}
+
+	/** A changed component named by an operation and predicate. */
+	private static final class Named {
+		private final String key;
+		private final boolean point;
+		private final boolean eligible;
+
+		Named(String key, boolean point, boolean eligible) {
+			this.key = key;
+			this.point = point;
+			this.eligible = eligible;
+		}
 	}
 }

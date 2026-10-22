@@ -29,9 +29,12 @@ public final class LocusSemanticMetadata2D {
 		REGULAR, SINGULAR, UNKNOWN
 	}
 
-	/** Typed branch lifecycle transition. */
+	/**
+	 * Typed branch lifecycle transition. A change of dimension relates a point component and
+	 * a component of dimension one ({@code locus-v2-existence-components.md} section 15.4).
+	 */
 	public enum LineageTransition {
-		UNCHANGED, APPEARED, DISAPPEARED, SPLIT, MERGED
+		UNCHANGED, APPEARED, DISAPPEARED, SPLIT, MERGED, DIMENSION_CHANGED
 	}
 
 	/** Fidelity to the approved construction. */

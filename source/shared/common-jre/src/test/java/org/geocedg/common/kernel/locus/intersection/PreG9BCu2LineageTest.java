@@ -6,20 +6,26 @@
 package org.geocedg.common.kernel.locus.intersection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusBoundary2D;
+import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D.Status;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.LineageTransition;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -29,6 +35,7 @@ import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,7 +44,8 @@ import org.junit.jupiter.api.Test;
  * design section 7, decision E-3 revised), on the synthetic critical configuration. Matrix
  * rows V-LIN-1, V-LIN-2, V-LIN-4, V-LIN-5 and V-LIN-6 (synthetic parts); the author model
  * is in {@code PreG9BCu2AuthorModelLineageTest}. The consumers read the certificates from
- * step T9, and step T11 publishes them.
+ * step T9, and step T11 publishes them. The typed change of dimension of a point component
+ * (row V-POINT-3, decision D-CU2-T13-R1) runs on the synthetic external tangency.
  */
 class PreG9BCu2LineageTest extends BaseUnitTest {
 	private static final String BRANCH = "generator.main";
@@ -169,6 +177,143 @@ class PreG9BCu2LineageTest extends BaseUnitTest {
 		assertTrue(point.startsWith(BRANCH + "/point/") && point.contains("DISCRIMINANT"),
 				point);
 		assertTrue(!point.contains("0x"), point);
+	}
+
+	/**
+	 * V-POINT-3 (decision D-CU2-T13-R1): the external tangency with the radius
+	 * {@code 40 - 2^-30 -> 40 -> 40 + 2^-30 -> 40} is an empty cover, a point component, an
+	 * arc between two simple roots and the point again. The point appears; the even root that
+	 * splits into the two simple roots bounding the arc, and the two roots that join again,
+	 * are typed changes of dimension that relate the point and the arc through the operation
+	 * and predicate of their sources, never through a label, an index, a coordinate or
+	 * proximity. The driver stays where no root exists, so the selection rule does not
+	 * change. Undoing and redoing each step restores each structure and key; a reloaded
+	 * certificate relates to nothing earlier.
+	 */
+	@Test
+	void aPointComponentChangesDimensionThroughTypedTransitions() {
+		activateUndo();
+		externalTangency(Math.atan2(-4, -3) + Math.PI);
+		getApp().storeUndoInfo();
+		AlgoDependentPointLocusV2 lq = algorithm("lq");
+		LocusExistenceStructure2D empty = structure(lq);
+		assertEquals(Completeness.COMPLETE, empty.getCompleteness(), empty.toString());
+		assertEquals(List.of(), keys(lq));
+		assertLineage(lq, LineageTransition.UNCHANGED, List.of(), List.of());
+		List<String> signatures = new ArrayList<>();
+		signatures.add(empty.getSemanticSignature());
+
+		radius(40);
+		getApp().storeUndoInfo();
+		LocusExistenceStructure2D tangency = structure(lq);
+		assertEquals(Completeness.COMPLETE, tangency.getCompleteness());
+		assertTrue(tangency.getContinuousValidComponents().isEmpty());
+		assertEquals(1, tangency.getPointComponents().size());
+		final List<String> point = keys(lq);
+		assertLineage(lq, LineageTransition.APPEARED, List.of(), point);
+		signatures.add(tangency.getSemanticSignature());
+
+		radius(40 + Math.scalb(1.0, -30));
+		getApp().storeUndoInfo();
+		LocusExistenceStructure2D split = structure(lq);
+		assertEquals(Completeness.COMPLETE, split.getCompleteness());
+		assertTrue(split.getPointComponents().isEmpty());
+		assertEquals(1, split.getContinuousValidComponents().size());
+		ContinuousComponent arc = split.getContinuousValidComponents().get(0);
+		LocusBoundarySource2D root = tangency.getPointComponents().get(0).getSource();
+		for (LocusBoundary2D end : List.of(arc.getLowerBoundary(), arc.getUpperBoundary())) {
+			assertEquals(LocusBoundary2D.Kind.CERTIFIED_TRANSITION, end.getKind());
+			assertEquals(root.getOrigin(), end.getSource().getOrigin());
+			assertEquals(root.getPredicate(), end.getSource().getPredicate());
+		}
+		assertTrue(arc.getStart() < arc.getEnd());
+		final List<String> bite = keys(lq);
+		assertLineage(lq, LineageTransition.DIMENSION_CHANGED, point, bite);
+		signatures.add(split.getSemanticSignature());
+
+		radius(40);
+		getApp().storeUndoInfo();
+		assertEquals(point, keys(lq));
+		assertLineage(lq, LineageTransition.DIMENSION_CHANGED, bite, point);
+		assertEquals(signatures.get(1), structure(lq).getSemanticSignature());
+		assertFalse(point.get(0).contains("0x"), point.get(0));
+		assertFalse(bite.get(0).contains("0x"), bite.get(0));
+
+		List<List<String>> stateKeys = List.of(List.of(), point, bite, point);
+		for (int state = 2; state >= 0; state--) {
+			getKernel().undo();
+			assertRestored(signatures.get(state), stateKeys.get(state));
+		}
+		for (int state = 1; state <= 3; state++) {
+			getKernel().redo();
+			assertRestored(signatures.get(state == 3 ? 1 : state), stateKeys.get(state));
+		}
+	}
+
+	/**
+	 * Decision D-CU2-T13-R1, fail closed: when the roots separate at the driver, the
+	 * intersection leaves its first initialization and the selection rule changes with the
+	 * dimension. Whatever the revisions in between, nothing relates the point and the arc:
+	 * the point disappears and the arc appears without a parent.
+	 */
+	@Test
+	void aChangeOfDimensionWithANewSelectionRuleRelatesNothing() {
+		externalTangency(Math.atan2(-4, -3));
+		AlgoDependentPointLocusV2 lq = algorithm("lq");
+		radius(40);
+		final List<String> point = keys(lq);
+		assertEquals(1, point.size());
+		org.geogebra.common.kernel.algos.AlgoIntersectLineConic intersection =
+				(org.geogebra.common.kernel.algos.AlgoIntersectLineConic) lookup("Q")
+						.getParentAlgorithm();
+		assertTrue(intersection.isSelectionFirstIntersectionPending());
+		List<LocusLineage2D> recorded = new ArrayList<>();
+		GeoNumeric rr = (GeoNumeric) lookup("rr");
+		rr.setValue(40 + Math.scalb(1.0, -30));
+		rr.updateCascade();
+		recorded.addAll(lq.getHybridLineage());
+		getKernel().updateConstruction(false);
+		recorded.addAll(lq.getHybridLineage());
+		assertFalse(intersection.isSelectionFirstIntersectionPending());
+		final List<String> bite = keys(lq);
+		assertEquals(1, bite.size());
+		assertTrue(recorded.contains(new LocusLineage2D(LineageTransition.DISAPPEARED, point,
+				List.of())), recorded.toString());
+		assertTrue(recorded.contains(new LocusLineage2D(LineageTransition.APPEARED, List.of(),
+				bite)), recorded.toString());
+		assertTrue(recorded.stream().noneMatch(lineage -> lineage.getTransition()
+				== LineageTransition.DIMENSION_CHANGED), recorded.toString());
+	}
+
+	/** After an undo or a redo the reloaded certificate relates to nothing earlier. */
+	private void assertRestored(String signature, List<String> keys) {
+		AlgoDependentPointLocusV2 reloaded = algorithm("lq");
+		assertEquals(signature, structure(reloaded).getSemanticSignature());
+		assertEquals(keys, keys(reloaded));
+		if (keys.isEmpty()) {
+			assertLineage(reloaded, LineageTransition.UNCHANGED, List.of(), List.of());
+		} else {
+			assertLineage(reloaded, LineageTransition.APPEARED, List.of(), keys);
+		}
+	}
+
+	/** The external tangency of matrix section 1 with a free radius {@code rr}. */
+	private void externalTangency(double driverParameter) {
+		add("rr=40-2^(-30)");
+		add("p=Circle((0,0),25)");
+		add("P=(-25,50)");
+		add("g1=Circle((83,19),rr)");
+		add("N=Point(g1)");
+		GeoPoint driver = (GeoPoint) lookup("N");
+		driver.getPathParameter().setT(driverParameter);
+		driver.getPath().pathChanged(driver);
+		driver.updateCoords();
+		driver.updateCascade();
+		add("t=Ray(P,N)");
+		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+				(GeoLine) lookup("t"), (GeoConic) lookup("p"));
+		add("lq=LocusV2(Q,N)");
+		getKernel().updateConstruction(false);
 	}
 
 	private void configuration(String radius) {

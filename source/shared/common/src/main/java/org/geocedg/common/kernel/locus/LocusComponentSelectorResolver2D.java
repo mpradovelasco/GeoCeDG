@@ -18,9 +18,11 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.LineageTransition
  * decision E-3 revised). A selector resolves only through a demonstrated structural
  * correspondence: the same lineage key, equality of the decomposition (the cited component
  * was the whole declared domain and the structure is one closed periodic component or, on a
- * bounded domain, one component equal to the domain), or a recorded lineage transition from
- * the cited component. Unique containment of the parameter then validates the
- * correspondence; it never creates one. Resolution never rewrites the retained selector.
+ * bounded domain, one component equal to the domain), or a recorded split or merge from the
+ * cited component. A change of dimension resolves no selector, since a point component is
+ * never selected by a parameter (decision D-CU2-T13-R1). Unique containment of the parameter
+ * then validates the correspondence; it never creates one. Resolution never rewrites the
+ * retained selector.
  */
 public final class LocusComponentSelectorResolver2D {
 	/** Outcome of a resolution. */

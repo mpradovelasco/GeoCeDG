@@ -1,6 +1,6 @@
 # Locus V2 semantic contract
 
-- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.3 AMENDMENT (PUBLICATION, EXACT FINGERPRINT AND RECONSTRUCTION FIDELITY, D-CU2-20-R) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.3 AMENDMENT (PUBLICATION, EXACT FINGERPRINT AND RECONSTRUCTION FIDELITY, D-CU2-20-R) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); TYPED CHANGE OF DIMENSION OF CERTIFIED COMPONENTS AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 (2026-10-22); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
 - Version: `1.3`
 - Approval date: 2026-08-11
 - Roadmap gate: G6A `PASS`; G6B `PASS`; G6 `PASS`
@@ -84,6 +84,13 @@ and child keys for real split/merge events. A deterministically recognized
 branch recovers its previous key after an inactive interval. Domain-component
 split/merge is recorded independently and does not imply branch lineage.
 
+PRE-G9B-CU2 precision (author decision D-CU2-T13-R1): the lineage of certified
+components also types `DIMENSION_CHANGED`, with exactly one parent and one child
+key, between a point component and the component of dimension one that replaces
+it, in either direction (`locus-v2-existence-components.md` §15.4 and §15.6). It
+is distinct from appearance, disappearance, split and merge, and it relates
+component keys only: the branch key does not change.
+
 The executable G6A fixture in
 `geocedg/validation/locus-v2/topology-fixture.yml` is the reference policy.
 
@@ -98,7 +105,8 @@ The following axes are independent:
   `NON_FINITE`, `EVALUATION_FAILED`, `UNSUPPORTED_NONDETERMINISM`;
 - optional regularity: `REGULAR`, `SINGULAR`, `UNKNOWN`;
 - topology/lineage transition: `UNCHANGED`, `APPEARED`, `DISAPPEARED`, `SPLIT`,
-  `MERGED`.
+  `MERGED`, and, for certified components, `DIMENSION_CHANGED` (PRE-G9B-CU2,
+  D-CU2-T13-R1).
 
 A cusp may be a valid evaluation with regularity `UNKNOWN`; G6B need not infer
 differential regularity. Empty domains, isolated valid components, collapsed
