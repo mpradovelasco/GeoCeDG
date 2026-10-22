@@ -193,6 +193,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		liveDriverRoots.add(originals.get(descriptor.getCoordinateId()));
 		fidelityOwner = nestedWorkOwner;
 		isolatedConstruction = macroKernel.getConstruction();
+		withholdPendingLabels();
 		SpatialIdentityRegistry isolatedRegistry = isolatedConstruction
 				.getSpatialIdentityRegistry();
 		for (PersistentGeoId id : descriptor.getDependencyIds()) {
@@ -1087,6 +1088,25 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					&& Double.doubleToRawLongBits(point.z) == Double.doubleToRawLongBits(z)
 					&& Double.doubleToRawLongBits(point.getPathParameter().getT())
 							== Double.doubleToRawLongBits(path.getT());
+		}
+	}
+
+	/**
+	 * The copy reproduces the label state of its revision until the next one (finding
+	 * H-T13-A, author decision D-CU2-T13-R6): an output that the live construction has not
+	 * labelled stays unlabelled in the copy. The inherited element labels a wanted label as
+	 * soon as it is first defined, and a point query defines outputs at parameters that the
+	 * live driver has not visited; so no unlabelled output of the copy keeps a wanted label.
+	 * When the live output gets its label, the label state of the slice changes and the next
+	 * revision rebuilds the copy from it.
+	 */
+	private void withholdPendingLabels() {
+		for (AlgoElement algorithm : isolatedConstruction.getAlgoList()) {
+			for (GeoElement output : algorithm.getOutput()) {
+				if (!output.isLabelSet()) {
+					output.setLabelWanted(false);
+				}
+			}
 		}
 	}
 

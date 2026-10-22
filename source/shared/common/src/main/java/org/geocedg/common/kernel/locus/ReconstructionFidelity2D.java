@@ -577,10 +577,16 @@ public final class ReconstructionFidelity2D {
 				+ ",pending=" + intersection.isSelectionPermutationPending();
 	}
 
+	/**
+	 * @return label state of the outputs in output order: the label of each labelled output
+	 *         and {@code -} for an unlabelled one, so that the copy corresponds to the live
+	 *         intersection output by output and label by label, not only in which outputs
+	 *         are labelled (author decision D-CU2-T13-R6)
+	 */
 	private static String labelState(AlgoElement intersection) {
 		StringBuilder state = new StringBuilder();
 		for (GeoElement output : intersection.getOutput()) {
-			state.append(output.isLabelSet() ? '1' : '0');
+			state.append(output.isLabelSet() ? output.getLabelSimple() : "-").append(';');
 		}
 		return state.toString();
 	}

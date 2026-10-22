@@ -41,6 +41,7 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D.SettlementOutcome;
+import org.geocedg.common.kernel.locus.ReconstructionFidelity2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -606,6 +607,202 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 		String compaction = rule.replace("LINE_CIRCLE[0x0.0p0,", "LINE_CIRCLE[0x1.0p0,");
 		assertNotEquals(rule, compaction, rule);
 		return compaction;
+	}
+
+	/**
+	 * Finding H-T13-A (author decision D-CU2-T13-R6): the labelled pair created where its
+	 * second output is undefined, in the gap of a bite or at the double root of the critical
+	 * configuration, by the product command Intersect(p, t) or with the two labels Q and R,
+	 * labels its first output only, and the label of the second stays pending until that output
+	 * is defined. The copy of a locus of the first output reproduces that label state for its
+	 * whole revision: the point queries of certification and of the published locus, which
+	 * define the second output in the copy, do not label it; the fidelity validated again by a
+	 * consumer of the program, as LocusLength does, finds the labels of the copy equal to the
+	 * live ones output by output; every parameter of certified existence keeps its output; the
+	 * certificate and the length are those of the same locus created with both outputs
+	 * labelled. So it stays after saving and reopening, recomputing, undoing and redoing. When
+	 * the live driver defines the second output, its label is set, a new revision rebuilds the
+	 * copy with both labels and, once the selection is settled, the certificate is again that
+	 * of the labelled creation. The unlabelled variant created there, whose auxiliary outputs
+	 * want no label, stays faithful as well.
+	 */
+	@Test
+	void aPendingLabelIsReproducedForTheWholeRevision() throws Exception {
+		activateUndo();
+		for (String radius : List.of("40+2^(-10)", "40")) {
+			for (boolean command : List.of(false, true)) {
+				pendingLabel(radius, command);
+			}
+		}
+	}
+
+	/**
+	 * @param command whether the product command Intersect(p, t) creates the pair, naming its
+	 *        outputs itself, or the dispatcher with the labels Q and R
+	 */
+	private void pendingLabel(String radius, boolean command) throws Exception {
+		final String variant = radius + (command ? " command" : " labels");
+		configuration(radius);
+		moveDriver(driver(), 0.3);
+		add("t=Ray(P,N)");
+		String first = pair(command);
+		add("lq=LocusV2(" + first + ",N)");
+		getKernel().updateConstruction(false);
+		add("lengthQ=LocusLength(lq)");
+		final String reference = named(certificate("lq"));
+		final double referenceLength = length("lengthQ");
+		getKernel().clearConstruction(true);
+
+		configuration(radius);
+		add("spare=1");
+		moveDriver(driver(), CRITICAL);
+		add("t=Ray(P,N)");
+		first = pair(command);
+		add("t2=Ray(P,N)");
+		add("R2=Intersect(p,t2,2)");
+		String pending = first + ";-;";
+		assertEquals(pending, labelState(liveIntersection(first)), variant);
+		add("lq=LocusV2(" + first + ",N)");
+		add("lr2=LocusV2(R2,N)");
+		// Published evaluations define the second output in the copy.
+		query("lq", samples());
+		assertEquals(pending, labelState(copyIntersection("lq", first)), variant);
+		add("lengthQ=LocusLength(lq)");
+		add("lengthR2=LocusLength(lr2)");
+		getApp().storeUndoInfo();
+		for (String state : List.of("created", "reopened", "recomputed", "undone",
+				"redone")) {
+			if ("reopened".equals(state)) {
+				reload();
+			} else if ("recomputed".equals(state)) {
+				getKernel().updateConstruction(false);
+			} else if ("undone".equals(state)) {
+				GeoNumeric number = (GeoNumeric) lookup("spare");
+				number.setValue(2);
+				number.updateCascade();
+				getApp().storeUndoInfo();
+				getKernel().undo();
+			} else if ("redone".equals(state)) {
+				getKernel().redo();
+			}
+			String context = variant + " " + state;
+			query("lq", samples());
+			assertEquals(pending, labelState(liveIntersection(first)), context);
+			assertLabelsReproduced(context, "lq", liveIntersection(first),
+					copyIntersection("lq", first));
+			assertLabelsReproduced(context, "lr2", liveSource("R2"), copySource("lr2", "R2"));
+			assertAvailable(context, "lq");
+			assertAvailable(context, "lr2");
+			assertEquals(reference, named(certificate("lq")), context);
+			assertEquals(Double.doubleToRawLongBits(referenceLength),
+					Double.doubleToRawLongBits(length("lengthQ")), context);
+		}
+		long revision = locus("lq").getSemanticRevision();
+		moveDriver(driver(), 0.3);
+		// The inherited element sets the pending label, or a free one after reopening.
+		assertTrue(liveIntersection(first).getOutput(1).isLabelSet(), variant);
+		assertTrue(locus("lq").getSemanticRevision() > revision, variant);
+		// The next live movement settles the selection that the first one initialized.
+		moveDriver(driver(), 0.31);
+		assertLabelsReproduced(variant + " labelled", "lq", liveIntersection(first),
+				copyIntersection("lq", first));
+		assertEquals(reference, named(certificate("lq")), variant + " labelled");
+		assertAvailable(variant + " labelled", "lq");
+		getKernel().clearConstruction(true);
+	}
+
+	/**
+	 * Creates the pair of the ray t and the circle p.
+	 *
+	 * @return label of its first output
+	 */
+	private String pair(boolean command) {
+		if (command) {
+			GeoElement first = add("Intersect(p,t)");
+			return first.getLabelSimple();
+		}
+		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+				(GeoLine) lookup("t"), (GeoConic) lookup("p"));
+		return "Q";
+	}
+
+	/**
+	 * Finding H-T13-A, negative case: a copy whose labels do not correspond to the live
+	 * outputs, here because the two outputs of the copy exchange their labels after its
+	 * revision was validated, keeps every label and which outputs are labelled, so only a
+	 * comparison output by output and label by label finds it: the next validation finds a
+	 * typed label discrepancy and the slice fails closed, with no program and no evaluation.
+	 */
+	@Test
+	void aCopyWhoseLabelsDoNotCorrespondFailsClosed() throws Exception {
+		variants("40+2^(-10)");
+		ReconstructibleLocusEvaluator2D evaluator = evaluator("lq");
+		assertTrue(evaluator.isReconstructionFaithful());
+		assertEquals("Q;R;", labelState(copyIntersection("lq", "Q")));
+		Construction copy = copy("lq");
+		GeoElement first = copy.lookupLabel("Q");
+		GeoElement second = copy.lookupLabel("R");
+		first.rename("Exchanged");
+		second.rename("Q");
+		first.rename("R");
+		assertEquals("R;Q;", labelState(first.getParentAlgorithm()));
+		assertFalse(evaluator.captureCertifiedProgram().isPresent());
+		assertFalse(evaluator.isReconstructionFaithful());
+		List<ReconstructionFidelity2D.DiscrepancyKind> kinds = new ArrayList<>();
+		for (ReconstructionFidelity2D.Discrepancy discrepancy
+				: evaluator.getFidelityReport().getDiscrepancies()) {
+			kinds.add(discrepancy.getKind());
+		}
+		assertTrue(kinds.contains(ReconstructionFidelity2D.DiscrepancyKind.LABELS),
+				kinds.toString());
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
+			assertFalse(evaluator.evaluate(null, null, 0.3, session).isValid());
+		}
+	}
+
+	/**
+	 * The copy, validated again as a consumer of the program validates it, is faithful and
+	 * reproduces the label state of the live intersection output by output.
+	 */
+	private void assertLabelsReproduced(String context, String label, AlgoElement live,
+			AlgoElement copy) throws Exception {
+		ReconstructibleLocusEvaluator2D evaluator = evaluator(label);
+		evaluator.captureCertifiedProgram();
+		assertTrue(evaluator.isReconstructionFaithful(), context + " " + label + " "
+				+ evaluator.getFidelityReport());
+		assertEquals(labelState(live), labelState(copy), context + " " + label);
+	}
+
+	/** Every parameter of certified existence has a published point. */
+	private void assertAvailable(String context, String label) {
+		LocusExistenceStructure2D structure = structure(label);
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+			for (int index = 0; index < 64; index++) {
+				double parameter = -Math.PI + 2 * Math.PI * (index + 0.5) / 64;
+				if (structure.getCoverageAt(parameter).getState()
+						== CoverageState.CERTIFIED_EXISTS) {
+					LocusEvaluation2D evaluation = locus(label).getSemanticDefinition()
+							.evaluate(BRANCH, parameter, session);
+					assertTrue(evaluation.isValid(), context + " " + label + " t=" + parameter
+							+ " " + evaluation);
+				}
+			}
+		}
+	}
+
+	/** @return label of each output in output order, {@code -} for an unlabelled one */
+	private static String labelState(AlgoElement intersection) {
+		StringBuilder state = new StringBuilder();
+		for (GeoElement output : intersection.getOutput()) {
+			state.append(output.isLabelSet() ? output.getLabelSimple() : "-").append(';');
+		}
+		return state.toString();
+	}
+
+	/** @return the finite value of a length */
+	private double length(String label) {
+		return ((GeoLocusMetricResult) lookup(label)).getMetricResult().getMetricValue()
+				.getFiniteValue().orElse(Double.NaN);
 	}
 
 	/**
