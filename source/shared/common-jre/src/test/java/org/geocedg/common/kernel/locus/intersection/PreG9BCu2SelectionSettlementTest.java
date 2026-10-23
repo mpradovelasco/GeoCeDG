@@ -38,10 +38,12 @@ import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
+import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D.SettlementOutcome;
 import org.geocedg.common.kernel.locus.ReconstructionFidelity2D;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -478,6 +480,85 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 		assertEquals("[0, 1]/f/p", state(liveIntersection("Q")));
 		assertTrue(evaluator("lq").isReconstructionFaithful());
 		assertEquals(components, components("lq"));
+	}
+
+	/**
+	 * V-REV-EXACT-7 (transitions of the inherited selection state): the unlabelled output R2
+	 * created with the driver at the double root keeps the intersection it reads in its first
+	 * initialization, and recomputing the construction there publishes nothing. The live
+	 * movements that separate the roots take that state out of its first initialization and
+	 * then settle its pending permutation: each real transition of the inherited state, and
+	 * only it, publishes a revision of {@code lr2} with the typed cause {@code SELECTION} and
+	 * no {@code VALUES}, {@code STRUCTURE} or {@code LABELS} change, and the copy stays
+	 * faithful (it reproduces the live state or is settled to the roots that state
+	 * designates). Once the state is settled, recomputing and moving the driver publish no
+	 * revision. (The labelled pair created there also labels its second output when it leaves
+	 * the double root; that change of the output labels is typed {@code STRUCTURE}, the pending
+	 * author decision on V-REV-EXACT-7.)
+	 */
+	@Test
+	void aRealSelectionTransitionPublishesARevisionWithItsTypedCause() throws Exception {
+		add("p=Circle((0,0),25)");
+		add("P=(-25,50)");
+		add("g1=Circle((35,-45),40)");
+		add("N=Point(g1)");
+		moveDriver(driver(), CRITICAL);
+		add("t2=Ray(P,N)");
+		add("R2=Intersect(p,t2,2)");
+		add("lr2=LocusV2(R2,N)");
+		AlgoIntersectLineConic intersection = (AlgoIntersectLineConic) ((AlgoIntersectSingle)
+				lookup("R2").getParentAlgorithm()).getSourceIntersection();
+		LocusInstrumentation2D work = locus("lr2").getInstrumentation();
+		long revision = locus("lr2").getSemanticRevision();
+		Map<ReconstructionSliceFingerprint2D.Change, Long> before = changes(work);
+		getKernel().updateConstruction(false);
+		assertTrue(intersection.isSelectionFirstIntersectionPending());
+		assertEquals(revision, locus("lr2").getSemanticRevision());
+		assertEquals(before, changes(work));
+
+		int transitions = 0;
+		for (int step = 1; step <= 4; step++) {
+			String previous = state(intersection);
+			Map<ReconstructionSliceFingerprint2D.Change, Long> counted = changes(work);
+			long published = locus("lr2").getSemanticRevision();
+			moveDriver(driver(), CRITICAL + 0.1 * step);
+			boolean transition = !previous.equals(state(intersection));
+			String context = previous + " -> " + state(intersection);
+			assertEquals(published + (transition ? 1 : 0), locus("lr2").getSemanticRevision(),
+					context);
+			for (ReconstructionSliceFingerprint2D.Change change
+					: ReconstructionSliceFingerprint2D.Change.values()) {
+				long expected = counted.get(change) + (transition
+						&& change == ReconstructionSliceFingerprint2D.Change.SELECTION ? 1 : 0);
+				if (change != ReconstructionSliceFingerprint2D.Change.NONE) {
+					assertEquals(expected, (long) changes(work).get(change),
+							context + " " + change);
+				}
+			}
+			assertTrue(evaluator("lr2").isReconstructionFaithful(),
+					evaluator("lr2").getFidelityReport().toString());
+			transitions += transition ? 1 : 0;
+		}
+		assertFalse(intersection.isSelectionFirstIntersectionPending());
+		assertEquals("[0, 1]/f/p", state(intersection));
+		assertTrue(transitions >= 1);
+		long settled = locus("lr2").getSemanticRevision();
+		Map<ReconstructionSliceFingerprint2D.Change, Long> after = changes(work);
+		getKernel().updateConstruction(false);
+		moveDriver(driver(), CRITICAL + 0.5);
+		assertEquals(settled, locus("lr2").getSemanticRevision());
+		assertEquals(after, changes(work));
+	}
+
+	private static Map<ReconstructionSliceFingerprint2D.Change, Long> changes(
+			LocusInstrumentation2D work) {
+		Map<ReconstructionSliceFingerprint2D.Change, Long> changes = new java.util.EnumMap<>(
+				ReconstructionSliceFingerprint2D.Change.class);
+		for (ReconstructionSliceFingerprint2D.Change change
+				: ReconstructionSliceFingerprint2D.Change.values()) {
+			changes.put(change, work.getSliceChanges(change));
+		}
+		return changes;
 	}
 
 	/**

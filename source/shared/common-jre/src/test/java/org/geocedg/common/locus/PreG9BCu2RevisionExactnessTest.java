@@ -29,8 +29,10 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionFidelity2D;
@@ -231,6 +233,272 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 					evaluator(scalar).getFidelityReport().toString());
 		}
 		assertEquals(extremes.length, fingerprints.size());
+	}
+
+	/**
+	 * V-REV-EXACT-10 (negative extremes and a nested chain): -1e-300, its neighbour,
+	 * -MIN_VALUE and -0.0 never share a fingerprint with each other or with the positive
+	 * extremes and are reconstructed faithfully. One ulp of the radius under the origin-wrap
+	 * chain (the locus o, the length w from a semantic point of o, and the locus e that
+	 * depends on that length) reaches every element: o and e publish new revisions with new
+	 * fingerprints and certificates computed anew (equal in content where the structure does
+	 * not depend on the radius), w is recomputed on the new revision of o, and e evaluates,
+	 * bit for bit, as the live construction at the same canonical parameter at every certified
+	 * sample; no state of the previous value survives.
+	 */
+	@Test
+	void negativeExtremesAndANestedChainLeaveNoStaleState() throws Exception {
+		add("t=0");
+		add("k=1");
+		add("V=(t,k t)");
+		add("dom={false,{-2,2,true,true}}");
+		GeoLocusV2 scalar = add("L=LocusV2(V,t,dom)");
+		GeoNumeric factor = (GeoNumeric) lookup("k");
+		Map<String, String> fingerprints = new LinkedHashMap<>();
+		double[] extremes = {-1e-300, Math.nextDown(-1e-300), -Double.MIN_VALUE, -0.0, 0.0,
+				1e-300, Double.MIN_VALUE};
+		for (double value : extremes) {
+			factor.setValue(value);
+			factor.updateCascade();
+			assertEquals(Double.doubleToRawLongBits(value),
+					Double.doubleToRawLongBits(factor.getValue()), Double.toString(value));
+			GeoElement driver = lookup("t");
+			String fingerprint = ReconstructionSliceFingerprint2D.compute(
+					((AlgoDependentPointLocusV2) scalar.getParentAlgorithm())
+							.getReconstructionSliceGeos(), List.of(driver, driver));
+			String previous = fingerprints.put(fingerprint, Double.toString(value));
+			assertEquals(null, previous, value + " shares the fingerprint of " + previous);
+			assertTrue(evaluator(scalar).isReconstructionFaithful(),
+					evaluator(scalar).getFidelityReport().toString());
+		}
+
+		add("rc=2");
+		add("c=Circle((0,0),rc)");
+		add("N=Point(c)");
+		add("K=N+(1,0)");
+		GeoLocusV2 origin = add("o=LocusV2(K,N)");
+		add("v=0");
+		add("A=Point(o,\"generator.main\",v)");
+		GeoLocusMetricResult length = add("w=LocusLength(o,A,K)");
+		add("d=Length(o,A,K)");
+		add("R=N-d*(1,0)");
+		GeoLocusV2 nested = add("e=LocusV2(R,N)");
+		Map<String, Object> before = chain(origin, nested, length);
+		setNumber(getApp(), "rc", Math.nextUp(2.0));
+		Map<String, Object> after = chain(origin, nested, length);
+		for (String part : List.of("o.revision", "e.revision")) {
+			assertTrue((Long) after.get(part) > (Long) before.get(part), part);
+		}
+		for (String part : List.of("o.fingerprint", "e.fingerprint", "w.revision")) {
+			assertNotEquals(before.get(part), after.get(part), part);
+		}
+		for (String part : List.of("o.computations", "e.computations")) {
+			assertTrue((Long) after.get(part) > (Long) before.get(part), part);
+		}
+		assertEquals(after.get("o.revision"), length.getSourceSemanticRevision());
+		assertTrue(evaluator(nested).isReconstructionFaithful());
+		// e evaluates as the live construction wherever its certificate states existence.
+		LocusDefinition2D definition = nested.getSemanticDefinition();
+		String branch = definition.getBranches().get(0).getBranchKey();
+		LocusExistenceStructure2D structure = definition.getBranch(branch)
+				.getExistenceStructure();
+		GeoPoint driver = (GeoPoint) lookup("N");
+		GeoPoint live = (GeoPoint) lookup("R");
+		int compared = 0;
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+			for (int sample = 0; sample < 32; sample++) {
+				double parameter = -Math.PI + 2 * Math.PI * (sample + 0.37) / 32;
+				LocusExistenceStructure2D.Coverage coverage = structure.getCoverageAt(parameter);
+				if (coverage == null || coverage.getState()
+						!= LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS) {
+					continue;
+				}
+				LocusEvaluation2D evaluation = definition.evaluate(branch, parameter, session);
+				moveDriver(driver, definition.getProvider().canonicalize(parameter));
+				String where = "t=" + Double.toHexString(parameter);
+				assertTrue(evaluation.isValid() && live.isDefined(), where);
+				assertEquals(Double.doubleToRawLongBits(live.getInhomX()),
+						Double.doubleToRawLongBits(evaluation.getPoint().getX()), where);
+				assertEquals(Double.doubleToRawLongBits(live.getInhomY()),
+						Double.doubleToRawLongBits(evaluation.getPoint().getY()), where);
+				compared++;
+			}
+		}
+		assertTrue(compared >= 16, "certified samples: " + compared);
+	}
+
+	/**
+	 * @return revisions, fingerprints, certificates and certificate computations of the two
+	 *         loci of the origin-wrap chain, and the value of its length
+	 */
+	private Map<String, Object> chain(GeoLocusV2 origin, GeoLocusV2 nested,
+			GeoLocusMetricResult length) {
+		Map<String, Object> state = new LinkedHashMap<>();
+		for (GeoLocusV2 locus : List.of(origin, nested)) {
+			String name = locus.getLabelSimple();
+			AlgoDependentPointLocusV2 parent = (AlgoDependentPointLocusV2) locus
+					.getParentAlgorithm();
+			GeoElement driver = lookup("N");
+			state.put(name + ".revision", locus.getSemanticRevision());
+			state.put(name + ".fingerprint", ReconstructionSliceFingerprint2D.compute(
+					parent.getReconstructionSliceGeos(), List.of(driver, driver)));
+			HybridExistenceCertifier2D.Result result = parent.getHybridExistenceCertificate();
+			StringBuilder certificate = new StringBuilder(
+					result.getStructure().getSemanticSignature());
+			for (HybridExistenceCertifier2D.CertifiedRoot root : result.getRoots()) {
+				certificate.append("|root=").append(root.getSignature());
+			}
+			state.put(name + ".certificate", certificate.toString());
+			state.put(name + ".computations", locus.getInstrumentation().getCertificationWork(
+					LocusCertificationWork2D.CERTIFICATE_COMPUTATION));
+		}
+		state.put("w.revision", length.getSourceSemanticRevision());
+		state.put("d.value", Double.doubleToRawLongBits(((GeoNumeric) lookup("d")).getValue()));
+		return state;
+	}
+
+	private static void moveDriver(GeoPoint driver, double parameter) {
+		driver.getPathParameter().setT(parameter);
+		driver.getPath().pathChanged(driver);
+		driver.updateCoords();
+		driver.updateCascade();
+	}
+
+	/**
+	 * V-REV-EXACT-3 (synthetic part): one ulp of the free radius of the critical configuration
+	 * publishes a revision of the unlabelled output {@code lr2 = LocusV2(R2, N)} whose slice
+	 * copy holds the exact radius, bit for bit, and is faithful; wherever its certificate
+	 * states existence, at 64 driver positions and around the double root, swept in order as
+	 * a drag would, the published evaluation of lr2 is the live R2 with the driver at the same
+	 * canonical parameter, bit for bit. (The provider canonicalizes a parameter of the
+	 * periodic domain as {@code -pi + (t + pi)}, which moves it by a few ulps; the evaluation
+	 * is that of the canonical parameter.)
+	 */
+	@Test
+	void oneUlpOfTheRadiusReachesTheUnlabelledOutputExactly() throws Exception {
+		AppCommon app = critical(40);
+		Kernel kernel = app.getKernel();
+		GeoLocusV2 locus = assertInstanceOf(GeoLocusV2.class, kernel.lookupLabel("lr2"));
+		long revision = locus.getSemanticRevision();
+		double radius = Math.nextUp(40.0);
+		setNumber(app, "rr", radius);
+		assertTrue(locus.getSemanticRevision() > revision);
+		ReconstructibleLocusEvaluator2D evaluator = evaluator(locus);
+		assertTrue(evaluator.isReconstructionFaithful(), evaluator.getFidelityReport().toString());
+		Field field = ReconstructibleLocusEvaluator2D.class.getDeclaredField(
+				"isolatedConstruction");
+		field.setAccessible(true);
+		Construction copy = (Construction) field.get(evaluator);
+		assertEquals(Double.doubleToRawLongBits(radius), Double.doubleToRawLongBits(
+				((GeoNumeric) copy.lookupLabel("rr")).getValue()));
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		String branch = definition.getBranches().get(0).getBranchKey();
+		LocusExistenceStructure2D structure = definition.getBranch(branch)
+				.getExistenceStructure();
+		TreeSet<Double> parameters = new TreeSet<>();
+		double critical = Math.atan2(4, 3);
+		for (int sample = 0; sample < 64; sample++) {
+			parameters.add(-Math.PI + 2 * Math.PI * sample / 64 + 0.003);
+			parameters.add(critical + (sample - 32) * 1e-3);
+		}
+		GeoPoint driver = (GeoPoint) kernel.lookupLabel("N");
+		GeoPoint live = (GeoPoint) kernel.lookupLabel("R2");
+		int compared = 0;
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(256)) {
+			for (double parameter : parameters) {
+				LocusExistenceStructure2D.Coverage coverage = structure.getCoverageAt(parameter);
+				if (coverage == null || coverage.getState()
+						!= LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS) {
+					continue;
+				}
+				LocusEvaluation2D evaluation = definition.evaluate(branch, parameter, session);
+				moveDriver(driver, definition.getProvider().canonicalize(parameter));
+				String where = "t=" + Double.toHexString(parameter);
+				assertTrue(evaluation.isValid() && live.isDefined(), where);
+				assertEquals(Double.doubleToRawLongBits(live.getInhomX()),
+						Double.doubleToRawLongBits(evaluation.getPoint().getX()), where);
+				assertEquals(Double.doubleToRawLongBits(live.getInhomY()),
+						Double.doubleToRawLongBits(evaluation.getPoint().getY()), where);
+				compared++;
+			}
+		}
+		assertTrue(compared >= 64, "certified samples: " + compared);
+	}
+
+	/**
+	 * V-REV-EXACT-9, the characterized loss: before reopening, the copy of an angle literal
+	 * without original text is not faithful, so the locus has no certified existence
+	 * ({@code NOT_ESTABLISHED} with {@code RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED}); after
+	 * reopening, the angle is the value written in degrees and the certificate is that of a
+	 * new document built by commands with that text, never the previous state. Undoing and
+	 * redoing a programmatic change of the reloaded angle, a free element once reloaded,
+	 * restore the states of the undo history: after undoing, everything is that of the
+	 * reopened document; after redoing, everything, certificate included, is that of a new
+	 * document loaded from the persisted changed state, and its slice is its own.
+	 */
+	@Test
+	void aLostAngleLiteralIsNeverAssociatedWithThePreviousCertificate() throws Exception {
+		AppCommon written = angle(0.4097);
+		String lost = artifacts(written, "la", "P");
+		assertTrue(lost.contains("faithful=false"), lost);
+		assertTrue(lost.contains("NOT_ESTABLISHED") && lost.contains(
+				"RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED"), lost);
+		AppCommon reopened = AppCommonFactory.create(new AppConfigGeoCeDG(true));
+		reopened.setXML(written.getXML(), true);
+		double reloaded = ((GeoNumeric) reopened.getKernel().lookupLabel("ang")).getValue();
+		assertNotEquals(Double.doubleToRawLongBits(0.4097), Double.doubleToRawLongBits(reloaded));
+		String restored = artifacts(reopened, "la", "P");
+		assertTrue(restored.contains("faithful=true"), restored);
+		assertEquals(certificatePart(artifacts(persistedAngle(written.getXML()), "la", "P")),
+				certificatePart(restored));
+		assertNotEquals(certificatePart(lost), certificatePart(restored));
+
+		// The reloaded angle is a free element: a change by program, undone and redone.
+		reopened.setUndoRedoMode(org.geogebra.common.main.UndoRedoMode.GUI);
+		reopened.setUndoActive(true);
+		reopened.storeUndoInfo();
+		setNumber(reopened, "ang", 0.4098);
+		reopened.storeUndoInfo();
+		String persisted = reopened.getXML();
+		reopened.getKernel().undo();
+		assertEquals(Double.doubleToRawLongBits(reloaded), Double.doubleToRawLongBits(
+				((GeoNumeric) reopened.getKernel().lookupLabel("ang")).getValue()));
+		assertEquals(restored, artifacts(reopened, "la", "P"));
+		reopened.getKernel().redo();
+		String again = artifacts(reopened, "la", "P");
+		assertTrue(again.contains("faithful=true"), again);
+		AppCommon loaded = AppCommonFactory.create(new AppConfigGeoCeDG(true));
+		loaded.setXML(persisted, true);
+		assertEquals(artifacts(loaded, "la", "P"), again);
+		assertNotEquals(restored.substring(0, restored.indexOf('\n')),
+				again.substring(0, again.indexOf('\n')), "the redone state has its own slice");
+	}
+
+	/** @return the certificate lines of the artifacts of {@link #artifacts} */
+	private static String certificatePart(String artifacts) {
+		return artifacts.substring(artifacts.indexOf("\ncertificate="));
+	}
+
+	/**
+	 * @return a new document built by commands with the angle that the persisted document
+	 *         writes for {@code ang}
+	 */
+	private static AppCommon persistedAngle(String xml) {
+		Matcher matcher = Pattern.compile("<expression label=\"ang\" exp=\"([^\"]*)\"")
+				.matcher(xml);
+		assertTrue(matcher.find(), xml);
+		Matcher entities = Pattern.compile("&#(x?)([0-9a-fA-F]+);").matcher(matcher.group(1));
+		StringBuilder expression = new StringBuilder();
+		while (entities.find()) {
+			int code = Integer.parseInt(entities.group(2), entities.group(1).isEmpty() ? 10 : 16);
+			entities.appendReplacement(expression, Matcher.quoteReplacement(
+					new String(Character.toChars(code))));
+		}
+		entities.appendTail(expression);
+		String text = expression.toString().replace("&quot;", "\"").replace("&lt;", "<")
+				.replace("&gt;", ">").replace("&apos;", "'").replace("&amp;", "&");
+		return document(List.of("c=Circle((0,0),3.6569437271164964)", "P=Point(c)",
+				"ang=" + text, "Q=Rotate(P,ang,(1,1))", "la=LocusV2(Q,P)"));
 	}
 
 	/**
