@@ -46,6 +46,7 @@ import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBoundaryImage2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
@@ -222,6 +223,44 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 			// V-B06-1: the closed stroke is measured cyclically at its closing vertex too.
 			assertEquals(1, assertTurnsBounded(drawing, 10, label), label);
 		}
+	}
+
+	/**
+	 * V-FOLD-4 (drawing; residue of the corrective mandate of 2026-10-23): the symmetric locus
+	 * with {@code F''(t0) = 0} at {@code t = 0} is drawn. Its non-degenerate fold at the seam
+	 * gives the only turn exemptions, every one in its band; the degenerate stationary point is
+	 * never exempted: the drawing refines its turn to the resolution of the parameter and
+	 * declares it once, with {@code UNCERTIFIED_TURN} at {@code 0}, the only cause of the
+	 * partial fidelity of the stroke.
+	 */
+	@Test
+	void aDegenerateStationaryPointIsRefinedAndDeclaredNeverExempted() {
+		add("c=Circle((0,0),1)");
+		add("N=Point(c)");
+		add("v=Line(N,Line((0,0),(0,1)))");
+		add("P1=Intersect(v,Line((0,0),(1,0)))");
+		add("P2=Rotate(P1,pi/2,(0,0))");
+		add("h2=PerpendicularLine(P2,Line((0,0),(0,1)))");
+		add("P3=Intersect(h2,Line((1,0),(1,1)))");
+		add("Q=Intersect(Line((0,0),P3),v)");
+		add("X=Intersect(Line(Q,Line((0,0),(1,2))),Line((0,0),(1,0)))");
+		add("lx=LocusV2(X,N)");
+		List<LocusCertifiedFold2D> folds = certificate("lx").getStructure().getCertifiedFolds();
+		assertEquals(1, folds.size(), folds.toString());
+		LocusRenderData2D drawing = render(locus("lx"), policy(10));
+		List<Integer> exempt = exemptions(drawing);
+		assertFalse(exempt.isEmpty());
+		for (int index : exempt) {
+			Vertex vertex = drawing.getVertices().get(index);
+			assertEquals(TurnExemption.FOLD_BAND, vertex.getTurnExemption());
+			assertTrue(folds.get(0).containsCanonical(vertex.getSemanticParameter(),
+					2 * Math.PI), vertex.toString());
+		}
+		List<Mark> unresolved = marks(drawing, MarkKind.UNCERTIFIED_TURN);
+		assertEquals(1, unresolved.size(), drawing.getMarks().toString());
+		assertEquals(0, unresolved.get(0).getParameter(), 1e-4, unresolved.toString());
+		assertEquals(List.of(MarkKind.UNCERTIFIED_TURN), drawing.getComponentFidelities()
+				.get(0).getCauses());
 	}
 
 	/**

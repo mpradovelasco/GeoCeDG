@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
 import org.geocedg.common.euclidian.draw.LocusRenderData2D;
@@ -109,6 +111,57 @@ class PreG9BCu2AuthorModelExportTest {
 	}
 
 	/**
+	 * V-DXF-3 on the author model (residue of the corrective mandate of 2026-10-23): the
+	 * closure residual of each of the six closed loci at the author's parameters is measured
+	 * against its closure certificate, between the start and the curve just before the
+	 * closing point (four ulps and twice the domain tolerance of the provider before it),
+	 * exactly the distance computed from the published definition; the trivial identity of the
+	 * start with the canonicalized end, which is 0, is never what is measured.
+	 */
+	@Test
+	void theClosureResidualOfEachClosedLocusIsMeasuredAgainstItsCertificate()
+			throws Exception {
+		Map<String, String> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			GeometryExportService service = new GeometryExportService();
+			GeoCeDGDxfExportController controller = new GeoCeDGDxfExportController(app);
+			Map<String, String> values = new LinkedHashMap<>();
+			for (String label : CLOSED) {
+				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+				List<SourceExportOutcome> outcomes = service.preflight(List.of(locus),
+						SelectionMode.CURRENT_SELECTION,
+						GeometryExportRequest.builder(0.001).build(), controller::exportContext)
+						.getModel().getOutcomes();
+				Double residual = outcomes.get(0).getApproximationEvidence()
+						.getClosureResidual();
+				LocusDefinition2D definition = locus.getSemanticDefinition();
+				double probe = Math.PI - Math.max(4 * Math.ulp(Math.PI),
+						2 * definition.getProvider().getDomainEpsilon());
+				LocusPoint2D start = point(definition, -Math.PI);
+				double expected = distance(start, point(definition, probe));
+				values.put(label, outcomes.size() + "/" + (residual != null
+						&& residual == expected) + "/" + (expected < 1e-9) + "/"
+						+ distance(start, point(definition, Math.PI)));
+			}
+			return values;
+		});
+		for (String label : CLOSED) {
+			assertEquals("1/true/true/0.0", row.get(label), label + " " + row);
+		}
+	}
+
+	private static LocusPoint2D point(LocusDefinition2D definition, double parameter) {
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
+			return definition.evaluate(PreG9BCu0Corpus.MAIN, parameter, session).getPoint();
+		}
+	}
+
+	private static double distance(LocusPoint2D first, LocusPoint2D second) {
+		return Math.hypot(first.getX() - second.getX(), first.getY() - second.getY());
+	}
+
+	/**
 	 * V-E2-9 and V-AVAIL-3 on the author model. The one-sided limit at the excluded end of
 	 * {@code e_2} is the value of {@code w_1} under the opposite same-position policy, the
 	 * estimated total length of {@code o_1}. A work budget cannot make that limit fail alone:
@@ -120,7 +173,10 @@ class PreG9BCu2AuthorModelExportTest {
 	 * are built, so that the limit is not available while the interior still evaluates: the
 	 * drawing and the DXF and LaTeX exports end at the last evaluated vertex and declare the
 	 * end ({@code END_NOT_EVALUATED}); nothing is extrapolated to the limit, the existence
-	 * structure is unchanged, and restoring the lookup restores the limit.
+	 * structure is unchanged, and restoring the lookup restores the limit. The coordinates
+	 * written by PGF end at the last exported vertex, apart from the limit, and PSTricks and
+	 * Asymptote declare the end as well (residues of V-E2-9 and V-AVAIL-3, corrective
+	 * mandate of 2026-10-23).
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -174,9 +230,15 @@ class PreG9BCu2AuthorModelExportTest {
 				values.put("dxf.extrapolated", exported.getX() == limit.getX()
 						&& exported.getY() == limit.getY());
 				showOnly(app, "e_2");
-				values.put("latex.declared", PreG9BR6PlusCLatexExportTest.generate(
-						PreG9BR6PlusCLatexExportTest.exporter(app, "pgf"), view)
-						.contains("END_NOT_EVALUATED"));
+				String pgf = PreG9BR6PlusCLatexExportTest.generate(
+						PreG9BR6PlusCLatexExportTest.exporter(app, "pgf"), view);
+				values.put("latex.declared", pgf.contains("END_NOT_EVALUATED"));
+				values.put("latex.end", latexEnd(pgf, exported, limit));
+				for (String dialect : List.of("pstricks", "asymptote")) {
+					values.put(dialect + ".declared", PreG9BR6PlusCLatexExportTest.generate(
+							PreG9BR6PlusCLatexExportTest.exporter(app, dialect), view)
+							.contains("END_NOT_EVALUATED"));
+				}
 				values.put("existence", structure.equals(definition.getBranch(
 						PreG9BCu0Corpus.MAIN).getExistenceStructure().getSemanticSignature()));
 			} finally {
@@ -194,8 +256,51 @@ class PreG9BCu2AuthorModelExportTest {
 		assertEquals(true, row.get("dxf.sidecar"), row.toString());
 		assertEquals(false, row.get("dxf.extrapolated"), row.toString());
 		assertEquals(true, row.get("latex.declared"), row.toString());
+		// Residue of V-E2-9 (corrective mandate of 2026-10-23): the coordinates of LaTeX
+		// itself end at the last exported vertex, apart from the limit.
+		assertEquals("at-last-vertex/not-limit", row.get("latex.end"), row.toString());
+		// Residue of V-AVAIL-3: PSTricks and Asymptote declare the end as PGF does.
+		assertEquals(true, row.get("pstricks.declared"), row.toString());
+		assertEquals(true, row.get("asymptote.declared"), row.toString());
 		assertEquals(true, row.get("existence"), row.toString());
 		assertEquals(true, row.get("restored"), row.toString());
+	}
+
+	/**
+	 * @return where the last vertex written by the last path of the PGF code lies, within half
+	 *         a unit of its last printed digit: at the last exported vertex or not, and at the
+	 *         limit, apart from it, or too close to the exported vertex to tell
+	 */
+	private static String latexEnd(String pgf, Point2D exported, LocusPoint2D limit) {
+		String path = pgf.substring(pgf.lastIndexOf("\\draw"));
+		path = path.substring(0, path.indexOf(';'));
+		Matcher matcher = Pattern.compile("\\((-?[0-9.]+),(-?[0-9.]+)\\)").matcher(path);
+		String x = null;
+		String y = null;
+		while (matcher.find()) {
+			x = matcher.group(1);
+			y = matcher.group(2);
+		}
+		if (x == null) {
+			return "no-vertex";
+		}
+		double tolerance = Math.max(printedUnit(x), printedUnit(y)) / 2 * (1 + 1e-9);
+		double printedX = Double.parseDouble(x);
+		double printedY = Double.parseDouble(y);
+		boolean atVertex = Math.abs(printedX - exported.getX()) <= tolerance
+				&& Math.abs(printedY - exported.getY()) <= tolerance;
+		boolean apart = Math.max(Math.abs(limit.getX() - exported.getX()),
+				Math.abs(limit.getY() - exported.getY())) > 2 * tolerance;
+		boolean atLimit = Math.abs(printedX - limit.getX()) <= tolerance
+				&& Math.abs(printedY - limit.getY()) <= tolerance;
+		return (atVertex ? "at-last-vertex" : "elsewhere:" + x + "," + y) + "/"
+				+ (!apart ? "indistinguishable" : atLimit ? "limit" : "not-limit");
+	}
+
+	/** @return value of one unit in the last printed digit of the number */
+	private static double printedUnit(String number) {
+		int dot = number.indexOf('.');
+		return dot < 0 ? 1 : Math.pow(10, -(number.length() - dot - 1));
 	}
 
 	private static boolean interiorValid(LocusDefinition2D definition) {

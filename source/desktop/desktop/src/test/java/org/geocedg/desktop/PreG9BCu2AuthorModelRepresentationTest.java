@@ -51,6 +51,7 @@ import org.geocedg.common.kernel.locus.metric.MetricWorkBudget2D;
 import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -174,6 +175,81 @@ class PreG9BCu2AuthorModelRepresentationTest {
 			assertEquals("COMPLETE/0/1/true/0", row.get("bite." + label), label + " " + row);
 		}
 		assertEquals("0/true/true", row.get("e_1.exempt"), row.toString());
+	}
+
+	/**
+	 * V-FOLD-2 (drawing; residue of the corrective mandate of 2026-10-23): with the centre
+	 * {@code I} of {@code d_1} redefined {@code 2^-40} off the mirror {@code i}, {@code e_1}
+	 * stays one closed component without any certified fold, and its drawing exempts no turn:
+	 * each of its two turns back, at {@code 0} and at the seam, is refined to the resolution of
+	 * the parameter and declared with {@code UNCERTIFIED_TURN} (once at {@code 0}; near the
+	 * seam on both of its sides, observation O-CU2A-8), the only cause of the partial fidelity
+	 * of the stroke, and no other turn is declared. The author's {@code e_1} declares no turn
+	 * and exempts only the bands of its two folds.
+	 */
+	@Test
+	void theDisplacedE1DeclaresItsTurnsAndExemptsNone() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			Map<String, Object> values = new LinkedHashMap<>();
+			values.put("author", turns(new LocusRenderCache2D().getOrBuild(
+					PreG9BCu0Corpus.locus(app, "e_1"), PreG9BCu0Corpus.authorPolicy())));
+			GeoPoint centre = (GeoPoint) app.getKernel().lookupLabel("I");
+			double[] coordinates = new double[2];
+			centre.getInhomCoords(coordinates);
+			app.getKernel().getAlgebraProcessor().processAlgebraCommand("I=(" + coordinates[0]
+					+ "," + (coordinates[1] + Math.scalb(1.0, -40)) + ")", false);
+			GeoLocusV2 e1 = PreG9BCu0Corpus.locus(app, "e_1");
+			LocusExistenceStructure2D structure = certificate(e1).getStructure();
+			values.put("certificate", structure.getCompleteness() + "/"
+					+ structure.isClosedPeriodic() + "/" + structure.getCertifiedFolds().size());
+			values.put("displaced", turns(new LocusRenderCache2D().getOrBuild(e1,
+					PreG9BCu0Corpus.authorPolicy())));
+			return values;
+		});
+		assertEquals("COMPLETE fold-bands-only zero=0 seam=false elsewhere=[]",
+				row.get("author"), row.toString());
+		assertEquals("COMPLETE/true/0", row.get("certificate"), row.toString());
+		assertEquals("PARTIAL no-exemption zero=1 seam=true elsewhere=[] "
+				+ "causes=[UNCERTIFIED_TURN]", row.get("displaced"), row.toString());
+	}
+
+	/**
+	 * @return fidelity, exemptions and the parameters of the declared turns of a drawing of
+	 *         {@code e_1}: {@code 0}, {@code seam} or the parameter itself
+	 */
+	private static String turns(LocusRenderData2D drawing) {
+		boolean exempt = false;
+		boolean outsideFolds = false;
+		for (Vertex vertex : drawing.getVertices()) {
+			if (vertex.getTurnExemption() != TurnExemption.NONE) {
+				exempt = true;
+				outsideFolds |= vertex.getTurnExemption() != TurnExemption.FOLD_BAND;
+			}
+		}
+		int atZero = 0;
+		int atSeam = 0;
+		List<String> elsewhere = new ArrayList<>();
+		for (Mark mark : drawing.getMarks()) {
+			if (mark.getKind() == MarkKind.UNCERTIFIED_TURN) {
+				double parameter = mark.getParameter();
+				if (Math.abs(parameter) < 1e-3) {
+					atZero++;
+				} else if (Math.abs(Math.abs(parameter) - Math.PI) < 1e-3) {
+					// Each vertex of the turn back near the seam may be declared on both of its
+					// sides (observation O-CU2A-8): what counts is that it is declared.
+					atSeam++;
+				} else {
+					elsewhere.add(parameter + ":" + mark.getDetail());
+				}
+			}
+		}
+		String causes = drawing.getFidelity() == Fidelity.COMPLETE ? ""
+				: " causes=" + drawing.getComponentFidelities().get(0).getCauses();
+		return drawing.getFidelity() + " " + (!exempt ? "no-exemption"
+				: outsideFolds ? "other-exemptions" : "fold-bands-only") + " zero=" + atZero
+				+ " seam=" + (atSeam > 0) + " elsewhere=" + elsewhere + causes;
 	}
 
 	/**

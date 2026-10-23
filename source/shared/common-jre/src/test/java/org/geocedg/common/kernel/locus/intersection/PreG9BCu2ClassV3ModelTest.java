@@ -334,7 +334,8 @@ class PreG9BCu2ClassV3ModelTest extends BaseUnitTest {
 
 	/**
 	 * V-V3-3: a reference-point intersection, an unsettled live selection and the continuous
-	 * mode, which the product policy keeps off, have no class-v3 program.
+	 * mode, which the product policy keeps off and a document cannot turn on, have no class-v3
+	 * program.
 	 */
 	@Test
 	void outOfClassShapesHaveNoProgram() throws Exception {
@@ -366,6 +367,16 @@ class PreG9BCu2ClassV3ModelTest extends BaseUnitTest {
 		assertEquals(Operation.LINE_CIRCLE, intersection.getOperation());
 		assertEquals(0, intersection.getParameter(0));
 		assertTrue(evaluator("lz").captureCertifiedProgramV3().isEmpty());
+		// Nor can a document load the continuous mode (residue of V-V3-3, corrective mandate
+		// of 2026-10-23): the case of the row cannot arise in the product.
+		String document = getApp().getXML();
+		String continuous = document.replace("<continuous val=\"false\"/>",
+				"<continuous val=\"true\"/>");
+		assertNotEquals(document, continuous);
+		getApp().setXML(continuous, true);
+		assertFalse(getKernel().isContinuous());
+		assertEquals(Operation.LINE_CIRCLE, evaluator("lq").captureCertifiedProgramV3()
+				.orElseThrow().getSteps().get(1).getOperation());
 	}
 
 	/**

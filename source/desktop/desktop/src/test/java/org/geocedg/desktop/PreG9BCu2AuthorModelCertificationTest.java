@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.file.Path;
@@ -37,6 +39,7 @@ import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
@@ -49,6 +52,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.CertifiedStationaryPoint;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.ExactEvidence;
@@ -106,7 +110,11 @@ class PreG9BCu2AuthorModelCertificationTest {
 	 * components, {@code e_1} folds at {@code 0} and at the seam, and {@code e_2} is one
 	 * full-length open arc at {@code t_N = 0}, certified without reading any length; the
 	 * origin wrap of {@code w_1} is at the exact address of {@code N_1}, with a certified
-	 * positive jump whose value is a reference to an estimated length.
+	 * positive jump whose value is a reference to an estimated length. For each closed locus
+	 * the seam cell, which holds no canonical parameter and contains {@code pi}, is valid,
+	 * with the selection of the boxes at both canonical sides of the seam and an enclosure of
+	 * the traced point that meets theirs (residue of V-PER-1, corrective mandate of
+	 * 2026-10-23).
 	 */
 	@Test
 	void theAuthorParametersAreCertifiedFromStructuralFactsOnly() throws Exception {
@@ -120,6 +128,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 				values.put(label + ".budgets", budgets(result));
 				values.put(label + ".stationary", stationary(result));
 				values.put(label + ".folds", folds(result));
+				values.put(label + ".seam", seamCell(PreG9BCu0Corpus.locus(app, label)));
 			}
 			GeoLocusV2 e2 = PreG9BCu0Corpus.locus(app, "e_2");
 			// Since step T11 the certificate is computed when the revision is published, while
@@ -167,6 +176,8 @@ class PreG9BCu2AuthorModelCertificationTest {
 		for (String label : CLOSED) {
 			assertEquals("COMPLETE/true/0/0", row.get(label), label + " " + row);
 			assertEquals("within", row.get(label + ".budgets"), label + " " + row);
+			assertEquals("VALID/VALID/VALID/same-selection/enclosures-meet",
+					row.get(label + ".seam"), label + " " + row);
 		}
 		assertEquals("FOLD:HORIZONTAL:-0x1.921fb54442d19p1,FOLD:HORIZONTAL:0x0.0p0",
 				row.get("e_1.stationary"), row.toString());
@@ -578,9 +589,17 @@ class PreG9BCu2AuthorModelCertificationTest {
 								+ shape(certificate(app, label)));
 					}
 				}
-				for (String label : List.of("o", "v", "w", "a_1", "e_1", "o_1")) {
-					if (!"within".equals(budgets(certificate(app, label)))) {
-						problems.add(label + "@" + rbCone + " " + budgets(certificate(app, label)));
+				// GC-4 for every locus of the model, e_2 included: within the box budget, and an
+				// exhausted budget only as a typed UNRESOLVED band of a certificate that is not
+				// COMPLETE.
+				for (String label : List.of("o", "v", "w", "a_1", "e_1", "o_1", "e_2")) {
+					Result result = certificate(app, label);
+					if (!"within".equals(budgets(result))) {
+						problems.add(label + "@" + rbCone + " " + budgets(result));
+					}
+					String exhaustion = exhaustion(result);
+					if (!exhaustion.isEmpty()) {
+						problems.add(label + "@" + rbCone + " " + exhaustion);
 					}
 				}
 				LocusExistenceStructure2D source = certificate(app, "o_1").getStructure();
@@ -850,9 +869,9 @@ class PreG9BCu2AuthorModelCertificationTest {
 	 * GC-2: a change of a non-driver input of the model (excCyl, rbCone, the parameter
 	 * {@code v_1} of {@code N_1} and the free point {@code P}) publishes at most one revision of
 	 * each locus and computes exactly one certificate of its own for each revision, and none
-	 * for a locus it does not affect. The rule for the nested certifications of the slice
-	 * copies is the pending author decision on GC-2; they are counted apart and not bounded
-	 * here.
+	 * for a locus it does not affect. Nested certifications follow the rule of author decision
+	 * C-4 of 2026-10-23: one computation for each nested copy that the revision reconstructs,
+	 * and none without a revision.
 	 */
 	@Test
 	void aNonDriverChangeComputesOneCertificatePerAffectedLocus() throws Exception {
@@ -873,6 +892,7 @@ class PreG9BCu2AuthorModelCertificationTest {
 				point.updateRepaint();
 			});
 			int affected = 0;
+			long reconstructed = 0;
 			for (Map.Entry<String, Runnable> change : changes.entrySet()) {
 				Map<String, Long> before = counters(app);
 				change.getValue().run();
@@ -887,10 +907,23 @@ class PreG9BCu2AuthorModelCertificationTest {
 						found.add(change.getKey() + " " + label + ": " + revisions
 								+ " revisions, " + own + " own certificate computations");
 					}
+					long nested = after.get(label + ".nestedCertificates")
+							- before.get(label + ".nestedCertificates");
+					long copies = after.get(label + ".nestedSliceBuilds")
+							- before.get(label + ".nestedSliceBuilds");
+					reconstructed += copies;
+					if (nested != copies || revisions == 0 && nested != 0) {
+						found.add(change.getKey() + " " + label + ": " + revisions
+								+ " revisions, " + nested + " nested certificate computations for "
+								+ copies + " reconstructed nested copies");
+					}
 				}
 			}
 			if (affected == 0) {
 				found.add("no change affected a locus");
+			}
+			if (reconstructed == 0) {
+				found.add("no change reconstructed a nested copy");
 			}
 			return found;
 		});
@@ -1060,6 +1093,54 @@ class PreG9BCu2AuthorModelCertificationTest {
 		return text.toString();
 	}
 
+	/**
+	 * Residue of V-PER-1 (corrective mandate of 2026-10-23): evaluates the program of the
+	 * locus, as the certifier does, on the seam cell from {@code Math.PI} to the next binary64,
+	 * which holds no canonical parameter and contains {@code pi}, and on the boxes that end at
+	 * both canonical sides of the seam. The evaluation is package-private, so it is reached by
+	 * reflection.
+	 *
+	 * @return the three outcomes, whether the selections are equal and whether the enclosure
+	 *         of the traced point on the seam cell meets both others
+	 */
+	private static String seamCell(GeoLocusV2 locus) throws ReflectiveOperationException {
+		ConstructionBoxModel2D model = ConstructionBoxModel2D.capture(
+				locus.getSemanticDefinition());
+		if (model == null) {
+			return "no-program";
+		}
+		Class<?> interval = Class.forName(
+				"org.geocedg.common.kernel.locus.intersection.SplineOutwardInterval2D");
+		Constructor<?> box = interval.getDeclaredConstructor(double.class, double.class);
+		box.setAccessible(true);
+		Method certifying = ConstructionBoxModel2D.class.getDeclaredMethod(
+				"evaluateCertifying", interval, boolean.class);
+		certifying.setAccessible(true);
+		List<ConstructionBoxOutcome2D> outcomes = new ArrayList<>();
+		for (double[] cell : new double[][] {{Math.PI, Math.nextUp(Math.PI)},
+				{Math.nextDown(Math.PI), Math.PI}, {-Math.PI, Math.nextUp(-Math.PI)}}) {
+			outcomes.add((ConstructionBoxOutcome2D) certifying.invoke(model,
+					box.newInstance(cell[0], cell[1]), true));
+		}
+		StringBuilder text = new StringBuilder();
+		for (ConstructionBoxOutcome2D outcome : outcomes) {
+			text.append(outcome.getKind()).append('/');
+		}
+		ConstructionBoxOutcome2D seam = outcomes.get(0);
+		boolean same = true;
+		boolean meet = true;
+		for (ConstructionBoxOutcome2D side : outcomes.subList(1, 3)) {
+			same &= seam.getSelection().equals(side.getSelection());
+			for (int axis = 0; axis < 2 && seam.getKind() == side.getKind()
+					&& seam.getKind() == ConstructionBoxOutcome2D.Kind.VALID; axis++) {
+				meet &= seam.getValueLower(axis) <= side.getValueUpper(axis)
+						&& side.getValueLower(axis) <= seam.getValueUpper(axis);
+			}
+		}
+		return text.append(same ? "same-selection" : "selection-differs").append('/')
+				.append(meet ? "enclosures-meet" : "enclosures-apart").toString();
+	}
+
 	/** @return the program with the centre of its circle through the driver moved in y */
 	private static CertifiedConstructionProgram2D movedCentre(
 			CertifiedConstructionProgram2D program, double shift) {
@@ -1211,6 +1292,26 @@ class PreG9BCu2AuthorModelCertificationTest {
 		LocusExistenceStructure2D structure = result.getStructure();
 		return structure.getCompleteness() + "/" + structure.isClosedPeriodic() + "/"
 				+ result.getCertifiedTransitions() + "/" + result.getUnresolvedBands();
+	}
+
+	/**
+	 * GC-4: a certificate that spent its whole box budget states the exhaustion as a typed
+	 * {@code UNRESOLVED} band with the cause {@code BUDGET_EXHAUSTED} and is not
+	 * {@code COMPLETE}.
+	 *
+	 * @return the problem, or an empty text
+	 */
+	private static String exhaustion(Result result) {
+		LocusExistenceStructure2D structure = result.getStructure();
+		boolean typed = structure.getCoverage().stream().anyMatch(item -> item.getState()
+				== CoverageState.UNRESOLVED
+				&& item.getCause() == LocusCoverageCause2D.BUDGET_EXHAUSTED);
+		if (result.getExistenceBoxes() < Policy.DEFAULT.getBoxBudget() && !typed) {
+			return "";
+		}
+		return typed && structure.getCompleteness() != LocusExistenceStructure2D.Completeness
+				.COMPLETE ? "" : "untyped exhaustion: " + result.getExistenceBoxes() + " boxes, "
+						+ structure.getCompleteness();
 	}
 
 	/** GC-4 and GC-8: boxes and exact certificates within their budgets. */

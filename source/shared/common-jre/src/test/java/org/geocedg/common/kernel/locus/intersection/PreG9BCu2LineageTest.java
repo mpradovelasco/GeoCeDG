@@ -456,6 +456,67 @@ class PreG9BCu2LineageTest extends BaseUnitTest {
 				== LineageTransition.DIMENSION_CHANGED), recorded.toString());
 	}
 
+	/**
+	 * Review finding H-CU2A-10 (2026-10-23): a closed component that one edit of the circle
+	 * turns into the point component of the external tangency is never split into the point.
+	 * While P lies inside the circle the segment from the driver to P crosses it once, so the
+	 * intersection stays in its first initialization and the selection rule is the same in
+	 * both states; with the centre at the origin the segment touches the circle only at the
+	 * tangency. The closed component disappears and the point appears, the reverse edit records
+	 * the reverse (section 15.4), and the selector of the closed component resolves into
+	 * nothing.
+	 */
+	@Test
+	void aClosedComponentIsNeverSplitIntoAPointComponent() {
+		add("M=(-25,40)");
+		add("p=Circle(M,25)");
+		add("P=(-25,50)");
+		add("g1=Circle((83,19),40)");
+		add("N=Point(g1)");
+		GeoPoint driver = (GeoPoint) lookup("N");
+		driver.getPathParameter().setT(0.5);
+		driver.getPath().pathChanged(driver);
+		driver.updateCoords();
+		driver.updateCascade();
+		add("s=Segment(N,P)");
+		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+				(GeoLine) lookup("s"), (GeoConic) lookup("p"));
+		add("lq=LocusV2(Q,N)");
+		getKernel().updateConstruction(false);
+		AlgoDependentPointLocusV2 lq = algorithm("lq");
+		org.geogebra.common.kernel.algos.AlgoIntersectLineConic intersection =
+				(org.geogebra.common.kernel.algos.AlgoIntersectLineConic) lookup("Q")
+						.getParentAlgorithm();
+		assertEquals(Completeness.COMPLETE, structure(lq).getCompleteness());
+		assertEquals(List.of(CLOSURE), keys(lq));
+
+		centre(0, 0);
+		LocusExistenceStructure2D tangency = structure(lq);
+		assertEquals(Completeness.COMPLETE, tangency.getCompleteness());
+		assertTrue(tangency.getContinuousValidComponents().isEmpty());
+		assertEquals(1, tangency.getPointComponents().size());
+		final List<String> point = keys(lq);
+		assertTrue(intersection.isSelectionFirstIntersectionPending());
+		assertEquals(List.of(new LocusLineage2D(LineageTransition.DISAPPEARED, List.of(CLOSURE),
+				List.of()), new LocusLineage2D(LineageTransition.APPEARED, List.of(), point)),
+				lq.getHybridLineage());
+		assertEquals(Status.NO_CORRESPONDENCE, LocusComponentSelectorResolver2D.resolve(CLOSURE,
+				tangency, lq.getHybridLineage(), Math.atan2(-4, -3)).getStatus());
+
+		centre(-25, 40);
+		assertEquals(List.of(CLOSURE), keys(lq));
+		assertTrue(intersection.isSelectionFirstIntersectionPending());
+		assertEquals(List.of(new LocusLineage2D(LineageTransition.DISAPPEARED, point, List.of()),
+				new LocusLineage2D(LineageTransition.APPEARED, List.of(), List.of(CLOSURE))),
+				lq.getHybridLineage());
+	}
+
+	private void centre(double x, double y) {
+		GeoPoint centre = (GeoPoint) lookup("M");
+		centre.setCoords(x, y, 1);
+		centre.updateCascade();
+	}
+
 	/** After an undo or a redo the reloaded certificate relates to nothing earlier. */
 	private void assertRestored(String signature, List<String> keys) {
 		AlgoDependentPointLocusV2 reloaded = algorithm("lq");

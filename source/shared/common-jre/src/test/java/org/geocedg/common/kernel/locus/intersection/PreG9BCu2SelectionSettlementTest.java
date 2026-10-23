@@ -27,6 +27,9 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
+import org.geocedg.common.euclidian.draw.LocusRenderData2D;
+import org.geocedg.common.euclidian.draw.LocusRenderPolicy2D;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -241,6 +244,124 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 						List.of(driver, driver)) + " " + ((GeoLocusV2) lookup("ls"))
 						.getSemanticDefinition().getBranches().get(0).getSemanticSignature()
 				+ " " + structure("ls").getSemanticSignature();
+	}
+
+	/**
+	 * V-SEL-6, order of the consumers (residue of the corrective mandate of 2026-10-23): with
+	 * the live permutation [1, 0] of V-SEL-7, a document whose locus is drawn first and then
+	 * measured, and one where it is measured first and then drawn, give the same live and copy
+	 * selection states, a faithful copy, the same certificate computed once for the revision,
+	 * the same total length and the same drawing, bit for bit.
+	 */
+	@Test
+	void drawingAndMeasuringInEitherOrderGiveTheSameResults() throws Exception {
+		List<String> runs = new ArrayList<>();
+		for (boolean drawFirst : new boolean[] {true, false}) {
+			getKernel().clearConstruction(true);
+			add("C=(0,0)");
+			add("k=Circle(C,5)");
+			add("g1=Circle((0,0),20)");
+			add("N=Point(g1)");
+			add("F=(0,6)");
+			add("m=Line(F,N)");
+			moveDriver(driver(), Math.PI / 2);
+			getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"S", "T"},
+					(GeoLine) lookup("m"), (GeoConic) lookup("k"));
+			moveDriver(driver(), -Math.PI / 2);
+			add("ls=LocusV2(S,N)");
+			String drawing;
+			String length;
+			if (drawFirst) {
+				drawing = drawing("ls");
+				length = totalLength("ls");
+			} else {
+				length = totalLength("ls");
+				drawing = drawing("ls");
+			}
+			// A new document allocates new durable identities: they are named by their labels.
+			runs.add(named(state(liveIntersection("S")) + " "
+					+ state(copyIntersection("ls", "S")) + " "
+					+ evaluator("ls").isReconstructionFaithful() + " "
+					+ structure("ls").getSemanticSignature() + " "
+					+ locus("ls").getInstrumentation().getCertificationWork(
+							LocusCertificationWork2D.CERTIFICATE_COMPUTATION)
+					+ " " + length + " " + drawing));
+		}
+		assertTrue(runs.get(0).startsWith("[1, 0]/f/p [1, 0]/f/p true "), runs.get(0));
+		assertEquals(runs.get(0), runs.get(1));
+	}
+
+	/** @return exact vertices of the drawing of the locus in a fixed view */
+	private String drawing(String label) {
+		LocusRenderData2D drawing = new LocusRenderCache2D().getOrBuild(locus(label),
+				LocusRenderPolicy2D.adaptive(1, 800, 600, 10, 10, 32, 0.75, 12));
+		StringBuilder text = new StringBuilder(drawing.getFidelity().name());
+		for (LocusRenderData2D.Vertex vertex : drawing.getVertices()) {
+			text.append(';').append(Double.toHexString(vertex.getSemanticParameter()))
+					.append(',').append(Double.toHexString(vertex.getPoint().getX()))
+					.append(',').append(Double.toHexString(vertex.getPoint().getY()));
+		}
+		return Integer.toHexString(text.toString().hashCode()) + ":"
+				+ drawing.getVertices().size();
+	}
+
+	/** @return status and exact value of the total length of the locus */
+	private String totalLength(String label) {
+		GeoLocusMetricResult length = add("length" + label + "=LocusLength(" + label + ")");
+		return length.getMetricResult().getComputationStatus() + "/"
+				+ length.getMetricResult().getMetricValue().getFiniteValue()
+						.stream().mapToObj(Double::toHexString).findFirst().orElse("none");
+	}
+
+	/**
+	 * V-SEL-1, review finding H-CU2A-7 (2026-10-23): an unlabelled intersection inside an
+	 * expression is a selection of the slice like a labelled one. The live intersection of
+	 * {@code Midpoint(Intersect(s,c,i),B)} is settled; a non-driver edit rebuilds the slice with
+	 * the driver where one root lies on the segment, so the copy of the inline intersection
+	 * ends in its first initialization. Before the correction the fidelity did not compare it,
+	 * and the certificate of its compaction stated existence where the live point is undefined
+	 * and nonexistence where it is defined; now the copy is settled to the live state, and over
+	 * 128 driver parameters the certificate never contradicts the live point.
+	 */
+	@Test
+	void anInlineIntersectionIsASelectionOfTheSlice() throws Exception {
+		for (int index : new int[] {1, 2}) {
+			getKernel().clearConstruction(true);
+			add("g1=Circle((8,0),5)");
+			add("N=Point(g1)");
+			moveDriver(driver(), 0);
+			add("P=(-20,0.5)");
+			add("c=Circle((0,0),6)");
+			add("s=Segment(N,P)");
+			add("B=(0,10)");
+			add("M=Midpoint(Intersect(s,c," + index + "),B)");
+			add("lm=LocusV2(M,N)");
+			getKernel().updateConstruction(false);
+			// The driver inside c, where one root lies on the segment; then a non-driver edit.
+			moveDriver(driver(), Math.PI);
+			move("B", 0, 10.5);
+			getKernel().updateConstruction(false);
+			ReconstructibleLocusEvaluator2D slice = evaluator("lm");
+			assertTrue(slice.isReconstructionFaithful(), slice.getFidelityReport().toString());
+			LocusExistenceStructure2D structure = structure("lm");
+			int contradictions = 0;
+			List<String> first = new ArrayList<>();
+			for (int sample = -64; sample < 64; sample++) {
+				double parameter = sample * Math.PI / 64;
+				moveDriver(driver(), parameter);
+				boolean defined = lookup("M").isDefined();
+				CoverageState state = coverageState(structure, parameter);
+				if (defined && state == CoverageState.CERTIFIED_DOES_NOT_EXIST
+						|| !defined && state == CoverageState.CERTIFIED_EXISTS) {
+					contradictions++;
+					if (first.size() < 4) {
+						first.add("t=" + parameter + " defined=" + defined + " " + state);
+					}
+				}
+			}
+			assertEquals(0, contradictions, "index " + index + " " + first);
+			assertEquals(Completeness.COMPLETE, structure.getCompleteness(), "index " + index);
+		}
 	}
 
 	/**
@@ -552,10 +673,11 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 	 * its order with {@code lr2}. There the pair labels only its first output. Moving the
 	 * driver off the double root takes the intersections out of their first initialization:
 	 * each locus publishes one revision per real transition of its state, typed
-	 * {@code SELECTION} for {@code lr2} (the pair labels its second output {@code R} there,
-	 * typed {@code STRUCTURE}, the pending author decision on V-REV-EXACT-7), its components
-	 * are unchanged, and the total length of {@code lq}, recomputed on the new revision, has
-	 * the same value bit for bit.
+	 * {@code SELECTION} for {@code lr2}; the pair labels its second output {@code R} there, a
+	 * change of its structural definition typed {@code STRUCTURE} for {@code lq}, never
+	 * {@code LABELS} (V-REV-EXACT-7, author decision C-1 of 2026-10-23). The components are
+	 * unchanged, and the total length of {@code lq}, recomputed on the new revision, has the
+	 * same value bit for bit.
 	 */
 	@Test
 	void theVariantsCreatedAtTheDoubleRootKeepTheirComponents() throws Exception {
@@ -611,6 +733,15 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 				assertEquals(published, after.get(ReconstructionSliceFingerprint2D.Change
 						.SELECTION) - counted.get(label).get(ReconstructionSliceFingerprint2D
 								.Change.SELECTION), "lr2 transitions are typed SELECTION");
+			} else {
+				// The labelling of R changes the structural definition of the pair.
+				Map<ReconstructionSliceFingerprint2D.Change, Long> before = counted.get(label);
+				assertTrue(after.get(ReconstructionSliceFingerprint2D.Change.STRUCTURE)
+						> before.get(ReconstructionSliceFingerprint2D.Change.STRUCTURE),
+						"lq: the labelling of R is typed STRUCTURE");
+				assertEquals(before.get(ReconstructionSliceFingerprint2D.Change.LABELS),
+						after.get(ReconstructionSliceFingerprint2D.Change.LABELS),
+						"lq: the labelling of R is never typed LABELS");
 			}
 			assertEquals(components.get(label), components(label), label);
 			assertTrue(evaluator(label).isReconstructionFaithful(), label);
@@ -630,8 +761,10 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 	 * transition is inside a typed unresolved band; in certified existence the live output and
 	 * the slice are defined; beyond the transition the live output stays defined for a few
 	 * {@code 1e-7} of the driver, where nonexistence is certified and no point is published,
-	 * the inherited excess of evaluation (as F-CU2-1). The compaction never designates
-	 * another root.
+	 * the inherited excess of evaluation (as F-CU2-1). Here the root within the tolerance is
+	 * raw root 1, the root that the rule designates, so the compaction designates no other
+	 * root; when it is raw root 0 it does, as
+	 * {@link #theCompactionNeverPublishesARootWithinTheToleranceBeforeTheRayStart} asserts.
 	 */
 	@Test
 	void theCompactionOnARayStartLeavesOnlyAnUnpublishedExcess() throws Exception {
@@ -675,6 +808,131 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 		assertTrue(excess > 0, "the inherited excess of evaluation is observed");
 	}
 
+	/**
+	 * Review finding H-CU2A-8 (2026-10-23), which refines O-CU2A-6: in its first
+	 * initialization the inherited compaction also counts a root within the incidence
+	 * tolerance {@code 1e-5} before the start of the ray, and when that root is raw root 0 it
+	 * becomes output 0 instead of the root that the certified compaction designates. A ray
+	 * from the driver, on a circle of radius 4 around (-8, 0), points to (100, 0.25); the start
+	 * is inside the circle of radius 5 for {@code cos t > 55/64}, where the root behind it is
+	 * raw root 0 and the root ahead is raw root 1; outside it both roots are ahead and the
+	 * rule designates raw root 0. Within about {@code 3e-4} of the driver inside each exact
+	 * transition the root behind lies within the tolerance. There the certificate states
+	 * existence of the root ahead, and the copy, which a query with both roots on the ray took
+	 * out of its first initialization (the view that draws the locus has already made one),
+	 * fails explicitly with {@code SELECTION_NOT_REPRODUCED} instead of publishing the root
+	 * behind; the definition publishes nothing. Every valid query is the root that the rule
+	 * designates: outside, raw root 0 ahead of the start; inside, the queries fail closed
+	 * (contract step 8).
+	 */
+	@Test
+	void theCompactionNeverPublishesARootWithinTheToleranceBeforeTheRayStart()
+			throws Exception {
+		add("c=Circle((0,0),5)");
+		add("g1=Circle((-8,0),4)");
+		add("N=Point(g1)");
+		moveDriver(driver(), 0);
+		add("A=(100,0.25)");
+		add("r=Ray(N,A)");
+		add("R=Intersect(c,r,1)");
+		add("lr=LocusV2(R,N)");
+		getKernel().updateConstruction(false);
+		assertTrue(liveSource("R").isSelectionFirstIntersectionPending());
+		LocusExistenceStructure2D structure = structure("lr");
+		ReconstructibleLocusEvaluator2D slice = evaluator("lr");
+		double transition = Math.acos(55.0 / 64.0);
+		List<Double> window = new ArrayList<>();
+		List<Double> farther = new ArrayList<>();
+		List<Double> outside = new ArrayList<>();
+		for (double side : new double[] {1, -1}) {
+			for (int k = 1; k <= 400; k++) {
+				double parameter = side * (transition - k * 2e-6);
+				if (structure.getComponentContaining(parameter) == null) {
+					continue;
+				}
+				assertEquals(CoverageState.CERTIFIED_EXISTS,
+						coverageState(structure, parameter), "t=" + parameter);
+				double behind = rootsOfTheToleranceRay(parameter)[0];
+				if (behind > -0.9e-5) {
+					window.add(parameter);
+				} else if (behind < -1.1e-5) {
+					farther.add(parameter);
+				}
+			}
+			for (int k = 1; k <= 60; k++) {
+				double parameter = side * (transition + k * (Math.PI - transition) / 61);
+				if (structure.getComponentContaining(parameter) != null) {
+					outside.add(parameter);
+				}
+			}
+		}
+		assertTrue(window.size() > 200 && farther.size() > 400 && outside.size() > 100,
+				window.size() + " " + farther.size() + " " + outside.size());
+		long departureRefusals = locus("lr").getInstrumentation().getCertificationWork(
+				LocusCertificationWork2D.SELECTION_DEPARTURE_REFUSAL);
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+			for (double parameter : window) {
+				LocusEvaluation2D evaluation = slice.evaluate(null, null, parameter, session);
+				if (evaluation.isValid()) {
+					assertTheRoot(parameter, evaluation, 1);
+				}
+				assertFalse(evaluation.isValid(), "t=" + parameter);
+				assertTrue(evaluation.getDiagnostic().startsWith("SELECTION_NOT_REPRODUCED"),
+						"t=" + parameter + " " + evaluation.getDiagnostic());
+				assertFalse(locus("lr").getSemanticDefinition().evaluate(BRANCH, parameter,
+						session).isValid(), "t=" + parameter);
+			}
+			for (double parameter : farther) {
+				LocusEvaluation2D evaluation = slice.evaluate(null, null, parameter, session);
+				if (evaluation.isValid()) {
+					assertTheRoot(parameter, evaluation, 1);
+				} else {
+					assertTrue(evaluation.getDiagnostic().startsWith(
+							"SELECTION_NOT_REPRODUCED"), "t=" + parameter);
+				}
+			}
+			for (double parameter : outside) {
+				LocusEvaluation2D evaluation = slice.evaluate(null, null, parameter, session);
+				assertTrue(evaluation.isValid(), "t=" + parameter + " "
+						+ evaluation.getDiagnostic());
+				assertTheRoot(parameter, evaluation, 0);
+			}
+		}
+		assertEquals(1, slice.getDepartedSelections());
+		assertTrue(locus("lr").getInstrumentation().getCertificationWork(
+				LocusCertificationWork2D.SELECTION_DEPARTURE_REFUSAL)
+				>= departureRefusals + window.size());
+		assertTrue(liveSource("R").isSelectionFirstIntersectionPending());
+	}
+
+	/**
+	 * @return the inherited parameters {@code s} of the two points {@code N + s (A - N)} of
+	 *         the circle of radius 5 in the construction of
+	 *         {@link #theCompactionNeverPublishesARootWithinTheToleranceBeforeTheRayStart},
+	 *         raw root 0 first
+	 */
+	private static double[] rootsOfTheToleranceRay(double parameter) {
+		double nx = -8 + 4 * Math.cos(parameter);
+		double ny = 4 * Math.sin(parameter);
+		double dx = 100 - nx;
+		double dy = 0.25 - ny;
+		double a = dx * dx + dy * dy;
+		double b = nx * dx + ny * dy;
+		double c = nx * nx + ny * ny - 25;
+		double q = -b + Math.sqrt(b * b - a * c);
+		return new double[] {c / q, q / a};
+	}
+
+	private static void assertTheRoot(double parameter, LocusEvaluation2D evaluation,
+			int raw) {
+		double root = rootsOfTheToleranceRay(parameter)[raw];
+		double nx = -8 + 4 * Math.cos(parameter);
+		double ny = 4 * Math.sin(parameter);
+		double gap = Math.hypot(evaluation.getPoint().getX() - (nx + root * (100 - nx)),
+				evaluation.getPoint().getY() - (ny + root * (0.25 - ny)));
+		assertTrue(gap < 1e-9, "t=" + parameter + " raw root " + raw + " gap=" + gap);
+	}
+
 	/** @return the coverage state of the structure at the canonical parameter */
 	private static CoverageState coverageState(LocusExistenceStructure2D structure,
 			double parameter) {
@@ -693,8 +951,9 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 	 * faithful (it reproduces the live state or is settled to the roots that state
 	 * designates). Once the state is settled, recomputing and moving the driver publish no
 	 * revision. (The labelled pair created there also labels its second output when it leaves
-	 * the double root; that change of the output labels is typed {@code STRUCTURE}, the pending
-	 * author decision on V-REV-EXACT-7.)
+	 * the double root; that change of the output labels is typed {@code STRUCTURE}, by author
+	 * decision C-1 of 2026-10-23, as {@link #theVariantsCreatedAtTheDoubleRootKeepTheirComponents}
+	 * asserts.)
 	 */
 	@Test
 	void aRealSelectionTransitionPublishesARevisionWithItsTypedCause() throws Exception {

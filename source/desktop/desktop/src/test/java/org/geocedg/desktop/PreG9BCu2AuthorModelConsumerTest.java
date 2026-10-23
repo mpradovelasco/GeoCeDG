@@ -18,6 +18,7 @@ import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
 import org.geocedg.common.euclidian.draw.LocusRenderData2D;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -41,9 +42,11 @@ import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPolicy2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricRoute2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricRouteResolver2D;
 import org.geocedg.common.kernel.locus.metric.LocusSemanticPosition2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
+import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
 import org.geocedg.common.kernel.locus.metric.MetricGuaranteeClass2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
 import org.geocedg.common.kernel.locus.metric.OpenBoundaryPolicy;
@@ -55,6 +58,8 @@ import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.main.error.ErrorHandler;
+import org.geogebra.common.util.AsyncOperation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -171,6 +176,170 @@ class PreG9BCu2AuthorModelConsumerTest {
 				row.toString());
 		assertEquals(0.0, (Double) row.get("restored"), 0,
 				"the persisted policy applies again after the query " + row);
+	}
+
+	/**
+	 * V-E2-8 with {@code full-cycle} (residue of the corrective mandate of 2026-10-23): the
+	 * twin {@code e_9} of {@code e_2} reads the length {@code w_9} of the same positions with
+	 * the same-position policy {@code full-cycle} ({@code w_1} cannot be redefined: it is the
+	 * protected input of the scalar that {@code e_2} reads). {@code t_N} belongs to its arc at
+	 * {@code s = 2 pi}, its end, and the start {@code s = 0} is excluded, the image of no
+	 * canonical parameter. The explicit query of its one-sided limit evaluates the copy of
+	 * {@code w_9} at the origin with the opposite policy, {@code w_9 = 0}: it agrees with the
+	 * driver just above {@code t_N} and lies the total length {@code L} of {@code o_1} away
+	 * from the included end, which is the value at {@code t_N}. The two ends have distinct
+	 * structural sources.
+	 */
+	@Test
+	void withFullCycleTheExcludedStartOfE2IsItsOneSidedLimit() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			// w_1 is the protected input of the scalar d_2 that e_2 reads, so a twin of e_2
+			// reads the length of the same positions with the policy full-cycle.
+			Map<String, Object> values = new LinkedHashMap<>();
+			for (String command : List.of(
+					"w_9=LocusLength(o_1,N_1,K_1,\"forward\",\"strict\",\"full-cycle\")",
+					"d_9", "Q_9=pointJump(L_1,g_2,d_9)", "j_9=Line(Q_9,f_2)",
+					"R_9=translationCoor(J_1,O_1,k,Q_9,j_9)", "e_9=LocusV2(R_9,E_1)")) {
+				if ("d_9".equals(command)) {
+					// The scalar of a metric result is its explicit opt-in adapter, as d_2.
+					new AlgoLocusMetricScalarAdapter(app.getKernel().getConstruction(), "d_9",
+							(GeoLocusMetricResult) app.getKernel().lookupLabel("w_9"));
+					values.put("created d_9", "true");
+					continue;
+				}
+				// A failing command would open a modal dialog on the event thread.
+				List<String> errors = new ArrayList<>();
+				GeoElementND[] created = app.getKernel().getAlgebraProcessor()
+						.processAlgebraCommandNoExceptionHandling(command, false,
+								recording(errors), false, null);
+				values.put("created " + command.substring(0, 3), created != null
+						&& created.length == 1 ? "true" : String.valueOf(errors));
+			}
+			if (values.values().stream().anyMatch(value -> !"true".equals(value))) {
+				return values;
+			}
+			GeoLocusV2 e2 = PreG9BCu0Corpus.locus(app, "e_9");
+			LocusDefinition2D certified = published(e2);
+			LocusExistenceStructure2D twin = certified.getBranch(PreG9BCu0Corpus.MAIN)
+					.getExistenceStructure();
+			values.put("structure", twin.getCompleteness() + " "
+					+ twin.getCoverage().stream().map(item -> item.getState() + ":"
+							+ item.getCause() + ":" + item.getEvidence())
+							.collect(java.util.stream.Collectors.toList()));
+			if (twin.getContinuousValidComponents().isEmpty()) {
+				values.put("diagnostic", certificate(e2).getDiagnostic());
+				return values;
+			}
+			ContinuousComponent arc = twin.getContinuousValidComponents().get(0);
+			values.put("ends", arc.getLowerBoundary().getKind() + ":"
+					+ arc.getLowerBoundary().getSource().getSide() + ":"
+					+ arc.getLowerBoundary().isIncluded() + "/"
+					+ arc.getUpperBoundary().getKind() + ":"
+					+ arc.getUpperBoundary().getSource().getSide() + ":"
+					+ arc.getUpperBoundary().isIncluded() + "/" + arc.getArcCoordinate(0));
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(16)) {
+				LocusEvaluation2D start = certified.evaluateComponentEnd(PreG9BCu0Corpus.MAIN,
+						0, false, session);
+				LocusEvaluation2D end = certified.evaluateComponentEnd(PreG9BCu0Corpus.MAIN,
+						0, true, session);
+				LocusEvaluation2D atOrigin = certified.evaluate(PreG9BCu0Corpus.MAIN, 0,
+						session);
+				LocusEvaluation2D above = certified.evaluate(PreG9BCu0Corpus.MAIN, 1e-9,
+						session);
+				LocusEvaluation2D again = certified.evaluate(PreG9BCu0Corpus.MAIN, 0, session);
+				values.put("statuses", start.getStatus() + "/" + end.getStatus() + "/"
+						+ atOrigin.getStatus() + "/" + above.getStatus());
+				values.put("endIsOrigin", distance(end.getPoint(), atOrigin.getPoint()));
+				values.put("startToAbove", distance(start.getPoint(), above.getPoint()));
+				values.put("endToStart", distance(end.getPoint(), start.getPoint()));
+				values.put("restored", distance(again.getPoint(), atOrigin.getPoint()));
+			}
+			AlgoLocusBetweenMetricV2 w9 = (AlgoLocusBetweenMetricV2) app.getKernel()
+					.lookupLabel("w_9").getParentAlgorithm();
+			values.put("total", w9.resolveJumpValue().getMetricValue().getFiniteValue()
+					.getAsDouble());
+			return values;
+		});
+		for (String command : List.of("w_9", "d_9", "Q_9", "j_9", "R_9", "e_9")) {
+			assertEquals("true", row.get("created " + command), row.toString());
+		}
+		assertTrue(((String) row.get("structure")).startsWith("COMPLETE ["
+				+ "CERTIFIED_EXISTS:"), row.toString());
+		assertEquals("STRUCTURAL_EVENT:start:false/STRUCTURAL_EVENT:end:true/"
+				+ 2 * Math.PI, row.get("ends"), row.toString());
+		assertEquals("VALID/VALID/VALID/VALID", row.get("statuses"), row.toString());
+		assertEquals(0.0, (Double) row.get("endIsOrigin"), 0, row.toString());
+		assertTrue((Double) row.get("startToAbove") < 1e-6, row.toString());
+		assertEquals((Double) row.get("total"), (Double) row.get("endToStart"), 1e-9,
+				row.toString());
+		assertEquals(0.0, (Double) row.get("restored"), 0,
+				"the persisted policy applies again after the query " + row);
+	}
+
+	/**
+	 * V-CON-2 on the author model (residue of the corrective mandate of 2026-10-23): in the
+	 * bite at excCyl 3.7 each locus of the first family is one arc across the seam. A route
+	 * between its positions {@code 0.1} inside both sides of the seam follows the arc across
+	 * it in one segment that is never wrapped, and the reverse route too; forward the other
+	 * way the target is not reachable, also with {@code wrap-to-start}, which states the typed
+	 * diagnostic of the topology, and {@code full-cycle} between equal positions is an invalid
+	 * query.
+	 */
+	@Test
+	void routesFollowTheBiteArcOfTheModelAcrossTheSeam() throws Exception {
+		Map<String, String> rows = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			PreG9BCu0Corpus.setNumber(app, "excCyl", 3.7);
+			Map<String, String> values = new LinkedHashMap<>();
+			double below = Math.PI - 0.1;
+			double above = -Math.PI + 0.1;
+			for (String label : FIRST_FAMILY) {
+				LocusDefinition2D definition = published(PreG9BCu0Corpus.locus(app, label));
+				List<ContinuousComponent> arcs = definition.getBranch(PreG9BCu0Corpus.MAIN)
+						.getExistenceStructure().getContinuousValidComponents();
+				ContinuousComponent arc = arcs.get(0);
+				LocusMetricRoute2D forward = route(definition, below, above,
+						TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
+						SamePositionPolicy.ZERO_LENGTH);
+				LocusMetricRoute2D reverse = route(definition, above, below,
+						TraversalDirection.REVERSE, OpenBoundaryPolicy.STRICT,
+						SamePositionPolicy.ZERO_LENGTH);
+				LocusMetricRoute2D backward = route(definition, above, below,
+						TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
+						SamePositionPolicy.ZERO_LENGTH);
+				LocusMetricRoute2D wrap = route(definition, above, below,
+						TraversalDirection.FORWARD, OpenBoundaryPolicy.WRAP_TO_START,
+						SamePositionPolicy.ZERO_LENGTH);
+				LocusMetricRoute2D cycle = route(definition, above, above,
+						TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT,
+						SamePositionPolicy.FULL_CYCLE);
+				values.put(label, arcs.size() + "/" + arc.crossesSeam() + "/"
+						+ (arc.getArcCoordinate(below) >= 0
+								&& arc.getArcCoordinate(below) < arc.getArcCoordinate(above)
+								&& arc.getArcCoordinate(above) <= arc.getLength())
+						+ " " + forward.getRouteStatus() + "/"
+						+ forward.getOrderedRouteSegments().size() + "/"
+						+ (forward.getOrderedRouteSegments().get(0).getStartCanonicalParameter()
+								== below) + "/"
+						+ (forward.getOrderedRouteSegments().get(0).getEndCanonicalParameter()
+								== above + 2 * Math.PI) + "/" + forward.isWrapped() + "/"
+						+ forward.isGeometricallyConnected() + " " + reverse.getRouteStatus()
+						+ "/" + reverse.isWrapped() + " " + backward.getRouteStatus() + " "
+						+ wrap.getRouteStatus() + "/" + wrap.getDiagnostics().stream().anyMatch(
+								diagnostic -> diagnostic.getCode()
+										== MetricDiagnosticCode2D.TOPOLOGY_NOT_ESTABLISHED)
+						+ " " + cycle.getRouteStatus());
+			}
+			return values;
+		});
+		for (String label : FIRST_FAMILY) {
+			assertEquals("1/true/true RESOLVED/1/true/true/false/true RESOLVED/false "
+					+ "TARGET_NOT_REACHABLE TARGET_NOT_REACHABLE/true INVALID_QUERY",
+					rows.get(label), label + " " + rows);
+		}
 	}
 
 	/**
@@ -488,6 +657,46 @@ class PreG9BCu2AuthorModelConsumerTest {
 				bind(definition, parameter), bind(definition, parameter),
 				TraversalDirection.FORWARD, OpenBoundaryPolicy.STRICT, same,
 				LocusMetricPolicy2D.initial()), definition).getRouteStatus().name();
+	}
+
+	/** @return an error handler that records the errors of a command instead of showing them */
+	private static ErrorHandler recording(List<String> errors) {
+		return new ErrorHandler() {
+			@Override
+			public void showError(String message) {
+				errors.add(String.valueOf(message));
+			}
+
+			@Override
+			public void showCommandError(String command, String message) {
+				errors.add(command + ": " + message);
+			}
+
+			@Override
+			public String getCurrentCommand() {
+				return null;
+			}
+
+			@Override
+			public boolean onUndefinedVariables(String string,
+					AsyncOperation<String[]> callback) {
+				errors.add("undefined: " + string);
+				return false;
+			}
+
+			@Override
+			public void resetError() {
+				// Nothing to reset.
+			}
+		};
+	}
+
+	private static LocusMetricRoute2D route(LocusDefinition2D definition, double start,
+			double target, TraversalDirection direction, OpenBoundaryPolicy boundary,
+			SamePositionPolicy same) {
+		return new LocusMetricRouteResolver2D().resolve(new BetweenPositionsMetricQuery(
+				bind(definition, start), bind(definition, target), direction, boundary, same,
+				LocusMetricPolicy2D.initial()), definition);
 	}
 
 	private static MetricPositionBinding2D bind(LocusDefinition2D definition,

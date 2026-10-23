@@ -64,9 +64,11 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Maximality;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
+import org.geocedg.common.kernel.locus.LocusSimilarityEvaluator2D;
 import org.geocedg.common.kernel.locus.LocusSimilarityTransform2D;
 import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
@@ -168,7 +170,11 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * V-CRIT-1, V-CRIT-4, V-COINC-1 and V-PER-1 (synthetic part): the exact critical
 	 * configuration is one closed periodic component with a singular parameter of
 	 * multiplicity 2 at {@code atan2(4, 3)}, with neither a transition nor a band; the boxes
-	 * that wrap the seam certify the closure.
+	 * that wrap the seam certify the closure. The seam cell, from {@code Math.PI} to the next
+	 * binary64, holds no canonical parameter and contains {@code pi}: it is valid, with the
+	 * selection of the boxes that end at both canonical sides of the seam and an enclosure of
+	 * the traced point that meets both of theirs (residue of V-PER-1, corrective mandate of
+	 * 2026-10-23).
 	 */
 	@Test
 	void theCriticalConfigurationIsOneClosedComponentWithASingularParameter() {
@@ -181,6 +187,26 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			assertEquals(1, structure.getContinuousValidComponents().size(), label);
 			assertEquals(0, result.getCertifiedTransitions(), label);
 			assertEquals(0, result.getUnresolvedBands(), label);
+			ConstructionBoxModel2D model = ConstructionBoxModel2D.capture(
+					locus(label).getSemanticDefinition());
+			ConstructionBoxOutcome2D seam = model.evaluateCertifying(
+					new SplineOutwardInterval2D(Math.PI, Math.nextUp(Math.PI)), true);
+			for (ConstructionBoxOutcome2D side : List.of(
+					model.evaluateCertifying(new SplineOutwardInterval2D(Math.nextDown(Math.PI),
+							Math.PI), true),
+					model.evaluateCertifying(new SplineOutwardInterval2D(-Math.PI,
+							Math.nextUp(-Math.PI)), true))) {
+				assertEquals(ConstructionBoxOutcome2D.Kind.VALID, seam.getKind(),
+						label + " " + seam);
+				assertEquals(ConstructionBoxOutcome2D.Kind.VALID, side.getKind(),
+						label + " " + side);
+				assertEquals(side.getSelection(), seam.getSelection(), label);
+				for (int axis = 0; axis < 2; axis++) {
+					assertTrue(seam.getValueLower(axis) <= side.getValueUpper(axis)
+							&& side.getValueLower(axis) <= seam.getValueUpper(axis),
+							label + " axis " + axis + " " + seam + " " + side);
+				}
+			}
 			for (Coverage coverage : structure.getCoverage()) {
 				assertEquals(CoverageState.CERTIFIED_EXISTS, coverage.getState(), label);
 			}
@@ -256,7 +282,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * V-CRIT-5, V-POINT-1, V-POINT-4 and V-POINT-6 (certificate parts): the external tangency
 	 * is a point component, never an interval: an enclosure of {@code atan2(-4, -3)}, closed,
 	 * maximal between certified nonexistence, with the certified position (15, 20); the cover
-	 * is complete, and no binary64 parameter selects the point.
+	 * is complete, and no binary64 parameter selects the point. Its structural source names
+	 * the durable output of the intersection, the discriminant and the root literally
+	 * (residue of V-POINT-1, corrective mandate of 2026-10-23).
 	 */
 	@Test
 	void anExternalTangencyIsAPointComponent() {
@@ -271,6 +299,13 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		assertTrue(point.getParameterUpper() - point.getParameterLower() <= DELTA);
 		assertEquals(Maximality.ESTABLISHED, point.getMaximality());
 		assertEquals("DISCRIMINANT", point.getSource().getPredicate());
+		PersistentGeoId output = getKernel().getConstruction().getSpatialIdentityRegistry()
+				.getPersistentGeoId(lookup("Q"));
+		assertEquals(output.toExternalForm() + "-INTERSECTION_OUTPUT",
+				point.getSource().getOrigin());
+		assertEquals("root-0", point.getSource().getSide());
+		assertEquals(point.getSource().getOrigin() + "/DISCRIMINANT/root-0",
+				point.getSource().getSignature());
 		assertEquals(LocusPointComponent2D.PositionState.CERTIFIED_ENCLOSURE,
 				point.getPositionState());
 		double[] position = point.getPositionEnclosure();
@@ -325,7 +360,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * {@code OUTSIDE_COMPONENTS} ({@code locus-v2-existence-components.md} section 15.8); it
 	 * binds no metric position and accepts no address, and the evaluator publishes no valid
 	 * point at any of those parameters. Before the correction the point was undefined without
-	 * any cause.
+	 * any cause. Inside the enclosure the definition itself states the typed cause (review
+	 * finding H-CU2A-11, 2026-10-23); before, it said the parameter was outside the complete
+	 * existence domain.
 	 */
 	@Test
 	void aSemanticPointNearTheTangencyIsUndefinedWithATypedCause() {
@@ -360,9 +397,146 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			assertNull(parent.getSemanticAddress(), where);
 			assertNull(parent.getMetricPositionBinding(), where);
 			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
-				assertFalse(definition.evaluate(BRANCH, value, session).isValid(), where);
+				LocusEvaluation2D evaluation = definition.evaluate(BRANCH, value, session);
+				assertFalse(evaluation.isValid(), where);
+				if (entry.getValue() == LocusSemanticPointCause2D.POINT_COMPONENT) {
+					// Finding H-CU2A-11: the definition types the cause as well.
+					assertTrue(evaluation.getDiagnostic().startsWith("POINT_COMPONENT: "),
+							where + " " + evaluation.getDiagnostic());
+				}
 			}
 		}
+	}
+
+	/**
+	 * V-POINT-4 (forced failure of the limit form; author decision C-9 of 2026-10-23): while
+	 * the test seam {@link ConstructionBoxModel2D#withholdLimitFormValue} is set, every valid
+	 * evaluation of the limit form withholds its enclosure of the traced point, as when that
+	 * enclosure fails, and decides validity as before. A new revision of the external
+	 * tangency then keeps its certified point component with the same parameter enclosure,
+	 * source, maximality, proof and evidence and the same cover; only its position becomes
+	 * {@code UNAVAILABLE}. No position is enclosed or invented and nothing turns into
+	 * nonexistence: the evaluator publishes no point near {@code t*}, {@code Point(L, u)}
+	 * keeps the cause {@code POINT_COMPONENT}, the total length stays 0, and the drawing, the
+	 * export declaration and the image by a translation state the unavailable position. Once
+	 * the failure is gone, the next revision of the same configuration has the first
+	 * certificate again, bit for bit, with the certified enclosure of (15, 20).
+	 */
+	@Test
+	void aForcedFailureOfTheLimitFormLeavesThePositionUnavailable() {
+		tangency("(83,19)", "Ray");
+		add("it=Translate(lq,Vector((1,0)))");
+		GeoNumeric parameter = new GeoNumeric(getConstruction(), EXTERNAL);
+		parameter.setLabel("tStar");
+		GeoPoint point = add("A=Point(lq,\"" + BRANCH + "\",tStar)");
+		AlgoSemanticLocusPoint2D parent = assertInstanceOf(AlgoSemanticLocusPoint2D.class,
+				point.getParentAlgorithm());
+		GeoLocusMetricResult length = add("lengthQ=LocusLength(lq)");
+		LocusExistenceStructure2D reference = structure("lq");
+		LocusPointComponent2D certified = reference.getPointComponents().get(0);
+		assertEquals(LocusPointComponent2D.PositionState.CERTIFIED_ENCLOSURE,
+				certified.getPositionState());
+		ConstructionBoxModel2D.withholdLimitFormValue = true;
+		try {
+			republishTangency();
+			LocusExistenceStructure2D failed = structure("lq");
+			assertEquals(1, failed.getPointComponents().size());
+			LocusPointComponent2D unavailable = failed.getPointComponents().get(0);
+			assertEquals(LocusPointComponent2D.PositionState.UNAVAILABLE,
+					unavailable.getPositionState());
+			assertThrows(IllegalStateException.class, unavailable::getPositionEnclosure);
+			assertEquals(certified.getParameterLower(), unavailable.getParameterLower());
+			assertEquals(certified.getParameterUpper(), unavailable.getParameterUpper());
+			assertEquals(certified.getSource().getSignature(),
+					unavailable.getSource().getSignature());
+			assertEquals(Maximality.ESTABLISHED, unavailable.getMaximality());
+			assertEquals(certified.getNature(), unavailable.getNature());
+			assertEquals(certified.getEvidenceKey(), unavailable.getEvidenceKey());
+			// Everything else of the certificate is the reference: existence is unchanged.
+			assertEquals(reference.withPointComponents(failed.getPointComponents())
+					.getSemanticSignature(), failed.getSemanticSignature());
+			assertNotEquals(reference.getSemanticSignature(), failed.getSemanticSignature());
+			assertEquals(Completeness.COMPLETE, failed.getCompleteness());
+			assertTrue(failed.getContinuousValidComponents().isEmpty());
+			assertEquals(CoverageState.CERTIFIED_ISOLATED_POINTS,
+					coverageAt(failed, EXTERNAL).getState());
+			assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST,
+					coverageAt(failed, EXTERNAL + 0.01).getState());
+			assertEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST,
+					coverageAt(failed, EXTERNAL - 0.01).getState());
+			assertConsumersOfThePointComponent(point, parent, length, "UNAVAILABLE", null);
+			LocusExistenceStructure2D image = locus("it").getSemanticDefinition()
+					.getBranch(BRANCH).getExistenceStructure();
+			assertEquals(LocusPointComponent2D.PositionState.UNAVAILABLE,
+					image.getPointComponents().get(0).getPositionState());
+			assertTrue(declaration(locus("it")).endsWith("position UNAVAILABLE."),
+					declaration(locus("it")));
+		} finally {
+			ConstructionBoxModel2D.withholdLimitFormValue = false;
+		}
+		republishTangency();
+		LocusExistenceStructure2D recovered = structure("lq");
+		assertEquals(reference.getSemanticSignature(), recovered.getSemanticSignature());
+		double[] position = recovered.getPointComponents().get(0).getPositionEnclosure();
+		assertEnclosed(15, position[0], position[1]);
+		assertEnclosed(20, position[2], position[3]);
+		assertConsumersOfThePointComponent(point, parent, length, "CERTIFIED_ENCLOSURE",
+				position);
+		double[] translated = locus("it").getSemanticDefinition().getBranch(BRANCH)
+				.getExistenceStructure().getPointComponents().get(0).getPositionEnclosure();
+		assertEnclosed(16, translated[0], translated[1]);
+		assertEnclosed(20, translated[2], translated[3]);
+	}
+
+	/**
+	 * Moves {@code P} of the tangency by one ulp and back: each step publishes a new revision
+	 * and a new certificate of the loci, the last one of the original configuration.
+	 */
+	private void republishTangency() {
+		GeoPoint p = (GeoPoint) lookup("P");
+		for (double x : new double[] {Math.nextUp(-25.0), -25}) {
+			p.setCoords(x, 50, 1);
+			p.updateCascade();
+			getKernel().updateConstruction(false);
+		}
+	}
+
+	/**
+	 * Checks what the consumers of the point component of {@code lq} receive: no point of the
+	 * evaluator near {@code t*}, the cause {@code POINT_COMPONENT} of {@code Point(L, u)}, a
+	 * total length of exactly 0, a drawing without vertices that declares the point with the
+	 * state of its position, and an export declaration with that state and, when certified,
+	 * its enclosure.
+	 */
+	private void assertConsumersOfThePointComponent(GeoPoint point,
+			AlgoSemanticLocusPoint2D parent, GeoLocusMetricResult length, String state,
+			double[] position) {
+		LocusPointComponent2D component = structure("lq").getPointComponents().get(0);
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+			for (double value : new double[] {component.getParameterLower(), EXTERNAL,
+					Math.nextUp(EXTERNAL), component.getParameterUpper()}) {
+				assertFalse(locus("lq").getSemanticDefinition().evaluate(BRANCH, value, session)
+						.isValid(), state + " u=" + Double.toHexString(value));
+			}
+		}
+		assertFalse(point.isDefined(), state);
+		assertEquals(LocusSemanticPointCause2D.POINT_COMPONENT, parent.getResolutionCause(),
+				state);
+		LocusMetricResult2D total = length.getMetricResult();
+		assertEquals(MetricComputationStatus.SUCCESS, total.getComputationStatus(), state);
+		assertEquals(0.0, total.getMetricValue().getFiniteValue().orElse(Double.NaN), state);
+		LocusRenderData2D drawing = new LocusRenderCache2D().getOrBuild(locus("lq"),
+				LocusRenderPolicy2D.adaptive(1, 800, 600, 10, 10, 32, 0.75, 12));
+		assertTrue(drawing.getVertices().isEmpty(), state);
+		List<LocusRenderData2D.Mark> declared = drawing.getMarks().stream().filter(mark ->
+				mark.getKind() == LocusRenderData2D.MarkKind.POINT_COMPONENT_NOT_DRAWN)
+				.collect(Collectors.toList());
+		assertEquals(1, declared.size(), state);
+		assertTrue(declared.get(0).getDetail().endsWith("position " + state),
+				declared.get(0).getDetail());
+		String export = declaration(locus("lq"));
+		assertTrue(export.endsWith("position " + state + (position == null ? ""
+				: " " + java.util.Arrays.toString(position)) + "."), export);
 	}
 
 	/**
@@ -704,6 +878,77 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			getKernel().clearConstruction(true);
 		}
 		assertTrue(moved >= 8, "ends that the canonicalization moves: " + moved);
+	}
+
+	/**
+	 * Finding H-CU2A-6 (review of the resolution of 2026-10-23; Level B; scope note A2.5 of
+	 * {@code locus-v2-similarity-transformations.md} and section 15.3 of {@code
+	 * locus-v2-existence-components.md}): the image of an arc across the seam by a similarity
+	 * inherits the arc with its ends, so an included end of the image is the image of the
+	 * source evaluated at its own parameter. The image evaluator evaluated the source through
+	 * its public evaluation, which canonicalizes the parameter again and moves most ends a few
+	 * ulps off the source arc, whose membership is exact: the ends of the image failed where
+	 * the ends of the source were valid (H-CU2A-3 had corrected the source only). Each
+	 * included end of the image by every public similarity is now valid, through {@code
+	 * evaluateComponentEnd} and through the lifted ends of {@code evaluateInComponent}, and
+	 * is the captured transformation of the source end, bit for bit.
+	 */
+	@Test
+	void theIncludedEndsOfAnImageArcAcrossTheSeamAreEvaluatedAtTheirOwnParameter() {
+		int moved = 0;
+		for (String radius : List.of("40+2^(-30)", "40+2^(-4)", "41", "45")) {
+			critical(radius);
+			add("it=Translate(lq,Vector((1,0)))");
+			add("ir=Rotate(lq,pi/6,(3,4))");
+			add("ip=Mirror(lq,(1,2))");
+			add("il=Mirror(lq,Line((0,1),(1,3)))");
+			add("id=Dilate(lq,-3,(2,-1))");
+			LocusDefinition2D source = locus("lq").getSemanticDefinition();
+			ContinuousComponent arc = source.getBranch(BRANCH).getExistenceStructure()
+					.getContinuousValidComponents().get(0);
+			assertTrue(arc.crossesSeam(), radius);
+			for (String label : List.of("it", "ir", "ip", "il", "id")) {
+				LocusDefinition2D image = locus(label).getSemanticDefinition();
+				LocusSimilarityTransform2D transform = assertInstanceOf(
+						LocusSimilarityEvaluator2D.class, image.getEvaluatorCapability())
+						.getCapturedTransform();
+				ContinuousComponent imageArc = image.getBranch(BRANCH).getExistenceStructure()
+						.getContinuousValidComponents().get(0);
+				assertEquals(arc.getInterval(), imageArc.getInterval(), radius + " " + label);
+				for (boolean upper : List.of(false, true)) {
+					double end = upper ? arc.getEnd() : arc.getStart();
+					String context = radius + " " + label + (upper ? " end " : " start ")
+							+ Double.toHexString(end);
+					assertTrue((upper ? imageArc.getUpperBoundary()
+							: imageArc.getLowerBoundary()).isBinaryEndIncluded(), context);
+					moved += source.getProvider().canonicalize(end) != end ? 1 : 0;
+					try (LocusEvaluationSession2D session = LocusEvaluationSession2D
+							.memoizing(8)) {
+						LocusEvaluation2D sourceEnd = source.evaluateComponentEnd(BRANCH, end,
+								upper, session);
+						LocusEvaluation2D atEnd = image.evaluateComponentEnd(BRANCH, end, upper,
+								session);
+						LocusEvaluation2D inComponent = image.evaluateInComponent(BRANCH,
+								imageArc.getInterval(), upper ? imageArc.getInterval().getUpper()
+										: imageArc.getInterval().getLower(), session);
+						assertTrue(sourceEnd.isValid() && atEnd.isValid()
+								&& inComponent.isValid(), context + " " + atEnd.getDiagnostic()
+										+ " " + inComponent.getDiagnostic());
+						LocusPoint2D expected = transform.transform(sourceEnd.getPoint());
+						for (LocusEvaluation2D evaluation : List.of(atEnd, inComponent)) {
+							assertEquals(Double.doubleToRawLongBits(expected.getX()),
+									Double.doubleToRawLongBits(evaluation.getPoint().getX()),
+									context);
+							assertEquals(Double.doubleToRawLongBits(expected.getY()),
+									Double.doubleToRawLongBits(evaluation.getPoint().getY()),
+									context);
+						}
+					}
+				}
+			}
+			getKernel().clearConstruction(true);
+		}
+		assertTrue(moved >= 4, "ends that the canonicalization moves: " + moved);
 	}
 
 	/**

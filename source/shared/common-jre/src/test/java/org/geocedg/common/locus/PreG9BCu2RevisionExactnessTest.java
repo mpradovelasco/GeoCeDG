@@ -585,6 +585,112 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 	}
 
 	/**
+	 * Review finding H-CU2A-9 (2026-10-23): the place of a point on a path or in a region that
+	 * follows the driver is an input of the slice, which the serialized form keeps only through
+	 * coordinates. Moving only the driver and recomputing publish no revision; dragging the
+	 * point publishes one, typed {@code VALUES}, whose copy holds the exact parameters of the
+	 * dragged place, and at every driver parameter its evaluator gives the live point (the
+	 * driver of a copy may differ from the live one in the last bits, so the comparison is
+	 * relative), never the place before the drag.
+	 */
+	@Test
+	void theFreePlaceOfAPointThatFollowsTheDriverIsAnInputOfTheSlice() throws Exception {
+		add("g1=Circle((0,0),4)");
+		add("N=Point(g1)");
+		GeoPoint driver = (GeoPoint) lookup("N");
+		moveDriver(driver, 0.3);
+		add("s=Segment(N,(10,1))");
+		add("B=Point(s)");
+		add("q=Polygon(N,(10,0),(10,10))");
+		add("C=PointIn(q)");
+		GeoLocusV2 onPath = add("lb=LocusV2(B,N)");
+		GeoLocusV2 inRegion = add("lc=LocusV2(C,N)");
+		for (GeoLocusV2 locus : List.of(onPath, inRegion)) {
+			GeoPoint point = (GeoPoint) lookup(locus == onPath ? "B" : "C");
+			String label = point.getLabelSimple();
+			LocusInstrumentation2D instrumentation = locus.getInstrumentation();
+			long values = instrumentation.getSliceChanges(
+					ReconstructionSliceFingerprint2D.Change.VALUES);
+			long revision = locus.getSemanticRevision();
+			moveDriver(driver, 2.0);
+			getKernel().updateConstruction(false);
+			assertEquals(revision, locus.getSemanticRevision(), label);
+			point.setCoords(point.getInhomX() + 0.37, point.getInhomY() + 0.11, 1);
+			point.updateCascade();
+			assertEquals(revision + 1, locus.getSemanticRevision(), label);
+			assertEquals(values + 1, instrumentation.getSliceChanges(
+					ReconstructionSliceFingerprint2D.Change.VALUES), label);
+			assertTrue(evaluator(locus).isReconstructionFaithful(),
+					evaluator(locus).getFidelityReport().toString());
+			assertEquals(place(point), place((GeoPoint) copy(locus).lookupLabel(label)), label);
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+				for (double parameter : DRIVER_PARAMETERS) {
+					moveDriver(driver, parameter);
+					LocusEvaluation2D evaluation = locus.getSemanticDefinition().evaluate(
+							locus.getSemanticDefinition().getBranches().get(0).getBranchKey(),
+							parameter, session);
+					assertTrue(evaluation.isValid(), label + " " + evaluation);
+					assertTrue(Math.hypot(evaluation.getPoint().getX() - point.getInhomX(),
+							evaluation.getPoint().getY() - point.getInhomY()) < 1e-12,
+							label + " t=" + parameter + " " + evaluation.getPoint());
+				}
+			}
+			assertEquals(revision + 1, locus.getSemanticRevision(), label);
+		}
+	}
+
+	/**
+	 * Review finding H-CU2A-9, the fidelity part: one ulp of the place of a point on a path
+	 * that follows the driver is a discrepancy of the copy, and the admitted restoration, through
+	 * the point's own parameters, returns the copy to the parameters of the live place bit for
+	 * bit.
+	 */
+	@Test
+	void aFreePlaceThatFollowsTheDriverIsComparedAndRestoredExactly() throws Exception {
+		add("g1=Circle((0,0),4)");
+		add("N=Point(g1)");
+		moveDriver((GeoPoint) lookup("N"), 0.3);
+		add("s=Segment(N,(10,1))");
+		add("B=Point(s)");
+		GeoPoint live = (GeoPoint) lookup("B");
+		live.setCoords(5.0, 1.3, 1);
+		live.updateCascade();
+		List<GeoElement> slice = slice(live);
+		List<GeoElement> roots = List.of(lookup("N"));
+		Construction copy = reconstruct(slice);
+		GeoPoint copyB = (GeoPoint) copy.lookupLabel("B");
+		assertTrue(ReconstructionFidelity2D.validate(slice, copy, roots, true).isFaithful());
+		assertEquals(place(live), place(copyB));
+		copyB.getPathParameter().setT(Math.nextUp(copyB.getPathParameter().getT()));
+		ReconstructionFidelity2D.Report found = ReconstructionFidelity2D.validate(slice, copy,
+				roots, false);
+		assertFalse(found.isFaithful());
+		assertEquals(EnumSet.of(DiscrepancyKind.VALUE), kinds(found));
+		ReconstructionFidelity2D.Report restored = ReconstructionFidelity2D.validate(slice,
+				copy, roots, true);
+		assertTrue(restored.isFaithful(), restored.toString());
+		assertEquals(1, restored.getRestorations());
+		assertEquals(place(live), place(copyB));
+		assertTrue(Math.hypot(live.getInhomX() - copyB.getInhomX(),
+				live.getInhomY() - copyB.getInhomY()) < 1e-12);
+	}
+
+	/** @return exact parameters of the place of a point on a path or in a region */
+	private static String place(GeoPoint point) {
+		return point.isPointOnPath()
+				? "path:" + Double.toHexString(point.getPathParameter().getT())
+				: "region:" + Double.toHexString(point.getRegionParameters().getT1()) + ","
+						+ Double.toHexString(point.getRegionParameters().getT2());
+	}
+
+	private static Construction copy(GeoLocusV2 locus) throws Exception {
+		Field field = ReconstructibleLocusEvaluator2D.class.getDeclaredField(
+				"isolatedConstruction");
+		field.setAccessible(true);
+		return (Construction) field.get(evaluator(locus));
+	}
+
+	/**
 	 * V-REV-EXACT-5 (synthetic states of V-REV-EXACT-2 to V-REV-EXACT-4): each state reached
 	 * by one-ulp changes of a free number and the returns to a previous value, by a one-ulp
 	 * change of the radius of the critical configuration with labelled and unlabelled outputs
