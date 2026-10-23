@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -706,6 +707,85 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * Finding H-CU2A-4 (corrective mandate, Level B; V-CON-1 and V-CON-4): the canonical
+	 * parameters of an arc across the seam belong to it up to the seam. The provider applied
+	 * its endpoint tolerance to the excluded end of its periodic domain, which is the seam, so
+	 * every canonical parameter in {@code [pi - 1e-12, pi)} was evaluated OUT_OF_DOMAIN inside
+	 * the certified arc ({@code locus-v2-existence-components.md} section 15: every parameter of
+	 * a certified interior has a valid semantic evaluation, and endpoint inclusion is never an
+	 * epsilon convenience), a semantic point there was undefined, and the root of a line
+	 * through the point of the arc at the seam was lost when its refinement reached those
+	 * parameters. Now they evaluate as the live construction with the driver there, the point
+	 * resolves, and the root is found next to the seam, interior to the arc.
+	 */
+	@Test
+	void theCanonicalParametersOfAnArcBelongToItUpToTheSeam() {
+		critical("41");
+		LocusDefinition2D definition = locus("lq").getSemanticDefinition();
+		ContinuousComponent arc = definition.getBranch(BRANCH).getExistenceStructure()
+				.getContinuousValidComponents().get(0);
+		assertTrue(arc.crossesSeam());
+		GeoPoint driver = (GeoPoint) lookup("N");
+		GeoPoint live = (GeoPoint) lookup("Q");
+		GeoNumeric u = add("u0=0");
+		add("S=Point(lq,\"" + BRANCH + "\",u0)");
+		AlgoSemanticLocusPoint2D point = (AlgoSemanticLocusPoint2D) lookup("S")
+				.getParentAlgorithm();
+		int window = 0;
+		for (double offset : new double[] {1e-12, 0x1p-41, 0x1p-45, 0x1p-48, 0x1p-50}) {
+			double parameter = definition.getProvider().canonicalize(Math.PI - offset);
+			if (parameter < Math.PI - 1e-12 || parameter <= 0) {
+				continue; // wrapped to the start of the domain
+			}
+			window++;
+			String context = Double.toHexString(parameter);
+			assertEquals(parameter, definition.getProvider().canonicalize(parameter), context);
+			assertTrue(arc.contains(parameter), context);
+			LocusEvaluation2D evaluation;
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
+				evaluation = definition.evaluate(BRANCH, parameter, session);
+			}
+			moveDriver(driver, parameter);
+			assertTrue(evaluation.isValid() && live.isDefined(), context + " "
+					+ evaluation.getStatus() + " " + evaluation.getDiagnostic());
+			assertEquals(Double.doubleToRawLongBits(live.getInhomX()),
+					Double.doubleToRawLongBits(evaluation.getPoint().getX()), context);
+			assertEquals(Double.doubleToRawLongBits(live.getInhomY()),
+					Double.doubleToRawLongBits(evaluation.getPoint().getY()), context);
+			u.setValue(parameter);
+			u.updateCascade();
+			assertEquals(LocusSemanticPointCause2D.RESOLVED, point.getResolutionCause(), context);
+			assertTrue(lookup("S").isDefined(), context);
+		}
+		assertTrue(window >= 3, "canonical parameters within 1e-12 of the seam: " + window);
+		org.geocedg.common.kernel.locus.LocusPoint2D at;
+		org.geocedg.common.kernel.locus.LocusPoint2D after;
+		org.geocedg.common.kernel.locus.LocusPoint2D before;
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(4)) {
+			at = definition.evaluate(BRANCH, -Math.PI, session).getPoint();
+			after = definition.evaluate(BRANCH, -Math.PI + 1e-4, session).getPoint();
+			before = definition.evaluate(BRANCH, Math.PI - 1e-4, session).getPoint();
+		}
+		double tx = after.getX() - before.getX();
+		double ty = after.getY() - before.getY();
+		double norm = Math.hypot(tx, ty);
+		GeoLine line = new GeoLine(getConstruction(), tx / norm, ty / norm,
+				-(tx / norm * at.getX() + ty / norm * at.getY()));
+		line.setLabel("seamLine");
+		GeoLocusIntersectionResult result = add("X=Intersect(lq,seamLine)");
+		List<String> seamRoots = new ArrayList<>();
+		for (LocusIntersectionSolution2D solution : result.getIntersectionResult()
+				.getFiniteSolutions()) {
+			double parameter = solution.getRevisionEvidence().getSemanticParameter();
+			if (Math.PI - Math.abs(parameter) < 1e-9) {
+				seamRoots.add(solution.getClassification().getDomainLocation().name());
+			}
+		}
+		assertEquals(List.of(IntersectionSemanticMetadata2D.DomainLocation.INTERIOR.name()),
+				seamRoots, "the root at the seam of the arc");
+	}
+
+	/**
 	 * V-CON-3 (synthetic part): the total length of the closed loci {@code lq} and {@code lr}
 	 * of the exact critical configuration. Both traced points stay on the circle {@code p} of
 	 * radius 25; as the ray from {@code P} turns between its two tangents to the circle of the
@@ -1113,6 +1193,63 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				.getSemanticSignature());
 		assertEquals(LocusComponentLineage2D.keys(published.getStructure()),
 				LocusComponentLineage2D.keys(certificate("lw").getStructure()));
+	}
+
+	/**
+	 * V-LVL-2 (corrective mandate, R5 group G2): the exploratory evidence is neither persisted
+	 * nor a source of revisions. The document of {@code lw}, outside class v3, stores no part
+	 * of the evidence, of its method or of an exploratory policy; reopening the document
+	 * publishes the same slice fingerprint, the same signature of the definition and the same
+	 * certificate, with the evidence recomputed by the policy of the product, never read back;
+	 * and the exploratory policy is outside the fingerprint, so that another policy changes
+	 * the evidence and nothing that a revision is made of.
+	 */
+	@Test
+	void exploratoryEvidenceIsNeitherPersistedNorARevisionSource() {
+		add("e1=Ellipse((0,0),(4,0),5)");
+		add("c=Circle((0,0),3)");
+		add("N=Point(c)");
+		add("k=Circle(N,5)");
+		add("W=Intersect(e1,k,1)");
+		add("lw=LocusV2(W,N)");
+		getKernel().updateConstruction(false);
+		Result before = certificate("lw");
+		String fingerprint = sliceFingerprint(getApp(), "lw");
+		String signature = locus("lw").getSemanticDefinition().getBranch(BRANCH)
+				.getSemanticSignature();
+		String document = getApp().getXML();
+		Policy other = Policy.DEFAULT.withExploration(96, 6);
+		for (String part : List.of(before.getExploration().getPolicyVersion(),
+				before.getExploration().getMethod(), Policy.DEFAULT.getSignature(),
+				other.getSignature())) {
+			assertFalse(document.contains(part), part);
+			assertFalse(fingerprint.contains(part), part);
+			assertFalse(signature.contains(part), part);
+		}
+		AppCommon reopened = AppCommonFactory.create(new AppConfigGeoCeDG(true));
+		reopened.setXML(document, true);
+		GeoLocusV2 locus = (GeoLocusV2) reopened.getKernel().lookupLabel("lw");
+		Result after = ((AlgoDependentPointLocusV2) locus.getParentAlgorithm())
+				.getHybridExistenceCertificate();
+		assertEquals(fingerprint, sliceFingerprint(reopened, "lw"));
+		assertEquals(signature, locus.getSemanticDefinition().getBranch(BRANCH)
+				.getSemanticSignature());
+		assertEquals(before.getStructure().getSemanticSignature(),
+				after.getStructure().getSemanticSignature());
+		assertNotSame(before.getExploration(), after.getExploration());
+		assertEquals(before.getExploration().getPolicyVersion(),
+				after.getExploration().getPolicyVersion());
+		assertEquals(before.getExploration().getWork(), after.getExploration().getWork());
+		assertFalse(after.getExploration().getNature().certifies());
+	}
+
+	/** @return slice fingerprint of the locus of the driver {@code N} in the application */
+	private static String sliceFingerprint(AppCommon app, String label) {
+		AlgoDependentPointLocusV2 algorithm = (AlgoDependentPointLocusV2) app.getKernel()
+				.lookupLabel(label).getParentAlgorithm();
+		GeoElement driver = app.getKernel().lookupLabel("N");
+		return ReconstructionSliceFingerprint2D.compute(algorithm.getReconstructionSliceGeos(),
+				List.of(driver, driver));
 	}
 
 	/**

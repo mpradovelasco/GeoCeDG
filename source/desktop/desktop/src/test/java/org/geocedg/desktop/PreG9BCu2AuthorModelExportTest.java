@@ -321,7 +321,7 @@ class PreG9BCu2AuthorModelExportTest {
 	 *         with the context of the product controller (an excluded end is declared in the
 	 *         mandatory sidecar)
 	 */
-	private static String dxf(AppGeoCeDG app, String label) {
+	static String dxf(AppGeoCeDG app, String label) {
 		GeometryExportService service = new GeometryExportService();
 		GeoCeDGDxfExportController controller = new GeoCeDGDxfExportController(app);
 		GeometryExportPreflight preflight = service.preflight(List.of(
@@ -376,7 +376,7 @@ class PreG9BCu2AuthorModelExportTest {
 	}
 
 	/** @return closed paths of the PGF, PSTricks and Asymptote outputs of the view */
-	private static int[] closedPaths(AppGeoCeDG app, EuclidianView view) {
+	static int[] closedPaths(AppGeoCeDG app, EuclidianView view) {
 		String pgf = PreG9BR6PlusCLatexExportTest.generate(
 				PreG9BR6PlusCLatexExportTest.exporter(app, "pgf"), view);
 		String pstricks = PreG9BR6PlusCLatexExportTest.generate(
@@ -388,7 +388,7 @@ class PreG9BCu2AuthorModelExportTest {
 	}
 
 	/** Shows only the element with the label, or nothing when the label is {@code null}. */
-	private static void showOnly(AppGeoCeDG app, String label) {
+	static void showOnly(AppGeoCeDG app, String label) {
 		for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
 			geo.setEuclidianVisible(label != null && label.equals(geo.getLabelSimple()));
 		}
