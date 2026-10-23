@@ -77,9 +77,11 @@ class PreG9BCu2AuthorModelRepresentationTest {
 
 	/**
 	 * V-B06-1 and V-B06-2: at the author's parameters and in a bite, every turn between
-	 * visible chords outside an exemption is within {@code theta_max}; the exemptions are the
-	 * bands of the two certified folds of {@code e_1} and nothing else; every drawing is
-	 * complete, one stroke per certified component.
+	 * visible chords outside an exemption is within {@code theta_max}, the turn at the closing
+	 * vertex of each closed stroke included, measured cyclically from its last chord to its
+	 * first; the exemptions are the bands of the two certified folds of {@code e_1} and nothing
+	 * else; every drawing is complete, one stroke per certified component, closed exactly for
+	 * the closed periodic components.
 	 */
 	@Test
 	void turnsAreBoundedOutsideTheCertifiedFolds() throws Exception {
@@ -88,8 +90,9 @@ class PreG9BCu2AuthorModelRepresentationTest {
 					PreG9BCu0Corpus.CEDG, work));
 			Map<String, Object> values = new LinkedHashMap<>();
 			for (String label : CLOSED) {
-				values.put(label, summary(publishAndRender(app, label, null,
-						PreG9BCu0Corpus.authorPolicy())));
+				LocusRenderData2D closed = publishAndRender(app, label, null,
+						PreG9BCu0Corpus.authorPolicy());
+				values.put(label, summary(closed) + "/" + closedStrokes(closed));
 			}
 			GeoLocusV2 e1 = PreG9BCu0Corpus.locus(app, "e_1");
 			List<LocusCertifiedFold2D> folds = certificate(e1).getStructure()
@@ -100,16 +103,18 @@ class PreG9BCu2AuthorModelRepresentationTest {
 					+ exemptNear(drawing, folds.get(0)) + "/" + exemptNear(drawing, folds.get(1)));
 			PreG9BCu0Corpus.setNumber(app, "excCyl", 3.85);
 			for (String label : FIRST_FAMILY) {
-				values.put("bite." + label, summary(publishAndRender(app, label, null,
-						PreG9BCu0Corpus.authorPolicy())));
+				LocusRenderData2D bite = publishAndRender(app, label, null,
+						PreG9BCu0Corpus.authorPolicy());
+				values.put("bite." + label, summary(bite) + "/" + closedStrokes(bite));
 			}
 			return values;
 		});
+		// Each closed stroke is measured cyclically at its closing vertex too (V-B06-1).
 		for (String label : CLOSED) {
-			assertEquals("COMPLETE/0/1/true", row.get(label), label + " " + row);
+			assertEquals("COMPLETE/0/1/true/1", row.get(label), label + " " + row);
 		}
 		for (String label : FIRST_FAMILY) {
-			assertEquals("COMPLETE/0/1/true", row.get("bite." + label), label + " " + row);
+			assertEquals("COMPLETE/0/1/true/0", row.get("bite." + label), label + " " + row);
 		}
 		assertEquals("0/true/true", row.get("e_1.exempt"), row.toString());
 	}
@@ -260,13 +265,16 @@ class PreG9BCu2AuthorModelRepresentationTest {
 	}
 
 	/**
-	 * V-AVAIL-2 (model part): a test policy whose work budget makes the length {@code w_1}
-	 * fail in the slice of {@code e_2} at one driver value: that point is
+	 * V-AVAIL-2 (model part) and V-E2-5: a test policy whose work budget makes the length
+	 * {@code w_1} fail in the slice of {@code e_2} at one driver value: that point is
 	 * {@code EVALUATION_FAILED}, the existence does not change, and the stroke is cut there
-	 * with a computational mark and a partial fidelity. The metric owner keeps for the
-	 * revision the index that the test budget built, so some later routes that need it fail
-	 * as well: each such failure is another computational gap, never nonexistence, never an
-	 * interpolation.
+	 * with a computational mark and a partial fidelity. The failure is local, since the
+	 * budget is part of the key of the metric index: 32 other drivers of the same revision are
+	 * evaluated, and the injection causes exactly one gap. The refinement around it reaches
+	 * drivers where the length estimate of the product fails without any injection
+	 * ({@code PARAMETER_RESOLUTION_REACHED}, the estimator of {@code CU1}; recorded as a
+	 * finding of the corrective mandate), whose gaps the unchanged definition shows as well. A
+	 * failure is a computational gap, never nonexistence, never an interpolation.
 	 */
 	@Test
 	void aFailingLengthCutsTheStrokeOfE2() throws Exception {
@@ -278,7 +286,8 @@ class PreG9BCu2AuthorModelRepresentationTest {
 			AlgoLocusBetweenMetricV2 length = sliceLength(live);
 			double failing = Math.PI / 2;
 			LocusEvaluator2D policy = failingLength(live, length, failing);
-			LocusExistenceStructure2D structure = certificate(e2).getStructure();
+			final LocusExistenceStructure2D structure = certificate(e2).getStructure();
+			LocusDefinition2D unchanged = e2.getSemanticDefinition();
 			LocusRenderData2D drawing = publishAndRender(app, "e_2", policy,
 					PreG9BCu0Corpus.authorPolicy());
 			Map<String, Object> values = new LinkedHashMap<>();
@@ -286,9 +295,36 @@ class PreG9BCu2AuthorModelRepresentationTest {
 				values.put("status", e2.getSemanticDefinition().evaluate(PreG9BCu0Corpus.MAIN,
 						failing, session).getStatus());
 			}
+			int valid = 0;
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+				for (int sample = 0; sample < 32; sample++) {
+					double parameter = -Math.PI + 2 * Math.PI * (sample + 0.5) / 32;
+					valid += e2.getSemanticDefinition().evaluate(PreG9BCu0Corpus.MAIN, parameter,
+							session).isValid() ? 1 : 0;
+				}
+			}
+			values.put("valid", valid);
 			List<Mark> gaps = drawing.getMarks().stream().filter(mark ->
 					mark.getKind() == MarkKind.COMPUTATIONAL_GAP).collect(Collectors.toList());
-			values.put("gaps", gaps.size());
+			// The gaps that the injection causes: those whose driver the unchanged definition
+			// evaluates.
+			int caused = 0;
+			List<String> independent = new ArrayList<>();
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+				for (Mark gap : gaps) {
+					LocusEvaluation2D without = unchanged.evaluate(PreG9BCu0Corpus.MAIN,
+							gap.getParameter(), session);
+					if (without.isValid()) {
+						caused++;
+					} else {
+						independent.add(Double.toHexString(gap.getParameter()) + ":"
+								+ without.getDiagnostic());
+					}
+				}
+			}
+			values.put("gaps", caused);
+			values.put("independent", independent.stream().allMatch(text ->
+					text.contains("COMPUTATIONAL_FAILURE")) + " " + independent);
 			values.put("onlyGaps", gaps.size() == drawing.getMarks().size());
 			values.put("gapAt", gaps.isEmpty() ? "none"
 					: Math.abs(gaps.get(0).getParameter() - failing) <= 4 * Math.ulp(failing));
@@ -300,7 +336,9 @@ class PreG9BCu2AuthorModelRepresentationTest {
 			return values;
 		});
 		assertEquals("EVALUATION_FAILED", String.valueOf(row.get("status")), row.toString());
-		assertTrue((int) row.get("gaps") >= 1, row.toString());
+		assertEquals(1, row.get("gaps"), row.toString());
+		assertTrue(String.valueOf(row.get("independent")).startsWith("true"), row.toString());
+		assertEquals(32, row.get("valid"), row.toString());
 		assertEquals(true, row.get("onlyGaps"), row.toString());
 		assertEquals(true, row.get("gapAt"), row.toString());
 		assertEquals(true, row.get("strokes"), row.toString());
@@ -593,7 +631,30 @@ class PreG9BCu2AuthorModelRepresentationTest {
 		return drawing.getVertices().stream().filter(Vertex::startsSubpath).count();
 	}
 
-	/** @return largest turn between visible chords outside the exemptions, in degrees */
+	/** @return strokes whose last vertex is their first, within a millionth of a pixel */
+	private static int closedStrokes(LocusRenderData2D drawing) {
+		List<Vertex> vertices = drawing.getVertices();
+		int closed = 0;
+		int start = 0;
+		while (start < vertices.size()) {
+			int end = start + 1;
+			while (end < vertices.size() && !vertices.get(end).startsSubpath()) {
+				end++;
+			}
+			if (end - 1 > start + 1 && distance(vertices.get(start).getPoint(),
+					vertices.get(end - 1).getPoint()) * SCALE <= 1e-6) {
+				closed++;
+			}
+			start = end;
+		}
+		return closed;
+	}
+
+	/**
+	 * @return largest turn between visible chords outside the exemptions, in degrees; on a
+	 *         closed stroke, whose last vertex is its first, the turn at the closing vertex is
+	 *         measured cyclically, from the last chord to the first (V-B06-1)
+	 */
 	private static double maximumTurn(LocusRenderData2D drawing) {
 		List<Vertex> vertices = drawing.getVertices();
 		double maximum = 0;
@@ -611,6 +672,32 @@ class PreG9BCu2AuthorModelRepresentationTest {
 				maximum = Math.max(maximum, turnDegrees(vertices.get(previous).getPoint(),
 						vertices.get(index).getPoint(), vertices.get(next).getPoint()));
 			}
+		}
+		int start = 0;
+		while (start < vertices.size()) {
+			int end = start + 1;
+			while (end < vertices.size() && !vertices.get(end).startsSubpath()) {
+				end++;
+			}
+			int last = end - 1;
+			if (last > start + 1 && distance(vertices.get(start).getPoint(),
+					vertices.get(last).getPoint()) * SCALE <= 1e-6) {
+				int previous = visibleNeighbour(vertices, last, -1);
+				int next = visibleNeighbour(vertices, start, 1);
+				boolean exempt = previous < 0 || next < 0;
+				for (int inside = Math.max(previous, start) + 1; !exempt && inside <= last;
+						inside++) {
+					exempt = vertices.get(inside).getTurnExemption() != TurnExemption.NONE;
+				}
+				for (int inside = start; !exempt && inside < next; inside++) {
+					exempt = vertices.get(inside).getTurnExemption() != TurnExemption.NONE;
+				}
+				if (!exempt) {
+					maximum = Math.max(maximum, turnDegrees(vertices.get(previous).getPoint(),
+							vertices.get(start).getPoint(), vertices.get(next).getPoint()));
+				}
+			}
+			start = end;
 		}
 		return maximum;
 	}

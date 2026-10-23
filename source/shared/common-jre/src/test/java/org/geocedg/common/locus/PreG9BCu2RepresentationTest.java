@@ -219,16 +219,18 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 			assertEquals(List.of(MarkKind.UNCERTIFIED_TURN), drawing.getComponentFidelities()
 					.get(0).getCauses());
 			assertEquals(Fidelity.PARTIAL, drawing.getFidelity());
-			assertTurnsBounded(drawing, 10, label);
+			// V-B06-1: the closed stroke is measured cyclically at its closing vertex too.
+			assertEquals(1, assertTurnsBounded(drawing, 10, label), label);
 		}
 	}
 
 	/**
 	 * V-B07-2 and V-AVAIL-4 (drawing): with the bite certificate published, the arc is one
-	 * stroke between its certified transitions; near each, the spans are taken in
-	 * {@code t = t* + s^2}, so that the end span meets the chord tolerance with the vertices of
-	 * a regular span; an end that the evaluator does not define is the limit form of its
-	 * transition, which adds no defect to the declared fidelity.
+	 * stroke between its certified transitions; near each, at the start and at the end after
+	 * the seam, the spans are taken in {@code t = t* +- s^2}, so that each end span meets the
+	 * chord tolerance with the vertices of a regular span, and each end vertex is within 0.75 px
+	 * of the image of its certified end; an end that the evaluator does not define is the
+	 * limit form of its transition, which adds no defect to the declared fidelity.
 	 */
 	@Test
 	void theTransitionEndsAreReachedInTheSquareRootCoordinate() {
@@ -263,6 +265,39 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 				arc.getLowerBoundary());
 		assertTrue(distancePixels(drawing.getVertices().get(0).getPoint(),
 				startImage.getPoint(), 10) <= 0.75);
+		// The upper end of the arc, after the seam, in t = t* - s^2 (V-B07-2, both ends).
+		double upper = arc.getInterval().getUpper();
+		List<Vertex> vertices = drawing.getVertices();
+		int upperEndSpan = 0;
+		int upperRegularSpan = 0;
+		for (Vertex vertex : vertices) {
+			double lifted = lifted(vertex.getSemanticParameter(), lower);
+			if (upper - span < lifted && lifted <= upper) {
+				upperEndSpan++;
+			} else if (upper - 2 * span < lifted && lifted <= upper - span) {
+				upperRegularSpan++;
+			}
+		}
+		assertTrue(upperEndSpan <= upperRegularSpan + 2, upperEndSpan + " vs " + upperRegularSpan);
+		int checked = 0;
+		for (int index = vertices.size() - 1; index > 0; index--) {
+			double pa = lifted(vertices.get(index - 1).getSemanticParameter(), lower);
+			double pb = lifted(vertices.get(index).getSemanticParameter(), lower);
+			if (pa < upper - span) {
+				break;
+			}
+			double sa = Math.sqrt(upper - pa);
+			double sb = Math.sqrt(upper - pb);
+			double s = sa + (sb - sa) / 2;
+			LocusPoint2D middle = evaluate(live, upper - s * s);
+			assertTrue(deviationPixels(middle, vertices.get(index - 1).getPoint(),
+					vertices.get(index).getPoint(), 10) <= 0.75, "upper end span chord " + index);
+			checked++;
+		}
+		assertTrue(checked >= 2, "upper end chords: " + checked);
+		LocusBoundaryImage2D endImage = live.encloseBoundaryImage(BRANCH,
+				arc.getUpperBoundary());
+		assertTrue(distancePixels(last(drawing).getPoint(), endImage.getPoint(), 10) <= 0.75);
 
 		// The evaluator does not define the boundary points: the limit form is the end.
 		LocusEvaluator2D failing = failingAt(live.getEvaluatorCapability(), arc.getStart(),
@@ -581,6 +616,94 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 				.filter(Component::isEmitted).count();
 		assertEquals(structure.getContinuousValidComponents().size(), emitted,
 				"the evidence is never exported");
+	}
+
+	/**
+	 * V-B07-4 (decision E-1, the style): drawn on a recording graphics, the exploratory evidence
+	 * of a locus outside class v3 and of the unlabelled second output of the critical
+	 * configuration is its own path, drawn after the certified one with the object colour at
+	 * alpha 128 and the dotted stroke of the object's width, never with the opaque solid stroke
+	 * of a certified component, which the unlabelled output draws first.
+	 */
+	@Test
+	void exploratoryEvidenceIsDrawnDottedAndTranslucent() {
+		add("s=0");
+		add("X=(s,s^2)");
+		add("D={false,{-2,2,true,true}}");
+		add("lx=LocusV2(X,s,D)");
+		critical("40");
+		add("t2=Ray(P,N)");
+		add("R2=Intersect(p,t2,2)");
+		add("lr2=LocusV2(R2,N)");
+		for (String label : List.of("lx", "lr2")) {
+			GeoLocusV2 locus = locus(label);
+			org.geogebra.common.euclidian.EuclidianView view = getApp().getEuclidianView1();
+			view.setCoordSystem(400, 300, 10, 10);
+			StyleRecorder graphics = new StyleRecorder();
+			new org.geocedg.common.euclidian.draw.DrawLocusV2(view, locus).draw(graphics);
+			int draws = graphics.colors.size();
+			assertTrue(draws >= 2, label + " draws " + draws);
+			int rgb = locus.getObjectColor().getARGB() | 0xFF000000;
+			// The last draw is the exploratory path, with its own paint and stroke.
+			org.geogebra.common.awt.GColor color = graphics.colors.get(draws - 1);
+			org.geogebra.common.awt.GBasicStroke stroke = graphics.strokes.get(draws - 1);
+			assertEquals(128, color.getAlpha(), label);
+			assertEquals(rgb, color.getARGB() | 0xFF000000, label);
+			assertTrue(stroke.getDashArray() != null, label + " a dotted stroke");
+			assertEquals(java.util.Arrays.toString(org.geogebra.common.euclidian.EuclidianStatic
+					.getStroke(stroke.getLineWidth(), org.geogebra.common.plugin
+							.EuclidianStyleConstants.LINE_TYPE_DOTTED).getDashArray()),
+					java.util.Arrays.toString(stroke.getDashArray()), label);
+			assertTrue(graphics.segments.get(draws - 1) > 0, label + " evidence drawn");
+			for (int index = 0; index < draws - 1; index++) {
+				assertEquals(rgb, graphics.colors.get(index).getARGB() | 0xFF000000, label);
+				assertTrue(graphics.colors.get(index).getAlpha() != 128, label);
+				assertEquals(stroke.getLineWidth(), graphics.strokes.get(index).getLineWidth(),
+						label + " the width of the object");
+			}
+			if ("lr2".equals(label)) {
+				assertTrue(graphics.segments.get(0) > 0, "the certified stroke of lr2 is drawn");
+				assertTrue(graphics.strokes.get(0).getDashArray() == null
+						|| graphics.strokes.get(0).getDashArray().length == 0,
+						"the certified stroke is solid");
+			}
+		}
+	}
+
+	/** Records the paint and stroke of each shape drawn, and its number of path segments. */
+	private static final class StyleRecorder extends org.geogebra.common.awt.GGraphicsCommon {
+		private final List<org.geogebra.common.awt.GColor> colors =
+				new java.util.ArrayList<>();
+		private final List<org.geogebra.common.awt.GBasicStroke> strokes =
+				new java.util.ArrayList<>();
+		private final List<Integer> segments = new java.util.ArrayList<>();
+		private org.geogebra.common.awt.GPaint paint;
+		private org.geogebra.common.awt.GBasicStroke stroke;
+
+		@Override
+		public void setPaint(org.geogebra.common.awt.GPaint value) {
+			paint = value;
+		}
+
+		@Override
+		public void setStroke(org.geogebra.common.awt.GBasicStroke value) {
+			stroke = value;
+		}
+
+		@Override
+		public void draw(org.geogebra.common.awt.GShape shape) {
+			colors.add((org.geogebra.common.awt.GColor) paint);
+			strokes.add(stroke);
+			int count = 0;
+			org.geogebra.common.awt.GPathIterator iterator = shape.getPathIterator(null);
+			double[] coordinates = new double[6];
+			while (!iterator.isDone()) {
+				iterator.currentSegment(coordinates);
+				count++;
+				iterator.next();
+			}
+			segments.add(count);
+		}
 	}
 
 	/**
@@ -940,6 +1063,11 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 		return exempt;
 	}
 
+	/** @return the parameter lifted by a period when it lies before the start of an arc */
+	private static double lifted(double parameter, double start) {
+		return parameter < start ? parameter + 2 * Math.PI : parameter;
+	}
+
 	private static int verticesIn(LocusRenderData2D drawing, double lower, double upper) {
 		int count = 0;
 		for (Vertex vertex : drawing.getVertices()) {
@@ -952,9 +1080,13 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 
 	/**
 	 * V-B06-1: every turn between visible chords of one subpath outside the exemptions is
-	 * within the policy, except at a declared turn at the resolution of the parameter.
+	 * within the policy, except at a declared turn at the resolution of the parameter; on a
+	 * closed subpath, whose last vertex is its first, the turn at the closing vertex is
+	 * measured cyclically, from the last chord to the first.
+	 *
+	 * @return the number of closed subpaths measured cyclically
 	 */
-	private static void assertTurnsBounded(LocusRenderData2D drawing, double scale,
+	private static int assertTurnsBounded(LocusRenderData2D drawing, double scale,
 			String label) {
 		List<Vertex> vertices = drawing.getVertices();
 		List<Mark> unresolved = marks(drawing, MarkKind.UNCERTIFIED_TURN);
@@ -979,6 +1111,42 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 			assertTrue(!(turn > LocusRenderPolicy2D.DEFAULT_MAXIMUM_TURN_DEGREES + 1e-9),
 					label + " turn " + turn + " at " + vertices.get(index).getSemanticParameter());
 		}
+		int closed = 0;
+		int start = 0;
+		while (start < vertices.size()) {
+			int end = start + 1;
+			while (end < vertices.size() && !vertices.get(end).startsSubpath()) {
+				end++;
+			}
+			int last = end - 1;
+			if (last > start + 1 && distancePixels(vertices.get(start).getPoint(),
+					vertices.get(last).getPoint(), scale) <= 1e-6) {
+				closed++;
+				int previous = visibleNeighbour(vertices, last, -1, scale);
+				int next = visibleNeighbour(vertices, start, 1, scale);
+				boolean exempt = previous < 0 || next < 0;
+				for (int inside = Math.max(previous, start) + 1; !exempt && inside <= last;
+						inside++) {
+					exempt = vertices.get(inside).getTurnExemption() != TurnExemption.NONE;
+				}
+				for (int inside = start; !exempt && inside < next; inside++) {
+					exempt = vertices.get(inside).getTurnExemption() != TurnExemption.NONE;
+				}
+				if (!exempt) {
+					double from = vertices.get(previous).getSemanticParameter();
+					double to = vertices.get(next).getSemanticParameter();
+					boolean declared = unresolved.stream().anyMatch(mark ->
+							from <= mark.getParameter() || mark.getParameter() <= to);
+					double turn = turnDegrees(vertices.get(previous).getPoint(),
+							vertices.get(start).getPoint(), vertices.get(next).getPoint());
+					assertTrue(declared
+							|| !(turn > LocusRenderPolicy2D.DEFAULT_MAXIMUM_TURN_DEGREES + 1e-9),
+							label + " closing turn " + turn);
+				}
+			}
+			start = end;
+		}
+		return closed;
 	}
 
 	/**

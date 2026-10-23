@@ -553,11 +553,16 @@ class PreG9BCu2AuthorModelCertificationTest {
 	}
 
 	/**
-	 * V-PER-3: with rbCone 8 and 10 the ray {@code n_1} from {@code I} and the vertical
-	 * {@code b_1} through {@code J_1} meet at the start of the ray at two drivers of
-	 * {@code o_1}: each is left in a narrow unresolved band that no component crosses, while
-	 * the other loci stay closed. The structure of {@code w_1} then stops at the band edges,
-	 * and {@code e_2} states no nonexistence it cannot prove.
+	 * V-PER-3 and GC-8: with rbCone 8 and 10 the ray {@code n_1} from {@code I} and the vertical
+	 * {@code b_1} through {@code J_1} coincide as verticals at the two drivers
+	 * {@code t* = +-arccos((x_I - x_B) / rbCone)} of {@code o_1}, located independently to 50
+	 * digits from the captured coordinates: each lies in a narrow unresolved band that no
+	 * component crosses, and every band of {@code o_1} lies within {@code 1e-9} of one of
+	 * them (with rbCone 10 the box predicate of the ray parameter is decided on a certified
+	 * island of about {@code 3e-12} between two bands next to each {@code t*}), while the other
+	 * loci stay closed; every certificate stays within its box and exact budgets. The
+	 * structure of {@code w_1} then stops at the band edges, and {@code e_2} states no
+	 * nonexistence it cannot prove.
 	 */
 	@Test
 	void constructionDegeneraciesAreBandsThatNoComponentCrosses() throws Exception {
@@ -573,7 +578,13 @@ class PreG9BCu2AuthorModelCertificationTest {
 								+ shape(certificate(app, label)));
 					}
 				}
+				for (String label : List.of("o", "v", "w", "a_1", "e_1", "o_1")) {
+					if (!"within".equals(budgets(certificate(app, label)))) {
+						problems.add(label + "@" + rbCone + " " + budgets(certificate(app, label)));
+					}
+				}
 				LocusExistenceStructure2D source = certificate(app, "o_1").getStructure();
+				List<BigDecimal> degenerate = coincidentVerticals(app, rbCone);
 				int bands = 0;
 				for (Coverage item : source.getCoverage()) {
 					if (item.getState() != CoverageState.UNRESOLVED) {
@@ -582,14 +593,34 @@ class PreG9BCu2AuthorModelCertificationTest {
 					bands++;
 					LocusInterval2D band = item.getInterval();
 					double middle = band.getLower() + (band.getUpper() - band.getLower()) / 2;
+					// Only the bands of the degenerate drivers: each lies within 1e-9 of one.
 					if (band.getUpper() - band.getLower() > 1E-9
 							|| source.getComponentContaining(middle) != null
-							|| !item.getEvidence().contains("RAY_PARAMETER")) {
-						problems.add("o_1@" + rbCone + " band " + item);
+							|| !item.getEvidence().contains("RAY_PARAMETER")
+							|| degenerate.stream().noneMatch(root -> root.subtract(
+									new BigDecimal(middle)).abs().compareTo(new BigDecimal("1e-9"))
+											< 0)) {
+						problems.add("o_1@" + rbCone + " band " + band + " " + item.getEvidence()
+								+ " for " + degenerate);
 					}
 				}
-				if (bands < 2) {
-					problems.add("o_1@" + rbCone + " has " + bands + " bands");
+				for (BigDecimal root : degenerate) {
+					// The 50-digit t* lies in a band, and no component contains it.
+					boolean inBand = source.getCoverage().stream().anyMatch(item ->
+							item.getState() == CoverageState.UNRESOLVED
+									&& new BigDecimal(item.getInterval().getLower()).compareTo(root)
+											<= 0 && root.compareTo(new BigDecimal(
+													item.getInterval().getUpper())) <= 0);
+					double nearest = root.doubleValue();
+					boolean crossed = source.getComponentContaining(Math.nextDown(nearest)) != null
+							&& source.getComponentContaining(Math.nextUp(nearest)) != null;
+					if (!inBand || source.getComponentContaining(nearest) != null || crossed) {
+						problems.add("o_1@" + rbCone + " t*=" + root + " in a band: " + inBand);
+					}
+				}
+				if (bands < degenerate.size()) {
+					problems.add("o_1@" + rbCone + " has " + bands + " bands for "
+							+ degenerate.size() + " degenerate drivers");
 				}
 				LocusExistenceStructure2D dependent = certificate(app, "e_2").getStructure();
 				for (Coverage item : dependent.getCoverage()) {
@@ -793,6 +824,11 @@ class PreG9BCu2AuthorModelCertificationTest {
 			if (result == previous) {
 				problems.add("a certificate was reused across revisions");
 			}
+			// GC-8 in the variants of V-CRIT-9.
+			if (!"within".equals(budgets(result))) {
+				problems.add("rbCylinder " + rbCylinder + " offset " + offset + ": "
+						+ budgets(result));
+			}
 			previous = result;
 		}
 		return problems;
@@ -900,6 +936,23 @@ class PreG9BCu2AuthorModelCertificationTest {
 		BigDecimal dx = new BigDecimal(p.getInhomX()).subtract(new BigDecimal(b.getInhomX()));
 		BigDecimal dy = new BigDecimal(p.getInhomY()).subtract(new BigDecimal(b.getInhomY()));
 		return dx.multiply(dx, DIGITS).add(dy.multiply(dy, DIGITS), DIGITS).sqrt(DIGITS);
+	}
+
+	/**
+	 * V-PER-3: the drivers of {@code o_1} at which {@code n_1 = Ray(I, E_1)} is vertical and
+	 * so coincides with the vertical {@code b_1} through {@code J_1}, whose abscissa is that of
+	 * {@code E_1 = B + rbCone (cos t, sin t)}.
+	 *
+	 * @return {@code -t*} and {@code t*}, {@code t* = arccos((x_I - x_B) / rbCone)}, with 50
+	 *         digits from the captured binary64 coordinates
+	 */
+	private static List<BigDecimal> coincidentVerticals(AppGeoCeDG app, double rbCone) {
+		GeoPoint i = (GeoPoint) app.getKernel().lookupLabel("I");
+		GeoPoint b = (GeoPoint) app.getKernel().lookupLabel("B");
+		BigDecimal ratio = new BigDecimal(i.getInhomX()).subtract(new BigDecimal(b.getInhomX()))
+				.divide(new BigDecimal(rbCone), DIGITS);
+		BigDecimal root = inverse(ratio, true);
+		return List.of(root.negate(), root);
 	}
 
 	/** Newton inversion of cos ({@code acos}) or sin ({@code asin}) with 50 digits. */

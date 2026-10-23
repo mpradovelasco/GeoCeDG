@@ -29,6 +29,9 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.euclidian.draw.LocusRenderCache2D;
+import org.geocedg.common.euclidian.draw.LocusRenderData2D;
+import org.geocedg.common.euclidian.draw.LocusRenderPolicy2D;
 import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D;
 import org.geocedg.common.export.ApproximationEvidence;
 import org.geocedg.common.export.GeometryExportRequest;
@@ -38,6 +41,7 @@ import org.geocedg.common.export.SourceExportOutcome;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
@@ -79,6 +83,8 @@ import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.P
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Result;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
+import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
+import org.geocedg.common.kernel.locus.metric.MetricGuaranteeClass2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -359,6 +365,70 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-POINT-6 (intersections and dependent loci) and V-POINT-5 (total length and drawing) on
+	 * the constructions of V-POINT-1 and V-POINT-2, the external tangency and the line of the
+	 * two point components: an intersection with a line far from the points or through
+	 * (15, 20) is neither {@code EMPTY} nor complete, since no position is excluded
+	 * rigorously; a locus traced by a point of that support declares the limitation of its
+	 * point components and is not {@code COMPLETE}; the total length is exactly 0 with a
+	 * structural guarantee; the drawing has no vertex and a partial fidelity, and declares each
+	 * point component with a typed mark that gives its enclosure and the state of its position.
+	 */
+	@Test
+	void pointComponentsAreNeverExcludedOrPromotedByConsumers() {
+		for (String[] configuration : new String[][] {{"(83,19)", "Ray"}, {"(15,70)", "Line"}}) {
+			tangency(configuration[0], configuration[1]);
+			String context = configuration[0] + " " + configuration[1];
+			int points = structure("lq").getPointComponents().size();
+			assertTrue(points >= 1, context);
+			assertTrue(structure("lq").getContinuousValidComponents().isEmpty(), context);
+			for (String target : List.of("target:y=500", "target=Line((15,20),(16,21))")) {
+				add(target);
+				GeoLocusIntersectionResult result = add("X=Intersect(lq,target)");
+				LocusIntersectionResult2D rich = result.getIntersectionResult();
+				assertNotEquals(IntersectionSemanticMetadata2D.GeometryKind.EMPTY,
+						rich.getGeometryKind(), context + " " + target);
+				assertNotEquals(IntersectionSemanticMetadata2D.Completeness.COMPLETE,
+						rich.getCompletenessEvidence().getCompleteness(), context + " " + target);
+				lookup("X").remove();
+				lookup("target").remove();
+			}
+			add("u0=0");
+			add("S=Point(lq,\"" + BRANCH + "\",u0)");
+			add("Y=S+(1,0)");
+			GeoLocusV2 dependent = add("ly=LocusV2(Y,S)");
+			LocusExistenceStructure2D limited = dependent.getSemanticDefinition()
+					.getBranches().get(0).getExistenceStructure();
+			assertNotEquals(Completeness.COMPLETE, limited.getCompleteness(), context);
+			assertTrue(limited.getCoverage().stream().anyMatch(coverage ->
+					coverage.getCause() == LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED
+							&& coverage.getEvidence().endsWith(
+									"upstream-point-components-not-composed")),
+					context + " " + limited);
+			GeoLocusMetricResult length = add("lengthQ=LocusLength(lq)");
+			LocusMetricResult2D total = length.getMetricResult();
+			assertEquals(MetricComputationStatus.SUCCESS, total.getComputationStatus(),
+					context + " " + total.getDiagnostics());
+			assertEquals(0.0, total.getMetricValue().getFiniteValue().orElse(Double.NaN),
+					context);
+			assertEquals(MetricGuaranteeClass2D.STRUCTURAL, total.getGuaranteeClass(), context);
+			LocusRenderData2D drawing = new LocusRenderCache2D().getOrBuild(locus("lq"),
+					LocusRenderPolicy2D.adaptive(1, 800, 600, 10, 10, 32, 0.75, 12));
+			assertTrue(drawing.getVertices().isEmpty(), context);
+			assertEquals(LocusRenderData2D.Fidelity.PARTIAL, drawing.getFidelity(), context);
+			List<LocusRenderData2D.Mark> declared = drawing.getMarks().stream().filter(mark ->
+					mark.getKind() == LocusRenderData2D.MarkKind.POINT_COMPONENT_NOT_DRAWN)
+					.collect(Collectors.toList());
+			assertEquals(points, declared.size(), context + " " + drawing.getMarks());
+			for (LocusRenderData2D.Mark mark : declared) {
+				assertTrue(mark.getDetail().contains("enclosure")
+						&& mark.getDetail().contains("position"), mark.getDetail());
+			}
+			getKernel().clearConstruction(true);
+		}
+	}
+
+	/**
 	 * V-POINT-6 (similarity images), corrective mandate, Level B: the image of the external
 	 * tangency by each public similarity keeps the point component of its source with its
 	 * parameter enclosure, structural source, maximality, proof, evidence and lineage keys and
@@ -566,6 +636,73 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 					context), context), values[1].add(values[2].multiply(y.subtract(values[1]),
 							context), context)};
 		}
+	}
+
+	/**
+	 * V-CON-3 and section 15.3 of {@code locus-v2-existence-components.md} (corrective
+	 * mandate, Level B): an included end of a certified arc across the seam belongs to the
+	 * arc and is evaluated, through {@code evaluateComponentEnd} and through the lifted ends of
+	 * {@code evaluateInComponent}, at its own binary64 parameter, as the live construction
+	 * with the driver there, bit for bit. The periodic canonicalization of the provider,
+	 * {@code -pi + (t + pi)}, moves most ends a few ulps off the arc, whose membership is
+	 * exact; before the correction those ends failed with OUT_OF_DOMAIN and the total length
+	 * of the arc with NUMERICAL_FAILURE. The total length is now an estimate or a typed budget
+	 * limitation (section 25), never an evaluation failure at a certified end.
+	 */
+	@Test
+	void theIncludedEndsOfAnArcAcrossTheSeamAreEvaluatedAtTheirOwnParameter() {
+		int moved = 0;
+		for (String radius : List.of("40+2^(-30)", "40+2^(-10)", "40+2^(-4)", "41", "45")) {
+			critical(radius);
+			add("lengthQ=LocusLength(lq)");
+			GeoPoint driver = (GeoPoint) lookup("N");
+			for (String label : List.of("lq", "lr")) {
+				LocusDefinition2D definition = locus(label).getSemanticDefinition();
+				ContinuousComponent arc = definition.getBranch(BRANCH).getExistenceStructure()
+						.getContinuousValidComponents().get(0);
+				assertTrue(arc.crossesSeam(), radius + " " + label);
+				GeoPoint live = (GeoPoint) lookup(label.equals("lq") ? "Q" : "R");
+				for (boolean upper : List.of(false, true)) {
+					double end = upper ? arc.getEnd() : arc.getStart();
+					String context = radius + " " + label + (upper ? " end " : " start ")
+							+ Double.toHexString(end);
+					assertTrue((upper ? arc.getUpperBoundary() : arc.getLowerBoundary())
+							.isBinaryEndIncluded(), context);
+					moved += definition.getProvider().canonicalize(end) != end ? 1 : 0;
+					LocusEvaluation2D atEnd;
+					LocusEvaluation2D inComponent;
+					try (LocusEvaluationSession2D session = LocusEvaluationSession2D
+							.memoizing(8)) {
+						atEnd = definition.evaluateComponentEnd(BRANCH, end, upper, session);
+						inComponent = definition.evaluateInComponent(BRANCH, arc.getInterval(),
+								upper ? arc.getInterval().getUpper()
+										: arc.getInterval().getLower(), session);
+					}
+					moveDriver(driver, end);
+					assertTrue(atEnd.isValid() && inComponent.isValid() && live.isDefined(),
+							context + " " + atEnd.getDiagnostic() + " "
+									+ inComponent.getDiagnostic());
+					for (LocusEvaluation2D evaluation : List.of(atEnd, inComponent)) {
+						assertEquals(Double.doubleToRawLongBits(live.getInhomX()),
+								Double.doubleToRawLongBits(evaluation.getPoint().getX()), context);
+						assertEquals(Double.doubleToRawLongBits(live.getInhomY()),
+								Double.doubleToRawLongBits(evaluation.getPoint().getY()), context);
+					}
+				}
+			}
+			LocusMetricResult2D length = ((GeoLocusMetricResult) lookup("lengthQ"))
+					.getMetricResult();
+			String status = radius + " " + length.getComputationStatus() + " "
+					+ length.getDiagnostics();
+			assertTrue(length.getComputationStatus() == MetricComputationStatus.SUCCESS
+					|| length.getDiagnostics().stream().allMatch(diagnostic ->
+							diagnostic.getCode() == MetricDiagnosticCode2D.WORK_BUDGET_EXHAUSTED),
+					status);
+			assertTrue(length.getDiagnostics().stream().noneMatch(diagnostic ->
+					diagnostic.getCode() == MetricDiagnosticCode2D.EVALUATION_FAILED), status);
+			getKernel().clearConstruction(true);
+		}
+		assertTrue(moved >= 8, "ends that the canonicalization moves: " + moved);
 	}
 
 	/**
