@@ -87,6 +87,14 @@ public final class ConstructionBoxModel2D {
 	private static final Object METRIC_DEFINED = new Object();
 	/** A value assumed valid whose enclosure is unbounded on the box. */
 	private static final Object ASSUMED_OPAQUE = new Object();
+	/**
+	 * Test seam of V-POINT-4 (PRE-G9B-CU2, author decision C-9 of 2026-10-23): while set, a
+	 * valid evaluation of the limit form ({@link #evaluateAssuming(SplineOutwardInterval2D,
+	 * List, boolean, Set)}) withholds its enclosure of the traced point, as when that
+	 * enclosure fails, and keeps every decision of validity. Package-private and never set by
+	 * product code; no certificate, persisted state or public interface reads it.
+	 */
+	static volatile boolean withholdLimitFormValue;
 
 	private final CertifiedConstructionProgram2D program;
 	private final NodeKind[] kinds;
@@ -415,7 +423,12 @@ public final class ConstructionBoxModel2D {
 			List<Target> assumed, boolean periodic, Set<Integer> definedMetrics) {
 		Run run = new Run(periodic, Mode.VALUE_ONLY, null, assumed);
 		run.definedMetrics = definedMetrics;
-		return run.evaluate(box);
+		ConstructionBoxOutcome2D outcome = run.evaluate(box);
+		if (withholdLimitFormValue && outcome.kind == ConstructionBoxOutcome2D.Kind.VALID) {
+			return ConstructionBoxOutcome2D.valid(null, null, outcome.selection,
+					outcome.evaluations);
+		}
+		return outcome;
 	}
 
 	/**
@@ -1315,12 +1328,12 @@ public final class ConstructionBoxModel2D {
 			Jet s = driverFirst ? nx.multiply(qy).subtract(ny.multiply(qx))
 					: qx.multiply(ny).subtract(qy.multiply(nx));
 			Jet squared = a.square().add(b.square());
-			box.a = both(tight(pair.line.a), tight(a));
-			box.b = both(tight(pair.line.b), tight(b));
+			box.a = both(box, tight(pair.line.a), tight(a));
+			box.b = both(box, tight(pair.line.b), tight(b));
 			box.c = tight(pair.line.c);
-			box.norm = both(tight(norm), tight(squared));
-			box.distance = both(tight(distance), tight(s));
-			box.discriminant = both(tight(discriminant), tight(squared.multiply(
+			box.norm = both(box, tight(norm), tight(squared));
+			box.distance = both(box, tight(distance), tight(s));
+			box.discriminant = both(box, tight(discriminant), tight(squared.multiply(
 					pair.circle.radiusSquared).subtract(s.square())));
 			if (pair.line.bound != null) {
 				box.startX = tight(pair.line.bound.x);
@@ -1330,7 +1343,7 @@ public final class ConstructionBoxModel2D {
 				// a^2 + b^2, as the membership predicate, and relative to the centre.
 				Jet startX = driverFirst ? nx : qx;
 				Jet startY = driverFirst ? ny : qy;
-				SplineOutwardInterval2D base = both(tight(pair.circle.mx
+				SplineOutwardInterval2D base = both(box, tight(pair.circle.mx
 						.subtract(pair.line.bound.x).multiply(pair.line.b)
 						.subtract(pair.circle.my.subtract(pair.line.bound.y)
 								.multiply(pair.line.a))),
@@ -1345,6 +1358,18 @@ public final class ConstructionBoxModel2D {
 				box.pathLow = margin(position, box.norm);
 				box.endLow = pair.line.bound.ray ? Double.POSITIVE_INFINITY
 						: margin(box.norm.subtract(position), box.norm);
+				if (pair.compaction) {
+					// In its first initialization the inherited intersection defines its second
+					// output only when both raw roots pass the path test, so the margins of the
+					// other raw root bound it too (PRE-G9B-CU2, review of R7, finding R7-A).
+					SplineOutwardInterval2D other = selected == 0 ? base.add(root)
+							: base.subtract(root);
+					box.pathLow = Math.min(box.pathLow, margin(other, box.norm));
+					if (!pair.line.bound.ray) {
+						box.endLow = Math.min(box.endLow,
+								margin(box.norm.subtract(other), box.norm));
+					}
+				}
 			}
 			return box;
 		}
@@ -1359,11 +1384,19 @@ public final class ConstructionBoxModel2D {
 			return operand.getKind() == OperandKind.NODE && operand.getNode() == 0;
 		}
 
-		/** @return the intersection of two enclosures of one value, or the first */
-		private SplineOutwardInterval2D both(SplineOutwardInterval2D first,
-				SplineOutwardInterval2D second) {
+		/**
+		 * @return the intersection of two enclosures of one value; when they are disjoint one
+		 *         of them is unsound, the box is marked inconsistent and stays in the band
+		 *         (PRE-G9B-CU2, review of R7, finding R7-D), and the first is returned
+		 */
+		private SplineOutwardInterval2D both(InheritedLineCircleBand2D.Box box,
+				SplineOutwardInterval2D first, SplineOutwardInterval2D second) {
 			SplineOutwardInterval2D common = first.intersection(second);
-			return common == null ? first : common;
+			if (common == null) {
+				box.consistent = false;
+				return first;
+			}
+			return common;
 		}
 
 		/** The meet point lies on each bounded operand. */

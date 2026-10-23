@@ -15,7 +15,11 @@ import java.util.Set;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.io.XMLStringBuilder;
+import org.geogebra.common.kernel.PathParameter;
+import org.geogebra.common.kernel.RegionParameters;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoPointInRegion;
+import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
@@ -24,6 +28,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoLocusND;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.geos.GeoVec3D;
 import org.geogebra.common.kernel.kernelND.GeoConicND;
@@ -78,6 +83,31 @@ final class ReconstructionExactState2D {
 		XMLStringBuilder xml = new XMLStringBuilder(new StringBuilder());
 		geo.getXML(false, xml);
 		return geo.getClass().getSimpleName() + ":" + xml;
+	}
+
+	/**
+	 * The place of a point on a path without a parameter input, or of a point in a region, is
+	 * its own state: its parameters are an input of the construction, not a value derived from
+	 * its path or region, and the serialized form keeps only the coordinates that they give
+	 * (PRE-G9B-CU2, finding H-CU2A-9).
+	 *
+	 * @return exact parameters of that place, or {@code null} for any other element
+	 */
+	static String freePlace(GeoElement geo) {
+		AlgoElement parent = geo.getParentAlgorithm();
+		if (!(geo instanceof GeoPoint)) {
+			return null;
+		}
+		if (parent instanceof AlgoPointOnPath && parent.getInputLength() == 1) {
+			PathParameter path = ((GeoPoint) geo).getPathParameter();
+			return "path:" + Double.toHexString(path.getT()) + "," + path.getPathType();
+		}
+		if (parent instanceof AlgoPointInRegion) {
+			RegionParameters region = ((GeoPoint) geo).getRegionParameters();
+			return "region:" + Double.toHexString(region.getT1()) + ","
+					+ Double.toHexString(region.getT2()) + "," + region.isOnPath();
+		}
+		return null;
 	}
 
 	/**

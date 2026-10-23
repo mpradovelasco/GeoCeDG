@@ -49,9 +49,11 @@ import org.geogebra.common.kernel.arithmetic.MyVecNode;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoSegment;
+import org.geogebra.common.kernel.geos.LimitedPath;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 
@@ -975,7 +977,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	 * @return why the outputs of a departed intersection are not those of the selection
 	 *         rule of the revision, the compaction of the roots on the paths in raw order, or
 	 *         {@code null}; with the identity permutation they are exactly when every defined
-	 *         output lies on both paths and output 0 is not undefined with output 1 defined
+	 *         output lies on both paths as the rule decides it ({@link #onBothPaths}) and
+	 *         output 0 is not undefined with output 1 defined
 	 */
 	private String departureRefusal() {
 		if (selectionLost) {
@@ -1000,8 +1003,20 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 				|| descriptor.getFamily() == SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT;
 	}
 
+	/**
+	 * @return whether the point lies on both paths as the rule of the revision and its
+	 *         certificate decide it: the inherited incidence tests and, on a ray or segment
+	 *         that bounds its intersections, its parameter range without the inherited
+	 *         tolerance {@link Kernel#MIN_PRECISION}. Within that tolerance before the start,
+	 *         the inherited compaction also counts a root that the rule does not, and its
+	 *         output 0 is then another root (PRE-G9B-CU2, review finding H-CU2A-8).
+	 */
 	private static boolean onBothPaths(AlgoIntersectLineConic intersection, GeoPoint point) {
-		return intersection.getLine().isIntersectionPointIncident(point, Kernel.MIN_PRECISION)
+		GeoLine line = intersection.getLine();
+		return line.isIntersectionPointIncident(point, Kernel.MIN_PRECISION)
+				&& (!(line instanceof LimitedPath)
+						|| ((LimitedPath) line).allowOutlyingIntersections()
+						|| line.respectLimitedPath(point.getCoordsInD2(), 0))
 				&& intersection.getConic().isIntersectionPointIncident(point,
 						Kernel.MIN_PRECISION);
 	}

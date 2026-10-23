@@ -40,7 +40,9 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * applies only after the whole construction is read; a free element enters only by its kind
  * and label, because its serialized form is representation only;</li>
  * <li>values: the exact binary64 bits of every independent element, of every unlabelled
- * input of an algorithm and of every number literal of a definition;</li>
+ * input of an algorithm and of every number literal of a definition, and the parameters of
+ * the free place of every point on a path or in a region that depends on the driver and is
+ * not a driver root (finding H-CU2A-9);</li>
  * <li>selection: the selection state of every line-conic intersection, read through
  * read-only accessors (D-CU2-17);</li>
  * <li>labels: the label state of the outputs of every intersection.</li>
@@ -219,6 +221,13 @@ public final class ReconstructionSliceFingerprint2D {
 					// value changes on recomputation and must publish a revision.
 					values.append("|D:").append(label).append(':')
 							.append(ReconstructionExactState2D.of(geo));
+				} else if (driverRoots.stream().noneMatch(root -> root == geo)) {
+					// Its coordinates follow the driver, but the place of a point on a path
+					// or in a region is its own input (PRE-G9B-CU2, finding H-CU2A-9).
+					String place = ReconstructionExactState2D.freePlace(geo);
+					if (place != null) {
+						values.append("|F:").append(label).append(':').append(place);
+					}
 				}
 			}
 			structure.append("|G:").append(text);

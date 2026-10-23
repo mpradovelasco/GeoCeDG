@@ -123,6 +123,26 @@ public final class LocusDefinition2D {
 	}
 
 	/**
+	 * Evaluates a provider-canonical parameter as given, for an evaluator of this package that
+	 * composes this definition with its own provider, such as a similarity image: the
+	 * canonicalization is not applied again, so that an included end of a component of the
+	 * image is this definition evaluated at its own parameter ({@code
+	 * locus-v2-existence-components.md} section 15.3; PRE-G9B-CU2, finding H-CU2A-6).
+	 *
+	 * @return typed semantic evaluation
+	 */
+	LocusEvaluation2D evaluateCanonicalParameter(String branchKey, double canonicalParameter,
+			LocusEvaluationSession2D session) {
+		Objects.requireNonNull(session);
+		LocusBranch2D branch = branchesByKey.get(branchKey);
+		LocusEvaluation2D refusal = refusal(branchKey, branch);
+		if (refusal != null) {
+			return refusal;
+		}
+		return evaluateCanonical(branch, canonicalParameter, session);
+	}
+
+	/**
 	 * Evaluates a canonical parameter as given: the coverage and the membership of the
 	 * existence structure decide it, and the canonicalization of the provider is not applied
 	 * again.
@@ -143,8 +163,14 @@ public final class LocusDefinition2D {
 		if (!certifiedNonexistence && structure.getCompleteness()
 				== LocusExistenceStructure2D.Completeness.COMPLETE
 				&& !branch.containsValidParameter(canonical, provider)) {
+			// A binary64 parameter never selects a point component, and says so with its
+			// typed cause (section 15.8; PRE-G9B-CU2, finding H-CU2A-11).
 			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
-					"Parameter lies outside the complete existence domain");
+					structure.getPointComponentEnclosing(canonical) != null
+							? LocusSemanticPointCause2D.POINT_COMPONENT + ": the parameter lies"
+									+ " in the enclosure of a point component, which a binary64"
+									+ " parameter never selects"
+							: "Parameter lies outside the complete existence domain");
 		}
 		return reconcile(branch, canonical, certifiedNonexistence ? coverage : null,
 				session.evaluate(this, branch, canonical));

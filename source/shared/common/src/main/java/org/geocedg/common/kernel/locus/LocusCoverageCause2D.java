@@ -41,7 +41,7 @@ public enum LocusCoverageCause2D {
 	OPERATION_OUTSIDE_CLASS(CoverageState.UNRESOLVED),
 	/** A degenerate configuration that the certificate cannot decide. */
 	DEGENERATE_CONFIGURATION(CoverageState.UNRESOLVED),
-	/** A dependency is undefined because its computation failed. */
+	/** Reserved (decision C-2): a dependency computation failed; no CU2 certifier emits it. */
 	COMPUTATIONAL_DEPENDENCY_FAILURE(CoverageState.UNRESOLVED),
 	/** Inherited behaviour that depends on a numerical tolerance. */
 	INHERITED_TOLERANCE_BEHAVIOUR(CoverageState.UNRESOLVED),

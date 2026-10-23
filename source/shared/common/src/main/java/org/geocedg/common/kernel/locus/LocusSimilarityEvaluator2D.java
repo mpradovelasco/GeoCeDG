@@ -100,12 +100,18 @@ public final class LocusSimilarityEvaluator2D implements LocusEvaluator2D,
 		return compositionDepth;
 	}
 
+	/**
+	 * The image and its source share the provider, so the canonical parameter of the image is
+	 * canonical for the source and is evaluated there as given: a second canonicalization
+	 * could move an included end of an arc across the seam off the source arc (PRE-G9B-CU2,
+	 * finding H-CU2A-6).
+	 */
 	@Override
 	public LocusEvaluation2D evaluate(LocusDefinition2D definition,
 			LocusBranch2D branch, double canonicalParameter,
 			LocusEvaluationSession2D session) {
-		return image(sourceDefinition.evaluate(branch.getBranchKey(), canonicalParameter,
-				session));
+		return image(sourceDefinition.evaluateCanonicalParameter(branch.getBranchKey(),
+				canonicalParameter, session));
 	}
 
 	/**

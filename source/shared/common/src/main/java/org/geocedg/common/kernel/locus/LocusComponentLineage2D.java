@@ -180,7 +180,10 @@ public final class LocusComponentLineage2D {
 	 * 7). Components whose keys persist are unchanged. When the previous structure was the
 	 * closed periodic component, every new component lies in it: a split, possibly into one
 	 * arc. When the new structure is closed periodic, every previous component lies in it: a
-	 * merge. A point component and a component of dimension one change dimension into each
+	 * merge. A split or a merge relates the closed component only with components of dimension
+	 * one: a point component appears or disappears beside it, and the closed component itself
+	 * when no such component is left (finding H-CU2A-10). A point component and a component
+	 * of dimension one change dimension into each
 	 * other when the source of the isolated root and the sources of both ends of the
 	 * component name the same operation and predicate, and no other component that changes
 	 * names them (decision D-CU2-T13-R1). Any other change has no demonstrated relation and is
@@ -217,9 +220,26 @@ public final class LocusComponentLineage2D {
 		} else if (children.isEmpty()) {
 			result.add(new LocusLineage2D(LineageTransition.DISAPPEARED, parents, List.of()));
 		} else if (sameSelection && previous.isClosedPeriodic()) {
-			result.add(new LocusLineage2D(LineageTransition.SPLIT, parents, children));
+			// A point component is never related to the closed component (section 15.4;
+			// PRE-G9B-CU2, finding H-CU2A-10): it appears.
+			List<String> points = pointKeys(current, children);
+			children.removeAll(points);
+			result.add(children.isEmpty()
+					? new LocusLineage2D(LineageTransition.DISAPPEARED, parents, List.of())
+					: new LocusLineage2D(LineageTransition.SPLIT, parents, children));
+			if (!points.isEmpty()) {
+				result.add(new LocusLineage2D(LineageTransition.APPEARED, List.of(), points));
+			}
 		} else if (sameSelection && current.isClosedPeriodic()) {
-			result.add(new LocusLineage2D(LineageTransition.MERGED, parents, children));
+			List<String> points = pointKeys(previous, parents);
+			parents.removeAll(points);
+			if (!points.isEmpty()) {
+				result.add(new LocusLineage2D(LineageTransition.DISAPPEARED, points,
+						List.of()));
+			}
+			result.add(parents.isEmpty()
+					? new LocusLineage2D(LineageTransition.APPEARED, List.of(), children)
+					: new LocusLineage2D(LineageTransition.MERGED, parents, children));
 		} else {
 			List<LocusLineage2D> changes = sameSelection
 					? dimensionChanges(previous, current, parents, children) : List.of();
@@ -238,6 +258,19 @@ public final class LocusComponentLineage2D {
 			}
 		}
 		return result;
+	}
+
+	/** @return the changed keys that name point components of the structure, in its order */
+	private static List<String> pointKeys(LocusExistenceStructure2D structure,
+			List<String> changed) {
+		List<String> points = new ArrayList<>();
+		for (LocusPointComponent2D point : structure.getPointComponents()) {
+			String key = of(structure, point);
+			if (changed.contains(key)) {
+				points.add(key);
+			}
+		}
+		return points;
 	}
 
 	/**

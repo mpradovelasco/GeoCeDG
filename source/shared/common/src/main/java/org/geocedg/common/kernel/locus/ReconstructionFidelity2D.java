@@ -24,6 +24,7 @@ import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 
 /**
  * Fidelity of a reconstructed slice to the live inputs it reads (PRE-G9B-CU2, D-CU2-20-R;
@@ -33,8 +34,10 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * the same binary64 values or the same inherited selection state as the live construction.
  * The validation compares, bit for bit: every labelled independent element that does not
  * depend on the driver, every random value, every unlabelled input of an algorithm (by its
- * input path), every number literal of a definition (by tree order), the selection state of
- * every line-conic intersection and the label state of every intersection output.</p>
+ * input path), every number literal of a definition (by tree order), the parameters of the
+ * free place of every point on a path or in a region that depends on the driver and is not a
+ * driver root (finding H-CU2A-9), the selection state of every line-conic intersection and
+ * the label state of every intersection output.</p>
  *
  * <p>Restoration is admitted only from the live construction to the copy and only through
  * the correspondence of the reconstruction itself: the label with which the serialized slice
@@ -283,13 +286,19 @@ public final class ReconstructionFidelity2D {
 		ordered.sort(CONSTRUCTION_ORDER);
 		Set<GeoElement> driverDependent = ReconstructionExactState2D.driverDependent(
 				ordered, driverRoots);
-		Pass first = new Pass(isolated, driverDependent, restore, departed);
+		Set<GeoElement> roots = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (GeoElement root : driverRoots) {
+			if (root != null) {
+				roots.add(root);
+			}
+		}
+		Pass first = new Pass(isolated, driverDependent, roots, restore, departed);
 		first.compare(ordered);
 		if (!restore || first.restorations == 0) {
 			return new Report(first, first.compared, 0);
 		}
 		first.refresh();
-		Pass second = new Pass(isolated, driverDependent, false, departed);
+		Pass second = new Pass(isolated, driverDependent, roots, false, departed);
 		second.compare(ordered);
 		return new Report(second, first.compared, first.restorations);
 	}
@@ -318,6 +327,7 @@ public final class ReconstructionFidelity2D {
 	private static final class Pass {
 		private final Construction isolated;
 		private final Set<GeoElement> driverDependent;
+		private final Set<GeoElement> roots;
 		private final boolean restore;
 		private final Set<AlgoIntersectLineConic> departedCopies;
 		private final List<Discrepancy> discrepancies = new ArrayList<>();
@@ -334,9 +344,11 @@ public final class ReconstructionFidelity2D {
 		private int restorations;
 
 		private Pass(Construction isolated, Set<GeoElement> driverDependent,
-				boolean restore, Set<AlgoIntersectLineConic> departedCopies) {
+				Set<GeoElement> roots, boolean restore,
+				Set<AlgoIntersectLineConic> departedCopies) {
 			this.isolated = isolated;
 			this.driverDependent = driverDependent;
+			this.roots = roots;
 			this.restore = restore;
 			this.departedCopies = departedCopies;
 		}
@@ -374,6 +386,9 @@ public final class ReconstructionFidelity2D {
 				if (live.isRandomGeo() && !driverDependent.contains(live)) {
 					compareRandom(label, live, copy, copyParent);
 				}
+				if (driverDependent.contains(live) && !roots.contains(live)) {
+					compareFreePlace(label, live, copy, copyParent);
+				}
 				compareLiterals(label, live.getDefinition(), copy.getDefinition(),
 						copyParent);
 				if (visited.add(parent)) {
@@ -410,6 +425,16 @@ public final class ReconstructionFidelity2D {
 					compareLiterals(element, liveInput.geo.getDefinition(),
 							copyInput.geo.getDefinition(),
 							copyInput.geo.getParentAlgorithm());
+					// An unlabelled intersection is a selection of the slice like a labelled
+					// one: its state is reproduced, settled or failed closed (PRE-G9B-CU2,
+					// finding H-CU2A-7).
+					AlgoElement liveInline = liveInput.geo.getParentAlgorithm();
+					AlgoElement copyInline = copyInput.geo.getParentAlgorithm();
+					if (liveInline != null && copyInline != null
+							&& liveInline.getClass() == copyInline.getClass()
+							&& visited.add(liveInline)) {
+						compareSelection(element, liveInline, copyInline);
+					}
 				}
 			}
 		}
@@ -450,6 +475,38 @@ public final class ReconstructionFidelity2D {
 				restoredValues.add(copy);
 			} else {
 				add(element, DiscrepancyKind.VALUE, liveState, copyState);
+			}
+		}
+
+		/**
+		 * The free place of a point on a path or in a region that depends on the driver is an
+		 * input of the slice. The copy derives it from the serialized coordinates, so it is
+		 * restored through the point's own parameters, which its algorithm reads on every
+		 * update (PRE-G9B-CU2, finding H-CU2A-9).
+		 */
+		private void compareFreePlace(String element, GeoElement live, GeoElement copy,
+				AlgoElement copyParent) {
+			String liveState = ReconstructionExactState2D.freePlace(live);
+			if (liveState == null) {
+				return;
+			}
+			String copyState = ReconstructionExactState2D.freePlace(copy);
+			if (liveState.equals(copyState)) {
+				return;
+			}
+			if (restore && copyState != null) {
+				GeoPoint livePoint = (GeoPoint) live;
+				GeoPoint copyPoint = (GeoPoint) copy;
+				if (livePoint.isPointOnPath()) {
+					copyPoint.getPathParameter().set(livePoint.getPathParameter());
+				} else {
+					copyPoint.getRegionParameters().set(livePoint.getRegionParameters());
+				}
+				restorations++;
+				restoredAlgorithms.add(copyParent);
+			} else {
+				add(element + "#place", DiscrepancyKind.VALUE, liveState,
+						String.valueOf(copyState));
 			}
 		}
 

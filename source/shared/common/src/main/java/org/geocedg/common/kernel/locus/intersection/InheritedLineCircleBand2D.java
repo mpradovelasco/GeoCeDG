@@ -94,6 +94,12 @@ final class InheritedLineCircleBand2D {
 		 */
 		double pathLow;
 		double endLow;
+		/**
+		 * Whether the two enclosures of each value of the box intersect; disjoint enclosures
+		 * mean that one of them is unsound, and the box stays in the band (PRE-G9B-CU2, review
+		 * of R7, finding R7-D).
+		 */
+		boolean consistent = true;
 	}
 
 	/**
@@ -120,6 +126,9 @@ final class InheritedLineCircleBand2D {
 	 *         at every binary64 driver point of the box; {@code false} puts it in the band
 	 */
 	static boolean keepsOutput(Box box) {
+		if (!box.consistent) {
+			return false;
+		}
 		Live live = new Live(box);
 		if (!live.bounded()) {
 			return false;
@@ -235,7 +244,10 @@ final class InheritedLineCircleBand2D {
 			double exactHigh = up(squared * (box.discriminant.upper + perturbation));
 			// |d| = sqrt(dis + u w) for the exact inputs.
 			double dHigh = Math.min(dTerms, up(Math.sqrt(up(exactHigh + uHigh * wHigh))));
-			double product = axis.wLow >= 0 ? uLow * axis.wLow : uHigh * axis.wLow;
+			// A negative product is rounded down: the sum may cancel, and its slack would not
+			// cover the rounding of the product (review of R7, finding R7-B).
+			double product = axis.wLow >= 0 ? uLow * axis.wLow
+					: Math.nextDown(uHigh * axis.wLow);
 			double dLow = down(Math.sqrt(down(exactLow + product)));
 			double uError = up(gamma(2) * uHigh);
 			// dis = d * d - u * w: rounding of its evaluation from d, u and w of exact inputs.
@@ -422,9 +434,11 @@ final class InheritedLineCircleBand2D {
 					+ 2 * UNIT * coordinates);
 			double shift = up(footShift + offsetShift + projection
 					+ (box.startIsDriver ? Math.sqrt(2) * box.driverError : 0));
-			double error = up((shift + UNIT * (coordinates + start)) / direction * (1 + UNIT)
-					+ (coordinates + start) * (Math.sqrt(2) * directionError / normLow
-							+ UNIT / direction));
+			// The start is a maximum norm: its Euclidean norm, which the change of the units of
+			// the direction multiplies, is at most sqrt(2) times it (review of R7, R7-C).
+			double reach = up(coordinates + Math.sqrt(2) * start);
+			double error = up((shift + UNIT * reach) / direction * (1 + UNIT)
+					+ reach * (Math.sqrt(2) * directionError / normLow + UNIT / direction));
 			return error < (Math.min(box.pathLow, box.endLow) + MIN_PRECISION)
 					* (1 - 0x1.0p-20);
 		}
