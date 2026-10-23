@@ -672,6 +672,18 @@ public final class LocusExistenceStructure2D {
 	}
 
 	/**
+	 * @param points the point components of the same parameters, sources and proofs, with
+	 *        positions of another image of the traced map (a similarity image transforms
+	 *        them)
+	 * @return the same evidence with those point components
+	 */
+	public LocusExistenceStructure2D withPointComponents(List<LocusPointComponent2D> points) {
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+				semanticRevision, coverage, components, points, singularParameters,
+				certifiedFolds, completeness, certifierContract);
+	}
+
+	/**
 	 * Explicit certificate of a static or analytic producer whose own contract proves
 	 * existence and continuity on the components it declares ({@code
 	 * locus-v2-existence-components.md} section 15.7; decision D-CU2-7, option A; ADR 0027).

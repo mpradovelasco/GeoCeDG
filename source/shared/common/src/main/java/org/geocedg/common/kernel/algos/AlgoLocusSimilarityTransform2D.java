@@ -7,11 +7,14 @@ package org.geocedg.common.kernel.algos;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
+import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
@@ -98,7 +101,7 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 					NumericGuarantee.FLOATING_POINT_UNCERTIFIED);
 			branches.add(new LocusBranch2D(sourceBranch.getBranchKey(),
 					sourceBranch.getDeclaredDriverDomain(),
-					sourceBranch.getExistenceStructure(),
+					transported(sourceBranch.getExistenceStructure()),
 					sourceBranch.getOrientation(),
 					PROVENANCE + "|source=" + sourceSnapshot.getLocusIdentity()
 							+ "|kind=" + transformSnapshot.getKind()
@@ -111,6 +114,29 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 				sourceSnapshot.getProvider(), branches, evaluator,
 				sourceSnapshot.getDeterminism(), evaluator.getEvaluatorSignature(),
 				getLocus().getInstrumentation());
+	}
+
+	/**
+	 * The existence structure of the source with the position enclosure of each point
+	 * component transformed ({@code locus-v2-similarity-transformations.md}, PRE-G9B-CU2 scope
+	 * note A2.5): its parameter enclosure, structural source, maximality, proof and lineage
+	 * stay those of the source, whose topology the image never recomputes.
+	 */
+	private LocusExistenceStructure2D transported(LocusExistenceStructure2D structure) {
+		if (structure.getPointComponents().isEmpty()) {
+			return structure;
+		}
+		List<LocusPointComponent2D> images = new ArrayList<>();
+		for (LocusPointComponent2D point : structure.getPointComponents()) {
+			double[] position = point.getPositionState()
+					== LocusPointComponent2D.PositionState.CERTIFIED_ENCLOSURE
+							? transformSnapshot.transformEnclosure(point.getPositionEnclosure())
+							: null;
+			images.add(new LocusPointComponent2D(point.getParameterLower(),
+					point.getParameterUpper(), point.getSource(), point.getMaximality(),
+					point.getNature(), point.getEvidenceKey(), position));
+		}
+		return structure.withPointComponents(images);
 	}
 
 	@Override

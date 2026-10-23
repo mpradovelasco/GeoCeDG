@@ -220,6 +220,92 @@ public final class LocusSimilarityTransform2D {
 		return transformed;
 	}
 
+	/**
+	 * Encloses the image of a box, to transport the certified position enclosure of a point
+	 * component ({@code locus-v2-similarity-transformations.md}, PRE-G9B-CU2 scope note A2.5).
+	 * The captured vector, centers and factor are exact. The exact cosine and sine of the
+	 * captured angle lie within two ulps of the binary64 values the evaluator uses, and the
+	 * exact normalized coefficients of the reflection line within {@code 2^-50} of their
+	 * magnitude plus the subnormal spacing of the captured ones, so the enclosure holds for
+	 * the exact similarity of the captured inputs and for the binary64 coefficients alike.
+	 * Every operation is rounded outward, and each coordinate of the box enters each image
+	 * coordinate once.
+	 *
+	 * @param box {@code {xLower, xUpper, yLower, yUpper}}
+	 * @return enclosure of the image of every point of the box, or {@code null} when a bound
+	 *         is not finite
+	 */
+	public double[] transformEnclosure(double[] box) {
+		Range x = new Range(box[0], box[1]);
+		Range y = new Range(box[2], box[3]);
+		Range two = Range.of(2);
+		Range imageX;
+		Range imageY;
+		switch (kind) {
+		case TRANSLATION:
+			imageX = x.add(Range.of(values.get(0)));
+			imageY = y.add(Range.of(values.get(1)));
+			break;
+		case ROTATION:
+			if (values.get(0) == 0) {
+				imageX = x;
+				imageY = y;
+				break;
+			}
+			Range cosine = Range.around(Math.cos(values.get(0)));
+			Range sine = Range.around(Math.sin(values.get(0)));
+			Range centerX = Range.of(values.get(1));
+			Range centerY = Range.of(values.get(2));
+			// c + R (p - c) = R p + (c - R c).
+			imageX = cosine.multiply(x).subtract(sine.multiply(y)).add(centerX
+					.subtract(cosine.multiply(centerX)).add(sine.multiply(centerY)));
+			imageY = sine.multiply(x).add(cosine.multiply(y)).add(centerY
+					.subtract(sine.multiply(centerX)).subtract(cosine.multiply(centerY)));
+			break;
+		case POINT_REFLECTION:
+			imageX = two.multiply(Range.of(values.get(0))).subtract(x);
+			imageY = two.multiply(Range.of(values.get(1))).subtract(y);
+			break;
+		case LINE_REFLECTION:
+			Range normalX = Range.normalized(values.get(0));
+			Range normalY = Range.normalized(values.get(1));
+			Range offset = Range.normalized(values.get(2));
+			Range cross = two.multiply(normalX).multiply(normalY);
+			// p - 2 n (n.p + c), linear in each coordinate.
+			imageX = Range.of(1).subtract(two.multiply(normalX).multiply(normalX)).multiply(x)
+					.subtract(cross.multiply(y))
+					.subtract(two.multiply(normalX).multiply(offset));
+			imageY = Range.of(1).subtract(two.multiply(normalY).multiply(normalY)).multiply(y)
+					.subtract(cross.multiply(x))
+					.subtract(two.multiply(normalY).multiply(offset));
+			break;
+		case DILATION:
+			if (values.get(0) == 0) {
+				imageX = Range.of(values.get(1));
+				imageY = Range.of(values.get(2));
+			} else if (values.get(0) == 1) {
+				imageX = x;
+				imageY = y;
+			} else {
+				Range factor = Range.of(values.get(0));
+				Range complement = Range.of(1).subtract(factor);
+				// c + k (p - c) = k p + (1 - k) c.
+				imageX = factor.multiply(x).add(complement.multiply(Range.of(values.get(1))));
+				imageY = factor.multiply(y).add(complement.multiply(Range.of(values.get(2))));
+			}
+			break;
+		default:
+			throw new IllegalStateException("Unsupported similarity family");
+		}
+		double[] image = {imageX.lower, imageX.upper, imageY.lower, imageY.upper};
+		for (double bound : image) {
+			if (!Double.isFinite(bound)) {
+				return null;
+			}
+		}
+		return image;
+	}
+
 	/** @return family of this immutable transformation */
 	public Kind getKind() {
 		return kind;
@@ -248,5 +334,67 @@ public final class LocusSimilarityTransform2D {
 	/** @return deterministic semantic content signature */
 	public String getSemanticSignature() {
 		return VERSION + "|" + kind + values.getSemanticSignature();
+	}
+
+	/** Closed interval; each operation moves its rounded bounds one ulp outward. */
+	private static final class Range {
+		/**
+		 * Relative error bound of {@link LocusSimilarityTransform2D#lineReflection}: the
+		 * quotients by the larger coefficient and by the norm round once each
+		 * ({@code u = 2^-53}), {@code Math.hypot} is within one ulp ({@code 2u}) and the
+		 * rounded quotients move the exact norm by at most {@code u}, so each coefficient is
+		 * within {@code 5u + O(u^2)} of the exact one, plus the subnormal spacing when a
+		 * quotient underflows.
+		 */
+		private static final double NORMALIZATION_ERROR = 0x1.0p-50;
+
+		private final double lower;
+		private final double upper;
+
+		Range(double lower, double upper) {
+			this.lower = lower;
+			this.upper = upper;
+		}
+
+		static Range of(double value) {
+			return new Range(value, value);
+		}
+
+		/**
+		 * @return the binary64 value widened by two ulps each way, which holds the exact value
+		 *         of a function accurate within one ulp of it ({@code Math.cos},
+		 *         {@code Math.sin}) even when the two lie in adjacent binades
+		 */
+		static Range around(double value) {
+			return new Range(Math.nextDown(Math.nextDown(value)),
+					Math.nextUp(Math.nextUp(value)));
+		}
+
+		/** @return the captured coefficient widened to hold the exact normalized one */
+		static Range normalized(double value) {
+			double radius = Math.nextUp(Math.abs(value) * NORMALIZATION_ERROR)
+					+ Double.MIN_VALUE;
+			return new Range(Math.nextDown(value - radius), Math.nextUp(value + radius));
+		}
+
+		Range add(Range other) {
+			return new Range(Math.nextDown(lower + other.lower),
+					Math.nextUp(upper + other.upper));
+		}
+
+		Range subtract(Range other) {
+			return new Range(Math.nextDown(lower - other.upper),
+					Math.nextUp(upper - other.lower));
+		}
+
+		Range multiply(Range other) {
+			double first = lower * other.lower;
+			double second = lower * other.upper;
+			double third = upper * other.lower;
+			double fourth = upper * other.upper;
+			return new Range(Math.nextDown(Math.min(Math.min(first, second),
+					Math.min(third, fourth))), Math.nextUp(Math.max(Math.max(first, second),
+							Math.max(third, fourth))));
+		}
 	}
 }
