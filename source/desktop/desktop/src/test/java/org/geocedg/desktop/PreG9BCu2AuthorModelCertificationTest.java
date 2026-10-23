@@ -1401,8 +1401,10 @@ class PreG9BCu2AuthorModelCertificationTest {
 	/**
 	 * V-DET-1 on the author model (corrective descendant T13-R4): two runs, each opening the
 	 * complete model anew and taking it through the same changes (the driver to
-	 * {@code t = -1}; excCyl to 2.9, 3.7 and 3.85, to the last binary64 of penetration and the
-	 * first of the bite, to 7.0, where the cover is empty, and back to 2.9; then rbCone to 8,
+	 * {@code t = -1}; excCyl to 2.9, to the nine bite values of V-TR-1 from 3.66 to 5.0, to
+	 * the last binary64 of penetration and the first of the bite, to 7.0, where the cover is
+	 * empty, and back to 2.9; rbCylinder to 2.0, and back with alpha_cyl to 35 degrees, the
+	 * changes of V-CRIT-9 (consolidated author resolution of 2026-10-23); then rbCone to 8,
 	 * where the construction degenerates), give results identical bit for bit at every step
 	 * for every locus of the model, {@code e_2} included, and again after undoing and redoing
 	 * the last two changes and after reopening the saved document: the semantic revision, the
@@ -1440,12 +1442,20 @@ class PreG9BCu2AuthorModelCertificationTest {
 			PreG9BR6PlusF3Fixtures.baseline(app);
 			StringBuilder text = new StringBuilder(results(app, "opened"));
 			double penetration = Double.longBitsToDouble(LAST_PENETRATION);
-			for (double value : new double[] {2.9, 3.7, 3.85, penetration,
-					Math.nextUp(penetration), 7.0, 2.9}) {
+			for (double value : new double[] {2.9, 3.66, 3.7, 3.85, 3.9, 3.95, 3.96, 4.0, 4.5,
+					5.0, penetration, Math.nextUp(penetration), 7.0, 2.9}) {
 				PreG9BCu0Corpus.setNumber(app, "excCyl", value);
 				PreG9BR6PlusF3Fixtures.store(app);
 				text.append(results(app, "excCyl=" + Double.toHexString(value)));
 			}
+			// V-CRIT-9: the non-driver parameters that move the critical value.
+			PreG9BCu0Corpus.setNumber(app, "rbCylinder", 2.0);
+			PreG9BR6PlusF3Fixtures.store(app);
+			text.append(results(app, "rbCylinder=2.0"));
+			PreG9BCu0Corpus.setNumber(app, "rbCylinder", 1.5);
+			PreG9BCu0Corpus.setNumber(app, "\u03b1_{cyl}", Math.toRadians(35));
+			PreG9BR6PlusF3Fixtures.store(app);
+			text.append(results(app, "alpha_cyl=35deg"));
 			PreG9BCu0Corpus.setNumber(app, "rbCone", 8);
 			PreG9BR6PlusF3Fixtures.store(app);
 			text.append(results(app, "rbCone=8"));

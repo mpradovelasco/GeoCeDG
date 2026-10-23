@@ -41,6 +41,7 @@ import org.geocedg.common.export.SemanticCurveExportAdapter2D.SourceResult;
 import org.geocedg.common.export.SourceExportOutcome;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -84,10 +85,15 @@ import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.C
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.ExactEvidence;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Policy;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Result;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D.OriginWrap;
+import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D.Piece;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.locus.metric.MetricDiagnosticCode2D;
 import org.geocedg.common.kernel.locus.metric.MetricGuaranteeClass2D;
+import org.geocedg.common.kernel.locus.metric.SamePositionPolicy;
+import org.geocedg.common.kernel.locus.metric.TraversalDirection;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -1652,7 +1658,17 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * (corrective mandate, R5 group G2) the runs also compare the counters of certification,
 	 * slices and revisions, own and nested, and the slice changes by kind, on one ulp of the
 	 * critical radius there and back with {@code lr2} and the driver away from the double root
-	 * and at it, on renamed outputs and on the literal inputs of V-REV-EXACT-4.
+	 * and at it, on renamed outputs and on the literal inputs of V-REV-EXACT-4. Since the
+	 * consolidated author resolution of 2026-10-23 they also cover the cases of the oriented
+	 * length event (V-E2-6: backward direction, origin at the seam and following the driver,
+	 * a source certified only locally, a degenerate source of length zero, a jump that no
+	 * chord bounds and a length between fixed positions; V-E2-8: the same-position and
+	 * open-boundary policies read through the scalar adapter), the compaction within the
+	 * inherited tolerance at a ray start, an inline intersection after a non-driver edit, a
+	 * closed component that one edit turns into a point component and back, and free places
+	 * on a path and in a region dragged before the driver moves (H-CU2A-7 to H-CU2A-10). No
+	 * construction gives a jump that no chord bounds, nor a structure that fails
+	 * computationally (V-UND-1): their synthetic structures are certified on two builds.
 	 */
 	@Test
 	void twoRunsOfTheSyntheticConstructionsGiveIdenticalResults() {
@@ -1807,6 +1823,93 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		});
 		changes.put("literals", List.of(Change.number("a", Math.nextUp(0.30000000000000004)),
 				Change.number("b", 0.1)));
+		// Consolidated author resolution of 2026-10-23: the cases of the oriented length event
+		// (V-E2-6: backward direction, origin at the seam and following the driver, a source
+		// certified only locally, a degenerate source and a length between fixed positions;
+		// V-E2-8: the same-position policies, read by the scalar adapter) and the constructions
+		// of the corrections of the final scientific review (H-CU2A-7 to H-CU2A-10).
+		for (String policy : List.of("\"reverse\",\"strict\",\"zero-length\"",
+				"\"forward\",\"strict\",\"full-cycle\"", "\"reverse\",\"strict\",\"full-cycle\"",
+				"\"forward\",\"wrap-to-start\",\"zero-length\"")) {
+			builders.put("length " + policy, () -> lengthEvent("N+(1,0)", "0", "," + policy));
+		}
+		builders.put("origin at the seam", () -> lengthEvent("N+(1,0)", "-pi", ""));
+		builders.put("origin following the driver", () -> lengthEvent("N+(1,0)", "x(N)/2", ""));
+		builders.put("locally certified source", () -> {
+			add("p=Circle((0,0),25)");
+			add("P=(-25,50)");
+			add("g1=Circle((35,-45),40)");
+			add("N=Point(g1)");
+			add("t2=Ray(P,N)");
+			add("R2=Intersect(p,t2,2)");
+			add("lr2=LocusV2(R2,N)");
+			getKernel().updateConstruction(false);
+			add("A=Point(lr2,\"" + BRANCH + "\",2)");
+			add("wl=LocusLength(lr2,A,R2)");
+			new AlgoLocusMetricScalarAdapter(getConstruction(), "dl",
+					(GeoLocusMetricResult) lookup("wl"));
+			add("Rl=N-dl*(1,0)");
+			add("el=LocusV2(Rl,N)");
+		});
+		builders.put("degenerate source", () -> lengthEvent("Dilate(N,0,(1,1))", "0", ""));
+		builders.put("fixed positions", () -> {
+			lengthEvent("N+(1,0)", "0", "");
+			add("B=Point(o,\"" + BRANCH + "\",1)");
+			add("f=LocusLength(o,A,B)");
+			add("df=Length(o,A,B)");
+			add("Rf=N-df*(1,0)");
+			add("ef=LocusV2(Rf,N)");
+		});
+		builders.put("compaction within the tolerance", () -> {
+			add("c=Circle((0,0),5)");
+			add("g1=Circle((-8,0),4)");
+			add("N=Point(g1)");
+			moveDriver((GeoPoint) lookup("N"), 0);
+			add("A=(100,0.25)");
+			add("r=Ray(N,A)");
+			add("R=Intersect(c,r,1)");
+			add("lr=LocusV2(R,N)");
+		});
+		builders.put("inline intersection", () -> {
+			add("g1=Circle((8,0),5)");
+			add("N=Point(g1)");
+			moveDriver((GeoPoint) lookup("N"), 0);
+			add("P=(-20,0.5)");
+			add("c=Circle((0,0),6)");
+			add("s=Segment(N,P)");
+			add("B=(0,10)");
+			add("M=Midpoint(Intersect(s,c,2),B)");
+			add("lm=LocusV2(M,N)");
+		});
+		changes.put("inline intersection", List.of(Change.driver(Math.PI),
+				Change.point("B", 0, 10.5)));
+		builders.put("closed component to a point", () -> {
+			add("M=(-25,40)");
+			add("p=Circle(M,25)");
+			add("P=(-25,50)");
+			add("g1=Circle((83,19),40)");
+			add("N=Point(g1)");
+			moveDriver((GeoPoint) lookup("N"), 0.5);
+			add("s=Segment(N,P)");
+			getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+					(GeoLine) lookup("s"), (GeoConic) lookup("p"));
+			add("lq=LocusV2(Q,N)");
+		});
+		changes.put("closed component to a point", List.of(Change.point("M", 0, 0),
+				Change.point("M", -25, 40)));
+		builders.put("free places", () -> {
+			add("g1=Circle((0,0),4)");
+			add("N=Point(g1)");
+			moveDriver((GeoPoint) lookup("N"), 0.3);
+			add("s=Segment(N,(10,1))");
+			add("B=Point(s)");
+			add("q=Polygon(N,(10,0),(10,10))");
+			add("C=PointIn(q)");
+			add("lb=LocusV2(B,N)");
+			add("lc=LocusV2(C,N)");
+		});
+		changes.put("free places", List.of(Change.point("B", 5.0, 1.3),
+				Change.point("C", 9.0, 2.5), Change.driver(2.0)));
 		StringBuilder compared = new StringBuilder();
 		for (Map.Entry<String, Runnable> builder : builders.entrySet()) {
 			builder.getValue().run();
@@ -1824,7 +1927,10 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				"2LINE_CIRCLE[0x1.0p0", " image revision=", "A point=", "undo 0", "redo 0",
 				"reopened", "cause=RESOLVED", "cause=POINT_COMPONENT", "rr=0x1.4000000000001p5",
 				"N at 0x", "renamed", "lr2r revision=", "lq2 revision=", "b=0x1.999999999999ap-4",
-				" slices=", "SELECTION=")) {
+				" slices=", "SELECTION=", "e revision=", "lm revision=", "lb revision=",
+				"lc revision=", "M to (", "B to (", "C to (", "APPEARED[", "wl metric=",
+				"el revision=", "rectifiability-not-established", "f metric=", "ef revision=",
+				"target-not-the-generator-occurrence", "refused metric-value-constant")) {
 			assertTrue(compared.indexOf(part) >= 0, "the runs compare " + part);
 		}
 		for (String event : List.of("SELECTION_SETTLEMENT=[1-9]", "SELECTION_DEPARTURE=[1-9]",
@@ -1832,6 +1938,47 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			assertTrue(Pattern.compile(event).matcher(compared).find(),
 					"the runs compare the event " + event);
 		}
+		String synthetic = syntheticCertificates();
+		assertEquals(synthetic, syntheticCertificates());
+		for (String part : List.of("UNRESOLVED_BAND_EDGE", "COMPUTATIONAL_DEPENDENCY_FAILURE")) {
+			assertTrue(synthetic.contains(part), "the synthetic runs compare " + part);
+		}
+	}
+
+	/**
+	 * V-DET-1 for the synthetic structures of V-E2-6 and V-UND-1, on a new build of the
+	 * length event: the dependent locus certified with a jump that no chord bounds and with
+	 * a structure that fails computationally.
+	 */
+	private String syntheticCertificates() {
+		lengthEvent("N+(1,0)", "0", "");
+		ConstructionBoxModel2D model = new ConstructionBoxModel2D(
+				((ReconstructibleLocusEvaluator2D) locus("e").getSemanticDefinition()
+						.getEvaluatorCapability()).captureCertifiedProgramV3().orElseThrow());
+		int node = model.metricInputs().get(0);
+		LocusInterval2D domain = new LocusInterval2D(-Math.PI, Math.PI, true, false);
+		StringBuilder text = new StringBuilder();
+		for (LocusMetricFunctionStructure2D structure : List.of(
+				LocusMetricFunctionStructure2D.certified(List.of(new Piece(domain,
+						LocusMetricFunctionStructure2D.State.DEFINED, null, false)),
+						List.of(new OriginWrap(0, TraversalDirection.FORWARD,
+								SamePositionPolicy.ZERO_LENGTH, Double.NaN, 100, "test")),
+						"test"),
+				LocusMetricFunctionStructure2D.notEstablished(
+						LocusCoverageCause2D.COMPUTATIONAL_DEPENDENCY_FAILURE, "test"))) {
+			Result result = HybridExistenceCertifier2D.certify(model, Map.of(node, structure),
+					domain, true, BRANCH, null, Policy.DEFAULT, null);
+			text.append(result.getStructure().getSemanticSignature()).append("\n roots=")
+					.append(result.getRoots().stream().map(CertifiedRoot::getSignature)
+							.collect(Collectors.joining(";")))
+					.append("\n exact=").append(result.getExactEvidence().stream()
+							.map(ExactEvidence::getSignature).collect(Collectors.joining(";")))
+					.append("\n boxes=").append(result.getExistenceBoxes())
+					.append("\n keys=").append(LocusComponentLineage2D.keys(
+							result.getStructure())).append('\n');
+		}
+		getKernel().clearConstruction(true);
+		return text.toString();
 	}
 
 	/**
@@ -1901,6 +2048,36 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			return new Change("N at " + Double.toHexString(parameter), app -> moveDriver(
 					(GeoPoint) app.getKernel().lookupLabel("N"), parameter));
 		}
+
+		/** The point with the label moved to the coordinates, as a drag moves it. */
+		static Change point(String label, double x, double y) {
+			return new Change(label + " to (" + Double.toHexString(x) + ", "
+					+ Double.toHexString(y) + ")", app -> {
+						GeoPoint point = (GeoPoint) app.getKernel().lookupLabel(label);
+						point.setCoords(x, y, 1);
+						point.updateCascade();
+						app.getKernel().updateConstruction(false);
+					});
+		}
+	}
+
+	/**
+	 * The oriented length event ({@code locus-v2-metrics.md} section 26): the length {@code w}
+	 * on the locus {@code o} of the traced point {@code K} from its point at the origin to
+	 * {@code K}, with the policy, read by the scalar adapter {@code d} on which the dependent
+	 * locus {@code e} depends.
+	 */
+	private void lengthEvent(String traced, String origin, String policy) {
+		add("c=Circle((0,0),2)");
+		add("N=Point(c)");
+		add("K=" + traced);
+		add("o=LocusV2(K,N)");
+		add("A=Point(o,\"" + BRANCH + "\"," + origin + ")");
+		add("w=LocusLength(o,A,K" + policy + ")");
+		new AlgoLocusMetricScalarAdapter(getConstruction(), "d",
+				(GeoLocusMetricResult) lookup("w"));
+		add("R=N-d*(1,0)");
+		add("e=LocusV2(R,N)");
 	}
 
 	/** @return every result of the document that a second run must reproduce bit for bit */
