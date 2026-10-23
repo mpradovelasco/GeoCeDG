@@ -22,6 +22,12 @@ public enum LocusCertificationWork2D {
 	CERTIFIED_TRANSITION,
 	/** One {@code UNRESOLVED} band published by a certificate. */
 	UNRESOLVED_BAND,
+	/**
+	 * One run of valid cells reported as interior of a band of the inherited coincidence
+	 * suppression, which a certificate closes at its band resolution (decision
+	 * D-CU2-T13-R7).
+	 */
+	COINCIDENCE_BAND_CLOSURE,
 	/** One exploratory traversal of an unresolved band. */
 	EXPLORATORY_TRAVERSAL,
 	/** One metric value computed or read while a certificate is computed. */

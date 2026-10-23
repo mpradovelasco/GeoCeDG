@@ -546,11 +546,20 @@ public final class HybridExistenceCertifier2D {
 		private final int bands;
 		private final String policySignature;
 		private final String diagnostic;
+		private final double closedWidth;
 
 		Result(LocusExistenceStructure2D structure, LocusExploratoryEvidence2D exploration,
 				List<CertifiedRoot> roots, List<ExactEvidence> exactEvidence,
 				List<CertifiedStationaryPoint> stationaryPoints, long boxes, int transitions,
 				int bands, String policySignature, String diagnostic) {
+			this(structure, exploration, roots, exactEvidence, stationaryPoints, boxes,
+					transitions, bands, policySignature, diagnostic, 0);
+		}
+
+		Result(LocusExistenceStructure2D structure, LocusExploratoryEvidence2D exploration,
+				List<CertifiedRoot> roots, List<ExactEvidence> exactEvidence,
+				List<CertifiedStationaryPoint> stationaryPoints, long boxes, int transitions,
+				int bands, String policySignature, String diagnostic, double closedWidth) {
 			this.structure = structure;
 			this.exploration = exploration;
 			this.roots = Collections.unmodifiableList(new ArrayList<>(roots));
@@ -562,6 +571,7 @@ public final class HybridExistenceCertifier2D {
 			this.bands = bands;
 			this.policySignature = policySignature;
 			this.diagnostic = diagnostic;
+			this.closedWidth = closedWidth;
 		}
 
 		/** @return existence structure, bound to no revision until published */
@@ -615,6 +625,15 @@ public final class HybridExistenceCertifier2D {
 		}
 
 		/**
+		 * @return total parameter width of the valid cells that the closure of the bands of
+		 *         the inherited coincidence suppression reported as band interior (decision
+		 *         D-CU2-T13-R7): certified existence withheld, never stated nonexistence
+		 */
+		public double getClosedCoincidenceWidth() {
+			return closedWidth;
+		}
+
+		/**
 		 * The same certificate restricted to the components that the generator declares for
 		 * its driver domain ({@link LocusExistenceStructure2D#restrictedTo}); the exploratory
 		 * evidence keeps only what lies inside them, and the computation evidence is kept.
@@ -628,7 +647,7 @@ public final class HybridExistenceCertifier2D {
 			return new Result(structure.restrictedTo(declared, declarationEvidence),
 					exploration == null ? null : exploration.restrictedTo(declared), roots,
 					exactEvidence, stationaryPoints, boxes, transitions, bands,
-					policySignature, diagnostic);
+					policySignature, diagnostic, closedWidth);
 		}
 	}
 
@@ -1149,6 +1168,8 @@ public final class HybridExistenceCertifier2D {
 		private long boxes;
 		private boolean exhausted;
 		private String diagnostic;
+		/** Width of the valid cells closed into coincidence bands. */
+		private double closedWidth;
 
 		Run(ConstructionBoxModel2D model, Map<Integer, LocusMetricFunctionStructure2D> metrics,
 				List<String> operations, LocusInterval2D domain, boolean periodic,
@@ -1268,6 +1289,9 @@ public final class HybridExistenceCertifier2D {
 								band(valid, LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT,
 										"coincidence-band-closure");
 							}
+							closedWidth += width;
+							record(instrumentation,
+									LocusCertificationWork2D.COINCIDENCE_BAND_CLOSURE);
 						}
 						break;
 					}
@@ -2364,7 +2388,7 @@ public final class HybridExistenceCertifier2D {
 			LocusExploratoryEvidence2D exploration = explore(branchKey, bands, sampler,
 					policy, instrumentation);
 			return new Result(structure, exploration, roots, exactEvidence, stationary, boxes,
-					transitions, bands.size(), policy.getSignature(), diagnostic);
+					transitions, bands.size(), policy.getSignature(), diagnostic, closedWidth);
 		}
 
 		/** Fails closed: a structural failure of the assembly certifies nothing. */
