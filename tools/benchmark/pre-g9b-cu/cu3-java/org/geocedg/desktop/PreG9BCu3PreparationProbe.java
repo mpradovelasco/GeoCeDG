@@ -96,6 +96,7 @@ class PreG9BCu3PreparationProbe {
 		model.put("P5_seam_root", seam(app));
 		model.put("P5_seam_contact_at_E_1_eq_J", seamContact(app));
 		model.put("P3_high_precision_ideal_identity", idealIdentity(app));
+		model.put("P10_current_reader_of_stage_a_syntax", currentReader(app));
 		model.put("P4_dynamics", dynamics(app));
 		model.put("P9_view_independence", viewIndependence(app));
 		return model;
@@ -345,6 +346,43 @@ class PreG9BCu3PreparationProbe {
 		java.math.BigDecimal norm = ux.multiply(ux).add(uy.multiply(uy)).sqrt(mc);
 		return new java.math.BigDecimal[] {x0.add(ux.multiply(r).divide(norm, mc), mc),
 			y0.add(uy.multiply(r).divide(norm, mc), mc)};
+	}
+
+	/**
+	 * P10: what the current product (a reader older than any CU3 contract) does with the
+	 * candidate Stage A syntax. Each command runs once in the working copy and is removed.
+	 */
+	private static Map<String, Object> currentReader(AppGeoCeDG app) {
+		Map<String, Object> rows = new LinkedHashMap<>();
+		for (String command : new String[] {"cu3P=Point(e_1,K)", "cu3I=Intersect(e_1,n,K)",
+				"cu3O=Intersect(o_1,h_2,K)", "cu3C=Intersect(e_1,c_1,K)"}) {
+			Map<String, Object> row = new LinkedHashMap<>();
+			List<String> messages = new ArrayList<>();
+			try {
+				GeoElementND[] result = app.getKernel().getAlgebraProcessor()
+						.processAlgebraCommandNoExceptionHandling(command, false,
+								recorder(messages), false, null);
+				boolean created = result != null && result.length > 0;
+				row.put("created", created);
+				if (created) {
+					GeoElement geo = result[0].toGeoElement();
+					row.put("class", geo.getClass().getSimpleName());
+					row.put("parent_algorithm", geo.getParentAlgorithm() == null ? null
+							: geo.getParentAlgorithm().getClass().getSimpleName());
+					row.put("defined", geo.isDefined());
+					if (geo instanceof GeoPoint point) {
+						row.put("point", xy(point));
+					}
+					geo.remove();
+				}
+			} catch (Throwable failure) {
+				row.put("created", false);
+				row.put("exception", failure.getClass().getName());
+			}
+			row.put("error_messages", messages);
+			rows.put(command, row);
+		}
+		return rows;
 	}
 
 	/** P4: dynamic sweeps of the four model parameters, restored after each change. */
