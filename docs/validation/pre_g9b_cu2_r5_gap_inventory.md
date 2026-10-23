@@ -7,7 +7,7 @@
 | Filas | las 34 de §3 de la [revisión de trazabilidad](pre_g9b_cu2_traceability_review.md) |
 | Método | cuatro revisores de solo lectura, uno por grupo de filas, releyeron el requisito de la [matriz](pre_g9b_cu2_validation_matrix.md), las pruebas y el código; una verificación dirigida, también de solo lectura, contrastó cada afirmación de defecto de producto o de inconsistencia normativa (§3). No se ha ejecutado ninguna prueba nueva |
 | Base | rama local `phase/pre-g9b-cu2-corrective` en `e9541c42e` (R1, R2, R4, refuerzo y corrección de H-T13-A) |
-| Relacionado | [registro de R6](pre_g9b_cu2_r6_correction_record.md): H-T13-A corregido; H-T13-B y H-T13-C pendientes de D-CU2-T13-R7 |
+| Relacionado | [registro de R6](pre_g9b_cu2_r6_correction_record.md): H-T13-A corregido; [registro de R7](pre_g9b_cu2_r7_correction_record.md): H-T13-B corregido y H-T13-C clasificado; §7, contenido por categorías pedido por D-CU2-T13-R7 |
 
 ## 1. Clasificación y obligatoriedad
 
@@ -151,3 +151,69 @@ escalar):
 
 G1 y G2 no cambian el producto. G3 conviene hacerlo después de D-CU2-T13-R7, porque la banda
 cambia sus resultados esperados. G4 no debería empezar sin decidir cada punto de §3.
+
+## 7. Contenido y propuesta de resolución por categorías (D-CU2-T13-R7, punto 7)
+
+La decisión D-CU2-T13-R7 mantiene R5 pendiente y pide, antes de autorizar G1 a G4, su contenido
+completo y la propuesta de resolución separados en cuatro categorías. No autoriza aplicar los 34
+cambios, y V-DET-1 sigue abierta hasta demostrar su cobertura conforme al contrato. Nada de esta
+sección se ha implementado. Cada fila aparece en la categoría de cada una de sus partes; las
+correcciones mínimas son las de §2.
+
+### 7.1 Refuerzo de pruebas
+
+Sin cambio de producto ni de norma. Si una prueba revela un defecto, se caracteriza y se escala, como
+en R2 y R4.
+
+| Grupo | Filas | Contenido |
+|---|---|---|
+| G1 | GC-8, V-LVL-1, V-PER-3, V-E2-5, V-REV-EXACT-3, V-REV-EXACT-9, V-REV-EXACT-10, V-POINT-4 (vecinos de `t*`), V-CON-7, V-B06-1, V-B06-3, V-B07-2, V-B07-4 | aserciones sobre construcciones ya probadas (§2) |
+| G2 | GC-1, GC-3, V-LVL-2, V-REV-EXACT-8, V-SEL-7, V-CON-1, V-CON-3, V-CON-4, V-TEX-1 (topología) | pruebas de escritorio del modelo con contadores, consumidores y estados; V-CON-3 puede revelar un defecto de la métrica |
+| G3 | V-COINC-2, V-COINC-3, V-COINC-5 y V-COINC-7 (sus aserciones), V-COINC-8 | salidas en raíces coincidentes; los resultados esperados de `lr2` son ya los de la banda de R7: banda estrecha en torno a las raíces coincidentes, componentes locales con bordes de banda y fallo cerrado tipado donde el cálculo heredado no es decisivo |
+| V-DET-1 | V-DET-1 | extender la doble ejecución a las filas que aún no cubre (las de G1 a G3 cuando existan), para cerrarla conforme al contrato |
+
+Propuesta: G1 primero; G3 cuando el autor confirme la banda de R7; G2 después, por coste.
+
+### 7.2 Corrección de producto
+
+Cada punto necesita una autorización expresa y una prueba que falle sobre el candidato anterior.
+
+| Filas | Defecto o cambio | Alternativa normativa |
+|---|---|---|
+| V-LIN-4 y V-POINT-5 | un `Point(L, u)` sin resolver queda indefinido sin causa tipada (confirmado, §3) | ninguna: la norma ya la exige |
+| V-POINT-6 | la imagen por semejanza conserva la posición de la componente puntual de la fuente (confirmado por lectura, §3) | declarar la posición no disponible en la imagen |
+| V-UND-1 | emitir `COMPUTATIONAL_DEPENDENCY_FAILURE` | declararla reservada (§7.3) |
+| V-AVAIL-6 | propagar la clase de garantía numérica al dibujo | precisar la fila (§7.3) |
+| V-REV-EXACT-7 | tipar `LABELS` un cambio de etiquetado; altera las huellas existentes | precisar que es `STRUCTURE` (§7.3) |
+| V-POINT-4 (fallo forzado) | un gancho de prueba para la vía `UNAVAILABLE` | usar una entrada métrica que falle, sin gancho |
+| G3 (observación de R7) | la compactación de la primera inicialización cuenta con la tolerancia heredada de `10⁻⁵` y el modelo con el predicado exacto ([registro de R7](pre_g9b_cu2_r7_correction_record.md) §6.6); por confirmar con una sonda | si se confirma, banda tipada en esa franja |
+
+Propuesta: V-LIN-4 y V-POINT-5, y V-POINT-6, son defectos confirmados de bajo riesgo; los demás,
+según la decisión normativa de §7.3.
+
+### 7.3 Modificación normativa
+
+Precisiones de filas o de normas, para decidir antes de cualquier prueba que dependa de ellas.
+
+| Filas | Precisión propuesta |
+|---|---|
+| V-REV-EXACT-7 | la causa tipada de un cambio de etiquetado (`STRUCTURE` frente a `LABELS`) |
+| V-UND-1 | `COMPUTATIONAL_DEPENDENCY_FAILURE` emitida o reservada |
+| V-AVAIL-6 | «coordenadas iguales bit a bit a las del evaluador, sin mejorar su clase» |
+| GC-2 | la regla de las certificaciones anidadas por revisión |
+| V-TEX-1 | compilar Asymptote, hacer visible la falta de herramientas TeX y precisar la orden |
+| V-COINC-5 y V-COINC-7 | redactar las filas con la precisión F-CU2-1 de R7: una salida etiquetada está definida más allá del extremo exacto (exceso de evaluación); la segunda salida sin etiqueta tiene su banda tipada; el muestreo de V-COINC-7 a 3,7 |
+| V-LIN-4 | precisar «interseca» |
+| §10.3 del modelo de construcción certificada | opcional y editorial: la banda está acotada por predicados conservadores del cálculo heredado sobre entradas de primer nivel (registro de R7, §4) |
+
+### 7.4 Deficiencias de trazabilidad
+
+Sin efecto sobre el producto ni sobre las normas.
+
+- Las erratas de §5: tipos de V-LVL-1, V-PER-3 y V-B07-4; la cita nominal de V-CON-7; la cobertura
+  parcial de V-REV-EXACT-3 y V-REV-EXACT-8 por R2 y R4.
+- V-COINC-7: el recentrado del muestreo de R2 no consta en la fila.
+- La tabla de §6 de la matriz debe citar cada prueba nueva cuando se añada.
+
+Propuesta: corregirlas juntas en la revisión de trazabilidad y en la matriz, antes que el resto, por
+no tener riesgo.

@@ -6,7 +6,7 @@
 | Origen | Decisión autoral D-CU2-T13-R4 (2026-10-22), «Control de conformidad»: distinguir los identificadores de `CU2` de sus homónimos de `CU1`, no tomar la aparición textual de un identificador como cumplimiento y asociar cada requisito obligatorio con pruebas efectivas |
 | Matriz | [matriz de validación de `CU2`](pre_g9b_cu2_validation_matrix.md), §2 y §3; su §6 resume esta revisión fila a fila |
 | Base de la revisión | rama local `phase/pre-g9b-cu2-corrective` tras los commits de R1, R2 y R4 y el refuerzo de §6; el candidato congelado y su verificación constarán en el registro de verificación del descendiente |
-| Hallazgos | H-T13-A y H-T13-B (§9), deficiencias preexistentes de fallo cerrado; D-CU2-T13-R6 corrigió H-T13-A, y H-T13-B quedó detenido por un contraejemplo junto al hallazgo nuevo H-T13-C ([registro de R6](pre_g9b_cu2_r6_correction_record.md)); decisiones pendientes D-CU2-T13-R5 (§8, [inventario](pre_g9b_cu2_r5_gap_inventory.md)) y D-CU2-T13-R7 (registro de R6, §5) |
+| Hallazgos | H-T13-A y H-T13-B (§9), deficiencias preexistentes de fallo cerrado; D-CU2-T13-R6 corrigió H-T13-A, y H-T13-B quedó detenido por un contraejemplo junto al hallazgo nuevo H-T13-C ([registro de R6](pre_g9b_cu2_r6_correction_record.md)); D-CU2-T13-R7 corrigió H-T13-B y clasificó H-T13-C ([registro de R7](pre_g9b_cu2_r7_correction_record.md)); decisión pendiente D-CU2-T13-R5 (§8, [inventario](pre_g9b_cu2_r5_gap_inventory.md)) |
 | Corrige | la auditoría de T13 ([registro de verificación de `39741a0b`](pre_g9b_cu2_verification_record.md) §2.3), que contó como cubiertas V-DET-1, V-INV-1 y V-INV-2 por las citas homónimas de `CU1` y que solo buscaba citas |
 
 ## 1. Método
@@ -225,3 +225,14 @@ régimen los certificados etiquetados afirman existencia sin salida (hallazgo nu
 anterior al descendiente). Todo consta en el [registro de R6](pre_g9b_cu2_r6_correction_record.md),
 que pide la decisión D-CU2-T13-R7. El [inventario de los 34 huecos](pre_g9b_cu2_r5_gap_inventory.md)
 responde a la petición de R6 sobre D-CU2-T13-R5.
+
+**Resultado de D-CU2-T13-R7.** El autor aprobó A(a) con B(i), con condiciones normativas. H-T13-B
+está corregido: la banda de la segunda salida sin etiqueta es el predicado riguroso del primer
+intento decisivo del cálculo heredado, la captura conserva el semieje que lee la prueba de
+incidencia y V-INV-2 tiene la precisión B(i) y pruebas con la variante sin etiqueta, que fallan
+sobre `39741a0b`. H-T13-C no es un defecto del producto: clasificado según la decisión, el régimen
+S3 es un fallo exclusivamente computacional que el contrato vigente ya representa (existencia
+matemática conservada y evaluación `EVALUATION_FAILED` con causa `COMPUTATIONAL_FAILURE`); el
+registro de R6 lo describía de más. Se corrige la precisión F-CU2-1 y se fija el comportamiento en
+pruebas. Todo consta en el [registro de R7](pre_g9b_cu2_r7_correction_record.md); D-CU2-T13-R5 sigue
+pendiente, y V-DET-1 abierta.

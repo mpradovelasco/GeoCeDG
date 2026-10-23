@@ -282,10 +282,17 @@ Reglas:
   salida sin etiqueta) deja la caja `UNRESOLVED` con causa tipada y nunca certifica existencia.
   Una tolerancia heredada que solo amplía la definición más allá del predicado exacto (ventana de
   tangencia de la intersección recta–cónica, tolerancia de incidencia de los caminos limitados) es
-  exceso de evaluación y nunca frontera (hallazgo F-CU2-1). *Nota del descendiente T13:* la ventana
-  de tangencia también restringe la definición cuando declara tangente una secante cuyo pie falla
-  la prueba de incidencia; ambas salidas quedan entonces indefinidas (hallazgo H-T13-C, pendiente de
-  la decisión D-CU2-T13-R7; [registro de R6](../validation/pre_g9b_cu2_r6_correction_record.md) §4).
+  exceso de evaluación y nunca frontera (hallazgo F-CU2-1). *Precisión D-CU2-T13-R7 (hallazgo
+  H-T13-C):* la ventana de tangencia no solo amplía. Cuando declara tangente una secante, una salida
+  etiquetada toma el pie de la perpendicular si pasa la prueba de incidencia, un valor efectivo
+  heredado a menos de `√(10⁻⁵)·R` de la raíz exacta; si ningún reintento pasa la prueba (régimen
+  S3), las salidas quedan indefinidas. Ese fallo es exclusivamente computacional: la existencia
+  matemática de la raíz se conserva, la evaluación publicada es `EVALUATION_FAILED` con la causa
+  `COMPUTATIONAL_FAILURE` (`existence-components` §15.5), nunca una frontera ni inexistencia, y un
+  consumidor que necesita todos los puntos lo trata como fallo numérico. Para la segunda salida sin
+  etiqueta, la ventana, la supresión de `avoidDoubleTangentPoint` y los reintentos que provoca una
+  prueba de incidencia fallida restringen la definición: la banda tipada del último apartado los
+  encierra ([registro de R7](../validation/pre_g9b_cu2_r7_correction_record.md) §2 y §3).
 - **Selección.** La captura lee el estado de la copia del corte, validado contra el vivo: una
   permutación asentada (modo 0) o una primera inicialización pendiente (modo 1, compactación en
   orden bruto de las raíces que están en los caminos). Una permutación viva que la siguiente
@@ -307,10 +314,21 @@ Reglas:
 - **Entrada métrica.** Un `LocusLength` entre dos posiciones, con su adaptador escalar, es un paso
   `METRIC_INPUT` cuyo valor nunca se evalúa: una caja que lo necesita queda `UNRESOLVED`
   (`METRIC_VALUE`) hasta el certificado estructural de T6.
-- **Banda de una segunda salida sin etiqueta.** Conservadora y de primer nivel:
+- **Banda de una segunda salida sin etiqueta.** Para una recta, un rayo o un segmento por un punto
+  constante y el conductor de una circunferencia completa, contra una circunferencia constante, una
+  caja queda fuera de la banda solo si, en todo conductor binary64 de la caja, el primer reintento
+  del cálculo heredado es decisivo y mantiene la salida definida: no degenerado, discriminante por
+  encima de su ventana de tangencia, raíz calculada que pasa las pruebas de incidencia y raíces
+  separadas más de `10⁻⁸` en alguna coordenada, con cotas a priori de todo redondeo
+  (`InheritedLineCircleBand2D`; decisión D-CU2-T13-R7, hallazgo H-T13-B). La captura conserva el
+  semieje que lee la prueba de incidencia, y exige el punto medio de la matriz. Un tramo válido más
+  estrecho que la resolución de banda entre dos celdas de esa banda se publica como interior de
+  la banda. En los demás casos sigue la banda de T3, conservadora y de primer nivel:
   `D ≤ 10⁻³·máx(a², b², c²)`, que contiene la ventana de tangencia heredada
   (`D ≤ 4·10⁻⁵·máx(a², b², c²)` para toda tolerancia de reintento y toda normalización de la
-  recta), o `D ≤ 10⁻¹⁰·(s² + r²·(a² + b²))`, que cubre el redondeo del discriminante heredado.
+  recta), o `D ≤ 10⁻¹⁰·(s² + r²·(a² + b²))`, que cubre el redondeo del discriminante heredado; crece
+  con el cuadrado de la distancia de la recta al origen
+  ([registro de R6](../validation/pre_g9b_cu2_r6_correction_record.md) §3.2).
 - **Límite de pasos.** 256 pasos dependientes del conductor tras expandir las macros (rango
   aprobado de 128 a 512, D-CU2-5). Un programa de más de 64 pasos es de clase v3. Evidencia del
   sondeo de T3: los cortes del modelo tienen 10 (`o`, `v`), 13 (`w`, `a_1`, `e_1`), 16 (`o_1`)
