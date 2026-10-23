@@ -1,6 +1,6 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
 - Version: `1.6`
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
@@ -1422,7 +1422,7 @@ Normative text of amendment A2.3-R and of the metric part of A2.5 of the
 [`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
 approved as architecture by the author on 2026-10-21 with ADR 0038 and decision D-CU2-3,
 option A ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
-It belongs to the `CU2` technical candidate until the author reviews that candidate. No
+It was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). No
 `LocusLength` value, traversal policy, same-position policy, order or direction changes.
 
 ### 26.1 Structural certificate of a metric function
@@ -1470,8 +1470,7 @@ These rules refine §22, §23.4, §24.4 and §24.5 for the existence structure o
 ### 26.5 Conditioned estimate outside the certified class
 
 Normative precision of author decision H10, option A (author resolution before `CU2` step T12,
-2026-10-22). It belongs to the `CU2` technical candidate until the author reviews that
-candidate. It preserves the class-3 estimation of `CU1` (§25.3) for constructions outside class
+2026-10-22). It was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). It preserves the class-3 estimation of `CU1` (§25.3) for constructions outside class
 v3 without attributing certified existence or completeness to them.
 
 1. **Eligibility.** The total length of a branch that is not `COMPLETE` is a *conditioned

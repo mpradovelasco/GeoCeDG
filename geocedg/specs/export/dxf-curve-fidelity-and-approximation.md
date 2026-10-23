@@ -4,7 +4,7 @@
 |---|---|
 | Status | **NORMATIVE / AUTHOR APPROVED** (version `1.0`); the version `1.1` amendment below is a `PRE-G9B-R6-plus-C` technical candidate pending author review |
 | Version | `1.2` (2026-10-21: certified topology of Locus V2 components, section 10, `PRE-G9B-CU2`); `1.1` (2026-10-04: units, hidden layers, explicit export area and sidecar schema version 2; author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`, `DQ-C13`) |
-| `CU2` amendment status | Section 10: **ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| `CU2` amendment status | Section 10: **ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | Phase | G9X1 design; implementation not authorized |
 | Scope | Read-only 2D DXF fidelity, approximation, preflight, and sidecar contract |
 | Hard dependencies | [G5 geometry export foundation](geometry-export-foundation.md) and approved internal G6-G8 semantic source contracts |
@@ -275,8 +275,7 @@ Normative text of amendment A2.6 of the
 approved as architecture by the author on 2026-10-21 with ADR 0038 and decision D-CU2-4
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
 It refines §3 to §8 for the existence structure of
-[`locus-v2-existence-components.md`](../locus/locus-v2-existence-components.md) §15 and belongs
-to the `CU2` technical candidate until the author reviews that candidate. DXF keeps the accepted
+[`locus-v2-existence-components.md`](../locus/locus-v2-existence-components.md) §15 and was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). DXF keeps the accepted
 strict G9X1 fidelity contract; the approximation tolerance stays in model units.
 
 **Export topology.** An export approximation follows the render topology: one open or closed

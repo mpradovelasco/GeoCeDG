@@ -1,6 +1,6 @@
 # Locus V2 semantic point interaction
 
-- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (§17) — ARCHITECTURE AUTHOR APPROVED (2026-10-21), PENDING THE CU2 CANDIDATE REVIEW**
+- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (§17) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
 - Version: 2
 - Phase: **G9U0-R6 + POST-G9U1-A6**
 - Architectural layer: shared Java kernel
@@ -396,7 +396,7 @@ Scope note of amendment A2.5 of the
 [`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
 approved as architecture by the author on 2026-10-21 with ADR 0038 and the decisions E-2 and
 E-3 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
-it belongs to the `CU2` technical candidate until the author reviews that candidate.
+it was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)).
 
 - A semantic point and its interaction resolve their parameter in exactly one certified
   component, even a local one, of the existence structure

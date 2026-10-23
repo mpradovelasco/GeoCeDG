@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | Version | `1.1` |
 | Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
 | Parent | [Locus V2 semantic contract](locus-v2-semantics.md) |
 | Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md); [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md), accepted as architecture on 2026-10-21 |
-| Product implementation | v1.0: **I1--I3 PASS — AUTHOR APPROVED**; v1.1: `CU2` technical candidate, pending author review |
+| Product implementation | v1.0: **I1--I3 PASS — AUTHOR APPROVED**; v1.1: **PASS — AUTHOR APPROVED** with the `CU2` closeout (2026-10-24; approved candidate `6ff1ddf7`) |
 
 ## 1. Purpose
 
@@ -341,8 +341,7 @@ approved as architecture by the author on 2026-10-21 together with
 [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md)
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
 It extends sections 2 to 5, 7, 8, 11 and 12 and keeps ADR 0027 unchanged, including the
-independence of local admissibility from global completeness. The text belongs to the `CU2`
-technical candidate until the author reviews that candidate. The construction class, the
+independence of local admissibility from global completeness. The text was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). The construction class, the
 transitions and the exact algebraic certificate are in
 [`locus-v2-certified-construction-model.md`](locus-v2-certified-construction-model.md) §10;
 publication and the exact fingerprint are in [`locus-v2-semantics.md`](locus-v2-semantics.md).

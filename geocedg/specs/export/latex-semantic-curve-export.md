@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Sections 2 to 4: **NORMATIVE — AUTHOR APPROVED** as author dispositions `DQ-C4`, `DQ-C5` and `DQ-C12` of the [`PRE-G9B-R6-plus-C` preparation record](../../../docs/validation/pre_g9b_r6_plus_c_prompt_closeout_record.md) (2026-10-04), implemented by `PRE-G9B-R6-plus-C`. Section 5: **ARCHITECTURE AUTHOR APPROVED (2026-10-21)**; it belongs to the `CU2` technical candidate, pending author review |
+| Status | Sections 2 to 4: **NORMATIVE — AUTHOR APPROVED** as author dispositions `DQ-C4`, `DQ-C5` and `DQ-C12` of the [`PRE-G9B-R6-plus-C` preparation record](../../../docs/validation/pre_g9b_r6_plus_c_prompt_closeout_record.md) (2026-10-04), implemented by `PRE-G9B-R6-plus-C`. Section 5: **ARCHITECTURE AUTHOR APPROVED (2026-10-21)**; **PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | Version | `1.0` |
 | Origin | decision D-CU2-11, option A ([`CU2` approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)): the rules that lived only in a validation record become a durable specification |
 | Scope | Locus V2 and SplineV2 semantic curves written by the GeoCeDG PSTricks, PGF/TikZ and Asymptote exporters |

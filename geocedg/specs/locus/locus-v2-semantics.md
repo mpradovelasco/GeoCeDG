@@ -1,6 +1,6 @@
 # Locus V2 semantic contract
 
-- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.3 AMENDMENT (PUBLICATION, EXACT FINGERPRINT AND RECONSTRUCTION FIDELITY, D-CU2-20-R) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); TYPED CHANGE OF DIMENSION OF CERTIFIED COMPONENTS AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 (2026-10-22); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW**
+- Status: **APPROVED AS NORMATIVE G6 SEMANTIC CONTRACT; PRE-G9B-CU1 v1.2 AMENDMENT — ARCHITECTURE AUTHOR APPROVED; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.3 AMENDMENT (PUBLICATION, EXACT FINGERPRINT AND RECONSTRUCTION FIDELITY, D-CU2-20-R) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); TYPED CHANGE OF DIMENSION OF CERTIFIED COMPONENTS AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 (2026-10-22); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
 - Version: `1.3`
 - Approval date: 2026-08-11
 - Roadmap gate: G6A `PASS`; G6B `PASS`; G6 `PASS`
@@ -276,8 +276,7 @@ the author's precision D-CU2-20-R, approved as architecture by the author on 202
 ADR 0027, ADR 0038 and decision D-CU2-8, option A
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
 D-CU2-20-R is a conformance amendment of the `CU1` snapshot rule above; it does not reopen the
-`CU1` closeout. The text belongs to the `CU2` technical candidate until the author reviews that
-candidate. Existence, evaluation and representation are separated in
+`CU1` closeout. The text was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). Existence, evaluation and representation are separated in
 `locus-v2-existence-components.md` §15.5.
 
 **Publication.** A Locus V2 is published when its definition inputs (every input that is not the

@@ -5,7 +5,7 @@
 | Carácter | Plan vivo del track `PRE-G9B-CU`. No es especificación normativa: las decisiones arquitectónicas se incorporan a sus especificaciones mediante el procedimiento de revisión y aprobación |
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
-| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); arquitectura de `CU2` `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo `2856f246` verificado ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); la resolución autoral consolidada de 2026-10-23 aprobó sus doce decisiones de nivel C (§2.5), y el candidato final congelado `6ff1ddf7` está pendiente de la decisión autoral de cierre ([paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md)); `CU2` no está `PASS`; `CU3`–`CU10` **no autorizados** |
+| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); `CU2` `PASS — AUTHOR APPROVED` (2026-10-24, con la comprobación manual del autor; [registro de cierre de `CU2`](../validation/pre_g9b_cu2_closeout_record.md), única autoridad de ese estado) sobre el candidato `6ff1ddf7` y su descendiente documental `098ec04f`, integrado en `main` por avance rápido con su cierre (§2.6). Historia de `CU2`: arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo `2856f246` verificado ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); la resolución autoral consolidada de 2026-10-23 aprobó sus doce decisiones de nivel C (§2.5), y el candidato final congelado `6ff1ddf7` está pendiente de la decisión autoral de cierre ([paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md)); `CU2` no está `PASS`; `CU3`–`CU10` **no autorizados** |
 | Mandato editorial | E1, aprobado por el autor el 2026-10-20 como obligación de cierre del track (§2.3 y §8): diseño detallado de los apéndices pendiente de preparación y revisión; redacción e incorporación a `geocedg_book` no autorizadas |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
@@ -116,6 +116,20 @@ aplican; las instrucciones autorales son su autoridad.
 | C-1 a C-12 | «PRE-G9B-CU2 — Resolución autoral consolidada y preparación del cierre»: alternativas recomendadas para C-1 a C-8, C-11 y C-12; C-8, solo precisión editorial de §10.3; C-9 (a), prueba del fallo forzado de la forma límite, con inyección en el arnés o interna, sin cambiar API pública, persistencia, serialización, identidad ni comportamiento de producción; C-10 (a), limitación computacional tipada, sin cambiar el contrato métrico de `CU1` ni introducir un estimador, y la estimación con cambio de variable en el backlog futuro, sin asignación a `CU3`; C-11 y C-12, comportamiento vigente con sus limitaciones documentadas, sin correspondencias por tolerancia o proximidad ni cambios de direcciones persistidas | `CU2`; candidato final `6ff1ddf7` |
 | Cierre | `CU2` no se declara todavía `PASS — AUTHOR APPROVED`; revisión científica focal, verificación `INTEGRATED_PHASE` y paquete de revisión final antes de la decisión; `FINAL` solo si el contrato de cierre o la autoridad ejecutable exigen un recibo; la comprobación manual del autor sigue pendiente y no se simula | `CU2`; `CU3`–`CU10` sin autorizar |
 
+## 2.6 Decisiones adoptadas por la instrucción de cierre de `CU2` (2026-10-24)
+
+Fuente: [registro de cierre de `CU2`](../validation/pre_g9b_cu2_closeout_record.md), que las
+transcribe y es su autoridad. Antes, el autor autorizó publicar la rama correctiva solo para una
+auditoría independiente (2026-10-24; publicada en `098ec04f`, sin etiquetas).
+
+| Id | Decisión | Efecto en el plan |
+|---|---|---|
+| Cierre | `CU2` `PASS — AUTHOR APPROVED` sobre el candidato `6ff1ddf7` y su descendiente documental `098ec04f`, con la comprobación manual del autor confirmada expresamente | `CU2` cerrado |
+| Limitaciones | aceptadas las de §8 del paquete de revisión final, `L-CU2-INDEPENDENT-EXPRESSION-STATE` solo fuera de la clase v3; las mejoras propuestas quedan como trabajo futuro sin autorizar y no son tareas de `CU3`; las cotas demostradas se distinguen de las pérdidas de cobertura observadas (R7-E) | `CU10` (informe de limitaciones) |
+| Integración | avance rápido de `main` hasta el commit de cierre, sin reescribir historia ni modificar el producto verificado; incorpora también los cierres aprobados de `CU0` y `CU1`; sin releases ni paquetes de redistribución | publicación del producto por fases, en lugar de reservarla entera a `CU10` |
+| Transferencia científica | registro E1, versión 5: principio transversal de integridad geométrica frente a precisión numérica, relacionado con SM-A-5, SM-E-6 y V-POINT-4; el expediente de `CU10` lo recoge; `geocedg_book` no cambia | `CU10`, §8 |
+| Frontera de fase | el cierre de `CU2` no autoriza `CU3`; la siguiente fase necesita una decisión autoral nueva | `CU3`–`CU10` sin autorizar |
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de
@@ -192,9 +206,15 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
 - **Verificación:** `INTEGRATED_PHASE` (`PHASE` propio + `INTEGRATION`); el inventario
   de selecciones se actualiza con el procedimiento oficial.
 
-### CU2 — Existencia, continuidad, fronteras y representación
+### CU2 — Existencia, continuidad, fronteras y representación (`PASS — AUTHOR APPROVED`)
 
-- **Estado:** arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación
+- **Cierre:** `PASS — AUTHOR APPROVED` el 2026-10-24, con la comprobación manual del autor, sobre
+  el candidato `6ff1ddf743bb3ee44a4e9a47f7dc238f30d642cb` y su descendiente documental
+  `098ec04f7ac72b691a989796637b3ff681e6e3de`
+  ([registro de cierre](../validation/pre_g9b_cu2_closeout_record.md), única autoridad de ese
+  estado; §2.6). Las limitaciones aceptadas y el trabajo futuro sin autorizar constan en ese
+  registro.
+- **Estado anterior al cierre:** arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación
   autorizada, condicionada, el 2026-10-21 (§2.4;
   [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md)),
   sobre la base exacta `070af6f902cd0be291247e73efb5629ef2a39eba`; implementada en la rama local
@@ -204,8 +224,8 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
   la resolución autoral consolidada de 2026-10-23 (§2.5) aprobó las decisiones C-1 a C-12, y el
   candidato final congelado `6ff1ddf7`, su verificación y la propuesta de cierre constan en el
   [paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md).
-  `CU2` no está `PASS`: lo decide la decisión autoral de cierre sobre ese candidato, con la
-  comprobación manual del autor. La preparación, su revisión focalizada y su cierre de
+  Hasta el cierre, `CU2` no estaba `PASS`: lo decidió la decisión autoral de cierre sobre ese
+  candidato, con la comprobación manual del autor. La preparación, su revisión focalizada y su cierre de
   coherencia se publicaron por instrucción autoral en `phase/pre-g9b-cu2-preparation`
   (`60d54644`, `cbb7ea8c` y `070af6f9`, por avance rápido normal)
   ([informe de preparación](../validation/pre_g9b_cu2_preparation_candidate_report.md),
@@ -373,9 +393,9 @@ Las decisiones C1-0 a C1-4 quedaron resueltas el 2026-10-20 (§2.1), y las de `C
 `CU2`, con E-1 a E-3 de `CU0`, quedaron resueltas el 2026-10-21 (§2.4); su
 [hoja de decisiones](../validation/pre_g9b_cu2_author_decision_sheet.md) conserva las preguntas
 tal como se presentaron. Las decisiones de nivel C del descendiente correctivo (C-1 a C-12)
-quedaron resueltas el 2026-10-23 (§2.5). La siguiente decisión autoral de `CU2` es su cierre,
-sobre el candidato final, con la propuesta de §10 del
-[paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md). Las de `CU0` que afectan a `CU3` siguen en la
+quedaron resueltas el 2026-10-23 (§2.5), y el cierre de `CU2` se decidió el 2026-10-24 (§2.6).
+La siguiente decisión autoral del track es la de la fase siguiente; `CU3` no está autorizado. Las
+de `CU0` que afectan a `CU3` siguen en la
 [hoja de decisiones de `CU0`](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
 precisión de `OBS-CU0-CU3-TANGENT-EXISTENCE` sobre F-2; el texto de las enmiendas
 candidatas de `CU0` está en las

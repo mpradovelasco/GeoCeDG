@@ -1,6 +1,6 @@
 # Locus V2 2D similarity transformations
 
-- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21), PENDING THE CU2 CANDIDATE REVIEW**
+- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
 - Phase: **G9U0-R5**
 - Implementation: **PASS — AUTHOR APPROVED**
 - Semantic base: accepted
@@ -350,7 +350,7 @@ Scope note of amendment A2.5 of the
 [`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
 approved as architecture by the author on 2026-10-21 with ADR 0038
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
-it belongs to the `CU2` technical candidate until the author reviews that candidate.
+it was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)).
 
 The image of a similarity transformation inherits explicitly the existence structure of its
 source (`locus-v2-existence-components.md` §15): coverage, maximality, completeness, the

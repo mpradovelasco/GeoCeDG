@@ -2,8 +2,7 @@
 
 - Status: **NORMATIVE / AUTHOR APPROVED** (version 1); **PRE-G9B-CU2 VERSION 2
   AMENDMENT ("PRE-G9B-CU2 amendment (version 2)" below) — ARCHITECTURE AUTHOR
-  APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL
-  CANDIDATE, PENDING AUTHOR REVIEW**
+  APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
 - Version: 2
 - Owners: GeoCeDG project owner
 - Roadmap gate: G9U0-R2 planning/design `PASS — AUTHOR APPROVED`;
@@ -214,8 +213,7 @@ approved as architecture by the author on 2026-10-21 with ADR 0038 and the decis
 D-CU2-10, D-CU2-19 and E-1
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
 It refines the render continuity contract above for the existence structure of
-`locus-v2-existence-components.md` §15 and belongs to the `CU2` technical candidate until the
-author reviews that candidate. The style contract of version 1 is unchanged.
+`locus-v2-existence-components.md` §15 and was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). The style contract of version 1 is unchanged.
 
 **Render topology.** Rendering is derived from the existence structure. Each certified
 component is tessellated up to its certified boundaries. No render segment crosses an

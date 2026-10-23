@@ -5,7 +5,7 @@
 | Version | `1.2` (`certified-construction-program/v1`, `/v2` and `/v3`) |
 | Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) and by `PRE-G9B-CU2` (§10) |
 | Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21 |
-| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22 AND THE EDITORIAL PRECISION OF §10.3 FROM AUTHOR DECISION C-8 OF 2026-10-23) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22 AND THE EDITORIAL PRECISION OF §10.3 FROM AUTHOR DECISION C-8 OF 2026-10-23) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -282,7 +282,7 @@ Normative text of amendment A2.2-R of the
 approved as architecture by the author on 2026-10-21 together with ADR 0038 and the
 decisions D-CU2-2, D-CU2-5, D-CU2-6, D-CU2-16, D-CU2-17 and D-CU2-18
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md)).
-The text belongs to the `CU2` technical candidate until the author reviews that candidate.
+The text was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)).
 Programs of class v1 and v2 and their consumers (§1 to §9) are unchanged.
 
 ### 10.1 Class v3
@@ -434,8 +434,7 @@ nonexistence.
 ### 10.10 Minimal certified composition on a locus support
 
 Normative precision of author decision V-CON-6, option 2 (author resolution before `CU2` step
-T12, 2026-10-22). It belongs to the `CU2` technical candidate until the author reviews that
-candidate. It is not a program and does not extend class v3: a locus-support generator still
+T12, 2026-10-22). It was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). It is not a program and does not extend class v3: a locus-support generator still
 has no program (§4, §9).
 
 1. **Scope.** A dependent locus whose generator is a point of a branch of a locus support

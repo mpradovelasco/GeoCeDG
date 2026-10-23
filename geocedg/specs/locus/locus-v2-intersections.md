@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5, LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21), PENDING THE CU2 CANDIDATE REVIEW** |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5, LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | Version | `1.2` with bounded G9U0-R4 refinement |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
@@ -990,7 +990,7 @@ Scope note of amendment A2.5 of the
 [`CU2` normative proposal](../../../docs/architecture/pre_g9b_cu2_normative_proposal.md),
 approved as architecture by the author on 2026-10-21 with ADR 0038
 ([approval record](../../../docs/validation/pre_g9b_cu2_author_architecture_approval_record.md));
-it belongs to the `CU2` technical candidate until the author reviews that candidate. Solvers,
+it was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [closeout record](../../../docs/validation/pre_g9b_cu2_closeout_record.md)). Solvers,
 residual tolerances and the intersection engine are unchanged (they belong to `CU3`).
 
 - A Locus V2 source is read through its existence structure

@@ -3,10 +3,7 @@
 - Status: **ACCEPTED — ARCHITECTURE AUTHOR APPROVED WITH PRECISION D-CU2-20-R** (author
   instruction "GeoCeDG — PRE-G9B-CU2. Aprobación autoral de la arquitectura y autorización
   condicionada de implementación", 2026-10-21;
-  [approval record](../validation/pre_g9b_cu2_author_architecture_approval_record.md)). This is
-  an architectural decision: the text incorporated into the specifications at step T0 belongs
-  to the `CU2` technical candidate, which is pending author review; acceptance does not mean
-  that `CU2` is implemented or verified.
+  [approval record](../validation/pre_g9b_cu2_author_architecture_approval_record.md)). This is an architectural decision. Its implementation, the `CU2` technical candidate `6ff1ddf743bb3ee44a4e9a47f7dc238f30d642cb`, and the text incorporated into the specifications at step T0 are `PASS — AUTHOR APPROVED` with the `CU2` closeout of 2026-10-24 ([closeout record](../validation/pre_g9b_cu2_closeout_record.md)).
 - Date: 2026-10-20; revised the same day by the focused review P1–P5 requested by the author
   and by the coherence closeout C1–C3; accepted on 2026-10-21
 - Phase: `PRE-G9B-CU2` (preparation authorized on 2026-10-20; implementation authorized on
