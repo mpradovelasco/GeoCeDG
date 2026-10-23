@@ -600,6 +600,8 @@ public final class ConstructionBoxModel2D {
 		private int node;
 		/** Radius of the box around its midpoint, for the centred form. */
 		private SplineOutwardInterval2D radius;
+		/** Driver parameter of the box. */
+		private Jet driverParameter;
 		/** Traced point of a valid box. */
 		private PointJet traced;
 		/** Metric inputs that their structural certificates define on the box. */
@@ -659,7 +661,8 @@ public final class ConstructionBoxModel2D {
 			double half = Math.nextUp(Math.max(middle - box.lower, box.upper - middle));
 			radius = new SplineOutwardInterval2D(-half, half);
 			try {
-				nodes[0] = driver(Jet.variable(box, mode, centered));
+				driverParameter = Jet.variable(box, mode, centered);
+				nodes[0] = driver(driverParameter);
 			} catch (ArithmeticException exception) {
 				return ConstructionBoxOutcome2D.unresolved(Unresolved.ENCLOSURE, 0, null,
 						STEP_PREDICATE, String.valueOf(exception.getMessage()), evaluations);
@@ -1166,7 +1169,13 @@ public final class ConstructionBoxModel2D {
 				}
 			}
 			if (index == 1 && !pair.labelled[1]) {
-				requireOutsideCoincidenceBand(line, discriminant, distance, norm, circle);
+				InheritedLineCircleBand2D.Box inherited = inheritedBox(pair, discriminant,
+						distance, norm, selected);
+				if (inherited == null) {
+					requireOutsideCoincidenceBand(line, discriminant, distance, norm, circle);
+				} else if (!InheritedLineCircleBand2D.keepsOutput(inherited)) {
+					throw inCoincidenceBand(discriminant);
+				}
 			}
 			selection.add("n" + node + ":r" + selected);
 			double sign = selected == 0 ? -1 : 1;
@@ -1212,7 +1221,12 @@ public final class ConstructionBoxModel2D {
 			return decideMember(line, parameter, 2 * raw);
 		}
 
-		/** Section 10.3: the inherited suppression may undefine an unlabelled output. */
+		/**
+		 * Section 10.3: the inherited suppression may undefine an unlabelled output. This
+		 * band of step T3 covers the tangency window of every retry and normalization, but
+		 * grows with the distance of the line from the origin (finding H-T13-B); it remains
+		 * for the intersections that {@link InheritedLineCircleBand2D} does not bound.
+		 */
 		private void requireOutsideCoincidenceBand(LineJet line, Jet discriminant,
 				Jet distance, Jet norm, CircleJet circle) {
 			SplineOutwardInterval2D scale = line.a.square().value
@@ -1225,12 +1239,131 @@ public final class ConstructionBoxModel2D {
 					&& margin.lower
 							> COINCIDENT_ROUNDING_FACTOR * Math.nextUp(rounding.upper);
 			if (!outside) {
-				record(ConstructionValidityPredicate2D.DISCRIMINANT, COINCIDENCE_BAND,
-						discriminant, Decision.TOLERANCE);
-				throw new Stop(Unresolved.UNLABELLED_COINCIDENT_OUTPUT,
-						ConstructionValidityPredicate2D.DISCRIMINANT, COINCIDENCE_BAND,
-						"An unlabelled second output may be suppressed at coincident roots");
+				throw inCoincidenceBand(discriminant);
 			}
+		}
+
+		private Stop inCoincidenceBand(Jet discriminant) {
+			record(ConstructionValidityPredicate2D.DISCRIMINANT, COINCIDENCE_BAND,
+					discriminant, Decision.TOLERANCE);
+			return new Stop(Unresolved.UNLABELLED_COINCIDENT_OUTPUT,
+					ConstructionValidityPredicate2D.DISCRIMINANT, COINCIDENCE_BAND,
+					"An unlabelled second output may be suppressed at coincident roots");
+		}
+
+		/**
+		 * @return the enclosures that {@link InheritedLineCircleBand2D} reads, for a line
+		 *         through a captured constant point and the driver point of a complete
+		 *         circle and a captured constant circle; {@code null} for any other
+		 *         intersection, which keeps the band of step T3 (decision D-CU2-T13-R7)
+		 */
+		private InheritedLineCircleBand2D.Box inheritedBox(PairJet pair, Jet discriminant,
+				Jet distance, Jet norm, int selected) {
+			List<Operand> operands = pair.step.getOperands();
+			Operand lineOperand = operands.get(0);
+			Operand circleOperand = operands.get(1);
+			if (program.getDriver() != Driver.CIRCLE
+					|| lineOperand.getKind() != OperandKind.NODE
+					|| circleOperand.getKind() != OperandKind.CIRCLE) {
+				return null;
+			}
+			Step join = program.getSteps().get(lineOperand.getNode() - 1);
+			if (join.getOperation() != Operation.JOIN && join.getOperation() != Operation.RAY
+					&& join.getOperation() != Operation.SEGMENT) {
+				return null;
+			}
+			Operand first = join.getOperands().get(0);
+			Operand second = join.getOperands().get(1);
+			boolean driverFirst = isDriver(first) && second.getKind() == OperandKind.POINT;
+			if (!driverFirst && !(first.getKind() == OperandKind.POINT && isDriver(second))) {
+				return null;
+			}
+			Operand point = driverFirst ? second : first;
+			PointJet driver = (PointJet) nodes[0];
+			InheritedLineCircleBand2D.Box box = new InheritedLineCircleBand2D.Box();
+			box.driverError = InheritedLineCircleBand2D.circleDriverError(
+					program.getDriverConstant(0), program.getDriverConstant(1),
+					program.getDriverConstant(2), program.getDriverConstant(3),
+					program.getDriverConstant(4), program.getDriverConstant(5),
+					program.getDriverConstant(6), program.getDriverConstant(7));
+			box.pointX = point.getValue(3);
+			box.pointY = point.getValue(4);
+			box.driverX = tight(driver.inhomX);
+			box.driverY = tight(driver.inhomY);
+			box.a2 = circleOperand.getValue(0);
+			box.a4 = circleOperand.getValue(1);
+			box.a5 = circleOperand.getValue(2);
+			box.halfAxis = circleOperand.getValue(3);
+			box.radiusSquared = tight(pair.circle.radiusSquared);
+			// The same line relative to the centre of the circle, where a translation of the
+			// whole construction cancels: s = (P - m) x (N - m). Both enclosures contain the
+			// exact values of the box, so their intersection does.
+			Jet centreX = Jet.constant(-box.a4);
+			Jet centreY = Jet.constant(-box.a5);
+			Jet px = Jet.constant(program.getDriverConstant(0)).multiply(driverParameter.cos());
+			Jet py = Jet.constant(program.getDriverConstant(1)).multiply(driverParameter.sin());
+			Jet nx = px.multiply(Jet.constant(program.getDriverConstant(2)))
+					.add(py.multiply(Jet.constant(program.getDriverConstant(4))))
+					.add(Jet.constant(program.getDriverConstant(6)).subtract(centreX));
+			Jet ny = px.multiply(Jet.constant(program.getDriverConstant(3)))
+					.add(py.multiply(Jet.constant(program.getDriverConstant(5))))
+					.add(Jet.constant(program.getDriverConstant(7)).subtract(centreY));
+			Jet qx = Jet.constant(box.pointX).subtract(centreX);
+			Jet qy = Jet.constant(box.pointY).subtract(centreY);
+			Jet a = driverFirst ? ny.subtract(qy) : qy.subtract(ny);
+			Jet b = driverFirst ? qx.subtract(nx) : nx.subtract(qx);
+			Jet s = driverFirst ? nx.multiply(qy).subtract(ny.multiply(qx))
+					: qx.multiply(ny).subtract(qy.multiply(nx));
+			Jet squared = a.square().add(b.square());
+			box.a = both(tight(pair.line.a), tight(a));
+			box.b = both(tight(pair.line.b), tight(b));
+			box.c = tight(pair.line.c);
+			box.norm = both(tight(norm), tight(squared));
+			box.distance = both(tight(distance), tight(s));
+			box.discriminant = both(tight(discriminant), tight(squared.multiply(
+					pair.circle.radiusSquared).subtract(s.square())));
+			if (pair.line.bound != null) {
+				box.startX = tight(pair.line.bound.x);
+				box.startY = tight(pair.line.bound.y);
+				box.startIsDriver = driverFirst;
+				// The selected exact root on the path, (M - O).(b, -a) +- sqrt(D) in units of
+				// a^2 + b^2, as the membership predicate, and relative to the centre.
+				Jet startX = driverFirst ? nx : qx;
+				Jet startY = driverFirst ? ny : qy;
+				SplineOutwardInterval2D base = both(tight(pair.circle.mx
+						.subtract(pair.line.bound.x).multiply(pair.line.b)
+						.subtract(pair.circle.my.subtract(pair.line.bound.y)
+								.multiply(pair.line.a))),
+						tight(startY.multiply(a).subtract(startX.multiply(b))));
+				SplineOutwardInterval2D root = new SplineOutwardInterval2D(
+						box.discriminant.lower > 0
+								? Math.max(0, Math.nextDown(Math.sqrt(box.discriminant.lower)))
+								: 0,
+						Math.nextUp(Math.sqrt(box.discriminant.upper)));
+				SplineOutwardInterval2D position = selected == 0 ? base.subtract(root)
+						: base.add(root);
+				box.pathLow = margin(position, box.norm);
+				box.endLow = pair.line.bound.ray ? Double.POSITIVE_INFINITY
+						: margin(box.norm.subtract(position), box.norm);
+			}
+			return box;
+		}
+
+		/** @return a lower bound of the value divided by the norm, or zero */
+		private double margin(SplineOutwardInterval2D value, SplineOutwardInterval2D norm) {
+			return value.lower > 0 && norm.upper > 0
+					? Math.max(0, Math.nextDown(value.lower / norm.upper)) : 0;
+		}
+
+		private boolean isDriver(Operand operand) {
+			return operand.getKind() == OperandKind.NODE && operand.getNode() == 0;
+		}
+
+		/** @return the intersection of two enclosures of one value, or the first */
+		private SplineOutwardInterval2D both(SplineOutwardInterval2D first,
+				SplineOutwardInterval2D second) {
+			SplineOutwardInterval2D common = first.intersection(second);
+			return common == null ? first : common;
 		}
 
 		/** The meet point lies on each bounded operand. */
@@ -1552,6 +1685,7 @@ public final class ConstructionBoxModel2D {
 	private static final class PairJet {
 		private final LineJet line;
 		private final CircleJet circle;
+		private final Step step;
 		private final boolean compaction;
 		private final int[] permutation;
 		private final boolean[] labelled;
@@ -1559,6 +1693,7 @@ public final class ConstructionBoxModel2D {
 		private PairJet(LineJet line, CircleJet circle, Step step) {
 			this.line = line;
 			this.circle = circle;
+			this.step = step;
 			compaction = step.getParameter(0) == 1;
 			permutation = new int[] {(int) step.getParameter(1),
 					(int) step.getParameter(2)};

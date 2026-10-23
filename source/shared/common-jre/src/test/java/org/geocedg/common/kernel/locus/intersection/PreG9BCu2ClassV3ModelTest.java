@@ -241,7 +241,7 @@ class PreG9BCu2ClassV3ModelTest extends BaseUnitTest {
 		programs.put("DISCRIMINANT_NEGATIVE", program(
 				step(Operation.JOIN, Operand.node(0), point(0, 0)),
 				step(Operation.LINE_CIRCLE, List.of(Operand.node(1),
-						Operand.circle(24, 0, -5)), 0, 0, 1, 1, 1),
+						Operand.circle(24, 0, -5, 1)), 0, 0, 1, 1, 1),
 				step(Operation.INTERSECTION_OUTPUT, List.of(Operand.node(2)), 0)));
 		// A ray from the origin through the driver meets x = -5 behind its start.
 		programs.put("RAY_PARAMETER_NEGATIVE", program(
@@ -326,7 +326,7 @@ class PreG9BCu2ClassV3ModelTest extends BaseUnitTest {
 		CertifiedConstructionProgram2D discriminant = program(
 				step(Operation.JOIN, Operand.node(0), point(0, 0)),
 				step(Operation.LINE_CIRCLE, List.of(Operand.node(1),
-						Operand.circle(24, 0, -5)), 0, 0, 1, 1, 1),
+						Operand.circle(24, 0, -5, 1)), 0, 0, 1, 1, 1),
 				step(Operation.INTERSECTION_OUTPUT, List.of(Operand.node(2)), 0));
 		assertEquals(Kind.UNIFORMLY_INVALID,
 				new ConstructionBoxModel2D(discriminant).evaluate(away).kind);

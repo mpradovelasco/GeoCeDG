@@ -76,6 +76,7 @@ import org.geogebra.common.kernel.geos.GeoVec2D;
 import org.geogebra.common.kernel.geos.GeoVec3D;
 import org.geogebra.common.kernel.geos.GeoVector;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
+import org.geogebra.common.kernel.matrix.Coords;
 import org.geogebra.common.util.MyMath;
 
 /**
@@ -1056,11 +1057,18 @@ final class CertifiedConstructionCapture2D {
 				|| ((GeoConic) constant).getType() != GeoConicNDConstants.CONIC_CIRCLE) {
 			throw new Refusal();
 		}
-		double[] matrix = ((GeoConic) constant).getFlatMatrix();
-		if (matrix[0] != 1 || matrix[1] != 1 || matrix[3] != 0) {
+		GeoConic circle = (GeoConic) constant;
+		double[] matrix = circle.getFlatMatrix();
+		// The inherited incidence test reads the midpoint and the half axis, not the matrix
+		// (decision D-CU2-T13-R7): the midpoint must be the one of the matrix exactly.
+		Coords midpoint = circle.getMidpoint();
+		double halfAxis = circle.getHalfAxis(0);
+		if (matrix[0] != 1 || matrix[1] != 1 || matrix[3] != 0
+				|| midpoint.getX() != -matrix[4] || midpoint.getY() != -matrix[5]
+				|| !(halfAxis > 0) || Double.isInfinite(halfAxis)) {
 			throw new Refusal();
 		}
-		return Operand.circle(matrix[2], matrix[4], matrix[5]);
+		return Operand.circle(matrix[2], matrix[4], matrix[5], halfAxis);
 	}
 
 	/** Class v3: a vector node or a constant vector. */

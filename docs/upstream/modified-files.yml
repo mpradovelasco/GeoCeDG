@@ -6962,6 +6962,12 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2, author decision H10 (option A) before step T12: the total length of a construction outside class v3 is a conditioned class-3 estimate on its declared domain (locus-v2-metrics.md section 26.5) that keeps the CU1 value, error and scalar admissibility and certifies nothing; only OPERATION_OUTSIDE_CLASS is eligible, a whole periodic period closes only under a recorded hypothesis, excluded ends and failures keep their typed status, and similarity images stay conditioned (H10-1 to H10-5).",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/InheritedLineCircleBand2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 corrective descendant, author decision D-CU2-T13-R7 (finding H-T13-B): rigorous band of the unlabelled second output of a line-circle intersection. A box leaves the band only when the first retry of the inherited AlgoIntersectLineConic computation is decisive and keeps the output defined at every binary64 driver point of the box, with a priori bounds of every rounding.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     }
   ]
 }

@@ -104,6 +104,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * that scales from {@code 10^-3} to {@code 10^3} are exact in binary64.
 	 */
 	private static final BigDecimal UNIT = BigDecimal.valueOf(125);
+	/** The configurations with a second output on the ray (decision D-CU2-T13-R7). */
+	private static final List<Configuration> UNLABELLED = List.of(Configuration.CRITICAL,
+			Configuration.BITE, Configuration.PENETRATION);
 	private static final MathContext REFERENCE = new MathContext(60, RoundingMode.HALF_EVEN);
 	/** Pi to 60 digits, for the enclosure of the seam. */
 	private static final BigDecimal PI = new BigDecimal(
@@ -298,7 +301,8 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * unlabelled second output has a typed unresolved band around the coincident root that
 	 * contains every undefined sample of the live construction and of the copy; its locus is
 	 * not established, with a local component on both sides of the band, which a local
-	 * consumer accepts away from the band.
+	 * consumer accepts away from the band. Since decision D-CU2-T13-R7 (H-T13-B) the band is
+	 * the rigorous one of the inherited computation, which stays near the coincident roots.
 	 */
 	@Test
 	void anUnlabelledSecondOutputLeavesLocalComponentsAroundABand() {
@@ -307,9 +311,20 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			Result result = certificate("lr2");
 			LocusExistenceStructure2D structure = result.getStructure();
 			assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness(), radius);
-			Coverage band = coverageAt(structure, CRITICAL - 0.01);
-			assertEquals(CoverageState.UNRESOLVED, band.getState(), radius);
-			assertEquals(LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT, band.getCause());
+			int bands = 0;
+			for (Coverage coverage : structure.getCoverage()) {
+				if (coverage.getState() == CoverageState.UNRESOLVED) {
+					bands++;
+					assertEquals(LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT,
+							coverage.getCause(), radius);
+					assertTrue(Math.abs(coverage.getInterval().getLower() - CRITICAL) < 1e-4
+							&& Math.abs(coverage.getInterval().getUpper() - CRITICAL) < 1e-4,
+							radius + " " + coverage);
+				}
+			}
+			assertTrue(bands > 0, radius);
+			assertEquals(CoverageState.CERTIFIED_EXISTS,
+					coverageAt(structure, CRITICAL - 0.01).getState(), radius);
 			assertNotEquals(CoverageState.CERTIFIED_EXISTS,
 					coverageAt(structure, CRITICAL).getState(), radius);
 			ContinuousComponent arc = structure.getContinuousValidComponents().get(0);
@@ -997,6 +1012,276 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-INV-2 for the unlabelled second output (decision D-CU2-T13-R7, precision B(i); finding
+	 * H-T13-B): the critical, bite and penetration configurations traced through the second
+	 * output of {@code Intersect(p, t2, 2)}, whose inherited suppression the band of
+	 * {@link InheritedLineCircleBand2D} encloses. The original transformations in the units of
+	 * matrix section 1 are mandatory and those with every constant a multiple of 125
+	 * complementary; the scale {@code 10^-3} with the translation (10^3, 10^3) in the units of
+	 * the matrix is the case of
+	 * {@link #theUnlabelledSecondOutputFailsClosedWhereTheInheritedComputationIsNotDecisive}.
+	 * Where the captured constants keep the kinds of the roots of the untransformed
+	 * discriminant the certificate keeps its structure; every statement agrees with the
+	 * 60-digit reference of the captured constants and every band has the typed cause of the
+	 * inherited suppression. With every constant a multiple of 125 the bands stay within a
+	 * width of {@code 10^-4}, instead of growing with the distance of the line from the
+	 * origin.
+	 */
+	@Test
+	void theUnlabelledSecondOutputKeepsItsStructureUnderTheTransforms() {
+		Map<Configuration, List<RealRootStructure1D.RootKind>> kinds = new LinkedHashMap<>();
+		final Map<Configuration, String> reference = unlabelledReferences(kinds);
+		List<Transform> transforms = new ArrayList<>();
+		for (BigDecimal unit : List.of(BigDecimal.ONE, UNIT)) {
+			transforms.add(Transform.of(unit, "1", "1000", "1000"));
+			transforms.add(Transform.of(unit, "1", "-1000", "1000"));
+			for (String scale : List.of("0.001", "0.01", "0.1", "10", "100", "1000")) {
+				transforms.add(Transform.of(unit, scale, "0", "0"));
+			}
+			transforms.add(Transform.of(unit, "1000", "-1000", "1000"));
+		}
+		transforms.add(Transform.of(UNIT, "0.001", "1000", "1000"));
+		transforms.add(Transform.of(UNIT, "1", "1000000", "1000000"));
+		transforms.add(Transform.of(UNIT, "1000000", "0", "0"));
+		transforms.add(Transform.of(BigDecimal.ONE, "0.001953125", "1024", "1024"));
+		transforms.add(Transform.of(BigDecimal.ONE, "0.01", "1000", "1000"));
+		transforms.add(Transform.of(BigDecimal.ONE, "1", "1000.1", "-999.7"));
+		List<String> problems = new ArrayList<>();
+		int kept = 0;
+		for (Transform transform : transforms) {
+			for (Configuration configuration : UNLABELLED) {
+				String context = configuration + " " + transform + " lr2";
+				buildUnlabelled(configuration, transform);
+				double[] constants = captured("lr2");
+				LocusExistenceStructure2D structure = structure("lr2");
+				double width = 0;
+				for (Coverage coverage : structure.getCoverage()) {
+					if (coverage.getState() == CoverageState.UNRESOLVED) {
+						width += coverage.getInterval().getUpper()
+								- coverage.getInterval().getLower();
+						if (coverage.getCause()
+								!= LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT) {
+							problems.add(context + ": a band without the typed cause " + coverage);
+						}
+					}
+				}
+				if (kinds(classify(constants)).equals(kinds.get(configuration))) {
+					assertEquals(reference.get(configuration), descriptor("lr2"), context);
+					kept++;
+				}
+				if (transform.unit.equals(UNIT) && width > 1e-4) {
+					problems.add(context + ": bands of width " + width);
+				}
+				references(context, "lr2", configuration, constants, null, problems);
+				getKernel().clearConstruction(true);
+			}
+		}
+		assertEquals(List.of(), problems);
+		// Rounded constants of the critical configuration may split its double root.
+		assertTrue(kept >= 0.9 * UNLABELLED.size() * transforms.size(),
+				"structures kept: " + kept);
+	}
+
+	/**
+	 * V-INV-2 for the unlabelled second output, the mandatory transformation where the
+	 * inherited computation is not decisive (decision D-CU2-T13-R7, precision B(i)): scaled by
+	 * {@code 10^-3} and translated by (10^3, 10^3) in the units of matrix section 1, the live
+	 * construction suppresses the output at parameters where two roots lie ahead of P (finding
+	 * H-T13-B), so no correct certificate keeps the untransformed structure. The certificate
+	 * fails closed with the typed cause of the inherited suppression, never with another
+	 * certified structure, and states nothing that the 60-digit reference of the captured
+	 * constants contradicts; {@link #everyCertifiedSampleOfTheUnlabelledSecondOutputIsDefined}
+	 * covers what it certifies.
+	 */
+	@Test
+	void theUnlabelledSecondOutputFailsClosedWhereTheInheritedComputationIsNotDecisive() {
+		Transform transform = Transform.of(BigDecimal.ONE, "0.001", "1000", "1000");
+		List<String> problems = new ArrayList<>();
+		for (Configuration configuration : UNLABELLED) {
+			String context = configuration + " " + transform + " lr2";
+			buildUnlabelled(configuration, transform);
+			double[] constants = captured("lr2");
+			LocusExistenceStructure2D structure = structure("lr2");
+			assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness(), context);
+			for (Coverage coverage : structure.getCoverage()) {
+				if (coverage.getState() == CoverageState.UNRESOLVED) {
+					assertEquals(LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT,
+							coverage.getCause(), context);
+				}
+			}
+			references(context, "lr2", configuration, constants, null, problems);
+			GeoPoint driver = (GeoPoint) lookup("N");
+			GeoPoint live = (GeoPoint) lookup("R2");
+			int suppressed = 0;
+			for (int sample = 0; sample < 2000; sample++) {
+				double t = CRITICAL - 0.1 + 0.2 * (sample + 0.5) / 2000;
+				BigDecimal[] value = discriminantAt(constants, t);
+				if (value[0].signum() > 0 && value[1].signum() > 0) {
+					moveDriver(driver, t);
+					if (!live.isDefined()) {
+						suppressed++;
+					}
+				}
+			}
+			assertTrue(suppressed > 0, context + ": no live suppression ahead of P");
+			getKernel().clearConstruction(true);
+		}
+		assertEquals(List.of(), problems);
+	}
+
+	/**
+	 * Finding H-T13-B, adversarial (decision D-CU2-T13-R7): wherever the certificate states
+	 * that the unlabelled second output exists, the live construction defines it and the
+	 * published evaluation is a point, at uniform samples, densely around the coincident root
+	 * and at the binary64 neighbours of every band edge, under the transformations that change
+	 * the inherited computation.
+	 */
+	@Test
+	void everyCertifiedSampleOfTheUnlabelledSecondOutputIsDefined() {
+		List<Transform> transforms = List.of(Transform.of(UNIT, "1", "0", "0"),
+				Transform.of(BigDecimal.ONE, "1", "1000", "1000"),
+				Transform.of(UNIT, "0.001", "1000", "1000"),
+				Transform.of(BigDecimal.ONE, "0.001", "1000", "1000"),
+				Transform.of(BigDecimal.ONE, "0.01", "1000", "1000"),
+				Transform.of(BigDecimal.ONE, "0.001953125", "1024", "1024"),
+				Transform.of(BigDecimal.ONE, "1", "1000.1", "-999.7"),
+				Transform.of(UNIT, "1", "1000000", "1000000"),
+				Transform.of(UNIT, "1000000", "0", "0"));
+		List<String> problems = new ArrayList<>();
+		int certified = 0;
+		for (Transform transform : transforms) {
+			for (Configuration configuration : UNLABELLED) {
+				String context = configuration + " " + transform + " lr2";
+				buildUnlabelled(configuration, transform);
+				LocusExistenceStructure2D structure = structure("lr2");
+				LocusDefinition2D definition = locus("lr2").getSemanticDefinition();
+				GeoPoint driver = (GeoPoint) lookup("N");
+				GeoPoint live = (GeoPoint) lookup("R2");
+				try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+					for (double t : samples(structure)) {
+						if (coverageAt(structure, t).getState() != CoverageState.CERTIFIED_EXISTS) {
+							continue;
+						}
+						certified++;
+						moveDriver(driver, t);
+						if (!live.isDefined()
+								|| !definition.evaluate(BRANCH, t, session).isValid()) {
+							problems.add(context + ": certified and undefined at t=" + t);
+						}
+					}
+				}
+				getKernel().clearConstruction(true);
+			}
+		}
+		assertTrue(certified > 0);
+		assertEquals(List.of(), problems);
+	}
+
+	/**
+	 * Decision D-CU2-T13-R7: the inherited incidence test reads the midpoint and the half axis
+	 * of the circle, not its matrix. The capture keeps the half axis with the matrix entries,
+	 * bit for bit, with the midpoint of the matrix exactly; translated far from its size, the
+	 * square of the half axis differs from the radius of the matrix.
+	 */
+	@Test
+	void theCapturedCircleCarriesTheHalfAxisOfTheInheritedIncidenceTest() {
+		for (Transform transform : List.of(Transform.of(BigDecimal.ONE, "1", "0", "0"),
+				Transform.of(BigDecimal.ONE, "0.001", "1000", "1000"))) {
+			buildUnlabelled(Configuration.CRITICAL, transform);
+			GeoConic circle = (GeoConic) lookup("p");
+			CertifiedConstructionProgram2D program = ((ReconstructibleLocusEvaluator2D) locus("lr2")
+					.getSemanticDefinition().getEvaluatorCapability()).captureCertifiedProgramV3()
+					.orElseThrow();
+			CertifiedConstructionProgram2D.Operand operand = null;
+			for (CertifiedConstructionProgram2D.Step step : program.getSteps()) {
+				if (step.getOperation() == CertifiedConstructionProgram2D.Operation.LINE_CIRCLE) {
+					operand = step.getOperands().get(1);
+				}
+			}
+			assertNotNull(operand, program.getSignature());
+			double[] matrix = circle.getFlatMatrix();
+			assertEquals(CertifiedConstructionProgram2D.OperandKind.CIRCLE, operand.getKind());
+			assertEquals(matrix[2], operand.getValue(0));
+			assertEquals(matrix[4], operand.getValue(1));
+			assertEquals(matrix[5], operand.getValue(2));
+			assertEquals(circle.getHalfAxis(0), operand.getValue(3));
+			assertEquals(-matrix[4], circle.getMidpoint().getX());
+			assertEquals(-matrix[5], circle.getMidpoint().getY());
+			BigDecimal a4 = new BigDecimal(matrix[4]);
+			BigDecimal a5 = new BigDecimal(matrix[5]);
+			BigDecimal halfAxis = new BigDecimal(operand.getValue(3));
+			int gap = halfAxis.multiply(halfAxis).subtract(a4.multiply(a4).add(a5.multiply(a5))
+					.subtract(new BigDecimal(matrix[2]))).signum();
+			assertEquals(transform.translationX.signum() != 0, gap != 0, transform.toString());
+			getKernel().clearConstruction(true);
+		}
+	}
+
+	/**
+	 * @return descriptors of the unlabelled second output of the untransformed critical, bite
+	 *         and penetration configurations, which agree in both units; the kinds of the
+	 *         roots of their discriminants go to {@code kinds}
+	 */
+	private Map<Configuration, String> unlabelledReferences(
+			Map<Configuration, List<RealRootStructure1D.RootKind>> kinds) {
+		Map<Configuration, String> descriptors = new LinkedHashMap<>();
+		for (Configuration configuration : UNLABELLED) {
+			for (BigDecimal unit : List.of(UNIT, BigDecimal.ONE)) {
+				buildUnlabelled(configuration, Transform.of(unit, "1", "0", "0"));
+				String descriptor = descriptor("lr2");
+				assertEquals(descriptors.getOrDefault(configuration, descriptor), descriptor,
+						configuration + " lr2 in both units");
+				descriptors.put(configuration, descriptor);
+				kinds.put(configuration, kinds(classify(captured("lr2"))));
+				getKernel().clearConstruction(true);
+			}
+		}
+		return descriptors;
+	}
+
+	private static List<RealRootStructure1D.RootKind> kinds(
+			List<CircleDriverRootStructure2D.Root> roots) {
+		return roots.stream().map(CircleDriverRootStructure2D.Root::kind)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * @return uniform samples of the circle, samples around the critical parameter and the
+	 *         binary64 neighbours of every band edge, inside the domain
+	 */
+	private static List<Double> samples(LocusExistenceStructure2D structure) {
+		List<Double> samples = new ArrayList<>();
+		for (int index = 0; index < 720; index++) {
+			samples.add(-Math.PI + 2 * Math.PI * (index + 0.5) / 720);
+		}
+		for (int index = 0; index < 2000; index++) {
+			samples.add(CRITICAL - 0.05 + 0.1 * (index + 0.5) / 2000);
+		}
+		for (Coverage coverage : structure.getCoverage()) {
+			if (coverage.getState() != CoverageState.UNRESOLVED) {
+				continue;
+			}
+			for (double edge : new double[] {coverage.getInterval().getLower(),
+				coverage.getInterval().getUpper()}) {
+				double below = edge;
+				double above = edge;
+				for (int step = 0; step < 16; step++) {
+					below = Math.nextDown(below);
+					above = Math.nextUp(above);
+					samples.add(below);
+					samples.add(above);
+				}
+				for (int power = 10; power <= 40; power += 2) {
+					samples.add(edge - Math.scalb(1.0, -power));
+					samples.add(edge + Math.scalb(1.0, -power));
+				}
+			}
+		}
+		samples.removeIf(t -> !(t >= -Math.PI && t < Math.PI));
+		return samples;
+	}
+
+	/**
 	 * @return descriptors of the untransformed configurations (every constant a multiple of
 	 *         125), which agree with those in the units of matrix section 1
 	 */
@@ -1035,6 +1320,28 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * output is undefined when it is created, so only {@code lq} traces it there.
 	 */
 	private void build(Configuration configuration, Transform transform) {
+		drivenLine(configuration, transform, "t");
+		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+				(GeoLine) lookup("t"), (GeoConic) lookup("p"));
+		for (String label : configuration.loci) {
+			add(label + "=LocusV2(" + label.substring(1).toUpperCase() + ",N)");
+		}
+		getKernel().updateConstruction(false);
+	}
+
+	/**
+	 * The synthetic configuration with only the unlabelled second output {@code R2} of
+	 * {@code Intersect(p, t2, 2)}, traced by {@code lr2} (decision D-CU2-T13-R7).
+	 */
+	private void buildUnlabelled(Configuration configuration, Transform transform) {
+		drivenLine(configuration, transform, "t2");
+		add("R2=Intersect(p,t2,2)");
+		add("lr2=LocusV2(R2,N)");
+		getKernel().updateConstruction(false);
+	}
+
+	/** The circle, the point P, the driver at its starting parameter and the line or ray. */
+	private void drivenLine(Configuration configuration, Transform transform, String line) {
 		BigDecimal zero = BigDecimal.ZERO;
 		add("p=Circle((" + plain(transform.x(zero)) + "," + plain(transform.y(zero)) + "),"
 				+ plain(transform.length(BigDecimal.valueOf(25))) + ")");
@@ -1045,13 +1352,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				+ plain(transform.length(configuration.radius)) + ")");
 		add("N=Point(g1)");
 		moveDriver((GeoPoint) lookup("N"), configuration.driver);
-		add("t=" + configuration.line + "(P,N)");
-		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
-				(GeoLine) lookup("t"), (GeoConic) lookup("p"));
-		for (String label : configuration.loci) {
-			add(label + "=LocusV2(" + label.substring(1).toUpperCase() + ",N)");
-		}
-		getKernel().updateConstruction(false);
+		add(line + "=" + configuration.line + "(P,N)");
 	}
 
 	/**
@@ -1076,7 +1377,12 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 *         A4 and A5 (10 to 12); the conic derives them from the typed inputs with rounding
 	 */
 	private double[] captured() {
-		CertifiedConstructionProgram2D program = ((ReconstructibleLocusEvaluator2D) locus("lq")
+		return captured("lq");
+	}
+
+	/** @return the constants of {@link #captured()} from the program of another locus */
+	private double[] captured(String label) {
+		CertifiedConstructionProgram2D program = ((ReconstructibleLocusEvaluator2D) locus(label)
 				.getSemanticDefinition().getEvaluatorCapability()).captureCertifiedProgramV3()
 				.orElseThrow();
 		double[] constants = new double[13];
@@ -1729,11 +2035,15 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	/**
 	 * The centred form of a certifying evaluation is sound: on boxes of every width, the
 	 * discriminant enclosures it decides with contain a 60-digit reference, and a box it
-	 * certifies outside the band of the unlabelled output is outside it at every sample.
+	 * certifies outside the band of the unlabelled output keeps the live output defined at
+	 * every sample (decision D-CU2-T13-R7).
 	 */
 	@Test
 	void theCentredFormEnclosesTheReference() {
 		critical("40+2^(-10)");
+		GeoPoint driver = (GeoPoint) lookup("N");
+		GeoPoint live = (GeoPoint) lookup("R2");
+		int kept = 0;
 		for (String label : List.of("lq", "lr2")) {
 			ConstructionBoxModel2D model = ConstructionBoxModel2D.capture(
 					locus(label).getSemanticDefinition());
@@ -1752,23 +2062,24 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 						continue;
 					}
 					for (double fraction : new double[] {0, 0.25, 0.5, 0.75, 1}) {
-						BigDecimal[] reference = referenceLine(lower + width * fraction);
-						BigDecimal value = reference[3];
+						BigDecimal value = referenceLine(lower + width * fraction)[3];
 						assertTrue(new BigDecimal(evaluation.getValueLower()).compareTo(value)
 								<= 0 && value.compareTo(new BigDecimal(
 										evaluation.getValueUpper())) <= 0,
 								label + " box=" + lower + "+" + width + " D=" + value);
-						if ("lr2".equals(label)
-								&& outcome.kind == ConstructionBoxOutcome2D.Kind.VALID) {
-							BigDecimal scale = reference[0].pow(2).max(reference[1].pow(2))
-									.max(reference[2].pow(2));
-							assertTrue(value.compareTo(scale.multiply(new BigDecimal(
-									ConstructionBoxModel2D.COINCIDENT_WINDOW_FACTOR))) > 0);
-						}
+					}
+				}
+				if ("lr2".equals(label)
+						&& outcome.kind == ConstructionBoxOutcome2D.Kind.VALID) {
+					for (double fraction : new double[] {0, 0.25, 0.5, 0.75, 1}) {
+						moveDriver(driver, lower + width * fraction);
+						assertTrue(live.isDefined(), label + " box=" + lower + "+" + width);
+						kept++;
 					}
 				}
 			}
 		}
+		assertTrue(kept > 0, "samples of certified boxes of lr2: " + kept);
 	}
 
 	/**

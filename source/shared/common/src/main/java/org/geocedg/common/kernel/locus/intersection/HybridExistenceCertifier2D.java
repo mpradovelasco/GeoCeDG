@@ -1235,7 +1235,51 @@ public final class HybridExistenceCertifier2D {
 									: describe(cell.outcome));
 				}
 			}
+			closeCoincidenceBands();
 			return assemble();
+		}
+
+		/**
+		 * Closes the bands of the inherited coincidence suppression at the band resolution
+		 * (decision D-CU2-T13-R7). Near the edge of such a band the margin of its predicate is
+		 * comparable to the binary64 rounding of the enclosures, so adjacent cells at the
+		 * refinement resolution may alternate between valid and band. A run of valid cells
+		 * narrower than the band resolution between two cells of such a band is reported as
+		 * band interior: the band only withholds existence that was certified, never states
+		 * any.
+		 */
+		private void closeCoincidenceBands() {
+			int size = cells.size();
+			for (int index = 0; index < size; index++) {
+				if (!isCoincidenceBand(cells.get(index))) {
+					continue;
+				}
+				List<Cell> run = new ArrayList<>();
+				double width = 0;
+				for (int offset = 1; offset < size; offset++) {
+					int next = index + offset;
+					if (next >= size && !circle) {
+						break;
+					}
+					Cell cell = cells.get(next % size);
+					if (cell.state != State.VALID) {
+						if (!run.isEmpty() && isCoincidenceBand(cell) && width < bandWidth) {
+							for (Cell valid : run) {
+								band(valid, LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT,
+										"coincidence-band-closure");
+							}
+						}
+						break;
+					}
+					run.add(cell);
+					width += cell.upper - cell.lower;
+				}
+			}
+		}
+
+		private static boolean isCoincidenceBand(Cell cell) {
+			return cell.state == State.BAND
+					&& cell.cause == LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT;
 		}
 
 		/** Structural totality: defined and continuous everywhere, without any box. */

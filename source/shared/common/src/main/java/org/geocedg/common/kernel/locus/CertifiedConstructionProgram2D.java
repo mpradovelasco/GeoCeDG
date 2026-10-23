@@ -156,7 +156,10 @@ public final class CertifiedConstructionProgram2D {
 		RAY(NodeKind.RAY),
 		/** Segment a,b,c with its start point ox,oy; end at start plus (b,-a). */
 		SEGMENT(NodeKind.SEGMENT),
-		/** Circle of matrix (1,1,A2,0,A4,A5); values A2,A4,A5. */
+		/**
+		 * Circle of matrix (1,1,A2,0,A4,A5) and midpoint (-A4,-A5); values A2,A4,A5 and the
+		 * half axis h0 that the inherited incidence test reads.
+		 */
 		CIRCLE(NodeKind.CIRCLE),
 		/** Vector x,y. */
 		VECTOR(NodeKind.VECTOR),
@@ -208,9 +211,13 @@ public final class CertifiedConstructionProgram2D {
 					startX, startY);
 		}
 
-		/** @return captured constant circle of matrix (1,1,A2,0,A4,A5) (class v3) */
-		public static Operand circle(double a2, double a4, double a5) {
-			return new Operand(OperandKind.CIRCLE, -1, a2, a4, a5);
+		/**
+		 * @return captured constant circle of matrix (1,1,A2,0,A4,A5) and midpoint
+		 *         (-A4,-A5), with the half axis of its inherited representation (class v3;
+		 *         decision D-CU2-T13-R7)
+		 */
+		public static Operand circle(double a2, double a4, double a5, double halfAxis) {
+			return new Operand(OperandKind.CIRCLE, -1, a2, a4, a5, halfAxis);
 		}
 
 		/** @return captured constant vector (class v3) */
