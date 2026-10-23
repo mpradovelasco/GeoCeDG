@@ -10,6 +10,7 @@
 | Decisiones pendientes | doce decisiones de nivel C, consolidadas en §9 con alternativas y recomendación |
 | Verificación | ejecuciones de desarrollo en §11; la verificación de aceptación del candidato congelado consta en §12, añadido por un commit documental descendiente: `STATIC`, `INFRA_UNIT`, las tres `PHASE` e `INTEGRATION` `ACCEPTED / COMPLETE` a la primera sobre `2856f246c`; referencias `preserve` de `CU0` iguales y bancos atribuidos |
 | Estado | `CU2` no está `PASS`; nada se ha publicado, fusionado ni etiquetado; `geocedg_book` no se ha tocado |
+| Continuación | la resolución autoral consolidada de 2026-10-23 aprobó C-1 a C-12; su aplicación, la revisión científica focal, el nuevo candidato y su verificación constan en el [paquete de revisión final](pre_g9b_cu2_final_review_package.md) |
 
 ## 1. Alcance y reglas aplicadas
 
@@ -74,7 +75,7 @@ semejanza, una envolvente certificada de la posición de una componente puntual 
 | O-CU2A-3 | `locus-v2-metrics.md` §25.1 y §25.7 (clase 4 con causa tipada; sin presupuesto universal) | la longitud total de un arco con extremos de raíz cuadrada (mordedura) es `NOT_ESTABLISHED` con `WORK_BUDGET_EXHAUSTED`: modelo a 3,7 (`o`, `v`, `w`, `a_1`) y casi todos los radios de mordedura sintéticos | — | C | C-10; la referencia independiente consta en §5 (V-CON-3) | sin longitud de las mordeduras |
 | O-CU2A-4 | V-SEL-6, asentamiento | el estado de selección de la copia puede diferir del vivo siendo fiel (asentamiento por diseño) | — | — | ninguna | — |
 | O-CU2A-5 | V-PER-3 | con rbCone 10 hay una isla certificada de unos `3·10⁻¹²` entre dos bandas junto a `t*` | — | — | ninguna: correcta, no canónica | — |
-| O-CU2A-6 | registro de R7 §6.6 | sondeada: en primera inicialización la salida heredada sigue definida unos `5·10⁻⁷` del conductor más allá de la transición exacta del rayo, en inexistencia certificada, y no se publica; nunca designa otra raíz | — | — | cerrada sin defecto; prueba `theCompactionOnARayStartLeavesOnlyAnUnpublishedExcess` | el exceso de evaluación heredado, como F-CU2-1 |
+| O-CU2A-6 | registro de R7 §6.6 | sondeada: en primera inicialización la salida heredada sigue definida unos `5·10⁻⁷` del conductor más allá de la transición exacta del rayo, en inexistencia certificada, y no se publica; nunca designa otra raíz | — | — | cerrada sin defecto; prueba `theCompactionOnARayStartLeavesOnlyAnUnpublishedExcess` (nota de 2026-10-23: el cierre valía para la configuración sondeada, donde la raíz de la tolerancia es la bruta 1; cuando es la bruta 0 la compactación designa otra raíz, H-CU2A-8, corregido; [paquete de revisión final](pre_g9b_cu2_final_review_package.md) §5) | el exceso de evaluación heredado, como F-CU2-1 |
 | TD-CU1-W1 | `CU1`, métrica | `w_1` llega a `PARAMETER_RESOLUTION_REACHED` con los conductores `2π·129/512`, `2π·9/32` y `2π·159/512`, también sobre `39741a0b` | — | deuda técnica | ninguna en `CU2`; ya descrita en el Javadoc de AME | huecos computacionales de `e_2` |
 
 ## 4. Correcciones de nivel B
@@ -105,9 +106,14 @@ extremo se desplaza del orden de 10⁻⁵ px (§12.3).
 ### 4.3 H-CU2A-4: la costura de un dominio periódico
 
 Un dominio periódico es una circunferencia: su extremo excluido es la costura, identificada con el
-extremo incluido, no un extremo. Todo parámetro canónico (imagen de la canonicalización, en
-`[lower, upper)`) pertenece al dominio. La tolerancia del proveedor se aplica ahora solo al extremo
-incluido de un dominio periódico y a los extremos de uno no periódico; la pertenencia a cada
+extremo incluido, no un extremo. Todo parámetro canónico de `[lower, upper)` pertenece al dominio.
+(Corrección de 2026-10-23, revisión científica focal, B-2: este párrafo daba la imagen de la
+canonicalización siempre en `[lower, upper)`; un caso de redondeo devuelve el extremo excluido,
+que el dominio rechaza, por ejemplo `−10⁻²⁰` en `[0, 1)` da `1`, y `nextDown(π)` va a `−π`, el otro
+lado de la misma costura; lo documenta `L-CU2-PERIODIC-CANONICALIZATION`, decisión C-11, en el
+[paquete de revisión final](pre_g9b_cu2_final_review_package.md) §8.) La tolerancia del proveedor
+se aplica ahora solo al extremo incluido de un dominio periódico y a los extremos de uno no
+periódico; la pertenencia a cada
 componente la sigue decidiendo la estructura: un arco que cruza la costura por su coordenada de
 arco exacta, una componente cerrada periódica y un intervalo por su intervalo con la tolerancia
 heredada (diseño de consumo §4), de modo que los loci de `CU0` y `CU1` no cambian. Prueba adversaria:

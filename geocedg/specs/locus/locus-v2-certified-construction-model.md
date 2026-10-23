@@ -5,7 +5,7 @@
 | Version | `1.2` (`certified-construction-program/v1`, `/v2` and `/v3`) |
 | Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) and by `PRE-G9B-CU2` (§10) |
 | Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21 |
-| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
+| v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22 AND THE EDITORIAL PRECISION OF §10.3 FROM AUTHOR DECISION C-8 OF 2026-10-23) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); THE INCORPORATED TEXT BELONGS TO THE CU2 TECHNICAL CANDIDATE, PENDING AUTHOR REVIEW** |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -337,8 +337,9 @@ undefined at that parameter. Where the inherited algorithm sets an unlabelled se
 undefined because it coincides with the first within a tolerance, the effective definition of
 that output near a coincident root depends on tolerance and rounding: the certificate states
 neither existence nor continuity of that output across the coincident root, and publishes
-around it an unresolved band with a typed cause, bounded by conservative first-level
-predicates; outside the band the output exists where its validity predicates are certified.
+around it an unresolved band with a typed cause, bounded by conservative predicates of the
+inherited computation on first-level inputs; outside the band the output exists where its
+validity predicates are certified.
 Where both outputs are labelled in the live construction and in the slice, the inherited rule
 does not apply and the double root is classified by the exact certificate. A certified limit
 value at a coincident root is evidence, never an available output, and no output identity is

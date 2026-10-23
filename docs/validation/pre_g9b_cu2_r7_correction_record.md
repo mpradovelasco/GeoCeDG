@@ -263,7 +263,11 @@ inherited computation on first-level inputs»; no se ha aplicado.
    por compactación cuenta las raíces que están en el camino con la tolerancia heredada de `10⁻⁵`,
    mientras el modelo de cajas las cuenta con el predicado exacto; en una franja de esa anchura junto
    a una transición del parámetro del rayo, la raíz seleccionada podría diferir. Está fuera del
-   perímetro de R7 y no se ha sondeado; se propone tratarla con R5 (grupo G3).
+   perímetro de R7 y no se ha sondeado; se propone tratarla con R5 (grupo G3). (Nota posterior de
+   2026-10-23: R5 la sondeó donde la raíz de la tolerancia es la bruta 1, sin defecto, O-CU2A-6;
+   la revisión científica focal la confirmó donde es la bruta 0, en que la compactación designa
+   otra raíz, y se corrigió como H-CU2A-8:
+   [paquete de revisión final](pre_g9b_cu2_final_review_package.md) §5.)
 
 ## 7. R5
 

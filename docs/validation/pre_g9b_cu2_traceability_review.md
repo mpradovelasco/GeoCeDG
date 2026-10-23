@@ -259,3 +259,65 @@ parte de V-REV-EXACT-3 y V-REV-EXACT-8; las pruebas nuevas cubren el resto.
 V-DET-1 tiene cobertura demostrable: la doble ejecución sintética y la del modelo comparan bit a
 bit revisiones, huellas, certificados, eventos y contadores, propios y anidados, en los estados de
 V-REV-EXACT-1 a V-REV-EXACT-7 (V-REV-EXACT-8).
+
+## 11. Resolución autoral consolidada
+
+La resolución autoral consolidada de 2026-10-23 aprobó las decisiones C-1 a C-12 de §9 del
+[registro de la corrección](pre_g9b_cu2_corrective_autonomy_record.md). Las precisiones de las
+filas se aplicaron en la matriz sin cambiar su obligatoriedad ni su tipo, y las pruebas se
+reforzaron donde una decisión fija un elemento nuevo que aseverar:
+
+| Fila | Decisión | Estado |
+|---|---|---|
+| GC-2 | C-4: por revisión publicada, un cálculo propio y uno por cada copia anidada reconstruida | efectiva: `aNonDriverChangeComputesOneCertificatePerAffectedLocus` asevera ahora también la regla de los anidados y que algún cambio reconstruye una copia anidada |
+| V-UND-1 | C-2: `COMPUTATIONAL_DEPENDENCY_FAILURE` reservada | efectiva; la constante lo declara |
+| V-REV-EXACT-7 | C-1: el etiquetado de una salida de un par etiquetado se tipa `STRUCTURE` | efectiva: `theVariantsCreatedAtTheDoubleRootKeepTheirComponents` asevera `STRUCTURE` y ningún `LABELS` |
+| V-LIN-4 | C-7: «contiene el parámetro dentro de la tolerancia del dominio, entre hijas de una división» | efectiva, con la redacción precisada |
+| V-COINC-5, V-COINC-7 | C-6: exceso de evaluación heredado, banda tipada y muestreo del modelo | efectivas, con la redacción y el muestreo precisados |
+| V-CON-3 | C-10: limitación computacional tipada de las mordeduras (`L-CU2-SQRT-END-LENGTH`) | efectiva, con la limitación aceptada |
+| V-AVAIL-6 | C-3: coordenadas dibujadas bit a bit las del evaluador, sin mejorar su clase | efectiva, con la redacción precisada |
+| V-TEX-1 | C-5: órdenes de compilación y omisión visible sin herramientas | efectiva, con la redacción precisada |
+| V-POINT-4 | C-9: fallo forzado de la forma límite | efectiva: `aForcedFailureOfTheLimitFormLeavesThePositionUnavailable`, con el gancho interno de paquete `ConstructionBoxModel2D.withholdLimitFormValue` |
+
+C-8 es una precisión editorial de §10.3 del modelo de construcción certificada, sin cambio de
+significado; C-11 y C-12 conservan el comportamiento vigente con sus limitaciones documentadas
+(`L-CU2-PERIODIC-CANONICALIZATION` y `L-CU2-CLOSED-PERIODIC-SEAM`). Los doce residuos menores de
+§5 se cierran en §12.
+
+## 12. Cierre de los residuos menores
+
+La resolución exige que toda fila obligatoria esté realmente ejercitada o tenga una decisión
+autoral que defina su tratamiento. Cada residuo de §5 tiene ahora una prueba que asevera el
+elemento que faltaba; la §6 de la matriz cita las pruebas nuevas y marca las filas «efectiva
+(resolución consolidada)». La revisión científica focal, con sus correcciones H-CU2A-6 a
+H-CU2A-11 y sus observaciones, consta en el [paquete de revisión final](pre_g9b_cu2_final_review_package.md) §5.
+
+| Fila | Residuo de §5 | Prueba que lo cierra |
+|---|---|---|
+| GC-4 | `e_2` frente al presupuesto de cajas | `constructionDegeneraciesAreBandsThatNoComponentCrosses` incluye `e_2`: dentro del presupuesto, o agotamiento tipado `BUDGET_EXHAUSTED` sin `COMPLETE` |
+| V-V3-3 | el modo continuo no puede activarse ni cargarse | `outOfClassShapesHaveNoProgram`: un documento que pide `continuous="true"` no lo activa y la intersección conserva su programa; el caso de la fila no puede darse en el producto |
+| V-PER-1 | ninguna prueba aísla la celda de la costura | la celda `[Math.PI, nextUp(Math.PI)]`, evaluada como en el certificador, es válida, con la selección de las cajas de los dos lados canónicos y una envolvente del punto trazado que corta las de ellas: configuración crítica sintética (`lq`, `lr`) y los seis loci cerrados del modelo |
+| V-FOLD-2 | el `e_1` desplazado no se dibuja | `theDisplacedE1DeclaresItsTurnsAndExemptsNone`: con `I` redefinido `2⁻⁴⁰` fuera de `i`, `e_1` sigue cerrada sin pliegue; su dibujo no exime ningún giro y declara `UNCERTIFIED_TURN` en `0` y junto a la costura, única causa de su fidelidad parcial |
+| V-FOLD-4 | el punto degenerado no se dibuja | `aDegenerateStationaryPointIsRefinedAndDeclaredNeverExempted`: las únicas exenciones son la banda del pliegue de la costura; el punto degenerado se declara una vez en `0` |
+| V-E2-8 | el límite del inicio excluido con `full-cycle` | `withFullCycleTheExcludedStartOfE2IsItsOneSidedLimit`: el gemelo de `e_2` que lee la longitud con `full-cycle` (`w_1` es entrada protegida de su escalar) incluye `t_N` en `s = 2π`; la consulta del inicio excluido da `w = 0` |
+| V-E2-9 | una comprobación de coordenadas propia de LaTeX | `anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated`: el último vértice escrito por PGF es el último vértice exportado y no el límite, a media unidad de la última cifra impresa |
+| V-SEL-6 | ningún orden dibujo-métrica o métrica-dibujo | `drawingAndMeasuringInEitherOrderGiveTheSameResults`: con `[1, 0]`, dibujar y medir en los dos órdenes dan los mismos estados, el mismo certificado, calculado una vez, la misma longitud y el mismo dibujo |
+| V-POINT-1 | la operación y la dirección literal de la raíz | `anExternalTangencyIsAPointComponent` asevera el origen (identidad durable de `Q` con `-INTERSECTION_OUTPUT`), el predicado `DISCRIMINANT` y la raíz `root-0` |
+| V-CON-2 | el arco del modelo no se recorre con una ruta | `routesFollowTheBiteArcOfTheModelAcrossTheSeam`: en la mordedura de excCyl 3,7, la ruta entre las dos posiciones a `0,1` de la costura sigue el arco sin envolver; `wrap-to-start` y `full-cycle` se rechazan con su diagnóstico tipado |
+| V-AVAIL-3 | PSTricks y Asymptote comparten el código de PGF | `anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated` asevera la declaración `END_NOT_EVALUATED` también en PSTricks y Asymptote |
+| V-DXF-3 | el residuo de cierre en los loci cerrados del modelo | `theClosureResidualOfEachClosedLocusIsMeasuredAgainstItsCertificate`: en los seis loci cerrados, el residuo es exactamente la distancia entre el inicio y la curva justo antes del punto de cierre, nunca la identidad trivial, que es 0 |
+
+V-DET-1 seguía marcada «abierta» en la matriz desde §6 (D-CU2-T13-R6), aunque el mandato
+correctivo amplió su cobertura (§10 y §7 del registro de la corrección). Las clases que §6
+señalaba sin repetir se repiten ahora. La doble ejecución sintética cubre los seis casos de V-E2-6
+(sentido atrás; origen en la costura; origen que depende del conductor; fuente solo localmente
+certificada, con un locus que depende de su longitud; fuente degenerada de longitud cero; ruta
+entre posiciones fijas), las políticas de misma posición y de extremo abierto de V-E2-8, leídas
+por el adaptador escalar, y las construcciones de las correcciones H-CU2A-7 a H-CU2A-10. Ninguna
+construcción da un salto que ninguna cuerda acote ni una estructura que falle computacionalmente
+(V-UND-1): sus estructuras sintéticas se certifican sobre dos construcciones nuevas, con el mismo
+resultado. La doble ejecución del modelo recorre los nueve valores de mordedura de V-TR-1 y los
+cambios de V-CRIT-9 (`rbCylinder` a 2,0 y `α_cyl` a 35°). Las dos ejecuciones son idénticas bit a
+bit; la fila queda «efectiva (resolución consolidada)».
+
+Tras el cierre ninguna fila obligatoria queda con un elemento sin aseverar.
