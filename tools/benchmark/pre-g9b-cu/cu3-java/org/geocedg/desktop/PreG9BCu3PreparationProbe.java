@@ -635,7 +635,9 @@ class PreG9BCu3PreparationProbe {
 			Throwable root = failure;
 			List<Object> chain = new ArrayList<>();
 			while (root != null) {
-				chain.add(root.getClass().getName() + ": " + root.getMessage());
+				// identities generated for the session are random: normalize them
+				chain.add(root.getClass().getName() + ": " + String.valueOf(root.getMessage())
+						.replaceAll("geo:[0-9a-f]{32}", "geo:<session-id>"));
 				if (root.getCause() == null) {
 					break;
 				}
