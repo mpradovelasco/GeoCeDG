@@ -225,6 +225,57 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-B06-3 (synthetic part): in the exact critical configuration and in its bite, the same
+	 * view draws {@code lq} and {@code lr} with identical vertices; twice the zoom and a quarter
+	 * of the chord tolerance change the vertices but never the number of strokes, their ends,
+	 * the closure or the exact singular vertex.
+	 */
+	@Test
+	void drawingsAreDeterministicAndTheirTopologyViewInvariant() {
+		for (String radius : List.of("40", "40+2^(-10)")) {
+			critical(radius);
+			for (String label : List.of("lq", "lr")) {
+				publishCertificate(label, null);
+				GeoLocusV2 locus = locus(label);
+				LocusRenderData2D first = render(locus, policy(10));
+				LocusRenderData2D again = render(locus, policy(10));
+				LocusRenderData2D zoomed = render(locus, policy(20));
+				LocusRenderData2D fine = render(locus, LocusRenderPolicy2D.adaptive(1, 800, 600,
+						10, 10, 32, 0.75 / 4, 12));
+				String context = radius + " " + label;
+				assertEquals(fingerprint(first), fingerprint(again), context);
+				assertEquals(topology(first, 10), topology(zoomed, 20), context);
+				assertEquals(topology(first, 10), topology(fine, 10), context);
+				assertTrue(zoomed.getVertices().size() >= first.getVertices().size(), context);
+			}
+			getKernel().clearConstruction(true);
+		}
+	}
+
+	/**
+	 * @return strokes, the semantic parameters of their ends, the closure and the singular
+	 *         vertices of a drawing
+	 */
+	private static String topology(LocusRenderData2D drawing, double scale) {
+		List<Vertex> vertices = drawing.getVertices();
+		StringBuilder text = new StringBuilder().append(subpaths(drawing)).append(':');
+		for (int index = 0; index < vertices.size(); index++) {
+			Vertex vertex = vertices.get(index);
+			boolean strokeEnd = index + 1 == vertices.size()
+					|| vertices.get(index + 1).startsSubpath();
+			if (vertex.startsSubpath() || strokeEnd) {
+				text.append(Double.toHexString(vertex.getSemanticParameter())).append(',');
+			}
+			if (vertex.getTurnExemption() == TurnExemption.SINGULAR_VERTEX) {
+				text.append("singular=").append(Double.toHexString(vertex.getPoint().getX()))
+						.append(',');
+			}
+		}
+		return text.append(':').append(!vertices.isEmpty() && distancePixels(
+				vertices.get(0).getPoint(), last(drawing).getPoint(), scale) <= 1e-6).toString();
+	}
+
+	/**
 	 * V-B07-2 and V-AVAIL-4 (drawing): with the bite certificate published, the arc is one
 	 * stroke between its certified transitions; near each, at the start and at the end after
 	 * the seam, the spans are taken in {@code t = t* +- s^2}, so that each end span meets the

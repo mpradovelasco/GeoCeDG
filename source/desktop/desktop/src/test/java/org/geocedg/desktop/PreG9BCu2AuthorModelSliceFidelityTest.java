@@ -26,6 +26,10 @@ import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
@@ -235,6 +239,72 @@ class PreG9BCu2AuthorModelSliceFidelityTest {
 	void everyStateWithTheDriverAtTheDoubleRootMatchesTheModelSetFromScratch()
 			throws Exception {
 		assertEquals(List.of(), statesAgainstScratch(T_C));
+	}
+
+	/**
+	 * V-REV-EXACT-3 (model part): with the variant {@code lr2 = LocusV2(R2, N)} of an unlabelled
+	 * second output added to the model, each one-ulp change of {@code excCyl} at the critical
+	 * value publishes a revision of {@code lr2} whose slice copy holds the exact
+	 * {@code excCyl}, bit for bit, and is faithful; wherever its certificate states existence,
+	 * at 64 driver positions swept in order, the published evaluation of {@code lr2} is the live
+	 * {@code R2} with the driver at the same canonical parameter, bit for bit.
+	 */
+	@Test
+	void oneUlpOfExcCylReachesTheUnlabelledOutputExactly() throws Exception {
+		File model = PreG9BCu0Corpus.withoutE2(work);
+		List<String> problems = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = state(model, -1.0, PENETRATION);
+			GeoLocusV2 lr2 = PreG9BCu0Corpus.locus(app, "lr2");
+			GeoPoint live = (GeoPoint) app.getKernel().lookupLabel("R2");
+			List<String> found = new ArrayList<>();
+			int compared = 0;
+			for (double value : new double[] {BITE, PENETRATION}) {
+				String visit = "excCyl=" + Double.toHexString(value);
+				long revision = lr2.getSemanticRevision();
+				PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+				ReconstructibleLocusEvaluator2D evaluator = (ReconstructibleLocusEvaluator2D)
+						field(lr2.getParentAlgorithm(), "evaluator");
+				if (lr2.getSemanticRevision() <= revision || !evaluator.isReconstructionFaithful()
+						|| !exact(app.getKernel().lookupLabel("excCyl")).equals(
+								exact(copy(lr2, "excCyl")))) {
+					found.add(visit + ": revision " + revision + " -> " + lr2.getSemanticRevision()
+							+ " " + evaluator.getFidelityReport());
+				}
+				LocusDefinition2D definition = lr2.getSemanticDefinition();
+				String branch = definition.getBranches().get(0).getBranchKey();
+				LocusExistenceStructure2D structure =
+						definition.getBranch(branch).getExistenceStructure();
+				try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(128)) {
+					for (int sample = 0; sample < 64; sample++) {
+						double parameter = -Math.PI + 2 * Math.PI * sample / 64 + 0.003;
+						LocusExistenceStructure2D.Coverage coverage =
+								structure.getCoverageAt(parameter);
+						if (coverage == null || coverage.getState()
+								!= LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS) {
+							continue;
+						}
+						LocusEvaluation2D evaluation = definition.evaluate(branch, parameter,
+								session);
+						PreG9BCu0Corpus.movePathPoint(app, "N",
+								definition.getProvider().canonicalize(parameter));
+						if (!evaluation.isValid() || !live.isDefined()
+								|| Double.doubleToRawLongBits(live.getInhomX()) != Double
+										.doubleToRawLongBits(evaluation.getPoint().getX())
+								|| Double.doubleToRawLongBits(live.getInhomY()) != Double
+										.doubleToRawLongBits(evaluation.getPoint().getY())) {
+							found.add(visit + " t=" + Double.toHexString(parameter) + ": "
+									+ evaluation.getStatus() + " live " + live);
+						}
+						compared++;
+					}
+				}
+			}
+			if (compared < 64) {
+				found.add("compared samples: " + compared);
+			}
+			return found;
+		});
+		assertEquals(List.of(), problems);
 	}
 
 	/** @return every visit whose artifacts differ from those of the model set from scratch */

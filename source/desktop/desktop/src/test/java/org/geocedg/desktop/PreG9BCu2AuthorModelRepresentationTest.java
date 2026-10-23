@@ -121,7 +121,10 @@ class PreG9BCu2AuthorModelRepresentationTest {
 
 	/**
 	 * V-B06-3: the same view gives identical vertices; another zoom or output resolution
-	 * changes the vertices, never the ends, the closure or the number of strokes.
+	 * changes the vertices, never the ends, the closure or the number of strokes. Checked on the
+	 * six closed loci at the author's parameters and on the first family in the bites at
+	 * excCyl 3.7 and 3.85 and at the first binary64 of the bite ({@code bc}), whose arcs cross
+	 * the seam.
 	 */
 	@Test
 	void drawingsAreDeterministicAndTheirTopologyViewInvariant() throws Exception {
@@ -129,37 +132,57 @@ class PreG9BCu2AuthorModelRepresentationTest {
 			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
 					PreG9BCu0Corpus.CEDG, work));
 			Map<String, Object> values = new LinkedHashMap<>();
-			LocusRenderPolicy2D author = PreG9BCu0Corpus.authorPolicy();
-			LocusRenderPolicy2D zoom = LocusRenderPolicy2D.adaptive(1,
-					PreG9BCu0Corpus.AUTHOR_WIDTH, PreG9BCu0Corpus.AUTHOR_HEIGHT, 2 * SCALE,
-					2 * SCALE, 32, 0.75, 12);
-			LocusRenderPolicy2D dpi = LocusRenderPolicy2D.adaptive(1,
-					PreG9BCu0Corpus.AUTHOR_WIDTH, PreG9BCu0Corpus.AUTHOR_HEIGHT, SCALE, SCALE,
-					32, 0.75 / 4, 12);
 			for (String label : CLOSED) {
-				LocusRenderData2D first = publishAndRender(app, label, null, author);
-				LocusRenderData2D again = new LocusRenderCache2D().getOrBuild(
-						PreG9BCu0Corpus.locus(app, label), author);
-				GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
-				LocusRenderData2D zoomed = new LocusRenderCache2D().getOrBuild(locus, zoom);
-				LocusRenderData2D fine = new LocusRenderCache2D().getOrBuild(locus, dpi);
-				values.put(label, (fingerprint(first).equals(fingerprint(again))) + "/"
-						+ topology(first).equals(topology(zoomed)) + "/"
-						+ topology(first).equals(topology(fine)) + "/"
-						+ (zoomed.getVertices().size() >= first.getVertices().size()));
+				values.put(label, invariance(app, label));
+			}
+			PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+			for (double excCyl : new double[] {3.7, 3.85,
+				Double.longBitsToDouble(0x400d416bb67a38bcL)}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				for (String label : FIRST_FAMILY) {
+					values.put(label + "@" + excCyl, invariance(app, label));
+				}
 			}
 			return values;
 		});
-		for (String label : CLOSED) {
-			assertEquals("true/true/true/true", row.get(label), label + " " + row);
+		for (Map.Entry<String, Object> entry : row.entrySet()) {
+			assertEquals("true/true/true/true", entry.getValue(), entry.getKey() + " " + row);
 		}
+		assertEquals(CLOSED.size() + 3 * FIRST_FAMILY.size(), row.size(), row.toString());
 	}
 
 	/**
-	 * V-B07-1 (step T11; inverts {@code pins.B07} of CU0): in the bites at excCyl 3.7, 3.85 and
-	 * 3.9 each locus of the first family is drawn as one open stroke along its certified arc
-	 * across the seam, whose end vertices lie within 0.75 px of the images of the certified
-	 * ends, which enclose the analytic ends (until CU2 the stroke stopped 6 to 24 px short).
+	 * @return {@code same/zoom/resolution/refined}: identical vertices with the author's view
+	 *         again, the same topology with twice the zoom and with a quarter of the chord
+	 *         tolerance, and at least as many vertices with the zoom
+	 */
+	private static String invariance(AppGeoCeDG app, String label) {
+		LocusRenderPolicy2D author = PreG9BCu0Corpus.authorPolicy();
+		LocusRenderPolicy2D zoom = LocusRenderPolicy2D.adaptive(1,
+				PreG9BCu0Corpus.AUTHOR_WIDTH, PreG9BCu0Corpus.AUTHOR_HEIGHT, 2 * SCALE,
+				2 * SCALE, 32, 0.75, 12);
+		LocusRenderPolicy2D dpi = LocusRenderPolicy2D.adaptive(1,
+				PreG9BCu0Corpus.AUTHOR_WIDTH, PreG9BCu0Corpus.AUTHOR_HEIGHT, SCALE, SCALE,
+				32, 0.75 / 4, 12);
+		LocusRenderData2D first = publishAndRender(app, label, null, author);
+		GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+		LocusRenderData2D again = new LocusRenderCache2D().getOrBuild(locus, author);
+		LocusRenderData2D zoomed = new LocusRenderCache2D().getOrBuild(locus, zoom);
+		LocusRenderData2D fine = new LocusRenderCache2D().getOrBuild(locus, dpi);
+		return (fingerprint(first).equals(fingerprint(again))) + "/"
+				+ topology(first).equals(topology(zoomed)) + "/"
+				+ topology(first).equals(topology(fine)) + "/"
+				+ (zoomed.getVertices().size() >= first.getVertices().size());
+	}
+
+	/**
+	 * V-B07-1 (step T11; inverts {@code pins.B07} of CU0) and V-B07-2 (model part): in the
+	 * bites at excCyl 3.7, 3.85 and 3.9 each locus of the first family is drawn as one open
+	 * stroke along its certified arc across the seam, whose end vertices lie within 0.75 px of
+	 * the images of the certified ends, which enclose the analytic ends (until CU2 the stroke
+	 * stopped 6 to 24 px short), and both included ends evaluate (finding H-CU2A-3); at each end
+	 * the last span, taken in the square-root coordinate {@code t = t* +- s^2}, meets the chord
+	 * tolerance with no more vertices than a regular span, plus two.
 	 */
 	@Test
 	void aBiteIsDrawnToTheImagesOfItsCertifiedEnds() throws Exception {
@@ -176,20 +199,92 @@ class PreG9BCu2AuthorModelRepresentationTest {
 					LocusDefinition2D definition = locus.getSemanticDefinition();
 					LocusPoint2D start = componentEnd(definition, arc, false);
 					LocusPoint2D end = componentEnd(definition, arc, true);
+					boolean evaluated;
+					try (LocusEvaluationSession2D session = LocusEvaluationSession2D
+							.memoizing(4)) {
+						evaluated = definition.evaluateComponentEnd(PreG9BCu0Corpus.MAIN,
+								arc.getStart(), false, session).isValid()
+								&& definition.evaluateComponentEnd(PreG9BCu0Corpus.MAIN,
+										arc.getEnd(), true, session).isValid();
+					}
 					List<Vertex> vertices = new LocusRenderCache2D().getOrBuild(locus,
 							PreG9BCu0Corpus.authorPolicy()).getVertices();
 					values.put(label + "@" + excCyl, arc.crossesSeam() + "/"
 							+ vertices.stream().filter(Vertex::startsSubpath).count() + "/"
 							+ (distance(vertices.get(0).getPoint(), start) * SCALE <= 0.75) + "/"
 							+ (distance(vertices.get(vertices.size() - 1).getPoint(), end)
-									* SCALE <= 0.75));
+									* SCALE <= 0.75) + "/" + evaluated + "/"
+							+ squareRootEndSpans(definition, arc, vertices));
 				}
 			}
 			return values;
 		});
 		for (Map.Entry<String, Object> entry : row.entrySet()) {
-			assertEquals("true/1/true/true", entry.getValue(), entry.getKey() + " " + row);
+			assertEquals("true/1/true/true/true/true", entry.getValue(),
+					entry.getKey() + " " + row);
 		}
+	}
+
+	/**
+	 * V-B07-2: at each end of the arc, the vertices of the last span of the minimum partition
+	 * are no more than those of the most refined regular span of the arc plus two (a span taken
+	 * in the parameter would refine to the resolution there), and every chord there deviates
+	 * at most 0.75 px from the curve at its midpoint in the square-root coordinate.
+	 */
+	private static String squareRootEndSpans(LocusDefinition2D definition,
+			ContinuousComponent arc, List<Vertex> vertices) {
+		double lower = arc.getInterval().getLower();
+		double upper = arc.getInterval().getUpper();
+		int spans = 1 << LocusRenderPolicy2D.DEFAULT_MINIMUM_DEPTH;
+		double span = (upper - lower) / spans;
+		int[] counts = new int[spans];
+		for (Vertex vertex : vertices) {
+			double lifted = lifted(vertex.getSemanticParameter(), lower);
+			int index = (int) Math.min(spans - 1, Math.max(0, Math.ceil((lifted - lower) / span)
+					- 1));
+			counts[index] += lifted > lower ? 1 : 0;
+		}
+		int regular = 0;
+		for (int index = 1; index + 1 < spans; index++) {
+			regular = Math.max(regular, counts[index]);
+		}
+		if (counts[0] > regular + 2 || counts[spans - 1] > regular + 2) {
+			return "vertices " + java.util.Arrays.toString(counts);
+		}
+		for (int index = 1; index < vertices.size(); index++) {
+			double pa = lifted(vertices.get(index - 1).getSemanticParameter(), lower);
+			double pb = lifted(vertices.get(index).getSemanticParameter(), lower);
+			double middle;
+			if (pb <= lower + span) {
+				double sa = Math.sqrt(pa - lower);
+				double sb = Math.sqrt(pb - lower);
+				middle = lower + Math.pow(sa + (sb - sa) / 2, 2);
+			} else if (pa >= upper - span) {
+				double sa = Math.sqrt(upper - pa);
+				double sb = Math.sqrt(upper - pb);
+				middle = upper - Math.pow(sa + (sb - sa) / 2, 2);
+			} else {
+				continue;
+			}
+			LocusPoint2D curve = evaluate(definition, middle);
+			LocusPoint2D a = vertices.get(index - 1).getPoint();
+			LocusPoint2D b = vertices.get(index).getPoint();
+			double dx = b.getX() - a.getX();
+			double dy = b.getY() - a.getY();
+			double length = Math.hypot(dx, dy);
+			double across = length == 0 ? distance(curve, a)
+					: Math.abs((curve.getX() - a.getX()) * dy - (curve.getY() - a.getY()) * dx)
+							/ length;
+			if (across * SCALE > 0.75) {
+				return "chord " + index + " deviates " + across * SCALE + " px";
+			}
+		}
+		return "true";
+	}
+
+	/** @return the parameter lifted by a period when it lies before the start of an arc */
+	private static double lifted(double parameter, double start) {
+		return parameter < start ? parameter + 2 * Math.PI : parameter;
 	}
 
 	/**
@@ -768,9 +863,10 @@ class PreG9BCu2AuthorModelRepresentationTest {
 
 	/**
 	 * @return the image of one end of a certified component: its evaluation or, where the
-	 *         evaluation of the binary64 end fails (the lifted end of an arc across the seam
-	 *         canonicalizes one rounding outside the arc), the limit-form enclosure of the
-	 *         certified transition that the representation uses (consumption design 5.2)
+	 *         evaluator does not define the binary64 end, the limit-form enclosure of the
+	 *         certified transition that the representation uses (consumption design 5.2).
+	 *         Until the corrective mandate (finding H-CU2A-3) the evaluation of an included end
+	 *         of an arc across the seam failed whenever the canonicalization moved it off the arc
 	 */
 	private static LocusPoint2D componentEnd(LocusDefinition2D definition,
 			ContinuousComponent component, boolean upper) {
