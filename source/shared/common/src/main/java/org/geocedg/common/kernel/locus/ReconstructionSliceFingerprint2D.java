@@ -56,18 +56,26 @@ public final class ReconstructionSliceFingerprint2D {
 
 	/**
 	 * Tags that carry the derived value of a dependent element, recomputed from its inputs
-	 * and its definition, or the driver position of a point on a path or in a region.
+	 * and its definition, or the driver position of a point on a path or in a region. Each
+	 * is removed with the whitespace before it, so that its presence never changes the
+	 * structure part.
 	 */
 	private static final Pattern DERIVED_VALUE_TAG = Pattern.compile(
-			"<(?:coords|value|matrix|eigenvectors|pathParameter|regionParameters)\\b[^>]*/>");
+			"\\s*<(?:coords|value|matrix|eigenvectors|pathParameter|regionParameters)"
+					+ "\\b[^>]*/>");
 	/**
 	 * Tags of drawing state that the file loader applies after the whole construction is
 	 * read, once the slice has been published (animation, visibility condition, dynamic
 	 * colour and caption, start point, linked input): they never change a value of the
 	 * slice, and keeping them would publish a second revision of every locus after loading.
+	 * Each is removed with the whitespace before it: an element that a document rebuilt by
+	 * undo writes without its colour, such as an unlabelled angle input, has the structure
+	 * of the element written with it (PRE-G9B-CU2; the fingerprint is never based on a
+	 * graphical representation, {@code locus-v2-semantics.md} v1.3).
 	 */
 	private static final Pattern DEFERRED_DRAWING_TAG = Pattern.compile(
-			"<(?:animation|condition|objColor|dynamicCaption|startPoint|linkedGeo)\\b[^>]*/>");
+			"\\s*<(?:animation|condition|objColor|dynamicCaption|startPoint|linkedGeo)"
+					+ "\\b[^>]*/>");
 	private static final Comparator<GeoElement> CONSTRUCTION_ORDER =
 			Comparator.comparingInt(GeoElement::getConstructionIndex)
 					.thenComparingLong(GeoElement::getID);
