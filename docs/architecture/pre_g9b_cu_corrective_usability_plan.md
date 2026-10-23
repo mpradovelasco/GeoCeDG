@@ -5,7 +5,7 @@
 | Carácter | Plan vivo del track `PRE-G9B-CU`. No es especificación normativa: las decisiones arquitectónicas se incorporan a sus especificaciones mediante el procedimiento de revisión y aprobación |
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
-| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); arquitectura de `CU2` `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation`, pendiente de revisión autoral y de las decisiones D-CU2-T13-R1 a D-CU2-T13-R3 ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)); `CU2` no está `PASS`; `CU3`–`CU10` **no autorizados** |
+| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); arquitectura de `CU2` `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo congelado `2856f246` pendiente de revisión autoral y de doce decisiones de nivel C ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); `CU2` no está `PASS`; `CU3`–`CU10` **no autorizados** |
 | Mandato editorial | E1, aprobado por el autor el 2026-10-20 como obligación de cierre del track (§2.3 y §8): diseño detallado de los apéndices pendiente de preparación y revisión; redacción e incorporación a `geocedg_book` no autorizadas |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
@@ -185,9 +185,12 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
 - **Estado:** arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación
   autorizada, condicionada, el 2026-10-21 (§2.4;
   [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md)),
-  sobre la base exacta `070af6f902cd0be291247e73efb5629ef2a39eba`; en curso en la rama local
-  `phase/pre-g9b-cu2-implementation`. `CU2` no está `PASS`: lo decide la revisión autoral del
-  candidato técnico congelado. La preparación, su revisión focalizada y su cierre de
+  sobre la base exacta `070af6f902cd0be291247e73efb5629ef2a39eba`; implementada en la rama local
+  `phase/pre-g9b-cu2-implementation` (candidato de T13 `39741a0b`) y corregida en la rama local
+  `phase/pre-g9b-cu2-corrective` (candidato correctivo `2856f246`;
+  [registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)).
+  `CU2` no está `PASS`: lo decide la revisión autoral del candidato técnico congelado. La
+  preparación, su revisión focalizada y su cierre de
   coherencia se publicaron por instrucción autoral en `phase/pre-g9b-cu2-preparation`
   (`60d54644`, `cbb7ea8c` y `070af6f9`, por avance rápido normal)
   ([informe de preparación](../validation/pre_g9b_cu2_preparation_candidate_report.md),
