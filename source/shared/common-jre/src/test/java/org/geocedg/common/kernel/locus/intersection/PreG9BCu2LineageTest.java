@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,17 +18,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
+import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusBoundarySource2D;
+import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D.Status;
+import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusLineage2D;
+import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
+import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.LineageTransition;
+import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.locus.LocusV2TestBranches;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
@@ -36,6 +48,7 @@ import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -121,6 +134,116 @@ class PreG9BCu2LineageTest extends BaseUnitTest {
 						.getStatus());
 		assertEquals(Status.RESOLVED_BY_KEY, LocusComponentSelectorResolver2D.resolve(
 				keys(lq).get(0), bite, List.of(), 2.5).getStatus());
+	}
+
+	/**
+	 * V-LIN-4 and V-LIN-6 (point part), corrective mandate, Level B for the typed cause: a
+	 * synthetic document whose retained selector corresponds, through a recorded split, to two
+	 * certified components that both contain its parameter, the two children sharing a closed
+	 * end, is {@code AMBIGUOUS}. The semantic point that retains it is undefined with the typed
+	 * cause {@code SELECTOR_UNRESOLVED} and that status, keeps its accepted address and its
+	 * persisted selector, and is reassociated with neither child; unique containment validates
+	 * the same correspondence away from the shared end. A split whose children do not contain
+	 * the parameter is {@code NOT_CONTAINED}, and the same decomposition without a recorded
+	 * transition {@code NO_CORRESPONDENCE}, with the same cause; the whole component resolves
+	 * the selector again. Before the correction the point was undefined without any cause.
+	 */
+	@Test
+	void anAmbiguousSelectorLeavesThePointUndefinedWithATypedCause() {
+		add("s=0");
+		add("Q=(s,0)");
+		add("D={false,{-2,2,true,true}}");
+		GeoLocusV2 locus = add("L=LocusV2(Q,s,D)");
+		String branchKey = locus.getSemanticDefinition().getBranches().get(0).getBranchKey();
+		LocusInterval2D whole = new LocusInterval2D(-2, 2, true, true);
+		// The scalar locus is outside class v3: its certified components are injected.
+		publish(locus, List.of(whole), LocusLineage2D.unchanged());
+		String parentKey = LocusComponentLineage2D.keys(structure(locus)).get(0);
+		LocusSemanticAddress2D address = new LocusSemanticAddress2D(
+				locus.getPersistentLocusId(),
+				locus.getSemanticDefinition().getProvider().getProviderId(), branchKey,
+				parentKey, 0, 0, SeamSide.NOT_PERIODIC);
+		String selector = LocusSemanticAddressState2D.encode(address);
+		GeoText branch = new GeoText(getConstruction());
+		branch.setTextString(selector);
+		GeoPoint point = LocusV2PublicOperations.createSemanticPoint(getConstruction(), "E",
+				locus, branch, new GeoNumeric(getConstruction(), 0));
+		AlgoSemanticLocusPoint2D parent = assertInstanceOf(AlgoSemanticLocusPoint2D.class,
+				point.getParentAlgorithm());
+		assertTrue(point.isDefined());
+		assertEquals(LocusSemanticPointCause2D.RESOLVED, parent.getResolutionCause());
+		assertEquals(Status.RESOLVED_BY_KEY, parent.getSelectorStatus());
+		assertEquals(address, parent.getSemanticAddress());
+
+		LocusInterval2D left = new LocusInterval2D(-2, 0, true, true);
+		LocusInterval2D right = new LocusInterval2D(0, 2, true, true);
+		List<String> children = List.of(LocusComponentLineage2D.create(branchKey, left),
+				LocusComponentLineage2D.create(branchKey, right));
+		publish(locus, List.of(left, right), new LocusLineage2D(LineageTransition.SPLIT,
+				List.of(parentKey), children));
+		parent.compute();
+		LocusExistenceStructure2D split = structure(locus);
+		assertEquals(children, LocusComponentLineage2D.keys(split));
+		assertUnresolved(parent, address, selector, Status.AMBIGUOUS);
+		List<LocusLineage2D> recorded = List.of(locus.getSemanticDefinition()
+				.getBranch(branchKey).getLineage());
+		LocusComponentSelectorResolver2D.Resolution away =
+				LocusComponentSelectorResolver2D.resolve(parentKey, split, recorded, -1);
+		assertEquals(Status.RESOLVED_BY_LINEAGE_TRANSITION, away.getStatus());
+		assertEquals(children.get(0), away.getLineageKey());
+
+		LocusInterval2D first = new LocusInterval2D(-2, -1, true, true);
+		LocusInterval2D second = new LocusInterval2D(1, 2, true, true);
+		publish(locus, List.of(first, second), new LocusLineage2D(LineageTransition.SPLIT,
+				List.of(parentKey), List.of(LocusComponentLineage2D.create(branchKey, first),
+						LocusComponentLineage2D.create(branchKey, second))));
+		parent.compute();
+		assertUnresolved(parent, address, selector, Status.NOT_CONTAINED);
+
+		publish(locus, List.of(left, right), LocusLineage2D.unchanged());
+		parent.compute();
+		assertUnresolved(parent, address, selector, Status.NO_CORRESPONDENCE);
+
+		publish(locus, List.of(whole), LocusLineage2D.unchanged());
+		parent.compute();
+		assertTrue(point.isDefined());
+		assertEquals(LocusSemanticPointCause2D.RESOLVED, parent.getResolutionCause());
+		assertEquals(Status.RESOLVED_BY_KEY, parent.getSelectorStatus());
+		assertEquals(address, parent.getCurrentSemanticAddress());
+		assertEquals(selector, parent.getBranchInput().getTextString());
+	}
+
+	/** The point is undefined with the typed cause and never reassociated or rewritten. */
+	private static void assertUnresolved(AlgoSemanticLocusPoint2D parent,
+			LocusSemanticAddress2D accepted, String selector, Status status) {
+		assertFalse(parent.getPoint().isDefined(), status.name());
+		assertEquals(LocusSemanticPointCause2D.SELECTOR_UNRESOLVED, parent.getResolutionCause(),
+				status.name());
+		assertEquals(status, parent.getSelectorStatus());
+		assertEquals(accepted, parent.getSemanticAddress(), "no reassociation: " + status);
+		assertNull(parent.getCurrentSemanticAddress(), status.name());
+		assertNull(parent.getMetricPositionBinding(), status.name());
+		assertEquals(selector, parent.getBranchInput().getTextString(),
+				"the persisted selector is never rewritten: " + status);
+	}
+
+	/** Publishes the next revision of an injected locus with certified fixture components. */
+	private static void publish(GeoLocusV2 locus, List<LocusInterval2D> components,
+			LocusLineage2D lineage) {
+		LocusDefinition2D previous = locus.getSemanticDefinition();
+		LocusBranch2D branch = previous.getBranches().get(0);
+		locus.publishSemanticDefinition(new LocusDefinition2D(locus.getLocusIdentity(),
+				previous.getSemanticRevision() + 1, DefinitionStatus.VALID,
+				previous.getProvider(), List.of(LocusV2TestBranches.branch(
+						branch.getBranchKey(), branch.getDeclaredDriverDomain(), components,
+						branch.getOrientation(), branch.getProvenance(), lineage,
+						branch.getProperties(), branch.getQuality())),
+				previous.getEvaluatorCapability(), previous.getDeterminism(),
+				"pre-g9b-cu2-v-lin-4/v1", locus.getInstrumentation()));
+	}
+
+	private static LocusExistenceStructure2D structure(GeoLocusV2 locus) {
+		return locus.getSemanticDefinition().getBranches().get(0).getExistenceStructure();
 	}
 
 	/**

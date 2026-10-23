@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,12 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.geocedg.common.export.AdaptiveCurveApproximationBuilder2D;
+import org.geocedg.common.export.ApproximationEvidence;
+import org.geocedg.common.export.GeometryExportRequest;
+import org.geocedg.common.export.SemanticCurveExportAdapter2D;
+import org.geocedg.common.export.SemanticCurveExportAdapter2D.SourceResult;
+import org.geocedg.common.export.SourceExportOutcome;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
@@ -54,6 +61,8 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Maximality;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
+import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
+import org.geocedg.common.kernel.locus.LocusSimilarityTransform2D;
 import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
@@ -302,6 +311,325 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-POINT-5 ({@code Point(L, u)}) and V-POINT-4 (the binary64 neighbours of {@code t*}),
+	 * corrective mandate, Level B: no binary64 parameter reaches the tangency. A semantic point
+	 * whose parameter lies in the enclosure of the point component is undefined with the typed
+	 * cause {@code POINT_COMPONENT}, and one outside it, in certified nonexistence, with
+	 * {@code OUTSIDE_COMPONENTS} ({@code locus-v2-existence-components.md} section 15.8); it
+	 * binds no metric position and accepts no address, and the evaluator publishes no valid
+	 * point at any of those parameters. Before the correction the point was undefined without
+	 * any cause.
+	 */
+	@Test
+	void aSemanticPointNearTheTangencyIsUndefinedWithATypedCause() {
+		tangency("(83,19)", "Ray");
+		LocusPointComponent2D component = structure("lq").getPointComponents().get(0);
+		double lower = component.getParameterLower();
+		double upper = component.getParameterUpper();
+		GeoNumeric parameter = new GeoNumeric(getConstruction(), EXTERNAL);
+		parameter.setLabel("tStar");
+		GeoPoint point = add("A=Point(lq,\"" + BRANCH + "\",tStar)");
+		AlgoSemanticLocusPoint2D parent = assertInstanceOf(AlgoSemanticLocusPoint2D.class,
+				point.getParentAlgorithm());
+		LocusDefinition2D definition = locus("lq").getSemanticDefinition();
+		Map<Double, LocusSemanticPointCause2D> expected = new LinkedHashMap<>();
+		for (double inside : new double[] {lower, Math.nextUp(lower), Math.nextDown(EXTERNAL),
+				EXTERNAL, Math.nextUp(EXTERNAL), Math.nextDown(upper), upper}) {
+			expected.put(inside, LocusSemanticPointCause2D.POINT_COMPONENT);
+		}
+		for (double outside : new double[] {Math.nextDown(lower), Math.nextUp(upper),
+				lower - 0x1.0p-30, upper + 0x1.0p-30, EXTERNAL - 0.01, EXTERNAL + 0.01}) {
+			expected.put(outside, LocusSemanticPointCause2D.OUTSIDE_COMPONENTS);
+		}
+		for (Map.Entry<Double, LocusSemanticPointCause2D> entry : expected.entrySet()) {
+			double value = entry.getKey();
+			parameter.setValue(value);
+			parameter.updateCascade();
+			String where = "u=" + Double.toHexString(value);
+			assertFalse(point.isDefined(), where);
+			assertEquals(entry.getValue(), parent.getResolutionCause(), where);
+			assertNull(parent.getSelectorStatus(), where);
+			assertNull(parent.getCurrentSemanticAddress(), where);
+			assertNull(parent.getSemanticAddress(), where);
+			assertNull(parent.getMetricPositionBinding(), where);
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+				assertFalse(definition.evaluate(BRANCH, value, session).isValid(), where);
+			}
+		}
+	}
+
+	/**
+	 * V-POINT-6 (similarity images), corrective mandate, Level B: the image of the external
+	 * tangency by each public similarity keeps the point component of its source with its
+	 * parameter enclosure, structural source, maximality, proof, evidence and lineage keys and
+	 * every other fact of the structure, and transforms its certified position enclosure
+	 * ({@code locus-v2-similarity-transformations.md}, scope note A2.5). The image enclosure
+	 * holds the 60-digit image of the exact position (15, 20) under the exact similarity of
+	 * the captured inputs, is no wider than the transformed source enclosure up to rounding,
+	 * no longer holds the source position, and is the one the export declares. Before the
+	 * correction every image kept the source position.
+	 */
+	@Test
+	void aSimilarityImageTransformsThePositionOfAPointComponent() {
+		tangency("(83,19)", "Ray");
+		add("it=Translate(lq,Vector((1,0)))");
+		add("ir=Rotate(lq,pi/2,(3,4))");
+		add("ip=Mirror(lq,(1,2))");
+		add("il=Mirror(lq,Line((0,1),(1,3)))");
+		add("id=Dilate(lq,-3,(2,-1))");
+		add("iz=Dilate(lq,0,(2,-1))");
+		LocusExistenceStructure2D source = structure("lq");
+		LocusPointComponent2D original = source.getPointComponents().get(0);
+		double[] box = original.getPositionEnclosure();
+		BigDecimal angle = new BigDecimal(((NumberValue) lookup("ir").getParentAlgorithm()
+				.getInput()[1]).getDouble());
+		BigDecimal cosine = series(angle, true, REFERENCE);
+		BigDecimal sine = series(angle, false, REFERENCE);
+		Map<String, BigDecimal[]> images = new LinkedHashMap<>();
+		images.put("it", new BigDecimal[] {BigDecimal.valueOf(16), BigDecimal.valueOf(20)});
+		images.put("ir", new BigDecimal[] {BigDecimal.valueOf(3).add(BigDecimal.valueOf(12)
+				.multiply(cosine)).subtract(BigDecimal.valueOf(16).multiply(sine)),
+				BigDecimal.valueOf(4).add(BigDecimal.valueOf(12).multiply(sine))
+						.add(BigDecimal.valueOf(16).multiply(cosine))});
+		images.put("ip", new BigDecimal[] {BigDecimal.valueOf(-13), BigDecimal.valueOf(-16)});
+		// The reflection in 2x - y + 1 = 0 of (15, 20) is (31/5, 122/5).
+		images.put("il", new BigDecimal[] {new BigDecimal("6.2"), new BigDecimal("24.4")});
+		images.put("id", new BigDecimal[] {BigDecimal.valueOf(-37), BigDecimal.valueOf(-64)});
+		images.put("iz", new BigDecimal[] {BigDecimal.valueOf(2), BigDecimal.valueOf(-1)});
+		Map<String, Double> scales = Map.of("it", 1.0, "ir", 1.0, "ip", 1.0, "il", 1.0,
+				"id", 3.0, "iz", 0.0);
+		String sourceDeclaration = declaration(locus("lq"));
+		assertTrue(sourceDeclaration.contains(java.util.Arrays.toString(box)),
+				sourceDeclaration);
+		for (Map.Entry<String, BigDecimal[]> image : images.entrySet()) {
+			String label = image.getKey();
+			LocusExistenceStructure2D structure = locus(label).getSemanticDefinition()
+					.getBranch(BRANCH).getExistenceStructure();
+			assertEquals(1, structure.getPointComponents().size(), label);
+			LocusPointComponent2D point = structure.getPointComponents().get(0);
+			assertEquals(source.withPointComponents(structure.getPointComponents())
+					.getSemanticSignature(), structure.getSemanticSignature(), label);
+			assertEquals(original.getParameterLower(), point.getParameterLower(), label);
+			assertEquals(original.getParameterUpper(), point.getParameterUpper(), label);
+			assertEquals(original.getSource().getSignature(), point.getSource().getSignature(),
+					label);
+			assertEquals(original.getMaximality(), point.getMaximality(), label);
+			assertEquals(original.getNature(), point.getNature(), label);
+			assertEquals(original.getEvidenceKey(), point.getEvidenceKey(), label);
+			assertEquals(LocusComponentLineage2D.of(source, original),
+					LocusComponentLineage2D.of(structure, point), label);
+			assertEquals(LocusPointComponent2D.PositionState.CERTIFIED_ENCLOSURE,
+					point.getPositionState(), label);
+			double[] position = point.getPositionEnclosure();
+			BigDecimal[] reference = image.getValue();
+			assertTrue(encloses(position[0], position[1], reference[0])
+					&& encloses(position[2], position[3], reference[1]), label + " "
+					+ java.util.Arrays.toString(position) + " does not hold (" + reference[0]
+					+ ", " + reference[1] + ")");
+			assertFalse(encloses(position[0], position[1], BigDecimal.valueOf(15))
+					&& encloses(position[2], position[3], BigDecimal.valueOf(20)),
+					label + " keeps the source position");
+			double spread = scales.get(label) * ((box[1] - box[0]) + (box[3] - box[2]))
+					+ 1e-12;
+			assertTrue(position[1] - position[0] <= spread
+					&& position[3] - position[2] <= spread, label + " "
+					+ java.util.Arrays.toString(position));
+			String declared = declaration(locus(label));
+			assertTrue(declared.contains(java.util.Arrays.toString(position)), declared);
+			assertFalse(declared.contains(java.util.Arrays.toString(box)), declared);
+		}
+	}
+
+	/**
+	 * V-POINT-6 (similarity images), soundness of the transported enclosure: for random boxes
+	 * from {@code 2^-20} to {@code 2^30}, translations, rotations, point reflections,
+	 * reflections in lines given by unnormalized coefficients (subnormal quotients included)
+	 * and dilations, the enclosure holds the 60-digit image of every corner of the box under
+	 * the exact similarity of the captured inputs: the exact cosine and sine of the binary64
+	 * angle, and the exact reflection in the line of the original coefficients. It is no wider
+	 * than the transformed box up to a relative {@code 10^-12}, and a box whose image
+	 * overflows has no enclosure.
+	 */
+	@Test
+	void theTransformedEnclosureHoldsTheExactImage() {
+		Random random = new Random(20261023);
+		List<String> problems = new ArrayList<>();
+		int checked = 0;
+		for (int trial = 0; trial < 3000; trial++) {
+			double scale = Math.scalb(1.0, random.nextInt(51) - 20);
+			double[] box = new double[4];
+			for (int axis = 0; axis < 2; axis++) {
+				double centre = (random.nextDouble() - 0.5) * scale;
+				double width = trial % 7 == 0 ? 0 : random.nextDouble() * scale * 0x1.0p-10;
+				box[2 * axis] = centre;
+				box[2 * axis + 1] = centre + width;
+			}
+			double a = (random.nextDouble() - 0.5) * scale;
+			double b = (random.nextDouble() - 0.5) * scale;
+			BigDecimal[] values = {new BigDecimal(a), new BigDecimal(b),
+					new BigDecimal((random.nextDouble() - 0.5) * scale)};
+			LocusSimilarityTransform2D transform;
+			double factor = 1;
+			switch (trial % 5) {
+			case 0:
+				transform = LocusSimilarityTransform2D.translation(a, b);
+				break;
+			case 1:
+				double angle = trial % 10 == 1 ? Math.PI / 2 * (1 + random.nextInt(4))
+						: (random.nextDouble() - 0.5) * 16;
+				values[2] = new BigDecimal(angle);
+				transform = LocusSimilarityTransform2D.rotation(angle, a, b);
+				break;
+			case 2:
+				transform = LocusSimilarityTransform2D.pointReflection(a, b);
+				break;
+			case 3:
+				// Unnormalized coefficients; every fourth line has a subnormal quotient.
+				double small = trial % 4 == 3 ? 1e-300 * (random.nextDouble() + 0.5) : a;
+				values[0] = new BigDecimal(small);
+				values[1] = new BigDecimal(b * 1e10);
+				transform = LocusSimilarityTransform2D.lineReflection(small, b * 1e10,
+						values[2].doubleValue());
+				break;
+			default:
+				factor = (random.nextDouble() - 0.5) * 8;
+				values[2] = new BigDecimal(factor);
+				transform = LocusSimilarityTransform2D.dilation(factor, a, b);
+				break;
+			}
+			double[] image = transform.transformEnclosure(box);
+			String context = transform.getSemanticSignature() + " box="
+					+ java.util.Arrays.toString(box);
+			if (image == null) {
+				problems.add(context + ": no enclosure");
+				continue;
+			}
+			for (int corner = 0; corner < 4; corner++) {
+				BigDecimal[] exact = exactImage(trial % 5, values,
+						new BigDecimal(box[corner / 2]), new BigDecimal(box[2 + corner % 2]));
+				if (!encloses(image[0], image[1], exact[0])
+						|| !encloses(image[2], image[3], exact[1])) {
+					problems.add(context + ": " + java.util.Arrays.toString(image)
+							+ " misses (" + exact[0] + ", " + exact[1] + ")");
+				}
+				checked++;
+			}
+			double magnitude = 1 + (Math.abs(factor) + 1) * (Math.max(Math.abs(box[0]),
+					Math.max(Math.abs(box[3]), Math.abs(box[1]))) + Math.abs(a) + Math.abs(b)
+					+ Math.abs(values[2].doubleValue()));
+			double spread = Math.abs(factor) * ((box[1] - box[0]) + (box[3] - box[2]))
+					+ 1e-12 * magnitude;
+			if (image[1] - image[0] > spread || image[3] - image[2] > spread) {
+				problems.add(context + ": wide " + java.util.Arrays.toString(image));
+			}
+		}
+		assertEquals(List.of(), problems.subList(0, Math.min(10, problems.size())));
+		assertEquals(4 * 3000, checked);
+		assertNull(LocusSimilarityTransform2D.dilation(10, 0, 0).transformEnclosure(
+				new double[] {0, Double.MAX_VALUE, 0, 1}));
+		assertNull(LocusSimilarityTransform2D.translation(Double.MAX_VALUE, 0)
+				.transformEnclosure(new double[] {Double.MAX_VALUE, Double.MAX_VALUE, 0, 0}));
+	}
+
+	/**
+	 * @return 60-digit image of the point under the exact similarity of the captured inputs:
+	 *         translation by {@code (v0, v1)}, rotation through {@code v2} about
+	 *         {@code (v0, v1)}, point reflection in {@code (v0, v1)}, reflection in the line
+	 *         {@code v0 x + v1 y + v2 = 0}, or dilation by {@code v2} about {@code (v0, v1)}
+	 */
+	private static BigDecimal[] exactImage(int family, BigDecimal[] values, BigDecimal x,
+			BigDecimal y) {
+		MathContext context = REFERENCE;
+		switch (family) {
+		case 0:
+			return new BigDecimal[] {x.add(values[0]), y.add(values[1])};
+		case 1:
+			BigDecimal cosine = series(values[2], true, context);
+			BigDecimal sine = series(values[2], false, context);
+			BigDecimal dx = x.subtract(values[0]);
+			BigDecimal dy = y.subtract(values[1]);
+			return new BigDecimal[] {values[0].add(cosine.multiply(dx, context), context)
+					.subtract(sine.multiply(dy, context), context),
+					values[1].add(sine.multiply(dx, context), context)
+							.add(cosine.multiply(dy, context), context)};
+		case 2:
+			return new BigDecimal[] {values[0].multiply(BigDecimal.valueOf(2)).subtract(x),
+					values[1].multiply(BigDecimal.valueOf(2)).subtract(y)};
+		case 3:
+			BigDecimal norm = values[0].multiply(values[0]).add(values[1].multiply(values[1]));
+			BigDecimal distance = values[0].multiply(x).add(values[1].multiply(y))
+					.add(values[2]).multiply(BigDecimal.valueOf(2)).divide(norm, context);
+			return new BigDecimal[] {x.subtract(distance.multiply(values[0], context), context),
+					y.subtract(distance.multiply(values[1], context), context)};
+		default:
+			return new BigDecimal[] {values[0].add(values[2].multiply(x.subtract(values[0]),
+					context), context), values[1].add(values[2].multiply(y.subtract(values[1]),
+							context), context)};
+		}
+	}
+
+	/**
+	 * V-CON-7: the images of the bite of {@code lq} and of its closed penetration by the four
+	 * public commands, a reflection in a point and in a line included, keep the published
+	 * structure of the source: its signature (coverage, maximality, completeness, components
+	 * and their ends), its closure, its component keys and its transported lineage. The image
+	 * is built by the command from the published certificate, not from the source branches.
+	 */
+	@Test
+	void similarityImagesOfABiteKeepItsStructure() {
+		List<String> commands = List.of("Translate(lq,Vector((1,0)))", "Rotate(lq,pi/3,(3,4))",
+				"Mirror(lq,(1,2))", "Mirror(lq,Line((0,1),(1,3)))", "Dilate(lq,-3,(2,-1))");
+		for (String radius : List.of("40+2^(-10)", "40-2^(-10)")) {
+			critical(radius);
+			LocusBranch2D source = locus("lq").getSemanticDefinition().getBranch(BRANCH);
+			LocusExistenceStructure2D structure = source.getExistenceStructure();
+			assertEquals(radius.contains("+"), !structure.isClosedPeriodic(), radius);
+			for (int index = 0; index < commands.size(); index++) {
+				GeoLocusV2 image = add("im" + index + "=" + commands.get(index));
+				LocusBranch2D branch = image.getSemanticDefinition().getBranch(BRANCH);
+				LocusExistenceStructure2D transported = branch.getExistenceStructure();
+				String context = radius + " " + commands.get(index);
+				assertEquals(structure.getSemanticSignature(), transported.getSemanticSignature(),
+						context);
+				assertEquals(structure.isClosedPeriodic(), transported.isClosedPeriodic(),
+						context);
+				assertEquals(structure.getCompleteness(), transported.getCompleteness(), context);
+				assertEquals(LocusComponentLineage2D.keys(structure),
+						LocusComponentLineage2D.keys(transported), context);
+				assertEquals(source.getLineage(), branch.getLineage(), context);
+				for (int component = 0; component < structure.getContinuousValidComponents()
+						.size(); component++) {
+					assertEquals(structure.getContinuousValidComponents().get(component)
+							.getMaximality(), transported.getContinuousValidComponents()
+									.get(component).getMaximality(), context);
+				}
+			}
+			getKernel().clearConstruction(true);
+		}
+	}
+
+	/** @return the message with which the export declares the point component of a locus */
+	private static String declaration(GeoLocusV2 locus) {
+		GeometryExportRequest request = GeometryExportRequest.builder(0.01)
+				.allowedGuarantees(EnumSet.of(ApproximationEvidence.Guarantee.ESTIMATED_ERROR))
+				.build();
+		SourceResult result = new SemanticCurveExportAdapter2D().adaptLocus(locus, 0, request,
+				new AdaptiveCurveApproximationBuilder2D.WorkLedger(request), "cu2:",
+				SemanticCurveExportAdapter2D.ALL_COMPONENTS);
+		List<String> declared = result.getComponents().stream()
+				.map(SemanticCurveExportAdapter2D.Component::getOutcome)
+				.filter(outcome -> outcome.getFidelity() == SourceExportOutcome.Fidelity.DECLARED)
+				.map(SourceExportOutcome::getMessage).collect(Collectors.toList());
+		assertEquals(1, declared.size(), locus.getLabelSimple() + " " + declared);
+		return declared.get(0);
+	}
+
+	private static boolean encloses(double lower, double upper, BigDecimal value) {
+		return new BigDecimal(lower).compareTo(value) <= 0
+				&& value.compareTo(new BigDecimal(upper)) <= 0;
+	}
+
+	/**
 	 * V-COINC-2, V-COINC-5 and V-COINC-7 (certificate parts) and V-LVL-3 (structure part): an
 	 * unlabelled second output has a typed unresolved band around the coincident root that
 	 * contains every undefined sample of the live construction and of the copy; its locus is
@@ -495,6 +823,70 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-LVL-1 (no authority over the graph or the identity): the exploratory evidence of
+	 * {@code lw} recomputed with another exploratory policy (more samples, fewer bisections)
+	 * differs, while the certificate it accompanies is identical bit for bit; and a revision of
+	 * {@code lw} keeps its persistent identity, its dependencies, the signature of its
+	 * definition and its component keys, none of which the evidence reaches. The document
+	 * never stores the evidence.
+	 */
+	@Test
+	void exploratoryEvidenceHasNoAuthorityOverTheDefinition() {
+		add("e1=Ellipse((0,0),(4,0),5)");
+		add("c=Circle((0,0),3)");
+		add("N=Point(c)");
+		add("k=Circle(N,5)");
+		add("W=Intersect(e1,k,1)");
+		add("lw=LocusV2(W,N)");
+		getKernel().updateConstruction(false);
+		GeoLocusV2 locus = locus("lw");
+		Result published = certificate("lw");
+		LocusDefinition2D definition = locus.getSemanticDefinition();
+		ReconstructibleLocusEvaluator2D evaluator =
+				(ReconstructibleLocusEvaluator2D) definition.getEvaluatorCapability();
+		Coverage unresolved = published.getStructure().getCoverage().get(0);
+		assertTrue(unresolved.getEvidence().startsWith("hybrid/v1:"), unresolved.getEvidence());
+		String reason = unresolved.getEvidence().substring("hybrid/v1:".length());
+		Map<String, Result> results = new LinkedHashMap<>();
+		for (Policy policy : List.of(Policy.DEFAULT, Policy.DEFAULT.withExploration(96, 6))) {
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(64)) {
+				results.put(policy.getSignature(), HybridExistenceCertifier2D.notEstablished(
+						published.getStructure().getCanonicalDomain(), true, BRANCH,
+						unresolved.getCause(), reason, parameter -> evaluator.evaluate(null, null,
+								parameter, session).isValid(), policy, null));
+			}
+		}
+		List<Result> recertified = new ArrayList<>(results.values());
+		assertEquals(published.getStructure().getSemanticSignature(),
+				recertified.get(0).getStructure().getSemanticSignature());
+		assertEquals(recertified.get(0).getStructure().getSemanticSignature(),
+				recertified.get(1).getStructure().getSemanticSignature());
+		assertNotEquals(recertified.get(0).getExploration().getPolicyVersion(),
+				recertified.get(1).getExploration().getPolicyVersion());
+		assertNotEquals(recertified.get(0).getExploration().getWork(),
+				recertified.get(1).getExploration().getWork());
+		assertFalse(recertified.get(1).getExploration().getNature().certifies());
+
+		// Nothing that identifies or defines the locus carries the evidence.
+		PersistentGeoId identity = locus.getPersistentLocusId();
+		String signature = definition.getBranch(BRANCH).getSemanticSignature();
+		List<GeoElement> inputs = List.of(locus.getParentAlgorithm().getInput());
+		for (String part : List.of(published.getExploration().getPolicyVersion(),
+				published.getExploration().getMethod())) {
+			assertFalse(signature.contains(part), part);
+			assertFalse(evaluator.getEvaluatorSignature().contains(part), part);
+			assertFalse(getApp().getXML().contains(part), part);
+		}
+		getKernel().updateConstruction(false);
+		assertEquals(identity, locus("lw").getPersistentLocusId());
+		assertEquals(inputs, List.of(locus("lw").getParentAlgorithm().getInput()));
+		assertEquals(signature, locus("lw").getSemanticDefinition().getBranch(BRANCH)
+				.getSemanticSignature());
+		assertEquals(LocusComponentLineage2D.keys(published.getStructure()),
+				LocusComponentLineage2D.keys(certificate("lw").getStructure()));
+	}
+
+	/**
 	 * V-V3-4, existence part: a slice above the versioned step limit is not established, and
 	 * the refusal is typed.
 	 */
@@ -587,7 +979,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * with similarity images; its penetration taken to a bite and back (split and merge) with a
 	 * point of the locus selected by its parameter; a copy rebuilt with the driver in a gap and
 	 * settled; the external tangency taken from an empty cover to a point, an arc and the point
-	 * again (changes of dimension), two point components, the band of an unlabelled output, a
+	 * again (changes of dimension), its images by the similarities with their transformed
+	 * position enclosures and a semantic point at its tangency with its typed cause (corrective
+	 * mandate), two point components, the band of an unlabelled output, a
 	 * fold, an origin wrap, the ends of a ray, a segment and a vanishing divisor, a structurally
 	 * total locus, a locus outside the class and the bite started with the driver in its gap. A
 	 * random value is not deterministic by definition and is left out.
@@ -650,6 +1044,17 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		changes.put("change of dimension", List.of(Change.radius(40.0),
 				Change.radius(40 + Math.scalb(1.0, -30)), Change.radius(40.0)));
 		builders.put("point components", () -> tangency("(15,70)", "Line"));
+		builders.put("images and a point of a point component", () -> {
+			tangency("(83,19)", "Ray");
+			// Before the images, whose literal arguments take the first free labels.
+			GeoNumeric parameter = new GeoNumeric(getConstruction(), EXTERNAL);
+			parameter.setLabel("tStar");
+			add("A=Point(lq,\"" + BRANCH + "\",tStar)");
+			add("it=Translate(lq,Vector((1,0)))");
+			add("ir=Rotate(lq,pi/2,(3,4))");
+			add("il=Mirror(lq,Line((0,1),(1,3)))");
+			add("id=Dilate(lq,-3,(2,-1))");
+		});
 		builders.put("band", () -> critical("40+2^(-30)"));
 		builders.put("fold", () -> {
 			add("c=Circle((0,0),2)");
@@ -716,7 +1121,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				"ORIGIN_WRAP", "OPERATION_OUTSIDE_CLASS", "UNLABELLED_COINCIDENT_OUTPUT",
 				"SPLIT[", "MERGED[", "DIMENSION_CHANGED[", "settlement=settled",
 				"2LINE_CIRCLE[0x1.0p0", " image revision=", "A point=", "undo 0", "redo 0",
-				"reopened")) {
+				"reopened", "cause=RESOLVED", "cause=POINT_COMPONENT")) {
 			assertTrue(compared.indexOf(part) >= 0, "the runs compare " + part);
 		}
 		for (String event : List.of("SELECTION_SETTLEMENT=[1-9]", "SELECTION_DEPARTURE=[1-9]",
@@ -848,10 +1253,13 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				text.append('\n');
 			} else if (geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D) {
 				GeoPoint point = (GeoPoint) geo;
+				AlgoSemanticLocusPoint2D parent =
+						(AlgoSemanticLocusPoint2D) geo.getParentAlgorithm();
 				text.append(geo.getLabelSimple()).append(" point=").append(point.isDefined()
 						? Double.toHexString(point.getInhomX()) + ","
 								+ Double.toHexString(point.getInhomY()) : "undefined")
-						.append('\n');
+						.append(" cause=").append(parent.getResolutionCause())
+						.append(" selector=").append(parent.getSelectorStatus()).append('\n');
 			} else if (geo.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2) {
 				text.append(geo.getLabelSimple()).append(" metric=").append(
 						((AlgoLocusBetweenMetricV2) geo.getParentAlgorithm())
@@ -1180,6 +1588,59 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		}
 		assertTrue(certified > 0);
 		assertEquals(List.of(), problems);
+	}
+
+	/**
+	 * Decision D-CU2-T13-R7: the closure of a band of the inherited coincidence suppression at
+	 * its band resolution only withholds certified existence. In the critical configuration
+	 * with every constant a multiple of 125, translated by (10^3, 10^3), the margin of the band
+	 * predicate near its edges is comparable to the rounding of the enclosures and valid cells
+	 * alternate with band cells; the certificate closes them, counts the closed runs and their
+	 * width, which is below the band resolution per run and, observed, far below. One band
+	 * with the typed cause surrounds the coincident root, nothing near it is certified
+	 * nonexistent, the live output is defined inside the band, and one local component carries
+	 * both sides.
+	 */
+	@Test
+	void theClosureOfACoincidenceBandOnlyWithholdsCertifiedExistence() {
+		buildUnlabelled(Configuration.CRITICAL, Transform.of(UNIT, "1", "1000", "1000"));
+		Result result = certificate("lr2");
+		LocusExistenceStructure2D structure = result.getStructure();
+		long runs = work("lr2", LocusCertificationWork2D.COINCIDENCE_BAND_CLOSURE);
+		double width = result.getClosedCoincidenceWidth();
+		assertTrue(runs > 0, "closed runs");
+		assertTrue(width > 0 && width < runs * Math.scalb(2 * Math.PI,
+				-Policy.DEFAULT.getBandDepth()), "closed width " + width);
+		// Observed about 6e-10; a regression guard far above it.
+		assertTrue(width < 1e-6, "closed width " + width);
+		Coverage band = null;
+		for (Coverage coverage : structure.getCoverage()) {
+			LocusInterval2D interval = coverage.getInterval();
+			boolean near = interval.getUpper() > CRITICAL - 1e-4
+					&& interval.getLower() < CRITICAL + 1e-4;
+			assertFalse(near && coverage.getState() == CoverageState.CERTIFIED_DOES_NOT_EXIST,
+					coverage.toString());
+			if (coverage.getState() == CoverageState.UNRESOLVED) {
+				assertNull(band, "a single band: " + coverage);
+				band = coverage;
+				assertEquals(LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT,
+						coverage.getCause());
+				assertTrue(near, coverage.toString());
+			}
+		}
+		assertNotNull(band);
+		assertEquals(1, structure.getContinuousValidComponents().size());
+		GeoPoint driver = (GeoPoint) lookup("N");
+		GeoPoint live = (GeoPoint) lookup("R2");
+		int defined = 0;
+		for (int sample = 1; sample < 64; sample++) {
+			moveDriver(driver, band.getInterval().getLower() + (band.getInterval().getUpper()
+					- band.getInterval().getLower()) * sample / 64);
+			if (live.isDefined()) {
+				defined++;
+			}
+		}
+		assertTrue(defined > 0, "the live output exists inside the band");
 	}
 
 	/**
