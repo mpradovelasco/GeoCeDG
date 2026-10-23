@@ -576,6 +576,79 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 	}
 
 	/**
+	 * V-COINC-3 on the author model (corrective mandate, R5 group G3): the variants created by
+	 * command with the driver at {@code t_c} at the first binary64 of the bite, where the
+	 * intersections are in their first initialization, then the driver moved to
+	 * {@code t = -1}. The indexed variant {@code lr2} publishes one revision per real
+	 * transition of the inherited state, typed {@code SELECTION}, and every variant keeps its
+	 * components; the state reached is the permutation [0, 1].
+	 */
+	@Test
+	void theVariantsCreatedAtTheDoubleRootLeaveItWithATypedTransition() throws Exception {
+		List<String> failures = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			List<String> problems = new ArrayList<>();
+			try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+				AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+				PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+				PreG9BCu0Corpus.setNumber(app, "excCyl", BITE);
+				PreG9BCu0Corpus.movePathPoint(app, "N", T_C);
+				for (String command : List.of("t2=Ray(P,N)", "R2=Intersect(p,t2,2)",
+						"lr2=LocusV2(R2,N)", "lq=LocusV2(Q,N)", "lr=LocusV2(R,N)")) {
+					app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+				}
+				app.getKernel().updateConstruction(false);
+				if (!source(app).isSelectionFirstIntersectionPending()) {
+					problems.add("R2 is not in its first initialization: " + state(source(app)));
+				}
+				Map<String, String> components = new LinkedHashMap<>();
+				Map<String, Long> revisions = new LinkedHashMap<>();
+				Map<String, Long> selections = new LinkedHashMap<>();
+				for (String label : VARIANTS) {
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					components.put(label, components(locus));
+					revisions.put(label, locus.getSemanticRevision());
+					selections.put(label, locus.getInstrumentation().getSliceChanges(
+							ReconstructionSliceFingerprint2D.Change.SELECTION));
+				}
+				for (double driver : new double[] {T_C + 1e-3, T_C + 1e-2, 0.5, -1}) {
+					PreG9BCu0Corpus.movePathPoint(app, "N", driver);
+				}
+				if (!"[0, 1]/false/false".equals(state(source(app)))) {
+					problems.add("the indexed source did not settle: " + state(source(app)));
+				}
+				for (String label : VARIANTS) {
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					long published = locus.getSemanticRevision() - revisions.get(label);
+					long selection = locus.getInstrumentation().getSliceChanges(
+							ReconstructionSliceFingerprint2D.Change.SELECTION)
+							- selections.get(label);
+					if ("lr2".equals(label) && (published < 1 || selection != published)) {
+						problems.add("lr2: " + published + " revisions, " + selection
+								+ " typed SELECTION");
+					}
+					if (!components.get(label).equals(components(locus))) {
+						problems.add(label + ": the components changed");
+					}
+				}
+			}
+			return problems;
+		});
+		assertEquals(List.of(), failures);
+	}
+
+	/** @return the signatures of the certified components of the published structure */
+	private static String components(GeoLocusV2 locus) {
+		StringBuilder text = new StringBuilder();
+		for (LocusExistenceStructure2D.ContinuousComponent component : locus
+				.getSemanticDefinition().getBranch(PreG9BCu0Corpus.MAIN).getExistenceStructure()
+				.getContinuousValidComponents()) {
+			text.append(component.getInterval()).append(component.getLowerBoundary().getKind())
+					.append(component.getUpperBoundary().getKind()).append(';');
+		}
+		return text.toString();
+	}
+
+	/**
 	 * V-COINC-2, V-COINC-5 and V-COINC-7 on the author model (corrective mandate, R5 group G3):
 	 * the unlabelled second output {@code R2} and its locus {@code lr2} at the last binary64 of
 	 * the penetration, the first of the bite and excCyl 3.7. Every unresolved band of
