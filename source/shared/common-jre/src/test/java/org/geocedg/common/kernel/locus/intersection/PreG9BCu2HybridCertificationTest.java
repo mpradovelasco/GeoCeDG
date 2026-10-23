@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.ConstructionValidityPredicate2D;
@@ -41,6 +42,7 @@ import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -51,6 +53,7 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Maximality;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
 import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
@@ -65,6 +68,8 @@ import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.C
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.ExactEvidence;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Policy;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D.Result;
+import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
+import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -1218,6 +1223,79 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * Finding H-T13-C and precision F-CU2-1 (decision D-CU2-T13-R7): where a root is certified
+	 * to exist but the inherited computation leaves the labelled output undefined (regime S3:
+	 * every retry fails the incidence test), the certificate keeps the mathematical existence
+	 * and the published evaluation fails with the typed computational cause, never a point and
+	 * never certified nonexistence; where the inherited computation declares the line tangent
+	 * and its foot passes the incidence test (regime S1) the published point is that foot, an
+	 * effective value within {@code sqrt(1e-5) R} of an exact root; and a consumer that needs
+	 * every point reports a numerical failure. The frozen candidate behaves the same.
+	 */
+	@Test
+	void aCertifiedRootThatTheInheritedComputationLosesIsAComputationalFailure() {
+		int failures = 0;
+		for (Transform transform : List.of(Transform.of(BigDecimal.ONE, "0.001", "1000", "1000"),
+				Transform.of(BigDecimal.ONE, "0.001953125", "1024", "1024"))) {
+			for (Configuration configuration : UNLABELLED) {
+				String context = configuration + " " + transform;
+				build(configuration, transform);
+				double[] constants = captured();
+				double radius = Math.sqrt(constants[11] * constants[11]
+						+ constants[12] * constants[12] - constants[10]);
+				for (String label : configuration.loci) {
+					LocusExistenceStructure2D structure = structure(label);
+					assertEquals(Completeness.COMPLETE, structure.getCompleteness(),
+							context + " " + label);
+					LocusDefinition2D definition = locus(label).getSemanticDefinition();
+					GeoPoint driver = (GeoPoint) lookup("N");
+					GeoPoint live = (GeoPoint) lookup(label.substring(1).toUpperCase());
+					try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+						for (int sample = 0; sample < 1000; sample++) {
+							double t = CRITICAL - 0.05 + 0.1 * (sample + 0.5) / 1000;
+							if (coverageAt(structure, t).getState()
+									!= CoverageState.CERTIFIED_EXISTS) {
+								continue;
+							}
+							moveDriver(driver, t);
+							LocusEvaluation2D evaluation = definition.evaluate(BRANCH, t, session);
+							String where = context + " " + label + " t=" + t;
+							if (evaluation.isValid()) {
+								assertTrue(live.isDefined(), where);
+								double distance = distanceToNearestRoot((GeoLine) lookup("t"),
+										constants, evaluation.getPoint().getX(),
+										evaluation.getPoint().getY());
+								assertTrue(distance <= 1.05 * Math.sqrt(1e-5) * radius,
+										where + ": " + distance / radius);
+							} else {
+								assertFalse(live.isDefined(), where);
+								assertEquals(EvaluationStatus.EVALUATION_FAILED,
+										evaluation.getStatus(), where);
+								assertTrue(evaluation.getDiagnostic().startsWith(
+										LocusDefinition2D.COMPUTATIONAL_FAILURE), where + ": "
+										+ evaluation.getDiagnostic());
+								failures++;
+							}
+						}
+					}
+				}
+				if (configuration == Configuration.CRITICAL) {
+					add("lengthQ=LocusLength(lq)");
+					LocusMetricResult2D length = ((GeoLocusMetricResult) lookup("lengthQ"))
+							.getMetricResult();
+					assertEquals(MetricComputationStatus.NUMERICAL_FAILURE,
+							length.getComputationStatus(), context);
+					assertTrue(length.getDiagnostics().toString().contains(
+							LocusDefinition2D.COMPUTATIONAL_FAILURE), context + " "
+							+ length.getDiagnostics());
+				}
+				getKernel().clearConstruction(true);
+			}
+		}
+		assertTrue(failures > 0, "computational failures: " + failures);
+	}
+
+	/**
 	 * @return descriptors of the unlabelled second output of the untransformed critical, bite
 	 *         and penetration configurations, which agree in both units; the kinds of the
 	 *         roots of their discriminants go to {@code kinds}
@@ -1279,6 +1357,38 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		}
 		samples.removeIf(t -> !(t >= -Math.PI && t < Math.PI));
 		return samples;
+	}
+
+	/**
+	 * @return distance from a point to the nearest exact intersection of a binary64 line with
+	 *         the circle of the captured matrix entries, with 60 digits
+	 */
+	private static double distanceToNearestRoot(GeoLine line, double[] constants, double x,
+			double y) {
+		BigDecimal a = new BigDecimal(line.getX());
+		BigDecimal b = new BigDecimal(line.getY());
+		BigDecimal c = new BigDecimal(line.getZ());
+		BigDecimal centreX = new BigDecimal(constants[11]).negate();
+		BigDecimal centreY = new BigDecimal(constants[12]).negate();
+		BigDecimal squared = centreX.multiply(centreX).add(centreY.multiply(centreY))
+				.subtract(new BigDecimal(constants[10]));
+		BigDecimal norm = a.multiply(a).add(b.multiply(b));
+		BigDecimal distance = a.multiply(centreX).add(b.multiply(centreY)).add(c);
+		BigDecimal discriminant = squared.multiply(norm).subtract(distance.multiply(distance));
+		BigDecimal root = discriminant.signum() > 0 ? discriminant.sqrt(REFERENCE)
+				: BigDecimal.ZERO;
+		BigDecimal footX = centreX.subtract(distance.multiply(a).divide(norm, REFERENCE));
+		BigDecimal footY = centreY.subtract(distance.multiply(b).divide(norm, REFERENCE));
+		double nearest = Double.POSITIVE_INFINITY;
+		for (int sign : new int[] {-1, 1}) {
+			BigDecimal offset = root.multiply(BigDecimal.valueOf(sign));
+			BigDecimal rootX = footX.add(offset.multiply(b).divide(norm, REFERENCE));
+			BigDecimal rootY = footY.subtract(offset.multiply(a).divide(norm, REFERENCE));
+			nearest = Math.min(nearest, Math.hypot(
+					new BigDecimal(x).subtract(rootX).doubleValue(),
+					new BigDecimal(y).subtract(rootY).doubleValue()));
+		}
+		return nearest;
 	}
 
 	/**
