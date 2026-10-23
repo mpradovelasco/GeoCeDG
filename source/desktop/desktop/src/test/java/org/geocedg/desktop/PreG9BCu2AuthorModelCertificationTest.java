@@ -806,6 +806,201 @@ class PreG9BCu2AuthorModelCertificationTest {
 		assertEquals(CoverageState.CERTIFIED_EXISTS.name(), row.get("exists"), row.toString());
 	}
 
+	/**
+	 * GC-1: moving only a driver publishes no revision and computes no certificate in any
+	 * locus of the model, own or nested. With excCyl 2.9 (closed loci) and 3.7 (a bite whose
+	 * certified gap contains {@code t_c}), the driver {@code N} of the first family is moved
+	 * to the middle of the gap of {@code o}, onto {@code t_c} and out of the gap, and the driver
+	 * {@code E_1} of the second family to three positions: the revisions, the certificate
+	 * computations, the existence boxes and the slice builds of the seven loci, own and
+	 * nested, do not change.
+	 */
+	@Test
+	void driverMovesPublishNoRevisionAndComputeNoCertificate() throws Exception {
+		List<String> problems = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			List<String> found = new ArrayList<>();
+			double criticalDriver = 1.2767651295;
+			for (double excCyl : new double[] {2.9, 3.7}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+				double gap = criticalDriver;
+				for (Coverage item : certificate(app, "o").getStructure().getCoverage()) {
+					if (item.getState() == CoverageState.CERTIFIED_DOES_NOT_EXIST) {
+						gap = item.getInterval().getLower() / 2 + item.getInterval().getUpper() / 2;
+					}
+				}
+				Map<String, Long> before = counters(app);
+				for (double driver : new double[] {gap, criticalDriver, -1, 0.5, 2.5}) {
+					PreG9BCu0Corpus.movePathPoint(app, "N", driver);
+					changes(found, excCyl + " N=" + driver, before, counters(app));
+				}
+				for (double driver : new double[] {-2.5, 0.4, 2.0}) {
+					PreG9BCu0Corpus.movePathPoint(app, "E_1", driver);
+					changes(found, excCyl + " E_1=" + driver, before, counters(app));
+				}
+			}
+			return found;
+		});
+		assertEquals(List.of(), problems);
+	}
+
+	/**
+	 * GC-2: a change of a non-driver input of the model (excCyl, rbCone, the parameter
+	 * {@code v_1} of {@code N_1} and the free point {@code P}) publishes at most one revision of
+	 * each locus and computes exactly one certificate of its own for each revision, and none
+	 * for a locus it does not affect. The rule for the nested certifications of the slice
+	 * copies is the pending author decision on GC-2; they are counted apart and not bounded
+	 * here.
+	 */
+	@Test
+	void aNonDriverChangeComputesOneCertificatePerAffectedLocus() throws Exception {
+		List<String> problems = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			List<String> found = new ArrayList<>();
+			Map<String, Runnable> changes = new LinkedHashMap<>();
+			changes.put("excCyl", () -> PreG9BCu0Corpus.setNumber(app, "excCyl", 3.7));
+			changes.put("rbCone", () -> PreG9BCu0Corpus.setNumber(app, "rbCone", 5.1));
+			changes.put("v_1", () -> {
+				GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel("v_1");
+				PreG9BCu0Corpus.setNumber(app, "v_1", number.getValue() + 0.1);
+			});
+			changes.put("P", () -> {
+				GeoPoint point = (GeoPoint) app.getKernel().lookupLabel("P");
+				point.setCoords(point.getInhomX() + 0.001, point.getInhomY(), 1);
+				point.updateRepaint();
+			});
+			int affected = 0;
+			for (Map.Entry<String, Runnable> change : changes.entrySet()) {
+				Map<String, Long> before = counters(app);
+				change.getValue().run();
+				Map<String, Long> after = counters(app);
+				for (String label : SEVEN) {
+					long revisions = after.get(label + ".revision")
+							- before.get(label + ".revision");
+					long own = after.get(label + ".certificates")
+							- before.get(label + ".certificates");
+					affected += revisions > 0 ? 1 : 0;
+					if (revisions > 1 || own != revisions) {
+						found.add(change.getKey() + " " + label + ": " + revisions
+								+ " revisions, " + own + " own certificate computations");
+					}
+				}
+			}
+			if (affected == 0) {
+				found.add("no change affected a locus");
+			}
+			return found;
+		});
+		assertEquals(List.of(), problems);
+	}
+
+	/**
+	 * GC-3: the consumers read the published certificate: creating a total and a partial
+	 * {@code LocusLength}, an intersection with a line and a semantic point, drawing every
+	 * locus, writing the strict DXF of the seven loci and the PGF, PSTricks and Asymptote
+	 * documents of the view compute no certificate and no existence box, own or nested, at the
+	 * author's parameters and in the bite at excCyl 3.7.
+	 */
+	@Test
+	void consumersReadThePublishedCertificateOnly() throws Exception {
+		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> PreG9BCu0Corpus.open(
+				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work)));
+		org.geogebra.common.euclidian.EuclidianView view =
+				PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
+		List<String> problems = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			List<String> found = new ArrayList<>();
+			int round = 0;
+			for (double excCyl : new double[] {2.9, 3.7}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+				String suffix = "gc3" + round++;
+				Map<String, Long> before = counters(app);
+				for (String command : List.of(suffix + "Length=LocusLength(o)",
+						suffix + "Partial=LocusLength(o_1,N_1,K_1)",
+						suffix + "Line=Line((0,0),(1,1))",
+						suffix + "Cut=Intersect(o," + suffix + "Line)",
+						suffix + "Point=Point(o,\"" + PreG9BCu0Corpus.MAIN + "\",0.5)")) {
+					org.geogebra.common.kernel.kernelND.GeoElementND[] created = app.getKernel()
+							.getAlgebraProcessor().processAlgebraCommand(command, false);
+					if (created == null || created.length == 0) {
+						found.add(excCyl + " " + command + " created nothing");
+					}
+					changes(found, excCyl + " " + command, before, counters(app));
+				}
+				for (String label : SEVEN) {
+					new org.geocedg.common.euclidian.draw.LocusRenderCache2D().getOrBuild(
+							PreG9BCu0Corpus.locus(app, label), PreG9BCu0Corpus.authorPolicy());
+				}
+				changes(found, excCyl + " drawing", before, counters(app));
+				for (String label : SEVEN) {
+					org.geocedg.common.export.GeometryExportService service =
+							new org.geocedg.common.export.GeometryExportService();
+					GeoCeDGDxfExportController controller = new GeoCeDGDxfExportController(app);
+					org.geocedg.common.export.GeometryExportPreflight preflight =
+							service.preflight(List.of(PreG9BCu0Corpus.locus(app, label)),
+									org.geocedg.common.export.GeometryExportModel.SelectionMode
+											.CURRENT_SELECTION,
+									org.geocedg.common.export.GeometryExportRequest.builder(0.001)
+											.build(), controller::exportContext);
+					if (preflight.isWritable()) {
+						service.encode(preflight).getDxfText();
+					}
+				}
+				changes(found, excCyl + " DXF", before, counters(app));
+				for (String dialect : List.of("pgf", "pstricks", "asymptote")) {
+					PreG9BR6PlusCLatexExportTest.generate(
+							PreG9BR6PlusCLatexExportTest.exporter(app, dialect), view);
+					changes(found, excCyl + " " + dialect, before, counters(app));
+				}
+			}
+			return found;
+		});
+		assertEquals(List.of(), problems);
+	}
+
+	/** The seven loci of the model. */
+	private static final List<String> SEVEN = List.of("o", "v", "w", "a_1", "e_1", "o_1",
+			"e_2");
+
+	/**
+	 * @return revisions, certificate computations, existence boxes and slice builds of the
+	 *         seven loci, own and nested
+	 */
+	private static Map<String, Long> counters(AppGeoCeDG app) {
+		Map<String, Long> counters = new LinkedHashMap<>();
+		for (String label : SEVEN) {
+			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+			org.geocedg.common.kernel.locus.LocusInstrumentation2D work =
+					locus.getInstrumentation();
+			counters.put(label + ".revision", locus.getSemanticRevision());
+			counters.put(label + ".certificates", work.getCertificationWork(
+					LocusCertificationWork2D.CERTIFICATE_COMPUTATION));
+			counters.put(label + ".nestedCertificates", work.getNestedCertificationWork(
+					LocusCertificationWork2D.CERTIFICATE_COMPUTATION));
+			counters.put(label + ".boxes", work.getCertificationWork(
+					LocusCertificationWork2D.EXISTENCE_BOX));
+			counters.put(label + ".nestedBoxes", work.getNestedCertificationWork(
+					LocusCertificationWork2D.EXISTENCE_BOX));
+			counters.put(label + ".sliceBuilds", work.getDependencySliceBuilds());
+			counters.put(label + ".nestedSliceBuilds", work.getNestedSliceBuilds());
+		}
+		return counters;
+	}
+
+	/** Records every counter that differs from the reference state. */
+	private static void changes(List<String> found, String step, Map<String, Long> before,
+			Map<String, Long> after) {
+		for (Map.Entry<String, Long> entry : before.entrySet()) {
+			if (!entry.getValue().equals(after.get(entry.getKey()))) {
+				found.add(step + ": " + entry.getKey() + " " + entry.getValue() + " -> "
+						+ after.get(entry.getKey()));
+			}
+		}
+	}
+
 	/** Checks the classification on both sides of the critical value of the formula. */
 	private static List<String> classification(AppGeoCeDG app, double rbCylinder,
 			Result previous) throws Exception {

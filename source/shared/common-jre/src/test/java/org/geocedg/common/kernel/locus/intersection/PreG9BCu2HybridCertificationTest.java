@@ -706,6 +706,98 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-CON-3 (synthetic part): the total length of the closed loci {@code lq} and {@code lr}
+	 * of the exact critical configuration. Both traced points stay on the circle {@code p} of
+	 * radius 25; as the ray from {@code P} turns between its two tangents to the circle of the
+	 * driver, each sweeps its arc of {@code p} between the point on the other tangent and the
+	 * double root (15, 20) and back, so each length is {@code 2 * 25 * dphi}, with {@code dphi}
+	 * computed to 60 digits from the tangent points (square roots only) and an arccosine. The
+	 * product publishes an estimate (class 3 of section 25.1 of {@code locus-v2-metrics.md})
+	 * whose established error amount holds the difference to that reference.
+	 */
+	@Test
+	void theTotalLengthsOfTheCriticalLociMatchTheExactSweptArcs() {
+		critical("40");
+		add("lengthQ=LocusLength(lq)");
+		add("lengthR=LocusLength(lr)");
+		MathContext context = REFERENCE;
+		BigDecimal px = BigDecimal.valueOf(-25);
+		BigDecimal py = BigDecimal.valueOf(50);
+		BigDecimal dx = BigDecimal.valueOf(60);
+		BigDecimal dy = BigDecimal.valueOf(-95);
+		BigDecimal radius = BigDecimal.valueOf(40);
+		BigDecimal distance = dx.multiply(dx).add(dy.multiply(dy)).sqrt(context);
+		BigDecimal ratio = radius.divide(distance, context);
+		BigDecimal along = ratio.negate();
+		BigDecimal across = BigDecimal.ONE.subtract(ratio.multiply(ratio, context)).sqrt(context);
+		BigDecimal ex = dx.divide(distance, context);
+		BigDecimal ey = dy.divide(distance, context);
+		BigDecimal[] near = null;
+		BigDecimal[] far = null;
+		for (int sign : new int[] {1, -1}) {
+			// Tangent point T = C + r (along e + sign across e_perp) of the circle of the driver.
+			BigDecimal cx = px.add(dx);
+			BigDecimal cy = py.add(dy);
+			BigDecimal sideways = across.multiply(BigDecimal.valueOf(sign));
+			BigDecimal tx = cx.add(radius.multiply(along.multiply(ex).subtract(sideways
+					.multiply(ey)), context));
+			BigDecimal ty = cy.add(radius.multiply(along.multiply(ey).add(sideways.multiply(ex)),
+					context));
+			BigDecimal ux = tx.subtract(px);
+			BigDecimal uy = ty.subtract(py);
+			BigDecimal norm = ux.multiply(ux).add(uy.multiply(uy)).sqrt(context);
+			ux = ux.divide(norm, context);
+			uy = uy.divide(norm, context);
+			BigDecimal b = px.multiply(ux).add(py.multiply(uy));
+			BigDecimal discriminant = b.multiply(b, context).subtract(BigDecimal.valueOf(2500));
+			if (discriminant.abs().compareTo(new BigDecimal("1e-40")) < 0) {
+				continue; // the tangent of the double root (15, 20)
+			}
+			BigDecimal root = discriminant.sqrt(context);
+			BigDecimal nearLambda = b.negate().subtract(root);
+			BigDecimal farLambda = b.negate().add(root);
+			near = new BigDecimal[] {px.add(nearLambda.multiply(ux, context)),
+				py.add(nearLambda.multiply(uy, context))};
+			far = new BigDecimal[] {px.add(farLambda.multiply(ux, context)),
+				py.add(farLambda.multiply(uy, context))};
+		}
+		assertNotNull(near, "one tangent of the driver circle is not tangent to p");
+		Map<String, BigDecimal> references = new LinkedHashMap<>();
+		references.put("lengthQ", sweptLength(near, context));
+		references.put("lengthR", sweptLength(far, context));
+		for (Map.Entry<String, BigDecimal> reference : references.entrySet()) {
+			LocusMetricResult2D length = ((GeoLocusMetricResult) lookup(reference.getKey()))
+					.getMetricResult();
+			String status = reference.getKey() + " " + length.getComputationStatus() + " "
+					+ length.getGuaranteeClass() + " " + length.getDiagnostics();
+			assertEquals(MetricComputationStatus.SUCCESS, length.getComputationStatus(), status);
+			assertEquals(MetricGuaranteeClass2D.ESTIMATED, length.getGuaranteeClass(), status);
+			BigDecimal value = new BigDecimal(length.getMetricValue().getFiniteValue()
+					.orElseThrow());
+			BigDecimal error = value.subtract(reference.getValue()).abs();
+			double amount = length.getErrorEvidence().getEstablishedAbsoluteAmount();
+			assertTrue(error.compareTo(new BigDecimal(amount)) <= 0, status + " value " + value
+					+ " reference " + reference.getValue() + " error " + error + " amount "
+					+ amount);
+		}
+	}
+
+	/**
+	 * @return {@code 2 * 25 * dphi}, {@code dphi} the angle between the point and the double
+	 *         root (15, 20) on the circle of radius 25
+	 */
+	private static BigDecimal sweptLength(BigDecimal[] point, MathContext context) {
+		BigDecimal cosine = point[0].multiply(BigDecimal.valueOf(15)).add(point[1]
+				.multiply(BigDecimal.valueOf(20))).divide(BigDecimal.valueOf(625), context);
+		BigDecimal angle = new BigDecimal(Math.acos(cosine.doubleValue()));
+		for (int step = 0; step < 8; step++) {
+			angle = angle.add(series(angle, true, context).subtract(cosine).divide(
+					series(angle, false, context), context), context);
+		}
+		return angle.multiply(BigDecimal.valueOf(50), context);
+	}
+
+	/**
 	 * V-CON-7: the images of the bite of {@code lq} and of its closed penetration by the four
 	 * public commands, a reflection in a point and in a line included, keep the published
 	 * structure of the source: its signature (coverage, maximality, completeness, components
@@ -2581,7 +2673,8 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	/**
 	 * GC-2 and GC-3: the certificate is computed once per revision, when the revision is
 	 * published (step T11), and shared; reading it, moving the driver or recomputing does
-	 * not recompute or change it; a new revision recomputes it.
+	 * not recompute or change it; a change of a non-driver input publishes exactly one
+	 * revision of each locus it affects, with exactly one certificate computation each.
 	 */
 	@Test
 	void theShadowCertificateIsComputedOncePerRevision() {
@@ -2602,6 +2695,12 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		moveDriver((GeoPoint) lookup("N"), CRITICAL);
 		assertSame(result, certificate("lq"));
 		assertEquals(boxes, work("lq", LocusCertificationWork2D.EXISTENCE_BOX));
+		assertEquals(certificates, work("lq", LocusCertificationWork2D.CERTIFICATE_COMPUTATION));
+		Map<String, long[]> counted = new LinkedHashMap<>();
+		for (String label : List.of("lq", "lr", "lr2")) {
+			counted.put(label, new long[] {locus(label).getSemanticRevision(),
+				work(label, LocusCertificationWork2D.CERTIFICATE_COMPUTATION)});
+		}
 		GeoNumeric radius = (GeoNumeric) lookup("rr");
 		radius.setValue(39);
 		radius.updateCascade();
@@ -2609,6 +2708,12 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		assertNotEquals(result.getStructure().getSemanticSignature(),
 				changed.getStructure().getSemanticSignature());
 		assertTrue(changed.getStructure().isClosedPeriodic());
+		for (Map.Entry<String, long[]> entry : counted.entrySet()) {
+			String label = entry.getKey();
+			assertEquals(entry.getValue()[0] + 1, locus(label).getSemanticRevision(), label);
+			assertEquals(entry.getValue()[1] + 1,
+					work(label, LocusCertificationWork2D.CERTIFICATE_COMPUTATION), label);
+		}
 	}
 
 	/**
