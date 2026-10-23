@@ -5,7 +5,8 @@
 | Carácter | Paquete de revisión final de `CU2` para la decisión autoral de cierre. No es aprobación; `selfApproved=false` |
 | Origen | Resolución autoral «PRE-G9B-CU2 — Resolución autoral consolidada y preparación del cierre» de 2026-10-23: aprueba las decisiones C-1 a C-12 con condiciones, pide completar V-POINT-4 y las precisiones, una revisión científica focal, la verificación final y este paquete, y no declara todavía `CU2` `PASS — AUTHOR APPROVED` |
 | Base | rama local `phase/pre-g9b-cu2-corrective`; candidato correctivo anterior `2856f246c61bd51916932262002cdff31e61b565` (árbol `95d9f408e65c3a3cda7181043521a78e30b292ec`), verificado en el [registro de la corrección](pre_g9b_cu2_corrective_autonomy_record.md) §12, y su descendiente documental `c8d4fd39c` |
-| Candidato | el commit que congela el inventario JUnit ejecutado y sus fijaciones sobre las correcciones de §5 (§1); un commit documental descendiente registra su identidad exacta y su verificación (§1, §6 y §7) |
+| Candidato | `6ff1ddf743bb3ee44a4e9a47f7dc238f30d642cb`, árbol `3dfcc575c45ec9ec660199d86d166d89e32851c9` (§1); un commit documental descendiente, que no es un candidato nuevo, completa §1, §6 y §7 |
+| Verificación | inventario JUnit regenerado con 0 fallos; `STATIC`, `INFRA_UNIT`, las tres `PHASE` e `INTEGRATION` `ACCEPTED / COMPLETE` a la primera (`INTEGRATION` `verification-a4b0007148a1467ba119058870f024cb`, 19/19); bancos de certificación, teselación y referencias iguales hoja a hoja a los de `2856f246`; V-DXF-4 sin errores en AutoCAD (§6) |
 | Estado | `CU2` no está `PASS`; la comprobación manual del autor sigue pendiente y no se simula ni se sustituye por pruebas; nada se ha publicado, fusionado ni etiquetado; `geocedg_book` no se ha tocado |
 
 ## 1. Identidad Git
@@ -16,8 +17,10 @@
 | Candidato anterior | `2856f246c61bd51916932262002cdff31e61b565` y su descendiente documental `c8d4fd39c` |
 | Correcciones de producto | `1c543d27b` (`fix`): correcciones de la revisión científica focal (H-CU2A-6 a H-CU2A-11, R7-A a R7-D), comentario de C-2 y gancho de prueba de C-9 |
 | Pruebas | `92dbd455a` (`test`): pruebas adversarias de la revisión, decisiones C-1, C-4 y C-9 y los doce residuos menores; `ac15661ab` (`test`): V-DET-1 repite todas las clases de escenario de su contrato |
-| Documentos | el commit que añade este paquete: matriz, revisión de trazabilidad, registros de la corrección y de R7, inventario de R5, precisión C-8 del modelo de construcción certificada y versión 4 del plan E1 |
-| Candidato final | el commit del inventario JUnit ejecutado y sus fijaciones; su commit y su árbol los registra el commit documental descendiente |
+| Documentos | `e3d01b9bd` (`docs`): matriz, revisión de trazabilidad, registros de la corrección y de R7, inventario de R5, precisión C-8 del modelo de construcción certificada, versión 4 del plan E1 y este paquete |
+| Candidato final | `6ff1ddf743bb3ee44a4e9a47f7dc238f30d642cb` (`test`), árbol `3dfcc575c45ec9ec660199d86d166d89e32851c9`: inventario JUnit ejecutado y sus fijaciones (§6.2); congela el candidato |
+| Delta desde `c8d4fd39c` | 5 commits; 31 archivos, 1 nuevo (este paquete) y 30 modificados, con 2 133 inserciones y 142 borrados. Producto: 10 archivos de `source/shared/common/src/main` (253 y 30). Pruebas: 10 clases `PreG9BCu2*` (1 429 y 30), ninguna prueba eliminada. Resto, 11 archivos: la matriz, la revisión de trazabilidad, los registros de la corrección y de R7, el inventario de R5, el modelo de construcción certificada, el plan E1, este paquete, el inventario JUnit, el registro de verificación y su prueba de cobertura |
+| Descendiente documental | el commit que completa §1, §6 y §7 de este paquete, el plan consolidado y la hoja de ruta; no modifica ningún archivo de producto, de prueba ni de verificación |
 
 ## 2. Decisiones C-1 a C-12 aplicadas
 
@@ -197,12 +200,139 @@ Ejecuciones sobre el árbol de trabajo antes del congelado; no son evidencia de 
 | Checkstyle | código 0; 4 avisos preexistentes en pruebas de Desktop no tocadas |
 | dobles ejecuciones de V-DET-1 tras su ampliación (`ac15661ab`) | idénticas bit a bit; `PreG9BCu2HybridCertificationTest` completa 39/39 |
 
-### 6.2 Verificación de aceptación del candidato
+Añadidas por el commit documental descendiente, que no modifica el candidato ni es un candidato
+nuevo, las secciones 6.2 a 6.7 recogen la verificación del candidato congelado. Los resultados y
+antecedentes de las verificaciones anteriores se conservan íntegros: los de `2856f246` en el
+[registro de la corrección](pre_g9b_cu2_corrective_autonomy_record.md) §12 y en
+`artifacts/agent/pre-g9b-cu2a-*-2856f246`, y los de T13 en su
+[registro de verificación](pre_g9b_cu2_verification_record.md).
 
-La añade el commit documental descendiente: inventario JUnit ejecutado y fijaciones; `STATIC`,
-`INFRA_UNIT`, `PHASE` de `CU2`, `CU1` y `CU0` e `INTEGRATION` (clase `INTEGRATED_PHASE`); bancos;
-V-DXF-4 con AutoCAD Core Console; escaneo de autoridad de G9X1 y frontera upstream. Los
-resultados y antecedentes de las verificaciones anteriores se conservan íntegros en sus registros.
+### 6.2 Inventario de JUnit
+
+El productor oficial `tools/agent/checks/gradle-test-evidence-producer.ps1` se ejecutó sobre el
+árbol de `e3d01b9bd`, cuyos archivos de prueba y de producto son los del candidato.
+
+| Selección | Modo | Resultado | Duración |
+|---|---|---|---:|
+| `discovery.shared` | descubrimiento en seco | `COMPLETED`, código 0; 724 archivos y 6 340 casos | 1,5 min |
+| `discovery.desktop` | descubrimiento en seco | `COMPLETED`, código 0; 190 archivos y 2 257 casos | 1,4 min |
+| `pre-g9b-cu2.shared` | ejecución | 21 clases, 242 pruebas, 0 fallos, 0 omitidas | 1,7 min |
+| `pre-g9b-cu2.desktop` | ejecución | 9 clases, 72 pruebas, 0 fallos, 0 omitidas | 5,5 min |
+| `final.shared` | ejecución | 724 archivos, 7 257 pruebas, 0 fallos, 10 omitidas | 3,7 min |
+| `final.desktop` | ejecución | 189 archivos, 2 251 pruebas, 0 fallos, 1 omitida | 19,7 min |
+
+Las omitidas son las preexistentes y upstream. El actualizador oficial
+`tools/agent/update-verification-junit-inventory.ps1` se ejecutó con las dos evidencias de
+descubrimiento y las cuatro de ejecución:
+
+- `discovery.shared`: 6 331 → 6 340, y `final.shared`: 7 248 → 7 257 (+9);
+- `discovery.desktop`: 2 253 → 2 257, y `final.desktop`: 2 247 → 2 251 (+4);
+- `pre-g9b-cu2.shared`: 233 → 242, y `pre-g9b-cu2.desktop`: 68 → 72: los 13 métodos nuevos de §7,
+  en clases `PreG9BCu2*` existentes; ninguna clase nueva;
+- las demás selecciones no cambian.
+
+La huella `junit_inventory` del registro cambia de
+`07a6a7c8e9e58c5a1d13e45f28b06f1293fcef06e8d5e8cadfdff9b4e0f8fd1d` a
+`712c8c77c10b3d15ab4bb0df2d549a7b505037102582d6ae5881ab5ef14c283a`; la anterior se reprodujo antes
+desde el archivo de `HEAD` con `Get-VerificationCanonicalTextSha256`. Las fijaciones de
+`verification-final-coverage.Tests.ps1` pasan de 233 y 68 a 242 y 72. Antes del commit, las 23
+hojas de nivel `INFRA_UNIT` del registro se ejecutaron directamente sobre el árbol y pasaron. El
+commit `6ff1ddf74` congela el candidato.
+
+### 6.3 Puertas de aceptación
+
+Clase `INTEGRATED_PHASE` (D-CU2-12). Ejecuciones secuenciales, desde la raíz del repositorio, con
+el candidato como `HEAD` y el árbol de trabajo y el índice limpios:
+
+```text
+& tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-cu2f-static-6ff1ddf7
+& tools/agent/verify.ps1 -Profile INFRA_UNIT -LogDirectory artifacts\agent\pre-g9b-cu2f-infra-unit-6ff1ddf7
+& tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-CU2 -LogDirectory artifacts\agent\pre-g9b-cu2f-phase-pre-g9b-cu2-6ff1ddf7
+& tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-CU1 -LogDirectory artifacts\agent\pre-g9b-cu2f-phase-pre-g9b-cu1-6ff1ddf7
+& tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-CU0 -LogDirectory artifacts\agent\pre-g9b-cu2f-phase-pre-g9b-cu0-6ff1ddf7
+& tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts\agent\pre-g9b-cu2f-integration-6ff1ddf7
+```
+
+La consola de cada ejecución se redirigió al directorio temporal de la sesión, fuera del
+repositorio. Todas terminaron con código de salida 0 a la primera, y sus `result_hash` se
+autenticaron con `Read-VerificationJson` y `Get-VerificationResultHash`.
+
+| Perfil | `run_id` | `result_hash` | Plan | Duración | Resultado |
+|---|---|---|---|---:|---|
+| `STATIC` | `verification-b60eca30025f4379b08eafffe518f309` | `577cf92058b7cfd6d480ee0b9e393620e85c532d89f521575b62eb07b6976b86` | `25dfacc8…cc52` | 0,1 min | `ACCEPTED / COMPLETE`, 3/3; solo diagnósticos permanentes |
+| `INFRA_UNIT` | `verification-3d7571b1f9e440d4adc69246bdc05bdc` | `9c10cd42da3ce56ed138f43907a80051319de132ff47f06901dd338f1f21e2e7` | `830887b1…ce1d` | 2,2 min | `ACCEPTED / COMPLETE`, 22/22 |
+| `PHASE -Phase PRE-G9B-CU2` | `verification-6d0dc9163e5642889799b50f8927ad11` | `0c5be979d6d750fd1b340500ce56b9c9b962e6a5f39725878988b11293e5ad41` | `b9dc6d9e…a930` | 9,6 min | `ACCEPTED / COMPLETE`, 4/4; `pre-g9b-cu2.shared`: 21 clases y 242 pruebas; `pre-g9b-cu2.desktop`: 9 clases y 72 pruebas; 0 fallos, 0 omitidas |
+| `PHASE -Phase PRE-G9B-CU1` | `verification-e6d45e0ae7b24affbfb14d5477ca9a87` | `32acd12d5b54c11be92a7d435e36cf1cdffa3dba1a993d0422524b8b7944e063` | `b0e4f130…4519` | 5,5 min | `ACCEPTED / COMPLETE`, 4/4; `pre-g9b-cu1.shared`: 6 clases y 57 pruebas; `pre-g9b-cu1.desktop`: 4 clases y 20 pruebas; 0 fallos |
+| `PHASE -Phase PRE-G9B-CU0` | `verification-e7b66154af944b39aacdac9bda39cbd4` | `ec7d02aed2da1d9b365daa75693493bdfc9536d5b6d12189bd3e7b0caad315af` | `43e3e97e…9173` | 2,6 min | `ACCEPTED / COMPLETE`, 2/2; `pre-g9b-cu0.desktop`: 6 clases y 21 pruebas; 0 fallos |
+| `INTEGRATION` | `verification-a4b0007148a1467ba119058870f024cb` | `57989175d345dc4a27f87c7306f279ac3e036bb221e1fc0237a4c6137233a428` | `4502c4bd…7aea` | 49,9 min | `ACCEPTED / COMPLETE`, 19/19 |
+
+Los seis planes son los de T13 y de `2856f246`: las selecciones conservan su definición y solo
+cambian sus identidades esperadas. En `INTEGRATION` pasaron `junit.shared.final` (724 archivos y
+7 257 pruebas, con las 10 omitidas upstream), `junit.desktop.final` (189 archivos y 2 251 pruebas,
+con 1 omitida upstream) y `junit.desktop.g9u1-isolated` (2 clases y 5 pruebas). Los diagnósticos
+de `STATIC` y de `INTEGRATION` son los permanentes, `diagnostic.governance` =
+`DIAGNOSTIC_FINDING` y `diagnostic.historical-consistency` = `DIAGNOSTIC_UNAVAILABLE`; los demás
+son `DIAGNOSTIC_CLEAR`: los cuatro de Checkstyle, `diagnostic.style`,
+`diagnostic.documentation`, `diagnostic.guide-structure`, `junit.desktop.revision3-diagnostic` (1
+prueba) y `repository.whitespace-diagnostic`. La carrera `OBS-CU2-OFF-EDT-TOOLBAR-RACE` no se
+presentó: hubo una sola `INTEGRATION`, aceptada.
+
+### 6.4 Referencias de `CU0` y `CU1` e indicadores de certificación
+
+El arnés de `CU0` (`tools/benchmark/pre-g9b-cu/run-harness.ps1`) se ejecutó sobre el candidato,
+después de las puertas, con el árbol de trabajo limpio (`product_sources_modified = false`). Las
+salidas están en `artifacts/benchmarks/pre-g9b-cu/cu2-after-{certification,tessellation,references}-6ff1ddf7`,
+que Git ignora, y se comparan hoja a hoja con las de `2856f246`, sin tiempos ni identidades.
+
+- **`certification`** (indicadores de certificación, puertas GC): las 4 160 hojas de contadores
+  son iguales, también los de cierre de bandas, todos a 0. La tabla de GC-1 a GC-7 del
+  [registro de verificación de T13](pre_g9b_cu2_verification_record.md) §3 vale sin cambios.
+  Tiempos, informativos: carga de 3 204 a 3 287 ms; pasos de 4,4–84,2 ms a 5,4–91,1 ms.
+- **`tessellation`**: las 6 689 hojas son iguales: vértices de cada vista, fidelidad de los 660
+  candidatos y giros fuera de exenciones.
+- **`references`**: las 661 hojas `preserve` de la línea base de `CU0` (sin tiempos) y las 346
+  `pins` son iguales a las de `2856f246`; las 12 `pins` que cambiaron frente a `39741a0b` siguen
+  atribuidas a H-CU2A-3 (registro de la corrección §12.3).
+- **`PHASE` de `CU0` y de `CU1`**: aceptadas (§6.3), con las referencias `preserve` de
+  `PreG9BCu0LocusReferenceTest` y `PreG9BCu0CompositionCharacterizationTest` y las pruebas de
+  `CU1`.
+
+Ninguna corrección de §5 cambia una salida de los bancos, que ejercen el modelo del autor; las
+pruebas adversarias de esas correcciones son construcciones sintéticas.
+
+### 6.5 V-DXF-4 (informativa)
+
+La resolución pide repetir V-DXF-4 porque cambió la evaluación de extremos geométricos. Un sondeo
+del directorio temporal de la sesión, añadido al conjunto de pruebas de Desktop con un
+`--init-script` y retirado después del árbol de compilación, escribió sobre el candidato las 11
+exportaciones DXF estrictas de V-DXF-1: `o`, `v`, `w`, `a_1`, `e_1`, `o_1` y `e_2` en el estado
+guardado, y `o`, `v`, `w` y `a_1` en la mordedura de excCyl 3,7. AutoCAD 2026 Core Console
+(`accoreconsole.exe`) abrió cada archivo con un guion `.scr` que cuenta las entidades con AutoLISP
+y ejecuta `AUDIT` sin corregir. En los 11 archivos no hubo errores de carga, `AUDIT` dio «Total
+errors found 0 fixed 0» y AutoCAD no modificó ningún archivo; hay una `LWPOLYLINE` por archivo,
+salvo en `e_2`, con tres: sus tres partes abiertas con los dos cortes declarados. Es el mismo
+resultado que en T13. Comprobación externa e informativa, no una puerta.
+
+### 6.6 Otras comprobaciones
+
+| Comprobación | Resultado |
+|---|---|
+| Escaneo de autoridad de G9X1 (V-PROD-2) | `Assert-GeoCeDGDxfSourceAuthority` sobre los 46 caminos del perímetro de `g9x1-evidence.json`: las mismas tres faltas preexistentes en la base `070af6f9`, en `2856f246` y en el candidato (el roadmap y `modified-files.yml`, que nombran `LocusRenderCache`, y `AppGeoCeDG.java`, con `EuclidianView`); no empeora |
+| Límite upstream | `Assert-GeoCeDGUpstreamBoundary` (base `9b93256b`) correcto: 1 162 archivos registrados en `docs/upstream/modified-files.yml`, los mismos que en `2856f246` (ningún archivo nuevo bajo `source/`) |
+| Libro y gobernanza | `geocedg_book` en `78fbc88e9e12346b89d6ded411eaae94de2284b9`, limpio; `AGENTS.md`, `CLAUDE.md`, `FIRST_AGENT_TASK.md`, `ai-shell/prompts/` y `.github/prompts/` sin cambios |
+| Árbol de trabajo e índice | limpios antes de cada ejecución de aceptación, de los bancos y del sondeo de V-DXF-4 |
+| Publicación | `main` = `origin/main` = `48a0775e4f2f122f5e2614c62b5773777752ccd1`; el remoto no tiene la rama correctiva; nada se ha publicado, fusionado ni etiquetado |
+
+### 6.7 Lo que no se ha ejecutado
+
+- `FINAL`: la resolución no lo exige salvo que el contrato de cierre o la autoridad ejecutable
+  requieran un recibo, y no lo requieren para la clase `INTEGRATED_PHASE`. `FINAL` añade a
+  `INTEGRATION` las hojas de `INFRA_UNIT`, que se ejecutaron aparte sobre el mismo candidato; solo
+  `FINAL` escribe `verification-receipt.json`, así que un cierre ligado a un recibo necesitaría
+  esa campaña, por decisión autoral (§10).
+- La comprobación manual del autor sobre el candidato: pendiente, no se simula.
+- Los escenarios `composition` y `windowed` del arnés, como en `2856f246`: las referencias de
+  composición las comprueban las `PHASE` de `CU0` y de `CU1`.
 
 ## 7. Comparación con el candidato anterior
 
@@ -212,7 +342,10 @@ resultados y antecedentes de las verificaciones anteriores se conservan íntegro
 | Pruebas | — | 13 métodos nuevos (9 compartidos y 4 de Desktop) y aserciones reforzadas en pruebas existentes (§2, §5 y §12 de la revisión de trazabilidad); ninguna aserción debilitada |
 | Conformidad | 34 filas de R5 tratadas (24 efectivas, 9 efectivas con una decisión de nivel C pendiente y 1 residuo); 12 residuos menores; V-DET-1 abierta | §4: ninguna fila obligatoria con un elemento sin aseverar |
 | Decisiones pendientes | C-1 a C-12 | ninguna, salvo las de §10 |
-| Inventario, puertas, referencias de `CU0` y `CU1`, indicadores de certificación y bancos | §12 del registro de la corrección | los añade el commit documental descendiente |
+| Inventario JUnit | `pre-g9b-cu2.shared` 233 y `pre-g9b-cu2.desktop` 68; `final.shared` 7 248 y `final.desktop` 2 247 | 242 y 72; 7 257 y 2 251; 0 fallos (§6.2) |
+| Puertas `INTEGRATED_PHASE` | las seis `ACCEPTED / COMPLETE` a la primera | las seis `ACCEPTED / COMPLETE` a la primera, con los mismos planes (§6.3) |
+| Referencias de `CU0` y `CU1`, indicadores de certificación y bancos | `preserve` iguales a la línea base; frente a `39741a0b`, 12 `pins` y 33 giros de teselación atribuidos a H-CU2A-3 | iguales hoja a hoja a los de `2856f246` (§6.4) |
+| V-DXF-4 | no repetida; vale la de T13 | repetida con AutoCAD Core Console: sin errores, como en T13 (§6.5) |
 
 ## 8. Limitaciones aceptadas y trabajo futuro
 
@@ -234,7 +367,7 @@ cerradas o son evidencia sin autoridad. Aceptar una limitación no obliga a mant
 | `e_2`: cortes computacionales; TD-CU1-W1 | deuda de la métrica de `CU1` | paquete métrico posterior | `w_1` con `PARAMETER_RESOLUTION_REACHED` en tres conductores; `e_2` declara sus cortes |
 | `L-CU1-E2-LENGTH` | cuestión de `CU1` asignada a `CU2`, respondida | — | el salto de la longitud orientada es el evento estructural certificado `ORIGIN_WRAP` (D-CU2-3) y `e_2` es un arco abierto de longitud completa desde `t_N = 0`, `COMPLETE` (B10.2); su longitud sigue en la clase de su estimación |
 | `L-CU1-CLASS2-REACH`, `L-CU1-AFFINE-FORMS` | limitaciones de `CU1` | paquete métrico posterior | `CU2` no las necesitó para su alcance |
-| `OBS-CU2-OFF-EDT-TOOLBAR-RACE` | carrera preexistente de una prueba de Desktop | tratamiento de la autorización de T13-R1/R2 §4 | no se presentó en la `INTEGRATION` del candidato correctivo; no se tocan Swing ni pruebas ajenas a `CU2` |
+| `OBS-CU2-OFF-EDT-TOOLBAR-RACE` | carrera preexistente de una prueba de Desktop | tratamiento de la autorización de T13-R1/R2 §4 | no se presentó en la `INTEGRATION` del candidato correctivo ni en la del final; no se tocan Swing ni pruebas ajenas a `CU2` |
 
 ## 9. Estado de E1
 
