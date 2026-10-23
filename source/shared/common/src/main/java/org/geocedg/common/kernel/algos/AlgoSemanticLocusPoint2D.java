@@ -22,6 +22,7 @@ import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
+import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.LocusSemanticPosition2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
@@ -48,6 +49,8 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	private LocusSemanticAddress2D semanticAddress;
 	private LocusSemanticAddress2D lastAcceptedAddress;
 	private MetricPositionBinding2D positionBinding;
+	private LocusSemanticPointCause2D cause = LocusSemanticPointCause2D.INVALID_SOURCE;
+	private LocusComponentSelectorResolver2D.Status selectorStatus;
 	private long previousRawParameterBits = Long.MIN_VALUE;
 	private String previousBranchInput;
 	private PersistentGeoId previousSourceId;
@@ -76,8 +79,9 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	public void compute() {
 		semanticAddress = null;
 		positionBinding = null;
+		selectorStatus = null;
 		if (!branchInput.isDefined()) {
-			point.setUndefined();
+			undefined(LocusSemanticPointCause2D.INVALID_ADDRESS);
 			return;
 		}
 		String branchState = branchInput.getTextString();
@@ -88,7 +92,7 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			principalState = persistedState == null
 					? LocusPrincipalBranchState2D.decode(branchState) : null;
 		} catch (IllegalArgumentException exception) {
-			point.setUndefined();
+			undefined(LocusSemanticPointCause2D.INVALID_ADDRESS);
 			return;
 		}
 		if (persistedState != null && ownsDedicatedInteractionInputs()) {
@@ -97,7 +101,7 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			enforceDedicatedPrincipalBranchPresentation();
 		}
 		if (!source.isDefined() || !parameterInput.toGeoElement().isDefined()) {
-			point.setUndefined();
+			undefined(LocusSemanticPointCause2D.INVALID_SOURCE);
 			return;
 		}
 		PersistentGeoId sourceId = source.getPersistentLocusId();
@@ -109,28 +113,31 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				principalAddress = LocusPrincipalBranchSelector2D.select(source,
 						rawParameter);
 			} catch (IllegalArgumentException exception) {
-				point.setUndefined();
+				undefined(LocusSemanticPointCause2D.PRINCIPAL_BRANCH_UNRESOLVED);
 				return;
 			}
 			LocusBranch2D principalBranch = definition == null ? null
 					: definition.getBranch(principalAddress.getBranchKey());
 			if (principalBranch == null || !principalState.resolves(principalAddress,
 					principalBranch, definition.getProvider().getDomainEpsilon())) {
-				point.setUndefined();
+				undefined(LocusSemanticPointCause2D.PRINCIPAL_BRANCH_UNRESOLVED);
 				return;
 			}
 		}
 		String branchKey = persistedState != null ? persistedState.getBranchKey()
 				: principalState != null ? principalState.getBranchKey() : branchState;
-		if (sourceId == null || definition == null || branchKey == null
-				|| branchKey.trim().isEmpty() || !branchKey.equals(branchKey.trim())
-				|| !Double.isFinite(rawParameter)) {
-			point.setUndefined();
+		if (sourceId == null || definition == null) {
+			undefined(LocusSemanticPointCause2D.INVALID_SOURCE);
+			return;
+		}
+		if (branchKey == null || branchKey.trim().isEmpty()
+				|| !branchKey.equals(branchKey.trim()) || !Double.isFinite(rawParameter)) {
+			undefined(LocusSemanticPointCause2D.INVALID_ADDRESS);
 			return;
 		}
 		LocusBranch2D branch = definition.getBranch(branchKey);
 		if (branch == null) {
-			point.setUndefined();
+			undefined(LocusSemanticPointCause2D.BRANCH_MISSING);
 			return;
 		}
 		LocusDriverDomainProvider2D provider = definition.getProvider();
@@ -148,7 +155,7 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				|| persistedAddress != null
 				&& !persistedAddressMatchesInputs(provider, persistedAddress,
 						rawParameter)) {
-			point.setUndefined();
+			undefined(LocusSemanticPointCause2D.INVALID_ADDRESS);
 			return;
 		}
 		String retainedComponentLineage = persistedState != null
@@ -157,7 +164,6 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		ContinuousComponent component = containingComponent(branch, canonical, provider,
 				retainedComponentLineage);
 		if (component == null) {
-			point.setUndefined();
 			return;
 		}
 		long lift = liftValue;
@@ -174,16 +180,18 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		if (sameAddressInputs && lastAcceptedAddress != null
 				&& !lastAcceptedAddress.getComponentLineageKey().equals(
 						candidate.getComponentLineageKey())) {
-			point.setUndefined();
+			undefined(LocusSemanticPointCause2D.COMPONENT_CHANGED);
 			return;
 		}
 		MetricPositionBinding2D candidateBinding = binder.bind(
 				candidate.toMetricPosition(), definition);
 		if (!candidateBinding.isValid()) {
-			point.setUndefined();
+			// The invalid binding is kept: it carries the typed cause of the failure.
+			positionBinding = candidateBinding;
+			undefined(LocusSemanticPointCause2D.POSITION_UNBOUND);
 			return;
 		}
-		org.geocedg.common.kernel.locus.LocusPoint2D evaluated = candidateBinding
+		final org.geocedg.common.kernel.locus.LocusPoint2D evaluated = candidateBinding
 				.getEvaluatedPoint().get();
 		semanticAddress = candidate;
 		lastAcceptedAddress = candidate;
@@ -191,7 +199,13 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		previousBranchInput = branchKey;
 		previousSourceId = sourceId;
 		positionBinding = candidateBinding;
+		cause = LocusSemanticPointCause2D.RESOLVED;
 		point.setCoords(evaluated.getX(), evaluated.getY(), 1);
+	}
+
+	private void undefined(LocusSemanticPointCause2D unresolved) {
+		cause = unresolved;
+		point.setUndefined();
 	}
 
 	@Override
@@ -274,6 +288,22 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	}
 
 	/**
+	 * @return typed cause of the state of the point in the current revision,
+	 *         {@link LocusSemanticPointCause2D#RESOLVED} while it is defined
+	 */
+	public LocusSemanticPointCause2D getResolutionCause() {
+		return cause;
+	}
+
+	/**
+	 * @return status of the resolution of the retained component selector in the current
+	 *         revision, or {@code null} when the address retains none
+	 */
+	public LocusComponentSelectorResolver2D.Status getSelectorStatus() {
+		return selectorStatus;
+	}
+
+	/**
 	 * Rebinds the currently admissible address against the source revision.
 	 *
 	 * @return current binding, or {@code null} while the address is unresolved
@@ -312,18 +342,25 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	 * The certified component of the position (consumption design section 3): a retained
 	 * selector resolves only through a demonstrated structural correspondence
 	 * ({@code locus-v2-existence-components.md} section 15.6); without one, the parameter
-	 * must lie in exactly one certified component. A point component is never selected.
+	 * must lie in exactly one certified component. A point component is never selected
+	 * (section 15.8). Otherwise the point is undefined with its typed cause.
+	 *
+	 * @return the component, or {@code null} once the point is undefined
 	 */
-	private static ContinuousComponent containingComponent(LocusBranch2D branch,
-			double parameter, LocusDriverDomainProvider2D provider,
-			String retainedComponentLineage) {
+	private ContinuousComponent containingComponent(LocusBranch2D branch, double parameter,
+			LocusDriverDomainProvider2D provider, String retainedComponentLineage) {
 		LocusExistenceStructure2D structure = branch.getExistenceStructure();
 		if (retainedComponentLineage != null) {
 			LocusComponentSelectorResolver2D.Resolution resolution =
 					LocusComponentSelectorResolver2D.resolve(retainedComponentLineage,
 							structure, Collections.singletonList(branch.getLineage()),
 							parameter, provider.getDomainEpsilon());
-			return resolution.getStatus().isResolved() ? resolution.getComponent() : null;
+			selectorStatus = resolution.getStatus();
+			if (resolution.getStatus().isResolved()) {
+				return resolution.getComponent();
+			}
+			undefined(LocusSemanticPointCause2D.SELECTOR_UNRESOLVED);
+			return null;
 		}
 		ContinuousComponent unqualified = null;
 		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
@@ -331,9 +368,15 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 				continue;
 			}
 			if (unqualified != null) {
+				undefined(LocusSemanticPointCause2D.AMBIGUOUS_COMPONENT);
 				return null;
 			}
 			unqualified = component;
+		}
+		if (unqualified == null) {
+			undefined(structure.getPointComponentEnclosing(parameter) != null
+					? LocusSemanticPointCause2D.POINT_COMPONENT
+					: LocusSemanticPointCause2D.OUTSIDE_COMPONENTS);
 		}
 		return unqualified;
 	}

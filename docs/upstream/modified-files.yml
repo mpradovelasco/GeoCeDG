@@ -6968,6 +6968,12 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 corrective descendant, author decision D-CU2-T13-R7 (finding H-T13-B): rigorous band of the unlabelled second output of a line-circle intersection. A box leaves the band only when the first retry of the inherited AlgoIntersectLineConic computation is decisive and keeps the output defined at every binary64 driver point of the box, with a priori bounds of every rounding.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSemanticPointCause2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU2 corrective mandate, Level B correction (V-LIN-4, V-POINT-5): typed cause of the state of a semantic point Point(L, u) in the current revision, so that a point whose selector, component or position does not resolve is undefined with an explicit cause and never reassociated silently.",
+      "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
     }
   ]
 }

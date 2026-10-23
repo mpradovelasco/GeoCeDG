@@ -52,6 +52,7 @@ public final class LocusMetricPositionBinder2D {
 		List<ContinuousComponent> components = structure.getContinuousValidComponents();
 		double epsilon = definition.getProvider().getDomainEpsilon();
 		ContinuousComponent component = null;
+		LocusComponentSelectorResolver2D.Status selector = null;
 		if (position.getComponentLineageKey() != null) {
 			// A retained component selector resolves only through a demonstrated
 			// structural correspondence (locus-v2-existence-components.md section 15.6).
@@ -60,6 +61,7 @@ public final class LocusMetricPositionBinder2D {
 							position.getComponentLineageKey(), structure,
 							Collections.singletonList(branch.getLineage()), parameter,
 							epsilon);
+			selector = resolution.getStatus();
 			component = resolution.getStatus().isResolved() ? resolution.getComponent()
 					: null;
 		} else {
@@ -79,7 +81,9 @@ public final class LocusMetricPositionBinder2D {
 					: invalid(position, definition.getSemanticRevision(),
 							MetricPositionEvaluationStatus.POSITION_OUTSIDE_DOMAIN,
 							MetricDiagnosticCode2D.POSITION_OUTSIDE_DOMAIN,
-							"Canonical parameter is outside every valid component");
+							selector == null
+									? "Canonical parameter is outside every valid component"
+									: "Retained component selector is unresolved: " + selector);
 		}
 		try (LocusEvaluationSession2D session =
 				LocusEvaluationSession2D.openServiceSession(false, 1)) {
