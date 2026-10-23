@@ -8,6 +8,7 @@
 | Método | cuatro revisores de solo lectura, uno por grupo de filas, releyeron el requisito de la [matriz](pre_g9b_cu2_validation_matrix.md), las pruebas y el código; una verificación dirigida, también de solo lectura, contrastó cada afirmación de defecto de producto o de inconsistencia normativa (§3). No se ha ejecutado ninguna prueba nueva |
 | Base | rama local `phase/pre-g9b-cu2-corrective` en `e9541c42e` (R1, R2, R4, refuerzo y corrección de H-T13-A) |
 | Relacionado | [registro de R6](pre_g9b_cu2_r6_correction_record.md): H-T13-A corregido; [registro de R7](pre_g9b_cu2_r7_correction_record.md): H-T13-B corregido y H-T13-C clasificado; §7, contenido por categorías pedido por D-CU2-T13-R7 |
+| Resolución | el mandato autoral de autonomía correctiva controlada de 2026-10-23 trató las 34 entradas con la clasificación de este inventario: el estado de cada una, las correcciones de producto y las decisiones de nivel C pendientes constan en el [registro de la corrección](pre_g9b_cu2_corrective_autonomy_record.md), en §10 de la revisión de trazabilidad y en §6 de la matriz. Este inventario se conserva como análisis previo |
 
 ## 1. Clasificación y obligatoriedad
 

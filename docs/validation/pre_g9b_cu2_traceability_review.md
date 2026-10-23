@@ -6,7 +6,7 @@
 | Origen | Decisión autoral D-CU2-T13-R4 (2026-10-22), «Control de conformidad»: distinguir los identificadores de `CU2` de sus homónimos de `CU1`, no tomar la aparición textual de un identificador como cumplimiento y asociar cada requisito obligatorio con pruebas efectivas |
 | Matriz | [matriz de validación de `CU2`](pre_g9b_cu2_validation_matrix.md), §2 y §3; su §6 resume esta revisión fila a fila |
 | Base de la revisión | rama local `phase/pre-g9b-cu2-corrective` tras los commits de R1, R2 y R4 y el refuerzo de §6; el candidato congelado y su verificación constarán en el registro de verificación del descendiente |
-| Hallazgos | H-T13-A y H-T13-B (§9), deficiencias preexistentes de fallo cerrado; D-CU2-T13-R6 corrigió H-T13-A, y H-T13-B quedó detenido por un contraejemplo junto al hallazgo nuevo H-T13-C ([registro de R6](pre_g9b_cu2_r6_correction_record.md)); D-CU2-T13-R7 corrigió H-T13-B y clasificó H-T13-C ([registro de R7](pre_g9b_cu2_r7_correction_record.md)); decisión pendiente D-CU2-T13-R5 (§8, [inventario](pre_g9b_cu2_r5_gap_inventory.md)) |
+| Hallazgos | H-T13-A y H-T13-B (§9), deficiencias preexistentes de fallo cerrado; D-CU2-T13-R6 corrigió H-T13-A, y H-T13-B quedó detenido por un contraejemplo junto al hallazgo nuevo H-T13-C ([registro de R6](pre_g9b_cu2_r6_correction_record.md)); D-CU2-T13-R7 corrigió H-T13-B y clasificó H-T13-C ([registro de R7](pre_g9b_cu2_r7_correction_record.md)); el mandato de autonomía correctiva de 2026-10-23 trató R5 (§10, [inventario](pre_g9b_cu2_r5_gap_inventory.md), [registro de la corrección](pre_g9b_cu2_corrective_autonomy_record.md)) |
 | Corrige | la auditoría de T13 ([registro de verificación de `39741a0b`](pre_g9b_cu2_verification_record.md) §2.3), que contó como cubiertas V-DET-1, V-INV-1 y V-INV-2 por las citas homónimas de `CU1` y que solo buscaba citas |
 
 ## 1. Método
@@ -58,10 +58,10 @@ Ninguna prueba del repositorio asevera el elemento indicado. Se agrupan por tema
 | GC-2 | GC | la cota de un cálculo de certificado por locus afectado y revisión tras cambiar una entrada no conductora |
 | GC-3 | GC | el contador de cálculos con los consumidores métrica, intersección, punto semántico y exportaciones DXF y LaTeX (el dibujo y la exportación de imagen los cubre V-INV-1) |
 | GC-8 | GC | los presupuestos del certificado exacto con rbCone 8 y 10 (V-PER-3) y en las variantes de V-CRIT-9 |
-| V-LVL-1 | A | que la evidencia exploratoria no tiene autoridad sobre el grafo de dependencias ni sobre la identidad |
+| V-LVL-1 | F | que la evidencia exploratoria no tiene autoridad sobre el grafo de dependencias ni sobre la identidad |
 | V-LVL-2 | F | guardar y reabrir un locus fuera de la clase y cambiar solo la política exploratoria: misma huella y evidencia recalculada |
 | V-UND-1 | F | un fallo real del cálculo de una dependencia antes de certificar; la causa `COMPUTATIONAL_DEPENDENCY_FAILURE` solo se inyecta en pruebas y ningún código productivo la emite |
-| V-PER-3 | F | la localización independiente de los conductores degenerados de `o_1` |
+| V-PER-3 | A | la localización independiente de los conductores degenerados de `o_1` |
 | V-E2-5 | F | que solo el punto cuyo cálculo falla queda `EVALUATION_FAILED` |
 | V-REV-EXACT-3 | F | para `lr2`, los bits de la copia, la fidelidad declarada y la igualdad con el vivo |
 | V-REV-EXACT-7 | A | la causa tipada de la revisión que publica un cambio real del estado de selección o de etiquetado |
@@ -85,7 +85,7 @@ Ninguna prueba del repositorio asevera el elemento indicado. Se agrupan por tema
 | V-B06-1 | F | el giro en el vértice de cierre de una componente cerrada (último a primer segmento) |
 | V-B06-3 | F | el determinismo con la misma vista y la invariancia de zoom y resolución en la mordedura y en la configuración crítica sintética |
 | V-B07-2 | F | el tramo de raíz cuadrada del extremo superior y los tramos de los extremos en las mordeduras del modelo (3,7, 3,85 y 3,9) |
-| V-B07-4 | A | el estilo punteado y translúcido del dibujo de la evidencia exploratoria |
+| V-B07-4 | F | el estilo punteado y translúcido del dibujo de la evidencia exploratoria |
 | V-AVAIL-6 | F | la clase de garantía de las coordenadas dibujadas en un resultado parcial |
 | V-TEX-1 | F | la compilación de Asymptote; la compilación PGF y PSTricks se omite sin aviso si faltan las herramientas; la topología LaTeX de la configuración crítica |
 
@@ -236,3 +236,26 @@ matemática conservada y evaluación `EVALUATION_FAILED` con causa `COMPUTATIONA
 registro de R6 lo describía de más. Se corrige la precisión F-CU2-1 y se fija el comportamiento en
 pruebas. Todo consta en el [registro de R7](pre_g9b_cu2_r7_correction_record.md); D-CU2-T13-R5 sigue
 pendiente, y V-DET-1 abierta.
+
+## 10. Resolución por el mandato de autonomía correctiva
+
+El mandato autoral de autonomía correctiva controlada de 2026-10-23 sustituye, para R5, a la
+decisión D-CU2-T13-R5: autoriza las pruebas (nivel A), las correcciones de producto con contrato
+aprobado y violado (nivel B) y reserva al autor las precisiones normativas (nivel C). El
+[registro de la corrección](pre_g9b_cu2_corrective_autonomy_record.md) da el detalle; la §6 de la
+matriz cita cada prueba nueva y resume el estado de cada fila.
+
+Erratas de esta revisión, corregidas en §3: V-LVL-1 y V-B07-4 son de tipo F y V-PER-3 de tipo A,
+como en la matriz. La cita de V-CON-7 era nominal (la imagen se construía con las ramas de la
+fuente); la prueba nueva construye las imágenes con los cuatro comandos públicos. R2 y R4 cubrían
+parte de V-REV-EXACT-3 y V-REV-EXACT-8; las pruebas nuevas cubren el resto.
+
+| Estado tras el mandato | Filas |
+|---|---|
+| Efectiva | GC-1, GC-3, GC-8, V-LVL-1, V-LVL-2, V-PER-3, V-E2-5, V-REV-EXACT-3, V-REV-EXACT-8, V-REV-EXACT-9 (con H-CU2A-5), V-REV-EXACT-10, V-SEL-7, V-COINC-2, V-COINC-3, V-COINC-8, V-POINT-5 (con H-CU2A-1), V-POINT-6 (con H-CU2A-2), V-CON-1 (con H-CU2A-4), V-CON-4, V-CON-7, V-B06-1, V-B06-3, V-B07-2 (con H-CU2A-3), V-B07-4 |
+| Efectiva, con una decisión de nivel C pendiente sobre la redacción o una causa | GC-2 (C-4), V-UND-1 (C-2), V-REV-EXACT-7 (C-1), V-LIN-4 (con H-CU2A-1; C-7), V-COINC-5 y V-COINC-7 (C-6), V-CON-3 (limitación O-CU2A-3; C-10), V-AVAIL-6 (C-3), V-TEX-1 (C-5) |
+| Residuo | V-POINT-4: el fallo forzado de la forma límite no tiene gancho de prueba (C-9); los vecinos de `t*` son efectivos |
+
+V-DET-1 tiene cobertura demostrable: la doble ejecución sintética y la del modelo comparan bit a
+bit revisiones, huellas, certificados, eventos y contadores, propios y anidados, en los estados de
+V-REV-EXACT-1 a V-REV-EXACT-7 (V-REV-EXACT-8).
