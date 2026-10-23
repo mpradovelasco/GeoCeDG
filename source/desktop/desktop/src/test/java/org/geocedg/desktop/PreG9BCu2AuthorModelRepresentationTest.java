@@ -76,6 +76,63 @@ class PreG9BCu2AuthorModelRepresentationTest {
 	Path work;
 
 	/**
+	 * V-AVAIL-6 (corrective mandate, R5 group G2): the drawing never improves the evaluator.
+	 * Every evaluated vertex of the drawings of the seven loci, at excCyl 2.9 and in the bite
+	 * at 3.7, has the coordinates of the evaluation of its parameter in its component, bit for
+	 * bit; the drawing records only the policy fidelity and the marks of its components, no
+	 * numerical guarantee of its own, so it never states a better class than the evaluator.
+	 * Whether the row is worded with these coordinates or with a numerical guarantee propagated
+	 * from the evaluator is the pending author decision on V-AVAIL-6.
+	 */
+	@Test
+	void drawnVerticesAreTheEvaluationsOfTheirParameters() throws Exception {
+		List<String> problems = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.workingCopy(
+					PreG9BCu0Corpus.CEDG, work));
+			List<String> found = new ArrayList<>();
+			for (double excCyl : new double[] {2.9, 3.7}) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", excCyl);
+				for (String label : List.of("o", "v", "w", "a_1", "e_1", "o_1", "e_2")) {
+					GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+					LocusDefinition2D definition = locus.getSemanticDefinition();
+					ContinuousComponent component = definition.getBranch(PreG9BCu0Corpus.MAIN)
+							.getExistenceStructure().getContinuousValidComponents().get(0);
+					LocusRenderData2D drawing = new LocusRenderCache2D().getOrBuild(locus,
+							PreG9BCu0Corpus.authorPolicy());
+					int compared = 0;
+					try (LocusEvaluationSession2D session = LocusEvaluationSession2D
+							.memoizing(64)) {
+						for (Vertex vertex : drawing.getVertices()) {
+							if (vertex.getSource() != VertexSource.EVALUATED) {
+								continue;
+							}
+							LocusEvaluation2D evaluation = definition.evaluateInComponent(
+									PreG9BCu0Corpus.MAIN, component.getInterval(),
+									vertex.getSemanticParameter(), session);
+							compared++;
+							if (!evaluation.isValid() || Double.doubleToRawLongBits(
+									evaluation.getPoint().getX()) != Double.doubleToRawLongBits(
+											vertex.getPoint().getX()) || Double.doubleToRawLongBits(
+											evaluation.getPoint().getY()) != Double
+											.doubleToRawLongBits(vertex.getPoint().getY())) {
+								found.add(excCyl + " " + label + " at " + Double.toHexString(
+										vertex.getSemanticParameter()) + ": "
+										+ evaluation.getStatus());
+							}
+						}
+					}
+					if (compared == 0) {
+						found.add(excCyl + " " + label + ": no evaluated vertex");
+					}
+				}
+			}
+			return found;
+		});
+		assertEquals(List.of(), problems.subList(0, Math.min(10, problems.size())),
+				problems.size() + " vertices differ");
+	}
+
+	/**
 	 * V-B06-1 and V-B06-2: at the author's parameters and in a bite, every turn between
 	 * visible chords outside an exemption is within {@code theta_max}, the turn at the closing
 	 * vertex of each closed stroke included, measured cyclically from its last chord to its

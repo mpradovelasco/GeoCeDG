@@ -188,6 +188,46 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 		assertEquals(changed, fingerprint("l"));
 	}
 
+	/**
+	 * Finding H-CU2A-5 (corrective mandate, Level B; V-REV-EXACT-2, V-REV-EXACT-9 and
+	 * V-SEL-7): drawing state of an element of the slice is never part of the fingerprint. The
+	 * fingerprint removed the tags of deferred drawing state, such as a visibility condition
+	 * or a colour, but kept the whitespace around each, so that the presence of such a tag
+	 * alone changed the structure part and published a revision typed {@code STRUCTURE},
+	 * contrary to {@code locus-v2-semantics.md} v1.3 (the fingerprint is never based on a
+	 * graphical representation); on the author model an undo rebuilt an unlabelled angle
+	 * input without its colour and gave the same content another fingerprint. Now giving the
+	 * traced point a visibility condition keeps the fingerprint, the revision and the slice.
+	 */
+	@Test
+	void drawingStateOfASliceElementPublishesNoRevision() throws Exception {
+		add("c=Circle((0,0),2)");
+		add("P=Point(c)");
+		add("Q=Rotate(P,30deg,(1,0))");
+		GeoLocusV2 locus = add("l=LocusV2(Q,P)");
+		add("b=true");
+		String fingerprint = fingerprint("l");
+		long revision = locus.getSemanticRevision();
+		long builds = locus.getInstrumentation().getDependencySliceBuilds();
+		GeoElement traced = lookup("Q");
+		String before = serialized(traced);
+		traced.setShowObjectCondition((org.geogebra.common.kernel.geos.GeoBoolean) lookup("b"));
+		traced.updateRepaint();
+		getKernel().updateConstruction(false);
+		assertTrue(serialized(traced).contains("<condition") && !before.contains("<condition"),
+				"the drawing tag is written");
+		assertEquals(fingerprint, fingerprint("l"));
+		assertEquals(revision, locus.getSemanticRevision());
+		assertEquals(builds, locus.getInstrumentation().getDependencySliceBuilds());
+	}
+
+	private static String serialized(GeoElement geo) {
+		org.geogebra.common.io.XMLStringBuilder xml =
+				new org.geogebra.common.io.XMLStringBuilder(new StringBuilder());
+		geo.getXML(false, xml);
+		return xml.toString();
+	}
+
 	/** V-REV-EXACT-8: two runs give identical fingerprints and counters. */
 	@Test
 	void twoRunsGiveIdenticalFingerprintsAndCounters() {

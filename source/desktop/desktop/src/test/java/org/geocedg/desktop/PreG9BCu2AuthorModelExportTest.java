@@ -47,6 +47,7 @@ import org.geocedg.desktop.export.LatexSemanticExporter;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.export.pstricks.GeoGebraExport;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -289,11 +290,12 @@ class PreG9BCu2AuthorModelExportTest {
 	 * V-TEX-1 and V-E2-3 (LaTeX part): in PGF, PSTricks and Asymptote a closed periodic
 	 * component is the only closed path ({@code -- cycle}, {@code \pspolygon},
 	 * {@code --cycle}); a bite is one open path, and {@code e_2} the same three open parts as
-	 * in DXF, with the gaps declared in the comments; each document compiles with
-	 * {@code -halt-on-error} where the tool is installed.
+	 * in DXF, with the gaps declared in the comments. The topology of the seven loci in
+	 * penetration and in the bite is V-CON-1 ({@code PreG9BCu2AuthorModelConsumerTest}); the
+	 * documents compile in the tests that follow, which a missing tool skips visibly.
 	 */
 	@Test
-	void latexClosesOnlyClosedPeriodicComponentsAndCompiles() throws Exception {
+	void latexClosesOnlyClosedPeriodicComponents() throws Exception {
 		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> PreG9BCu0Corpus.open(
 				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work)));
 		EuclidianView view = PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
@@ -313,7 +315,117 @@ class PreG9BCu2AuthorModelExportTest {
 		assertEquals("3/0/0/0", row.get("e_2"), row.toString());
 		assertEquals("1/0/0/0", row.get("bite.o"), row.toString());
 		assertEquals(true, row.get("e_2.comments"), row.toString());
-		compile(app, view);
+	}
+
+	/**
+	 * V-TEX-1 (corrective mandate, R5 group G2): the PGF document of {@code o}, {@code e_1}
+	 * and {@code e_2} compiles with {@code pdflatex -halt-on-error}; without the tool the test
+	 * is skipped, visibly.
+	 */
+	@Test
+	void thePgfDocumentCompiles() throws Exception {
+		Path pdflatex = tool("pdflatex");
+		Assumptions.assumeTrue(pdflatex != null, "V-TEX-1: pdflatex is not installed");
+		String document = document("pgf");
+		Path dir = Files.createDirectories(work.resolve("pgf"));
+		Files.writeString(dir.resolve("p.tex"), document);
+		run(dir, pdflatex.toString(), "-interaction=nonstopmode", "-halt-on-error", "p.tex");
+		assertTrue(Files.size(dir.resolve("p.pdf")) > 0);
+	}
+
+	/**
+	 * V-TEX-1 (corrective mandate, R5 group G2): the PSTricks document of the same loci
+	 * compiles with {@code latex -halt-on-error} and {@code dvips}; without the tools the test
+	 * is skipped, visibly.
+	 */
+	@Test
+	void thePstricksDocumentCompiles() throws Exception {
+		Path latex = tool("latex");
+		Path dvips = tool("dvips");
+		Assumptions.assumeTrue(latex != null && dvips != null,
+				"V-TEX-1: latex or dvips is not installed");
+		String document = document("pstricks");
+		Path dir = Files.createDirectories(work.resolve("pstricks"));
+		Files.writeString(dir.resolve("t.tex"), document);
+		run(dir, latex.toString(), "-interaction=nonstopmode", "-halt-on-error", "t.tex");
+		run(dir, dvips.toString(), "-q", "t.dvi", "-o", "t.ps");
+		assertTrue(Files.size(dir.resolve("t.ps")) > 0);
+	}
+
+	/**
+	 * V-TEX-1 (corrective mandate, R5 group G2): the Asymptote document of the same loci, a
+	 * standalone {@code .asy} program, compiles with {@code asy -noV -f pdf} (without
+	 * {@code -noV} the tool waits for a viewer); it was never compiled before. Without the
+	 * tool the test is skipped, visibly.
+	 */
+	@Test
+	void theAsymptoteDocumentCompiles() throws Exception {
+		Path asy = tool("asy");
+		Assumptions.assumeTrue(asy != null, "V-TEX-1: asy is not installed");
+		String document = document("asymptote");
+		assertTrue(document.contains("--cycle"), "the closed loci are closed paths");
+		Path dir = Files.createDirectories(work.resolve("asymptote"));
+		Files.writeString(dir.resolve("a.asy"), document);
+		run(dir, asy.toString(), "-noV", "-f", "pdf", "a.asy");
+		assertTrue(Files.size(dir.resolve("a.pdf")) > 0);
+	}
+
+	/**
+	 * V-TEX-1 (corrective mandate, R5 group G2): the topology of the synthetic critical loci in
+	 * LaTeX. At the critical radius 40, {@code lq} and {@code lr} are closed periodic
+	 * components with a singular parameter, one closed path each in PGF, PSTricks and
+	 * Asymptote; at radius 41 each is an arc across the seam, one open path.
+	 */
+	@Test
+	void theCriticalLociAreClosedInLatexOnlyWhenPeriodic() throws Exception {
+		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> PreG9BCu0Corpus.open(
+				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work)));
+		EuclidianView view = PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
+		Map<String, String> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			app.getKernel().clearConstruction(true);
+			view.setRealWorldCoordSystem(-30, 30, -30, 30);
+			Map<String, String> values = new LinkedHashMap<>();
+			for (String radius : List.of("40", "41")) {
+				for (String command : List.of("p=Circle((0,0),25)", "P=(-25,50)",
+						"g1=Circle((35,-45)," + radius + ")", "N=Point(g1)", "t=Ray(P,N)")) {
+					app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+				}
+				app.getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+						(org.geogebra.common.kernel.geos.GeoLine) app.getKernel().lookupLabel("t"),
+						(org.geogebra.common.kernel.geos.GeoConic) app.getKernel()
+								.lookupLabel("p"));
+				for (String command : List.of("lq=LocusV2(Q,N)", "lr=LocusV2(R,N)")) {
+					app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+				}
+				app.getKernel().updateConstruction(false);
+				for (String label : List.of("lq", "lr")) {
+					values.put(radius + " " + label, latex(app, view, label));
+				}
+				app.getKernel().clearConstruction(true);
+			}
+			return values;
+		});
+		assertEquals("1/1/1/1", row.get("40 lq"), row.toString());
+		assertEquals("1/1/1/1", row.get("40 lr"), row.toString());
+		assertEquals("1/0/0/0", row.get("41 lq"), row.toString());
+		assertEquals("1/0/0/0", row.get("41 lr"), row.toString());
+	}
+
+	/** @return the document of the dialect with {@code o}, {@code e_1} and {@code e_2} shown */
+	private String document(String dialect) throws Exception {
+		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.onEdt(() -> PreG9BCu0Corpus.open(
+				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.CEDG, work)));
+		EuclidianView view = PreG9BR6PlusBPictureFidelityTest.sized(app.getEuclidianView1());
+		return PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			for (GeoElement geo : app.getKernel().getConstruction()
+					.getGeoSetConstructionOrder()) {
+				String label = geo.getLabelSimple();
+				geo.setEuclidianVisible("o".equals(label) || "e_1".equals(label)
+						|| "e_2".equals(label));
+			}
+			return PreG9BR6PlusCLatexExportTest.generate(
+					PreG9BR6PlusCLatexExportTest.exporter(app, dialect), view);
+		});
 	}
 
 	/**
@@ -401,44 +513,6 @@ class PreG9BCu2AuthorModelExportTest {
 			count++;
 		}
 		return count;
-	}
-
-	/** Compiles the documents of the three loci shown together, where the tools exist. */
-	private void compile(AppGeoCeDG app, EuclidianView view) throws Exception {
-		Map<String, String> documents = PreG9BR6PlusF3Fixtures.onEdt(() -> {
-			for (GeoElement geo : app.getKernel().getConstruction()
-					.getGeoSetConstructionOrder()) {
-				String label = geo.getLabelSimple();
-				geo.setEuclidianVisible("o".equals(label) || "e_1".equals(label)
-						|| "e_2".equals(label));
-			}
-			Map<String, String> texts = new LinkedHashMap<>();
-			for (String dialect : new String[] {"pgf", "pstricks"}) {
-				texts.put(dialect, PreG9BR6PlusCLatexExportTest.generate(
-						PreG9BR6PlusCLatexExportTest.exporter(app, dialect), view));
-			}
-			return texts;
-		});
-		Path pdflatex = tool("pdflatex");
-		Path latex = tool("latex");
-		Path dvips = tool("dvips");
-		if (pdflatex != null) {
-			Path dir = Files.createDirectories(work.resolve("pgf"));
-			Files.writeString(dir.resolve("p.tex"), documents.get("pgf"));
-			run(dir, pdflatex.toString(), "-interaction=nonstopmode", "-halt-on-error", "p.tex");
-			assertTrue(Files.size(dir.resolve("p.pdf")) > 0);
-		} else {
-			System.out.println("V-TEX-1 pdflatex UNAVAILABLE");
-		}
-		if (latex != null && dvips != null) {
-			Path dir = Files.createDirectories(work.resolve("pstricks"));
-			Files.writeString(dir.resolve("t.tex"), documents.get("pstricks"));
-			run(dir, latex.toString(), "-interaction=nonstopmode", "-halt-on-error", "t.tex");
-			run(dir, dvips.toString(), "-q", "t.dvi", "-o", "t.ps");
-			assertTrue(Files.size(dir.resolve("t.ps")) > 0);
-		} else {
-			System.out.println("V-TEX-1 latex/dvips UNAVAILABLE");
-		}
 	}
 
 	private static void run(Path dir, String... command) throws Exception {

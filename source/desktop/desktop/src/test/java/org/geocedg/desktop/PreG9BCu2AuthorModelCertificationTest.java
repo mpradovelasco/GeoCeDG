@@ -1412,10 +1412,22 @@ class PreG9BCu2AuthorModelCertificationTest {
 									.map(CertifiedConstructionProgram2D::getSelectionSignature)
 									.orElse("refused " + evaluator.getProgramV3Refusal()));
 				}
+				// The work of certification, own and nested, and the counters of the slice.
+				org.geocedg.common.kernel.locus.LocusInstrumentation2D work =
+						locus.getInstrumentation();
 				text.append("\n work=");
 				for (LocusCertificationWork2D kind : LocusCertificationWork2D.values()) {
-					text.append(kind.name()).append('=').append(locus.getInstrumentation()
-							.getCertificationWork(kind)).append(' ');
+					text.append(kind.name()).append('=').append(work.getCertificationWork(kind))
+							.append('/').append(work.getNestedCertificationWork(kind)).append(' ');
+				}
+				text.append("\n slices=").append(work.getDependencySliceBuilds()).append('/')
+						.append(work.getNestedSliceBuilds()).append(" publications=")
+						.append(work.getRevisionPublications()).append('/')
+						.append(work.getNestedRevisionPublications()).append(" changes=");
+				for (ReconstructionSliceFingerprint2D.Change change
+						: ReconstructionSliceFingerprint2D.Change.values()) {
+					text.append(change.name()).append('=').append(work.getSliceChanges(change))
+							.append(' ');
 				}
 				text.append('\n');
 			} else if (geo.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2) {
@@ -1425,6 +1437,81 @@ class PreG9BCu2AuthorModelCertificationTest {
 			}
 		}
 		return text.toString();
+	}
+
+	/**
+	 * V-REV-EXACT-8 on the author model (corrective mandate, R5 group G2): two runs of the
+	 * model with the variants {@code lq}, {@code lr} and {@code lr2} (analysis section 3.5c),
+	 * alternating the driver between {@code t = -1} and {@code t_c} and excCyl between the
+	 * last binary64 of the penetration and the first of the bite, there and back
+	 * (V-REV-EXACT-1 and V-REV-EXACT-2), give results identical bit for bit at every step,
+	 * after undoing and redoing the last two changes and after reopening the saved document:
+	 * revisions, slice fingerprints, certificates, events of the slice and the counters of
+	 * certification, slices and revisions, own and nested.
+	 */
+	@Test
+	void twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults() throws Exception {
+		// The variants are saved once, so that both runs open the same durable identities.
+		File model = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+				AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
+				PreG9BCu0Corpus.movePathPoint(app, "N", -1);
+				for (String command : List.of("lq=LocusV2(Q,N)", "lr=LocusV2(R,N)",
+						"t2=Ray(P,N)", "R2=Intersect(p,t2,2)", "lr2=LocusV2(R2,N)")) {
+					app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+				}
+				app.getKernel().updateConstruction(false);
+				return PreG9BR6PlusF3Fixtures.save(app, work, "variants");
+			}
+		});
+		String first = PreG9BR6PlusF3Fixtures.onEdt(() -> alternation(model, work));
+		String second = PreG9BR6PlusF3Fixtures.onEdt(() -> alternation(model, work));
+		assertEquals(first, second);
+		for (String part : List.of("lr2 revision=", "lq revision=", "settlement=",
+				" slices=", "SELECTION=", "CERTIFICATE_COMPUTATION=", "N=0x", "undo 1",
+				"redo 1", "reopened")) {
+			assertTrue(first.contains(part), "the runs compare " + part);
+		}
+	}
+
+	/**
+	 * One run of V-REV-EXACT-8 on the model with its variants: excCyl there and back with the
+	 * driver at {@code t = -1}, then at {@code t_c}, the last two changes undone and redone,
+	 * and the document saved and reopened.
+	 */
+	private static String alternation(File model, Path work) throws Exception {
+		try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(model);
+			PreG9BR6PlusF3Fixtures.baseline(app);
+			StringBuilder text = new StringBuilder(results(app, "opened"));
+			double penetration = Double.longBitsToDouble(LAST_PENETRATION);
+			double[] values = {penetration, Math.nextUp(penetration), penetration,
+				Math.nextUp(penetration)};
+			// The driver at t = -1, then at the double root t_c of the critical value.
+			for (double driver : new double[] {-1, 1.2767651295307840}) {
+				PreG9BCu0Corpus.movePathPoint(app, "N", driver);
+				PreG9BR6PlusF3Fixtures.store(app);
+				text.append(results(app, "N=" + Double.toHexString(driver)));
+				for (double value : values) {
+					PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+					PreG9BR6PlusF3Fixtures.store(app);
+					text.append(results(app, "N=" + Double.toHexString(driver) + " excCyl="
+							+ Double.toHexString(value)));
+				}
+			}
+			for (int step = 0; step < 2; step++) {
+				app.getKernel().getConstruction().getUndoManager().undo();
+				PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+				text.append(results(app, "undo " + step));
+			}
+			for (int step = 0; step < 2; step++) {
+				app.getKernel().getConstruction().getUndoManager().redo();
+				PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+				text.append(results(app, "redo " + step));
+			}
+			app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work, "alternation"));
+			return text.append(results(app, "reopened")).toString();
+		}
 	}
 
 	private static Object field(Object target, String name)

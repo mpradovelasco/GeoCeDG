@@ -786,6 +786,59 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	}
 
 	/**
+	 * V-UND-1 (corrective mandate, R5 group G2): a locus whose existence depends on a length
+	 * measured on another locus is never certified nonexistent where that length fails
+	 * ({@code locus-v2-existence-components.md} section 15.5). The point {@code X} is the
+	 * intersection of the circle about the origin whose radius is the length along {@code lq}
+	 * from a semantic point {@code A} to the traced point {@code Q} with the horizontal line
+	 * through the driver: in the bite (radius 41) the length fails where the route is not
+	 * established, in the closed configuration (radius 39) it is available. The cover of the
+	 * locus of {@code X} has no certified nonexistence, its unresolved coverage carries a typed
+	 * cause (today {@code OPERATION_OUTSIDE_CLASS}: the construction is outside class v3) and
+	 * every failed evaluation is typed and never a certified nonexistence. Whether the
+	 * computational dependency failure gets its own cause is the pending author decision on
+	 * V-UND-1.
+	 */
+	@Test
+	void aLocusOnALengthThatFailsIsNeverCertifiedNonexistent() {
+		for (String radius : List.of("41", "39")) {
+			critical(radius);
+			add("a=-2.5");
+			add("A=Point(lq,\"" + BRANCH + "\",a)");
+			add("d=Length(lq,A,Q)");
+			add("k=Circle((0,0),d)");
+			add("h=Line(N,N+(1,0))");
+			add("X=Intersect(k,h,1)");
+			GeoLocusV2 traced = add("lx=LocusV2(X,N)");
+			getKernel().updateConstruction(false);
+			LocusExistenceStructure2D structure = structure("lx");
+			String context = radius + " " + structure.getSemanticSignature();
+			assertNotEquals(Completeness.COMPLETE, structure.getCompleteness(), context);
+			for (Coverage item : structure.getCoverage()) {
+				assertNotEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST, item.getState(), context);
+				if (item.getState() == CoverageState.UNRESOLVED) {
+					assertNotNull(item.getCause(), context);
+				}
+			}
+			int failed = 0;
+			try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(16)) {
+				for (int index = 0; index < 64; index++) {
+					LocusEvaluation2D evaluation = traced.getSemanticDefinition().evaluate(BRANCH,
+							-Math.PI + 2 * Math.PI * index / 64, session);
+					if (!evaluation.isValid()) {
+						failed++;
+						assertFalse(evaluation.getDiagnostic().startsWith(
+								LocusDefinition2D.CERTIFIED_NONEXISTENCE), context);
+					}
+				}
+			}
+			assertTrue(failed > 0, radius + ": evaluations fail where the length is undefined"
+					+ " or the line misses the circle");
+			getKernel().clearConstruction(true);
+		}
+	}
+
+	/**
 	 * V-CON-3 (synthetic part): the total length of the closed loci {@code lq} and {@code lr}
 	 * of the exact critical configuration. Both traced points stay on the circle {@code p} of
 	 * radius 25; as the ray from {@code P} turns between its two tangents to the circle of the
@@ -1350,7 +1403,11 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 	 * mandate), two point components, the band of an unlabelled output, a
 	 * fold, an origin wrap, the ends of a ray, a segment and a vanishing divisor, a structurally
 	 * total locus, a locus outside the class and the bite started with the driver in its gap. A
-	 * random value is not deterministic by definition and is left out.
+	 * random value is not deterministic by definition and is left out. For V-REV-EXACT-8
+	 * (corrective mandate, R5 group G2) the runs also compare the counters of certification,
+	 * slices and revisions, own and nested, and the slice changes by kind, on one ulp of the
+	 * critical radius there and back with {@code lr2} and the driver away from the double root
+	 * and at it, on renamed outputs and on the literal inputs of V-REV-EXACT-4.
 	 */
 	@Test
 	void twoRunsOfTheSyntheticConstructionsGiveIdenticalResults() {
@@ -1472,6 +1529,39 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			critical("40+2^(-10)");
 			moveDriver((GeoPoint) lookup("N"), CRITICAL);
 		});
+		// V-REV-EXACT-8 (corrective mandate): one ulp of the critical radius there and back,
+		// with lr2, with the driver away from the double root and then at it (V-REV-EXACT-1
+		// to V-REV-EXACT-3).
+		builders.put("one ulp there and back", () -> {
+			add("rr=40");
+			critical("rr");
+		});
+		changes.put("one ulp there and back", List.of(Change.radius(Math.nextUp(40.0)),
+				Change.radius(40), Change.radius(Math.nextUp(40.0)), Change.driver(CRITICAL),
+				Change.radius(40), Change.radius(Math.nextUp(40.0))));
+		// Renamed outputs, the pair and the indexed one (V-REV-EXACT-7).
+		builders.put("renamed outputs", () -> critical("40"));
+		changes.put("renamed outputs", List.of(Change.rename("Q", "Qr"),
+				Change.rename("R2", "R2r"), Change.rename("lr2", "lr2r")));
+		// Literal inputs of V-REV-EXACT-4: 17 significant digits, a value set by the program
+		// without original text, an angle set by the program, which the document writes in
+		// degrees, and an inline literal argument.
+		builders.put("literals", () -> {
+			add("c=Circle((0,0),3)");
+			add("N=Point(c)");
+			add("a=0.30000000000000004");
+			GeoNumeric free = new GeoNumeric(getConstruction(), Math.nextUp(0.1));
+			free.setLabel("b");
+			add("al=20deg");
+			((GeoNumeric) lookup("al")).setValue(Math.nextUp(Math.toRadians(20)));
+			add("Q=Rotate(N,al,(a,b))");
+			add("Q2=Rotate(N,0.12345678901234568,(1,0))");
+			add("lq=LocusV2(Q,N)");
+			add("lq2=LocusV2(Q2,N)");
+			getKernel().updateConstruction(false);
+		});
+		changes.put("literals", List.of(Change.number("a", Math.nextUp(0.30000000000000004)),
+				Change.number("b", 0.1)));
 		StringBuilder compared = new StringBuilder();
 		for (Map.Entry<String, Runnable> builder : builders.entrySet()) {
 			builder.getValue().run();
@@ -1487,7 +1577,9 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				"ORIGIN_WRAP", "OPERATION_OUTSIDE_CLASS", "UNLABELLED_COINCIDENT_OUTPUT",
 				"SPLIT[", "MERGED[", "DIMENSION_CHANGED[", "settlement=settled",
 				"2LINE_CIRCLE[0x1.0p0", " image revision=", "A point=", "undo 0", "redo 0",
-				"reopened", "cause=RESOLVED", "cause=POINT_COMPONENT")) {
+				"reopened", "cause=RESOLVED", "cause=POINT_COMPONENT", "rr=0x1.4000000000001p5",
+				"N at 0x", "renamed", "lr2r revision=", "lq2 revision=", "b=0x1.999999999999ap-4",
+				" slices=", "SELECTION=")) {
 			assertTrue(compared.indexOf(part) >= 0, "the runs compare " + part);
 		}
 		for (String event : List.of("SELECTION_SETTLEMENT=[1-9]", "SELECTION_DEPARTURE=[1-9]",
@@ -1538,10 +1630,23 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 
 		/** The free radius {@code rr} set to the value. */
 		static Change radius(double value) {
-			return new Change("rr=" + Double.toHexString(value), app -> {
-				GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel("rr");
+			return number("rr", value);
+		}
+
+		/** The free number with the label set to the value. */
+		static Change number(String label, double value) {
+			return new Change(label + "=" + Double.toHexString(value), app -> {
+				GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel(label);
 				number.setValue(value);
 				number.updateCascade();
+				app.getKernel().updateConstruction(false);
+			});
+		}
+
+		/** The element with the label renamed. */
+		static Change rename(String label, String name) {
+			return new Change(label + " renamed " + name, app -> {
+				app.getKernel().lookupLabel(label).rename(name);
 				app.getKernel().updateConstruction(false);
 			});
 		}
@@ -1599,11 +1704,23 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 									.map(CertifiedConstructionProgram2D::getSelectionSignature)
 									.orElse("refused " + evaluator.getProgramV3Refusal()));
 				}
-				// The work of certification counts its events: settlements, departures.
+				// The work of certification, own and nested, counts its events: settlements,
+				// departures; and the counters of the slice and its revisions.
+				org.geocedg.common.kernel.locus.LocusInstrumentation2D work =
+						locus.getInstrumentation();
 				text.append("\n work=");
 				for (LocusCertificationWork2D kind : LocusCertificationWork2D.values()) {
-					text.append(kind.name()).append('=').append(locus.getInstrumentation()
-							.getCertificationWork(kind)).append(' ');
+					text.append(kind.name()).append('=').append(work.getCertificationWork(kind))
+							.append('/').append(work.getNestedCertificationWork(kind)).append(' ');
+				}
+				text.append("\n slices=").append(work.getDependencySliceBuilds()).append('/')
+						.append(work.getNestedSliceBuilds()).append(" publications=")
+						.append(work.getRevisionPublications()).append('/')
+						.append(work.getNestedRevisionPublications()).append(" changes=");
+				for (ReconstructionSliceFingerprint2D.Change change
+						: ReconstructionSliceFingerprint2D.Change.values()) {
+					text.append(change.name()).append('=').append(work.getSliceChanges(change))
+							.append(' ');
 				}
 				text.append('\n');
 			} else if (geo instanceof GeoLocusV2) {

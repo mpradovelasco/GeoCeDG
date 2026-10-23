@@ -15,6 +15,7 @@ import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -115,6 +117,147 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 			return problems;
 		});
 		assertEquals(List.of(), failures);
+	}
+
+	/**
+	 * V-SEL-7 and V-COINC-8 on the author model (corrective mandate, R5 groups G2 and G3): the
+	 * selection state is read again on undo, redo, reopening and recomputation. With the
+	 * variants of section 3.5c (the labelled pair and the indexed output) and the driver at
+	 * {@code t = -1}, then at {@code t_c}, excCyl goes from the last binary64 of the
+	 * penetration to the first of the bite, and the change is undone, redone, the document
+	 * reopened and recomputed. Where an operation reads the same live states of {@code Q/R}
+	 * and of the source of {@code R2}, the four loci of the first family and the variants
+	 * have the slice fingerprint, certificate, settlement outcome and captured rule of that
+	 * state, bit for bit (finding H-CU2A-5: an undo used to give the same content another
+	 * fingerprint). Where it reads another state, as redo and reopening do with the driver in
+	 * the gap at {@code t_c}, where the rebuilt intersection starts in its first
+	 * initialization, the change is typed: of the fingerprint only the selection part
+	 * changes, the settlement outcome and the captured rule follow the state that was read
+	 * (the diagnostic), and the certificate is the same, never another root. The signature of
+	 * the definition is not compared: it carries the lineage relation of its revision, which
+	 * is an appearance for an element rebuilt by these operations.
+	 */
+	@Test
+	void theSelectionStateIsReadAgainOnUndoRedoAndReopen() throws Exception {
+		List<String> changed = new ArrayList<>();
+		List<String> failures = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			List<String> problems = new ArrayList<>();
+			for (double driver : new double[] {-1, T_C}) {
+				// Each driver position retires the embedded hosts it opened.
+				try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+					AppGeoCeDG app = variants(PENETRATION);
+					PreG9BR6PlusF3Fixtures.baseline(app);
+					PreG9BCu0Corpus.movePathPoint(app, "N", driver);
+					PreG9BR6PlusF3Fixtures.store(app);
+					Map<String, List<String>> penetration = selection(app);
+					PreG9BCu0Corpus.setNumber(app, "excCyl", BITE);
+					PreG9BR6PlusF3Fixtures.store(app);
+					Map<String, List<String>> bite = selection(app);
+					app.getKernel().getConstruction().getUndoManager().undo();
+					PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+					reread(problems, changed, driver + " undo", penetration, selection(app));
+					app.getKernel().getConstruction().getUndoManager().redo();
+					PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+					reread(problems, changed, driver + " redo", bite, selection(app));
+					app = PreG9BCu0Corpus.open(PreG9BR6PlusF3Fixtures.save(app, work,
+							"selection" + (driver < 0 ? "-1" : "tc")));
+					PreG9BR6PlusF3Fixtures.baseline(app);
+					Map<String, List<String>> reopened = selection(app);
+					reread(problems, changed, driver + " reopened", bite, reopened);
+					// V-COINC-8: recomputing reads the same state and changes nothing.
+					app.getKernel().updateConstruction(false);
+					PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+					reread(problems, changed, driver + " recomputed", reopened,
+							selection(app));
+				}
+			}
+			return problems;
+		});
+		assertEquals(List.of(), failures);
+		assertTrue(!changed.isEmpty() && changed.size() < 6,
+				"both cases of V-SEL-7 are exercised: " + changed);
+	}
+
+	/**
+	 * Checks the loci after an operation against the state before it: every field when the
+	 * live states are the same; otherwise the typed change of the selection with the same
+	 * certificate.
+	 */
+	private static void reread(List<String> problems, List<String> changed, String step,
+			Map<String, List<String>> expected, Map<String, List<String>> actual) {
+		boolean same = expected.values().iterator().next().get(0)
+				.equals(actual.values().iterator().next().get(0));
+		if (!same) {
+			changed.add(step);
+		}
+		for (Map.Entry<String, List<String>> entry : expected.entrySet()) {
+			List<String> before = entry.getValue();
+			List<String> after = actual.get(entry.getKey());
+			List<String> differing = new ArrayList<>();
+			for (int index = 0; index < before.size(); index++) {
+				String field = SELECTION_FIELDS.get(index);
+				boolean equal = before.get(index).equals(after.get(index));
+				// A changed state is typed by the selection part; the settlement outcome and
+				// the captured rule of the copy follow the state that was read.
+				boolean typed = "states".equals(field) || "selection".equals(field);
+				boolean free = "settlement".equals(field) || "rule".equals(field);
+				if (same ? !equal : !free && equal == typed) {
+					differing.add(field + " " + abbreviated(before.get(index)) + " -> "
+							+ abbreviated(after.get(index)));
+				}
+			}
+			if (!differing.isEmpty()) {
+				problems.add(step + (same ? " same state " : " changed state ")
+						+ entry.getKey() + ": " + differing);
+			}
+		}
+	}
+
+	private static String abbreviated(String text) {
+		return text.length() <= 40 ? text : text.substring(0, 16) + "..#" + Integer.toHexString(
+				text.hashCode());
+	}
+
+	private static final List<String> SELECTION_FIELDS = List.of("states", "structure",
+			"values", "labels", "selection", "certificate", "settlement", "rule");
+
+	/**
+	 * @return per locus of the first family and variant: the live selection states of
+	 *         {@code Q/R} and of the source of {@code R2}, the four parts of the slice
+	 *         fingerprint, the certificate, the settlement outcome of the copy and the
+	 *         captured selection rule
+	 */
+	private static Map<String, List<String>> selection(AppGeoCeDG app) throws Exception {
+		Map<String, List<String>> fields = new LinkedHashMap<>();
+		String states = state(live(app)) + " " + state(source(app));
+		List<String> loci = new ArrayList<>(FIRST_FAMILY);
+		loci.addAll(VARIANTS);
+		for (String label : loci) {
+			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+			AlgoDependentPointLocusV2 algorithm = (AlgoDependentPointLocusV2) locus
+					.getParentAlgorithm();
+			ReconstructibleLocusEvaluator2D evaluator = evaluator(locus);
+			ReconstructionSliceFingerprint2D.Snapshot snapshot = ReconstructionSliceFingerprint2D
+					.snapshot(algorithm.getReconstructionSliceGeos(), List.of(
+							root(algorithm, "state"), root(algorithm, "coordinate")));
+			fields.put(label, List.of(states, snapshot.getStructureDigest(),
+					snapshot.getValuesDigest(), snapshot.getLabelsDigest(),
+					snapshot.getSelectionDigest(), algorithm.getHybridExistenceCertificate()
+							.getStructure().getSemanticSignature(),
+					evaluator.getSettlementOutcome().getToken(),
+					evaluator.captureCertifiedProgramV3().map(
+							CertifiedConstructionProgram2D::getSelectionSignature)
+							.orElse("refused")));
+		}
+		return fields;
+	}
+
+	/** @return the driver state or coordinate that the slice fingerprint excludes */
+	private static GeoElement root(AlgoDependentPointLocusV2 algorithm, String name)
+			throws ReflectiveOperationException {
+		Field field = AlgoDependentPointLocusV2.class.getDeclaredField(name);
+		field.setAccessible(true);
+		return (GeoElement) field.get(algorithm);
 	}
 
 	/**
@@ -430,6 +573,165 @@ class PreG9BCu2AuthorModelSelectionSettlementTest {
 		assertTrue((Integer) row.get("compared") > 10000, "compared outputs: " + row);
 		assertTrue((Integer) row.get("rootless") > 0, "outputs without a real root: " + row);
 		assertTrue((Integer) row.get("ends") >= 24, "certified ends: " + row);
+	}
+
+	/**
+	 * V-COINC-2, V-COINC-5 and V-COINC-7 on the author model (corrective mandate, R5 group G3):
+	 * the unlabelled second output {@code R2} and its locus {@code lr2} at the last binary64 of
+	 * the penetration, the first of the bite and excCyl 3.7. Every unresolved band of
+	 * {@code lr2} carries its typed cause and makes the certificate not established; every
+	 * certified component next to a band is local, with the edge of the band as its typed
+	 * boundary, and no component crosses a band. In 64 uniform samples and in 201 samples
+	 * within {@code 1e-8} of {@code t_c} (and of the analytic ends of the gap at 3.7), with
+	 * offsets of {@code 1e-7} to {@code 1e-2}, every sample where the live {@code R2} or the
+	 * output of the slice is undefined lies in a band, in a certified boundary enclosure or in
+	 * certified nonexistence; every sample where the two disagree lies in a band; and the
+	 * labelled {@code Q} and {@code R} are defined wherever their own certificates state
+	 * existence. The numbers of undefined samples are printed, not pinned.
+	 */
+	@Test
+	void theUnlabelledSecondOutputKeepsItsTypedBands() throws Exception {
+		Map<String, Object> row = PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			List<String> problems = new ArrayList<>();
+			Map<String, Integer> undefined = new LinkedHashMap<>();
+			int bands = 0;
+			for (double excCyl : new double[] {PENETRATION, BITE, 3.7}) {
+				try (G9U1TestApp.GlobalRoots roots = G9U1TestApp.GlobalRoots.capture()) {
+					AppGeoCeDG app = variants(excCyl);
+					String context = "excCyl=" + excCyl;
+					LocusExistenceStructure2D structure = PreG9BCu0Corpus.locus(app, "lr2")
+							.getSemanticDefinition().getBranch(PreG9BCu0Corpus.MAIN)
+							.getExistenceStructure();
+					bands += bandStructure(structure, context, problems);
+					undefined.put(context, bandSamples(app, structure, excCyl, context,
+							problems));
+				}
+			}
+			Map<String, Object> values = new LinkedHashMap<>();
+			values.put("problems", problems);
+			values.put("bands", bands);
+			values.put("undefined", undefined);
+			return values;
+		});
+		System.out.println("V-COINC-2 undefined samples of R2 or of its slice: "
+				+ row.get("undefined") + ", bands: " + row.get("bands"));
+		assertEquals(List.of(), row.get("problems"));
+		assertTrue((Integer) row.get("bands") > 0, "the configurations have bands: " + row);
+	}
+
+	/**
+	 * Checks the bands of the structure: typed causes, a structure not established, and local
+	 * components bounded by the edges of the bands, none across a band.
+	 *
+	 * @return number of bands
+	 */
+	private static int bandStructure(LocusExistenceStructure2D structure, String context,
+			List<String> problems) {
+		List<LocusExistenceStructure2D.Coverage> bands = new ArrayList<>();
+		for (LocusExistenceStructure2D.Coverage item : structure.getCoverage()) {
+			if (item.getState() == LocusExistenceStructure2D.CoverageState.UNRESOLVED) {
+				bands.add(item);
+				if (item.getCause() == null || item.getEvidence().isEmpty()) {
+					problems.add(context + ": a band without a typed cause " + item.getInterval());
+				}
+			}
+		}
+		if (!bands.isEmpty() && structure.getCompleteness()
+				== LocusExistenceStructure2D.Completeness.COMPLETE) {
+			problems.add(context + ": COMPLETE with bands");
+		}
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: structure.getContinuousValidComponents()) {
+			for (LocusExistenceStructure2D.Coverage band : bands) {
+				double middle = band.getInterval().getLower() / 2
+						+ band.getInterval().getUpper() / 2;
+				if (component.contains(middle)) {
+					problems.add(context + ": component " + component.getInterval()
+							+ " crosses the band " + band.getInterval());
+				}
+			}
+			for (LocusBoundary2D boundary : List.of(component.getLowerBoundary(),
+					component.getUpperBoundary())) {
+				boolean local = component.getMaximality()
+						== LocusExistenceStructure2D.Maximality.LOCAL_CERTIFIED_SUBINTERVAL;
+				if (boundary.getKind() == LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE && !local) {
+					problems.add(context + ": a component bounded by a band is not local "
+							+ component.getInterval());
+				}
+			}
+		}
+		boolean edges = structure.getContinuousValidComponents().stream().anyMatch(
+				component -> component.getLowerBoundary().getKind()
+						== LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE
+						|| component.getUpperBoundary().getKind()
+								== LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE);
+		if (!bands.isEmpty() && !structure.getContinuousValidComponents().isEmpty() && !edges) {
+			problems.add(context + ": no component is bounded by the edge of a band");
+		}
+		return bands.size();
+	}
+
+	/**
+	 * Samples the live outputs and the slice of {@code lr2}: an undefined output lies in a
+	 * band, a boundary enclosure or nonexistence; a disagreement lies in a band; {@code Q} and
+	 * {@code R} are defined where their certificates state existence.
+	 *
+	 * @return number of samples where the live {@code R2} or the slice output is undefined
+	 */
+	private static int bandSamples(AppGeoCeDG app, LocusExistenceStructure2D structure,
+			double excCyl, String context, List<String> problems) throws Exception {
+		List<Double> samples = new ArrayList<>();
+		for (int index = 0; index < 64; index++) {
+			samples.add(-Math.PI + 2 * Math.PI * (index + 0.5) / 64);
+		}
+		List<Double> centres = excCyl == 3.7 ? List.of(T_C, GAP_LOWER, GAP_UPPER)
+				: List.of(T_C);
+		for (double centre : centres) {
+			for (int index = -100; index <= 100; index++) {
+				samples.add(centre + index * 1e-10);
+			}
+			for (double offset : new double[] {1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2}) {
+				samples.add(centre - offset);
+				samples.add(centre + offset);
+			}
+		}
+		LocusExistenceStructure2D lq = PreG9BCu0Corpus.locus(app, "lq").getSemanticDefinition()
+				.getBranch(PreG9BCu0Corpus.MAIN).getExistenceStructure();
+		LocusExistenceStructure2D lr = PreG9BCu0Corpus.locus(app, "lr").getSemanticDefinition()
+				.getBranch(PreG9BCu0Corpus.MAIN).getExistenceStructure();
+		ReconstructibleLocusEvaluator2D slice = evaluator(PreG9BCu0Corpus.locus(app, "lr2"));
+		int undefined = 0;
+		try (LocusEvaluationSession2D session = LocusEvaluationSession2D.memoizing(8)) {
+			for (double parameter : samples) {
+				LocusExistenceStructure2D.CoverageState state = coverageState(structure,
+						parameter);
+				PreG9BCu0Corpus.movePathPoint(app, "N", parameter);
+				boolean live = app.getKernel().lookupLabel("R2").isDefined();
+				boolean copy = slice.evaluate(null, null, parameter, session).isValid();
+				String where = context + " t=" + parameter + " " + state;
+				if (!live || !copy) {
+					undefined++;
+					if (EnumSet.of(LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS,
+							LocusExistenceStructure2D.CoverageState.CERTIFIED_ISOLATED_POINTS)
+							.contains(state)) {
+						problems.add(where + ": undefined output, live " + live + ", slice "
+								+ copy);
+					}
+				}
+				if (live != copy && state != LocusExistenceStructure2D.CoverageState.UNRESOLVED) {
+					problems.add(where + ": the live and slice outputs disagree outside a band");
+				}
+				for (String output : List.of("Q", "R")) {
+					LocusExistenceStructure2D own = "Q".equals(output) ? lq : lr;
+					if (coverageState(own, parameter)
+							== LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS
+							&& !app.getKernel().lookupLabel(output).isDefined()) {
+						problems.add(where + ": " + output + " undefined in certified existence");
+					}
+				}
+			}
+		}
+		return undefined;
 	}
 
 	/** The model at excCyl with the driver at t = -1 and the two variants of section 3.5c. */
