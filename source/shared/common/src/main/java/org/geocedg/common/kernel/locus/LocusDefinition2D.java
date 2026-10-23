@@ -119,8 +119,17 @@ public final class LocusDefinition2D {
 		if (refusal != null) {
 			return refusal;
 		}
+		return evaluateCanonical(branch, provider.canonicalize(semanticParameter), session);
+	}
+
+	/**
+	 * Evaluates a canonical parameter as given: the coverage and the membership of the
+	 * existence structure decide it, and the canonicalization of the provider is not applied
+	 * again.
+	 */
+	private LocusEvaluation2D evaluateCanonical(LocusBranch2D branch, double canonical,
+			LocusEvaluationSession2D session) {
 		LocusQuality2D quality = branch.getQuality();
-		double canonical = provider.canonicalize(semanticParameter);
 		if (!provider.contains(canonical)) {
 			return LocusEvaluation2D.invalid(EvaluationStatus.OUT_OF_DOMAIN, quality,
 					"Parameter is outside the canonical branch domain");
@@ -171,8 +180,14 @@ public final class LocusDefinition2D {
 		}
 		LocusBoundary2D end = upperEnd ? component.getUpperBoundary()
 				: component.getLowerBoundary();
-		if (component.isClosedPeriodic() || end.isBinaryEndIncluded()) {
+		if (component.isClosedPeriodic()) {
 			return evaluate(branchKey, canonicalParameter, session);
+		}
+		if (end.isBinaryEndIncluded()) {
+			// The binary64 end belongs to the component (section 15.3). The periodic
+			// canonicalization of the provider, lower + (t - lower), can move it by a few ulps
+			// off an arc whose membership is exact, so the end is evaluated as given.
+			return evaluateCanonical(branch, canonicalParameter, session);
 		}
 		instrumentation.recordEvaluatorCall(locusIdentity);
 		try {
@@ -194,8 +209,10 @@ public final class LocusDefinition2D {
 	 * Evaluates a parameter of the lifted range of one certified component, as consumers
 	 * that traverse a component do (PRE-G9B-CU2): an end of the range that is the excluded
 	 * end of a structural event is its one-sided limit ({@link #evaluateComponentEnd}),
-	 * never the image of the canonical parameter that it shares with the other end; every
-	 * other parameter is evaluated as {@link #evaluate} does.
+	 * never the image of the canonical parameter that it shares with the other end; an
+	 * included end of a component that is not closed periodic is its canonical end
+	 * parameter, which the lifted end of an arc across the seam represents only up to
+	 * rounding; every other parameter is evaluated as {@link #evaluate} does.
 	 *
 	 * @param componentExtent lifted interval of a component of the branch
 	 * @return typed semantic evaluation
@@ -213,8 +230,8 @@ public final class LocusDefinition2D {
 				}
 				LocusBoundary2D end = lowerEnd ? component.getLowerBoundary()
 						: component.getUpperBoundary();
-				if (!component.isClosedPeriodic() && !end.isBinaryEndIncluded()
-						&& end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT) {
+				if (!component.isClosedPeriodic() && (end.isBinaryEndIncluded()
+						|| end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT)) {
 					return evaluateComponentEnd(branchKey,
 							lowerEnd ? component.getStart() : component.getEnd(), !lowerEnd,
 							session);
