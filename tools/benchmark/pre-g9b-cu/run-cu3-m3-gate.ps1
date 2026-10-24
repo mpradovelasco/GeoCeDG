@@ -77,9 +77,12 @@ $buildRoot = Join-Path $RepositoryRoot 'source\desktop\desktop\build'
 $leftovers = @(foreach ($folder in @('classes', 'tmp', 'test-results')) {
         Get-ChildItem -File -Recurse -LiteralPath (Join-Path $buildRoot $folder) `
             -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -like 'PreG9BCu3*' -or
-                $_.Name -like 'TEST-org.geocedg.desktop.PreG9BCu3*' }
+            Where-Object { $_.Name -like 'PreG9BCu3M3*' -or
+                $_.Name -like 'PreG9BCu3PreparationProbe*' -or
+                $_.Name -like 'PreG9BCu3EnclosureProbeAccess*' -or
+                $_.Name -like 'TEST-org.geocedg.desktop.PreG9BCu3M3*' }
     })
+# Only the probe classes are removed: PRE-G9B-CU3 product and test classes stay in the build.
 foreach ($file in $leftovers) {
     [IO.File]::Delete($file.FullName)
 }
