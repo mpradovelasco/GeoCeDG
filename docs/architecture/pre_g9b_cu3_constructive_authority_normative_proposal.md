@@ -7,8 +7,8 @@
 | Dirección adoptada por el autor | Para desarrollo normativo, no como contrato aprobado: **A2** (autoridad geométrica constructiva ideal), **B2** (certificación de relaciones estructurales), **C** (revisión coordinada, versionada y mínima de los contratos de autoridad) y **D** (estados de integridad estricta y relajada, independientes de las garantías numéricas, con propagación por premisas) |
 | Antecedentes | [estudio de la autoridad constructiva](pre_g9b_cu3_constructive_authority_study.md), publicado en `da7ca96ae68732ad61db48923f5d8521c9ba8def` y revisado favorablemente por el autor; [informe de la puerta G-M3](../validation/pre_g9b_cu3_m3_gate_report.md); [registro de aprobación del diseño de `CU3`](../validation/pre_g9b_cu3_author_design_approval_record.md) |
 | Rama | `phase/pre-g9b-cu3-authority-study`, local, sobre `da7ca96a` |
-| Prototipo | `PreG9BCu3ConstructiveIdentityProbe` (`tools/benchmark/pre-g9b-cu/cu3-java/`) con su lanzador [`run-cu3-constructive-identity.ps1`](../../tools/benchmark/pre-g9b-cu/run-cu3-constructive-identity.ps1). Herramienta de investigación, no producto, en el commit `51cc363781af93fff312d2c647ec28e5c8a8b730` (árbol `06bf35f7594de99db51bdd1570f028659bc81054`) |
-| Evidencia | [`pre-g9b-cu3-constructive-identity-evidence.json`](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-constructive-identity-evidence.json), SHA-256 `15668afbcce4afd942c6494c99277a2fb85897c4b2b50871a77539820ed6284c`: copia byte a byte de la ejecución A, sobre un árbol limpio; la ejecución B dio el mismo SHA-256 |
+| Prototipo | `PreG9BCu3ConstructiveIdentityProbe` (`tools/benchmark/pre-g9b-cu/cu3-java/`) con su lanzador [`run-cu3-constructive-identity.ps1`](../../tools/benchmark/pre-g9b-cu/run-cu3-constructive-identity.ps1). Herramienta de investigación, no producto, en el commit `6ce61d818187ea390024fdf9c54beeaf3cbd743f` (árbol `4f8a08b32f2f195063c082ecad1b1660adc0ad08`), con las correcciones de una revisión independiente de la consolidación |
+| Evidencia | [`pre-g9b-cu3-constructive-identity-evidence.json`](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-constructive-identity-evidence.json), SHA-256 `b5668d21228e2f41315a96a9de159faa64d4396105fece1ae17e488e12fd449d`: copia byte a byte de la ejecución A, sobre un árbol limpio; la ejecución B dio el mismo SHA-256 |
 | Estado | `CU3` sigue detenido en T2. Ninguna alternativa, norma, cota ni puerta queda aprobada por este documento |
 
 Esta propuesta no repite la caracterización del estudio: la cita. Los textos normativos
@@ -24,32 +24,38 @@ tiene alternativas, el texto corresponde a la recomendada.
    constructivo ideal, función pura del grafo, de las entradas libres y de una tabla de clase
    versionada. El significado no depende del comando que lo consume, del conductor, de la captura
    ni de una reconstrucción. Los algoritmos heredados no cambian: calculan representaciones, y las
-   relaciones que dan por procedencia son estrictas para los objetos ideales. Los documentos
-   existentes conservan la autoridad vigente (`legacy-representation-authority/v1`) hasta un
-   evento explícito de adopción, con informe de impacto y sin reasociaciones; nunca hay dos
-   autoridades en un documento.
+   relaciones que dan por procedencia son estrictas para los objetos ideales cuando esos objetos
+   existen, lo que se decide aparte y de forma rigurosa. Los documentos existentes conservan la
+   autoridad vigente (`legacy-representation-authority/v1`) hasta un evento explícito de
+   adopción, con informe de impacto y sin reasociaciones; los lectores anteriores fallan cerrados
+   ante el registro nuevo, y nunca hay dos autoridades en un documento.
 2. **Transferencia de `CU2` (§3).** Un certificado de `CU2` sigue siendo, sin cambio de bytes, de
-   huella ni de claves, un certificado de su representación `Σ_L`. Se transfiere al objeto
-   constructivo si y solo si hay correspondencia estructural, cita la misma revisión y una de tres
-   vías establece rigurosamente el mismo enunciado en la configuración constructiva: **margen**
-   para las decisiones abiertas, **estructura** o **nueva decisión** para las cerradas. En otro
-   caso, el resultado es `EVIDENCE_INSUFFICIENT` y todo consumidor estricto falla cerrado.
+   huella ni de claves, un certificado de su representación `Σ_L`. La política admite su
+   transferencia al objeto constructivo si y solo si hay correspondencia estructural, cita la
+   misma revisión y, para cada una de sus decisiones, una de tres vías establece rigurosamente el
+   mismo enunciado en la configuración constructiva: **margen** para las decisiones abiertas,
+   **estructura** o **nueva decisión** para las cerradas. En otro caso, el resultado es
+   `EVIDENCE_INSUFFICIENT` y todo consumidor estricto falla cerrado.
 3. **Integridad `RELAXED` (§4).** La política `constructive-relaxed-admission/v1` admite una
    relación solo con evidencia positiva relativa a los objetos constructivos y sin contradicción
-   rigurosa respecto de la misma autoridad. Esa evidencia es la igualdad exacta con los sustitutos
-   de frontera declarados o, solo en raíces con cambio de signo, un encierro riguroso del residuo
-   constructivo compatible con la tolerancia versionada.
+   rigurosa respecto de la misma autoridad. Esa evidencia es la igualdad exacta genérica con los
+   sustitutos de frontera declarados (en el sustituto y en perturbaciones racionales suyas) o,
+   solo en raíces con cambio de signo, un encierro riguroso del residuo constructivo compatible
+   con la tolerancia versionada.
    Distingue evidencia relajada, contradicción rigurosa y ausencia de evidencia. G8B-R1 sigue
    siendo el precedente de verificación local, pero en un documento constructivo su admisión se
    recalifica, nunca se hereda.
 4. **Certificación estructural genérica (§5).** El prototipo de **certificado de identidad
    constructiva** (CIC) establece, como evidencia de investigación, las cinco incidencias
    obligatorias como identidades en un cuerpo de funciones racionales, con una regla de frontera
-   automática y sin código específico del modelo. `H` entra como punto libre, así que la prueba no depende de su posición no constructible.
-   Las precondiciones son condiciones de signo certificadas por intervalos y recomprobables en otra
-   configuración sin trabajo simbólico nuevo. Los controles adversarios fallan como deben y la
-   capacidad prueba o refuta enunciados de construcciones sintéticas. Las doce posiciones del
-   estudio son recomprobaciones, no la demostración.
+   automática y sin código específico del modelo. `H` entra como punto libre, así que, dentro de
+   su celda y con su valor ideal en la caja, la prueba no depende de su posición exacta no
+   constructible. Las precondiciones son condiciones de signo certificadas por intervalos; las
+   ramas fuera del corte del conductor se contrastan con el algoritmo vivo, y todo se recomprueba
+   en otra configuración sin trabajo simbólico nuevo si la estructura no cambia. Los controles
+   adversarios fallan como deben, y en construcciones sintéticas la capacidad demuestra los
+   teoremas y no demuestra las conjeturas falsas. Las doce posiciones del estudio son
+   recomprobaciones, no la demostración.
 5. **Plan mínimo (§6).** Primero, en E1, construcciones útiles con integridad consultable:
    `P ∈ L` estricta por transferencia y `P ∈ r` relajada o estricta. Después, en E2, la
    certificación estricta por CIC; en E3, la regla de conflicto con paridad y la Etapa B; y en E4,
@@ -111,6 +117,11 @@ cambio sin ningún caso particular.
   certificado de identidad constructiva (§5). Mientras no se decide, es `NOT_ESTABLISHED`. La
   tolerancia con que un algoritmo heredado acepta, por ejemplo, un punto junto al extremo de un
   segmento es un artefacto de la representación y nunca decide la existencia del objeto ideal.
+- **Comandos heredados que deciden relaciones.** `Relation`, `AreEqual`, `AreParallel`,
+  `IsInRegion` o el demostrador heredado (`Prove`) siguen como están. Sus veredictos son
+  resultados de la representación binary64, o verdad genérica sobre los complejos en el caso del
+  demostrador: nunca son evidencia de integridad, y ningún consumidor de GeoCeDG los usa como tal.
+  Ofrecer en ellos la integridad constructiva queda fuera de `CU3`.
 - **Lo único que cambia** es el significado de lo que afirman las capas de GeoCeDG sobre esas
   salidas: certificados, integridad y admisiones. Ninguna línea de un algoritmo heredado cambia de
   comportamiento.
@@ -159,9 +170,13 @@ premisas. Su materialización se rige por D-CU3-5, revisada en D-AUT-7.
   ofrece el evento de adopción y, si se rechaza, falla cerrado con causa tipada.
 - **Copiar, pegar y macros.** Rige la política del destino. Pegar formas de `CU3` en un documento
   antiguo sigue la regla anterior.
-- **Lectores anteriores.** Un documento con formas de `CU3` falla cerrado en ellos (D-CU3-12). Uno
-  que solo lleva el registro lo leen con su propia política heredada. Como la evidencia no se
-  persiste, no hay incoherencia que conservar; E1 añade la nota de migración.
+- **Lectores anteriores.** Un documento con el registro de política falla cerrado en ellos, con
+  causa tipada, igual que un documento con formas de `CU3` (D-CU3-12). Es el patrón del ADR 0029:
+  una versión anterior rechaza un registro de versión nueva como `MALFORMED_RECORD` y no carga
+  nada, nunca lo interpreta con su propia regla. E1 sitúa el registro en el formato de modo que
+  así ocurra y lo demuestra con una prueba de compatibilidad (G-AUT-7). Un documento constructivo
+  nunca se lee en silencio con otra autoridad, ni pierde su registro al guardarlo un lector
+  anterior; tampoco cambia en silencio el resultado de un archivo antiguo (`AGENTS.md` §11.6).
 
 ### 2.6 Tabla de clase y puntos sobre caminos
 
@@ -187,7 +202,8 @@ premisas. Su materialización se rige por D-CU3-5, revisada en D-AUT-7.
   creará la implementación tras la aprobación: AUT-1 es su §1 a §3 y AUT-2 su §4 y §5; ADR 0040
   (§9).
 - **Naturaleza:** nuevo; sustituye, solo en los documentos que adoptan la política, la autoridad
-  de los objetivos (`locus-v2-intersections.md` §2.1) y de la configuración de decisión (§7).
+  de los objetivos (`locus-v2-intersections.md` §2.1) y de la configuración de decisión
+  (`locus-v2-certified-construction-model.md` §11.2–§11.3), como detalla §7.
 - **Depende de:** D-AUT-1 y D-AUT-3 (AUT-1); D-AUT-2 (AUT-2).
 - **Texto candidato:**
 
@@ -207,7 +223,10 @@ premisas. Su materialización se rige por D-CU3-5, revisada en D-AUT-7.
   > representations. The existence of an ideal output — the validity of its construction, its
   > membership of a limited part and its branch — is a separate fact, decided rigorously by
   > margin, by structure or by a constructive identity certificate, and `NOT_ESTABLISHED`
-  > otherwise; an inherited tolerance never decides it.
+  > otherwise; an inherited tolerance never decides it. Inherited commands that decide relations
+  > (such as `Relation`, `AreEqual` or the generic prover) keep their behaviour; their verdicts are
+  > results of the representation or generic truths over the complex numbers, and they are never
+  > integrity evidence.
   >
   > **§3 Class table and boundary.** Membership of an object in the exact class is decided by the
   > class of its algorithm only. An object outside the class enters an exact evaluation through its
@@ -225,7 +244,9 @@ premisas. Su materialización se rige por D-CU3-5, revisada en D-AUT-7.
   > undoable, changes no identity, token or selector, withdraws contradicted results with a typed
   > cause and never reassociates them. One document has one authority. The authority is never
   > chosen per relation, per object or per command. Creating a construct that requires the
-  > constructive policy in a legacy document requires the adoption event or fails closed.
+  > constructive policy in a legacy document requires the adoption event or fails closed. A
+  > reader that does not support the record fails closed with a typed cause and loads nothing; it
+  > never reads the document under another authority.
   >
   > **§5 What is persisted.** The policy record is persisted. Integrity, transfer records,
   > certificates and their evidence are revision evidence, recomputed and never persisted.
@@ -255,7 +276,9 @@ nuevo de la revisión con estos campos:
 
 Sea `C` un certificado de `CU2` con enunciado `S` sobre la configuración capturada: `S(Σ_L)` está
 certificado. Transferir `C` es establecer `S(Σ_C)`, el mismo enunciado sobre los mismos objetos
-con su significado constructivo. **`C` se transfiere si y solo si:**
+con su significado constructivo. Un certificado consta de varias decisiones (cajas, transiciones,
+conteos, simetrías), y unas dependen de otras: un pliegue, por ejemplo, exige la continuidad de
+su componente. **La política admite la transferencia de `C` si y solo si:**
 
 - **(N1) Correspondencia estructural.** El programa capturado (clase v3, estados de selección
   heredados, estados de etiqueta, salidas efectivas y definiciones estructurales: todo lo que la
@@ -263,8 +286,9 @@ con su significado constructivo. **`C` se transfiere si y solo si:**
   corte del grafo y las mismas ramas.
 - **(N2) Misma revisión.** El registro cita la huella de la revisión en que se consume y las mismas
   versiones de contrato.
-- **(N3) Vía admitida.** `S(Σ_C)` queda establecido rigurosamente por una de estas vías, que el
-  registro nombra:
+- **(N3) Vía admitida, decisión por decisión.** Cada decisión de `C`, en el orden de sus
+  dependencias, queda establecida rigurosamente en `Σ_C` por una de estas vías, que el registro
+  nombra; `C` se transfiere solo si se transfieren todas:
   - **Margen** (`TRANSFERRED_BY_MARGIN`), para las decisiones abiertas: desigualdades estrictas
     certificadas con margen. Son las cajas válidas, las uniformemente inválidas en desigualdades
     estrictas, las transiciones por cambio de signo con derivada que excluye el cero y las celdas.
@@ -278,9 +302,11 @@ con su significado constructivo. **`C` se transfiere si y solo si:**
     bajo la autoridad constructiva.
   - **Nueva decisión** (`TRANSFERRED_BY_REDECISION`), para las decisiones cerradas sobre bits que
     una perturbación puede romper: conteos de Sturm y multiplicidades, componentes puntuales,
-    parámetros singulares y valores críticos como el de la mordedura. Se decide otra vez `S` en
-    `Σ_C` por un método riguroso: evaluación exacta con premisa constructible, o certificado de
-    identidad constructiva (§5) con sus condiciones certificadas.
+    parámetros singulares y valores críticos como el de la mordedura. Se decide otra vez la
+    decisión en `Σ_C` por un método riguroso de los contratos de `CU2` y `CU3`: evaluación exacta
+    con premisa constructible; una nueva certificación por intervalos cuando el hecho es de
+    multiplicidad uno (un conteo de raíces simples, con cambio de signo y derivada que excluye el
+    cero); o un certificado de identidad constructiva (§5) con sus condiciones certificadas.
 
 **Por qué son necesarias.**
 
@@ -288,15 +314,20 @@ con su significado constructivo. **`C` se transfiere si y solo si:**
 - Sin (N2), de otra revisión: un certificado solo vale para la revisión cuya huella cita
   (ADR 0038, decisión 17).
 - Sin (N3), `S(Σ_C)` no está establecido.
-- Las vías están cerradas a propósito: ni una tolerancia, ni la proximidad de coordenadas, ni la
-  robustez observada en un muestreo transfieren nada. La estabilidad de las estructuras de `e_1` y
-  `o_1` ante perturbaciones de un ulp (estudio §1.4) es evidencia, no transferencia.
+- La lista de vías de (N3) es cerrada **por decisión normativa**, no por un teorema: se admiten
+  solo los métodos rigurosos ya contratados. Ni una tolerancia, ni la proximidad de coordenadas,
+  ni la robustez observada en un muestreo transfieren nada. La estabilidad de las estructuras de
+  `e_1` y `o_1` ante perturbaciones de un ulp (estudio §1.4) es evidencia, no transferencia. Un
+  método riguroso nuevo entraría en la lista con una versión nueva de la política.
 
-**Por qué son suficientes.** Cada vía es una prueba de `S(Σ_C)`:
+**Por qué son suficientes.** Cada vía es una prueba de su decisión en `Σ_C`:
 
 - el margen, por la monotonía de la aritmética de intervalos;
-- la estructura, porque el enunciado se deduce de premisas estrictas;
+- la estructura, porque la decisión se deduce de premisas estrictas;
 - la nueva decisión, por construcción.
+
+Las decisiones se transfieren en el orden de sus dependencias, así que cada una usa solo
+premisas ya transferidas.
 
 ### 3.3 Sin transferencia demostrada
 
@@ -310,15 +341,20 @@ con su significado constructivo. **`C` se transfiere si y solo si:**
 | La nueva decisión refuta `S` en `Σ_C` | `CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION` | falla cerrado | falla cerrado: una contradicción rigurosa nunca es relajadamente válida |
 
 En todos los casos el certificado de origen, sus componentes y sus claves quedan intactos y siguen
-valiendo para `Σ_L`. Una degeneración, como el valor crítico de la mordedura, en la que la decisión
-cerrada sobre `Σ_L` y la constructiva difieren, deja la integridad en `NOT_ESTABLISHED` sin tocar
-la estructura de `CU2`.
+valiendo para `Σ_L`. En una degeneración, como el valor crítico de la mordedura, hay dos casos:
+
+- si una nueva decisión rigurosa en `Σ_C` refuta la decisión cerrada de `Σ_L`, el resultado es
+  `CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION`, como en la tabla;
+- si ninguna vía decide en `Σ_C` (por ejemplo, una multiplicidad con premisa no constructible y
+  sin certificado de identidad), la integridad queda en `NOT_ESTABLISHED`.
+
+En ninguno de los dos se toca la estructura de `CU2`.
 
 ### 3.4 Lo que `CU3` necesita de `CU2`, y por qué vía
 
 | Resultado de `CU2` | Uso en `CU3` | Vía | En el modelo |
 |---|---|---|---|
-| Componente certificada que contiene `t*` (validez del corte) | `P = F(t*) ∈ L` | margen | decisiones abiertas con margen; la diferencia entre la constante capturada y la constructiva es del orden de `10⁻¹⁵` (radio² de `c_1`: `−3,66·10⁻¹⁵`, estudio §5) |
+| Componente certificada que contiene `t*` (validez del corte) | `P = F(t*) ∈ L` | margen | decisiones abiertas con margen; la diferencia entre la constante capturada y la constructiva es del orden de `10⁻¹⁵` (radio² de `c_1`: `−3,66·10⁻¹⁵`, estudio §5). El encierro de transferencia exige encerrar rigurosamente el valor constructivo de las constantes capturadas que dependen de `H`, que no es constructible: por eso esos encierros están en E1 (§6.2) |
 | Pliegues de `e_1` en `0` y en `π` (`fold-symmetry/v1:HORIZONTAL`) | contacto en pliegue; certificado de paridad | estructura | simetría estructural (estudio §1.7); el CIC confirma `F′(t*) ≡ 0` (§5.5) |
 | Periodicidad estructural y cierre en la costura | costura de `e_1·c_1` y `e_1·r` | estructura | `t* = π` estructural en el CIC |
 | Transiciones cercanas a `t*` | vigencia de la componente | margen | — |
@@ -338,12 +374,13 @@ la estructura de `CU2`.
   > **§12.2 Transfer of CU2 certificates (`cu2-certificate-transfer/v1`).** A CU2 certificate
   > remains, unchanged in text, fingerprint, structure and lineage keys, a certificate of its
   > captured configuration `Σ_L`. Transferring it to the constructive authority establishes the
-  > same statement in the constructive configuration `Σ_C` of the same objects. A certificate
-  > transfers if and only if (N1) the captured program is structurally the program of the
-  > constructive object (class-v3 program, inherited selection states, label states, effective
-  > outputs and structural definitions), (N2) the transfer cites the fingerprint of the consuming
-  > revision, and (N3) an admitted route, named by the transfer record, establishes the statement
-  > in `Σ_C`:
+  > same statement in the constructive configuration `Σ_C` of the same objects. The policy admits
+  > the transfer of a certificate if and only if (N1) the captured program is structurally the
+  > program of the constructive object, with the same slice and branches (class-v3 program,
+  > inherited selection states, label states, effective outputs and structural definitions), (N2)
+  > the transfer cites the fingerprint of the consuming revision and the same contract versions,
+  > and (N3) every decision of the certificate, in the order of its dependencies, is established in
+  > `Σ_C` by an admitted route named by the transfer record:
   >
   > - *margin*, for open decisions: their interval program, re-evaluated with every captured
   >   constant replaced by an enclosure of both its captured value and a rigorous enclosure of its
@@ -352,13 +389,16 @@ la estructura de `CU2`.
   >   and periodicity, exact zeros that correspond to provenance relations), when every
   >   structural premise is `STRICT` under the constructive authority;
   > - *re-decision*, for closed decisions on captured bits (Sturm counts and multiplicities, point
-  >   components, singular parameters, critical values): the statement is decided again in `Σ_C`
-  >   by exact evaluation with a constructible premise or by a constructive identity certificate.
+  >   components, singular parameters, critical values): the decision is taken again in `Σ_C` by a
+  >   rigorous method of the CU2 and CU3 contracts — exact evaluation with a constructible premise,
+  >   a new interval certification of a fact of multiplicity one, or a constructive identity
+  >   certificate.
   >
-  > No other route is admitted: no tolerance, coordinate proximity or sampled robustness transfers
-  > a certificate. Without a demonstrated transfer the result is `EVIDENCE_INSUFFICIENT` with a
-  > typed cause, and every consumer that requires `STRICT` fails closed. A re-decision that refutes
-  > the statement gives `CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION`. A transfer record is revision
+  > The list of routes is closed by this policy: no tolerance, coordinate proximity or sampled
+  > robustness transfers a certificate, and a new rigorous route needs a new policy version.
+  > Without a demonstrated transfer the result is `EVIDENCE_INSUFFICIENT` with a typed cause, and
+  > every consumer that requires `STRICT` fails closed. A re-decision that refutes the statement
+  > gives `CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION`. A transfer record is revision
   > evidence: it cites the source certificate by kind, fingerprint and structure key, the
   > authority version, the route and the premises, and it is never persisted. No source
   > certificate, component, fingerprint or lineage key is modified or reinterpreted.
@@ -369,7 +409,7 @@ la estructura de `CU2`.
 
 | Hecho | Estado | Ejemplo en la evidencia |
 |---|---|---|
-| **Evidencia relajada**: evidencia positiva relativa a los objetos constructivos, admitida por una política versionada, sin contradicción rigurosa | `RELAXED` | igualdad exacta de los cinco contactos con el sustituto binary64 de `H` (estudio §1.7) |
+| **Evidencia relajada**: evidencia positiva relativa a los objetos constructivos, admitida por una política versionada, sin contradicción rigurosa | `RELAXED` | igualdad exacta genérica de los cinco contactos: con el sustituto binary64 de `H` y en doce posiciones racionales de `H` (estudio §1.6 y §1.7, 60 de 60) |
 | **Contradicción rigurosa**: una prueba de que la relación es falsa para los objetos constructivos | `CONTRADICTED` | `J_1` fuera del segmento `n` con `D_1` ×3, certificado (§5.5, nuevas pruebas) |
 | **Ausencia de evidencia**: ni prueba, ni admisión, ni contradicción | `NOT_ESTABLISHED` | una condición de signo indecidible, un objeto fuera de la clase, el presupuesto agotado o una identidad que no se cumple formalmente sin refutación |
 
@@ -395,18 +435,34 @@ Una relación `R` de una revisión es `RELAXED` si y solo si se cumplen las cuat
   rigurosa respecto del objeto ideal (estudio §2.4, precisión 4). Deja la relación en
   `NOT_ESTABLISHED`: no sirve ni para admitir ni para retirar.
 - **(c) Evidencia positiva** de una de estas clases, relativas a los objetos constructivos:
-  - **(c1) `SUBSTITUTE_EXACT`.** `R` se cumple exactamente en la evaluación exacta en que cada
-    objeto no constructible de la frontera se sustituye por su sustituto binary64 declarado. Además,
-    cada predicado de validez, rama y pertenencia que decide esa evaluación se cumple con margen
-    estricto certificado.
+  - **(c1) `SUBSTITUTE_GENERIC`.** `R` se cumple exactamente en la evaluación exacta en que cada
+    objeto no constructible de la frontera se sustituye por su sustituto binary64 declarado, y
+    también en un número versionado (8 en v1) de perturbaciones racionales de cada sustituto
+    dentro de la misma celda. En todas esas evaluaciones, cada predicado de validez, rama y
+    pertenencia se cumple con margen estricto certificado y con el mismo signo.
   - **(c2) `ENCLOSURE_COMPATIBLE`.** Un encierro riguroso del residuo constructivo de `R`,
     normalizado como en `locus-v2-intersections.md` §8.1, contiene el cero y queda dentro de la
-    tolerancia versionada `τ_v1 = 2·10⁻¹² + 2·10⁻¹²·L`. Son las mismas cantidades normalizadas
-    de G8B (§8.4), aplicadas ahora al objeto constructivo y no a su representación. **Solo vale
-    para una raíz con corchete de cambio de signo verificado**, es decir, transversal. Un contacto
-    sin cambio de signo, sea tangencia o pliegue, nunca es `RELAXED` por (c2): un residuo pequeño
-    no prueba una raíz (`OBS-CU0-CU3-TANGENT-EXISTENCE`), y la clase 3 de `CU3` sigue sin
-    materializarse por tolerancia.
+    tolerancia versionada `τ_v1 = 2·10⁻¹² + 2·10⁻¹²·max(1, S)`. Es el umbral que G8B-R1 aplica
+    hoy, con su escala `S` por familia: 1 para rectas, segmentos y rayos, y el radio para
+    circunferencias (estudio de precisión y tolerancias de `CU0`, §1). Aquí se aplica al residuo
+    del objeto constructivo y no al de su representación. **Solo vale para una raíz cuyo corchete
+    de cambio de signo está verificado contra la representación**, es decir, transversal. Si el
+    corchete se vuelve a certificar contra el objetivo constructivo, ya no es (c2): es existencia
+    certificada (CU3.1 (a)) y la raíz es `STRICT` (§4.4). Un contacto sin cambio de signo, sea
+    tangencia o pliegue, nunca es `RELAXED` por (c2): un residuo pequeño no prueba una raíz
+    (`OBS-CU0-CU3-TANGENT-EXISTENCE`), y la clase 3 de `CU3` sigue sin materializarse por
+    tolerancia.
+
+  **Por qué (c1) es evidencia del objeto y no del sustituto.** La igualdad exacta en un solo
+  sustituto no lo es: el control C3 de §5.5 (una igualdad que vale exactamente en el sustituto de
+  `I` y no como identidad) la cumpliría, y para un contacto tangente equivaldría a admitir una
+  existencia a `10⁻¹⁶` del objeto. La versión genérica exige que la relación no dependa del valor
+  del sustituto dentro de su celda, y el valor ideal es un punto más de esa familia. No es una
+  prueba: un número finito de puntos no demuestra una identidad, y la demostración es el
+  certificado de §5, que la hace `STRICT`. La asimetría con (b) es deliberada. Una igualdad que se
+  mantiene al mover el sustituto apunta a una relación estructural. Una refutación en el sustituto
+  solo dice que la relación no es una identidad en la familia de sustitutos, y puede deberse a una
+  propiedad exacta del valor ideal que la familia no conserva, como la isometría de un giro.
 - **(d) Registro.** Se registran la clase de evidencia, los sustitutos usados (las premisas no
   constructibles), las premisas y la versión de la política.
 
@@ -427,8 +483,13 @@ Una relación `R` de una revisión es `RELAXED` si y solo si se cumplen las cuat
 ### 4.4 G8B-R1: precedente sin transferencia automática
 
 **Qué es G8B-R1.** Es la verificación local de raíces transversales de G8B: residuo
-`≤ 2·10⁻¹² + 2·10⁻¹²·S` contra el **adaptador binary64** del objetivo, con evidencia de
+`≤ 2·10⁻¹² + 2·10⁻¹²·max(1, S)` contra el **adaptador binary64** del objetivo, con evidencia de
 aislamiento (`LOCALLY_VERIFIED`, CU3.4). Su admisión es relativa a la autoridad de representación.
+
+**Alcance.** La recalificación solo afecta a las raíces que G8B-R1 admitió en documentos
+existentes, que son transversales: el motor vigente no materializa raíces tangentes. Las formas de
+`CU3` nacen bajo la autoridad constructiva (§2.3) y sus contactos se deciden directamente por
+§4.2 y §5, sin nada que recalificar.
 
 **Lo que se conserva:**
 
@@ -455,6 +516,23 @@ volver a decidirla, y hacerlo es barato.
 Si una contradicción rigurosa la refuta, la raíz se retira con causa tipada, sin reasociación. Al
 adoptar la política, el informe de impacto (§2.5) enumera las raíces de cada clase.
 
+**Conflicto con contratos aprobados, que se declara.** CU3.4 dice que, sin contradicción, la
+admisibilidad no cambia, y D-CU3-6, D-CU3-7 y D-CU3-13 conservan las capacidades de G8B-R1 fuera
+de las contradicciones rigurosas. Esta propuesta lo mantiene sin cambios bajo
+`legacy-representation-authority/v1`. Bajo `constructive-authority/v1`, en cambio, una raíz sin
+justificación pasaría a `NOT_ESTABLISHED` sin haber sido contradicha, porque la instrucción
+autoral pide no transferir la admisibilidad entre autoridades sin justificación. Para acotar ese
+cambio:
+
+- solo ocurre una vez, en el evento explícito de adopción, versionado, informado antes de aplicarse
+  y reversible con Deshacer;
+- después, dentro del documento constructivo, la admisibilidad vuelve a cambiar solo por una
+  contradicción rigurosa o por evidencia nueva de la revisión;
+- la recalificación por corchete constructivo es barata y, salvo degeneraciones, da `STRICT`.
+
+Es una revisión de CU3.4 y de esas decisiones para la política nueva, que D-AUT-6 y D-AUT-11
+someten al autor.
+
 ### 4.5 Consumo y presentación
 
 - Cada consumidor declara la integridad mínima que exige. Uno que exige `STRICT` falla de forma
@@ -475,18 +553,22 @@ La regla es la del estudio (§2.4, precisión 3), en forma normativa:
 - una incidencia de procedencia es `STRICT` aunque una relación lejana sea `RELAXED`: solo hereda lo
   que su prueba usa.
 
-**Correspondencia con los vocabularios existentes**, que no cambian:
+**Relación con los vocabularios existentes**, que no cambian:
 
-| Vocabulario | Hacia `STRICT` | Hacia `RELAXED` | Hacia `NOT_ESTABLISHED` |
-|---|---|---|---|
-| Naturaleza de la evidencia (ADR 0038, decisión 18) | exacta, simbólica o algebraica, e intervalos rigurosos, **transferidas** | verificación numérica bajo hipótesis | exploratoria o ninguna |
-| Clases de garantía métrica (ADR 0037) | 1 y 2, transferidas | 3 (`ESTIMATED`) | 4 |
-| Grados de `CU3` (CU3.4) | `EXISTENCE_CERTIFIED`, `EXISTENCE_STRUCTURAL` y `EXISTENCE_EXACT` respecto del objeto constructivo | `LOCALLY_VERIFIED`, según la recalificación de §4.4, que también puede darle `STRICT` o `NOT_ESTABLISHED` | — |
-
-La tabla es una correspondencia conceptual entre vocabularios, no una regla de admisión. La
-admisión `RELAXED` de §4.2 solo se aplica a incidencias y pertenencias. Las métricas conservan su
-propia admisibilidad (ADR 0037). `NumericGuarantee` sigue siendo el eje de la precisión y no se
-corresponde con la integridad.
+- **Hacia `STRICT`** solo cuenta la evidencia rigurosa respecto del objeto constructivo:
+  procedencia con existencia establecida (§2.2), certificados de `CU2` transferidos (§3),
+  evidencia exacta o de intervalos rigurosos de la naturaleza que fija el ADR 0038 (decisión 18)
+  decidida en `Σ_C`, los grados `EXISTENCE_CERTIFIED`, `EXISTENCE_STRUCTURAL` y `EXISTENCE_EXACT`
+  de CU3.4 y las clases de contacto 1 y 2 de CU3.2 decididos contra el objetivo constructivo, y
+  los certificados de §5. Una clase 2 obtenida con sustitutos no constructibles es (c1), es decir,
+  `RELAXED`.
+- **Hacia `RELAXED`** solo cuentan (c1) y (c2) de §4.2. Una verificación numérica bajo hipótesis,
+  un grado `LOCALLY_VERIFIED` o una clase métrica 3 (`ESTIMATED`, ADR 0037) no bastan por sí
+  solos: son ejes de evidencia o de precisión, y `LOCALLY_VERIFIED` se recalifica por §4.4.
+- **Las métricas** conservan su propia admisibilidad (ADR 0037); la admisión `RELAXED` solo se
+  aplica a incidencias y pertenencias.
+- **`NumericGuarantee`** sigue siendo el eje de la precisión de una representación y no se
+  corresponde con la integridad.
 
 ### 4.7 Textos candidatos AUT-3 y AUT-5 — integridad y política relajada
 
@@ -515,15 +597,16 @@ corresponde con la integridad.
   > consumer that accepts `RELAXED`; (b) no rigorous evidence of the same revision refutes it for
   > the constructive objects — an exact refutation whose premise contains a non-constructible
   > boundary substitute is not rigorous for the ideal object and leaves the relation
-  > `NOT_ESTABLISHED`; (c) it has positive evidence of a declared kind: `SUBSTITUTE_EXACT` (the
+  > `NOT_ESTABLISHED`; (c) it has positive evidence of a declared kind: `SUBSTITUTE_GENERIC` (the
   > relation holds exactly in the exact evaluation with the declared binary64 substitutes of the
-  > non-constructible boundary, and every validity, branch and membership predicate of that
-  > evaluation holds with a certified strict margin) or `ENCLOSURE_COMPATIBLE` (for a root with a
-  > verified sign-change bracket only: a rigorous enclosure of the normalized constructive residual
-  > contains zero and lies within `2e-12 + 2e-12 L`, with the quantities of
-  > `locus-v2-intersections.md` §8.1 and §8.4; a contact without a sign change is never relaxed by
-  > a residual bound); and (d)
-  > the record names the evidence kind, the substitutes, the premises and the policy version.
+  > non-constructible boundary and in a versioned number of rational perturbations of every
+  > substitute within the same cell — eight in version 1 — and every validity, branch and
+  > membership predicate of those evaluations holds with a certified strict margin and the same
+  > sign) or `ENCLOSURE_COMPATIBLE` (only for a root whose sign-change bracket is verified against
+  > the representation: a rigorous enclosure of the normalized constructive residual contains zero
+  > and lies within `2e-12 + 2e-12 max(1, S)`, the G8B-R1 threshold with its scale `S` per target
+  > family; a contact without a sign change is never relaxed by a residual bound); and (d) the
+  > record names the evidence kind, the substitutes, the premises and the policy version.
   > `RELAXED` is never presented as a proof, never becomes `STRICT` through a tolerance, a
   > coordinate coincidence, persistence or another revision, and a `CONTRADICTED` relation never
   > becomes `RELAXED`.
@@ -535,7 +618,10 @@ corresponde con la integridad.
   > `constructive-authority/v1`, a root it verifies is `STRICT` when its sign-change bracket is
   > re-certified against the constructive target, `RELAXED` by `ENCLOSURE_COMPATIBLE` without
   > contradiction, and otherwise `NOT_ESTABLISHED`; a root that rigorous evidence contradicts is
-  > withdrawn with a typed cause and never reassociated.
+  > withdrawn with a typed cause and never reassociated. This re-qualification happens once, in
+  > the explicit adoption event, which reports it before it is applied; afterwards, the
+  > admissibility of a root changes only by rigorous contradiction or new evidence of the
+  > revision.
 
 ## 5. Punto 4 — Certificación estructural genérica
 
@@ -552,7 +638,8 @@ fijado en un punto exacto de su camino. Devuelve uno de estos resultados:
 | `LIMITED_PART_EXCLUDED` | identidad con el soporte y no pertenencia certificada a la parte limitada | `CONTRADICTED` para el objetivo limitado |
 | `NOT_AN_IDENTITY` | el residuo no es formalmente nulo; no es una refutación | `NOT_ESTABLISHED` (puede pedirse una refutación por encierro) |
 | `PRECONDITION_UNDECIDED` | una condición de signo no se certifica en la caja | `NOT_ESTABLISHED` |
-| `INVALID` | una condición de validez se certifica falsa: un objeto de la relación no existe | relación no definida; falla cerrado con causa |
+| `BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED` | una rama elegida fuera del corte del conductor no se certifica correspondiente a la salida viva del algoritmo heredado | `NOT_ESTABLISHED` |
+| `INVALID` | una condición de validez se certifica falsa: un objeto de la relación no existe | la relación queda `NOT_ESTABLISHED` con causa `OBJECT_UNDEFINED`, y la existencia del objeto ideal es un hecho `CONTRADICTED`; falla cerrado |
 | `OUT_OF_CLASS`, `BUDGET_EXHAUSTED` | fuera de la clase o del presupuesto versionado | `NOT_ESTABLISHED` |
 
 ### 5.2 Fundamento y corrección
@@ -566,14 +653,32 @@ exactos. Las operaciones son las de regla y compás de la tabla de clase.
 signo sobre un elemento de `K`:
 
 - puntos distintos y rectas no paralelas;
-- discriminantes positivos;
+- discriminantes y radios positivos;
 - divisores no nulos;
 - la rama de cada raíz cuadrada;
 - los parámetros de segmentos y rayos;
 - la selección heredada de cada intersección.
 
 Cada signo se certifica por evaluación de intervalos con redondeo hacia fuera en una caja `X` de
-las indeterminadas, y se registra.
+las indeterminadas, y se registra. Una circunferencia pertenece a la clase por el algoritmo que la
+define, nunca por su valor actual.
+
+**Ramas.** Cada salida de una intersección recta–circunferencia es la que da la regla heredada con
+el estado de selección capturado. Hay dos casos:
+
+- **Fuera del corte de un conductor sustituido** (el punto `D`, los objetivos y sus ancestros, o
+  cualquier relación sin conductor), la salida viva del algoritmo heredado se calcula en la misma
+  configuración. Se exige que esa salida binary64 esté certificada, en toda la caja, como
+  estrictamente más cercana a la rama formal elegida que a la otra. Si no, el resultado es
+  `BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED`, sin ninguna tolerancia. Así se cubre también el caso
+  especial heredado de un punto ya incidente, que el algoritmo coloca en un índice propio.
+- **Dentro del corte** (`H_1` y `G_1` en el modelo), la salida viva corresponde a otra posición
+  del conductor y no es comparable. Rige el estado de selección capturado, como en el evaluador de
+  clase v3 de `CU2`, cuya fidelidad al algoritmo vivo certifica `CU2`
+  (`locus-v2-certified-construction-model.md` §10.2).
+
+Las intersecciones en modo continuo y las selecciones por punto de referencia quedan fuera de la
+clase, como en §11.2 de ese modelo.
 
 **Proposición.** Sea `X` una caja (convexa y conexa) en la que todas las condiciones registradas
 tienen su signo certificado, incluida `Δ > 0`. Para todo `v ∈ X`:
@@ -589,17 +694,33 @@ Si además el residuo de `R` es el elemento nulo de `K`, `R` se cumple en todo `
 - Las condiciones de validez en todo `X` hacen continua cada operación real en `X`.
 - Su expresión formal coincide con ella en el abierto denso `U ⊂ X` donde ningún denominador formal
   se anula. Es denso porque los denominadores son polinomios no nulos.
-- `√Δ` es la raíz positiva, por la condición de rama.
+- `√Δ` denota la raíz positiva, como la evalúan los intervalos. La condición de rama registrada
+  elige, para cada raíz cuadrada de la construcción, el signo que la hace positiva.
 - El residuo real es continuo en `X` y nulo en `U`, luego nulo en `X`. ∎
 
-**El valor ideal tiene que estar en la caja.** El enunciado vale para el objeto constructivo cuando
-`X` contiene el valor ideal de las indeterminadas. En la producción, ese valor se encierra
-rigurosamente; por ejemplo, el corte de `H` se encierra evaluando por intervalos su subgrafo no
-constructible, con un coseno y un seno de redondeo hacia fuera del ángulo binary64. El prototipo
-no calcula ese encierro. Se apoya en que la caja certificada (semianchura hasta `10⁻¹`) excede en
-muchos órdenes la distancia entre la representación y el valor ideal, que el redondeo de unas
-pocas operaciones binary64 deja en torno a `10⁻¹⁴` como mucho (estimación, no medida). El encierro
-es un requisito de E2 (§6).
+**Corolario para el producto.** La relación vale para los objetos que muestra el documento si,
+además:
+
+- la estructura del cono de dependencias es la que la prueba registró (§5.4);
+- las ramas corresponden a las del algoritmo heredado, en el sentido de «Ramas»;
+- `X` contiene el valor ideal de las indeterminadas.
+
+**El valor ideal tiene que estar en la caja.** Para una entrada libre, el valor binary64 es el
+ideal. Para un punto sobre camino y para un corte no lo es, y en la producción ese valor se encierra
+rigurosamente. Por ejemplo, el corte de `H` se encierra evaluando por intervalos su subgrafo no
+constructible, con un coseno y un seno de redondeo hacia fuera del ángulo binary64.
+
+El prototipo no calcula esos encierros. Se apoya en que la caja certificada (semianchura hasta
+`10⁻¹`) excede en muchos órdenes la distancia entre la representación y el valor ideal. El
+redondeo de unas pocas operaciones binary64 deja esa distancia en torno a `10⁻¹⁴` como mucho; es
+una estimación, no una medida. Los encierros son un requisito de E1 (§6).
+
+**Completitud.** Faltan un máximo común divisor y una extracción exhaustiva de cuadrados
+perfectos, así que la representación formal no es canónica. Eso puede ocultar una identidad
+(`NOT_AN_IDENTITY`) o dejar un signo sin decidir. Nunca produce un certificado falso:
+
+- un elemento formalmente nulo es nulo;
+- `INVALID` exige un signo certificado o una nulidad formal.
 
 **Encierros.** Los signos se certifican con una forma de valor medio de segundo orden de cada
 polinomio: valor y gradiente racionales exactos en el centro de la caja, y encierro ingenuo de las
@@ -625,8 +746,8 @@ olvidada, el resultado es `NOT_AN_IDENTITY` o `NOT_ESTABLISHED`, nunca una afirm
 incompletitud honesta, que muestra la fila «limitation» de §5.5.
 
 **El caso de `H`.** `H = Point[j]` con `j = Line[A, C']` y `C' = Rotate[C, 47°, A]`. La regla
-corta `H` como punto libre, y las cinco identidades se cumplen. Por eso la prueba vale sea cual sea
-la posición exacta, no constructible, de `H`.
+corta `H` como punto libre, y las cinco identidades se cumplen. Por eso, dentro de su celda y con el
+valor ideal de `H` en la caja, la prueba no depende de esa posición exacta no constructible.
 
 ### 5.4 Celdas, recomprobación y dinámica
 
@@ -636,9 +757,16 @@ la posición exacta, no constructible, de `H`.
   celda se certifica, revisión a revisión, recomprobando los signos registrados en una caja pequeña
   alrededor de sus valores vivos, sin trabajo simbólico.
 - **Fallo cerrado de la recomprobación.** La recomprobación falla cerrada si:
+  - cambia la estructura del cono de dependencias: un objeto redefinido, eliminado o sustituido
+    por otro con la misma etiqueta, o un cambio de lo que se corta (`NOT_APPLICABLE`);
   - cambia una constante de la prueba (`NOT_APPLICABLE`: hace falta una prueba nueva);
   - cambia un estado de selección;
-  - un signo no se certifica igual.
+  - un signo no se certifica igual;
+  - una rama fuera del corte del conductor deja de corresponder a la salida viva.
+
+  Los signos solos no bastan. En la construcción S4 de §5.5, una circunferencia se sustituye por
+  otra con la misma etiqueta: los signos registrados seguirían aceptando la prueba antigua, y la
+  comprobación estructural la rechaza.
 - **Otra celda.** La configuración puede estar en otra celda, con otro vector de signos. Se
   intenta entonces una prueba nueva, que cuesta milisegundos en el modelo. Las celdas son finitas
   y se demuestran bajo demanda.
@@ -647,23 +775,28 @@ la posición exacta, no constructible, de `H`.
 
 ### 5.5 Evidencia del prototipo
 
-Toda la evidencia está en el archivo JSON citado arriba. Las cifras de trabajo son contadores
-deterministas de productos de términos polinómicos.
+Los resultados están en el archivo JSON citado arriba. Las cifras de trabajo son contadores
+deterministas de productos de términos polinómicos. Los tiempos, la medición de la evaluación
+ingenua y algunas magnitudes geométricas citadas aparte (como `|HM| − |HD_1|`) no están en él:
+son cálculos o ejecuciones de desarrollo, a título informativo.
 
 **Incidencias obligatorias.** La tabla da el alcance, las indeterminadas y el resultado:
 
 | Alcance | Indeterminadas | Constantes | Resultado |
 |---|---|---|---|
-| frontera | `B.y`, `H.x`, `H.y` | `A`, `D_1`, `rbCone` | las cinco incidencias, `IDENTITY` certificada; `t* = 0` (`K`) o `π` (`J`) para todo valor de las indeterminadas; extensión `√Δ` con `Δ` de grado 4 y 13 términos; certificadas en cajas de semianchura `10⁻⁹`, `10⁻⁶`, `10⁻³` y `10⁻¹`; entre 934 y 1 756 productos de términos |
-| automático | `A.x`, `A.y`, `B.y`, `rbCone`, `H.x`, `H.y`, `D_1.x`, `D_1.y` | ninguna (solo el eje) | las cinco, `IDENTITY` certificada; corte registrado: `H`, por depender su camino de la rotación; certificadas hasta `10⁻¹`, salvo `o_1·h_2` en `10⁻¹`, donde no se certifica que `M_1` quede antes del extremo del segmento (su margen geométrico, `|HM| − |HD_1| ≈ 2,5`, apunta a sobreestimación de los intervalos); entre 1 481 y 28 331 productos |
+| frontera | `B.y`, `H.x`, `H.y` | `A`, `D_1`, `rbCone` | las cinco incidencias, `IDENTITY` certificada; `t* = 0` (`K`) o `π` (`J`) para todo valor de las indeterminadas; extensión `√Δ` con `Δ` de grado 4 y 13 términos; entre 42 y 60 condiciones de signo; las ramas fuera del corte del conductor (`K` o `J`, y `M_1` en `o_1·h_2`) corresponden a la salida viva, y las del corte (`H_1` y `G_1`) siguen el estado de selección capturado; certificadas en cajas de semianchura `10⁻⁹`, `10⁻⁶`, `10⁻³` y `10⁻¹`; entre 948 y 2 854 productos de términos |
+| automático | `A.x`, `A.y`, `B.y`, `rbCone`, `H.x`, `H.y`, `D_1.x`, `D_1.y` | ninguna (solo el eje) | las cinco, `IDENTITY` certificada, con las mismas ramas contrastadas; corte registrado: `H`, por depender su camino de la rotación; certificadas hasta `10⁻¹`, salvo `o_1·h_2` en `10⁻¹`, donde no se certifica que `M_1` quede antes del extremo del segmento (su margen geométrico, `|HM| − |HD_1| ≈ 2,5`, apunta a sobreestimación de los intervalos); entre 1 511 y 687 481 productos |
 
 **Orden de contacto, por jets exactos en los dos alcances.**
 
 - En los cinco contactos, `h′ ≡ 0` y `h″` tiene signo certificado. Los signos coinciden con los
   valores exactos del estudio (§1.7: `−28,5`, `−24,7`, `+2,57`, `−7,99` y `+16,2`).
-- `F′(t*) ≡ 0` en `e_1` en `K` y en `J`: son pliegues de la parametrización.
-- `|F′(t*)| > 0` certificado en `o_1·h_2`: tangencia regular.
-- El coste llega como mucho a 963 233 productos.
+- `F′(t*) ≡ 0` en `e_1` en `K` y en `J`: el punto trazado es estacionario. Es coherente con los
+  pliegues que `CU2` certifica por simetría exacta, pero el CIC no certifica un pliegue por sí
+  solo: eso exige las condiciones del ADR 0038, decisión 8.
+- `|F′(t*)| > 0` certificado en `o_1·h_2`: punto regular, tangencia.
+- Los signos de `h″` y de `|F′|` se registran como condiciones de la evaluación.
+- El coste llega como mucho a 1 622 383 productos.
 
 **Recomprobación en las doce posiciones del estudio y en movimientos de `B` y `H`.**
 
@@ -683,8 +816,8 @@ deterministas de productos de términos polinómicos.
 
 Esto confirma lo que el estudio vio en el modelo: con `D_1` ×3, `e_1·n` y `e_1·r` quedan fuera de
 la parte limitada, `M_1` no existe y `e_1·c_1` sigue siendo exacto. Ahora esos hechos están
-certificados y no solo observados. La celda nueva de `H` +40 da la prueba de la otra rama de
-`H_1`, que es el teorema de reflexión del
+certificados y no solo observados, con la salvedad de §11 sobre los valores ideales. La celda
+nueva de `H` +40 da la prueba de la otra rama de `H_1`, que es el teorema de reflexión del
 [análisis de `CU3`](pre_g9b_cu3_initial_state_and_capability_analysis.md) §5.3.
 
 **Controles adversarios.**
@@ -694,7 +827,7 @@ certificados y no solo observados. La celda nueva de `H` +40 da la prueba de la 
 | C1, objetivos binary64 `n` y `h_2` (la representación, no la construcción) | `NOT_AN_IDENTITY` |
 | C2, la otra intersección de `c_1` con el soporte de `n` como objetivo de `h_2` | `NOT_AN_IDENTITY` (la prueba distingue las ramas reales) |
 | C3, igualdad accidental: `I` sobre la vertical constante que pasa por su sustituto, con residuo nulo en él | `NOT_AN_IDENTITY`; el residuo en la caja es `[−1,0·10⁻⁹; 1,0·10⁻⁹]`: la igualdad en un punto no se certifica |
-| C4, caja de semianchura 5 | `NOT_ESTABLISHED` (radio de `d_1`) |
+| C4, caja de semianchura 5 | `NOT_ESTABLISHED` (radio de `c_1`: en esa caja `H` puede alcanzar `D_1`) |
 | C5, emparejamiento erróneo: `J_1` en `J` contra `n` | `NOT_AN_IDENTITY` |
 
 **Construcciones sintéticas.** Se construyen en un anfitrión nuevo, con órdenes en inglés y en el
@@ -704,13 +837,15 @@ alcance automático:
 |---|---|
 | S1: el circuncentro está en la tercera mediatriz; el segundo vértice y el vértice girado 47°, no constructible, están en la circunferencia circunscrita; el baricentro está en la tercera mediana | cuatro `IDENTITY` certificadas; corte del vértice girado |
 | S1: conjetura falsa: el baricentro está en la circunferencia circunscrita | `NOT_AN_IDENTITY` |
-| S2: Tales con las dos intersecciones de una recta con la circunferencia de diámetro `TA TB` | la intersección 2, `IDENTITY`; la 1 (el propio `TA`), `NOT_AN_IDENTITY`: la prueba depende de la rama, como debe |
+| S2: Tales con las dos intersecciones de una recta con la circunferencia de diámetro `TA TB` | la intersección 2, `IDENTITY`; la 1, `NOT_AN_IDENTITY`: la prueba depende de la rama, como debe. Las dos ramas corresponden a la salida viva |
+| S2: la intersección 1 es el propio `TA` (igualdad de puntos) | `IDENTITY`: la intersección 1 que da la regla heredada es `TA`, y su rama corresponde a la salida viva; no se supone |
 | S3: el pie de la perpendicular a una recta no constructible está en la circunferencia de diámetro `UA UB` | `IDENTITY` |
 | S3: un punto sobre una recta constructible está en ella; conjetura falsa: está en la circunferencia | `IDENTITY` (una indeterminada); `NOT_AN_IDENTITY` |
 | S3: limitación: un punto sobre una recta no constructible se corta, y su propia pertenencia, que es de procedencia, no se vuelve a demostrar | `NOT_AN_IDENTITY`, como se esperaba; esa relación es `STRICT` por procedencia, no por el CIC |
+| S4: cambio estructural: tras una prueba de `SC` sobre `cc`, se elimina `cc` y se vuelve a crear con la misma etiqueta como `Circle(SO, mAB)` | prueba anterior certificada; los signos registrados solos la seguirían aceptando (`CERTIFIED`, un certificado viejo y falso); la recomprobación la rechaza (`NOT_APPLICABLE`: cambió la estructura en `cc`); la prueba nueva da `NOT_AN_IDENTITY` |
 
-**Coste.** En la ejecución A, cada prueba de incidencia tardó como mucho 0,24 s y cada prueba con
-jets 1,37 s, a título informativo. La ejecución completa tarda entre 15 y 20 s.
+**Coste.** En la ejecución A, cada prueba de incidencia tardó como mucho 0,66 s y cada prueba con
+jets 1,71 s, a título informativo. La ejecución completa tarda entre 24 y 28 s.
 
 En una ejecución de desarrollo no versionada, anterior a la regla de corte de §5.3, mantener `H`
 sobre `j` con `C'` libre llevaba la prueba de `o_1·h_2` al límite de términos, y la ejecución
@@ -725,16 +860,18 @@ tardaba 340 s. La regla es necesaria, no cosmética.
   exige otra prueba, como la de `H` +40.
 - **La genericidad 12 de 12 del estudio** (posiciones racionales de `H`) queda superada como
   evidencia. La prueba del alcance automático vale para todo `H`, `A`, `D_1`, `B` y `rbCone` de la
-  celda.
+  celda, con la estructura y las ramas que registró y con los valores ideales en la caja.
 
 ### 5.7 Límites del prototipo y requisitos de producción
 
-| Límite del prototipo | Requisito de producción (E2) |
+| Límite del prototipo | Requisito de producción (E1 o E2) |
 |---|---|
 | una sola extensión cuadrática; una segunda raíz independiente da `OUT_OF_CLASS` | torre de extensiones con normalización, o fallo cerrado tipado igual que hoy |
-| funciones racionales sin máximo común divisor (solo divisiones exactas acotadas) | aritmética con simplificación y presupuesto versionado; el coste depende de la construcción y necesita su banco |
+| funciones racionales sin máximo común divisor (solo divisiones exactas acotadas); un cuadrado perfecto no detectado oculta una identidad, sin falsearla | aritmética con simplificación y presupuesto versionado; el coste depende de la construcción y necesita su banco |
 | circunferencias como única cónica; sin expresiones ni transformaciones | la tabla de clase versionada de §2.6; lo demás se corta o queda fuera de la clase |
-| el valor ideal de un corte no se encierra (se confía en la holgura de la caja) | encierro riguroso del valor ideal de cada corte (§5.2) |
+| el valor ideal de un punto sobre camino o de un corte no se encierra (se confía en la holgura de la caja) | encierro riguroso de esos valores ideales (§5.2), en E1 |
+| dentro del corte del conductor, la correspondencia de ramas descansa en el estado de selección capturado | la fidelidad de selección que `CU2` ya certifica, consumida por transferencia (§3) |
+| la huella estructural del prototipo es su propia firma de cada objeto | la huella de revisión del ADR 0038, decisión 17, que ya cubre las definiciones estructurales |
 | encierros sin subdivisión; las cajas grandes pierden certificados por sobreestimación | subdivisión o formas de Taylor de orden mayor cuando haga falta |
 | `NOT_AN_IDENTITY` no intenta refutar | refutación opcional por encierro del residuo que excluye el cero, que da `CONTRADICTED` |
 | conductores solo en circunferencias, con jets de orden dos | familias de camino de la clase v3, con los jets de A3.5 |
@@ -744,13 +881,14 @@ tardaba 340 s. La regla es necesaria, no cosmética.
 - **Procedencia.** Da `STRICT` sin el CIC cuando el objeto ideal existe (§2.2), y el CIC no la
   vuelve a demostrar (fila «limitation»).
 - **Evaluación exacta (M3).** Decide exactamente con una premisa constructible. Con una premisa no
-  constructible decide para los sustitutos y da (c1) `SUBSTITUTE_EXACT`, que es `RELAXED`. El CIC
-  hace `STRICT` lo que M3 deja en `RELAXED`.
+  constructible decide para los sustitutos; repetida en perturbaciones racionales de ellos, da
+  (c1) `SUBSTITUTE_GENERIC`, que es `RELAXED`. El CIC hace `STRICT` lo que M3 deja en `RELAXED`.
 - **Simetría y paridad.** Son pruebas estructurales independientes. El CIC confirma la estructura,
   por ejemplo `t*` estructural y `F′ ≡ 0`, sin sustituirlas.
 - **Prover heredado.** Prueba verdad genérica sobre los complejos, sin ramas reales. El CIC
-  distingue ramas (C2, S2) porque sus decisiones de rama son signos certificados. Por eso puede ser
-  autoridad de prueba y el prover heredado no (estudio §2.5).
+  distingue ramas (C2, S2) porque sus decisiones de rama son signos certificados y porque contrasta
+  las ramas con el algoritmo vivo. Por eso puede ser autoridad de prueba y el prover heredado no
+  (estudio §2.5).
 
 ### 5.9 Texto candidato AUT-6 — certificados de identidad constructiva
 
@@ -768,21 +906,31 @@ tardaba 340 s. La regla es necesaria, no cosmética.
   > constructible line path is one indeterminate with its other coordinate solved from the exact
   > line, and every point computed outside the class or lying on a path that depends on objects
   > outside the class is cut as a free point of the plane. A cut forgets relations and never
-  > creates them. Every branch, validity, membership and non-degeneracy decision is a sign
+  > creates them. A circle belongs to the class by the algorithm that defines it, never by its
+  > current value. Every branch, validity, membership and non-degeneracy decision is a sign
   > condition certified by outward-rounded enclosures on a decision box and recorded with the
-  > inherited selection states it used. When the residual of the relation is the zero element and
+  > inherited selection states it used. Every line-circle output is the one the inherited
+  > selection rule gives with the captured selection state; outside the slice of a driver replaced
+  > by an exact point, its live binary64 output must be certified strictly closer, on the whole
+  > box, to the selected branch than to the other, or the result is
+  > `BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED`; inside the slice, the captured selection state
+  > governs, as in the class-v3 evaluator. Continuous-mode intersections and reference-point
+  > selections are outside the class. When the residual of the relation is the zero element and
   > every recorded condition is certified on a box that contains the ideal value of the
   > indeterminates, the relation is `STRICT` on that box (`IDENTITY_CERTIFIED`). A certified
   > non-membership of a limited part is a rigorous contradiction of the relation with that limited
   > target. A residual that is not the zero element is `NOT_AN_IDENTITY`, never a contradiction.
   > An undecided condition, a construct outside the class or an exhausted versioned budget gives
-  > `NOT_ESTABLISHED` with a typed cause; a validity condition certified false gives `INVALID`.
-  > At another revision a certificate applies when its constants and inherited selection states
-  > are unchanged and every recorded sign is certified with the same value on a box around the
-  > live values of its indeterminates; otherwise a new certificate is attempted, and its absence
-  > leaves the relation `NOT_ESTABLISHED`. Certificates are revision evidence and are never
-  > persisted. The ideal value of every indeterminate is enclosed rigorously, including the ideal
-  > value of a cut point computed outside the class.
+  > `NOT_ESTABLISHED` with a typed cause; a validity condition certified false gives `INVALID`, and
+  > the relation is `NOT_ESTABLISHED` with the cause `OBJECT_UNDEFINED`. At another revision a
+  > certificate applies only when the structure of its dependency cone (the definitions of the
+  > objects it used and what it cut), its constants and its inherited selection states are
+  > unchanged, every recorded sign is certified with the same value on a box around the live
+  > values of its indeterminates and every branch outside the driver slice still corresponds to
+  > the live algorithm; otherwise a new certificate is attempted, and its absence leaves the
+  > relation `NOT_ESTABLISHED`. Certificates are revision evidence and are never persisted. The
+  > ideal value of every indeterminate that is not a free input — a point on a path or a cut — is
+  > enclosed rigorously.
 
 ## 6. Punto 5 — Plan mínimo de ejecución
 
@@ -801,8 +949,8 @@ tardaba 340 s. La regla es necesaria, no cosmética.
 | Incremento | Contenido | Resultado en el modelo |
 |---|---|---|
 | **E0. Contratos** | aprobación autoral del ADR 0040 y de los textos AUT-1 a AUT-7, de las decisiones D-AUT y del prompt de tarea; T0 los incorpora sin reescribir las secciones aprobadas | ninguno |
-| **E1. Integridad consultable** | (a) tipo `RelationIntegrity`, registros de evidencia, propagación por premisas, requisitos de consumidor y consulta de integridad con premisas; (b) evaluador constructivo con la tabla de clase, la semántica de puntos sobre caminos, los sustitutos declarados y la evaluación exacta M3 llevada a producto con presupuesto; (c) registro de política, nacimiento constructivo de los documentos nuevos y evento de adopción con informe de impacto; (d) transferencia de `CU2` por margen y por estructura para lo que necesita `CU3-A`; (e) política `RELAXED` v1 y recalificación de G8B-R1; (f) `Point(L, D)` e `Intersect(L, r, D)` bajo la autoridad constructiva | los tres casos obligatorios y la costura materializados: `P ∈ L` `STRICT` por transferencia, `P ∈ r` `RELAXED` por (c1), consultables; los documentos antiguos, sin cambios |
-| **E2. Certificación estricta** | (a) CIC v1: clase, regla de frontera automática, encierros rigurosos de los valores ideales, celdas, recomprobación por revisión, prueba nueva por celda, presupuestos; (b) subida de `RELAXED` a `STRICT` y bajada por contradicción, sin identidad nueva; (c) orden de contacto por jets exactos (pliegue o tangencia regular) para las clases de contacto 1 y 2 | `P ∈ r` `STRICT` en los cinco contactos, dentro de su celda |
+| **E1. Integridad consultable** | (a) tipo `RelationIntegrity`, registros de evidencia, propagación por premisas, requisitos de consumidor y consulta de integridad con premisas; (b) evaluador constructivo con la tabla de clase, la semántica de puntos sobre caminos, los sustitutos declarados y la evaluación exacta M3 llevada a producto con presupuesto; (c) registro de política con fallo cerrado de los lectores anteriores, nacimiento constructivo de los documentos nuevos y evento de adopción con informe de impacto; (d) encierros rigurosos de los valores constructivos de las constantes capturadas, incluidas las que dependen de objetos no constructibles (evaluación por intervalos de su subgrafo, con funciones trigonométricas de redondeo hacia fuera), y con ellos la transferencia de `CU2` por margen y por estructura para lo que necesita `CU3-A`; (e) política `RELAXED` v1 con (c1) genérica y recalificación de G8B-R1 en la adopción; (f) `Point(L, D)` e `Intersect(L, r, D)` bajo la autoridad constructiva | los tres casos obligatorios y la costura materializados: `P ∈ L` `STRICT` por transferencia, `P ∈ r` `RELAXED` por (c1), consultables; los documentos antiguos, sin cambios |
+| **E2. Certificación estricta** | (a) CIC v1: clase, regla de frontera automática, correspondencia de ramas con el algoritmo vivo, celdas con huella estructural, recomprobación por revisión, prueba nueva por celda, presupuestos, con los encierros de E1(d) para los valores ideales; (b) subida de `RELAXED` a `STRICT` y bajada por contradicción, sin identidad nueva; (c) orden de contacto por jets exactos para las clases de contacto 1 y 2, con sus signos registrados en la celda; el pliegue lo sigue certificando `CU2` | `P ∈ r` `STRICT` en los cinco contactos, dentro de su celda |
 | **E3. Conflicto y Etapa B** | certificado de paridad por simetría exacta (SM-B-14) en la regla de conflicto; reclasificación de la costura con prueba e inversión de `pins.B08_B09`; `CU3-B` (materialización sin conductor) bajo la autoridad constructiva | costura reclasificada como contacto en pliegue; `preserve.contacts` igual |
 | **E4. Cierre** | verificación `INTEGRATED_PHASE`; registro de cierre; revisión manual del autor | candidato congelado |
 
@@ -813,16 +961,16 @@ Precisan las del estudio (§8) y añaden G-AUT-9 y G-AUT-10.
 | Puerta | Incremento | Qué establece | Pruebas adversarias |
 |---|---|---|---|
 | G-AUT-0 | E0 | contratos y decisiones aprobados por el autor | — |
-| G-AUT-1, cierre de procedencia | E1 | el evaluador constructivo hace exactas las relaciones de procedencia del modelo y de un corpus sintético, con la semántica de D-AUT-3 | un punto sobre camino sin la semántica de camino refuta su camino; una recta binary64 refuta sus puntos; el censo 160/160 entra solo como regresión |
+| G-AUT-1, cierre de procedencia | E1 | el evaluador constructivo hace exactas las relaciones de procedencia del modelo y de un corpus sintético, con la semántica de D-AUT-3; ninguna relación de procedencia es `STRICT` sin su hecho de existencia | un punto sobre camino sin la semántica de camino refuta su camino; una recta binary64 refuta sus puntos; casi-tangencia en que la tolerancia heredada crea o suprime una intersección que la ideal no tiene; punto aceptado por tolerancia junto al extremo de un segmento; el censo 160/160 entra solo como regresión |
 | G-AUT-3, intrinsecidad | E1 | una sola semántica por objeto con cualquier conductor, captura y consumidor | las cuatro semánticas de `h_2` deben dar una |
 | G-AUT-4, transferencia | E1 | margen, estructura y nueva decisión; `EVIDENCE_INSUFFICIENT` y fallo cerrado estricto; bytes del certificado de origen intactos | perturbaciones de un ulp; valor crítico de la mordedura (cerrado); componente puntual consumida sin nueva decisión; huella distinta; correspondencia rota por un estado de selección cambiado |
 | G-AUT-5, integridad | E1 | propagación por premisas; consumidores estrictos que fallan de forma explícita | grafo sintético con premisas `STRICT`, `RELAXED` y `CONTRADICTED`; premisa lejana relajada que no contamina una incidencia de procedencia |
-| G-AUT-6, sin blanqueo | E1 | ninguna relación `CONTRADICTED` pasa a `RELAXED`; autoridad por documento | admitir como relajado un contacto refutado; elegir autoridad por relación; documento mixto; residuo binary64 dentro de la tolerancia con contradicción constructiva |
-| G-AUT-7, compatibilidad | E1 a E4 | documentos antiguos sin cambios; tokens que se resuelven; `preserve` igual; `pins` invertidos solo con prueba; lectores anteriores | corpus de `CU0`, `CU1` y `CU2`; modelo del autor sin adoptar y adoptado; Deshacer de la adopción; copiar y pegar entre políticas |
+| G-AUT-6, sin blanqueo | E1 | ninguna relación `CONTRADICTED` pasa a `RELAXED`; autoridad por documento; (c1) exige genericidad | admitir como relajado un contacto refutado; elegir autoridad por relación; documento mixto; residuo binary64 dentro de la tolerancia con contradicción constructiva; igualdad exacta solo en el sustituto, como C3 de §5.5, que (c1) no debe admitir |
+| G-AUT-7, compatibilidad | E1 a E4 | documentos antiguos sin cambios; tokens que se resuelven; `preserve` igual; `pins` invertidos solo con prueba; los lectores anteriores fallan cerrados ante el registro | corpus de `CU0`, `CU1` y `CU2`; modelo del autor sin adoptar y adoptado; Deshacer de la adopción; copiar y pegar entre políticas; documento constructivo abierto con un lector anterior |
 | G-AUT-8, coste | E1 y E2 | presupuestos versionados y contadores deterministas | inyección de presupuesto; construcción con una segunda raíz independiente |
 | G-AUT-2, contactos | E2 | los cinco contactos `STRICT` en su celda, con orden de contacto | C1 a C5 de §5.5; objetivo desplazado un ulp; V-M3-5, V-M3-6 y V-CFG-6 |
-| G-AUT-9, corrección del CIC | E2 | teoremas sintéticos demostrados; conjeturas falsas no demostradas; dependencia de la rama; un corte nunca inventa | las filas de S1 a S3 y otras nuevas del mismo tipo; inversión de signo inyectada; caja que no contiene el valor ideal |
-| G-AUT-10, dinámica | E2 | ninguna prueba sobrevive a un cambio de constante, de selección o de celda; prueba nueva en la celda nueva | doce posiciones, movimientos de `B` y `H`, `H` +40, `D_1` ×3, transición real de un estado de selección |
+| G-AUT-9, corrección del CIC | E2 | teoremas sintéticos demostrados; conjeturas falsas no demostradas; dependencia de la rama; correspondencia de ramas con el algoritmo vivo; un corte nunca inventa | las filas de S1 a S4 y otras nuevas del mismo tipo; caso especial heredado de un punto ya incidente; ramas casi coincidentes que no se pueden distinguir; inversión de signo inyectada; caja que no contiene el valor ideal |
+| G-AUT-10, dinámica | E2 | ninguna prueba sobrevive a un cambio de estructura, de constante, de selección o de celda; prueba nueva en la celda nueva | doce posiciones, movimientos de `B` y `H`, `H` +40, `D_1` ×3, transición real de un estado de selección; redefinición de un objeto del cono y sustitución con la misma etiqueta, como S4 |
 | G-A y G-B | E1 y E3 | las de `CU3`, ajustadas a esta decisión | las de la matriz de `CU3`, revisadas |
 | G-final | E4 | `INTEGRATED_PHASE` | — |
 
@@ -859,7 +1007,12 @@ G-AUT-9 o G-AUT-10, E1 se presenta como candidato parcial verificado, con `P ∈
 | ADR nuevo 0040 | — | autoridad constructiva, política de documento, integridad, transferencia, política `RELAXED` y CIC (§9) | nuevo |
 | especificación nueva `locus-v2-constructive-authority.md` | §1 a §8 | AUT-1, AUT-2, AUT-3, AUT-5 y AUT-6 | nueva |
 | `locus-v2-intersections.md` | §2.1 (adaptador autoritativo); CU3.1; CU3.4 | AUT-7: bajo la política constructiva, el objetivo autoritativo es el objeto constructivo y el adaptador binary64 es la representación de la búsqueda de raíces; CU3.4 decide en `Σ_C`; G8B-R1 se recalifica (AUT-5 §7.4) | nueva versión semántica (1.4), solo bajo la política nueva |
+| `locus-v2-intersections.md` | CU3.1 (c) y CU3.2 (clases de contacto) | bajo la política constructiva, la clase 2 (aritmética exacta) exige una premisa constructible; con sustitutos no constructibles, la evidencia es (c1) y la integridad `RELAXED`; las clases 1 y 2 decididas contra el objeto constructivo son `STRICT` | nueva versión semántica, solo bajo la política nueva |
+| `locus-v2-intersections.md` | CU3.4, «Without contradiction, admissibility is unchanged» | se mantiene bajo la política antigua; bajo la nueva, la admisibilidad cambia sin contradicción solo en el evento de adopción, por la recalificación de §4.4 | nueva versión semántica, solo bajo la política nueva |
 | `locus-v2-certified-construction-model.md` | §11.2 y §11.3 | AUT-7: configuración de decisión constructiva; `Σ_L⁺` queda como configuración de la política antigua; nueva §12 con AUT-4 y la referencia a AUT-6 | nueva versión semántica (1.4), solo bajo la política nueva |
+| `locus-v2-certified-construction-model.md` | §11.4, condiciones 3 y 4 | la 3 (correspondencia con el algoritmo vivo) se conserva y se extiende al CIC; la 4 («no decision is transferred from another configuration») la sustituyen, bajo la política nueva, las vías admitidas de AUT-4 y la recomprobación de una misma prueba de AUT-6 | nueva versión semántica, solo bajo la política nueva |
+| `locus-v2-existence-components.md` | nota de consumidor | los consumidores estrictos de `CU2` consumen certificados transferidos (AUT-4) | aditiva |
+| Registro de aprobación de `CU3` | G-M3-4 | bajo la política nueva, la autoridad del objetivo que comprueba es la constructiva (AUT-7); se mantiene que el significado de un objetivo nunca se redefine para que una incidencia se cumpla | decisión nueva (D-AUT-11) |
 | ADR 0028 | decisión 3 | su «authority» es la de la representación | recalificación aditiva |
 | ADR 0038 | decisiones 7 y 17 | sin cambio de texto; la transferencia es una capa nueva | aditiva |
 | ADR 0039 | autoridad de `L` en `Σ_L` y del objetivo | sustituido por el ADR 0040 solo bajo la política constructiva | nueva versión semántica |
@@ -868,7 +1021,7 @@ G-AUT-9 o G-AUT-10, E1 se presenta como candidato parcial verificado, con `P ∈
 | ADR 0017 | barrera de cardinalidad | nota de migración para la adopción | aditiva |
 | ADR 0029 | migración perezosa | patrón del evento de adopción, sin documentos mixtos | sin cambio |
 | ADR 0037 | clases 1 a 4 | correspondencia con la integridad (§4.6) | aditiva |
-| Decisiones de `CU3` | D-CU3-3, -4, -5, -10 y -13 | D-AUT-11 | decisiones nuevas |
+| Decisiones de `CU3` | D-CU3-3, -4, -5, -6, -7, -10 y -13 | D-AUT-11 | decisiones nuevas |
 | `AGENTS.md` | §1 y §11 | ninguna: la dirección es coherente con ellos, y el archivo es de solo lectura para los agentes | — |
 
 ### 7.1 Texto candidato AUT-7 — objetivo y configuración de decisión bajo la autoridad constructiva
@@ -945,7 +1098,7 @@ se invierte solo en E3 y con prueba.
   > 2. **Document policy.** Documents without the record keep
   >    `legacy-representation-authority/v1`; new documents are created under the constructive
   >    policy; existing documents adopt it only by the explicit event `AUTHORITY_POLICY_ADOPTION`;
-  >    one document has one authority.
+  >    one document has one authority, and a reader that does not support the record fails closed.
   > 3. **Inherited algorithms** are unchanged representation engines; their provenance relations
   >    are strict for the ideal objects whenever those exist, and the existence of an ideal output
   >    is decided rigorously, never by an inherited tolerance.
@@ -956,14 +1109,17 @@ se invierte solo en E3 y con prueba.
   >    a type of their own, independent of numeric guarantees, propagated by premises, never
   >    persisted and never part of identity.
   > 6. **Relaxed admission.** `constructive-relaxed-admission/v1` admits a relation only with
-  >    positive evidence relative to the constructive objects and without rigorous contradiction;
-  >    G8B-R1 is not inherited and is re-qualified.
+  >    positive evidence relative to the constructive objects — exact equality with the declared
+  >    substitutes that persists under rational perturbations of them, or, for sign-change roots
+  >    only, a compatible enclosure of the constructive residual — and without rigorous
+  >    contradiction; G8B-R1 is not inherited and is re-qualified once, at adoption.
   > 7. **CU2 transfer.** CU2 certificates remain certificates of their captured configuration and
   >    transfer only by structural correspondence, the same revision and one of margin, structure or
   >    re-decision; otherwise `EVIDENCE_INSUFFICIENT` and strict consumers fail closed.
   > 8. **Constructive identity certificates** prove relations as identities in a field of rational
-  >    functions with an automatic boundary rule, certified sign conditions, cells, rechecks and
-  >    new proofs per cell.
+  >    functions with an automatic boundary rule, certified sign conditions, branches that
+  >    correspond to the live algorithm outside the driver slice, cells bound to the structure of
+  >    their dependency cone, rechecks and new proofs per cell.
   >
   > ## Consequences
   >
@@ -989,13 +1145,13 @@ se invierte solo en E3 y con prueba.
 | **D-AUT-2**, alcance y adopción | (a) documentos nuevos constructivos, antiguos con la autoridad vigente hasta la adopción explícita, sin documentos mixtos; (b) adopción solo explícita, también en los nuevos; (c) autoridad por comando | (a); (c) se rechaza porque da dos significados a un objeto |
 | **D-AUT-3**, puntos sobre caminos | (a) la aplicación de camino heredada sobre el camino ideal; (b) proyección ortogonal anclada | (a): intrínseca y heredada. La certificación genérica no depende de la elección |
 | **D-AUT-4**, transferencia de `CU2` | (a) las condiciones de §3.2, con `EVIDENCE_INSUFFICIENT` y fallo cerrado; (b) recalcular `Σ_L` (C3) | (a): conserva certificados, huellas y claves |
-| **D-AUT-5**, política `RELAXED` v1 | (a) (c1) para toda relación y (c2) solo para raíces con cambio de signo, con `τ_v1` igual a los valores G8B aplicados al residuo constructivo; (b) solo (c1); (c) sin `RELAXED` | (a): ningún contacto sin cambio de signo se admite por una cota de residuo |
+| **D-AUT-5**, política `RELAXED` v1 | (a) (c1) genérica (sustituto y ocho perturbaciones racionales) para toda relación, y (c2) solo para raíces con cambio de signo, con el umbral de G8B-R1 aplicado al residuo constructivo; (b) solo (c1); (c) sin `RELAXED` | (a): ningún contacto sin cambio de signo se admite por una cota de residuo, y ninguna igualdad aislada en el sustituto basta |
 | **D-AUT-6**, G8B-R1 en documentos adoptados | (a) recalificación por §4.4; (b) herencia automática | (a): la herencia automática transfiere una admisión entre autoridades sin justificación |
 | **D-AUT-7**, revisión de D-CU3-5 | (a) materializar `Intersect(L, r, D)` con `P ∈ r` `RELAXED` e integridad visible desde E1; (b) materializar solo con `STRICT`, después de E2 | (a): da construcciones útiles antes y no presenta lo relajado como prueba |
 | **D-AUT-8**, CIC | (a) CIC v1 como certificador estricto con la regla de frontera automática, las celdas y los encierros rigurosos de los valores ideales; (b) pruebas específicas por teorema | (a): capacidad reutilizable |
 | **D-AUT-9**, nombres y API | tipo propio `RelationIntegrity`, sin persistir y fuera de los tokens | la indicada; evita la colisión con `STRICT` de `OpenBoundaryPolicy` |
 | **D-AUT-10**, plan, puertas, autonomía y base | E0 a E4 con las puertas de §6.3; `INTEGRATED_PHASE`; la rama detenida avanza al commit aprobado | lo indicado |
-| **D-AUT-11**, decisiones de `CU3` | D-CU3-3: autoridad constructiva, `Σ_L` como representación transferida. D-CU3-4: M3 en `Σ_C` con sustitutos declarados, y el CIC para las premisas no constructibles. D-CU3-5: D-AUT-7. D-CU3-10: reclasificación de la costura por paridad bajo la autoridad constructiva. D-CU3-13: certificado de paridad y configuración `Σ_C` | aprobar las cinco revisiones |
+| **D-AUT-11**, decisiones de `CU3` | D-CU3-3: autoridad constructiva, `Σ_L` como representación transferida. D-CU3-4: M3 en `Σ_C` con sustitutos declarados, y el CIC para las premisas no constructibles. D-CU3-5: D-AUT-7. D-CU3-6 y D-CU3-7: G8B-R1 conservada bajo la política antigua y recalificada en la adopción bajo la nueva (§4.4), sin reasociaciones. D-CU3-10: reclasificación de la costura por paridad bajo la autoridad constructiva. D-CU3-13: certificado de paridad y configuración `Σ_C`. G-M3-4: autoridad del objetivo constructiva bajo la política nueva. CU3.1 (c), CU3.2 y §11.4: como en §7 | aprobar las revisiones |
 | **D-AUT-12**, publicación | publicar esta rama para la auditoría, con push normal y sin `main` | decisión del autor; el agente no publica |
 
 ## 11. Lo que esta propuesta no establece
@@ -1006,8 +1162,13 @@ se invierte solo en E3 y con prueba.
   sustituye las puertas de §6.
 - **Universalidad.** Ninguna prueba vale fuera de su celda. Las doce posiciones son
   recomprobaciones.
-- **Valores ideales de los cortes.** El prototipo no los encierra rigurosamente (§5.2).
-- **Coste general.** Las cifras son las del modelo y de tres construcciones sintéticas.
+- **Valores ideales.** El prototipo no encierra rigurosamente los de los puntos sobre caminos ni
+  los de los cortes (§5.2); por eso sus «certificados», incluidas las contradicciones de las
+  pruebas nuevas, valen con esa salvedad.
+- **Ramas dentro del corte del conductor.** El prototipo las toma del estado de selección
+  capturado sin volver a certificar su fidelidad, que en el producto aporta `CU2`.
+- **Coste general.** Las cifras son las del modelo y de cuatro construcciones sintéticas.
+- **Comandos heredados de relaciones.** No se integran con la integridad (§2.2).
 - **Sintaxis del registro de política.** Queda para E1.
 
 ## 12. Reproducción
@@ -1016,14 +1177,17 @@ se invierte solo en E3 y con prueba.
 pwsh -NoProfile -File tools/benchmark/pre-g9b-cu/run-cu3-constructive-identity.ps1 -OutputDirectory <directorio nuevo>
 ```
 
-Hubo dos ejecuciones sobre `51cc3637`, con el espacio de trabajo limpio, en
-`artifacts/benchmarks/pre-g9b-cu/cu3-constructive-identity-51cc3637-clean-runA` y `…-runB`, que el
+Hubo dos ejecuciones sobre `6ce61d81`, con el espacio de trabajo limpio, en
+`artifacts/benchmarks/pre-g9b-cu/cu3-constructive-identity-6ce61d81-runA` y `…-runB`, que el
 repositorio ignora:
 
 - códigos de salida 0 en el sondeo y en la limpieza;
 - fuentes del producto sin cambios;
 - el mismo SHA-256 de `cu3-constructive-identity.json`;
-- 17,9 a 19,6 s por ejecución, a título informativo.
+- 24,3 a 27,7 s por ejecución, a título informativo.
+
+Las ejecuciones anteriores, sobre `51cc3637`, dieron una evidencia distinta y ya sustituida, sin
+la correspondencia de ramas ni la huella estructural.
 
 El sondeo lee copias del modelo del autor, construye las construcciones sintéticas en un anfitrión
 embebido nuevo y no asigna ningún veredicto.
