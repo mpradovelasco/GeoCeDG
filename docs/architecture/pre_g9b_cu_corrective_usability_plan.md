@@ -5,7 +5,7 @@
 | Carácter | Plan vivo del track `PRE-G9B-CU`. No es especificación normativa: las decisiones arquitectónicas se incorporan a sus especificaciones mediante el procedimiento de revisión y aprobación |
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
-| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); `CU2` `PASS — AUTHOR APPROVED` (2026-10-24, con la comprobación manual del autor; [registro de cierre de `CU2`](../validation/pre_g9b_cu2_closeout_record.md), única autoridad de ese estado) sobre el candidato `6ff1ddf7` y su descendiente documental `098ec04f`, integrado en `main` por avance rápido con su cierre (§2.6). Historia de `CU2`: arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo `2856f246` verificado ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); la resolución autoral consolidada de 2026-10-23 aprobó sus doce decisiones de nivel C (§2.5), y el candidato final `6ff1ddf7` ([paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md)) se aprobó con el cierre de 2026-10-24. `CU3`: preparación autorizada el 2026-10-24 sobre `main` = `e6c908f2` (§2.7) y publicada en su rama de revisión en `80d72a50` ([expediente](../validation/pre_g9b_cu3_preparation_candidate_report.md)); diseño `AUTHOR APPROVED` e implementación **autorizada** en dos incrementos con puertas bloqueantes sobre `80d72a50` (2026-10-24, §2.8; [registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado), en la rama local `phase/pre-g9b-cu3-implementation`, detenida en el paso T2 porque la puerta G-M3 no se supera en la autoridad del objetivo, a la espera de la decisión autoral ([informe de la puerta](../validation/pre_g9b_cu3_m3_gate_report.md)); `CU3` no aprobado. `CU4`–`CU10` **no autorizados** |
+| Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); `CU2` `PASS — AUTHOR APPROVED` (2026-10-24, con la comprobación manual del autor; [registro de cierre de `CU2`](../validation/pre_g9b_cu2_closeout_record.md), única autoridad de ese estado) sobre el candidato `6ff1ddf7` y su descendiente documental `098ec04f`, integrado en `main` por avance rápido con su cierre (§2.6). Historia de `CU2`: arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo `2856f246` verificado ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); la resolución autoral consolidada de 2026-10-23 aprobó sus doce decisiones de nivel C (§2.5), y el candidato final `6ff1ddf7` ([paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md)) se aprobó con el cierre de 2026-10-24. `CU3`: preparación autorizada el 2026-10-24 sobre `main` = `e6c908f2` (§2.7) y publicada en su rama de revisión en `80d72a50` ([expediente](../validation/pre_g9b_cu3_preparation_candidate_report.md)); diseño `AUTHOR APPROVED` e implementación **autorizada** en dos incrementos con puertas bloqueantes sobre `80d72a50` (2026-10-24, §2.8; [registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado), detenida en el paso T2 porque la puerta G-M3 no se supera en la autoridad del objetivo ([informe de la puerta](../validation/pre_g9b_cu3_m3_gate_report.md); rama publicada en `1a0903aa` para su auditoría); bloqueo confirmado y estudio de la autoridad geométrica constructiva autorizado (§2.9; [estudio](pre_g9b_cu3_constructive_authority_study.md)); `CU3` no aprobado. `CU4`–`CU10` **no autorizados** |
 | Mandato editorial | E1, aprobado por el autor el 2026-10-20 como obligación de cierre del track (§2.3 y §8): diseño detallado de los apéndices pendiente de preparación y revisión; redacción e incorporación a `geocedg_book` no autorizadas |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
@@ -167,6 +167,20 @@ autoridad.
 | Autonomía | ejecución autónoma de los pasos previstos; parada solo ante un fallo de G-M3, una incompatibilidad normativa o de identidad, un cambio de contrato aprobado, un presupuesto que requiera aprobación o una garantía imposible | `CU3` |
 | Exclusiones | puntos críticos públicos sin incidencia, componentes puntuales (C22, C23 y C40), pares fuera de lo aprobado, C3, tolerancias de presentación, `CU4`–`CU10`, `G9B`, `geocedg_book` y cualquier publicación en `main`, etiquetas, releases o paquetes | `CU3`–`CU10` |
 
+## 2.9 Auditoría de G-M3 y estudio de la autoridad geométrica constructiva (2026-10-24)
+
+Fuentes: las instrucciones autorales «G-M3 detenida — auditoría independiente antes de elegir
+alternativa», «PRE-G9B-CU3 — Decisión autoral tras la auditoría independiente de G-M3» e
+«Hipótesis arquitectónica adicional para el estudio de autoridad geométrica constructiva», todas de
+2026-10-24.
+
+| Id | Decisión | Efecto en el plan |
+|---|---|---|
+| Auditoría | la implementación sigue detenida en T2; R-1 no se adopta; publicación autorizada de la rama `phase/pre-g9b-cu3-implementation` en `1a0903aa53170c16889a2ecd6b373f1f8ec42364`, por push normal, sin etiquetas ni cambios en `main`, para una auditoría independiente del prototipo de M3 | `CU3` |
+| G-M3-4 | confirmada como bloqueo de la implementación que depende de M3; R-1, R-2, R-3 y C3 no se adoptan | `CU3` |
+| Objetivo | se mantiene: intersecciones dinámicas con sus dos incidencias establecidas, con su grado real de evidencia; no se sustituye por una construcción que solo establezca la pertenencia al locus | `CU3` |
+| Estudio | autorizado un estudio arquitectónico focal de la autoridad geométrica constructiva (alternativas A, B y C, y la hipótesis de integridad estricta y relajada), solo con investigación, análisis de código, sondeos de solo lectura y documentación candidata; sin código productivo, sin cambios en especificaciones aprobadas ni en formatos persistidos, sin reanudar T3–T13 y sin promover ninguna alternativa | `CU3`; [estudio](pre_g9b_cu3_constructive_authority_study.md) |
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de
@@ -308,10 +322,14 @@ enmiendas normativas candidatas; hoja de decisiones; conciliación del estado vi
   ([expediente](../validation/pre_g9b_cu3_preparation_candidate_report.md)); diseño aprobado e
   implementación autorizada en dos incrementos con puertas bloqueantes el mismo día (§2.8;
   [registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md)), en la
-  rama local `phase/pre-g9b-cu3-implementation`. La implementación está detenida en el paso T2: la
-  puerta G-M3 no se supera en la autoridad del objetivo (G-M3-4), porque los cinco contactos
-  obligatorios se refutan exactamente contra ella
-  ([informe de la puerta](../validation/pre_g9b_cu3_m3_gate_report.md)). Documentos del diseño:
+  rama `phase/pre-g9b-cu3-implementation`, publicada en `1a0903aa` para su auditoría. La
+  implementación está detenida en el paso T2: la puerta G-M3 no se supera en la autoridad del
+  objetivo (G-M3-4), porque los cinco contactos obligatorios se refutan exactamente contra ella
+  ([informe de la puerta](../validation/pre_g9b_cu3_m3_gate_report.md)). Tras la auditoría, el
+  autor confirmó el bloqueo y autorizó un estudio arquitectónico de la autoridad geométrica
+  constructiva (§2.9), entregado como candidato en la rama local
+  `phase/pre-g9b-cu3-authority-study` ([estudio](pre_g9b_cu3_constructive_authority_study.md)).
+  Documentos del diseño:
   - [análisis](pre_g9b_cu3_initial_state_and_capability_analysis.md);
   - [Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md);
   - [Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md);
@@ -459,10 +477,11 @@ La preparación de `CU3` se autorizó el 2026-10-24 (§2.7), y el mismo día el 
 diseño (D-CU3-1 a D-CU3-19 de la
 [hoja de decisiones de `CU3`](../validation/pre_g9b_cu3_author_decision_sheet.md)) y autorizó la
 implementación en dos incrementos (§2.8). La puerta G-M3 se ejecutó en el paso T2 y no se supera
-en la autoridad del objetivo. La siguiente intervención autoral es la decisión única que presenta
-su [informe](../validation/pre_g9b_cu3_m3_gate_report.md) §8: la vía para los casos obligatorios
-y, si lleva M3 al producto, su presupuesto. Después vendrá la revisión del candidato técnico
-congelado. Las de `CU0` que afectan a `CU3`, sustituidas
+en la autoridad del objetivo; tras una auditoría independiente, el autor confirmó el bloqueo y
+autorizó el estudio de la autoridad geométrica constructiva (§2.9). La siguiente intervención
+autoral es la decisión sobre ese [estudio](pre_g9b_cu3_constructive_authority_study.md) §4: una
+solución parcial conservadora o una investigación arquitectónica específica. Después vendrá la
+revisión del candidato técnico congelado. Las de `CU0` que afectan a `CU3`, sustituidas
 por las de esa hoja, siguen en la
 [hoja de decisiones de `CU0`](../validation/pre_g9b_cu0_author_decision_sheet.md), con la
 precisión de `OBS-CU0-CU3-TANGENT-EXISTENCE` sobre F-2; el texto de las enmiendas

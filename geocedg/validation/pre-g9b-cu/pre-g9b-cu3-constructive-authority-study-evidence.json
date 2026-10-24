@@ -1,0 +1,2619 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-constructive-authority-study",
+  "status": "CU3 CONSTRUCTIVE AUTHORITY STUDY PROBE EVIDENCE - NO VERDICT OF ITS OWN",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-authority-study.ps1",
+    "source_commit": "91e78a92959267311b5a3a49978a329c3190db12",
+    "source_tree": "1b4fb85989ab76fb3161be0a74eb777a1c49edeb",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "readings": {
+    "binary64": "the kernel state taken as exact rationals: point (x/z, y/z) from its homogeneous coordinates; line coefficients (x, y, z) with the start and end points of a segment or ray; circle by its adapter (translation vector and first half axis) or by its matrix (A0 x^2 + A1 y^2 + A2 + 2 A3 xy + 2 A4 x + 2 A5 y)",
+    "stand_in": "constructive semantics: every object of a supported ruler-and-compass algorithm (join, segment, ray, parallel, perpendicular, meet, midpoint, circle through a point, circle with a free radius, line-circle intersection with the inherited selection) is recomputed exactly from its parents; free objects, points on paths and outputs of every other algorithm are binary64 stand-ins",
+    "anchored": "as stand_in, but a point on a line or circle path is the exact projection of its binary64 position onto the exact path"
+  },
+  "boundary": {
+    "constructible_objects": 24,
+    "non_constructible_objects": 77,
+    "objects": {
+      "D": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "E": {
+        "reading": "STAND_IN AlgoDependentPoint",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoDependentPoint)"
+      },
+      "F": {
+        "reading": "STAND_IN AlgoDependentPoint",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoDependentPoint)"
+      },
+      "G": {
+        "reading": "STAND_IN AlgoDependentPoint",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoDependentPoint)"
+      },
+      "A": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "g": {
+        "reading": "CONSTRUCTIVE AlgoOrthoLinePointLine",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "B": {
+        "reading": "PATH_POINT_STAND_IN",
+        "ideal_class": "CONSTRUCTIBLE (point on a constructible line at a rational parameter)"
+      },
+      "rbCone": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "rbCylinder": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "h": {
+        "reading": "CONSTRUCTIVE AlgoOrthoLinePointLine",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "i": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "C": {
+        "reading": "PATH_POINT_STAND_IN",
+        "ideal_class": "CONSTRUCTIBLE (point on a constructible line at a rational parameter)"
+      },
+      "\u03b1_{cone}": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "C'": {
+        "reading": "STAND_IN AlgoRotatePoint",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoRotatePoint)"
+      },
+      "\u03b1": {
+        "reading": "STAND_IN AlgoAnglePoints",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoAnglePoints)"
+      },
+      "j": {
+        "reading": "CONSTRUCTIVE AlgoJoinPoints",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on C')"
+      },
+      "H": {
+        "reading": "PATH_POINT_STAND_IN",
+        "ideal_class": "NON_CONSTRUCTIBLE (point on a non-constructible line j)"
+      },
+      "k": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "I": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on k)"
+      },
+      "p": {
+        "reading": "CONSTRUCTIVE AlgoCirclePointRadius",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "J": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "K": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "l": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "m": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "L": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "M": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "n": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "q": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "r": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "excCyl": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "C_c": {
+        "reading": "STAND_IN AlgoDependentPoint",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoDependentPoint)"
+      },
+      "a": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on C_c)"
+      },
+      "\u03b1_{cyl}": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "L'": {
+        "reading": "STAND_IN AlgoRotatePoint",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoRotatePoint)"
+      },
+      "\u03b2": {
+        "reading": "STAND_IN AlgoAnglePoints",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoAnglePoints)"
+      },
+      "b": {
+        "reading": "CONSTRUCTIVE AlgoJoinPoints",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on L')"
+      },
+      "g_1": {
+        "reading": "CONSTRUCTIVE AlgoCirclePointRadius",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on C_c)"
+      },
+      "V": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on g_1)"
+      },
+      "Z": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on g_1)"
+      },
+      "A_2": {
+        "reading": "PATH_POINT_STAND_IN",
+        "ideal_class": "NON_CONSTRUCTIBLE (point on a non-constructible line b)"
+      },
+      "a_2": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on A_2)"
+      },
+      "b_2": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on A_2)"
+      },
+      "B_2": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on a)"
+      },
+      "c_2": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on B_2)"
+      },
+      "N": {
+        "reading": "PATH_POINT_STAND_IN",
+        "ideal_class": "NON_CONSTRUCTIBLE (point on a conic at a binary64 angle parameter: trigonometric coordinates)"
+      },
+      "f": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "O": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on f)"
+      },
+      "s": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on O)"
+      },
+      "P": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on s)"
+      },
+      "t": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on P)"
+      },
+      "Q": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on t)"
+      },
+      "R": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on t)"
+      },
+      "c": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on R)"
+      },
+      "d": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on Q)"
+      },
+      "e": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on N)"
+      },
+      "S": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on c)"
+      },
+      "T": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on e)"
+      },
+      "U": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on d)"
+      },
+      "f_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "i_1": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on T)"
+      },
+      "W": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on i_1)"
+      },
+      "j_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "A_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on i_1)"
+      },
+      "h_1": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on W)"
+      },
+      "k_1": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on A_1)"
+      },
+      "l_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on I)"
+      },
+      "m_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on I)"
+      },
+      "B_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on h_1)"
+      },
+      "C_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on k_1)"
+      },
+      "D_1": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "c_1": {
+        "reading": "CONSTRUCTIVE AlgoCircleTwoPoints",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "E_1": {
+        "reading": "PATH_POINT_STAND_IN",
+        "ideal_class": "NON_CONSTRUCTIBLE (point on a conic at a binary64 angle parameter: trigonometric coordinates)"
+      },
+      "n_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on I)"
+      },
+      "p_1": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on E_1)"
+      },
+      "F_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on p_1)"
+      },
+      "d_1": {
+        "reading": "CONSTRUCTIVE AlgoCircleTwoPoints",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on I)"
+      },
+      "H_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectSingle",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on d_1)"
+      },
+      "r_1": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H_1)"
+      },
+      "I_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on r_1)"
+      },
+      "q_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "s_1": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsRay",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on H)"
+      },
+      "G_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectSingle",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on c_1)"
+      },
+      "t_1": {
+        "reading": "CONSTRUCTIVE AlgoOrthoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on G_1)"
+      },
+      "J_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on q_1)"
+      },
+      "b_1": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on J_1)"
+      },
+      "K_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on b_1)"
+      },
+      "L_1": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "f_2": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on k)"
+      },
+      "g_2": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "CONSTRUCTIBLE"
+      },
+      "M_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLineConic",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on c_1)"
+      },
+      "h_2": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on M_1)"
+      },
+      "O_1": {
+        "reading": "CONSTRUCTIVE AlgoIntersectLines",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on h_2)"
+      },
+      "P_1": {
+        "reading": "STAND_IN AlgoMacro",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoMacro)"
+      },
+      "i_2": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on P_1)"
+      },
+      "v_1": {
+        "reading": "FREE",
+        "ideal_class": "CONSTRUCTIBLE (free input)"
+      },
+      "N_1": {
+        "reading": "STAND_IN AlgoSemanticLocusPoint2D",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoSemanticLocusPoint2D)"
+      },
+      "d_2": {
+        "reading": "STAND_IN AlgoLocusMetricScalarAdapter",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoLocusMetricScalarAdapter)"
+      },
+      "Q_1": {
+        "reading": "STAND_IN AlgoMacro",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoMacro)"
+      },
+      "j_2": {
+        "reading": "CONSTRUCTIVE AlgoLinePointLine",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on Q_1)"
+      },
+      "R_1": {
+        "reading": "STAND_IN AlgoMacro",
+        "ideal_class": "NON_CONSTRUCTIBLE (AlgoMacro)"
+      },
+      "k_2": {
+        "reading": "CONSTRUCTIVE AlgoJoinPointsSegment",
+        "ideal_class": "NON_CONSTRUCTIBLE (depends on R_1)"
+      }
+    }
+  },
+  "provenance_census": {
+    "relations": 160,
+    "summary": {
+      "binary64": {
+        "exactly_true": 92,
+        "exactly_false": 55,
+        "not_decided": 0
+      },
+      "stand_in": {
+        "exactly_true": 156,
+        "exactly_false": 4,
+        "not_decided": 0
+      },
+      "anchored": {
+        "exactly_true": 160,
+        "exactly_false": 0,
+        "not_decided": 0
+      },
+      "binary64 (adapter)": {
+        "exactly_true": 2,
+        "exactly_false": 11,
+        "not_decided": 0
+      },
+      "binary64 (matrix)": {
+        "exactly_true": 0,
+        "exactly_false": 13,
+        "not_decided": 0
+      }
+    },
+    "rows": [
+      {
+        "relation": "A on g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "g perpendicular xAxis",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B on g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "h perpendicular g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B on i",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "i parallel h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A on j",
+        "binary64": "false (-2.57997791498E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C' on j",
+        "binary64": "false (-2.57997791498E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on j",
+        "binary64": "false (-1.48571956705E-16)",
+        "stand_in": "false (1.09425834793E-16)",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "k parallel g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I on k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I on i",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "p centre B",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "p radius rbCone",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J on i",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J on p",
+        "binary64": "false (-4.44089209850E-15)",
+        "binary64_matrix": "false (-3.38957426503E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "K on i",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "K on p",
+        "binary64": "false (4.44089209850E-15)",
+        "binary64_matrix": "false (5.49220993198E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J on l",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "l parallel g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "K on m",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "m parallel g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L on l",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M on m",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on n",
+        "binary64": "false (-3.68946849915E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M on n",
+        "binary64": "false (-3.68946849915E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M on q",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L on q",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on r",
+        "binary64": "false (-1.43476095355E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L on r",
+        "binary64": "false (-1.43476095355E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C_c on a",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "a parallel h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A on b",
+        "binary64": "false (1.87512165228E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L' on b",
+        "binary64": "false (1.87512165228E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "g_1 centre C_c",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "g_1 radius rbCylinder",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "V on g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "V on g_1",
+        "binary64": "true",
+        "binary64_matrix": "false (3.99844342831E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Z on g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Z on g_1",
+        "binary64": "false (-3.33066907388E-16)",
+        "binary64_matrix": "false (6.67774354439E-17)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_2 on b",
+        "binary64": "false (1.12791871463E-15)",
+        "stand_in": "false (-7.47202937648E-16)",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_2 on a_2",
+        "binary64": "false (5.90451939531E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A on a_2",
+        "binary64": "false (3.24591146614E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_2 on b_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "b_2 parallel g",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B_2 on b_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B_2 on a",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B_2 on c_2",
+        "binary64": "false (1.74423284272E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C_c on c_2",
+        "binary64": "false (1.74423284272E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "N on g_1",
+        "binary64": "false (-1.08146629981E-17)",
+        "binary64_matrix": "false (3.89029679833E-16)",
+        "stand_in": "false (-1.08146629981E-17)",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on f",
+        "binary64": "false (-7.93098906133E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "f parallel b",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "O on h",
+        "binary64": "false (3.16952183225E-17)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "O on f",
+        "binary64": "false (2.75055456629E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "O on s",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "s parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "P on i",
+        "binary64": "false (-5.07107569428E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "P on s",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "P on t",
+        "binary64": "false (1.28620007817E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "N on t",
+        "binary64": "false (1.57752205170E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q on t",
+        "binary64": "false (-3.44557034389E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q in_limited_part t",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q on p",
+        "binary64": "false (1.21128846640E-15)",
+        "binary64_matrix": "false (2.26260629988E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "R on t",
+        "binary64": "false (1.19705802143E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "R in_limited_part t",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "R on p",
+        "binary64": "false (-4.15169113646E-15)",
+        "binary64_matrix": "false (-3.10037330298E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "R on c",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "c parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q on d",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "d parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "N on e",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "e parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "S on c",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "S on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "T on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "T on e",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "U on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "U on d",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on f_1",
+        "binary64": "false (-1.07633114439E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "S on f_1",
+        "binary64": "false (-7.15658441083E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "T on i_1",
+        "binary64": "false (-1.37278535503E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "i_1 parallel b",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "W on f_1",
+        "binary64": "false (-1.27157481167E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "W on i_1",
+        "binary64": "false (-2.15783540740E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "W in_limited_part f_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on j_1",
+        "binary64": "false (-1.48239072218E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "U on j_1",
+        "binary64": "false (-1.48239072218E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_1 on j_1",
+        "binary64": "false (-1.60308053895E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_1 on i_1",
+        "binary64": "false (2.70572905256E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_1 in_limited_part j_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "W on h_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "h_1 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "A_1 on k_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "k_1 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I on l_1",
+        "binary64": "false (-5.05393530567E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q on l_1",
+        "binary64": "false (-5.05393530567E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I on m_1",
+        "binary64": "false (1.79362900128E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "R on m_1",
+        "binary64": "false (-3.43463713108E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B_1 on m_1",
+        "binary64": "false (-1.18397203865E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B_1 on h_1",
+        "binary64": "false (9.27694339937E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "B_1 in_limited_part m_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C_1 on l_1",
+        "binary64": "false (-2.09485773132E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C_1 on k_1",
+        "binary64": "false (-1.23731873460E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "C_1 in_limited_part l_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "c_1 centre H",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "D_1 on c_1",
+        "binary64": "false (-8.24185936421E-15)",
+        "binary64_matrix": "false (3.66044396282E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "E_1 on p",
+        "binary64": "false (-4.03281382794E-15)",
+        "binary64_matrix": "false (-2.98149599446E-15)",
+        "stand_in": "false (-4.03281382794E-15)",
+        "anchored": "true"
+      },
+      {
+        "relation": "I on n_1",
+        "binary64": "false (-4.32439671327E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "E_1 on n_1",
+        "binary64": "false (-4.32439671327E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "E_1 on p_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "p_1 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "F_1 on p_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "F_1 on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "d_1 centre I",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "E_1 on d_1",
+        "binary64": "false (-5.63869230509E-15)",
+        "binary64_matrix": "false (2.14383568018E-16)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H_1 on i",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H_1 on d_1",
+        "binary64": "true",
+        "binary64_matrix": "false (5.85307587311E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H_1 on r_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "r_1 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I_1 on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I_1 on r_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on q_1",
+        "binary64": "false (3.62562991366E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "F_1 on q_1",
+        "binary64": "false (3.62562991366E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "H on s_1",
+        "binary64": "false (-1.76452335928E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "I_1 on s_1",
+        "binary64": "false (-1.76452335928E-14)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "G_1 on s_1",
+        "binary64": "false (-7.09608498290E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "G_1 in_limited_part s_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "G_1 on c_1",
+        "binary64": "false (-1.47598203939E-14)",
+        "binary64_matrix": "false (-2.85751706683E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "G_1 on t_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "t_1 perpendicular k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J_1 on t_1",
+        "binary64": "false (-9.32785984901E-19)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J_1 on q_1",
+        "binary64": "false (-2.51363293569E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J_1 in_limited_part q_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "J_1 on b_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "b_1 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "K_1 on n_1",
+        "binary64": "false (-3.12993232917E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "K_1 on b_1",
+        "binary64": "false (1.88352297266E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "K_1 in_limited_part n_1",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L_1 on f_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "f_2 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L_1 on g_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "g_2 parallel h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M_1 on n",
+        "binary64": "false (1.16944541740E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M_1 in_limited_part n",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M_1 on c_1",
+        "binary64": "false (-2.03703356416E-14)",
+        "binary64_matrix": "false (-8.46803231452E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "M_1 on h_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "h_2 parallel k",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "O_1 on h",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "O_1 on h_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "L_1 on i_2",
+        "binary64": "false (-2.31210182781E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "P_1 on i_2",
+        "binary64": "false (-2.31210182781E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q_1 on j_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "j_2 parallel f_2",
+        "binary64": "true",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "R_1 on k_2",
+        "binary64": "false (4.78220408215E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      },
+      {
+        "relation": "Q_1 on k_2",
+        "binary64": "false (4.78220408215E-15)",
+        "stand_in": "true",
+        "anchored": "true"
+      }
+    ]
+  },
+  "representations": {
+    "circles": {
+      "p": {
+        "matrix_A0_A1_A3": [1.0, 1.0, 0.0],
+        "reading": "CONSTRUCTIVE AlgoCirclePointRadius",
+        "radius_squared_matrix": "25.0000000000",
+        "matrix_minus_half_axis_squared": "-1.05131783347E-15",
+        "matrix_minus_constructive": "-1.05131783347E-15",
+        "half_axis_squared_minus_constructive": "0",
+        "half_axes_equal": true,
+        "matrix_centre_equals_translation_vector": true,
+        "constructive_centre_minus_translation_vector": ["0", "0"],
+        "anchored_minus_constructive_radius_squared": "0"
+      },
+      "g_1": {
+        "matrix_A0_A1_A3": [1.0, 1.0, 0.0],
+        "reading": "CONSTRUCTIVE AlgoCirclePointRadius",
+        "radius_squared_matrix": "2.25000000000",
+        "matrix_minus_half_axis_squared": "-3.99844342831E-16",
+        "matrix_minus_constructive": "-3.99844342831E-16",
+        "half_axis_squared_minus_constructive": "0",
+        "half_axes_equal": true,
+        "matrix_centre_equals_translation_vector": true,
+        "constructive_centre_minus_translation_vector": ["0", "0"],
+        "anchored_minus_constructive_radius_squared": "0.00"
+      },
+      "c_1": {
+        "matrix_A0_A1_A3": [1.0, 1.0, 0.0],
+        "reading": "CONSTRUCTIVE AlgoCircleTwoPoints",
+        "radius_squared_matrix": "35.8151129835",
+        "matrix_minus_half_axis_squared": "-1.19023033270E-14",
+        "matrix_minus_constructive": "-3.66044396282E-15",
+        "half_axis_squared_minus_constructive": "8.24185936421E-15",
+        "half_axes_equal": true,
+        "matrix_centre_equals_translation_vector": true,
+        "constructive_centre_minus_translation_vector": ["0", "0"],
+        "anchored_minus_constructive_radius_squared": "8.41480639857E-15"
+      },
+      "d_1": {
+        "matrix_A0_A1_A3": [1.0, 1.0, 0.0],
+        "reading": "CONSTRUCTIVE AlgoCircleTwoPoints",
+        "radius_squared_matrix": "134.531419444",
+        "matrix_minus_half_axis_squared": "-5.85307587311E-15",
+        "matrix_minus_constructive": "-2.14383568018E-16",
+        "half_axis_squared_minus_constructive": "5.63869230509E-15",
+        "half_axes_equal": true,
+        "matrix_centre_equals_translation_vector": true,
+        "constructive_centre_minus_translation_vector": ["0", "0"],
+        "anchored_minus_constructive_radius_squared": "-4.26666409012E-15"
+      }
+    },
+    "lines": {
+      "g": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "h": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "i": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "j": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "2.57997791498E-16"
+      },
+      "k": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "l": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-4.44089209850E-16"
+      },
+      "m": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-4.44089209850E-16"
+      },
+      "n": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "9.63053372659E-15"
+      },
+      "q": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "r": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "2.02886747630E-14"
+      },
+      "a": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "b": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-1.87512165228E-15"
+      },
+      "a_2": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "-9.11573271765E-16"
+      },
+      "b_2": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "c_2": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-1.74423284272E-15"
+      },
+      "f": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "7.93098906133E-15"
+      },
+      "s": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "8.08464478861E-15"
+      },
+      "t": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "4.48445408605E-15"
+      },
+      "c": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-3.64072661574E-16"
+      },
+      "d": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "1.52869002334E-16"
+      },
+      "e": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "f_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "9.69284289381E-15"
+      },
+      "i_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "1.37278535503E-15"
+      },
+      "j_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "-5.62704483865E-16"
+      },
+      "h_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "2.00854173048E-15"
+      },
+      "k_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "2.12861157407E-14"
+      },
+      "l_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "-1.04282932919E-15"
+      },
+      "m_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "5.69615784654E-15"
+      },
+      "n_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "4.32439671327E-15"
+      },
+      "p_1": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "r_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-2.43072897839E-16"
+      },
+      "q_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-3.62562991366E-15"
+      },
+      "s_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": false,
+        "offset_difference_after_scaling": "2.08970845927E-14"
+      },
+      "t_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-9.70904656486E-16"
+      },
+      "b_1": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-4.56840362881E-15"
+      },
+      "f_2": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "g_2": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "h_2": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-1.13325531212E-15"
+      },
+      "i_2": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "2.31210182781E-15"
+      },
+      "j_2": {
+        "proportional_to_binary64": true,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "0"
+      },
+      "k_2": {
+        "proportional_to_binary64": false,
+        "direction_proportional": true,
+        "offset_difference_after_scaling": "-4.78220408215E-15"
+      }
+    },
+    "points": {
+      "I": {
+        "equal_to_binary64": true,
+        "difference": ["0", "0"]
+      },
+      "J": {
+        "equal_to_binary64": false,
+        "difference": ["-4.44089209850E-16", "0"]
+      },
+      "K": {
+        "equal_to_binary64": false,
+        "difference": ["-4.44089209850E-16", "0"]
+      },
+      "L": {
+        "equal_to_binary64": false,
+        "difference": ["-4.44089209850E-16", "0"]
+      },
+      "M": {
+        "equal_to_binary64": false,
+        "difference": ["-4.44089209850E-16", "0"]
+      },
+      "V": {
+        "equal_to_binary64": true,
+        "difference": ["0", "0"]
+      },
+      "Z": {
+        "equal_to_binary64": false,
+        "difference": ["0", "1.11022302463E-16"]
+      },
+      "B_2": {
+        "equal_to_binary64": true,
+        "difference": ["0", "0"]
+      },
+      "O": {
+        "equal_to_binary64": false,
+        "difference": ["2.51549490587E-15", "3.16952183225E-17"]
+      },
+      "P": {
+        "equal_to_binary64": false,
+        "difference": ["2.51549490587E-15", "-5.07107569428E-16"]
+      },
+      "Q": {
+        "equal_to_binary64": false,
+        "difference": ["1.52869002334E-16", "-3.77420314853E-16"]
+      },
+      "R": {
+        "equal_to_binary64": false,
+        "difference": ["-3.64072661574E-16", "2.92386420746E-16"]
+      },
+      "S": {
+        "equal_to_binary64": false,
+        "difference": ["-3.64072661574E-16", "0E-236"]
+      },
+      "T": {
+        "equal_to_binary64": true,
+        "difference": ["0", "0"]
+      },
+      "U": {
+        "equal_to_binary64": false,
+        "difference": ["1.52869002334E-16", "0E-118"]
+      },
+      "W": {
+        "equal_to_binary64": false,
+        "difference": ["3.24046025340E-17", "-2.32152702205E-16"]
+      },
+      "A_1": {
+        "equal_to_binary64": false,
+        "difference": ["4.94761831675E-16", "6.49670016984E-16"]
+      },
+      "B_1": {
+        "equal_to_binary64": false,
+        "difference": ["1.82073219833E-16", "2.66728983092E-16"]
+      },
+      "C_1": {
+        "equal_to_binary64": false,
+        "difference": ["2.07166813894E-16", "-3.93208634456E-16"]
+      },
+      "F_1": {
+        "equal_to_binary64": true,
+        "difference": ["0", "0"]
+      },
+      "H_1": {
+        "equal_to_binary64": false,
+        "difference": ["-2.43072897839E-16", "0E-354"]
+      },
+      "I_1": {
+        "equal_to_binary64": false,
+        "difference": ["-2.43072897839E-16", "0E-354"]
+      },
+      "G_1": {
+        "equal_to_binary64": false,
+        "difference": ["-1.50500481833E-17", "-9.70904656486E-16"]
+      },
+      "J_1": {
+        "equal_to_binary64": false,
+        "difference": ["-5.62498558718E-16", "-9.71837442471E-16"]
+      },
+      "K_1": {
+        "equal_to_binary64": false,
+        "difference": ["-3.30584077530E-16", "2.17156278134E-16"]
+      },
+      "M_1": {
+        "equal_to_binary64": false,
+        "difference": ["-1.13325531212E-15", "-7.03868067839E-16"]
+      },
+      "O_1": {
+        "equal_to_binary64": false,
+        "difference": ["-1.13325531212E-15", "0E-590"]
+      }
+    }
+  },
+  "mandatory_contacts": {
+    "e_1*n at K": {
+      "stand_in": {
+        "D_exact": ["4.06195492795", "-5.36746971213"],
+        "t_star": "0 (exact)",
+        "P": ["4.82772220816", "7.67308554281"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "-28.5250201472",
+        "in_the_limited_part_of_the_constructive_target": true,
+        "incidence_with_the_binary64_target": "DIFFERENT (-6.22299923077E-15)",
+        "reading_of_H": "PATH_POINT_STAND_IN",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_STAND_IN)", "H (PATH_POINT_STAND_IN)"]
+        },
+        "counters": {
+          "operations": 2412,
+          "tower_depth": 1,
+          "max_bits": 269
+        }
+      },
+      "anchored": {
+        "D_exact": ["4.06195492795", "-5.36746971213"],
+        "t_star": "0 (exact)",
+        "P": ["4.82772220816", "7.67308554281"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "-28.5250201472",
+        "in_the_limited_part_of_the_constructive_target": true,
+        "incidence_with_the_binary64_target": "DIFFERENT (-7.99998641291E-15)",
+        "reading_of_H": "PATH_POINT_ANCHORED",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_ANCHORED)", "C' (STAND_IN AlgoRotatePoint)", "H (PATH_POINT_ANCHORED)"]
+        },
+        "counters": {
+          "operations": 2455,
+          "tower_depth": 1,
+          "max_bits": 560
+        }
+      },
+      "P_L_captured_configuration": ["4.82772220816", "7.67308554281"],
+      "P_L_against_the_binary64_authority": "DIFFERENT",
+      "P_stand_in_minus_P_L": ["-9.23807016875E-17", "-2.91536809713E-16"]
+    },
+    "e_1*c_1 at K": {
+      "stand_in": {
+        "D_exact": ["4.06195492795", "-5.36746971213"],
+        "t_star": "0 (exact)",
+        "P": ["4.82772220816", "7.67308554281"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "-24.6715143576",
+        "incidence_with_the_binary64_target": "DIFFERENT (-8.24185936421E-15)",
+        "reading_of_H": "PATH_POINT_STAND_IN",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_STAND_IN)", "H (PATH_POINT_STAND_IN)"]
+        },
+        "counters": {
+          "operations": 2233,
+          "tower_depth": 1,
+          "max_bits": 325
+        }
+      },
+      "anchored": {
+        "D_exact": ["4.06195492795", "-5.36746971213"],
+        "t_star": "0 (exact)",
+        "P": ["4.82772220816", "7.67308554281"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "-24.6715143576",
+        "incidence_with_the_binary64_target": "DIFFERENT (-3.81412398607E-15)",
+        "reading_of_H": "PATH_POINT_ANCHORED",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_ANCHORED)", "C' (STAND_IN AlgoRotatePoint)", "H (PATH_POINT_ANCHORED)"]
+        },
+        "counters": {
+          "operations": 2277,
+          "tower_depth": 1,
+          "max_bits": 613
+        }
+      },
+      "P_L_captured_configuration": ["4.82772220816", "7.67308554281"],
+      "P_L_against_the_binary64_authority": "DIFFERENT",
+      "P_stand_in_minus_P_L": ["-9.23807016875E-17", "-2.91536809713E-16"]
+    },
+    "o_1*h_2 at K": {
+      "stand_in": {
+        "D_exact": ["4.06195492795", "-5.36746971213"],
+        "t_star": "0 (exact)",
+        "P": ["4.82772220816", "-5.36746971213"],
+        "P_first_derivative_is_exact_zero (fold)": false,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "2.56909823004",
+        "incidence_with_the_binary64_target": "DIFFERENT (1.13325531212E-15)",
+        "reading_of_H": "PATH_POINT_STAND_IN",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_STAND_IN)", "H (PATH_POINT_STAND_IN)"]
+        },
+        "counters": {
+          "operations": 3514,
+          "tower_depth": 2,
+          "max_bits": 269
+        }
+      },
+      "anchored": {
+        "D_exact": ["4.06195492795", "-5.36746971213"],
+        "t_star": "0 (exact)",
+        "P": ["4.82772220816", "-5.36746971213"],
+        "P_first_derivative_is_exact_zero (fold)": false,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "2.56909823004",
+        "incidence_with_the_binary64_target": "DIFFERENT (1.44383283259E-15)",
+        "reading_of_H": "PATH_POINT_ANCHORED",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_ANCHORED)", "C' (STAND_IN AlgoRotatePoint)", "H (PATH_POINT_ANCHORED)"]
+        },
+        "counters": {
+          "operations": 3552,
+          "tower_depth": 2,
+          "max_bits": 553
+        }
+      },
+      "P_L_captured_configuration": ["4.82772220816", "-5.36746971213"],
+      "P_L_against_the_binary64_authority": "DIFFERENT",
+      "P_stand_in_minus_P_L": ["-9.23807016875E-17", "0E-118"]
+    },
+    "e_1*c_1 at J": {
+      "stand_in": {
+        "D_exact": ["-5.93804507205", "-5.36746971213"],
+        "t_star": "pi (exact)",
+        "P": ["1.60843955401", "10.1309634885"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "-7.99249183578",
+        "incidence_with_the_binary64_target": "DIFFERENT (-8.24185936421E-15)",
+        "reading_of_H": "PATH_POINT_STAND_IN",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_STAND_IN)", "H (PATH_POINT_STAND_IN)"]
+        },
+        "counters": {
+          "operations": 2233,
+          "tower_depth": 1,
+          "max_bits": 330
+        }
+      },
+      "anchored": {
+        "D_exact": ["-5.93804507205", "-5.36746971213"],
+        "t_star": "pi (exact)",
+        "P": ["1.60843955401", "10.1309634885"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "-7.99249183578",
+        "incidence_with_the_binary64_target": "DIFFERENT (2.44227449523E-15)",
+        "reading_of_H": "PATH_POINT_ANCHORED",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_ANCHORED)", "C' (STAND_IN AlgoRotatePoint)", "H (PATH_POINT_ANCHORED)"]
+        },
+        "counters": {
+          "operations": 2272,
+          "tower_depth": 1,
+          "max_bits": 615
+        }
+      },
+      "P_L_captured_configuration": ["1.60843955401", "10.1309634885"],
+      "P_L_against_the_binary64_authority": "DIFFERENT",
+      "P_stand_in_minus_P_L": ["-2.56892311094E-16", "-1.65934462855E-16"]
+    },
+    "e_1*r at J": {
+      "stand_in": {
+        "D_exact": ["-5.93804507205", "-5.36746971213"],
+        "t_star": "pi (exact)",
+        "P": ["1.60843955401", "10.1309634885"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "16.2356304190",
+        "in_the_limited_part_of_the_constructive_target": true,
+        "incidence_with_the_binary64_target": "DIFFERENT (-1.57896231924E-14)",
+        "reading_of_H": "PATH_POINT_STAND_IN",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_STAND_IN)", "H (PATH_POINT_STAND_IN)"]
+        },
+        "counters": {
+          "operations": 2412,
+          "tower_depth": 1,
+          "max_bits": 275
+        }
+      },
+      "anchored": {
+        "D_exact": ["-5.93804507205", "-5.36746971213"],
+        "t_star": "pi (exact)",
+        "P": ["1.60843955401", "10.1309634885"],
+        "P_first_derivative_is_exact_zero (fold)": true,
+        "incidence_with_the_constructive_target": "EQUAL",
+        "residual_first_derivative_is_exact_zero": true,
+        "residual_second_derivative": "16.2356304190",
+        "in_the_limited_part_of_the_constructive_target": true,
+        "incidence_with_the_binary64_target": "DIFFERENT (-2.25506903893E-14)",
+        "reading_of_H": "PATH_POINT_ANCHORED",
+        "boundary_support": {
+          "free_inputs": ["A", "D_1", "rbCone", "xAxis"],
+          "boundary_objects": ["B (PATH_POINT_ANCHORED)", "C' (STAND_IN AlgoRotatePoint)", "H (PATH_POINT_ANCHORED)"]
+        },
+        "counters": {
+          "operations": 2455,
+          "tower_depth": 1,
+          "max_bits": 567
+        }
+      },
+      "P_L_captured_configuration": ["1.60843955401", "10.1309634885"],
+      "P_L_against_the_binary64_authority": "DIFFERENT",
+      "P_stand_in_minus_P_L": ["-2.56892311094E-16", "-1.65934462855E-16"]
+    }
+  },
+  "genericity_in_H": {
+    "decisions": 60,
+    "exactly_equal": 60,
+    "positions": {
+      "position_1": {
+        "H": [6.7467948729164355, 13.553889572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_2": {
+        "H": [6.412894872916436, 13.436689572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_3": {
+        "H": [6.932294872916436, 13.319489572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_4": {
+        "H": [6.598394872916436, 13.202289572261037],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_5": {
+        "H": [6.264494872916435, 13.641789572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_6": {
+        "H": [6.783894872916435, 13.524589572261037],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_7": {
+        "H": [6.449994872916435, 13.407389572261037],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_8": {
+        "H": [6.9693948729164354, 13.290189572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_9": {
+        "H": [6.635494872916436, 13.172989572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_10": {
+        "H": [6.301594872916436, 13.612489572261039],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_11": {
+        "H": [6.820994872916436, 13.495289572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      },
+      "position_12": {
+        "H": [6.487094872916436, 13.378089572261038],
+        "e_1*n at K": "EQUAL, h' = 0",
+        "e_1*c_1 at K": "EQUAL, h' = 0",
+        "o_1*h_2 at K": "EQUAL, h' = 0",
+        "e_1*c_1 at J": "EQUAL, h' = 0",
+        "e_1*r at J": "EQUAL, h' = 0"
+      }
+    }
+  },
+  "reconstruction_boundaries": {
+    "n": {
+      "Sigma_L+ from K (gate G-M3) vs from D_1": "different lines",
+      "Sigma_L+ from K (gate G-M3) vs deep recomputation": "same line",
+      "Sigma_L+ from K (gate G-M3) vs binary64": "different lines",
+      "from D_1 vs deep recomputation": "different lines",
+      "from D_1 vs binary64": "same line",
+      "deep recomputation vs binary64": "different lines"
+    },
+    "h_2": {
+      "Sigma_L+ from K (gate G-M3) vs from D_1": "different lines",
+      "Sigma_L+ from K (gate G-M3) vs deep recomputation": "different lines",
+      "Sigma_L+ from K (gate G-M3) vs binary64": "different lines",
+      "from D_1 vs deep recomputation": "different lines",
+      "from D_1 vs binary64": "different lines",
+      "deep recomputation vs binary64": "different lines"
+    },
+    "c_1": {
+      "Sigma_L+ from K (gate G-M3) vs from D_1": "different circles (centre equal true, r^2 difference -3.66044396282E-15)",
+      "Sigma_L+ from K (gate G-M3) vs deep recomputation": "different circles (centre equal true, r^2 difference -3.66044396282E-15)",
+      "Sigma_L+ from K (gate G-M3) vs binary64": "same circle",
+      "from D_1 vs deep recomputation": "same circle",
+      "from D_1 vs binary64": "different circles (centre equal true, r^2 difference 3.66044396282E-15)",
+      "deep recomputation vs binary64": "different circles (centre equal true, r^2 difference 3.66044396282E-15)",
+      "Sigma_L+ from K (gate G-M3) vs adapter (half axis)": "different circles (centre equal true, r^2 difference -1.19023033270E-14)",
+      "from D_1 vs adapter (half axis)": "different circles (centre equal true, r^2 difference -8.24185936421E-15)",
+      "deep recomputation vs adapter (half axis)": "different circles (centre equal true, r^2 difference -8.24185936421E-15)",
+      "binary64 vs adapter (half axis)": "different circles (centre equal true, r^2 difference -1.19023033270E-14)"
+    }
+  },
+  "fold_symmetry": {
+    "e_1": {
+      "cu2_certified_folds": [
+        {
+          "parameter": [-3.1415926535897936, -3.141592653589793],
+          "symmetry": "fold-symmetry/v1:HORIZONTAL",
+          "nature": "RIGOROUS_INTERVAL"
+        },
+        {
+          "parameter": [0.0, 0.0],
+          "symmetry": "fold-symmetry/v1:HORIZONTAL",
+          "nature": "RIGOROUS_INTERVAL"
+        }
+      ],
+      "symmetric_driver_pairs": {
+        "0 +- m=0.14285714285714285": {
+          "captured_program": "EQUAL (exact)",
+          "constructive_reading": "EQUAL (exact)"
+        },
+        "pi +- m=0.14285714285714285": {
+          "captured_program": "EQUAL (exact)",
+          "constructive_reading": "EQUAL (exact)"
+        },
+        "0 +- m=0.2222222222222222": {
+          "captured_program": "EQUAL (exact)",
+          "constructive_reading": "EQUAL (exact)"
+        },
+        "pi +- m=0.2222222222222222": {
+          "captured_program": "EQUAL (exact)",
+          "constructive_reading": "EQUAL (exact)"
+        },
+        "0 +- m=0.2727272727272727": {
+          "captured_program": "EQUAL (exact)",
+          "constructive_reading": "EQUAL (exact)"
+        },
+        "pi +- m=0.2727272727272727": {
+          "captured_program": "EQUAL (exact)",
+          "constructive_reading": "EQUAL (exact)"
+        }
+      }
+    },
+    "o_1": {
+      "cu2_certified_folds": [],
+      "symmetric_driver_pairs": {
+        "0 +- m=0.14285714285714285": {
+          "captured_program": "DIFFERENT (dx 0E-119, dy 1.92704539396)",
+          "constructive_reading": "DIFFERENT (dx 0E-119, dy 1.92704539396)"
+        },
+        "pi +- m=0.14285714285714285": {
+          "captured_program": "DIFFERENT (dx 0E-119, dy 1.12712006189)",
+          "constructive_reading": "DIFFERENT (dx 0E-119, dy 1.12712006189)"
+        },
+        "0 +- m=0.2222222222222222": {
+          "captured_program": "DIFFERENT (dx 0E-119, dy 2.83893176056)",
+          "constructive_reading": "DIFFERENT (dx 0E-119, dy 2.83893176056)"
+        },
+        "pi +- m=0.2222222222222222": {
+          "captured_program": "DIFFERENT (dx 0E-119, dy 1.72091822736)",
+          "constructive_reading": "DIFFERENT (dx 0E-119, dy 1.72091822736)"
+        },
+        "0 +- m=0.2727272727272727": {
+          "captured_program": "DIFFERENT (dx 0E-119, dy 3.33357825785)",
+          "constructive_reading": "DIFFERENT (dx 0E-119, dy 3.33357825785)"
+        },
+        "pi +- m=0.2727272727272727": {
+          "captured_program": "DIFFERENT (dx 0E-119, dy 2.07905201315)",
+          "constructive_reading": "DIFFERENT (dx 0E-119, dy 2.07905201315)"
+        }
+      }
+    }
+  },
+  "dynamics": {
+    "rbCone=3.0": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "rbCone=4.0": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "rbCone=6.0": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "rbCone=7.5": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "alpha_cone=35.0": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "alpha_cone=60.0": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "D_1 radius factor 0.5": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "D_1 radius factor 1.3": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "D_1 radius factor 3.0": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": false
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "PROBE_FAILURE: java.lang.ArithmeticException: Nonfinite binary64 value at org.geocedg.desktop.PreG9BCu3M3Tower.of(PreG9BCu3M3Tower.java:97) < org.geocedg.desktop.PreG9BCu3M3Evaluator.constant(PreG9BCu3M3Evaluator.java:332)",
+        "constructive": "INVALID: INVALID at node -1: Fewer roots lie on the path than the index",
+        "constructive_h1_zero": null
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": false
+      },
+      "constructive_max_operations": 2919,
+      "constructive_max_tower_depth": 2
+    },
+    "excCyl=3.7 (control)": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    },
+    "restored": {
+      "e_1*n at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "e_1*c_1 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "o_1*h_2 at K": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*c_1 at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true
+      },
+      "e_1*r at J": {
+        "binary64_authority": "DIFFERENT",
+        "constructive": "EQUAL",
+        "constructive_h1_zero": true,
+        "constructive_in_limited_part": true
+      },
+      "constructive_max_operations": 3514,
+      "constructive_max_tower_depth": 2
+    }
+  },
+  "cu2_certificate_stability": {
+    "base": {
+      "e_1": {
+        "completeness": "COMPLETE",
+        "certifier": "locus-existence/hybrid/v1",
+        "components": [
+          [-3.141592653589793, -3.141592653589793, true, false]
+        ],
+        "folds": [
+          [-3.1415926535897936, -3.141592653589793, "fold-symmetry/v1:HORIZONTAL"],
+          [0.0, 0.0, "fold-symmetry/v1:HORIZONTAL"]
+        ],
+        "point_components": 0,
+        "singular_parameters": 0
+      },
+      "o_1": {
+        "completeness": "COMPLETE",
+        "certifier": "locus-existence/hybrid/v1",
+        "components": [
+          [-3.141592653589793, -3.141592653589793, true, false]
+        ],
+        "folds": [],
+        "point_components": 0,
+        "singular_parameters": 0
+      }
+    },
+    "D_1.x + 1 ulp": {
+      "identical_to_base": true
+    },
+    "rbCone + 1 ulp": {
+      "identical_to_base": true
+    },
+    "alpha_cone + 1 ulp": {
+      "identical_to_base": true
+    },
+    "H path parameter + 1 ulp": {
+      "identical_to_base": true
+    },
+    "restored": {
+      "identical_to_base": true
+    }
+  }
+}
