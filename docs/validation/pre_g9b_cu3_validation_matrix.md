@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Matriz candidata de validación de una futura implementación de `CU3`. No es evidencia de ejecución ni contrato aprobado |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisada por la revisión científica focal y por la comprobación final de coherencia científica de 2026-10-24; `selfApproved=false` |
+| Estado | Matriz de la preparación, revisada por la revisión científica focal y por la comprobación final de coherencia científica de 2026-10-24. **Aprobada por el autor el 2026-10-24** con la precisión de la autoridad del objetivo, incorporada en el paso T0 (G-M3-4 y las filas que dependen de ella) ([registro de aprobación](pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado); `selfApproved=false` |
 | Normas candidatas | [propuesta normativa](../architecture/pre_g9b_cu3_normative_proposal.md) (A3.0 a A3.5); [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Diseños | [análisis](../architecture/pre_g9b_cu3_initial_state_and_capability_analysis.md); [Etapa A](../architecture/pre_g9b_cu3_stage_a_structural_points_design.md); [Etapa B](../architecture/pre_g9b_cu3_stage_b_tangent_contact_certification_design.md); [normalización, admisibilidad y ejes](../architecture/pre_g9b_cu3_residual_normalization_and_axes_design.md); [estrategia](../architecture/pre_g9b_cu3_implementation_strategy.md) |
 | Decisiones aplicadas | C1-1 (puertas por contadores) y C1-4 (`preserve` frente a `pins`) del cierre de `CU0`; las de las filas dependen de la [hoja de decisiones de `CU3`](pre_g9b_cu3_author_decision_sheet.md) |
@@ -20,6 +20,12 @@ Reglas de las filas:
   `L` y autoridad; `Σ_L⁺`, que la contiene sin cambios y es la configuración de decisión de M3 y de
   los certificados de conteo; o `Σ_B`, la recalculación profunda, solo diagnóstico (Etapa A §2.3,
   §6.2 y §6.6).
+- Precisión autoral de 2026-10-24 (G-M3-4): cada incidencia se decide contra la autoridad del
+  objetivo (`locus-v2-intersections.md` §2.1; `locus-v2-certified-construction-model.md` §11.3):
+  los coeficientes binary64 de la recta, con la parte limitada de un segmento o un rayo, y el
+  centro y el semieje del adaptador de una circunferencia. Una reconstrucción del objetivo, o la
+  matriz capturada de una constante que es también objetivo, solo da diagnósticos, salvo que se
+  demuestre su igualdad exacta con la autoridad.
 
 ## 1. Referencias analíticas y medidas
 
@@ -27,7 +33,7 @@ Reglas de las filas:
 |---|---|---|
 | `t*(K)` | `0` exacto en `Σ_L` y en `Σ_L⁺` (`K* − c` es un múltiplo positivo de `e₀`, con la semántica de conductor de `p`) | análisis §5.1; Etapa A §2.3 |
 | relaciones exactas en `Σ_L` | `k` vertical por `H`; `h` e `i` horizontales; `I = i ∩ k = (H.x, B.y)`; centro de `c_1` igual a `H`; centro de `p` en `i`; `g ∥ k` (productos por 0 y ±1, normalización por potencias de dos; hipótesis `z = 1`) | análisis §5.8 |
-| radio de `c_1` | `Σ_L`: el de la matriz capturada, `√(A4² + A5² − A2)`; `Σ_B`: el exacto `|HD_1|`; en general distintos, así que `P_L ≠ P_B` | Etapa A §6.6 |
+| radio de `c_1` | `Σ_L`: el de la matriz capturada, `√(A4² + A5² − A2)`; autoridad como objetivo: el semieje del adaptador; `Σ_B`: el exacto `|HD_1|`; en general distintos entre sí, así que `P_L ≠ P_B` | Etapa A §6.2 y §6.6; G-M3-4 |
 | datos del caso adversario de configuración | `fl(fl(√2)²) = 2,0000000000000004 ≠ 2` | comprobación aritmética de la comprobación final |
 | `t*(J)` | `π`, no representable; garantía encerrada | análisis §5.1 |
 | `K.x` binary64 | `fl(B.x + 5)`, que difiere de `B.x + 5` en `4,44·10⁻¹⁶` | análisis §5.7 |
@@ -50,13 +56,17 @@ Reglas de las filas:
 
 | Id | Criterio | Se supera si |
 |---|---|---|
-| G-M3-1 | viabilidad matemática en `Σ_L⁺` de los cinco contactos obligatorios (`e_1·n`, `e_1·c_1` y `o_1·h_2` en `K`; `e_1·c_1` y `e_1·r` en `J`), con las hipótesis aritméticas del análisis §5.8 comprobadas sobre los estados capturados | V-M3-1, V-M3-2 y V-M3-3 a V-M3-6 pasan (igual en los cinco y en las dos ramas; distinto en el control desplazado un ulp; igual en el control accidental exacto; distinto en el accidental no representable), y V-CFG-1 a V-CFG-6 pasan |
+| G-M3-1 | viabilidad matemática en `Σ_L⁺` de los cinco contactos obligatorios (`e_1·n`, `e_1·c_1` y `o_1·h_2` en `K`; `e_1·c_1` y `e_1·r` en `J`), con las hipótesis aritméticas del análisis §5.8 comprobadas sobre los estados capturados | M3 decide exactamente (igual o distinto, nunca fuera de clase) en los cinco contactos y en las dos ramas de `H_1`, con las hipótesis de §5.8 comprobadas; V-M3-1 y V-M3-2 deciden igual con los objetivos reconstruidos, como diagnóstico del teorema; los controles V-M3-3 a V-M3-6 dan su resultado (distinto en el control desplazado un ulp; igual en el control accidental exacto; distinto en el accidental no representable); y V-CFG-1 a V-CFG-6 pasan. Que la incidencia se cumpla con la autoridad del objetivo lo decide G-M3-4 |
 | G-M3-2 | presupuesto | los contadores de GC3-1, GC3-3 y GC3-4 de los cinco contactos, bajo el techo versionado propuesto por el banco y aprobado por el autor |
 | G-M3-3 | correspondencia con el algoritmo vivo | V-M3-7 pasa en todos los algoritmos de varias salidas de los cinco subgrafos |
+| G-M3-4 | autoridad del objetivo geométrico (precisión autoral de 2026-10-24): para cada incidencia, el punto exacto de `L` en `Σ_L` y el objetivo autoritativo; semántica exacta del objetivo frente a su autoridad (rectas, coeficientes proporcionales con un factor no nulo demostrado; segmentos y rayos, además su parte limitada; circunferencias, la representación del adaptador, distinta de la matriz capturada, de los semiejes y de las evaluaciones numéricas; objetivos reconstruidos, correspondencia exacta demostrada) en los casos obligatorios, en los controles adversarios y donde el redondeo rompe una relación constructiva exacta | V-M3-9 y V-CFG-1 a V-CFG-6 pasan: cada incidencia se decide contra la autoridad, y un desacuerdo sin correspondencia exacta demostrada falla cerrado |
 
-Si la puerta no se supera, la implementación de la segunda incidencia se detiene y se presentan
-las alternativas R-1 a R-3 y C3 de la Etapa A §6.7. Nunca se sustituye por un residuo ni por una
-demostración en `Σ_B`.
+La aprobación del diseño no certifica por anticipado la viabilidad de M3 ni su presupuesto. El
+resultado de la puerta y el techo propuesto se presentan juntos al autor para una única decisión
+cuando el presupuesto necesita su aprobación. Si la puerta no se supera, incluida G-M3-4, la
+implementación de la segunda incidencia se detiene y se presentan las alternativas R-1 a R-3 y C3
+de la Etapa A §6.7; ninguna queda autorizada automáticamente. Nunca se sustituye por un residuo ni
+por una demostración en `Σ_B`.
 
 ### 2.2 Contadores
 
@@ -104,7 +114,7 @@ informativos.
 
 | Id | Caso | Criterio |
 |---|---|---|
-| V-MAND-1 | `Intersect(e_1, n, K)` | el punto materializado es el de `Point(e_1, K)` (`P_L`), dentro de la tolerancia de punto de `M_1`; incidencia decidida por M3 en `Σ_L⁺`; orden `FOLD_CONTACT` |
+| V-MAND-1 | `Intersect(e_1, n, K)` | el punto materializado es el de `Point(e_1, K)` (`P_L`), dentro de la tolerancia de punto de `M_1`; incidencia decidida por M3 en `Σ_L⁺` contra la autoridad de `n` (G-M3-4); orden `FOLD_CONTACT`; si la autoridad no contiene `P_L`, fallo cerrado y condición de parada |
 | V-MAND-2 | `Intersect(e_1, c_1, K)` | igual |
 | V-MAND-3 | `Intersect(o_1, h_2, K)` | `N_1`; orden dos (tangencia regular) |
 | V-MAND-4 | costura: `Intersect(e_1, c_1, J)` e `Intersect(e_1, r, J)` | el punto de la costura, como contacto estructural en el pliegue (D-CU3-10) |
@@ -118,24 +128,25 @@ informativos.
 
 | Id | Caso | Criterio |
 |---|---|---|
-| V-M3-1 | `Σ_L⁺` del modelo en el punto exacto `K*`: constantes de `Σ_L` sin cambios (`H`, `h`, `k`, `i`, `I`, `c_1` en su forma de matriz, `p` en su semántica de conductor), `g` en su estado binary64, y `K`, `m`, `M`, `n`, `M_1` y `h_2` recalculados | decide igual para `n`, `c_1` y `h_2` en las dos ramas de `H_1` |
+| V-M3-1 | `Σ_L⁺` del modelo en el punto exacto `K*`: constantes de `Σ_L` sin cambios (`H`, `h`, `k`, `i`, `I`, `c_1` en su forma de matriz, `p` en su semántica de conductor), `g` en su estado binary64, y `K`, `m`, `M`, `n`, `M_1` y `h_2` recalculados | diagnóstico del teorema con los objetivos reconstruidos: decide igual para `n`, `c_1` y `h_2` en las dos ramas de `H_1`; con la precisión G-M3-4 nunca establece la incidencia, que decide V-M3-9 |
 | V-M3-2 | ídem en `J*` | decide igual para `c_1` y `r` |
-| V-M3-3 | control de configuración: la misma decisión con los objetos intermedios (`K`, `M`, `n`, `M_1`) tomados en su estado binary64 | refuta las incidencias con `n` y con `h_2`, que se construyen a partir de `K` y `M` redondeados (`INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`), y puede confirmar la de `c_1`, que solo depende de constantes comunes al corte; documenta por qué la regla 6 de `Σ_L⁺` recalcula exactamente los objetos intermedios (Etapa A §6.2) |
+| V-M3-3 | control de configuración: la misma decisión con los objetos intermedios (`K`, `M`, `n`, `M_1`) tomados en su estado binary64 | refuta las incidencias con `n` y con `h_2`, que se construyen a partir de `K` y `M` redondeados (`INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`), y puede confirmar la de `c_1`, que solo depende de constantes comunes al corte; documenta por qué la regla 6 de `Σ_L⁺` recalcula exactamente los objetos intermedios (Etapa A §6.2). Con la precisión G-M3-4, `n` y `h_2` en su estado binary64 son su autoridad como objetivos: para ellos este control coincide con la decisión autoritativa de V-M3-9, y la regla 6 solo sirve para reconstruir `D*` y para el diagnóstico de la reconstrucción |
 | V-M3-4 | control negativo: objetivo desplazado un ulp en la frontera | decide distinto |
 | V-M3-5 | igualdad accidental exacta en `Σ_L⁺`: circunferencia trazada de radio 1,5 y recta `y = 1,5` | decide igual (clase 2) |
 | V-M3-6 | igualdad accidental solo con valores no representables (`0.1 + 0.2` frente a `0.3`) | decide distinto, de forma exacta |
 | V-M3-7 | correspondencia con el algoritmo vivo | para cada algoritmo de varias salidas, la rama exacta, elegida por la regla exacta de §10.2 con el estado capturado, tiene un encierro que contiene el valor vivo y es disjunto del de la otra rama; si no, `SELECTION_NOT_RECONSTRUCTED` |
 | V-M3-8 | fuera de clase y presupuesto | operación trascendente del conductor: `EXACT_EVALUATION_OUT_OF_CLASS`; presupuesto agotado (inyección en el arnés): `EXACT_EVALUATION_BUDGET_EXHAUSTED`. Nunca una decisión |
+| V-M3-9 | autoridad del objetivo en los cinco contactos (G-M3-4) | para cada contacto, M3 decide contra la autoridad del objetivo: `n` y `r` por los coeficientes binary64 de su recta soporte y su parte limitada, `h_2` por sus coeficientes binary64 y `c_1` por el centro y el semieje de su adaptador. Se registran la diferencia exacta entre la autoridad y la reconstrucción (proporcionalidad de las rectas; matriz frente a semieje de `c_1`), el signo exacto del residuo autoritativo y su magnitud aproximada. La incidencia solo se establece si se cumple exactamente con la autoridad |
 
 ### 3.3b Coherencia entre `Σ_L`, `Σ_L⁺` y `Σ_B` (comprobación final)
 
 | Id | Caso | Criterio | Prueba adversaria |
 |---|---|---|---|
-| V-CFG-1 | **incidencia demostrada en `Σ_B` y no demostrada en `Σ_L`**. `O = (0, 0)`; `c = Circle(O, (1, 1))`, que el corte captura como constante con `r² = fl(fl(√2)²) = 2,0000000000000004`; el conductor `P` sobre `d = Circle(O, 3)`; `Q = Intersect(c, Ray(O, P), 1)`; `L = LocusV2(Q, P)`; el objetivo `r = Circle(O, (1, −1))`, que `Σ_L⁺` recalcula con `r² = 2`; `D = Point(d)` | `Intersect(L, r, D)` indefinido con `INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION` y el diagnóstico `INCIDENCE_HOLDS_ONLY_IN_JOINT_RECOMPUTATION` (en `Σ_B` los dos radios son `√2`); `Point(L, D)` definido; el residuo binary64 de `P̃` respecto de `r` es del orden de `10⁻¹⁶`, y **no** se acepta | una implementación que transfiriera la demostración desde `Σ_B`, o que aceptara la coincidencia numérica, definiría el punto |
-| V-CFG-2 | el objetivo es la misma constante del corte (`r := c`) | incidencia demostrada en `Σ_L⁺`: la constante es también el objetivo, con la misma forma de matriz | — |
-| V-CFG-3 | el objetivo es otro objeto de término idéntico, `Circle(O, (1, 1))` | M1 les da una sola semántica; incidencia demostrada | sin la regla de término idéntico, `Σ_L⁺` recalcularía `r² = 2` y refutaría |
+| V-CFG-1 | **incidencia demostrada en `Σ_B` y no demostrada en `Σ_L`**. `O = (0, 0)`; `c = Circle(O, (1, 1))`, que el corte captura como constante con `r² = fl(fl(√2)²) = 2,0000000000000004`; el conductor `P` sobre `d = Circle(O, 3)`; `Q = Intersect(c, Ray(O, P), 1)`; `L = LocusV2(Q, P)`; el objetivo `r = Circle(O, (1, −1))`, cuya autoridad es su adaptador (centro `O` y semieje `fl(√2)`, con `r² = fl(√2)²` exacto); `D` sobre `d` con coordenadas exactas, por ejemplo una salida de intersección | `Intersect(L, r, D)` indefinido con `INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION` y el diagnóstico `INCIDENCE_HOLDS_ONLY_IN_JOINT_RECOMPUTATION` (en `Σ_B` los dos radios son `√2`); `Point(L, D)` definido; el residuo binary64 de `P̃` respecto de `r` es del orden de `10⁻¹⁶`, y **no** se acepta | una implementación que transfiriera la demostración desde `Σ_B`, o que aceptara la coincidencia numérica, definiría el punto |
+| V-CFG-2 | el objetivo es la misma constante del corte (`r := c`) | con la precisión G-M3-4, la autoridad del objetivo es la representación de su adaptador (centro `O` y semieje `fl(√2)`), distinta de la matriz capturada (`r² = 2,0000000000000004` frente a `fl(√2)² = 2,00000000000000027…`): la incidencia se decide contra la autoridad y se refuta, con el diagnóstico `TARGET_AUTHORITY_MISMATCH` (matriz frente a semieje); con una circunferencia cuyas dos representaciones coinciden exactamente, se demuestra | una implementación que tomara la matriz como autoridad del objetivo la demostraría |
+| V-CFG-3 | el objetivo es otro objeto de término idéntico, `Circle(O, (1, 1))` | su autoridad es su propio adaptador (centro `O` y semieje `fl(√2)`); M1 solo comparte una semántica si las representaciones coinciden exactamente; aquí se refuta como V-CFG-2 | una implementación que diera al objetivo la matriz de la constante por M1 la demostraría |
 | V-CFG-4 | coincidencia de redondeo: un objetivo de término distinto con el mismo radio binary64, `Circle(O, (−1, 1))` | se recalcula (regla 6): refutada, como V-CFG-1; nunca se demuestra porque los dos radios binary64 coincidan | tomar el objetivo en su estado binary64 lo «demostraría» por coincidencia |
-| V-CFG-5 | modelo del autor | `Σ_L⁺` demuestra los cinco contactos; si se calcula `Σ_B`, también los demuestra, pero el punto materializado es `P_L` y no `P_B`; la evidencia registra `Σ_L⁺`; el radio de `c_1` que usa la decisión es el de la matriz capturada | — |
+| V-CFG-5 | modelo del autor | con los objetivos reconstruidos, `Σ_L⁺` demostraría los cinco contactos (diagnóstico, V-M3-1); la decisión se toma contra la autoridad de cada objetivo (V-M3-9); el punto materializado sería `P_L`, nunca `P_B`; el radio de `c_1` de la decisión es el semieje de su adaptador, y su matriz capturada solo da un diagnóstico | una implementación que decidiera con los objetivos reconstruidos demostraría contactos que la autoridad no contiene |
 | V-CFG-6 | conflicto de representación: el soporte del conductor, una circunferencia con `A4² + A5² − A2` distinto del cuadrado del semieje, usado también como operando de circunferencia en el corte | `CONFIGURATION_REPRESENTATION_CONFLICT`, con fallo cerrado | — |
 
 ### 3.4 Etapa B — evidencia de contacto (opción A)

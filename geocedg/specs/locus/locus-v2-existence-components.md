@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**; **PRE-G9B-CU3 CONSUMER NOTE (§16) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
 | Version | `1.1` |
 | Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
@@ -534,3 +534,17 @@ DXF and LaTeX exports follow the topology of the certificate:
 [`dxf-curve-fidelity-and-approximation.md`](../export/dxf-curve-fidelity-and-approximation.md)
 section "PRE-G9B-CU2 amendment" and
 [`latex-semantic-curve-export.md`](../export/latex-semantic-curve-export.md).
+
+## 16. PRE-G9B-CU3 consumer note: structural points
+
+Consumer note of amendment A3.3-R of the
+[`CU3` normative proposal](../../../docs/architecture/pre_g9b_cu3_normative_proposal.md),
+approved by the author on 2026-10-24 with ADR 0039 and decision D-CU3-9
+([approval record](../../../docs/validation/pre_g9b_cu3_author_design_approval_record.md)).
+Sections 1 to 15 are unchanged.
+
+A structural point by driver correspondence (`locus-v2-public-surface.md` §21) is a local
+consumer of §15.8. Its correspondence must lie in the interior of a certified continuous
+component. It never materializes on a point component (§15.4): when the correspondence meets a
+point component, the point is undefined with the typed cause `POINT_COMPONENT_NOT_MATERIALIZED`,
+and no structural address of a point component is introduced in `CU3`.

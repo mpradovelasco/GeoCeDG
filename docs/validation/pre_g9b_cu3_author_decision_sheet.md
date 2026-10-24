@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Decisiones que requieren intervención autoral para aprobar el diseño de `CU3` y, en su caso, autorizar su implementación. No registra ninguna decisión tomada por el agente |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisada por la revisión científica focal y por la comprobación final de coherencia científica de 2026-10-24; `selfApproved=false` |
+| Estado | Preguntas tal como se presentaron, revisadas por la revisión científica focal y por la comprobación final de coherencia científica de 2026-10-24. El autor las resolvió el 2026-10-24: diseño aprobado conforme a las recomendaciones de D-CU3-1 a D-CU3-19, con condiciones expresas, e implementación autorizada en dos incrementos con puertas bloqueantes. El [registro de aprobación](pre_g9b_cu3_author_design_approval_record.md) es la única autoridad de esas disposiciones; `selfApproved=false` |
 | Expediente | [informe del candidato de preparación](pre_g9b_cu3_preparation_candidate_report.md), §11 (revisión focal) y §12 (comprobación final de coherencia) |
 | Sustituye | las decisiones F-1, F-2, H-2 y H-3 de la [hoja de `CU0`](pre_g9b_cu0_author_decision_sheet.md) §4, que se conservan como antecedente; H-1 sigue en esa hoja |
 | Orientación del autor | instrucción «PRE-G9B-CU3 — Comprobación final de coherencia científica» (2026-10-24), sobre `cbd31633`: el autor acepta provisionalmente la orientación general de D-CU3-1 a D-CU3-19, incluidos los incrementos `CU3-A` y `CU3-B`, la conservación de G8B-R1 y las puertas propuestas. La autorización definitiva sigue pendiente |

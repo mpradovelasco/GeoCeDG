@@ -5,6 +5,10 @@
 - Roadmap state: G8 planning/G8A/G8B-R1/G8B/G8C design/G8C1/G8C2 and global G8 `PASS — AUTHOR APPROVED`; G9 design authorized/not started
 - Decision phase: final G8A author closeout
 - Date: 2026-08-14
+- Amended by: [ADR 0039](0039-locus-v2-structural-points-and-certified-contact-evidence.md)
+  (`PRE-G9B-CU3`, design approved 2026-10-24): evidence grades, a certified admission path and a
+  conflict rule based on root-count certificates extend the G8B-R1 clarification; its
+  point-admissibility predicate and thresholds are unchanged
 
 The author accepts this architecture after reviewing the complete G8A
 characterization package. Acceptance makes the intersection specification

@@ -4,6 +4,9 @@
 - Date: 2026-08-29
 - Accepted: 2026-08-29, author-directed G9U0-R4 corrective iteration
 - Phase: G9U0-R4 `PASS — AUTHOR APPROVED`
+- Amended by: [ADR 0039](0039-locus-v2-structural-points-and-certified-contact-evidence.md)
+  (`PRE-G9B-CU3`, design approved 2026-10-24): a versioned tangent-contact germ alongside the
+  unchanged transverse germ, for the driverless materialization of increment `CU3-B`
 - Normative contract:
   `geocedg/specs/locus/locus-v2-intersections.md`
 

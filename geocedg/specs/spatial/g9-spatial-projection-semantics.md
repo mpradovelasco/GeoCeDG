@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR APPROVED** |
+| Status | **NORMATIVE / AUTHOR APPROVED**; **PRE-G9B-CU3 AMENDMENT (§8.3, RESERVED AXIS PARTICIPANTS) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
 | Version | `1.0` |
 | Design phase | G9P |
 | Intended implementation gates | G9A1, G9A2, G9A3; later G9B and G9C; post-gate G9U2 consumer |
 | Affected layer | Shared Java kernel/semantic model and construction XML |
 | Product state | Normative design; productive G9 spatial implementation is not started and is not authorized |
-| Accepted decisions | ADR 0010 and ADR 0011, both Accepted |
+| Accepted decisions | ADR 0010 and ADR 0011, both Accepted; ADR 0039 (accepted as architecture on 2026-10-24) for the bounded amendment of §8.3 |
 
 This document is the author-approved normative G9 spatial contract. It governs
 future design-to-code work but does not itself authorize G9A1, G9A2, G9A3,
@@ -580,6 +580,20 @@ The lazy upgrade of a historical record happens only inside its own explicit
 redefine (contract §7.2). It is not the association or migration of a legacy
 unassociated file, which the "Legacy unassociated file load" row still governs.
 Contract §15 gives the complete mapping to the ADR 0011 classes.
+
+### 8.3 PRE-G9B-CU3 amendment: reserved axis participants
+
+Normative text of amendment A3.4-R of the
+[`CU3` normative proposal](../../../docs/architecture/pre_g9b_cu3_normative_proposal.md),
+approved by the author on 2026-10-24 with ADR 0039 and option A of decision D-CU3-8
+([approval record](../../../docs/validation/pre_g9b_cu3_author_design_approval_record.md)). It is
+the bounded amendment of ADR 0010 that ADR 0039 records. §8.1 and §8.2 are unchanged.
+
+`xAxis` and `yAxis` are reserved kernel references with stable symbolic identities. They may
+participate in a durable construction relation as non-ordinary participants whose identity is the
+reserved reference, not a label and not a synthesized ordinary identity. No ordinary line is
+created in their place. Save, reopen, Undo, Redo and copy restore the reserved reference exactly.
+A construction that needs another unsupported participant is still rejected with a typed cause.
 
 ## 9. Compatibility and serialization boundary
 

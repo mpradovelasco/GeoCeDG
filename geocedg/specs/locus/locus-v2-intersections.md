@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5, LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
-| Version | `1.2` with bounded G9U0-R4 refinement |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3, LAST SECTION) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
+| Version | `1.3` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3`) |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
 | Approval | G8 base author-approved on 2026-08-14/15; the author made deterministic semantic selection authoritative for R4, accepted bounded intrinsic phase/rank on 2026-08-29 and approved final R4 after both final re-smokes |
-| Architecture decision | Accepted ADR 0008 with R1 clarification; Accepted ADR 0017 for the bounded public single-Locus phase/rank selector |
+| Architecture decision | Accepted ADR 0008 with R1 clarification; Accepted ADR 0017 for the bounded public single-Locus phase/rank selector; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md), accepted as architecture on 2026-10-24, for the `PRE-G9B-CU3` amendment |
 
 This normative contract incorporates the G8A characterization evidence and
 the final author decisions D1–D17. The separately invoked G8B task produced an
@@ -1005,3 +1005,173 @@ residual tolerances and the intersection engine are unchanged (they belong to `C
   rigorously; otherwise its result is incomplete with a typed cause.
 - Tokens and selectors use the structural lineage of components
   (`locus-v2-existence-components.md` §15.6), never boundary bits or list order.
+
+## PRE-G9B-CU3 amendment (version 1.3): evidence, contacts, admissibility and axes
+
+Normative text of amendments A3.0, A3.1-R, A3.2-R and A3.4-R of the
+[`CU3` normative proposal](../../../docs/architecture/pre_g9b_cu3_normative_proposal.md),
+approved by the author on 2026-10-24 together with
+[ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md)
+and decisions D-CU3-1 to D-CU3-19, with the precisions of that decision
+([approval record](../../../docs/validation/pre_g9b_cu3_author_design_approval_record.md)). The
+implementation is authorized in two increments with blocking gates; its status is recorded only in
+the `CU3` records. Sections 1 to 14 and the `CU2` scope note are unchanged; the subsections below
+extend the sections they name.
+
+### CU3.1 Kinds of evidence (extends §5)
+
+Three kinds of claim are distinguished.
+
+(a) *Existence of some root in an interval.* If the source program is certified valid on a
+bracket, so that the residual is continuous there, and outward-rounded enclosures of the residual
+at the bracket ends exclude zero with opposite signs, then a root exists in the bracket. Interval
+Newton, Krawczyk and Miranda tests give the same kind of certificate. A derivative enclosure that
+excludes zero on the bracket adds uniqueness and simplicity. This is rigorous interval evidence
+for a transverse root, and for the critical point of a residual as a root of its derivative.
+
+(b) *Equality at a prescribed parameter or point.* `h(t₀) = 0` at a given `t₀`, the incidence
+`P ∈ r` of a given point, the equality of two given points, and the vanishing of a derivative at a
+given parameter are closed conditions. An enclosure that contains zero is compatible with the
+equality and with its negation, so interval or floating-point evaluation never decides them. The
+existence of a root of even multiplicity has no sign change and requires such an equality at the
+critical point.
+
+(c) *Structural and exact equality.* An equality of kind (b) is established either structurally
+(construction provenance, term identity under driver substitution, a certified exact symmetry) or
+by exact arithmetic in a declared configuration with a declared capture boundary. Both are
+rigorous and are recorded as distinct evidence. A residual below a tolerance, a certified critical
+point with a small residual, a finite-difference contact indicator, or a higher-precision floating
+evaluation is numerical evidence of kind (b), never its proof.
+
+An exact decision of an incidence is made against the authoritative target of §2.1, never against
+a reconstruction of it (`locus-v2-certified-construction-model.md` §11.3).
+
+### CU3.2 Contact evidence and contact order (extends §5.1)
+
+A contact candidate without a local sign change has exactly one class:
+
+1. `CONTACT_STRUCTURAL` (CU3.1 (c), structural);
+2. `CONTACT_EXISTENCE_EXACT` (CU3.1 (c), exact arithmetic at an exact driver point, with its
+   configuration and capture boundary);
+3. `CONTACT_NUMERICALLY_COMPATIBLE` (a certified critical point whose residual enclosure contains
+   zero);
+4. `CRITICAL_POINT_CERTIFIED_WITHOUT_INTERSECTION` or `CRITICAL_POINT_CERTIFIED_TWO_ROOTS` (the
+   residual enclosure at the certified critical point excludes zero);
+5. `CONTACT_NOT_ESTABLISHED`.
+
+For a root of even multiplicity, "established" in the G8B-R1 admissibility predicate means
+class 1 or 2. Only classes 1 and 2 are materialized as intersections. Classes 3 to 5 remain in the
+rich result with their evidence and as diagnostics. An equality that is not structural is
+established exactly when it holds exactly in the declared configuration.
+
+Contact order is a geometric attribute of a regular source parameter:
+
+- one, when existence is proved and the residual-derivative enclosure excludes zero;
+- two, when existence is of class 1 or 2, the source-derivative enclosure excludes the zero
+  vector, the residual derivative vanishes by structure, exact symmetry or exact arithmetic, and
+  the second-derivative enclosure excludes zero;
+- `FOLD_CONTACT`, at a certified fold of the source (exact symmetry `F(t₀ + s) = F(t₀ − s)`),
+  where the point set of the source ends at the contact and the two parameter roots of a perturbed
+  target are two preimages of one geometric point, carried as one identity;
+- not established otherwise.
+
+The finite-difference indicator of §8.3 is diagnostic.
+
+### CU3.3 Tangent-contact germ and lifecycle (extends §6.2 and §6.3)
+
+These rules apply to the driverless materialization of increment `CU3-B` only.
+
+The selector of a materialized contact is the stable component lineage plus a typed
+tangent-contact germ `…/tangent-contact-germ/v1`, made of the target family and canonical
+orientation, the side of contact, the established order and the evidence class. It contains no
+coordinate, parameter, index or configuration. Transverse germs are unchanged.
+
+The critical point is continued as a simple root of the residual derivative, as revision evidence
+only. The transitions are:
+
+- classes 1 and 2 from the same germ keep the token (`CURRENT`);
+- class 4 without intersection gives `CONTACT_LOST`;
+- class 4 with two roots at a regular source gives `CONTACT_SPLIT`, with new identities;
+- class 3 gives `CONTACT_NOT_CERTIFIED`;
+- a lost second-derivative certificate or isolation gives `IDENTITY_DISCONTINUITY`.
+
+A tangent token is never transferred.
+
+### CU3.4 Evidence grades, admissibility and the conflict rule (extends §8.1 and §8.4)
+
+**Grades (policy `cu3-certified-admission/v1`).** Every finite solution carries an existence
+grade, orthogonal to its contact class and to global completeness:
+
+- `LOCALLY_VERIFIED`: the G8B-R1 predicate, with residual and isolation evidence evaluated in
+  binary64;
+- `EXISTENCE_CERTIFIED`: CU3.1 (a);
+- `EXISTENCE_STRUCTURAL` and `EXISTENCE_EXACT`: CU3.1 (c).
+
+`LOCALLY_VERIFIED` is numerical verification under hypotheses, not a certificate of existence.
+
+**Admissibility.** The G8B-R1 point-admissibility predicate and its versioned thresholds are
+unchanged. In addition, a transverse root graded `EXISTENCE_CERTIFIED` satisfies the residual
+condition of that predicate when its normalized residual is within `τ_rel · L`. `L` is the larger
+of the extent of the image of the source component and the extent of a bounded target, or the
+source extent for an unbounded target, with an absolute floor only for a degenerate extent. This
+scale never decides existence. Refinement on this path stops on the residual criterion or on a
+bracket of a few `ulp` of the semantic parameter.
+
+**Conflict rule.** For one-parameter targets and sources with residual enclosures, a locally
+verified solution is withdrawn or reclassified only when a root-count certificate, computed in the
+same revision and in the decision configuration `Σ_L⁺` of §11.2 of the certified construction
+model, which contains the captured configuration of `L` unchanged, really contradicts its
+existence, its multiplicity or its classification. The identity and the geometric configuration
+of the certificate are the solution's own: the same source component, the same revision and the
+authoritative target of §2.1.
+
+A root-count certificate on a parameter box `T` requires continuity: `T` lies in one certified
+continuous component and the class-v3 box evaluation is valid on `T`. A component end, a seam that
+ends a component, a transition, an unresolved band, an invalid gap or a point component inside `T`
+voids it, except an included domain end whose value is decided exactly. The certificate
+establishes the exact number of roots in `T`, with multiplicity, and their location, in one of four
+forms:
+
+- none (the residual has a certified fixed sign on `T`);
+- one simple root (derivative enclosure without zero and opposite certified end signs);
+- two simple roots located on either side of a certified critical point (fixed second-derivative
+  sign, residual at the critical point and at both ends of certified signs);
+- one double root at an exact point (class 1 or 2, vanishing derivative by structure, exact
+  symmetry or exact arithmetic, fixed second-derivative sign).
+
+A solution is contradicted when:
+
+- the certificate gives no root, or the solution's isolating interval is disjoint from every root
+  it locates (withdrawn);
+- more solutions lie in one located sub-bracket than the certificate allows (merged into one
+  preimage, keeping an established identity if exactly one had it);
+- a simple or transverse solution lies where the certificate gives a double root (reclassified);
+- a tangent or undetermined solution lies where the certificate gives a simple root (reclassified
+  as transverse with certified existence).
+
+An isolated certified critical point, a class-3 candidate, a certificate that fails these
+conditions, or a contradiction of set completeness alone is never a contradiction of a solution:
+the last one lowers the result's completeness. Global completeness stays independent of local
+admissibility, and the approved G8B-R1 capabilities are preserved outside rigorously established
+contradictions. The analysis is triggered deterministically and independently of scale, only for
+candidates that the solver marks as non-transverse, as local minima, or as closer than their own
+bracket width. Without contradiction, admissibility is unchanged.
+
+**Diagnostics and consumption.** Rejections emit their declared diagnostics (`RESIDUAL_REJECTED`,
+`PAIR_RESIDUAL_REJECTED`, `MEMBERSHIP_REJECTED`, `NONFINITE_EVALUATION`). A grade never rises
+through a tolerance, a coordinate coincidence, a label, persistence or another revision. A
+consumer that requires a minimum grade fails explicitly when it is not met. The grade is revision
+evidence and is not part of a root token. The residual-adapter contract text inside tokens is
+unchanged. A solution that a certificate contradicts loses its admissibility with a typed cause and
+is never reassociated with another solution.
+
+The pair normalization by the distance to the origin is unchanged in `CU3`; it is a recorded
+nonconformity with §8.1.
+
+### CU3.5 Axes as reserved line targets (extends §2.1)
+
+`xAxis` and `yAxis` are reserved kernel references with stable symbolic identities. They may
+participate in a durable construction relation as non-ordinary participants whose identity is the
+reserved reference, not a label (`g9-spatial-projection-semantics.md` §8.3). A Locus V2
+intersection admits them as unbounded line targets. A target that remains unsupported is rejected
+with a typed message, never with a generic computer-algebra error.

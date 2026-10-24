@@ -3,10 +3,10 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Texto normativo **candidato** de `CU3` para la revisión autoral. No modifica ninguna especificación ni ningún ADR vigentes; su incorporación exige la aprobación autoral de la arquitectura y un paso T0 de la implementación |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24: A3.1-R, A3.3-R y A3.5); `selfApproved=false` |
+| Estado | Texto candidato revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24: A3.1-R, A3.3-R y A3.5). **Aprobado por el autor el 2026-10-24** en la dirección científica documentada e incorporado en el paso T0, con las precisiones de la decisión: la autoridad del objetivo (`locus-v2-certified-construction-model.md` §11.3) y las condiciones de conformidad de M3 (§11.4). Desde la incorporación, las especificaciones son la autoridad y este documento es antecedente ([registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md)); `selfApproved=false` |
 | Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §5 punto 4; precisión autoral «Decisión sobre la planificación de CU3» (2026-10-24); instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación» (2026-10-24) |
 | Sustituye | las enmiendas candidatas A3.1–A3.4 de `CU0` ([enmiendas candidatas](pre_g9b_cu0_candidate_normative_amendments.md)), que se conservan como antecedente |
-| ADR | [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
+| ADR | [ADR 0039 (ACCEPTED, 2026-10-24)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Diseños | [análisis](pre_g9b_cu3_initial_state_and_capability_analysis.md); [Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md); [Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md); [normalización, admisibilidad y ejes](pre_g9b_cu3_residual_normalization_and_axes_design.md) |
 | Validación | [matriz de validación](../validation/pre_g9b_cu3_validation_matrix.md) |
 

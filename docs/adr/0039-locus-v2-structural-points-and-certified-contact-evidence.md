@@ -1,13 +1,18 @@
 # ADR 0039 — Locus V2 structural points and certified contact evidence
 
-- Status: **PROPOSED — PRE-G9B-CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW**, revised by the
-  author-requested focal scientific review and by the final scientific coherence check (both
-  2026-10-24). `selfApproved=false`. It changes no accepted ADR or specification until the author
-  approves it.
-- Date: 2026-10-24
+- Status: **ACCEPTED — DESIGN AUTHOR APPROVED WITH THE PRECISIONS OF 2026-10-24** (author
+  instruction "PRE-G9B-CU3 — Aprobación autoral del diseño e implementación por incrementos",
+  2026-10-24; [approval record](../validation/pre_g9b_cu3_author_design_approval_record.md)). This
+  is an architectural decision. Its implementation, authorized in two increments with blocking
+  gates on the exact base `80d72a50557a82a7a9d501a26252d1758ac6d94d`, and the text incorporated
+  into the specifications at step T0 are not approved as product until the author reviews the
+  frozen technical candidate. The approval does not certify in advance the viability of exact
+  evaluation or its budgets: gate G-M3 decides them.
+- Date: 2026-10-24 (proposed; revised by the author-requested focal scientific review and by the
+  final scientific coherence check; accepted the same day)
 - Phase: `PRE-G9B-CU3`. Preparation was authorized on 2026-10-24 on the exact base
-  `e6c908f2203cd8feb5d4938013e16b212e0fe016`; the preparation candidate `213ea5aa` was published for
-  review, and the focal review was authorized the same day. Implementation is not authorized.
+  `e6c908f2203cd8feb5d4938013e16b212e0fe016` and published for review at `80d72a50`;
+  implementation was authorized on 2026-10-24 on that exact base.
 - Extends: [ADR 0027](0027-locus-v2-existence-and-continuous-valid-components.md) and
   [ADR 0038](0038-locus-v2-hybrid-existence-certification-and-certified-closure.md). Their existence
   certificates, component queries (including the point-component rule of
@@ -16,18 +21,23 @@
 - Builds on: [ADR 0008](0008-locus-v2-intersection-result-and-continuation.md) and its G8B-R1
   clarification. Its point-admissibility predicate is preserved, extended by a certified path and
   restricted only by the conflict rule of decision 5.
-- Amends, if accepted:
+- Amends:
   - [ADR 0017](0017-deterministic-intersection-phase-rank-identity.md): a tangent-contact germ
     alongside the unchanged transverse germ;
   - [ADR 0010](0010-role-gated-spatial-authority-and-durable-identity.md): reserved axis references
-    as non-ordinary participants, only under option A of decision D-CU3-8.
+    as non-ordinary participants, under option A of decision D-CU3-8, which the author approved.
 - Author decisions it relies on:
   - DA-3 (2026-10-19, stage option C), H02 and H06 ([consolidated plan](../architecture/pre_g9b_cu_corrective_usability_plan.md) §2);
   - `OBS-CU0-CU3-TANGENT-EXISTENCE` (2026-10-20): F-2 is not approved as formulated;
   - the `CU3` preparation authorization and its precision on the driver correspondence;
-  - the focal scientific review instruction (all 2026-10-24).
+  - the focal scientific review instruction;
+  - the final scientific coherence check;
+  - the design approval and implementation authorization (all 2026-10-24).
 - Normative text: [`CU3` normative proposal](../architecture/pre_g9b_cu3_normative_proposal.md),
-  amendments A3.0 to A3.5.
+  amendments A3.0 to A3.5, incorporated at step T0 into `locus-v2-intersections.md` 1.3,
+  `locus-v2-certified-construction-model.md` 1.3 (§11), `locus-v2-public-surface.md` §21,
+  `locus-v2-point-interaction.md` §18, `locus-v2-existence-components.md` §16 and
+  `g9-spatial-projection-semantics.md` §8.3.
 - Evidence:
   - [initial-state and capability analysis](../architecture/pre_g9b_cu3_initial_state_and_capability_analysis.md);
   - [characterization](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-preparation-characterization.json);
@@ -169,10 +179,19 @@ The `CU3` characterization and the focal review establish seven facts.
      `INCIDENCE_HOLDS_ONLY_IN_JOINT_RECOMPUTATION`, and the intersection stays undefined.
    - **Accidental equalities.** An accidental equality is proved exactly when it holds exactly in
      that configuration.
+   - **Authority of the target** (author precision of 2026-10-24). For every incidence decided,
+     the exact meaning of the target is its authority under `locus-v2-intersections.md` §2.1: the
+     current line coefficients up to a proved nonzero factor; for segments and rays, also their
+     limited part; for circles, the representation of the target adapter, distinct from the
+     captured matrix, the half axes and numerical evaluations. A reconstruction of the target
+     never replaces its binary64 coefficients without a proved exact correspondence. Otherwise the
+     incidence fails closed, and the meaning of a target is never redefined to make it hold.
    - **Gate.** An early blocking gate precedes the implementation of the second incidence:
      mathematical viability in `Σ_L⁺` on the five mandatory contacts and controls, including the
-     adversarial case that is proved only in `Σ_B`; budget by counters; and correspondence with the
-     live algorithm.
+     adversarial case that is proved only in `Σ_B` and the arithmetic hypotheses of the captured
+     constants; budget by counters, approved by the author when the contract requires it;
+     correspondence with the live algorithm and exact reconstruction of the selection; coherence of
+     configurations; and the authority of the target (G-M3-4).
    - **Failure.** If M3 fails, its evidence is never replaced by a residual or by a `Σ_B` proof.
      The alternatives go to the author, among them amending the `CU2` capture convention (C3),
      which this ADR does not do.
@@ -187,8 +206,9 @@ The `CU3` characterization and the focal review establish seven facts.
 
 - **Mandatory contacts.** The three mandatory contacts and the seam contact become
   materializable through `Intersect(L, r, K)` and `Intersect(L, r, J)` with structural, dynamic
-  identity, provided that the M3 gate passes. Without it only `Point(L, D)` is materializable for
-  them, and the author decides among the alternatives of the gate.
+  identity, provided that the M3 gate passes, including the authority of the target. Without it
+  only `Point(L, D)` is materializable for them, and the author decides among the alternatives of
+  the gate.
 - **Driverless form.** `Intersect(L, r)` without a driver keeps the four contacts as class 3 in
   the minimal increment. Increment `CU3-B` raises them to class 2 through the certified folds of
   `CU2` and M3 at `K*` and `J*`.

@@ -1,6 +1,6 @@
 # Public Locus V2 command, tool and persistence surface
 
-- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A3 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW**
+- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A3 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW; PRE-G9B-CU3 AMENDMENT (§21) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**
 - Phase: G9P design approved; productive G9U0 implementation is not authorized
 - Internal prerequisites: G6, G7 and G8 are author-approved
 - Related Accepted ADR: `docs/adr/0013-public-locus-v2-surface-and-token-selection.md`
@@ -774,3 +774,61 @@ replacement retires the old semantic closure and publishes fresh identities as
 one ordinary undoable host operation. Kernel result types contain no dialog,
 localization or presentation authority; a future frontend only asks, displays,
 navigates and invokes the already authorized execution mode.
+
+## 21. PRE-G9B-CU3 amendment: structural points by driver correspondence
+
+Normative text of amendment A3.3-R of the
+[`CU3` normative proposal](../../../docs/architecture/pre_g9b_cu3_normative_proposal.md),
+approved by the author on 2026-10-24 with ADR 0039 and decisions D-CU3-1 to D-CU3-4, D-CU3-9 and
+D-CU3-12 ([approval record](../../../docs/validation/pre_g9b_cu3_author_design_approval_record.md));
+the proposal named this section §20, which an earlier amendment already uses. Its implementation
+status is recorded only in the `CU3` records. The rest of this specification is unchanged.
+
+`Point(L, D)` is the point of the Locus V2 `L` at the driver position that corresponds to the point
+`D`. `Intersect(L, r, D)` is the same point as an intersection of `L` with `r`. The third argument
+is never an initial point of a numerical iteration. The point is defined only when four facts
+hold, checked in this order.
+
+1. **Provenance.** The exact point that the parent algorithm of `D` defines lies on its origin
+   objects. The provenance classes form a closed versioned table: point on a path; defining point
+   of a segment or arc; output of an admitted intersection algorithm that places its output on an
+   input. The exact output is selected by the exact form of the inherited selection rule
+   (`locus-v2-certified-construction-model.md` §10.2).
+2. **Driver support.** That input is the driver support of `L` itself: the same live object with
+   the same persistent identity.
+3. **Correspondence.** The exact correspondence `t*(D)` is defined by the provider's
+   parameterization in a declared configuration. It is known exactly for a path point (its path
+   parameter) and for a defining point (0 or 1). For an intersection output it is enclosed by
+   evaluating the provider inverse with outward intervals on a certified enclosure of the exact
+   point. The binary64 coordinates of `D` alone never certify the correspondence. The numerical
+   value `t̃(D)` serves only the displayed position. The live driver is never moved.
+4. **Evaluation and incidence.** The enclosure of `t*(D)` lies in the interior of a certified
+   continuous component of `L`. The point fails closed with a typed cause when the enclosure:
+   - meets a bounded-domain end that provenance does not place inside the limited support;
+   - meets a seam that ends a component;
+   - meets a component end, a certified transition, an unresolved band or an invalid gap;
+   - meets a point component.
+
+   A point component creates no public point in this version
+   (`locus-v2-existence-components.md` §15.4). The authoritative object is `L` in its captured
+   configuration (§10 of the certified construction model), and `Intersect(L, r, D)` materializes
+   the same exact point as `Point(L, D)`. For `Intersect`, the incidence of that point with `r` and
+   its membership in a limited target are equalities at a prescribed point
+   (`locus-v2-intersections.md`, PRE-G9B-CU3 amendment, CU3.1 (b)). They are established only by
+   term identity under driver substitution, or by exact evaluation in the decision configuration
+   that contains the captured configuration of `L` unchanged (certified construction model §11.2),
+   always against the authoritative target (§11.3). Exact evaluation either proves the equality,
+   refutes it exactly, or reports that it is out of class or out of budget. A proof in any
+   configuration that recomputes the captured constants of `L`, or with a reconstruction of the
+   target, is diagnostic and never establishes the incidence.
+
+No parameter or certificate is persisted: the point is reconstructed from the dependency graph at
+every revision, after Undo, Redo, reopen and copy. Its identity is its own durable identity with
+the durable identities of `L`, `D` and `r` as inputs. It never includes a root token, parameter,
+coordinate, output index, configuration or proximity. Current readers reject the two forms and
+fail closed; a migration note records it.
+
+The rich result of an intersection carries the evidence grade and the contact class of every
+solution (`locus-v2-intersections.md`, PRE-G9B-CU3 amendment, CU3.2 and CU3.4). A tangent root of
+class 3 to 5 remains visible as rich evidence and as a diagnostic and is never a materialized
+point.

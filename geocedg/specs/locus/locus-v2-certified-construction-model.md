@@ -2,10 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | `1.2` (`certified-construction-program/v1`, `/v2` and `/v3`) |
-| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9) and by `PRE-G9B-CU2` (§10) |
-| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21 |
+| Version | `1.3` (`certified-construction-program/v1`, `/v2` and `/v3`) |
+| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9), by `PRE-G9B-CU2` (§10) and by `PRE-G9B-CU3` (§11) |
+| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) for exact evaluation (§11), accepted as architecture on 2026-10-24 |
 | v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22 AND THE EDITORIAL PRECISION OF §10.3 FROM AUTHOR DECISION C-8 OF 2026-10-23) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
+| v1.3 status | **PRE-G9B-CU3 AMENDMENT (§11, WITH THE AUTHORITY OF THE TARGET IN §11.3 AND THE CONFORMANCE CONDITIONS OF EXACT EVALUATION IN §11.4) — DESIGN AUTHOR APPROVED (2026-10-24); IMPLEMENTATION AUTHORIZED SUBJECT TO GATE G-M3, NOT YET APPROVED AS PRODUCT** |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -466,3 +467,116 @@ has no program (§4, §9).
    elsewhere, stays `NOT_ESTABLISHED` with no component. The composition provides no program
    and no certified curve model, so the dependent's consumers use only the capabilities that do
    not need one.
+
+## 11. PRE-G9B-CU3 amendment (v1.3): residual jets and exact evaluation
+
+Normative text of amendment A3.5 of the
+[`CU3` normative proposal](../../../docs/architecture/pre_g9b_cu3_normative_proposal.md),
+approved by the author on 2026-10-24 together with ADR 0039 and decisions D-CU3-4 and D-CU3-11,
+with the precisions of that decision
+([approval record](../../../docs/validation/pre_g9b_cu3_author_design_approval_record.md)): the
+authority of the target (§11.3) and the conformance conditions of exact evaluation (§11.4). The
+approval of this architecture does not certify in advance the viability of exact evaluation or its
+budgets; gate G-M3 decides them. Programs of classes v1, v2 and v3, their consumers and the
+certificates of `CU2` (§1 to §10) are unchanged.
+
+### 11.1 Residual jets
+
+The second-order enclosure of the traced point (§10.7) may be composed with the residual of a
+supported target into enclosures of the residual and of its first two derivatives. This extends
+§10.7 to the isolation of critical points of contact residuals, and certifies only claims of kind
+(a) of `locus-v2-intersections.md` (PRE-G9B-CU3 amendment, CU3.1).
+
+### 11.2 Exact evaluation in the authoritative configuration
+
+The decision configuration `Σ_L⁺` of a structural point contains the captured configuration of `L`
+(§3 and §10) without any change: the same captured constants, with the same exact meaning that the
+class-v3 program gives them, and the same program. It adds the driver point `D`, the target `r`
+and their ancestors. Every object receives exactly one exact meaning:
+
+- a captured constant of `L` keeps its captured value and its representation in the program of
+  `L` (a constant circle is its matrix circle); when it is also the target, its meaning as target
+  is governed by §11.3;
+- the driver support keeps the meaning of the captured driver constants, and the algorithm of `D`
+  is evaluated on that meaning;
+- an object outside the captured configuration that is an ancestor of a captured constant is taken
+  at its binary64 state;
+- the independent elements, the path parameters and the objects whose exact computation leaves the
+  class are taken at their binary64 states;
+- every other ancestor of `D` is recomputed exactly from its parents' meanings;
+- the target and its ancestors are governed by §11.3: a recomputation of the target's subgraph is
+  a diagnostic, never the target's meaning;
+- term-identical objects share one meaning only when their representations are proved equal;
+- a constant with two different exact representations in the program of `L` fails closed
+  (`CONFIGURATION_REPRESENTATION_CONFLICT`).
+
+The exact point `D*` is reconstructed by the exact form of the inherited selection rule (§10.2)
+with the captured selection state. Coincident roots, continuous-mode intersections,
+reference-point selections and an uncertified initialization fail closed. The slice is evaluated
+with the driver replaced by the exact point `D*`, never by a parameter. Ruler-and-compass
+operations generate a finite tower of quadratic extensions. The signs and the vanishing of
+residuals, validity predicates, limited-target parameters and, when needed, first derivatives
+(exact jets) are decided with exact arithmetic and constructive root-separation bounds. The result
+is "equal", "different", or `EXACT_EVALUATION_OUT_OF_CLASS` / `EXACT_EVALUATION_BUDGET_EXHAUSTED`,
+never "equal within a tolerance".
+
+Because the captured configuration of `L` is contained unchanged, a decision is a property of the
+authoritative point of `L` and needs no transfer. A deeper joint recomputation that also recomputes
+the captured constants of `L` is a different configuration. It may be computed only as a diagnostic
+(`INCIDENCE_HOLDS_ONLY_IN_JOINT_RECOMPUTATION`). Its result applies to the authoritative point only
+if both configurations are proved to give the same exact value to every object the proof uses. A
+refutation in `Σ_L⁺` is reported as such (`INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`), never as
+nonexistence in the intended configuration. No captured constant or certificate of `L` is changed or
+reinterpreted. The binary64 coordinates of `D` enter only the check that the reconstructed branch
+corresponds to the live algorithm.
+
+### 11.3 Authority of the target
+
+Author precision of 2026-10-24. For every incidence that exact evaluation decides, two objects are
+identified: the exact point of `L` in its captured configuration, and the authoritative target
+under `locus-v2-intersections.md` §2.1. The exact meaning that the decision gives the target is
+that authority:
+
+- **line:** its homogeneous coefficients as the target adapter captures them, the current
+  `GeoLine` coefficients taken as exact rationals. Another exact meaning, such as a recomputation
+  of the target's subgraph or the representation of a captured constant, is admitted only when its
+  coefficients are proved exactly proportional to those, with a proved nonzero factor;
+- **segment and ray:** the support line as above and, in addition, the membership conditions of
+  the limited part as the adapter captures it (start and end, or start and direction);
+- **circle:** the representation of the target adapter (`g8b-circle-radial-distance-adapter/v1`:
+  centre from the translation vector and radius from the first half axis). The captured matrix of a
+  circle constant (§10), its half axes and numerical evaluations, such as implicit coefficients
+  computed in binary64, are distinct representations; a decision uses another representation only
+  when its exact equality with the adapter's is proved;
+- **target recomputed from a subgraph:** it never replaces the binary64 coefficients of the existing
+  target by those of an ideal reconstruction; its exact correspondence with the existing target
+  object must be proved.
+
+The incidence is decided against that meaning. When the incidence does not hold with it, the
+result fails closed (`INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`). A difference between the
+target's authority and a reconstruction or another representation of it is reported as
+`TARGET_AUTHORITY_MISMATCH`, with the exact difference; an incidence that holds only with such a
+reconstruction is a diagnostic, like a deeper joint recomputation, and never establishes the
+incidence. Any need to change the geometric authority of a target, the capture convention of `CU2`
+or another approved contract is a stop condition for an author decision. The meaning of a target is
+never redefined to make an incidence hold.
+
+### 11.4 Conformance conditions of exact evaluation
+
+Exact evaluation conforms only when an early, blocking gate (G-M3) establishes, before its product
+implementation:
+
+1. mathematical viability on the mandatory cases and on the adversarial controls, including the
+   arithmetic hypotheses of the captured constants (homogeneous coordinate `z = 1` and exact
+   structural relations) and the configuration cases V-CFG-1 to V-CFG-6;
+2. a versioned budget proposed from deterministic counters (exact operations, tower degree, maximal
+   bit length), approved by the author when the contract requires it, never by the implementation
+   itself;
+3. correspondence with the live algorithm: each exact branch reproduces the inherited selection or
+   fails with a typed cause;
+4. coherence of configurations: no decision is transferred from another configuration;
+5. the authority of the target (§11.3) for every incidence decided.
+
+If any condition fails, the parts that depend on exact evaluation stop, and the alternatives are
+presented to the author; none is authorized automatically. Its evidence is never replaced by a
+residual, a tolerance or a proof in another configuration.

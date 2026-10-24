@@ -1,6 +1,6 @@
 # Locus V2 semantic point interaction
 
-- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (§17) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
+- Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (§17) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 SCOPE NOTE (§18) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**
 - Version: 2
 - Phase: **G9U0-R6 + POST-G9U1-A6**
 - Architectural layer: shared Java kernel
@@ -410,3 +410,20 @@ it was approved with `PRE-G9B-CU2` (`PASS — AUTHOR APPROVED`, 2026-10-24; [clo
 - A persisted component selector resolves only through a demonstrated structural
   correspondence (`locus-v2-existence-components.md` §15.6); unique containment validates it
   and never creates it. Resolution never rewrites the persisted selector or user content.
+
+## 18. PRE-G9B-CU3 scope note: structural points by driver correspondence
+
+Scope note of amendment A3.3-R of the
+[`CU3` normative proposal](../../../docs/architecture/pre_g9b_cu3_normative_proposal.md),
+approved by the author on 2026-10-24 with ADR 0039
+([approval record](../../../docs/validation/pre_g9b_cu3_author_design_approval_record.md)).
+
+- `Point(L, D)` and `Intersect(L, r, D)` (`locus-v2-public-surface.md` §21) are a point family of
+  their own. Their address is the exact driver correspondence of a provenance, not an inverse
+  semantic address resolved from a position. They are not interaction points: no drag, no
+  nearest-point search and no capture by proximity creates, moves or reassociates them.
+- Their membership in `L` uses the same certified components as this contract (§17): the
+  correspondence must lie in the interior of a certified continuous component, and a point
+  component is never selected.
+- A semantic point of this contract never becomes a structural point, and a structural point
+  never becomes an interaction point, through any coincidence of coordinates.

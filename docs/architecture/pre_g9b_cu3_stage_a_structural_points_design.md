@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Diseño candidato de la Etapa A de `CU3`. No es especificación normativa ni autoriza implementación |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24); `selfApproved=false` |
+| Estado | Diseño de la preparación, revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24). **Aprobado por el autor el 2026-10-24** con condiciones expresas, entre ellas la autoridad del objetivo (G-M3-4), que precisa las reglas 1 y 6 de §6.2 y la expectativa de §6.5 ([registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado); implementación autorizada en dos incrementos con puertas bloqueantes; `selfApproved=false` |
 | Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §1–§4; precisión autoral «Decisión sobre la planificación de CU3»; instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación», puntos 2, 3 y 6; instrucción «PRE-G9B-CU3 — Comprobación final de coherencia científica», punto 1 (todas de 2026-10-24) |
 | Autoridad vigente | `locus-v2-semantics.md` v1.3 (conductores y proveedores); `locus-v2-point-interaction.md` §7, §12, §16 y §17; `locus-v2-existence-components.md` v1.1 §15 (en particular §15.4, componentes puntuales); `locus-v2-certified-construction-model.md` v1.2 §3 (constantes capturadas) y §10 (en particular §10.1–§10.3); `locus-v2-public-surface.md` §6 y §8–§10; `locus-v2-intersections.md` §5 y §8; ADR 0008 (aclaración G8B-R1), 0027 y 0038; `AGENTS.md` §1, §4 y §11.3–§11.5 |
 | Antecedente | [propuesta F](pre_g9b_cu0_tangent_materialization_proposal.md) §4 (F-1); enmienda candidata A3.3 de `CU0` |
@@ -285,6 +285,16 @@ coincidencias de redondeo entre objetos redondeados independientemente. Por ejem
 circunferencias de radio `√2` construidas de dos maneras tienen el mismo radio binary64 y
 «coincidirían» (V-CFG-3).
 
+**Precisión autoral de 2026-10-24: autoridad del objetivo (G-M3-4).** Las reglas 1 y 6 no se
+aplican al objetivo `r` de una incidencia. Su semántica exacta es su autoridad geométrica vigente
+(`locus-v2-intersections.md` §2.1; `locus-v2-certified-construction-model.md` §11.3): los
+coeficientes binary64 de la recta, con la parte limitada de un segmento o un rayo, y el centro y el
+semieje del adaptador de una circunferencia. La matriz capturada de una constante de `Σ_L` que es
+también objetivo es otra representación, y una recalculación del subgrafo de `r` es un diagnóstico.
+Solo se usan para decidir si se demuestra que coinciden exactamente con la autoridad. Si no, la
+incidencia se decide contra la autoridad y, si no se cumple, falla cerrado. La semántica del
+objetivo nunca se redefine para que una incidencia se cumpla.
+
 ### 6.3 Reconstrucción exacta de `D` y selección heredada
 
 Cada algoritmo de varias salidas del subgrafo (`K = Intersect[p, i]`, `H_1 = Intersect[d_1, i, 1]`,
@@ -337,6 +347,12 @@ potencias de dos.
 Por tanto se espera que M3 demuestre en `Σ_L⁺` los cinco contactos obligatorios, para el punto
 autoritativo de `L`. La puerta G-M3 lo confirma o lo refuta.
 
+Con la precisión de la autoridad del objetivo (§6.2), esa expectativa solo vale si la semántica
+autoritativa de cada objetivo coincide exactamente con la que usa el teorema. `n`, `h_2` y `r` se
+construyen a partir de objetos redondeados (`K.x = fl(B.x + 5)`, análisis §5.7), y `c_1` tiene dos
+representaciones de su radio que pueden diferir (análisis §5.8). La puerta G-M3 lo decide caso por
+caso, y un desacuerdo es una condición de parada.
+
 ### 6.6 Relación con `Σ_B` y transferencia
 
 `Σ_B` recalcula también las constantes de `Σ_L`: por ejemplo, el radio de `c_1` es el exacto
@@ -370,6 +386,7 @@ esa parte se detiene y se presentan las alternativas.
 | **G-M3-1** viabilidad matemática en `Σ_L⁺` | los cinco contactos obligatorios (`e_1·n`, `e_1·c_1` y `o_1·h_2` en `K`; `e_1·c_1` y `e_1·r` en `J`), con las reglas de §6.2 y las hipótesis aritméticas del análisis §5.8 comprobadas sobre los estados capturados | M3 decide **igual** en los cinco y en las dos ramas de `H_1`, y pasan los controles V-M3-3 a V-M3-6 y V-CFG-1 a V-CFG-3 |
 | **G-M3-2** presupuesto computacional | contadores deterministas: operaciones exactas, grado de la torre, longitud máxima en bits; GC3-3 y GC3-4 | los cinco contactos bajo un techo versionado, fijado por el banco y aprobado por el autor |
 | **G-M3-3** correspondencia con el algoritmo vivo | para cada algoritmo de varias salidas, la rama exacta elegida por la regla exacta de §10.2 con el estado capturado; su encierro contiene el valor vivo y es disjunto del de la otra rama; la fidelidad de reconstrucción de `CU2` (D-CU2-20-R) se cumple | todas las salidas de los cinco casos |
+| **G-M3-4** autoridad del objetivo (precisión autoral de 2026-10-24) | para cada incidencia, el punto exacto de `L` en `Σ_L` y el objetivo autoritativo (`locus-v2-intersections.md` §2.1); la semántica exacta del objetivo frente a su autoridad: rectas, coeficientes proporcionales con un factor no nulo demostrado; segmentos y rayos, además su parte limitada; circunferencias, la representación del adaptador, distinta de la matriz capturada, de los semiejes y de las evaluaciones numéricas; objetivos reconstruidos desde un subgrafo, su correspondencia exacta demostrada | cada incidencia se decide contra la autoridad del objetivo; un desacuerdo sin correspondencia exacta demostrada falla cerrado y es una condición de parada |
 
 **Si M3 resulta inviable en `Σ_L⁺` para los casos obligatorios**, nunca se sustituye su evidencia
 por un residuo ni por una demostración en `Σ_B`. Alternativas, que se presentan al autor con la

@@ -5,6 +5,10 @@
 - Date: 2026-08-16
 - Scope: shared-kernel spatial identity, projection bindings, and edit authority
 - Productive implementation: not authorized
+- Amended by: [ADR 0039](0039-locus-v2-structural-points-and-certified-contact-evidence.md)
+  (`PRE-G9B-CU3`, design approved 2026-10-24, option A of decision D-CU3-8): `xAxis` and `yAxis`
+  as reserved references that participate as non-ordinary participants
+  (`g9-spatial-projection-semantics.md` §8.3); the rest of this decision is unchanged
 
 ## Context
 

@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Estrategia candidata (entregables 7 y 8 de la instrucción de preparación). **No autoriza ninguna implementación**: la siguiente autorización es la aprobación del diseño y, en su caso, de la implementación, sobre una base exacta |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisada por la revisión científica focal y por la comprobación final de coherencia (2026-10-24); `selfApproved=false` |
+| Estado | Estrategia de la preparación, revisada por la revisión científica focal y por la comprobación final de coherencia (2026-10-24). **Aprobada por el autor el 2026-10-24**, que autoriza su ejecución T0–T13 en dos incrementos con las puertas G-M3 (con la autoridad del objetivo, G-M3-4), G-A, G-B y G-final ([registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado; [prompt canónico](../../.github/prompts/tasks/pre-g9b-cu3-structural-points-and-certified-contact-evidence.prompt.md)); `selfApproved=false` |
 | Normas candidatas | [propuesta normativa](pre_g9b_cu3_normative_proposal.md); [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Validación | [matriz](../validation/pre_g9b_cu3_validation_matrix.md) |
 | Decisiones | [hoja de decisiones](../validation/pre_g9b_cu3_author_decision_sheet.md), con la recomendación consolidada (§7) |
@@ -63,7 +63,7 @@ T13  comprobación manual del autor
 
 | Puerta | Momento | Bloquea | Criterio |
 |---|---|---|---|
-| G-M3 | T2 | la segunda incidencia de la Etapa A (I-4 de producto e `Intersect` de I-5) y todo `CU3-B` | G-M3-1, G-M3-2 y G-M3-3 de la matriz §2.1 |
+| G-M3 | T2 | la segunda incidencia de la Etapa A (I-4 de producto e `Intersect` de I-5) y todo `CU3-B` | G-M3-1 a G-M3-4 de la matriz §2.1 (G-M3-4: autoridad del objetivo, precisión autoral de 2026-10-24); el presupuesto propuesto se presenta al autor con el resultado de la puerta para una única decisión |
 | G-A | T10 | el inicio de `CU3-B` | todas las filas obligatorias de `CU3-A` de la matriz, más las regresiones de §3.9 |
 | G-B | T11 | la congelación con `CU3-B` | V-B-7 a V-B-10 y V-B-12, y V-B-1 en su forma de clase 2; sin regresión de G-A |
 | G-final | T12 | el paquete de revisión | `INTEGRATED_PHASE` completo sobre el candidato congelado |
@@ -78,7 +78,8 @@ pendiente sin rebajar ninguna evidencia.
 2. Habría que cambiar el texto de un adaptador de residuo o un formato de token existente.
 3. Habría que materializar una clase 3 como intersección, o aceptar un residuo, una proximidad o
    el prover simbólico como prueba de una igualdad.
-4. La puerta G-M3 no se supera.
+4. La puerta G-M3 no se supera, incluida la autoridad del objetivo (G-M3-4), o su presupuesto
+   necesita la aprobación autoral.
 5. La regla de conflicto restringiría resultados sin una contradicción certificada, o la
    admisibilidad de G8B-R1 cambiaría fuera de las filas identificadas.
 6. Una tolerancia nueva dependería de la vista, de la posición absoluta o de una constante sin

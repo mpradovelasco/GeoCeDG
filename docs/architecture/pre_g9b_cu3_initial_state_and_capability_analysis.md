@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Análisis candidato de la preparación de `CU3` (entregables 1 y 2 de la instrucción). Evidencia y análisis, no autoridad normativa |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false` |
+| Estado | Análisis de la preparación; el autor aprobó el diseño que se apoya en él el 2026-10-24 ([registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md)). Las hipótesis aritméticas de §5.8 son condiciones de la puerta G-M3, no hechos aprobados; `selfApproved=false` |
 | Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24) y su precisión «Decisión sobre la planificación de CU3» (2026-10-24) sobre la correspondencia entre la procedencia y el parámetro del conductor |
 | Base | `main` = `e6c908f2203cd8feb5d4938013e16b212e0fe016`, árbol `fdb0e7027e19ee2b8fc9717f54d545e6ea50f6e1` (cierre de `CU2` publicado) |
 | Evidencia reproducible | [`pre-g9b-cu3-preparation-characterization.json`](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-preparation-characterization.json): salida del sondeo [`run-cu3-probe.ps1`](../../tools/benchmark/pre-g9b-cu/run-cu3-probe.ps1) sobre el commit `ec2b4dfa0bd77dad0686897cd559ea5003675165`, árbol `a8c32e657d6a5de76d9b42396108362b3b898240`. Dos ejecuciones con el árbol limpio dieron una salida idéntica byte a byte (SHA-256 `20af5cf471fc54622d63dec6ba69d9fe675587a48023a1faff654fd702e7d70f`) |
