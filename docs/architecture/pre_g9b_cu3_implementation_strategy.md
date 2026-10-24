@@ -1,86 +1,119 @@
-# PRE-G9B-CU3 — Estrategia mínima de implementación, verificación y riesgos
+# PRE-G9B-CU3 — Estrategia mínima de implementación, puertas, verificación y riesgos
 
 | Campo | Valor |
 |---|---|
-| Carácter | Estrategia candidata (entregables 7 y 8 de la instrucción). **No autoriza ninguna implementación**: la siguiente autorización es la aprobación del diseño y, en su caso, de la implementación, sobre una base exacta |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false` |
+| Carácter | Estrategia candidata (entregables 7 y 8 de la instrucción de preparación). **No autoriza ninguna implementación**: la siguiente autorización es la aprobación del diseño y, en su caso, de la implementación, sobre una base exacta |
+| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisada por la revisión científica focal de 2026-10-24; `selfApproved=false` |
 | Normas candidatas | [propuesta normativa](pre_g9b_cu3_normative_proposal.md); [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Validación | [matriz](../validation/pre_g9b_cu3_validation_matrix.md) |
-| Decisiones | [hoja de decisiones](../validation/pre_g9b_cu3_author_decision_sheet.md) |
+| Decisiones | [hoja de decisiones](../validation/pre_g9b_cu3_author_decision_sheet.md), con la recomendación consolidada (§7) |
 
-## 1. Alcance mínimo propuesto para la implementación
+## 1. Alcance propuesto: dos incrementos en una sola autorización
 
-Con las opciones recomendadas de la hoja de decisiones, el alcance es este.
+La revisión focal pide una elección de alcance mínimo con sus puertas, sin otra sucesión de
+autorizaciones parciales. La propuesta es **una autorización** con dos incrementos. El segundo
+empieza solo cuando el primero supera sus puertas, y no necesita una autorización nueva salvo
+que una puerta falle.
 
-| Pieza | Contenido | Necesaria para |
+| Pieza | Contenido | Incremento |
 |---|---|---|
-| I-1 | envolventes de `h`, `h′` y `h″`: composición de la envolvente de segundo orden de clase v3 con los adaptadores de residuo de recta, segmento, rayo y circunferencia | Etapa B; aceptación certificada de H-2 |
-| I-2 | aceptación certificada de las raíces transversales, deduplicación por corchetes, escala característica S1 y emisión de los diagnósticos de rechazo, con la política versionada nueva y el texto de los adaptadores intacto | H02; H-CU3-1, H-CU3-3 y H-CU3-4 |
-| I-3 | taxonomía de evidencia de contacto, orden de contacto (con el pliegue) y germen tangente con su ciclo de vida | Etapa B; H-CU3-2 |
-| I-4 | evaluación exacta (M3) de los programas de clase v3 de regla y compás en un punto exacto del conductor, con presupuesto versionado | segunda incidencia de los casos obligatorios |
-| I-5 | `Point(L, D)` e `Intersect(L, r, D)`: los cuatro hechos, la tabla de procedencia, la correspondencia y los diagnósticos | Etapa A; los tres casos obligatorios y la costura |
-| I-6 | los ejes como referencias reservadas en el registro de identidad y en el adaptador de recta | H06 |
-| I-7 (opción B de D-CU3-5) | objeto de punto crítico certificado | usabilidad de los contactos de clase 3 |
+| I-1 | envolventes de `h`, `h′` y `h″` (composición de la envolvente de segundo orden de clase v3 con los adaptadores de recta, segmento, rayo y circunferencia); punto crítico certificado | `CU3-A` |
+| I-2 | grados de evidencia; vía certificada aditiva (H02); regla de conflicto; emisión de los diagnósticos de rechazo; política de consumo; política versionada nueva, con el texto de los adaptadores intacto | `CU3-A` |
+| I-3 | taxonomía de contacto (clases 1 a 5) y orden de contacto (con el pliegue) en el resultado rico, **sin** materialización sin conductor | `CU3-A` |
+| I-4 | evaluación exacta M3 en la configuración conjunta `Σ_B`: frontera de captura, reconstrucción exacta de `D*` con la selección heredada, decisión exacta, presupuesto | `CU3-A` (tras la puerta G-M3) |
+| I-5 | `Point(L, D)` e `Intersect(L, r, D)`: los cuatro hechos, la tabla de procedencia, la correspondencia exacta y encerrada, el fallo cerrado y los diagnósticos | `CU3-A` |
+| I-6 | los ejes como referencias reservadas en el registro de identidad y en el adaptador de recta | `CU3-A` |
+| I-7 | materialización **sin conductor** de las clases 1 y 2 (pliegue certificado de `CU2` en `t₀ ∈ {0, π}` más M3), germen tangente, ciclo de vida y parejas de preimágenes en los pliegues | `CU3-B` |
 
-Fuera del mínimo, diferibles según el plan §6:
+**Qué cierra `CU3-A`:**
 
-- la Etapa B para los objetivos de cónica, gráfica e implícita, y para los pares;
-- I-7, si el autor elige la opción A.
+- los tres casos obligatorios y la costura, con `Intersect(L, r, K)` e `Intersect(L, r, J)`;
+- H02, H06 y H-CU3-1 a H-CU3-4;
+- la clasificación honesta de los contactos sin conductor.
 
-## 2. Pasos, dependencias y condiciones de parada
+**Qué añade `CU3-B`:** la materialización de esos contactos con `Intersect(L, r)` sin conductor,
+cuando son de clase 1 o 2.
+
+Fuera de los dos incrementos, diferibles según el plan §6 o futuros:
+
+- la Etapa B para cónicas, gráficas, implícitas y pares;
+- el objeto público de punto crítico (opción B de D-CU3-5);
+- la materialización en componentes puntuales (C22, C23) y C40;
+- la normalización de los pares.
+
+## 2. Pasos, dependencias y puertas
 
 ```text
-T0  normas aprobadas incorporadas (A3.0–A3.5), ADR 0039 aceptado, versión de política
-T1  pruebas de caracterización y pins nuevos (filas «falla en la base») ────────────┐
-T2  I-1 envolventes de h, h', h''  ──► T3  I-2 aceptación certificada (H-2) ──┐     │
-T4  I-3 taxonomía, orden y germen  ◄───────────────────────────────────────────┘     │
-T5  I-4 evaluación exacta (M3) ─► banco GC3-1 ─► constantes del presupuesto           │
-T6  I-5 Etapa A (cuatro hechos)  ◄── T5                                               │
-T7  I-6 ejes (identidad reservada)                                                     │
-T8  I-7 punto crítico (si B)                                                           │
-T9  compatibilidad: tokens persistidos, nota de migración (D-CU3-7, D-CU3-12)          │
-T10 inversión de pins B08_B09, H02 y H06; preserve; selecciones de CU0–CU2  ◄──────────┘
-T11 congelación, inventario JUnit, STATIC, INFRA_UNIT, PHASE CU3/CU2/CU1/CU0, INTEGRATION
+T0   normas aprobadas incorporadas (A3.0–A3.5), ADR 0039 aceptado, política versionada
+T1   pruebas de caracterización y pins nuevos (filas «falla en la base»); inventario de pruebas
+T2   PUERTA G-M3 (temprana y bloqueante): prototipo de M3 en Σ_B sobre los cinco contactos y los
+     controles; banco GC3-1; correspondencia con el algoritmo vivo ── si falla: PARADA y
+     alternativas R-1 a R-3 al autor (nunca un residuo tolerado)
+T3   I-1 envolventes ──► T4 I-2 grados, vía certificada y regla de conflicto ──► T5 I-3 taxonomía
+T6   I-4 M3 de producto (tras G-M3) ──► T7 I-5 Etapa A
+T8   I-6 ejes
+T9   compatibilidad: tokens persistidos, nota de migración (D-CU3-7, D-CU3-12)
+T10  PUERTA G-A: matriz de CU3-A en verde; pins B08_B09 (reformulado), H02 y H06 invertidos;
+     preserve; selecciones de CU0–CU2; suites G8/G9U0 intactas fuera de las filas de conflicto
+T11  I-7 (CU3-B): germen, ciclo de vida, materialización sin conductor ──► PUERTA G-B
+T12  congelación, inventario JUnit, STATIC, INFRA_UNIT, PHASE CU3/CU2/CU1/CU0, INTEGRATION
+T13  comprobación manual del autor
 ```
 
-Condiciones de parada:
+| Puerta | Momento | Bloquea | Criterio |
+|---|---|---|---|
+| G-M3 | T2 | la segunda incidencia de la Etapa A (I-4 de producto e `Intersect` de I-5) y todo `CU3-B` | G-M3-1, G-M3-2 y G-M3-3 de la matriz §2.1 |
+| G-A | T10 | el inicio de `CU3-B` | todas las filas obligatorias de `CU3-A` de la matriz, más las regresiones de §3.9 |
+| G-B | T11 | la congelación con `CU3-B` | V-B-7 a V-B-10 y V-B-12, y V-B-1 en su forma de clase 2; sin regresión de G-A |
+| G-final | T12 | el paquete de revisión | `INTEGRATED_PHASE` completo sobre el candidato congelado |
 
-1. Una pieza exigiría cambiar un contrato aprobado de `CU0`–`CU2` (componentes, certificados,
-   métrica, presentación o exportación).
+Si G-B no se supera, el candidato se congela con `CU3-A` solo, y `CU3-B` se presenta como
+pendiente sin rebajar ninguna evidencia.
+
+**Condiciones de parada:**
+
+1. Una pieza exigiría cambiar un contrato aprobado de `CU0`–`CU2`, incluida la regla de
+   componentes puntuales de §15.4.
 2. Habría que cambiar el texto de un adaptador de residuo o un formato de token existente.
-3. Habría que materializar una clase 3 como intersección para cumplir un caso obligatorio.
-4. M3 no decide los casos obligatorios dentro de un presupuesto razonable (banco GC3-1). En ese
-   caso se presentan los resultados y las alternativas antes de seguir.
-5. Una tolerancia nueva dependería de la vista, de la posición absoluta o de una constante sin
+3. Habría que materializar una clase 3 como intersección, o aceptar un residuo, una proximidad o
+   el prover simbólico como prueba de una igualdad.
+4. La puerta G-M3 no se supera.
+5. La regla de conflicto restringiría resultados sin una contradicción certificada, o la
+   admisibilidad de G8B-R1 cambiaría fuera de las filas identificadas.
+6. Una tolerancia nueva dependería de la vista, de la posición absoluta o de una constante sin
    justificar con un banco.
-6. Un cambio upstream sería necesario fuera de lo que el ADR 0039 justifique, o no se podría
+7. Un cambio upstream sería necesario fuera de lo que el ADR 0039 justifique, o no se podría
    registrar en `docs/upstream/modified-files.yml`.
-7. Se descubriría un defecto preexistente fuera de H-CU3-1 a H-CU3-7. Se registra y se presenta,
+8. Se descubriría un defecto preexistente fuera de H-CU3-1 a H-CU3-7. Se registra y se presenta,
    sin corregirlo sin autorización.
 
 ## 3. Superficies afectadas
 
 - **Núcleo compartido** (`org.geocedg.common.kernel.locus.intersection`, `…locus.exact` y
-  `…kernel.algos`): las piezas nuevas.
+  `…kernel.algos`): las piezas nuevas, incluida una captura conjunta de la frontera para M3. Esa
+  captura reutiliza las definiciones de operaciones de la clase v3 y sus accesores de selección,
+  pero no su frontera por corte.
 - **Superficies existentes que se tocan:**
   - `LocusIntersectionPolicy2D`;
-  - las capacidades adaptativa y polinómica;
+  - las capacidades adaptativa y polinómica (grados, disparador y regla de conflicto);
   - `PublicTargetIntersectionCapability2D`;
   - `PublicIntersectionRootIdentityResolver2D`;
-  - `LocusIntersectionTokenLedger2D` (un formato de estado nuevo; los antiguos se siguen
-    leyendo).
+  - `LocusIntersectionTokenLedger2D`, con un formato de estado nuevo solo en `CU3-B`; los antiguos
+    se siguen leyendo.
 - **Registro de identidad espacial**, solo con la opción A de D-CU3-8.
 - **Upstream mínimo:** los procesadores `CmdPoint` y `CmdIntersect`, que reciben las formas
   nuevas (como en `CU2`, las sobrecargas V2 viven en los procesadores existentes), y la
   localización de la sintaxis. Cada archivo se registra en `docs/upstream/modified-files.yml`.
-- **Escritorio:** el inspector y los mensajes. Ninguna lógica geométrica.
+- **Escritorio:** el inspector (grados, clases, configuraciones y causas) y los mensajes. Ninguna
+  lógica geométrica.
 
 ### Pruebas existentes afectadas, por categorías
 
 - las de `CU0` que fijan B08/B09, H02 y H06 (se invierten en T10);
-- las de G8 y G9U0 que fijan la clasificación de contacto o las raíces de casi-tangencias (se
-  revisan: una que espere una raíz espuria es un pin de un defecto);
-- las de la fase `PRE-G9B-CU2` que materializan raíces transversales en loci con pliegues.
+- las de G8 y G9U0 que fijan raíces de casi-tangencias contradichas por la evidencia certificada
+  (se revisan una a una: una que espere una raíz contradicha fija un defecto). El resto debe pasar
+  sin cambios (V-EVID-1);
+- las de la fase `PRE-G9B-CU2` que materializan raíces en loci con pliegues.
 
 El inventario exacto se completa en T1.
 
@@ -88,37 +121,39 @@ El inventario exacto se completa en T1.
 
 | Momento | Perfil | Evidencia |
 |---|---|---|
-| durante T1–T10 | `DEV` y pruebas focalizadas | consola en el directorio temporal; ninguna ejecución de aceptación como efecto secundario |
+| T2 (puerta G-M3) | prototipo y banco en el arnés de `tools/benchmark/pre-g9b-cu`, más pruebas focalizadas | informe de la puerta, con contadores, decisiones y correspondencia; ninguna ejecución de aceptación |
+| durante T3–T11 | `DEV` y pruebas focalizadas | consola en el directorio temporal; ninguna ejecución de aceptación como efecto secundario |
 | candidato congelado | `STATIC`, `INFRA_UNIT`, `PHASE -Phase PRE-G9B-CU3`, `PRE-G9B-CU2`, `PRE-G9B-CU1`, `PRE-G9B-CU0` e `INTEGRATION`, cada uno una vez sobre el mismo commit y el mismo árbol | ejecuciones re-autenticadas (`Read-VerificationJson`, `Get-VerificationResultHash`) |
-| bancos | GC3-1 a GC3-4 antes y después, con los contadores deterministas | `artifacts/benchmarks/pre-g9b-cu/` |
+| bancos | GC3-1 a GC3-5 antes y después | `artifacts/benchmarks/pre-g9b-cu/` |
 | comprobación del autor | los tres casos y la costura en la aplicación real, la dinámica y la persistencia | la comprobación manual del autor; nunca se simula |
 
-`FINAL` no lo exige la clase y queda para `CU10`.
-
-Registrar la fase exige añadir `PRE-G9B-CU3` al registro y las selecciones al inventario. Es
-infraestructura de verificación y se hace dentro de la implementación autorizada, como en `CU1` y
-`CU2`.
+`FINAL` no lo exige la clase y queda para `CU10`. Registrar la fase exige añadir `PRE-G9B-CU3` al
+registro y las selecciones al inventario, como en `CU1` y `CU2`.
 
 ## 5. Riesgos y degeneraciones
 
 | Riesgo | Efecto | Mitigación |
 |---|---|---|
-| coste de M3 | la torre de extensiones crece con la profundidad del corte | presupuesto versionado, banco GC3-1 y fallo cerrado con `EXACT_EVALUATION_BUDGET_EXHAUSTED`; la clase 3 sigue siendo visible |
-| ámbito de M3 | las constantes trascendentes (ángulos introducidos como funciones del conductor) quedan fuera de la clase | `EXACT_EVALUATION_OUT_OF_CLASS`; las constantes independientes del conductor ya son racionales capturados |
-| documentos antiguos con raíces que cambian | tokens de raíces mal clasificadas o espurias dejan de resolverse | D-CU3-7, nota de migración y V-COMPAT-1/2 |
-| menos puntos materializables con la opción (i) de D-CU3-6 | fuentes sin envolventes | diagnóstico visible y ampliación de la clase v3 en un paquete posterior |
-| pliegues sin simetría exacta | `F′ = 0` sin certificado de pliegue | orden no establecido (Etapa B §4.4); nunca se supone una tangencia |
+| frontera de captura de M3 | una relación que solo valga por cancelaciones entre valores trascendentes de la frontera se refuta en `Σ_B` | se registra como `INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`, nunca como inexistencia; V-M3-3 lo documenta; alternativas de la puerta |
+| coste de M3 | la torre crece con la profundidad del subgrafo conjunto | presupuesto versionado, banco GC3-1 y `EXACT_EVALUATION_BUDGET_EXHAUSTED`; la clase 3 sigue visible |
+| correspondencia con el algoritmo vivo | una selección heredada definida por comparaciones binary64 cerca de un empate | encierros disjuntos de las ramas exactas o `SELECTION_NOT_RECONSTRUCTED` (V-M3-7) |
+| disparador de la regla de conflicto | una raíz contradicha fuera del disparador seguiría publicada | el disparador cubre los mecanismos de H-CU3-1 a H-CU3-4; la limitación se declara (matriz §5) |
+| documentos antiguos | los tokens de soluciones contradichas dejan de resolverse | D-CU3-7, nota de migración y V-COMPAT-2 |
+| configuraciones distintas (`Σ_L` y `Σ_B`) | evidencias de configuraciones diferentes | cada afirmación declara su configuración; `Intersect` exige ambas (Etapa A §3) |
+| pliegues sin simetría exacta | `F′ = 0` sin certificado de pliegue | orden no establecido (Etapa B §4.4) |
 | contactos de orden mayor que dos y cúspides | `h″` no certificado lejos del cero | clase 5 con su diagnóstico |
-| raíces cerca de la costura | lados del levantamiento periódico | la canonicalización del proveedor; `L-CU2-CLOSED-PERIODIC-SEAM` se conserva |
-| condición de no degeneración en el límite (`|HD_1| = |HM|`) | `M_1` es un extremo de `n` | la pertenencia al objetivo limitado; caso de frontera en la matriz (V-A-14) |
-| permutación de las salidas heredadas | `D` cambia de punto geométrico | se sigue al objeto, sin reasociar (V-A-15) |
-| el objeto de punto crítico se confunde con una intersección | uso incorrecto por el usuario | familia, nombre y ficha propios, y ninguna conversión automática |
+| raíces cerca de la costura | lados del levantamiento periódico | reglas de §2.3 de la Etapa A; `L-CU2-CLOSED-PERIODIC-SEAM` se conserva |
+| condición de no degeneración en el límite (`|HD_1| = |HM|`) | `M_1` es un extremo de `n` | M3 decide la pertenencia al objetivo limitado (V-A-19) |
+| permutación de las salidas heredadas | `D*` cambia de punto | se sigue al objeto, sin reasociar (V-A-21) |
+| componentes puntuales | un punto estructural exacto sobre una componente puntual | `POINT_COMPONENT_NOT_MATERIALIZED` (V-A-15); fuera de `CU3` |
 
 ## 6. Fuera de alcance
 
 - `CU4`, `CU5`, `CU6`, `CU7`, `CU8-D`, `CU9`, `CU10` y `G9B`.
 - El perfil de esfuerzo (H-1) y cualquier tolerancia configurable.
-- La materialización de las componentes puntuales y C22, C23 y C40, salvo que lo decida D-CU3-9.
+- El objeto público de punto crítico.
+- La materialización en componentes puntuales, C22, C23 y C40.
+- La normalización y la tangencia de los pares de loci.
 - El trabajo futuro registrado en el cierre de `CU2` §6.
-- Los pares de loci tangentes; los contactos de orden superior; la eliminación algebraica general.
+- Los contactos de orden superior y la eliminación algebraica general.
 - Cualquier cambio en `geocedg_book`.

@@ -187,7 +187,7 @@ La versión 6 registra la preparación de `CU3` (autorizada el 2026-10-24 sobre 
 - **Filas actualizadas:** SM-C-4, SM-C-7 y SM-D-11.
 - **Métodos nuevos:**
   - SM-B-11: evaluación exacta de programas de regla y compás con cotas de separación;
-  - SM-C-12: condiciones abiertas frente a cerradas, y chorros del residuo de contacto;
+  - SM-C-12: qué certifican los intervalos, y chorros del residuo de contacto;
   - SM-D-14: contactos en pliegues frente a tangencias;
   - SM-E-12: puntos estructurales por correspondencia del conductor;
   - SM-E-13: germen de contacto tangente y su ciclo de vida.
@@ -195,11 +195,17 @@ La versión 6 registra la preparación de `CU3` (autorizada el 2026-10-24 sobre 
   productivo, y ninguna fila sube de estado sin la implementación y el cierre de `CU3`.
 - **Evidencia.** La del [sondeo de la preparación](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-preparation-characterization.json),
   que es investigación y no certificado.
-- **Principio candidato.** La preparación propone para §3 el principio «las condiciones
-  abiertas se certifican con intervalos; las cerradas (incidencias, igualdades, raíces
-  múltiples), solo por estructura o aritmética exacta» (A3.0 de la
-  [propuesta normativa de `CU3`](pre_g9b_cu3_normative_proposal.md)). No se añade a §3 sin una
-  decisión autoral.
+- **Principio candidato.** La preparación propone para §3 el principio A3.0 de la
+  [propuesta normativa de `CU3`](pre_g9b_cu3_normative_proposal.md), en la forma que precisó la
+  revisión científica focal de 2026-10-24:
+  - los intervalos certifican la existencia de alguna raíz en un intervalo (continuidad y cambio
+    de signo certificado) y las desigualdades estrictas;
+  - no deciden una igualdad en un parámetro o en un punto prescrito (una incidencia dada, una raíz
+    múltiple);
+  - esa igualdad se establece por estructura o por aritmética exacta, que son evidencias
+    distintas.
+
+  No se añade a §3 sin una decisión autoral.
 
 ### 6.1 A. Fundamentos de geometría descriptiva computacional
 
@@ -226,7 +232,7 @@ La versión 6 registra la preparación de `CU3` (autorizada el 2026-10-24 sobre 
 | SM-B-8 | Constantes capturadas frente a relaciones geométricas ideales | `INVESTIGACIÓN` | análisis de `CU2` §3.8.3 (F-CU2-10); `locus-v2-certified-construction-model.md` §3 | — | B | SM-B-5 |
 | SM-B-9 | Simetría estructural exacta como prueba de existencia de puntos estacionarios | `IMPLEMENTACIÓN VERIFICADA` (`CU2`, aprobado; D-CU2-6; `fold-symmetry/v1`), restringida al conductor en una circunferencia sin términos cruzados y a dos involuciones, y usada solo para los pliegues del mapa trazado | diseño de `CU2` §5; A2.2-R; `locus-v2-certified-construction-model.md` §10.7 | `kernel/locus/intersection/ConstructionSymmetry2D`; `PreG9BCu2FoldCertificationTest` | B | SM-C-6 |
 | SM-B-10 | Rechazo de pares de tramos polinómicos por la envolvente convexa de Bernstein | `IMPLEMENTACIÓN VERIFICADA` (aprobado), como evidencia de candidatos en coma flotante, sin cobertura rigurosa | `locus-v2-extended-intersections.md` (`G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED`); ADR 0009 | `kernel/locus/intersection/PiecewisePolynomialPairIntersectionCapability2D`; `PiecewisePolynomialPairIntersectionCapability2DTest`, `G8C2LocusPairKernelTest` | B | no |
-| SM-B-11 | Evaluación exacta de programas de clase v3 de regla y compás en un punto exacto del conductor: torre de extensiones cuadráticas sobre las constantes binary64 capturadas y decisión del signo y la nulidad con cotas constructivas de separación de raíces | `DISEÑO` (candidato de `CU3`, sin aprobación) e `INVESTIGACIÓN`: la identidad `J_1(K) = M_1` del modelo, deducida y comprobada con 80 cifras en las dos ramas de `H_1` | [propuesta normativa de `CU3`](pre_g9b_cu3_normative_proposal.md) A3.5; [Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md) §6 (M3); [análisis](pre_g9b_cu3_initial_state_and_capability_analysis.md) §5.3 | sondeo `tools/benchmark/pre-g9b-cu/cu3-java/`, escenario P3 | B | no |
+| SM-B-11 | Evaluación exacta de programas de regla y compás en un punto exacto del conductor, en la configuración conjunta recalculada desde una frontera de captura común (la captura objeto a objeto rompe las relaciones estructurales: `K.x = fl(B.x + 5)`): torre de extensiones cuadráticas sobre los racionales de la frontera, reconstrucción exacta del punto del conductor con la selección heredada, y decisión del signo y la nulidad con cotas constructivas de separación de raíces | `DISEÑO` (candidato de `CU3`, sin aprobación) e `INVESTIGACIÓN`: la identidad `J_1(K) = M_1` del modelo, deducida y comprobada con 80 cifras en las dos ramas de `H_1` | [propuesta normativa de `CU3`](pre_g9b_cu3_normative_proposal.md) A3.5; [Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md) §6 (M3); [análisis](pre_g9b_cu3_initial_state_and_capability_analysis.md) §5.3 | sondeo `tools/benchmark/pre-g9b-cu/cu3-java/`, escenario P3 | B | no |
 
 ### 6.3 C. Análisis numérico riguroso
 
@@ -243,7 +249,7 @@ La versión 6 registra la preparación de `CU3` (autorizada el 2026-10-24 sobre 
 | SM-C-9 | Totalidad estructural: certificación sin cajas de los programas de operaciones totales | `IMPLEMENTACIÓN VERIFICADA` (`CU2`, aprobado; `structural-totality/v1`): primera autoridad del certificador, composición mínima de V-CON-6 y paso de valores métricos por pasos totales | diseño de `CU2` §4.2; A2.2-R; `locus-v2-certified-construction-model.md` §10.8 y §10.10 | `kernel/locus/intersection/ConstructionBoxModel2D` (`isStructurallyTotal`), `HybridExistenceCertifier2D`; `kernel/algos/AlgoDependentPointLocusV2`; `PreG9BCu2HybridCertificationTest`, `PreG9BCu2ConsumerMigrationTest` | C | no |
 | SM-C-10 | Aislamiento de raíces polinómicas por tramos monótonos (ceros de la derivada) y bisección | `IMPLEMENTACIÓN VERIFICADA` (aprobado), con evidencia en coma flotante, no certificada; se usa también para los puntos estacionarios de la distancia al cuadrado en la interacción | `locus-v2-intersections.md` 1.2; ADR 0008 | `kernel/locus/intersection/PolynomialRootIsolation2D`; `kernel/locus/interaction/LocusPointInteractionResolver2D`; `PolynomialRootIsolation2DTest`, `G8BIntersectionKernelTest` | C | no |
 | SM-C-11 | Redondeo dirigido con transformaciones exactas (TwoSum y TwoProduct de Dekker) y suma compensada | `IMPLEMENTACIÓN VERIFICADA` (`CU1`, aprobado) | `locus-v2-metrics.md` §25 | `kernel/locus/metric/MetricOutwardArithmetic2D`, `LocusMetricAggregator2D`; `PreG9BCu1MetricClassesTest` | C | no |
-| SM-C-12 | Condiciones abiertas y cerradas: los intervalos certifican desigualdades estrictas, nunca una incidencia ni una raíz múltiple; envolventes del residuo de contacto `h`, `h′` y `h″` compuestas con la clase v3; punto crítico certificado; aceptación de raíces transversales por un cambio de signo certificado | `DISEÑO` (candidato de `CU3`, sin aprobación) e `INVESTIGACIÓN`: el sondeo clasifica los contactos del modelo (clase 3), las casi-tangencias (clases 3 y 4) y el barrido H02, y encuentra H-CU3-1 a H-CU3-4 en el motor vigente | propuesta normativa de `CU3` A3.0, A3.1-R y A3.5; [Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md) §2–§4 | sondeo de la preparación, escenarios P2 y P5 a P7 | C | no |
+| SM-C-12 | Qué certifican los intervalos: la existencia de alguna raíz en un intervalo (continuidad y cambio de signo certificado) y las desigualdades estrictas, nunca una igualdad en un parámetro o punto prescrito (una incidencia dada, una raíz múltiple); envolventes del residuo de contacto `h`, `h′` y `h″` compuestas con la clase v3; punto crítico certificado; grados de evidencia y vía certificada de admisión, junto a la verificación local de G8B-R1 | `DISEÑO` (candidato de `CU3`, sin aprobación) e `INVESTIGACIÓN`: el sondeo clasifica los contactos del modelo (clase 3), las casi-tangencias (clases 3 y 4) y el barrido H02, y encuentra H-CU3-1 a H-CU3-4 en el motor vigente | propuesta normativa de `CU3` A3.0, A3.1-R y A3.5; [Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md) §2–§4 | sondeo de la preparación, escenarios P2 y P5 a P7 | C | no |
 
 ### 6.4 D. Curvas, métricas y topología
 

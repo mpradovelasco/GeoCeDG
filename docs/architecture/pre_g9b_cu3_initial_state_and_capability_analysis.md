@@ -324,6 +324,28 @@ persiste, porque `J_1(K)` sigue en `c_1`. Al restaurar `D_1`, todo vuelve.
   producto anterior falla cerrado; que la carga del documento completo falle no se ha comprobado
   (Etapa A §8).
 
+### 5.7 Configuración de la evaluación exacta (revisión focal, 2026-10-24)
+
+**Comprobación racional exacta.** Se hizo con los valores binary64 de `B.x` y `K.x` que registra
+la evidencia, convertidos a racionales exactos con `System.Numerics.BigInteger`:
+
+- `K.x = 4,0619549279530975` es `fl(B.x + 5)`;
+- difiere del racional exacto `B.x + 5`, con `B.x = −0,9380450720469029`, en `4,44·10⁻¹⁶`.
+
+**Consecuencia.** El estado binary64 de `K`, y con él los de `m`, `M` y `n`, no conserva
+exactamente la relación «`n` pasa por la vertical del punto exacto de contacto». Una
+configuración que tomara como constantes los estados binary64 de esos objetos intermedios no
+contendría la incidencia del teorema de §5.3. Por eso la evaluación exacta M3 debe recalcular el
+subgrafo conjunto desde una frontera común ([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md)
+§6.2).
+
+**P3 ya hizo esa recalculación**, con la frontera `{H, B, altura de h, rbCone, D_1}`:
+
+- recalculó `K = B + (rbCone, 0)` y `M` exactamente a partir de ella;
+- por eso dio `0E-79`.
+
+Es una evaluación con 80 cifras sobre esa frontera, no una prueba exacta.
+
 ## 6. Clasificación núcleo frente a capa externa
 
 Según la regla de colocación de `AGENTS.md` §4:
@@ -337,7 +359,7 @@ Según la regla de colocación de `AGENTS.md` §4:
 | Evaluación exacta del corte (M3) | núcleo | certifica una incidencia; su resultado decide la admisibilidad |
 | Normalización de residuos (H-2) | núcleo | política de un resultado semántico |
 | Ejes como objetivos (H-3) | núcleo (registro de identidad y adaptador de objetivo) | identidad durable |
-| Objeto de punto crítico (F-2-R, opción B) | núcleo | punto del DAG con identidad |
+| Objeto de punto crítico (opción futura B de F-2-R; no incorporado a `CU3`) | núcleo | punto del DAG con identidad |
 | Bancos, sondeos y comparación con referencias | capa externa (`tools/benchmark`, pruebas) | validación |
 | Prover simbólico de GeoGebra como contraste | capa externa (evidencia) | depende de un CAS y no es determinista en tiempo; nunca es autoridad |
 | Inspector, mensajes y textos de diagnóstico | aplicación de escritorio | presentación |

@@ -1,11 +1,11 @@
-# PRE-G9B-CU3 — Normalización de residuos (H-2) y ejes como objetivos (H-3)
+# PRE-G9B-CU3 — Normalización de residuos, admisibilidad local frente a certificación (H-2) y ejes (H-3)
 
 | Campo | Valor |
 |---|---|
-| Carácter | Diseño candidato de `CU3` para H02 y H06. No es especificación normativa ni autoriza implementación |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`; `selfApproved=false` |
-| Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §1 (H-2 y H-3) y §4 (las tolerancias nunca dependen del zoom, el DPI, la cámara ni el tamaño de la vista) |
-| Autoridad vigente | `locus-v2-intersections.md` v1.2 §8 (en particular §8.1: «any characteristic geometric scale used by the relative check is translation-invariant… independent of viewport and coordinate-origin offset») y §9; `locus-v2-public-surface.md` §8; ADR 0013 (persistencia de políticas), ADR 0017 y ADR 0026; `AGENTS.md` §1.8, §10 y §11.5–§11.6 |
+| Carácter | Diseño candidato de `CU3` para H02 y H06, y para la relación entre la admisibilidad local aprobada y la existencia certificada. No es especificación normativa ni autoriza implementación |
+| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal de 2026-10-24; `selfApproved=false` |
+| Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §1 (H-2 y H-3) y §4 (las tolerancias nunca dependen del zoom, el DPI, la cámara ni el tamaño de la vista); instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación» (2026-10-24), punto 1 |
+| Autoridad vigente | `locus-v2-intersections.md` v1.2 §5.1, §8 (en particular §8.1) y §9; aclaración G8B-R1 (ADR 0008, «G8B-R1 clarification — point admissibility versus completeness», y el [informe G8B-R1](../validation/g8b_r1_locus_v2_intersection_point_admissibility_report.md), §C y §D); `locus-v2-public-surface.md` §8 y §10; ADR 0013, 0017, 0026 y 0037 (clases de garantía métrica, precedente); `AGENTS.md` §1.8, §10 y §11.5–§11.6 |
 | Antecedentes | [estudio H de `CU0`](pre_g9b_cu0_precision_and_tolerance_study.md) §4 y §5 (H-b, H-c); enmiendas candidatas A3.1 y A3.4 de `CU0`; decisiones H-2 y H-3 de la [hoja de `CU0`](../validation/pre_g9b_cu0_author_decision_sheet.md) |
 | Evidencia | [análisis del estado inicial](pre_g9b_cu3_initial_state_and_capability_analysis.md) §3.1 y §4 (H-CU3-1 a H-CU3-6); P7, P8 y P9 de la [caracterización](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-preparation-characterization.json) |
 
@@ -14,79 +14,173 @@
 Hay tres mecanismos, confirmados por P7:
 
 1. **Escala unidad para rectas, segmentos, rayos, gráficas e implícitas.** El umbral efectivo es
-   `4·10⁻¹²` en unidades del modelo para cualquier tamaño de la construcción.
+   `4·10⁻¹²` en unidades del modelo, sea cual sea el tamaño de la construcción.
 2. **Corchete absoluto `1e-12` en el parámetro.** Tras la bisección, el residuo vale
-   aproximadamente `|dh/dt|·Δt`, que crece con la escala, así que una raíz regular se rechaza
-   cuando `|dh/dt|` pasa de 4 a 8.
-3. **Traslación.** Los valores binary64 de las coordenadas pierden precisión absoluta con la
-   distancia al origen. Con la misma escala, el número de raíces admisibles cambia con la
-   traslación (P7: radio 200, 0/2 en el origen y 2/2 a 10⁶), y a 10⁶ aparecen duplicados
-   (H-CU3-4).
+   aproximadamente `|dh/dt|·Δt`, que crece con la escala.
+3. **Traslación.** Con la misma escala, el número de raíces admisibles cambia con la traslación
+   (P7: radio 200, 0/2 en el origen y 2/2 a 10⁶), y a 10⁶ aparecen duplicados (H-CU3-4).
 
 En todos esos casos, el sondeo **certifica la existencia de las dos raíces** por un cambio de signo
-de envolventes que excluyen el cero, y sus residuos divididos por la extensión `3r` de la imagen
-están entre `0` y `7,6·10⁻¹⁷`. El defecto no es de precisión, sino de **criterio de aceptación**:
-el residuo absoluto se usa como prueba de existencia, cuando no lo es (Etapa B §2).
+de envolventes que excluyen el cero (Etapa B §2a). Sus residuos divididos por la extensión `3r` de
+la imagen están entre `0` y `7,6·10⁻¹⁷`. Lo que falla no es la precisión, sino el **criterio de
+aceptación** basado en un residuo absoluto.
 
-Los pares de loci usan `max(1, ‖P₁‖, ‖P₂‖)`, la **distancia al origen**
-(`LocusPairIntersectionSolver2D:593-596`). Eso contradice §8.1 de la especificación de
-intersecciones, ya aprobada: es una falta de conformidad, no una propuesta nueva.
+## 2. Admisibilidad local (G8B-R1) frente a existencia certificada
 
-## 2. Principio
+### 2.1 Lo que aprobó G8B-R1
 
-- **La existencia de una raíz transversal se prueba con condiciones abiertas.** Si en un
-  corchete `[a, b]` donde el programa está certificado válido las envolventes de `h(a)` y `h(b)`
-  excluyen el cero con signos opuestos, existe una raíz (teorema del valor intermedio). Si
-  además la envolvente de `h′` en `[a, b]` excluye el cero, es única y simple. Esa es la
-  evidencia de aceptación.
-- **El residuo normalizado es un control de consistencia**, no una prueba. Compara el valor
-  evaluado en la raíz refinada con una escala geométrica característica, para detectar una
-  evaluación incoherente con la declarada. Si lo supera, el candidato se rechaza y se emite el
-  diagnóstico `RESIDUAL_REJECTED`, que hoy se declara y nunca se emite. No acepta nada por sí solo.
-- **Ninguna tolerancia semántica lee la vista.** Ni el zoom, ni los píxeles, ni el DPI, ni la
-  cámara, ni el tamaño de la vista. P9 lo comprueba en el estado actual, y la regla se conserva.
+El informe G8B-R1 (§C) y su aclaración en el ADR 0008 definen la **admisibilidad de un punto** como
+una propiedad **local** de la solución, independiente de la completitud global. Una solución es
+admisible si:
 
-## 3. Propuesta H-2-R
+1. su token es único en el resultado rico actual;
+2. el resultado es actual, de éxito, finito y soportado;
+3. la solución fue publicada tras una evaluación semántica nueva, una comprobación de coordenadas
+   finitas, una comprobación del **residuo normalizado** y una comprobación de pertenencia al
+   objetivo;
+4. su aislamiento local es `ESTABLISHED`;
+5. su identidad es `NEW_TOPOLOGICAL_SOLUTION` o `CONTINUATION_ESTABLISHED`, con clave de
+   continuación;
+6. sus vínculos de linaje y de revisión concuerdan.
 
-### 3.1 Aceptación de raíces transversales
+El ADR 0008 añade que «a small residual alone is insufficient» y que «tangency is not inferred
+from sign changes alone».
 
-| Elemento | Regla candidata |
-|---|---|
-| Existencia | cambio de signo certificado con envolventes (§2), en lugar del residuo absoluto |
-| Unicidad | `h′` que excluye el cero en el corchete; si no, el candidato pasa a la taxonomía de la Etapa B §3 |
-| Corchete | refinado hasta que el control de consistencia se cumpla o hasta la anchura de unos pocos `ulp(t)`, con la parada por el residuo (`Δt ≤ τ·L / |h′|`) y no por un corchete absoluto |
-| Deduplicación | dos candidatos son la misma preimagen **si y solo si** sus corchetes certificados se solapan y `h′` excluye el cero en la unión; nunca se fusionan dos preimágenes distintas por cercanía de coordenadas (§8.2) |
-| Clase de contacto | la decide la evidencia (Etapa B §4.4), no `|n·t| ≤ 1e-10`, que queda como indicador de diagnóstico |
+### 2.2 Grados de evidencia de existencia
 
-### 3.2 Escala característica
+La revisión focal pide distinguir las soluciones **localmente verificadas y admisibles** bajo ese
+contrato de las soluciones con **existencia rigurosamente certificada**. El diseño lo hace con un
+atributo explícito de cada solución, ortogonal a su clase de contacto, a su orden y a la
+completitud global:
 
-Alternativas para la decisión D-CU3-6:
+| Grado | Evidencia | Naturaleza (principio 3 del registro E1) |
+|---|---|---|
+| `LOCALLY_VERIFIED` | las condiciones 1 a 6 de G8B-R1 con la evidencia binary64 actual: cambio de signo o muestra de los valores evaluados, residuo bajo el umbral versionado y aislamiento local | **verificación numérica bajo hipótesis**: suficiente para la admisibilidad aprobada, **no** un certificado de existencia |
+| `EXISTENCE_CERTIFIED` | cambio de signo con envolventes que excluyen el cero en un corchete certificado válido (continuidad), y unicidad por `h'` que excluye el cero (Etapa B §2a) | aritmética de intervalos con cotas rigurosas |
+| `EXISTENCE_STRUCTURAL` | igualdad por estructura (Etapa B §2c) | prueba estructural |
+| `EXISTENCE_EXACT` | igualdad decidida por aritmética exacta en una configuración declarada (M3) | prueba algebraica exacta |
+
+Los tres últimos certifican. El primero, no. Un grado no se deduce de otro (§4).
+
+## 3. Propuesta H-2-R (D-CU3-6, revisada)
+
+La versión anterior de esta preparación proponía sustituir la aceptación de G8B-R1 por la
+aceptación certificada y dejar no admisibles las raíces de capacidades sin envolventes. **Eso
+habría restringido una capacidad aprobada sin identificarlo**, y se retira. La propuesta revisada
+tiene cuatro piezas.
+
+### 3.1 Vía G8B-R1, sin cambios
+
+La admisibilidad de G8B-R1 se conserva tal como está:
+
+- los umbrales versionados de `g8b-initial-normalized/v1`;
+- el grado `LOCALLY_VERIFIED`;
+- las capacidades sin envolventes: el evaluador heredado, las fuentes fuera de la clase v3 y de
+  SplineV2, y los pares.
+
+Ninguna raíz admisible hoy deja de serlo por esta pieza.
+
+### 3.2 Vía certificada, aditiva (H02)
+
+Una raíz transversal `EXISTENCE_CERTIFIED` que **no** pasa la comprobación de residuo de la
+condición 3 de G8B-R1 es admisible si su residuo normalizado es coherente con la escala
+característica: `|residuo| ≤ τ_rel · L` (§3.5). Es una ampliación de la condición 3: la satisface
+o bien el residuo versionado, o bien la existencia certificada con coherencia de escala.
+
+Efectos:
+
+- las raíces de H02 a gran escala y trasladadas pasan a ser admisibles;
+- ninguna raíz admisible deja de serlo;
+- en dibujos pequeños (`L < 1`) no cambia nada, porque la vía G8B-R1 se mantiene.
+
+El corchete de la vía certificada se refina por el criterio de residuo o hasta unos pocos
+`ulp(t)`, nunca por una anchura absoluta.
+
+### 3.3 Regla de conflicto de evidencia (cambio normativo restrictivo, identificado)
+
+> Cuando, en la misma revisión, una evidencia certificada contradice una clasificación o una
+> admisibilidad obtenida por verificación local, prevalece la evidencia certificada: la solución
+> contradicha se retira del conjunto finito o se reclasifica, y su token deja de ser admisible. Sin
+> contradicción certificada, nada cambia.
+
+Las contradicciones tipificadas son:
+
+| Contradicción | Hallazgo | Efecto |
+|---|---|---|
+| clase 4 sin intersección certificada en una caja que contiene raíces verificadas localmente | H-CU3-3; parte de H-CU3-1 | las raíces se retiran; el resultado rico registra la ausencia local certificada (la completitud global no cambia) |
+| punto crítico certificado (`h''` de signo fijo y un solo cambio de signo de `h'`) en una caja donde se publica una única raíz transversal, o más raíces de las que el certificado permite | H-CU3-1; H-CU3-2 | las raíces contradichas se reclasifican según la taxonomía (clase 3, 4 o 1–2) |
+| unicidad certificada de dos candidatos cuyos corchetes se solapan | H-CU3-4 | se fusionan en una preimagen |
+
+**Alcance.** Solo objetivos de un parámetro, y solo fuentes con envolventes (clase v3 o SplineV2).
+Los pares y las capacidades sin envolventes no cambian: allí no se calcula ninguna evidencia
+certificada que pueda contradecir nada.
+
+**Disparador determinista e independiente de la escala.** El análisis certificado solo se ejecuta
+sobre los candidatos que el resolvedor ya marca como no transversales por su indicador, sobre los
+mínimos locales que encuentra su búsqueda ternaria y sobre las parejas de candidatos cuyos
+corchetes están a una distancia relativa menor que la de su propia anchura. Una raíz transversal
+genérica no lo dispara y no cambia.
+
+**Naturaleza del cambio.** Es una enmienda normativa de la admisibilidad aprobada (A3.1-R) que
+restringe solo resultados contradichos por una prueba. Se apoya en §5.1 de la especificación
+(«uncertainty must not become a false transverse or no-root result») y en el ADR 0008
+(«tangency is not inferred from sign changes alone»). Sus consecuencias de compatibilidad están
+en §5.
+
+**Alternativa sin restricción.** Conservar la admisibilidad de las soluciones contradichas y
+marcarlas solo con un diagnóstico. Mantiene la compatibilidad completa, pero deja publicadas
+raíces transversales que una prueba contradice. Contraría §5.1, y no se recomienda.
+
+### 3.4 Diagnósticos de rechazo
+
+`RESIDUAL_REJECTED`, `PAIR_RESIDUAL_REJECTED`, `MEMBERSHIP_REJECTED` y `NONFINITE_EVALUATION` están
+declarados y hoy no se emiten. Pasan a emitirse en los rechazos que ya ocurren. Es observabilidad
+pura y no cambia ninguna admisibilidad.
+
+### 3.5 Escala característica `L` (solo para la vía certificada y los diagnósticos)
 
 | Opción | Escala `L` | Valoración |
 |---|---|---|
-| **S1** (recomendada; A3.1 de `CU0`) | la mayor de la extensión de la imagen de la componente del locus y la del objetivo acotado (la del locus si el objetivo no está acotado), con un suelo absoluto solo para extensiones degeneradas | invariante por traslación y covariante con la escala; puede ser holgada para un detalle pequeño de una componente grande, lo que es aceptable porque la escala ya no decide la existencia |
-| S2 | escala local (`|F′|·Δt` o el radio de curvatura) | depende de la parametrización y del corchete; más frágil |
-| S3 | ninguna tolerancia: solo la anchura de las envolventes | rigurosa, pero no detecta una evaluación incoherente cuando las envolventes no se pueden calcular (capacidades sin clase v3) |
+| **S1** (recomendada; A3.1 de `CU0`) | la mayor de la extensión de la imagen de la componente del locus y la del objetivo acotado (la del locus si el objetivo no está acotado), con un suelo absoluto solo para extensiones degeneradas | invariante por traslación y covariante con la escala; puede ser holgada para un detalle pequeño de una componente grande, lo que es aceptable porque aquí la escala no decide la existencia |
+| S2 | escala local (`|F′|·Δt` o el radio de curvatura) | depende de la parametrización; más frágil |
+| S3 | ninguna tolerancia, solo la anchura de las envolventes | rigurosa, pero sin control de coherencia |
 
-**Combinación recomendada.** `τ_rel·L`, con `τ_rel` versionado; el valor inicial es el `2e-12`
-vigente, pero ahora multiplica a una escala con sentido geométrico. Un suelo absoluto
-`max(τ_abs, τ_rel·L)` solo para `L` degenerada, con `τ_abs` el `2e-12` vigente. En los pares, la
-misma regla con la mayor de las extensiones de las dos componentes. Nunca la distancia al origen.
+Como la escala solo interviene en la vía certificada, adoptarla **no restringe** la vía G8B-R1.
 
-**Capacidades sin envolventes.** Para fuentes fuera de la clase v3 y que no sean SplineV2, y para
-el evaluador heredado, la existencia no se puede certificar. En la decisión D-CU3-6 hay dos
-alternativas:
+### 3.6 Pares de loci
 
-- **(i)**, recomendada: esas raíces se publican con la evidencia numérica y **no son admisibles**
-  para la materialización; en el inspector aparecen como `CONTACT_NOT_ESTABLISHED` o como
-  candidatas;
-- **(ii)**: conservan el criterio actual, con la escala S1, y se marcan como verificación numérica
-  bajo hipótesis.
+Los pares usan `max(1, ‖P₁‖, ‖P₂‖)`, la **distancia al origen**
+(`LocusPairIntersectionSolver2D:593-596`). Eso contradice §8.1 de la especificación aprobada:
 
-La (i) es coherente con §5.1. Puede reducir los puntos materializables en documentos que hoy los
-tienen, así que exige la decisión de compatibilidad D-CU3-7.
+- **recomendación para `CU3`**: no cambiar la aceptación de pares, que está fuera del alcance
+  mínimo, y registrar la no conformidad como limitación conocida con una enmienda futura;
+- **alternativa**: corregirla en `CU3`. Afecta en las dos direcciones a la admisibilidad de los
+  pares trasladados, y exigiría su propio análisis de compatibilidad.
 
-## 4. Compatibilidad, identidad y persistencia
+## 4. Política de consumo de la evidencia
+
+| Consumidor | Acepta | Regla |
+|---|---|---|
+| resultado rico e inspector | todos los grados y clases | muestra el grado, la clase, el orden y la evidencia tal cual; las clases 3 a 5 se conservan como resultado y diagnóstico |
+| punto derivado por token, `Intersect(R, token)` | raíces transversales `LOCALLY_VERIFIED` o superiores (G8B-R1, sin cambios, más la vía certificada); contactos sin cambio de signo solo de las clases 1 y 2 (Etapa B §5) | el grado no forma parte del token: es evidencia de la revisión y se muestra en la procedencia del punto |
+| segunda incidencia de la Etapa A | solo `EXISTENCE_STRUCTURAL` o `EXISTENCE_EXACT` | es una igualdad en un punto prescrito (Etapa B §2b) |
+| materialización sin conductor de contactos (incremento `CU3-B`) | solo las clases 1 y 2 | Etapa B §5 y §6 |
+| otras construcciones del DAG que usan el punto | el punto, como cualquier punto | su grado se propaga como procedencia: nunca se convierte en un certificado de los consumidores, y un certificado de `CU2` que capture el punto como constante independiente del conductor sigue certificando solo su configuración capturada |
+| exportaciones (DXF, LaTeX) | el punto | declaran el grado donde el formato lo permite y nunca afirman exactitud que no tenga |
+
+**Reglas contra la promoción silenciosa:**
+
+1. El grado de una solución en una revisión es la evidencia más fuerte **calculada en esa
+   revisión**. Nunca sube por una tolerancia, por la coincidencia de coordenadas, por una etiqueta
+   del usuario, por la persistencia ni por un resultado de otra revisión.
+2. `LOCALLY_VERIFIED` nunca se lee como `EXISTENCE_CERTIFIED`, ni `EXISTENCE_CERTIFIED` (que es
+   existencial, §2a) como una igualdad en un punto prescrito.
+3. Un cambio de grado entre revisiones no cambia la identidad. El inspector lo muestra, y un
+   consumidor que exija un grado mínimo queda indefinido con su causa si ya no se cumple.
+4. Como en las clases métricas de `CU1` (ADR 0037), el grado dice si un resultado puede alimentar
+   un consumidor que exige rigor, y nunca se infiere de la calidad aparente del valor.
+
+## 5. Compatibilidad, identidad y persistencia
 
 **Hecho registrado.** El token `text1` guardado en el modelo del autor es un `locus-root/v3`. Su
 selector incluye el contrato del adaptador de residuo:
@@ -105,30 +199,26 @@ identidad de un token.
 
 Consecuencias:
 
-1. **La regla de escala no debe cambiar dentro del texto del contrato del adaptador.** Ese texto
-   identifica la *cantidad* residual, no la tolerancia. La escala nueva pertenece a la identidad
-   de la **política** (`g8b-initial-normalized/v1` pasa a una versión nueva, nombre de trabajo
-   `cu3-certified-existence-normalized/v1`), y no a la del adaptador. Si el texto del adaptador
-   cambiara, ningún token guardado antes de `CU3` volvería a coincidir. Recomendación: conservar
-   el texto del adaptador y versionar solo la política, que participa en la identidad del
-   resultado (§8) pero no en la del token.
-2. **Reclasificar una tangencia mal clasificada como transversal** (H-CU3-2) hace que su token
-   deje de resolverse: el germen transversal ya no existe. El punto derivado `Intersect(R, token)`
-   quedaría indefinido con `IDENTITY_DISCONTINUITY`. Es la semántica correcta, el fallo cerrado de
-   una raíz que nunca fue transversal, pero cambia el resultado de un documento antiguo. `AGENTS.md`
-   §11.6 exige entonces una decisión de compatibilidad, una nota de migración y evidencia de
-   regresión (D-CU3-7). Alternativas:
-   - **(a)**, recomendada: el cambio se aplica a todos los documentos, con un diagnóstico que
-     explica la reclasificación y ofrece la forma estructural de la Etapa A
+1. **El texto del contrato del adaptador no cambia.** La escala S1 vive en la identidad de la
+   **política** de la vía certificada (nombre de trabajo `cu3-certified-admission/v1`), que entra
+   en la identidad del resultado (§8 de la especificación) y no en la del token. Si el texto del
+   adaptador cambiara, ningún token guardado volvería a coincidir.
+2. **Cambios aditivos** (vía certificada, H02): las raíces antes rechazadas reciben tokens nuevos.
+   No cambia ningún token existente.
+3. **Cambios restrictivos identificados** (regla de conflicto, §3.3): un token guardado de una
+   solución contradicha deja de resolverse, y su punto derivado queda indefinido con una causa
+   tipada (`CONTRADICTED_BY_CERTIFIED_EVIDENCE`). Son la raíz de la costura de `e_1·c_1` en el
+   modelo del autor (H-CU3-2), las raíces espurias de H-CU3-1, las tangencias en extremos
+   clasificadas como transversales y los duplicados de H-CU3-4. `AGENTS.md` §11.6 exige una
+   decisión de compatibilidad, una nota de migración y evidencia de regresión (D-CU3-7):
+   - **(a)**, recomendada: la regla se aplica a todos los documentos, con un diagnóstico que
+     explica la contradicción y ofrece la forma estructural de la Etapa A
      (`Intersect(e_1, c_1, J)`);
-   - **(b)**: los documentos anteriores a `CU3` conservan la política anterior hasta una migración
-     explícita del usuario, y la política entra en el documento como exige el ADR 0013.
-3. **Raíces que pasan a ser admisibles** (H02 a gran escala). Las raíces antes rechazadas reciben
-   tokens nuevos. No cambia ningún token existente: es un efecto aditivo.
-4. **Raíces espurias que dejan de existir** (H-CU3-1). Un token persistido de una raíz espuria
-   deja de resolverse y su punto queda indefinido. Mismo tratamiento que en el punto 2.
+   - **(b)**: los documentos anteriores a `CU3` conservan su admisibilidad hasta una migración
+     explícita del usuario, con la política persistida en el documento (ADR 0013).
+4. **Precisión de G8B-R1 para raíces pares** (Etapa B §5): ningún token existente afectado.
 
-## 5. H06: diagnóstico y propuesta H-3-R
+## 6. H06: diagnóstico y propuesta H-3-R
 
 **Causa** (P8). `GeoAxis` es un `GeoLine`, y la tabla de objetivos lo admite como recta
 (`LocusIntersectionTargets2D:111-113`). El fallo está en la **identidad**:
@@ -142,21 +232,22 @@ Alternativas para la decisión D-CU3-8:
 
 | Opción | Contenido | Valoración |
 |---|---|---|
-| **A** (recomendada) | los ejes son **referencias reservadas del núcleo** con identidad simbólica estable (`xAxis`, `yAxis`, como ya los nombra el XML de comandos), admitidas por el registro de identidad como participantes no ordinarios. El adaptador los trata como rectas no acotadas. El resultado y sus tokens usan esa identidad reservada | cumple H06 (el autor eligió admitir los ejes) sin inferir identidad de etiquetas: la identidad reservada es un contrato del núcleo, no la etiqueta visible; toca el registro de identidad, que es una superficie aprobada (ADR 0026) |
-| B | un mensaje explícito y tipado en lugar del error genérico, sin admitir los ejes | mínima, pero no cumple la decisión H-3 que recomendaba admitirlos |
+| **A** (recomendada) | los ejes son **referencias reservadas del núcleo** con identidad simbólica estable (`xAxis`, `yAxis`, como ya los nombra el XML de comandos), admitidas por el registro de identidad como participantes no ordinarios; el adaptador los trata como rectas no acotadas | cumple H06 sin inferir identidad de etiquetas: la identidad reservada es un contrato del núcleo, no la etiqueta visible; toca el registro de identidad, una superficie aprobada (ADR 0026) |
+| B | un mensaje explícito y tipado en lugar del error genérico, sin admitir los ejes | mínima, pero no cumple la decisión H-3, que recomendaba admitirlos |
 | C | sustituir el eje en silencio por una recta ordinaria `y = 0` | **rechazada**: crea un objeto oculto, cambia la identidad e infiere equivalencia por coordenadas |
 
-Con la opción A, el mensaje tipado de la B se emite de todos modos para los objetivos que sigan
-sin admitirse.
+Con la opción A, el mensaje tipado de la B se emite igualmente para los objetivos que sigan sin
+admitirse. Es un cambio aditivo: ningún documento existente contiene un resultado con un eje.
 
-## 6. Pruebas exigidas (resumen; detalle en la matriz)
+## 7. Pruebas exigidas (resumen; detalle en la matriz)
 
-- **Inversión de `pins.H02`:** dos raíces admisibles en todo el barrido de escala y traslación,
-  sin perder las de la línea base.
-- **Inversión de `pins.H06`:** `Intersect(L, xAxis)` e `Intersect(L, yAxis)` creados y
-  persistentes. Guardar, reabrir, Deshacer y Rehacer conservan la identidad reservada.
+- **Inversión de `pins.H02`** por la vía certificada, en todo el barrido de escala y traslación,
+  sin perder las raíces de la línea base.
+- **Vía G8B-R1 intacta.** Las suites G8B, G8C1, G8C2 y G9U0-R4 pasan sin cambios, salvo las filas de
+  conflicto identificadas.
+- **Regla de conflicto.** Cada contradicción tipificada, con su prueba adversaria y su
+  compatibilidad.
+- **Política de consumo.** Ninguna promoción: el grado mínimo exigido por cada consumidor.
 - **Diagnósticos de rechazo emitidos.**
-- **Pares:** normalización sin el origen, con traslación de 10⁶.
-- **Vista:** invariancia de todo resultado semántico ante el zoom, el DPI y el tamaño de la vista.
-- **Compatibilidad:** documentos anteriores a `CU3` con tokens persistidos (incluido `text1`),
-  con la opción elegida en D-CU3-7.
+- **Inversión de `pins.H06`**, con la persistencia de la identidad reservada.
+- **Vista.** Invariancia ante el zoom, el DPI y el tamaño de la vista.
