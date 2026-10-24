@@ -1,0 +1,2938 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-preparation-characterization",
+  "status": "CU3 PREPARATION EVIDENCE - CANDIDATE - NO VERDICT",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-probe.ps1",
+    "source_commit": "ec2b4dfa0bd77dad0686897cd559ea5003675165",
+    "source_tree": "a8c32e657d6a5de76d9b42396108362b3b898240",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "model": {
+    "P1_runtime_provenance": {
+      "K_parent_algorithm": "AlgoIntersectLineConic",
+      "K_algorithm_outputs": ["J", "K"],
+      "K_algorithm_inputs": ["p", "i"],
+      "K_incidence_list": ["i", "p", "m"],
+      "K_is_point_on_path": false,
+      "E_1_is_point_on_path": true,
+      "E_1_path_is_object_p": true,
+      "p_persistent_id": "geo:848974e6549ef5f2754a7efcb19c0068",
+      "E_1_path_persistent_id": "geo:848974e6549ef5f2754a7efcb19c0068",
+      "E_1_t_in_document": 2.3307447996817268
+    },
+    "P2_correspondence_and_identities": {
+      "K": [4.0619549279530975, -5.367469712127068],
+      "B": [-0.9380450720469029, -5.367469712127068],
+      "p_eigenvectors": [
+        [1.0, 0.0],
+        [-0.0, 1.0]
+      ],
+      "t_K_route_a_canonical_projection": 0.0,
+      "t_K_route_a_is_exact_zero": true,
+      "t_K_route_c_eigenframe_angle": 0.0,
+      "K_y_minus_B_y": 0.0,
+      "E_1_after_move": [4.0619549279530975, -5.367469712127068],
+      "E_1_equals_K_bitwise": true,
+      "E_1_distance_to_K": 0.0,
+      "points_at_E_1_eq_K": {
+        "F_1": [4.0619549279530975, 5.256462311160281],
+        "M": [4.0619549279530975, 5.256462311160281],
+        "H_1": [9.209034817879774, -5.367469712127068],
+        "J": [-5.9380450720469025, -5.367469712127068],
+        "I": [6.635494872916436, -5.367469712127068],
+        "I_1": [9.209034817879774, 5.256462311160281],
+        "G_1": [8.443267537673126, 7.673085542813242],
+        "J_1": [4.827722208159745, 7.673085542813242],
+        "M_1": [4.827722208159745, 7.673085542813242],
+        "K_1": [4.827722208159745, -5.367469712127069]
+      },
+      "bitwise_equalities": {
+        "F_1==M": true,
+        "H_1==K": false,
+        "H_1==J": false,
+        "I_1==M": false,
+        "G_1==M_1": false,
+        "J_1==M_1": true,
+        "J_1.x==M_1.x": true
+      },
+      "residuals_at_E_1_eq_K": {
+        "|J_1-M_1|": 0.0,
+        "|G_1-M_1|": 3.615545329513381,
+        "J_1 signed distance to n": 4.1700373707533768E-16,
+        "J_1 radial residual to c_1": -1.7763568394002505E-15,
+        "K_1 signed distance to h_2": 0.0
+      },
+      "e_1_component_containing_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+      "o_1_component_containing_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE"
+    },
+    "P2_enclosures": {
+      "e_1|n": {
+        "0.01": {
+          "h2_on_box": [-3.4025471339619706, -3.293420450000651],
+          "h1_at_ends": [
+            [0.03347925643355716, 0.03347925643356764],
+            [-0.03347925643356764, -0.03347925643355716]
+          ],
+          "h_at_ends": [
+            [-1.674020437220268E-4, -1.6740204356856928E-4],
+            [-1.674020437220268E-4, -1.6740204356856928E-4]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-7.506067267356081E-14, 7.38096614623348E-14],
+          "h_enclosure_width": 1.4887033413589562E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        },
+        "1.0E-4": {
+          "h2_on_box": [-3.3481615453035034, -3.3481506353041186],
+          "h1_at_ends": [
+            [3.3481560843435604E-4, 3.348156084376713E-4],
+            [-3.348156084376713E-4, -3.3481560843435604E-4]
+          ],
+          "h_at_ends": [
+            [-1.674085730406068E-8, -1.6740703012677945E-8],
+            [-1.674085730406068E-8, -1.6740703012677945E-8]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-7.506067267356081E-14, 7.38096614623348E-14],
+          "h_enclosure_width": 1.4887033413589562E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        },
+        "1.0E-6": {
+          "h2_on_box": [-3.3481561079521396, -3.3481561068605012],
+          "h1_at_ends": [
+            [3.3481561057837514E-6, 3.3481561090277013E-6],
+            [-3.3481561090277013E-6, -3.3481561057837514E-6]
+          ],
+          "h_at_ends": [
+            [-1.7518326994534943E-12, -1.5983753242097687E-12],
+            [-1.7518326994534943E-12, -1.5983753242097687E-12]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-7.506067267356081E-14, 7.38096614623348E-14],
+          "h_enclosure_width": 1.4887033413589562E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        }
+      },
+      "e_1|c_1": {
+        "0.01": {
+          "h2_on_box": [-2.1804307183000162, -1.9417430465065113],
+          "h1_at_ends": [
+            [0.020609424300634543, 0.020609424300652494],
+            [-0.020609424300652494, -0.020609424300634543]
+          ],
+          "h_at_ends": [
+            [-1.0305504564911418E-4, -1.0305504545460308E-4],
+            [-1.0305504564911418E-4, -1.0305504545460308E-4]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-9.681144774731366E-14, 9.325873406851316E-14],
+          "h_enclosure_width": 1.9007018181582682E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        },
+        "1.0E-4": {
+          "h2_on_box": [-2.061271308850315, -2.0612474530229816],
+          "h1_at_ends": [
+            [2.0612593684931368E-4, 2.0612593685506692E-4],
+            [-2.0612593685506692E-4, -2.0612593684931368E-4]
+          ],
+          "h_at_ends": [
+            [-1.0306395736847664E-8, -1.0306202113952166E-8],
+            [-1.0306395736847664E-8, -1.0306202113952166E-8]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-9.681144774731366E-14, 9.325873406851316E-14],
+          "h_enclosure_width": 1.9007018181582682E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        },
+        "1.0E-6": {
+          "h2_on_box": [-2.0612594014130483, -2.061259399026347],
+          "h1_at_ends": [
+            [2.0612593973244713E-6, 2.0612594029570617E-6],
+            [-2.0612594029570617E-6, -2.0612593973244713E-6]
+          ],
+          "h_at_ends": [
+            [-1.1288747714388594E-12, -9.361400543639318E-13],
+            [-1.1288747714388594E-12, -9.361400543639318E-13]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-9.681144774731366E-14, 9.325873406851316E-14],
+          "h_enclosure_width": 1.9007018181582682E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        }
+      },
+      "o_1|h_2": {
+        "0.01": {
+          "h2_on_box": [2.511994435540397, 2.625969078315753],
+          "h1_at_ends": [
+            [-0.025689459904484308, -0.02568945990447296],
+            [0.02568945990447296, 0.025689459904484308]
+          ],
+          "h_at_ends": [
+            [1.284511053674108E-4, 1.2845110550863134E-4],
+            [1.284511053674108E-4, 1.2845110550863134E-4]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-6.306066779870893E-14, 6.57252030578093E-14],
+          "h_enclosure_width": 1.2878587085651823E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        },
+        "1.0E-4": {
+          "h2_on_box": [2.569092520933318, 2.5691039153556057],
+          "h1_at_ends": [
+            [-2.569098214822902E-4, -2.569098214804921E-4],
+            [2.569098214804921E-4, 2.569098214822902E-4]
+          ],
+          "h_at_ends": [
+            [1.2845420727103369E-8, 1.2845561059293693E-8],
+            [1.2845420727103369E-8, 1.2845561059293693E-8]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-6.306066779870893E-14, 6.57252030578093E-14],
+          "h_enclosure_width": 1.2878587085651823E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        },
+        "1.0E-6": {
+          "h2_on_box": [2.569098229467329, 2.5690982306076737],
+          "h1_at_ends": [
+            [-2.5690982309116627E-6, -2.5690982292096114E-6],
+            [2.5690982292096114E-6, 2.5690982309116627E-6]
+          ],
+          "h_at_ends": [
+            [1.2159162565694708E-12, 1.3562484468820918E-12],
+            [1.2159162565694708E-12, 1.3562484468820918E-12]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-6.306066779870893E-14, 6.57252030578093E-14],
+          "h_enclosure_width": 1.2878587085651823E-13,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        }
+      }
+    },
+    "P2_source_jets": {
+      "e_1": {
+        "0.0": {
+          "F": [
+            [4.8277222081596936, 4.827722208159795],
+            [7.673085542813162, 7.673085542813323]
+          ],
+          "F1": [
+            [-8.50544392192283E-16, 8.50544392192283E-16],
+            [-2.6841644855462347E-15, 2.6841644855462347E-15]
+          ],
+          "F2": [
+            [-2.5690982300388847, -2.5690982300384944],
+            [2.9763524520770988, 2.976352452077918]
+          ],
+          "F1_enclosure_contains_zero_vector": true,
+          "limit_direction_used": "F2",
+          "angle_degrees_between_limit_direction_and_target": {
+            "n": 58.38187859343917,
+            "r": 82.05985594145358,
+            "h_2": 40.79977617724773,
+            "c_1": 31.618121406560856
+          }
+        },
+        "3.141592653589793": {
+          "F": [
+            [1.6084395540122054, 1.6084395540126506],
+            [10.13096348845448, 10.130963488454764]
+          ],
+          "F1": [
+            [-1.291650576266097E-15, 9.482276110192588E-16],
+            [-6.761829434473718E-16, 7.706216817440037E-16]
+          ],
+          "F2": [
+            [1.1494339555123396, 1.1494339555128774],
+            [-0.5487998050916056, -0.5487998050913846]
+          ],
+          "F1_enclosure_contains_zero_vector": true,
+          "limit_direction_used": "F2",
+          "angle_degrees_between_limit_direction_and_target": {
+            "n": 82.05985594145358,
+            "r": 58.38187859343918,
+            "h_2": 64.47775352526212,
+            "c_1": 31.618121406560824
+          }
+        }
+      },
+      "o_1": {
+        "0.0": {
+          "F": [
+            [4.827722208159681, 4.827722208159806],
+            [-5.367469712127103, -5.367469712127034]
+          ],
+          "F1": [
+            [-8.505443921922877E-16, 8.505443921922877E-16],
+            [3.512229659179367, 3.512229659179664]
+          ],
+          "F2": [
+            [-2.569098230039127, -2.5690982300382528],
+            [-1.1014410204275589E-13, 1.1286370950060172E-13]
+          ],
+          "F1_enclosure_contains_zero_vector": false,
+          "limit_direction_used": "F1",
+          "angle_degrees_between_limit_direction_and_target": {
+            "n": 17.58210241619141,
+            "r": 57.14036788129871,
+            "h_2": 0.0,
+            "c_1": 84.49157928293545
+          }
+        },
+        "3.141592653589793": {
+          "F": [
+            [1.6084395540122034, 1.6084395540126526],
+            [-5.3674697121270905, -5.367469712127044]
+          ],
+          "F1": [
+            [-1.2916505762661224E-15, 9.482276110192833E-16],
+            [-1.9990612591635306, -1.9990612591633197]
+          ],
+          "F2": [
+            [1.149433955512159, 1.149433955513058],
+            [-1.836933823845465E-14, 1.836933823845465E-14]
+          ],
+          "F1_enclosure_contains_zero_vector": false,
+          "limit_direction_used": "F1",
+          "angle_degrees_between_limit_direction_and_target": {
+            "n": 17.5821024161914,
+            "r": 57.14036788129871,
+            "h_2": 4.921481622015477E-15,
+            "c_1": 74.98802945094536
+          }
+        }
+      }
+    },
+    "current_contacts": {
+      "Intersect(o_1,h_2)": [
+        {
+          "point": [4.827722208159745, -5.367469712127069],
+          "contact_class": "TANGENT_ESTABLISHED",
+          "domain_location": "INTERIOR",
+          "identity_status": "NOT_ESTABLISHED",
+          "admissible": false
+        }
+      ],
+      "Intersect(e_1,n)": [
+        {
+          "point": [4.827722208159745, 7.673085542813242],
+          "contact_class": "CONTACT_UNDETERMINED",
+          "domain_location": "INTERIOR",
+          "identity_status": "NOT_ESTABLISHED",
+          "admissible": false
+        }
+      ],
+      "Intersect(e_1,c_1)": [
+        {
+          "point": [1.6084395540124312, 10.130963488454622],
+          "contact_class": "TRANSVERSE_ESTABLISHED",
+          "domain_location": "PERIODIC_SEAM",
+          "identity_status": "NEW_TOPOLOGICAL_SOLUTION",
+          "admissible": true
+        },
+        {
+          "point": [4.827722208159745, 7.673085542813242],
+          "contact_class": "CONTACT_UNDETERMINED",
+          "domain_location": "INTERIOR",
+          "identity_status": "NOT_ESTABLISHED",
+          "admissible": false
+        }
+      ],
+      "signed_residual_at_t0": {
+        "e_1|n": {
+          "h": 4.1700373707533768E-16,
+          "dh": 0.0,
+          "d2h": -3.348154954970214
+        },
+        "e_1|c_1": {
+          "h": -1.7763568394002505E-15,
+          "dh": 0.0,
+          "d2h": -2.0612578097711776
+        },
+        "o_1|h_2": {
+          "h": 0.0,
+          "dh": 0.0,
+          "d2h": 2.569097469873327
+        }
+      }
+    },
+    "P5_seam_root": {
+      "roots": [
+        {
+          "semantic_parameter": -3.141592653589793,
+          "contact_class": "TRANSVERSE_ESTABLISHED",
+          "domain_location": "PERIODIC_SEAM",
+          "local_isolation": "ESTABLISHED",
+          "admissible": true,
+          "probe_transverse_certification": {
+            "1.0E-6": {
+              "certified": false,
+              "reason": "ENCLOSURE_NOT_AVAILABLE"
+            },
+            "1.0E-9": {
+              "certified": false,
+              "reason": "ENCLOSURE_NOT_AVAILABLE"
+            }
+          }
+        },
+        {
+          "semantic_parameter": 0.0,
+          "contact_class": "CONTACT_UNDETERMINED",
+          "domain_location": "INTERIOR",
+          "local_isolation": "NOT_ESTABLISHED",
+          "admissible": false,
+          "probe_transverse_certification": {
+            "1.0E-6": {
+              "h_at_ends": [
+                [-1.1288747714388594E-12, -9.361400543639318E-13],
+                [-1.1288747714388594E-12, -9.361400543639318E-13]
+              ],
+              "h1_on_box": [-2.7924445556626566E-5, 2.7924445556626566E-5],
+              "existence_by_certified_sign_change": false,
+              "uniqueness_by_h1_excluding_zero": false,
+              "certified": false
+            },
+            "1.0E-9": {
+              "h_at_ends": [
+                [-9.681144774731366E-14, 9.325873406851316E-14],
+                [-9.681144774731366E-14, 9.325873406851316E-14]
+              ],
+              "h1_on_box": [-2.7924449681350616E-8, 2.7924449681350616E-8],
+              "existence_by_certified_sign_change": false,
+              "uniqueness_by_h1_excluding_zero": false,
+              "certified": false
+            }
+          }
+        }
+      ]
+    },
+    "P5_seam_contact_at_E_1_eq_J": {
+      "t_J_canonical_projection": 3.141592653589793,
+      "c_1_cap_r_created": true,
+      "E_1_equals_J_bitwise": false,
+      "J_1_at_J": [1.6084395540124312, 10.130963488454622],
+      "c_1_cap_r": [1.6084395540124259, 10.130963488454618],
+      "|J_1-(c_1 cap r)|": 6.4047456679787536E-15,
+      "J_1==(c_1 cap r) bitwise": false,
+      "J_1 signed distance to r": 0.0,
+      "J_1 radial residual to c_1": -7.105427357601002E-15,
+      "current_Intersect(e_1,r)": {
+        "created": true,
+        "solutions": [
+          {
+            "parameter": -3.141592653589793,
+            "contact_class": "TRANSVERSE_ESTABLISHED",
+            "domain_location": "PERIODIC_SEAM",
+            "admissible": true
+          }
+        ]
+      },
+      "periodic_enclosures_at_pi": {
+        "e_1|c_1": {
+          "0.01": {
+            "h2_on_box": [-0.7346804296179014, -0.6008114355172768],
+            "h1_at_ends": [
+              [0.0066773969238109, 0.0066773969238216975],
+              [-0.00667739692382146, -0.006677396923810664]
+            ],
+            "h_at_ends": [
+              [-3.3387440404375475E-5, -3.33874398554812E-5],
+              [-3.3387440404375475E-5, -3.33874398554812E-5]
+            ],
+            "critical_point_bracket": [3.141592653589783, 3.1415926535898033],
+            "bracket_width": 2.042810365310288E-14,
+            "bisection_steps": 0,
+            "symmetric_tightenings": 4,
+            "h_at_critical_point_enclosure": [-2.7089441800853825E-13, 2.629008122312371E-13],
+            "h_enclosure_width": 5.337952302397754E-13,
+            "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+          },
+          "1.0E-4": {
+            "h2_on_box": [-0.6677646009832894, -0.6677512201324589],
+            "h1_at_ends": [
+              [6.677579107482732E-5, 6.677579107757582E-5],
+              [-6.677579107745675E-5, -6.677579107470913E-5]
+            ],
+            "h_at_ends": [
+              [-3.3390623599416362E-9, -3.338525011997717E-9],
+              [-3.3390623599416362E-9, -3.338525011997717E-9]
+            ],
+            "critical_point_bracket": [3.141592653589783, 3.1415926535898033],
+            "bracket_width": 2.042810365310288E-14,
+            "bisection_steps": 0,
+            "symmetric_tightenings": 4,
+            "h_at_critical_point_enclosure": [-2.7089441800853825E-13, 2.629008122312371E-13],
+            "h_enclosure_width": 5.337952302397754E-13,
+            "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+          },
+          "1.0E-6": {
+            "h2_on_box": [-0.6677579132509462, -0.6677579119121027],
+            "h1_at_ends": [
+              [6.677579114599428E-7, 6.677579141272801E-7],
+              [-6.677579138900481E-7, -6.677579112227026E-7]
+            ],
+            "h_at_ends": [
+              [-6.084022174945859E-13, -6.661338147750938E-14],
+              [-6.084022174945859E-13, -6.661338147750938E-14]
+            ],
+            "critical_point_bracket": [3.141592653589783, 3.1415926535898033],
+            "bracket_width": 2.042810365310288E-14,
+            "bisection_steps": 0,
+            "symmetric_tightenings": 4,
+            "h_at_critical_point_enclosure": [-2.7089441800853825E-13, 2.629008122312371E-13],
+            "h_enclosure_width": 5.337952302397754E-13,
+            "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+          }
+        },
+        "e_1|r": {
+          "0.01": {
+            "h2_on_box": [1.0706450380132493, 1.0986312749994183],
+            "h1_at_ends": [
+              [-0.010846564275810879, -0.010846564275803135],
+              [0.01084656427580287, 0.010846564275810613]
+            ],
+            "h_at_ends": [
+              [5.4232814774750285E-5, 5.423281527033019E-5],
+              [5.4232814774750285E-5, 5.423281527033019E-5]
+            ],
+            "critical_point_bracket": [3.141592653589783, 3.1415926535898033],
+            "bracket_width": 2.042810365310288E-14,
+            "bisection_steps": 0,
+            "symmetric_tightenings": 4,
+            "h_at_critical_point_enclosure": [-2.4304299061417885E-13, 2.401948305679189E-13],
+            "h_enclosure_width": 4.832378211820978E-13,
+            "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+          },
+          "1.0E-4": {
+            "h2_on_box": [1.0846547723302205, 1.084657570735481],
+            "h1_at_ends": [
+              [-1.0846561733693657E-4, -1.0846561733445196E-4],
+              [1.0846561733418664E-4, 1.0846561733667051E-4]
+            ],
+            "h_at_ends": [
+              [5.423037237307808E-9, 5.42352237390236E-9],
+              [5.423037237307808E-9, 5.42352237390236E-9]
+            ],
+            "critical_point_bracket": [3.141592653589783, 3.1415926535898033],
+            "bracket_width": 2.042810365310288E-14,
+            "bisection_steps": 0,
+            "symmetric_tightenings": 4,
+            "h_at_critical_point_enclosure": [-2.4304299061417885E-13, 2.401948305679189E-13],
+            "h_enclosure_width": 4.832378211820978E-13,
+            "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+          },
+          "1.0E-6": {
+            "h2_on_box": [1.0846561731875548, 1.084656173467883],
+            "h1_at_ends": [
+              [-1.084656174827934E-6, -1.0846561723967534E-6],
+              [1.0846561721310851E-6, 1.0846561745622728E-6]
+            ],
+            "h_at_ends": [
+              [2.9430987144685685E-13, 7.870415594498212E-13],
+              [2.9430987144685685E-13, 7.870415594498212E-13]
+            ],
+            "critical_point_bracket": [3.141592653589783, 3.1415926535898033],
+            "bracket_width": 2.042810365310288E-14,
+            "bisection_steps": 0,
+            "symmetric_tightenings": 4,
+            "h_at_critical_point_enclosure": [-2.4304299061417885E-13, 2.401948305679189E-13],
+            "h_enclosure_width": 4.832378211820978E-13,
+            "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+          }
+        }
+      }
+    },
+    "P3_high_precision_ideal_identity": {
+      "h_line_height_binary64": 5.256462311160281,
+      "is_h_horizontal_in_binary64": true,
+      "B_y_equals_K_y": true,
+      "branch_H_1=2I-K": "0E-79",
+      "branch_H_1=K": "0E-79",
+      "digits": 80
+    },
+    "P10_current_reader_of_stage_a_syntax": {
+      "cu3P=Point(e_1,K)": {
+        "created": false,
+        "error_messages": ["command error: Point: Command Point:\nIllegal argument: Semantic Locus V2 e_1\n\nSyntax:\nPoint( <Object> )\nPoint( <Object>, <Parameter> )\nPoint( <Point>, <Vector> )\nPoint( <List> )\nPoint( <Locus V2>, <Branch Key>, <Canonical Parameter> )"]
+      },
+      "cu3I=Intersect(e_1,n,K)": {
+        "created": false,
+        "error_messages": ["command error: Intersect: Command Intersect:\nIllegal argument: Semantic Locus V2 e_1\n\nSyntax:\nIntersect( <Object>, <Object> )\nIntersect( <Object>, <Object>, <Index of Intersection Point> )\nIntersect( <Object>, <Object>, <Initial Point> )\nIntersect( <Function>, <Function>, <Start x-Value>, <End x-Value> )\nIntersect( <Curve 1>, <Curve 2>, <Parameter 1>, <Parameter 2> )\nIntersect( <Locus V2>, <Supported Object> )\nIntersect( <Locus V2>, <Locus V2> )\nIntersect( <Rich Intersection Result>, <Solution Token> )"]
+      },
+      "cu3O=Intersect(o_1,h_2,K)": {
+        "created": false,
+        "error_messages": ["command error: Intersect: Command Intersect:\nIllegal argument: Semantic Locus V2 o_1\n\nSyntax:\nIntersect( <Object>, <Object> )\nIntersect( <Object>, <Object>, <Index of Intersection Point> )\nIntersect( <Object>, <Object>, <Initial Point> )\nIntersect( <Function>, <Function>, <Start x-Value>, <End x-Value> )\nIntersect( <Curve 1>, <Curve 2>, <Parameter 1>, <Parameter 2> )\nIntersect( <Locus V2>, <Supported Object> )\nIntersect( <Locus V2>, <Locus V2> )\nIntersect( <Rich Intersection Result>, <Solution Token> )"]
+      },
+      "cu3C=Intersect(e_1,c_1,K)": {
+        "created": false,
+        "error_messages": ["command error: Intersect: Command Intersect:\nIllegal argument: Semantic Locus V2 e_1\n\nSyntax:\nIntersect( <Object>, <Object> )\nIntersect( <Object>, <Object>, <Index of Intersection Point> )\nIntersect( <Object>, <Object>, <Initial Point> )\nIntersect( <Function>, <Function>, <Start x-Value>, <End x-Value> )\nIntersect( <Curve 1>, <Curve 2>, <Parameter 1>, <Parameter 2> )\nIntersect( <Locus V2>, <Supported Object> )\nIntersect( <Locus V2>, <Locus V2> )\nIntersect( <Rich Intersection Result>, <Solution Token> )"]
+      }
+    },
+    "P4_dynamics": {
+      "rbCone": {
+        "3.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 2.220446049250313E-15,
+          "K_1_to_h_2_at_K": 1.3322676295501878E-15,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 1.4380702406668888E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "4.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 3.66205343881779E-15,
+          "K_1_to_h_2_at_K": 8.881784197001252E-16,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -2.598070913961692E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": -4.1980420029119614E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "5.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 0.0,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "6.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 1.2560739669470201E-15,
+          "K_1_to_h_2_at_K": -8.881784197001252E-16,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": -2.986541236538187E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "7.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 1.7763568394002505E-15,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 2.2018424861158792E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "7.5": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 8.881784197001252E-16,
+          "K_1_to_h_2_at_K": -1.7763568394002505E-15,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        }
+      },
+      "alpha_cone_degrees": {
+        "35.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 1.9860273225978185E-15,
+          "K_1_to_h_2_at_K": -8.881784197001252E-16,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -2.598070913961692E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": false
+                },
+                {
+                  "parameter": -3.1415925131496576,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": -8.464631706672776E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": -2.3406689475535813E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 2.3406689475535813E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 3.141592513149657,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": true
+                }
+              ]
+            }
+          }
+        },
+        "47.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 0.0,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "60.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 8.881784197001252E-16,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        }
+      },
+      "D_1": {
+        "radius_factor_0.5": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 3.972054645195637E-15,
+          "K_1_to_h_2_at_K": -1.7763568394002505E-15,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -5.266505098688867E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": true
+                },
+                {
+                  "parameter": -2.598070913961692E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 5.266505098688867E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": true
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                },
+                {
+                  "parameter": 3.3870062754459695E-8,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "radius_factor_1.0": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 0.0,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "radius_factor_1.3": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 1.9860273225978185E-15,
+          "K_1_to_h_2_at_K": -8.881784197001252E-16,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "radius_factor_3.0": {
+          "K_defined": true,
+          "M_1_defined": false,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": []
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": []
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        }
+      },
+      "excCyl": {
+        "2.9": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 0.0,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        },
+        "3.7": {
+          "K_defined": true,
+          "M_1_defined": true,
+          "t_K": 0.0,
+          "J_1_defined_at_K": true,
+          "|J_1-M_1|_at_K": 0.0,
+          "K_1_to_h_2_at_K": 0.0,
+          "e_1_component_at_t_K": "IN_CERTIFIED_CONTINUOUS_COMPONENT; completeness=COMPLETE",
+          "probe_taxonomy_delta_1e-4": {
+            "e_1|n": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "e_1|c_1": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+            "o_1|h_2": "3_NUMERICALLY_COMPATIBLE_CONTACT"
+          },
+          "current_classification": {
+            "Intersect(o_1,h_2)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "TANGENT_ESTABLISHED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,n)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            },
+            "Intersect(e_1,c_1)": {
+              "created": true,
+              "solutions": [
+                {
+                  "parameter": -3.141592653589793,
+                  "contact_class": "TRANSVERSE_ESTABLISHED",
+                  "domain_location": "PERIODIC_SEAM",
+                  "admissible": true
+                },
+                {
+                  "parameter": 0.0,
+                  "contact_class": "CONTACT_UNDETERMINED",
+                  "domain_location": "INTERIOR",
+                  "admissible": false
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "P9_view_independence": {
+      "zoom_factor": 37.5,
+      "enclosure_identical": true,
+      "classification_identical": true
+    }
+  },
+  "P6_synthetic": {
+    "circle_r1.5_vs_line_y=1.5+delta": {
+      "0.01": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-0.01000074999993839, -0.010000749999936604],
+            [-0.01000074999993839, -0.010000749999936604]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [-0.010000000000001124, -0.009999999999999338],
+          "h_enclosure_width": 1.7867651802561113E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "1.0E-6": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-1.7499999382941675E-6, -1.7499999365178092E-6],
+            [-1.7499999382941675E-6, -1.7499999365178092E-6]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [-1.000000001027957E-6, -9.99999999251599E-7],
+          "h_enclosure_width": 1.7763581099496713E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "1.0E-10": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-7.500999383847078E-7, -7.500999366083502E-7],
+            [-7.500999383847078E-7, -7.500999366083502E-7]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [-1.0000111849706178E-10, -9.999934214022229E-11],
+          "h_enclosure_width": 1.7763568394907233E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "1.0E-13": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 1.5707963267948966,
+              "contact_class": "TANGENT_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-7.500000382965059E-7, -7.500000365201484E-7],
+            [-7.500000382965059E-7, -7.500000365201484E-7]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [-1.010302952408893E-13, -9.925393840148896E-14],
+          "h_enclosure_width": 1.776356839400339E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "0.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 1.5707963267948966,
+              "contact_class": "TANGENT_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-7.499999383764337E-7, -7.499999366000761E-7],
+            [-7.499999383764337E-7, -7.499999366000761E-7]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [-1.1102230246251571E-15, 6.661338147750943E-16],
+          "h_enclosure_width": 1.7763568394002513E-15,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        }
+      },
+      "-1.0E-13": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 1.5707959616627196,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 1.5707959617968363,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 1.5707963267948966,
+              "contact_class": "TANGENT_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 1.5707966917929568,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-7.499998384563615E-7, -7.499998366800039E-7],
+            [-7.499998384563615E-7, -7.499998366800039E-7]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [9.88098491916389E-14, 1.0058620603103923E-13],
+          "h_enclosure_width": 1.776356839400339E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_TWO_TRANSVERSE_ROOTS_ON_BOX"
+        }
+      },
+      "-1.0E-10": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 1.5707847797882035,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 1.570784779792433,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 1.5708078738015896,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [-7.498999383681597E-7, -7.498999365918021E-7],
+            [-7.498999383681597E-7, -7.498999365918021E-7]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [9.999889805101244E-11, 1.0000067440785193E-10],
+          "h_enclosure_width": 1.7763568394907233E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_TWO_TRANSVERSE_ROOTS_ON_BOX"
+        }
+      },
+      "-1.0E-6": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 1.5696416261926966,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 1.5719510273970965,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [2.500000615412999E-7, 2.5000006331765705E-7],
+            [2.500000615412999E-7, 2.5000006331765705E-7]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [9.999999988075097E-7, 1.0000000005838678E-6],
+          "h_enclosure_width": 1.7763581099496713E-15,
+          "taxonomy_class": "5_NOT_ESTABLISHED",
+          "reason": "END_SIGNS_NOT_CERTIFIED"
+        }
+      },
+      "-0.01": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 1.455262026510403,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 1.68633062707939,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [-1.5000000000000013, -1.4999992500000612],
+          "h1_at_ends": [
+            [0.0014999997499999373, 0.001499999749999941],
+            [-0.0014999997499997575, -0.0014999997499997538]
+          ],
+          "h_at_ends": [
+            [0.009999250000061627, 0.009999250000063414],
+            [0.009999250000061627, 0.009999250000063414]
+          ],
+          "critical_point_bracket": [1.5707963267948966, 1.5707963267948968],
+          "bracket_width": 2.220446049250313E-16,
+          "bisection_steps": 43,
+          "symmetric_tightenings": 0,
+          "h_at_critical_point_enclosure": [0.009999999999998893, 0.01000000000000068],
+          "h_enclosure_width": 1.7867651802561113E-15,
+          "taxonomy_class": "5_NOT_ESTABLISHED",
+          "reason": "END_SIGNS_NOT_CERTIFIED"
+        }
+      }
+    },
+    "circle_r1.5_vs_circle_centre_3+delta_r1.5": {
+      "0.01": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.990052123681055, 2.990077346497473],
+          "h1_at_ends": [
+            [-0.0029900627663972125, -0.0029900627663971965],
+            [0.0029900627663971965, 0.0029900627663972125]
+          ],
+          "h_at_ends": [
+            [0.010001495032246453, 0.010001495032248899],
+            [0.010001495032246453, 0.010001495032248899]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [0.009999999999998675, 0.010000000000001343],
+          "h_enclosure_width": 2.6680047060523293E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "1.0E-6": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.999984750017221, 3.000010249999111],
+          "h1_at_ends": [
+            [-0.002999995500010116, -0.0029999955000101007],
+            [0.0029999955000101007, 0.002999995500010116]
+          ],
+          "h_at_ends": [
+            [2.4999986238949386E-6, 2.49999862633743E-6],
+            [2.4999986238949386E-6, 2.49999862633743E-6]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [9.999999992515993E-7, 1.0000000014720458E-6],
+          "h_enclosure_width": 2.2204464727667867E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "1.0E-10": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.9999857499015565, 3.0000112499114424],
+          "h1_at_ends": [
+            [-0.002999996499905283, -0.002999996499905268],
+            [0.002999996499905268, 0.002999996499905283]
+          ],
+          "h_at_ends": [
+            [1.5000991238078851E-6, 1.5000991262503762E-6],
+            [1.5000991238078851E-6, 1.5000991262503762E-6]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [9.999912009561739E-11, 1.0000134054166666E-10],
+          "h_enclosure_width": 2.2204460492761625E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "1.0E-13": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.0,
+              "contact_class": "TANGENT_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.9999857500014544, 3.000011250011344],
+          "h1_at_ends": [
+            [-0.002999996500005183, -0.002999996500005167],
+            [0.002999996500005167, 0.002999996500005183]
+          ],
+          "h_at_ends": [
+            [1.4999992237196833E-6, 1.4999992261621744E-6],
+            [1.4999992237196833E-6, 1.4999992261621744E-6]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [9.903189379656395E-14, 1.0125233984581429E-13],
+          "h_enclosure_width": 2.2204460492503383E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_NO_INTERSECTION_ON_BOX"
+        }
+      },
+      "0.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.0,
+              "contact_class": "TANGENT_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.9999857500015548, 3.000011250011444],
+          "h1_at_ends": [
+            [-0.0029999965000052824, -0.0029999965000052677],
+            [0.0029999965000052677, 0.0029999965000052824]
+          ],
+          "h_at_ends": [
+            [1.499999123799611E-6, 1.4999991262421022E-6],
+            [1.499999123799611E-6, 1.4999991262421022E-6]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-8.881784197001254E-16, 1.332267629550188E-15],
+          "h_enclosure_width": 2.2204460492503135E-15,
+          "taxonomy_class": "3_NUMERICALLY_COMPATIBLE_CONTACT",
+          "reason": "CRITICAL_POINT_CERTIFIED_H_AT_T_STAR_SIGN_UNDECIDED"
+        }
+      },
+      "-1.0E-13": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": -2.5820504090390273E-7,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": -2.581613895991097E-7,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 0.0,
+              "contact_class": "TANGENT_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 2.5820504090390273E-7,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.9999857500016547, 3.000011250011544],
+          "h1_at_ends": [
+            [-0.002999996500005383, -0.0029999965000053674],
+            [0.0029999965000053674, 0.002999996500005383]
+          ],
+          "h_at_ends": [
+            [1.4999990238795389E-6, 1.49999902632203E-6],
+            [1.4999990238795389E-6, 1.49999902632203E-6]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-1.0080825063596423E-13, -9.858780458671389E-14],
+          "h_enclosure_width": 2.2204460492503383E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_TWO_TRANSVERSE_ROOTS_ON_BOX"
+        }
+      },
+      "-1.0E-10": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": -8.164968674950757E-6,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 8.164963905876732E-6,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 8.164968674950757E-6,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.9999857501015534, 3.0000112501114455],
+          "h1_at_ends": [
+            [-0.0029999965001052823, -0.002999996500105267],
+            [0.002999996500105267, 0.0029999965001052823]
+          ],
+          "h_at_ends": [
+            [1.499899123791337E-6, 1.4998991262338281E-6],
+            [1.499899123791337E-6, 1.4998991262338281E-6]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-1.0000089645245681E-10, -9.999867600640754E-11],
+          "h_enclosure_width": 2.2204460492761625E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_TWO_TRANSVERSE_ROOTS_ON_BOX"
+        }
+      },
+      "-1.0E-6": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": -8.164966039321264E-4,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 8.164966039321264E-4,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [2.9999867499872215, 3.0000122500251116],
+          "h1_at_ends": [
+            [-0.002999997500001783, -0.0029999975000017678],
+            [0.0029999975000017678, 0.002999997500001783]
+          ],
+          "h_at_ends": [
+            [4.999996237042835E-7, 4.999996261467744E-7],
+            [4.999996237042835E-7, 4.999996261467744E-7]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-1.0000000010279566E-6, -9.999999988075101E-7],
+          "h_enclosure_width": 2.2204464727667867E-15,
+          "taxonomy_class": "4_CRITICAL_POINT_CERTIFIED_TWO_TRANSVERSE_ROOTS_ON_BOX"
+        }
+      },
+      "-0.01": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": -0.08167235558072106,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 0.08167235558072106,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "probe_delta_1e-3": {
+          "h2_on_box": [3.010052712581325, 3.010078495451843],
+          "h1_at_ends": [
+            [-0.0030100635719839124, -0.003010063571983897],
+            [0.003010063571983897, 0.0030100635719839124]
+          ],
+          "h_at_ends": [
+            [-0.00999849496732952, -0.009998494967327074],
+            [-0.00999849496732952, -0.009998494967327074]
+          ],
+          "critical_point_bracket": [-1.0E-14, 1.0E-14],
+          "bracket_width": 2.0E-14,
+          "bisection_steps": 0,
+          "symmetric_tightenings": 4,
+          "h_at_critical_point_enclosure": [-0.010000000000000677, -0.009999999999998453],
+          "h_enclosure_width": 2.2239154962022667E-15,
+          "taxonomy_class": "5_NOT_ESTABLISHED",
+          "reason": "END_SIGNS_NOT_CERTIFIED"
+        }
+      }
+    },
+    "parabola_tangent_at_included_endpoint": {
+      "current": {
+        "created": true,
+        "solutions": []
+      },
+      "class_v3_captured": false
+    },
+    "quarter_arc_tangent_to_x=1_at_included_start": {
+      "current": {
+        "created": true,
+        "solutions": [
+          {
+            "parameter": 0.0,
+            "contact_class": "TRANSVERSE_ESTABLISHED",
+            "domain_location": "INCLUDED_ENDPOINT",
+            "admissible": true
+          }
+        ]
+      },
+      "class_v3_captured": true,
+      "one_sided_box_[0,1e-3]": {
+        "h_at_endpoint": [-4.440892098500629E-16, 4.440892098500629E-16],
+        "h1_at_endpoint": [-4.0E-323, 4.0E-323],
+        "h1_on_box": [-4.9E-323, 0.0024674000855944363],
+        "h2_on_box": [2.467398056238867, 2.467401100272342]
+      }
+    }
+  },
+  "P7_scale": {
+    "translation_0.0": {
+      "2.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094542093,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.8017557441355843,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 6.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.8284271824663436E-7, -2.828427166923218E-7],
+                [2.828427061452031E-7, 2.8284270858769405E-7]
+              ],
+              "h1_on_box": [2.8284270247461727, 2.828427224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -4.440892098500628E-16,
+            "normalized_residual": 7.40148683083438E-17
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.828427059231585E-7, 2.8284270814360484E-7],
+                [-2.8284271780254515E-7, -2.828427161372103E-7]
+              ],
+              "h1_on_box": [-2.828427224746179, -2.828427024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 1.1102230246251573E-16,
+            "normalized_residual": 1.8503717077085954E-17
+          }
+        ]
+      },
+      "20.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094542093,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.8017557441355843,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 60.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.828427184908834E-6, -2.8284271635925494E-6],
+                [2.8284270641165664E-6, 2.828427083656494E-6]
+              ],
+              "h1_on_box": [28.284270247461727, 28.284272247461793],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -3.552713678800503E-15,
+            "normalized_residual": 5.921189464667505E-17
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8284270605638527E-6, 2.8284270801037805E-6],
+                [-2.8284271795797635E-6, -2.8284271600398357E-6]
+              ],
+              "h1_on_box": [-28.284272247461786, -28.28427024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "200.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094541347,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 2.801755744135659,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 600.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.8284271834877486E-5, -2.8284271635925496E-5],
+                [2.8284270641165666E-5, 2.82842708259068E-5]
+              ],
+              "h1_on_box": [282.84270247461717, 282.84272247461803],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -2.8421709430404026E-14,
+            "normalized_residual": 4.7369515717340046E-17
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8284270612743957E-5, 2.8284270811695946E-5],
+                [-2.8284271792244922E-5, -2.8284271607503787E-5]
+              ],
+              "h1_on_box": [-282.842722474618, -282.8427024746172],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -1.421085471520201E-14,
+            "normalized_residual": 2.3684757858670017E-17
+          }
+        ]
+      },
+      "2000.0": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "candidate_characteristic_scale": 6000.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.828427183203532E-4, -2.8284271650136345E-4],
+                [2.8284270649692173E-4, 2.8284270831591146E-4]
+              ],
+              "h1_on_box": [2828.4270247461723, 2828.427224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -4.547473508864643E-13,
+            "normalized_residual": 7.579122514774405E-17
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8284270626954805E-4, 2.828427078611641E-4],
+                [-2.82842717751919E-4, -2.828427160466161E-4]
+              ],
+              "h1_on_box": [-2828.427224746179, -2828.4270247461727],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "20000.0": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "candidate_characteristic_scale": 60000.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-0.002828427184795147, -0.0028284271629672717],
+                [0.002828427064741844, 0.00282842708475073]
+              ],
+              "h1_on_box": [28284.270247461725, 28284.27224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -3.637978807091715E-12,
+            "normalized_residual": 6.063298011819526E-17
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [0.0028284270592848757, 0.0028284270792937618],
+                [-0.0028284271811571684, -0.002828427159329293]
+              ],
+              "h1_on_box": [-28284.27224746179, -28284.27024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      }
+    },
+    "translation_1000.0": {
+      "2.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094542093,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.8017557441355843,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 6.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.828436436175254E-7, -2.8284193831495925E-7],
+                [2.828418246281215E-7, 2.8284352993068767E-7]
+              ],
+              "h1_on_box": [2.8284270247461727, 2.828427224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.828418246281215E-7, 2.8284352993068767E-7],
+                [-2.828436436175254E-7, -2.8284193831495925E-7]
+              ],
+              "h1_on_box": [-2.828427224746179, -2.828427024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "20.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094542093,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.8017557441355843,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 60.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.8284281370361E-6, -2.8284264317335315E-6],
+                [2.8284260906730184E-6, 2.8284277959755867E-6]
+              ],
+              "h1_on_box": [28.284270247461727, 28.284272247461793],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8284260906730184E-6, 2.8284277959755867E-6],
+                [-2.8284281370361E-6, -2.8284264317335315E-6]
+              ],
+              "h1_on_box": [-28.284272247461786, -28.28427024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "200.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094541347,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 2.801755744135659,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 600.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.8284273184908684E-5, -2.8284270456424555E-5],
+                [2.8284269092182502E-5, 2.8284272275413982E-5]
+              ],
+              "h1_on_box": [282.84270247461717, 282.84272247461803],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8284269092182502E-5, 2.8284272275413982E-5],
+                [-2.8284273184908684E-5, -2.8284270456424555E-5]
+              ],
+              "h1_on_box": [-282.842722474618, -282.8427024746172],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "2000.0": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "candidate_characteristic_scale": 6000.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.828427195709084E-4, -2.828427157055556E-4],
+                [2.828427054737402E-4, 2.82842709339093E-4]
+              ],
+              "h1_on_box": [2828.4270247461723, 2828.427224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.828427045642455E-4, 2.82842709339093E-4],
+                [-2.8284271911616104E-4, -2.828427147960609E-4]
+              ],
+              "h1_on_box": [-2828.427224746179, -2828.4270247461727],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "20000.0": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "candidate_characteristic_scale": 60000.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-0.0028284271866141366, -0.0028284271611482823],
+                [0.002828427061103865, 0.002828427088388709]
+              ],
+              "h1_on_box": [28284.270247461725, 28284.27224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": -3.637978807091715E-12,
+            "normalized_residual": 6.063298011819526E-17
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [0.002828427055646897, 0.0028284270829317406],
+                [-0.0028284271829761578, -0.0028284271575103035]
+              ],
+              "h1_on_box": [-28284.27224746179, -28284.27024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      }
+    },
+    "translation_1000000.0": {
+      "2.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094051117,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 0.3398369094913538,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.8017557440984397,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.801755744184682,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 6.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.837041392922403E-7, -2.8195790946483596E-7],
+                [2.8184149414300903E-7, 2.8382055461406724E-7]
+              ],
+              "h1_on_box": [2.8284270247461727, 2.828427224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8184149414300903E-7, 2.8382055461406724E-7],
+                [-2.837041392922403E-7, -2.8195790946483596E-7]
+              ],
+              "h1_on_box": [-2.828427224746179, -2.828427024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "20.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.33983690945021294,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 0.33983690945706657,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.801755744132727,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.80175574413958,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 60.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.829474397003652E-6, -2.8274953365325915E-6],
+                [2.8276117518544184E-6, 2.829357981681825E-6]
+              ],
+              "h1_on_box": [28.284270247461727, 28.284272247461793],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8276117518544184E-6, 2.829357981681825E-6],
+                [-2.829474397003652E-6, -2.8274953365325915E-6]
+              ],
+              "h1_on_box": [-28.284272247461786, -28.28427024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "200.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094542093,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            },
+            {
+              "parameter": 2.8017557441355843,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": true
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 600.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.828531432896854E-5, -2.8283335268497457E-5],
+                [2.8283451683819284E-5, 2.828519791364671E-5]
+              ],
+              "h1_on_box": [282.84270247461717, 282.84272247461803],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.8283451683819284E-5, 2.828519791364671E-5],
+                [-2.828531432896854E-5, -2.8283335268497457E-5]
+              ],
+              "h1_on_box": [-282.842722474618, -282.8427024746172],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "2000.0": {
+        "current": {
+          "created": true,
+          "solutions": [
+            {
+              "parameter": 0.3398369094541347,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            },
+            {
+              "parameter": 2.801755744135659,
+              "contact_class": "TRANSVERSE_ESTABLISHED",
+              "domain_location": "INTERIOR",
+              "admissible": false
+            }
+          ]
+        },
+        "candidate_characteristic_scale": 6000.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-2.8284371364861743E-4, -2.8284173458814605E-4],
+                [2.828418510034679E-4, 2.828435972332956E-4]
+              ],
+              "h1_on_box": [2828.4270247461723, 2828.427224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [2.828418510034679E-4, 2.828435972332956E-4],
+                [-2.8284371364861743E-4, -2.8284173458814605E-4]
+              ],
+              "h1_on_box": [-2828.427224746179, -2828.4270247461727],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      },
+      "20000.0": {
+        "current": {
+          "created": true,
+          "solutions": []
+        },
+        "candidate_characteristic_scale": 60000.0,
+        "roots": [
+          {
+            "analytic_parameter": 0.3398369094541219,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [-0.0028284281725063933, -0.0028284264262765633],
+                [0.002828426077030598, 0.002828427823260428]
+              ],
+              "h1_on_box": [28284.270247461725, 28284.27224746179],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          },
+          {
+            "analytic_parameter": 2.8017557441356713,
+            "probe_transverse_1e-7": {
+              "h_at_ends": [
+                [0.002828426077030598, 0.002828427823260428],
+                [-0.0028284281725063933, -0.0028284264262765633]
+              ],
+              "h1_on_box": [-28284.27224746179, -28284.27024746173],
+              "existence_by_certified_sign_change": true,
+              "uniqueness_by_h1_excluding_zero": true,
+              "certified": true
+            },
+            "binary64_residual_at_analytic_parameter": 0.0,
+            "normalized_residual": 0.0
+          }
+        ]
+      }
+    }
+  },
+  "P8_axes": {
+    "xAxis": {
+      "created": false,
+      "error_messages": ["command error: Intersect: CAS.GeneralErrorMessage"],
+      "direct_public_operation": {
+        "target_class": "org.geogebra.common.kernel.geos.GeoAxis",
+        "target_is_geo_line": true,
+        "target_label_set": true,
+        "created": false,
+        "exception_chain": ["org.geocedg.common.kernel.spatial.identity.SpatialIdentityException: GEO_NOT_SERIALIZABLE: Participating geo has no stable ordinary-element attachment [subject=geo:<session-id>]"],
+        "root_frames": ["org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.failure(SpatialIdentityRegistry.java:7016)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.validateAttachmentGeo(SpatialIdentityRegistry.java:6884)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.validateBatch(SpatialIdentityRegistry.java:6463)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.publishBatch(SpatialIdentityRegistry.java:6220)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.publishBatch(SpatialIdentityRegistry.java:6209)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.registerConstructionParticipations(SpatialIdentityRegistry.java:574)", "org.geocedg.common.kernel.locus.LocusV2PublicOperations$ParticipationBatch.publish(LocusV2PublicOperations.java:1088)", "org.geocedg.common.kernel.locus.LocusV2PublicOperations.intersect(LocusV2PublicOperations.java:620)", "org.geocedg.desktop.PreG9BCu3PreparationProbe.direct(PreG9BCu3PreparationProbe.java:720)", "org.geocedg.desktop.PreG9BCu3PreparationProbe.axes(PreG9BCu3PreparationProbe.java:704)", "org.geocedg.desktop.PreG9BR6PlusF3Fixtures.lambda$onEdt$2(PreG9BR6PlusF3Fixtures.java:138)", "java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:308)", "java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)", "java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)", "java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)", "java.base/java.security.AccessController.doPrivileged(AccessController.java:399)"]
+      }
+    },
+    "yAxis": {
+      "created": false,
+      "error_messages": ["command error: Intersect: CAS.GeneralErrorMessage"],
+      "direct_public_operation": {
+        "target_class": "org.geogebra.common.kernel.geos.GeoAxis",
+        "target_is_geo_line": true,
+        "target_label_set": true,
+        "created": false,
+        "exception_chain": ["org.geocedg.common.kernel.spatial.identity.SpatialIdentityException: GEO_NOT_SERIALIZABLE: Participating geo has no stable ordinary-element attachment [subject=geo:<session-id>]"],
+        "root_frames": ["org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.failure(SpatialIdentityRegistry.java:7016)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.validateAttachmentGeo(SpatialIdentityRegistry.java:6884)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.validateBatch(SpatialIdentityRegistry.java:6463)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.publishBatch(SpatialIdentityRegistry.java:6220)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.publishBatch(SpatialIdentityRegistry.java:6209)", "org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.registerConstructionParticipations(SpatialIdentityRegistry.java:574)", "org.geocedg.common.kernel.locus.LocusV2PublicOperations$ParticipationBatch.publish(LocusV2PublicOperations.java:1088)", "org.geocedg.common.kernel.locus.LocusV2PublicOperations.intersect(LocusV2PublicOperations.java:620)", "org.geocedg.desktop.PreG9BCu3PreparationProbe.direct(PreG9BCu3PreparationProbe.java:720)", "org.geocedg.desktop.PreG9BCu3PreparationProbe.axes(PreG9BCu3PreparationProbe.java:704)", "org.geocedg.desktop.PreG9BR6PlusF3Fixtures.lambda$onEdt$2(PreG9BR6PlusF3Fixtures.java:138)", "java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:308)", "java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)", "java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)", "java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)", "java.base/java.security.AccessController.doPrivileged(AccessController.java:399)"]
+      }
+    },
+    "y=0": {
+      "created": true,
+      "error_messages": []
+    }
+  }
+}
