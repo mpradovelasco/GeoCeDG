@@ -92,6 +92,7 @@ class PreG9BCu3PreparationProbe {
 		model.put("P1_runtime_provenance", provenance(app));
 		model.put("P2_correspondence_and_identities", identities(app));
 		model.put("P2_enclosures", enclosures(app));
+		model.put("P2_source_jets", sourceJets(app));
 		model.put("current_contacts", PreG9BCu0References.contacts(app));
 		model.put("P5_seam_root", seam(app));
 		model.put("P5_seam_contact_at_E_1_eq_J", seamContact(app));
@@ -209,6 +210,57 @@ class PreG9BCu3PreparationProbe {
 						delta));
 			}
 			rows.put(pair.name, byDelta);
+		}
+		return rows;
+	}
+
+	/**
+	 * Point enclosures of the traced point and of its first two derivatives at the contact
+	 * parameters t = 0 and t = pi, and the angles between the limit direction F'' (or F')
+	 * and the targets: a vanishing F' is a fold of the trace, not a tangency of the curve.
+	 */
+	private static Map<String, Object> sourceJets(AppGeoCeDG app) {
+		Map<String, Object> rows = new LinkedHashMap<>();
+		for (String label : List.of("e_1", "o_1")) {
+			PreG9BCu3EnclosureProbeAccess access = PreG9BCu3EnclosureProbeAccess.capture(
+					definition(app, label));
+			Map<String, Object> byParameter = new LinkedHashMap<>();
+			for (double t : new double[] {0, Math.PI}) {
+				Map<String, Object> row = new LinkedHashMap<>();
+				double[][] jet = access == null ? null : access.traced(t, t, t != 0);
+				if (jet == null) {
+					row.put("status", "ENCLOSURE_NOT_AVAILABLE");
+				} else {
+					row.put("F", List.of(Arrays.asList(jet[0][0], jet[0][1]),
+							Arrays.asList(jet[1][0], jet[1][1])));
+					row.put("F1", List.of(Arrays.asList(jet[2][0], jet[2][1]),
+							Arrays.asList(jet[3][0], jet[3][1])));
+					row.put("F2", List.of(Arrays.asList(jet[4][0], jet[4][1]),
+							Arrays.asList(jet[5][0], jet[5][1])));
+					boolean fold = jet[2][0] <= 0 && jet[2][1] >= 0 && jet[3][0] <= 0
+							&& jet[3][1] >= 0;
+					row.put("F1_enclosure_contains_zero_vector", fold);
+					double dx = fold ? (jet[4][0] + jet[4][1]) / 2 : (jet[2][0] + jet[2][1]) / 2;
+					double dy = fold ? (jet[5][0] + jet[5][1]) / 2 : (jet[3][0] + jet[3][1]) / 2;
+					row.put("limit_direction_used", fold ? "F2" : "F1");
+					Map<String, Object> angles = new LinkedHashMap<>();
+					for (String target : List.of("n", "r", "h_2")) {
+						GeoLine line = line(app, target);
+						angles.put(target, Math.toDegrees(Math.abs(Math.asin(
+								(line.getX() * dx + line.getY() * dy)
+										/ (Math.hypot(line.getX(), line.getY())
+												* Math.hypot(dx, dy))))));
+					}
+					GeoConic c1 = (GeoConic) app.getKernel().lookupLabel("c_1");
+					double rx = (jet[0][0] + jet[0][1]) / 2 - c1.getMidpoint2D().getX();
+					double ry = (jet[1][0] + jet[1][1]) / 2 - c1.getMidpoint2D().getY();
+					angles.put("c_1", Math.toDegrees(Math.abs(Math.asin((rx * dx + ry * dy)
+							/ (Math.hypot(rx, ry) * Math.hypot(dx, dy))))));
+					row.put("angle_degrees_between_limit_direction_and_target", angles);
+				}
+				byParameter.put(key(t), row);
+			}
+			rows.put(label, byParameter);
 		}
 		return rows;
 	}
