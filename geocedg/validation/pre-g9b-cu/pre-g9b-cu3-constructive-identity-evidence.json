@@ -1,0 +1,1120 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-constructive-identity",
+  "status": "CU3 CONSTRUCTIVE IDENTITY CERTIFICATE PROTOTYPE EVIDENCE - NO VERDICT OF ITS OWN",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-constructive-identity.ps1",
+    "source_commit": "51cc363781af93fff312d2c647ec28e5c8a8b730",
+    "source_tree": "06bf35f7594de99db51bdd1570f028659bc81054",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "method": {
+    "boundary_scope": "indeterminates B.y (B on its constructible line path g: one coordinate free, the other solved from the exact equation of g), H.x and H.y (H, on the non-constructible line j, as a free point of the plane); every other free input is an exact constant at its binary64 value, recorded so that a change of it makes the proof not applicable",
+    "automatic_scope": "boundary rule with no model-specific code: a free point or number becomes indeterminates; a point on a constructible line path, one indeterminate; a point computed outside the class, or on a path that depends on objects outside the class (here H, on j = Line[A, C'] with C' = Rotate[C, 47 degrees, A]), is cut as a free point of the plane, which forgets relations and never invents them; the axes are constants",
+    "field": "rational functions over Q in the indeterminates, extended by at most one square root that is not a perfect square; perfect squares are extracted exactly",
+    "enclosures": "second-order mean-value form of every polynomial: exact rational values of the polynomial and of its gradient at the centre of the box, naive interval enclosures of the second derivatives",
+    "driver": "E_1 replaced by the exact driver point, itself evaluated symbolically and checked identically on the circle path p; for the contact order, by the exact jet of p at that point",
+    "semantics": "ideal ruler-and-compass operations; validity is mathematical (distinct points, nonparallel lines, positive discriminant, positive radius), never an inherited tolerance; selection by the captured inherited selection state",
+    "sign_conditions": "outward-rounded interval evaluation; every decision is taken on the decision box (half-width 1e-9) and recorded; a condition whose interval contains zero is undecided and the result is NOT_ESTABLISHED",
+    "rechecks": "a proof holds on another box or configuration when every recorded sign is certified there with the same value and the inherited selection states are unchanged; no new symbolic work",
+    "box_half_widths": [1.0E-9, 1.0E-6, 0.001, 0.1],
+    "work_budgets_term_products": {
+      "incidence": 400000000,
+      "contact_order": 400000000
+    }
+  },
+  "mandatory_incidences_boundary_scope": {
+    "e_1*n at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "limited_part": "member (certified)",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 47,
+      "divisions_certified_nonzero": 25,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 17,
+      "work_term_products": 934,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "e_1*c_1 at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 41,
+      "divisions_certified_nonzero": 23,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 61,
+      "work_term_products": 1534,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "o_1*h_2 at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 59,
+      "divisions_certified_nonzero": 31,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 21,
+      "work_term_products": 1756,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "e_1*c_1 at J": {
+      "contact_parameter": "pi for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 41,
+      "divisions_certified_nonzero": 23,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 61,
+      "work_term_products": 1534,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "e_1*r at J": {
+      "contact_parameter": "pi for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "limited_part": "member (certified)",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 47,
+      "divisions_certified_nonzero": 25,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 17,
+      "work_term_products": 934,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    }
+  },
+  "mandatory_incidences_automatic_scope": {
+    "e_1*n at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "limited_part": "member (certified)",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+      "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+      "sign_conditions_decided": 47,
+      "divisions_certified_nonzero": 25,
+      "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+      "largest_element_terms": 55,
+      "work_term_products": 1481,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "e_1*c_1 at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+      "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+      "sign_conditions_decided": 41,
+      "divisions_certified_nonzero": 23,
+      "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+      "largest_element_terms": 552,
+      "work_term_products": 3867,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "o_1*h_2 at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+      "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+      "sign_conditions_decided": 59,
+      "divisions_certified_nonzero": 31,
+      "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+      "largest_element_terms": 448,
+      "work_term_products": 28331,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "NOT_ESTABLISHED: M_1: raw root 1: parameter before the segment end: not certified with the same sign"
+      }
+    },
+    "e_1*c_1 at J": {
+      "contact_parameter": "pi for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+      "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+      "sign_conditions_decided": 41,
+      "divisions_certified_nonzero": 23,
+      "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+      "largest_element_terms": 552,
+      "work_term_products": 3867,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    },
+    "e_1*r at J": {
+      "contact_parameter": "pi for every value of the indeterminates",
+      "incidence": "IDENTITY",
+      "limited_part": "member (certified)",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+      "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+      "sign_conditions_decided": 47,
+      "divisions_certified_nonzero": 25,
+      "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+      "largest_element_terms": 55,
+      "work_term_products": 1481,
+      "boxes": {
+        "half-width 1.0E-9": "CERTIFIED",
+        "half-width 1.0E-6": "CERTIFIED",
+        "half-width 0.001": "CERTIFIED",
+        "half-width 0.1": "CERTIFIED"
+      }
+    }
+  },
+  "configuration_rechecks": {
+    "base": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "rbCone=3.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 3.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "rbCone=4.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 4.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "rbCone=6.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 6.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "rbCone=7.5": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 7.5
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant rbCone of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "alpha_cone=35.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [8.158576110227688, 11.625985035227085],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "alpha_cone=60.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [4.614416919408118, 14.873608587455434],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "D_1 radius factor 0.5": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [7.753574035853167, 10.602539675164794],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "D_1 radius factor 1.3": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [9.542500696551937, 6.161659839810802],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "D_1 radius factor 3.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [13.343969850536824, -3.275209810316431],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "NOT_ESTABLISHED: limited part of n: parameter before the segment end: not certified with the same sign"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "NOT_ESTABLISHED: M_1: raw root 1: parameter before the segment end: not certified with the same sign"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "NOT_APPLICABLE: the constant D_1.x of this proof changed (a new proof is needed)",
+        "automatic_proof": "NOT_ESTABLISHED: limited part of r: parameter before the segment end: not certified with the same sign"
+      }
+    },
+    "D_1 radius factor 3.0: new proofs at this position": {
+      "e_1*n at K": {
+        "incidence": "IDENTITY",
+        "limited_part": "not a member (certified)",
+        "outcome": "NOT CERTIFIED: identity with the support, outside its limited part"
+      },
+      "e_1*c_1 at K": {
+        "incidence": "IDENTITY",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box"
+      },
+      "o_1*h_2 at K": {
+        "incidence": "not decided",
+        "outcome": "INVALID: M_1: fewer roots on the path than the index"
+      },
+      "e_1*c_1 at J": {
+        "incidence": "IDENTITY",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box"
+      },
+      "e_1*r at J": {
+        "incidence": "IDENTITY",
+        "limited_part": "not a member (certified)",
+        "outcome": "NOT CERTIFIED: identity with the support, outside its limited part"
+      }
+    },
+    "excCyl=3.7 (outside the dependency cone)": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "restored": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "H path parameter -20.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [8.558673342377684, 15.440445986704445],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "H path parameter +20.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [4.712316403455187, 11.315733157817633],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "H path parameter +40.0": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [2.789137933993938, 9.253376743374224],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "NOT_ESTABLISHED: H_1: branch of the square root: not certified with the same sign",
+        "automatic_proof": "NOT_ESTABLISHED: H_1: branch of the square root: not certified with the same sign"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "NOT_ESTABLISHED: H_1: branch of the square root: not certified with the same sign",
+        "automatic_proof": "NOT_ESTABLISHED: H_1: branch of the square root: not certified with the same sign"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "NOT_ESTABLISHED: H_1: branch of the square root: not certified with the same sign",
+        "automatic_proof": "NOT_ESTABLISHED: H_1: branch of the square root: not certified with the same sign"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "H path parameter +40.0: new proofs at this position": {
+      "e_1*n at K": {
+        "incidence": "IDENTITY",
+        "limited_part": "not a member (certified)",
+        "outcome": "NOT CERTIFIED: identity with the support, outside its limited part"
+      },
+      "e_1*c_1 at K": {
+        "incidence": "IDENTITY",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box"
+      },
+      "o_1*h_2 at K": {
+        "incidence": "not decided",
+        "outcome": "INVALID: M_1: fewer roots on the path than the index"
+      },
+      "e_1*c_1 at J": {
+        "incidence": "IDENTITY",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box"
+      },
+      "e_1*r at J": {
+        "incidence": "IDENTITY",
+        "limited_part": "member (certified)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box"
+      }
+    },
+    "B path parameter -3.0": {
+      "configuration": {
+        "B.y": -8.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "B path parameter +3.0": {
+      "configuration": {
+        "B.y": -2.3674697121270682,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    },
+    "restored again": {
+      "configuration": {
+        "B.y": -5.367469712127068,
+        "H": [6.635494872916436, 13.378089572261038],
+        "A": [-0.9380450720469029, 5.256462311160281],
+        "D_1": [8.871653198789899, 7.8269897780685485],
+        "rbCone": 5.0
+      },
+      "e_1*n at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "o_1*h_2 at K": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*c_1 at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      },
+      "e_1*r at J": {
+        "boundary_proof": "CERTIFIED",
+        "automatic_proof": "CERTIFIED"
+      }
+    }
+  },
+  "adversarial_controls": {
+    "C1 binary64 target n (representation, not the construction): e_1*n at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 3 + 5)",
+      "limited_part": "member (certified)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 43,
+      "divisions_certified_nonzero": 23,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 17,
+      "work_term_products": 876
+    },
+    "C1 binary64 target h_2: o_1*h_2 at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 2 + 6)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 46,
+      "divisions_certified_nonzero": 25,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 21,
+      "work_term_products": 1096
+    },
+    "C2 other branch of M_1 for h_2: o_1*h_2 at K": {
+      "contact_parameter": "0 for every value of the indeterminates",
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 0 + 6)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 65,
+      "divisions_certified_nonzero": 35,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 21,
+      "work_term_products": 2181
+    },
+    "C3 accidental equality: I on the constant vertical line through its stand-in": {
+      "incidence": "NOT_AN_IDENTITY",
+      "residual_interval_on_the_box": [-1.0000009709187921E-9, 1.0000009709187921E-9],
+      "outcome": "NOT CERTIFIED: not an identity"
+    },
+    "C4 box too large (half-width 5) for the proof of e_1*n at K": "NOT_ESTABLISHED: d_1: positive radius: not certified with the same sign",
+    "C5 wrong pairing: J_1 at J against n": {
+      "contact_parameter": "pi for every value of the indeterminates",
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 0 + 3)",
+      "limited_part": "member (certified)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["B.y", "H.x", "H.y"],
+      "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+      "sign_conditions_decided": 53,
+      "divisions_certified_nonzero": 29,
+      "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+      "largest_element_terms": 22,
+      "work_term_products": 991
+    }
+  },
+  "contact_order": {
+    "e_1*n at K": {
+      "boundary_scope": {
+        "contact_parameter": "0 for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "limited_part": "member (certified)",
+        "contact_order": "h' identically zero; h'' negative on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["B.y", "H.x", "H.y"],
+        "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+        "sign_conditions_decided": 75,
+        "divisions_certified_nonzero": 53,
+        "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+        "largest_element_terms": 182,
+        "work_term_products": 10232
+      },
+      "automatic_scope": {
+        "contact_parameter": "0 for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "limited_part": "member (certified)",
+        "contact_order": "h' identically zero; h'' negative on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+        "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+        "sign_conditions_decided": 75,
+        "divisions_certified_nonzero": 53,
+        "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+        "largest_element_terms": 9722,
+        "work_term_products": 304086
+      }
+    },
+    "e_1*c_1 at K": {
+      "boundary_scope": {
+        "contact_parameter": "0 for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "contact_order": "h' identically zero; h'' negative on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["B.y", "H.x", "H.y"],
+        "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+        "sign_conditions_decided": 69,
+        "divisions_certified_nonzero": 51,
+        "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+        "largest_element_terms": 182,
+        "work_term_products": 13355
+      },
+      "automatic_scope": {
+        "contact_parameter": "0 for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "contact_order": "h' identically zero; h'' negative on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+        "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+        "sign_conditions_decided": 69,
+        "divisions_certified_nonzero": 51,
+        "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+        "largest_element_terms": 9722,
+        "work_term_products": 363336
+      }
+    },
+    "o_1*h_2 at K": {
+      "boundary_scope": {
+        "contact_parameter": "0 for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "contact_order": "h' identically zero; h'' positive on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "|F'(t*)| positive on the box (certified): regular point, tangency",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["B.y", "H.x", "H.y"],
+        "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+        "sign_conditions_decided": 91,
+        "divisions_certified_nonzero": 63,
+        "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+        "largest_element_terms": 182,
+        "work_term_products": 15386
+      },
+      "automatic_scope": {
+        "contact_parameter": "0 for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "contact_order": "h' identically zero; h'' positive on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "|F'(t*)| positive on the box (certified): regular point, tangency",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+        "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+        "sign_conditions_decided": 91,
+        "divisions_certified_nonzero": 63,
+        "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+        "largest_element_terms": 27508,
+        "work_term_products": 963233
+      }
+    },
+    "e_1*c_1 at J": {
+      "boundary_scope": {
+        "contact_parameter": "pi for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "contact_order": "h' identically zero; h'' negative on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["B.y", "H.x", "H.y"],
+        "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+        "sign_conditions_decided": 69,
+        "divisions_certified_nonzero": 51,
+        "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+        "largest_element_terms": 182,
+        "work_term_products": 13355
+      },
+      "automatic_scope": {
+        "contact_parameter": "pi for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "contact_order": "h' identically zero; h'' negative on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+        "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+        "sign_conditions_decided": 69,
+        "divisions_certified_nonzero": 51,
+        "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+        "largest_element_terms": 9722,
+        "work_term_products": 363336
+      }
+    },
+    "e_1*r at J": {
+      "boundary_scope": {
+        "contact_parameter": "pi for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "limited_part": "member (certified)",
+        "contact_order": "h' identically zero; h'' positive on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["B.y", "H.x", "H.y"],
+        "constants": ["A.x", "A.y", "rbCone", "D_1.x", "D_1.y"],
+        "sign_conditions_decided": 75,
+        "divisions_certified_nonzero": 53,
+        "extension": "sqrt of a polynomial of degree 4 with 13 terms",
+        "largest_element_terms": 182,
+        "work_term_products": 10232
+      },
+      "automatic_scope": {
+        "contact_parameter": "pi for every value of the indeterminates",
+        "incidence": "IDENTITY",
+        "limited_part": "member (certified)",
+        "contact_order": "h' identically zero; h'' positive on the box (certified): contact of order exactly two in the driver parameter",
+        "locus_point_velocity": "F'(t*) identically zero: stationary point of the parametrization (fold)",
+        "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+        "indeterminates": ["A.x", "A.y", "B.y", "rbCone", "H.x", "H.y", "D_1.x", "D_1.y"],
+        "cuts": ["H: point on a path that depends on objects outside the class, cut as a free point"],
+        "sign_conditions_decided": 75,
+        "divisions_certified_nonzero": 53,
+        "extension": "sqrt of a polynomial of degree 4 with 53 terms",
+        "largest_element_terms": 9722,
+        "work_term_products": 304086
+      }
+    }
+  },
+  "synthetic_constructions": {
+    "commands": ["SA=(0.37,-1.21)", "SB=(5.83,0.44)", "SP=(2.9,3.3)", "SC=Rotate(SP,47*pi/180,SA)", "mAB=Midpoint(SA,SB)", "mBC=Midpoint(SB,SC)", "mCA=Midpoint(SC,SA)", "sAB=Line(SA,SB)", "sBC=Line(SB,SC)", "sCA=Line(SC,SA)", "pAB=OrthogonalLine(mAB,sAB)", "pBC=OrthogonalLine(mBC,sBC)", "pCA=OrthogonalLine(mCA,sCA)", "SO=Intersect(pAB,pBC)", "cc=Circle(SO,SA)", "gA=Line(SA,mBC)", "gB=Line(SB,mCA)", "gC=Line(SC,mAB)", "SG=Intersect(gA,gB)", "TA=(-2.3,0.7)", "TB=(3.1,1.9)", "TO=Midpoint(TA,TB)", "tc=Circle(TO,TA)", "TP=(0.4,4.6)", "tl=Line(TA,TP)", "TQ=Intersect(tc,tl,1)", "TR=Intersect(tc,tl,2)", "tp=OrthogonalLine(TB,tl)", "UA=(1.1,0.9)", "UB=(4.2,2.3)", "UR=Rotate(UB,29*pi/180,UA)", "ul=Line(UA,UR)", "uf=OrthogonalLine(UB,ul)", "UF=Intersect(uf,ul)", "UM=Midpoint(UA,UB)", "uw=Circle(UM,UA)", "sl=Line(UA,UB)", "UX=Point(sl)", "UY=Point(ul)"],
+    "S1 the circumcentre lies on the third perpendicular bisector (theorem)": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["SB.x", "SB.y", "SC.x", "SC.y", "SA.x", "SA.y"],
+      "cuts": ["SC: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 6,
+      "divisions_certified_nonzero": 2,
+      "extension": "none",
+      "largest_element_terms": 31,
+      "work_term_products": 298
+    },
+    "S1 the second vertex lies on the circumcircle (theorem)": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["SB.x", "SB.y", "SC.x", "SC.y", "SA.x", "SA.y"],
+      "cuts": ["SC: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 6,
+      "divisions_certified_nonzero": 2,
+      "extension": "none",
+      "largest_element_terms": 186,
+      "work_term_products": 1442
+    },
+    "S1 the rotated, non-constructible vertex lies on the circumcircle (theorem)": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["SC.x", "SC.y", "SB.x", "SB.y", "SA.x", "SA.y"],
+      "cuts": ["SC: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 6,
+      "divisions_certified_nonzero": 2,
+      "extension": "none",
+      "largest_element_terms": 186,
+      "work_term_products": 1442
+    },
+    "S1 the centroid lies on the third median (theorem)": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["SB.x", "SB.y", "SC.x", "SC.y", "SA.x", "SA.y"],
+      "cuts": ["SC: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 6,
+      "divisions_certified_nonzero": 2,
+      "extension": "none",
+      "largest_element_terms": 14,
+      "work_term_products": 272
+    },
+    "S1 false conjecture: the centroid lies on the circumcircle": {
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 12 + 0)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["SB.x", "SB.y", "SC.x", "SC.y", "SA.x", "SA.y"],
+      "cuts": ["SC: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 11,
+      "divisions_certified_nonzero": 4,
+      "extension": "none",
+      "largest_element_terms": 210,
+      "work_term_products": 2068
+    },
+    "S2 Thales, intersection 1 of tc and tl on the perpendicular from TB": {
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 8 + 0)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["TA.x", "TA.y", "TP.x", "TP.y", "TB.x", "TB.y"],
+      "sign_conditions_decided": 8,
+      "divisions_certified_nonzero": 4,
+      "extension": "none",
+      "largest_element_terms": 37,
+      "work_term_products": 499
+    },
+    "S2 Thales, intersection 2 of tc and tl on the perpendicular from TB": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["TA.x", "TA.y", "TP.x", "TP.y", "TB.x", "TB.y"],
+      "sign_conditions_decided": 8,
+      "divisions_certified_nonzero": 4,
+      "extension": "none",
+      "largest_element_terms": 37,
+      "work_term_products": 621
+    },
+    "S3 foot of the perpendicular from UB to a non-constructible line on the circle with diameter UA UB (Thales)": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["UA.x", "UA.y", "UR.x", "UR.y", "UB.x", "UB.y"],
+      "cuts": ["UR: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 5,
+      "divisions_certified_nonzero": 2,
+      "extension": "none",
+      "largest_element_terms": 131,
+      "work_term_products": 1209
+    },
+    "S3 a point on a constructible line lies on it (one indeterminate on the path)": {
+      "incidence": "IDENTITY",
+      "outcome": "CERTIFIED: identity with every precondition certified on the decision box",
+      "indeterminates": ["UA.x", "UA.y", "UB.x", "UB.y", "UX.x"],
+      "sign_conditions_decided": 2,
+      "divisions_certified_nonzero": 1,
+      "extension": "none",
+      "largest_element_terms": 8,
+      "work_term_products": 48
+    },
+    "S3 false conjecture: that point lies on the circle": {
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 22 + 0)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["UA.x", "UA.y", "UB.x", "UB.y", "UX.x"],
+      "sign_conditions_decided": 3,
+      "divisions_certified_nonzero": 1,
+      "extension": "none",
+      "largest_element_terms": 32,
+      "work_term_products": 193
+    },
+    "S3 limitation: a point on a non-constructible line is cut, so its own path membership, a provenance relation, is not re-proved": {
+      "incidence": "NOT_AN_IDENTITY (residual numerator terms 6 + 0)",
+      "outcome": "NOT CERTIFIED: not an identity",
+      "indeterminates": ["UY.x", "UY.y", "UA.x", "UA.y", "UR.x", "UR.y"],
+      "cuts": ["UY: point on a path that depends on objects outside the class, cut as a free point", "UR: AlgoRotatePoint outside the class, cut as a free point"],
+      "sign_conditions_decided": 1,
+      "divisions_certified_nonzero": 0,
+      "extension": "none",
+      "largest_element_terms": 8,
+      "work_term_products": 20
+    }
+  }
+}
