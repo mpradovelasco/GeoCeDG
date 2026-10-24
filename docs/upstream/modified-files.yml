@@ -6974,6 +6974,12 @@
       "change": "added",
       "purpose": "PRE-G9B-CU2 corrective mandate, Level B correction (V-LIN-4, V-POINT-5): typed cause of the state of a semantic point Point(L, u) in the current revision, so that a point whose selector, component or position does not resolve is undefined with an explicit cause and never reassociated silently.",
       "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3BaseCharacterizationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 step T1: characterization pins of the base 80d72a50 for the findings H-CU3-1 to H-CU3-4 on synthetic constructions (a tangency declared where absence is certifiable, noise and duplicated roots around a near-tangency, an endpoint tangency classified transverse); inverted later only with a test that proves the correction.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
 }

@@ -117,7 +117,20 @@ pendiente sin rebajar ninguna evidencia.
   sin cambios (V-EVID-1);
 - las de la fase `PRE-G9B-CU2` que materializan raíces en loci con pliegues.
 
-El inventario exacto se completa en T1.
+**Inventario de T1** (base `80d72a50`; búsqueda de las clasificaciones de contacto y de las
+intersecciones de Locus V2 en las fuentes de prueba):
+
+| Categoría | Pruebas | Efecto previsto |
+|---|---|---|
+| pins de `CU0` | `PreG9BCu0LocusReferenceTest` (`pins.B08_B09`, con la raíz de la costura `TRANSVERSE_ESTABLISHED` admisible); `PreG9BCu0SyntheticCharacterizationTest` (`pins.H02` y `pins.H06`) | se invierten en T10 con pruebas propias (decisión C1-4); la de la costura, según la evidencia de M3 con la autoridad del objetivo |
+| pins de `CU3` (T1) | `PreG9BCu3BaseCharacterizationTest`: tangencia declarada con `δ = +10⁻¹³` (H-CU3-3), cuatro y tres soluciones con `δ = −10⁻¹³` y `−10⁻¹⁰` (H-CU3-1 y H-CU3-4), tangencia en el extremo del cuarto de arco clasificada transversal y admisible (H-CU3-2) | se invierten en T10 solo con la prueba de la corrección |
+| clasificación de tangencias exactas | `G8BIntersectionKernelTest`, `G8BIntersectionTopologyAndScientificTest`, `G8BIntersectionLifecycleTest`, `G8C1ExtendedTargetKernelTest`, `G8C1ExtendedTargetLifecycleTest`, `G9S1SemanticSpline2DTest`, `G9S1R1StructuralImplicitCertificationTest` y `G9U0R4IntersectionAdmissibilityContinuationTest` | sin cambios previstos: una clase 3 no es una contradicción; se revisan una a una en T4 y T5 |
+| pares de loci | `G8C2LocusPairKernelTest`, `G8C2LocusPairLifecycleTest` y `G9S1R1NativeStructuralPairTest` | sin cambios: los pares quedan fuera de `CU3` |
+| clasificaciones inyectadas por accesorios | `G8BIntersectionFixtures` y `G8C2IntersectionTestSupport` (identidad y ciclo de vida sin resolvedor) y el modelo propio de `G8AIntersection*` | sin cambios |
+| modelo del autor en `CU2` | `PreG9BCu2AuthorModelConsumerTest`, `PreG9BCu2AuthorModelSelectionSettlementTest` y `PreG9BCu2ConsumerMigrationTest` | se revisan en T4 y T5; la regla de conflicto solo cambia raíces junto a los pliegues del modelo con un certificado de conteo |
+
+Ninguna prueba se debilita: una que esperase una raíz contradicha fija un defecto y se invierte
+con su prueba de corrección.
 
 ## 4. Plan de verificación
 
