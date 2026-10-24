@@ -44,6 +44,7 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoRay;
 import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
+import org.geogebra.common.main.error.ErrorHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,10 +62,13 @@ import org.junit.jupiter.api.io.TempDir;
  * incidence whose residual is identically zero in the field then holds for every value of the
  * indeterminates in the box where all those sign conditions are certified, in particular for the
  * ideal values when the box encloses them; at another configuration the same proof holds again
- * when the recorded sign conditions are certified there with the same signs and the inherited
- * selection states are unchanged. It also proves or refutes statements of synthetic constructions
- * built in a fresh host. It reads copies of the author model only, assigns no verdict and changes
- * no product behaviour. It is not part of any source set.
+ * when the structure of its dependency cone, its constants and the inherited selection states are
+ * unchanged, the recorded sign conditions are certified there with the same signs and the branches
+ * outside the slice of a replaced driver still correspond to the live algorithm. It also attempts
+ * proofs of statements of synthetic constructions built in a fresh host: theorems are certified,
+ * false conjectures are not (a residual that is not identically zero is never a refutation). It
+ * reads copies of the author model, assigns no verdict and changes no product behaviour. It is not
+ * part of any source set.
  */
 @EnabledIfSystemProperty(named = "geocedg.cu0.harness", matches = "cu3-constructive-identity")
 @ExtendWith({G9U1TestApp.Lifecycle.class,
@@ -157,9 +161,16 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		row.put("sign_conditions", "outward-rounded interval evaluation; every decision is taken "
 				+ "on the decision box (half-width 1e-9) and recorded; a condition whose interval "
 				+ "contains zero is undecided and the result is NOT_ESTABLISHED");
-		row.put("rechecks", "a proof holds on another box or configuration when every recorded "
-				+ "sign is certified there with the same value and the inherited selection states "
-				+ "are unchanged; no new symbolic work");
+		row.put("branches", "every line-circle output by the inherited rule with the captured "
+				+ "selection state; outside the slice of a replaced driver, the live binary64 output "
+				+ "must be certified strictly closer to the selected formal branch than to the other "
+				+ "on the whole box, or the result fails closed; continuous-mode intersections and "
+				+ "reference-point selections are outside the class");
+		row.put("rechecks", "a proof holds on another box or configuration when the structural "
+				+ "signatures of its dependency cone, its constants and the inherited selection "
+				+ "states are unchanged, every recorded sign is certified there with the same value "
+				+ "and every branch outside the driver slice still corresponds to the live "
+				+ "algorithm; no new symbolic work");
 		row.put("box_half_widths", List.of(1e-9, 1e-6, 1e-3, 1e-1));
 		Map<String, Object> budgets = new LinkedHashMap<>();
 		budgets.put("incidence", INCIDENCE_BUDGET);
@@ -193,6 +204,15 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		private static final long serialVersionUID = 1L;
 
 		Invalid(String reason) {
+			super(reason);
+		}
+	}
+
+	/** Raised when a selected branch is not shown to correspond to the live algorithm. */
+	static final class Correspondence extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		Correspondence(String reason) {
 			super(reason);
 		}
 	}
@@ -1113,10 +1133,92 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		/** The inherited selection state of every intersection the evaluation used, in order. */
 		final Map<AlgoIntersectLineConic, String> selections = new IdentityHashMap<>();
 		final List<AlgoIntersectLineConic> selectionOrder = new ArrayList<>();
+		/** The selected and the other formal branch of every intersection, in order. */
+		final List<Branch> branches = new ArrayList<>();
+		/** The structural signature of every object the evaluation used, in order. */
+		final List<GeoElement> structureGeos = new ArrayList<>();
+		final List<String> structureLabels = new ArrayList<>();
+		final List<String> structureSignatures = new ArrayList<>();
+		/** The driver replaced by an exact point, if any, and the objects that depend on it. */
+		GeoElement driverGeo;
+		private final Map<GeoElement, Boolean> driven = new IdentityHashMap<>();
 
 		Sym(Field f, boolean automatic) {
 			this.f = f;
 			this.automatic = automatic;
+		}
+
+		void record(GeoElement geo) {
+			structureGeos.add(geo);
+			structureLabels.add(geo.getLabelSimple());
+			structureSignatures.add(signature(geo));
+		}
+
+		/** The label of the first object whose definition changed or that was removed, else null. */
+		String structureChange() {
+			for (int i = 0; i < structureGeos.size(); i++) {
+				GeoElement geo = structureGeos.get(i);
+				String label = structureLabels.get(i);
+				if (label == null || geo.getConstruction().lookupLabel(label) != geo
+						|| !signature(geo).equals(structureSignatures.get(i))) {
+					return label;
+				}
+			}
+			return null;
+		}
+
+		/** Whether the object depends on the driver replaced by an exact point. */
+		boolean driven(GeoElement geo) {
+			if (driverGeo == null) {
+				return false;
+			}
+			if (geo == driverGeo) {
+				return true;
+			}
+			Boolean known = driven.get(geo);
+			if (known != null) {
+				return known;
+			}
+			AlgoElement parent = geo.getParentAlgorithm();
+			boolean result = false;
+			for (int i = 0; parent != null && i < parent.getInputLength() && !result; i++) {
+				result = driven(parent.getInput(i).toGeoElement());
+			}
+			if (!result && geo instanceof GeoPoint && ((GeoPoint) geo).isPointOnPath()) {
+				result = driven(((GeoPoint) geo).getPath().toGeoElement());
+			}
+			driven.put(geo, result);
+			return result;
+		}
+
+		/**
+		 * Correspondence of a selected branch with the live algorithm: its binary64 output must be
+		 * certified strictly closer, on the whole box, to the selected formal branch than to the
+		 * other one. A tolerance never decides it.
+		 *
+		 * @return null when it corresponds, else the reason
+		 */
+		String correspondence(Branch branch, Iv[] box) {
+			if (!branch.live.isDefined()) {
+				return branch.label + ": the live output is undefined";
+			}
+			Ext x = f.constant(Q.of(branch.live.getInhomX()));
+			Ext y = f.constant(Q.of(branch.live.getInhomY()));
+			int s;
+			try {
+				s = distance2(branch.other, x, y).sub(distance2(branch.selected, x, y)).eval(box)
+						.sign();
+			} catch (Undecided undecided) {
+				s = 0;
+			}
+			return s > 0 ? null : branch.label + ": the live output is not certified closer to the "
+					+ "selected branch than to the other";
+		}
+
+		private Ext distance2(SPt p, Ext x, Ext y) {
+			Ext dx = p.x.v.sub(x);
+			Ext dy = p.y.v.sub(y);
+			return dx.mul(dx).add(dy.mul(dy));
 		}
 
 		SJ unknown(String name, DoubleSupplier live) {
@@ -1247,31 +1349,26 @@ class PreG9BCu3ConstructiveIdentityProbe {
 					new SPt(footX.add(offX), footY.add(offY))};
 		}
 
-		SPt lineCircle(SLine l, SCircle c, boolean compaction, int[] permutation, int index,
+		/** The raw root selected by the inherited rule with the captured selection state. */
+		int select(SLine l, SPt[] raw, boolean compaction, int[] permutation, int index,
 				String what) {
-			SPt[] raw = rawRoots(l, c, what);
-			int selected;
 			if (compaction) {
-				selected = -1;
 				int count = 0;
-				for (int r = 0; r < 2 && selected < 0; r++) {
+				for (int r = 0; r < 2; r++) {
 					if (member(l, raw[r], what + ": raw root " + r)) {
 						if (count == index) {
-							selected = r;
+							return r;
 						}
 						count++;
 					}
 				}
-				if (selected < 0) {
-					throw new Invalid(what + ": fewer roots on the path than the index");
-				}
-			} else {
-				selected = permutation[index];
-				if (!member(l, raw[selected], what + ": selected root")) {
-					throw new Invalid(what + ": the selected root is not on the path");
-				}
+				throw new Invalid(what + ": fewer roots on the path than the index");
 			}
-			return raw[selected];
+			int selected = permutation[index];
+			if (!member(l, raw[selected], what + ": selected root")) {
+				throw new Invalid(what + ": the selected root is not on the path");
+			}
+			return selected;
 		}
 
 		private final Map<GeoElement, Boolean> constructible = new IdentityHashMap<>();
@@ -1311,11 +1408,10 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			return result;
 		}
 
+		/** A circle is in the class by the algorithm that defines it, never by its current value. */
 		private boolean constructible(AlgoIntersectLineConic algorithm) {
-			return algorithm.getConic() instanceof GeoConic
-					&& ((GeoConic) algorithm.getConic()).isCircle()
-					&& constructible(algorithm.getLine().toGeoElement())
-					&& constructible(((GeoConic) algorithm.getConic()).toGeoElement());
+			return constructible(algorithm.getLine().toGeoElement())
+					&& constructible(algorithm.getConic().toGeoElement());
 		}
 
 		Object eval(GeoElement geo) {
@@ -1325,6 +1421,7 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			}
 			Object value = compute(geo);
 			values.put(geo, value);
+			record(geo);
 			return value;
 		}
 
@@ -1413,19 +1510,23 @@ class PreG9BCu3ConstructiveIdentityProbe {
 				AlgoCirclePointRadius circle = (AlgoCirclePointRadius) parent;
 				SPt centre = point(circle.getCenter().toGeoElement());
 				SJ r = (SJ) eval(circle.getRadiusGeo());
+				positive(r, label + ": positive radius");
 				return new SCircle(centre.x, centre.y, r.square());
 			}
 			if (parent instanceof AlgoIntersectSingle && ((AlgoIntersectSingle) parent)
 					.getSourceIntersection() instanceof AlgoIntersectLineConic) {
 				AlgoIntersectSingle single = (AlgoIntersectSingle) parent;
+				if (single.getInputLength() > 2 && single.getInput(2) instanceof GeoPoint) {
+					throw new OutOfClass("reference-point selection (" + label + ")");
+				}
 				return lineConic((AlgoIntersectLineConic) single.getSourceIntersection(),
-						single.getSelectedIndex(), label);
+						single.getSelectedIndex(), label, (GeoPoint) geo);
 			}
 			if (parent instanceof AlgoIntersectLineConic) {
 				AlgoIntersectLineConic algorithm = (AlgoIntersectLineConic) parent;
 				for (int output = 0; output < algorithm.getOutputLength(); output++) {
 					if (algorithm.getOutput(output) == geo) {
-						return lineConic(algorithm, output, label);
+						return lineConic(algorithm, output, label, (GeoPoint) geo);
 					}
 				}
 			}
@@ -1437,10 +1538,21 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			throw new OutOfClass(parent.getClass().getSimpleName() + " (" + label + ")");
 		}
 
-		private SPt lineConic(AlgoIntersectLineConic algorithm, int index, String label) {
-			if (!(algorithm.getConic() instanceof GeoConic)
-					|| !((GeoConic) algorithm.getConic()).isCircle()) {
-				throw new OutOfClass("conic that is not a circle (" + label + ")");
+		/**
+		 * An output of a line-circle intersection by the inherited selection rule with the captured
+		 * selection state. Outside the slice of a replaced driver, the live output is computed in
+		 * the same configuration and the selected branch must correspond to it; inside the slice,
+		 * the live output belongs to another driver position and the captured selection state
+		 * governs, as in the class-v3 evaluator of CU2.
+		 */
+		private SPt lineConic(AlgoIntersectLineConic algorithm, int index, String label,
+				GeoPoint live) {
+			if (algorithm.getKernel().isContinuous()) {
+				throw new OutOfClass("continuous-mode intersection (" + label + ")");
+			}
+			Object conic = eval(algorithm.getConic().toGeoElement());
+			if (!(conic instanceof SCircle)) {
+				throw new OutOfClass("conic that is not a circle of the class (" + label + ")");
 			}
 			boolean compaction = algorithm.isSelectionFirstIntersectionPending();
 			int[] permutation = compaction ? new int[] {0, 1}
@@ -1448,9 +1560,58 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			if (selections.put(algorithm, selectionState(algorithm)) == null) {
 				selectionOrder.add(algorithm);
 			}
-			return lineCircle(line(algorithm.getLine()), circle((GeoConic) algorithm.getConic()),
-					compaction, permutation, index, label);
+			SLine l = line(algorithm.getLine());
+			SPt[] raw = rawRoots(l, (SCircle) conic, label);
+			int selected = select(l, raw, compaction, permutation, index, label);
+			Branch branch = new Branch(label, live, raw[selected], raw[1 - selected],
+					!driven(live));
+			branches.add(branch);
+			if (branch.liveChecked) {
+				String failed = correspondence(branch, f.box);
+				if (failed != null) {
+					throw new Correspondence(failed);
+				}
+			}
+			return raw[selected];
 		}
+	}
+
+	/** An intersection output with its selected and other formal branches. */
+	static final class Branch {
+		final String label;
+		final GeoPoint live;
+		final SPt selected;
+		final SPt other;
+		final boolean liveChecked;
+
+		Branch(String label, GeoPoint live, SPt selected, SPt other, boolean liveChecked) {
+			this.label = label;
+			this.live = live;
+			this.selected = selected;
+			this.other = other;
+			this.liveChecked = liveChecked;
+		}
+	}
+
+	/** Definition of an object as the construction states it: label, algorithm, inputs, path. */
+	static String signature(GeoElement geo) {
+		StringBuilder text = new StringBuilder(geo.isLabelSet() ? geo.getLabelSimple() : "?");
+		AlgoElement parent = geo.getParentAlgorithm();
+		if (parent == null) {
+			text.append("=free ").append(geo.getClass().getSimpleName());
+		} else {
+			text.append('=').append(parent.getClass().getSimpleName()).append('(');
+			for (int i = 0; i < parent.getInputLength(); i++) {
+				GeoElement input = parent.getInput(i).toGeoElement();
+				text.append(i > 0 ? "," : "").append(input.isLabelSet() ? input.getLabelSimple()
+						: input.getClass().getSimpleName());
+			}
+			text.append(')');
+		}
+		if (geo instanceof GeoPoint && ((GeoPoint) geo).isPointOnPath()) {
+			text.append(" on ").append(((GeoPoint) geo).getPath().toGeoElement().getLabelSimple());
+		}
+		return text.toString();
 	}
 
 	// ======================================================================== contacts
@@ -1483,8 +1644,10 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		Sym sym = new Sym(field, false);
 		GeoPoint b = (GeoPoint) lookup(app, "B");
 		sym.values.put(b, sym.pathPoint(b));
+		sym.record(b);
 		GeoPoint h = (GeoPoint) lookup(app, "H");
 		sym.values.put(h, sym.freePoint(h));
+		sym.record(h);
 		return sym;
 	}
 
@@ -1495,6 +1658,8 @@ class PreG9BCu3ConstructiveIdentityProbe {
 	 * structurally 0 or pi (cos and sin identically 1 or -1, and 0).
 	 */
 	private static String driver(AppGeoCeDG app, Sym sym, String dLabel, boolean jets) {
+		GeoElement e1 = lookup(app, "E_1");
+		sym.driverGeo = e1;
 		SCircle p = sym.circle(lookup(app, "p"));
 		SPt d = sym.point(lookup(app, dLabel));
 		if (!residual(p, d).v.isZero()) {
@@ -1513,11 +1678,17 @@ class PreG9BCu3ConstructiveIdentityProbe {
 				: new SJ(d.x.v, null, null);
 		SJ y = jets ? new SJ(d.y.v, rv.mul(cos.v), rv.mul(sin.v).neg())
 				: new SJ(d.y.v, null, null);
-		sym.values.put(lookup(app, "E_1"), new SPt(x, y));
+		sym.values.put(e1, new SPt(x, y));
+		sym.record(e1);
 		return parameter;
 	}
 
+	/** Residual of an incidence with a line or a circle, or the squared distance to a point. */
 	private static SJ residual(Object target, SPt point) {
+		if (target instanceof SPt) {
+			SPt q = (SPt) target;
+			return point.x.sub(q.x).square().add(point.y.sub(q.y).square());
+		}
 		if (target instanceof SLine) {
 			SLine l = (SLine) target;
 			return l.a.mul(point.x).add(l.b.mul(point.y)).add(l.c);
@@ -1534,11 +1705,18 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		boolean certified;
 
 		/**
-		 * The proof holds at the live configuration when its constants are unchanged, the
-		 * inherited selection states it used are unchanged and every sign it decided is certified
-		 * on the box around the live values of its indeterminates with the same value.
+		 * The proof holds at the live configuration when the structure of its dependency cone,
+		 * its constants and the inherited selection states it used are unchanged, every sign it
+		 * decided is certified on the box around the live values of its indeterminates with the
+		 * same value, and every branch outside the slice of a replaced driver still corresponds
+		 * to the live algorithm.
 		 */
 		String recheck(double halfWidth) {
+			String changed = sym.structureChange();
+			if (changed != null) {
+				return "NOT_APPLICABLE: the structure of the dependency cone changed at " + changed
+						+ " (a new proof is needed)";
+			}
 			Iv[] box = new Iv[NV];
 			for (Coordinate coordinate : field.coordinates) {
 				double value = coordinate.live.getAsDouble();
@@ -1556,8 +1734,29 @@ class PreG9BCu3ConstructiveIdentityProbe {
 				}
 			}
 			String failed = field.recheck(box);
-			return failed == null ? "CERTIFIED"
-					: "NOT_ESTABLISHED: " + failed + ": not certified with the same sign";
+			if (failed != null) {
+				return "NOT_ESTABLISHED: " + failed + ": not certified with the same sign";
+			}
+			for (Branch branch : sym.branches) {
+				String reason = branch.liveChecked ? sym.correspondence(branch, box) : null;
+				if (reason != null) {
+					return "NOT_ESTABLISHED: branch correspondence with the live algorithm not "
+							+ "demonstrated (" + reason + ")";
+				}
+			}
+			return "CERTIFIED";
+		}
+
+		/** The recorded signs alone, without the structural and correspondence checks. */
+		String signsOnly(double halfWidth) {
+			Iv[] box = new Iv[NV];
+			for (Coordinate coordinate : field.coordinates) {
+				if (coordinate.index >= 0) {
+					box[coordinate.index] = interval(coordinate.live.getAsDouble(), halfWidth);
+				}
+			}
+			String failed = field.recheck(box);
+			return failed == null ? "CERTIFIED" : "NOT_ESTABLISHED: " + failed;
 		}
 	}
 
@@ -1603,6 +1802,9 @@ class PreG9BCu3ConstructiveIdentityProbe {
 					+ undecided.getMessage() + ")");
 		} catch (Budget budgetExceeded) {
 			row.put("outcome", "NOT_ESTABLISHED: " + budgetExceeded.getMessage());
+		} catch (Correspondence correspondence) {
+			row.put("outcome", "NOT_ESTABLISHED: branch correspondence with the live algorithm not "
+					+ "demonstrated (" + correspondence.getMessage() + ")");
 		} catch (Invalid invalid) {
 			row.put("outcome", "INVALID: " + invalid.getMessage());
 		} catch (OutOfClass outOfClass) {
@@ -1611,6 +1813,14 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			StackTraceElement[] trace = failure.getStackTrace();
 			row.put("outcome", "PROBE_FAILURE: " + failure + (trace.length > 0 ? " at " + trace[0]
 					: ""));
+		}
+		if (evaluation.sym != null) {
+			int checked = 0;
+			for (Branch branch : evaluation.sym.branches) {
+				checked += branch.liveChecked ? 1 : 0;
+			}
+			row.put("branches_checked_against_the_live_algorithm", checked + " of "
+					+ evaluation.sym.branches.size());
 		}
 		System.err.printf("CIC %s on %s at %s %s jets=%s automatic=%s: %.2f s, work %d%n",
 				pointLabel, targetLabel, driverLabel, variant, jets, automatic,
@@ -1665,10 +1875,13 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		return p.x.v.sub(q.x.v).isZero() && p.y.v.sub(q.y.v).isZero();
 	}
 
-	/** Contact order from the exact jets of an identically vanishing residual. */
+	/**
+	 * Contact order from the exact jets of an identically vanishing residual. The signs it uses
+	 * are recorded with the other conditions of the evaluation.
+	 */
 	private static String order(SJ h) {
 		if (h.d1 != null && !h.d1.isZero()) {
-			int s = signOrZero(h.d1);
+			int s = recordedSign(h.d1, "first derivative of the residual");
 			return s == 0 ? "h' not identically zero, sign undecided on the box"
 					: "h' " + (s > 0 ? "positive" : "negative") + " on the box (certified): "
 							+ "transverse contact";
@@ -1676,27 +1889,30 @@ class PreG9BCu3ConstructiveIdentityProbe {
 		if (h.d2 == null || h.d2.isZero()) {
 			return "h' and h'' identically zero";
 		}
-		int s = signOrZero(h.d2);
+		int s = recordedSign(h.d2, "second derivative of the residual");
 		return "h' identically zero; h'' " + (s == 0 ? "sign undecided on the box"
 				: (s > 0 ? "positive" : "negative") + " on the box (certified): contact of order "
 						+ "exactly two in the driver parameter");
 	}
 
-	/** Whether the traced point is stationary at the contact (a fold of its parametrization). */
+	/**
+	 * Whether the traced point is stationary at the contact. A stationary point is consistent with
+	 * a fold, which only the fold certificate of CU2 establishes (ADR 0038, decision 8).
+	 */
 	private static String velocity(SPt point) {
 		Ext dx = point.x.d1 != null ? point.x.d1 : point.x.v.f.constant(Q.ZERO);
 		Ext dy = point.y.d1 != null ? point.y.d1 : point.y.v.f.constant(Q.ZERO);
 		if (dx.isZero() && dy.isZero()) {
-			return "F'(t*) identically zero: stationary point of the parametrization (fold)";
+			return "F'(t*) identically zero: stationary point of the parametrization";
 		}
-		int s = signOrZero(dx.mul(dx).add(dy.mul(dy)));
-		return s > 0 ? "|F'(t*)| positive on the box (certified): regular point, tangency"
+		int s = recordedSign(dx.mul(dx).add(dy.mul(dy)), "speed of the traced point");
+		return s > 0 ? "|F'(t*)| positive on the box (certified): regular point"
 				: "F'(t*) not identically zero, nonvanishing undecided on the box";
 	}
 
-	private static int signOrZero(Ext value) {
+	private static int recordedSign(Ext value, String what) {
 		try {
-			return value.eval().sign();
+			return value.sign(what);
 		} catch (Undecided undecided) {
 			return 0;
 		}
@@ -1921,6 +2137,7 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			{"S1 false conjecture: the centroid lies on the circumcircle", "SG", "cc"},
 			{"S2 Thales, intersection 1 of tc and tl on the perpendicular from TB", "TQ", "tp"},
 			{"S2 Thales, intersection 2 of tc and tl on the perpendicular from TB", "TR", "tp"},
+			{"S2 intersection 1 of tc and tl is the point TA itself (point equality)", "TQ", "TA"},
 			{"S3 foot of the perpendicular from UB to a non-constructible line on the circle with "
 					+ "diameter UA UB (Thales)", "UF", "uw"},
 			{"S3 a point on a constructible line lies on it (one indeterminate on the path)", "UX",
@@ -1944,7 +2161,37 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			rows.put(statement[0], evaluate(app, statement[1], null, statement[2], "constructive",
 					false, true, INCIDENCE_BUDGET).row);
 		}
+		rows.put("S4 structural change: cc replaced by Circle(SO, mAB) after a proof of SC on cc",
+				structuralChange(app));
 		return rows;
+	}
+
+	/**
+	 * A proof of SC on cc, then cc removed and recreated with the same label as another circle:
+	 * the recorded signs alone would still accept the stale proof; the structural check refuses
+	 * it, and a new proof decides the new statement.
+	 */
+	private static Map<String, Object> structuralChange(AppGeoCeDG app) {
+		Map<String, Object> row = new LinkedHashMap<>();
+		Evaluation before = evaluate(app, "SC", null, "cc", "constructive", false, true,
+				INCIDENCE_BUDGET);
+		row.put("proof before the change", before.row.get("outcome"));
+		lookup(app, "cc").remove();
+		GeoElementND[] created = null;
+		try {
+			created = app.getKernel().getAlgebraProcessor().processAlgebraCommandNoExceptionHandling(
+					"cc=Circle(SO,mAB)", false, ErrorHelper.silent(), false, null);
+		} catch (RuntimeException | Error failure) {
+			row.put("redefinition_failure", failure.toString());
+		}
+		row.put("new cc created", created != null && created.length > 0);
+		row.put("recorded signs alone, without the structural check", before.signsOnly(
+				HALF_WIDTHS[0]));
+		row.put("recheck of the stale proof", before.recheck(HALF_WIDTHS[0]));
+		Map<String, Object> fresh = evaluate(app, "SC", null, "cc", "constructive", false, true,
+				INCIDENCE_BUDGET).row;
+		row.put("new proof", fresh.get("incidence") + " | " + fresh.get("outcome"));
+		return row;
 	}
 
 	private static double number(AppGeoCeDG app, String label) {
