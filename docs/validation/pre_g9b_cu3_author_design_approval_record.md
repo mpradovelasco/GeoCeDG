@@ -263,3 +263,17 @@ El paso T0 registra esta decisión, incorpora las enmiendas aprobadas (§2), cre
 actualiza el estado de los documentos de la preparación, la estrategia y la matriz (con G-M3-4 y
 las filas que dependen de la autoridad del objetivo), el plan consolidado, la hoja de ruta y el
 registro E1, sin código productivo.
+
+## 13. Registro de los pasos T1 y T2
+
+- **T1** (`4a1272c0`): pruebas de caracterización de la base para H-CU3-1 a H-CU3-4 e inventario
+  de las pruebas afectadas (estrategia §3).
+- **T2** (`245c66e3` y `efa372c8`): prototipo de M3 en el arnés de bancos, sin código de producto.
+  La puerta G-M3 se ejecutó con evidencia determinista
+  ([informe de la puerta](pre_g9b_cu3_m3_gate_report.md)). Resultado técnico: G-M3-1 y G-M3-3 se
+  cumplen; G-M3-2 está medido, con un techo propuesto; **G-M3-4 no se cumple**, porque los cinco
+  contactos obligatorios se refutan exactamente contra la autoridad de su objetivo.
+
+Conforme a §4 y §9, las partes que dependen de M3 se detienen y la decisión se presenta al autor
+con las alternativas R-1, R-2, R-3 y C3, sin autorizar ninguna. Este registro no declara ningún
+resultado de puerta como decisión autoral.
