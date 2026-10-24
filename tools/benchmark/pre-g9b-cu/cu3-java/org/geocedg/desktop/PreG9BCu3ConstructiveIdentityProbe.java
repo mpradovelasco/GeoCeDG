@@ -1739,7 +1739,8 @@ class PreG9BCu3ConstructiveIdentityProbe {
 	 * A proof of a mandatory incidence is a formal identity: at another configuration it holds
 	 * again when its constants are unchanged, every recorded sign is certified there with the same
 	 * value and the inherited selection states are unchanged, with no new symbolic work. The
-	 * positions are the twelve of the authority study, then moves of the boundary inputs.
+	 * positions are the twelve of the authority study, then moves of the boundary inputs; at the
+	 * two positions where rechecks fail closed, new proofs are attempted.
 	 */
 	private static Map<String, Object> configurations(AppGeoCeDG app,
 			Map<String, Evaluation> boundary, Map<String, Evaluation> automatic) {
@@ -1766,6 +1767,9 @@ class PreG9BCu3ConstructiveIdentityProbe {
 					h.getInhomY() + factor * (dy - h.getInhomY()), 1);
 			d1.updateRepaint();
 			rows.put("D_1 radius factor " + factor, recheckAll(app, boundary, automatic));
+			if (factor == 3.0) {
+				rows.put("D_1 radius factor 3.0: new proofs at this position", newProofs(app));
+			}
 		}
 		d1.setCoords(dx, dy, 1);
 		d1.updateRepaint();
@@ -1780,6 +1784,9 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			PreG9BCu0Corpus.movePathPoint(app, "H", tH + delta);
 			rows.put("H path parameter " + (delta > 0 ? "+" : "") + delta, recheckAll(app,
 					boundary, automatic));
+			if (delta == 40) {
+				rows.put("H path parameter +40.0: new proofs at this position", newProofs(app));
+			}
 		}
 		PreG9BCu0Corpus.movePathPoint(app, "H", tH);
 		double tB = PreG9BCu0Corpus.pathParameter(app, "B");
@@ -1807,6 +1814,26 @@ class PreG9BCu3ConstructiveIdentityProbe {
 			row.put(contact[0], entry);
 		}
 		return row;
+	}
+
+	/**
+	 * Where a recheck fails, the configuration may lie in another cell: a new proof, in the
+	 * automatic scope, either proves the incidence there or reports why it does not hold.
+	 */
+	private static Map<String, Object> newProofs(AppGeoCeDG app) {
+		Map<String, Object> rows = new LinkedHashMap<>();
+		for (String[] contact : CONTACTS) {
+			Map<String, Object> row = evaluate(app, contact, "constructive", false, true,
+					INCIDENCE_BUDGET).row;
+			Map<String, Object> summary = new LinkedHashMap<>();
+			summary.put("incidence", row.getOrDefault("incidence", "not decided"));
+			if (row.containsKey("limited_part")) {
+				summary.put("limited_part", row.get("limited_part"));
+			}
+			summary.put("outcome", row.get("outcome"));
+			rows.put(contact[0], summary);
+		}
+		return rows;
 	}
 
 	private static Map<String, Object> contactOrder(AppGeoCeDG app) {
