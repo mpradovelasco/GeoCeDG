@@ -168,7 +168,7 @@ debe convertirse en un falso transversal.
 | Id | Hallazgo | Evidencia | Contrato |
 |---|---|---|---|
 | **H-CU3-1** | **Raíces espurias del ruido de redondeo** junto a una tangencia, publicadas como `TRANSVERSE_ESTABLISHED` y **algunas admisibles** (se puede crear un punto): un `h` redondeado con un valor de `±1e-15` en su extremo da dos raíces de la función binary64 a `√(2|h|/|h″|) ≈ 2–5·10⁻⁸` del contacto | modelo, P4: `rbCone` 3, 4, 6 y 7, `α` 35° (siete raíces para `e_1·c_1`, dos admisibles) y `D_1` ×0,5 (cuatro raíces para `o_1·h_2`, dos admisibles); sintéticos, P6: δ = −1e-13 y −1e-10 dan cuatro y tres raíces, con duplicados, frente a las dos que el sondeo certifica | viola §5.1 |
-| **H-CU3-2** | **Contactos con un cero doble del residuo** (el pliegue de `e_1` en la costura, §5.4b, y una tangencia en un extremo incluido) **clasificados como raíces transversales simples y admisibles** | `e_1·c_1` y `e_1·r` en `t = ±π`: el sondeo certifica `h″ < 0` en `[π − 1e-2, π + 1e-2]`, el cambio de signo de `h′` y que `h(t*)` contiene el cero, así que no puede haber una sola raíz transversal; cuarto de arco con `x = 1` en su inicio: `h′(0) ≈ 0` y `h″ > 0`, y el motor publica `TRANSVERSE_ESTABLISHED`, `INCLUDED_ENDPOINT`, admisible | viola §5.1 |
+| **H-CU3-2** | **Contactos con un cero doble del residuo** (el pliegue de `e_1` en la costura, §5.4b, y una tangencia en un extremo incluido) **clasificados como raíces transversales simples y admisibles** | `e_1·c_1` y `e_1·r` en `t = ±π`: el sondeo certifica `h″ < 0` en `[π − 1e-2, π + 1e-2]`, el cambio de signo de `h′`, los signos de `h` en los extremos de la caja y que `h(t*)` contiene el cero. Eso deja tres posibilidades en la caja: ninguna raíz, una doble o dos simples. No contradice por sí solo la raíz publicada (comprobación final, Etapa B §9); el error de clasificación lo establece el teorema estructural (§5.3), que sitúa en `π` un cero doble; cuarto de arco con `x = 1` en su inicio: `h′(0) ≈ 0` y `h″ > 0`, y el motor publica `TRANSVERSE_ESTABLISHED`, `INCLUDED_ENDPOINT`, admisible | viola §5.1 |
 | **H-CU3-3** | **Tangencias declaradas donde la ausencia de intersección está certificada** | δ = +1e-13 (recta y circunferencia): el sondeo certifica la clase 4 sin intersección (`h(t*)` ∈ `[−1,010e-13; −0,993e-13]`) y el motor publica `TANGENT_ESTABLISHED`, no admisible, porque el residuo `1e-13` es menor que la tolerancia `4e-12` | viola §5.1 y `AGENTS.md` §1.8 |
 | **H-CU3-4** | **Duplicados de una misma preimagen** | traslación 10⁶, radios 2 y 20: cuatro soluciones transversales para dos raíces; δ = −1e-10: raíces a `4,2·10⁻¹²` y `4,8·10⁻¹²` en el parámetro | §8.2 (la deduplicación no debe fusionar preimágenes distintas, pero sí las repetidas) |
 | **H-CU3-5** | **H02 confirmado**, también con traslaciones | `r` = 2, 20, 200, 2000 y 20 000 con traslaciones 0, 10³ y 10⁶: las raíces admisibles pasan de 2/2 a 0/0 según la escala y, a la misma escala, según la traslación; el sondeo certifica las dos raíces por cambio de signo en todos los casos, con residuos normalizados por `3r` entre 0 y `7,6·10⁻¹⁷` | §8.1 (escala invariante por traslación) |
@@ -335,16 +335,94 @@ la evidencia, convertidos a racionales exactos con `System.Numerics.BigInteger`:
 **Consecuencia.** El estado binary64 de `K`, y con él los de `m`, `M` y `n`, no conserva
 exactamente la relación «`n` pasa por la vertical del punto exacto de contacto». Una
 configuración que tomara como constantes los estados binary64 de esos objetos intermedios no
-contendría la incidencia del teorema de §5.3. Por eso la evaluación exacta M3 debe recalcular el
-subgrafo conjunto desde una frontera común ([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md)
-§6.2).
+contendría la incidencia del teorema de §5.3. Por eso M3 recalcula exactamente, en la
+configuración de decisión `Σ_L⁺`, los ancestros de `D` y de `r` que no son constantes de `Σ_L`,
+entre ellos `K`, `m`, `M` y `n`, y conserva sin cambios las constantes de `Σ_L`
+([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md) §6.2, reglas 1 y 6; §5.8). Esta
+consecuencia se precisó en la comprobación final de coherencia: la revisión focal pedía recalcular
+el subgrafo conjunto desde una frontera común.
 
-**P3 ya hizo esa recalculación**, con la frontera `{H, B, altura de h, rbCone, D_1}`:
+**P3 hizo una recalculación más profunda**, con la frontera `{H, B, altura de h, rbCone, D_1}`:
 
 - recalculó `K = B + (rbCone, 0)` y `M` exactamente a partir de ella;
+- recalculó también constantes de `Σ_L`: el radio de `c_1 = Circle[H, D_1]` es en P3 `|HD_1|`, y
+  no el de la matriz capturada;
 - por eso dio `0E-79`.
 
-Es una evaluación con 80 cifras sobre esa frontera, no una prueba exacta.
+Es una evaluación con 80 cifras en una configuración del tipo `Σ_B`, no una prueba exacta, y solo
+tiene valor diagnóstico (Etapa A §6.6). La validez del teorema en `Σ_L⁺` se apoya en §5.8 y la
+decide la puerta G-M3.
+
+### 5.8 Exactitud aritmética de las constantes capturadas del modelo (comprobación final, 2026-10-24)
+
+Análisis de la aritmética del código heredado y de la captura de `CU2`, sin ejecutar ningún
+sondeo. Sirve para decidir si las relaciones que usa el teorema de §5.3 se cumplen exactamente en
+la configuración capturada `Σ_L` de `e_1` y `o_1`, que es la configuración autoritativa
+([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md) §2.3).
+
+**Cómo captura `CU2` las constantes**
+(`source/shared/common/src/main/java/org/geocedg/common/kernel/locus/CertifiedConstructionCapture2D.java`):
+
+- Una recta constante se captura por sus coeficientes binary64 `(x, y, z)` (`:1034-1047`).
+- Una circunferencia constante se captura por su matriz, `(A2, A4, A5)` con centro `(−A4, −A5)`,
+  más su semieje (`:1050-1071`). La clase v3 usa la matriz (`r² = A4² + A5² − A2`) para la
+  intersección geométrica, y el semieje solo para la banda heredada
+  (`ConstructionBoxModel2D.java:1273-1310`, D-CU2-T13-R7).
+- El soporte del conductor se captura por sus semiejes, sus vectores propios y su centro
+  (`:286-297`).
+
+El objeto vivo `c_1` tiene, por tanto, dos representaciones del radio que pueden diferir en el
+redondeo: el semieje, que es `M.distance(P)`, y `A2 = Σ m_i² − r²` redondeado
+(`GeoQuadricND.setSphereNDMatrix`, `:321-345`). Su semántica en `Σ_L` es la de la matriz.
+
+**Aritmética heredada**
+(`source/shared/common/src/main/java/org/geogebra/common/kernel/`):
+
+- `AlgoOrthoLinePointLine.compute` (`algos/…:129-140`): `cross(P, l.x, l.y, 0)` y después
+  `getNormalizedCoefficients(…, 10E6, 1E-2)`, que solo escala por **potencias de dos** y solo
+  cuando los tres coeficientes quedan fuera de los límites (`geos/GeoLine.java:1620-1650`).
+- `AlgoLinePointLine.compute` (`algos/…:118-121`): `cross(P, l.y, −l.x, 0)`.
+- Productos vectoriales `GeoVec3D.cross` (`geos/GeoVec3D.java:234-237` y `:396-411`), también en la
+  intersección de dos rectas.
+- Circunferencia por centro y punto: `setCircle` → `setCircleMatrix` → `setSphereNDMatrix`, que
+  copia el centro.
+
+**Derivación para el modelo**, con `xAxis = (0, 1, 0)` y coordenada homogénea `z = 1` en `A`, `B`
+y `H`:
+
+- `g = (−1, 0, A.x)`;
+- `h = (0, −1, A.y)`;
+- `k = (−H.z, 0, H.x)`, vertical; `H ∈ k` exactamente, porque los dos productos `H.z·H.x` son el
+  mismo valor binary64;
+- `i = (0, −B.z, B.y)`, horizontal;
+- `I = cross(i, k) = (−B.z·H.x, −B.y·H.z, −B.z·H.z)`, que con `z = 1` es exactamente
+  `(H.x, B.y)`;
+- `c_1` con centro exactamente `H`;
+- `p` con centro `B`, semieje 5 y vectores propios `(1, 0)` y `(0, 1)` (P2).
+
+Todas son productos por 0 y por ±1, sumas con cero y copias de coordenadas, que son exactas en
+IEEE 754.
+
+**Consecuencia.** Las relaciones que usa el teorema se cumplen **exactamente** en `Σ_L`:
+
+- `k` vertical por `H`;
+- `h` e `i` horizontales;
+- `I` sobre `i` y sobre `k`;
+- el centro de `c_1` en `k`;
+- el centro de `p` en `i`;
+- `g ∥ k`.
+
+Los valores métricos (los radios de `c_1` y de `p`) no hace falta que sean exactos. El teorema se
+conserva, por tanto, en `Σ_L⁺`.
+
+**Hipótesis a confirmar en la puerta G-M3** (no medidas aquí):
+
+- la coordenada homogénea `z = 1` de los puntos libres y sobre caminos;
+- que los estados capturados son los que da esta aritmética.
+
+En un modelo con rectas oblicuas, el coeficiente `z` de una paralela por un punto se redondea,
+y una relación análoga puede no sobrevivir. Entonces M3 refuta en `Σ_L⁺` y el fallo es cerrado
+(Etapa A §6.6).
 
 ## 6. Clasificación núcleo frente a capa externa
 

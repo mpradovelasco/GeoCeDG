@@ -1,8 +1,9 @@
 # ADR 0039 — Locus V2 structural points and certified contact evidence
 
 - Status: **PROPOSED — PRE-G9B-CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW**, revised by the
-  author-requested focal scientific review of 2026-10-24. `selfApproved=false`. It changes no
-  accepted ADR or specification until the author approves it.
+  author-requested focal scientific review and by the final scientific coherence check (both
+  2026-10-24). `selfApproved=false`. It changes no accepted ADR or specification until the author
+  approves it.
 - Date: 2026-10-24
 - Phase: `PRE-G9B-CU3`. Preparation was authorized on 2026-10-24 on the exact base
   `e6c908f2203cd8feb5d4938013e16b212e0fe016`; the preparation candidate `213ea5aa` was published for
@@ -72,6 +73,16 @@ The `CU3` characterization and the focal review establish seven facts.
 7. **Interval evidence is existential.** Intervals certify the existence of some root in an
    interval (sign change and continuity), but not an equality at a prescribed parameter. The
    earlier wording of this preparation blurred that distinction.
+8. **Two configurations, one object.** The final coherence check points out that an incidence
+   proved in a joint exact recomputation `Σ_B` does not transfer automatically to the point of `L`
+   in its `CU2` captured configuration `Σ_L`. The two configurations differ: for example, the
+   captured radius of `c_1` is the one of its matrix, `√(A4² + A5² − A2)`, not the exact `|HD_1|`.
+   A reading of the inherited arithmetic shows that the relations the theorem needs (vertical `k`
+   through `H`, horizontal `h` and `i`, the centre of `c_1` on `k`, `g ∥ k`) hold exactly in the
+   binary64 states that `Σ_L` captures in the author model.
+9. **Certified critical points do not contradict.** A certified critical point alone does not
+   contradict a locally verified root: it leaves no root, one double root or two simple roots
+   possible.
 
 ## Decision
 
@@ -115,9 +126,11 @@ The `CU3` characterization and the focal review establish seven facts.
      components.
 
    Point components are not materialized: `CU2` §15.4 forbids a public point there, and C22 and
-   C23 are not introduced. The incidence with `r` is an equality at a prescribed point, decided
-   only by term identity or by exact evaluation. The live driver is never moved, and nothing
-   numerical is persisted.
+   C23 are not introduced. The authoritative object is `L` in its `CU2` captured configuration
+   `Σ_L`. `Intersect(L, r, D)` materializes **the same exact point** as `Point(L, D)`, and its
+   incidence with `r` is an equality at a prescribed point, decided only by term identity or by
+   exact evaluation in `Σ_L⁺` (decision 6). The live driver is never moved, and nothing numerical
+   is persisted.
 5. **Evidence grades, admissibility and consumption** (A3.1-R).
    - **Grades.** Every finite solution carries a grade: `LOCALLY_VERIFIED` (G8B-R1, numerical
      verification under hypotheses), `EXISTENCE_CERTIFIED`, `EXISTENCE_STRUCTURAL` or
@@ -125,28 +138,44 @@ The `CU3` characterization and the focal review establish seven facts.
    - **Admissibility.** The G8B-R1 predicate and thresholds are unchanged. A certified path admits
      `EXISTENCE_CERTIFIED` transverse roots whose residual is consistent with a translation-invariant
      characteristic scale (H02, additive).
-   - **Conflict rule.** Certified evidence prevails over a contradicted local verification; that is
-     the only restriction, and it is identified.
+   - **Conflict rule.** A locally verified solution is withdrawn or reclassified only when a
+     root-count certificate in `Σ_L⁺` really contradicts its existence, multiplicity or
+     classification. The certificate gives the exact number of roots and their location on a box
+     with certified continuity: none, one simple, two simple around a certified critical point, or
+     one double at an exact point. A certified critical point alone, a class-3 candidate or a
+     contradiction of set completeness alone never withdraws a solution; the last one lowers the
+     completeness. This is the only restriction, and it is identified.
    - **Consumption.** A consumption policy fixes the minimum grade per consumer. Grades are
      revision evidence, never promoted silently, and not part of tokens.
    - **Pairs.** Pair acceptance is unchanged in `CU3`; its origin-distance scale is a recorded
      nonconformity with §8.1.
-6. **Exact evaluation in a joint configuration** (A3.5).
-   - **Configuration.** The joint subgraph of the driver point, the slice and the target is
-     recomputed exactly from one capture boundary (independent elements, path parameters, and
-     objects whose exact computation would leave the class), so that structural relations among
-     recomputed objects survive.
+6. **Exact evaluation in the authoritative configuration** (A3.5).
+   - **Configuration.** M3 decides in `Σ_L⁺`, which contains the `CU2` captured configuration of
+     `L` unchanged: the same constants, with the exact meaning that the class-v3 program gives
+     them, also when a constant is the target. Only the driver point, the target and their
+     ancestors outside `Σ_L` are added. Shared ancestors of captured constants and boundary
+     objects are taken at their binary64 states, and every other added object is recomputed
+     exactly, so that structural relations among recomputed objects survive. Each object has
+     exactly one exact meaning; a conflict fails closed.
+   - **No transfer.** A decision in `Σ_L⁺` is a property of the authoritative point of `L`. A
+     deeper joint recomputation `Σ_B` that also recomputes the captured constants is diagnostic
+     only. It applies to the authoritative point only if both configurations are proved to give
+     the same exact value to every object used.
    - **Exact driver point.** It is reconstructed from its provenance and the exact inherited
-     selection, and the slice is evaluated at that point.
-   - **Outcomes.** Signs and vanishing are decided exactly: proved, refuted, out of class or out of
-     budget, never "equal within a tolerance". Its scope is that joint configuration.
+     selection, on the driver meaning of its support, and the slice is evaluated at that point.
+   - **Outcomes.** Signs and vanishing, and first derivatives when needed, are decided exactly:
+     proved, refuted, out of class or out of budget, never "equal within a tolerance". A
+     refutation in `Σ_L⁺` while `Σ_B` proves is reported as
+     `INCIDENCE_HOLDS_ONLY_IN_JOINT_RECOMPUTATION`, and the intersection stays undefined.
    - **Accidental equalities.** An accidental equality is proved exactly when it holds exactly in
      that configuration.
-   - **Gate.** An early blocking gate (mathematical viability on the five mandatory contacts and
-     controls, budget by counters, correspondence with the live algorithm) precedes the
-     implementation of the second incidence.
-   - **Failure.** If M3 fails, its evidence is never replaced by a residual; the alternatives go to
-     the author.
+   - **Gate.** An early blocking gate precedes the implementation of the second incidence:
+     mathematical viability in `Σ_L⁺` on the five mandatory contacts and controls, including the
+     adversarial case that is proved only in `Σ_B`; budget by counters; and correspondence with the
+     live algorithm.
+   - **Failure.** If M3 fails, its evidence is never replaced by a residual or by a `Σ_B` proof.
+     The alternatives go to the author, among them amending the `CU2` capture convention (C3),
+     which this ADR does not do.
 7. **Axes** (A3.4-R). Under option A, `xAxis` and `yAxis` become reserved kernel references with
    stable identity, admitted as unbounded line targets. The identity failure
    `GEO_NOT_SERIALIZABLE`, the cause of H06, is addressed in the identity registry, not by
@@ -164,11 +193,13 @@ The `CU3` characterization and the focal review establish seven facts.
   the minimal increment. Increment `CU3-B` raises them to class 2 through the certified folds of
   `CU2` and M3 at `K*` and `J*`.
 - **Documents saved before `CU3`.** Previously admissible roots stay admissible, except solutions
-  contradicted by certified evidence. Their tokens stop resolving with a typed cause:
-  - the seam root of `e_1 · c_1` in the author model;
-  - the noise roots;
-  - transverse-classified endpoint tangencies;
-  - duplicated preimages.
+  contradicted by a root-count certificate. Their tokens stop resolving with a typed cause:
+  - certified absence;
+  - duplicated preimages that do not keep the identity;
+  - with M3, the seam root of `e_1 · c_1`, the noise roots near the structural contact and
+    transverse-classified endpoint tangencies.
+
+  Without M3, those last ones keep their G8B-R1 state.
 
   Additive admissions (H02) create new tokens. `AGENTS.md` §11.6 requires decision D-CU3-7, a
   migration note and regression evidence.
@@ -190,6 +221,15 @@ The `CU3` characterization and the focal review establish seven facts.
 - **Exact evaluation over a per-object capture**, taking every intermediate object at its binary64
   state: rejected. Rounding of intermediate objects (`K.x = fl(B.x + 5)`) breaks the structural
   relations and would refute theorems.
+- **A deep joint recomputation `Σ_B` as the authority**, the configuration of the focal review:
+  rejected. It recomputes the captured constants of `L`, so its point is not the point that `CU2`
+  certifies, and using it would silently reinterpret the `CU2` certificates.
+- **Transferring a `Σ_B` proof to `Σ_L` by numerical closeness**, or by a certified bound on the
+  distance between both points: rejected. A positive bound proves no equality.
+- **Amending the `CU2` capture convention** so that the captured configuration of `L` is the deep
+  recomputation (C3): not in `CU3`. It changes an approved contract and needs new certificates.
+- **Treating a certified critical point, or a class-3 candidate, as a contradiction:** rejected.
+  It leaves no root, one double root or two simple roots possible.
 - **Changing the residual-adapter contract text** to carry the new scale: rejected. It would
   invalidate every persisted root token.
 - **Materializing points on point components in `CU3`:** rejected. `CU2` §15.4 forbids a public

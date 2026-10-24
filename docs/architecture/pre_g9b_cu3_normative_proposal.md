@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Texto normativo **candidato** de `CU3` para la revisión autoral. No modifica ninguna especificación ni ningún ADR vigentes; su incorporación exige la aprobación autoral de la arquitectura y un paso T0 de la implementación |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal de 2026-10-24; `selfApproved=false` |
+| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24: A3.1-R, A3.3-R y A3.5); `selfApproved=false` |
 | Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §5 punto 4; precisión autoral «Decisión sobre la planificación de CU3» (2026-10-24); instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación» (2026-10-24) |
 | Sustituye | las enmiendas candidatas A3.1–A3.4 de `CU0` ([enmiendas candidatas](pre_g9b_cu0_candidate_normative_amendments.md)), que se conservan como antecedente |
 | ADR | [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
@@ -77,18 +77,42 @@ alternativas, el texto corresponde a la recomendada.
   > never decides existence. Refinement on this path stops on the residual criterion or on a
   > bracket of a few `ulp` of the semantic parameter.
   >
-  > **Conflict rule.** For one-parameter targets and sources with residual enclosures, when
-  > certified evidence in the same revision contradicts a locally verified classification or
-  > admissibility, the certified evidence prevails and the contradicted solution is withdrawn or
-  > reclassified. The certified evidence is one of:
+  > **Conflict rule.** For one-parameter targets and sources with residual enclosures, a locally
+  > verified solution is withdrawn or reclassified only when a root-count certificate, computed in
+  > the same revision and in the decision configuration `Σ_L⁺` of §11.2 of the certified
+  > construction model, which contains the captured configuration of `L` unchanged, really
+  > contradicts its existence, its multiplicity or its classification.
   >
-  > - certified absence of roots in a bracket;
-  > - a certified critical point that excludes the published set of transverse roots;
-  > - certified uniqueness of overlapping candidates.
+  > A root-count certificate on a parameter box `T` requires continuity: `T` lies in one certified
+  > continuous component and the class-v3 box evaluation is valid on `T`. A component end, a seam
+  > that ends a component, a transition, an unresolved band, an invalid gap or a point component
+  > inside `T` voids it, except an included domain end whose value is decided exactly. The
+  > certificate establishes the exact number of roots in `T`, with multiplicity, and their location,
+  > in one of four forms:
   >
-  > The analysis is triggered deterministically and independently of scale, only for candidates
-  > that the solver marks as non-transverse, as local minima, or as closer than their own bracket
-  > width. Without contradiction, admissibility is unchanged.
+  > - none (the residual has a certified fixed sign on `T`);
+  > - one simple root (derivative enclosure without zero and opposite certified end signs);
+  > - two simple roots located on either side of a certified critical point (fixed second-derivative
+  >   sign, residual at the critical point and at both ends of certified signs);
+  > - one double root at an exact point (class 1 or 2, vanishing derivative by structure, exact
+  >   symmetry or exact arithmetic, fixed second-derivative sign).
+  >
+  > A solution is contradicted when:
+  >
+  > - the certificate gives no root, or the solution's isolating interval is disjoint from every
+  >   root it locates (withdrawn);
+  > - more solutions lie in one located sub-bracket than the certificate allows (merged into one
+  >   preimage, keeping an established identity if exactly one had it);
+  > - a simple or transverse solution lies where the certificate gives a double root (reclassified);
+  > - a tangent or undetermined solution lies where the certificate gives a simple root
+  >   (reclassified as transverse with certified existence).
+  >
+  > An isolated certified critical point, a class-3 candidate, a certificate that fails these
+  > conditions, or a contradiction of set completeness alone is never a contradiction of a
+  > solution: the last one lowers the result's completeness. The analysis is triggered
+  > deterministically and independently of scale, only for candidates that the solver marks as
+  > non-transverse, as local minima, or as closer than their own bracket width. Without
+  > contradiction, admissibility is unchanged.
   >
   > Rejections emit their declared diagnostics (`RESIDUAL_REJECTED`, `PAIR_RESIDUAL_REJECTED`,
   > `MEMBERSHIP_REJECTED`, `NONFINITE_EVALUATION`). A grade never rises through a tolerance, a
@@ -101,7 +125,8 @@ alternativas, el texto corresponde a la recomendada.
 - **Evidencia exigida:**
   - inversión de `pins.H02` por la vía certificada;
   - las suites G8B, G8C y G9U0-R4 intactas fuera de las filas de conflicto;
-  - V-EVID-1 a V-EVID-6, V-H2-1 a V-H2-5, V-B-NOISE-1, V-B-DUP-1 y V-COMPAT-1 a V-COMPAT-2.
+  - V-EVID-1 a V-EVID-6, V-CONF-1 a V-CONF-8, V-H2-1 a V-H2-5, V-B-NOISE-1, V-B-DUP-1 y
+    V-COMPAT-1 a V-COMPAT-2.
 
 ## 3. A3.2-R — Contact evidence classes, contact order and lifecycle
 
@@ -205,12 +230,16 @@ alternativas, el texto corresponde a la recomendada.
   >    - meets a component end, a certified transition, an unresolved band or an invalid gap;
   >    - meets a point component.
   >
-  >    A point component creates no public point in this version (§15.4). For `Intersect`, the
-  >    incidence with `r` and the membership in a limited target are equalities at a prescribed
-  >    point (§5.4 (b)). They are established only by term identity under driver substitution, or
-  >    by exact evaluation in the joint exact configuration (certified construction model §11.2).
-  >    Exact evaluation either proves the equality, refutes it exactly, or reports that it is out
-  >    of class or out of budget.
+  >    A point component creates no public point in this version (§15.4). The authoritative object
+  >    is `L` in its captured configuration (§10 of the certified construction model), and
+  >    `Intersect(L, r, D)` materializes the same exact point as `Point(L, D)`. For `Intersect`, the
+  >    incidence of that point with `r` and its membership in a limited target are equalities at a
+  >    prescribed point (§5.4 (b)). They are established only by term identity under driver
+  >    substitution, or by exact evaluation in the decision configuration that contains the
+  >    captured configuration of `L` unchanged (certified construction model §11.2). Exact
+  >    evaluation either proves the equality, refutes it exactly, or reports that it is out of
+  >    class or out of budget. A proof in any configuration that recomputes the captured constants
+  >    of `L` is diagnostic and never establishes the incidence.
   >
   > No parameter or certificate is persisted: the point is reconstructed from the dependency graph
   > at every revision, after Undo, Redo, reopen and copy. Its identity is its own durable identity
@@ -237,7 +266,7 @@ alternativas, el texto corresponde a la recomendada.
 
 - **Evidencia exigida:** inversión de `pins.H06`; V-H3-1 a V-H3-4.
 
-## 6. A3.5 — Residual jets and exact evaluation in a joint configuration
+## 6. A3.5 — Residual jets and exact evaluation in the authoritative configuration
 
 - **Destino:** `locus-v2-certified-construction-model.md`, nuevo §11 (versión 1.3).
 - **Decisiones:** D-CU3-4 (M3 y su puerta) y D-CU3-11.
@@ -250,31 +279,53 @@ alternativas, el texto corresponde a la recomendada.
   > derivatives. This extends §10.7 to the isolation of critical points of contact residuals, and
   > certifies only claims of kind (a) of `locus-v2-intersections.md` §5.4.
   >
-  > **§11.2 Exact evaluation in a joint configuration.** The joint configuration `Σ_B` of a
-  > structural point is the subgraph made of the ancestors of the driver point `D`, the slice of
-  > `L` and the ancestors of the target `r`, recomputed exactly from one capture boundary `B`.
-  > `B` contains the independent elements, the path parameters of points on boundary paths, and
-  > the objects whose exact computation leaves the class (for example a rotation by a
-  > non-special angle). Their binary64 states are taken as exact rationals. Every object above
-  > `B` is recomputed, and none is taken at its binary64 state, so that structural relations among
-  > them survive. The exact point `D*` is reconstructed by the exact form of the inherited
-  > selection rule (§10.2) with the captured selection state. Coincident roots, continuous-mode
-  > intersections, reference-point selections and an uncertified initialization fail closed. The
-  > slice is evaluated with the driver replaced by the exact point `D*`, never by a parameter.
-  > Ruler-and-compass operations generate a finite tower of quadratic extensions. Signs and
-  > vanishing are decided with exact arithmetic and constructive root-separation bounds. The
-  > result is "equal", "different", or `EXACT_EVALUATION_OUT_OF_CLASS` /
-  > `EXACT_EVALUATION_BUDGET_EXHAUSTED`, never "equal within a tolerance". Its scope is `Σ_B`. It
-  > says nothing of the values typed by the user or of the rounded computation, and a refutation
-  > in `Σ_B` is reported as such, never as nonexistence in the intended configuration. The binary64
-  > coordinates of `D` enter only the check that the reconstructed branch corresponds to the live
-  > algorithm.
+  > **§11.2 Exact evaluation in the authoritative configuration.** The decision configuration
+  > `Σ_L⁺` of a structural point contains the captured configuration of `L` (§3 and §10) without
+  > any change: the same captured constants, with the same exact meaning that the class-v3
+  > program gives them, and the same program. It adds the driver point `D`, the target `r` and
+  > their ancestors. Every object of the joint subgraph receives exactly one exact meaning:
+  >
+  > - a captured constant of `L` keeps its captured value and representation (a constant circle is
+  >   its matrix circle), also when it is the target;
+  > - the driver support keeps the meaning of the captured driver constants, and the algorithm of
+  >   `D` is evaluated on that meaning;
+  > - an object outside the captured configuration that is an ancestor of a captured constant is
+  >   taken at its binary64 state;
+  > - the independent elements, the path parameters and the objects whose exact computation leaves
+  >   the class are taken at their binary64 states;
+  > - every other object is recomputed exactly from its parents' meanings;
+  > - term-identical objects share one meaning;
+  > - a constant with two different exact representations in the program of `L` fails closed
+  >   (`CONFIGURATION_REPRESENTATION_CONFLICT`).
+  >
+  > The exact point `D*` is reconstructed by the exact form of the inherited selection rule
+  > (§10.2) with the captured selection state. Coincident roots, continuous-mode intersections,
+  > reference-point selections and an uncertified initialization fail closed. The slice is
+  > evaluated with the driver replaced by the exact point `D*`, never by a parameter.
+  > Ruler-and-compass operations generate a finite tower of quadratic extensions. The signs and
+  > the vanishing of residuals, validity predicates, limited-target parameters and, when needed,
+  > first derivatives (exact jets) are decided with exact arithmetic and constructive
+  > root-separation bounds. The result is "equal", "different", or
+  > `EXACT_EVALUATION_OUT_OF_CLASS` / `EXACT_EVALUATION_BUDGET_EXHAUSTED`, never "equal within a
+  > tolerance".
+  >
+  > Because the captured configuration of `L` is contained unchanged, a decision is a property of
+  > the authoritative point of `L` and needs no transfer. A deeper joint recomputation that also
+  > recomputes the captured constants of `L` is a different configuration. It may be computed
+  > only as a diagnostic (`INCIDENCE_HOLDS_ONLY_IN_JOINT_RECOMPUTATION`). Its result applies to the
+  > authoritative point only if both configurations are proved to give the same exact value to
+  > every object the proof uses. A refutation in `Σ_L⁺` is reported as such
+  > (`INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`), never as nonexistence in the intended
+  > configuration. No captured constant or certificate of `L` is changed or reinterpreted. The
+  > binary64 coordinates of `D` enter only the check that the reconstructed branch corresponds to
+  > the live algorithm.
 
-- **Puerta de la implementación (estrategia, paso T2):** G-M3-1 (viabilidad matemática en los
-  cinco contactos obligatorios y en los controles), G-M3-2 (presupuesto por contadores) y G-M3-3
-  (correspondencia con el algoritmo vivo). Sin la puerta superada, no se implementa la segunda
-  incidencia, y su evidencia nunca se sustituye por un residuo.
-- **Evidencia exigida:** V-M3-1 a V-M3-8 y las filas de la puerta.
+- **Puerta de la implementación (estrategia, paso T2):** G-M3-1 (viabilidad matemática en
+  `Σ_L⁺` en los cinco contactos obligatorios y en los controles), G-M3-2 (presupuesto por
+  contadores) y G-M3-3 (correspondencia con el algoritmo vivo). Sin la puerta superada, no se
+  implementa la segunda incidencia, y su evidencia nunca se sustituye por un residuo ni por una
+  demostración en `Σ_B`.
+- **Evidencia exigida:** V-M3-1 a V-M3-8, V-CFG-1 a V-CFG-6 y las filas de la puerta.
 
 ## 7. Lo que estas enmiendas no cambian
 

@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Diseño candidato de `CU3` para H02 y H06, y para la relación entre la admisibilidad local aprobada y la existencia certificada. No es especificación normativa ni autoriza implementación |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal de 2026-10-24; `selfApproved=false` |
+| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24, regla de conflicto, §3.3); `selfApproved=false` |
 | Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §1 (H-2 y H-3) y §4 (las tolerancias nunca dependen del zoom, el DPI, la cámara ni el tamaño de la vista); instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación» (2026-10-24), punto 1 |
 | Autoridad vigente | `locus-v2-intersections.md` v1.2 §5.1, §8 (en particular §8.1) y §9; aclaración G8B-R1 (ADR 0008, «G8B-R1 clarification — point admissibility versus completeness», y el [informe G8B-R1](../validation/g8b_r1_locus_v2_intersection_point_admissibility_report.md), §C y §D); `locus-v2-public-surface.md` §8 y §10; ADR 0013, 0017, 0026 y 0037 (clases de garantía métrica, precedente); `AGENTS.md` §1.8, §10 y §11.5–§11.6 |
 | Antecedentes | [estudio H de `CU0`](pre_g9b_cu0_precision_and_tolerance_study.md) §4 y §5 (H-b, H-c); enmiendas candidatas A3.1 y A3.4 de `CU0`; decisiones H-2 y H-3 de la [hoja de `CU0`](../validation/pre_g9b_cu0_author_decision_sheet.md) |
@@ -98,18 +98,41 @@ El corchete de la vía certificada se refina por el criterio de residuo o hasta 
 
 ### 3.3 Regla de conflicto de evidencia (cambio normativo restrictivo, identificado)
 
-> Cuando, en la misma revisión, una evidencia certificada contradice una clasificación o una
-> admisibilidad obtenida por verificación local, prevalece la evidencia certificada: la solución
-> contradicha se retira del conjunto finito o se reclasifica, y su token deja de ser admisible. Sin
-> contradicción certificada, nada cambia.
+> Una solución verificada localmente solo se retira o se reclasifica cuando un **certificado de
+> conteo** riguroso, calculado en la misma revisión y en la configuración de decisión `Σ_L⁺`, que
+> contiene sin cambios la configuración autoritativa `Σ_L`, contradice realmente su existencia, su
+> multiplicidad o su clasificación. Sin esa contradicción, nada cambia.
 
-Las contradicciones tipificadas son:
+El certificado de conteo y las contradicciones están definidos en la
+[Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md) §9.1 y §9.2, precisados por
+la comprobación final de coherencia. En resumen:
 
-| Contradicción | Hallazgo | Efecto |
+**El certificado** fija sobre una caja `T`, dentro de una sola componente continua certificada y
+con la evaluación de la clase v3 válida en `T` (continuidad), el número exacto `N` de raíces y su
+localización. Las formas válidas son:
+
+- `N = 0`;
+- `N = 1` simple, con `h'` sin cero y signos opuestos en los extremos;
+- `N = 2` simples, alrededor de un punto crítico certificado, con `h(t*)` y los extremos de signos
+  certificados;
+- `N = 1` doble en un punto exacto, de las clases 1 o 2, con `h''` de signo fijo.
+
+Un borde de componente, una costura que termina una componente, una transición, una banda sin
+resolver, un hueco o una componente puntual dentro de `T` lo invalidan, salvo un extremo incluido
+del dominio con su decisión exacta.
+
+**Las contradicciones** son:
+
+| Contradicción | Efecto | Hallazgos |
 |---|---|---|
-| clase 4 sin intersección certificada en una caja que contiene raíces verificadas localmente | H-CU3-3; parte de H-CU3-1 | las raíces se retiran; el resultado rico registra la ausencia local certificada (la completitud global no cambia) |
-| punto crítico certificado (`h''` de signo fijo y un solo cambio de signo de `h'`) en una caja donde se publica una única raíz transversal, o más raíces de las que el certificado permite | H-CU3-1; H-CU3-2 | las raíces contradichas se reclasifican según la taxonomía (clase 3, 4 o 1–2) |
-| unicidad certificada de dos candidatos cuyos corchetes se solapan | H-CU3-4 | se fusionan en una preimagen |
+| de existencia: `N = 0`, o el intervalo aislante de la solución es disjunto de todo lo que `C` localiza | se retira | H-CU3-3; parte de H-CU3-1 |
+| de conteo: más soluciones publicadas en un subcorchete de las que `C` certifica en él | se fusionan en una preimagen; la identidad establecida, si solo una la tenía, se conserva | H-CU3-4; parte de H-CU3-1 |
+| de multiplicidad: solución simple o transversal donde `C` certifica una raíz doble exacta | se reclasifica, y su token transversal deja de ser admisible | H-CU3-2 (solo con M3) |
+| de clasificación al alza: tangente o indeterminada donde `C` certifica una raíz simple | se reclasifica como transversal `EXISTENCE_CERTIFIED` | — |
+
+**No son contradicciones**: un punto crítico certificado aislado; una clase 3; un certificado que
+no cumple la continuidad, la localización o la configuración; y una contradicción solo de la
+completitud del conjunto, que rebaja la completitud y no retira la solución.
 
 **Alcance.** Solo objetivos de un parámetro, y solo fuentes con envolventes (clase v3 o SplineV2).
 Los pares y las capacidades sin envolventes no cambian: allí no se calcula ninguna evidencia
@@ -163,7 +186,7 @@ Los pares usan `max(1, ‖P₁‖, ‖P₂‖)`, la **distancia al origen**
 |---|---|---|
 | resultado rico e inspector | todos los grados y clases | muestra el grado, la clase, el orden y la evidencia tal cual; las clases 3 a 5 se conservan como resultado y diagnóstico |
 | punto derivado por token, `Intersect(R, token)` | raíces transversales `LOCALLY_VERIFIED` o superiores (G8B-R1, sin cambios, más la vía certificada); contactos sin cambio de signo solo de las clases 1 y 2 (Etapa B §5) | el grado no forma parte del token: es evidencia de la revisión y se muestra en la procedencia del punto |
-| segunda incidencia de la Etapa A | solo `EXISTENCE_STRUCTURAL` o `EXISTENCE_EXACT` | es una igualdad en un punto prescrito (Etapa B §2b) |
+| segunda incidencia de la Etapa A | solo `EXISTENCE_STRUCTURAL` o `EXISTENCE_EXACT`, decididos en `Σ_L⁺` para el mismo punto de `L` (Etapa A §2.3) | es una igualdad en un punto prescrito (Etapa B §2b); una demostración en `Σ_B` no basta |
 | materialización sin conductor de contactos (incremento `CU3-B`) | solo las clases 1 y 2 | Etapa B §5 y §6 |
 | otras construcciones del DAG que usan el punto | el punto, como cualquier punto | su grado se propaga como procedencia: nunca se convierte en un certificado de los consumidores, y un certificado de `CU2` que capture el punto como constante independiente del conductor sigue certificando solo su configuración capturada |
 | exportaciones (DXF, LaTeX) | el punto | declaran el grado donde el formato lo permite y nunca afirman exactitud que no tenga |
@@ -206,11 +229,16 @@ Consecuencias:
 2. **Cambios aditivos** (vía certificada, H02): las raíces antes rechazadas reciben tokens nuevos.
    No cambia ningún token existente.
 3. **Cambios restrictivos identificados** (regla de conflicto, §3.3): un token guardado de una
-   solución contradicha deja de resolverse, y su punto derivado queda indefinido con una causa
-   tipada (`CONTRADICTED_BY_CERTIFIED_EVIDENCE`). Son la raíz de la costura de `e_1·c_1` en el
-   modelo del autor (H-CU3-2), las raíces espurias de H-CU3-1, las tangencias en extremos
-   clasificadas como transversales y los duplicados de H-CU3-4. `AGENTS.md` §11.6 exige una
-   decisión de compatibilidad, una nota de migración y evidencia de regresión (D-CU3-7):
+   solución contradicha por un certificado de conteo deja de resolverse, y su punto derivado
+   queda indefinido con una causa tipada (`CONTRADICTED_BY_CERTIFIED_EVIDENCE`). Son:
+   - las soluciones retiradas por `N = 0`;
+   - los duplicados fusionados de H-CU3-4 que no conservan la identidad;
+   - con M3 disponible, la raíz de la costura de `e_1·c_1` del modelo (H-CU3-2), las raíces
+     espurias del modelo cerca de un contacto estructural (H-CU3-1) y las tangencias en extremos
+     clasificadas como transversales.
+
+   Sin M3, estos últimos conservan su estado de G8B-R1. `AGENTS.md` §11.6 exige una decisión de
+   compatibilidad, una nota de migración y evidencia de regresión (D-CU3-7):
    - **(a)**, recomendada: la regla se aplica a todos los documentos, con un diagnóstico que
      explica la contradicción y ofrece la forma estructural de la Etapa A
      (`Intersect(e_1, c_1, J)`);

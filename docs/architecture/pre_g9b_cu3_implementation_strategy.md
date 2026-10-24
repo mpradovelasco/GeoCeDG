@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Estrategia candidata (entregables 7 y 8 de la instrucción de preparación). **No autoriza ninguna implementación**: la siguiente autorización es la aprobación del diseño y, en su caso, de la implementación, sobre una base exacta |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisada por la revisión científica focal de 2026-10-24; `selfApproved=false` |
+| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisada por la revisión científica focal y por la comprobación final de coherencia (2026-10-24); `selfApproved=false` |
 | Normas candidatas | [propuesta normativa](pre_g9b_cu3_normative_proposal.md); [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Validación | [matriz](../validation/pre_g9b_cu3_validation_matrix.md) |
 | Decisiones | [hoja de decisiones](../validation/pre_g9b_cu3_author_decision_sheet.md), con la recomendación consolidada (§7) |
@@ -19,8 +19,8 @@ que una puerta falle.
 |---|---|---|
 | I-1 | envolventes de `h`, `h′` y `h″` (composición de la envolvente de segundo orden de clase v3 con los adaptadores de recta, segmento, rayo y circunferencia); punto crítico certificado | `CU3-A` |
 | I-2 | grados de evidencia; vía certificada aditiva (H02); regla de conflicto; emisión de los diagnósticos de rechazo; política de consumo; política versionada nueva, con el texto de los adaptadores intacto | `CU3-A` |
-| I-3 | taxonomía de contacto (clases 1 a 5) y orden de contacto (con el pliegue) en el resultado rico, **sin** materialización sin conductor | `CU3-A` |
-| I-4 | evaluación exacta M3 en la configuración conjunta `Σ_B`: frontera de captura, reconstrucción exacta de `D*` con la selección heredada, decisión exacta, presupuesto | `CU3-A` (tras la puerta G-M3) |
+| I-3 | taxonomía de contacto (clases 1 a 5), orden de contacto (con el pliegue) y certificados de conteo de la regla de conflicto en el resultado rico, **sin** materialización sin conductor. Incluye la clase 2 como evidencia de clasificación cuando M3 está disponible, porque los contactos estructurales del modelo solo se corrigen con `N = 1` doble (Etapa B §9.3) | `CU3-A` |
+| I-4 | evaluación exacta M3 en la configuración de decisión `Σ_L⁺`, que contiene la configuración autoritativa: `Σ_L` sin cambios, más `D`, `r` y sus ancestros con las reglas de una sola semántica; reconstrucción exacta de `D*` con la selección heredada; decisión exacta, con chorros de primer orden; presupuesto; `Σ_B` solo como diagnóstico opcional | `CU3-A` (tras la puerta G-M3) |
 | I-5 | `Point(L, D)` e `Intersect(L, r, D)`: los cuatro hechos, la tabla de procedencia, la correspondencia exacta y encerrada, el fallo cerrado y los diagnósticos | `CU3-A` |
 | I-6 | los ejes como referencias reservadas en el registro de identidad y en el adaptador de recta | `CU3-A` |
 | I-7 | materialización **sin conductor** de las clases 1 y 2 (pliegue certificado de `CU2` en `t₀ ∈ {0, π}` más M3), germen tangente, ciclo de vida y parejas de preimágenes en los pliegues | `CU3-B` |
@@ -46,9 +46,10 @@ Fuera de los dos incrementos, diferibles según el plan §6 o futuros:
 ```text
 T0   normas aprobadas incorporadas (A3.0–A3.5), ADR 0039 aceptado, política versionada
 T1   pruebas de caracterización y pins nuevos (filas «falla en la base»); inventario de pruebas
-T2   PUERTA G-M3 (temprana y bloqueante): prototipo de M3 en Σ_B sobre los cinco contactos y los
-     controles; banco GC3-1; correspondencia con el algoritmo vivo ── si falla: PARADA y
-     alternativas R-1 a R-3 al autor (nunca un residuo tolerado)
+T2   PUERTA G-M3 (temprana y bloqueante): prototipo de M3 en Σ_L⁺ sobre los cinco contactos, los
+     controles y el caso adversario V-CFG-1 (demostrado solo en Σ_B); hipótesis aritméticas del
+     análisis §5.8; banco GC3-1; correspondencia con el algoritmo vivo ── si falla: PARADA y
+     alternativas R-1 a R-3 y C3 al autor (nunca un residuo tolerado ni una demostración en Σ_B)
 T3   I-1 envolventes ──► T4 I-2 grados, vía certificada y regla de conflicto ──► T5 I-3 taxonomía
 T6   I-4 M3 de producto (tras G-M3) ──► T7 I-5 Etapa A
 T8   I-6 ejes
@@ -90,9 +91,9 @@ pendiente sin rebajar ninguna evidencia.
 ## 3. Superficies afectadas
 
 - **Núcleo compartido** (`org.geocedg.common.kernel.locus.intersection`, `…locus.exact` y
-  `…kernel.algos`): las piezas nuevas, incluida una captura conjunta de la frontera para M3. Esa
-  captura reutiliza las definiciones de operaciones de la clase v3 y sus accesores de selección,
-  pero no su frontera por corte.
+  `…kernel.algos`): las piezas nuevas, incluida la construcción de `Σ_L⁺` para M3. Reutiliza sin
+  cambios el programa capturado de clase v3 de `L`, sus operaciones y sus accesores de selección,
+  y lo amplía con `D`, `r` y sus ancestros según las reglas de la Etapa A §6.2.
 - **Superficies existentes que se tocan:**
   - `LocusIntersectionPolicy2D`;
   - las capacidades adaptativa y polinómica (grados, disparador y regla de conflicto);
@@ -134,12 +135,13 @@ registro y las selecciones al inventario, como en `CU1` y `CU2`.
 
 | Riesgo | Efecto | Mitigación |
 |---|---|---|
-| frontera de captura de M3 | una relación que solo valga por cancelaciones entre valores trascendentes de la frontera se refuta en `Σ_B` | se registra como `INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`, nunca como inexistencia; V-M3-3 lo documenta; alternativas de la puerta |
+| redondeo de las constantes capturadas de `L` | una relación estructural que el redondeo de una constante de `Σ_L` rompe (por ejemplo, el coeficiente `z` redondeado de una paralela oblicua) se refuta en `Σ_L⁺`, aunque `Σ_B` la demuestre | se registra como `INCIDENCE_REFUTED_IN_CAPTURED_CONFIGURATION`, nunca como inexistencia; V-M3-3 lo documenta; alternativas de la puerta |
 | coste de M3 | la torre crece con la profundidad del subgrafo conjunto | presupuesto versionado, banco GC3-1 y `EXACT_EVALUATION_BUDGET_EXHAUSTED`; la clase 3 sigue visible |
 | correspondencia con el algoritmo vivo | una selección heredada definida por comparaciones binary64 cerca de un empate | encierros disjuntos de las ramas exactas o `SELECTION_NOT_RECONSTRUCTED` (V-M3-7) |
 | disparador de la regla de conflicto | una raíz contradicha fuera del disparador seguiría publicada | el disparador cubre los mecanismos de H-CU3-1 a H-CU3-4; la limitación se declara (matriz §5) |
 | documentos antiguos | los tokens de soluciones contradichas dejan de resolverse | D-CU3-7, nota de migración y V-COMPAT-2 |
-| configuraciones distintas (`Σ_L` y `Σ_B`) | evidencias de configuraciones diferentes | cada afirmación declara su configuración; `Intersect` exige ambas (Etapa A §3) |
+| configuraciones distintas (`Σ_L` y `Σ_B`) | una demostración en `Σ_B` no es una propiedad del punto autoritativo | las decisiones se toman en `Σ_L⁺`, que contiene `Σ_L`; `Σ_B` es diagnóstico y no se transfiere sin la condición de la Etapa A §6.6 (V-CFG-1) |
+| regla de conflicto demasiado amplia | retirar soluciones válidas por la mera existencia de un punto crítico | certificados de conteo con continuidad y localización (Etapa B §9.1); la clase 3 no contradice (V-CONF-4) |
 | pliegues sin simetría exacta | `F′ = 0` sin certificado de pliegue | orden no establecido (Etapa B §4.4) |
 | contactos de orden mayor que dos y cúspides | `h″` no certificado lejos del cero | clase 5 con su diagnóstico |
 | raíces cerca de la costura | lados del levantamiento periódico | reglas de §2.3 de la Etapa A; `L-CU2-CLOSED-PERIODIC-SEAM` se conserva |

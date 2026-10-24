@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Diseño candidato de la Etapa B de `CU3`. No es especificación normativa ni autoriza implementación |
-| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal de 2026-10-24; `selfApproved=false` |
-| Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §1–§3; instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación» (2026-10-24), puntos 1, 3, 4, 5 y 6 |
+| Estado | `CU3 PREPARATION CANDIDATE — PENDING AUTHOR REVIEW`, revisado por la revisión científica focal y por la comprobación final de coherencia (2026-10-24); `selfApproved=false` |
+| Encargo | Instrucción autoral «PRE-G9B-CU3 — Autorización de preparación arquitectónica, científica y normativa» (2026-10-24), §1–§3; instrucción «PRE-G9B-CU3 — Revisión científica focal del candidato de preparación», puntos 1, 3, 4, 5 y 6; instrucción «PRE-G9B-CU3 — Comprobación final de coherencia científica», puntos 1 y 2 (todas de 2026-10-24) |
 | Autoridad vigente | `locus-v2-intersections.md` v1.2 §5.1, §6.2, §6.3 y §8; `locus-v2-public-surface.md` §10; aclaración G8B-R1 (ADR 0008 e [informe G8B-R1](../validation/g8b_r1_locus_v2_intersection_point_admissibility_report.md)); `locus-v2-existence-components.md` v1.1 §15; `locus-v2-certified-construction-model.md` v1.2 §10; ADR 0009, 0017, 0027 y 0038; `AGENTS.md` §1.8, §11.4 y §11.5 |
 | Antecedentes | [propuesta F](pre_g9b_cu0_tangent_materialization_proposal.md) §5 (`TANGENT_CERTIFIED_ISOLATED`, **no aprobada** tal como está formulada); `OBS-CU0-CU3-TANGENT-EXISTENCE` ([cierre de `CU0`](../validation/pre_g9b_cu0_closeout_record.md)); [plan consolidado](pre_g9b_cu_corrective_usability_plan.md) §2.1 y §4 |
 | Evidencia | [análisis del estado inicial](pre_g9b_cu3_initial_state_and_capability_analysis.md); [caracterización](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-preparation-characterization.json) |
@@ -58,9 +58,10 @@ separado:
 
 - **estructural**: la procedencia de la construcción, la identidad de términos tras la sustitución
   del conductor, o una simetría exacta certificada;
-- **por aritmética exacta**: la evaluación exacta M3 decide el valor en la configuración
-  conjunta `Σ_B`, con su frontera declarada ([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md)
-  §6).
+- **por aritmética exacta**: la evaluación exacta M3 decide el valor en la configuración de
+  decisión `Σ_L⁺`, que contiene sin cambios la configuración capturada de `L` de `CU2`, de modo que
+  la igualdad es una propiedad del objeto autoritativo
+  ([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md) §2.3 y §6).
 
 Consecuencia directa: una raíz transversal se certifica con (a). La materialización de una
 tangencia o de un contacto en un pliegue como intersección exige (b), probado por (c). Los
@@ -114,9 +115,9 @@ estructura:
 
 ### 4.2 Clase 2: aritmética exacta (M3)
 
-**Con conductor (Etapa A).** M3 decide `h(D*) = 0` en la configuración conjunta `Σ_B`, sustituyendo
-el punto exacto `D*` reconstruido desde su procedencia y su selección heredada (Etapa A §6.2 y
-§6.3).
+**Con conductor (Etapa A).** M3 decide `h(D*) = 0` en `Σ_L⁺`, sustituyendo el punto exacto `D*`,
+reconstruido desde su procedencia y su selección heredada, para **el mismo punto** de `L` que
+materializa `Point(L, D)` (Etapa A §6.2 a §6.4).
 
 **Sin conductor (`Intersect(L, r)`).** Hace falta un punto exacto del conductor para el parámetro
 crítico. Hay dos vías:
@@ -124,7 +125,8 @@ crítico. Hay dos vías:
 1. **Parámetro fijo de una simetría exacta certificada.** Si el certificado de `CU2` prueba que `h`
    es par respecto de `t₀` (pliegue por simetría exacta, SM-C-6), entonces `h'(t₀) = 0`
    exactamente. Si el punto del soporte del conductor en `t₀` es exacto (en una circunferencia,
-   `t₀ ∈ {0, π}` da los puntos `c ± r·e₀`, racionales en `Σ_B`), M3 decide `h = 0` en ese punto.
+   `t₀ ∈ {0, π}` da los puntos `c ± r·e₀` de la semántica de conductor de `Σ_L`, racionales), M3
+   decide `h = 0` en ese punto, en `Σ_L⁺`.
    La envolvente de `h''(t₀)` que excluye el cero (condición abierta) da la multiplicidad exacta
    dos en el parámetro. Para los casos obligatorios, `t₀ = 0` y `t₀ = π` son los puntos `K*` y
    `J*`: es **la misma decisión** que la Etapa A.
@@ -133,17 +135,19 @@ crítico. Hay dos vías:
    en la configuración capturada. Su alcance es limitado: los residuos de los casos del autor no
    son de primer nivel.
 
-Una eliminación algebraica general (resultantes de `h` y `h'` sobre la torre de `Σ_B`) queda como
+Una eliminación algebraica general (resultantes de `h` y `h'` sobre la torre de `Σ_L⁺`) queda como
 alternativa R-2 de la puerta de M3, no como capacidad de `CU3`.
 
-**Alcance que se declara siempre.** El objeto de la prueba es una configuración exacta (`Σ_B` o
-la configuración capturada de `CU2`), no los valores escritos por el usuario (47° no es
-representable) ni el cálculo redondeado.
+**Alcance que se declara siempre.** La prueba se hace en la configuración de decisión `Σ_L⁺`, que
+contiene sin cambios la configuración autoritativa, la capturada de `CU2`. No es una recalculación profunda
+(`Σ_B`, que solo es diagnóstico), ni los valores escritos por el usuario (47° no es
+representable), ni el cálculo redondeado.
 
 **Igualdades accidentales.** Una tangencia que no es un teorema del modelo, sino la coincidencia
-de valores escritos, **se demuestra si y solo si es exacta en la configuración declarada**. Por
+de valores escritos, **se demuestra si y solo si es exacta en `Σ_L⁺`**. Por
 ejemplo, la circunferencia de radio 1,5 trazada y la recta `y = 1,5` son exactamente tangentes en
-`Σ_B`, porque los dos valores son representables: M3 lo demuestra (clase 2). Si la coincidencia
+`Σ_L⁺`, porque los dos valores son representables y el corte los usa exactamente: M3 lo demuestra
+(clase 2). Si la coincidencia
 solo vale con valores no representables, M3 decide exactamente la desigualdad, que da la clase 4
 con el signo exacto. Esto corrige la formulación anterior de esta preparación («una tangencia
 accidental en general no es exacta» y «no se certifica nunca»).
@@ -299,7 +303,8 @@ unilaterales dan el orden y el aislamiento. Si falta la prueba, la clase es 5.
 ## 8. Los tres casos obligatorios
 
 Los tres contactos se reducen a una identidad del modelo, `J_1(K) = M_1` (análisis §5.3): un
-teorema válido para cualquier valor de la frontera, que M3 debe decidir en `Σ_B`. El mismo teorema,
+teorema que solo necesita relaciones de incidencia, paralelismo y perpendicularidad que se cumplen
+exactamente en la configuración capturada (análisis §5.8), y que M3 debe decidir en `Σ_L⁺`. El mismo teorema,
 con el conductor en `J` y la generatriz `r`, hace del punto de la costura de `e_1·c_1` un contacto
 estructural (H-CU3-2; D-CU3-10).
 
@@ -310,7 +315,7 @@ Por su orden de contacto:
 - `o_1·h_2` es una tangencia regular.
 
 **Con conductor** (`Intersect(L, r, K)` y `Intersect(L, r, J)`), la Etapa A los materializa si M3
-supera su puerta temprana (Etapa A §6.5).
+supera su puerta temprana (Etapa A §6.7).
 
 **Sin conductor** (`Intersect(L, r)`):
 
@@ -332,36 +337,102 @@ especificación de intersecciones (análisis §4):
 - **H-CU3-4:** duplicados de una misma preimagen.
 
 Esos resultados son **admisibles o publicables bajo la verificación local de G8B-R1**: valores
-binary64, residuo normalizado y aislamiento local. La revisión focal pide no restringir esa
-capacidad aprobada sin identificar el cambio normativo y sus consecuencias. El diseño revisado no
-sustituye la aceptación de G8B-R1. Añade una **regla de conflicto**:
+binary64, residuo normalizado y aislamiento local. El diseño no sustituye esa aceptación aprobada.
+Añade una **regla de conflicto**, precisada por la comprobación final de coherencia: una solución
+verificada localmente solo se retira o se reclasifica cuando un certificado riguroso contradice
+**realmente** su existencia, su multiplicidad o su clasificación.
 
-> Cuando, en la misma revisión, una evidencia certificada (§2a o §4.3) contradice una
-> clasificación obtenida por verificación local, prevalece la evidencia certificada, y la
-> solución contradicha se retira o se reclasifica. Sin contradicción certificada, la admisibilidad
-> de G8B-R1 no cambia.
+### 9.1 Certificado de conteo
 
-Las contradicciones posibles son:
+Un certificado de conteo `C` sobre una caja `T = [a, b]` del parámetro exige tres cosas.
 
-- una clase 4 sin intersección en una caja que contiene una raíz verificada localmente;
-- un punto crítico certificado (`h''` de signo fijo y `h'` con un solo cambio de signo) en una caja
-  donde se publica una única raíz transversal, o más raíces de las que el certificado permite;
-- la unicidad certificada de dos candidatos que se solapan, que son la misma preimagen.
+**(C1) Continuidad.**
 
-El análisis certificado se dispara de forma determinista e independiente de la escala solo en
-los candidatos que el resolvedor ya marca como no transversales o como próximos entre sí, de modo
-que las raíces transversales genéricas no cambian. El mecanismo, la normativa (A3.1-R) y la
-compatibilidad están en la
-[normalización, admisibilidad y ejes](pre_g9b_cu3_residual_normalization_and_axes_design.md) §3 y
-§4, y la política de consumo, en su §4.
+- `T` está dentro de una sola componente continua certificada de `L`, y la evaluación por cajas de
+  la clase v3 es `VALID` en `T`, de modo que `F` y `h` son continuas en `T`.
+- Si `T` corta un extremo de componente, una costura que termina una componente, un extremo del
+  dominio, una transición certificada, una banda `UNRESOLVED`, un hueco o una componente puntual,
+  no hay certificado.
+- Excepción: un extremo **incluido** del dominio, con la decisión exacta del valor en el extremo
+  (§6.4) y signos unilaterales certificados.
 
-Qué está medido y qué es inferencia:
+**(C2) Conteo y localización.** `C` establece el número exacto `N` de raíces de `h` en `T`,
+contadas con su multiplicidad, y su localización. Solo valen estas formas:
 
-- **Medido en el sondeo.** La clase 3 de los contactos de H-CU3-2 (incompatible con una sola raíz
-  transversal) y la clase 4 sin intersección de H-CU3-3.
-- **Inferencia** de las anchuras de envolvente medidas: las raíces de H-CU3-1 caen dentro de la
-  banda de indecisión de un punto crítico certificado, y los duplicados de H-CU3-4 tendrían
-  corchetes que se solapan. La implementación debe confirmarlo (V-B-NOISE-1 y V-B-DUP-1).
+| Forma | Evidencia | Conclusión |
+|---|---|---|
+| `N = 0` | la envolvente de `h` en `T` excluye el cero; o `h''` de signo fijo en `T`, un punto crítico `t*` certificado y una envolvente de `h(t*)` que excluye el cero con el signo de `h''`, de modo que `h` tiene ese signo en todo `T`, extremos incluidos | ninguna raíz en `T` |
+| `N = 1` simple | la envolvente de `h'` en `T` excluye el cero, y `h(a)` y `h(b)` tienen signos opuestos certificados | exactamente una raíz simple, localizable en un subcorchete tan estrecho como se quiera por bisección certificada |
+| `N = 2` simples | `h''` de signo fijo en `T`; un punto crítico único `t* ∈ [t*_l, t*_u] ⊂ T` (cambio de signo certificado de `h'`); `h(t*)` que excluye el cero con el signo **contrario** al de `h''`; y `h(a)`, `h(b)` certificados con el signo de `h''` | exactamente dos raíces simples, una en `[a, t*_l]` y otra en `[t*_u, b]`, cada una única en su subcorchete por monotonía |
+| `N = 1` doble en un punto exacto | `h(t₀) = 0` establecido por estructura o por aritmética exacta (clases 1 o 2); `h'(t₀) = 0` por estructura, por simetría exacta o por aritmética exacta; y `h''` de signo fijo en `T` | exactamente una raíz en `T`, doble, en `t₀`; `h` tiene el signo de `h''` en el resto de `T` |
+
+**(C3) Configuración.** `C` se calcula en la misma configuración de decisión que M3, `Σ_L⁺`
+([Etapa A](pre_g9b_cu3_stage_a_structural_points_design.md) §2.3 y §6.2), que contiene sin
+cambios la configuración autoritativa `Σ_L`: el objeto `L` de `CU2` y el objetivo con su semántica
+exacta en `Σ_L⁺`.
+
+### 9.2 Qué es una contradicción
+
+Una solución `σ` verificada localmente, con su intervalo aislante `I_σ ⊂ T`, está contradicha por
+`C` en estos casos, y solo en ellos:
+
+| Contradicción | Condición | Efecto |
+|---|---|---|
+| de **existencia** | `N = 0`; o `I_σ` es disjunto de todos los subcorchetes y puntos que `C` localiza | `σ` se retira del conjunto finito (`CONTRADICTED_BY_CERTIFIED_EVIDENCE`) |
+| de **conteo** | se publican en un subcorchete más soluciones de las que `C` certifica en él | son la misma preimagen y se fusionan en una; si exactamente una tenía una identidad establecida, la solución fusionada la conserva, porque es la misma preimagen certificada y no hay reasignación; si no, recibe una identidad nueva |
+| de **multiplicidad** | `σ` se publica como simple o transversal y `C` certifica en `T` una raíz doble en un `t₀ ∈ I_σ` (`N = 1` doble) | `σ` se reclasifica según la taxonomía (clase 1 o 2, orden dos o `FOLD_CONTACT`), y su token transversal deja de ser admisible |
+| de **clasificación** al alza | `σ` se publica como tangente o indeterminada y `C` certifica en `T` una sola raíz simple, o dos con `σ` en el subcorchete de una | `σ` se reclasifica como transversal con grado `EXISTENCE_CERTIFIED`: es nueva evidencia de la revisión, no una promoción silenciosa |
+
+**No son contradicciones:**
+
+- **Un punto crítico aislado certificado por sí solo**, o una clase 3 (envolvente de `h(t*)` que
+  contiene el cero): admiten ninguna raíz, una doble o dos simples, y nada de eso refuta una
+  solución verificada localmente. `σ` conserva su estado de G8B-R1, y el resultado rico muestra
+  la evidencia de clase 3 junto a ella.
+- **Un certificado que no cumple (C1), (C2) o (C3).**
+- **Una contradicción solo del conjunto**, por ejemplo un resultado declarado completo que publica
+  una sola raíz simple donde `C` deja `N ∈ {0, 1 doble, 2}`. Rebaja la completitud a
+  `NOT_ESTABLISHED` y **no** retira la solución, conforme a la ortogonalidad de G8B-R1 entre
+  completitud y admisibilidad.
+
+### 9.3 Disparador, alcance y consecuencias
+
+**Disparador.** El análisis certificado se dispara de forma determinista e independiente de la
+escala solo en los candidatos que el resolvedor ya marca como no transversales, en los mínimos
+locales de su búsqueda ternaria y en las parejas de candidatos más próximas que su propia anchura
+de corchete. Las raíces transversales genéricas no cambian.
+
+**Alcance.** Objetivos de un parámetro y fuentes con envolventes. Las normas (A3.1-R), la
+compatibilidad y la política de consumo están en la
+[normalización, admisibilidad y ejes](pre_g9b_cu3_residual_normalization_and_axes_design.md) §3 a
+§5.
+
+**Qué corrige cada hallazgo, y con qué evidencia:**
+
+| Hallazgo | Evidencia necesaria | Disponible |
+|---|---|---|
+| H-CU3-3 (δ = +10⁻¹³) | `N = 0` por intervalos | sí, medido en el sondeo (clase 4 sin intersección) |
+| H-CU3-4 (duplicados) | `N = 1` o `N = 2` con su localización, por intervalos | por inferencia de las anchuras medidas; prueba V-B-DUP-1 |
+| H-CU3-1 en las casi-tangencias sintéticas (δ = −10⁻¹³) | `N = 2` localizado | sí, medido (clase 4 con dos raíces) |
+| H-CU3-1 en el modelo (contacto estructural en `t = 0`) | `N = 1` doble: pliegue certificado de `CU2` (`h'(0) = 0`), M3 en `Σ_L⁺` (`h(K*) = 0`) y `h''` de signo fijo | **solo con M3** (puerta G-M3); los intervalos dan la clase 3, que no es una contradicción |
+| H-CU3-2 en la costura | `N = 1` doble en `π`: pliegue de `CU2` y M3 en `J*` | **solo con M3** |
+| H-CU3-2 en el extremo del cuarto de arco | `h(0) = 0` y `h'(0) = 0` exactos (M3 con chorros exactos) y `h''` de signo fijo unilateral | **solo con M3** |
+
+Si M3 no está disponible (la puerta falla o el caso sale de la clase), los resultados de las tres
+últimas filas conservan su estado de G8B-R1, con la evidencia de clase 3 visible. No se retiran.
+Esto corrige la afirmación anterior de esta preparación, según la cual la clase 3 de la costura
+bastaba para contradecir una raíz transversal.
+
+**Pruebas adversarias** (matriz, V-CONF-1 a V-CONF-8):
+
+- ausencia;
+- una raíz transversal que se conserva junto a un punto crítico aislado;
+- dos raíces localizadas alrededor de un punto crítico;
+- clase 3 sola, sin ningún cambio;
+- raíz doble exacta;
+- certificado que corta un borde (sin certificado);
+- reclasificación al alza;
+- contradicción solo del conjunto.
 
 ## 10. Fuera de alcance
 
