@@ -105,8 +105,10 @@ final class RelationIntegrityTest {
 
 		assertNull(relaxed.unmetRequirementCause(RelationIntegrity.RELAXED));
 		String cause = relaxed.unmetRequirementCause(RelationIntegrity.STRICT);
-		assertNotNull(cause);
+		assertNotNull(cause, "V-AUT-INT-2: a strict consumer fails explicitly");
 		assertTrue(cause.startsWith("INTEGRITY_REQUIREMENT_NOT_MET"), cause);
+		assertEquals(Arrays.asList("H"), relaxed.getUnestablishedPremises(),
+				"the query of integrity lists the premises that are not established");
 		RelationIntegrityRecord contradicted = RelationIntegrityRecord.derive("Q on n",
 				RelationIntegrity.CONTRADICTED, Evidence.EXACT_EVALUATION, NONE, ESTABLISHED,
 				"INCIDENCE_REFUTED");

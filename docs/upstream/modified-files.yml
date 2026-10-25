@@ -2700,19 +2700,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: labels of the intersection diagnostics CERTIFIED_EXISTENCE_ESTABLISHED, CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED and CONTRADICTED_BY_CERTIFIED_EVIDENCE.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: English labels of the four new intersection diagnostics.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the Spanish Marco ISO A tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the Spanish Marco ISO A tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: Spanish labels of the four new intersection diagnostics.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -7038,7 +7038,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/RelationIntegrityTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: matrix rows V-AUT-INT-1 to V-AUT-INT-3, propagation of integrity by premises on a synthetic graph, rigorous refutations, unestablished premises and consumer requirements.",
+      "purpose": "PRE-G9B-CU3 increment E1: matrix rows V-AUT-INT-1 to V-AUT-INT-3, propagation of integrity by premises on a synthetic graph, rigorous refutations, unestablished premises and consumer requirements. Row V-AUT-INT-2: a strict consumer fails explicitly and the query lists the premises that are not established.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7074,7 +7074,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/AuthorityPolicyPersistenceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: persistence, reopening, Undo and Redo, atomicity, macro and clipboard exclusion and fail-closed reading of the document authority policy (shared-kernel part of V-AUT-ADOPT-1 to V-AUT-ADOPT-7).",
+      "purpose": "PRE-G9B-CU3 increment E1: persistence, reopening, Undo and Redo, atomicity, macro and clipboard exclusion and fail-closed reading of the document authority policy (shared-kernel part of V-AUT-ADOPT-1 to V-AUT-ADOPT-7). Row V-AUT-ADOPT-5: a merge never brings a second authority; merged objects without identities come under the policy of the destination.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7182,7 +7182,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericEvidenceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of SUBSTITUTE_GENERIC (V-AUT-RLX-1 to V-AUT-RLX-6): the five mandatory contacts RELAXED, accidental equalities of degree one and two, a product of substitutes, a nonzero cubic on the nine points (a finite agreement is never an identity), a perturbation that leaves the cell, determinism and the rigorous case without substitutes.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of SUBSTITUTE_GENERIC (V-AUT-RLX-1 to V-AUT-RLX-6): the five mandatory contacts RELAXED, accidental equalities of degree one and two, a product of substitutes, a nonzero cubic on the nine points (a finite agreement is never an identity), a perturbation that leaves the cell, determinism and the rigorous case without substitutes. Rows V-AUT-RLX-5 and V-AUT-RLX-6: a base branch that is not the live output, an injected budget and an object outside the class decide nothing.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {

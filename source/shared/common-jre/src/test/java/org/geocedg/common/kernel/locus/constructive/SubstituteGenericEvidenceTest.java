@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.locus.constructive.SubstituteGenericEvidence.Ca
 import org.geocedg.common.kernel.locus.constructive.SubstituteGenericEvidence.Result;
 import org.geocedg.common.kernel.locus.exact.ExactRational2D;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -125,7 +126,60 @@ final class SubstituteGenericEvidenceTest extends ConstructiveModelReplicaTest {
 		assertEquals(RelationIntegrity.RELAXED, holds.getRecord().getIntegrity(),
 				"a relation by provenance holds at every perturbation: " + holds);
 		assertEquals(Cause.PERTURBATION_LEFT_CELL, left.getCause(),
-				"V-AUT-RLX-3: the membership of the ray changes sign: " + left);
+				"V-AUT-RLX-5: the membership of the ray changes sign: " + left);
+	}
+
+	@Test
+	void aBaseBranchThatIsNotTheLiveOutputIsNeverAdmitted() {
+		add("A=(0,0)");
+		add("c=Circle(A,(3,0))");
+		add("f=Line((-5,1),(5,1))");
+		GeoElementND[] outputs = getElements("Intersect(c,f)");
+		getKernel().updateConstruction(false);
+		GeoPoint first = (GeoPoint) outputs[0].toGeoElement();
+		GeoPoint second = (GeoPoint) outputs[1].toGeoElement();
+		first.setCoords(second.getInhomX(), second.getInhomY(), 1);
+		add("w=0.3");
+		GeoPoint rotated = add("S=Rotate((1,0),w,A)");
+		add("g=Line(" + first.getLabelSimple() + ",S)");
+		ConstructiveCone.Builder builder = ConstructiveCone.builder(getConstruction());
+		int point = builder.add(first);
+		int target = builder.add(lookup("g"));
+		ConstructiveCone cone = builder.build();
+
+		Result result = SubstituteGenericEvidence.incidence("first on g", cone, point, target,
+				ExactEvaluationBudget.V1);
+
+		assertTrue(cone.getNode(cone.nodeOf(rotated)).getOperation()
+				== ConstructiveOperation.ROTATE_POINT, "the target reads a substitute");
+		assertEquals(RelationIntegrity.NOT_ESTABLISHED, result.getRecord().getIntegrity(),
+				"V-AUT-RLX-5: the base branch is not the live output: " + result);
+		assertEquals(Cause.BASE_NOT_DECIDED, result.getCause(), String.valueOf(result));
+	}
+
+	@Test
+	void anExhaustedBudgetOrAnObjectOutsideTheClassDecideNothing() {
+		buildAuthorReplica();
+		ConstructiveCone.Builder builder = ConstructiveCone.builder(getConstruction());
+		int target = builder.add(geo("n"));
+		int point = builder.addWithDriverSubstitution(geo("J_1"), geo("E_1"), geo("K"));
+		ConstructiveCone cone = builder.build();
+		add("e=Ellipse((0,0),(4,0),5)");
+		ConstructiveCone.Builder outside = ConstructiveCone.builder(getConstruction());
+		int conic = outside.add(lookup("e"));
+		int traced = outside.addWithDriverSubstitution(geo("J_1"), geo("E_1"), geo("K"));
+
+		Result exhausted = SubstituteGenericEvidence.incidence("P on n", cone, point, target,
+				ExactEvaluationBudget.restrictedTo(50, 8, 4096));
+		Result unclassified = SubstituteGenericEvidence.incidence("P on e", outside.build(),
+				traced, conic, ExactEvaluationBudget.V1);
+
+		assertEquals(Cause.BUDGET_EXHAUSTED, exhausted.getCause(), "V-AUT-RLX-6: " + exhausted);
+		assertEquals(RelationIntegrity.NOT_ESTABLISHED, exhausted.getRecord().getIntegrity());
+		assertEquals(RelationIntegrity.NOT_ESTABLISHED, unclassified.getRecord().getIntegrity(),
+				"V-AUT-RLX-6: an object outside the class is not a declared boundary: "
+						+ unclassified);
+		assertTrue(unclassified.getCause() != null, String.valueOf(unclassified));
 	}
 
 	@Test
@@ -201,7 +255,7 @@ final class SubstituteGenericEvidenceTest extends ConstructiveModelReplicaTest {
 		Result second = SubstituteGenericEvidence.incidence("P on h_2", cone, point, target,
 				ExactEvaluationBudget.V1);
 
-		assertEquals(first.toString(), second.toString());
+		assertEquals(first.toString(), second.toString(), "V-AUT-RLX-6: determinism");
 		assertEquals(first.getCell(), second.getCell());
 		assertEquals(first.getCounters().toString(), second.getCounters().toString());
 	}

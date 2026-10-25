@@ -208,6 +208,43 @@ final class AuthorityPolicyPersistenceTest extends BaseUnitTest {
 	}
 
 	@Test
+	void noOperationLeavesTwoAuthoritiesInOneDocument() throws Exception {
+		// Labels distinct from those of the fixture: a shared label would be a redefinition.
+		add("Zc=(1,2)");
+		AuthorityPolicyAdoption.adopt(cons());
+		String constructive = getApp().getXML();
+		load(fixture("complete-forward-closure.xml"));
+		String legacy = getApp().getXML();
+		assertFalse(AuthorityPolicyAdoption.isConstructive(cons()),
+				"a whole-document load takes the policy of the document read");
+
+		SpatialIdentityException merge = assertThrows(SpatialIdentityException.class,
+				() -> getApp().getXMLio().processXMLString(constructive, false, false, false));
+
+		assertEquals(SpatialIdentityDiagnostic.Code.GENERIC_MERGE_FORBIDDEN,
+				merge.getDiagnostic().getCode(), "V-AUT-ADOPT-5: no merge of another authority");
+		assertFalse(AuthorityPolicyAdoption.isConstructive(cons()));
+		assertEquals(legacy, getApp().getXML(), "the destination is unchanged");
+		getKernel().clearConstruction(true);
+		add("Zl=(3,4)");
+		String plainLegacy = getApp().getXML();
+		load(constructive);
+		assertTrue(AuthorityPolicyAdoption.isConstructive(cons()));
+		String adopted = getApp().getXML();
+		assertThrows(SpatialIdentityException.class,
+				() -> getApp().getXMLio().processXMLString(legacy, false, false, false),
+				"nor the other way round");
+		assertEquals(adopted, getApp().getXML());
+
+		getApp().getXMLio().processXMLString(plainLegacy, false, false, false);
+
+		assertTrue(AuthorityPolicyAdoption.isConstructive(cons()),
+				"merged objects without identities come under the policy of the destination");
+		String merged = getApp().getXML();
+		assertEquals(merged.indexOf(RECORD), merged.lastIndexOf(RECORD), "one authority");
+	}
+
+	@Test
 	void onlyTheRecordOfThisBuildIsAdoptedByADocumentConstruction() {
 		assertThrows(IllegalArgumentException.class,
 				() -> registry().adoptDocumentAuthority(null));
