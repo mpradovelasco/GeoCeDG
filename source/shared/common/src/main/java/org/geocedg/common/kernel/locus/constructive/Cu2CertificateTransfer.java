@@ -416,8 +416,8 @@ public final class Cu2CertificateTransfer {
 	/**
 	 * Route structure for a fold of {@code fold-symmetry/v1}: the certificate records a fold at
 	 * the parameter, the parameter is exactly a fixed point of its reflection, every premise of
-	 * the symmetry holds exactly for the constructive objects without a boundary substitute, and
-	 * the isolation band keeps its sign by margin.
+	 * the symmetry holds for the constructive objects, exactly or by a constructive identity
+	 * certificate for every value of a cut, and the isolation band keeps its sign by margin.
 	 */
 	private static Record fold(Prepared prepared, ConstructiveCone cone, int traced, int support,
 			ConstructiveConeEvaluator<Element> exact, Builder record) {
@@ -461,7 +461,8 @@ public final class Cu2CertificateTransfer {
 	 * The premises of {@code fold-symmetry/v1} for the constructive objects: the driver is a
 	 * circle of {@code constructive-class/v1} read in the frame of the axes, and every step that
 	 * reads the driver point does so through a magnitude that the reflection keeps, decided
-	 * exactly on constructive values without a boundary substitute.
+	 * exactly on constructive values without a boundary substitute or, when a constant reads
+	 * one, by a constructive identity certificate for every value of the cut.
 	 *
 	 * @return {@code null} when every premise is {@code STRICT}, otherwise the first that is not
 	 */
@@ -492,13 +493,14 @@ public final class Cu2CertificateTransfer {
 			String failure;
 			switch (step.getOperation()) {
 			case PARALLEL:
-				failure = linePremise(prepared, exact, programNode, !horizontal);
+				failure = linePremise(prepared, cone, exact, programNode, !horizontal, record);
 				break;
 			case PERPENDICULAR:
-				failure = linePremise(prepared, exact, programNode, horizontal);
+				failure = linePremise(prepared, cone, exact, programNode, horizontal, record);
 				break;
 			case CIRCLE_THROUGH:
-				failure = centrePremise(prepared, exact, programNode, driverCircle, horizontal);
+				failure = centrePremise(prepared, cone, support, exact, programNode, driverCircle,
+						horizontal, record);
 				break;
 			default:
 				failure = "step " + programNode + " reads the driver outside " + SYMMETRY;
@@ -514,43 +516,76 @@ public final class Cu2CertificateTransfer {
 
 	/**
 	 * The constant line of a parallel or perpendicular to the driver is exactly horizontal or
-	 * vertical for the constructive objects.
+	 * vertical for the constructive objects: decided exactly when it reads no boundary
+	 * substitute, otherwise by a constructive identity certificate for every value of the cut
+	 * (increment E2).
 	 */
-	private static String linePremise(Prepared prepared, ConstructiveConeEvaluator<Element> exact,
-			int programNode, boolean horizontalLine) {
+	private static String linePremise(Prepared prepared, ConstructiveCone cone,
+			ConstructiveConeEvaluator<Element> exact, int programNode, boolean horizontalLine,
+			Builder record) {
 		ConstantBinding binding = binding(prepared, programNode, 1);
-		Object value = binding == null ? null : exactValue(exact, binding.getConeNode());
-		if (!(value instanceof Line)) {
-			return "the constant line of step " + programNode
-					+ " has no exact value without a boundary substitute";
+		if (binding == null) {
+			return "the constant line of step " + programNode + " has no cone node";
 		}
-		@SuppressWarnings("unchecked")
-		Line<Element> line = (Line<Element>) value;
-		Element zero = horizontalLine ? line.getA() : line.getB();
-		Element other = horizontalLine ? line.getB() : line.getA();
-		if (zero.signum() != 0 || other.signum() == 0) {
-			return "the constant line of step " + programNode + " is not exactly "
-					+ (horizontalLine ? "horizontal" : "vertical");
+		String direction = horizontalLine ? "horizontal" : "vertical";
+		Object value = exactValue(exact, binding.getConeNode());
+		if (value instanceof Line) {
+			@SuppressWarnings("unchecked")
+			Line<Element> line = (Line<Element>) value;
+			Element zero = horizontalLine ? line.getA() : line.getB();
+			Element other = horizontalLine ? line.getB() : line.getA();
+			if (zero.signum() != 0 || other.signum() == 0) {
+				return "the constant line of step " + programNode + " is not exactly "
+						+ direction;
+			}
+			return null;
 		}
+		ConstructiveIdentityCertificate certificate = ConstructiveIdentityCertifier.axisParallel(
+				"the constant line of step " + programNode + " is " + direction, cone,
+				binding.getConeNode(), horizontalLine, ConstructiveIdentityBudget.V1);
+		if (!certificate.isIdentityCertified()) {
+			return "the constant line of step " + programNode + " is not certified " + direction
+					+ " for every value of the cut: " + certificate;
+		}
+		record.premise("structure: the constant line of step " + programNode + " is "
+				+ direction + " by " + ConstructiveIdentityCertificate.VERSION + " "
+				+ certificate.getKey());
 		return null;
 	}
 
-	/** The constant centre of a circle through the driver lies exactly on the mirror. */
-	private static String centrePremise(Prepared prepared,
+	/**
+	 * The constant centre of a circle through the driver lies exactly on the mirror: decided
+	 * exactly when it reads no boundary substitute, otherwise by a constructive identity
+	 * certificate for every value of the cut (increment E2).
+	 */
+	private static String centrePremise(Prepared prepared, ConstructiveCone cone, int support,
 			ConstructiveConeEvaluator<Element> exact, int programNode, Circle<Element> driver,
-			boolean horizontal) {
+			boolean horizontal, Builder record) {
 		ConstantBinding binding = binding(prepared, programNode, 0);
-		Object value = binding == null ? null : exactValue(exact, binding.getConeNode());
-		if (!(value instanceof Point)) {
-			return "the constant centre of step " + programNode
-					+ " has no exact value without a boundary substitute";
+		if (binding == null) {
+			return "the constant centre of step " + programNode + " has no cone node";
 		}
-		@SuppressWarnings("unchecked")
-		Point<Element> centre = (Point<Element>) value;
-		Element offset = horizontal ? centre.getY().subtract(driver.getCenterY())
-				: centre.getX().subtract(driver.getCenterX());
-		return offset.signum() == 0 ? null : "the constant centre of step " + programNode
-				+ " is not exactly on the mirror";
+		Object value = exactValue(exact, binding.getConeNode());
+		if (value instanceof Point) {
+			@SuppressWarnings("unchecked")
+			Point<Element> centre = (Point<Element>) value;
+			Element offset = horizontal ? centre.getY().subtract(driver.getCenterY())
+					: centre.getX().subtract(driver.getCenterX());
+			return offset.signum() == 0 ? null : "the constant centre of step " + programNode
+					+ " is not exactly on the mirror";
+		}
+		ConstructiveIdentityCertificate certificate = ConstructiveIdentityCertifier
+				.sameCoordinate("the constant centre of step " + programNode + " is on the mirror",
+						cone, binding.getConeNode(), support, horizontal,
+						ConstructiveIdentityBudget.V1);
+		if (!certificate.isIdentityCertified()) {
+			return "the constant centre of step " + programNode + " is not certified on the"
+					+ " mirror for every value of the cut: " + certificate;
+		}
+		record.premise("structure: the constant centre of step " + programNode
+				+ " is on the mirror by " + ConstructiveIdentityCertificate.VERSION + " "
+				+ certificate.getKey());
+		return null;
 	}
 
 	/**

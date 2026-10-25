@@ -42,8 +42,9 @@ import org.junit.jupiter.api.Test;
  * or the evidence that defines it; the five mandatory contacts are in {@code StructuralPointTest}.
  * A refutation whose premises contain a boundary substitute is not rigorous for the ideal
  * objects and leaves the relation {@code NOT_ESTABLISHED} ({@code
- * locus-v2-constructive-authority.md} section 7 (b)); the rows that the preparation decided
- * against binary64 targets are decided here against constructive ones.
+ * locus-v2-constructive-authority.md} section 7 (b)); since increment E2 a constructive identity
+ * certificate decides it for every value of the cut when it can (section 8). The rows that the
+ * preparation decided against binary64 targets are decided here against constructive ones.
  */
 final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 
@@ -381,9 +382,10 @@ final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 		place("D_1", h.getInhomX() + 3 * (x - h.getInhomX()), h.getInhomY() + 3 * (y
 				- h.getInhomY()));
 		StructuralPointResolution outside = resolution(output);
-		assertEquals(Cause.INCIDENCE_NOT_ESTABLISHED, outside.getCause(), "V-A-19 and V-DYN-2:"
-				+ " with D_1 times 3 the exact exit from n uses the substitute of Cr, which is not"
-				+ " rigorous for the ideal objects; the certified exit is V-AUT-DYN-1 of E2");
+		assertEquals(Cause.NOT_ON_LIMITED_TARGET, outside.getCause(), "V-A-19, V-DYN-2 and"
+				+ " V-AUT-DYN-1: with D_1 times 3 the constructive identity certificate decides the"
+				+ " exit from n for every value of the cut H: " + outside);
+		assertEquals(RelationIntegrity.CONTRADICTED, outside.getIncidence().getIntegrity());
 		assertTrue(resolution(add("P=Point(e_1,K)")).isDefined(), "Point(L, D) stays defined");
 		place("D_1", x, y);
 
@@ -412,7 +414,9 @@ final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 		StructuralPointResolution near = resolution(add("Q2=Intersect(e_1,w2,K)"));
 		assertFalse(near.isDefined(), "V-A-17: a target 1e-13 from M_1 is not accepted");
 		assertEquals(Cause.INCIDENCE_NOT_ESTABLISHED, near.getCause(),
-				"refuted only with the substitute Cr: not rigorous for the ideal objects");
+				"refuted only with the substitute Cr, and no identity of the free inputs");
+		assertEquals(ConstructiveIdentityCertificate.Status.NOT_AN_IDENTITY,
+				near.getCertificate().getStatus(), "never a contradiction: " + near);
 		assertTrue(point.isDefined(), "Point(L, D) stays defined");
 	}
 
@@ -663,7 +667,8 @@ final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 			String row = "V-DYN-1, " + step + ", " + output.getLabelSimple() + ": " + resolved;
 			assertTrue(resolved.isDefined(), row);
 			assertEquals(RelationIntegrity.STRICT, resolved.getMembership().getIntegrity(), row);
-			assertEquals(RelationIntegrity.RELAXED, resolved.getIncidence().getIntegrity(), row);
+			assertEquals(RelationIntegrity.STRICT, resolved.getIncidence().getIntegrity(),
+					row + ", by the constructive identity certificate in its cell (E2)");
 			assertEquals(identities.get(index), identity(output), row);
 			if (index < 2) {
 				assertEquals(m1.getInhomX(), resolved.getX(), CLOSE, row);

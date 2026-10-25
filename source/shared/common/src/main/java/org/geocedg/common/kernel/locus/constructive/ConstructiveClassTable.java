@@ -44,6 +44,7 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoRay;
 import org.geogebra.common.kernel.geos.GeoSegment;
+import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.plugin.Operation;
 
 /**
@@ -295,9 +296,22 @@ public final class ConstructiveClassTable {
 			return boundary(geo, BoundaryCategory.CONDITIONED_SELECTION,
 					"continuous-mode intersection");
 		}
+		InheritedLineCircleSelection selection = InheritedLineCircleSelection.read(algorithm);
+		// The special case of a point already incident (D1): the point is a third input.
+		GeoPointND existing = algorithm.getSelectionExistingIntersection();
+		if (selection != null && selection.getExistingIntersectionOutput() >= 0) {
+			if (!(existing instanceof GeoPoint)) {
+				return new Classification(ConstructiveOperation.LINE_CIRCLE_OUTPUT,
+						List.of(algorithm.getLine(), algorithm.getConic()), output, null, false,
+						null, null);
+			}
+			return new Classification(ConstructiveOperation.LINE_CIRCLE_OUTPUT,
+					List.of(algorithm.getLine(), algorithm.getConic(), (GeoPoint) existing),
+					output, selection, false, null, null);
+		}
 		return new Classification(ConstructiveOperation.LINE_CIRCLE_OUTPUT,
-				List.of(algorithm.getLine(), algorithm.getConic()), output,
-				InheritedLineCircleSelection.read(algorithm), false, null, null);
+				List.of(algorithm.getLine(), algorithm.getConic()), output, selection, false,
+				null, null);
 	}
 
 	/** An indexed single intersection selects one output of its source intersection. */

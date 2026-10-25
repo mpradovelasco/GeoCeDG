@@ -44,6 +44,11 @@ import org.geocedg.common.kernel.locus.exact.ExactRational2D;
  * the sign vector, the operational cell of {@code SUBSTITUTE_GENERIC}. The checks against the
  * live algorithm are recorded apart. Nothing is persisted and the construction is never read.</p>
  *
+ * <p>A constructive identity certificate (section 8) is one more number system of this
+ * evaluator, so that it decides the same predicates: a rule gives a point on a line path its
+ * indeterminate, the slice may read the exact jet of the driver instead of its replacement, and
+ * the roots of every checked line-circle output are kept for a recheck.</p>
+ *
  * @param <T> the type of a real value of the number system
  */
 public final class ConstructiveConeEvaluator<T> {
@@ -336,11 +341,59 @@ public final class ConstructiveConeEvaluator<T> {
 		}
 	}
 
+	/**
+	 * How a number system evaluates a point on a line path: by default the inherited path map,
+	 * the orthogonal projection of its persisted coordinates; a constructive identity
+	 * certificate gives it one indeterminate instead ({@code locus-v2-constructive-authority.md}
+	 * section 8).
+	 *
+	 * @param <T> the type of a real value
+	 */
+	public interface PathPointRule<T> {
+		/**
+		 * @param node a point on a line path, outside the slice of a substituted driver
+		 * @param line the value of its line path
+		 * @return the point, or {@code null} for the inherited path map
+		 */
+		Point<T> pointOnLine(ConstructiveConeNode node, Line<T> line);
+	}
+
+	/** A line-circle output checked against the live algorithm, with both formal roots. */
+	public static final class LiveCorrespondence<T> {
+		private final int node;
+		private final Point<T> selected;
+		private final Point<T> other;
+
+		LiveCorrespondence(int node, Point<T> selected, Point<T> other) {
+			this.node = node;
+			this.selected = selected;
+			this.other = other;
+		}
+
+		/** @return the node of the output */
+		public int getNode() {
+			return node;
+		}
+
+		/** @return the root that the inherited selection gives */
+		public Point<T> getSelected() {
+			return selected;
+		}
+
+		/** @return the other root */
+		public Point<T> getOther() {
+			return other;
+		}
+	}
+
 	private final ConstructiveCone cone;
 	private final ConstructiveArithmetic<T> arithmetic;
 	private final boolean checkLive;
 	private final Map<Integer, ExactRational2D[]> overrides;
 	private final Map<Integer, Object> fixed;
+	private final PathPointRule<T> pathPointRule;
+	private final List<LiveCorrespondence<T>> correspondences = new ArrayList<>();
+	private Object sliceDriver;
 	private final Object[] values;
 	private final Result[] failures;
 	private final boolean[] done;
@@ -375,11 +428,30 @@ public final class ConstructiveConeEvaluator<T> {
 	public ConstructiveConeEvaluator(ConstructiveCone cone, ConstructiveArithmetic<T> arithmetic,
 			boolean checkLive, Map<Integer, ExactRational2D[]> substitutes,
 			Map<Integer, Object> values) {
+		this(cone, arithmetic, checkLive, substitutes, values, null);
+	}
+
+	/**
+	 * @param cone the cone
+	 * @param arithmetic the number system
+	 * @param checkLive whether the live algorithm is checked outside a substituted driver slice
+	 * @param substitutes exact values that replace the binary64 substitutes of some boundary
+	 *        nodes, by node index: two coordinates of a point or one number
+	 * @param values values of the number system that some nodes take instead of their own,
+	 *        by node index: a {@link Point}, {@link Line}, {@link Circle} or a real; the
+	 *        ancestors of such a node are not evaluated for it
+	 * @param pathPointRule the rule of the points on line paths, or {@code null} for the
+	 *        inherited path map
+	 */
+	public ConstructiveConeEvaluator(ConstructiveCone cone, ConstructiveArithmetic<T> arithmetic,
+			boolean checkLive, Map<Integer, ExactRational2D[]> substitutes,
+			Map<Integer, Object> values, PathPointRule<T> pathPointRule) {
 		this.cone = Objects.requireNonNull(cone);
 		this.arithmetic = Objects.requireNonNull(arithmetic);
 		this.checkLive = checkLive;
 		this.overrides = new HashMap<>(substitutes);
 		this.fixed = new HashMap<>(values);
+		this.pathPointRule = pathPointRule;
 		this.values = new Object[cone.size()];
 		failures = new Result[cone.size()];
 		done = new boolean[cone.size()];
@@ -410,6 +482,22 @@ public final class ConstructiveConeEvaluator<T> {
 	/** @return the number system */
 	public ConstructiveArithmetic<T> getArithmetic() {
 		return arithmetic;
+	}
+
+	/**
+	 * Sets the value that the nodes of the substituted slice read for the replacement of the
+	 * driver instead of its own: the exact jet of the driver on its path, for the order of
+	 * contact. It must be set before any node of the slice is evaluated.
+	 *
+	 * @param value a {@link Point} of the number system
+	 */
+	public void setSliceDriver(Object value) {
+		sliceDriver = Objects.requireNonNull(value);
+	}
+
+	/** @return the line-circle outputs checked against the live algorithm, in evaluation order */
+	public List<LiveCorrespondence<T>> getCorrespondences() {
+		return Collections.unmodifiableList(new ArrayList<>(correspondences));
 	}
 
 	/**
@@ -703,7 +791,7 @@ public final class ConstructiveConeEvaluator<T> {
 			requirePositive(index, "radius", squared);
 		} else if (radiusOperation.getShape() == ConstructiveOperation.Shape.NUMBER) {
 			@SuppressWarnings("unchecked")
-			T radius = (T) values[node.getInput(1)];
+			T radius = (T) input(node, 1);
 			requirePositive(index, "radius", radius);
 			squared = mul(radius, radius);
 		} else {
@@ -725,6 +813,9 @@ public final class ConstructiveConeEvaluator<T> {
 		RawRoots<T> roots = rawRoots(node, line, circle);
 		int output = node.getOutputIndex();
 		boolean limited = line.limited && !line.outlying;
+		if (selection.getExistingIntersectionOutput() >= 0) {
+			return existingIntersectionOutput(node, selection, line, roots, limited);
+		}
 		int selected;
 		if (selection.isCompaction()) {
 			selected = -1;
@@ -754,6 +845,40 @@ public final class ConstructiveConeEvaluator<T> {
 		if (checkLive && !node.isDriverSlice()) {
 			requireLiveDefined(node);
 			requireCorrespondence(node, result, roots.roots[1 - selected]);
+		}
+		return result;
+	}
+
+	/**
+	 * The inherited special case of a point already incident with the line and the circle (D1):
+	 * the output at its index is that point, and the other output is the raw root that is not
+	 * it. The tolerance comparison of the inherited rule is replaced by decided signs: one raw
+	 * root is apart from the point and the other is exactly the point, or the selection is not
+	 * reconstructed.
+	 */
+	private Point<T> existingIntersectionOutput(ConstructiveConeNode node,
+			InheritedLineCircleSelection selection, Line<T> line, RawRoots<T> roots,
+			boolean limited) {
+		int index = node.getIndex();
+		Point<T> existing = point(node, 2);
+		int[] signs = new int[2];
+		for (int raw = 0; raw < 2; raw++) {
+			signs[raw] = decideOrSelection(index, "existing-root-" + raw,
+					squaredDistance(roots.roots[raw], existing.x, existing.y));
+		}
+		if (signs[0] + signs[1] != 1 || signs[0] * signs[1] != 0) {
+			throw new Stop(Failure.SELECTION_NOT_RECONSTRUCTED, index,
+					"the point already incident is not exactly one raw root");
+		}
+		Point<T> apart = roots.roots[signs[0] > 0 ? 0 : 1];
+		boolean first = node.getOutputIndex() == selection.getExistingIntersectionOutput();
+		Point<T> result = first ? existing : apart;
+		if (limited && !member(index, "existing-member", line, result)) {
+			throw new Stop(Failure.INVALID, index, "the output is not on the path");
+		}
+		if (checkLive && !node.isDriverSlice()) {
+			requireLiveDefined(node);
+			requireCorrespondence(node, result, first ? apart : existing);
 		}
 		return result;
 	}
@@ -840,10 +965,18 @@ public final class ConstructiveConeEvaluator<T> {
 					"a point on a path that moves with the driver");
 		}
 		Point<T> persisted = livePoint(node, "persisted point on a path");
-		Object path = values[node.getInput(0)];
+		Object path = input(node, 0);
 		if (path instanceof Line) {
 			@SuppressWarnings("unchecked")
 			Line<T> line = (Line<T>) path;
+			Point<T> ruled = pathPointRule == null ? null : pathPointRule.pointOnLine(node, line);
+			if (ruled != null) {
+				if (line.limited && !member(index, "path-member", line, ruled)) {
+					throw new Stop(Failure.INVALID, index,
+							"the point is not on the limited part of its path");
+				}
+				return ruled;
+			}
 			T norm = add(mul(line.a, line.a), mul(line.b, line.b));
 			T t = arithmetic.negate(arithmetic.divide(add(add(line.c, mul(line.a, persisted.x)),
 					mul(line.b, persisted.y)), norm));
@@ -986,7 +1119,8 @@ public final class ConstructiveConeEvaluator<T> {
 		T liveY = arithmetic.ofRational(ExactRational2D.ofBinary64(y).divide(denominator));
 		T margin = sub(squaredDistance(other, liveX, liveY),
 				squaredDistance(selected, liveX, liveY));
-		int sign = arithmetic.sign(margin);
+		correspondences.add(new LiveCorrespondence<>(index, selected, other));
+		int sign = arithmetic.signOfLiveCheck(margin);
 		liveChecks.add(new Decision(index, "branch-correspondence", sign));
 		if (sign != 1) {
 			throw new Stop(Failure.BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED, index,
@@ -1060,9 +1194,19 @@ public final class ConstructiveConeEvaluator<T> {
 		return sign;
 	}
 
+	/**
+	 * The value of one input of a node: inside the substituted slice, the replacement of the
+	 * driver reads the slice driver when one is set.
+	 */
+	private Object input(ConstructiveConeNode node, int position) {
+		int input = node.getInput(position);
+		return sliceDriver != null && node.isDriverSlice() && input == cone.getReplacementNode()
+				? sliceDriver : values[input];
+	}
+
 	@SuppressWarnings("unchecked")
 	private Point<T> point(ConstructiveConeNode node, int position) {
-		Object value = values[node.getInput(position)];
+		Object value = input(node, position);
 		if (!(value instanceof Point)) {
 			throw new Stop(Failure.OUT_OF_CLASS, node.getIndex(), "an input that is not a point");
 		}
@@ -1071,7 +1215,7 @@ public final class ConstructiveConeEvaluator<T> {
 
 	@SuppressWarnings("unchecked")
 	private Line<T> line(ConstructiveConeNode node, int position) {
-		Object value = values[node.getInput(position)];
+		Object value = input(node, position);
 		if (!(value instanceof Line)) {
 			throw new Stop(Failure.OUT_OF_CLASS, node.getIndex(), "an input that is not a line");
 		}
@@ -1080,7 +1224,7 @@ public final class ConstructiveConeEvaluator<T> {
 
 	@SuppressWarnings("unchecked")
 	private Circle<T> circle(ConstructiveConeNode node, int position) {
-		Object value = values[node.getInput(position)];
+		Object value = input(node, position);
 		if (!(value instanceof Circle)) {
 			throw new Stop(Failure.OUT_OF_CLASS, node.getIndex(), "an input that is not a circle");
 		}

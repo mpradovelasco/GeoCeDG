@@ -2862,7 +2862,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. PRE-G9B-CU3 piece I-6: a kernel axis dependency is a reserved reference, never promoted, labelled or attached.",
+      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. PRE-G9B-CU3 piece I-6: a kernel axis dependency is a reserved reference, never promoted, labelled or attached. PRE-G9B-CU3 increment E2: a structural point computes its evidence again once its batch has published the durable identities of its inputs, which the key of a constructive identity certificate reads.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -6642,7 +6642,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoIntersectLineConic.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU2 (D-CU2-17): read-only accessors of the selection state (copy of the permutation, first-intersection and permutation-pending flags) for the exact revision fingerprint and the fidelity validation of reconstructed slices; no behaviour change and no write of the selection state.",
+      "purpose": "PRE-G9B-CU2 (D-CU2-17): read-only accessors of the selection state (copy of the permutation, first-intersection and permutation-pending flags) for the exact revision fingerprint and the fidelity validation of reconstructed slices; no behaviour change and no write of the selection state. GeoCeDG PRE-G9B-CU3 increment E2: read-only access to the special case of a point already incident with the line and the conic (the existing intersection and its output index), which constructive-class/v1 reproduces (D1).",
       "authority": "docs/validation/pre_g9b_cu2_author_architecture_approval_record.md"
     },
     {
@@ -7086,13 +7086,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveClassTable.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the class table constructive-class/v1, which classifies an object by the class of its algorithm and never by its value, with the declared boundary of categories D2 to D5; it only reads the construction.",
+      "purpose": "PRE-G9B-CU3 increment E1: the class table constructive-class/v1, which classifies an object by the class of its algorithm and never by its value, with the declared boundary of categories D2 to D5; it only reads the construction. PRE-G9B-CU3 increment E2: in the special case of a point already incident (D1), the existing point is a third input of the line-circle output.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/InheritedLineCircleSelection.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the inherited selection state of a line-circle intersection (compaction or fixed permutation, labels), read through the read-only accessors of D-CU2-17 and never written.",
+      "purpose": "PRE-G9B-CU3 increment E1: the inherited selection state of a line-circle intersection (compaction or fixed permutation, labels), read through the read-only accessors of D-CU2-17 and never written. PRE-G9B-CU3 increment E2: the special case of a point already incident is a reproducible selection state, with the index of its output.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7134,13 +7134,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveArithmetic.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the number system of a cone evaluation, exact arithmetic in the quadratic tower of the approved budget or outward intervals with StrictMath sine and cosine widened beyond their one-ulp error.",
+      "purpose": "PRE-G9B-CU3 increment E1: the number system of a cone evaluation, exact arithmetic in the quadratic tower of the approved budget or outward intervals with StrictMath sine and cosine widened beyond their one-ulp error. PRE-G9B-CU3 increment E2: the sign of a check against the live algorithm, which a constructive identity certificate records apart from its cell.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeEvaluator.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: one evaluator of a constructive cone over both number systems: the exact evaluation M3 in the constructive configuration with binary64 boundary substitutes, and the rigorous enclosure of ideal values; inherited tolerance decisions replaced by strict signs, inherited selection reproduced, live algorithm checked outside a substituted slice, sign vector recorded. PRE-G9B-CU3 increment E1.5: fixed values of some nodes, the hulls of the margin route, whose ancestors are then not evaluated.",
+      "purpose": "PRE-G9B-CU3 increment E1: one evaluator of a constructive cone over both number systems: the exact evaluation M3 in the constructive configuration with binary64 boundary substitutes, and the rigorous enclosure of ideal values; inherited tolerance decisions replaced by strict signs, inherited selection reproduced, live algorithm checked outside a substituted slice, sign vector recorded. PRE-G9B-CU3 increment E1.5: fixed values of some nodes, the hulls of the margin route, whose ancestors are then not evaluated. PRE-G9B-CU3 increment E2: the field of a constructive identity certificate is one more number system: a rule for the points on line paths, the exact jet of the driver read by the substituted slice, and the formal roots of every line-circle output checked against the live algorithm, kept for a recheck.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7164,13 +7164,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransfer.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED. PRE-G9B-CU3 increment E1, gate G-AUT-4: closed decisions requested by a strict consumer, a fold of fold-symmetry/v1 by the route structure (premises decided exactly without boundary substitutes, isolation band by margin in interval jets) and the location of a degenerate root by the route re-decision (exact evaluation at the replacement); CLOSED_DECISION_NOT_REDECIDED otherwise, CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION when the exact evaluation refutes it.",
+      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED. PRE-G9B-CU3 increment E1, gate G-AUT-4: closed decisions requested by a strict consumer, a fold of fold-symmetry/v1 by the route structure (premises decided exactly without boundary substitutes, isolation band by margin in interval jets) and the location of a degenerate root by the route re-decision (exact evaluation at the replacement); CLOSED_DECISION_NOT_REDECIDED otherwise, CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION when the exact evaluation refutes it. PRE-G9B-CU3 increment E2: a premise of a fold whose constant reads a cut is decided by a constructive identity certificate for every value of the cut.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransferTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of the transfer of the membership (V-AUT-TRF-1, V-AUT-TRF-4 to V-AUT-TRF-6): the three driver positions of the mandatory contacts by margin, exact parameters, invalid parameters, constants without a rigorous enclosure, changed selection states, budget exhaustion and the intact source certificate. PRE-G9B-CU3 increment E1: rows V-AUT-TRF-2 and V-AUT-TRF-3, a fold transferred by structure and refused with a boundary substitute, the location of a root decided again, refuted one ulp away and refused with a substitute, and no method for multiplicities, Sturm counts or critical values.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the transfer of the membership (V-AUT-TRF-1, V-AUT-TRF-4 to V-AUT-TRF-6): the three driver positions of the mandatory contacts by margin, exact parameters, invalid parameters, constants without a rigorous enclosure, changed selection states, budget exhaustion and the intact source certificate. PRE-G9B-CU3 increment E1: rows V-AUT-TRF-2 and V-AUT-TRF-3, a fold transferred by structure and refused with a boundary substitute, the location of a root decided again, refuted one ulp away and refused with a substitute, and no method for multiplicities, Sturm counts or critical values. PRE-G9B-CU3 increment E2: the folds of e_1 in the replica transfer by structure with a premise certified for every value of the cut; a premise that is no identity of the cut is STRUCTURAL_PREMISE_NOT_STRICT.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7182,19 +7182,19 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericEvidenceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of SUBSTITUTE_GENERIC (V-AUT-RLX-1 to V-AUT-RLX-6): the five mandatory contacts RELAXED, accidental equalities of degree one and two, a product of substitutes, a nonzero cubic on the nine points (a finite agreement is never an identity), a perturbation that leaves the cell, determinism and the rigorous case without substitutes. Rows V-AUT-RLX-5 and V-AUT-RLX-6: a base branch that is not the live output, an injected budget and an object outside the class decide nothing.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of SUBSTITUTE_GENERIC (V-AUT-RLX-1 to V-AUT-RLX-6): the five mandatory contacts RELAXED, accidental equalities of degree one and two, a product of substitutes, a nonzero cubic on the nine points (a finite agreement is never an identity), a perturbation that leaves the cell, determinism and the rigorous case without substitutes. Rows V-AUT-RLX-5 and V-AUT-RLX-6: a base branch that is not the live output, an injected budget and an object outside the class decide nothing. PRE-G9B-CU3 increment E2: the cubic through the nine points is shared with the certificate test of V-AUT-RLX-2.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolver.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone. PRE-G9B-CU3 increment E1, Stage A matrix: drivers on arcs and on paths other than circles and segments are UNSUPPORTED_DRIVER_FAMILY; a defining point of a segment is recognized before its parent; OUT_OF_DRIVER_DOMAIN and SEAM_SIDE_UNDECIDED are typed causes. PRE-G9B-CU3 gate G-AUT-8: every resolution carries the counters of its exact evaluation and of SUBSTITUTE_GENERIC.",
+      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone. PRE-G9B-CU3 increment E1, Stage A matrix: drivers on arcs and on paths other than circles and segments are UNSUPPORTED_DRIVER_FAMILY; a defining point of a segment is recognized before its parent; OUT_OF_DRIVER_DOMAIN and SEAM_SIDE_UNDECIDED are typed causes. PRE-G9B-CU3 gate G-AUT-8: every resolution carries the counters of its exact evaluation and of SUBSTITUTE_GENERIC. PRE-G9B-CU3 increment E2: P in r by a constructive identity certificate when the exact evaluation uses a boundary substitute: STRICT in its cell with its order of contact and, at a stationary contact, the fold of CU2 by structure; NOT_AN_IDENTITY withdraws the evidence of SUBSTITUTE_GENERIC; a certified exit from a limited target is a contradiction; the certificate of the earlier revision is rechecked before a new attempt.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolution.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the revision evidence of one structural point: position with the declared error of its rigorous enclosure, integrity records of P in L and P in r, transfer record and typed cause; never persisted. PRE-G9B-CU3 gate G-AUT-8: the deterministic counters of the exact evaluation and of SUBSTITUTE_GENERIC, as revision evidence that is never persisted.",
+      "purpose": "PRE-G9B-CU3 increment E1: the revision evidence of one structural point: position with the declared error of its rigorous enclosure, integrity records of P in L and P in r, transfer record and typed cause; never persisted. PRE-G9B-CU3 gate G-AUT-8: the deterministic counters of the exact evaluation and of SUBSTITUTE_GENERIC, as revision evidence that is never persisted. PRE-G9B-CU3 increment E2: the constructive identity certificate of P in r and the fold record of a stationary contact, as revision evidence that is never persisted.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7206,7 +7206,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of Point(L, D) and Intersect(L, r, D) on the replica of the author's model: the five mandatory contacts with P in L STRICT and P in r RELAXED, the legacy policy, fail-closed provenance and support, persistence, Undo and Redo, and a drag that repeats nothing.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of Point(L, D) and Intersect(L, r, D) on the replica of the author's model: the five mandatory contacts with P in L STRICT and P in r RELAXED, the legacy policy, fail-closed provenance and support, persistence, Undo and Redo, and a drag that repeats nothing. PRE-G9B-CU3 increment E2: the five mandatory contacts with P in r STRICT by the constructive identity certificate, with H cut.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7326,13 +7326,13 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointMatrixTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism. Rows V-EVID-4, V-AUT-NUM-1, V-AUT-NUM-2 and V-VIEW-1 at the structural point. Gate G-AUT-8: the counters of two resolutions of one revision are identical.",
+      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism. Rows V-EVID-4, V-AUT-NUM-1, V-AUT-NUM-2 and V-VIEW-1 at the structural point. Gate G-AUT-8: the counters of two resolutions of one revision are identical. PRE-G9B-CU3 increment E2: the sweeps keep P in r STRICT; with D_1 times 3 the exit from n is a certified contradiction (V-AUT-DYN-1); a target near M_1 is no identity.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3StructuralPointAuthorModelTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1 on the author model: explicit adoption with every durable identity kept, the five mandatory contacts with P in L STRICT and P in r RELAXED, the inherited permutation 1,0 of K, Point(o_1, K) against the author's workaround N_1 and the excCyl sweep. Row V-MAND-3: Intersect(o_1, h_2, K) is N_1.",
+      "purpose": "PRE-G9B-CU3 increment E1 on the author model: explicit adoption with every durable identity kept, the five mandatory contacts with P in L STRICT and P in r RELAXED, the inherited permutation 1,0 of K, Point(o_1, K) against the author's workaround N_1 and the excCyl sweep. Row V-MAND-3: Intersect(o_1, h_2, K) is N_1. PRE-G9B-CU3 increment E2: on the author model the five contacts are STRICT by the constructive identity certificate, with their order of contact and the fold of CU2 at the stationary contacts.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7344,13 +7344,109 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3ConstructiveAdoptionDesktopTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1 on the Desktop: rows V-AUT-ADOPT-1 and V-AUT-ADOPT-2 (one explicit adoption event with its impact report computed first and one undo point together with the input that offered it, also when that input ends without a result; a declined offer fails closed with the typed cause and changes nothing; a constructive document and other errors are never offered; the report text) and row V-AUT-INT-2 in the definition inspector (the integrity apart from the declared error, the premises that are not established).",
+      "purpose": "PRE-G9B-CU3 increment E1 on the Desktop: rows V-AUT-ADOPT-1 and V-AUT-ADOPT-2 (one explicit adoption event with its impact report computed first and one undo point together with the input that offered it, also when that input ends without a result; a declined offer fails closed with the typed cause and changes nothing; a constructive document and other errors are never offered; the report text) and row V-AUT-INT-2 in the definition inspector (the integrity apart from the declared error, the premises that are not established). PRE-G9B-CU3 increment E2: the inspector shows the evidence of a constructive identity certificate; the RELAXED example is a conditioned point, which has no rigorous enclosure.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3ProvenanceCensusTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1, gate G-AUT-1 on the author model: the census of the 160 relations that the provenance of every object declares, decided by the constructive evaluator of the product under the approved budget; none is refuted, 140 hold exactly and twenty in the cone of the rotation exceed the bits of cu3-exact-evaluation-budget/v1 and fail closed; the binary64 copy of a point on a path that is not parallel to an axis refutes its path. Row V-AUT-PROV-1.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/CertificatePolynomial.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: exact polynomials of constructive-identity-certificate/v1: monomials of the 16 indeterminates of the budget in two 64-bit words, an exponent beyond 255 failing closed and never wrapped, exact rational coefficients, bounded exact division and square roots, and the mean-value enclosure, of the first order and of the second when the first decides no sign, with no derivative kept; every product charged to the budget.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/CertificateRationalFunction.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: rational functions in the indeterminates of a certificate, normalized, zero exactly when the numerator is, with a rigorous enclosure when the denominator keeps its sign on the box.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/CertificateElement.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: an element a + b sqrt(Delta) of the field Q(V)[sqrt(Delta)] of a certificate.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/CertificateJet.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: an exact jet of order two of a field element in the parameter of the driver, for the order of contact.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityArithmetic.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: the number system of a certificate: indeterminates with their box, one radicand, perfect squares extracted, a second independent or nested root OUT_OF_CLASS, every certified sign recorded in the cell and the live checks kept apart.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityJetArithmetic.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: exact jets of order two over the field of a certificate, with the same cell.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityBudget.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: constructive-identity-certificate-budget/v1 with the provisional ceilings fixed by the author, restricted only downward for adversarial injections.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityBudgetExhaustedException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: the typed exhaustion of the budget of a certificate, with the limit and the counters.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCounters.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: the deterministic counters of one attempt of a certificate, checked against its budget at every step.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: a typed stop of an attempt of a certificate.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCertificate.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: the outcome of an attempt of constructive-identity-certificate/v1: status and typed cause, scope, structural key, indeterminates with their box, cell, checked branches, cuts, order of contact with the signs of the derivatives of the residual, and counters; revision evidence that is never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCertifier.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: attempts and rechecks of constructive-identity-certificate/v1 on the cone evaluator: automatic boundary rule, decision box with the rigorous enclosures of the ideal values, residual decided as a field element, certified membership of a limited part, order of contact by exact jets, structural key cic-structural-key/v1 by durable identity, recheck without symbolic work, and the premises of a fold.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityAlgebraTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: tests of the exact algebra of the certificate: 16 indeterminates without collision, exponent range, every limit of the budget, exact division and roots, the mean-value form against cancellation, one radicand, and the cubic of V-AUT-RLX-2.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCertifierTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: tests of the certifier on synthetic constructions (G-AUT-9): S1 to S4, the dependence on the branch, the inherited special case, a cut that forgets, the membership of a limited part (the segment defect of the prototype), typed results, an injected inversion of the live branch, branches that cannot be told apart, the key, determinism and budget.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityContactTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: the five mandatory contacts of the replica in both scopes with their order of contact (G-AUT-2), the controls C1 to C5 and a target one ulp away, the ideal values in the box, accidental equalities, the representation conflict of the driver circle, the positions of the authority study and a transition of a selection state (G-AUT-10).",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityIntegrationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E2: Intersect(L, r, D) with the certificate: the five contacts STRICT with the fold of CU2, NOT_AN_IDENTITY withdrawing SUBSTITUTE_GENERIC, rename, redefinition, deletion and recreation, Undo, Redo, reopening, a duplicate, a drag that only rechecks and determinism (V-AUT-ID-1 to V-AUT-ID-7, V-AUT-DYN-3 and V-AUT-DYN-4).",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

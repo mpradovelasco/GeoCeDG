@@ -300,8 +300,11 @@ final class SubstituteGenericEvidenceTest extends ConstructiveModelReplicaTest {
 		return value;
 	}
 
-	/** A nonzero cubic through nine points, by exact Gaussian elimination. */
-	private static ExactRational2D[] cubicThrough(List<List<ExactRational2D>> points) {
+	/**
+	 * A nonzero cubic through nine points, by exact Gaussian elimination; its coefficients follow
+	 * the monomials {@code 1, x, y, x^2, xy, y^2, x^3, x^2y, xy^2, y^3}.
+	 */
+	static ExactRational2D[] cubicThrough(List<List<ExactRational2D>> points) {
 		int columns = 10;
 		List<ExactRational2D[]> rows = new ArrayList<>();
 		for (List<ExactRational2D> point : points) {

@@ -48,7 +48,11 @@ import org.geogebra.common.kernel.geos.GeoSegment;
  * ({@code cu2-certificate-transfer/v1}) and is {@code STRICT};</li>
  * <li>for the intersection, {@code P in r} is decided against the constructive target: by the
  * exact evaluation when it uses no boundary substitute ({@code STRICT}, or a rigorous
- * contradiction), otherwise by {@code SUBSTITUTE_GENERIC} ({@code RELAXED}).</li>
+ * contradiction); otherwise by a constructive identity certificate, {@code STRICT} in its cell
+ * with its order of contact, whose {@code NOT_AN_IDENTITY} or {@code INVALID} withdraws the
+ * relaxed evidence and whose certified exit from a limited target is a contradiction, and
+ * failing a certificate by {@code SUBSTITUTE_GENERIC} ({@code RELAXED}). A certificate of the
+ * earlier revision is rechecked before a new one is attempted.</li>
  * </ol>
  * The materialized position is a representation: the centre of a rigorous enclosure of the
  * constructive point, with the enclosure as its declared error. Nothing is persisted.
@@ -176,20 +180,24 @@ public final class StructuralPointResolver {
 					refused.getMessage(), null);
 		}
 		ConstructiveCone cone = builder.build();
-		String digest = cone.getStateDigest() + "|revision=" + locus.getSemanticRevision()
-				+ "|budget=" + budget;
+		// The key of a certificate reads the durable identities, so their attachment, as when a
+		// new public form publishes its inputs, is a new state of the evidence.
+		String digest = cone.getStateDigest() + "|identities=" + identities(cone) + "|revision="
+				+ locus.getSemanticRevision() + "|budget=" + budget;
 		if (previous != null && digest.equals(previous.getStateDigest())) {
 			return previous;
 		}
 		ConstructiveConeEvaluator<Element> exact = ConstructiveConeEvaluator.exact(cone, budget);
 		return decide(locus, cone, exact, point, supportNode, targetNode, premises, budget,
-				digest).withExactCounters(exact.getExactCounters());
+				digest, previous == null ? null : previous.getCertificate())
+				.withExactCounters(exact.getExactCounters());
 	}
 
 	/** Facts 2 to 4 on the exact evaluation of the cone at its base configuration. */
 	private static StructuralPointResolution decide(GeoLocusV2 locus, ConstructiveCone cone,
 			ConstructiveConeEvaluator<Element> exact, int point, int supportNode, int targetNode,
-			List<String> premises, ExactEvaluationBudget budget, String digest) {
+			List<String> premises, ExactEvaluationBudget budget, String digest,
+			ConstructiveIdentityCertificate previousCertificate) {
 		int replacement = cone.getReplacementNode();
 		IncidenceResult onSupport = exact.incidence(replacement, supportNode);
 		if (onSupport.getIncidence() == Incidence.NOT_DECIDED) {
@@ -230,13 +238,16 @@ public final class StructuralPointResolver {
 		if (targetNode < 0) {
 			return resolved;
 		}
-		return incidence(resolved, cone, exact, point, targetNode, budget, digest);
+		return incidence(locus, resolved, cone, exact, point, targetNode, supportNode, budget,
+				digest, previousCertificate);
 	}
 
 	/** Fact 4 of the intersection: {@code P in r} against the constructive target. */
-	private static StructuralPointResolution incidence(StructuralPointResolution resolved,
-			ConstructiveCone cone, ConstructiveConeEvaluator<Element> exact, int point,
-			int target, ExactEvaluationBudget budget, String digest) {
+	private static StructuralPointResolution incidence(GeoLocusV2 locus,
+			StructuralPointResolution resolved, ConstructiveCone cone,
+			ConstructiveConeEvaluator<Element> exact, int point, int target, int support,
+			ExactEvaluationBudget budget, String digest,
+			ConstructiveIdentityCertificate previousCertificate) {
 		IncidenceResult decided = exact.incidence(point, target);
 		if (decided.getIncidence() == Incidence.NOT_DECIDED) {
 			return StructuralPointResolution.undefined(cause(decided.getFailure()),
@@ -266,14 +277,82 @@ public final class StructuralPointResolver {
 		}
 		SubstituteGenericEvidence.Result relaxed = SubstituteGenericEvidence.incidence("P on r",
 				cone, point, target, budget);
+		// E2: the constructive identity certificate decides the incidence for every value of the
+		// substitutes; NOT_AN_IDENTITY withdraws the relaxed evidence (section 7.1).
+		ConstructiveIdentityCertificate certificate = certificate(cone, point, target, support,
+				previousCertificate);
+		switch (certificate.getStatus()) {
+		case IDENTITY_CERTIFIED: {
+			StructuralPointResolution strict = resolved.withIncidence(RelationIntegrityRecord
+					.derive("P on r", RelationIntegrity.STRICT,
+							RelationIntegrityRecord.Evidence.CONSTRUCTIVE_IDENTITY_CERTIFICATE,
+							Collections.emptyList(), Collections.emptyList(), null))
+					.withRelaxedCounters(relaxed.getCounters()).withCertificate(certificate);
+			// A stationary point of the trace is a fold contact only when the fold of CU2
+			// transfers to the constructive configuration (ADR 0038, decision 8).
+			if (certificate.getContactOrder()
+					== ConstructiveIdentityCertificate.ContactOrder.STATIONARY) {
+				strict = strict.withFold(Cu2CertificateTransfer.closedDecision(locus, cone,
+						point, support, exact, Cu2CertificateTransfer.ClosedDecision.FOLD));
+			}
+			return strict;
+		}
+		case NOT_AN_IDENTITY:
+		case INVALID:
+			// No identity, or an object of the relation certified undefined for the ideal
+			// values: the relation is NOT_ESTABLISHED and the relaxed evidence is withdrawn.
+			return StructuralPointResolution.undefined(Cause.INCIDENCE_NOT_ESTABLISHED,
+					String.valueOf(certificate), digest).withTransfer(resolved.getTransfer())
+					.withIncidence(RelationIntegrityRecord.derive("P on r",
+							RelationIntegrity.NOT_ESTABLISHED,
+							RelationIntegrityRecord.Evidence.CONSTRUCTIVE_IDENTITY_CERTIFICATE,
+							Collections.emptyList(), Collections.emptyList(),
+							certificate.getStatus() + " " + certificate.getCause()))
+					.withRelaxedCounters(relaxed.getCounters()).withCertificate(certificate);
+		case CONTRADICTED:
+			return StructuralPointResolution.undefined(Cause.NOT_ON_LIMITED_TARGET,
+					String.valueOf(certificate), digest).withTransfer(resolved.getTransfer())
+					.withIncidence(RelationIntegrityRecord.derive("P on r",
+							RelationIntegrity.CONTRADICTED,
+							RelationIntegrityRecord.Evidence.CONSTRUCTIVE_IDENTITY_CERTIFICATE,
+							Collections.emptyList(), Collections.emptyList(),
+							ConstructiveIdentityCertificate.Cause.NOT_ON_LIMITED_TARGET.name()))
+					.withRelaxedCounters(relaxed.getCounters()).withCertificate(certificate);
+		default:
+			break;
+		}
 		if (relaxed.getRecord().getIntegrity() != RelationIntegrity.RELAXED) {
 			return StructuralPointResolution.undefined(Cause.INCIDENCE_NOT_ESTABLISHED,
 					String.valueOf(relaxed), digest).withTransfer(resolved.getTransfer())
 					.withIncidence(relaxed.getRecord())
-					.withRelaxedCounters(relaxed.getCounters());
+					.withRelaxedCounters(relaxed.getCounters()).withCertificate(certificate);
 		}
 		return resolved.withIncidence(relaxed.getRecord())
-				.withRelaxedCounters(relaxed.getCounters());
+				.withRelaxedCounters(relaxed.getCounters()).withCertificate(certificate);
+	}
+
+	/**
+	 * The certificate of {@code P in r}: the one of the earlier revision when it still applies
+	 * (section 8.2, a recheck without symbolic work), otherwise a new attempt.
+	 */
+	private static ConstructiveIdentityCertificate certificate(ConstructiveCone cone, int point,
+			int target, int support, ConstructiveIdentityCertificate previous) {
+		if (previous != null && ConstructiveIdentityCertifier.recheck(previous, cone, point,
+				target, support, ConstructiveIdentityBudget.V1)) {
+			return previous;
+		}
+		return ConstructiveIdentityCertifier.incidence("P on r", cone, point, target, support,
+				ConstructiveIdentityBudget.V1);
+	}
+
+	/** @return the durable identity of every node of the cone, in cone order */
+	private static String identities(ConstructiveCone cone) {
+		StringBuilder text = new StringBuilder();
+		for (ConstructiveConeNode node : cone.getNodes()) {
+			text.append(node.getDurableIdentity() == null ? "-"
+					: node.getDurableIdentity().toExternalForm()).append(',');
+		}
+		return text.toString();
 	}
 
 	/**

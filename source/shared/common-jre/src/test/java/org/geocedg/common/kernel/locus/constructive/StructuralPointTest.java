@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.geocedg.common.kernel.algos.AlgoLocusDriverCorrespondencePoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
@@ -23,10 +25,12 @@ import org.junit.jupiter.api.Test;
 /**
  * {@code Point(L, D)} and {@code Intersect(L, r, D)} under the constructive authority on the
  * replica of the author's model (Stage A design sections 2 to 8, with the revisions of
- * D-AUT-11; validation matrix rows V-A-*, V-MAND-*, V-DYN-* and V-AUT-RLX-7): the five mandatory
- * contacts, with {@code P in L} {@code STRICT} by transfer and {@code P in r} {@code RELAXED} by
- * {@code SUBSTITUTE_GENERIC}; the fail-closed facts; the explicit policy; persistence, Undo and
- * Redo; and a drag of the driver that repeats nothing.
+ * D-AUT-11; validation matrix rows V-A-*, V-MAND-*, V-DYN-* and V-AUT-CIC-1): the five
+ * mandatory contacts, with {@code P in L} {@code STRICT} by transfer and, since increment E2,
+ * {@code P in r} {@code STRICT} by its constructive identity certificate with the point
+ * {@code H} cut, where E1 admitted it {@code RELAXED} by {@code SUBSTITUTE_GENERIC}; the
+ * fail-closed facts; the explicit policy; persistence, Undo and Redo; and a drag of the driver
+ * that repeats nothing.
  */
 final class StructuralPointTest extends ConstructiveModelReplicaTest {
 
@@ -67,10 +71,13 @@ final class StructuralPointTest extends ConstructiveModelReplicaTest {
 			StructuralPointResolution resolved = resolution(add(contact[0]));
 			assertTrue(resolved.isDefined(), contact[0] + ": " + resolved);
 			assertEquals(RelationIntegrity.STRICT, resolved.getMembership().getIntegrity());
-			assertEquals(RelationIntegrity.RELAXED, resolved.getIncidence().getIntegrity(),
-					contact[0] + ": P in r by SUBSTITUTE_GENERIC with C'");
-			assertEquals(RelationIntegrity.RELAXED, resolved.getIntegrity());
-			assertTrue(resolved.getIncidence().getUnestablishedPremises().get(0).contains("Cr"));
+			assertEquals(RelationIntegrity.STRICT, resolved.getIncidence().getIntegrity(),
+					contact[0] + ": P in r by its constructive identity certificate");
+			assertEquals(RelationIntegrityRecord.Evidence.CONSTRUCTIVE_IDENTITY_CERTIFICATE,
+					resolved.getIncidence().getEvidence());
+			assertEquals(RelationIntegrity.STRICT, resolved.getIntegrity());
+			assertEquals(List.of("H"), resolved.getCertificate().getCuts(),
+					"H, on the line through the rotation Cr, is cut");
 			if (contact[1] != null) {
 				assertClose((GeoPoint) geo(contact[1]), resolved, contact[0]);
 			}

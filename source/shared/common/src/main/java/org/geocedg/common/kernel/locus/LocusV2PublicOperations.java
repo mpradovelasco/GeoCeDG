@@ -420,6 +420,9 @@ public final class LocusV2PublicOperations {
 				batch.stageReserved(output, outputId, dependencies,
 						ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE);
 				batch.publish();
+				// The publication attaches durable identities to the inputs, which the key of a
+				// constructive identity certificate reads: the evidence is computed again.
+				algorithm.update();
 			}
 			return output;
 		} catch (RuntimeException exception) {

@@ -129,6 +129,25 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 		return isPermutationNeeded;
 	}
 
+	/**
+	 * GeoCeDG PRE-G9B-CU3 (constructive-class/v1, D1): read-only access to the special case of
+	 * a point already incident with the line and the conic.
+	 *
+	 * @return the existing intersection of the last computation, or null
+	 */
+	public GeoPointND getSelectionExistingIntersection() {
+		return existingIntersection;
+	}
+
+	/**
+	 * GeoCeDG PRE-G9B-CU3 (constructive-class/v1, D1): read-only access to the special case.
+	 *
+	 * @return the index of the output that is the existing intersection
+	 */
+	public int getSelectionExistingIntersectionIndex() {
+		return specialCasePointOnCircleIndex;
+	}
+
 	@Override
 	public int getRelatedModeID() {
 		return EuclidianConstants.MODE_INTERSECT;

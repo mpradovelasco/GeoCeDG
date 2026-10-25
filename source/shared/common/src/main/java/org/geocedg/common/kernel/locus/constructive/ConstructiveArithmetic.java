@@ -15,7 +15,8 @@ import org.geocedg.common.kernel.locus.exact.ExactRational2D;
  * tower over the rationals, where every sign is decided, or outward-rounded intervals, where a
  * sign is certified or undecided ({@code locus-v2-constructive-authority.md} sections 3 and 6;
  * E1 implementation design section 6). One evaluator is written once over this interface, so
- * both number systems use the same formulas and decide the same predicates.
+ * every number system uses the same formulas and decides the same predicates; the field of a
+ * constructive identity certificate (section 8) is one more of them.
  *
  * @param <T> the type of a real value
  */
@@ -62,6 +63,18 @@ public interface ConstructiveArithmetic<T> {
 
 	/** @return {@code -1}, {@code 0} or {@code 1}, or {@link #UNDECIDED} */
 	int sign(T a);
+
+	/**
+	 * The sign of a value of a check against the live algorithm. It is the sign; a constructive
+	 * identity certificate records it apart from its cell, because it reads the live state of
+	 * the revision.
+	 *
+	 * @param a a value of a check against the live algorithm
+	 * @return {@code -1}, {@code 0} or {@code 1}, or {@link #UNDECIDED}
+	 */
+	default int signOfLiveCheck(T a) {
+		return sign(a);
+	}
 
 	/** @return whether every sign is decided exactly */
 	boolean isExact();

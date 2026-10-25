@@ -29,12 +29,15 @@ public final class StructuralPointResolution {
 	private final String stateDigest;
 	private final ExactEvaluationCounters exactCounters;
 	private final List<ExactEvaluationCounters> relaxedCounters;
+	private final ConstructiveIdentityCertificate certificate;
+	private final Cu2CertificateTransfer.Record fold;
 
 	private StructuralPointResolution(boolean defined, StructuralPointResolver.Cause cause,
 			String message, double[] position, RelationIntegrityRecord membership,
 			RelationIntegrityRecord incidence, Cu2CertificateTransfer.Record transfer,
 			List<String> premises, String stateDigest, ExactEvaluationCounters exactCounters,
-			List<ExactEvaluationCounters> relaxedCounters) {
+			List<ExactEvaluationCounters> relaxedCounters,
+			ConstructiveIdentityCertificate certificate, Cu2CertificateTransfer.Record fold) {
 		this.defined = defined;
 		this.cause = cause;
 		this.message = message;
@@ -46,39 +49,57 @@ public final class StructuralPointResolution {
 		this.stateDigest = stateDigest;
 		this.exactCounters = exactCounters;
 		this.relaxedCounters = Collections.unmodifiableList(new ArrayList<>(relaxedCounters));
+		this.certificate = certificate;
+		this.fold = fold;
 	}
 
 	static StructuralPointResolution undefined(StructuralPointResolver.Cause cause,
 			String message, String stateDigest) {
 		return new StructuralPointResolution(false, cause, message, null, null, null, null,
-				Collections.emptyList(), stateDigest, null, Collections.emptyList());
+				Collections.emptyList(), stateDigest, null, Collections.emptyList(), null, null);
 	}
 
 	static StructuralPointResolution defined(double[] position,
 			RelationIntegrityRecord membership, RelationIntegrityRecord incidence,
 			List<String> premises, String stateDigest) {
 		return new StructuralPointResolution(true, null, null, position.clone(), membership,
-				incidence, null, premises, stateDigest, null, Collections.emptyList());
+				incidence, null, premises, stateDigest, null, Collections.emptyList(), null, null);
 	}
 
 	StructuralPointResolution withTransfer(Cu2CertificateTransfer.Record record) {
 		return new StructuralPointResolution(defined, cause, message, position, membership,
-				incidence, record, premises, stateDigest, exactCounters, relaxedCounters);
+				incidence, record, premises, stateDigest, exactCounters, relaxedCounters,
+				certificate, fold);
 	}
 
 	StructuralPointResolution withIncidence(RelationIntegrityRecord record) {
 		return new StructuralPointResolution(defined, cause, message, position, membership,
-				record, transfer, premises, stateDigest, exactCounters, relaxedCounters);
+				record, transfer, premises, stateDigest, exactCounters, relaxedCounters,
+				certificate, fold);
 	}
 
 	StructuralPointResolution withExactCounters(ExactEvaluationCounters counters) {
 		return new StructuralPointResolution(defined, cause, message, position, membership,
-				incidence, transfer, premises, stateDigest, counters, relaxedCounters);
+				incidence, transfer, premises, stateDigest, counters, relaxedCounters,
+				certificate, fold);
 	}
 
 	StructuralPointResolution withRelaxedCounters(List<ExactEvaluationCounters> counters) {
 		return new StructuralPointResolution(defined, cause, message, position, membership,
-				incidence, transfer, premises, stateDigest, exactCounters, counters);
+				incidence, transfer, premises, stateDigest, exactCounters, counters,
+				certificate, fold);
+	}
+
+	StructuralPointResolution withCertificate(ConstructiveIdentityCertificate value) {
+		return new StructuralPointResolution(defined, cause, message, position, membership,
+				incidence, transfer, premises, stateDigest, exactCounters, relaxedCounters,
+				value, fold);
+	}
+
+	StructuralPointResolution withFold(Cu2CertificateTransfer.Record value) {
+		return new StructuralPointResolution(defined, cause, message, position, membership,
+				incidence, transfer, premises, stateDigest, exactCounters, relaxedCounters,
+				certificate, value);
 	}
 
 	/** @return whether the point is defined */
@@ -156,6 +177,22 @@ public final class StructuralPointResolution {
 	 */
 	public List<ExactEvaluationCounters> getRelaxedCounters() {
 		return relaxedCounters;
+	}
+
+	/**
+	 * @return the constructive identity certificate of {@code P in r}, with its order of
+	 *         contact, or {@code null} when none was attempted
+	 */
+	public ConstructiveIdentityCertificate getCertificate() {
+		return certificate;
+	}
+
+	/**
+	 * @return the transfer record of the fold of {@code CU2} at a stationary contact, or
+	 *         {@code null} when the contact is not stationary or no certificate holds
+	 */
+	public Cu2CertificateTransfer.Record getFold() {
+		return fold;
 	}
 
 	/**

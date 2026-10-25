@@ -32,12 +32,14 @@ import org.junit.jupiter.api.io.TempDir;
  * PRE-G9B-CU3 increment E1 on the author model ({@code InterCilConoOblique.cedg}, without
  * {@code e_2}): the explicit adoption of {@code constructive-authority/v1} keeps every durable
  * identity; the five mandatory contacts are created with {@code P in L} {@code STRICT} by
- * transfer and {@code P in r} {@code RELAXED} by {@code SUBSTITUTE_GENERIC}; the exact
+ * transfer and, since increment E2, {@code P in r} {@code STRICT} by its constructive identity
+ * certificate, with the order of contact and the fold of {@code CU2} at the stationary contacts
+ * (E1 admitted {@code P in r} {@code RELAXED} by {@code SUBSTITUTE_GENERIC}); the exact
  * correspondence follows the inherited permutation {@code 1,0} of the outputs of
  * {@code Intersect(p, i)}, under which {@code K} is output 1, unlike the replica; and
  * {@code Point(o_1, K)} is the author's workaround {@code N_1 = Point(o_1, text2, v_1)} without
  * the manual selector. Matrix rows V-MAND-1 to V-MAND-4, V-A-21, V-DYN-1 ({@code excCyl}),
- * V-DYN-3 and V-AUT-ADOPT-3.
+ * V-DYN-3, V-AUT-ADOPT-3, V-AUT-CIC-1 and V-AUT-TRF-2.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -115,11 +117,18 @@ class PreG9BCu3StructuralPointAuthorModelTest {
 				"V-DYN-3: the author's workaround N_1, without the manual selector");
 		for (String contact : CONTACTS) {
 			Object[] resolved = (Object[]) rows.get(contact);
-			assertDefined(resolved, "STRICT", "RELAXED", contact);
+			assertDefined(resolved, "STRICT", "STRICT", contact);
+			assertEquals("CONSTRUCTIVE_IDENTITY_CERTIFICATE", resolved[6], contact);
+			boolean regular = contact.startsWith("Q3");
+			assertEquals(regular ? "TANGENT" : "STATIONARY", resolved[7], contact);
+			if (!regular) {
+				assertEquals(true, resolved[8], "V-AUT-TRF-2: the fold of CU2 by structure, "
+						+ contact + ": " + resolved[5]);
+			}
 			String label = contact.substring(0, 2);
 			for (double value : new double[] {2.9, 3.7}) {
 				Object[] swept = (Object[]) rows.get("excCyl=" + value + " " + label);
-				assertDefined(swept, "STRICT", "RELAXED", "V-DYN-1 excCyl=" + value + " "
+				assertDefined(swept, "STRICT", "STRICT", "V-DYN-1 excCyl=" + value + " "
 						+ contact);
 				assertEquals((double) resolved[3], (double) swept[3], 0, "outside the cone");
 				assertEquals((double) resolved[4], (double) swept[4], 0, "outside the cone");
@@ -161,7 +170,10 @@ class PreG9BCu3StructuralPointAuthorModelTest {
 				.getResolution();
 	}
 
-	/** @return definedness, membership and incidence integrity, position and description */
+	/**
+	 * @return definedness, membership and incidence integrity, position, description, evidence
+	 *         of the incidence, order of contact and whether the fold of {@code CU2} transfers
+	 */
 	private static Object[] describe(StructuralPointResolution resolution) {
 		return new Object[] {resolution.isDefined(),
 				resolution.getMembership() == null ? null
@@ -170,7 +182,13 @@ class PreG9BCu3StructuralPointAuthorModelTest {
 						: resolution.getIncidence().getIntegrity().name(),
 				resolution.isDefined() ? resolution.getX() : Double.NaN,
 				resolution.isDefined() ? resolution.getY() : Double.NaN,
-				resolution.toString()};
+				resolution.toString(),
+				resolution.getIncidence() == null ? null
+						: resolution.getIncidence().getEvidence().name(),
+				resolution.getCertificate() == null
+						|| resolution.getCertificate().getContactOrder() == null ? null
+								: resolution.getCertificate().getContactOrder().name(),
+				resolution.getFold() == null ? null : resolution.getFold().isTransferred()};
 	}
 
 	private static void assertDefined(Object[] row, String membership, String incidence,
@@ -179,7 +197,7 @@ class PreG9BCu3StructuralPointAuthorModelTest {
 		assertEquals(membership, row[1], message + ": " + row[5]);
 		assertEquals(incidence, row[2], message + ": " + row[5]);
 		if (incidence != null) {
-			assertEquals(RelationIntegrity.RELAXED.name(), incidence);
+			assertEquals(RelationIntegrity.STRICT.name(), incidence);
 		}
 	}
 

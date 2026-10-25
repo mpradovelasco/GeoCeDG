@@ -40,7 +40,9 @@ import org.junit.jupiter.api.Test;
  * model, whose constants come through a point on a path and a rotation, and the fail-closed
  * causes when a condition is not demonstrated; the closed decisions a strict consumer requests,
  * a fold by the route structure and the location of a root by the route re-decision, refused
- * with a typed cause or refuted when the constructive configuration decides otherwise.
+ * with a typed cause or refuted when the constructive configuration decides otherwise. Since
+ * increment E2 a premise of a fold that reads a cut is decided by a constructive identity
+ * certificate for every value of the cut.
  */
 final class Cu2CertificateTransferTest extends ConstructiveModelReplicaTest {
 
@@ -299,15 +301,47 @@ final class Cu2CertificateTransferTest extends ConstructiveModelReplicaTest {
 	}
 
 	@Test
-	void aFoldWhoseSymmetryReadsABoundarySubstituteIsNotTransferred() {
+	void aFoldWhosePremiseReadsACutTransfersByAConstructiveIdentityCertificate() {
 		buildAuthorReplica();
 
-		Record fold = closed((GeoLocusV2) geo("e_1"), "J_1", "E_1", "p", "K",
+		for (String point : new String[] {"K", "J"}) {
+			Record fold = closed((GeoLocusV2) geo("e_1"), "J_1", "E_1", "p", point,
+					ClosedDecision.FOLD);
+
+			assertTrue(fold.isTransferred(), "V-AUT-TRF-2 in E2: the line k through H, a point"
+					+ " on the line through the rotation Cr, is parallel to the vertical g for"
+					+ " every value of the cut: " + fold);
+			assertEquals(Route.STRUCTURE, fold.getRoute());
+			assertTrue(fold.getPremises().stream().anyMatch(premise -> premise.startsWith(
+					"structure:") && premise.contains(ConstructiveIdentityCertificate.VERSION)),
+					fold.getPremises().toString());
+		}
+	}
+
+	@Test
+	void aFoldWhosePremiseIsNoIdentityOfTheCutIsNotTransferred() {
+		add("O=(0,0)");
+		add("c=Circle(O,2)");
+		add("P=Point(c)");
+		add("k=Circle(O,3)");
+		// The rotation by zero is the identity, but a cut forgets it: the line through W and its
+		// rotated point is vertical only for the binary64 values.
+		add("W=(5,0)");
+		add("S=Rotate((5,1),0°,W)");
+		add("ell=Line(W,S)");
+		add("v=Line(P,ell)");
+		add("Q=Intersect(k,v,1)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
+		GeoElementND[] ends = getElements("Intersect(c,xAxis)");
+		// A new line-circle intersection settles its selection state at its next computation.
+		getKernel().updateConstruction(false);
+
+		Record fold = closed(locus, "Q", "P", "c", ends[0].getLabelSimple(),
 				ClosedDecision.FOLD);
 
-		assertEquals(Cause.STRUCTURAL_PREMISE_NOT_STRICT, fold.getCause(), "V-AUT-TRF-2: the"
-				+ " line k through H, a point on the line through the rotation Cr: " + fold);
-		assertTrue(fold.getMessage().contains("boundary substitute"), fold.getMessage());
+		assertEquals(Cause.STRUCTURAL_PREMISE_NOT_STRICT, fold.getCause(), "V-AUT-TRF-2: " + fold);
+		assertTrue(fold.getMessage().contains(ConstructiveIdentityCertificate.Status.NOT_AN_IDENTITY
+				.name()), fold.getMessage());
 	}
 
 	@Test

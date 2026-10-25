@@ -40,7 +40,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * and one undo point together with the input that offered it; the typed refusal when the offer is
  * declined; and the integrity of a structural point in the
  * definition inspector, with the premises that are not established and the declared error of
- * its position apart from it (V-AUT-INT-2).
+ * its position apart from it (V-AUT-INT-2), and, since increment E2, the evidence of a
+ * constructive identity certificate.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -167,19 +168,26 @@ class PreG9BCu3ConstructiveAdoptionDesktopTest {
 	@Test
 	void theInspectorShowsTheIntegrityApartFromThePrecision() throws Exception {
 		AppGeoCeDG app = locus();
-		// A line through a rotation and the point of L at D: the incidence holds for every
-		// value of the boundary substitute, so it is RELAXED, never STRICT.
+		// A line through a conditioned point and the point of L at D: the incidence holds for
+		// every value of the inherited decision, which has no rigorous enclosure, so the
+		// constructive identity certificate decides nothing and the incidence is RELAXED.
 		eval(app, "w=0.3");
-		eval(app, "Sr=Rotate((1,2),w,O)");
+		eval(app, "Sc=If(w>0,(1,2),(3,-1))");
 		eval(app, "M=Midpoint(O,D)");
-		eval(app, "h=Line(Sr,M)");
+		eval(app, "h=Line(Sc,M)");
+		// The same line through a rotation: the rotation is cut and the certificate proves the
+		// incidence for every value of the cut.
+		eval(app, "Sr=Rotate((1,2),w,O)");
+		eval(app, "hr=Line(Sr,M)");
 		AuthorityPolicyAdoption.adopt(app.getKernel().getConstruction());
 		eval(app, "X=Intersect(L,g,D)");
 		eval(app, "Y=Intersect(L,h,D)");
+		eval(app, "Z=Intersect(L,hr,D)");
 		for (String language : new String[] {"en", "es"}) {
 			app.setLocale(new Locale(language));
 			String strict = GeoCeDGDefinitionInspector.semanticDetails(app, lookup(app, "X"));
 			String relaxed = GeoCeDGDefinitionInspector.semanticDetails(app, lookup(app, "Y"));
+			String certified = GeoCeDGDefinitionInspector.semanticDetails(app, lookup(app, "Z"));
 
 			assertTrue(strict.contains(GeoCeDGProfile.getText("Definition.Integrity", language)
 					+ ": STRICT"), strict);
@@ -191,6 +199,8 @@ class PreG9BCu3ConstructiveAdoptionDesktopTest {
 					language) + ": RELAXED"), relaxed);
 			assertTrue(relaxed.contains(GeoCeDGProfile.getText(
 					"Definition.UnestablishedPremise", language)), "V-AUT-INT-2: " + relaxed);
+			assertTrue(certified.contains(GeoCeDGProfile.getText("Definition.Incidence",
+					language) + ": STRICT CONSTRUCTIVE_IDENTITY_CERTIFICATE"), certified);
 		}
 	}
 
