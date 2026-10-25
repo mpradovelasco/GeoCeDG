@@ -481,6 +481,13 @@ final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 		assertEquals(String.valueOf(first.getIncidence()), String.valueOf(second.getIncidence()));
 		assertEquals(String.valueOf(first.getTransfer()), String.valueOf(second.getTransfer()));
 		assertEquals(first.getX(), second.getX(), 0);
+		assertEquals(String.valueOf(first.getExactCounters()),
+				String.valueOf(second.getExactCounters()), "G-AUT-8: deterministic counters");
+		assertTrue(first.getExactCounters().getOperations() > 0);
+		assertEquals(String.valueOf(first.getRelaxedCounters()),
+				String.valueOf(second.getRelaxedCounters()));
+		assertTrue(first.getRelaxedCounters().size() > 1,
+				"SUBSTITUTE_GENERIC evaluates the base and every perturbation");
 	}
 
 	@Test

@@ -182,6 +182,14 @@ public final class StructuralPointResolver {
 			return previous;
 		}
 		ConstructiveConeEvaluator<Element> exact = ConstructiveConeEvaluator.exact(cone, budget);
+		return decide(locus, cone, exact, point, supportNode, targetNode, premises, budget,
+				digest).withExactCounters(exact.getExactCounters());
+	}
+
+	/** Facts 2 to 4 on the exact evaluation of the cone at its base configuration. */
+	private static StructuralPointResolution decide(GeoLocusV2 locus, ConstructiveCone cone,
+			ConstructiveConeEvaluator<Element> exact, int point, int supportNode, int targetNode,
+			List<String> premises, ExactEvaluationBudget budget, String digest) {
 		int replacement = cone.getReplacementNode();
 		IncidenceResult onSupport = exact.incidence(replacement, supportNode);
 		if (onSupport.getIncidence() == Incidence.NOT_DECIDED) {
@@ -219,7 +227,7 @@ public final class StructuralPointResolver {
 		}
 		StructuralPointResolution resolved = StructuralPointResolution.defined(position,
 				membership, null, premises, digest).withTransfer(transfer);
-		if (target == null) {
+		if (targetNode < 0) {
 			return resolved;
 		}
 		return incidence(resolved, cone, exact, point, targetNode, budget, digest);
@@ -261,9 +269,11 @@ public final class StructuralPointResolver {
 		if (relaxed.getRecord().getIntegrity() != RelationIntegrity.RELAXED) {
 			return StructuralPointResolution.undefined(Cause.INCIDENCE_NOT_ESTABLISHED,
 					String.valueOf(relaxed), digest).withTransfer(resolved.getTransfer())
-					.withIncidence(relaxed.getRecord());
+					.withIncidence(relaxed.getRecord())
+					.withRelaxedCounters(relaxed.getCounters());
 		}
-		return resolved.withIncidence(relaxed.getRecord());
+		return resolved.withIncidence(relaxed.getRecord())
+				.withRelaxedCounters(relaxed.getCounters());
 	}
 
 	/**

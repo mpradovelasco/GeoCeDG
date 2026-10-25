@@ -27,11 +27,14 @@ public final class StructuralPointResolution {
 	private final Cu2CertificateTransfer.Record transfer;
 	private final List<String> premises;
 	private final String stateDigest;
+	private final ExactEvaluationCounters exactCounters;
+	private final List<ExactEvaluationCounters> relaxedCounters;
 
 	private StructuralPointResolution(boolean defined, StructuralPointResolver.Cause cause,
 			String message, double[] position, RelationIntegrityRecord membership,
 			RelationIntegrityRecord incidence, Cu2CertificateTransfer.Record transfer,
-			List<String> premises, String stateDigest) {
+			List<String> premises, String stateDigest, ExactEvaluationCounters exactCounters,
+			List<ExactEvaluationCounters> relaxedCounters) {
 		this.defined = defined;
 		this.cause = cause;
 		this.message = message;
@@ -41,29 +44,41 @@ public final class StructuralPointResolution {
 		this.transfer = transfer;
 		this.premises = Collections.unmodifiableList(new ArrayList<>(premises));
 		this.stateDigest = stateDigest;
+		this.exactCounters = exactCounters;
+		this.relaxedCounters = Collections.unmodifiableList(new ArrayList<>(relaxedCounters));
 	}
 
 	static StructuralPointResolution undefined(StructuralPointResolver.Cause cause,
 			String message, String stateDigest) {
 		return new StructuralPointResolution(false, cause, message, null, null, null, null,
-				Collections.emptyList(), stateDigest);
+				Collections.emptyList(), stateDigest, null, Collections.emptyList());
 	}
 
 	static StructuralPointResolution defined(double[] position,
 			RelationIntegrityRecord membership, RelationIntegrityRecord incidence,
 			List<String> premises, String stateDigest) {
 		return new StructuralPointResolution(true, null, null, position.clone(), membership,
-				incidence, null, premises, stateDigest);
+				incidence, null, premises, stateDigest, null, Collections.emptyList());
 	}
 
 	StructuralPointResolution withTransfer(Cu2CertificateTransfer.Record record) {
 		return new StructuralPointResolution(defined, cause, message, position, membership,
-				incidence, record, premises, stateDigest);
+				incidence, record, premises, stateDigest, exactCounters, relaxedCounters);
 	}
 
 	StructuralPointResolution withIncidence(RelationIntegrityRecord record) {
 		return new StructuralPointResolution(defined, cause, message, position, membership,
-				record, transfer, premises, stateDigest);
+				record, transfer, premises, stateDigest, exactCounters, relaxedCounters);
+	}
+
+	StructuralPointResolution withExactCounters(ExactEvaluationCounters counters) {
+		return new StructuralPointResolution(defined, cause, message, position, membership,
+				incidence, transfer, premises, stateDigest, counters, relaxedCounters);
+	}
+
+	StructuralPointResolution withRelaxedCounters(List<ExactEvaluationCounters> counters) {
+		return new StructuralPointResolution(defined, cause, message, position, membership,
+				incidence, transfer, premises, stateDigest, exactCounters, counters);
 	}
 
 	/** @return whether the point is defined */
@@ -125,6 +140,22 @@ public final class StructuralPointResolution {
 	 */
 	public String getStateDigest() {
 		return stateDigest;
+	}
+
+	/**
+	 * @return the deterministic counters of the exact evaluation at the base configuration,
+	 *         against {@code cu3-exact-evaluation-budget/v1}, or {@code null} when none ran
+	 */
+	public ExactEvaluationCounters getExactCounters() {
+		return exactCounters;
+	}
+
+	/**
+	 * @return the counters of the exact evaluations of {@code SUBSTITUTE_GENERIC}, one for the
+	 *         base and one for each perturbation, or an empty list when it did not run
+	 */
+	public List<ExactEvaluationCounters> getRelaxedCounters() {
+		return relaxedCounters;
 	}
 
 	/**

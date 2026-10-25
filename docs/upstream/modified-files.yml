@@ -7188,13 +7188,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolver.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone. PRE-G9B-CU3 increment E1, Stage A matrix: drivers on arcs and on paths other than circles and segments are UNSUPPORTED_DRIVER_FAMILY; a defining point of a segment is recognized before its parent; OUT_OF_DRIVER_DOMAIN and SEAM_SIDE_UNDECIDED are typed causes.",
+      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone. PRE-G9B-CU3 increment E1, Stage A matrix: drivers on arcs and on paths other than circles and segments are UNSUPPORTED_DRIVER_FAMILY; a defining point of a segment is recognized before its parent; OUT_OF_DRIVER_DOMAIN and SEAM_SIDE_UNDECIDED are typed causes. PRE-G9B-CU3 gate G-AUT-8: every resolution carries the counters of its exact evaluation and of SUBSTITUTE_GENERIC.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolution.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the revision evidence of one structural point: position with the declared error of its rigorous enclosure, integrity records of P in L and P in r, transfer record and typed cause; never persisted.",
+      "purpose": "PRE-G9B-CU3 increment E1: the revision evidence of one structural point: position with the declared error of its rigorous enclosure, integrity records of P in L and P in r, transfer record and typed cause; never persisted. PRE-G9B-CU3 gate G-AUT-8: the deterministic counters of the exact evaluation and of SUBSTITUTE_GENERIC, as revision evidence that is never persisted.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7326,7 +7326,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointMatrixTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism. Rows V-EVID-4, V-AUT-NUM-1, V-AUT-NUM-2 and V-VIEW-1 at the structural point.",
+      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism. Rows V-EVID-4, V-AUT-NUM-1, V-AUT-NUM-2 and V-VIEW-1 at the structural point. Gate G-AUT-8: the counters of two resolutions of one revision are identical.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
