@@ -7,6 +7,7 @@
 | Normas candidatas | [propuesta normativa](../architecture/pre_g9b_cu3_normative_proposal.md) (A3.0 a A3.5); [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Diseños | [análisis](../architecture/pre_g9b_cu3_initial_state_and_capability_analysis.md); [Etapa A](../architecture/pre_g9b_cu3_stage_a_structural_points_design.md); [Etapa B](../architecture/pre_g9b_cu3_stage_b_tangent_contact_certification_design.md); [normalización, admisibilidad y ejes](../architecture/pre_g9b_cu3_residual_normalization_and_axes_design.md); [estrategia](../architecture/pre_g9b_cu3_implementation_strategy.md) |
 | Decisiones aplicadas | C1-1 (puertas por contadores) y C1-4 (`preserve` frente a `pins`) del cierre de `CU0`; las de las filas dependen de la [hoja de decisiones de `CU3`](pre_g9b_cu3_author_decision_sheet.md) |
+| Ampliación candidata | §6: filas V-AUT de la autoridad constructiva, de la conciliación de 2026-10-25 ([propuesta normativa candidata](../architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md)). Sin aprobación autoral; no modifica §1 a §5 |
 
 Reglas de las filas:
 
@@ -260,3 +261,136 @@ Clase recomendada: `INTEGRATED_PHASE`, con `STATIC`, `INFRA_UNIT`, `PHASE` de `C
   exista otra raíz transversal contradicha fuera de sus disparadores.
 - **Lectores anteriores.** La compatibilidad se comprueba con el producto actual, no con todas las
   versiones publicadas.
+
+## 6. Ampliación candidata: autoridad constructiva e integridad de las relaciones (V-AUT)
+
+Esta sección es una **ampliación candidata** de la conciliación de 2026-10-25
+([propuesta](../architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md), §6.3, §13
+y §14). No forma parte de la matriz aprobada el 2026-10-24, no la modifica y no tiene
+aprobación autoral (`selfApproved=false`). Sus filas solo serán obligatorias si el autor aprueba
+las decisiones D-AUT de las que dependen (§13 de la propuesta).
+
+Reglas propias:
+
+- Las reglas del encabezamiento valen también aquí. La prueba adversaria falla con la capacidad
+  desactivada o en la base de la implementación.
+- Salvo que la fila diga otra cosa, las decisiones exactas se toman en `Σ_C`: la configuración
+  constructiva, con los sustitutos de frontera declarados. `Σ_L` solo entra como representación
+  certificada, por transferencia (§6.2).
+- Bajo `legacy-representation-authority/v1`, las filas de §1 a §5 conservan su sentido aprobado.
+  Bajo `constructive-authority/v1`, las filas que deciden en `Σ_L⁺` o contra la autoridad
+  binary64 del objetivo se leen con AUT-7. Entre ellas están G-M3-4, V-M3-9, V-CFG-1 a V-CFG-6 y
+  V-MAND-1 a V-MAND-3. Con AUT-7, la autoridad del objetivo es el objeto constructivo y la
+  configuración de decisión es `Σ_C`. Esa lectura no reescribe ninguna fila aprobada: es la
+  revisión que D-AUT-11 somete al autor.
+- `RELAXED` nunca es prueba: ninguna fila lo acepta como premisa de `STRICT`.
+- Un sondeo transitorio puede identificar objetos por etiqueta o por referencia Java. Una prueba
+  de producto nunca lo hace (§6.6).
+
+### 6.1 Adopción y política de documento (D-AUT-2)
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-ADOPT-1 | documento nuevo | nace sin registro de política, con `legacy-representation-authority/v1`; al crear una forma de `CU3`, el comando ofrece el evento de adopción y, si se rechaza, falla cerrado con causa tipada | un producto que diera por defecto la política constructiva a los documentos nuevos haría fallar la prueba |
+| V-AUT-ADOPT-2 | documento nuevo o vacío que adopta la política | `AUTHORITY_POLICY_ADOPTION` explícito y registrado, con informe de impacto vacío | una adopción implícita, sin evento, haría fallar la prueba |
+| V-AUT-ADOPT-3 | documento existente: modelo del autor y corpus de `CU0`, `CU1` y `CU2` | abrir, editar, guardar, Deshacer y Rehacer nunca cambian la política; la adopción calcula su informe de impacto antes de aplicarse, se aplica en una sola transacción y no cambia ninguna identidad, token ni selector | — |
+| V-AUT-ADOPT-4 | Deshacer y Rehacer de la adopción | Deshacer restaura la política anterior y sus resultados; Rehacer aplica la misma adopción con el mismo informe; no existe la vuelta automática | — |
+| V-AUT-ADOPT-5 | sin documentos mixtos | ninguna operación deja dos autoridades en un documento | elegir la autoridad por relación o por comando haría fallar la prueba |
+| V-AUT-ADOPT-6 | copiar, pegar y macros entre políticas | rige la política del destino; pegar formas de `CU3` en un documento sin la política constructiva sigue V-AUT-ADOPT-1 | — |
+| V-AUT-ADOPT-7 | lector anterior | un documento con el registro de política, abierto con el producto de la base de la implementación, falla cerrado con causa tipada (patrón `MALFORMED_RECORD` del ADR 0029); nunca se lee con otra autoridad ni pierde el registro al guardarse | un lector que ignorara el registro cargaría el documento con la autoridad antigua |
+| V-AUT-ADOPT-8 | recalificación de G8B-R1 en la adopción (D-AUT-6) | cada raíz que G8B-R1 admitió se recalifica una sola vez: `STRICT` si su corchete se certifica de nuevo contra el objetivo constructivo, `RELAXED` por (c2) o `NOT_ESTABLISHED`; un resultado contradicho pierde su admisibilidad con causa tipada, sin reasociación; el informe de impacto enumera las raíces de cada clase | heredar automáticamente la admisión haría fallar la prueba |
+
+### 6.2 Transferencia de certificados de `CU2` (D-AUT-4)
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-TRF-1 | margen: la componente de `e_1` que contiene `t*` | se transfiere con encierros de transferencia que contienen el valor capturado y el constructivo, con todos los signos estrictos; `P ∈ L` `STRICT`, con la vía `TRANSFERRED_BY_MARGIN` registrada | con un ulp de perturbación junto a una frontera de decisión, `OPEN_MARGIN_INSUFFICIENT` |
+| V-AUT-TRF-2 | estructura: los pliegues de `e_1` (`fold-symmetry/v1`) y la periodicidad estructural de la costura | se transfieren si todas sus premisas estructurales son `STRICT` bajo la autoridad constructiva | con una premisa estructural no estricta, `STRUCTURAL_PREMISE_NOT_STRICT` |
+| V-AUT-TRF-3 | nueva decisión: un conteo de Sturm, una multiplicidad o el valor crítico de la mordedura, pedidos por un consumidor estricto | se vuelven a decidir en `Σ_C` por un método admitido; si no hay vía, `CLOSED_DECISION_NOT_REDECIDED`, y si la nueva decisión refuta, `CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION` | consumir una componente puntual o la decisión cerrada de `Σ_L` sin decidirla de nuevo haría fallar la prueba |
+| V-AUT-TRF-4 | correspondencia y revisión | una huella distinta o un estado de selección cambiado da `CORRESPONDENCE_NOT_DEMONSTRATED`; fallan cerrados tanto el consumidor estricto como el que acepta `RELAXED` | — |
+| V-AUT-TRF-5 | presupuesto | con un presupuesto inyectado, `BUDGET_EXHAUSTED` y fallo cerrado estricto; nunca una decisión | — |
+| V-AUT-TRF-6 | certificado de origen intacto | en todos los casos anteriores, los bytes, la huella, los componentes y las claves del certificado de `CU2` son iguales antes y después, y siguen valiendo para `Σ_L` | — |
+
+### 6.3 Procedencia, intrinsecidad e integridad (D-AUT-1, D-AUT-3 y D-AUT-9)
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-PROV-1 | cierre de procedencia (G-AUT-1) | con la semántica de los puntos sobre caminos de D-AUT-3, el evaluador constructivo hace exactas las relaciones de procedencia del modelo y de un corpus sintético; ninguna es `STRICT` sin su hecho de existencia establecido rigurosamente; el censo 160/160 del estudio solo entra como regresión | un punto sobre camino sin la semántica de camino refuta su camino; una recta tomada en binary64 refuta sus puntos |
+| V-AUT-PROV-2 | intrinsecidad (G-AUT-3) | una sola semántica por objeto con cualquier conductor, captura y consumidor | las cuatro semánticas de `h_2` del estudio deben dar una sola |
+| V-AUT-INT-1 | propagación por premisas (G-AUT-5) | en un grafo sintético con premisas `STRICT`, `RELAXED` y `CONTRADICTED`, la integridad de cada relación es la de su método, acotada por la peor premisa que usa su prueba; lo que depende de una premisa `CONTRADICTED` pasa a `NOT_ESTABLISHED`, y solo es `CONTRADICTED` lo que se refuta por sí mismo | una premisa lejana `RELAXED` que contaminara una incidencia de procedencia haría fallar la prueba |
+| V-AUT-INT-2 | consumidores e interfaz | un consumidor que exige `STRICT` y no la recibe falla de forma explícita, con causa tipada; la consulta de integridad enumera las premisas `RELAXED`, separada de `NumericGuarantee`; `RelationIntegrity` no se persiste ni entra en los tokens | — |
+| V-AUT-INT-3 | sin blanqueo (G-AUT-6) | ninguna relación `CONTRADICTED` pasa a `RELAXED`; un residuo binary64 dentro de la tolerancia no cambia una contradicción constructiva | admitir como relajado un contacto refutado haría fallar la prueba |
+
+### 6.4 Política `RELAXED`: `SUBSTITUTE_GENERIC` versión 1 (D-AUT-5)
+
+Las filas siguen la definición operativa de la propuesta §4.2b. En el modelo del autor, `m = 2` y
+`N = 8`.
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-RLX-1 | igualdad accidental de grado 1: el control C3, con `I` sobre la vertical constante que pasa por su sustituto | se cumple en el sustituto y no en las perturbaciones: no hay evidencia (c1) y la relación queda en `NOT_ESTABLISHED` | una política que bastara con la igualdad en el sustituto la admitiría |
+| V-AUT-RLX-2 | **un acuerdo finito no es una identidad**: relación sintética del evaluador, en una prueba directa del motor, cuyo residuo es la cúbica no nula que se anula en los `N + 1 = 9` puntos de la versión 1, calculada por álgebra lineal exacta a partir de ellos | en E1, `SUBSTITUTE_GENERIC` la admite: es `RELAXED` por (c1), nunca `STRICT` ni premisa de `STRICT`, y se presenta como evidencia computacional, no como prueba; en E2, el certificado da `NOT_AN_IDENTITY` para la misma relación y celda, retira la evidencia y la relación queda en `NOT_ESTABLISHED` | tomar el acuerdo en los nueve puntos como prueba daría `STRICT`; no retirar la evidencia tras `NOT_AN_IDENTITY` la dejaría en `RELAXED` |
+| V-AUT-RLX-3 | igualdad accidental de grado 2: residuo cuadrático no nulo que se anula en la base `z`, por ejemplo `(w₁ − z₁)² − (w₂ − z₂)²` en las coordenadas de frontera `w` | la condición de rango lo rechaza: al menos un punto perturbado da un residuo no nulo, y la relación queda en `NOT_ESTABLISHED` | sin la condición de rango, un generador cuyas direcciones cumplieran `|ρ₁d₁| = |ρ₂d₂|` la aceptaría |
+| V-AUT-RLX-4 | producto de dos sustitutos que se anula en la base, `(w₁ − z₁)(w₂ − z₂)` | se rechaza: cada dirección mueve todas las coordenadas, porque se descartan las salidas nulas del generador | perturbar un sustituto cada vez lo aceptaría |
+| V-AUT-RLX-5 | celda operativa y ramas | una base tan cerca de una frontera entre celdas que una perturbación cambia un signo da `PERTURBATION_LEFT_CELL` y `NOT_ESTABLISHED`; una rama de la base fuera del corte del conductor que no corresponde a la salida viva da `NOT_ESTABLISHED` con su causa; en cada perturbación, la rama es la misma rama formal (índice de raíz bruta y pertenencia) | volver a elegir en cada punto la rama que cumple la relación aceptaría la intersección 1 de S2 |
+| V-AUT-RLX-6 | determinismo, posición general y precondiciones | dos ejecuciones en la misma revisión dan los mismos puntos y resultados; los `N + 1` puntos no están sobre ninguna cuádrica, comprobado con aritmética exacta; con un generador degenerado inyectado, el tope de `64·N` salidas da `NOT_ESTABLISHED`; un objeto fuera de la clase sin declarar como frontera y un presupuesto inyectado dan `NOT_ESTABLISHED` con causa tipada | una semilla distinta por ejecución o por sesión daría resultados distintos |
+| V-AUT-RLX-7 | los cinco contactos obligatorios en E1 | `P ∈ r` `RELAXED` por (c1), con el sustituto de `H` como premisa no constructible registrada, y `P ∈ L` `STRICT` por transferencia (V-AUT-TRF-1); se recalcula en cada revisión, y un arrastre sin cambio de revisión no repite nada (GC3-3) | con (c1) desactivado, ningún contacto pasa a `RELAXED` por (c2), aunque su residuo constructivo quede dentro de `τ_v1`: no tienen cambio de signo |
+
+### 6.5 Decisiones numéricas heredadas (D-AUT-3, §2.6b de la propuesta)
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-NUM-1 | definición condicionada con condición sin establecer (D3): `P = If(b, P₁, P₂)` | ninguna relación cuya prueba use la decisión es `STRICT` (P1); una identidad que vale para todo valor del corte solo es `STRICT` si la caja certificada contiene las dos ramas y cabe en la celda, y si no, queda en `NOT_ESTABLISHED` (P2); con (c1), `RELAXED`, con la decisión nombrada como premisa no establecida (P5) | encerrar solo la rama elegida daría `STRICT` a través de una decisión sin establecer |
+| V-AUT-NUM-2 | objeto condicionado por un booleano de D2 (`AreConcyclic`, `Relation`, una comparación) frente a una condición polinómica de la clase (`x(A) > 0`) | con el booleano, la existencia o la selección del objeto queda en `NOT_ESTABLISHED` (P4); con la condición de la clase, el certificado decide su signo, lo registra en la celda y lo recomprueba, y el objeto deja de ser frontera (P3); al cruzar `x(A) = 0`, la prueba queda inaplicable y se intenta otra en la celda nueva | tomar el booleano heredado como premisa daría `STRICT`; sin la condición en la celda, la prueba de una rama sobreviviría al cambio de rama |
+| V-AUT-NUM-3 | tangencia decidida por tolerancia (D1): recta casi tangente a una circunferencia, con `isEqual(dis, 0, delta)` de `AlgoIntersectLineConic` | la existencia y la multiplicidad de la salida ideal se deciden por un signo certificado o una decisión exacta, nunca por la tolerancia; si no se deciden, `NOT_ESTABLISHED`; la salida heredada no cambia | aceptar la tolerancia daría `STRICT` a un punto que no existe idealmente, o suprimiría uno que sí existe |
+| V-AUT-NUM-4 | extremo de segmento (D1): punto aceptado por tolerancia junto al extremo de un segmento o un rayo | la pertenencia a la parte limitada se decide con el parámetro constructivo, con signo certificado o exacto; fuera, `NOT_ON_LIMITED_TARGET`; sin decidir, `NOT_ESTABLISHED` | la pertenencia por tolerancia daría `STRICT` fuera de la parte limitada |
+| V-AUT-NUM-5 | selección condicionada (D4): `Element(lista, n)` con un índice calculado, e `Intersect` con punto de referencia | fuera de la clase: el objeto elegido es frontera declarada; una relación que dependa de él es como mucho `RELAXED`, con la selección como premisa no establecida, salvo P2 sobre todos los candidatos | tomar la selección heredada como premisa rigurosa daría `STRICT` |
+| V-AUT-NUM-6 | comportamiento heredado sin cambios (P6) | en cada categoría D1 a D5, las salidas heredadas (valores, booleanos, índices, textos de `Relation`) son iguales byte a byte con las dos políticas; las de D2 no tienen integridad; GeoCeDG no añade ninguna reinterpretación por tolerancia | un producto que cambiara `AreEqual` o `Relation` bajo la política constructiva haría fallar la prueba |
+
+### 6.6 Identidad durable y clave estructural del certificado (D-AUT-8)
+
+La clave es `cic-structural-key/v1` (propuesta §5.4b). Cada fila se comprueba sobre el modelo del
+autor y sobre una construcción sintética, con el certificado de la relación antes y después de la
+operación.
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-ID-1 | renombrar un objeto del cono: el objetivo, un intermedio y el conductor | las identidades durables y la clave no cambian; la prueba se recomprueba y sigue siendo aplicable, con la misma integridad | la firma por etiquetas del prototipo haría inaplicable una prueba válida |
+| V-AUT-ID-2 | redefinir un objeto del cono, aunque conserve su identidad por retención compatible (ADR 0029) | cambia su definición estructural y con ella la clave: la prueba queda inaplicable y se intenta otra | una recomprobación solo de signos aceptaría el certificado viejo |
+| V-AUT-ID-3 | eliminar y volver a crear con la misma etiqueta (S4 en el producto) | otra identidad durable y otra clave: la prueba queda inaplicable, sin reasociación; eliminar un ancestro elimina el sujeto de la relación, y ningún certificado le sobrevive | una correspondencia por etiqueta conservaría el certificado viejo, que en S4 es falso |
+| V-AUT-ID-4 | Deshacer tras un cambio del cono | se restauran las identidades, los roles, las dependencias y las revisiones; el certificado se vuelve a evaluar y coincide con el de antes del cambio; ninguno viejo sobrevive | — |
+| V-AUT-ID-5 | Rehacer | el certificado coincide con el de después del cambio | — |
+| V-AUT-ID-6 | guardar y reabrir | el archivo no contiene certificados ni integridades; tras la carga se recalculan con la misma clave, porque las identidades durables sí se persisten, y dan los mismos resultados de forma determinista | — |
+| V-AUT-ID-7 | copiar o duplicar | identidades nuevas, claves nuevas y certificados nuevos, sin reutilizar ninguno | reutilizar el certificado del original haría fallar la prueba |
+
+### 6.7 Certificado de identidad constructiva (D-AUT-8; G-AUT-2 y G-AUT-9)
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-CIC-1 | las cinco incidencias obligatorias, en los alcances de frontera y automático | `IDENTITY_CERTIFIED` en su celda, con `t*` estructural, el orden de contacto por jets exactos y los valores ideales de los puntos sobre caminos y de los cortes encerrados rigurosamente (E1(d)) | una caja que no contiene el valor ideal da `NOT_ESTABLISHED`, nunca `IDENTITY_CERTIFIED` |
+| V-AUT-CIC-2 | controles C1 a C5 de la propuesta §5.5 | C1, C2, C3 y C5 dan `NOT_AN_IDENTITY`, y C4 da `NOT_ESTABLISHED`; `NOT_AN_IDENTITY` nunca es una contradicción | un objetivo desplazado un ulp no se certifica |
+| V-AUT-CIC-3 | construcciones sintéticas S1 a S3 | los teoremas se demuestran; las conjeturas falsas no; la prueba depende de la rama (S2); un corte olvida relaciones y nunca las inventa (limitación de S3) | — |
+| V-AUT-CIC-4 | correspondencia de ramas | fuera del corte del conductor, la salida viva se certifica estrictamente más cerca de la rama elegida que de la otra; si las ramas casi coinciden y no se distinguen, `BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED`; dentro del corte rige el estado de selección capturado, cuya fidelidad aporta `CU2` por transferencia | una inversión de signo inyectada no da ningún certificado |
+| V-AUT-CIC-5 | caso especial heredado de un punto ya incidente | la rama que devuelve la regla heredada (la intersección 1 de S2, que es `TA`) se reproduce y se contrasta con la salida viva, sin suponerla | — |
+| V-AUT-CIC-6 | resultados tipados | segunda raíz independiente: `OUT_OF_CLASS`; presupuesto inyectado: `BUDGET_EXHAUSTED`; objeto indefinido: `INVALID` (`OBJECT_UNDEFINED`); precondición sin decidir: `PRECONDITION_UNDECIDED`; nunca una decisión por defecto | — |
+
+### 6.8 Dinámica (G-AUT-10)
+
+| Id | Caso | Criterio | Prueba adversaria |
+|---|---|---|---|
+| V-AUT-DYN-1 | las doce posiciones del estudio y movimientos de `B` y `H` | con la misma clave, recomprobación sin trabajo simbólico nuevo; un cambio de constante deja inaplicable la prueba de frontera y no la del alcance automático; con `H` +40 (otra celda), la recomprobación de los contactos en `K` falla cerrada y las pruebas nuevas dan los resultados de la propuesta §5.5, entre ellos la otra rama de `H_1`; con `D_1` ×3, la salida de la parte limitada certificada o `INVALID` | ninguna prueba sobrevive a un cambio de clave, de constante, de selección o de celda |
+| V-AUT-DYN-2 | transición real de un estado de selección | la clave cambia, la prueba anterior queda inaplicable y se intenta otra | una recomprobación solo de signos aceptaría la prueba anterior |
+| V-AUT-DYN-3 | arrastre sin cambio de revisión | ninguna evaluación exacta ni simbólica nueva (GC3-3) | — |
+| V-AUT-DYN-4 | determinismo | dos ejecuciones en la misma revisión dan las mismas integridades, causas, premisas y contadores (como V-DET-CU3-1) | — |
+
+### 6.9 Lo que estas filas no pueden demostrar
+
+- **`SUBSTITUTE_GENERIC`** es evidencia computacional positiva. V-AUT-RLX-2 deja constancia de que
+  un acuerdo en un conjunto finito de puntos no es una identidad, y ninguna fila de §6.4 demuestra
+  una incidencia.
+- **El certificado** vale en su celda y con los valores ideales encerrados. Las doce posiciones son
+  recomprobaciones, no la demostración.
+- **La recalificación de G8B-R1** se prueba en el corpus y en casos construidos, no en todos los
+  documentos existentes.
+- **Los lectores anteriores** se prueban con el producto de la base de la implementación, no con
+  todas las versiones publicadas.
