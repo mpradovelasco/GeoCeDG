@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-e2-cost",
+  "status": "CU3 E2 GATE G-AUT-8 BENCH EVIDENCE - NO VERDICT OF ITS OWN",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-e2-cost.ps1",
+    "source_commit": "91222e312fed9756225407be6f0c72a1eafeac6e",
+    "source_tree": "5289878073d33f28d69bee92d08de9a96bbb54bf",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "budget": {
+    "version": "constructive-identity-certificate-budget/v1",
+    "term_products": 16000000,
+    "indeterminates": 16,
+    "terms": 200000,
+    "bits": 4096,
+    "status": "provisional initial ceilings (approval record section 16)"
+  },
+  "timing_runs": 5,
+  "model": {
+    "SX1=Intersect(e_1,n,K)": {
+      "product": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:1e1586bf9b96cf1b0e86fde1a574bd95a0dff1da93db179af705c221a6af0720",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 24,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 279900,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 104,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 157.412
+      },
+      "integrity": "STRICT",
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at 0",
+      "boundary_scope": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "BOUNDARY",
+        "key": "cic-structural-key/v1:fd59e90266ac652e254bee2d7e7b4cbfea413dc0f786a39ffabd70a00392c171",
+        "cuts": ["H"],
+        "indeterminates": ["H.x", "H.y", "B.y"],
+        "cell_conditions": 24,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 6501,
+          "indeterminates": 3,
+          "largest_terms": 98,
+          "largest_bits": 698,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 20.6567
+      }
+    },
+    "SX2=Intersect(e_1,c_1,K)": {
+      "product": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:6679dfb72a63f957e811ce1c62e73f76f19b73f9f520fb085511eaeded87fc6b",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 20,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 311243,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 104,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 187.8707
+      },
+      "integrity": "STRICT",
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at 0",
+      "boundary_scope": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "BOUNDARY",
+        "key": "cic-structural-key/v1:19c605ed7827d72384d4a65f5da69c715864fae47423e74cd6a5ef0b08b8493a",
+        "cuts": ["H"],
+        "indeterminates": ["H.x", "H.y", "B.y"],
+        "cell_conditions": 20,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 8387,
+          "indeterminates": 3,
+          "largest_terms": 98,
+          "largest_bits": 698,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 25.3532
+      }
+    },
+    "SX3=Intersect(o_1,h_2,K)": {
+      "product": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:3e781ac183de0163a8f4f189e1ccad3bee57342bfb76c0f0d1289e1cca092922",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 31,
+        "contact_order": "TANGENT",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": 1,
+        "counters": {
+          "term_products": 1571831,
+          "indeterminates": 8,
+          "largest_terms": 21685,
+          "largest_bits": 114,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 882.886
+      },
+      "integrity": "STRICT",
+      "fold": "null",
+      "boundary_scope": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "BOUNDARY",
+        "key": "cic-structural-key/v1:bebcceda6ef47336284add11c42c29ec5c2b19dcd9036dc7bf78b338a4d14b90",
+        "cuts": ["H"],
+        "indeterminates": ["H.x", "H.y", "B.y"],
+        "cell_conditions": 31,
+        "contact_order": "TANGENT",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": 1,
+        "counters": {
+          "term_products": 11467,
+          "indeterminates": 3,
+          "largest_terms": 98,
+          "largest_bits": 698,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 33.8742
+      }
+    },
+    "SX4=Intersect(e_1,c_1,J)": {
+      "product": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:2e9c65472bc024c3b6499fd792f60348920b08f052c613bed745e8f5351c9ee7",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 20,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 311243,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 105,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 185.8294
+      },
+      "integrity": "STRICT",
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at pi",
+      "boundary_scope": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "BOUNDARY",
+        "key": "cic-structural-key/v1:41269289992f72202f8baa1dacb8c7c095a73fb59da46964cf14f0cf4f119316",
+        "cuts": ["H"],
+        "indeterminates": ["H.x", "H.y", "B.y"],
+        "cell_conditions": 20,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 8387,
+          "indeterminates": 3,
+          "largest_terms": 98,
+          "largest_bits": 700,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 25.461
+      }
+    },
+    "SX5=Intersect(e_1,r,J)": {
+      "product": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:bc0c5bcf6bd921f0fe8e3fda710ba0d09bdbb3109e2a079c902a5c72a7ff9630",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 24,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": 1,
+        "counters": {
+          "term_products": 279900,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 105,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 129.9254
+      },
+      "integrity": "STRICT",
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at pi",
+      "boundary_scope": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "scope": "BOUNDARY",
+        "key": "cic-structural-key/v1:c4d40b50f658a3b2f4f681239c6d9340d518e32e66283d22705c3d936299a6a5",
+        "cuts": ["H"],
+        "indeterminates": ["H.x", "H.y", "B.y"],
+        "cell_conditions": 24,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": 1,
+        "counters": {
+          "term_products": 6501,
+          "indeterminates": 3,
+          "largest_terms": 98,
+          "largest_bits": 700,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 18.8943
+      }
+    },
+    "budget injections on SX1": {
+      "term products 1000": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:6ac89f186a69622bab7c244053222a63db94138a8008593916222ddc11ea6781",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 13,
+        "contact_order": null,
+        "counters": {
+          "term_products": 1014,
+          "indeterminates": 8,
+          "largest_terms": 53,
+          "largest_bits": 104,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=1000, indeterminates=16, terms=200000, bits=4096]"
+        }
+      },
+      "indeterminates 4": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:f759b1696438f6d2ed1fb1c62c64a256345fb6112059484466ee0a047d17c1ff",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y"],
+        "cell_conditions": 0,
+        "contact_order": null,
+        "counters": {
+          "term_products": 0,
+          "indeterminates": 4,
+          "largest_terms": 0,
+          "largest_bits": 0,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=16000000, indeterminates=4, terms=200000, bits=4096]"
+        }
+      },
+      "terms 50": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:bfc781878c29895f0b8320cf46e237d60067de53a3afd80e7f3d50f23deae321",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 11,
+        "contact_order": null,
+        "counters": {
+          "term_products": 404,
+          "indeterminates": 8,
+          "largest_terms": 53,
+          "largest_bits": 104,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=16000000, indeterminates=16, terms=50, bits=4096]"
+        }
+      },
+      "bits 60": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "scope": "AUTOMATIC",
+        "key": "cic-structural-key/v1:364d559ff4941623e3f6bd20be55350b237cc6cb6604d6934b30b99dc69d3b04",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 4,
+        "contact_order": null,
+        "counters": {
+          "term_products": 39,
+          "indeterminates": 8,
+          "largest_terms": 6,
+          "largest_bits": 103,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=16000000, indeterminates=16, terms=200000, bits=60]"
+        }
+      }
+    },
+    "drags": {
+      "same resolution after moving E_1": true,
+      "same certificate after moving H, rechecked": true,
+      "integrity after moving H": "STRICT"
+    }
+  },
+  "synthetic": {
+    "S1 circumcentre on the third bisector": {
+      "status": "IDENTITY_CERTIFIED",
+      "cause": "NONE",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:d427df7aae5a1c30e03c94d18030922a63e8e9342e355b6d5f93c8e315352a97",
+      "cuts": ["SC"],
+      "indeterminates": ["SB.x", "SB.y", "SA.x", "SA.y", "SC.x", "SC.y"],
+      "cell_conditions": 4,
+      "contact_order": null,
+      "counters": {
+        "term_products": 298,
+        "indeterminates": 6,
+        "largest_terms": 24,
+        "largest_bits": 2,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.5753
+    },
+    "S1 rotated vertex on the circumcircle": {
+      "status": "IDENTITY_CERTIFIED",
+      "cause": "NONE",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:340669899f77fbc9ae108a6b0a8b5bb1b2fa42bbc1af6bf7148fdf988534d504",
+      "cuts": ["SC"],
+      "indeterminates": ["SA.x", "SA.y", "SC.x", "SC.y", "SB.x", "SB.y"],
+      "cell_conditions": 4,
+      "contact_order": null,
+      "counters": {
+        "term_products": 1430,
+        "indeterminates": 6,
+        "largest_terms": 164,
+        "largest_bits": 3,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 2.6778
+    },
+    "S1 centroid on the third median": {
+      "status": "IDENTITY_CERTIFIED",
+      "cause": "NONE",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:c6891b9529602d1af67c3f6e185e05ad99a03e1e05657f78ca06fb5eff20a0d7",
+      "cuts": ["SC"],
+      "indeterminates": ["SB.x", "SB.y", "SA.x", "SA.y", "SC.x", "SC.y"],
+      "cell_conditions": 4,
+      "contact_order": null,
+      "counters": {
+        "term_products": 272,
+        "indeterminates": 6,
+        "largest_terms": 12,
+        "largest_bits": 3,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.2991
+    },
+    "S1 false: centroid on the circumcircle": {
+      "status": "NOT_AN_IDENTITY",
+      "cause": "RESIDUAL_NOT_ZERO",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:8a2b0c51ccd19146f2b55fd0267111f57916401907af86993ce4c73ad27185e3",
+      "cuts": ["SC"],
+      "indeterminates": ["SB.x", "SB.y", "SA.x", "SA.y", "SC.x", "SC.y"],
+      "cell_conditions": 7,
+      "contact_order": null,
+      "counters": {
+        "term_products": 2056,
+        "indeterminates": 6,
+        "largest_terms": 188,
+        "largest_bits": 6,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 3.0141
+    },
+    "S2 intersection 1 on the perpendicular": {
+      "status": "NOT_AN_IDENTITY",
+      "cause": "RESIDUAL_NOT_ZERO",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:eb52de35501d69050abe99f71e62304ed11d05b38adbb83941fbafc84c959ac2",
+      "cuts": [],
+      "indeterminates": ["TA.x", "TA.y", "TP.x", "TP.y", "TB.x", "TB.y"],
+      "cell_conditions": 5,
+      "contact_order": null,
+      "counters": {
+        "term_products": 2248,
+        "indeterminates": 6,
+        "largest_terms": 184,
+        "largest_bits": 109,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 4.6978
+    },
+    "S2 intersection 2 on the perpendicular": {
+      "status": "IDENTITY_CERTIFIED",
+      "cause": "NONE",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:5a0b31634deddd05d0af189f156de9f0d1fb8b03a95593631b254dda10eeb2d0",
+      "cuts": [],
+      "indeterminates": ["TA.x", "TA.y", "TP.x", "TP.y", "TB.x", "TB.y"],
+      "cell_conditions": 5,
+      "contact_order": null,
+      "counters": {
+        "term_products": 2370,
+        "indeterminates": 6,
+        "largest_terms": 184,
+        "largest_bits": 108,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 4.5166
+    },
+    "S3 foot on the Thales circle": {
+      "status": "IDENTITY_CERTIFIED",
+      "cause": "NONE",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:340d5979abc37400f1881d50925efc96cfbbc232479160b10b3585c0f9fa22d3",
+      "cuts": ["UR"],
+      "indeterminates": ["UA.x", "UA.y", "UB.x", "UB.y", "UR.x", "UR.y"],
+      "cell_conditions": 3,
+      "contact_order": null,
+      "counters": {
+        "term_products": 1209,
+        "indeterminates": 6,
+        "largest_terms": 111,
+        "largest_bits": 4,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.6113
+    },
+    "independent second root": {
+      "status": "NOT_ESTABLISHED",
+      "cause": "OUT_OF_CLASS",
+      "scope": "AUTOMATIC",
+      "key": "cic-structural-key/v1:ea453d41d0222ed5df0c926a23ad0286beae6cca51120580e7beed8c20081cf4",
+      "cuts": [],
+      "indeterminates": ["n0.x", "n0.y", "n1.x", "n1.y", "RA.x", "RA.y", "n4", "n7.x", "n7.y", "n8.x", "n8.y", "n10.x", "n10.y", "n11", "n14.x", "n14.y"],
+      "cell_conditions": 7,
+      "contact_order": null,
+      "counters": {
+        "term_products": 4140,
+        "indeterminates": 16,
+        "largest_terms": 729,
+        "largest_bits": 108,
+        "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 3.479
+    }
+  },
+  "largest_observed": {
+    "term_products": 1571831,
+    "indeterminates": 16,
+    "terms": 21685,
+    "bits": 700
+  }
+}
