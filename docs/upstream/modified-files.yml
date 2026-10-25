@@ -7158,13 +7158,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/DriverParameterEnclosure.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the driver parameter of an exact point on the captured driver support (inherited path map evaluated exactly: exact 0, pi and pi/2 on the axes of the frame, otherwise a widened StrictMath atan2 lifted across the seam), with the captured driver point at the enclosed parameter.",
+      "purpose": "PRE-G9B-CU3 increment E1: the driver parameter of an exact point on the captured driver support (inherited path map evaluated exactly: exact 0, pi and pi/2 on the axes of the frame, otherwise a widened StrictMath atan2 lifted across the seam), with the captured driver point at the enclosed parameter. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter of a segment driver is compared exactly with the driver domain, and an integer parameter is written without its denominator.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransfer.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted.",
+      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -7188,7 +7188,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolver.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone.",
+      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone. PRE-G9B-CU3 increment E1, Stage A matrix: drivers on arcs and on paths other than circles and segments are UNSUPPORTED_DRIVER_FAMILY; a defining point of a segment is recognized before its parent; OUT_OF_DRIVER_DOMAIN and SEAM_SIDE_UNDECIDED are typed causes.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7321,6 +7321,18 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu3ReservedAxisTargetTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 piece I-6: tests of the axes as Locus V2 intersection targets: creation, reserved identities in the durable relation, saving, reopening, Undo, Redo, copy and paste, a typed result for an unsupported target and no hidden line.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointMatrixTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3StructuralPointAuthorModelTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1 on the author model: explicit adoption with every durable identity kept, the five mandatory contacts with P in L STRICT and P in r RELAXED, the inherited permutation 1,0 of K, Point(o_1, K) against the author's workaround N_1 and the excCyl sweep.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

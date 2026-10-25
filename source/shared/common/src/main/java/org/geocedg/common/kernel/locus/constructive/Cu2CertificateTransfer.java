@@ -18,8 +18,12 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operand;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.OperandKind;
+import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Circle;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Line;
@@ -89,8 +93,12 @@ public final class Cu2CertificateTransfer {
 		CORRESPONDENCE_NOT_CERTIFIED,
 		/** The driver family has no parameter correspondence in this version. */
 		UNSUPPORTED_DRIVER_FAMILY,
+		/** The exact parameter lies outside the bounded driver domain. */
+		OUT_OF_DRIVER_DOMAIN,
 		/** The parameter enclosure meets the end of a component. */
 		COMPONENT_BOUNDARY_UNDECIDED,
+		/** The parameter enclosure meets the seam of a periodic domain at a component end. */
+		SEAM_SIDE_UNDECIDED,
 		/** The parameter enclosure meets a point component. */
 		POINT_COMPONENT_NOT_MATERIALIZED,
 		/** The parameter lies in no certified continuous component. */
@@ -286,6 +294,15 @@ public final class Cu2CertificateTransfer {
 					"no rigorous driver parameter of the exact point");
 		}
 		record.parameter = parameter.toString();
+		try {
+			if (Boolean.TRUE.equals(parameter.isOutside(structure.getCanonicalDomain()))) {
+				return record.refuse(Cause.OUT_OF_DRIVER_DOMAIN, "the exact parameter "
+						+ parameter + " lies outside the driver domain "
+						+ structure.getCanonicalDomain());
+			}
+		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
+			return record.refuse(Cause.BUDGET_EXHAUSTED, exhaustion.getMessage());
+		}
 		Cause placement = place(structure, parameter, record);
 		if (placement != null) {
 			return record.refuse(placement, "the parameter " + parameter
@@ -300,7 +317,10 @@ public final class Cu2CertificateTransfer {
 
 	/**
 	 * @return {@code null} when a certified continuous component contains the parameter
-	 *         enclosure in its interior, otherwise why not
+	 *         enclosure in its interior, otherwise why not: a point component that it meets, a
+	 *         certified absence that covers it (whose cause in {@code CU2} becomes a premise), the
+	 *         seam at the end of a component, or else the end of a component, a transition, an
+	 *         unresolved band or a gap that it meets
 	 */
 	private static Cause place(LocusExistenceStructure2D structure,
 			DriverParameterEnclosure parameter, Builder record) {
@@ -311,7 +331,12 @@ public final class Cu2CertificateTransfer {
 				return Cause.POINT_COMPONENT_NOT_MATERIALIZED;
 			}
 		}
-		boolean touches = false;
+		boolean periodic = structure.getTopology()
+				== LocusExistenceStructure2D.DomainTopology.PERIODIC;
+		double domainLower = structure.getCanonicalDomain().getLower();
+		double domainUpper = structure.getCanonicalDomain().getUpper();
+		boolean meetsSeam = periodic && (lower <= domainLower || upper >= domainUpper);
+		boolean seam = false;
 		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
 			if (!component.getNature().certifies()) {
 				continue;
@@ -333,10 +358,117 @@ public final class Cu2CertificateTransfer {
 									: " contains " + parameter + " in its interior"));
 					return null;
 				}
-				touches |= !(candidate[1] < start || candidate[0] > end);
+				if (!periodic && atIncludedDomainEnds(component, candidate)) {
+					// Stage A design section 2.3: an exact parameter at an included end of the
+					// driver domain belongs to the component; the end is no validity transition.
+					record.component = component.getEvidenceKey();
+					record.premise("component " + component.getEvidenceKey() + " "
+							+ component.getInterval() + " " + component.getNature()
+							+ " contains " + parameter + " up to an included end of the domain");
+					return null;
+				}
+			}
+			seam |= meetsSeam && endsAtSeam(component, domainLower, domainUpper);
+		}
+		String absence = certifiedAbsence(structure, lower, upper);
+		if (absence != null) {
+			record.premise(absence);
+			return Cause.NOT_IN_CERTIFIED_COMPONENT;
+		}
+		return seam ? Cause.SEAM_SIDE_UNDECIDED : Cause.COMPONENT_BOUNDARY_UNDECIDED;
+	}
+
+	/**
+	 * Whether an end of a component lies at the seam of the periodic domain: its binary64 end
+	 * is an end of the canonical domain, or the enclosure of its boundary reaches one. The ideal
+	 * seam {@code pi} lies above the binary64 end of the half-open domain.
+	 */
+	private static boolean endsAtSeam(ContinuousComponent component, double domainLower,
+			double domainUpper) {
+		return component.getStart() <= domainLower || component.getEnd() >= domainUpper
+				|| reachesSeam(component.getLowerBoundary(), domainLower, domainUpper)
+				|| reachesSeam(component.getUpperBoundary(), domainLower, domainUpper);
+	}
+
+	private static boolean reachesSeam(LocusBoundary2D boundary, double domainLower,
+			double domainUpper) {
+		return boundary.hasEnclosure() && (boundary.getEnclosureLower() <= domainLower
+				|| boundary.getEnclosureUpper() >= domainUpper);
+	}
+
+	/**
+	 * Whether the coverage of {@code CU2} certifies, without a gap, that the locus does not
+	 * exist at any parameter of the enclosure. An enclosure that leaves the canonical domain is
+	 * never covered: the seam stays undecided.
+	 *
+	 * @return the certified absence as a premise, or {@code null} when it does not cover the
+	 *         enclosure
+	 */
+	private static String certifiedAbsence(LocusExistenceStructure2D structure, double lower,
+			double upper) {
+		LocusInterval2D domain = structure.getCanonicalDomain();
+		if (lower < domain.getLower() || upper > domain.getUpper()) {
+			return null;
+		}
+		double reach = lower;
+		boolean reachCovered = false;
+		List<String> evidence = new ArrayList<>();
+		boolean progress = true;
+		while (progress && !(reach > upper || reach == upper && reachCovered)) {
+			progress = false;
+			for (Coverage item : structure.getCoverage()) {
+				if (!certifiesAbsence(item)) {
+					continue;
+				}
+				LocusInterval2D interval = item.getInterval();
+				boolean starts = interval.getLower() < reach || interval.getLower() == reach
+						&& (reachCovered || interval.isLowerClosed());
+				boolean extendsReach = interval.getUpper() > reach || !reachCovered
+						&& interval.getUpper() == reach && interval.isUpperClosed();
+				if (starts && extendsReach) {
+					if (interval.getUpper() > reach) {
+						reach = interval.getUpper();
+						reachCovered = interval.isUpperClosed();
+					} else {
+						reachCovered = true;
+					}
+					evidence.add(interval + " " + item.getState() + " " + item.getCause() + " "
+							+ item.getNature());
+					progress = true;
+				}
 			}
 		}
-		return touches ? Cause.COMPONENT_BOUNDARY_UNDECIDED : Cause.NOT_IN_CERTIFIED_COMPONENT;
+		return reach > upper || reach == upper && reachCovered
+				? "CU2 certified absence: " + String.join(", ", evidence) : null;
+	}
+
+	private static boolean certifiesAbsence(Coverage item) {
+		// Point components are refused before: an isolated-points interval is absence elsewhere.
+		return item.getNature().certifies()
+				&& (item.getState() == CoverageState.CERTIFIED_DOES_NOT_EXIST
+						|| item.getState() == CoverageState.CERTIFIED_ISOLATED_POINTS);
+	}
+
+	/**
+	 * @return whether the enclosure lies in the closed component and touches it only at ends
+	 *         that are included ends of the driver domain
+	 */
+	private static boolean atIncludedDomainEnds(ContinuousComponent component,
+			double[] candidate) {
+		double start = component.getInterval().getLower();
+		double end = component.getInterval().getUpper();
+		if (candidate[0] < start || candidate[1] > end) {
+			return false;
+		}
+		boolean lowerSide = candidate[0] > start || isIncludedDomainEnd(
+				component.getLowerBoundary());
+		boolean upperSide = candidate[1] < end || isIncludedDomainEnd(
+				component.getUpperBoundary());
+		return lowerSide && upperSide;
+	}
+
+	private static boolean isIncludedDomainEnd(LocusBoundary2D boundary) {
+		return boundary.getKind() == LocusBoundary2D.Kind.DOMAIN_END && boundary.isIncluded();
 	}
 
 	/** @return the enclosure plus {@code 2 pi}, rounded outward */

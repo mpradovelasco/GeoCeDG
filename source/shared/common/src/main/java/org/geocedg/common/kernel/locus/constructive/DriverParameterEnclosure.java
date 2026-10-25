@@ -5,10 +5,12 @@
 
 package org.geocedg.common.kernel.locus.constructive;
 
+import java.math.BigInteger;
 import java.util.Objects;
 
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.constructive.ExactQuadraticTower.Element;
 import org.geocedg.common.kernel.locus.exact.ExactRational2D;
 
@@ -29,13 +31,22 @@ final class DriverParameterEnclosure {
 	private final double upper;
 	private final String exact;
 	private final OutwardInterval[] drivenPoint;
+	private final ExactQuadraticTower tower;
+	private final Element value;
 
 	private DriverParameterEnclosure(double lower, double upper, String exact,
 			OutwardInterval[] drivenPoint) {
+		this(lower, upper, exact, drivenPoint, null, null);
+	}
+
+	private DriverParameterEnclosure(double lower, double upper, String exact,
+			OutwardInterval[] drivenPoint, ExactQuadraticTower tower, Element value) {
 		this.lower = lower;
 		this.upper = upper;
 		this.exact = exact;
 		this.drivenPoint = drivenPoint;
+		this.tower = tower;
+		this.value = value;
 	}
 
 	/**
@@ -110,7 +121,32 @@ final class DriverParameterEnclosure {
 				.multiply(OutwardInterval.point(c[3]))), OutwardInterval.point(c[1])
 						.subtract(interval.multiply(OutwardInterval.point(c[2])))};
 		return new DriverParameterEnclosure(bounds[0], bounds[1],
-				t.isRational() ? t.getRational().toString() : null, point);
+				t.isRational() ? text(t.getRational()) : null, point, tower, t);
+	}
+
+	/**
+	 * The domain of a segment driver, decided exactly: a point of the support line whose
+	 * parameter lies outside it is no position of the driver, whatever an inherited algorithm
+	 * with outlying intersections accepts.
+	 *
+	 * @param domain the canonical driver domain
+	 * @return whether the exact parameter lies outside the domain, or {@code null} for a
+	 *         periodic parameter
+	 */
+	Boolean isOutside(LocusInterval2D domain) {
+		if (value == null) {
+			return null;
+		}
+		int below = value.subtract(tower.ofBinary64(domain.getLower())).signum();
+		int above = value.subtract(tower.ofBinary64(domain.getUpper())).signum();
+		return below < 0 || below == 0 && !domain.isLowerClosed() || above > 0
+				|| above == 0 && !domain.isUpperClosed();
+	}
+
+	/** @return an integer without its denominator, otherwise the fraction */
+	private static String text(ExactRational2D value) {
+		return BigInteger.ONE.equals(value.denominator()) ? value.numerator().toString()
+				: value.toString();
 	}
 
 	/** @return the lower bound of the parameter, lifted above the seam when it crosses it */

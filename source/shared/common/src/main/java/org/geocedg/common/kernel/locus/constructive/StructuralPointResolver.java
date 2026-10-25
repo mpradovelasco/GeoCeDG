@@ -27,8 +27,11 @@ import org.geogebra.common.kernel.algos.AlgoIntersectLines;
 import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.algos.AlgoJoinPointsSegment;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
+import org.geogebra.common.kernel.geos.GeoConic;
+import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoSegment;
 
 /**
  * The structural point {@code Point(L, D)} and the intersection {@code Intersect(L, r, D)}
@@ -68,6 +71,10 @@ public final class StructuralPointResolver {
 		SELECTION_NOT_RECONSTRUCTED,
 		/** {@code D*} or its driver parameter is not established rigorously. */
 		CORRESPONDENCE_NOT_CERTIFIED,
+		/** {@code D*} lies on the support line of a bounded driver outside its limited part. */
+		OUT_OF_DRIVER_DOMAIN,
+		/** The parameter enclosure meets the seam of a periodic domain at a component end. */
+		SEAM_SIDE_UNDECIDED,
 		/** The parameter enclosure meets the end of a component. */
 		COMPONENT_BOUNDARY_UNDECIDED,
 		/** The parameter enclosure meets a point component. */
@@ -137,6 +144,13 @@ public final class StructuralPointResolver {
 		GeoElement traced = parent.getInput(0).toGeoElement();
 		GeoPoint driver = (GeoPoint) parent.getInput(1);
 		GeoElement support = driver.getPath().toGeoElement();
+		// Circles and segments only: arcs are outside constructive-class/v1 (D-AUT-11).
+		if (support instanceof GeoConicPart
+				|| !(support instanceof GeoConic || support instanceof GeoSegment)) {
+			return StructuralPointResolution.undefined(Cause.UNSUPPORTED_DRIVER_FAMILY,
+					"a driver on " + support.getTypeString() + " has no parameter correspondence"
+							+ " in " + Cu2CertificateTransfer.VERSION, null);
+		}
 		if (!driverPoint.isDefined()) {
 			return StructuralPointResolution.undefined(Cause.DRIVER_POINT_UNDEFINED,
 					"D is undefined", null);
@@ -177,6 +191,11 @@ public final class StructuralPointResolver {
 		if (!onSupport.getSubstitutes().isEmpty()) {
 			return StructuralPointResolution.undefined(Cause.CORRESPONDENCE_NOT_CERTIFIED,
 					"the constructive point of D depends on a boundary substitute", digest);
+		}
+		if (onSupport.getIncidence() == Incidence.NOT_ON_LIMITED_TARGET) {
+			return StructuralPointResolution.undefined(Cause.OUT_OF_DRIVER_DOMAIN,
+					"the constructive point of D lies on the support line outside its limited"
+							+ " part", digest);
 		}
 		if (onSupport.getIncidence() != Incidence.HOLDS) {
 			return StructuralPointResolution.undefined(Cause.PROVENANCE_NOT_ESTABLISHED,
@@ -258,6 +277,14 @@ public final class StructuralPointResolver {
 		if (point == driver) {
 			return Cause.PROVENANCE_NOT_ESTABLISHED;
 		}
+		// A defining point of a segment is often free, so it is recognized before its parent.
+		AlgoElement supportParent = support.getParentAlgorithm();
+		if (supportParent instanceof AlgoJoinPointsSegment
+				&& (((AlgoJoinPointsSegment) supportParent).getP() == point
+						|| ((AlgoJoinPointsSegment) supportParent).getQ() == point)) {
+			premises.add("DEFINING_POINT of the support of the driver");
+			return null;
+		}
 		AlgoElement parent = point.getParentAlgorithm();
 		if (parent == null) {
 			return Cause.PROVENANCE_NOT_ESTABLISHED;
@@ -267,13 +294,6 @@ public final class StructuralPointResolver {
 				return Cause.DRIVER_SUPPORT_MISMATCH;
 			}
 			premises.add("PATH_POINT on the support of the driver");
-			return null;
-		}
-		AlgoElement supportParent = support.getParentAlgorithm();
-		if (supportParent instanceof AlgoJoinPointsSegment
-				&& (((AlgoJoinPointsSegment) supportParent).getP() == point
-						|| ((AlgoJoinPointsSegment) supportParent).getQ() == point)) {
-			premises.add("DEFINING_POINT of the support of the driver");
 			return null;
 		}
 		AlgoElement source = parent instanceof AlgoIntersectSingle
@@ -348,6 +368,10 @@ public final class StructuralPointResolver {
 		switch (transfer.getCause()) {
 		case COMPONENT_BOUNDARY_UNDECIDED:
 			return Cause.COMPONENT_BOUNDARY_UNDECIDED;
+		case SEAM_SIDE_UNDECIDED:
+			return Cause.SEAM_SIDE_UNDECIDED;
+		case OUT_OF_DRIVER_DOMAIN:
+			return Cause.OUT_OF_DRIVER_DOMAIN;
 		case POINT_COMPONENT_NOT_MATERIALIZED:
 			return Cause.POINT_COMPONENT_NOT_MATERIALIZED;
 		case NOT_IN_CERTIFIED_COMPONENT:
