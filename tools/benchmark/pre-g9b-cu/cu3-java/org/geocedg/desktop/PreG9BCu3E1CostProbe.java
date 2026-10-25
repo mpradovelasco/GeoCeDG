@@ -36,7 +36,7 @@ import org.junit.jupiter.api.io.TempDir;
  * exact evaluation against {@code cu3-exact-evaluation-budget/v1} and of
  * {@code SUBSTITUTE_GENERIC} for the structural points and the five mandatory contacts of the
  * author model under the constructive authority, for the synthetic controls of the matrix and
- * for a construction with two independent square roots; the injection of a budget; the
+ * for a construction with independent square roots; the injection of a budget; the
  * repetition of every evaluation; and a drag of the driver without a new revision. The kernel
  * enforces the budgets, this bench only measures them; timings are informative and never part
  * of a decision. It reads copies of the author model and synthetic constructions only, assigns
@@ -144,9 +144,12 @@ class PreG9BCu3E1CostProbe {
 				"k2=Circle(O,1.5)", "v=PerpendicularLine(P,xAxis)", "Q1=Intersect(k1,v,1)",
 				"Q2=Intersect(k2,v,1)", "M=Midpoint(Q1,Q2)", "L=LocusV2(M,P)",
 				"D=Intersect(c,Line((0.5,0),(0.5,1)),1)"};
-		rows.put("two independent square roots", synthetic(roots, null, "X=Point(L,D)"));
-		rows.put("two independent square roots, depth budget 1", syntheticWithBudget(roots,
-				ExactEvaluationBudget.restrictedTo(ExactEvaluationBudget.MAXIMUM_OPERATIONS, 1,
+		// Point(L, D) evaluates only D* exactly; the intersection evaluates the traced point.
+		String vertical = "g=Line((0.5,0),(0.5,1))";
+		rows.put("independent square roots", synthetic(roots, vertical, "X=Intersect(L,g,D)"));
+		rows.put("independent square roots, depth budget 1", syntheticWithBudget(roots,
+				vertical, ExactEvaluationBudget.restrictedTo(
+						ExactEvaluationBudget.MAXIMUM_OPERATIONS, 1,
 						ExactEvaluationBudget.MAXIMUM_BITS)));
 		return rows;
 	}
@@ -170,17 +173,19 @@ class PreG9BCu3E1CostProbe {
 				ExactEvaluationBudget.V1));
 	}
 
-	private static Map<String, Object> syntheticWithBudget(String[] commands,
+	private static Map<String, Object> syntheticWithBudget(String[] commands, String target,
 			ExactEvaluationBudget budget) {
 		AppGeoCeDG app = PreG9BR6PlusF3Fixtures.app(PreG9BR6PlusF3Documents.M);
 		for (String command : commands) {
 			PreG9BR6PlusF3Fixtures.must(app, command);
 		}
+		PreG9BR6PlusF3Fixtures.must(app, target);
 		Construction construction = app.getKernel().getConstruction();
 		AuthorityPolicyAdoption.adopt(construction);
 		Map<String, Object> row = describe(StructuralPointResolver.resolve(
 				(GeoLocusV2) construction.lookupLabel("L"),
-				(GeoPoint) construction.lookupLabel("D"), null, budget));
+				(GeoPoint) construction.lookupLabel("D"),
+				construction.lookupLabel(target.substring(0, 1)), budget));
 		row.put("budget", budget.toString());
 		return row;
 	}
