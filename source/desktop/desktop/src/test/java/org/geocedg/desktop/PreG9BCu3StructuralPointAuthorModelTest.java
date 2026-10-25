@@ -39,7 +39,8 @@ import org.junit.jupiter.api.io.TempDir;
  * {@code Intersect(p, i)}, under which {@code K} is output 1, unlike the replica; and
  * {@code Point(o_1, K)} is the author's workaround {@code N_1 = Point(o_1, text2, v_1)} without
  * the manual selector. Matrix rows V-MAND-1 to V-MAND-4, V-A-21, V-DYN-1 ({@code excCyl}),
- * V-DYN-3, V-AUT-ADOPT-3, V-AUT-CIC-1 and V-AUT-TRF-2.
+ * V-DYN-3, V-AUT-ADOPT-3, V-AUT-CIC-1 and V-AUT-TRF-2, and, read with AUT-7, V-M3-9 and
+ * V-CFG-5: each contact of the author model is decided against its constructive target.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,

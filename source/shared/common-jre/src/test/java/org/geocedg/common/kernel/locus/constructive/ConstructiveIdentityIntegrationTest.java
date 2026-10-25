@@ -54,7 +54,8 @@ final class ConstructiveIdentityIntegrationTest extends ConstructiveModelReplica
 			GeoElement output = add(CONTACTS[index]);
 			final String identity = identity(output);
 			StructuralPointResolution resolved = resolution(output);
-			String row = "G-AUT-2 " + CONTACTS[index] + ": " + resolved;
+			String row = "G-AUT-2 and V-M3-9 with AUT-7, against the constructive target, "
+					+ CONTACTS[index] + ": " + resolved;
 			assertTrue(resolved.isDefined(), row);
 			assertEquals(RelationIntegrity.STRICT, resolved.getMembership().getIntegrity(), row);
 			assertEquals(RelationIntegrity.STRICT, resolved.getIncidence().getIntegrity(), row);
