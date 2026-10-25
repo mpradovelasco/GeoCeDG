@@ -106,6 +106,17 @@ public final class IntersectionSemanticMetadata2D {
 		STRICT, RELAXED, NOT_ESTABLISHED
 	}
 
+	/**
+	 * Order of contact of a root at its parameter ({@code locus-v2-intersections.md} CU3.2;
+	 * Stage B design section 4.4): one for a transverse root with established existence; two for
+	 * a tangency of a regular branch with existence of class 1 or 2; a contact at a certified fold
+	 * of the source, where {@code h'(t0) = 0} comes from {@code F'(t0) = 0}; or not established. It
+	 * is revision evidence and never enters a token (PRE-G9B-CU3 increment E3).
+	 */
+	public enum ContactOrder {
+		ONE, TWO, FOLD_CONTACT, NOT_ESTABLISHED
+	}
+
 	/** Whether an integer multiplicity has been established. */
 	public enum MultiplicityStatus {
 		ESTABLISHED, NOT_ESTABLISHED

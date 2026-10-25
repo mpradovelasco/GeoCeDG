@@ -5,7 +5,10 @@
 
 package org.geocedg.common.kernel.locus.constructive;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
@@ -15,7 +18,11 @@ import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Ci
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Line;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Point;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Result;
+import org.geocedg.common.kernel.locus.exact.ExactRational2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
+import org.geocedg.common.kernel.locus.intersection.ExactContactEvidence2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactEvidenceClass;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactOrder;
 import org.geocedg.common.kernel.locus.intersection.ResidualJetEnclosure2D;
 import org.geocedg.common.kernel.locus.intersection.ResidualJetSource2D;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -32,29 +39,50 @@ import org.geogebra.common.kernel.geos.GeoPoint;
  * governed by {@code constructive-authority/v1}. A slice or a target outside what interval jets
  * enclose, such as a boundary substitute that moves with the driver, has no source: no
  * constructive evidence is computed for it.
+ *
+ * <p>At the exact parameters of a circle driver read in the frame of the axes the configuration
+ * also decides exactly (PRE-G9B-CU3 increment E3): the constructive identity certificate of the
+ * incidence of the traced point with the target, with the driver at the exact point of its
+ * circle, establishes {@code h(t0) = 0}, and its exact jets {@code h'(t0) = 0}; the fold of
+ * {@code CU2} at {@code t0}, transferred by structure, makes the contact a fold contact.</p>
  */
 public final class ConstructiveResidualJetSource implements ResidualJetSource2D {
 	/** Name of this decision configuration. */
 	public static final String CONFIGURATION = "constructive/constructive-target";
 
+	private static final String[] QUARTERS = {"0", "pi/2", "pi", "-pi/2"};
+	/** The widest box, in quarter turns, whose exact parameters the source decides. */
+	private static final int MAXIMUM_QUARTER_TURNS = 8;
+
+	private final GeoLocusV2 locus;
 	private final ConstructiveCone cone;
 	private final int traced;
 	private final int target;
+	private final int supportNode;
 	private final int driver;
 	private final CertifiedConstructionProgram2D.Driver family;
 	private final double[] frame;
 	private final Object support;
+	private final ExactContactMemory memory;
+	private final ConstructiveIdentityBudget budget;
+	private final Map<Integer, ExactContactMemory.Decision> decided = new HashMap<>();
+	private String digest;
 
-	private ConstructiveResidualJetSource(ConstructiveCone cone, int traced, int target,
-			int driver, CertifiedConstructionProgram2D.Driver family, double[] frame,
-			Object support) {
+	private ConstructiveResidualJetSource(GeoLocusV2 locus, ConstructiveCone cone, int traced,
+			int target, int supportNode, int driver, CertifiedConstructionProgram2D.Driver family,
+			double[] frame, Object support, ExactContactMemory memory,
+			ConstructiveIdentityBudget budget) {
+		this.locus = locus;
 		this.cone = cone;
 		this.traced = traced;
 		this.target = target;
+		this.supportNode = supportNode;
 		this.driver = driver;
 		this.family = family;
 		this.frame = frame;
 		this.support = support;
+		this.memory = memory;
+		this.budget = budget;
 	}
 
 	/**
@@ -64,6 +92,20 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 	 *         its driver parametrization or the target has no interval-jet enclosure
 	 */
 	public static ResidualJetSource2D capture(GeoLocusV2 locus, GeoElement targetObject) {
+		return capture(locus, targetObject, new ExactContactMemory(),
+				ConstructiveIdentityBudget.V1);
+	}
+
+	/**
+	 * @param locus a Locus V2 driven by a point on a circle or a segment
+	 * @param targetObject the target of the query
+	 * @param memory the exact decisions of the earlier queries of the same intersection
+	 * @param budget the budget of a constructive identity certificate at an exact parameter
+	 * @return the residual in the constructive configuration, or {@code null} when the slice,
+	 *         its driver parametrization or the target has no interval-jet enclosure
+	 */
+	static ResidualJetSource2D capture(GeoLocusV2 locus, GeoElement targetObject,
+			ExactContactMemory memory, ConstructiveIdentityBudget budget) {
 		AlgoElement parent = locus.getParentAlgorithm();
 		if (!(parent instanceof AlgoDependentPointLocusV2) || parent.getInputLength() < 2
 				|| !(parent.getInput(1) instanceof GeoPoint)
@@ -116,8 +158,9 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 			if (!compatible) {
 				return null;
 			}
-			return new ConstructiveResidualJetSource(cone, tracedNode, targetNode,
-					cone.getReplacementNode(), program.getDriver(), frame, value);
+			return new ConstructiveResidualJetSource(locus, cone, tracedNode, targetNode,
+					supportNode, cone.getReplacementNode(), program.getDriver(), frame, value,
+					memory, budget);
 		} catch (RuntimeException outsideTheClass) {
 			return null;
 		}
@@ -158,6 +201,127 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 		} catch (ArithmeticException exception) {
 			return null;
 		}
+	}
+
+	/**
+	 * The exact contacts at the parameters {@code k pi / 2} of a circle driver whose binary64
+	 * enclosure lies in the box. At each the constructive identity certificate of the incidence,
+	 * with the driver at the exact point of its circle, must certify the identity, and its exact
+	 * jets must give {@code h'(t0)} as the zero element: at a stationary point of the trace, by
+	 * {@code F'(t0) = 0}, a fold contact when the fold of {@code CU2} at {@code t0} transfers by
+	 * structure and otherwise of an order not established; at a regular point, a tangency of order
+	 * two. A transverse or a higher-order contact, a certificate that is not established and a
+	 * segment driver give nothing.
+	 */
+	@Override
+	public List<ExactContactEvidence2D> exactContacts(double lower, double upper) {
+		if (family != CertifiedConstructionProgram2D.Driver.CIRCLE || !(lower <= upper)
+				|| Double.isInfinite(lower) || Double.isInfinite(upper)) {
+			return Collections.emptyList();
+		}
+		double quarterTurn = Math.PI / 2;
+		long first = (long) Math.floor(lower / quarterTurn) - 1;
+		long last = (long) Math.ceil(upper / quarterTurn) + 1;
+		if (last - first > MAXIMUM_QUARTER_TURNS) {
+			return Collections.emptyList();
+		}
+		List<ExactContactEvidence2D> contacts = new ArrayList<>();
+		for (long turns = first; turns <= last; turns++) {
+			double[] enclosure = quarterTurns(turns);
+			if (enclosure[0] < lower || enclosure[1] > upper) {
+				continue;
+			}
+			int quarter = (int) Math.floorMod(turns, 4L);
+			ExactContactMemory.Decision decision = decide(quarter);
+			if (decision.getOrder() != null) {
+				contacts.add(new ExactContactEvidence2D(QUARTERS[quarter], enclosure[0],
+						enclosure[1], ContactEvidenceClass.CONTACT_EXISTENCE_EXACT,
+						decision.getOrder(), decision.getCurvature(),
+						decision.getDescription()));
+			}
+		}
+		return contacts;
+	}
+
+	/**
+	 * The decision at one exact parameter: the one of the same state of the cone when the
+	 * memory keeps it; otherwise the certificate of an earlier revision when its recheck holds,
+	 * or a new attempt, and the fold of {@code CU2} decided again.
+	 */
+	private ExactContactMemory.Decision decide(int quarter) {
+		ExactContactMemory.Decision known = decided.get(quarter);
+		if (known != null) {
+			return known;
+		}
+		if (digest == null) {
+			digest = cone.describe() + "|" + cone.getStateDigest() + "|revision="
+					+ locus.getSemanticRevision() + "|budget=" + budget + "|"
+					+ ExactEvaluationBudget.V1;
+		}
+		ExactContactMemory.Decision decision = memory.decision(quarter, digest);
+		if (decision == null) {
+			ConstructiveIdentityCertificate previous = memory.certificate(quarter);
+			ConstructiveIdentityCertificate certificate = previous != null
+					&& ConstructiveIdentityCertifier.recheckAtParameter(previous, cone, traced,
+							target, supportNode, quarter, frame, budget) ? previous
+									: ConstructiveIdentityCertifier.incidenceAtParameter(
+											"F(" + QUARTERS[quarter] + ") on the target", cone,
+											traced, target, supportNode, quarter, frame,
+											budget);
+			decision = decision(quarter, certificate);
+			memory.store(quarter, digest, certificate, decision);
+		}
+		decided.put(quarter, decision);
+		return decision;
+	}
+
+	/** @return the decision that a certificate at an exact parameter gives */
+	private ExactContactMemory.Decision decision(int quarter,
+			ConstructiveIdentityCertificate certificate) {
+		String description = certificate + " key " + certificate.getKey();
+		if (!certificate.isIdentityCertified() || certificate.getContactOrder() == null
+				|| certificate.getResidualDerivativeSign(1) != 0) {
+			return new ExactContactMemory.Decision(null, 0, description);
+		}
+		ContactOrder order;
+		switch (certificate.getContactOrder()) {
+		case STATIONARY: {
+			Cu2CertificateTransfer.Record fold = Cu2CertificateTransfer.foldAtParameter(locus,
+					cone, traced, supportNode, ConstructiveConeEvaluator.exact(cone,
+							ExactEvaluationBudget.V1), QUARTERS[quarter]);
+			order = fold.getStatus() == Cu2CertificateTransfer.Status.TRANSFERRED
+					? ContactOrder.FOLD_CONTACT : ContactOrder.NOT_ESTABLISHED;
+			description += "; " + fold;
+			break;
+		}
+		case TANGENT:
+			order = ContactOrder.TWO;
+			break;
+		case NOT_ESTABLISHED:
+			order = ContactOrder.NOT_ESTABLISHED;
+			break;
+		default:
+			// A higher-order contact has h''(t0) = 0: no double root at the parameter.
+			return new ExactContactMemory.Decision(null, 0, description);
+		}
+		int second = certificate.getResidualDerivativeSign(2);
+		return new ExactContactMemory.Decision(order, second == 1 || second == -1 ? second : 0,
+				description);
+	}
+
+	/** @return an outward binary64 enclosure of {@code turns pi / 2} */
+	static double[] quarterTurns(long turns) {
+		if (turns == 0) {
+			return new double[] {0, 0};
+		}
+		ExactRational2D factor = ExactRational2D.of(turns);
+		double[] below = ExactRational2D.ofBinary64(Math.PI / 2).multiply(factor)
+				.outwardDoubleEnclosure();
+		double[] above = ExactRational2D.ofBinary64(Math.nextUp(Math.PI / 2)).multiply(factor)
+				.outwardDoubleEnclosure();
+		// Math.PI / 2 < pi / 2 < Math.nextUp(Math.PI / 2); a negative factor swaps the ends.
+		return turns > 0 ? new double[] {below[0], above[1]}
+				: new double[] {above[0], below[1]};
 	}
 
 	/**

@@ -9,15 +9,17 @@ import java.util.Objects;
 
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ConstructiveAdmission;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactEvidenceClass;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactOrder;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ExistenceGrade;
 
 /**
  * Existence evidence of one candidate or finite solution under
  * {@link CertifiedAdmissionPolicy2D#VERSION} ({@code locus-v2-intersections.md} CU3.2 and CU3.4):
  * its existence grade, the decision configuration that computed it, the certified admission
- * route, the contact evidence class of a candidate without a local sign change and, under the
- * constructive authority, the re-qualification of its admission. It is revision evidence: it is
- * never persisted and never enters a root token, a selector or the graph.
+ * route, the contact evidence class of a candidate without a local sign change, the order of
+ * contact of a root that the conflict rule reclassifies and, under the constructive authority, the
+ * re-qualification of its admission. It is revision evidence: it is never persisted and never
+ * enters a root token, a selector or the graph.
  */
 public final class IntersectionExistenceEvidence2D {
 	/** Configuration of evidence that no residual enclosure computed. */
@@ -27,7 +29,7 @@ public final class IntersectionExistenceEvidence2D {
 
 	private static final IntersectionExistenceEvidence2D LOCALLY_VERIFIED =
 			new IntersectionExistenceEvidence2D(ExistenceGrade.LOCALLY_VERIFIED, NOT_COMPUTED,
-					false, Double.NaN, null, null, null);
+					false, Double.NaN, null, null, null, null);
 
 	private final ExistenceGrade grade;
 	private final String configuration;
@@ -36,11 +38,12 @@ public final class IntersectionExistenceEvidence2D {
 	private final ContactEvidenceClass contactEvidence;
 	private final String certificate;
 	private final ConstructiveAdmission constructiveAdmission;
+	private final ContactOrder contactOrder;
 
 	private IntersectionExistenceEvidence2D(ExistenceGrade grade, String configuration,
 			boolean certifiedRoute, double characteristicScale,
 			ContactEvidenceClass contactEvidence, String certificate,
-			ConstructiveAdmission constructiveAdmission) {
+			ConstructiveAdmission constructiveAdmission, ContactOrder contactOrder) {
 		this.grade = Objects.requireNonNull(grade);
 		this.configuration = Objects.requireNonNull(configuration);
 		this.certifiedRoute = certifiedRoute;
@@ -48,6 +51,7 @@ public final class IntersectionExistenceEvidence2D {
 		this.contactEvidence = contactEvidence;
 		this.certificate = certificate;
 		this.constructiveAdmission = constructiveAdmission;
+		this.contactOrder = contactOrder;
 		if (certifiedRoute && (grade != ExistenceGrade.EXISTENCE_CERTIFIED
 				|| !(characteristicScale > 0) || Double.isInfinite(characteristicScale))) {
 			throw new IllegalArgumentException(
@@ -71,7 +75,7 @@ public final class IntersectionExistenceEvidence2D {
 	static IntersectionExistenceEvidence2D of(ExistenceGrade grade, String configuration,
 			ContactEvidenceClass contactEvidence, String certificate) {
 		return new IntersectionExistenceEvidence2D(grade, configuration, false, Double.NaN,
-				contactEvidence, certificate, null);
+				contactEvidence, certificate, null, null);
 	}
 
 	/**
@@ -80,13 +84,14 @@ public final class IntersectionExistenceEvidence2D {
 	 */
 	IntersectionExistenceEvidence2D withCertifiedRoute(double characteristicScale) {
 		return new IntersectionExistenceEvidence2D(grade, configuration, true,
-				characteristicScale, contactEvidence, certificate, constructiveAdmission);
+				characteristicScale, contactEvidence, certificate, constructiveAdmission,
+				contactOrder);
 	}
 
 	/** @return this evidence, its residual condition satisfied by the G8B-R1 threshold */
 	IntersectionExistenceEvidence2D withoutCertifiedRoute() {
 		return new IntersectionExistenceEvidence2D(grade, configuration, false, Double.NaN,
-				contactEvidence, certificate, constructiveAdmission);
+				contactEvidence, certificate, constructiveAdmission, contactOrder);
 	}
 
 	/**
@@ -96,7 +101,17 @@ public final class IntersectionExistenceEvidence2D {
 	IntersectionExistenceEvidence2D withConstructiveAdmission(ConstructiveAdmission admission) {
 		return new IntersectionExistenceEvidence2D(grade, configuration, certifiedRoute,
 				characteristicScale, contactEvidence, certificate,
-				Objects.requireNonNull(admission));
+				Objects.requireNonNull(admission), contactOrder);
+	}
+
+	/**
+	 * @param order the order of contact that the conflict rule establishes
+	 * @return this evidence with it
+	 */
+	IntersectionExistenceEvidence2D withContactOrder(ContactOrder order) {
+		return new IntersectionExistenceEvidence2D(grade, configuration, certifiedRoute,
+				characteristicScale, contactEvidence, certificate, constructiveAdmission,
+				Objects.requireNonNull(order));
 	}
 
 	/** @return the existence grade */
@@ -142,10 +157,19 @@ public final class IntersectionExistenceEvidence2D {
 		return constructiveAdmission;
 	}
 
+	/**
+	 * @return the order of contact of a root that the conflict rule reclassifies, or
+	 *         {@code null}; it never enters a token
+	 */
+	public ContactOrder getContactOrder() {
+		return contactOrder;
+	}
+
 	@Override
 	public String toString() {
 		return grade + " " + configuration + (certifiedRoute ? " certified-route L="
 				+ characteristicScale : "") + (contactEvidence == null ? "" : " " + contactEvidence)
+				+ (contactOrder == null ? "" : " order " + contactOrder)
 				+ (constructiveAdmission == null ? "" : " " + constructiveAdmission)
 				+ (certificate == null ? "" : " " + certificate);
 	}

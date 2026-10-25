@@ -20,12 +20,16 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * policy of the document at every computation: the captured configuration under
  * {@code legacy-representation-authority/v1}, the constructive configuration under
  * {@code constructive-authority/v1} ({@code locus-v2-intersections.md}, constructive authority
- * amendment). The policy changes only by the explicit adoption event, Undo or a reload.
+ * amendment). The policy changes only by the explicit adoption event, Undo or a reload. The
+ * exact decisions of the constructive configuration at the exact parameters of the driver are
+ * kept between the revisions of the intersection, so that a revision that keeps their structure
+ * rechecks them without symbolic work (PRE-G9B-CU3 increment E3).
  */
 public final class DocumentDecisionConfiguration implements IntersectionDecisionConfiguration2D {
 	private final Construction construction;
 	private final GeoLocusV2 locus;
 	private final GeoElement target;
+	private final ExactContactMemory memory = new ExactContactMemory();
 
 	/**
 	 * @param construction the document construction
@@ -42,8 +46,8 @@ public final class DocumentDecisionConfiguration implements IntersectionDecision
 	@Override
 	public ResidualJetSource2D residualJets(LocusDefinition2D definition,
 			LocusIntersectionTarget2D capturedTarget) {
-		return isConstructive() ? ConstructiveResidualJetSource.capture(locus, target)
-				: CAPTURED.residualJets(definition, capturedTarget);
+		return isConstructive() ? ConstructiveResidualJetSource.capture(locus, target, memory,
+				ConstructiveIdentityBudget.V1) : CAPTURED.residualJets(definition, capturedTarget);
 	}
 
 	@Override

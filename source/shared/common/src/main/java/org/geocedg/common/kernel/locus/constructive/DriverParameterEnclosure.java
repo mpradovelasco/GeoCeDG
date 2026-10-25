@@ -69,6 +69,36 @@ final class DriverParameterEnclosure {
 		return null;
 	}
 
+	/**
+	 * The enclosure of an exact parameter of a circle driver, for a closed decision at that
+	 * parameter when no point of the document stands there (PRE-G9B-CU3 increment E3).
+	 *
+	 * @param program the captured program
+	 * @param parameter {@code 0}, {@code pi/2}, {@code pi} or {@code -pi/2}
+	 * @return the enclosure, or {@code null} for another driver or another parameter
+	 */
+	static DriverParameterEnclosure atExactParameter(CertifiedConstructionProgram2D program,
+			String parameter) {
+		Objects.requireNonNull(program);
+		if (program.getDriver() != Driver.CIRCLE) {
+			return null;
+		}
+		double[] c = constants(program, 8);
+		double half = Math.PI / 2;
+		switch (parameter) {
+		case "0":
+			return exact(0, 0, "0", circlePoint(c, 1, 0));
+		case "pi/2":
+			return exact(half, Math.nextUp(half), "pi/2", circlePoint(c, 0, 1));
+		case "pi":
+			return exact(Math.PI, Math.nextUp(Math.PI), "pi", circlePoint(c, -1, 0));
+		case "-pi/2":
+			return exact(-Math.nextUp(half), -half, "-pi/2", circlePoint(c, 0, -1));
+		default:
+			return null;
+		}
+	}
+
 	private static DriverParameterEnclosure circle(CertifiedConstructionProgram2D program,
 			ExactQuadraticTower tower, Element x, Element y) {
 		double[] c = constants(program, 8);

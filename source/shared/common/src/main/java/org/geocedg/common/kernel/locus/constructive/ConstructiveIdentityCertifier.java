@@ -121,9 +121,39 @@ public final class ConstructiveIdentityCertifier {
 			int point, int target, int support, ConstructiveIdentityCertificate.Scope scope,
 			ConstructiveIdentityBudget budget, double widening) {
 		return attempt(relation, incidenceText(point, target), scope, cone,
-				new int[] {point, target}, support, budget, widening,
+				new int[] {point, target}, support, null, budget, widening,
 				(certificate, jets, values, driven) -> decide(certificate, jets, values[0],
 						values[1], driven));
+	}
+
+	/**
+	 * Attempts the certificate of {@code point} on {@code target} with the driver of the slice
+	 * at an exact parameter of its path, a circle read in the frame of the axes, instead of at
+	 * the point that replaces it (PRE-G9B-CU3 increment E3: the form one double root at an exact
+	 * point of the conflict rule). The driver is the exact jet of order two of the circle at
+	 * the parameter, {@code m + r (cos t0 e0 + sin t0 e1)} with {@code r} the nonnegative root of
+	 * the exact squared radius, so the order of contact follows as for a structural point; the
+	 * replacement node of the cone is neither evaluated nor read, so its persisted position never
+	 * enters the key.
+	 *
+	 * @param relation the name of the relation, in a report only
+	 * @param cone a cone with the slice of the locus, its driver as the replacement node
+	 * @param point node of the traced point in the slice
+	 * @param target node of a line, segment, ray or circle
+	 * @param support node of the circle of the driver
+	 * @param quarter the parameter {@code t0 = quarter pi / 2}, from {@code 0} to {@code 3}
+	 * @param frame the frame {@code {e0x, e0y, e1x, e1y}} of the captured driver, of the axes
+	 * @param budget the budget of the attempt
+	 * @return the certificate
+	 */
+	public static ConstructiveIdentityCertificate incidenceAtParameter(String relation,
+			ConstructiveCone cone, int point, int target, int support, int quarter,
+			double[] frame, ConstructiveIdentityBudget budget) {
+		DriverAt at = new DriverAt(quarter, frame);
+		return attempt(relation, incidenceText(point, target) + at.describe(),
+				ConstructiveIdentityCertificate.Scope.AUTOMATIC, cone, new int[] {point, target},
+				support, at, budget, 0, (certificate, jets, values, driven) -> decide(certificate,
+						jets, values[0], values[1], driven));
 	}
 
 	/**
@@ -143,8 +173,8 @@ public final class ConstructiveIdentityCertifier {
 			ConstructiveCone cone, int line, boolean horizontal,
 			ConstructiveIdentityBudget budget) {
 		return attempt(relation, (horizontal ? "horizontal n" : "vertical n") + line,
-				ConstructiveIdentityCertificate.Scope.AUTOMATIC, cone, new int[] {line}, -1, budget,
-				0, (certificate, jets, values, driven) -> {
+				ConstructiveIdentityCertificate.Scope.AUTOMATIC, cone, new int[] {line}, -1, null,
+				budget, 0, (certificate, jets, values, driven) -> {
 					if (!(values[0] instanceof Line)) {
 						return certificate.outcome(Status.NOT_ESTABLISHED, Cause.OUT_OF_CLASS,
 								"not a line");
@@ -177,7 +207,8 @@ public final class ConstructiveIdentityCertifier {
 			ConstructiveIdentityBudget budget) {
 		return attempt(relation, (ordinate ? "same ordinate n" : "same abscissa n") + point
 				+ " n" + circle, ConstructiveIdentityCertificate.Scope.AUTOMATIC, cone,
-				new int[] {point, circle}, -1, budget, 0, (certificate, jets, values, driven) -> {
+				new int[] {point, circle}, -1, null, budget, 0,
+				(certificate, jets, values, driven) -> {
 					if (!(values[0] instanceof Point) || !(values[1] instanceof Circle)) {
 						return certificate.outcome(Status.NOT_ESTABLISHED, Cause.OUT_OF_CLASS,
 								"not a point and a circle");
@@ -222,22 +253,44 @@ public final class ConstructiveIdentityCertifier {
 
 	private static ConstructiveIdentityCertificate attempt(String relation, String text,
 			ConstructiveIdentityCertificate.Scope scope, ConstructiveCone cone, int[] nodes,
-			int support, ConstructiveIdentityBudget budget, double widening, Decider decider) {
+			int support, DriverAt at, ConstructiveIdentityBudget budget, double widening,
+			Decider decider) {
 		int[] roots = new int[nodes.length + 1];
 		System.arraycopy(nodes, 0, roots, 0, nodes.length);
 		roots[nodes.length] = support;
+		boolean readsReplacement = at == null;
 		ConstructiveIdentityCertificate.Builder certificate = ConstructiveIdentityCertificate
-				.builder(relation, scope).key(key(cone, text, roots, scope, budget));
+				.builder(relation, scope).key(key(cone, text, roots, scope, budget,
+						readsReplacement));
 		ConstructiveIdentityArithmetic field = new ConstructiveIdentityArithmetic(
 				new ConstructiveIdentityCounters(budget));
 		ConstructiveIdentityJetArithmetic jets = new ConstructiveIdentityJetArithmetic(field);
 		certificate.evaluation(field);
 		try {
-			Boundary boundary = Boundary.of(cone, jets, certificate, scope, widening, roots);
+			Boundary boundary = Boundary.of(cone, jets, certificate, scope, widening,
+					readsReplacement, roots);
 			ConstructiveConeEvaluator<CertificateJet> evaluator = new ConstructiveConeEvaluator<>(
 					cone, jets, true, Collections.emptyMap(), boundary.fixed, boundary);
 			boolean driven = false;
-			if (cone.hasDriverSubstitution() && support >= 0) {
+			if (at != null) {
+				// The driver at the exact parameter: the slice reads the jet of the circle there
+				// in place of the replacement, which is never evaluated.
+				Result path = evaluator.evaluate(support);
+				if (!path.hasValue()) {
+					return failed(certificate, evaluator, path);
+				}
+				Point<CertificateJet> driver = at.jet(jets, path.getValue());
+				if (driver == null) {
+					return certificate.outcome(Status.NOT_ESTABLISHED, Cause.OUT_OF_CLASS,
+							"the path of the driver is not a circle");
+				}
+				correspondences(certificate, evaluator);
+				Map<Integer, Object> fixed = new HashMap<>(boundary.fixed);
+				fixed.put(cone.getReplacementNode(), driver);
+				evaluator = new ConstructiveConeEvaluator<>(cone, jets, true,
+						Collections.emptyMap(), fixed, boundary);
+				driven = true;
+			} else if (cone.hasDriverSubstitution() && support >= 0) {
 				Result path = evaluator.evaluate(support);
 				Result replacement = evaluator.evaluate(cone.getReplacementNode());
 				for (Result result : new Result[] {path, replacement}) {
@@ -294,11 +347,41 @@ public final class ConstructiveIdentityCertifier {
 	public static boolean recheck(ConstructiveIdentityCertificate certificate,
 			ConstructiveCone cone, int point, int target, int support,
 			ConstructiveIdentityBudget budget) {
-		if (!certificate.isIdentityCertified() || !key(cone, incidenceText(point, target),
-				new int[] {point, target, support}, certificate.getScope(), budget)
-						.equals(certificate.getKey())) {
-			return false;
-		}
+		return certificate.isIdentityCertified() && key(cone, incidenceText(point, target),
+				new int[] {point, target, support}, certificate.getScope(), budget, true)
+						.equals(certificate.getKey()) && recheckCell(certificate, cone, budget);
+	}
+
+	/**
+	 * Rechecks at another revision a certified identity with the driver at an exact parameter
+	 * of its circle ({@link #incidenceAtParameter}), as {@link #recheck} does.
+	 *
+	 * @param certificate a certificate of an earlier revision
+	 * @param cone the cone of the same relation at this revision
+	 * @param point node of the traced point in the slice
+	 * @param target node of the target
+	 * @param support node of the circle of the driver
+	 * @param quarter the parameter {@code t0 = quarter pi / 2}
+	 * @param frame the frame of the captured driver
+	 * @param budget the budget of an attempt
+	 * @return whether the certificate applies at this revision
+	 */
+	public static boolean recheckAtParameter(ConstructiveIdentityCertificate certificate,
+			ConstructiveCone cone, int point, int target, int support, int quarter,
+			double[] frame, ConstructiveIdentityBudget budget) {
+		return certificate.isIdentityCertified() && key(cone, incidenceText(point, target)
+				+ new DriverAt(quarter, frame).describe(), new int[] {point, target, support},
+				certificate.getScope(), budget, false).equals(certificate.getKey())
+				&& recheckCell(certificate, cone, budget);
+	}
+
+	/**
+	 * Whether every sign of the cell is certified with the same value on the decision box of
+	 * the cone, built as in an attempt, and every checked line-circle output is still certified
+	 * closer to its selected branch than to the other.
+	 */
+	private static boolean recheckCell(ConstructiveIdentityCertificate certificate,
+			ConstructiveCone cone, ConstructiveIdentityBudget budget) {
 		ConstructiveIdentityArithmetic field = certificate.getArithmetic()
 				.forRecheck(new ConstructiveIdentityCounters(budget));
 		try {
@@ -355,6 +438,16 @@ public final class ConstructiveIdentityCertifier {
 	 */
 	static String key(ConstructiveCone cone, String relation, int[] roots,
 			ConstructiveIdentityCertificate.Scope scope, ConstructiveIdentityBudget budget) {
+		return key(cone, relation, roots, scope, budget, true);
+	}
+
+	/**
+	 * The structural key, with or without the replacement of a substituted driver among the
+	 * nodes the proof reads: without it when the driver stands at an exact parameter.
+	 */
+	private static String key(ConstructiveCone cone, String relation, int[] roots,
+			ConstructiveIdentityCertificate.Scope scope, ConstructiveIdentityBudget budget,
+			boolean replacement) {
 		StringBuilder text = new StringBuilder(KEY_VERSION).append('\n')
 				.append(AuthorityPolicy.CONSTRUCTIVE_AUTHORITY).append('\n')
 				.append(ConstructiveClassTable.VERSION).append('\n')
@@ -364,7 +457,7 @@ public final class ConstructiveIdentityCertifier {
 				.append(scope).append('\n')
 				.append(relation).append('\n')
 				.append(cone.describe());
-		boolean[] read = reads(cone, roots);
+		boolean[] read = reads(cone, replacement, roots);
 		for (ConstructiveConeNode node : cone.getNodes()) {
 			ConstructiveOperation operation = node.getOperation();
 			if (read[node.getIndex()] && (operation == ConstructiveOperation.AXIS
@@ -735,6 +828,15 @@ public final class ConstructiveIdentityCertifier {
 	 * driver: the walk stops at the cuts, whose inputs the proof never reads.
 	 */
 	static boolean[] reads(ConstructiveCone cone, int... roots) {
+		return reads(cone, true, roots);
+	}
+
+	/**
+	 * The nodes that an attempt from the roots reads, with or without the replacement of a
+	 * substituted driver: without it, when the driver stands at an exact parameter of its path,
+	 * the walk never enters the replacement, whose value the slice does not read.
+	 */
+	private static boolean[] reads(ConstructiveCone cone, boolean replacement, int... roots) {
 		boolean[] seen = new boolean[cone.size()];
 		List<Integer> stack = new ArrayList<>();
 		for (int root : roots) {
@@ -742,11 +844,14 @@ public final class ConstructiveIdentityCertifier {
 				stack.add(root);
 			}
 		}
-		if (cone.hasDriverSubstitution()) {
+		if (cone.hasDriverSubstitution() && replacement) {
 			stack.add(cone.getReplacementNode());
 		}
 		while (!stack.isEmpty()) {
 			int index = stack.remove(stack.size() - 1);
+			if (!replacement && index == cone.getReplacementNode()) {
+				continue;
+			}
 			if (seen[index]) {
 				continue;
 			}
@@ -775,6 +880,7 @@ public final class ConstructiveIdentityCertifier {
 		private final double widening;
 		private final ConstructiveConeEvaluator<OutwardInterval> ideal;
 		private final Map<Integer, Object> fixed = new HashMap<>();
+		private final Map<Integer, Point<CertificateJet>> pathPoints = new HashMap<>();
 
 		private Boundary(ConstructiveCone cone, ConstructiveIdentityJetArithmetic jets,
 				ConstructiveIdentityCertificate.Builder certificate,
@@ -789,9 +895,10 @@ public final class ConstructiveIdentityCertifier {
 
 		static Boundary of(ConstructiveCone cone, ConstructiveIdentityJetArithmetic jets,
 				ConstructiveIdentityCertificate.Builder certificate,
-				ConstructiveIdentityCertificate.Scope scope, double widening, int... roots) {
+				ConstructiveIdentityCertificate.Scope scope, double widening, boolean replacement,
+				int... roots) {
 			Boundary boundary = new Boundary(cone, jets, certificate, scope, widening);
-			boolean[] read = reads(cone, roots);
+			boolean[] read = reads(cone, replacement, roots);
 			for (ConstructiveConeNode node : cone.getNodes()) {
 				if (read[node.getIndex()]) {
 					boundary.assign(node);
@@ -846,10 +953,22 @@ public final class ConstructiveIdentityCertifier {
 		/**
 		 * One indeterminate for a point on a constructible line path: the coordinate along the
 		 * larger coefficient of the live line, the other solved from the exact line, whose
-		 * coefficient is certified nonzero on the box.
+		 * coefficient is certified nonzero on the box. The point is one indeterminate of the
+		 * attempt, however many evaluations of the attempt read it.
 		 */
 		@Override
 		public Point<CertificateJet> pointOnLine(ConstructiveConeNode node,
+				Line<CertificateJet> line) {
+			Point<CertificateJet> known = pathPoints.get(node.getIndex());
+			if (known != null) {
+				return known;
+			}
+			Point<CertificateJet> point = newPointOnLine(node, line);
+			pathPoints.put(node.getIndex(), point);
+			return point;
+		}
+
+		private Point<CertificateJet> newPointOnLine(ConstructiveConeNode node,
 				Line<CertificateJet> line) {
 			ConstructiveIdentityArithmetic field = jets.getField();
 			ConstructiveConeNode path = cone.getNode(node.getInput(0));
@@ -890,6 +1009,67 @@ public final class ConstructiveIdentityCertifier {
 		private static String name(ConstructiveConeNode node) {
 			return node.getPresentationName() == null ? "n" + node.getIndex()
 					: node.getPresentationName();
+		}
+	}
+
+	/**
+	 * An exact parameter {@code t0 = quarter pi / 2} of a circle driver read in the frame of the
+	 * axes, where the point of the circle is exact in the field of the certificate.
+	 */
+	private static final class DriverAt {
+		private static final String[] NAMES = {"0", "pi/2", "pi", "-pi/2"};
+		private static final int[] COS = {1, 0, -1, 0};
+		private static final int[] SIN = {0, 1, 0, -1};
+
+		private final int quarter;
+		private final double[] frame;
+
+		DriverAt(int quarter, double[] frame) {
+			if (quarter < 0 || quarter > 3 || frame == null || frame.length != 4) {
+				throw new IllegalArgumentException("Not an exact parameter of a circle driver");
+			}
+			for (double component : frame) {
+				if (component != 0 && component != 1 && component != -1) {
+					throw new IllegalArgumentException("Not a frame of the axes");
+				}
+			}
+			this.quarter = quarter;
+			this.frame = frame.clone();
+		}
+
+		String describe() {
+			return " driver at " + NAMES[quarter] + " frame " + frame[0] + "," + frame[1] + ","
+					+ frame[2] + "," + frame[3];
+		}
+
+		/**
+		 * The exact jet of order two of the circle at the parameter: the point
+		 * {@code m + r (c e0 + s e1)}, its derivative {@code r (-s e0 + c e1)} and its second
+		 * derivative {@code -r (c e0 + s e1)}, with {@code (c, s) = (cos t0, sin t0)}.
+		 *
+		 * @return the jet, or {@code null} for another path
+		 */
+		@SuppressWarnings("unchecked")
+		Point<CertificateJet> jet(ConstructiveIdentityJetArithmetic jets, Object path) {
+			if (!(path instanceof Circle)) {
+				return null;
+			}
+			Circle<CertificateJet> circle = (Circle<CertificateJet>) path;
+			ConstructiveIdentityArithmetic field = jets.getField();
+			CertificateElement radius = field.sqrt(circle.getRadiusSquared().getValue());
+			int c = COS[quarter];
+			int s = SIN[quarter];
+			CertificateElement alongX = field.multiply(radius,
+					field.ofBinary64(c * frame[0] + s * frame[2]));
+			CertificateElement alongY = field.multiply(radius,
+					field.ofBinary64(c * frame[1] + s * frame[3]));
+			CertificateElement turnX = field.multiply(radius,
+					field.ofBinary64(c * frame[2] - s * frame[0]));
+			CertificateElement turnY = field.multiply(radius,
+					field.ofBinary64(c * frame[3] - s * frame[1]));
+			return new Point<>(new CertificateJet(field.add(circle.getCenterX().getValue(),
+					alongX), turnX, field.negate(alongX)), new CertificateJet(field.add(
+							circle.getCenterY().getValue(), alongY), turnY, field.negate(alongY)));
 		}
 	}
 }

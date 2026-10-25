@@ -5,6 +5,9 @@
 
 package org.geocedg.common.kernel.locus.intersection;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * The residual of one source and one target in one decision configuration, enclosed on
  * parameter boxes (PRE-G9B-CU3 piece I-1). The captured configuration of a document under
@@ -45,4 +48,20 @@ public interface ResidualJetSource2D {
 	 *         {@code null} when it is not enclosed
 	 */
 	double[] normalizedResidual(double parameter);
+
+	/**
+	 * The exact contacts of the configuration at the exact parameters of the driver that lie
+	 * strictly inside a box (PRE-G9B-CU3 increment E3; Stage B design section 9.1, form "one
+	 * double root at an exact point"). Only the constructive configuration decides exactly; the
+	 * captured configuration of a document under {@code legacy-representation-authority/v1}
+	 * gives none, so that CU3.4 governs it unchanged.
+	 *
+	 * @param lower lower end of the box
+	 * @param upper upper end of the box
+	 * @return the exact contacts, each with {@code h(t0) = 0} and {@code h'(t0) = 0} established,
+	 *         or an empty list
+	 */
+	default List<ExactContactEvidence2D> exactContacts(double lower, double upper) {
+		return Collections.emptyList();
+	}
 }

@@ -23,6 +23,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ConstructiveAdmission;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactEvidenceClass;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactOrder;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ExistenceGrade;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LineageEventKind;
@@ -41,8 +42,12 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  * a certificate really contradicts its existence, its count or its classification; a certified
  * critical point alone, a class-3 contact or a certificate that does not hold leaves every
  * candidate unchanged. Every transverse isolated candidate also receives the grade
- * {@code EXISTENCE_CERTIFIED} when a simple root is certified around it. The analysis creates
- * no point and no token; the solver verifies every surviving candidate as before.
+ * {@code EXISTENCE_CERTIFIED} when a simple root is certified around it. In the constructive
+ * configuration a candidate at a certified fold of {@code CU2} triggers too, and the form one
+ * double root at an exact point, from the exact decisions of that configuration, reclassifies a
+ * root published as transverse at a fold and withdraws the rounding noise around a contact
+ * (PRE-G9B-CU3 increment E3). The analysis creates no point and no token; the solver verifies
+ * every surviving candidate as before.
  */
 final class CertifiedContactAnalysis2D {
 
@@ -78,6 +83,17 @@ final class CertifiedContactAnalysis2D {
 		}
 	}
 
+	/** The entries of the candidates of one analysis, in their order, and its outcome. */
+	private static final class Analysis {
+		private final List<Entry> entries;
+		private final Outcome outcome;
+
+		Analysis(List<Entry> entries, Outcome outcome) {
+			this.entries = entries;
+			this.outcome = outcome;
+		}
+	}
+
 	private CertifiedContactAnalysis2D() {
 	}
 
@@ -90,6 +106,13 @@ final class CertifiedContactAnalysis2D {
 	 */
 	static Outcome apply(IntersectionCapabilityContext2D context, ResidualJetSource2D source,
 			List<IntersectionCandidate2D> candidates, boolean complete) {
+		return analyse(context, source, candidates, complete).outcome;
+	}
+
+	/** @return the entries of the candidates, in their order, and the outcome */
+	private static Analysis analyse(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, List<IntersectionCandidate2D> candidates,
+			boolean complete) {
 		List<IntersectionDiagnostic2D> diagnostics = new ArrayList<>();
 		Map<String, List<Entry>> byComponent = new LinkedHashMap<>();
 		List<Entry> entries = new ArrayList<>();
@@ -109,7 +132,7 @@ final class CertifiedContactAnalysis2D {
 			group.sort((first, second) -> Double.compare(first.candidate.getSemanticParameter(),
 					second.candidate.getSemanticParameter()));
 			for (Entry entry : new ArrayList<>(group)) {
-				if (entry.state != State.OPEN || !triggered(entry, group)) {
+				if (entry.state != State.OPEN || !triggered(context, source, entry, group)) {
 					continue;
 				}
 				RootCountCertificate2D certificate = certificate(source, window, entry);
@@ -164,46 +187,65 @@ final class CertifiedContactAnalysis2D {
 					"A certified critical point leaves the count of a box undetermined: the"
 							+ " completeness of the set is not established"));
 		}
-		return new Outcome(result, diagnostics, contradicted);
+		return new Analysis(entries, new Outcome(result, diagnostics, contradicted));
 	}
 
 	/**
-	 * The re-qualification of one published solution under the constructive authority, as the
-	 * adoption event reports it before anything is applied ({@code
-	 * locus-v2-constructive-authority.md} section 7.4).
+	 * The re-qualification of every published solution of one result under the constructive
+	 * authority, as the adoption event reports it before anything is applied ({@code
+	 * locus-v2-constructive-authority.md} section 7.4), with the conflict rule of the
+	 * constructive configuration applied to all of them together: the rule may withdraw, merge
+	 * or reclassify a solution there (PRE-G9B-CU3 increment E3), and such a solution is no longer
+	 * admitted.
 	 *
 	 * @param context a query of the published result
 	 * @param source the residual in the constructive configuration
-	 * @param solution a published solution
-	 * @return its admission under the constructive authority
+	 * @param solutions the published solutions
+	 * @return per solution, in the same order, its admission under the constructive authority,
+	 *         or {@code null} when the conflict rule contradicts it there
 	 */
-	static ConstructiveAdmission requalify(IntersectionCapabilityContext2D context,
-			ResidualJetSource2D source, LocusIntersectionSolution2D solution) {
+	static List<ConstructiveAdmission> requalify(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, List<LocusIntersectionSolution2D> solutions) {
+		List<IntersectionCandidate2D> candidates = new ArrayList<>();
+		for (LocusIntersectionSolution2D solution : solutions) {
+			candidates.add(candidate(solution));
+		}
+		Analysis analysis = analyse(context, source, candidates, false);
+		List<ConstructiveAdmission> admissions = new ArrayList<>();
+		for (int index = 0; index < candidates.size(); index++) {
+			Entry entry = analysis.entries.get(index);
+			admissions.add(entry.state == State.WITHDRAWN ? null
+					: entry.admission(context, source));
+		}
+		return admissions;
+	}
+
+	/** @return the candidate that a published solution would be, without its identity */
+	private static IntersectionCandidate2D candidate(LocusIntersectionSolution2D solution) {
 		IntersectionRootRevisionEvidence2D evidence = solution.getRevisionEvidence();
-		IntersectionCandidate2D candidate = new IntersectionCandidate2D(
-				evidence.getBranchSnapshotKey(), evidence.getResolvedValidComponentKey(),
-				evidence.getSemanticParameter(), evidence.getLiftedPeriodicParameter(),
-				evidence.getIsolatingInterval(), evidence.getLocalIsolationStatus(),
-				Optional.empty(), solution.getClassification().getContactClass(),
+		return new IntersectionCandidate2D(evidence.getBranchSnapshotKey(),
+				evidence.getResolvedValidComponentKey(), evidence.getSemanticParameter(),
+				evidence.getLiftedPeriodicParameter(), evidence.getIsolatingInterval(),
+				evidence.getLocalIsolationStatus(), Optional.empty(),
+				solution.getClassification().getContactClass(),
 				MultiplicityStatus.NOT_ESTABLISHED, OptionalInt.empty(),
 				evidence.getSolverMethod(), evidence.getNumericGuarantee(),
 				LineageEventKind.APPEARED, Collections.emptyList(), Collections.emptyList());
-		Entry entry = new Entry(candidate);
-		Window window = Window.of(context, candidate);
-		if (window != null) {
-			grade(source, window, entry);
-		}
-		return entry.admission(context, source);
 	}
 
 	/**
 	 * The trigger of Stage B section 9.3: a non-transverse or not locally isolated candidate,
-	 * or one closer to another candidate of its component than the bracket of either.
+	 * or one closer to another candidate of its component than the bracket of either; in the
+	 * constructive configuration also a candidate whose isolating interval meets a certified
+	 * fold of {@code CU2}, where a root is never simple (PRE-G9B-CU3 increment E3, the seam of the
+	 * author's model). The trigger reads parameters, solver states and the certified folds only.
 	 */
-	private static boolean triggered(Entry entry, List<Entry> group) {
+	private static boolean triggered(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, Entry entry, List<Entry> group) {
 		IntersectionCandidate2D candidate = entry.candidate;
 		if (candidate.getContactClass() != ContactClass.TRANSVERSE_ESTABLISHED
-				|| candidate.getLocalIsolationStatus() != LocalIsolationStatus.ESTABLISHED) {
+				|| candidate.getLocalIsolationStatus() != LocalIsolationStatus.ESTABLISHED
+				|| source.isConstructive() && entry.atCertifiedFold(context)) {
 			return true;
 		}
 		for (Entry other : group) {
@@ -264,6 +306,10 @@ final class CertifiedContactAnalysis2D {
 			}
 			return;
 		}
+		if (certificate.getForm() == RootCountCertificate2D.Form.ONE_DOUBLE) {
+			resolveDouble(context, window, certificate, members, group, entries, diagnostics);
+			return;
+		}
 		List<double[]> roots = certificate.getRoots();
 		List<List<Entry>> located = new ArrayList<>();
 		for (int index = 0; index < roots.size(); index++) {
@@ -318,6 +364,7 @@ final class CertifiedContactAnalysis2D {
 			created.grade = ExistenceGrade.EXISTENCE_CERTIFIED;
 			created.certificate = certificate;
 			created.contact = kept != null ? kept.contact : null;
+			created.order = ContactOrder.ONE;
 			if (kept != null) {
 				kept.withdraw(diagnostics, "reclassified as a transverse root with certified"
 						+ " existence: " + evidence);
@@ -330,6 +377,147 @@ final class CertifiedContactAnalysis2D {
 							+ (kept == null ? " without a published candidate" : "") + ": "
 							+ evidence));
 		}
+	}
+
+	/**
+	 * The contradictions of the form one double root at an exact point {@code t0} (Stage B
+	 * design section 9.2, PRE-G9B-CU3 increment E3): a candidate whose isolating interval misses
+	 * {@code t0} is withdrawn (existence); of those that contain it, all but the closest are
+	 * merged into it (count); and that one, published as transverse, tangent or undetermined, is
+	 * replaced by a tangent candidate at {@code t0} with multiplicity two, the existence grade
+	 * {@code EXISTENCE_EXACT}, contact class 1 or 2 and its order of contact (multiplicity). The
+	 * replacement never inherits a transverse germ, so the token of a transverse candidate stops
+	 * being admissible and is never reassociated. When no binary64 parameter of {@code t0} passes
+	 * the residual check of the verification, the candidates that contain it stay as they are.
+	 */
+	private static void resolveDouble(IntersectionCapabilityContext2D context, Window window,
+			RootCountCertificate2D certificate, List<Entry> members, List<Entry> group,
+			List<Entry> entries, List<IntersectionDiagnostic2D> diagnostics) {
+		double lower = certificate.getLower();
+		double upper = certificate.getUpper();
+		double[] root = certificate.getRoots().get(0);
+		ExactContactEvidence2D exact = certificate.getExact();
+		String evidence = certificate.describe();
+		List<Entry> located = new ArrayList<>();
+		for (Entry member : members) {
+			if (window.overlaps(member, root, lower, upper)) {
+				located.add(member);
+			} else {
+				member.withdraw(diagnostics, "the isolating interval misses the one double root"
+						+ " at " + exact.getParameter() + ": " + evidence);
+			}
+		}
+		Entry kept = null;
+		double distance = Double.POSITIVE_INFINITY;
+		double middle = root[0] + (root[1] - root[0]) / 2;
+		for (Entry member : located) {
+			double current = Math.abs(window.lift(member.candidate.getSemanticParameter(), lower,
+					upper) - middle);
+			if (current < distance) {
+				distance = current;
+				kept = member;
+			}
+		}
+		IntersectionCandidate2D replacement = doubleRoot(context, window, root,
+				kept != null ? kept.candidate : members.get(0).candidate, exact);
+		if (replacement == null) {
+			// No parameter of t0 passes the residual check of the verification: the candidates
+			// that contain it stay as they are rather than leaving the root unverified.
+			for (Entry member : located) {
+				member.state = State.ANALYSED;
+			}
+			return;
+		}
+		for (Entry member : located) {
+			if (member != kept) {
+				member.withdraw(diagnostics, "merged into the one double root at "
+						+ exact.getParameter() + ": " + evidence);
+			}
+		}
+		Entry created = new Entry(replacement);
+		created.state = State.CERTIFIED;
+		created.grade = ExistenceGrade.EXISTENCE_EXACT;
+		created.certificate = certificate;
+		created.contact = exact.getEvidence();
+		created.order = exact.getOrder();
+		if (kept != null) {
+			kept.withdraw(diagnostics, "reclassified as the one double root at the exact"
+					+ " parameter " + exact.getParameter() + " (" + exact.getOrder() + "): "
+					+ evidence);
+		}
+		group.add(created);
+		entries.add(created);
+		diagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.CERTIFIED_EXISTENCE_ESTABLISHED,
+				"Certified double root at the exact parameter " + exact.getParameter() + ", "
+						+ exact.getEvidence() + ", order " + exact.getOrder()
+						+ (kept == null ? " without a published candidate" : "") + ": "
+						+ evidence));
+	}
+
+	/**
+	 * A tangent candidate of multiplicity two at an exact parameter, at the binary64 parameter of
+	 * its enclosure whose residual passes the residual check of the verification: the parameter
+	 * of the candidate it replaces when that one lies in the enclosure, otherwise the end with
+	 * the smallest residual. Its isolation stays {@code NOT_ESTABLISHED}, as for every contact of
+	 * G8B-R1, so it gets no transverse germ.
+	 *
+	 * @return the candidate, or {@code null} when no such parameter passes the check
+	 */
+	private static IntersectionCandidate2D doubleRoot(IntersectionCapabilityContext2D context,
+			Window window, double[] root, IntersectionCandidate2D template,
+			ExactContactEvidence2D exact) {
+		double own = template.getSemanticParameter();
+		double ownLifted = window.lift(own, root[0], root[1]);
+		double chosen = Double.NaN;
+		double smallest = Double.POSITIVE_INFINITY;
+		if (root[0] <= ownLifted && ownLifted <= root[1] && passes(context, template, own) >= 0) {
+			chosen = own;
+		} else {
+			for (double lifted : new double[] {root[0], root[1]}) {
+				double parameter = context.getDefinition().getProvider().canonicalize(lifted
+						+ window.canonicalShift(lifted));
+				double magnitude = passes(context, template, parameter);
+				if (magnitude >= 0 && magnitude < smallest) {
+					smallest = magnitude;
+					chosen = parameter;
+				}
+			}
+		}
+		if (Double.isNaN(chosen)) {
+			return null;
+		}
+		return new IntersectionCandidate2D(template.getBranchKey(), template.getComponentKey(),
+				chosen, OptionalDouble.empty(), new IntersectionParameterInterval2D(chosen, chosen),
+				LocalIsolationStatus.NOT_ESTABLISHED, Optional.empty(),
+				ContactClass.TANGENT_ESTABLISHED, MultiplicityStatus.ESTABLISHED, OptionalInt.of(2),
+				SolverMethod.CERTIFIED_INTERVAL, NumericGuarantee.CERTIFIED_ERROR_BOUND,
+				LineageEventKind.APPEARED, Collections.emptyList(), List.of(
+						new IntersectionDiagnostic2D(DiagnosticCode.CONTACT_EVIDENCE_CLASSIFIED,
+								"Root-count certificate of cu3-certified-admission/v1: one"
+										+ " double root at the exact parameter "
+										+ exact.getParameter() + ", " + exact.getEvidence()
+										+ ", order " + exact.getOrder())));
+	}
+
+	/**
+	 * @return the magnitude of the normalized binary64 residual at the parameter when it passes
+	 *         the residual check of the verification, otherwise {@code -1}
+	 */
+	private static double passes(IntersectionCapabilityContext2D context,
+			IntersectionCandidate2D template, double parameter) {
+		LocusEvaluation2D evaluation = context.evaluate(template.getBranchKey(), parameter);
+		if (!evaluation.isValid() || evaluation.getPoint() == null) {
+			return -1;
+		}
+		TargetResidualEvaluation2D residual = context.evaluateResidualEvidence(
+				evaluation.getPoint());
+		if (!residual.isEstablished()) {
+			return -1;
+		}
+		TargetResidual2D value = residual.getResidual().get();
+		double magnitude = Math.abs(value.getNormalizedResidual());
+		return magnitude <= context.getQuery().getPolicy().getResidualTolerance()
+				.threshold(value.getCharacteristicScale()) ? magnitude : -1;
 	}
 
 	/**
@@ -375,19 +563,8 @@ final class CertifiedContactAnalysis2D {
 		double smallest = Double.POSITIVE_INFINITY;
 		for (double lifted : new double[] {middle, root[0], root[1]}) {
 			double parameter = context.getDefinition().getProvider().canonicalize(lifted + shift);
-			LocusEvaluation2D evaluation = context.evaluate(template.getBranchKey(), parameter);
-			if (!evaluation.isValid() || evaluation.getPoint() == null) {
-				continue;
-			}
-			TargetResidualEvaluation2D residual = context.evaluateResidualEvidence(
-					evaluation.getPoint());
-			if (!residual.isEstablished()) {
-				continue;
-			}
-			TargetResidual2D value = residual.getResidual().get();
-			double magnitude = Math.abs(value.getNormalizedResidual());
-			if (magnitude <= context.getQuery().getPolicy().getResidualTolerance()
-					.threshold(value.getCharacteristicScale()) && magnitude < smallest) {
+			double magnitude = passes(context, template, parameter);
+			if (magnitude >= 0 && magnitude < smallest) {
 				smallest = magnitude;
 				chosen = parameter;
 			}
@@ -465,6 +642,7 @@ final class CertifiedContactAnalysis2D {
 		private State state = State.OPEN;
 		private ExistenceGrade grade = ExistenceGrade.LOCALLY_VERIFIED;
 		private ContactEvidenceClass contact;
+		private ContactOrder order;
 		private RootCountCertificate2D certificate;
 
 		Entry(IntersectionCandidate2D candidate) {
@@ -494,6 +672,9 @@ final class CertifiedContactAnalysis2D {
 			if (evidence.isCertifiedRoute()) {
 				// The capability certified it; the route keeps its own certificate and scale.
 				computed = computed.withCertifiedRoute(evidence.getCharacteristicScale());
+			}
+			if (order != null) {
+				computed = computed.withContactOrder(order);
 			}
 			if (source.isConstructive()) {
 				computed = computed.withConstructiveAdmission(admission(context, source));

@@ -339,8 +339,90 @@ public final class Cu2CertificateTransfer {
 		}
 	}
 
+	/**
+	 * Establishes in the constructive configuration the fold of the source certificate at an
+	 * exact parameter of a circle driver, by the route structure, as {@link #closedDecision} does
+	 * at the driver parameter of an exact point (PRE-G9B-CU3 increment E3: the order of contact
+	 * of the form one double root at an exact point of the conflict rule, where no point of the
+	 * document stands at the parameter).
+	 *
+	 * @param locus the locus
+	 * @param cone a cone with the slice of the locus, its driver as the replacement node
+	 * @param traced the slice node of the traced point
+	 * @param support the cone node of the circle of the driver
+	 * @param exact the exact evaluation of the cone at its base configuration
+	 * @param parameter the exact parameter, {@code 0}, {@code pi/2}, {@code pi} or
+	 *        {@code -pi/2}
+	 * @return the transfer record
+	 */
+	public static Record foldAtParameter(GeoLocusV2 locus, ConstructiveCone cone, int traced,
+			int support, ConstructiveConeEvaluator<Element> exact, String parameter) {
+		Objects.requireNonNull(locus);
+		Builder record = new Builder(locus.getSemanticRevision());
+		Prepared source = prepareSource(locus, cone, traced, exact, record);
+		if (source.refusal != null) {
+			return source.refusal;
+		}
+		DriverParameterEnclosure enclosure = DriverParameterEnclosure.atExactParameter(
+				source.program, parameter);
+		if (enclosure == null) {
+			return record.refuse(Cause.UNSUPPORTED_DRIVER_FAMILY, "no exact parameter "
+					+ parameter + " of a circle driver read in the frame of the axes");
+		}
+		record.parameter = enclosure.toString();
+		try {
+			return fold(new Prepared(source.structure, source.program, source.correspondence,
+					null, enclosure, null), cone, traced, support, exact, record);
+		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
+			return record.refuse(Cause.BUDGET_EXHAUSTED, exhaustion.getMessage());
+		}
+	}
+
 	/** Conditions N1 and N2 and the exact driver parameter of the replacement. */
 	private static Prepared prepare(GeoLocusV2 locus, ConstructiveCone cone, int traced,
+			ConstructiveConeEvaluator<Element> exact, Builder record) {
+		Prepared source = prepareSource(locus, cone, traced, exact, record);
+		if (source.refusal != null) {
+			return source;
+		}
+		CertifiedConstructionProgram2D program = source.program;
+		int replacement = cone.getReplacementNode();
+		Result driverPoint = exact.evaluate(replacement);
+		if (driverPoint.getFailure() == ConstructiveConeEvaluator.Failure.BUDGET_EXHAUSTED) {
+			return Prepared.refused(record.refuse(Cause.BUDGET_EXHAUSTED,
+					driverPoint.getMessage()));
+		}
+		if (!driverPoint.hasValue() || exact.dependsOnSubstitute(replacement)) {
+			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
+					"the replacement has no exact constructive point"));
+		}
+		@SuppressWarnings("unchecked")
+		Point<Element> point = (Point<Element>) driverPoint.getValue();
+		if (program.getDriver() != CertifiedConstructionProgram2D.Driver.CIRCLE
+				&& program.getDriver() != CertifiedConstructionProgram2D.Driver.SEGMENT) {
+			return Prepared.refused(record.refuse(Cause.UNSUPPORTED_DRIVER_FAMILY,
+					program.getDriver().name()));
+		}
+		DriverParameterEnclosure parameter;
+		try {
+			parameter = DriverParameterEnclosure.of(program,
+					((ConstructiveArithmetic.Exact) exact.getArithmetic()).getTower(),
+					point.getX(), point.getY());
+		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
+			return Prepared.refused(record.refuse(Cause.BUDGET_EXHAUSTED,
+					exhaustion.getMessage()));
+		}
+		if (parameter == null) {
+			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
+					"no rigorous driver parameter of the exact point"));
+		}
+		record.parameter = parameter.toString();
+		return new Prepared(source.structure, program, source.correspondence, point, parameter,
+				null);
+	}
+
+	/** Conditions N1 and N2: the certificate and the program of the consuming revision. */
+	private static Prepared prepareSource(GeoLocusV2 locus, ConstructiveCone cone, int traced,
 			ConstructiveConeEvaluator<Element> exact, Builder record) {
 		Objects.requireNonNull(cone);
 		Objects.requireNonNull(exact);
@@ -379,38 +461,7 @@ public final class Cu2CertificateTransfer {
 		}
 		record.premise("N1: " + program.getSteps().size() + " captured steps, "
 				+ correspondence.getConstants().size() + " captured constants");
-		int replacement = cone.getReplacementNode();
-		Result driverPoint = exact.evaluate(replacement);
-		if (driverPoint.getFailure() == ConstructiveConeEvaluator.Failure.BUDGET_EXHAUSTED) {
-			return Prepared.refused(record.refuse(Cause.BUDGET_EXHAUSTED,
-					driverPoint.getMessage()));
-		}
-		if (!driverPoint.hasValue() || exact.dependsOnSubstitute(replacement)) {
-			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
-					"the replacement has no exact constructive point"));
-		}
-		@SuppressWarnings("unchecked")
-		Point<Element> point = (Point<Element>) driverPoint.getValue();
-		if (program.getDriver() != CertifiedConstructionProgram2D.Driver.CIRCLE
-				&& program.getDriver() != CertifiedConstructionProgram2D.Driver.SEGMENT) {
-			return Prepared.refused(record.refuse(Cause.UNSUPPORTED_DRIVER_FAMILY,
-					program.getDriver().name()));
-		}
-		DriverParameterEnclosure parameter;
-		try {
-			parameter = DriverParameterEnclosure.of(program,
-					((ConstructiveArithmetic.Exact) exact.getArithmetic()).getTower(),
-					point.getX(), point.getY());
-		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
-			return Prepared.refused(record.refuse(Cause.BUDGET_EXHAUSTED,
-					exhaustion.getMessage()));
-		}
-		if (parameter == null) {
-			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
-					"no rigorous driver parameter of the exact point"));
-		}
-		record.parameter = parameter.toString();
-		return new Prepared(structure, program, correspondence, point, parameter, null);
+		return new Prepared(structure, program, correspondence, null, null, null);
 	}
 
 	/**

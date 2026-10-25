@@ -1266,7 +1266,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
       "change": "added",
-      "purpose": "Define the closed intersection result/evidence vocabulary; preserve R4 deterministic-selection identity and add R1 pair singleton-certificate diagnostics without conflating source support, root discovery, local proof, class coverage or global completeness. PRE-G9B-CU3 pieces I-2 and I-3: the existence grades, contact evidence classes and constructive admissions of CU3.2, CU3.4 and AUT-5, and the diagnostics of contradictions, certified existence and contact evidence, appended without changing any other value.",
+      "purpose": "Define the closed intersection result/evidence vocabulary; preserve R4 deterministic-selection identity and add R1 pair singleton-certificate diagnostics without conflating source support, root discovery, local proof, class coverage or global completeness. PRE-G9B-CU3 pieces I-2 and I-3: the existence grades, contact evidence classes and constructive admissions of CU3.2, CU3.4 and AUT-5, and the diagnostics of contradictions, certified existence and contact evidence, appended without changing any other value. PRE-G9B-CU3 increment E3: the order of contact ONE, TWO, FOLD_CONTACT or NOT_ESTABLISHED.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -7158,13 +7158,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/DriverParameterEnclosure.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the driver parameter of an exact point on the captured driver support (inherited path map evaluated exactly: exact 0, pi and pi/2 on the axes of the frame, otherwise a widened StrictMath atan2 lifted across the seam), with the captured driver point at the enclosed parameter. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter of a segment driver is compared exactly with the driver domain, and an integer parameter is written without its denominator.",
+      "purpose": "PRE-G9B-CU3 increment E1: the driver parameter of an exact point on the captured driver support (inherited path map evaluated exactly: exact 0, pi and pi/2 on the axes of the frame, otherwise a widened StrictMath atan2 lifted across the seam), with the captured driver point at the enclosed parameter. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter of a segment driver is compared exactly with the driver domain, and an integer parameter is written without its denominator. PRE-G9B-CU3 increment E3: the enclosure of an exact parameter of a circle driver.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransfer.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED. PRE-G9B-CU3 increment E1, gate G-AUT-4: closed decisions requested by a strict consumer, a fold of fold-symmetry/v1 by the route structure (premises decided exactly without boundary substitutes, isolation band by margin in interval jets) and the location of a degenerate root by the route re-decision (exact evaluation at the replacement); CLOSED_DECISION_NOT_REDECIDED otherwise, CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION when the exact evaluation refutes it. PRE-G9B-CU3 increment E2: a premise of a fold whose constant reads a cut is decided by a constructive identity certificate for every value of the cut.",
+      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED. PRE-G9B-CU3 increment E1, gate G-AUT-4: closed decisions requested by a strict consumer, a fold of fold-symmetry/v1 by the route structure (premises decided exactly without boundary substitutes, isolation band by margin in interval jets) and the location of a degenerate root by the route re-decision (exact evaluation at the replacement); CLOSED_DECISION_NOT_REDECIDED otherwise, CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION when the exact evaluation refutes it. PRE-G9B-CU3 increment E2: a premise of a fold whose constant reads a cut is decided by a constructive identity certificate for every value of the cut. PRE-G9B-CU3 increment E3: the fold of the source certificate at an exact parameter of a circle driver by the route structure, where no point of the document stands.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -7218,7 +7218,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ResidualJetSource2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 piece I-1: the residual of one source and one target in one decision configuration, enclosed on parameter boxes; a non-null enclosure certifies validity and continuity on the box.",
+      "purpose": "PRE-G9B-CU3 piece I-1: the residual of one source and one target in one decision configuration, enclosed on parameter boxes; a non-null enclosure certifies validity and continuity on the box. PRE-G9B-CU3 increment E3: the exact contacts of a configuration at the exact parameters of the driver in a box, none by default.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -7254,19 +7254,19 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionExistenceEvidence2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grade, decision configuration, certified route, contact evidence class and constructive re-qualification of one candidate or solution; revision evidence, never persisted or in a token.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grade, decision configuration, certified route, contact evidence class and constructive re-qualification of one candidate or solution; revision evidence, never persisted or in a token. PRE-G9B-CU3 increment E3: the order of contact of a root that the conflict rule reclassifies, never in a token.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RootCountCertificate2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: root-count certificates of CU3.4 on one parameter box (none, one simple root, two simple roots around a certified critical point) and the critical-point contact classes 3 and 4, from outward enclosures only.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: root-count certificates of CU3.4 on one parameter box (none, one simple root, two simple roots around a certified critical point) and the critical-point contact classes 3 and 4, from outward enclosures only. PRE-G9B-CU3 increment E3: the form one double root at an exact point, from the exact decisions of the configuration in the bracket of a certified critical point with a second derivative of fixed sign; a disagreeing exact sign certifies nothing.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedContactAnalysis2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise. PRE-G9B-CU3 increment E1: in the constructive configuration, the re-qualification of section 7.4 (STRICT by certified existence, RELAXED by ENCLOSURE_COMPATIBLE, never for a contact or at a certified fold) and its entry for the adoption report.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise. PRE-G9B-CU3 increment E1: in the constructive configuration, the re-qualification of section 7.4 (STRICT by certified existence, RELAXED by ENCLOSURE_COMPATIBLE, never for a contact or at a certified fold) and its entry for the adoption report. PRE-G9B-CU3 increment E3: in the constructive configuration a candidate at a certified fold of CU2 triggers the analysis, and the form one double root at an exact point withdraws the candidates that miss it, merges those that contain it and replaces the closest by a tangent candidate of multiplicity two with EXISTENCE_EXACT, contact class 2 and its order of contact, which gets no transverse germ; the re-qualification of the adoption applies the rule to all the solutions of a result.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -7284,31 +7284,31 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveResidualJetSource.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the residual of a Locus V2 and its target in the constructive configuration Sigma_C, from the constructive cone of the slice with the driver as the ideal point of its constructive support, evaluated in interval jets; no source for a slice with a boundary substitute that moves with the driver.",
+      "purpose": "PRE-G9B-CU3 increment E1: the residual of a Locus V2 and its target in the constructive configuration Sigma_C, from the constructive cone of the slice with the driver as the ideal point of its constructive support, evaluated in interval jets; no source for a slice with a boundary substitute that moves with the driver. PRE-G9B-CU3 increment E3: the exact contacts at the parameters k pi / 2 of a circle driver, by the constructive identity certificate at the exact parameter and the fold of CU2 transferred by structure, kept and rechecked between revisions.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/DocumentDecisionConfiguration.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the decision configuration of a public intersection read from the authority policy of its document at every computation, captured under the legacy policy and constructive under constructive-authority/v1.",
+      "purpose": "PRE-G9B-CU3 increment E1: the decision configuration of a public intersection read from the authority policy of its document at every computation, captured under the legacy policy and constructive under constructive-authority/v1. PRE-G9B-CU3 increment E3: the exact decisions of the constructive configuration kept between the revisions of the intersection.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/IntersectionAdmissionImpact.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1 (D-AUT-6): the part of the adoption impact report that re-qualifies once, before anything is applied, every root G8B-R1 admits in the public intersections: STRICT, RELAXED or NOT_ESTABLISHED with its cause.",
+      "purpose": "PRE-G9B-CU3 increment E1 (D-AUT-6): the part of the adoption impact report that re-qualifies once, before anything is applied, every root G8B-R1 admits in the public intersections: STRICT, RELAXED or NOT_ESTABLISHED with its cause. PRE-G9B-CU3 increment E3: the report applies the conflict rule of the constructive configuration to all the solutions of each result; a root that it withdraws, merges or reclassifies is reported as no longer admitted, with the cause CONTRADICTED_BY_CERTIFIED_EVIDENCE.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructiveRequalification2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the re-qualification of section 7.4 of one published solution in the constructive configuration, for the adoption impact report; it reads the published result and changes no identity, token or selector.",
+      "purpose": "PRE-G9B-CU3 increment E1: the re-qualification of section 7.4 of one published solution in the constructive configuration, for the adoption impact report; it reads the published result and changes no identity, token or selector. PRE-G9B-CU3 increment E3: the re-qualification of all the solutions of one result together, with the conflict rule of the constructive configuration; a contradicted root is not admitted.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIntersectionAdmissionTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of the public intersection under the constructive authority: Sigma_C residual enclosures, conflict rule in Sigma_C, re-qualification of G8B-R1 at the adoption with its report, Undo, unchanged tokens, a slice outside the class and the fold contacts of the author's model.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the public intersection under the constructive authority: Sigma_C residual enclosures, conflict rule in Sigma_C, re-qualification of G8B-R1 at the adoption with its report, Undo, unchanged tokens, a slice outside the class and the fold contacts of the author's model. PRE-G9B-CU3 increment E3: after the adoption the contact of e_1 and c_1 at t = 0 is class 2.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7422,7 +7422,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCertifier.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E2: attempts and rechecks of constructive-identity-certificate/v1 on the cone evaluator: automatic boundary rule, decision box with the rigorous enclosures of the ideal values, residual decided as a field element, certified membership of a limited part, order of contact by exact jets, structural key cic-structural-key/v1 by durable identity, recheck without symbolic work, and the premises of a fold.",
+      "purpose": "PRE-G9B-CU3 increment E2: attempts and rechecks of constructive-identity-certificate/v1 on the cone evaluator: automatic boundary rule, decision box with the rigorous enclosures of the ideal values, residual decided as a field element, certified membership of a limited part, order of contact by exact jets, structural key cic-structural-key/v1 by durable identity, recheck without symbolic work, and the premises of a fold. PRE-G9B-CU3 increment E3: the certificate and its recheck with the driver of the slice at an exact parameter of its circle in the frame of the axes, as the exact jet of the circle there, without reading the replacement node; a point on a line path is one indeterminate of an attempt however many evaluations read it.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7447,6 +7447,36 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityIntegrationTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E2: Intersect(L, r, D) with the certificate: the five contacts STRICT with the fold of CU2, NOT_AN_IDENTITY withdrawing SUBSTITUTE_GENERIC, rename, redefinition, deletion and recreation, Undo, Redo, reopening, a duplicate, a drag that only rechecks and determinism (V-AUT-ID-1 to V-AUT-ID-7, V-AUT-DYN-3 and V-AUT-DYN-4).",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ExactContactEvidence2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E3: the exact contact evidence of a decision configuration at an exact parameter of the driver, with the residual and its first derivative established zero, an outward enclosure of the parameter, the order of contact and the exact sign of the second derivative; revision evidence only.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ExactContactMemory.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E3: the exact decisions of the queries of one public intersection kept between its revisions, with the certificate that a later revision rechecks.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu3ExactDoubleRootTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E3: the form one double root at an exact point and its contradictions in the conflict rule, with a source that declares one exact decision: noise withdrawn, a transverse classification reclassified, a disagreeing exact sign and a parameter outside the bracket certifying nothing.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveExactContactTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E3: on the replica, the seam of e_1 and c_1 reclassified as the fold contact at pi, the contacts at t = 0 with their order, the report of the adoption, Undo, a budget that decides nothing, a target that is no identity and the recheck of a later revision.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3SeamReclassificationAuthorModelTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E3: on the adopted author model, the inversion of pins.B08_B09, the preserved contacts and V-B-NOISE-1.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

@@ -30,16 +30,21 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  * {@code h''}, a critical value of the opposite sign and ends of the sign of {@code h''}.</li>
  * </ul>
  *
- * <p>The form of one double root at an exact point needs an exact or structural decision and is
- * not computed by intervals. A certified critical point whose value enclosure contains zero is
- * contact class 3 and certifies no count. Every sign is that of an outward enclosure that
- * excludes zero; no tolerance and no binary64 value decides anything.</p>
+ * <p>The fourth form, one double root at an exact point, needs an exact or structural decision
+ * that intervals never give: {@code h(t0) = 0} and {@code h'(t0) = 0} established by the
+ * decision configuration at an exact parameter {@code t0} of the driver, which then lies in the
+ * bracket of the certified critical point, with {@code h''} of fixed sign on {@code T}; by
+ * Taylor's theorem {@code h} has the sign of {@code h''} on the rest of {@code T}, so {@code t0}
+ * is its only root there, of multiplicity two (PRE-G9B-CU3 increment E3). Without that decision a
+ * certified critical point whose value enclosure contains zero is contact class 3 and certifies
+ * no count. Every sign is that of an outward enclosure that excludes zero or of an exact decision;
+ * no tolerance and no binary64 value decides anything.</p>
  */
 final class RootCountCertificate2D {
 
 	/** Form of the certificate. */
 	enum Form {
-		NONE, ONE_SIMPLE, TWO_SIMPLE, NOT_CERTIFIED
+		NONE, ONE_SIMPLE, TWO_SIMPLE, ONE_DOUBLE, NOT_CERTIFIED
 	}
 
 	private static final int INVALID = Integer.MIN_VALUE;
@@ -51,12 +56,13 @@ final class RootCountCertificate2D {
 	private final List<double[]> roots;
 	private final double[] critical;
 	private final ContactEvidenceClass contact;
+	private final ExactContactEvidence2D exact;
 	private final int evaluations;
 	private final String reason;
 
 	private RootCountCertificate2D(Form form, double lower, double upper, List<double[]> pieces,
 			List<double[]> roots, double[] critical, ContactEvidenceClass contact,
-			int evaluations, String reason) {
+			ExactContactEvidence2D exact, int evaluations, String reason) {
 		this.form = form;
 		this.lower = lower;
 		this.upper = upper;
@@ -64,6 +70,7 @@ final class RootCountCertificate2D {
 		this.roots = Collections.unmodifiableList(new ArrayList<>(roots));
 		this.critical = critical;
 		this.contact = contact;
+		this.exact = exact;
 		this.evaluations = evaluations;
 		this.reason = reason;
 	}
@@ -166,6 +173,11 @@ final class RootCountCertificate2D {
 		return contact;
 	}
 
+	/** @return the exact contact of the form one double root at an exact point, or {@code null} */
+	ExactContactEvidence2D getExact() {
+		return exact;
+	}
+
 	/** @return box enclosures used */
 	int getEvaluations() {
 		return evaluations;
@@ -186,6 +198,9 @@ final class RootCountCertificate2D {
 		}
 		for (double[] root : roots) {
 			text.append(" root [").append(root[0]).append(',').append(root[1]).append(']');
+		}
+		if (exact != null) {
+			text.append(" exact ").append(exact);
 		}
 		return text.append(" (").append(reason).append(", ").append(evaluations)
 				.append(" enclosures)").toString();
@@ -296,8 +311,9 @@ final class RootCountCertificate2D {
 				return invalid(a, b);
 			}
 			if (value == 0) {
-				return result(Form.NOT_CERTIFIED, a, b, bracket,
-						ContactEvidenceClass.CONTACT_NUMERICALLY_COMPATIBLE,
+				RootCountCertificate2D exactDouble = exactDouble(a, b, curvature, bracket);
+				return exactDouble != null ? exactDouble : result(Form.NOT_CERTIFIED, a, b,
+						bracket, ContactEvidenceClass.CONTACT_NUMERICALLY_COMPATIBLE,
 						"the residual at the certified critical point contains zero");
 			}
 			if (value == curvature) {
@@ -339,6 +355,38 @@ final class RootCountCertificate2D {
 			return roots.isEmpty() ? result(Form.NONE, a, b, bracket, contact,
 					why + "; the ends have that sign too")
 					: located(a, b, pieces, roots, bracket, contact, why);
+		}
+
+		/**
+		 * The form one double root at an exact point: {@code h''} has the sign
+		 * {@code curvature} on {@code [a, b]}, so the critical point of {@code h} in the box is
+		 * unique and lies in the bracket, and the configuration establishes {@code h(t0) = 0}
+		 * and {@code h'(t0) = 0} at an exact parameter whose enclosure lies in the bracket. An
+		 * exact sign of {@code h''(t0)} that disagrees with the enclosure contradicts one of the
+		 * two decisions, so it certifies nothing.
+		 *
+		 * @return the certificate, or {@code null} when the configuration gives no exact contact
+		 *         in the bracket
+		 */
+		private RootCountCertificate2D exactDouble(double a, double b, int curvature,
+				double[] bracket) {
+			for (ExactContactEvidence2D exact : source.exactContacts(bracket[0], bracket[1])) {
+				if (exact.getLower() < bracket[0] || exact.getUpper() > bracket[1]) {
+					continue;
+				}
+				if (exact.getCurvature() != 0 && exact.getCurvature() != curvature) {
+					return result(Form.NOT_CERTIFIED, a, b, bracket, null,
+							"the exact sign of h'' at " + exact.getParameter()
+									+ " disagrees with its enclosure on the box");
+				}
+				return new RootCountCertificate2D(Form.ONE_DOUBLE, a, b,
+						List.of(new double[] {a, b}),
+						List.of(new double[] {exact.getLower(), exact.getUpper()}), bracket,
+						exact.getEvidence(), exact, evaluations,
+						"h(t0) = 0 and h'(t0) = 0 at the exact parameter " + exact.getParameter()
+								+ " and h'' has a fixed sign: one double root");
+			}
+			return null;
 		}
 
 		/**
@@ -427,14 +475,14 @@ final class RootCountCertificate2D {
 				List<double[]> roots, double[] critical, ContactEvidenceClass contact,
 				String reason) {
 			return new RootCountCertificate2D(roots.size() == 1 ? Form.ONE_SIMPLE
-					: Form.TWO_SIMPLE, a, b, pieces, roots, critical, contact, evaluations,
+					: Form.TWO_SIMPLE, a, b, pieces, roots, critical, contact, null, evaluations,
 					reason);
 		}
 
 		RootCountCertificate2D result(Form form, double a, double b, double[] critical,
 				ContactEvidenceClass contact, String reason) {
 			return new RootCountCertificate2D(form, a, b, Collections.emptyList(),
-					Collections.emptyList(), critical, contact, evaluations, reason);
+					Collections.emptyList(), critical, contact, null, evaluations, reason);
 		}
 	}
 

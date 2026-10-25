@@ -166,8 +166,9 @@ final class ConstructiveIntersectionAdmissionTest extends ConstructiveModelRepli
 				evidence(constructiveSeam).getConstructiveAdmission());
 		assertFalse(adopted.isPointAdmissible(constructiveSeam.getIdentity().getRootToken()),
 				"a contact without a sign change is never admitted by a residual bound");
-		assertEquals(ContactEvidenceClass.CONTACT_NUMERICALLY_COMPATIBLE, contactAtZero(adopted),
-				"V-B-1 under the constructive authority: class 3, until the exact decision of E2");
+		assertEquals(ContactEvidenceClass.CONTACT_EXISTENCE_EXACT, contactAtZero(adopted),
+				"V-B-1 under the constructive authority: class 2 since the exact decision of E3"
+						+ " (ConstructiveExactContactTest)");
 	}
 
 	// ---------------------------------------------------------------- helpers
@@ -207,6 +208,7 @@ final class ConstructiveIntersectionAdmissionTest extends ConstructiveModelRepli
 		return tokens;
 	}
 
+	/** @return the solution at the seam, transverse under the legacy policy */
 	private static LocusIntersectionSolution2D transverse(GeoLocusIntersectionResult result) {
 		for (LocusIntersectionSolution2D solution : rich(result).getFiniteSolutions()) {
 			if (Math.abs(Math.abs(solution.getRevisionEvidence().getSemanticParameter())
