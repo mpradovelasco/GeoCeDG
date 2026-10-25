@@ -26,6 +26,7 @@ public final class IntersectionRootRevisionEvidence2D {
 	private final SolverMethod solverMethod;
 	private final NumericGuarantee numericGuarantee;
 	private final Optional<String> currentRootGerm;
+	private final IntersectionExistenceEvidence2D existenceEvidence;
 
 	/** Creates immutable evidence for exactly one captured source revision. */
 	public IntersectionRootRevisionEvidence2D(long locusSemanticRevision,
@@ -37,6 +38,27 @@ public final class IntersectionRootRevisionEvidence2D {
 			TargetResidual2D residualEvidence, SolverMethod solverMethod,
 			NumericGuarantee numericGuarantee,
 			Optional<String> currentRootGerm) {
+		this(locusSemanticRevision, targetUpdateStamp, branchSnapshotKey,
+				resolvedValidComponentKey, semanticParameter, liftedPeriodicParameter,
+				isolatingInterval, localIsolationStatus, residualEvidence, solverMethod,
+				numericGuarantee, currentRootGerm,
+				IntersectionExistenceEvidence2D.locallyVerified());
+	}
+
+	/**
+	 * Creates immutable evidence with the existence evidence of
+	 * {@code cu3-certified-admission/v1}, which enters no identity.
+	 */
+	public IntersectionRootRevisionEvidence2D(long locusSemanticRevision,
+			long targetUpdateStamp, String branchSnapshotKey,
+			String resolvedValidComponentKey, double semanticParameter,
+			OptionalDouble liftedPeriodicParameter,
+			IntersectionParameterInterval2D isolatingInterval,
+			LocalIsolationStatus localIsolationStatus,
+			TargetResidual2D residualEvidence, SolverMethod solverMethod,
+			NumericGuarantee numericGuarantee,
+			Optional<String> currentRootGerm,
+			IntersectionExistenceEvidence2D existenceEvidence) {
 		if (locusSemanticRevision < 1 || targetUpdateStamp < 0
 				|| !Double.isFinite(semanticParameter)) {
 			throw new IllegalArgumentException("Invalid root revision evidence");
@@ -57,6 +79,7 @@ public final class IntersectionRootRevisionEvidence2D {
 		this.solverMethod = java.util.Objects.requireNonNull(solverMethod);
 		this.numericGuarantee = java.util.Objects.requireNonNull(numericGuarantee);
 		this.currentRootGerm = checkedOptional(currentRootGerm);
+		this.existenceEvidence = java.util.Objects.requireNonNull(existenceEvidence);
 	}
 
 	public long getLocusSemanticRevision() {
@@ -109,6 +132,14 @@ public final class IntersectionRootRevisionEvidence2D {
 	 */
 	public Optional<String> getCurrentRootGerm() {
 		return currentRootGerm;
+	}
+
+	/**
+	 * @return existence grade, certified route, contact evidence and constructive
+	 *         re-qualification of the revision; {@code LOCALLY_VERIFIED} when none was computed
+	 */
+	public IntersectionExistenceEvidence2D getExistenceEvidence() {
+		return existenceEvidence;
 	}
 
 	private static Optional<String> checkedOptional(Optional<String> value) {

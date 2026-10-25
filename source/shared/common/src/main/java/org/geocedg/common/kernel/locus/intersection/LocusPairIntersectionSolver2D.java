@@ -184,9 +184,10 @@ public final class LocusPairIntersectionSolver2D {
 		ArrayList<LocusIntersectionSolution2D> solutions = new ArrayList<>();
 		HashSet<String> tokens = new HashSet<>();
 		boolean unresolved = false;
+		int[] residualRejections = {0};
 		for (LocusPairIntersectionCandidate2D candidate : candidates) {
 			LocusIntersectionSolution2D solution = verifyCandidate(context,
-					candidate, tokenSource);
+					candidate, tokenSource, residualRejections);
 			if (solution == null) {
 				unresolved = true;
 				context.getInstrumentation().recordUnresolvedCandidate();
@@ -196,6 +197,12 @@ public final class LocusPairIntersectionSolver2D {
 			} else {
 				solutions.add(solution);
 			}
+		}
+		if (residualRejections[0] > 0) {
+			// The declared rejection diagnostic (CU3.4) is observability only.
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.PAIR_RESIDUAL_REJECTED, residualRejections[0]
+							+ " pair candidate(s) rejected by the pair residual check"));
 		}
 		if (unresolved && completeness == Completeness.COMPLETE) {
 			completeness = Completeness.INCOMPLETE;
@@ -218,6 +225,13 @@ public final class LocusPairIntersectionSolver2D {
 			LocusPairIntersectionContext2D context,
 			LocusPairIntersectionCandidate2D candidate,
 			LocusPairRootTokenSource2D tokenSource) {
+		return verifyCandidate(context, candidate, tokenSource, new int[1]);
+	}
+
+	private static LocusIntersectionSolution2D verifyCandidate(
+			LocusPairIntersectionContext2D context,
+			LocusPairIntersectionCandidate2D candidate,
+			LocusPairRootTokenSource2D tokenSource, int[] residualRejections) {
 		ComponentAddress firstComponent = resolve(context.getFirstComponents(),
 				candidate.getFirstBranchKey(), candidate.getFirstComponentKey());
 		ComponentAddress secondComponent = resolve(context.getSecondComponents(),
@@ -254,6 +268,7 @@ public final class LocusPairIntersectionSolver2D {
 				.threshold(scale);
 		if (!Double.isFinite(residual) || residual > threshold) {
 			context.getInstrumentation().recordRejectedCandidate();
+			residualRejections[0]++;
 			return null;
 		}
 

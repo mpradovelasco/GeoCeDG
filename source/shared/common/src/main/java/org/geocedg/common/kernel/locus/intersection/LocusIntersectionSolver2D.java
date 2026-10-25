@@ -25,9 +25,11 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ComputationStatus;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Currentness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DomainLocation;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ExistenceGrade;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LineageEventKind;
@@ -198,9 +200,14 @@ public final class LocusIntersectionSolver2D {
 		java.util.LinkedHashSet<String> unresolvedComponents =
 				new java.util.LinkedHashSet<>();
 		boolean unresolvedCandidate = false;
+		java.util.Map<DiagnosticCode, Integer> rejections = new java.util.EnumMap<>(
+				DiagnosticCode.class);
 		for (IntersectionCandidate2D candidate : candidates) {
 			Verification verification = verifyCandidate(context, candidate,
 					tokenSource);
+			if (verification.rejection != null) {
+				rejections.merge(verification.rejection, 1, Integer::sum);
+			}
 			if (verification.solution != null) {
 				solutions.add(verification.solution);
 			} else if (!verification.safeMembershipExclusion) {
@@ -208,6 +215,13 @@ public final class LocusIntersectionSolver2D {
 				unresolvedComponents.add(candidate.getComponentKey());
 				context.getInstrumentation().recordUnresolvedCandidate();
 			}
+		}
+		// The declared rejection diagnostics (CU3.4) are observability only.
+		for (java.util.Map.Entry<DiagnosticCode, Integer> rejection
+				: rejections.entrySet()) {
+			diagnostics.add(new IntersectionDiagnostic2D(rejection.getKey(),
+					rejection.getValue() + " candidate(s) rejected by the "
+							+ rejectionCheck(rejection.getKey()) + " check"));
 		}
 		if (unresolvedCandidate && completeness == Completeness.COMPLETE) {
 			completeness = Completeness.INCOMPLETE;
@@ -258,7 +272,9 @@ public final class LocusIntersectionSolver2D {
 		if (!evaluation.isValid() || evaluation.getPoint() == null
 				|| !finite(evaluation.getPoint())) {
 			context.getInstrumentation().recordRejectedCandidate();
-			return Verification.unresolved();
+			return evaluation.isValid() && evaluation.getPoint() != null
+					? Verification.rejected(DiagnosticCode.NONFINITE_EVALUATION)
+					: Verification.unresolved();
 		}
 		context.getInstrumentation().recordResidualVerification();
 		TargetResidualEvaluation2D residualEvaluation =
@@ -268,12 +284,25 @@ public final class LocusIntersectionSolver2D {
 			return Verification.unresolved();
 		}
 		TargetResidual2D residual = residualEvaluation.getResidual().get();
+		IntersectionExistenceEvidence2D existence = candidate.getExistenceEvidence();
+		boolean withinThreshold = Math.abs(residual.getNormalizedResidual())
+				<= context.getQuery().getPolicy().getResidualTolerance()
+						.threshold(residual.getCharacteristicScale());
+		// cu3-certified-admission/v1: certified existence with a residual coherent with the
+		// characteristic scale also satisfies the residual condition of G8B-R1 (CU3.4).
+		boolean certifiedRoute = !withinThreshold && existence.isCertifiedRoute()
+				&& existence.getGrade() == ExistenceGrade.EXISTENCE_CERTIFIED
+				&& candidate.getContactClass() == ContactClass.TRANSVERSE_ESTABLISHED
+				&& Math.abs(residual.getNormalizedResidual())
+						<= CertifiedAdmissionPolicy2D.RELATIVE_RESIDUAL
+								* existence.getCharacteristicScale();
 		if (!residualCompatible(context.getQuery().getPolicy(), residual)
-				|| Math.abs(residual.getNormalizedResidual())
-						> context.getQuery().getPolicy().getResidualTolerance()
-								.threshold(residual.getCharacteristicScale())) {
+				|| !withinThreshold && !certifiedRoute) {
 			context.getInstrumentation().recordRejectedCandidate();
-			return Verification.unresolved();
+			return Verification.rejected(DiagnosticCode.RESIDUAL_REJECTED);
+		}
+		if (withinThreshold && existence.isCertifiedRoute()) {
+			existence = existence.withoutCertifiedRoute();
 		}
 		TargetMembership2D membership = context.evaluateMembership(
 				evaluation.getPoint(), context.getQuery().getPolicy()
@@ -304,7 +333,7 @@ public final class LocusIntersectionSolver2D {
 						candidate.getLocalIsolationStatus(), residual,
 						candidate.getSolverMethod(),
 						candidate.getNumericGuarantee(),
-						candidate.getContinuationKey());
+						candidate.getContinuationKey(), existence);
 		boolean durableIdentity = tokenSource
 				.establishesDurableCandidateIdentity(
 						candidate.getContinuationKey());
@@ -345,9 +374,31 @@ public final class LocusIntersectionSolver2D {
 				DiagnosticCode.CONTINUATION_ESTABLISHED,
 				"Independent semantic evaluation, normalized residual and target "
 						+ "membership verification passed"));
+		if (certifiedRoute) {
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.CERTIFIED_EXISTENCE_ESTABLISHED,
+					"The residual condition is satisfied by certified existence: |residual| "
+							+ Math.abs(residual.getNormalizedResidual()) + " <= tau_rel * L = "
+							+ CertifiedAdmissionPolicy2D.RELATIVE_RESIDUAL + " * "
+							+ existence.getCharacteristicScale() + " ("
+							+ CertifiedAdmissionPolicy2D.VERSION + ")"));
+		}
 		return Verification.accepted(new LocusIntersectionSolution2D(identity,
 				revisionEvidence, evaluation.getPoint(), classification, lineage,
 				diagnostics));
+	}
+
+	private static String rejectionCheck(DiagnosticCode code) {
+		switch (code) {
+		case RESIDUAL_REJECTED:
+			return "normalized residual";
+		case MEMBERSHIP_REJECTED:
+			return "limited-target membership";
+		case NONFINITE_EVALUATION:
+			return "finite semantic evaluation";
+		default:
+			return code.name();
+		}
 	}
 
 	static List<IntersectionCandidate2D> deduplicate(
@@ -584,23 +635,30 @@ public final class LocusIntersectionSolver2D {
 	private static final class Verification {
 		private final LocusIntersectionSolution2D solution;
 		private final boolean safeMembershipExclusion;
+		/** Declared diagnostic of a rejection (CU3.4), or {@code null}. */
+		private final DiagnosticCode rejection;
 
 		Verification(LocusIntersectionSolution2D solution,
-				boolean safeMembershipExclusion) {
+				boolean safeMembershipExclusion, DiagnosticCode rejection) {
 			this.solution = solution;
 			this.safeMembershipExclusion = safeMembershipExclusion;
+			this.rejection = rejection;
 		}
 
 		static Verification accepted(LocusIntersectionSolution2D solution) {
-			return new Verification(solution, false);
+			return new Verification(solution, false, null);
 		}
 
 		static Verification safeMembershipExclusion() {
-			return new Verification(null, true);
+			return new Verification(null, true, DiagnosticCode.MEMBERSHIP_REJECTED);
 		}
 
 		static Verification unresolved() {
-			return new Verification(null, false);
+			return new Verification(null, false, null);
+		}
+
+		static Verification rejected(DiagnosticCode rejection) {
+			return new Verification(null, false, rejection);
 		}
 	}
 }

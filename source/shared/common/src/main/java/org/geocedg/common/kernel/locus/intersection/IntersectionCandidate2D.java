@@ -37,6 +37,8 @@ public final class IntersectionCandidate2D {
 	private final List<String> candidateParentContinuationKeys;
 	private final List<IntersectionDiagnostic2D> diagnostics;
 	private final SplineImplicitIntervalCertification2D.Proof structuralCertificate;
+	private IntersectionExistenceEvidence2D existenceEvidence =
+			IntersectionExistenceEvidence2D.locallyVerified();
 
 	/** Creates an immutable candidate with explicit evidence strength. */
 	public IntersectionCandidate2D(String branchKey, String componentKey,
@@ -115,16 +117,37 @@ public final class IntersectionCandidate2D {
 
 	IntersectionCandidate2D withStructuralCertificate(
 			SplineImplicitIntervalCertification2D.Proof certificate) {
-		return new IntersectionCandidate2D(branchKey, componentKey, semanticParameter,
-				liftedPeriodicParameter, isolatingInterval, localIsolationStatus,
-				continuationKey, contactClass, multiplicityStatus, establishedMultiplicity,
-				solverMethod, numericGuarantee, lineageEventKind,
+		IntersectionCandidate2D copy = new IntersectionCandidate2D(branchKey, componentKey,
+				semanticParameter, liftedPeriodicParameter, isolatingInterval,
+				localIsolationStatus, continuationKey, contactClass, multiplicityStatus,
+				establishedMultiplicity, solverMethod, numericGuarantee, lineageEventKind,
 				candidateParentContinuationKeys, diagnostics,
 				java.util.Objects.requireNonNull(certificate));
+		copy.existenceEvidence = existenceEvidence;
+		return copy;
 	}
 
 	SplineImplicitIntervalCertification2D.Proof getStructuralCertificate() {
 		return structuralCertificate;
+	}
+
+	/**
+	 * @param evidence existence evidence of {@code cu3-certified-admission/v1}
+	 * @return this candidate with it; the evidence enters no identity
+	 */
+	IntersectionCandidate2D withExistenceEvidence(IntersectionExistenceEvidence2D evidence) {
+		IntersectionCandidate2D copy = new IntersectionCandidate2D(branchKey, componentKey,
+				semanticParameter, liftedPeriodicParameter, isolatingInterval,
+				localIsolationStatus, continuationKey, contactClass, multiplicityStatus,
+				establishedMultiplicity, solverMethod, numericGuarantee, lineageEventKind,
+				candidateParentContinuationKeys, diagnostics, structuralCertificate);
+		copy.existenceEvidence = java.util.Objects.requireNonNull(evidence);
+		return copy;
+	}
+
+	/** @return existence evidence, {@code LOCALLY_VERIFIED} when none was computed */
+	public IntersectionExistenceEvidence2D getExistenceEvidence() {
+		return existenceEvidence;
 	}
 
 	public String getBranchKey() {

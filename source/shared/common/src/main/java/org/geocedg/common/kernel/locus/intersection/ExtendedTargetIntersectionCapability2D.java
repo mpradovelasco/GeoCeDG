@@ -62,6 +62,20 @@ public final class ExtendedTargetIntersectionCapability2D
 	@Override
 	public IntersectionCandidateSet2D isolate(
 			IntersectionCapabilityContext2D context) {
+		return isolate(context, null);
+	}
+
+	/**
+	 * Isolates candidates; with a residual of a decision configuration, a sign change whose
+	 * refined residual exceeds the G8B-R1 threshold may still give a candidate by the certified
+	 * route of {@code cu3-certified-admission/v1} (normalization design section 3.2).
+	 *
+	 * @param certified the residual of the decision configuration, or {@code null} for the
+	 *        unchanged G8C1 search
+	 * @return the candidate set
+	 */
+	IntersectionCandidateSet2D isolate(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D certified) {
 		ArrayList<LocalizedRoot> roots = new ArrayList<>();
 		ArrayList<String> examinedComponents = new ArrayList<>();
 		boolean[] invalidTargetObserved = {false};
@@ -76,7 +90,7 @@ public final class ExtendedTargetIntersectionCapability2D
 				examinedComponents.add(componentKey);
 				isolateComponent(context, branch.getBranchKey(), componentKey,
 						components.get(componentIndex), roots,
-						invalidTargetObserved, nonIsolatedZeroRun);
+						invalidTargetObserved, nonIsolatedZeroRun, certified);
 			}
 		}
 		ArrayList<IntersectionDiagnostic2D> diagnostics = new ArrayList<>();
@@ -136,13 +150,20 @@ public final class ExtendedTargetIntersectionCapability2D
 						"No unique component-local continuation relation is "
 								+ "established; parameter and result order are not identity"));
 			}
-			candidates.add(new IntersectionCandidate2D(root.branchKey,
+			IntersectionCandidate2D candidate = new IntersectionCandidate2D(root.branchKey,
 					root.componentKey, root.parameter, OptionalDouble.empty(),
 					new IntersectionParameterInterval2D(root.lower, root.upper),
 					root.localIsolation, continuationKey, root.contact,
 					MultiplicityStatus.NOT_ESTABLISHED, OptionalInt.empty(),
 					root.method, root.guarantee, LineageEventKind.APPEARED,
-					Collections.emptyList(), rootDiagnostics));
+					Collections.emptyList(), rootDiagnostics);
+			if (root.certificate != null) {
+				candidate = candidate.withExistenceEvidence(IntersectionExistenceEvidence2D.of(
+						IntersectionSemanticMetadata2D.ExistenceGrade.EXISTENCE_CERTIFIED,
+						certified.getConfiguration(), null, root.certificate.describe())
+						.withCertifiedRoute(root.characteristicScale));
+			}
+			candidates.add(candidate);
 		}
 		return new IntersectionCandidateSet2D(Completeness.NOT_ESTABLISHED,
 				CompletenessMethod.NOT_ESTABLISHED,
@@ -158,7 +179,7 @@ public final class ExtendedTargetIntersectionCapability2D
 			IntersectionCapabilityContext2D context, String branchKey,
 			String componentKey, LocusInterval2D component,
 			List<LocalizedRoot> roots, boolean[] invalidTargetObserved,
-			boolean[] nonIsolatedZeroRun) {
+			boolean[] nonIsolatedZeroRun, ResidualJetSource2D certified) {
 		double lower = component.isLowerClosed() ? component.getLower()
 				: Math.nextUp(component.getLower());
 		boolean completePeriodicSeam = hasCompletePeriodicSeam(context,
@@ -201,6 +222,8 @@ public final class ExtendedTargetIntersectionCapability2D
 		if (nonIsolatedZeroRun[0]) {
 			return;
 		}
+		double scale = certified == null ? Double.NaN
+				: characteristicScale(context, samples);
 		for (int index = 0; index < samples.size(); index++) {
 			Sample current = samples.get(index);
 			if (!current.isFinite()) {
@@ -228,6 +251,13 @@ public final class ExtendedTargetIntersectionCapability2D
 								component, refined.best.parameter,
 								refined.lower, refined.upper,
 								Origin.SIGN_CHANGE));
+					} else if (refined.valid && certified != null) {
+						LocalizedRoot root = certifiedRoute(context, certified, branchKey,
+								componentKey, component, refined, scale,
+								invalidTargetObserved);
+						if (root != null) {
+							roots.add(root);
+						}
 					}
 				}
 			}
@@ -388,8 +418,129 @@ public final class ExtendedTargetIntersectionCapability2D
 			invalidTargetObserved[0] = true;
 			return Sample.invalid(parameter);
 		}
-		return new Sample(parameter, target.getLevel().getAsDouble(),
+		Sample sample = new Sample(parameter, target.getLevel().getAsDouble(),
 				target.getCharacteristicScale().getAsDouble(), true);
+		sample.x = evaluation.getPoint().getX();
+		sample.y = evaluation.getPoint().getY();
+		return sample;
+	}
+
+	/**
+	 * The characteristic scale {@code L} of the certified route (normalization design section
+	 * 3.5, option S1): the larger of the extent of the sampled image of the component and the
+	 * extent of a bounded target; it never decides existence.
+	 *
+	 * @return {@code L}, or {@code NaN} when the image is degenerate
+	 */
+	private static double characteristicScale(IntersectionCapabilityContext2D context,
+			List<Sample> samples) {
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+		for (Sample sample : samples) {
+			if (sample.isFinite()) {
+				minX = Math.min(minX, sample.x);
+				maxX = Math.max(maxX, sample.x);
+				minY = Math.min(minY, sample.y);
+				maxY = Math.max(maxY, sample.y);
+			}
+		}
+		double extent = Math.max(maxX - minX, maxY - minY);
+		if (context.getTarget() instanceof CertifiedResidualTarget2D) {
+			double target = ((CertifiedResidualTarget2D) context.getTarget()).boundedExtent();
+			if (target > extent) {
+				extent = target;
+			}
+		}
+		return extent > 0 && Double.isFinite(extent) ? extent : Double.NaN;
+	}
+
+	/**
+	 * The certified route of {@code cu3-certified-admission/v1} for one sign change whose G8B-R1
+	 * refinement leaves a residual above the threshold: the bisection continues to a bracket of
+	 * a few ulp of the parameter, the residual of its best point must be within
+	 * {@code tau_rel * L}, and one simple root must be certified around the bracket.
+	 *
+	 * @return the certified root, or {@code null}
+	 */
+	private static LocalizedRoot certifiedRoute(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D certified, String branchKey, String componentKey,
+			LocusInterval2D component, Refinement refined, double scale,
+			boolean[] invalidTargetObserved) {
+		if (!(scale > 0) || Double.isInfinite(scale)) {
+			return null;
+		}
+		Refinement deep = refineToUlps(context, branchKey, refined, invalidTargetObserved);
+		if (!deep.valid || Math.abs(deep.best.level)
+				> CertifiedAdmissionPolicy2D.RELATIVE_RESIDUAL * scale) {
+			return null;
+		}
+		double center = deep.best.parameter;
+		double half = Math.max((deep.upper - deep.lower) / 2,
+				CertifiedAdmissionPolicy2D.bracketWidth(center));
+		double limit = (component.getUpper() - component.getLower())
+				/ CertifiedAdmissionPolicy2D.CELL_DIVISOR;
+		for (int expansion = 0; expansion <= CertifiedAdmissionPolicy2D.GRADE_EXPANSIONS
+				&& half <= limit; expansion++, half *= 2) {
+			double low = Math.min(center - half, deep.lower);
+			double high = Math.max(center + half, deep.upper);
+			if (low <= component.getLower() || high >= component.getUpper()) {
+				return null;
+			}
+			RootCountCertificate2D certificate = RootCountCertificate2D.certifySimple(
+					certified, low, high);
+			if (certificate.isCertified()) {
+				LocalizedRoot root = new LocalizedRoot(branchKey, componentKey, component,
+						deep.best.parameter, deep.lower, deep.upper, Origin.SIGN_CHANGE);
+				root.certificate = certificate;
+				root.characteristicScale = scale;
+				return root;
+			}
+			if (certificate.getContact() != null) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	/** Continues a sign-change bisection to a bracket of a few ulp of the parameter. */
+	private static Refinement refineToUlps(IntersectionCapabilityContext2D context,
+			String branchKey, Refinement refined, boolean[] invalidTargetObserved) {
+		Sample lower = sample(context, branchKey, refined.lower, invalidTargetObserved);
+		Sample upper = sample(context, branchKey, refined.upper, invalidTargetObserved);
+		if (!lower.isFinite() || !upper.isFinite()
+				|| !oppositeSigns(lower.level, upper.level)) {
+			return Refinement.invalid();
+		}
+		Sample best = Math.abs(lower.level) <= Math.abs(upper.level) ? lower : upper;
+		for (int iteration = 0; iteration < CertifiedAdmissionPolicy2D.MAXIMUM_BISECTIONS
+				&& upper.parameter - lower.parameter
+						> CertifiedAdmissionPolicy2D.bracketWidth(lower.parameter);
+				iteration++) {
+			double middleParameter = lower.parameter
+					+ (upper.parameter - lower.parameter) / 2;
+			if (!(lower.parameter < middleParameter && middleParameter < upper.parameter)) {
+				break;
+			}
+			Sample middle = sample(context, branchKey, middleParameter,
+					invalidTargetObserved);
+			if (!middle.isFinite()) {
+				return Refinement.invalid();
+			}
+			if (Math.abs(middle.level) < Math.abs(best.level)) {
+				best = middle;
+			}
+			if (middle.level == 0) {
+				break;
+			}
+			if (oppositeSigns(lower.level, middle.level)) {
+				upper = middle;
+			} else {
+				lower = middle;
+			}
+		}
+		return Refinement.valid(best, lower.parameter, upper.parameter);
 	}
 
 	private static void classify(IntersectionCapabilityContext2D context,
@@ -524,6 +675,8 @@ public final class ExtendedTargetIntersectionCapability2D
 		private final double level;
 		private final double characteristicScale;
 		private final boolean finite;
+		private double x;
+		private double y;
 
 		Sample(double parameter, double level, double characteristicScale,
 				boolean finite) {
@@ -580,6 +733,10 @@ public final class ExtendedTargetIntersectionCapability2D
 		private SolverMethod method = SolverMethod.EVALUATOR_ADAPTIVE;
 		private NumericGuarantee guarantee =
 				NumericGuarantee.FLOATING_POINT_UNCERTIFIED;
+		/** Existence certificate of a root of the certified route, or {@code null}. */
+		private RootCountCertificate2D certificate;
+		/** Characteristic scale of the certified route. */
+		private double characteristicScale = Double.NaN;
 
 		LocalizedRoot(String branchKey, String componentKey,
 				LocusInterval2D component, double parameter, double lower,

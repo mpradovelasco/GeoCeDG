@@ -187,7 +187,7 @@ public final class LocusIntersectionTargets2D {
 	}
 
 	private static final class LineTarget
-			implements PolynomialIntersectionTarget2D {
+			implements PolynomialIntersectionTarget2D, CertifiedResidualTarget2D {
 		private final TargetFamily family;
 		private final String targetIdentity;
 		private final long targetUpdateStamp;
@@ -335,10 +335,35 @@ public final class LocusIntersectionTargets2D {
 					"d(canonical-line-distance)/d(source-arc-length)",
 					"Canonical normalized line-normal/source-tangent factor");
 		}
+
+		/** The support line {@code a x + b y + c} of the captured binary64 coefficients. */
+		@Override
+		public SplineOutwardInterval2D[] residualJet(SplineOutwardInterval2D[][] traced) {
+			return new SplineOutwardInterval2D[] {
+					ResidualIntervals2D.combination(a, traced[0][0], b, traced[0][1])
+							.add(ResidualIntervals2D.constant(c)),
+					ResidualIntervals2D.combination(a, traced[1][0], b, traced[1][1]),
+					ResidualIntervals2D.combination(a, traced[2][0], b, traced[2][1])};
+		}
+
+		@Override
+		public SplineOutwardInterval2D normalizedResidual(SplineOutwardInterval2D x,
+				SplineOutwardInterval2D y) {
+			// Math.hypot is within one ulp of the exact norm.
+			return ResidualIntervals2D.combination(a, x, b, y)
+					.add(ResidualIntervals2D.constant(c))
+					.divide(new SplineOutwardInterval2D(Math.nextDown(normalLength),
+							Math.nextUp(normalLength)));
+		}
+
+		@Override
+		public double boundedExtent() {
+			return family == TargetFamily.SEGMENT ? Math.sqrt(directionSquared) : Double.NaN;
+		}
 	}
 
 	private static final class CircleTarget
-			implements PolynomialIntersectionTarget2D {
+			implements PolynomialIntersectionTarget2D, CertifiedResidualTarget2D {
 		private final String targetIdentity;
 		private final long targetUpdateStamp;
 		private final double centerX;
@@ -433,6 +458,44 @@ public final class LocusIntersectionTargets2D {
 			return TargetContactEvidence2D.established(indicator,
 					"d(radial-distance)/d(source-arc-length)",
 					"Normalized circle-normal/source-tangent directional factor");
+		}
+
+		/**
+		 * The squared form {@code |X - centre|^2 - radius^2} of the captured centre and radius:
+		 * the product of the radial distance with the positive {@code |X - centre| + radius},
+		 * so it has the zero set, the signs and the root multiplicities of the adapter residual.
+		 */
+		@Override
+		public SplineOutwardInterval2D[] residualJet(SplineOutwardInterval2D[][] traced) {
+			SplineOutwardInterval2D dx = traced[0][0]
+					.subtract(ResidualIntervals2D.constant(centerX));
+			SplineOutwardInterval2D dy = traced[0][1]
+					.subtract(ResidualIntervals2D.constant(centerY));
+			SplineOutwardInterval2D two = ResidualIntervals2D.constant(2);
+			SplineOutwardInterval2D value = ResidualIntervals2D.square(dx)
+					.add(ResidualIntervals2D.square(dy))
+					.subtract(ResidualIntervals2D.square(ResidualIntervals2D.constant(radius)));
+			SplineOutwardInterval2D first = two.multiply(dx.multiply(traced[1][0])
+					.add(dy.multiply(traced[1][1])));
+			SplineOutwardInterval2D second = two.multiply(ResidualIntervals2D
+					.square(traced[1][0]).add(ResidualIntervals2D.square(traced[1][1]))
+					.add(dx.multiply(traced[2][0])).add(dy.multiply(traced[2][1])));
+			return new SplineOutwardInterval2D[] {value, first, second};
+		}
+
+		@Override
+		public SplineOutwardInterval2D normalizedResidual(SplineOutwardInterval2D x,
+				SplineOutwardInterval2D y) {
+			SplineOutwardInterval2D dx = x.subtract(ResidualIntervals2D.constant(centerX));
+			SplineOutwardInterval2D dy = y.subtract(ResidualIntervals2D.constant(centerY));
+			return ResidualIntervals2D.sqrt(ResidualIntervals2D.square(dx)
+					.add(ResidualIntervals2D.square(dy)))
+					.subtract(ResidualIntervals2D.constant(radius));
+		}
+
+		@Override
+		public double boundedExtent() {
+			return 2 * radius;
 		}
 	}
 

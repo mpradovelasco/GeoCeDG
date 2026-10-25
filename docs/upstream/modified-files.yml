@@ -1188,7 +1188,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionCandidate2D.java",
       "change": "added",
-      "purpose": "Retain the internal query-local G8B candidate contract while R1 carries typed current structural univariate proof without adding proof boxes or coordinates to durable identity, render or metric authority.",
+      "purpose": "Retain the internal query-local G8B candidate contract while R1 carries typed current structural univariate proof without adding proof boxes or coordinates to durable identity, render or metric authority. PRE-G9B-CU3 piece I-2: optional existence evidence of cu3-certified-admission/v1, kept by every copy and entering no identity.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -1254,7 +1254,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionRootRevisionEvidence2D.java",
       "change": "added",
-      "purpose": "Carry query-local G8B revision evidence; R4 adds the typed current root germ used with component lineage to form a deterministic base selector, while canonical parameter/address data remain nonidentity revision evidence used only to prove intrinsic oriented phase ordering.",
+      "purpose": "Carry query-local G8B revision evidence; R4 adds the typed current root germ used with component lineage to form a deterministic base selector, while canonical parameter/address data remain nonidentity revision evidence used only to prove intrinsic oriented phase ordering. PRE-G9B-CU3 piece I-2: the existence evidence of the revision, LOCALLY_VERIFIED when none was computed, outside every token and handle.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1266,7 +1266,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionSemanticMetadata2D.java",
       "change": "added",
-      "purpose": "Define the closed intersection result/evidence vocabulary; preserve R4 deterministic-selection identity and add R1 pair singleton-certificate diagnostics without conflating source support, root discovery, local proof, class coverage or global completeness.",
+      "purpose": "Define the closed intersection result/evidence vocabulary; preserve R4 deterministic-selection identity and add R1 pair singleton-certificate diagnostics without conflating source support, root discovery, local proof, class coverage or global completeness. PRE-G9B-CU3 pieces I-2 and I-3: the existence grades, contact evidence classes and constructive admissions of CU3.2, CU3.4 and AUT-5, and the diagnostics of contradictions, certified existence and contact evidence, appended without changing any other value.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1332,7 +1332,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Retain the closed capability hierarchy, residual/membership checks and R4 deterministic publication; R1 consumes current structural implicit proof and certified root equivalence without generic proximity deduplication or weakening non-spline contracts.",
+      "purpose": "Retain the closed capability hierarchy, residual/membership checks and R4 deterministic publication; R1 consumes current structural implicit proof and certified root equivalence without generic proximity deduplication or weakening non-spline contracts. PRE-G9B-CU3 piece I-2: the certified route of H02 (certified existence with a residual within tau_rel * L) beside the unchanged G8B-R1 threshold, the declared rejection diagnostics and the existence evidence of each solution.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -1344,7 +1344,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionTargets2D.java",
       "change": "added",
-      "purpose": "Make closed typed support and snapshot decisions for G8B/G8C1 targets; R4 canonicalizes line/segment and regular-polynomial contact orientation against equivalent nonzero equation scaling while deliberately retaining oriented ray direction as semantic selector evidence.",
+      "purpose": "Make closed typed support and snapshot decisions for G8B/G8C1 targets; R4 canonicalizes line/segment and regular-polynomial contact orientation against equivalent nonzero equation scaling while deliberately retaining oriented ray direction as semantic selector evidence. PRE-G9B-CU3 piece I-1: the line, segment, ray and circle adapters compose their residual with outward enclosures of the traced point; their contract text and binary64 authority are unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1452,7 +1452,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ExtendedTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Provide bounded query-local one-parameter candidate isolation, safeguarded refinement, even-contact discovery and conservative completeness; R4 evaluates and deduplicates the equivalent upper seam only for an exact complete periodic cycle.",
+      "purpose": "Provide bounded query-local one-parameter candidate isolation, safeguarded refinement, even-contact discovery and conservative completeness; R4 evaluates and deduplicates the equivalent upper seam only for an exact complete periodic cycle. PRE-G9B-CU3 piece I-2: with a residual of the decision configuration only, a sign change refined to a few ulp whose existence is certified and whose residual is coherent with the characteristic scale is a candidate of the certified route; without one the G8C1 search is unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1590,7 +1590,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusPairIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Coordinate pair candidate isolation, dual refinement, independent two-source residual verification, completeness and overlap; R1 publishes authenticated spline singleton-class certificate metadata without promoting generic pairs or using one-sided R4 identity as pair authority. PRE-G9B-R2-E0/E1: admit public D2 publication for any pair whose two sources expose a certified interval curve model, replacing the spline-only restriction; internal callers without a ledger evaluation keep the rich-only route. Authority: docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md.",
+      "purpose": "Coordinate pair candidate isolation, dual refinement, independent two-source residual verification, completeness and overlap; R1 publishes authenticated spline singleton-class certificate metadata without promoting generic pairs or using one-sided R4 identity as pair authority. PRE-G9B-R2-E0/E1: admit public D2 publication for any pair whose two sources expose a certified interval curve model, replacing the spline-only restriction; internal callers without a ledger evaluation keep the rich-only route. Authority: docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md. PRE-G9B-CU3 piece I-2: the declared diagnostic PAIR_RESIDUAL_REJECTED of the pair residual check, observability only; the pair normalization is unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -2916,7 +2916,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Retain approved one-parameter public target adaptation and R4 oriented germ identity; R1 preserves current structural implicit proof through candidate copies and derives its germ from certified derivative sign with canonical target orientation, without promoting rounded circle/line/conic adapters.",
+      "purpose": "Retain approved one-parameter public target adaptation and R4 oriented germ identity; R1 preserves current structural implicit proof through candidate copies and derives its germ from certified derivative sign with canonical target orientation, without promoting rounded circle/line/conic adapters. PRE-G9B-CU3 pieces I-2 and I-3: the decision configuration of the query, the certified route and the analysis of grades, contact evidence and the conflict rule before the root germs, with the evidence kept on each candidate.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -6456,7 +6456,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0SyntheticCharacterizationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion. PRE-G9B-CU1 inverts H10 and H11.",
+      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion. PRE-G9B-CU1 inverts H10 and H11. PRE-G9B-CU3 increment E1: the H02 pin inverted by the certified route of cu3-certified-admission/v1; the baseline keeps the pinned counts as historical evidence.",
       "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
     },
     {
@@ -6978,7 +6978,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3BaseCharacterizationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 step T1: characterization pins of the base 80d72a50 for the findings H-CU3-1 to H-CU3-4 on synthetic constructions (a tangency declared where absence is certifiable, noise and duplicated roots around a near-tangency, an endpoint tangency classified transverse); inverted later only with a test that proves the correction.",
+      "purpose": "PRE-G9B-CU3 step T1: characterization pins of the base 80d72a50 for the findings H-CU3-1 to H-CU3-4 on synthetic constructions (a tangency declared where absence is certifiable, noise and duplicated roots around a near-tangency, an endpoint tangency classified transverse); inverted later only with a test that proves the correction. PRE-G9B-CU3 increment E1: the pins H-CU3-1, H-CU3-3 and H-CU3-4 inverted by the root-count certificates of cu3-certified-admission/v1; H-CU3-2 stays pinned until increment E3.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7207,6 +7207,72 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: tests of Point(L, D) and Intersect(L, r, D) on the replica of the author's model: the five mandatory contacts with P in L STRICT and P in r RELAXED, the legacy policy, fail-closed provenance and support, persistence, Undo and Redo, and a drag that repeats nothing.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ResidualJetEnclosure2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-1: outward enclosures of a target residual h and of its first two derivatives on one parameter box, revision evidence that never enters a token.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ResidualJetSource2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-1: the residual of one source and one target in one decision configuration, enclosed on parameter boxes; a non-null enclosure certifies validity and continuity on the box.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedResidualTarget2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-1: composition of the line, segment, ray and circle adapters with outward enclosures of the traced point, with the binary64 captured state as authority and the residual text of their contracts unchanged.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ResidualIntervals2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-1: outward-rounded square, square root and linear combination for the residual compositions.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CapturedResidualJetSource2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-1: the residual of a class-v3 source in the captured configuration of CU2 with the target adapter as authority: the second-order enclosure of the traced point composed with the target residual.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionDecisionConfiguration2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: the decision configuration of the certified evidence of a public one-parameter query, captured under the legacy policy and constructive under constructive-authority/v1.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedAdmissionPolicy2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-2: versioned policy cu3-certified-admission/v1 with tau_rel equal to the approved relative residual of section 8.4 and the work limits of one certificate; the G8B-R1 policy is unchanged.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionExistenceEvidence2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grade, decision configuration, certified route, contact evidence class and constructive re-qualification of one candidate or solution; revision evidence, never persisted or in a token.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RootCountCertificate2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: root-count certificates of CU3.4 on one parameter box (none, one simple root, two simple roots around a certified critical point) and the critical-point contact classes 3 and 4, from outward enclosures only.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedContactAnalysis2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu3CertifiedEvidenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 pieces I-1 to I-3: tests of the residual enclosures, grades, certified route H02, conflict rule and contact evidence on the synthetic near-tangencies, the H02 scale and translation sweep and the quarter arc, each against the same capability without enclosures.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

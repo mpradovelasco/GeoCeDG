@@ -14,6 +14,8 @@ import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
@@ -57,6 +59,21 @@ public final class PublicTargetIntersectionCapability2D
 			new ExtendedTargetIntersectionCapability2D();
 	private final PolynomialTargetIntersectionCapability2D polynomialProof =
 			new PolynomialTargetIntersectionCapability2D();
+	private final IntersectionDecisionConfiguration2D configuration;
+
+	/** Creates the capability with the captured decision configuration. */
+	public PublicTargetIntersectionCapability2D() {
+		this(IntersectionDecisionConfiguration2D.CAPTURED);
+	}
+
+	/**
+	 * @param configuration the decision configuration of the certified evidence of
+	 *        {@code cu3-certified-admission/v1}
+	 */
+	public PublicTargetIntersectionCapability2D(
+			IntersectionDecisionConfiguration2D configuration) {
+		this.configuration = java.util.Objects.requireNonNull(configuration);
+	}
 
 	@Override
 	public String getCapabilityId() {
@@ -84,21 +101,45 @@ public final class PublicTargetIntersectionCapability2D
 			throw new IllegalArgumentException(
 					"Target family is outside the G9U0 public capability");
 		}
-		IntersectionCandidateSet2D delegated = polynomialProof.supports(context)
-				? polynomialProof.isolate(context) : adaptiveProof.isolate(context);
-		boolean finiteAuthority = delegated.getGeometryKind() == GeometryKind.FINITE
+		boolean polynomial = polynomialProof.supports(context);
+		ResidualJetSource2D certified = polynomial ? null
+				: configuration.residualJets(context.getDefinition(), context.getTarget());
+		IntersectionCandidateSet2D delegated = polynomial
+				? polynomialProof.isolate(context) : adaptiveProof.isolate(context, certified);
+		Completeness completeness = delegated.getCompleteness();
+		CompletenessMethod completenessMethod = delegated.getCompletenessMethod();
+		GeometryKind kind = delegated.getGeometryKind();
+		List<IntersectionCandidate2D> candidates = delegated.getCandidates();
+		ArrayList<IntersectionDiagnostic2D> diagnostics =
+				new ArrayList<>(delegated.getDiagnostics());
+		if (certified != null && kind == GeometryKind.FINITE
+				&& delegated.getOverlapEvidence().isEmpty()) {
+			// Grades, contact evidence and the conflict rule of cu3-certified-admission/v1.
+			CertifiedContactAnalysis2D.Outcome outcome = CertifiedContactAnalysis2D.apply(
+					context, certified, candidates, completeness == Completeness.COMPLETE);
+			candidates = outcome.getCandidates();
+			diagnostics.addAll(outcome.getDiagnostics());
+			if (outcome.isCompletenessContradicted()) {
+				completeness = Completeness.NOT_ESTABLISHED;
+				completenessMethod = CompletenessMethod.NOT_ESTABLISHED;
+			}
+			if (candidates.isEmpty()) {
+				kind = completeness == Completeness.COMPLETE ? GeometryKind.EMPTY
+						: GeometryKind.UNRESOLVED;
+			}
+		}
+		boolean finiteAuthority = kind == GeometryKind.FINITE
 				&& delegated.getOverlapEvidence().isEmpty();
 		ArrayList<IntersectionCandidate2D> publicCandidates = new ArrayList<>();
-		for (IntersectionCandidate2D candidate : delegated.getCandidates()) {
+		for (IntersectionCandidate2D candidate : candidates) {
 			Optional<String> germ = finiteAuthority
 					? transverseGerm(context, candidate) : Optional.empty();
 			publicCandidates.add(withCurrentRootGerm(context, candidate, germ));
 		}
-		return new IntersectionCandidateSet2D(delegated.getCompleteness(),
-				delegated.getCompletenessMethod(), delegated.getGeometryKind(),
+		return new IntersectionCandidateSet2D(completeness, completenessMethod, kind,
 				delegated.getSupportLevel(), delegated.getNumericGuarantee(),
 				delegated.getCoveredComponentKeys(), publicCandidates,
-				delegated.getOverlapEvidence(), delegated.getDiagnostics());
+				delegated.getOverlapEvidence(), diagnostics);
 	}
 
 	private static IntersectionCandidate2D withCurrentRootGerm(
@@ -135,8 +176,10 @@ public final class PublicTargetIntersectionCapability2D
 				candidate.getNumericGuarantee(), candidate.getLineageEventKind(),
 				candidate.getCandidateParentContinuationKeys(),
 				diagnostics);
-		return candidate.getStructuralCertificate() == null ? enriched
+		IntersectionCandidate2D certified = candidate.getStructuralCertificate() == null
+				? enriched
 				: enriched.withStructuralCertificate(candidate.getStructuralCertificate());
+		return certified.withExistenceEvidence(candidate.getExistenceEvidence());
 	}
 
 	private static Optional<String> transverseGerm(

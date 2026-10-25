@@ -79,6 +79,33 @@ public final class IntersectionSemanticMetadata2D {
 		TRANSVERSE_ESTABLISHED, TANGENT_ESTABLISHED, CONTACT_UNDETERMINED
 	}
 
+	/**
+	 * Existence grade of one finite solution under {@code cu3-certified-admission/v1}
+	 * ({@code locus-v2-intersections.md} CU3.4), orthogonal to its contact class and to global
+	 * completeness. Only the last three certify existence.
+	 */
+	public enum ExistenceGrade {
+		LOCALLY_VERIFIED, EXISTENCE_CERTIFIED, EXISTENCE_STRUCTURAL, EXISTENCE_EXACT
+	}
+
+	/**
+	 * Evidence class of a contact candidate without a local sign change (CU3.2). Only the first
+	 * two are intersections; the others stay in the rich result as evidence and diagnostics.
+	 */
+	public enum ContactEvidenceClass {
+		CONTACT_STRUCTURAL, CONTACT_EXISTENCE_EXACT, CONTACT_NUMERICALLY_COMPATIBLE,
+		CRITICAL_POINT_CERTIFIED_WITHOUT_INTERSECTION, CRITICAL_POINT_CERTIFIED_TWO_ROOTS,
+		CONTACT_NOT_ESTABLISHED
+	}
+
+	/**
+	 * Re-qualification of a root that G8B-R1 verifies, in a document governed by
+	 * {@code constructive-authority/v1} ({@code locus-v2-constructive-authority.md} section 7.4).
+	 */
+	public enum ConstructiveAdmission {
+		STRICT, RELAXED, NOT_ESTABLISHED
+	}
+
 	/** Whether an integer multiplicity has been established. */
 	public enum MultiplicityStatus {
 		ESTABLISHED, NOT_ESTABLISHED
@@ -161,7 +188,9 @@ public final class IntersectionSemanticMetadata2D {
 		PAIR_LOCAL_ISOLATION_NOT_ESTABLISHED, PAIR_RESIDUAL_REJECTED,
 		PAIR_SOURCE_ORDER_CANONICALIZED, PAIR_SELECTOR_CLASS_EVIDENCE,
 		PAIR_CERTIFICATION_WORK, OVERLAP_SUSPECTED,
-		UNSUPPORTED_OVERLAP
+		UNSUPPORTED_OVERLAP, CONTRADICTED_BY_CERTIFIED_EVIDENCE,
+		CERTIFIED_EXISTENCE_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED,
+		CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED
 	}
 
 	private IntersectionSemanticMetadata2D() {

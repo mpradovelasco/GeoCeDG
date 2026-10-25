@@ -26,7 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * it declares a tangency where the absence of intersection is certifiable, publishes noise roots
  * and duplicated preimages around a near-tangency, and classifies an endpoint tangency as a
  * transverse root. The pins of B08/B09, H02 and H06 stay in the {@code CU0} tests. A later step
- * inverts these pins only with a test that proves the correction (decision C1-4 of {@code CU0}).
+ * inverts these pins only with a test that proves the correction (decision C1-4 of {@code CU0}):
+ * increment E1 of {@code CU3} inverts H-CU3-1, H-CU3-3 and H-CU3-4 with the root-count
+ * certificates of {@code cu3-certified-admission/v1} ({@code PreG9BCu3CertifiedEvidenceTest});
+ * H-CU3-2 needs the exact decision at the included end and stays pinned until increment E3.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -36,43 +39,37 @@ class PreG9BCu3BaseCharacterizationTest {
 	/**
 	 * H-CU3-3: the circle of radius 1.5 against the line {@code y = 1.5 + 1e-13}, which misses
 	 * it, and against the circle of centre {@code (3 + 1e-13, 0)} and radius 1.5, which is
-	 * disjoint from it. The engine publishes one tangent solution in each case.
+	 * disjoint from it. The base published one tangent solution in each case; a certified fixed
+	 * sign of the residual now withdraws it.
 	 */
 	@Test
-	void absentIntersectionIsDeclaredTangent() throws Exception {
+	void absentIntersectionIsCertifiedAbsent() throws Exception {
 		for (String target : new String[] {"g=Line((0,1.5000000000001),(1,1.5000000000001))",
 				"g=Circle((3.0000000000001,0),1.5)"}) {
 			List<String[]> solutions = PreG9BR6PlusF3Fixtures.onEdt(() -> solutions(target));
-			assertEquals(1, solutions.size(), pin("H-CU3-3", target
-					+ ": one solution where the absence of intersection is certifiable"));
-			assertEquals("TANGENT_ESTABLISHED", solutions.get(0)[0],
-					pin("H-CU3-3", target + ": the solution is declared tangent"));
-			assertEquals("false", solutions.get(0)[2], target + ": not admissible");
+			assertEquals(0, solutions.size(), inverted("H-CU3-3", target
+					+ ": no solution where the absence of intersection is certified"));
 		}
 	}
 
 	/**
 	 * H-CU3-1 and H-CU3-4: against {@code y = 1.5 - 1e-13} and {@code y = 1.5 - 1e-10} the true
-	 * intersection is two transverse roots near {@code pi / 2}; the engine publishes four and
+	 * intersection is two transverse roots near {@code pi / 2}. The base published four and
 	 * three solutions, among them a duplicate of a true root and, for {@code 1e-13}, a tangent
-	 * solution at the critical point.
+	 * solution at the critical point; the certificate of two roots around the certified
+	 * critical point now leaves exactly the two true roots.
 	 */
 	@Test
-	void nearTangencyPublishesNoiseAndDuplicatedRoots() throws Exception {
-		List<String[]> close = PreG9BR6PlusF3Fixtures.onEdt(() -> solutions(
-				"g=Line((0,1.4999999999999),(1,1.4999999999999))"));
-		assertEquals(4, close.size(), pin("H-CU3-1/H-CU3-4",
-				"delta = -1e-13: four solutions for two true roots"));
-		assertEquals(2, admissible(close), "delta = -1e-13: the two true roots are admissible");
-		assertEquals(1, count(close, "TANGENT_ESTABLISHED"),
-				pin("H-CU3-1", "delta = -1e-13: a tangent solution at the critical point"));
-		List<String[]> further = PreG9BR6PlusF3Fixtures.onEdt(() -> solutions(
-				"g=Line((0,1.4999999999),(1,1.4999999999))"));
-		assertEquals(3, further.size(), pin("H-CU3-4",
-				"delta = -1e-10: three solutions for two true roots"));
-		assertEquals(2, admissible(further), "delta = -1e-10: two admissible solutions");
-		assertEquals(3, count(further, "TRANSVERSE_ESTABLISHED"),
-				"delta = -1e-10: all three are classified transverse");
+	void nearTangencyPublishesExactlyTheTwoTrueRoots() throws Exception {
+		for (String target : new String[] {"g=Line((0,1.4999999999999),(1,1.4999999999999))",
+				"g=Line((0,1.4999999999),(1,1.4999999999))"}) {
+			List<String[]> solutions = PreG9BR6PlusF3Fixtures.onEdt(() -> solutions(target));
+			assertEquals(2, solutions.size(), inverted("H-CU3-1/H-CU3-4",
+					target + ": two solutions for two true roots"));
+			assertEquals(2, admissible(solutions), target + ": both are admissible");
+			assertEquals(2, count(solutions, "TRANSVERSE_ESTABLISHED"),
+					inverted("H-CU3-1", target + ": no tangent solution at the critical point"));
+		}
 	}
 
 	/**
@@ -143,5 +140,9 @@ class PreG9BCu3BaseCharacterizationTest {
 
 	private static String pin(String finding, String detail) {
 		return PreG9BCu0Baseline.pinMessage(finding, "CU3", detail);
+	}
+
+	private static String inverted(String finding, String detail) {
+		return PreG9BCu0Baseline.inversionMessage(finding, "CU3", detail);
 	}
 }
