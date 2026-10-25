@@ -16,8 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geocedg.common.kernel.algos.AlgoLocusDriverCorrespondencePoint2D;
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.constructive.StructuralPointResolver.Cause;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ExistenceGrade;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -518,6 +522,86 @@ final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 	}
 
 	@Test
+	void aCertifiedRootNearThePointIsNoProofOfThePrescribedIncidence() {
+		add("O=(0,0)");
+		add("c=Circle(O,3)");
+		add("P=Point(c)");
+		add("Q=Midpoint(O,P)");
+		add("L=LocusV2(Q,P)");
+		add("D=Intersect(c,yAxis,2)");
+		add("U=(-1,0.500000000001)");
+		add("V=(1,2.500000000001)");
+		add("g=Line(U,V)");
+		AuthorityPolicyAdoption.adopt(getConstruction());
+		GeoLocusIntersectionResult generic = (GeoLocusIntersectionResult) add("R=Intersect(L,g)");
+		boolean certifiedNear = false;
+		for (LocusIntersectionSolution2D solution : generic.getIntersectionResult()
+				.getFiniteSolutions()) {
+			certifiedNear |= Math.hypot(solution.getEvaluatedPoint().getX(),
+					solution.getEvaluatedPoint().getY() - 1.5) < 1E-11
+					&& solution.getRevisionEvidence().getExistenceEvidence().getGrade()
+							== ExistenceGrade.EXISTENCE_CERTIFIED;
+		}
+
+		assertTrue(certifiedNear, "a transverse root within 1e-12 of P has certified existence");
+		assertEquals(Cause.INCIDENCE_REFUTED_IN_CONSTRUCTIVE_CONFIGURATION,
+				cause(add("X=Intersect(L,g,D)")),
+				"V-EVID-4: the certified root proves no incidence at the prescribed point");
+	}
+
+	@Test
+	void anInheritedConditionIsAnUnestablishedPremiseNeverAStrictOne() {
+		add("O=(0,0)");
+		add("c=Circle(O,3)");
+		add("P=Point(c)");
+		add("Q=Midpoint(O,P)");
+		add("L=LocusV2(Q,P)");
+		add("D=Intersect(c,yAxis,2)");
+		add("M=Midpoint(O,D)");
+		add("a=1");
+		add("Pc=If(a>0,(2,4),(3,-1))");
+		add("A1=(0,0)");
+		add("B1=(1,1)");
+		add("C1=(2,2)");
+		add("Pb=If(AreCollinear(A1,B1,C1),(2,4),(3,-1))");
+		add("gc=Line(Pc,M)");
+		add("gb=Line(Pb,M)");
+		add("rb=If(AreCollinear(A1,B1,C1),Line(M,(1,1.5)),Line(M,(1,2)))");
+		AuthorityPolicyAdoption.adopt(getConstruction());
+
+		for (String[] row : new String[][] {{"Xc=Intersect(L,gc,D)", "Pc", "V-AUT-NUM-1"},
+				{"Xb=Intersect(L,gb,D)", "Pb", "V-AUT-NUM-2"}}) {
+			StructuralPointResolution relaxed = resolution(add(row[0]));
+			assertTrue(relaxed.isDefined(), row[2] + ": " + relaxed);
+			assertEquals(RelationIntegrity.RELAXED, relaxed.getIncidence().getIntegrity(),
+					row[2] + ": P1 and P5, at most RELAXED through the inherited decision");
+			assertTrue(relaxed.getIncidence().getUnestablishedPremises().stream()
+					.anyMatch(premise -> premise.contains(row[1])), row[2] + ": "
+							+ relaxed.getIncidence().getUnestablishedPremises());
+		}
+		StructuralPointResolution line = resolution(add("Xr=Intersect(L,rb,D)"));
+		assertFalse(line.isDefined(), "V-AUT-NUM-2: a line conditioned by a boolean of D2 is"
+				+ " outside the class: " + line);
+	}
+
+	@Test
+	void theViewNeverChangesAResult() {
+		buildAuthorReplica();
+		AuthorityPolicyAdoption.adopt(getConstruction());
+		GeoLocusV2 locus = (GeoLocusV2) geo("e_1");
+		List<String> before = viewIndependentResults(locus);
+		EuclidianView view = getApp().getActiveEuclidianView();
+
+		view.setCoordSystem(17, 503, 0.37, 2.9);
+		getKernel().updateConstruction(false);
+
+		assertEquals(before, viewIndependentResults(locus), "V-VIEW-1: zoom and origin");
+		view.setCoordSystem(300, 300, 4000, 4000);
+		getKernel().updateConstruction(false);
+		assertEquals(before, viewIndependentResults(locus), "V-VIEW-1: a large zoom");
+	}
+
+	@Test
 	void aJointRecomputationIsTheConstructiveConfiguration() {
 		add("O=(0,0)");
 		add("U=(1,1)");
@@ -545,6 +629,23 @@ final class StructuralPointMatrixTest extends ConstructiveModelReplicaTest {
 	}
 
 	// ---------------------------------------------------------------- helpers
+
+	/** The structural point and the five contacts resolved afresh, without any cached state. */
+	private List<String> viewIndependentResults(GeoLocusV2 locus) {
+		List<String> results = new ArrayList<>();
+		for (String[] contact : new String[][] {{"e_1", "K", null}, {"e_1", "K", "n"},
+				{"e_1", "K", "c_1"}, {"o_1", "K", "h_2"}, {"e_1", "J", "c_1"},
+				{"e_1", "J", "r"}}) {
+			StructuralPointResolution resolution = StructuralPointResolver.resolve(
+					contact[0].equals("e_1") ? locus : (GeoLocusV2) geo(contact[0]),
+					(GeoPoint) geo(contact[1]), contact[2] == null ? null : geo(contact[2]),
+					ExactEvaluationBudget.V1);
+			results.add(resolution + " " + resolution.getIncidence() + " "
+					+ resolution.getTransfer() + " " + resolution.getX() + " "
+					+ resolution.getY());
+		}
+		return results;
+	}
 
 	private void assertContacts(List<GeoElement> outputs, List<String> identities,
 			String step) {

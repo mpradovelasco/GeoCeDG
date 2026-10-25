@@ -7164,13 +7164,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransfer.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED.",
+      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted. PRE-G9B-CU3 increment E1, Stage A matrix: the exact parameter outside a bounded driver domain is OUT_OF_DRIVER_DOMAIN; an exact parameter at an included end of the domain belongs to its component; a certified absence of CU2 that covers the enclosure is NOT_IN_CERTIFIED_COMPONENT with its cause as a premise; an enclosure at the seam where a component ends is SEAM_SIDE_UNDECIDED; a transition, band or gap is COMPONENT_BOUNDARY_UNDECIDED. PRE-G9B-CU3 increment E1, gate G-AUT-4: closed decisions requested by a strict consumer, a fold of fold-symmetry/v1 by the route structure (premises decided exactly without boundary substitutes, isolation band by margin in interval jets) and the location of a degenerate root by the route re-decision (exact evaluation at the replacement); CLOSED_DECISION_NOT_REDECIDED otherwise, CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION when the exact evaluation refutes it.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransferTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of the transfer of the membership (V-AUT-TRF-1, V-AUT-TRF-4 to V-AUT-TRF-6): the three driver positions of the mandatory contacts by margin, exact parameters, invalid parameters, constants without a rigorous enclosure, changed selection states, budget exhaustion and the intact source certificate.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the transfer of the membership (V-AUT-TRF-1, V-AUT-TRF-4 to V-AUT-TRF-6): the three driver positions of the mandatory contacts by margin, exact parameters, invalid parameters, constants without a rigorous enclosure, changed selection states, budget exhaustion and the intact source certificate. PRE-G9B-CU3 increment E1: rows V-AUT-TRF-2 and V-AUT-TRF-3, a fold transferred by structure and refused with a boundary substitute, the location of a root decided again, refuted one ulp away and refused with a substitute, and no method for multiplicities, Sturm counts or critical values.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7326,13 +7326,13 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointMatrixTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism.",
+      "purpose": "PRE-G9B-CU3 increment E1: the rows of the Stage A validation matrix under the constructive authority with the revisions of D-AUT-11: provenance, support, driver domain and seam, certified absence and component boundaries, point components, local components, selection, permutation, limited targets, accidental equalities decided exactly, copies, sweeps and determinism. Rows V-EVID-4, V-AUT-NUM-1, V-AUT-NUM-2 and V-VIEW-1 at the structural point.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3StructuralPointAuthorModelTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1 on the author model: explicit adoption with every durable identity kept, the five mandatory contacts with P in L STRICT and P in r RELAXED, the inherited permutation 1,0 of K, Point(o_1, K) against the author's workaround N_1 and the excCyl sweep.",
+      "purpose": "PRE-G9B-CU3 increment E1 on the author model: explicit adoption with every durable identity kept, the five mandatory contacts with P in L STRICT and P in r RELAXED, the inherited permutation 1,0 of K, Point(o_1, K) against the author's workaround N_1 and the excCyl sweep. Row V-MAND-3: Intersect(o_1, h_2, K) is N_1.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

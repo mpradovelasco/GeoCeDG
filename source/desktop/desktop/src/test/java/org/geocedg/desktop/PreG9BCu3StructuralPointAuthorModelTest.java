@@ -127,6 +127,8 @@ class PreG9BCu3StructuralPointAuthorModelTest {
 		}
 		assertClose(m1, (Object[]) rows.get(CONTACTS.get(0)), "V-MAND-1");
 		assertClose(m1, (Object[]) rows.get(CONTACTS.get(1)), "V-MAND-2");
+		assertClose((double[]) rows.get("N_1"), (Object[]) rows.get(CONTACTS.get(2)),
+				"V-MAND-3: N_1; its order of contact is decided by exact jets in E2");
 		Object[] seam = (Object[]) rows.get(CONTACTS.get(3));
 		Object[] seamOnR = (Object[]) rows.get(CONTACTS.get(4));
 		assertEquals((double) seam[3], (double) seamOnR[3], CLOSE, "V-MAND-4: one point");

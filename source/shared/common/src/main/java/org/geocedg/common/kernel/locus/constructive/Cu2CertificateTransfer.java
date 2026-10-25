@@ -18,7 +18,9 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operand;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.OperandKind;
+import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
+import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Coverage;
@@ -26,6 +28,7 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.CoverageState;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Circle;
+import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Decision;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Line;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Point;
 import org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluator.Result;
@@ -62,6 +65,10 @@ public final class Cu2CertificateTransfer {
 
 	/** Version of the transfer policy. */
 	public static final String VERSION = DocumentAuthorityRecord.TRANSFER;
+	/** The operation table of the symmetries of the folds of {@code CU2}. */
+	private static final String SYMMETRY = "fold-symmetry/v1";
+	/** The largest number of pieces of the isolation band of a fold. */
+	private static final int MAXIMUM_PIECES = 64;
 
 	/** Admitted routes of the policy. */
 	public enum Route {
@@ -78,7 +85,26 @@ public final class Cu2CertificateTransfer {
 		/** The statement holds in the constructive configuration. */
 		TRANSFERRED,
 		/** The transfer is not demonstrated; the typed cause says why. */
-		EVIDENCE_INSUFFICIENT
+		EVIDENCE_INSUFFICIENT,
+		/** A re-decision refutes the statement in the constructive configuration. */
+		CONTRADICTED
+	}
+
+	/**
+	 * Closed decisions of a source certificate that a strict consumer may request at the
+	 * driver parameter of an exact point (section 12.2, routes structure and re-decision).
+	 */
+	public enum ClosedDecision {
+		/** A certified fold of the traced map: existence by symmetry, isolation by its band. */
+		FOLD,
+		/** The location of the degenerate root of a component end or of a point component. */
+		ROOT_LOCATION,
+		/** The multiplicity of a root. */
+		MULTIPLICITY,
+		/** The root count of a Sturm certificate. */
+		STURM_COUNT,
+		/** A critical value of the configuration, such as the bite of the author's model. */
+		CRITICAL_VALUE
 	}
 
 	/** Typed cause of a transfer that is not demonstrated. */
@@ -105,6 +131,14 @@ public final class Cu2CertificateTransfer {
 		NOT_IN_CERTIFIED_COMPONENT,
 		/** A strict sign of the slice is not kept on the hull (N3, margin). */
 		OPEN_MARGIN_INSUFFICIENT,
+		/** The certificate records no such closed decision at the parameter. */
+		DECISION_NOT_IN_CERTIFICATE,
+		/** A premise of a structural decision is not {@code STRICT} (N3, structure). */
+		STRUCTURAL_PREMISE_NOT_STRICT,
+		/** No admitted method takes the closed decision again (N3, re-decision). */
+		CLOSED_DECISION_NOT_REDECIDED,
+		/** The re-decision refutes the statement for the constructive objects. */
+		CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION,
 		/** The versioned budget of the exact evaluation is exhausted; nothing is decided. */
 		BUDGET_EXHAUSTED
 	}
@@ -145,6 +179,11 @@ public final class Cu2CertificateTransfer {
 		/** @return whether the transfer is established */
 		public boolean isTransferred() {
 			return status == Status.TRANSFERRED;
+		}
+
+		/** @return whether a re-decision refutes the statement */
+		public boolean isContradicted() {
+			return status == Status.CONTRADICTED;
 		}
 
 		/** @return the outcome */
@@ -229,71 +268,13 @@ public final class Cu2CertificateTransfer {
 	public static Record membership(GeoLocusV2 locus, ConstructiveCone cone, int traced,
 			ConstructiveConeEvaluator<Element> exact) {
 		Objects.requireNonNull(locus);
-		Objects.requireNonNull(cone);
-		Objects.requireNonNull(exact);
 		Builder record = new Builder(locus.getSemanticRevision());
-		AlgoElement parent = locus.getParentAlgorithm();
-		if (!(parent instanceof AlgoDependentPointLocusV2)) {
-			return record.refuse(Cause.CERTIFICATE_NOT_AVAILABLE, "not a dependent-point locus");
+		Prepared prepared = prepare(locus, cone, traced, exact, record);
+		if (prepared.refusal != null) {
+			return prepared.refusal;
 		}
-		AlgoDependentPointLocusV2 algorithm = (AlgoDependentPointLocusV2) parent;
-		HybridExistenceCertifier2D.Result certificate =
-				algorithm.getHybridExistenceCertificate();
-		ConstructionBoxModel2D model = ConstructionBoxModel2D.capture(
-				locus.getSemanticDefinition());
-		if (certificate == null || model == null) {
-			return record.refuse(Cause.CERTIFICATE_NOT_AVAILABLE,
-					"no certificate or class-v3 program");
-		}
-		long revision = locus.getSemanticRevision();
-		// The certifier records an unbound structure; its publication binds it to the revision.
-		LocusExistenceStructure2D structure = certificate.getStructure().bindToRevision(revision);
-		record.source(algorithm.getSliceFingerprint(), certificate.getPolicySignature(),
-				structure.getSemanticSignature());
-		if (locus.getSemanticDefinition().getSemanticRevision() != revision
-				|| record.fingerprint == null) {
-			return record.refuse(Cause.REVISION_MISMATCH,
-					"the certificate is not that of the consuming revision");
-		}
-		record.premise("N2: fingerprint " + record.fingerprint + " of revision "
-				+ locus.getSemanticRevision());
-		CertifiedConstructionProgram2D program = model.getProgram();
-		Cu2ProgramCorrespondence correspondence =
-				Cu2ProgramCorrespondence.match(program, cone, traced);
-		if (!correspondence.isDemonstrated()) {
-			return record.refuse(Cause.CORRESPONDENCE_NOT_DEMONSTRATED,
-					correspondence.getFailure());
-		}
-		record.premise("N1: " + program.getSteps().size() + " captured steps, "
-				+ correspondence.getConstants().size() + " captured constants");
-		int replacement = cone.getReplacementNode();
-		Result driverPoint = exact.evaluate(replacement);
-		if (driverPoint.getFailure() == ConstructiveConeEvaluator.Failure.BUDGET_EXHAUSTED) {
-			return record.refuse(Cause.BUDGET_EXHAUSTED, driverPoint.getMessage());
-		}
-		if (!driverPoint.hasValue() || exact.dependsOnSubstitute(replacement)) {
-			return record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
-					"the replacement has no exact constructive point");
-		}
-		@SuppressWarnings("unchecked")
-		Point<Element> point = (Point<Element>) driverPoint.getValue();
-		if (program.getDriver() != CertifiedConstructionProgram2D.Driver.CIRCLE
-				&& program.getDriver() != CertifiedConstructionProgram2D.Driver.SEGMENT) {
-			return record.refuse(Cause.UNSUPPORTED_DRIVER_FAMILY, program.getDriver().name());
-		}
-		DriverParameterEnclosure parameter;
-		try {
-			parameter = DriverParameterEnclosure.of(program,
-					((ConstructiveArithmetic.Exact) exact.getArithmetic()).getTower(),
-					point.getX(), point.getY());
-		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
-			return record.refuse(Cause.BUDGET_EXHAUSTED, exhaustion.getMessage());
-		}
-		if (parameter == null) {
-			return record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
-					"no rigorous driver parameter of the exact point");
-		}
-		record.parameter = parameter.toString();
+		LocusExistenceStructure2D structure = prepared.structure;
+		DriverParameterEnclosure parameter = prepared.parameter;
 		try {
 			if (Boolean.TRUE.equals(parameter.isOutside(structure.getCanonicalDomain()))) {
 				return record.refuse(Cause.OUT_OF_DRIVER_DOMAIN, "the exact parameter "
@@ -308,11 +289,491 @@ public final class Cu2CertificateTransfer {
 			return record.refuse(placement, "the parameter " + parameter
 					+ " is not in the interior of a certified continuous component");
 		}
-		String failure = margin(cone, traced, correspondence, point, parameter, record);
+		String failure = margin(cone, traced, prepared.correspondence, prepared.point,
+				parameter, record);
 		if (failure != null) {
 			return record.refuse(Cause.OPEN_MARGIN_INSUFFICIENT, failure);
 		}
 		return record.transferred(Route.MARGIN);
+	}
+
+	/**
+	 * Establishes in the constructive configuration a closed decision of the source certificate
+	 * at the driver parameter of the exact point of the replacement, for a strict consumer:
+	 * a fold by the route structure, when every premise of its symmetry is {@code STRICT} and its
+	 * isolation band keeps its sign by margin; the location of a degenerate root by the route
+	 * re-decision, the exact evaluation of the slice at the replacement with constructible
+	 * premises only. A closed decision that no implemented method takes again is never consumed
+	 * from the captured configuration: {@code CLOSED_DECISION_NOT_REDECIDED}.
+	 *
+	 * @param locus the locus
+	 * @param cone a cone that substitutes the driver of the slice of the locus
+	 * @param traced the slice node of the traced point
+	 * @param support the cone node of the support of the driver
+	 * @param exact the exact evaluation of the cone at its base configuration
+	 * @param decision the closed decision requested
+	 * @return the transfer record
+	 */
+	public static Record closedDecision(GeoLocusV2 locus, ConstructiveCone cone, int traced,
+			int support, ConstructiveConeEvaluator<Element> exact, ClosedDecision decision) {
+		Objects.requireNonNull(locus);
+		Objects.requireNonNull(decision);
+		Builder record = new Builder(locus.getSemanticRevision());
+		Prepared prepared = prepare(locus, cone, traced, exact, record);
+		if (prepared.refusal != null) {
+			return prepared.refusal;
+		}
+		try {
+			switch (decision) {
+			case FOLD:
+				return fold(prepared, cone, traced, support, exact, record);
+			case ROOT_LOCATION:
+				return rootLocation(prepared, cone, traced, exact, record);
+			default:
+				return record.refuse(Cause.CLOSED_DECISION_NOT_REDECIDED, decision
+						+ ": no implemented method decides it again in the constructive"
+						+ " configuration");
+			}
+		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
+			return record.refuse(Cause.BUDGET_EXHAUSTED, exhaustion.getMessage());
+		}
+	}
+
+	/** Conditions N1 and N2 and the exact driver parameter of the replacement. */
+	private static Prepared prepare(GeoLocusV2 locus, ConstructiveCone cone, int traced,
+			ConstructiveConeEvaluator<Element> exact, Builder record) {
+		Objects.requireNonNull(cone);
+		Objects.requireNonNull(exact);
+		AlgoElement parent = locus.getParentAlgorithm();
+		if (!(parent instanceof AlgoDependentPointLocusV2)) {
+			return Prepared.refused(record.refuse(Cause.CERTIFICATE_NOT_AVAILABLE,
+					"not a dependent-point locus"));
+		}
+		AlgoDependentPointLocusV2 algorithm = (AlgoDependentPointLocusV2) parent;
+		HybridExistenceCertifier2D.Result certificate =
+				algorithm.getHybridExistenceCertificate();
+		ConstructionBoxModel2D model = ConstructionBoxModel2D.capture(
+				locus.getSemanticDefinition());
+		if (certificate == null || model == null) {
+			return Prepared.refused(record.refuse(Cause.CERTIFICATE_NOT_AVAILABLE,
+					"no certificate or class-v3 program"));
+		}
+		long revision = locus.getSemanticRevision();
+		// The certifier records an unbound structure; its publication binds it to the revision.
+		LocusExistenceStructure2D structure = certificate.getStructure().bindToRevision(revision);
+		record.source(algorithm.getSliceFingerprint(), certificate.getPolicySignature(),
+				structure.getSemanticSignature());
+		if (locus.getSemanticDefinition().getSemanticRevision() != revision
+				|| record.fingerprint == null) {
+			return Prepared.refused(record.refuse(Cause.REVISION_MISMATCH,
+					"the certificate is not that of the consuming revision"));
+		}
+		record.premise("N2: fingerprint " + record.fingerprint + " of revision "
+				+ locus.getSemanticRevision());
+		CertifiedConstructionProgram2D program = model.getProgram();
+		Cu2ProgramCorrespondence correspondence =
+				Cu2ProgramCorrespondence.match(program, cone, traced);
+		if (!correspondence.isDemonstrated()) {
+			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_DEMONSTRATED,
+					correspondence.getFailure()));
+		}
+		record.premise("N1: " + program.getSteps().size() + " captured steps, "
+				+ correspondence.getConstants().size() + " captured constants");
+		int replacement = cone.getReplacementNode();
+		Result driverPoint = exact.evaluate(replacement);
+		if (driverPoint.getFailure() == ConstructiveConeEvaluator.Failure.BUDGET_EXHAUSTED) {
+			return Prepared.refused(record.refuse(Cause.BUDGET_EXHAUSTED,
+					driverPoint.getMessage()));
+		}
+		if (!driverPoint.hasValue() || exact.dependsOnSubstitute(replacement)) {
+			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
+					"the replacement has no exact constructive point"));
+		}
+		@SuppressWarnings("unchecked")
+		Point<Element> point = (Point<Element>) driverPoint.getValue();
+		if (program.getDriver() != CertifiedConstructionProgram2D.Driver.CIRCLE
+				&& program.getDriver() != CertifiedConstructionProgram2D.Driver.SEGMENT) {
+			return Prepared.refused(record.refuse(Cause.UNSUPPORTED_DRIVER_FAMILY,
+					program.getDriver().name()));
+		}
+		DriverParameterEnclosure parameter;
+		try {
+			parameter = DriverParameterEnclosure.of(program,
+					((ConstructiveArithmetic.Exact) exact.getArithmetic()).getTower(),
+					point.getX(), point.getY());
+		} catch (ExactEvaluationBudgetExhaustedException exhaustion) {
+			return Prepared.refused(record.refuse(Cause.BUDGET_EXHAUSTED,
+					exhaustion.getMessage()));
+		}
+		if (parameter == null) {
+			return Prepared.refused(record.refuse(Cause.CORRESPONDENCE_NOT_CERTIFIED,
+					"no rigorous driver parameter of the exact point"));
+		}
+		record.parameter = parameter.toString();
+		return new Prepared(structure, program, correspondence, point, parameter, null);
+	}
+
+	/**
+	 * Route structure for a fold of {@code fold-symmetry/v1}: the certificate records a fold at
+	 * the parameter, the parameter is exactly a fixed point of its reflection, every premise of
+	 * the symmetry holds exactly for the constructive objects without a boundary substitute, and
+	 * the isolation band keeps its sign by margin.
+	 */
+	private static Record fold(Prepared prepared, ConstructiveCone cone, int traced, int support,
+			ConstructiveConeEvaluator<Element> exact, Builder record) {
+		DriverParameterEnclosure parameter = prepared.parameter;
+		LocusCertifiedFold2D fold = null;
+		for (LocusCertifiedFold2D candidate : prepared.structure.getCertifiedFolds()) {
+			if (fold == null && meetsModuloPeriod(candidate.getParameterLower(),
+					candidate.getParameterUpper(), parameter)) {
+				fold = candidate;
+			}
+		}
+		if (fold == null) {
+			return record.refuse(Cause.DECISION_NOT_IN_CERTIFICATE,
+					"the certificate records no fold at " + parameter);
+		}
+		String symmetry = fold.getSymmetry();
+		boolean horizontal = (SYMMETRY + ":HORIZONTAL").equals(symmetry);
+		if (!horizontal && !(SYMMETRY + ":VERTICAL").equals(symmetry)) {
+			return record.refuse(Cause.STRUCTURAL_PREMISE_NOT_STRICT, "the symmetry "
+					+ symmetry + " has no structural premises in this version");
+		}
+		record.premise("CU2 fold [" + fold.getParameterLower() + ", "
+				+ fold.getParameterUpper() + "] by " + symmetry);
+		List<String> fixedPoints = horizontal ? List.of("0", "pi") : List.of("pi/2", "-pi/2");
+		if (!fixedPoints.contains(parameter.getExact())) {
+			return record.refuse(Cause.CLOSED_DECISION_NOT_REDECIDED, "the parameter "
+					+ parameter + " is not decided exactly at a fixed point of the reflection");
+		}
+		String premise = symmetryPremises(prepared, cone, support, exact, horizontal, record);
+		if (premise != null) {
+			return record.refuse(Cause.STRUCTURAL_PREMISE_NOT_STRICT, premise);
+		}
+		String isolation = foldIsolation(prepared, cone, traced, support, fold, record);
+		if (isolation != null) {
+			return record.refuse(Cause.OPEN_MARGIN_INSUFFICIENT, isolation);
+		}
+		return record.transferred(Route.STRUCTURE);
+	}
+
+	/**
+	 * The premises of {@code fold-symmetry/v1} for the constructive objects: the driver is a
+	 * circle of {@code constructive-class/v1} read in the frame of the axes, and every step that
+	 * reads the driver point does so through a magnitude that the reflection keeps, decided
+	 * exactly on constructive values without a boundary substitute.
+	 *
+	 * @return {@code null} when every premise is {@code STRICT}, otherwise the first that is not
+	 */
+	private static String symmetryPremises(Prepared prepared, ConstructiveCone cone, int support,
+			ConstructiveConeEvaluator<Element> exact, boolean horizontal, Builder record) {
+		CertifiedConstructionProgram2D program = prepared.program;
+		ConstructiveOperation circle = cone.getNode(support).getOperation();
+		if (circle != ConstructiveOperation.CIRCLE_THROUGH
+				&& circle != ConstructiveOperation.CIRCLE_RADIUS
+				|| program.getDriverConstant(3) != 0 || program.getDriverConstant(4) != 0) {
+			return "the driver is not a circle of constructive-class/v1 read in the frame of the"
+					+ " axes";
+		}
+		Object driver = exactValue(exact, support);
+		if (!(driver instanceof Circle)) {
+			return "the driver circle has no exact value without a boundary substitute";
+		}
+		@SuppressWarnings("unchecked")
+		Circle<Element> driverCircle = (Circle<Element>) driver;
+		record.premise("structure: the driver is " + circle + " of constructive-class/v1");
+		List<Step> steps = program.getSteps();
+		for (int index = 0; index < steps.size(); index++) {
+			Step step = steps.get(index);
+			if (!readsDriver(step)) {
+				continue;
+			}
+			int programNode = index + 1;
+			String failure;
+			switch (step.getOperation()) {
+			case PARALLEL:
+				failure = linePremise(prepared, exact, programNode, !horizontal);
+				break;
+			case PERPENDICULAR:
+				failure = linePremise(prepared, exact, programNode, horizontal);
+				break;
+			case CIRCLE_THROUGH:
+				failure = centrePremise(prepared, exact, programNode, driverCircle, horizontal);
+				break;
+			default:
+				failure = "step " + programNode + " reads the driver outside " + SYMMETRY;
+			}
+			if (failure != null) {
+				return failure;
+			}
+			record.premise("structure: step " + programNode + " " + step.getOperation()
+					+ " reads the driver symmetrically, decided exactly");
+		}
+		return null;
+	}
+
+	/**
+	 * The constant line of a parallel or perpendicular to the driver is exactly horizontal or
+	 * vertical for the constructive objects.
+	 */
+	private static String linePremise(Prepared prepared, ConstructiveConeEvaluator<Element> exact,
+			int programNode, boolean horizontalLine) {
+		ConstantBinding binding = binding(prepared, programNode, 1);
+		Object value = binding == null ? null : exactValue(exact, binding.getConeNode());
+		if (!(value instanceof Line)) {
+			return "the constant line of step " + programNode
+					+ " has no exact value without a boundary substitute";
+		}
+		@SuppressWarnings("unchecked")
+		Line<Element> line = (Line<Element>) value;
+		Element zero = horizontalLine ? line.getA() : line.getB();
+		Element other = horizontalLine ? line.getB() : line.getA();
+		if (zero.signum() != 0 || other.signum() == 0) {
+			return "the constant line of step " + programNode + " is not exactly "
+					+ (horizontalLine ? "horizontal" : "vertical");
+		}
+		return null;
+	}
+
+	/** The constant centre of a circle through the driver lies exactly on the mirror. */
+	private static String centrePremise(Prepared prepared,
+			ConstructiveConeEvaluator<Element> exact, int programNode, Circle<Element> driver,
+			boolean horizontal) {
+		ConstantBinding binding = binding(prepared, programNode, 0);
+		Object value = binding == null ? null : exactValue(exact, binding.getConeNode());
+		if (!(value instanceof Point)) {
+			return "the constant centre of step " + programNode
+					+ " has no exact value without a boundary substitute";
+		}
+		@SuppressWarnings("unchecked")
+		Point<Element> centre = (Point<Element>) value;
+		Element offset = horizontal ? centre.getY().subtract(driver.getCenterY())
+				: centre.getX().subtract(driver.getCenterX());
+		return offset.signum() == 0 ? null : "the constant centre of step " + programNode
+				+ " is not exactly on the mirror";
+	}
+
+	/**
+	 * Route margin for the isolation of a fold: on its band, one component of {@code F''} keeps
+	 * a strict sign when every captured constant is the hull of its captured and constructive
+	 * values and the driver circle the hull of the captured and constructive circles, in
+	 * interval jets on at most {@value #MAXIMUM_PIECES} pieces of the band.
+	 */
+	@SuppressWarnings("unchecked")
+	private static String foldIsolation(Prepared prepared, ConstructiveCone cone, int traced,
+			int support, LocusCertifiedFold2D fold, Builder record) {
+		Map<Integer, Object> hulls = new HashMap<>();
+		String failure = hulls(cone, prepared.correspondence, hulls);
+		if (failure != null) {
+			return failure;
+		}
+		Result value = ConstructiveConeEvaluator.intervals(cone).evaluate(support);
+		if (!(value.getValue() instanceof Circle)) {
+			return "no rigorous enclosure of the constructive driver circle";
+		}
+		Circle<OutwardInterval> ideal = (Circle<OutwardInterval>) value.getValue();
+		CertifiedConstructionProgram2D program = prepared.program;
+		OutwardInterval[] driver = {
+				ideal.getCenterX().hull(OutwardInterval.point(program.getDriverConstant(6))),
+				ideal.getCenterY().hull(OutwardInterval.point(program.getDriverConstant(7))),
+				ideal.getRadiusSquared().sqrt().hull(OutwardInterval.point(
+						program.getDriverConstant(0))).hull(OutwardInterval.point(
+								program.getDriverConstant(1)))};
+		Map<Integer, Object> jets = new HashMap<>();
+		for (Map.Entry<Integer, Object> entry : hulls.entrySet()) {
+			jets.put(entry.getKey(), constantJet(entry.getValue()));
+		}
+		for (int pieces = 1; pieces <= MAXIMUM_PIECES; pieces *= 2) {
+			int component = isolation(cone, traced, program, jets, driver, fold, pieces);
+			if (component >= 0) {
+				record.premise("margin: " + (component == 0 ? "x''" : "y''")
+						+ " keeps a strict sign on the band [" + fold.getBandLower() + ", "
+						+ fold.getBandUpper() + "] in " + pieces + " pieces");
+				return null;
+			}
+		}
+		return "no component of F'' keeps a strict sign on the band [" + fold.getBandLower()
+				+ ", " + fold.getBandUpper() + "]";
+	}
+
+	/**
+	 * @return the component of {@code F''} that keeps one strict sign on every piece of the
+	 *         band, or {@code -1}
+	 */
+	@SuppressWarnings("unchecked")
+	private static int isolation(ConstructiveCone cone, int traced,
+			CertifiedConstructionProgram2D program, Map<Integer, Object> jets,
+			OutwardInterval[] driver, LocusCertifiedFold2D fold, int pieces) {
+		int[] signs = new int[2];
+		double width = (fold.getBandUpper() - fold.getBandLower()) / pieces;
+		for (int piece = 0; piece < pieces; piece++) {
+			double lower = piece == 0 ? fold.getBandLower()
+					: Math.nextDown(fold.getBandLower() + piece * width);
+			double upper = piece == pieces - 1 ? fold.getBandUpper()
+					: Math.nextUp(fold.getBandLower() + (piece + 1) * width);
+			OutwardInterval[] trig = DriverParameterEnclosure.cosSin(lower, upper);
+			if (trig == null) {
+				return -1;
+			}
+			IntervalJet cos = IntervalJet.of(trig[0], trig[1].negate(), trig[0].negate());
+			IntervalJet sin = IntervalJet.of(trig[1], trig[0], trig[1].negate());
+			IntervalJet radius = IntervalJet.constant(driver[2]);
+			IntervalJet along = cos.multiply(constant(program.getDriverConstant(2)))
+					.add(sin.multiply(constant(program.getDriverConstant(4))));
+			IntervalJet across = cos.multiply(constant(program.getDriverConstant(3)))
+					.add(sin.multiply(constant(program.getDriverConstant(5))));
+			Map<Integer, Object> fixed = new HashMap<>(jets);
+			fixed.put(cone.getReplacementNode(), new Point<>(IntervalJet.constant(driver[0])
+					.add(radius.multiply(along)), IntervalJet.constant(driver[1])
+							.add(radius.multiply(across))));
+			Result point;
+			try {
+				point = new ConstructiveConeEvaluator<>(cone, IntervalJet.Arithmetic.INSTANCE,
+						false, Collections.emptyMap(), fixed).evaluate(traced);
+			} catch (ArithmeticException | IllegalArgumentException undefined) {
+				return -1;
+			}
+			if (!(point.getValue() instanceof Point)) {
+				return -1;
+			}
+			Point<IntervalJet> value = (Point<IntervalJet>) point.getValue();
+			int[] pieceSigns = {value.getX().getSecond().certifiedSign(),
+					value.getY().getSecond().certifiedSign()};
+			for (int component = 0; component < 2; component++) {
+				signs[component] = piece == 0 ? pieceSigns[component]
+						: signs[component] == pieceSigns[component] ? signs[component] : 0;
+			}
+		}
+		return signs[0] != 0 ? 0 : signs[1] != 0 ? 1 : -1;
+	}
+
+	/**
+	 * Route re-decision for the location of a degenerate root: the certificate records a
+	 * component end or a point component at the parameter, and the exact evaluation of the
+	 * slice at the replacement, with constructible premises only, decides whether one of its
+	 * predicates vanishes there. The isolation and the multiplicity of the root are other closed
+	 * decisions.
+	 */
+	private static Record rootLocation(Prepared prepared, ConstructiveCone cone, int traced,
+			ConstructiveConeEvaluator<Element> exact, Builder record) {
+		String recorded = closedRootAt(prepared.structure, prepared.parameter);
+		if (recorded == null) {
+			return record.refuse(Cause.DECISION_NOT_IN_CERTIFICATE, "the certificate records"
+					+ " no component end or point component at " + prepared.parameter);
+		}
+		record.premise("CU2 records " + recorded);
+		Result slice = exact.evaluate(traced);
+		if (slice.getFailure() == ConstructiveConeEvaluator.Failure.BUDGET_EXHAUSTED) {
+			return record.refuse(Cause.BUDGET_EXHAUSTED, slice.getMessage());
+		}
+		if (exact.dependsOnSubstitute(traced)) {
+			return record.refuse(Cause.CLOSED_DECISION_NOT_REDECIDED, "the slice at D* reads a"
+					+ " boundary substitute, which is no constructible premise");
+		}
+		for (Decision decision : exact.getDecisions()) {
+			if (decision.getSign() == 0 && cone.getNode(decision.getNode()).isDriverSlice()) {
+				record.premise("re-decision: " + decision.getPredicate() + " of slice node "
+						+ decision.getNode() + " vanishes exactly at D*");
+				return record.transferred(Route.REDECISION);
+			}
+		}
+		if (slice.hasValue() || slice.getFailure() == ConstructiveConeEvaluator.Failure.INVALID) {
+			return record.contradict("every predicate of the slice has a strict sign at D*: no"
+					+ " degenerate root lies at " + prepared.parameter);
+		}
+		return record.refuse(Cause.CLOSED_DECISION_NOT_REDECIDED, String.valueOf(slice));
+	}
+
+	/**
+	 * @return the closed decision of the certificate at the parameter, a point component or
+	 *         the enclosed end of a certified component, or {@code null}
+	 */
+	private static String closedRootAt(LocusExistenceStructure2D structure,
+			DriverParameterEnclosure parameter) {
+		for (LocusPointComponent2D point : structure.getPointComponents()) {
+			if (meetsModuloPeriod(point.getParameterLower(), point.getParameterUpper(),
+					parameter)) {
+				return "a point component " + point;
+			}
+		}
+		for (ContinuousComponent component : structure.getContinuousValidComponents()) {
+			for (LocusBoundary2D boundary : new LocusBoundary2D[] {
+					component.getLowerBoundary(), component.getUpperBoundary()}) {
+				if (component.getNature().certifies() && boundary.hasEnclosure()
+						&& boundary.getKind() == LocusBoundary2D.Kind.CERTIFIED_TRANSITION
+						&& meetsModuloPeriod(boundary.getEnclosureLower(),
+								boundary.getEnclosureUpper(), parameter)) {
+					return "the end " + boundary + " of component " + component.getEvidenceKey();
+				}
+			}
+		}
+		return null;
+	}
+
+	/** @return whether the interval meets the parameter enclosure, modulo {@code 2 pi} */
+	private static boolean meetsModuloPeriod(double lower, double upper,
+			DriverParameterEnclosure parameter) {
+		// 2 pi lies between the binary64 period and the next value above it.
+		double below = 2 * Math.PI;
+		double above = Math.nextUp(below);
+		double[][] shifted = {{lower, upper},
+				{Math.nextDown(lower + below), Math.nextUp(upper + above)},
+				{Math.nextDown(lower - above), Math.nextUp(upper - below)}};
+		for (double[] interval : shifted) {
+			if (!(interval[1] < parameter.getLower() || interval[0] > parameter.getUpper())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean readsDriver(Step step) {
+		for (Operand operand : step.getOperands()) {
+			if (operand.getKind() == OperandKind.NODE && operand.getNode() == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static ConstantBinding binding(Prepared prepared, int programNode, int operand) {
+		for (ConstantBinding binding : prepared.correspondence.getConstants()) {
+			if (binding.getProgramNode() == programNode && binding.getOperand() == operand) {
+				return binding;
+			}
+		}
+		return null;
+	}
+
+	/** @return the exact value of a node computed without a boundary substitute, or null */
+	private static Object exactValue(ConstructiveConeEvaluator<Element> exact, int node) {
+		Result value = exact.evaluate(node);
+		return value.hasValue() && !exact.dependsOnSubstitute(node) ? value.getValue() : null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Object constantJet(Object hull) {
+		if (hull instanceof OutwardInterval) {
+			return IntervalJet.constant((OutwardInterval) hull);
+		}
+		if (hull instanceof Point) {
+			Point<OutwardInterval> point = (Point<OutwardInterval>) hull;
+			return new Point<>(IntervalJet.constant(point.getX()),
+					IntervalJet.constant(point.getY()));
+		}
+		if (hull instanceof Line) {
+			Line<OutwardInterval> line = (Line<OutwardInterval>) hull;
+			return new Line<>(IntervalJet.constant(line.getA()), IntervalJet.constant(line.getB()),
+					IntervalJet.constant(line.getC()), false, false, false, null, null);
+		}
+		Circle<OutwardInterval> circle = (Circle<OutwardInterval>) hull;
+		return new Circle<>(IntervalJet.constant(circle.getCenterX()),
+				IntervalJet.constant(circle.getCenterY()),
+				IntervalJet.constant(circle.getRadiusSquared()));
+	}
+
+	private static IntervalJet constant(double value) {
+		return IntervalJet.constant(OutwardInterval.point(value));
 	}
 
 	/**
@@ -486,6 +947,33 @@ public final class Cu2CertificateTransfer {
 	private static String margin(ConstructiveCone cone, int traced,
 			Cu2ProgramCorrespondence correspondence, Point<Element> point,
 			DriverParameterEnclosure parameter, Builder record) {
+		Map<Integer, Object> hulls = new HashMap<>();
+		String failure = hulls(cone, correspondence, hulls);
+		if (failure != null) {
+			return failure;
+		}
+		OutwardInterval[] driven = parameter.getDrivenPoint();
+		hulls.put(cone.getReplacementNode(), new Point<>(
+				enclosure(point.getX()).hull(driven[0]), enclosure(point.getY()).hull(driven[1])));
+		ConstructiveConeEvaluator<OutwardInterval> margin = new ConstructiveConeEvaluator<>(cone,
+				ConstructiveArithmetic.intervals(), false, Collections.emptyMap(), hulls);
+		Result slice = margin.evaluate(traced);
+		if (!slice.hasValue()) {
+			return slice.toString();
+		}
+		record.premise("margin: " + hulls.size() + " hulls, " + margin.getDecisions().size()
+				+ " strict signs kept");
+		return null;
+	}
+
+	/**
+	 * The hull of the captured values and of the rigorous enclosure of the constructive value of
+	 * every captured constant, by cone node.
+	 *
+	 * @return {@code null} when every constant has one, otherwise why not
+	 */
+	private static String hulls(ConstructiveCone cone, Cu2ProgramCorrespondence correspondence,
+			Map<Integer, Object> hulls) {
 		ConstructiveConeEvaluator<OutwardInterval> constructive =
 				ConstructiveConeEvaluator.intervals(cone);
 		Map<Integer, List<ConstantBinding>> byNode = new LinkedHashMap<>();
@@ -493,7 +981,6 @@ public final class Cu2CertificateTransfer {
 			byNode.computeIfAbsent(binding.getConeNode(), node -> new ArrayList<>())
 					.add(binding);
 		}
-		Map<Integer, Object> hulls = new HashMap<>();
 		for (Map.Entry<Integer, List<ConstantBinding>> entry : byNode.entrySet()) {
 			Result value = constructive.evaluate(entry.getKey());
 			if (!value.hasValue()) {
@@ -507,17 +994,6 @@ public final class Cu2CertificateTransfer {
 			}
 			hulls.put(entry.getKey(), hull);
 		}
-		OutwardInterval[] driven = parameter.getDrivenPoint();
-		hulls.put(cone.getReplacementNode(), new Point<>(
-				enclosure(point.getX()).hull(driven[0]), enclosure(point.getY()).hull(driven[1])));
-		ConstructiveConeEvaluator<OutwardInterval> margin = new ConstructiveConeEvaluator<>(cone,
-				ConstructiveArithmetic.intervals(), false, Collections.emptyMap(), hulls);
-		Result slice = margin.evaluate(traced);
-		if (!slice.hasValue()) {
-			return slice.toString();
-		}
-		record.premise("margin: " + hulls.size() + " hulls, " + margin.getDecisions().size()
-				+ " strict signs kept");
 		return null;
 	}
 
@@ -643,6 +1119,38 @@ public final class Cu2CertificateTransfer {
 			return new Record(Status.TRANSFERRED, null, null, route, revision, fingerprint,
 					HybridExistenceCertifier2D.CONTRACT, policy, structure, component, parameter,
 					premises);
+		}
+
+		private Record contradict(String message) {
+			return new Record(Status.CONTRADICTED,
+					Cause.CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION, message, Route.REDECISION,
+					revision, fingerprint, HybridExistenceCertifier2D.CONTRACT, policy, structure,
+					component, parameter, premises);
+		}
+	}
+
+	/** Conditions N1 and N2 with the exact driver parameter, or the refusal of the transfer. */
+	private static final class Prepared {
+		private final LocusExistenceStructure2D structure;
+		private final CertifiedConstructionProgram2D program;
+		private final Cu2ProgramCorrespondence correspondence;
+		private final Point<Element> point;
+		private final DriverParameterEnclosure parameter;
+		private final Record refusal;
+
+		private Prepared(LocusExistenceStructure2D structure,
+				CertifiedConstructionProgram2D program, Cu2ProgramCorrespondence correspondence,
+				Point<Element> point, DriverParameterEnclosure parameter, Record refusal) {
+			this.structure = structure;
+			this.program = program;
+			this.correspondence = correspondence;
+			this.point = point;
+			this.parameter = parameter;
+			this.refusal = refusal;
+		}
+
+		private static Prepared refused(Record refusal) {
+			return new Prepared(null, null, null, null, null, refusal);
 		}
 	}
 }

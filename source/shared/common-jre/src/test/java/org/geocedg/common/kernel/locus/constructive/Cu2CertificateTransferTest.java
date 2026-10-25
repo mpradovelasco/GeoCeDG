@@ -22,11 +22,15 @@ import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operation;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Step;
 import org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransfer.Cause;
+import org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransfer.ClosedDecision;
 import org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransfer.Record;
 import org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransfer.Route;
 import org.geocedg.common.kernel.locus.constructive.ExactQuadraticTower.Element;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
+import org.geogebra.common.kernel.geos.GeoConic;
+import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -34,7 +38,9 @@ import org.junit.jupiter.api.Test;
  * its locus ({@code locus-v2-certified-construction-model.md} section 12.2; validation matrix
  * rows V-AUT-TRF-1 to V-AUT-TRF-6): N1, N2 and the margin route on the replica of the author's
  * model, whose constants come through a point on a path and a rotation, and the fail-closed
- * causes when a condition is not demonstrated.
+ * causes when a condition is not demonstrated; the closed decisions a strict consumer requests,
+ * a fold by the route structure and the location of a root by the route re-decision, refused
+ * with a typed cause or refuted when the constructive configuration decides otherwise.
  */
 final class Cu2CertificateTransferTest extends ConstructiveModelReplicaTest {
 
@@ -260,5 +266,134 @@ final class Cu2CertificateTransferTest extends ConstructiveModelReplicaTest {
 				unsubstituted, node, ConstructiveConeEvaluator.exact(unsubstituted,
 						ExactEvaluationBudget.V1));
 		assertEquals(Cause.CORRESPONDENCE_NOT_DEMONSTRATED, refused.getCause());
+	}
+
+	@Test
+	void aFoldWithConstructibleSymmetryPremisesTransfersByStructure() {
+		add("O=(0,0)");
+		add("c=Circle(O,2)");
+		add("P=Point(c)");
+		add("k=Circle(O,3)");
+		add("v=PerpendicularLine(P,xAxis)");
+		add("Q=Intersect(k,v,1)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
+		GeoElementND[] ends = getElements("Intersect(c,xAxis)");
+		add("Dt=Intersect(c,yAxis,2)");
+		// A new line-circle intersection settles its selection state at its next computation.
+		getKernel().updateConstruction(false);
+		String structure = signature(locus);
+
+		for (GeoElementND end : ends) {
+			Record fold = closed(locus, "Q", "P", "c", end.getLabelSimple(),
+					ClosedDecision.FOLD);
+			assertTrue(fold.isTransferred(), "V-AUT-TRF-2: " + fold);
+			assertEquals(Route.STRUCTURE, fold.getRoute());
+			assertTrue(fold.getPremises().stream().anyMatch(p -> p.startsWith("structure: step")),
+					"the perpendicular to the axis reads the driver symmetrically");
+			assertTrue(fold.getPremises().stream().anyMatch(p -> p.startsWith("margin: x''")),
+					"x'' = -2 cos t keeps its sign on the isolation band: " + fold.getPremises());
+		}
+		assertEquals(Cause.DECISION_NOT_IN_CERTIFICATE, closed(locus, "Q", "P", "c", "Dt",
+				ClosedDecision.FOLD).getCause(), "no fold at pi/2");
+		assertEquals(structure, signature(locus), "V-AUT-TRF-6");
+	}
+
+	@Test
+	void aFoldWhoseSymmetryReadsABoundarySubstituteIsNotTransferred() {
+		buildAuthorReplica();
+
+		Record fold = closed((GeoLocusV2) geo("e_1"), "J_1", "E_1", "p", "K",
+				ClosedDecision.FOLD);
+
+		assertEquals(Cause.STRUCTURAL_PREMISE_NOT_STRICT, fold.getCause(), "V-AUT-TRF-2: the"
+				+ " line k through H, a point on the line through the rotation Cr: " + fold);
+		assertTrue(fold.getMessage().contains("boundary substitute"), fold.getMessage());
+	}
+
+	@Test
+	void theLocationOfARootIsDecidedAgainExactlyOrRefuted() {
+		add("O=(0,0)");
+		add("c=Circle(O,2)");
+		add("P=Point(c)");
+		add("k=Circle(O,1)");
+		add("v=PerpendicularLine(P,xAxis)");
+		add("Q=Intersect(k,v,1)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
+		add("D=Intersect(c,Line((1,0),(1,1)),1)");
+		String beside = Double.toString(Math.nextUp(1.0));
+		add("Db=Intersect(c,Line((" + beside + ",0),(" + beside + ",1)),1)");
+		add("Di=Intersect(c,Line((0.5,0),(0.5,1)),1)");
+		String structure = signature(locus);
+
+		Record end = closed(locus, "Q", "P", "c", "D", ClosedDecision.ROOT_LOCATION);
+		assertTrue(end.isTransferred(), "V-AUT-TRF-3: the end of the component is exactly at"
+				+ " D, where v touches k: " + end);
+		assertEquals(Route.REDECISION, end.getRoute());
+		Record refuted = closed(locus, "Q", "P", "c", "Db", ClosedDecision.ROOT_LOCATION);
+		assertTrue(refuted.isContradicted(), "one ulp away the exact evaluation refutes it: "
+				+ refuted);
+		assertEquals(Cause.CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION, refuted.getCause());
+		assertEquals(Cause.DECISION_NOT_IN_CERTIFICATE, closed(locus, "Q", "P", "c", "Di",
+				ClosedDecision.ROOT_LOCATION).getCause(), "inside a component");
+		for (ClosedDecision other : new ClosedDecision[] {ClosedDecision.MULTIPLICITY,
+				ClosedDecision.STURM_COUNT, ClosedDecision.CRITICAL_VALUE}) {
+			assertEquals(Cause.CLOSED_DECISION_NOT_REDECIDED, closed(locus, "Q", "P", "c", "D",
+					other).getCause(), "V-AUT-TRF-3: no method for " + other);
+		}
+		assertEquals(structure, signature(locus), "V-AUT-TRF-6");
+	}
+
+	@Test
+	void aPointComponentIsDecidedAgainOnlyForItsLocation() {
+		add("p=Circle((0,0),25)");
+		add("P=(-25,50)");
+		add("g1=Circle((83,19),40)");
+		add("N=Point(g1)");
+		add("t=Ray(P,N)");
+		getKernel().getAlgoDispatcher().intersectLineConic(new String[] {"Q", "R"},
+				(GeoLine) lookup("t"), (GeoConic) lookup("p"));
+		GeoLocusV2 locus = add("lq=LocusV2(Q,N)");
+		getKernel().updateConstruction(false);
+		add("D=Intersect(g1,Line((83,19),(59,-13)),2)");
+
+		Record location = closed(locus, "Q", "N", "g1", "D", ClosedDecision.ROOT_LOCATION);
+		assertTrue(location.isTransferred(), "the external tangency is exactly at D: "
+				+ location);
+		assertTrue(location.getPremises().stream().anyMatch(p -> p.contains("point component")));
+		assertEquals(Cause.CLOSED_DECISION_NOT_REDECIDED, closed(locus, "Q", "N", "g1", "D",
+				ClosedDecision.MULTIPLICITY).getCause(), "its isolation is another decision");
+	}
+
+	@Test
+	void aRootLocationThatReadsABoundarySubstituteIsNotDecidedAgain() {
+		add("O=(0,0)");
+		add("c=Circle(O,2)");
+		add("P=Point(c)");
+		add("Ok=Rotate(O,pi/6,O)");
+		add("k=Circle(Ok,1)");
+		add("v=PerpendicularLine(P,xAxis)");
+		add("Q=Intersect(k,v,1)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,P)");
+		add("D=Intersect(c,Line((1,0),(1,1)),1)");
+
+		Record record = closed(locus, "Q", "P", "c", "D", ClosedDecision.ROOT_LOCATION);
+
+		assertEquals(Cause.CLOSED_DECISION_NOT_REDECIDED, record.getCause(),
+				"V-AUT-TRF-3: the rotation is no constructible premise: " + record);
+	}
+
+	private Record closed(GeoLocusV2 locus, String traced, String driver, String support,
+			String point, ClosedDecision decision) {
+		ConstructiveCone.Builder builder = ConstructiveCone.builder(getConstruction());
+		int supportNode = builder.add(geo(support));
+		int tracedNode = builder.addWithDriverSubstitution(geo(traced), geo(driver), geo(point));
+		ConstructiveCone cone = builder.build();
+		return Cu2CertificateTransfer.closedDecision(locus, cone, tracedNode, supportNode,
+				ConstructiveConeEvaluator.exact(cone, ExactEvaluationBudget.V1), decision);
+	}
+
+	private static String signature(GeoLocusV2 locus) {
+		return ((AlgoDependentPointLocusV2) locus.getParentAlgorithm())
+				.getHybridExistenceCertificate().getStructure().getSemanticSignature();
 	}
 }
