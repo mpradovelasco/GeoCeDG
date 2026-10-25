@@ -37,7 +37,7 @@ final class ConstructiveConeTest extends ConstructiveModelReplicaTest {
 		ConstructiveConeNode replacement = cone.getNode(cone.getReplacementNode());
 		assertEquals(cone.nodeOf(geo("K")), cone.getReplacementNode());
 		assertEquals(ConstructiveOperation.LINE_CIRCLE_OUTPUT, replacement.getOperation());
-		assertEquals(1, replacement.getOutputIndex(), "K is the second output");
+		assertEquals(0, replacement.getOutputIndex(), "K is output 0 of the replica");
 		assertEquals(cone.nodeOf(geo("i")), replacement.getInput(0));
 		assertEquals(cone.nodeOf(geo("p")), replacement.getInput(1));
 		assertEquals(ConstructiveOperation.SEGMENT, cone.getNode(target).getOperation());

@@ -7124,6 +7124,30 @@
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: tests of the constructive cone on the replica of the author's model: one meaning per object (V-AUT-PROV-2), substituted driver slice, boundary and cuts, rename and redefinition.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/OutwardInterval.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: outward-rounded binary64 intervals (TwoSum-exact sums, one-binary64 widening of the other operations) for the rigorous enclosure of ideal values; a sign is certified only when the interval lies on one side of zero.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveArithmetic.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the number system of a cone evaluation, exact arithmetic in the quadratic tower of the approved budget or outward intervals with StrictMath sine and cosine widened beyond their one-ulp error.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeEvaluator.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: one evaluator of a constructive cone over both number systems: the exact evaluation M3 in the constructive configuration with binary64 boundary substitutes, and the rigorous enclosure of ideal values; inherited tolerance decisions replaced by strict signs, inherited selection reproduced, live algorithm checked outside a substituted slice, sign vector recorded.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeEvaluatorTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the cone evaluator: the five mandatory contacts of the replica hold exactly with the rotation as the only substitute, path semantics (V-AUT-PROV-1), exact decision of accidental coincidences, live correspondence, budget exhaustion and rigorous enclosures.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
 }

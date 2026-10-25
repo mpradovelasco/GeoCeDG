@@ -16,12 +16,15 @@ import org.geogebra.common.kernel.kernelND.GeoElementND;
 /**
  * A replica, built by commands, of the part of the author's model that the five mandatory
  * contacts of {@code CU3} use (Stage A design section 7): the cone construction with
- * {@code C' = Rotate(C, 47°, A)}, the cut point {@code H} on {@code j = Line(A, C')}, the circle
- * {@code p} that carries the driver {@code E_1}, the slices of {@code e_1} and {@code o_1}, and
- * the targets {@code n}, {@code r}, {@code c_1} and {@code h_2}, with the captured coordinates of
- * the free points and of the points on paths. Labels follow the model except {@code alpha} for
- * {@code α_cone} and {@code Cr} for {@code C'}; {@code M_1} is the indexed form of the model's
- * intersection.
+ * {@code C' = Rotate(C, 47 degrees, A)}, the cut point {@code H} on {@code j = Line(A, C')}, the
+ * circle {@code p} that carries the driver {@code E_1}, the slices of {@code e_1} and
+ * {@code o_1}, and the targets {@code n}, {@code r}, {@code c_1} and {@code h_2}, with the
+ * captured coordinates of the free points and of the points on paths. Labels follow the model
+ * except {@code alpha} for {@code alpha_cone} and {@code Cr} for {@code C'}; {@code M_1} is the
+ * indexed form of the model's intersection. The outputs of {@code Intersect(p, i)} are named by
+ * position, as in the model: {@code K = B + (5, 0)} and {@code J = B - (5, 0)}, the point of the
+ * seam; a fresh intersection selects them with the identity permutation, so here {@code K} is
+ * output 0, while the permutation of the model makes it output 1.
  */
 abstract class ConstructiveModelReplicaTest extends BaseUnitTest {
 
@@ -50,8 +53,8 @@ abstract class ConstructiveModelReplicaTest extends BaseUnitTest {
 		add("I=Intersect(i,k)");
 		add("p=Circle(B,rbCone)");
 		GeoElementND[] roots = getElements("Intersect(p,i)");
-		roots[0].toGeoElement().rename("J");
-		roots[1].toGeoElement().rename("K");
+		roots[0].toGeoElement().rename("K");
+		roots[1].toGeoElement().rename("J");
 		add("l=Line(J,g)");
 		add("m=Line(K,g)");
 		add("L=Intersect(l,h)");
