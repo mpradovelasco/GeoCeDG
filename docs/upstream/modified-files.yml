@@ -6980,6 +6980,78 @@
       "change": "added",
       "purpose": "PRE-G9B-CU3 step T1: characterization pins of the base 80d72a50 for the findings H-CU3-1 to H-CU3-4 on synthetic constructions (a tangency declared where absence is certifiable, noise and duplicated roots around a near-tangency, an endpoint tangency classified transverse); inverted later only with a test that proves the correction.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/AuthorityPolicy.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the versioned geometric authority policy of a document (legacy-representation-authority/v1 without a record, constructive-authority/v1 after the explicit adoption event), read only with the exact versions of this build.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/RelationIntegrity.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the integrity of a relation (relation-integrity/v1: STRICT, RELAXED, NOT_ESTABLISHED, CONTRADICTED) as a type of its own, with propagation by premises; revision evidence, never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/RelationIntegrityRecord.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the integrity record of one relation with its method, evidence kind, premises, unestablished premises (substitutes and inherited decisions), typed cause and policy version, and the explicit failure of a consumer requirement.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ExactEvaluationBudget.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the approved budget cu3-exact-evaluation-budget/v1 (100 000 exact operations, tower depth 8, 4 096 bits per exact evaluation), which an adversarial injection can only restrict.",
+      "authority": "docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ExactEvaluationCounters.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: deterministic counters of one exact evaluation (operations counted as in the gate G-M3 prototype, depth and maximal bits).",
+      "authority": "docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ExactEvaluationBudgetExhaustedException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: typed failure EXACT_EVALUATION_BUDGET_EXHAUSTED with the exceeded limit and the counters; the decision is never made.",
+      "authority": "docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ExactQuadraticTower.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: product exact real arithmetic in a tower of quadratic extensions over the rationals (exact signs by conjugate norms, inverses, square roots), counted against cu3-exact-evaluation-budget/v1; port of the gate G-M3 research prototype.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericPerturbationSet.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the deterministic perturbation set of SUBSTITUTE_GENERIC version 1 (SplitMix64 with the fixed seed, dyadic scale, rank condition on the monomials of degree at most 2, cap of 64 N generator outputs).",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/AuthorityPolicyTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the document authority policy and of its exact-version reading.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/RelationIntegrityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: matrix rows V-AUT-INT-1 to V-AUT-INT-3, propagation of integrity by premises on a synthetic graph, rigorous refutations, unestablished premises and consumer requirements.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ExactQuadraticTowerTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: exact arithmetic of the quadratic tower against high-precision references, zero-norm inverses and the injected budgets of V-M3-8 with their deterministic counters.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericPerturbationSetTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the perturbation set of SUBSTITUTE_GENERIC version 1 (size, scale, determinism, general position) and the foundation of V-AUT-RLX-2, a nonzero cubic through its nine points.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
 }
