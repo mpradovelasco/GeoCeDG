@@ -7146,7 +7146,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeEvaluatorTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: tests of the cone evaluator: the five mandatory contacts of the replica hold exactly with the rotation as the only substitute, path semantics (V-AUT-PROV-1), exact decision of accidental coincidences, live correspondence, budget exhaustion and rigorous enclosures.",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the cone evaluator: the five mandatory contacts of the replica hold exactly with the rotation as the only substitute, path semantics (V-AUT-PROV-1), exact decision of accidental coincidences, live correspondence, budget exhaustion and rigorous enclosures. Gate G-AUT-1, row V-AUT-NUM-3: a near tangency that the inherited tolerance decides fails closed, INVALID where it creates a point the ideal line does not have and BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED where it merges the two ideal roots.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     },
     {
@@ -7345,6 +7345,12 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3ConstructiveAdoptionDesktopTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1 on the Desktop: rows V-AUT-ADOPT-1 and V-AUT-ADOPT-2 (one explicit adoption event with its impact report computed first and one undo point together with the input that offered it, also when that input ends without a result; a declined offer fails closed with the typed cause and changes nothing; a constructive document and other errors are never offered; the report text) and row V-AUT-INT-2 in the definition inspector (the integrity apart from the declared error, the premises that are not established).",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3ProvenanceCensusTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1, gate G-AUT-1 on the author model: the census of the 160 relations that the provenance of every object declares, decided by the constructive evaluator of the product under the approved budget; none is refuted, 140 hold exactly and twenty in the cone of the rotation exceed the bits of cu3-exact-evaluation-budget/v1 and fail closed; the binary64 copy of a point on a path that is not parallel to an axis refutes its path. Row V-AUT-PROV-1.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

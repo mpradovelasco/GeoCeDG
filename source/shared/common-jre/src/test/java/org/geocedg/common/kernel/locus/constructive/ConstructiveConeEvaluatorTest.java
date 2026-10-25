@@ -235,6 +235,45 @@ final class ConstructiveConeEvaluatorTest extends ConstructiveModelReplicaTest {
 	}
 
 	@Test
+	void aNearTangencyThatTheInheritedToleranceDecidesFailsClosed() {
+		// 1 + 2^-51 and 1 - 2^-52: the inherited tolerance declares both lines tangent to c,
+		// with one output at the foot of the perpendicular from the centre and the unlabelled
+		// second output suppressed or equal to it.
+		double above = Math.nextUp(Math.nextUp(1.0));
+		double below = Math.nextDown(Math.nextDown(1.0));
+		add("O=(0,0)");
+		add("c=Circle(O,1)");
+		add("f=Line((-2," + above + "),(2," + above + "))");
+		add("g=Line((-2," + below + "),(2," + below + "))");
+		GeoElementND[] created = getElements("Intersect(c,f)");
+		GeoElementND[] merged = getElements("Intersect(c,g)");
+		getKernel().updateConstruction(false);
+		double[] heights = {above, below};
+		GeoElementND[][] pairs = {created, merged};
+		for (int line = 0; line < 2; line++) {
+			GeoPoint first = (GeoPoint) pairs[line][0].toGeoElement();
+			GeoPoint second = (GeoPoint) pairs[line][1].toGeoElement();
+			assertTrue(first.isDefined() && first.getInhomX() == 0
+					&& first.getInhomY() == heights[line], "the inherited tangency: " + first);
+			assertTrue(!second.isDefined() || second.getInhomX() == first.getInhomX()
+					&& second.getInhomY() == first.getInhomY(), "one point: " + second);
+		}
+		ConstructiveCone.Builder builder = ConstructiveCone.builder(getConstruction());
+		int outside = builder.add(created[0].toGeoElement());
+		int inside = builder.add(merged[0].toGeoElement());
+		int circle = builder.add(lookup("c"));
+		ConstructiveConeEvaluator<Element> exact =
+				ConstructiveConeEvaluator.exact(builder.build(), ExactEvaluationBudget.V1);
+
+		assertEquals(Failure.INVALID, exact.evaluate(outside).getFailure(),
+				"V-AUT-NUM-3: the tolerance creates a point that the ideal line does not have");
+		assertEquals(Incidence.NOT_DECIDED, exact.incidence(outside, circle).getIncidence());
+		assertEquals(Failure.BRANCH_CORRESPONDENCE_NOT_DEMONSTRATED,
+				exact.evaluate(inside).getFailure(),
+				"V-AUT-NUM-3: the tolerance merges the two ideal roots into one");
+	}
+
+	@Test
 	void anExhaustedBudgetFailsClosedWithItsCounters() {
 		buildAuthorReplica();
 		ConstructiveCone.Builder builder = ConstructiveCone.builder(getConstruction());
