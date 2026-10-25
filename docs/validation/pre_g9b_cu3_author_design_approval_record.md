@@ -277,3 +277,12 @@ registro E1, sin código productivo.
 Conforme a §4 y §9, las partes que dependen de M3 se detienen y la decisión se presenta al autor
 con las alternativas R-1, R-2, R-3 y C3, sin autorizar ninguna. Este registro no declara ningún
 resultado de puerta como decisión autoral.
+
+## 14. Decisión posterior de 2026-10-25
+
+El autor aprobó la autoridad geométrica constructiva y reanudó `CU3` desde T2 sobre `3cd0f710`
+([registro de aprobación de la autoridad constructiva](pre_g9b_cu3_constructive_authority_approval_record.md),
+única autoridad de esa decisión). La decisión D-AUT-11 revisa, solo bajo
+`constructive-authority/v1`, las decisiones D-CU3-3, -4, -5, -6, -7, -10 y -13 y la comprobación
+G-M3-4. Este registro sigue vigente en lo demás, y en los documentos que no adoptan la política
+constructiva.

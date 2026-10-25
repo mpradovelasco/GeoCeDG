@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**; **PRE-G9B-CU3 CONSUMER NOTE (§16) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**; **PRE-G9B-CU3 CONSUMER NOTE (§16) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**; **CONSTRUCTIVE AUTHORITY CONSUMER NOTE (§17) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
 | Version | `1.1` |
 | Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
 | Parent | [Locus V2 semantic contract](locus-v2-semantics.md) |
-| Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md); [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md), accepted as architecture on 2026-10-21 |
+| Decision | [Accepted ADR 0027](../../../docs/adr/0027-locus-v2-existence-and-continuous-valid-components.md); [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md), accepted as architecture on 2026-10-21; [ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md), accepted as architecture on 2026-10-25, for §17 |
 | Product implementation | v1.0: **I1--I3 PASS — AUTHOR APPROVED**; v1.1: **PASS — AUTHOR APPROVED** with the `CU2` closeout (2026-10-24; approved candidate `6ff1ddf7`) |
 
 ## 1. Purpose
@@ -548,3 +548,20 @@ consumer of §15.8. Its correspondence must lie in the interior of a certified c
 component. It never materializes on a point component (§15.4): when the correspondence meets a
 point component, the point is undefined with the typed cause `POINT_COMPONENT_NOT_MATERIALIZED`,
 and no structural address of a point component is introduced in `CU3`.
+
+## 17. Constructive authority consumer note
+
+Consumer note of text AUT-4 of the
+[constructive authority normative proposal](../../../docs/architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md),
+approved by the author on 2026-10-25 with
+[ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md) and
+decision D-AUT-4
+([approval record](../../../docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md)).
+Sections 1 to 16 are unchanged.
+
+In a document governed by `constructive-authority/v1`, a consumer that requires `STRICT` evidence
+about the constructive object consumes a certificate of §15 only through a demonstrated transfer
+(`locus-v2-certified-construction-model.md` §12.2). The certificate, its components, its
+fingerprint and its lineage keys are unchanged and keep certifying the captured configuration.
+Without a demonstrated transfer the result is `EVIDENCE_INSUFFICIENT` with a typed cause, and the
+strict consumer fails closed.

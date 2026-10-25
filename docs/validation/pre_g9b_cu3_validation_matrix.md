@@ -7,7 +7,7 @@
 | Normas candidatas | [propuesta normativa](../architecture/pre_g9b_cu3_normative_proposal.md) (A3.0 a A3.5); [ADR 0039 (PROPOSED)](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) |
 | Diseños | [análisis](../architecture/pre_g9b_cu3_initial_state_and_capability_analysis.md); [Etapa A](../architecture/pre_g9b_cu3_stage_a_structural_points_design.md); [Etapa B](../architecture/pre_g9b_cu3_stage_b_tangent_contact_certification_design.md); [normalización, admisibilidad y ejes](../architecture/pre_g9b_cu3_residual_normalization_and_axes_design.md); [estrategia](../architecture/pre_g9b_cu3_implementation_strategy.md) |
 | Decisiones aplicadas | C1-1 (puertas por contadores) y C1-4 (`preserve` frente a `pins`) del cierre de `CU0`; las de las filas dependen de la [hoja de decisiones de `CU3`](pre_g9b_cu3_author_decision_sheet.md) |
-| Ampliación candidata | §6: filas V-AUT de la autoridad constructiva, de la conciliación de 2026-10-25 ([propuesta normativa candidata](../architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md)). Sin aprobación autoral; no modifica §1 a §5 |
+| Ampliación V-AUT | §6: filas V-AUT de la autoridad constructiva, de la conciliación de 2026-10-25 ([propuesta normativa](../architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md)). **Aprobada por el autor el 2026-10-25** como filas obligatorias ([registro de aprobación](pre_g9b_cu3_constructive_authority_approval_record.md), única autoridad de ese estado); no modifica §1 a §5 |
 
 Reglas de las filas:
 
@@ -269,6 +269,10 @@ Esta sección es una **ampliación candidata** de la conciliación de 2026-10-25
 y §14). No forma parte de la matriz aprobada el 2026-10-24, no la modifica y no tiene
 aprobación autoral (`selfApproved=false`). Sus filas solo serán obligatorias si el autor aprueba
 las decisiones D-AUT de las que dependen (§13 de la propuesta).
+
+**Estado (2026-10-25).** El autor aprobó las decisiones D-AUT-1 a D-AUT-12 y la ampliación V-AUT
+([registro de aprobación](pre_g9b_cu3_constructive_authority_approval_record.md)). Desde entonces
+las filas de esta sección son obligatorias para `CU3`, con las puertas de la propuesta §6.3.
 
 Reglas propias:
 

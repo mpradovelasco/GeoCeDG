@@ -7,6 +7,10 @@
 - Amended by: [ADR 0039](0039-locus-v2-structural-points-and-certified-contact-evidence.md)
   (`PRE-G9B-CU3`, design approved 2026-10-24): a versioned tangent-contact germ alongside the
   unchanged transverse germ, for the driverless materialization of increment `CU3-B`
+- Amended by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): a migration note for the explicit adoption
+  of `constructive-authority/v1`; results that the adoption contradicts lose their admissibility
+  with a typed cause and are never reassociated, and no token or selector changes
 - Normative contract:
   `geocedg/specs/locus/locus-v2-intersections.md`
 

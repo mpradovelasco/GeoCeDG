@@ -9,6 +9,10 @@
   ([`CU1` closeout record](../validation/pre_g9b_cu1_closeout_record.md)).
 - Date: 2026-10-20
 - Phase: `PRE-G9B-CU1` (`PASS — AUTHOR APPROVED` on 2026-10-20)
+- Amended by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): under `constructive-authority/v1` the
+  metric guarantee classes correspond to relation integrity states; metrics keep their own
+  admissibility, and relaxed admission applies only to incidences and memberships
 - Author decisions:
   - [`CU0` closeout record](../validation/pre_g9b_cu0_closeout_record.md) §3–§5
     (C1-0 to C1-4 and the binding H10 precision);

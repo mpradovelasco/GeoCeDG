@@ -26,6 +26,11 @@
     alongside the unchanged transverse germ;
   - [ADR 0010](0010-role-gated-spatial-authority-and-durable-identity.md): reserved axis references
     as non-ordinary participants, under option A of decision D-CU3-8, which the author approved.
+- Superseded in part by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): in documents governed by
+  `constructive-authority/v1`, the authority of the locus in its captured configuration and of
+  the target is replaced by the constructive authority (decision D-AUT-11); in every other
+  document this decision stands unchanged
 - Author decisions it relies on:
   - DA-3 (2026-10-19, stage option C), H02 and H06 ([consolidated plan](../architecture/pre_g9b_cu_corrective_usability_plan.md) §2);
   - `OBS-CU0-CU3-TANGENT-EXISTENCE` (2026-10-20): F-2 is not approved as formulated;

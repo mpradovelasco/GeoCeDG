@@ -3,6 +3,10 @@
 - Status: **Accepted**
 - Accepted: 2026-08-16
 - Phase: G9P design; G9U0 implementation not authorized
+- Amended by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): the document authority policy record is a
+  persisted input; integrity, transfer records and certificates stay revision evidence and are
+  never persisted
 - Normative contract: `geocedg/specs/locus/locus-v2-public-surface.md`
 
 ## Context

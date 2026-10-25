@@ -2,13 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3, LAST SECTION) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
-| Version | `1.3` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3`) |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT** |
+| Version | `1.4` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3` and by its constructive authority amendment in `1.4`) |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
 | Approval | G8 base author-approved on 2026-08-14/15; the author made deterministic semantic selection authoritative for R4, accepted bounded intrinsic phase/rank on 2026-08-29 and approved final R4 after both final re-smokes |
-| Architecture decision | Accepted ADR 0008 with R1 clarification; Accepted ADR 0017 for the bounded public single-Locus phase/rank selector; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md), accepted as architecture on 2026-10-24, for the `PRE-G9B-CU3` amendment |
+| Architecture decision | Accepted ADR 0008 with R1 clarification; Accepted ADR 0017 for the bounded public single-Locus phase/rank selector; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md), accepted as architecture on 2026-10-24, for the `PRE-G9B-CU3` amendment; [ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md), accepted as architecture on 2026-10-25, for the constructive authority amendment |
 
 This normative contract incorporates the G8A characterization evidence and
 the final author decisions D1–D17. The separately invoked G8B task produced an
@@ -1175,3 +1175,44 @@ participate in a durable construction relation as non-ordinary participants whos
 reserved reference, not a label (`g9-spatial-projection-semantics.md` §8.3). A Locus V2
 intersection admits them as unbounded line targets. A target that remains unsupported is rejected
 with a typed message, never with a generic computer-algebra error.
+
+## Constructive authority amendment (version 1.4)
+
+Normative text AUT-7 of the
+[constructive authority normative proposal](../../../docs/architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md),
+approved by the author on 2026-10-25 together with
+[ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md) and
+decision D-AUT-11, with the revisions of the `CU3` amendment that the contract table of that
+proposal (§7) assigns to the constructive policy
+([approval record](../../../docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md)).
+It applies only to documents governed by `constructive-authority/v1`
+([`locus-v2-constructive-authority.md`](locus-v2-constructive-authority.md) §4). Sections 1 to 14,
+the `CU2` scope note and the `PRE-G9B-CU3` amendment (version 1.3) are unchanged and keep governing
+every other document.
+
+**Target and decision configuration.** In a document governed by `constructive-authority/v1`, the
+authoritative target of an intersection is the constructive object of
+`locus-v2-constructive-authority.md` §1: a line, segment, ray or circle as its construction defines
+it, with the limited part of a segment or ray as its construction defines it. The approved target
+adapters of §2.1, including `g8b-circle-radial-distance-adapter/v1`, remain the representations
+used by the numerical root search and by G8B-R1; their contract text inside tokens is unchanged.
+The decision configuration of a structural point is the constructive configuration `Σ_C` of the
+locus and of the target, with the declared boundary substitutes; the captured configuration `Σ_L`
+of CU2 is a certified representation whose certificates enter by `cu2-certificate-transfer/v1`. The
+conflict rule of CU3.4 decides in `Σ_C`, against the constructive target, and also admits a parity
+certificate by exact symmetry. An incidence is never decided against a reconstruction chosen for
+that incidence. In a document governed by `legacy-representation-authority/v1`, §2.1 and
+§11.2–§11.3 of the certified construction model apply unchanged.
+
+**Contact evidence (CU3.1 (c) and CU3.2 under the constructive policy).** Class 2, exact
+arithmetic, needs a constructible premise. With non-constructible substitutes the evidence is
+`SUBSTITUTE_GENERIC` and the integrity is `RELAXED` (`locus-v2-constructive-authority.md` §7.1).
+Classes 1 and 2 decided against the constructive target are `STRICT`.
+
+**Admissibility (CU3.4 under the constructive policy).** The rule "Without contradiction,
+admissibility is unchanged" keeps governing documents under the legacy policy. Under the
+constructive policy, admissibility changes without a contradiction only in the explicit adoption
+event, by the re-qualification of G8B-R1 (`locus-v2-constructive-authority.md` §7.4); afterwards it
+changes only by a rigorous contradiction or by new evidence of the revision. A solution that the
+re-qualification or a later certificate contradicts loses its admissibility with a typed cause and
+is never reassociated.

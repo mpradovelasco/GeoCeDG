@@ -6,6 +6,10 @@
 - Amends: [ADR 0021](0021-spline-pair-singleton-germ-materialization.md) Decision 1 only
 - Amended by: `PRE-G9B-R3-X1` (Decision 3 only; see the amendment section at the
   end, which carries its own technical-candidate state)
+- Amended by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): the "authority" of Decision 3 is the
+  authority of the representation; under `constructive-authority/v1` relations of the
+  constructive objects are decided by ADR 0040
 - Extends: [locus-v2-metrics.md](../../geocedg/specs/locus/locus-v2-metrics.md) §21 and §23
 - Normative contracts: [certified construction model](../../geocedg/specs/locus/locus-v2-certified-construction-model.md),
   [metrics §24](../../geocedg/specs/locus/locus-v2-metrics.md),

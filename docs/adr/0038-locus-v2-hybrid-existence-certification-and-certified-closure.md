@@ -11,6 +11,10 @@
 - Extends: [ADR 0027](0027-locus-v2-existence-and-continuous-valid-components.md). Its four
   axes, its consumer rules and the independence of local admissibility from global
   completeness are preserved unchanged.
+- Amended by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): a `CU2` certificate remains a certificate of
+  its captured configuration; its transfer to the constructive authority is a new layer
+  (`cu2-certificate-transfer/v1`); the text of decisions 7 and 17 is unchanged
 - Author decisions:
   - hybrid direction DA-1 (2026-10-19; [`CU0` decision sheet](../validation/pre_g9b_cu0_author_decision_sheet.md) §1);
   - [`CU1` closeout record](../validation/pre_g9b_cu1_closeout_record.md) §7: `CU2`

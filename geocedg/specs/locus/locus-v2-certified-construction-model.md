@@ -2,11 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | `1.3` (`certified-construction-program/v1`, `/v2` and `/v3`) |
-| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9), by `PRE-G9B-CU2` (§10) and by `PRE-G9B-CU3` (§11) |
-| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) for exact evaluation (§11), accepted as architecture on 2026-10-24 |
+| Version | `1.4` (`certified-construction-program/v1`, `/v2` and `/v3`; §12 only under `constructive-authority/v1`) |
+| Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9), by `PRE-G9B-CU2` (§10) and by `PRE-G9B-CU3` (§11, and the constructive authority amendment of §12) |
+| Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) for exact evaluation (§11), accepted as architecture on 2026-10-24; [ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md) for the constructive authority amendment (§12), accepted as architecture on 2026-10-25 |
 | v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22 AND THE EDITORIAL PRECISION OF §10.3 FROM AUTHOR DECISION C-8 OF 2026-10-23) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | v1.3 status | **PRE-G9B-CU3 AMENDMENT (§11, WITH THE AUTHORITY OF THE TARGET IN §11.3 AND THE CONFORMANCE CONDITIONS OF EXACT EVALUATION IN §11.4) — DESIGN AUTHOR APPROVED (2026-10-24); IMPLEMENTATION AUTHORIZED SUBJECT TO GATE G-M3, NOT YET APPROVED AS PRODUCT** |
+| v1.4 status | **CONSTRUCTIVE AUTHORITY AMENDMENT (§12, TEXTS AUT-4 AND AUT-7) — AUTHOR APPROVED AS CONTRACT (2026-10-25); IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT** ([approval record](../../../docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md)) |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -580,3 +581,79 @@ implementation:
 If any condition fails, the parts that depend on exact evaluation stop, and the alternatives are
 presented to the author; none is authorized automatically. Its evidence is never replaced by a
 residual, a tolerance or a proof in another configuration.
+
+## 12. Constructive authority amendment (v1.4)
+
+Normative texts AUT-4 and AUT-7 of the
+[constructive authority normative proposal](../../../docs/architecture/pre_g9b_cu3_constructive_authority_normative_proposal.md),
+approved by the author on 2026-10-25 together with
+[ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md) and
+decisions D-AUT-4 and D-AUT-11
+([approval record](../../../docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md)).
+This section applies only to documents governed by `constructive-authority/v1`
+([`locus-v2-constructive-authority.md`](locus-v2-constructive-authority.md) §4). In every other
+document §1 to §11 apply unchanged. The programs of classes v1, v2 and v3, their consumers and the
+certificates of `CU2` (§1 to §10) are unchanged in every document.
+
+### 12.1 Decision configuration under the constructive authority (replaces §11.2 and §11.3)
+
+The decision configuration of a structural point is the constructive configuration `Σ_C` of the
+locus and of the target, with the declared boundary substitutes; the captured configuration `Σ_L`
+of CU2 is a certified representation whose certificates enter by `cu2-certificate-transfer/v1`
+(§12.2). The authoritative target of an intersection is the constructive object of
+`locus-v2-constructive-authority.md` §1 (`locus-v2-intersections.md`, constructive authority
+amendment). An incidence is never decided against a reconstruction chosen for that incidence.
+`Σ_L⁺` and the target authority of §11.3 remain the decision configuration and the target
+authority of `legacy-representation-authority/v1`.
+
+The conditions of §11.4 apply with the constructive target of this section. Condition 3
+(correspondence with the live algorithm) is kept and extends to constructive identity
+certificates. Condition 4 ("no decision is transferred from another configuration") is replaced,
+under the constructive policy, by the admitted routes of §12.2 and by the recheck of one proof in
+`locus-v2-constructive-authority.md` §8.
+
+### 12.2 Transfer of CU2 certificates (`cu2-certificate-transfer/v1`)
+
+A CU2 certificate remains, unchanged in text, fingerprint, structure and lineage keys, a
+certificate of its captured configuration `Σ_L`. Transferring it to the constructive authority
+establishes the same statement in the constructive configuration `Σ_C` of the same objects. The
+policy admits the transfer of a certificate if and only if (N1) the captured program is
+structurally the program of the constructive object, with the same slice and branches (class-v3
+program, inherited selection states, label states, effective outputs and structural definitions),
+(N2) the transfer cites the fingerprint of the consuming revision and the same contract versions,
+and (N3) every decision of the certificate, in the order of its dependencies, is established in
+`Σ_C` by an admitted route named by the transfer record:
+
+- *margin*, for open decisions: their interval program, re-evaluated with every captured constant
+  replaced by an enclosure of both its captured value and a rigorous enclosure of its constructive
+  value, keeps every strict sign;
+- *structure*, for closed decisions implied by structure (fold symmetry, structural totality and
+  periodicity, exact zeros that correspond to provenance relations), when every structural premise
+  is `STRICT` under the constructive authority;
+- *re-decision*, for closed decisions on captured bits (Sturm counts and multiplicities, point
+  components, singular parameters, critical values): the decision is taken again in `Σ_C` by a
+  rigorous method of the CU2 and CU3 contracts — exact evaluation with a constructible premise, a
+  new interval certification of a fact of multiplicity one, or a constructive identity
+  certificate.
+
+The list of routes is closed by this policy: no tolerance, coordinate proximity or sampled
+robustness transfers a certificate, and a new rigorous route needs a new policy version. Without a
+demonstrated transfer the result is `EVIDENCE_INSUFFICIENT` with a typed cause, and every consumer
+that requires `STRICT` fails closed. A re-decision that refutes the statement gives
+`CONTRADICTED_IN_CONSTRUCTIVE_CONFIGURATION`. A transfer record is revision evidence: it cites the
+source certificate by kind, fingerprint and structure key, the authority version, the route and the
+premises, and it is never persisted. No source certificate, component, fingerprint or lineage key
+is modified or reinterpreted.
+
+The enclosure of the constructive value of a captured constant contains the ideal geometric value,
+including values that come from points on paths, trigonometric constructions and objects outside
+the exact class; an error estimate or a numerically wide box never replaces it. Without an
+established transfer, the membership of a structural point in its locus is never published as
+`STRICT`.
+
+### 12.3 Constructive identity certificates
+
+A relation whose evidence needs a non-constructible boundary object is decided strictly only by a
+constructive identity certificate (`locus-v2-constructive-authority.md` §8). Exact evaluation with
+non-constructible substitutes gives at most `SUBSTITUTE_GENERIC` evidence (§7.1 of that contract),
+which is `RELAXED`.

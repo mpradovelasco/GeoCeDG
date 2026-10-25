@@ -9,6 +9,10 @@
   (`PRE-G9B-CU3`, design approved 2026-10-24): evidence grades, a certified admission path and a
   conflict rule based on root-count certificates extend the G8B-R1 clarification; its
   point-admissibility predicate and thresholds are unchanged
+- Amended by: [ADR 0040](0040-constructive-geometric-authority-and-relation-integrity.md)
+  (`PRE-G9B-CU3`, architecture approved 2026-10-25): under `constructive-authority/v1` the
+  G8B-R1 admission is not inherited and is re-qualified once, at the explicit adoption event; it
+  remains the candidate search everywhere and is unchanged in documents without that policy
 
 The author accepts this architecture after reviewing the complete G8A
 characterization package. Acceptance makes the intersection specification
