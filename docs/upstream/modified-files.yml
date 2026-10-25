@@ -7076,6 +7076,54 @@
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: persistence, reopening, Undo and Redo, atomicity, macro and clipboard exclusion and fail-closed reading of the document authority policy (shared-kernel part of V-AUT-ADOPT-1 to V-AUT-ADOPT-7).",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveOperation.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the operations of constructive-class/v1 with their shape, membership (free input, point on a path, in the class, declared boundary, outside) and the structural positions of their inputs.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveClassTable.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the class table constructive-class/v1, which classifies an object by the class of its algorithm and never by its value, with the declared boundary of categories D2 to D5; it only reads the construction.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/InheritedLineCircleSelection.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the inherited selection state of a line-circle intersection (compaction or fixed permutation, labels), read through the read-only accessors of D-CU2-17 and never written.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeNode.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: one node of a constructive cone: operation, inputs by structural position, inherited selection, classification, durable identity and captured binary64 state; labels are presentation only.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveCone.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the constructive cone of a relation, one node and one meaning per object down to the free inputs, with an optional substituted driver slice and the cut of what reads an object outside the class; revision evidence, never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveModelReplicaTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1 test support: a command replica of the part of the author's model that the five mandatory contacts use, with its captured coordinates.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveClassTableTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of constructive-class/v1: membership by algorithm, structural inputs, inherited selection states and the declared boundary, without any change of inherited outputs.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the constructive cone on the replica of the author's model: one meaning per object (V-AUT-PROV-2), substituted driver slice, boundary and cuts, rename and redefinition.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
 }
