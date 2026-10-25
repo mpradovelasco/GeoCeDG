@@ -27,6 +27,7 @@ import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
@@ -79,6 +80,18 @@ public class CmdPoint extends CommandProcessor {
 
 		case 2:
 			arg = resArgs(c, info);
+			// PRE-G9B-CU3 (ADR 0040): Point(L, D), the point of L at the driver position of D.
+			if (arg[0] instanceof GeoLocusV2 && arg[1] instanceof GeoPoint) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				try {
+					return new GeoElement[] {
+							LocusV2PublicOperations.createDriverCorrespondencePoint(cons,
+									c.getLabel(), (GeoLocusV2) arg[0], null, (GeoPoint) arg[1])};
+				} catch (IllegalArgumentException | IllegalStateException exception) {
+					throw MyError.forCommand(loc, exception.getMessage(), c.getName(),
+							exception);
+				}
+			}
 			if ((ok[0] = arg[0] instanceof GeoLocusV2)
 					&& (ok[1] = arg[1] instanceof GeoNumberValue)) {
 				RuntimeFeatureService.requireLocusV2Access(cons);

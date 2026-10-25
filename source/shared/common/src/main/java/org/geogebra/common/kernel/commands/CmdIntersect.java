@@ -419,6 +419,19 @@ public class CmdIntersect extends CommandProcessor {
 
 	private GeoElement[] intersect3(GeoElement[] arg, Command c) {
 		boolean[] ok = new boolean[3];
+		// PRE-G9B-CU3 (ADR 0040): Intersect(L, r, D), the point of L at the driver position of
+		// D, when its incidence with r is established or admitted.
+		if (arg[0] instanceof GeoLocusV2 && !(arg[1] instanceof GeoLocusV2)
+				&& arg[2] instanceof GeoPoint) {
+			RuntimeFeatureService.requireLocusV2Access(cons);
+			try {
+				return new GeoElement[] {
+						LocusV2PublicOperations.createDriverCorrespondencePoint(cons,
+								c.getLabel(), (GeoLocusV2) arg[0], arg[1], (GeoPoint) arg[2])};
+			} catch (IllegalArgumentException | IllegalStateException exception) {
+				throw MyError.forCommand(loc, exception.getMessage(), c.getName(), exception);
+			}
+		}
 		// Line - Line
 		if ((ok[0] = arg[0].isGeoLine()) && (ok[1] = arg[1].isGeoLine())
 				&& (ok[2] = arg[2] instanceof GeoNumberValue)) {

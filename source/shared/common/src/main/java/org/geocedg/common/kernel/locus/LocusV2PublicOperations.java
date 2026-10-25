@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
+import org.geocedg.common.kernel.algos.AlgoLocusDriverCorrespondencePoint2D;
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusLocusIntersectionV2;
@@ -27,6 +28,7 @@ import org.geocedg.common.kernel.algos.AlgoSplineV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.constructive.AuthorityPolicyAdoption;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidate2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionQuery2D;
@@ -369,6 +371,54 @@ public final class LocusV2PublicOperations {
 			if (!construction.isFileLoading()) {
 				batch.stageReserved(output, outputId, dependencies,
 						stableOutputRole);
+				batch.publish();
+			}
+			return output;
+		} catch (RuntimeException exception) {
+			batch.abandonBeforePublication();
+			removeFailed(algorithm);
+			throw exception;
+		}
+	}
+
+	/**
+	 * PRE-G9B-CU3 (ADR 0040, Stage A): creates {@code Point(L, D)}, or
+	 * {@code Intersect(L, r, D)} when the target is given, as an ordinary point with its own
+	 * durable identity. Outside file loading the document must be governed by the constructive
+	 * authority; a legacy document fails closed with
+	 * {@value AuthorityPolicyAdoption#REQUIRED_CAUSE} and keeps its policy.
+	 *
+	 * @param construction the construction
+	 * @param label output label, or {@code null}
+	 * @param source the locus {@code L}
+	 * @param target the target {@code r}, or {@code null}
+	 * @param driverPoint the point {@code D}
+	 * @return the point
+	 * @throws IllegalStateException in a legacy document
+	 */
+	public static GeoPoint createDriverCorrespondencePoint(Construction construction,
+			String label, GeoLocusV2 source, GeoElement target, GeoPoint driverPoint) {
+		requireAccess(construction);
+		if (!construction.isFileLoading()
+				&& !AuthorityPolicyAdoption.isConstructive(construction)) {
+			throw new IllegalStateException(AuthorityPolicyAdoption.REQUIRED_CAUSE
+					+ ": the structural point needs the constructive authority of the document");
+		}
+		ParticipationBatch batch = new ParticipationBatch(construction);
+		List<GeoElement> dependencies = direct(source, target, driverPoint);
+		if (!construction.isFileLoading()) {
+			batch.prepareAll(dependencies);
+		}
+		PersistentGeoId outputId = batch.reserveOutput();
+		AlgoLocusDriverCorrespondencePoint2D algorithm = null;
+		try {
+			algorithm = new AlgoLocusDriverCorrespondencePoint2D(construction, source, target,
+					driverPoint);
+			GeoPoint output = algorithm.getPoint();
+			finishLabel(output, label, false);
+			if (!construction.isFileLoading()) {
+				batch.stageReserved(output, outputId, dependencies,
+						ConstructionGeoRedefineProvider.STABLE_OUTPUT_ROLE);
 				batch.publish();
 			}
 			return output;

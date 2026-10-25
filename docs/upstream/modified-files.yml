@@ -2628,7 +2628,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdPoint.java",
       "change": "modified",
-      "purpose": "Add the exact branch-and-parameter semantic point overload for Locus V2 without making it a generic Path.",
+      "purpose": "Add the exact branch-and-parameter semantic point overload for Locus V2 without making it a generic Path. PRE-G9B-CU3 increment E1: dispatch Point(L, D) for a Locus V2 and a point to the structural point of the constructive authority before every other two-argument form. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2640,7 +2640,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdIntersect.java",
       "change": "modified",
-      "purpose": "Route typed Locus V2 operands to rich intersection authority and exact-token point selection before unchanged legacy dispatch.",
+      "purpose": "Route typed Locus V2 operands to rich intersection authority and exact-token point selection before unchanged legacy dispatch. PRE-G9B-CU3 increment E1: dispatch Intersect(L, r, D) for a Locus V2, a target and a point to the structural point of the constructive authority before every other three-argument form. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2862,7 +2862,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md.",
+      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -7104,7 +7104,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveCone.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the constructive cone of a relation, one node and one meaning per object down to the free inputs, with an optional substituted driver slice and the cut of what reads an object outside the class; revision evidence, never persisted.",
+      "purpose": "PRE-G9B-CU3 increment E1: the constructive cone of a relation, one node and one meaning per object down to the free inputs, with an optional substituted driver slice and the cut of what reads an object outside the class; revision evidence, never persisted. PRE-G9B-CU3 increment E1.7: the state digest of what its evaluations read, without durable identities and slice states, for the cache of a revision.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7183,6 +7183,30 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericEvidenceTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: tests of SUBSTITUTE_GENERIC (V-AUT-RLX-1 to V-AUT-RLX-6): the five mandatory contacts RELAXED, accidental equalities of degree one and two, a product of substitutes, a nonzero cubic on the nine points (a finite agreement is never an identity), a perturbation that leaves the cell, determinism and the rigorous case without substitutes.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolver.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the four facts of Point(L, D) and Intersect(L, r, D) under the constructive authority: admitted provenance of D, the same support as the driver, the exact D* with P in L transferred from CU2 (STRICT), and P in r by exact evaluation or SUBSTITUTE_GENERIC, each failing closed with its typed cause; cached by the state digest of the cone.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/StructuralPointResolution.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the revision evidence of one structural point: position with the declared error of its rigorous enclosure, integrity records of P in L and P in r, transfer record and typed cause; never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusDriverCorrespondencePoint2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the algorithm of Point(L, D) and Intersect(L, r, D), an ordinary command whose output is defined only when the facts of StructuralPointResolver hold; no parameter, certificate or integrity is persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/StructuralPointTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of Point(L, D) and Intersect(L, r, D) on the replica of the author's model: the five mandatory contacts with P in L STRICT and P in r RELAXED, the legacy policy, fail-closed provenance and support, persistence, Undo and Redo, and a drag that repeats nothing.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

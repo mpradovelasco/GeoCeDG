@@ -1,0 +1,152 @@
+/* GeoCeDG
+ * Copyright (c) 2026 GeoCeDG contributors
+ * SPDX-License-Identifier: EUPL-1.2
+ */
+
+package org.geocedg.common.kernel.locus.constructive;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * The resolution of one structural point at one revision: its position with the declared error
+ * of the representation, or the typed cause of its absence, with the integrity records of
+ * {@code P in L} and {@code P in r} and the transfer record they rely on. It is revision
+ * evidence: it never enters a token, a selector or the construction graph, and it is never
+ * persisted.
+ */
+public final class StructuralPointResolution {
+
+	private final boolean defined;
+	private final StructuralPointResolver.Cause cause;
+	private final String message;
+	private final double[] position;
+	private final RelationIntegrityRecord membership;
+	private final RelationIntegrityRecord incidence;
+	private final Cu2CertificateTransfer.Record transfer;
+	private final List<String> premises;
+	private final String stateDigest;
+
+	private StructuralPointResolution(boolean defined, StructuralPointResolver.Cause cause,
+			String message, double[] position, RelationIntegrityRecord membership,
+			RelationIntegrityRecord incidence, Cu2CertificateTransfer.Record transfer,
+			List<String> premises, String stateDigest) {
+		this.defined = defined;
+		this.cause = cause;
+		this.message = message;
+		this.position = position;
+		this.membership = membership;
+		this.incidence = incidence;
+		this.transfer = transfer;
+		this.premises = Collections.unmodifiableList(new ArrayList<>(premises));
+		this.stateDigest = stateDigest;
+	}
+
+	static StructuralPointResolution undefined(StructuralPointResolver.Cause cause,
+			String message, String stateDigest) {
+		return new StructuralPointResolution(false, cause, message, null, null, null, null,
+				Collections.emptyList(), stateDigest);
+	}
+
+	static StructuralPointResolution defined(double[] position,
+			RelationIntegrityRecord membership, RelationIntegrityRecord incidence,
+			List<String> premises, String stateDigest) {
+		return new StructuralPointResolution(true, null, null, position.clone(), membership,
+				incidence, null, premises, stateDigest);
+	}
+
+	StructuralPointResolution withTransfer(Cu2CertificateTransfer.Record record) {
+		return new StructuralPointResolution(defined, cause, message, position, membership,
+				incidence, record, premises, stateDigest);
+	}
+
+	StructuralPointResolution withIncidence(RelationIntegrityRecord record) {
+		return new StructuralPointResolution(defined, cause, message, position, membership,
+				record, transfer, premises, stateDigest);
+	}
+
+	/** @return whether the point is defined */
+	public boolean isDefined() {
+		return defined;
+	}
+
+	/** @return the typed cause of an undefined point, or {@code null} */
+	public StructuralPointResolver.Cause getCause() {
+		return cause;
+	}
+
+	/** @return a description of the cause, or {@code null} */
+	public String getMessage() {
+		return message;
+	}
+
+	/** @return the abscissa of the materialized position */
+	public double getX() {
+		return position == null ? Double.NaN : position[0];
+	}
+
+	/** @return the ordinate of the materialized position */
+	public double getY() {
+		return position == null ? Double.NaN : position[1];
+	}
+
+	/**
+	 * @return the declared error of the position: half widths of a rigorous enclosure of the
+	 *         constructive point in each coordinate, or {@code null} for an undefined point
+	 */
+	public double[] getDeclaredError() {
+		return position == null ? null : new double[] {position[2], position[3]};
+	}
+
+	/** @return the integrity record of {@code P in L}, or {@code null} */
+	public RelationIntegrityRecord getMembership() {
+		return membership;
+	}
+
+	/** @return the integrity record of {@code P in r}, or {@code null} */
+	public RelationIntegrityRecord getIncidence() {
+		return incidence;
+	}
+
+	/** @return the transfer record of the membership, or {@code null} */
+	public Cu2CertificateTransfer.Record getTransfer() {
+		return transfer;
+	}
+
+	/** @return the premises of the provenance and the support */
+	public List<String> getPremises() {
+		return premises;
+	}
+
+	/**
+	 * @return the state digest of the cone the resolution read, or {@code null}; an unchanged
+	 *         digest means an unchanged revision of every input
+	 */
+	public String getStateDigest() {
+		return stateDigest;
+	}
+
+	/**
+	 * @return the integrity of the point: the worst of the relations its definition relies on,
+	 *         {@code NOT_ESTABLISHED} for an undefined point
+	 */
+	public RelationIntegrity getIntegrity() {
+		if (!defined) {
+			return RelationIntegrity.NOT_ESTABLISHED;
+		}
+		List<RelationIntegrity> relations = new ArrayList<>();
+		relations.add(membership.getIntegrity());
+		if (incidence != null) {
+			relations.add(incidence.getIntegrity());
+		}
+		return RelationIntegrity.propagate(RelationIntegrity.STRICT, relations);
+	}
+
+	@Override
+	public String toString() {
+		return defined ? "(" + getX() + ", " + getY() + ") " + getIntegrity() + " [" + membership
+				+ (incidence == null ? "" : "; " + incidence) + "]"
+				: "undefined " + cause + ": " + message;
+	}
+}

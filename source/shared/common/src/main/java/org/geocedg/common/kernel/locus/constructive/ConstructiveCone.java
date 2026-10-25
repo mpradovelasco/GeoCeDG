@@ -145,6 +145,34 @@ public final class ConstructiveCone {
 		return text.toString();
 	}
 
+	/**
+	 * The state of the cone that its evaluations read: the structural definition of every node
+	 * and the captured binary64 state of every node outside a substituted slice. Durable
+	 * identities never enter an evaluation, so attaching one keeps the digest; the captured state
+	 * of a slice node belongs to the live driver and is never read, so moving the driver of the
+	 * slice keeps it too; any change of an input of the relation changes it.
+	 *
+	 * @return the digest text
+	 */
+	public String getStateDigest() {
+		StringBuilder text = new StringBuilder(ConstructiveClassTable.VERSION).append('\n');
+		for (ConstructiveConeNode node : nodes) {
+			text.append(node.describe()).append('\n');
+		}
+		text.append("driver := n").append(replacementNode).append('\n');
+		for (ConstructiveConeNode node : nodes) {
+			if (node.isDriverSlice()) {
+				continue;
+			}
+			text.append('n').append(node.getIndex()).append(node.isLiveDefined() ? '+' : '-');
+			for (double value : node.getLiveState()) {
+				text.append(Long.toHexString(Double.doubleToLongBits(value))).append(',');
+			}
+			text.append('\n');
+		}
+		return text.toString();
+	}
+
 	@Override
 	public String toString() {
 		return describe();
