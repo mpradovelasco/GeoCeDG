@@ -206,7 +206,7 @@ constructiva y continuidad editorial», no modifica la autorización vigente.
 | Dirección de referencia | tras revisar favorablemente la consolidación publicada, el autor acepta A2+B2+C+D como dirección arquitectónica de referencia, y el certificado de identidad constructiva y sus evidencias como base científica favorable; antes de adoptar formalmente D-AUT-1 a D-AUT-12 pide cuatro precisiones: adopción inicial controlada, política `RELAXED`, decisiones numéricas heredadas, e identidad y huella estructural | `CU3`; [propuesta](pre_g9b_cu3_constructive_authority_normative_proposal.md) §14 |
 | Conciliación | se actualizan solo la propuesta candidata, la matriz (ampliación candidata V-AUT, §6 de la [matriz](../validation/pre_g9b_cu3_validation_matrix.md)) y las decisiones D-AUT correspondientes, sin repetir sondeos y con los incrementos E0 a E4 y sus puertas; la propuesta da una recomendación consolidada única (§13); `CU3` sigue detenido en T2, sin código productivo y sin cambios en contratos aprobados, `main` ni `geocedg_book` | `CU3` |
 | Evolución de la autoridad | planificación futura, no decisión. La adopción explícita de `constructive-authority/v1` es transitoria: `CU3` se implementa y valida bajo adopción explícita; después de `CU3` se verifica la compatibilidad general; luego, una decisión autoral independiente puede promover la autoridad constructiva a predeterminada en los documentos nuevos, y los existentes conservan su política hasta una migración explícita. La autoridad predeterminada no implica integridad `STRICT` universal | `CU3` y posteriores |
-| Continuidad editorial | planificación futura: el expediente de `CU10` incluirá una exposición científica amplia y completa de la autoridad constructiva y la integridad de las relaciones, que distinga la aportación CeDG de las capacidades de representación geométrica exacta de CAD ([registro E1](pre_g9b_cu_scientific_methods_editorial_handoff_plan.md), versión 10, §7); no se modifica `geocedg_book` ni se adelanta `CU10` | `CU10`; E1 |
+| Continuidad editorial | planificación futura: el expediente de `CU10` incluirá una exposición científica amplia y comprensiva de la autoridad constructiva y la integridad de las relaciones, que distinga la aportación CeDG de las capacidades de representación geométrica exacta de CAD ([registro E1](pre_g9b_cu_scientific_methods_editorial_handoff_plan.md), versión 10, §7); no se modifica `geocedg_book` ni se adelanta `CU10` | `CU10`; E1 |
 
 ## 3. Incidencias y paquetes
 
@@ -449,7 +449,7 @@ especificaciones, ADR, código, pruebas y modelos, la separación entre resultad
 estimaciones, las degeneraciones y limitaciones, los ejemplos reproducibles, la propuesta de
 apéndices, la bibliografía y las lagunas. El expediente no inicia ninguna fase editorial.
 Desde la precisión autoral de 2026-10-25 (§2.11), incluye también una exposición científica amplia
-y completa de la autoridad constructiva y de la integridad de las relaciones, que distingue la
+y comprensiva de la autoridad constructiva y de la integridad de las relaciones, que distingue la
 aportación CeDG de las capacidades de representación geométrica exacta de CAD (registro E1, §7,
 punto 11).
 

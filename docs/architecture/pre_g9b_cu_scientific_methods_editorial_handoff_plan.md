@@ -282,8 +282,8 @@ Es un candidato documental sin aprobación autoral y no repite ningún sondeo:
   identidad durable y los contratos de revisión aprobados, con regresiones de renombrado,
   redefinición, eliminación y nueva creación, Deshacer, Rehacer y reapertura (propuesta §5.4b). Las
   etiquetas y las referencias Java quedan para los sondeos.
-- **Continuidad editorial.** §7 añade al expediente de `CU10` una exposición científica amplia de
-  estos resultados, como planificación futura.
+- **Continuidad editorial.** §7 añade al expediente de `CU10` una exposición científica amplia y
+  comprensiva de estos resultados, como planificación futura.
 - **Estado.** Ningún método sube de estado.
 
 ### 6.1 A. Fundamentos de geometría descriptiva computacional
@@ -596,15 +596,15 @@ del libro. Contiene:
 10. los principios transversales para el libro, entre ellos la distinción entre integridad
     geométrica y precisión numérica (principio 8 de §3), con sus ejemplos de `CU2` y su relación
     con SM-A-5 y SM-E-6;
-11. una exposición científica amplia y completa de la autoridad geométrica constructiva y de la
+11. una exposición científica amplia y comprensiva de la autoridad geométrica constructiva y de la
     integridad de las relaciones (precisión autoral de 2026-10-25), que trate:
     - la autoridad constructiva frente a la representación numérica;
     - la identidad semántica y la integridad geométrica;
     - los estados `STRICT`, `RELAXED`, `NOT_ESTABLISHED` y `CONTRADICTED`;
-    - la propagación de la evidencia por el grafo de dependencias;
-    - la certificación mediante el certificado de identidad constructiva;
+    - la propagación de la evidencia por el DAG, el grafo de dependencias de la construcción;
+    - la certificación mediante el certificado de identidad constructiva (CIC);
     - la transferencia de certificados y la compatibilidad;
-    - los pliegues, las tangencias y las intersecciones de superficies;
+    - los casos de pliegues, tangencias e intersecciones de superficies;
     - los límites matemáticos y computacionales de los métodos.
 
     La exposición distingue la aportación CeDG de las capacidades de representación geométrica
