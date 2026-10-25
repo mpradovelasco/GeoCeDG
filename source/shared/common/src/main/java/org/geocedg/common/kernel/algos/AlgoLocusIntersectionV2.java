@@ -13,6 +13,7 @@ import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
+import org.geocedg.common.kernel.locus.constructive.DocumentDecisionConfiguration;
 import org.geocedg.common.kernel.locus.intersection.IntersectionCompletenessEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionDiagnostic2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionRootTokenSource2D;
@@ -94,8 +95,9 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		this(construction, source, target, "g9u0-pending-source-pair",
 				"g9u0-public-intersection/v1", "g9u0-pending-target",
 				"g9u0-public-topology/v1",
-				new PublicTargetIntersectionCapability2D(), new GeoElement[0], true,
-				Commands.Intersect, label, resultId);
+				new PublicTargetIntersectionCapability2D(
+						new DocumentDecisionConfiguration(construction, source, target)),
+				new GeoElement[0], true, Commands.Intersect, label, resultId);
 	}
 
 	private AlgoLocusIntersectionV2(Construction construction,

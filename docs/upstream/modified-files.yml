@@ -1320,7 +1320,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionResult2D.java",
       "change": "added",
-      "purpose": "Implement the internal query-local G8B intersection result contract; R4 admits only current unique deterministic-selection/new-solution states, keeps merge/split/ambiguous topology point-inadmissible, and indexes unique locally point-admissible exact tokens for deterministic lookup.",
+      "purpose": "Implement the internal query-local G8B intersection result contract; R4 admits only current unique deterministic-selection/new-solution states, keeps merge/split/ambiguous topology point-inadmissible, and indexes unique locally point-admissible exact tokens for deterministic lookup. PRE-G9B-CU3 increment E1: under constructive-authority/v1 a solution is point admissible only with the re-qualification STRICT or RELAXED; legacy solutions keep the unchanged predicate.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1380,7 +1380,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
       "change": "added",
-      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies and typed target capture; R4 inserts deterministic current-root resolution before atomic canonical-ledger publication, with prior-state transition evidence diagnostic only.",
+      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies and typed target capture; R4 inserts deterministic current-root resolution before atomic canonical-ledger publication, with prior-state transition evidence diagnostic only. PRE-G9B-CU3 increment E1: the public command computes its certified evidence in the decision configuration of the authority policy of its document.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -2916,7 +2916,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PublicTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Retain approved one-parameter public target adaptation and R4 oriented germ identity; R1 preserves current structural implicit proof through candidate copies and derives its germ from certified derivative sign with canonical target orientation, without promoting rounded circle/line/conic adapters. PRE-G9B-CU3 pieces I-2 and I-3: the decision configuration of the query, the certified route and the analysis of grades, contact evidence and the conflict rule before the root germs, with the evidence kept on each candidate.",
+      "purpose": "Retain approved one-parameter public target adaptation and R4 oriented germ identity; R1 preserves current structural implicit proof through candidate copies and derives its germ from certified derivative sign with canonical target orientation, without promoting rounded circle/line/conic adapters. PRE-G9B-CU3 pieces I-2 and I-3: the decision configuration of the query, the certified route and the analysis of grades, contact evidence and the conflict rule before the root germs, with the evidence kept on each candidate. PRE-G9B-CU3 increment E1: in the constructive configuration without an enclosure every root is re-qualified NOT_ESTABLISHED with a typed diagnostic.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -7068,7 +7068,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/AuthorityPolicyAdoption.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the explicit adoption event AUTHORITY_POLICY_ADOPTION of constructive-authority/v1: impact report first, then one atomic construction mutation and one undo point, and the typed cause CONSTRUCTIVE_AUTHORITY_REQUIRED.",
+      "purpose": "PRE-G9B-CU3 increment E1: the explicit adoption event AUTHORITY_POLICY_ADOPTION of constructive-authority/v1: impact report first, then one atomic construction mutation and one undo point, and the typed cause CONSTRUCTIVE_AUTHORITY_REQUIRED. PRE-G9B-CU3 increment E1: the registered impact contributor that re-qualifies the roots G8B-R1 admits (D-AUT-6).",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7104,7 +7104,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveCone.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the constructive cone of a relation, one node and one meaning per object down to the free inputs, with an optional substituted driver slice and the cut of what reads an object outside the class; revision evidence, never persisted. PRE-G9B-CU3 increment E1.7: the state digest of what its evaluations read, without durable identities and slice states, for the cache of a revision.",
+      "purpose": "PRE-G9B-CU3 increment E1: the constructive cone of a relation, one node and one meaning per object down to the free inputs, with an optional substituted driver slice and the cut of what reads an object outside the class; revision evidence, never persisted. PRE-G9B-CU3 increment E1.7: the state digest of what its evaluations read, without durable identities and slice states, for the cache of a revision. PRE-G9B-CU3 increment E1: addSlice, a slice whose driver stays a document node so that an evaluation can place it at any parameter of a box.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7266,13 +7266,49 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedContactAnalysis2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise. PRE-G9B-CU3 increment E1: in the constructive configuration, the re-qualification of section 7.4 (STRICT by certified existence, RELAXED by ENCLOSURE_COMPATIBLE, never for a contact or at a certified fold) and its entry for the adoption report.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu3CertifiedEvidenceTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 pieces I-1 to I-3: tests of the residual enclosures, grades, certified route H02, conflict rule and contact evidence on the synthetic near-tangencies, the H02 scale and translation sweep and the quarter arc, each against the same capability without enclosures.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/IntervalJet.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-1 under the constructive authority: second-order jets of outward intervals in the driver parameter, a number system of the constructive cone evaluator whose chain rule encloses the value and the derivatives of every composition on a box.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveResidualJetSource.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the residual of a Locus V2 and its target in the constructive configuration Sigma_C, from the constructive cone of the slice with the driver as the ideal point of its constructive support, evaluated in interval jets; no source for a slice with a boundary substitute that moves with the driver.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/DocumentDecisionConfiguration.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the decision configuration of a public intersection read from the authority policy of its document at every computation, captured under the legacy policy and constructive under constructive-authority/v1.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/IntersectionAdmissionImpact.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1 (D-AUT-6): the part of the adoption impact report that re-qualifies once, before anything is applied, every root G8B-R1 admits in the public intersections: STRICT, RELAXED or NOT_ESTABLISHED with its cause.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructiveRequalification2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the re-qualification of section 7.4 of one published solution in the constructive configuration, for the adoption impact report; it reads the published result and changes no identity, token or selector.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIntersectionAdmissionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the public intersection under the constructive authority: Sigma_C residual enclosures, conflict rule in Sigma_C, re-qualification of G8B-R1 at the adoption with its report, Undo, unchanged tokens, a slice outside the class and the fold contacts of the author's model.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

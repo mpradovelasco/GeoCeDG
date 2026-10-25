@@ -22,6 +22,8 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 public final class IntersectionExistenceEvidence2D {
 	/** Configuration of evidence that no residual enclosure computed. */
 	public static final String NOT_COMPUTED = "not-computed";
+	/** The constructive configuration of a query whose source or target it does not enclose. */
+	public static final String NOT_ENCLOSED_CONSTRUCTIVE = "constructive/not-enclosed";
 
 	private static final IntersectionExistenceEvidence2D LOCALLY_VERIFIED =
 			new IntersectionExistenceEvidence2D(ExistenceGrade.LOCALLY_VERIFIED, NOT_COMPUTED,

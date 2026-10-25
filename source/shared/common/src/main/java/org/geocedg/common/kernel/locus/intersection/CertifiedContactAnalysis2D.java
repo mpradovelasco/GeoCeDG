@@ -15,10 +15,12 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
+import org.geocedg.common.kernel.locus.LocusCertifiedFold2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ConstructiveAdmission;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactEvidenceClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
@@ -145,7 +147,7 @@ final class CertifiedContactAnalysis2D {
 		List<IntersectionCandidate2D> result = new ArrayList<>();
 		for (Entry entry : entries) {
 			if (entry.state != State.WITHDRAWN) {
-				result.add(entry.publish(source.getConfiguration()));
+				result.add(entry.publish(context, source));
 			}
 		}
 		result.sort((first, second) -> {
@@ -163,6 +165,35 @@ final class CertifiedContactAnalysis2D {
 							+ " completeness of the set is not established"));
 		}
 		return new Outcome(result, diagnostics, contradicted);
+	}
+
+	/**
+	 * The re-qualification of one published solution under the constructive authority, as the
+	 * adoption event reports it before anything is applied ({@code
+	 * locus-v2-constructive-authority.md} section 7.4).
+	 *
+	 * @param context a query of the published result
+	 * @param source the residual in the constructive configuration
+	 * @param solution a published solution
+	 * @return its admission under the constructive authority
+	 */
+	static ConstructiveAdmission requalify(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, LocusIntersectionSolution2D solution) {
+		IntersectionRootRevisionEvidence2D evidence = solution.getRevisionEvidence();
+		IntersectionCandidate2D candidate = new IntersectionCandidate2D(
+				evidence.getBranchSnapshotKey(), evidence.getResolvedValidComponentKey(),
+				evidence.getSemanticParameter(), evidence.getLiftedPeriodicParameter(),
+				evidence.getIsolatingInterval(), evidence.getLocalIsolationStatus(),
+				Optional.empty(), solution.getClassification().getContactClass(),
+				MultiplicityStatus.NOT_ESTABLISHED, OptionalInt.empty(),
+				evidence.getSolverMethod(), evidence.getNumericGuarantee(),
+				LineageEventKind.APPEARED, Collections.emptyList(), Collections.emptyList());
+		Entry entry = new Entry(candidate);
+		Window window = Window.of(context, candidate);
+		if (window != null) {
+			grade(source, window, entry);
+		}
+		return entry.admission(context, source);
 	}
 
 	/**
@@ -453,17 +484,83 @@ final class CertifiedContactAnalysis2D {
 									: " (" + contact + ")") + " withdrawn: " + why));
 		}
 
-		IntersectionCandidate2D publish(String configuration) {
+		IntersectionCandidate2D publish(IntersectionCapabilityContext2D context,
+				ResidualJetSource2D source) {
 			IntersectionExistenceEvidence2D evidence = candidate.getExistenceEvidence();
 			String described = certificate != null ? certificate.describe()
 					: evidence.getCertificate();
 			IntersectionExistenceEvidence2D computed = IntersectionExistenceEvidence2D.of(grade,
-					configuration, contact, described);
+					source.getConfiguration(), contact, described);
 			if (evidence.isCertifiedRoute()) {
 				// The capability certified it; the route keeps its own certificate and scale.
 				computed = computed.withCertifiedRoute(evidence.getCharacteristicScale());
 			}
+			if (source.isConstructive()) {
+				computed = computed.withConstructiveAdmission(admission(context, source));
+			}
 			return candidate.withExistenceEvidence(computed);
+		}
+
+		/**
+		 * The re-qualification of {@code locus-v2-constructive-authority.md} section 7.4:
+		 * {@code STRICT} with existence certified against the constructive target,
+		 * {@code RELAXED} by {@code ENCLOSURE_COMPATIBLE} for a transverse root whose
+		 * constructive residual enclosure contains zero within the G8B-R1 threshold, and
+		 * {@code NOT_ESTABLISHED} otherwise; a contact without a sign change is never relaxed.
+		 */
+		private ConstructiveAdmission admission(IntersectionCapabilityContext2D context,
+				ResidualJetSource2D source) {
+			if (!isTransverseIsolated(candidate)) {
+				return ConstructiveAdmission.NOT_ESTABLISHED;
+			}
+			if (grade == ExistenceGrade.EXISTENCE_CERTIFIED) {
+				return ConstructiveAdmission.STRICT;
+			}
+			if (atCertifiedFold(context)) {
+				// At a certified fold the residual is even: a contact without a sign change,
+				// never relaxed by a residual bound (section 7.2).
+				return ConstructiveAdmission.NOT_ESTABLISHED;
+			}
+			double[] residual = source.normalizedResidual(candidate.getSemanticParameter());
+			if (residual == null || residual[0] > 0 || residual[1] < 0) {
+				return ConstructiveAdmission.NOT_ESTABLISHED;
+			}
+			LocusEvaluation2D evaluation = context.evaluate(candidate.getBranchKey(),
+					candidate.getSemanticParameter());
+			if (!evaluation.isValid() || evaluation.getPoint() == null) {
+				return ConstructiveAdmission.NOT_ESTABLISHED;
+			}
+			TargetResidualEvaluation2D adapter = context.evaluateResidualEvidence(
+					evaluation.getPoint());
+			if (!adapter.isEstablished()) {
+				return ConstructiveAdmission.NOT_ESTABLISHED;
+			}
+			double threshold = context.getQuery().getPolicy().getResidualTolerance()
+					.threshold(adapter.getResidual().get().getCharacteristicScale());
+			return Math.max(-residual[0], residual[1]) <= threshold
+					? ConstructiveAdmission.RELAXED : ConstructiveAdmission.NOT_ESTABLISHED;
+		}
+
+		/** @return whether the isolating interval meets a certified fold of the source */
+		private boolean atCertifiedFold(IntersectionCapabilityContext2D context) {
+			LocusBranch2D branch = context.getDefinition().getBranch(candidate.getBranchKey());
+			if (branch == null) {
+				return false;
+			}
+			LocusInterval2D domain = context.getDefinition().getProvider().getDeclaredDomain();
+			double period = context.getDefinition().getProvider().isPeriodic()
+					? domain.getUpper() - domain.getLower() : 0;
+			IntersectionParameterInterval2D interval = candidate.getIsolatingInterval();
+			for (LocusCertifiedFold2D fold : branch.getExistenceStructure().getCertifiedFolds()) {
+				for (int shift = -1; shift <= 1; shift++) {
+					double offset = shift * period;
+					if (fold.getParameterLower() + offset <= interval.getUpper()
+							&& fold.getParameterUpper() + offset >= interval.getLower()) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 

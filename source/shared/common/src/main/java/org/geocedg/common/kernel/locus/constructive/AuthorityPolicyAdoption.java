@@ -104,7 +104,9 @@ public final class AuthorityPolicyAdoption {
 
 		/** @return the contributors in their fixed order */
 		static List<AdoptionImpactContributor> registered() {
-			return new ArrayList<>();
+			List<AdoptionImpactContributor> contributors = new ArrayList<>();
+			contributors.add(new IntersectionAdmissionImpact());
+			return contributors;
 		}
 	}
 }

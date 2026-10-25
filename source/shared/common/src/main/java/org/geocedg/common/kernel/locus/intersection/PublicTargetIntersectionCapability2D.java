@@ -127,6 +127,24 @@ public final class PublicTargetIntersectionCapability2D
 				kind = completeness == Completeness.COMPLETE ? GeometryKind.EMPTY
 						: GeometryKind.UNRESOLVED;
 			}
+		} else if (configuration.isConstructive()) {
+			// Without an enclosure in the constructive configuration no root that G8B-R1
+			// verifies is re-qualified (locus-v2-constructive-authority.md section 7.4).
+			List<IntersectionCandidate2D> unqualified = new ArrayList<>();
+			for (IntersectionCandidate2D candidate : candidates) {
+				unqualified.add(candidate.withExistenceEvidence(IntersectionExistenceEvidence2D
+						.of(candidate.getExistenceEvidence().getGrade(),
+								IntersectionExistenceEvidence2D.NOT_ENCLOSED_CONSTRUCTIVE, null,
+								null).withConstructiveAdmission(
+										IntersectionSemanticMetadata2D.ConstructiveAdmission
+												.NOT_ESTABLISHED)));
+			}
+			candidates = unqualified;
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED,
+					"The source or the target has no enclosure in the constructive"
+							+ " configuration: no root is admitted by the constructive"
+							+ " authority"));
 		}
 		boolean finiteAuthority = kind == GeometryKind.FINITE
 				&& delegated.getOverlapEvidence().isEmpty();

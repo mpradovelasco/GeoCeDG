@@ -26,6 +26,7 @@ import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ConstructiveAdmission;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactEvidenceClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
@@ -206,6 +207,61 @@ final class PreG9BCu3CertifiedEvidenceTest extends BaseUnitTest {
 		assertEquals(root, reclassified.getSemanticParameter(), 1E-12);
 		assertNotNull(diagnostic(outcome.getDiagnostics(),
 				DiagnosticCode.CERTIFIED_EXISTENCE_ESTABLISHED));
+	}
+
+	@Test
+	void anEnclosureCompatibleRootIsRelaxedAndAContactNever() {
+		circleLocus(0, 1);
+		add("g=Line((0,0.75),(1,0.75))");
+		IntersectionCapabilityContext2D context = context("g");
+		ResidualJetSource2D captured = IntersectionDecisionConfiguration2D.CAPTURED.residualJets(
+				context.getDefinition(), context.getTarget());
+		ResidualJetSource2D uncertifiable = new ResidualJetSource2D() {
+			@Override
+			public String getConfiguration() {
+				return "test/constructive-without-derivative";
+			}
+
+			@Override
+			public boolean isConstructive() {
+				return true;
+			}
+
+			@Override
+			public ResidualJetEnclosure2D enclose(double lower, double upper) {
+				ResidualJetEnclosure2D jet = captured.enclose(lower, upper);
+				return jet == null ? null : new ResidualJetEnclosure2D(jet.getValue(),
+						new double[] {-1, 1}, jet.getSecond());
+			}
+
+			@Override
+			public double[] normalizedResidual(double parameter) {
+				return captured.normalizedResidual(parameter);
+			}
+		};
+		double root = Math.PI / 6;
+		List<IntersectionCandidate2D> candidates = List.of(
+				candidate(context, root, ContactClass.TRANSVERSE_ESTABLISHED,
+						LocalIsolationStatus.ESTABLISHED),
+				candidate(context, Math.PI / 2, ContactClass.TANGENT_ESTABLISHED,
+						LocalIsolationStatus.NOT_ESTABLISHED),
+				candidate(context, 0.6, ContactClass.TRANSVERSE_ESTABLISHED,
+						LocalIsolationStatus.ESTABLISHED));
+
+		for (IntersectionCandidate2D candidate : CertifiedContactAnalysis2D.apply(context,
+				uncertifiable, candidates, false).getCandidates()) {
+			IntersectionExistenceEvidence2D evidence = candidate.getExistenceEvidence();
+			double parameter = candidate.getSemanticParameter();
+			if (parameter == root) {
+				assertEquals(ConstructiveAdmission.RELAXED, evidence.getConstructiveAdmission(),
+						"ENCLOSURE_COMPATIBLE without certified existence");
+				assertEquals(ExistenceGrade.LOCALLY_VERIFIED, evidence.getGrade());
+			} else {
+				assertEquals(ConstructiveAdmission.NOT_ESTABLISHED,
+						evidence.getConstructiveAdmission(), parameter + ": a contact or a"
+								+ " residual enclosure without zero is never relaxed");
+			}
+		}
 	}
 
 	@Test

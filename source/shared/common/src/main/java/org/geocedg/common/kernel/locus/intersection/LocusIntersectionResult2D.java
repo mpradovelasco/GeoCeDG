@@ -248,7 +248,8 @@ public final class LocusIntersectionResult2D {
 				&& evidence.getTargetUpdateStamp()
 						== sourceBinding.getTargetUpdateStamp()
 				&& !unresolvedCandidateComponentKeys.contains(
-						evidence.getResolvedValidComponentKey());
+						evidence.getResolvedValidComponentKey())
+				&& constructivelyAdmitted(evidence.getExistenceEvidence());
 		if (!common || !sourceBinding.isLocusPair()) {
 			return common;
 		}
@@ -269,6 +270,20 @@ public final class LocusIntersectionResult2D {
 						sourceBinding.getSecondLocusIdentity())
 				&& pair.getSecond().getSemanticRevision()
 						== sourceBinding.getSecondLocusSemanticRevision();
+	}
+
+	/**
+	 * Under {@code constructive-authority/v1} a root that G8B-R1 verifies is admitted only
+	 * when its re-qualification is {@code STRICT} or {@code RELAXED}
+	 * ({@code locus-v2-constructive-authority.md} section 7.4); a solution of the legacy
+	 * policy has no re-qualification and keeps the unchanged G8B-R1 predicate.
+	 */
+	private static boolean constructivelyAdmitted(IntersectionExistenceEvidence2D evidence) {
+		IntersectionSemanticMetadata2D.ConstructiveAdmission admission =
+				evidence.getConstructiveAdmission();
+		return admission == null
+				|| admission == IntersectionSemanticMetadata2D.ConstructiveAdmission.STRICT
+				|| admission == IntersectionSemanticMetadata2D.ConstructiveAdmission.RELAXED;
 	}
 
 	private void validateShape() {

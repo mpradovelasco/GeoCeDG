@@ -19,6 +19,15 @@ public interface ResidualJetSource2D {
 	String getConfiguration();
 
 	/**
+	 * @return whether this is the constructive configuration, in which the admission of a root
+	 *         that G8B-R1 verifies is re-qualified ({@code locus-v2-constructive-authority.md}
+	 *         section 7.4)
+	 */
+	default boolean isConstructive() {
+		return false;
+	}
+
+	/**
 	 * Encloses {@code h}, {@code h'} and {@code h''} on one parameter box. A non-null result
 	 * certifies that the source is valid and continuous on the whole box.
 	 *

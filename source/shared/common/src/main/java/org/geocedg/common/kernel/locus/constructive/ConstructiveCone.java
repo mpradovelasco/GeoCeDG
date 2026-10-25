@@ -251,6 +251,28 @@ public final class ConstructiveCone {
 			return walk(traced, true);
 		}
 
+		/**
+		 * Adds the traced point of a locus slice whose driver stays itself: the driver is a node
+		 * of the document, its replacement node, so that an evaluation can give it the point
+		 * of its support at any parameter (PRE-G9B-CU3, residual enclosures under the
+		 * constructive authority). One cone substitutes at most one driver.
+		 *
+		 * @param traced the traced point of the slice
+		 * @param sliceDriver the driver of the slice
+		 * @return the node of the traced point inside the slice
+		 */
+		public int addSlice(GeoElement traced, GeoElement sliceDriver) {
+			requireOpen();
+			Objects.requireNonNull(traced);
+			if (driver != null) {
+				throw new IllegalStateException("A cone substitutes at most one driver");
+			}
+			replacementNode = walk(Objects.requireNonNull(sliceDriver), false);
+			driver = sliceDriver;
+			driven.clear();
+			return walk(traced, true);
+		}
+
 		/** @return the cone */
 		public ConstructiveCone build() {
 			requireOpen();
