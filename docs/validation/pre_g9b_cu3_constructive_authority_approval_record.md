@@ -219,4 +219,69 @@ los usa:
 
 E0 registra esta decisión, incorpora los textos aprobados (§2), actualiza el prompt canónico y el
 estado de la propuesta, de la estrategia, de la matriz, del plan consolidado, de la hoja de ruta y
-del registro E1, y registra la publicación de `3cd0f710`, sin código productivo.
+del registro E1, y registra la publicación de `3cd0f710`, sin código productivo. E0 quedó en
+`1f81666ea90f4ca53a9d782b4f905cc839c61cf1` (árbol `3e8b6f039ef2b4ac72d71b51773a3ef309f6fb2c`), con
+`verify.ps1 -Profile STATIC` `verification-ac6df0aa06ce46689df9b4634c64e807`, resultado
+`51877647cde299f8d9c229b6b3200d508552b8919a239cc2c72f03d4f0c69b42`, `ACCEPTED / COMPLETE`,
+re-autenticado. Presentados los presupuestos (§14), el autor eligió primero detener E1 tras E0.
+
+## 16. Decisión autoral sobre los presupuestos y continuación de E1
+
+Instrucción «PRE-G9B-CU3 — Decisión autoral sobre presupuestos de cálculo y continuación de E1»,
+de 2026-10-25. Se transcribe y se ordena; ante cualquier diferencia prevalece la instrucción.
+
+**Evaluación exacta M3: `cu3-exact-evaluation-budget/v1`, aprobado.**
+
+| Límite | Valor |
+|---|---|
+| Operaciones exactas | 100 000 |
+| Profundidad de la torre | 8 |
+| Bits | 4 096 |
+
+- Se aplica por evaluación exacta de un punto estructural frente a su objetivo, conforme al
+  contrato aprobado.
+- Su agotamiento produce `EXACT_EVALUATION_BUDGET_EXHAUSTED`, con fallo cerrado, diagnóstico y
+  contadores deterministas.
+- No se amplían automáticamente los límites, y un agotamiento nunca se convierte en una
+  aproximación aceptada.
+
+**Certificado de identidad constructiva: `constructive-identity-certificate-budget/v1`, límites
+iniciales de desarrollo y caracterización.**
+
+| Límite | Valor |
+|---|---|
+| Productos de términos por intento | 16 000 000 |
+| Indeterminadas | 16 |
+| Términos por polinomio | 200 000 |
+| Bits por coeficiente (provisional) | 4 096 |
+
+- Son techos iniciales de ingeniería, no una declaración anticipada de suficiencia ni de
+  rendimiento aceptado.
+- Antes de su aceptación productiva en E2, G-AUT-8 debe medirlos, instrumentarlos completamente y
+  validarlos con pruebas adversarias.
+- La extensión del prototipo de nueve a dieciséis indeterminadas requiere una representación de
+  monomios que soporte ese rango sin colisiones ni desbordamientos.
+- Si el banco demuestra que algún límite es insuficiente, se presentan la evidencia y la
+  modificación justificada para una decisión autoral; ningún límite se eleva en silencio.
+
+**Continuación de E1.** Se autoriza continuar E1 sobre la base documental aprobada, conservando la
+evidencia de E0, con todas sus condiciones, en especial:
+
+1. encierros rigurosos de los valores ideales;
+2. transferencia demostrada de los certificados de `CU2`;
+3. autoridad geométrica única por documento;
+4. integridad consultable y propagación por premisas;
+5. admisión `RELAXED` exclusivamente conforme a su política versionada;
+6. ninguna modificación silenciosa de la identidad, de la persistencia ni de los algoritmos
+   heredados.
+
+**Condiciones adicionales.**
+
+- El defecto del prototipo del certificado sobre la pertenencia a segmentos se corrige, con pruebas
+  adversarias, antes de usar el certificador correspondiente como autoridad.
+- Los presupuestos se implementan en la capa correcta: los límites semánticos del cálculo en el
+  núcleo compartido; la instrumentación, los bancos y los informes en sus capas externas.
+- La autorización no supone que E1 ni E2 estén verificados. Se mantienen las puertas y las
+  condiciones de parada aprobadas, y `CU3` no se declara `PASS — AUTHOR APPROVED` sin una decisión
+  autoral.
+- No se publica en `main` ni se inician fases posteriores fuera del alcance autorizado.

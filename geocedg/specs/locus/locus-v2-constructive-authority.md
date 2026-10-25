@@ -418,6 +418,20 @@ Exhausting a budget gives `NOT_ESTABLISHED` with a typed cause and never a decis
 the contracts leave to the author is fixed by the author from the counters of the benchmarks,
 never by the implementation itself.
 
+The author fixed these budgets on 2026-10-25
+([approval record](../../../docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md)
+§16). They are semantic limits of the computation in the shared kernel; their instrumentation,
+benchmarks and reports belong to the external layers.
+
+| Budget | Scope | Limits | Status |
+|---|---|---|---|
+| `cu3-exact-evaluation-budget/v1` | each exact evaluation of a structural point against its target, including each of the `N + 1` exact evaluations of `SUBSTITUTE_GENERIC` (§7.1, precondition 5) | 100 000 exact operations; tower depth 8; 4 096 bits | approved; exhaustion gives `EXACT_EVALUATION_BUDGET_EXHAUSTED`, fails closed with a diagnostic and deterministic counters, and is never raised automatically nor turned into an accepted approximation |
+| `constructive-identity-certificate-budget/v1` | each attempt of a constructive identity certificate | 16 000 000 term products; 16 indeterminates; 200 000 terms per polynomial; 4 096 bits per coefficient (provisional) | initial engineering ceilings for development and characterization, not a statement of sufficiency; measured, fully instrumented and validated with adversarial tests by gate G-AUT-8 before their productive acceptance in E2; a limit shown insufficient is presented with its evidence for an author decision, never raised silently |
+
+The monomial representation of the certificate supports all 16 indeterminates without collision
+or overflow; an exponent beyond its representable range fails closed with a typed cause and is
+never wrapped or truncated.
+
 ## 11. Compatibility
 
 No existing format changes: the policy record is additive. Documents that do not adopt the policy
