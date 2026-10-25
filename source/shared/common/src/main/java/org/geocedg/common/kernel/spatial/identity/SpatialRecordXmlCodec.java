@@ -261,7 +261,22 @@ public final class SpatialRecordXmlCodec {
 	 * @return the section XML, or an empty string for an empty collection
 	 */
 	public static String writeSection(Collection<? extends SpatialIdentityRecord> records) {
-		if (records.isEmpty()) {
+		return writeSection(records, null);
+	}
+
+	/**
+	 * Writes a complete deterministic flat section, with the document authority policy record
+	 * first when the document has adopted one (PRE-G9B-CU3, ADR 0040). Clipboard and macro
+	 * closure sections never pass a policy: the policy of the destination governs.
+	 *
+	 * @param records identity records
+	 * @param authority the document authority policy record, or {@code null} for a document
+	 *        governed by {@code legacy-representation-authority/v1}
+	 * @return the section XML, or an empty string when there is neither a record nor a policy
+	 */
+	public static String writeSection(Collection<? extends SpatialIdentityRecord> records,
+			DocumentAuthorityRecord authority) {
+		if (records.isEmpty() && authority == null) {
 			return "";
 		}
 		ArrayList<SpatialIdentityRecord> sorted = new ArrayList<>();
@@ -274,6 +289,9 @@ public final class SpatialRecordXmlCodec {
 		});
 		StringBuilder xml = new StringBuilder();
 		xml.append("\t<geocedgSpatial version=\"1\">\n");
+		if (authority != null) {
+			xml.append("\t\t").append(authority.writeXml()).append('\n');
+		}
 		for (SpatialIdentityRecord record : sorted) {
 			xml.append("\t\t").append(writeRecord(record)).append('\n');
 		}

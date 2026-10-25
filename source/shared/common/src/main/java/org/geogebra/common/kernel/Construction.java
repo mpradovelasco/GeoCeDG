@@ -1559,7 +1559,9 @@ public class Construction {
 				UnitStateXml.write(sb, unitSystem.getState());
 			}
 
-			if (!spatialIdentityRegistry.isEmpty()) {
+			// PRE-G9B-CU3 (ADR 0040): the section also carries the document authority policy.
+			if (!spatialIdentityRegistry.isEmpty()
+					|| spatialIdentityRegistry.hasDocumentAuthorityRecord()) {
 				sb.append(new XMLStringBuilder(new StringBuilder(
 						spatialIdentityRegistry.writeSpatialSection())));
 			}
@@ -4040,7 +4042,9 @@ public class Construction {
 	 * @return whether the document has save-relevant content
 	 */
 	public boolean hasSaveRelevantContent() {
-		return isStarted() || unitSystem.hasPersistentMetadata();
+		// PRE-G9B-CU3 (ADR 0040): an adopted authority policy is persistent document metadata.
+		return isStarted() || unitSystem.hasPersistentMetadata()
+				|| spatialIdentityRegistry.hasDocumentAuthorityRecord();
 	}
 
 	/**

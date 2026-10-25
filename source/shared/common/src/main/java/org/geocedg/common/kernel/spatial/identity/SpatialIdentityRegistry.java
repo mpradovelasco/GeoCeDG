@@ -25,6 +25,7 @@ import org.geogebra.common.io.DocHandler;
 import org.geogebra.common.io.QDParser;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.MacroConstruction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -75,6 +76,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	private Map<PersistentGeoId, String> pendingOrdinaryEditSteps;
 	private final int maximumAllocationAttempts;
 	private final Construction owner;
+	/** PRE-G9B-CU3, ADR 0040: the persisted document policy, or null for the legacy one. */
+	private DocumentAuthorityRecord documentAuthority;
 	private final IdentityHashMap<GeoElement, PersistentGeoId> idsByGeo =
 			new IdentityHashMap<>();
 	private final Map<PersistentGeoId, GeoElement> geosById = new LinkedHashMap<>();
@@ -210,6 +213,47 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	/** @return whether the registry has no published records */
 	public boolean isEmpty() {
 		return records.isEmpty();
+	}
+
+	/**
+	 * The persisted geometric authority policy of the document (PRE-G9B-CU3, ADR 0040).
+	 *
+	 * @return the record, or {@code null} for a document governed by
+	 *         {@code legacy-representation-authority/v1}
+	 */
+	public DocumentAuthorityRecord getDocumentAuthorityRecord() {
+		return documentAuthority;
+	}
+
+	/** @return whether the document has adopted a persisted authority policy */
+	public boolean hasDocumentAuthorityRecord() {
+		return documentAuthority != null;
+	}
+
+	/**
+	 * Applies the explicit adoption event {@code AUTHORITY_POLICY_ADOPTION} to this document
+	 * registry. Only the adoption event calls it; it changes no identity, token, record or
+	 * selector, and returning to the earlier policy is Undo.
+	 *
+	 * @param record the policy record of this build
+	 * @throws IllegalStateException for a registry without a document construction, a macro
+	 *         construction or a document that already has a policy
+	 */
+	public void adoptDocumentAuthority(DocumentAuthorityRecord record) {
+		if (!DocumentAuthorityRecord.CONSTRUCTIVE_V1.equals(record)) {
+			throw new IllegalArgumentException("Only " + DocumentAuthorityRecord.CONSTRUCTIVE_V1
+					+ " can be adopted");
+		}
+		if (owner == null || owner instanceof MacroConstruction) {
+			throw new IllegalStateException(
+					"The authority policy belongs only to a document construction");
+		}
+		if (documentAuthority != null) {
+			throw new IllegalStateException("The document already has an authority policy");
+		}
+		requireGraphSwitchNotInProgress();
+		documentAuthority = record;
+		mutationEpoch++;
 	}
 
 	/** @return all records in deterministic kind-and-ID order */
@@ -3229,6 +3273,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		resolutions.clear();
 		serializationOverlay.clear();
 		diagnostics.clear();
+		// A clearing parse restores the policy of the parsed state, legacy when it has none.
+		documentAuthority = null;
 		mutationEpoch++;
 		graphPublicationEpoch = Math.addExact(graphPublicationEpoch, 1);
 	}
@@ -3269,7 +3315,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 
 	/** @return deterministic full-construction spatial section XML */
 	public String writeSpatialSection() {
-		return SpatialRecordXmlCodec.writeSection(getRecords());
+		return SpatialRecordXmlCodec.writeSection(getRecords(), documentAuthority);
 	}
 
 	/** @return deterministic semantic-closure spatial section XML */
@@ -4822,7 +4868,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			view.add(record);
 		}
 		transaction.markRebuildViewWritten();
-		return SpatialRecordXmlCodec.writeSection(view);
+		return SpatialRecordXmlCodec.writeSection(view, documentAuthority);
 	}
 
 	/**
@@ -4883,7 +4929,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			SpatialIdentityRecord replacement = replacements.get(record.getId());
 			view.add(replacement == null ? record : replacement);
 		}
-		return SpatialRecordXmlCodec.writeSection(view);
+		return SpatialRecordXmlCodec.writeSection(view, documentAuthority);
 	}
 
 	void commitRedefine(SpatialRedefineTransaction transaction, GeoElement actualResult) {
@@ -7354,6 +7400,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		private SpatialIdentityException stagingFailure;
 		private boolean finished;
 		private final Map<PersistentGeoId, String> ordinaryEditSteps;
+		private DocumentAuthorityRecord stagedAuthority;
 
 		private LoadSession(LoadPurpose purpose, int sectionVersion,
 				RedefineRebuildToken redefineRebuildToken) {
@@ -7387,6 +7434,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						"Unsupported geocedgSpatial version: " + sectionVersion));
 				throw stagingFailure;
 			}
+			if (DocumentAuthorityRecord.ELEMENT.equals(xmlElementName)) {
+				stageAuthorityRecord(attributes);
+				return;
+			}
 			try {
 				stageRecord(SpatialRecordXmlCodec.parseRecord(xmlElementName, attributes));
 			} catch (IllegalArgumentException exception) {
@@ -7398,6 +7449,43 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				stagingFailure = failure(SpatialIdentityDiagnostic.of(code,
 						"Malformed " + xmlElementName + " persistence record"), exception);
 				throw stagingFailure;
+			}
+		}
+
+		/**
+		 * Stages the document authority policy record (PRE-G9B-CU3, ADR 0040). Its attributes
+		 * are read strictly, a second record is malformed, and an unsupported version fails
+		 * closed as {@code UNSUPPORTED_VERSION}.
+		 */
+		private void stageAuthorityRecord(Map<String, String> attributes) {
+			if (stagedAuthority != null) {
+				stagingFailure = failure(SpatialIdentityDiagnostic.of(
+						SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+						"A geocedgSpatial section may contain only one authorityPolicy record"));
+				throw stagingFailure;
+			}
+			try {
+				stagedAuthority = DocumentAuthorityRecord.read(attributes);
+			} catch (IllegalArgumentException exception) {
+				SpatialIdentityDiagnostic.Code code = isUnsupportedVersion(exception)
+						? SpatialIdentityDiagnostic.Code.UNSUPPORTED_VERSION
+						: SpatialIdentityDiagnostic.Code.MALFORMED_RECORD;
+				stagingFailure = failure(SpatialIdentityDiagnostic.of(code,
+						"Malformed authorityPolicy persistence record"), exception);
+				throw stagingFailure;
+			}
+		}
+
+		/**
+		 * Rejects a policy record that does not belong to a document construction: clipboard
+		 * and macro sections never carry it, because the policy of the destination governs.
+		 */
+		private void requireAuthorityRecordPlace() {
+			if (stagedAuthority != null && (purpose == LoadPurpose.CLIPBOARD_IMPORT
+					|| owner == null || owner instanceof MacroConstruction)) {
+				throw failure(SpatialIdentityDiagnostic.of(
+						SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+						"The authority policy belongs only to a document construction"));
 			}
 		}
 
@@ -7455,10 +7543,12 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						SpatialIdentityDiagnostic.Code.GENERIC_MERGE_FORBIDDEN,
 						"Generic merge cannot activate spatial identities"));
 			}
+			requireAuthorityRecordPlace();
 			if (stagedRecords.isEmpty() && attachments.isEmpty()) {
 				if (redefineRebuildToken != null) {
 					finishRedefineRebuildLoad();
 				}
+				restoreDocumentAuthority();
 				return Collections.emptyMap();
 			}
 			if (purpose == LoadPurpose.CLIPBOARD_IMPORT) {
@@ -7506,10 +7596,22 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			} finally {
 				publishingConstructionRestore = previousRestorePublication;
 			}
+			restoreDocumentAuthority();
 			for (SpatialIdentityRecord record : stagedRecords) {
 				instrumentation.recordRestore(record.getId().getKind());
 			}
 			return Collections.emptyMap();
+		}
+
+		/**
+		 * A parse that restores a whole document construction restores its policy exactly:
+		 * the staged record, or the legacy policy when the section has none. A clipboard import
+		 * never changes the policy of the destination.
+		 */
+		private void restoreDocumentAuthority() {
+			if (purpose != LoadPurpose.CLIPBOARD_IMPORT) {
+				documentAuthority = stagedAuthority;
+			}
 		}
 
 		/** Abandons all staged state without publication. */

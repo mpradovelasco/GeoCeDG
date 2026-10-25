@@ -7,6 +7,9 @@ package org.geocedg.common.kernel.locus.constructive;
 
 import java.util.Objects;
 
+import org.geocedg.common.kernel.spatial.identity.DocumentAuthorityRecord;
+import org.geogebra.common.kernel.Construction;
+
 /**
  * The geometric authority policy of one document ({@code locus-v2-constructive-authority.md}
  * section 4). A document without a persisted policy record is governed by
@@ -18,15 +21,16 @@ public final class AuthorityPolicy {
 	/** Authority of documents without the record: the contracts approved before ADR 0040. */
 	public static final String LEGACY_AUTHORITY = "legacy-representation-authority/v1";
 	/** The single constructive authority of ADR 0040. */
-	public static final String CONSTRUCTIVE_AUTHORITY = "constructive-authority/v1";
+	public static final String CONSTRUCTIVE_AUTHORITY =
+			DocumentAuthorityRecord.CONSTRUCTIVE_AUTHORITY;
 	/** Class table of version 1. */
-	public static final String CLASS_TABLE = "constructive-class/v1";
+	public static final String CLASS_TABLE = DocumentAuthorityRecord.CLASS_TABLE;
 	/** Relaxed admission policy of version 1. */
-	public static final String RELAXED_ADMISSION = "constructive-relaxed-admission/v1";
+	public static final String RELAXED_ADMISSION = DocumentAuthorityRecord.RELAXED_ADMISSION;
 	/** Constructive identity certificate of version 1. */
-	public static final String CERTIFIER = "constructive-identity-certificate/v1";
+	public static final String CERTIFIER = DocumentAuthorityRecord.CERTIFIER;
 	/** Transfer of CU2 certificates of version 1. */
-	public static final String TRANSFER = "cu2-certificate-transfer/v1";
+	public static final String TRANSFER = DocumentAuthorityRecord.TRANSFER;
 
 	/** The policy of every document that has not adopted the constructive authority. */
 	public static final AuthorityPolicy LEGACY_REPRESENTATION = new AuthorityPolicy(
@@ -51,20 +55,35 @@ public final class AuthorityPolicy {
 	}
 
 	/**
-	 * Resolves a persisted record. Only the exact versions of this build are accepted; any other
-	 * value fails closed, so that a document is never read under another authority.
-	 *
-	 * @return the policy
-	 * @throws IllegalArgumentException for any unsupported authority or version
+	 * @param construction a construction
+	 * @return the policy of its document, from its persisted record
 	 */
-	public static AuthorityPolicy fromRecord(String authority, String classTable,
-			String relaxedAdmission, String certifier, String transfer) {
-		AuthorityPolicy candidate = new AuthorityPolicy(authority, classTable, relaxedAdmission,
-				certifier, transfer);
-		if (!CONSTRUCTIVE_V1.equals(candidate)) {
+	public static AuthorityPolicy of(Construction construction) {
+		return fromRecord(Objects.requireNonNull(construction).getSpatialIdentityRegistry()
+				.getDocumentAuthorityRecord());
+	}
+
+	/**
+	 * Resolves a persisted record. Only the exact versions of this build exist as records; the
+	 * absence of a record is the legacy policy.
+	 *
+	 * @param record the persisted record, or {@code null}
+	 * @return the policy
+	 * @throws IllegalArgumentException for any record other than the one of this build
+	 */
+	public static AuthorityPolicy fromRecord(DocumentAuthorityRecord record) {
+		if (record == null) {
+			return LEGACY_REPRESENTATION;
+		}
+		if (!DocumentAuthorityRecord.CONSTRUCTIVE_V1.equals(record)) {
 			throw new IllegalArgumentException("Unsupported authority policy record");
 		}
 		return CONSTRUCTIVE_V1;
+	}
+
+	/** @return the persisted record of this policy, or {@code null} for the legacy policy */
+	public DocumentAuthorityRecord toRecord() {
+		return isConstructive() ? DocumentAuthorityRecord.CONSTRUCTIVE_V1 : null;
 	}
 
 	/** @return whether the document is governed by the constructive authority */

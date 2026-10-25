@@ -1878,7 +1878,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R3-R1: the late-participation Javadoc distinguishes the version-1 direct inputs from the version-2 frontier walk; no code change.",
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R3-R1: the late-participation Javadoc distinguishes the version-1 direct inputs from the version-2 frontier walk; no code change. PRE-G9B-CU3 increment E1: own the document authority policy record (constructive-authority/v1): a load stages it strictly, rejects it in clipboard, macro and detached sections and restores it exactly on every whole-document parse; the document and redefine sections write it first and closure sections never; only the explicit adoption event sets it. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -1908,7 +1908,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialRecordXmlCodec.java",
       "change": "added",
-      "purpose": "Preserve version-one XML byte shape and strictly parse/write the exact version-two G9A2 point-pilot record attributes.",
+      "purpose": "Preserve version-one XML byte shape and strictly parse/write the exact version-two G9A2 point-pilot record attributes. PRE-G9B-CU3 increment E1: write the document authority policy record before the identity records of a section; the record parser is unchanged. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2010,7 +2010,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/Construction.java",
       "change": "modified",
-      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged. POST-G9U1-A3-R1 correction: defer collected participating authorization until the complete retained batch has passed serialization preflight, then perform the existing final currentness authorization immediately before the first host mutation. PRE-G9B-R3: rebuild an ordinary edit with the certified version-2 frontier refresh, and capture the existing operation-entry snapshot for an ordinary edit that crosses a version-2 frontier so that a failed certification restores the whole edit; host ordering is unchanged. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R6-plus-D1: own the document unit system, write geocedgUnits lazily after worksheetText, reset it on clearConstruction and expose the narrow hasSaveRelevantContent seam; isStarted is unchanged. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md.",
+      "purpose": "Own the identity registry and G9A2 semantic runtime and provide the R6 host-wide atomic mutation seam that snapshots/restores the complete Construction around address writes, cascade and postcondition without creating an undo record. Preserve ordinary collected redefinitions without fabricating an empty spatial completion operation; participating transaction and rollback contracts remain unchanged. POST-G9U1-A3-R1 correction: defer collected participating authorization until the complete retained batch has passed serialization preflight, then perform the existing final currentness authorization immediately before the first host mutation. PRE-G9B-R3: rebuild an ordinary edit with the certified version-2 frontier refresh, and capture the existing operation-entry snapshot for an ordinary edit that crosses a version-2 frontier so that a failed certification restores the whole edit; host ordering is unchanged. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R6-plus-D1: own the document unit system, write geocedgUnits lazily after worksheetText, reset it on clearConstruction and expose the narrow hasSaveRelevantContent seam; isStarted is unchanged. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-CU3 increment E1: write the geocedgSpatial section also when the document carries only its authority policy record, and count an adopted policy as save-relevant content; host ordering is unchanged. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
       "authority": "docs/architecture/post_g9u1_a3_v2_compatible_redefine.md"
     },
     {
@@ -7051,6 +7051,30 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericPerturbationSetTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: the perturbation set of SUBSTITUTE_GENERIC version 1 (size, scale, determinism, general position) and the foundation of V-AUT-RLX-2, a nonzero cubic through its nine points.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/DocumentAuthorityRecord.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the persisted authority policy record of a document (authorityPolicy inside geocedgSpatial version 1), read strictly with the exact versions of this build; a reader without it rejects the unknown record and fails closed.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/AuthorityAdoptionImpact.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the impact report of the explicit adoption event AUTHORITY_POLICY_ADOPTION, computed before anything is applied.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/AuthorityPolicyAdoption.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the explicit adoption event AUTHORITY_POLICY_ADOPTION of constructive-authority/v1: impact report first, then one atomic construction mutation and one undo point, and the typed cause CONSTRUCTIVE_AUTHORITY_REQUIRED.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/AuthorityPolicyPersistenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: persistence, reopening, Undo and Redo, atomicity, macro and clipboard exclusion and fail-closed reading of the document authority policy (shared-kernel part of V-AUT-ADOPT-1 to V-AUT-ADOPT-7).",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
