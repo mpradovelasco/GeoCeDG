@@ -11,6 +11,7 @@ import javax.swing.JTextArea;
 
 import org.geocedg.common.euclidian.draw.DrawLocusV2;
 import org.geocedg.common.euclidian.draw.LocusRenderData2D;
+import org.geocedg.common.kernel.algos.AlgoLocusDriverCorrespondencePoint2D;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
@@ -21,6 +22,8 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.constructive.RelationIntegrityRecord;
+import org.geocedg.common.kernel.locus.constructive.StructuralPointResolution;
 import org.geogebra.common.euclidian.DrawableND;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.desktop.main.AppD;
@@ -79,7 +82,58 @@ public final class GeoCeDGDefinitionInspector {
 			}
 			appendAddressDetails(app, address, current, details);
 		}
+		if (geo != null
+				&& geo.getParentAlgorithm() instanceof AlgoLocusDriverCorrespondencePoint2D) {
+			appendStructuralPointDetails(app,
+					((AlgoLocusDriverCorrespondencePoint2D) geo.getParentAlgorithm())
+							.getResolution(), details);
+		}
 		return details.toString();
+	}
+
+	/**
+	 * PRE-G9B-CU3 ({@code locus-v2-constructive-authority.md} sections 6 and 7.3): the
+	 * integrity of a structural point, the worst of the relations its definition relies on,
+	 * with its premises that are not established, the evidence of {@code P in L} and of
+	 * {@code P in r}, the cause of an undefined point and, apart from the integrity, the
+	 * declared error of its position.
+	 */
+	private static void appendStructuralPointDetails(AppD app,
+			StructuralPointResolution resolution, StringBuilder details) {
+		if (resolution == null) {
+			return;
+		}
+		appendSemanticHeader(app, details);
+		details.append(text(app, "Definition.StructuralPoint")).append('\n');
+		appendField(app, details, "Definition.Integrity", resolution.getIntegrity().name(),
+				"  ");
+		if (!resolution.isDefined()) {
+			appendField(app, details, "Definition.Cause", resolution.getCause() + ": "
+					+ resolution.getMessage(), "  ");
+		}
+		appendRelation(app, details, "Definition.Membership", resolution.getMembership());
+		appendRelation(app, details, "Definition.Incidence", resolution.getIncidence());
+		if (resolution.getTransfer() != null) {
+			appendField(app, details, "Definition.Transfer",
+					resolution.getTransfer().toString(), "  ");
+		}
+		double[] error = resolution.getDeclaredError();
+		if (error != null) {
+			appendField(app, details, "Definition.DeclaredError",
+					"(" + error[0] + ", " + error[1] + ")", "  ");
+		}
+	}
+
+	private static void appendRelation(AppD app, StringBuilder details, String key,
+			RelationIntegrityRecord relation) {
+		if (relation == null) {
+			return;
+		}
+		appendField(app, details, key, relation.getIntegrity() + " " + relation.getEvidence(),
+				"  ");
+		for (String premise : relation.getUnestablishedPremises()) {
+			appendField(app, details, "Definition.UnestablishedPremise", premise, "    ");
+		}
 	}
 
 	static String inspectionText(AppD app, GeoElement geo) {

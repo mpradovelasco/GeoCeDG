@@ -32,6 +32,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidat
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionDiagnostic2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionExistenceEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionOverlapEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.LocalPairIsolationEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionInstrumentationSnapshot2D;
@@ -389,6 +390,20 @@ final class GeoCeDGLocusV2Dialogs {
 				appendField(summary, "LocusV2.Results.Field.Guarantee",
 						localizeEnum(solution.getRevisionEvidence()
 								.getNumericGuarantee()));
+				// PRE-G9B-CU3: the existence grade, the contact evidence and, under the
+				// constructive authority, the admission, which tells RELAXED from STRICT.
+				IntersectionExistenceEvidence2D existence = solution.getRevisionEvidence()
+						.getExistenceEvidence();
+				appendField(summary, "LocusV2.Results.Field.ExistenceGrade",
+						localizeEnum(existence.getGrade()));
+				if (existence.getContactEvidence() != null) {
+					appendField(summary, "LocusV2.Results.Field.ContactEvidence",
+							localizeEnum(existence.getContactEvidence()));
+				}
+				if (existence.getConstructiveAdmission() != null) {
+					appendField(summary, "LocusV2.Results.Field.ConstructiveAdmission",
+							localizeEnum(existence.getConstructiveAdmission()));
+				}
 				appendField(summary, "LocusV2.Results.Field.Token",
 						pointAdmissible ? token
 								: menu("LocusV2.Results.NoAdmissibleToken"));

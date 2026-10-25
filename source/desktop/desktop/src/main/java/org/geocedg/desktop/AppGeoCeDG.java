@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import org.geocedg.common.export.PhysicalExportScale;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
+import org.geocedg.common.kernel.locus.constructive.AuthorityPolicyAdoption;
 import org.geocedg.common.kernel.sheet.AlgoIsoABorder;
 import org.geocedg.common.kernel.sheet.IsoASheet;
 import org.geocedg.common.kernel.units.DocumentUnitSystem;
@@ -139,6 +140,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private boolean clearedInFileNew;
 	private GeoCeDGCopyPaste unitCopyPaste;
 	private GeoCeDGDocumentUnitsPrompt documentUnitsPrompt = GeoCeDGDocumentUnitsPrompt.dialog();
+	private GeoCeDGConstructiveAdoptionPrompt constructiveAdoptionPrompt =
+			GeoCeDGConstructiveAdoptionPrompt.dialog();
 	private Consumer<String> unitLoadErrorSink;
 	/**
 	 * PRE-G9B-R6-plus-C (DQ-C7) session engineering drawing scale of this window;
@@ -304,6 +307,33 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 
 	void setDocumentUnitsPrompt(GeoCeDGDocumentUnitsPrompt prompt) {
 		documentUnitsPrompt = prompt;
+	}
+
+	/**
+	 * PRE-G9B-CU3 explicit adoption event of {@code constructive-authority/v1}
+	 * ({@code locus-v2-constructive-authority.md} section 4), offered when a form of
+	 * {@code CU3} is refused in a document governed by the legacy policy: the impact report is
+	 * computed without applying anything, and only an accepted offer applies the adoption, one
+	 * atomic operation. It belongs to the explicit input transaction that offered it, whose
+	 * caller stores the one undo point of the transaction.
+	 *
+	 * @return whether the document is governed by the constructive authority afterwards
+	 */
+	boolean offerConstructiveAdoption() {
+		Construction construction = getKernel().getConstruction();
+		if (AuthorityPolicyAdoption.isConstructive(construction)) {
+			return true;
+		}
+		if (!constructiveAdoptionPrompt.ask(this,
+				AuthorityPolicyAdoption.report(construction))) {
+			return false;
+		}
+		AuthorityPolicyAdoption.adoptWithinTransaction(construction);
+		return true;
+	}
+
+	void setConstructiveAdoptionPrompt(GeoCeDGConstructiveAdoptionPrompt prompt) {
+		constructiveAdoptionPrompt = prompt;
 	}
 
 	@Override

@@ -5906,6 +5906,54 @@
       "es": "Elevación periódica"
     },
     "Definition.Seam": { "en": "Seam side", "es": "Lado de costura" },
+    "Definition.StructuralPoint": {
+      "en": "Structural point under the constructive authority",
+      "es": "Punto estructural bajo la autoridad constructiva"
+    },
+    "Definition.Integrity": { "en": "Integrity", "es": "Integridad" },
+    "Definition.Cause": { "en": "Cause", "es": "Causa" },
+    "Definition.Membership": {
+      "en": "Membership of P in L",
+      "es": "Pertenencia de P a L"
+    },
+    "Definition.Incidence": {
+      "en": "Incidence of P on r",
+      "es": "Incidencia de P en r"
+    },
+    "Definition.UnestablishedPremise": {
+      "en": "Premise not established",
+      "es": "Premisa no establecida"
+    },
+    "Definition.Transfer": {
+      "en": "Transfer of the CU2 certificate",
+      "es": "Transferencia del certificado de CU2"
+    },
+    "Definition.DeclaredError": {
+      "en": "Declared error of the position, apart from the integrity",
+      "es": "Error declarado de la posición, aparte de la integridad"
+    },
+    "ConstructiveAuthority.Adoption.Title": {
+      "en": "Constructive authority",
+      "es": "Autoridad constructiva"
+    },
+    "ConstructiveAuthority.Adoption.Message": {
+      "en": "This command needs the constructive geometric authority of the document (constructive-authority/v1). Adopting it is one explicit change of the document that Undo reverses: durable identities, tokens and selectors do not change, and the relations listed below change their integrity or admission. Without the adoption the command is not created.",
+      "es": "Esta orden necesita la autoridad geométrica constructiva del documento (constructive-authority/v1). Adoptarla es un cambio explícito del documento que Deshacer revierte: las identidades durables, los tokens y los selectores no cambian, y las relaciones de la lista cambian su integridad o su admisión. Sin la adopción la orden no se crea."
+    },
+    "ConstructiveAuthority.Adoption.Examined": {
+      "en": "Relations examined",
+      "es": "Relaciones examinadas"
+    },
+    "ConstructiveAuthority.Adoption.Changes": {
+      "en": "Relations whose integrity or admission changes",
+      "es": "Relaciones cuya integridad o admisión cambia"
+    },
+    "ConstructiveAuthority.Adoption.NoChange": {
+      "en": "No relation changes its integrity or its admission.",
+      "es": "Ninguna relación cambia su integridad ni su admisión."
+    },
+    "ConstructiveAuthority.Adoption.Adopt": { "en": "Adopt", "es": "Adoptar" },
+    "ConstructiveAuthority.Adoption.Cancel": { "en": "Cancel", "es": "Cancelar" },
     "Workspace.Shortcuts": {
       "en": "Enter: commit Algebra Input; Escape: cancel; Ctrl+Z: undo; Ctrl+Y: redo. Use Zoom to rectangle for view-only navigation. Tab navigates controls; F1 opens tool help. Ctrl+Shift+U: Graphics View as Picture; Ctrl+Shift+C: copy the Graphics view as an image of the export area; Ctrl+Shift+D: Export 2D geometry as DXF.",
       "es": "Intro: confirmar Entrada algebraica; Esc: cancelar; Ctrl+Z: deshacer; Ctrl+Y: rehacer. Usa Zoom por rectángulo para navegación visual. Tab recorre controles; F1 abre la ayuda. Ctrl+Mayús+U: Vista gráfica como imagen; Ctrl+Mayús+C: copiar la vista gráfica como imagen del área de exportación; Ctrl+Mayús+D: exportar geometría 2D como DXF."

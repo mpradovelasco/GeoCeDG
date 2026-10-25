@@ -115,7 +115,11 @@ class G9U0LocalizationHelpTest {
 				intersection + "PairIsolationMethod",
 				intersection + "OverlapStatus",
 				intersection + "OverlapRelationKind",
-				intersection + "DiagnosticCode"
+				intersection + "DiagnosticCode",
+				// PRE-G9B-CU3: the evidence of every solution under both authorities.
+				intersection + "ExistenceGrade",
+				intersection + "ContactEvidenceClass",
+				intersection + "ConstructiveAdmission"
 		};
 		for (String className : enumClasses) {
 			for (Object constant : Class.forName(className).getEnumConstants()) {

@@ -58,16 +58,31 @@ public final class AuthorityPolicyAdoption {
 	 * @return the impact report computed before the adoption
 	 */
 	public static AuthorityAdoptionImpact adopt(Construction construction) {
+		AuthorityAdoptionImpact impact = adoptWithinTransaction(construction);
+		App app = construction.getApplication();
+		if (app != null) {
+			app.storeUndoInfo();
+		}
+		return impact;
+	}
+
+	/**
+	 * Applies the adoption as {@link #adopt(Construction)} does, but inside an explicit
+	 * transaction of the caller, which stores the one undo point of the whole transaction
+	 * afterwards; Undo then returns to the earlier policy together with the rest of the
+	 * transaction. No second undo point is stored, so two asynchronous history stores never
+	 * race.
+	 *
+	 * @param construction a document construction governed by the legacy policy
+	 * @return the impact report computed before the adoption
+	 */
+	public static AuthorityAdoptionImpact adoptWithinTransaction(Construction construction) {
 		AuthorityAdoptionImpact impact = report(construction);
 		construction.runAtomicConstructionMutation(() -> {
 			construction.getSpatialIdentityRegistry()
 					.adoptDocumentAuthority(DocumentAuthorityRecord.CONSTRUCTIVE_V1);
 			construction.updateConstruction(false);
 		});
-		App app = construction.getApplication();
-		if (app != null) {
-			app.storeUndoInfo();
-		}
 		return impact;
 	}
 
