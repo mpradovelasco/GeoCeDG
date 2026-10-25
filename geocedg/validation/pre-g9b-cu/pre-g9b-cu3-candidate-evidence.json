@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU3",
+  "recordKind": "IMPLEMENTATION_CANDIDATE",
+  "record": "docs/validation/pre_g9b_cu3_implementation_candidate_report.md",
+  "verificationRecord": "docs/validation/pre_g9b_cu3_verification_record.md, added by a documentary descendant of the candidate",
+  "authorDecision": "NOT_RECORDED_IN_THIS_ARTIFACT",
+  "candidateStatus": "CU3 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW",
+  "scope": {"CU3-A": "COMPLETE", "CU3-B": "PENDING (gate G-B not reached; three author decisions requested)"},
+  "selfApproved": false,
+  "passClaimed": false,
+  "authorCloseoutExecuted": false,
+  "constructiveAuthorityIsDefault": false,
+  "authorizations": [
+    {"instruction": "PRE-G9B-CU3 — Aprobación autoral de la autoridad constructiva e implementación por incrementos", "date": "2026-10-25", "record": "docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md"},
+    {"instruction": "PRE-G9B-CU3 — Decisión autoral sobre presupuestos de cálculo y continuación de E1", "date": "2026-10-25", "record": "docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md section 16"}
+  ],
+  "authorizedBase": {"commit": "3cd0f710c370c3985ea536f1cc5edcadeca930ee", "tree": "9e4984db1dec327e47afeec2c1072f78c6e9cc49"},
+  "branch": {"name": "phase/pre-g9b-cu3-implementation", "local": true, "upstream": null, "published": false},
+  "technicalCandidateState": "FROZEN AT THE E4 COMMIT THAT ADDS THIS FILE (identity reported in the verification record)",
+  "lineage": [
+    {"commit": "1f81666ea90f4ca53a9d782b4f905cc839c61cf1", "increment": "E0", "role": "approved contracts before code"},
+    {"commit": "acae78a951d6eed81434c82fd1a1d3c2df254cc5", "increment": "E0", "role": "budget decision and E1 implementation design"},
+    {"commit": "f09cd51c74005146ea404e8edf96413aee7f4162", "increment": "E1", "role": "foundations of the constructive authority"},
+    {"commit": "048683e2acdeed3e54af22bc131f3b6db04c8bcb", "increment": "E1", "role": "persisted authority policy and explicit adoption"},
+    {"commit": "97a85b1c9e05c2944970b64b3403375c8412be4a", "increment": "E1", "role": "class table and constructive cone"},
+    {"commit": "9553e4841cf4affd60b2e221e5041843061b7d7a", "increment": "E1", "role": "exact and interval evaluation of the cone"},
+    {"commit": "677f4e8d5e1c9df4af256e1930e5c2dbe85009be", "increment": "E1", "role": "transfer of the CU2 membership certificate by margin"},
+    {"commit": "f15ec0a096ca937887c472a52e28d705c78217e4", "increment": "E1", "role": "relaxed admission SUBSTITUTE_GENERIC v1"},
+    {"commit": "d99def043056094c4db85ea8e288cd396f722fa9", "increment": "E1", "role": "Point(L, D) and Intersect(L, r, D)"},
+    {"commit": "276a7d35eb7d06a08a0f958d26dc734662bb2746", "increment": "E1", "role": "certified evidence, H02 route and conflict rule (I-1 to I-3)"},
+    {"commit": "a0cfa2ed98225d96fa5d85a5d2cebe79dee44db7", "increment": "E1", "role": "constructive configuration of the intersection evidence and G8B-R1 re-qualification"},
+    {"commit": "7c844602ded1f8728b9c4106ad1bce1dc72d2b92", "increment": "E1", "role": "axes as reserved line targets (I-6, H06)"},
+    {"commit": "e5728ab78245bc9e32bfe604c0ac918b67b205ea", "increment": "E1", "role": "Stage A matrix"},
+    {"commit": "e80bf42e3ee93dbf1008ebf295b741dcc3c8e3a5", "increment": "E1", "role": "transfer routes structure and re-decision"},
+    {"commit": "0132e572f0d4897e0f2b6791c9eadb85aed75078", "increment": "E1", "role": "deterministic counters and G-AUT-8 bench"},
+    {"commit": "947aa35363272123c6d029a38d6e474c38e69637", "increment": "E1", "role": "bench fix for independent square roots"},
+    {"commit": "dd1000201697dda1516b8af99324a4a48edd0b7b", "increment": "E1", "role": "labels of the new diagnostics"},
+    {"commit": "721501742bf7bde0fabc033f23c758706f4b4e13", "increment": "E1", "role": "LF terminators of the labels"},
+    {"commit": "c9e9a2bc99143682f445ff342a68af3227978143", "increment": "E1", "role": "JUnit inventory"},
+    {"commit": "406a44d9dd28ada97ffed4d8bf4edcd786e09fbe", "increment": "E1", "role": "Desktop adoption offer, inspector and evidence labels"},
+    {"commit": "86cb710f6c17e2648785c58ede3d15b864132091", "increment": "E1", "role": "JUnit inventory"},
+    {"commit": "45729b6ebeb8acb54738795c70dd5c230af215f3", "increment": "E1", "role": "provenance census and near tangency (G-AUT-1)"},
+    {"commit": "50ac91c29fb2835874d10c7e7afe56c3c349f79f", "increment": "E1", "role": "JUnit inventory; E1 gates"},
+    {"commit": "73c20c5f85a0bceb4f2f5d1651a373688e5b57f8", "increment": "E1", "role": "E1 gate record"},
+    {"commit": "86be18d11ea7e93825e19320a382fc6a3415c73d", "increment": "E2", "role": "constructive identity certificate"},
+    {"commit": "b79558c1fcde1d905a3cf98d3ef87e618568026f", "increment": "E2", "role": "certificate cost bench"},
+    {"commit": "2b6a1709173d5800fe8dea940446af261926c6f7", "increment": "E2", "role": "JUnit inventory with executed final selections"},
+    {"commit": "91222e312fed9756225407be6f0c72a1eafeac6e", "increment": "E2", "role": "matrix citations; E2 gates"},
+    {"commit": "5a1ac888ebcd88006ccfb94ff51bf97b34b8c92d", "increment": "E2", "role": "E2 gate record"},
+    {"commit": "06f2bb409713b82a27b7da10094fc54822f80002", "increment": "E3", "role": "double root at an exact point and the seam reclassification"},
+    {"commit": "this commit", "increment": "E4", "role": "phase registration, executed JUnit inventory, infrastructure pins, E3 record and design, candidate report, this mirror and living documents"}
+  ],
+  "gates": {
+    "G-AUT-0": "SATISFIED (author decision)",
+    "G-AUT-1": "SATISFIED (E1 record)",
+    "G-AUT-3 to G-AUT-7": "SATISFIED (E1 record)",
+    "G-AUT-8": "SATISFIED (E1 and E2 records; E3 bench in the verification record)",
+    "G-AUT-2, G-AUT-9, G-AUT-10": "SATISFIED (E2 record)",
+    "G-A": "SATISFIED WITH THE CANDIDATE VERIFICATION (E3 record)",
+    "G-B": "NOT REACHED (CU3-B pending)",
+    "G-final": "INTEGRATED_PHASE ON THE CANDIDATE (verification record)"
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptanceProfiles": ["STATIC", "INFRA_UNIT", "PHASE -Phase PRE-G9B-CU3", "PHASE -Phase PRE-G9B-CU2", "PHASE -Phase PRE-G9B-CU1", "PHASE -Phase PRE-G9B-CU0", "INTEGRATION"],
+  "acceptanceResults": "RECORDED IN THE VERIFICATION RECORD",
+  "finalRun": false,
+  "phaseSelection": {
+    "phaseId": "PRE-G9B-CU3",
+    "requiredCheckIds": ["compile.shared.semantic", "compile.desktop.semantic", "junit.shared.pre-g9b-cu3.semantic", "junit.desktop.pre-g9b-cu3.semantic"],
+    "selections": {
+      "pre-g9b-cu3.shared": {"classes": 21, "identities": 194, "content": "the 18 classes of kernel.locus.constructive and the 3 PreG9BCu3* classes of kernel.locus.intersection"},
+      "pre-g9b-cu3.desktop": {"classes": 5, "identities": 14, "content": "the 5 PreG9BCu3* Desktop classes"}
+    },
+    "inputIdentity": {"commit": "1f81666ea90f4ca53a9d782b4f905cc839c61cf1", "tree": "3e8b6f039ef2b4ac72d71b51773a3ef309f6fb2c"}
+  },
+  "junitInventory": {
+    "updater": "tools/agent/update-verification-junit-inventory.ps1",
+    "producer": "tools/agent/checks/gradle-test-evidence-producer.ps1",
+    "evidenceSource": "clean tree of commit 06f2bb409713b82a27b7da10094fc54822f80002 for discovery and final selections; the same tree with the E4 registry and inventory changes for the two CU3 selections",
+    "counts": {
+      "discovery.shared": {"before": 6523, "after": 6534},
+      "discovery.desktop": {"before": 2268, "after": 2271},
+      "final.shared": {"before": 7440, "after": 7451},
+      "final.desktop": {"before": 2262, "after": 2265},
+      "pre-g9b-cu3.shared": {"before": null, "after": 194},
+      "pre-g9b-cu3.desktop": {"before": null, "after": 14}
+    },
+    "registryPin": {"before": "6531bd0388d8d48f19763123b50f02f0e2feef0cc7431ba94d04d7484d69900d", "after": "165135e8192fffa4ab1609eb5fcb44352fa00302858473ec3478be88a687dd61"},
+    "coverageTestPins": {"selections": "68 -> 70", "phaseSelections": "71 -> 72", "pre-g9b-cu3.shared": 194, "pre-g9b-cu3.desktop": 14}
+  },
+  "budgets": {
+    "cu3-exact-evaluation-budget/v1": {"state": "APPROVED", "limits": {"operations": 100000, "depth": 8, "bits": 4096}},
+    "constructive-identity-certificate-budget/v1": {"state": "PROVISIONAL INITIAL CEILINGS", "limits": {"termProducts": 16000000, "indeterminates": 16, "terms": 200000, "bits": 4096}, "changeProposed": false}
+  },
+  "evidence": [
+    "geocedg/validation/pre-g9b-cu/pre-g9b-cu3-e1-cost-evidence.json",
+    "geocedg/validation/pre-g9b-cu/pre-g9b-cu3-e1-base-reader-evidence.json",
+    "geocedg/validation/pre-g9b-cu/pre-g9b-cu3-e2-cost-evidence.json",
+    "geocedg/validation/pre-g9b-cu/pre-g9b-cu3-e3-cost-evidence.json (added by the verification record)"
+  ],
+  "decisionsRequested": [
+    "approval of the CU3-A candidate or the changes requested",
+    "CU3-B: separate increment with three decisions (one identity for a split fold, tie-break of two contacts with one germ at the fixed point of a fold, evidence inside the token) or deferral",
+    "provenance census: own characterization budget outside the product, or the regression without refutations",
+    "productive acceptance of the provisional ceilings of the certificate budget",
+    "response time under the constructive policy",
+    "publication of the branch"
+  ]
+}

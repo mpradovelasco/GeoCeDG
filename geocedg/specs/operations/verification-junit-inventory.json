@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "3130f0152905229cb8fc7bff554b2ff574676a170ecbfd1723e9c6e1aaa8cc41",
-      "discovered_identity_count": 6523,
-      "discovered_identities_sha256": "4ad83d15a97f2fb897b800cf58260f0aa270b4fc692ba11ed4cce4e0ad8f4e7d"
+      "discovery_evidence_sha256": "297bb3fe1161ce40fe05c0825c6e2dfb3de5f267911eb91067e43ab2a3abf667",
+      "discovered_identity_count": 6534,
+      "discovered_identities_sha256": "fa48272fcf85721de3f9c1aa230f8c931b6179f4ab0e2d4194349c76a45fe995"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "fa8f7aa49ed96846007217e70ddba16ead274b753f24debc36039a06b33a1f1e",
-      "discovered_identity_count": 2268,
-      "discovered_identities_sha256": "e5f1389ecc301697b7298fcfce2020ff0a21bb7f5c88747a3d0185e11b2cc428"
+      "discovery_evidence_sha256": "d7bcce0159a8b915c62438d43b6b420fbe7b94836d07cc983c1861664c4271ff",
+      "discovered_identity_count": 2271,
+      "discovered_identities_sha256": "8c8b2dbc8d614048a5df9ac9914ec95074bcb70de0bbe2ecab3b8b5191e3ffde"
     }
   ],
   "selections": [
@@ -38,8 +38,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 6523,
-      "expected_identities_sha256": "4ad83d15a97f2fb897b800cf58260f0aa270b4fc692ba11ed4cce4e0ad8f4e7d",
+      "expected_identity_count": 6534,
+      "expected_identities_sha256": "fa48272fcf85721de3f9c1aa230f8c931b6179f4ab0e2d4194349c76a45fe995",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2268,
-      "expected_identities_sha256": "e5f1389ecc301697b7298fcfce2020ff0a21bb7f5c88747a3d0185e11b2cc428",
+      "expected_identity_count": 2271,
+      "expected_identities_sha256": "8c8b2dbc8d614048a5df9ac9914ec95074bcb70de0bbe2ecab3b8b5191e3ffde",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7440,
-      "expected_identities_sha256": "3cdf1146c74a895d7ab3f2c2141e751c9d753e777696f4c04bc795683905d63b",
+      "expected_identity_count": 7451,
+      "expected_identities_sha256": "272a6f47d76a15c9a5fcedf08ec1cbcc371ff63d35255a92db4845ec8fba45db",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2262,
-      "expected_identities_sha256": "bc127321609147b94b78eaf3c32c95cf07ff95df9cb7a2281840c71030647882",
+      "expected_identity_count": 2265,
+      "expected_identities_sha256": "814867353cd73e3469b82b468127fa43c24eee42a9f1b3d0afd29159902547b5",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -3460,6 +3460,136 @@
         {
           "commit": "9bfafbf054c84ca7b88be732023f944af1ea3761",
           "tree": "af1ad02ea9d33586b755cac17398be44ab4729fd"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu3.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.kernel.locus.constructive.AuthorityPolicyPersistenceTest",
+        "org.geocedg.common.kernel.locus.constructive.AuthorityPolicyTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveClassTableTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluatorTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveConeTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveExactContactTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityAlgebraTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityCertifierTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityContactTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityIntegrationTest",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIntersectionAdmissionTest",
+        "org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransferTest",
+        "org.geocedg.common.kernel.locus.constructive.ExactQuadraticTowerTest",
+        "org.geocedg.common.kernel.locus.constructive.RelationIntegrityTest",
+        "org.geocedg.common.kernel.locus.constructive.StructuralPointMatrixTest",
+        "org.geocedg.common.kernel.locus.constructive.StructuralPointTest",
+        "org.geocedg.common.kernel.locus.constructive.SubstituteGenericEvidenceTest",
+        "org.geocedg.common.kernel.locus.constructive.SubstituteGenericPerturbationSetTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3CertifiedEvidenceTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ExactDoubleRootTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ReservedAxisTargetTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.AuthorityPolicyPersistenceTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.AuthorityPolicyTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveClassTableTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveConeEvaluatorTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveConeTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveExactContactTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityAlgebraTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityCertifierTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityContactTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIdentityIntegrationTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ConstructiveIntersectionAdmissionTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransferTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.ExactQuadraticTowerTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.RelationIntegrityTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.StructuralPointMatrixTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.StructuralPointTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.SubstituteGenericEvidenceTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.SubstituteGenericPerturbationSetTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3CertifiedEvidenceTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ExactDoubleRootTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ReservedAxisTargetTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 194,
+      "expected_identities_sha256": "d4ce68e4f7558b8c1365c0ba7521a71d5e40b2f1e180df99e05d876dd2525c20",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "1f81666ea90f4ca53a9d782b4f905cc839c61cf1",
+          "tree": "3e8b6f039ef2b4ac72d71b51773a3ef309f6fb2c"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu3.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BCu3BaseCharacterizationTest",
+        "org.geocedg.desktop.PreG9BCu3ConstructiveAdoptionDesktopTest",
+        "org.geocedg.desktop.PreG9BCu3ProvenanceCensusTest",
+        "org.geocedg.desktop.PreG9BCu3SeamReclassificationAuthorModelTest",
+        "org.geocedg.desktop.PreG9BCu3StructuralPointAuthorModelTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu3BaseCharacterizationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu3ConstructiveAdoptionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu3ProvenanceCensusTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu3SeamReclassificationAuthorModelTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu3StructuralPointAuthorModelTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 14,
+      "expected_identities_sha256": "362f8cf8cec91e320c985d0db777a228d071591727727ac3091c970a4a4d6805",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "1f81666ea90f4ca53a9d782b4f905cc839c61cf1",
+          "tree": "3e8b6f039ef2b4ac72d71b51773a3ef309f6fb2c"
         }
       ]
     }
