@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-e3-cost",
+  "status": "CU3 E3 BENCH EVIDENCE OF THE EXACT DECISIONS - NO VERDICT OF ITS OWN",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-e3-cost.ps1",
+    "source_commit": "3c2ca7e800001a19b96b686f1adb8fcc1866c796",
+    "source_tree": "0f782b29e83716b9a7b57c0b4a82c02cf6288168",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "budget": {
+    "version": "constructive-identity-certificate-budget/v1",
+    "term_products": 16000000,
+    "indeterminates": 16,
+    "terms": 200000,
+    "bits": 4096,
+    "status": "provisional initial ceilings (approval record section 16)"
+  },
+  "timing_runs": 5,
+  "exact_decisions": {
+    "e_1 n at 0": {
+      "certificate": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 26,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 279910,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 104,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 124.7334
+      },
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at 0",
+      "exact_contacts_of_the_source": ["CONTACT_EXISTENCE_EXACT FOLD_CONTACT at 0 [0.0,0.0] curvature -1"]
+    },
+    "e_1 c_1 at 0": {
+      "certificate": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 19,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 311202,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 14,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 173.0342
+      },
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at 0",
+      "exact_contacts_of_the_source": ["CONTACT_EXISTENCE_EXACT FOLD_CONTACT at 0 [0.0,0.0] curvature -1"]
+    },
+    "o_1 h_2 at 0": {
+      "certificate": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 33,
+        "contact_order": "TANGENT",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": 1,
+        "counters": {
+          "term_products": 1571841,
+          "indeterminates": 8,
+          "largest_terms": 21685,
+          "largest_bits": 114,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 862.0617
+      },
+      "fold": "cu2-certificate-transfer/v1 EVIDENCE_INSUFFICIENT DECISION_NOT_IN_CERTIFICATE: the certificate records no fold at 0 at 0",
+      "exact_contacts_of_the_source": ["CONTACT_EXISTENCE_EXACT TWO at 0 [0.0,0.0] curvature 1"]
+    },
+    "e_1 c_1 at pi": {
+      "certificate": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 19,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": -1,
+        "counters": {
+          "term_products": 311202,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 14,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 173.2039
+      },
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at pi",
+      "exact_contacts_of_the_source": ["CONTACT_EXISTENCE_EXACT FOLD_CONTACT at pi [3.141592653589793,3.1415926535897936] curvature -1"]
+    },
+    "e_1 r at pi": {
+      "certificate": {
+        "status": "IDENTITY_CERTIFIED",
+        "cause": "NONE",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "rbCone", "D_1.x", "D_1.y", "B.y"],
+        "cell_conditions": 26,
+        "contact_order": "STATIONARY",
+        "residual_first_derivative_sign": 0,
+        "residual_second_derivative_sign": 1,
+        "counters": {
+          "term_products": 279910,
+          "indeterminates": 8,
+          "largest_terms": 5915,
+          "largest_bits": 105,
+          "budget": "constructive-identity-certificate-budget/v1[termProducts=16000000, indeterminates=16, terms=200000, bits=4096]"
+        },
+        "deterministic_over_runs": true,
+        "median_wall_time_ms": 120.3397
+      },
+      "fold": "cu2-certificate-transfer/v1 TRANSFERRED STRUCTURE at pi",
+      "exact_contacts_of_the_source": ["CONTACT_EXISTENCE_EXACT FOLD_CONTACT at pi [3.141592653589793,3.1415926535897936] curvature 1"]
+    },
+    "budget injections on e_1 c_1 at pi": {
+      "term products 1000": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 12,
+        "contact_order": null,
+        "counters": {
+          "term_products": 1002,
+          "indeterminates": 8,
+          "largest_terms": 53,
+          "largest_bits": 5,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=1000, indeterminates=16, terms=200000, bits=4096]"
+        }
+      },
+      "indeterminates 4": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y"],
+        "cell_conditions": 0,
+        "contact_order": null,
+        "counters": {
+          "term_products": 0,
+          "indeterminates": 4,
+          "largest_terms": 0,
+          "largest_bits": 0,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=16000000, indeterminates=4, terms=200000, bits=4096]"
+        }
+      },
+      "terms 50": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 10,
+        "contact_order": null,
+        "counters": {
+          "term_products": 363,
+          "indeterminates": 8,
+          "largest_terms": 53,
+          "largest_bits": 3,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=16000000, indeterminates=16, terms=50, bits=4096]"
+        }
+      },
+      "bits 8": {
+        "status": "NOT_ESTABLISHED",
+        "cause": "BUDGET_EXHAUSTED",
+        "cuts": ["H"],
+        "indeterminates": ["A.x", "A.y", "H.x", "H.y", "D_1.x", "D_1.y", "rbCone", "B.y"],
+        "cell_conditions": 12,
+        "contact_order": null,
+        "counters": {
+          "term_products": 42585,
+          "indeterminates": 8,
+          "largest_terms": 3806,
+          "largest_bits": 12,
+          "budget": "constructive-identity-certificate-budget/v1 restricted[termProducts=16000000, indeterminates=16, terms=200000, bits=8]"
+        }
+      }
+    }
+  },
+  "document": {
+    "published_after_adoption": {
+      "u_1=Intersect(o_1,h_2)": ["0.0 TANGENT_ESTABLISHED EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT TWO admissible false"],
+      "cu3X1=Intersect(e_1,n)": ["0.0 TANGENT_ESTABLISHED EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT FOLD_CONTACT admissible false"],
+      "cu3X2=Intersect(e_1,c_1)": ["-3.141592653589793 TANGENT_ESTABLISHED EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT FOLD_CONTACT admissible false", "0.0 TANGENT_ESTABLISHED EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT FOLD_CONTACT admissible false"],
+      "cu3X3=Intersect(e_1,r)": ["-3.141592653589793 TANGENT_ESTABLISHED EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT FOLD_CONTACT admissible false"]
+    },
+    "median_adoption_ms": 2309.5289,
+    "median_drag_of_H_legacy_ms": 60.5199,
+    "median_drag_of_H_constructive_ms": 766.6253
+  },
+  "largest_observed": {
+    "term_products": 1571841,
+    "indeterminates": 8,
+    "terms": 21685,
+    "bits": 114
+  }
+}
