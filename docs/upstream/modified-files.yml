@@ -7172,6 +7172,18 @@
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: tests of the transfer of the membership (V-AUT-TRF-1, V-AUT-TRF-4 to V-AUT-TRF-6): the three driver positions of the mandatory contacts by margin, exact parameters, invalid parameters, constants without a rigorous enclosure, changed selection states, budget exhaustion and the intact source certificate.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericEvidence.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the relaxed kind SUBSTITUTE_GENERIC version 1: the incidence holds exactly at the binary64 boundary substitutes and at the N deterministic perturbations with the same strict sign vector, each evaluation within cu3-exact-evaluation-budget/v1, live algorithm checked at the base; RELAXED with every substitute named as an unestablished premise, never a proof of identity.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/SubstituteGenericEvidenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of SUBSTITUTE_GENERIC (V-AUT-RLX-1 to V-AUT-RLX-6): the five mandatory contacts RELAXED, accidental equalities of degree one and two, a product of substitutes, a nonzero cubic on the nine points (a finite agreement is never an identity), a perturbation that leaves the cell, determinism and the rigorous case without substitutes.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
 }
