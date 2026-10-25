@@ -301,7 +301,7 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		}
 		PersistentGeoId sourceId = source.getPersistentLocusId();
 		PersistentGeoId targetId = cons.getSpatialIdentityRegistry()
-				.getPersistentGeoId(target);
+				.getDurableReferenceId(target);
 		PersistentGeoId resultId = cons.getSpatialIdentityRegistry()
 				.getPersistentGeoId(result);
 		if (sourceId == null || targetId == null || resultId == null) {

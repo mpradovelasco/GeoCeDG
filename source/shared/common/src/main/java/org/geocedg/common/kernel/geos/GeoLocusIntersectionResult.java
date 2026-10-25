@@ -23,6 +23,7 @@ import org.geocedg.common.kernel.locus.intersection.PairSemanticSlotSelector2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
+import org.geocedg.common.kernel.spatial.identity.ReservedKernelReference;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
@@ -363,9 +364,15 @@ public final class GeoLocusIntersectionResult extends GeoElement
 				parent.getSource());
 		GeoIdentityRecord targetRecord = prospectiveRecord.apply(
 				parent.getTarget());
-		if (sourceRecord == null || targetRecord == null
+		// PRE-G9B-CU3 (CU3.5): a kernel axis target is its reserved reference, the same in
+		// every construction, so it is also the copy source of a copied target.
+		PersistentGeoId reservedTarget = targetRecord == null
+				? ReservedKernelReference.of(parent.getTarget()) : null;
+		PersistentGeoId targetId = targetRecord != null ? targetRecord.getId()
+				: reservedTarget;
+		if (sourceRecord == null || targetId == null
 				|| !hasExactDependencies(attachedRecord, sourceRecord.getId(),
-						targetRecord.getId())) {
+						targetId)) {
 			throw new IllegalArgumentException(
 					"Persisted token ledger lacks its exact reconstructed inputs");
 		}
@@ -375,11 +382,11 @@ public final class GeoLocusIntersectionResult extends GeoElement
 		String expectedSourcePair;
 		String expectedCopySourcePair = null;
 		if (tokenLedger.hasCurrentOwner(attachedOwner)) {
-			expectedSourcePair = sourcePair(sourceRecord.getId(),
-					targetRecord.getId());
+			expectedSourcePair = sourcePair(sourceRecord.getId(), targetId);
 			if (declaredCopySource != null) {
 				PersistentGeoId sourceCopy = sourceRecord.getCopySourceId();
-				PersistentGeoId targetCopy = targetRecord.getCopySourceId();
+				PersistentGeoId targetCopy = targetRecord != null
+						? targetRecord.getCopySourceId() : reservedTarget;
 				if (sourceCopy == null || targetCopy == null) {
 					throw new IllegalArgumentException(
 							"Token-ledger copy provenance lacks copied inputs");
@@ -388,7 +395,8 @@ public final class GeoLocusIntersectionResult extends GeoElement
 			}
 		} else {
 			PersistentGeoId sourceCopy = sourceRecord.getCopySourceId();
-			PersistentGeoId targetCopy = targetRecord.getCopySourceId();
+			PersistentGeoId targetCopy = targetRecord != null
+					? targetRecord.getCopySourceId() : reservedTarget;
 			if (!immediateCopy || sourceCopy == null || targetCopy == null) {
 				throw new IllegalArgumentException(
 						"Token-ledger owner transition lacks copied inputs");

@@ -106,6 +106,18 @@ public enum DurableDependencyProjection {
 		Objects.requireNonNull(identity);
 		IdentityHashMap<GeoElement, Boolean> visited = new IdentityHashMap<>();
 		visited.put(geo, Boolean.TRUE);
+		if (ConstructionGeoRedefineProvider.isPublicLocusV2Output(geo)) {
+			// PRE-G9B-CU3 (CU3.5): a kernel axis that is a direct input of a public Locus V2
+			// output is named by its reserved identity; every other projection keeps the
+			// identity-free axes, so no earlier frontier changes.
+			for (GeoElement input : ConstructionGeoRedefineProvider.durableDependencyGeos(geo)) {
+				PersistentGeoId reserved = ReservedKernelReference.of(input);
+				if (reserved != null) {
+					ids.add(reserved);
+					visited.put(input, Boolean.TRUE);
+				}
+			}
+		}
 		ArrayDeque<GeoElement> pending = new ArrayDeque<>();
 		pushInputs(geo, pending);
 		while (!pending.isEmpty()) {

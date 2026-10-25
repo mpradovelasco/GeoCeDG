@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * segment lose admissibility and finally disappear as the drawing is scaled, although the
  * geometry has two transverse roots at every scale; H06, the axes are not accepted as Locus V2
  * intersection targets while the equivalent line is. PRE-G9B-CU3 inverts H02 with the certified
- * route of {@code cu3-certified-admission/v1}.
+ * route of {@code cu3-certified-admission/v1} and H06 with the reserved axis references.
  */
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
@@ -94,12 +94,17 @@ class PreG9BCu0SyntheticCharacterizationTest {
 	}
 
 	@Test
-	void axesAreNotAcceptedAsIntersectionTargets() throws Exception {
+	void axesAreAcceptedAsIntersectionTargets() throws Exception {
+		JSONObject pinned = PreG9BCu0Baseline.load().getJSONObject("pins").getJSONObject("H06");
+		assertFalse(pinned.getBoolean("Intersect(L,xAxis)_created"), "historical pin");
+		// PRE-G9B-CU3 inversion of H06 (locus-v2-intersections.md CU3.5, decision D-CU3-8
+		// option A; proof in PreG9BCu3ReservedAxisTargetTest): the axes are reserved kernel
+		// references and unbounded line targets.
 		Map<String, Object> pin = PreG9BR6PlusF3Fixtures.onEdt(PreG9BCu0References::axisTarget);
-		assertFalse((Boolean) pin.get("Intersect(L,xAxis)_created"),
-				PreG9BCu0Baseline.pinMessage("H06", "CU3", "Intersect(L, xAxis) fails"));
-		assertFalse((Boolean) pin.get("Intersect(L,yAxis)_created"),
-				PreG9BCu0Baseline.pinMessage("H06", "CU3", "Intersect(L, yAxis) fails"));
+		assertTrue((Boolean) pin.get("Intersect(L,xAxis)_created"), PreG9BCu0Baseline
+				.inversionMessage("H06", "CU3", "Intersect(L, xAxis) is created"));
+		assertTrue((Boolean) pin.get("Intersect(L,yAxis)_created"), PreG9BCu0Baseline
+				.inversionMessage("H06", "CU3", "Intersect(L, yAxis) is created"));
 		assertTrue((Boolean) pin.get("Intersect(L,y=0)_created"),
 				"the equivalent explicit line is accepted");
 	}

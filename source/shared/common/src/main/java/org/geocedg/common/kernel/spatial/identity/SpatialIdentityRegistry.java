@@ -170,6 +170,19 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		return idsByGeo.get(geo);
 	}
 
+	/**
+	 * @return the identity by which a durable relation names the geo: its participating
+	 *         identity, or the reserved identity of a kernel axis of the owning construction
+	 *         ({@link ReservedKernelReference}); {@code null} otherwise
+	 */
+	public PersistentGeoId getDurableReferenceId(GeoElement geo) {
+		PersistentGeoId id = idsByGeo.get(geo);
+		if (id != null || geo == null || owner == null || geo.getConstruction() != owner) {
+			return id;
+		}
+		return ReservedKernelReference.of(geo);
+	}
+
 	/** @return the overlaid or currently published ID used for element XML */
 	public PersistentGeoId getPersistentGeoIdForSerialization(GeoElement geo) {
 		PersistentGeoId overlay = serializationOverlay.get(geo);
@@ -295,7 +308,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						SpatialIdentityDiagnostic.Code.MALFORMED_ID,
 						"Token source returned a malformed token"), exception);
 			}
-			if (issuedTokenIndex.containsKey(token)) {
+			if (issuedTokenIndex.containsKey(token)
+					|| ReservedKernelReference.isReservedToken(token)) {
 				instrumentation.recordCollision(kind);
 				continue;
 			}
@@ -464,7 +478,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 		for (GeoIdentityRecord record : prospective.values()) {
 			for (SpatialIdentityId dependency : record.getReferences()) {
-				if (!available.contains(dependency)) {
+				if (!available.contains(dependency)
+						&& !ReservedKernelReference.isReserved(dependency)) {
 					throw failure(SpatialIdentityDiagnostic.forReference(
 							SpatialIdentityDiagnostic.Code.MISSING_REFERENCE,
 							"Staged redefine participation omits a durable dependency",
@@ -607,7 +622,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			for (SpatialIdentityRecord record : batch) {
 				for (SpatialIdentityId dependency : record.getReferences()) {
 					if (!records.containsKey(dependency)
-							&& !stagedIds.contains(dependency)) {
+							&& !stagedIds.contains(dependency)
+							&& !ReservedKernelReference.isReserved(dependency)) {
 						throw failure(SpatialIdentityDiagnostic.forReference(
 								SpatialIdentityDiagnostic.Code.MISSING_REFERENCE,
 								"Construction participation omits a durable dependency",
@@ -818,7 +834,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 						id));
 			}
 			for (SpatialIdentityId reference : record.getReferences()) {
-				if (!context.contains(reference)) {
+				if (!context.contains(reference)
+						&& !ReservedKernelReference.isReserved(reference)) {
 					pending.add(reference);
 				}
 			}
@@ -860,7 +877,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 		for (SpatialIdentityRecord record : ownedRecords) {
 			for (SpatialIdentityId reference : record.getReferences()) {
-				if (!ownedIds.contains(reference) && !externalIds.contains(reference)) {
+				if (!ownedIds.contains(reference) && !externalIds.contains(reference)
+						&& !ReservedKernelReference.isReserved(reference)) {
 					throw failure(SpatialIdentityDiagnostic.forReference(
 							SpatialIdentityDiagnostic.Code.INCOMPLETE_CLOSURE,
 							"Spatial copy has an undeclared external reference",
@@ -1294,7 +1312,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		for (SpatialIdentityRecord record : immutableSortedRecords(graph.values())) {
 			ArrayList<SpatialIdentityDiagnostic> missing = new ArrayList<>();
 			for (SpatialIdentityId reference : record.getReferences()) {
-				if (!graph.containsKey(reference)) {
+				if (!graph.containsKey(reference)
+						&& !ReservedKernelReference.isReserved(reference)) {
 					missing.add(SpatialIdentityDiagnostic.forReference(
 							SpatialIdentityDiagnostic.Code.MISSING_REFERENCE,
 							"Record retains an unresolved typed reference",
@@ -6470,6 +6489,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			Objects.requireNonNull(record);
 			validateRecordShape(record);
 			SpatialIdentityId id = record.getId();
+			requireUnreservedToken(id);
 			if (batchIds.put(id, record) != null || records.containsKey(id)) {
 				instrumentation.recordCollision(id.getKind());
 				throw failure(SpatialIdentityDiagnostic.forSubject(
@@ -6529,7 +6549,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			}
 			if (requireCompleteClosure) {
 				for (SpatialIdentityId reference : record.getReferences()) {
-					if (!batchIds.containsKey(reference)) {
+					if (!batchIds.containsKey(reference)
+							&& !ReservedKernelReference.isReserved(reference)) {
 						throw failure(SpatialIdentityDiagnostic.forReference(
 								SpatialIdentityDiagnostic.Code.INCOMPLETE_CLOSURE,
 								"Import closure omits a referenced identity",
@@ -6613,7 +6634,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				for (GeoElement dependencyGeo
 						: ConstructionGeoRedefineProvider.durableDependencyGeos(
 								attachedGeo)) {
-					if (prospectiveRecord.apply(dependencyGeo) == null) {
+					if (prospectiveRecord.apply(dependencyGeo) == null
+							&& ReservedKernelReference.of(dependencyGeo) == null) {
 						throw malformedConstructionIdentity(attachedRecord,
 								"required public dependency has no prospective identity");
 					}
@@ -6704,6 +6726,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			Objects.requireNonNull(record);
 			validateRecordShape(record);
 			SpatialIdentityId id = record.getId();
+			requireUnreservedToken(id);
 			if (batchIds.put(id, record) != null) {
 				instrumentation.recordCollision(id.getKind());
 				throw failure(SpatialIdentityDiagnostic.forSubject(
@@ -6750,7 +6773,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		}
 		for (SpatialIdentityRecord record : batch) {
 			for (SpatialIdentityId reference : record.getReferences()) {
-				if (!batchIds.containsKey(reference)) {
+				if (!batchIds.containsKey(reference)
+						&& !ReservedKernelReference.isReserved(reference)) {
 					throw failure(SpatialIdentityDiagnostic.forReference(
 							SpatialIdentityDiagnostic.Code.INCOMPLETE_CLOSURE,
 							"Import closure omits a referenced identity",
@@ -6916,6 +6940,15 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		return Double.isFinite(value) && value > 0;
 	}
 
+	/** A reserved kernel reference is never the identity of a record, of any kind. */
+	private void requireUnreservedToken(SpatialIdentityId id) {
+		if (ReservedKernelReference.isReservedToken(id.getRawToken())) {
+			throw failure(SpatialIdentityDiagnostic.forSubject(
+					SpatialIdentityDiagnostic.Code.MALFORMED_ID,
+					"A record cannot use the token of a reserved kernel reference", id));
+		}
+	}
+
 	private void validateAttachmentGeo(GeoElement geo, PersistentGeoId id) {
 		if (owner != null && geo.getConstruction() != owner) {
 			throw failure(SpatialIdentityDiagnostic.forSubject(
@@ -6964,7 +6997,12 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				}
 				if (connected) {
 					changed |= closure.add(record.getId());
-					changed |= closure.addAll(record.getReferences());
+					for (SpatialIdentityId reference : record.getReferences()) {
+						// A reserved kernel reference is resolved by the destination, never copied.
+						if (!ReservedKernelReference.isReserved(reference)) {
+							changed |= closure.add(reference);
+						}
+					}
 				}
 			}
 		} while (changed);

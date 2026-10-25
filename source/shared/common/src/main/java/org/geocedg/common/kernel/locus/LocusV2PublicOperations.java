@@ -1027,7 +1027,9 @@ public final class LocusV2PublicOperations {
 		}
 
 		private PersistentGeoId prepare(GeoElement geo) {
-			PersistentGeoId existing = registry.getPersistentGeoId(geo);
+			// A kernel axis is a reserved reference (CU3.5): it is never promoted, labelled
+			// or attached, and needs no record.
+			PersistentGeoId existing = registry.getDurableReferenceId(geo);
 			if (existing != null) {
 				return existing;
 			}

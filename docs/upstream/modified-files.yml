@@ -1380,7 +1380,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoLocusIntersectionV2.java",
       "change": "added",
-      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies and typed target capture; R4 inserts deterministic current-root resolution before atomic canonical-ledger publication, with prior-state transition evidence diagnostic only. PRE-G9B-CU3 increment E1: the public command computes its certified evidence in the decision configuration of the authority policy of its document.",
+      "purpose": "Publish one coherent immutable G8B/G8C1 rich intersection snapshot through normal Construction DAG dependencies and typed target capture; R4 inserts deterministic current-root resolution before atomic canonical-ledger publication, with prior-state transition evidence diagnostic only. PRE-G9B-CU3 increment E1: the public command computes its certified evidence in the decision configuration of the authority policy of its document. PRE-G9B-CU3 piece I-6: the target identity of the source pair is its durable reference, the reserved identity for an axis.",
       "authority": "geocedg/specs/locus/locus-v2-extended-intersections.md"
     },
     {
@@ -1392,7 +1392,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusIntersectionResult.java",
       "change": "added",
-      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible persistence and an exact token ledger; R1 adds strict two-source pair attachment/copy provenance and retained singleton-slot claims without changing R4 one-source lifecycle or allowing label/coordinate inference. PRE-G9B-R2-E0/E1 proves the copy association of every participant a pair parameterization contract names from exact identity-record copy provenance and exposes retained pair selectors.",
+      "purpose": "Publish rich intersection authority as a nonnumeric, nondrawable DAG node with reconstructible persistence and an exact token ledger; R1 adds strict two-source pair attachment/copy provenance and retained singleton-slot claims without changing R4 one-source lifecycle or allowing label/coordinate inference. PRE-G9B-R2-E0/E1 proves the copy association of every participant a pair parameterization contract names from exact identity-record copy provenance and exposes retained pair selectors. PRE-G9B-CU3 piece I-6: a kernel axis target is validated by its reserved identity, which is also its copy source.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -1878,7 +1878,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/SpatialIdentityRegistry.java",
       "change": "added",
-      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R3-R1: the late-participation Javadoc distinguishes the version-1 direct inputs from the version-2 frontier walk; no code change. PRE-G9B-CU3 increment E1: own the document authority policy record (constructive-authority/v1): a load stages it strictly, rejects it in clipboard, macro and detached sections and restores it exactly on every whole-document parse; the document and redefine sections write it first and closure sections never; only the explicit adoption event sets it. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
+      "purpose": "Preserve G9A1 atomic identity lifecycle while validating, remapping and publishing exact records, including the R6 interaction-owned semantic-point role only for structurally dedicated inputs and restoring their auxiliary/restricted presentation after identity attachment on reopen. G9U1 review round 1: update affected existing construction dependency records during ordinary late-input participation in the same atomic registry/runtime publication, preserving IDs/schema/revisions and G9A guards; strict native load/copy never repairs stale records. PRE-G9B-R3: validate every construction record under the dependency rule named by its schemaVersion (1 direct, 2 transitive durable frontier) and reject unknown versions; lift the old target to the frontier for assessment; assess typed DURABLE_CONTRACT_CHANGE and UNDESCRIBABLE_PROPOSAL outcomes with the two explicit operation flags and authorize the identity-preserving contract update; upgrade a retained version-1 record inside its own redefine transaction; certify a version-2 frontier refresh after an ordinary-edit rebuild; publish copied construction records as version 2. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-R3-R1: the late-participation Javadoc distinguishes the version-1 direct inputs from the version-2 frontier walk; no code change. PRE-G9B-CU3 increment E1: own the document authority policy record (constructive-authority/v1): a load stages it strictly, rejects it in clipboard, macro and detached sections and restores it exactly on every whole-document parse; the document and redefine sections write it first and closure sections never; only the explicit adoption event sets it. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. PRE-G9B-CU3 piece I-6 (CU3.5): reserved kernel references of the axes accepted as references of records and closures, excluded from allocation, record identities and clipboard closures, and reachable through getDurableReferenceId; getPersistentGeoId is unchanged.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -2862,7 +2862,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
+      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. PRE-G9B-CU3 piece I-6: a kernel axis dependency is a reserved reference, never promoted, labelled or attached.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -4752,7 +4752,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/DurableDependencyProjection.java",
       "change": "added",
-      "purpose": "PRE-G9B-R3: implement the single versioned durable dependency projection (DIRECT for version 1, TRANSITIVE_DURABLE_FRONTIER for version 2) shared by publication, assessment, validation, refresh and copy.",
+      "purpose": "PRE-G9B-R3: implement the single versioned durable dependency projection (DIRECT for version 1, TRANSITIVE_DURABLE_FRONTIER for version 2) shared by publication, assessment, validation, refresh and copy. PRE-G9B-CU3 piece I-6: a kernel axis that is a direct input of a public Locus V2 output is named by its reserved identity; every other projection, and so every earlier frontier, is unchanged.",
       "authority": "geocedg/specs/spatial/durable-dependency-projection.md"
     },
     {
@@ -6456,7 +6456,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu0SyntheticCharacterizationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion. PRE-G9B-CU1 inverts H10 and H11. PRE-G9B-CU3 increment E1: the H02 pin inverted by the certified route of cu3-certified-admission/v1; the baseline keeps the pinned counts as historical evidence.",
+      "purpose": "PRE-G9B-CU0 synthetic pins: H02 scale-dependent admissibility of transverse roots, H06 axes as targets, H10 metric aliasing and H11 metric budget exhaustion. PRE-G9B-CU1 inverts H10 and H11. PRE-G9B-CU3 increment E1: the H02 pin inverted by the certified route of cu3-certified-admission/v1; the baseline keeps the pinned counts as historical evidence. PRE-G9B-CU3 piece I-6: the H06 pin inverted by the reserved axis references; the baseline keeps the pinned flags as historical evidence.",
       "authority": "docs/validation/pre_g9b_cu0_baseline_candidate_report.md"
     },
     {
@@ -7309,6 +7309,18 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIntersectionAdmissionTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: tests of the public intersection under the constructive authority: Sigma_C residual enclosures, conflict rule in Sigma_C, re-qualification of G8B-R1 at the adoption with its report, Undo, unchanged tokens, a slice outside the class and the fold contacts of the author's model.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/spatial/identity/ReservedKernelReference.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-6 (H06, D-CU3-8 option A): the kernel axes as reserved references of the spatial identity registry with fixed symbolic identities, never allocated, recorded or attached, resolved from the construction that reads them.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu3ReservedAxisTargetTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 piece I-6: tests of the axes as Locus V2 intersection targets: creation, reserved identities in the durable relation, saving, reopening, Undo, Redo, copy and paste, a typed result for an unsupported target and no hidden line.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
