@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-e1-base-reader",
+  "status": "CU3 E1 V-AUT-ADOPT-7 EVIDENCE - NO VERDICT OF ITS OWN",
+  "matrix_rows": [
+    "V-AUT-ADOPT-7",
+    "V-A-COMPAT-1",
+    "V-A-COMPAT-2"
+  ],
+  "writer": {
+    "commit": "50ac91c29fb2835874d10c7e7afe56c3c349f79f",
+    "method": "scratch probe in the common-jre test source set, not versioned: on the replica construction O=(0,0), c=Circle(O,3), P=Point(c), Q=Midpoint(O,P), L=LocusV2(Q,P), D=Intersect(c,yAxis,2), g=Line((0,1.5),(1,1.5)); legacy-control.xml without adoption; adopted-empty.xml after AuthorityPolicyAdoption.adopt on an empty document; adopted-cu3.xml after the adoption and S=Point(L,D), X=Intersect(L,g,D); each written with getXML()"
+  },
+  "reader": {
+    "base_commit": "3cd0f710c370c3985ea536f1cc5edcadeca930ee",
+    "build": "git archive of the base commit, extracted and built apart from the repository",
+    "method": "scratch probe in the common-jre test source set of the base build, not versioned: AppCommonFactory.create(new AppConfigGeoCeDG(true)), then getXMLio().processXMLString(xml, true, false, false) for each document in order; after each, the construction and whether its XML carries the policy"
+  },
+  "documents": [
+    {
+      "order": 1,
+      "document": "legacy-control.xml",
+      "sha256": "4109f0bfa06ab03be58ca8a80254e0505ae174335464b4f3ca038f4c42dcc61a",
+      "bytes": 5495,
+      "has_policy_record": false,
+      "structural_forms": [],
+      "outcome": "LOADED",
+      "cause_chain": [],
+      "construction_after": [
+        "O[GeoPoint]",
+        "c[GeoConic/AlgoCirclePointRadius]",
+        "P[GeoPoint/AlgoPointOnPath]",
+        "Q[GeoPoint/AlgoMidpoint]",
+        "L[GeoLocusV2/AlgoDependentPointLocusV2]",
+        "D[GeoPoint/AlgoIntersectSingle]",
+        "g[GeoLine/AlgoJoinPoints]"
+      ],
+      "policy_after": false
+    },
+    {
+      "order": 2,
+      "document": "adopted-empty.xml",
+      "sha256": "29686d428ea9e0ac3995eee53bbc097f2a43c97073b89f118afa86c065838be1",
+      "bytes": 1617,
+      "has_policy_record": true,
+      "structural_forms": [],
+      "outcome": "FAILED",
+      "cause_chain": [
+        "SpatialIdentityException: MALFORMED_RECORD: Malformed authorityPolicy persistence record [MALFORMED_RECORD]",
+        "IllegalArgumentException: Unknown geocedgSpatial record: authorityPolicy"
+      ],
+      "construction_after": [
+        "O[GeoPoint]",
+        "c[GeoConic/AlgoCirclePointRadius]",
+        "P[GeoPoint/AlgoPointOnPath]",
+        "Q[GeoPoint/AlgoMidpoint]",
+        "L[GeoLocusV2/AlgoDependentPointLocusV2]",
+        "D[GeoPoint/AlgoIntersectSingle]",
+        "g[GeoLine/AlgoJoinPoints]"
+      ],
+      "policy_after": false
+    },
+    {
+      "order": 3,
+      "document": "adopted-cu3.xml",
+      "sha256": "de43844c89f99580aff5f57ca95065af3295591871d0c0e23166eb815287a311",
+      "bytes": 8053,
+      "has_policy_record": true,
+      "structural_forms": [
+        "Point",
+        "Intersect"
+      ],
+      "outcome": "FAILED",
+      "cause_chain": [
+        "SpatialIdentityException: MALFORMED_RECORD: Malformed authorityPolicy persistence record [MALFORMED_RECORD]",
+        "IllegalArgumentException: Unknown geocedgSpatial record: authorityPolicy"
+      ],
+      "construction_after": [
+        "O[GeoPoint]",
+        "c[GeoConic/AlgoCirclePointRadius]",
+        "P[GeoPoint/AlgoPointOnPath]",
+        "Q[GeoPoint/AlgoMidpoint]",
+        "L[GeoLocusV2/AlgoDependentPointLocusV2]",
+        "D[GeoPoint/AlgoIntersectSingle]",
+        "g[GeoLine/AlgoJoinPoints]"
+      ],
+      "policy_after": false
+    },
+    {
+      "order": 4,
+      "document": "legacy-control.xml",
+      "sha256": "4109f0bfa06ab03be58ca8a80254e0505ae174335464b4f3ca038f4c42dcc61a",
+      "bytes": 5495,
+      "has_policy_record": false,
+      "structural_forms": [],
+      "outcome": "LOADED",
+      "cause_chain": [],
+      "construction_after": [
+        "O[GeoPoint]",
+        "c[GeoConic/AlgoCirclePointRadius]",
+        "P[GeoPoint/AlgoPointOnPath]",
+        "Q[GeoPoint/AlgoMidpoint]",
+        "L[GeoLocusV2/AlgoDependentPointLocusV2]",
+        "D[GeoPoint/AlgoIntersectSingle]",
+        "g[GeoLine/AlgoJoinPoints]"
+      ],
+      "policy_after": false
+    }
+  ],
+  "reading": "The base reader loads the legacy control. Each document with the policy record fails closed with MALFORMED_RECORD (Unknown geocedgSpatial record: authorityPolicy) and loads nothing: the construction stays the document opened before, and no form of CU3 is created or reinterpreted. A document with a form of CU3 always carries the record, so the base aborts the whole load."
+}

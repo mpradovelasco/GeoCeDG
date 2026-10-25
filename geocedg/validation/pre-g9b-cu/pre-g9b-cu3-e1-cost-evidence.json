@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-e1-cost",
+  "status": "CU3 E1 GATE G-AUT-8 BENCH EVIDENCE - NO VERDICT OF ITS OWN",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-e1-cost.ps1",
+    "source_commit": "50ac91c29fb2835874d10c7e7afe56c3c349f79f",
+    "source_tree": "01b5a4255e90866c71008f7df9e7b696bc581ca9",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "budget": {
+    "version": "cu3-exact-evaluation-budget/v1",
+    "operations": 100000,
+    "depth": 8,
+    "bits": 4096
+  },
+  "timing_runs": 7,
+  "model": {
+    "SPe=Point(e_1,K)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "STRICT",
+      "membership": "STRICT",
+      "incidence": null,
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at 0",
+      "exact": {
+        "operations": 83,
+        "additions": 33,
+        "multiplications": 38,
+        "inversions": 5,
+        "sign_decisions": 7,
+        "square_roots": 0,
+        "rational_square_roots": 1,
+        "depth": 0,
+        "maximum_bits": 109
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.5939
+    },
+    "SPo=Point(o_1,K)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "STRICT",
+      "membership": "STRICT",
+      "incidence": null,
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at 0",
+      "exact": {
+        "operations": 83,
+        "additions": 33,
+        "multiplications": 38,
+        "inversions": 5,
+        "sign_decisions": 7,
+        "square_roots": 0,
+        "rational_square_roots": 1,
+        "depth": 0,
+        "maximum_bits": 109
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.5282
+    },
+    "SPj=Point(e_1,J)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "STRICT",
+      "membership": "STRICT",
+      "incidence": null,
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi",
+      "exact": {
+        "operations": 83,
+        "additions": 33,
+        "multiplications": 38,
+        "inversions": 5,
+        "sign_decisions": 7,
+        "square_roots": 0,
+        "rational_square_roots": 1,
+        "depth": 0,
+        "maximum_bits": 109
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.4869
+    },
+    "SX1=Intersect(e_1,n,K)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "RELAXED",
+      "membership": "STRICT",
+      "incidence": "RELAXED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at 0",
+      "exact": {
+        "operations": 543,
+        "additions": 206,
+        "multiplications": 265,
+        "inversions": 25,
+        "sign_decisions": 46,
+        "square_roots": 1,
+        "rational_square_roots": 2,
+        "depth": 1,
+        "maximum_bits": 385
+      },
+      "substitute_generic": {
+        "evaluations": 9,
+        "operations_total": 4638,
+        "operations_largest": 526,
+        "depth_largest": 1,
+        "bits_largest": 385
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 6.6049
+    },
+    "SX2=Intersect(e_1,c_1,K)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "RELAXED",
+      "membership": "STRICT",
+      "incidence": "RELAXED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at 0",
+      "exact": {
+        "operations": 479,
+        "additions": 186,
+        "multiplications": 234,
+        "inversions": 23,
+        "sign_decisions": 35,
+        "square_roots": 1,
+        "rational_square_roots": 2,
+        "depth": 1,
+        "maximum_bits": 477
+      },
+      "substitute_generic": {
+        "evaluations": 9,
+        "operations_total": 4062,
+        "operations_largest": 462,
+        "depth_largest": 1,
+        "bits_largest": 477
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 5.3968
+    },
+    "SX3=Intersect(o_1,h_2,K)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "RELAXED",
+      "membership": "STRICT",
+      "incidence": "RELAXED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at 0",
+      "exact": {
+        "operations": 1531,
+        "additions": 613,
+        "multiplications": 786,
+        "inversions": 31,
+        "sign_decisions": 99,
+        "square_roots": 2,
+        "rational_square_roots": 2,
+        "depth": 2,
+        "maximum_bits": 478
+      },
+      "substitute_generic": {
+        "evaluations": 9,
+        "operations_total": 11554,
+        "operations_largest": 1514,
+        "depth_largest": 2,
+        "bits_largest": 478
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 5.9619
+    },
+    "SX4=Intersect(e_1,c_1,J)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "RELAXED",
+      "membership": "STRICT",
+      "incidence": "RELAXED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi",
+      "exact": {
+        "operations": 479,
+        "additions": 186,
+        "multiplications": 234,
+        "inversions": 23,
+        "sign_decisions": 35,
+        "square_roots": 1,
+        "rational_square_roots": 2,
+        "depth": 1,
+        "maximum_bits": 477
+      },
+      "substitute_generic": {
+        "evaluations": 9,
+        "operations_total": 4062,
+        "operations_largest": 462,
+        "depth_largest": 1,
+        "bits_largest": 477
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 3.2525
+    },
+    "SX5=Intersect(e_1,r,J)": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "RELAXED",
+      "membership": "STRICT",
+      "incidence": "RELAXED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi",
+      "exact": {
+        "operations": 543,
+        "additions": 206,
+        "multiplications": 265,
+        "inversions": 25,
+        "sign_decisions": 46,
+        "square_roots": 1,
+        "rational_square_roots": 2,
+        "depth": 1,
+        "maximum_bits": 389
+      },
+      "substitute_generic": {
+        "evaluations": 9,
+        "operations_total": 4638,
+        "operations_largest": 526,
+        "depth_largest": 1,
+        "bits_largest": 389
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 4.2637
+    },
+    "budget injection on SX1 (8 operations)": {
+      "defined": false,
+      "cause": "EXACT_EVALUATION_BUDGET_EXHAUSTED",
+      "integrity": "NOT_ESTABLISHED",
+      "membership": null,
+      "incidence": null,
+      "transfer": null,
+      "exact": {
+        "operations": 9,
+        "additions": 3,
+        "multiplications": 6,
+        "inversions": 0,
+        "sign_decisions": 0,
+        "square_roots": 0,
+        "rational_square_roots": 0,
+        "depth": 0,
+        "maximum_bits": 52
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      }
+    },
+    "drag of the driver without a new revision": {
+      "same resolution after moving E_1": true,
+      "same exact counters": true
+    }
+  },
+  "synthetic": {
+    "V-M3-5 radius 1.5 against y = 1.5": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "STRICT",
+      "membership": "STRICT",
+      "incidence": "STRICT",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi/2",
+      "exact": {
+        "operations": 79,
+        "additions": 33,
+        "multiplications": 33,
+        "inversions": 4,
+        "sign_decisions": 9,
+        "square_roots": 0,
+        "rational_square_roots": 1,
+        "depth": 0,
+        "maximum_bits": 6
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.1715
+    },
+    "V-M3-4 one ulp away": {
+      "defined": false,
+      "cause": "INCIDENCE_REFUTED_IN_CONSTRUCTIVE_CONFIGURATION",
+      "integrity": "NOT_ESTABLISHED",
+      "membership": null,
+      "incidence": "CONTRADICTED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi/2",
+      "exact": {
+        "operations": 79,
+        "additions": 33,
+        "multiplications": 33,
+        "inversions": 4,
+        "sign_decisions": 9,
+        "square_roots": 0,
+        "rational_square_roots": 1,
+        "depth": 0,
+        "maximum_bits": 53
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.094
+    },
+    "V-M3-6 0.3 against 0.1 + 0.2": {
+      "defined": false,
+      "cause": "INCIDENCE_REFUTED_IN_CONSTRUCTIVE_CONFIGURATION",
+      "integrity": "NOT_ESTABLISHED",
+      "membership": null,
+      "incidence": "CONTRADICTED",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi/2",
+      "exact": {
+        "operations": 77,
+        "additions": 32,
+        "multiplications": 33,
+        "inversions": 4,
+        "sign_decisions": 8,
+        "square_roots": 0,
+        "rational_square_roots": 1,
+        "depth": 0,
+        "maximum_bits": 107
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.2852
+    },
+    "V-CFG-1 joint recomputation": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "STRICT",
+      "membership": "STRICT",
+      "incidence": "STRICT",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at pi",
+      "exact": {
+        "operations": 238,
+        "additions": 103,
+        "multiplications": 103,
+        "inversions": 8,
+        "sign_decisions": 23,
+        "square_roots": 1,
+        "rational_square_roots": 1,
+        "depth": 1,
+        "maximum_bits": 6
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.1236
+    },
+    "independent square roots": {
+      "defined": true,
+      "cause": "null",
+      "integrity": "STRICT",
+      "membership": "STRICT",
+      "incidence": "STRICT",
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at [-1.3181160716528189, -1.318116071652817]",
+      "exact": {
+        "operations": 2740,
+        "additions": 1118,
+        "multiplications": 1559,
+        "inversions": 12,
+        "sign_decisions": 48,
+        "square_roots": 3,
+        "rational_square_roots": 0,
+        "depth": 3,
+        "maximum_bits": 105
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "deterministic_over_runs": true,
+      "median_wall_time_ms": 0.2331
+    },
+    "independent square roots, depth budget 1": {
+      "defined": false,
+      "cause": "EXACT_EVALUATION_BUDGET_EXHAUSTED",
+      "integrity": "NOT_ESTABLISHED",
+      "membership": null,
+      "incidence": null,
+      "transfer": "cu2-certificate-transfer/v1 TRANSFERRED MARGIN at [-1.3181160716528189, -1.318116071652817]",
+      "exact": {
+        "operations": 266,
+        "additions": 112,
+        "multiplications": 123,
+        "inversions": 4,
+        "sign_decisions": 25,
+        "square_roots": 2,
+        "rational_square_roots": 0,
+        "depth": 1,
+        "maximum_bits": 105
+      },
+      "substitute_generic": {
+        "evaluations": 0,
+        "operations_total": 0,
+        "operations_largest": 0,
+        "depth_largest": 0,
+        "bits_largest": 0
+      },
+      "budget": "cu3-exact-evaluation-budget/v1 restricted[operations=100000, depth=1, bits=4096]"
+    }
+  }
+}
