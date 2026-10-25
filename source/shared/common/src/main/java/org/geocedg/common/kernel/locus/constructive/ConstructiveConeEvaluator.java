@@ -340,6 +340,7 @@ public final class ConstructiveConeEvaluator<T> {
 	private final ConstructiveArithmetic<T> arithmetic;
 	private final boolean checkLive;
 	private final Map<Integer, ExactRational2D[]> overrides;
+	private final Map<Integer, Object> fixed;
 	private final Object[] values;
 	private final Result[] failures;
 	private final boolean[] done;
@@ -358,11 +359,28 @@ public final class ConstructiveConeEvaluator<T> {
 	 */
 	public ConstructiveConeEvaluator(ConstructiveCone cone, ConstructiveArithmetic<T> arithmetic,
 			boolean checkLive, Map<Integer, ExactRational2D[]> substitutes) {
+		this(cone, arithmetic, checkLive, substitutes, Collections.emptyMap());
+	}
+
+	/**
+	 * @param cone the cone
+	 * @param arithmetic the number system
+	 * @param checkLive whether the live algorithm is checked outside a substituted driver slice
+	 * @param substitutes exact values that replace the binary64 substitutes of some boundary
+	 *        nodes, by node index: two coordinates of a point or one number
+	 * @param values values of the number system that some nodes take instead of their own,
+	 *        by node index: a {@link Point}, {@link Line}, {@link Circle} or a real; the
+	 *        ancestors of such a node are not evaluated for it
+	 */
+	public ConstructiveConeEvaluator(ConstructiveCone cone, ConstructiveArithmetic<T> arithmetic,
+			boolean checkLive, Map<Integer, ExactRational2D[]> substitutes,
+			Map<Integer, Object> values) {
 		this.cone = Objects.requireNonNull(cone);
 		this.arithmetic = Objects.requireNonNull(arithmetic);
 		this.checkLive = checkLive;
 		this.overrides = new HashMap<>(substitutes);
-		values = new Object[cone.size()];
+		this.fixed = new HashMap<>(values);
+		this.values = new Object[cone.size()];
 		failures = new Result[cone.size()];
 		done = new boolean[cone.size()];
 		substitute = new boolean[cone.size()];
@@ -524,6 +542,9 @@ public final class ConstructiveConeEvaluator<T> {
 			}
 			seen[current] = true;
 			result.add(current);
+			if (fixed.containsKey(current)) {
+				continue;
+			}
 			ConstructiveConeNode coneNode = cone.getNode(current);
 			for (int position = 0; position < coneNode.getInputCount(); position++) {
 				stack.push(coneNode.getInput(position));
@@ -548,6 +569,10 @@ public final class ConstructiveConeEvaluator<T> {
 		done[index] = true;
 		if (exhausted != null) {
 			failures[index] = exhausted;
+			return;
+		}
+		if (fixed.containsKey(index)) {
+			values[index] = fixed.get(index);
 			return;
 		}
 		ConstructiveConeNode node = cone.getNode(index);

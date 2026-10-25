@@ -285,6 +285,18 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	}
 
 	/**
+	 * PRE-G9B-CU3 ({@code locus-v2-certified-construction-model.md} section 12.2, N2):
+	 * read-only access to the exact fingerprint of the non-driver slice inputs of the
+	 * consuming revision, which a transfer of a certificate of this revision cites.
+	 *
+	 * @return the fingerprint digest, or {@code null} before the slice of the first revision
+	 *         is built
+	 */
+	public String getSliceFingerprint() {
+		return sliceFingerprint;
+	}
+
+	/**
 	 * Lineage transitions of the components of the certificate from the previous one
 	 * computed for this locus ({@code locus-v2-existence-components.md} section 15.6); the
 	 * first certificate after loading relates to nothing earlier.

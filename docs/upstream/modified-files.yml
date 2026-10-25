@@ -2820,7 +2820,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoDependentPointLocusV2.java",
       "change": "added",
-      "purpose": "Provide the reconstructible public Locus V2 parent with explicit serialized inputs, durable direct roots, and a complete isolated evaluator dependency slice.",
+      "purpose": "Provide the reconstructible public Locus V2 parent with explicit serialized inputs, durable direct roots, and a complete isolated evaluator dependency slice. PRE-G9B-CU3 increment E1: read-only access to the slice fingerprint of the consuming revision, which a transfer of its certificate cites (N2); nothing else changes. Authority: geocedg/specs/locus/locus-v2-certified-construction-model.md.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -7140,13 +7140,37 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeEvaluator.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: one evaluator of a constructive cone over both number systems: the exact evaluation M3 in the constructive configuration with binary64 boundary substitutes, and the rigorous enclosure of ideal values; inherited tolerance decisions replaced by strict signs, inherited selection reproduced, live algorithm checked outside a substituted slice, sign vector recorded.",
+      "purpose": "PRE-G9B-CU3 increment E1: one evaluator of a constructive cone over both number systems: the exact evaluation M3 in the constructive configuration with binary64 boundary substitutes, and the rigorous enclosure of ideal values; inherited tolerance decisions replaced by strict signs, inherited selection reproduced, live algorithm checked outside a substituted slice, sign vector recorded. PRE-G9B-CU3 increment E1.5: fixed values of some nodes, the hulls of the margin route, whose ancestors are then not evaluated.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveConeEvaluatorTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E1: tests of the cone evaluator: the five mandatory contacts of the replica hold exactly with the rotation as the only substitute, path semantics (V-AUT-PROV-1), exact decision of accidental coincidences, live correspondence, budget exhaustion and rigorous enclosures.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/Cu2ProgramCorrespondence.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: condition N1 of cu2-certificate-transfer/v1, a bijection between the captured class-v3 program of a locus and its constructive slice (operations, structural inputs, output indices, selection and label states), binding every captured constant to the cone node it represents.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/DriverParameterEnclosure.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: the driver parameter of an exact point on the captured driver support (inherited path map evaluated exactly: exact 0, pi and pi/2 on the axes of the frame, otherwise a widened StrictMath atan2 lifted across the seam), with the captured driver point at the enclosed parameter.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransfer.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: cu2-certificate-transfer/v1 for the membership of a structural point in its locus: N1, N2 (fingerprint and certificate of the consuming revision) and the margin route over hulls of captured and rigorous constructive values, with typed causes; the source certificate is never changed and the record is never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/Cu2CertificateTransferTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 increment E1: tests of the transfer of the membership (V-AUT-TRF-1, V-AUT-TRF-4 to V-AUT-TRF-6): the three driver positions of the mandatory contacts by margin, exact parameters, invalid parameters, constants without a rigorous enclosure, changed selection states, budget exhaustion and the intact source certificate.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
