@@ -3,10 +3,15 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Guía concisa de la prueba manual del autor que pide la disposición autoral de 2026-10-26, punto 6. Este documento no sustituye ni simula la prueba |
-| Producto | el del candidato técnico `3c2ca7e8`. Los commits posteriores de la rama `phase/pre-g9b-cu3-implementation` (registro de verificación, caracterizaciones y documentos) no cambian el producto |
+| Producto | desde 2026-10-27, el del candidato `CU3-A` `9f6f27f265725b27673f5c37880947ad6c4f2399` (árbol `abe10e3d`), con T1 a T3, T6 y T7-a (`cu3-certified-admission/v2`). Los commits posteriores de la rama local `phase/pre-g9b-cu3-implementation` solo cambian documentos. La primera prueba manual, de 2026-10-26, se hizo con el producto de `3c2ca7e8` |
 | Modelo | una **copia** de `models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg`. El original es evidencia autoral fijada por SHA-256: no se abre para guardar ni se modifica |
-| Resultado | el autor anota `PASS` o `FAIL` por paso, con la observación y la posición del modelo si falla. Resultado del 2026-10-26: smoke funcional `PASS — AUTHOR REPORTED`; rendimiento interactivo `NOT ACCEPTED` ([registro del smoke](pre_g9b_cu3_author_smoke_record.md)) |
+| Resultado | el autor anota `PASS`, `FAIL` o `NOT TESTED` por paso en la [hoja de resultados](pre_g9b_cu3_a_smoke_results_sheet.md), con la observación y la posición del modelo si falla. Resultado de 2026-10-26 sobre `3c2ca7e8`: smoke funcional `PASS — AUTHOR REPORTED`; rendimiento interactivo `NOT ACCEPTED` ([registro del smoke](pre_g9b_cu3_author_smoke_record.md)). La prueba del candidato `9f6f27f2` está pendiente |
 | `selfApproved` | `false` |
+
+**Lanzamiento.** En el checkout de la rama local `phase/pre-g9b-cu3-implementation`, comprobar que
+`git rev-parse HEAD` es `9f6f27f2` o un descendiente sin cambios de producto
+(`git diff --stat 9f6f27f2 HEAD -- source` vacío), y lanzar el perfil de producto con
+`gradlew.bat :desktop:desktop:runGeoCeDG`, sin argumentos.
 
 **Preparación.** Copiar el modelo a una carpeta de trabajo y abrir la copia con el producto del
 candidato. La copia no está adoptada: su política es `legacy-representation-authority/v1`.
@@ -54,7 +59,8 @@ candidato. La copia no está adoptada: su política es `legacy-representation-au
      - en `R1` hay dos contactos, en `0` y en la costura (`−π`); en `R2`, uno en la costura;
      - todos son `TANGENT_ESTABLISHED`, `EXISTENCE_EXACT` y `CONTACT_EXISTENCE_EXACT`, con orden
        `FOLD_CONTACT`, y sin token admisible;
-     - `u_1` muestra la tangencia en `0` con orden `TWO`.
+     - `u_1` muestra la tangencia en `0` con orden `TWO`;
+     - los diagnósticos de los certificados nombran la política `cu3-certified-admission/v2`.
    - *Si falla:* una raíz transversal admisible en la costura indica que la regla de conflicto no
      actuó (comprobar que el documento está adoptado).
    - *Nota:* no se crea ningún punto sin conductor sobre estos contactos; eso es `CU3-B`, pendiente.
@@ -62,8 +68,9 @@ candidato. La copia no está adoptada: su política es `legacy-representation-au
 ## C. Dinámica
 
 8. **Arrastre de `H`.** Arrastrar `H` sobre su camino unos pasos y volver.
-   - *Esperado:* `X1` a `X5` siguen definidos y `STRICT`. Cada paso tarda unos 0,75 s, frente a unos
-     0,08 s sin adoptar: es la limitación aceptada provisionalmente.
+   - *Esperado:* `X1` a `X5` siguen definidos y `STRICT`. Tiempos medidos en esta configuración (§E):
+     el primer arrastre tras la adopción y los cinco puntos tarda unos 1,5–1,7 s; los siguientes,
+     unos 70 ms cada uno. En la primera prueba (`3c2ca7e8`) cada paso tardaba unos 0,75 s.
    - *Si falla:* anotar la posición si un contacto queda indefinido o no `STRICT` dentro de la misma
      celda. Si `H` sale de su celda, una prueba nueva es lo esperado y puede tardar más.
 9. **Arrastre de `B`.** Igual que el paso 8.
@@ -84,6 +91,18 @@ candidato. La copia no está adoptada: su política es `legacy-representation-au
     rico de `u_1`.
     - *Esperado:* una sola tangencia de orden `TWO`. Sin adoptar, aparecen cuatro raíces.
     - *Después:* deshacer.
+12a. **`rbCone` a 7,5.** Ejecutar `SetValue(rbCone, 7.5)` y abrir el resultado rico de `u_1`.
+    - *Esperado:* `X1` a `X5` siguen `STRICT`. `u_1` tiene una sola solución en `0`,
+      `TANGENT_ESTABLISHED` con multiplicidad 2, orden `TWO`, grado `EXISTENCE_EXACT` y garantía
+      `CERTIFIED_ERROR_BOUND`, no admisible. Es el caso que la versión 1 dejaba sin certificar por su
+      límite de trabajo y que T7-a certifica.
+    - *Después:* deshacer.
+12b. **`rbCone` a 3 y `α_cone` a 60°.** Ejecutar `SetValue(rbCone, 3)`, comprobar, deshacer; después
+    `SetValue(α_{cone}, 60°)`, comprobar, deshacer.
+    - *Esperado:* en ambos casos, `X1` a `X5` siguen `STRICT` y `u_1` tiene una sola tangencia en `0`.
+12c. **Recuperación.** Tras los pasos 10 a 12b y sus Deshacer.
+    - *Esperado:* el modelo vuelve a su configuración guardada, `X1` a `X5` son `STRICT` y los
+      resultados ricos son los del paso 7. Rehacer reaplica el último cambio con el mismo resultado.
 13. **Deshacer la adopción.** Deshacer hasta antes de la adopción y abrir el resultado rico de `R1`
     y `R2` si siguen existiendo; si no, crearlos de nuevo sin adoptar.
     - *Esperado:* la raíz transversal de la costura vuelve a ser admisible, con su token.
@@ -98,6 +117,21 @@ candidato. La copia no está adoptada: su política es `legacy-representation-au
     - *Esperado:* la carga falla con `MALFORMED_RECORD`, el mensaje nombra el registro
       `authorityPolicy`, y el documento que estuviera abierto queda intacto.
     - *Control:* una copia **sin adoptar** se abre con normalidad.
+
+## E. Rendimiento interactivo
+
+La experiencia del autor decide la aceptación. Las cifras medidas son una referencia experimental,
+no un límite normativo ([registro de T7-a](pre_g9b_cu3_t7a_implementation_record.md) §6):
+
+| Momento | Referencia medida (configuración del smoke) | Qué anotar |
+|---|---|---|
+| Adopción (paso 3) | unos 2 s | tiempo percibido |
+| Primer arrastre tras la adopción y los puntos | unos 1,5–1,7 s | tiempo percibido |
+| Arrastres sucesivos de `H` y `B` | unos 67–72 ms de mediana | fluidez |
+| Pausas anómalas | ninguna en las mediciones (máximo aislado de 100 ms) | posición y momento de cada pausa |
+
+16. **Fluidez.** Durante los pasos 8 y 9, anotar si el arrastre es fluido y cualquier pausa
+    anómala, con la posición.
 
 ## Causas de fallo frecuentes
 
