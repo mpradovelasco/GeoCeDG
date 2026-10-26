@@ -290,7 +290,7 @@ No cambian:
 - **Alcance.** La política sigue a la autoridad del documento:
   - `constructive-authority/v1` → v2;
   - `legacy-representation-authority/v1` → v1, sin cambios.
-  
+
   El cambio de autoridad, y con él el de política, solo ocurre con el evento explícito de
   adopción, con Deshacer o al recargar el documento.
 - **Documentos ya adoptados.**
