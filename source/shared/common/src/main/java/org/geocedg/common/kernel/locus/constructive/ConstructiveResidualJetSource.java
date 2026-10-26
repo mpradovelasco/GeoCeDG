@@ -45,6 +45,13 @@ import org.geogebra.common.kernel.geos.GeoPoint;
  * incidence of the traced point with the target, with the driver at the exact point of its
  * circle, establishes {@code h(t0) = 0}, and its exact jets {@code h'(t0) = 0}; the fold of
  * {@code CU2} at {@code t0}, transferred by structure, makes the contact a fold contact.</p>
+ *
+ * <p>The enclosures on the boxes of one revision reuse what no box changes and what the queries
+ * of the same locus share (PRE-G9B-CU3 focal optimization T6): the values of the nodes that do
+ * not depend on the driver, computed once for the source, and the enclosure of the traced point
+ * on a box, kept in the {@link ConstructiveSliceEnclosureMemory} of the locus under the
+ * canonical key of the slice. Both are the values a full evaluation gives, with the same
+ * outward-rounded ends; no decision, count or certificate is kept.</p>
  */
 public final class ConstructiveResidualJetSource implements ResidualJetSource2D {
 	/** Name of this decision configuration. */
@@ -67,11 +74,15 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 	private final ConstructiveIdentityBudget budget;
 	private final Map<Integer, ExactContactMemory.Decision> decided = new HashMap<>();
 	private String digest;
+	private final boolean accelerated;
+	private final ConstructiveSliceEnclosureMemory sliceMemory;
+	private final String sliceKey;
+	private Map<Integer, Object> independent;
 
 	private ConstructiveResidualJetSource(GeoLocusV2 locus, ConstructiveCone cone, int traced,
 			int target, int supportNode, int driver, CertifiedConstructionProgram2D.Driver family,
 			double[] frame, Object support, ExactContactMemory memory,
-			ConstructiveIdentityBudget budget) {
+			ConstructiveIdentityBudget budget, boolean accelerated) {
 		this.locus = locus;
 		this.cone = cone;
 		this.traced = traced;
@@ -83,6 +94,10 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 		this.support = support;
 		this.memory = memory;
 		this.budget = budget;
+		this.accelerated = accelerated;
+		this.sliceMemory = accelerated ? ConstructiveSliceEnclosureMemory.of(locus) : null;
+		this.sliceKey = accelerated ? ConstructiveSliceEnclosureMemory.key(cone, traced,
+				supportNode, family, frame, locus.getSemanticRevision()) : null;
 	}
 
 	/**
@@ -106,6 +121,19 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 	 */
 	static ResidualJetSource2D capture(GeoLocusV2 locus, GeoElement targetObject,
 			ExactContactMemory memory, ConstructiveIdentityBudget budget) {
+		return capture(locus, targetObject, memory, budget, true);
+	}
+
+	/**
+	 * @param accelerated whether the box enclosures reuse the values that do not depend on the
+	 *        driver and the shared enclosures of the traced point (PRE-G9B-CU3 focal
+	 *        optimization T6); without it every box evaluates the whole cone: for the tests that
+	 *        compare both
+	 * @return the residual in the constructive configuration, as {@link #capture(GeoLocusV2,
+	 *         GeoElement, ExactContactMemory, ConstructiveIdentityBudget)}
+	 */
+	static ResidualJetSource2D capture(GeoLocusV2 locus, GeoElement targetObject,
+			ExactContactMemory memory, ConstructiveIdentityBudget budget, boolean accelerated) {
 		AlgoElement parent = locus.getParentAlgorithm();
 		if (!(parent instanceof AlgoDependentPointLocusV2) || parent.getInputLength() < 2
 				|| !(parent.getInput(1) instanceof GeoPoint)
@@ -160,7 +188,7 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 			}
 			return new ConstructiveResidualJetSource(locus, cone, tracedNode, targetNode,
 					supportNode, cone.getReplacementNode(), program.getDriver(), frame, value,
-					memory, budget);
+					memory, budget, accelerated);
 		} catch (RuntimeException outsideTheClass) {
 			return null;
 		}
@@ -169,6 +197,11 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 	@Override
 	public String getConfiguration() {
 		return CONFIGURATION;
+	}
+
+	/** @return the key of the shared enclosures of the slice, or {@code null}: for the tests */
+	String getSliceKey() {
+		return sliceKey;
 	}
 
 	@Override
@@ -337,10 +370,26 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 			if (driverPoint == null) {
 				return null;
 			}
-			Map<Integer, Object> fixed = Collections.singletonMap(driver, driverPoint);
+			Map<Integer, Object> fixed = new HashMap<>();
+			Object shared = null;
+			if (accelerated) {
+				fixed.putAll(independent(driverPoint));
+				shared = sliceMemory.get(sliceKey, lower, upper);
+				if (shared == ConstructiveSliceEnclosureMemory.FAILED) {
+					return null;
+				}
+				if (shared != null) {
+					fixed.put(traced, shared);
+				}
+			}
+			fixed.put(driver, driverPoint);
 			ConstructiveConeEvaluator<IntervalJet> evaluator = new ConstructiveConeEvaluator<>(
 					cone, IntervalJet.Arithmetic.INSTANCE, true, Collections.emptyMap(), fixed);
 			Result point = evaluator.evaluate(traced);
+			if (accelerated && shared == null) {
+				sliceMemory.put(sliceKey, lower, upper, point.hasValue() ? point.getValue()
+						: ConstructiveSliceEnclosureMemory.FAILED);
+			}
 			Result object = evaluator.evaluate(target);
 			if (!point.hasValue() || !object.hasValue()
 					|| !(point.getValue() instanceof Point)) {
@@ -369,6 +418,61 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 		} catch (ArithmeticException | IllegalArgumentException undefined) {
 			return null;
 		}
+	}
+
+	/**
+	 * The values that no box changes, computed once for this source, that is for one query in
+	 * one revision (PRE-G9B-CU3 focal optimization T6): every node that does not depend on the
+	 * driver and is an input of a node that does, and the target when it does not depend on the
+	 * driver. Each is the value an evaluation on any box gives, since its evaluation reads only
+	 * its ancestors and their captured state; a node whose evaluation fails is left out, so that
+	 * every box evaluates it and fails as before.
+	 *
+	 * @param driverPoint the driver on the first box, which none of these values reads
+	 */
+	private Map<Integer, Object> independent(Point<IntervalJet> driverPoint) {
+		if (independent == null) {
+			Map<Integer, Object> values = new HashMap<>();
+			try {
+				boolean[] depends = new boolean[cone.size()];
+				List<Integer> inputs = new ArrayList<>();
+				for (ConstructiveConeNode node : cone.getNodes()) {
+					int index = node.getIndex();
+					boolean dependent = index == driver || node.isDriverSlice();
+					for (int position = 0; position < node.getInputCount(); position++) {
+						dependent |= depends[node.getInput(position)];
+					}
+					depends[index] = dependent;
+				}
+				for (ConstructiveConeNode node : cone.getNodes()) {
+					if (!depends[node.getIndex()] || node.getIndex() == driver) {
+						continue;
+					}
+					for (int position = 0; position < node.getInputCount(); position++) {
+						int input = node.getInput(position);
+						if (!depends[input] && !inputs.contains(input)) {
+							inputs.add(input);
+						}
+					}
+				}
+				if (!depends[target] && !inputs.contains(target)) {
+					inputs.add(target);
+				}
+				ConstructiveConeEvaluator<IntervalJet> evaluator = new ConstructiveConeEvaluator<>(
+						cone, IntervalJet.Arithmetic.INSTANCE, true, Collections.emptyMap(),
+						Collections.singletonMap(driver, driverPoint));
+				for (int input : inputs) {
+					Result value = evaluator.evaluate(input);
+					if (value.hasValue()) {
+						values.put(input, value.getValue());
+					}
+				}
+			} catch (ArithmeticException | IllegalArgumentException undefined) {
+				values.clear();
+			}
+			independent = values;
+		}
+		return independent;
 	}
 
 	/**

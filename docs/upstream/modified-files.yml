@@ -7284,7 +7284,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveResidualJetSource.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E1: the residual of a Locus V2 and its target in the constructive configuration Sigma_C, from the constructive cone of the slice with the driver as the ideal point of its constructive support, evaluated in interval jets; no source for a slice with a boundary substitute that moves with the driver. PRE-G9B-CU3 increment E3: the exact contacts at the parameters k pi / 2 of a circle driver, by the constructive identity certificate at the exact parameter and the fold of CU2 transferred by structure, kept and rechecked between revisions.",
+      "purpose": "PRE-G9B-CU3 increment E1: the residual of a Locus V2 and its target in the constructive configuration Sigma_C, from the constructive cone of the slice with the driver as the ideal point of its constructive support, evaluated in interval jets; no source for a slice with a boundary substitute that moves with the driver. PRE-G9B-CU3 increment E3: the exact contacts at the parameters k pi / 2 of a circle driver, by the constructive identity certificate at the exact parameter and the fold of CU2 transferred by structure, kept and rechecked between revisions. PRE-G9B-CU3 focal optimization T6: the enclosures on the boxes of one revision reuse the values of the nodes that do not depend on the driver, computed once for the source, and the enclosure of the traced point kept in the slice memory of the locus; both are the values of a full evaluation.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -7489,6 +7489,18 @@
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityRecheckMemoryTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): on the replica, the accelerated recheck decides as the procedure of the candidate in every revision of the lifecycle, the memory certifies every sign at the base revision, the specialization is exact and canonical whatever the history, a changed value repeats only the steps from its indeterminate, the prepared margin is the margin, a kept derivative encloses and counts as a fresh one, a failing memory leaves every decision to the candidate, and a certificate whose key changed never reaches its memory.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveSliceEnclosureMemory.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 focal optimization T6: the enclosures of the traced point of the slice of one Locus V2 on parameter boxes, shared by its intersection queries in one revision under the canonical key of the slice (structure, durable identities, captured state, driver, frame, semantic revision and the exact ends of the box); one key at a time, bounded, transient, never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveSliceEnclosureMemoryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 focal optimization T6: on the replica, the accelerated enclosures are bitwise those of a full evaluation in every revision, also where it fails; the queries of one locus share the traced point and another locus never does; the key follows the source, its parametrization and its branch and not a target outside the slice; the box is part of the key; the legacy configuration never reaches the memory; Undo and Redo; the bound.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
