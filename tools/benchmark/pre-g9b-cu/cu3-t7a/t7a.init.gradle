@@ -1,0 +1,19 @@
+// PRE-G9B-CU3 characterization of T7-a, used only by run-cu3-t7a-characterization.ps1: puts the
+// shadow certificate classes the runner generated first on the class path of the shared and
+// Desktop test tasks and passes the mode and the ledger path to the test JVMs. The shared
+// modules form an included build, which receives the values as system properties (-D) rather
+// than project properties. Without the value t7aShadow it does nothing.
+allprojects { p ->
+    def value = { String name -> p.rootProject.findProperty(name) ?: System.getProperty(name) }
+    p.tasks.withType(Test).configureEach { t ->
+        def shadow = value('t7aShadow')
+        if (shadow && (p.name == 'common-jre' || p.path == ':desktop:desktop')) {
+            def mode = value('t7aMode') ?: 'off'
+            // At execution time, when the test suite has completed the class path.
+            t.doFirst { t.classpath = p.files(shadow) + t.classpath }
+            t.systemProperty('geocedg.t7a.mode', mode)
+            t.systemProperty('geocedg.t7a.ledger', value('t7aLedger') ?: '')
+            t.inputs.property('t7aMode', mode)
+        }
+    }
+}
