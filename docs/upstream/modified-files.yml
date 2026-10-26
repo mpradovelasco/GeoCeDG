@@ -7356,13 +7356,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/CertificatePolynomial.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E2: exact polynomials of constructive-identity-certificate/v1: monomials of the 16 indeterminates of the budget in two 64-bit words, an exponent beyond 255 failing closed and never wrapped, exact rational coefficients, bounded exact division and square roots, and the mean-value enclosure, of the first order and of the second when the first decides no sign, with no derivative kept; every product charged to the budget.",
+      "purpose": "PRE-G9B-CU3 increment E2: exact polynomials of constructive-identity-certificate/v1: monomials of the 16 indeterminates of the budget in two 64-bit words, an exponent beyond 255 failing closed and never wrapped, exact rational coefficients, bounded exact division and square roots, and the mean-value enclosure, of the first order and of the second when the first decides no sign, with no derivative kept; every product charged to the budget. PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): the exact specialization of one indeterminate at a value, partial derivatives kept only by the specialized polynomials of a recheck memory and recorded again at every use, and the exact value at a point from powers computed once.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/CertificateRationalFunction.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E2: rational functions in the indeterminates of a certificate, normalized, zero exactly when the numerator is, with a rigorous enclosure when the denominator keeps its sign on the box.",
+      "purpose": "PRE-G9B-CU3 increment E2: rational functions in the indeterminates of a certificate, normalized, zero exactly when the numerator is, with a rigorous enclosure when the denominator keeps its sign on the box. PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): the specialized quotient of a recheck memory, kept as it is.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7380,7 +7380,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityArithmetic.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E2: the number system of a certificate: indeterminates with their box, one radicand, perfect squares extracted, a second independent or nested root OUT_OF_CLASS, every certified sign recorded in the cell and the live checks kept apart.",
+      "purpose": "PRE-G9B-CU3 increment E2: the number system of a certificate: indeterminates with their box, one radicand, perfect squares extracted, a second independent or nested root OUT_OF_CLASS, every certified sign recorded in the cell and the live checks kept apart. PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): the enclosure of an element with a given radicand and counters.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7416,13 +7416,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCertificate.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E2: the outcome of an attempt of constructive-identity-certificate/v1: status and typed cause, scope, structural key, indeterminates with their box, cell, checked branches, cuts, order of contact with the signs of the derivatives of the residual, and counters; revision evidence that is never persisted.",
+      "purpose": "PRE-G9B-CU3 increment E2: the outcome of an attempt of constructive-identity-certificate/v1: status and typed cause, scope, structural key, indeterminates with their box, cell, checked branches, cuts, order of contact with the signs of the derivatives of the residual, and counters; revision evidence that is never persisted. PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): the recheck memory of the certificate, never persisted.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityCertifier.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 increment E2: attempts and rechecks of constructive-identity-certificate/v1 on the cone evaluator: automatic boundary rule, decision box with the rigorous enclosures of the ideal values, residual decided as a field element, certified membership of a limited part, order of contact by exact jets, structural key cic-structural-key/v1 by durable identity, recheck without symbolic work, and the premises of a fold. PRE-G9B-CU3 increment E3: the certificate and its recheck with the driver of the slice at an exact parameter of its circle in the frame of the axes, as the exact jet of the circle there, without reading the replacement node; a point on a line path is one indeterminate of an attempt however many evaluations read it.",
+      "purpose": "PRE-G9B-CU3 increment E2: attempts and rechecks of constructive-identity-certificate/v1 on the cone evaluator: automatic boundary rule, decision box with the rigorous enclosures of the ideal values, residual decided as a field element, certified membership of a limited part, order of contact by exact jets, structural key cic-structural-key/v1 by durable identity, recheck without symbolic work, and the premises of a fold. PRE-G9B-CU3 increment E3: the certificate and its recheck with the driver of the slice at an exact parameter of its circle in the frame of the axes, as the exact jet of the circle there, without reading the replacement node; a point on a line path is one indeterminate of an attempt however many evaluations read it. PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): the recheck first encloses every sign through the recheck memory of the certificate, and every sign that the memory does not certify is decided by the procedure of the candidate.",
       "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
     },
     {
@@ -7477,6 +7477,18 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu3SeamReclassificationAuthorModelTest.java",
       "change": "added",
       "purpose": "PRE-G9B-CU3 increment E3: on the adopted author model, the inversion of pins.B08_B09, the preserved contacts and V-B-NOISE-1.",
+      "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityRecheckMemory.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): the reusable exact memory of the rechecks of one certificate: the prepared margin A + x U + y W of every checked line-circle output, the specialization of the polynomials of the cell, the radicand and the margins at the exact values of the point indeterminates of the box, one indeterminate at a time with every step kept with its value, and their kept derivatives; mathematical objects only, never a decision, never persisted.",
+      "authority": "geocedg/specs/locus/locus-v2-constructive-authority.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityRecheckMemoryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): on the replica, the accelerated recheck decides as the procedure of the candidate in every revision of the lifecycle, the memory certifies every sign at the base revision, the specialization is exact and canonical whatever the history, a changed value repeats only the steps from its indeterminate, the prepared margin is the margin, a kept derivative encloses and counts as a fresh one, and a failing memory leaves every decision to the candidate.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]

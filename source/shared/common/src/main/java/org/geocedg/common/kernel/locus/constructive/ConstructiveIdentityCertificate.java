@@ -187,6 +187,8 @@ public final class ConstructiveIdentityCertificate {
 	private final int[] derivativeSigns;
 	private final ConstructiveIdentityCounters counters;
 	private final ConstructiveIdentityArithmetic arithmetic;
+	private final ConstructiveIdentityRecheckMemory recheckMemory =
+			new ConstructiveIdentityRecheckMemory();
 
 	private ConstructiveIdentityCertificate(Builder builder) {
 		relation = builder.relation;
@@ -312,6 +314,11 @@ public final class ConstructiveIdentityCertificate {
 
 	ConstructiveIdentityArithmetic getArithmetic() {
 		return arithmetic;
+	}
+
+	/** @return the reusable exact memory of the rechecks of this certificate, never persisted */
+	ConstructiveIdentityRecheckMemory getRecheckMemory() {
+		return recheckMemory;
 	}
 
 	@Override

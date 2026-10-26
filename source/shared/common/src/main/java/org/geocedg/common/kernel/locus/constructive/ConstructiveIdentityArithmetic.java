@@ -290,6 +290,19 @@ final class ConstructiveIdentityArithmetic implements ConstructiveArithmetic<Cer
 	 *         enclosure is certified
 	 */
 	OutwardInterval enclose(CertificateElement a, OutwardInterval[] on) {
+		return enclose(a, radicand, on, counters);
+	}
+
+	/**
+	 * @param a an element
+	 * @param radicand the radicand of its extension, or {@code null} for the base field
+	 * @param on a box with an interval for each indeterminate of the attempt
+	 * @param counters the counters that record the polynomials of the enclosure
+	 * @return a rigorous enclosure of the element over the box, or {@code null} when no finite
+	 *         enclosure is certified
+	 */
+	static OutwardInterval enclose(CertificateElement a, CertificatePolynomial radicand,
+			OutwardInterval[] on, ConstructiveIdentityCounters counters) {
 		OutwardInterval[] full = new OutwardInterval[CertificatePolynomial.INDETERMINATES];
 		System.arraycopy(on, 0, full, 0, Math.min(on.length, full.length));
 		for (int index = 0; index < full.length; index++) {

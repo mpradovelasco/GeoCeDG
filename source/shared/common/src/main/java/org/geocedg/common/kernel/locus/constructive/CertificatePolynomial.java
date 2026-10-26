@@ -35,10 +35,18 @@ final class CertificatePolynomial {
 	private static final long LOW_BITS = 0x7F7F7F7F7F7F7F7FL;
 
 	private final TreeMap<Monomial, ExactRational2D> terms;
+	private final boolean memoizing;
 	private int[] maximumExponents;
+	private CertificatePolynomial[] partials;
+	private int[] partialBits;
 
 	private CertificatePolynomial(TreeMap<Monomial, ExactRational2D> terms) {
+		this(terms, false);
+	}
+
+	private CertificatePolynomial(TreeMap<Monomial, ExactRational2D> terms, boolean memoizing) {
 		this.terms = terms;
+		this.memoizing = memoizing;
 	}
 
 	/** The exponents of one monomial. */
@@ -125,6 +133,13 @@ final class CertificatePolynomial {
 			long unit = 1L << shift(indeterminate);
 			return indeterminate < 8 ? new Monomial(first - unit, second)
 					: new Monomial(first, second - unit);
+		}
+
+		/** @return the monomial with the exponent of one indeterminate set to zero */
+		Monomial without(int indeterminate) {
+			long mask = ~(0xFFL << shift(indeterminate));
+			return indeterminate < 8 ? new Monomial(first & mask, second)
+					: new Monomial(first, second & mask);
 		}
 
 		/**
@@ -395,11 +410,36 @@ final class CertificatePolynomial {
 	}
 
 	/**
-	 * @return the partial derivative in one indeterminate, computed afresh: a certificate keeps
-	 *         its conditions and never their derivatives
+	 * @return the partial derivative in one indeterminate. A polynomial of a certificate computes
+	 *         it afresh: a certificate keeps its conditions and never their derivatives. A
+	 *         specialized polynomial of a recheck memory ({@link #specialize}) keeps it once
+	 *         computed, and records it again in the counters of every later use, as a fresh
+	 *         computation would.
 	 */
 	CertificatePolynomial partial(int indeterminate, ConstructiveIdentityCounters counters) {
 		checkIndex(indeterminate);
+		if (!memoizing) {
+			return derivative(indeterminate, counters);
+		}
+		synchronized (this) {
+			if (partials == null) {
+				partials = new CertificatePolynomial[INDETERMINATES];
+				partialBits = new int[INDETERMINATES];
+			}
+			CertificatePolynomial known = partials[indeterminate];
+			if (known != null) {
+				counters.recordPolynomial(known.terms.size(), partialBits[indeterminate]);
+				return known;
+			}
+			known = derivative(indeterminate, counters);
+			partials[indeterminate] = known;
+			partialBits[indeterminate] = maximumBits(known.terms);
+			return known;
+		}
+	}
+
+	private CertificatePolynomial derivative(int indeterminate,
+			ConstructiveIdentityCounters counters) {
 		TreeMap<Monomial, ExactRational2D> derivative = new TreeMap<>();
 		for (Map.Entry<Monomial, ExactRational2D> term : terms.entrySet()) {
 			int exponent = term.getKey().exponent(indeterminate);
@@ -408,7 +448,43 @@ final class CertificatePolynomial {
 						term.getValue().multiply(ExactRational2D.of(exponent)));
 			}
 		}
-		return checked(derivative, counters);
+		return checked(derivative, counters, memoizing);
+	}
+
+	/**
+	 * The exact substitution of a value for one indeterminate: every term {@code c v^k m}
+	 * becomes {@code (c value^k) m} and equal monomials are added exactly. The result is the
+	 * canonical polynomial of the same function restricted to {@code v = value}, whatever the
+	 * order of earlier substitutions; it keeps its partial derivatives once computed
+	 * ({@link #partial}). It serves the recheck memory of a certificate and never an attempt.
+	 *
+	 * @param indeterminate index of an indeterminate
+	 * @param value its exact value
+	 * @return the polynomial in the other indeterminates
+	 */
+	CertificatePolynomial specialize(int indeterminate, ExactRational2D value,
+			ConstructiveIdentityCounters counters) {
+		checkIndex(indeterminate);
+		ExactRational2D[] powers = powers(value, maximumExponents()[indeterminate]);
+		TreeMap<Monomial, ExactRational2D> specialized = new TreeMap<>();
+		for (Map.Entry<Monomial, ExactRational2D> term : terms.entrySet()) {
+			int exponent = term.getKey().exponent(indeterminate);
+			if (exponent == 0) {
+				accumulate(specialized, term.getKey(), term.getValue());
+			} else {
+				accumulate(specialized, term.getKey().without(indeterminate),
+						term.getValue().multiply(powers[exponent]));
+			}
+		}
+		return checked(specialized, counters, true);
+	}
+
+	/**
+	 * @return the same polynomial, which keeps its partial derivatives once computed
+	 *         ({@link #partial}); it serves the recheck memory of a certificate
+	 */
+	CertificatePolynomial memoizing() {
+		return memoizing ? this : new CertificatePolynomial(terms, true);
 	}
 
 	/**
@@ -548,8 +624,13 @@ final class CertificatePolynomial {
 
 	private static CertificatePolynomial checked(TreeMap<Monomial, ExactRational2D> terms,
 			ConstructiveIdentityCounters counters) {
+		return checked(terms, counters, false);
+	}
+
+	private static CertificatePolynomial checked(TreeMap<Monomial, ExactRational2D> terms,
+			ConstructiveIdentityCounters counters, boolean memoizing) {
 		counters.recordPolynomial(terms.size(), maximumBits(terms));
-		return new CertificatePolynomial(terms);
+		return new CertificatePolynomial(terms, memoizing);
 	}
 
 	private static int maximumBits(Map<Monomial, ExactRational2D> terms) {

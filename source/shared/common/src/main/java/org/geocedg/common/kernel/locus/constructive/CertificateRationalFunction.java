@@ -12,7 +12,8 @@ import org.geocedg.common.kernel.locus.exact.ExactRational2D;
 /**
  * A rational function, numerator over denominator, in the indeterminates of one constructive
  * identity certificate. The denominator is never the zero polynomial: a constant denominator is
- * one, and any other is scaled to a leading coefficient one. Exact division keeps the sizes down
+ * one, and any other is scaled to a leading coefficient one, except in a specialized quotient of
+ * a recheck memory, which keeps its specialized parts. Exact division keeps the sizes down
  * when it applies; it never changes the value. A rational function is zero exactly when its
  * numerator is the zero polynomial.
  */
@@ -58,6 +59,22 @@ final class CertificateRationalFunction {
 		ExactRational2D scale = one.divide(denominator.leadingCoefficient());
 		return new CertificateRationalFunction(numerator.scale(scale, counters),
 				denominator.scale(scale, counters));
+	}
+
+	/**
+	 * The quotient of a numerator and a denominator specialized at the same exact values, kept
+	 * as they are: it is the same function on the specialized indeterminates, and it serves only
+	 * the enclosures of a recheck memory, never an attempt.
+	 *
+	 * @throws IllegalArgumentException if the specialized denominator is the zero polynomial
+	 */
+	static CertificateRationalFunction specialized(CertificatePolynomial numerator,
+			CertificatePolynomial denominator) {
+		Objects.requireNonNull(numerator);
+		if (denominator.isZero()) {
+			throw new IllegalArgumentException("a zero denominator");
+		}
+		return new CertificateRationalFunction(numerator, denominator);
 	}
 
 	/** @return the polynomial as a rational function */

@@ -375,15 +375,28 @@ public final class ConstructiveIdentityCertifier {
 				&& recheckCell(certificate, cone, budget);
 	}
 
+	private static boolean recheckCell(ConstructiveIdentityCertificate certificate,
+			ConstructiveCone cone, ConstructiveIdentityBudget budget) {
+		return recheckCell(certificate, cone, budget, true);
+	}
+
 	/**
 	 * Whether every sign of the cell is certified with the same value on the decision box of
 	 * the cone, built as in an attempt, and every checked line-circle output is still certified
-	 * closer to its selected branch than to the other.
+	 * closer to its selected branch than to the other. Accelerated, every sign is first enclosed
+	 * through the recheck memory of the certificate, on the same box and with counters of its
+	 * own; when that enclosure does not certify the sign, or cannot be built, the enclosure of the
+	 * procedure without the memory decides it, so that every sign the procedure without the
+	 * memory certifies stays certified. Without acceleration only that procedure runs: for the
+	 * tests that compare both.
 	 */
-	private static boolean recheckCell(ConstructiveIdentityCertificate certificate,
-			ConstructiveCone cone, ConstructiveIdentityBudget budget) {
+	static boolean recheckCell(ConstructiveIdentityCertificate certificate,
+			ConstructiveCone cone, ConstructiveIdentityBudget budget, boolean accelerated) {
 		ConstructiveIdentityArithmetic field = certificate.getArithmetic()
 				.forRecheck(new ConstructiveIdentityCounters(budget));
+		ConstructiveIdentityRecheckMemory memory = accelerated ? certificate.getRecheckMemory()
+				: null;
+		ConstructiveIdentityCounters memoryCounters = new ConstructiveIdentityCounters(budget);
 		try {
 			ConstructiveConeEvaluator<OutwardInterval> ideal =
 					ConstructiveConeEvaluator.intervals(cone);
@@ -396,25 +409,30 @@ public final class ConstructiveIdentityCertifier {
 					return false;
 				}
 			}
-			for (ConstructiveIdentityArithmetic.Condition condition : certificate.getCell()) {
-				OutwardInterval enclosure = field.enclose(condition.getElement(), box);
-				if (enclosure == null || enclosure.certifiedSign() != condition.getSign()) {
+			List<ConstructiveIdentityArithmetic.Condition> cell = certificate.getCell();
+			for (int index = 0; index < cell.size(); index++) {
+				ConstructiveIdentityArithmetic.Condition condition = cell.get(index);
+				if (memory != null && certifies(memory.condition(certificate, index, box,
+						memoryCounters), condition.getSign())) {
+					continue;
+				}
+				if (!certifies(field.enclose(condition.getElement(), box), condition.getSign())) {
 					return false;
 				}
 			}
-			for (ConstructiveIdentityCertificate.Correspondence checked
-					: certificate.getCorrespondences()) {
+			List<ConstructiveIdentityCertificate.Correspondence> correspondences =
+					certificate.getCorrespondences();
+			for (int index = 0; index < correspondences.size(); index++) {
+				ConstructiveIdentityCertificate.Correspondence checked = correspondences.get(index);
 				ExactRational2D[] live = exactPoint(cone.getNode(checked.getNode()));
 				if (live == null) {
 					return false;
 				}
-				CertificateElement x = field.ofRational(live[0]);
-				CertificateElement y = field.ofRational(live[1]);
-				CertificateElement margin = field.subtract(
-						squaredDistance(field, checked.getOther(), x, y),
-						squaredDistance(field, checked.getSelected(), x, y));
-				OutwardInterval enclosure = field.enclose(margin, box);
-				if (enclosure == null || enclosure.certifiedSign() != 1) {
+				if (memory != null && certifies(memory.margin(certificate, index, live, box,
+						memoryCounters), 1)) {
+					continue;
+				}
+				if (!certifies(field.enclose(margin(field, checked, live), box), 1)) {
 					return false;
 				}
 			}
@@ -691,6 +709,22 @@ public final class ConstructiveIdentityCertifier {
 		default:
 			return certificate.outcome(Status.NOT_ESTABLISHED, Cause.OUT_OF_CLASS, message);
 		}
+	}
+
+	private static boolean certifies(OutwardInterval enclosure, int sign) {
+		return enclosure != null && enclosure.certifiedSign() == sign;
+	}
+
+	/**
+	 * @return the margin {@code |O - P|^2 - |S - P|^2} of a checked line-circle output at its
+	 *         live point {@code P}, with {@code O} the other branch and {@code S} the selected one
+	 */
+	static CertificateElement margin(ConstructiveIdentityArithmetic field,
+			ConstructiveIdentityCertificate.Correspondence checked, ExactRational2D[] live) {
+		CertificateElement x = field.ofRational(live[0]);
+		CertificateElement y = field.ofRational(live[1]);
+		return field.subtract(squaredDistance(field, checked.getOther(), x, y),
+				squaredDistance(field, checked.getSelected(), x, y));
 	}
 
 	private static CertificateElement squaredDistance(ConstructiveIdentityArithmetic field,
