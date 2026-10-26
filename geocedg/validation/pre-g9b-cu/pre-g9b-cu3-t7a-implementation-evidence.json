@@ -1,0 +1,2972 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-t7a-implementation",
+  "status": "CU3 T7-a IMPLEMENTATION CANDIDATE - PENDING AUTHOR REVIEW; NO VERDICT OF ITS OWN; TIMINGS ARE INFORMATIVE",
+  "authorization": "PRE-G9B-CU3 - Decision autoral sobre T7-a (author, 2026-10-26): T7-a approved as direction, implementation behind gate N and gate I",
+  "reference_t6_candidate": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+  "gate_n_commit": "22891c7b",
+  "measured_at": "247f335c94c16ebc76904e4febcdaa162188a6c2",
+  "measured_tree": "718910723655061d8140ee6fb22171d60b07fbba",
+  "comparison": "candidate: current = version 1, t7a = cu3-certified-admission/v2",
+  "modes": {
+    "off": "version 1 through the shadow of the candidate",
+    "compare": "version 1 returned, version 2 computed and recorded",
+    "t7a": "version 2 through the shadow",
+    "product": "the candidate as built, no shadow"
+  },
+  "shadow": {
+    "product_blob": "27b4e939d5ed217b2fda4b9705d6cef74c17ec5d",
+    "shadow_sha256": "9dbe1a51ea2c43904f6b8060ab825c7f34b565af4361b1573d5af22b4d55f0e1",
+    "ledger_sha256": "41bd9b9003e5df9dbc777e578d86f485aa119ca2d29e9f33efa71f86ab7063f7"
+  },
+  "runs": [
+    {
+      "name": "shared-compare",
+      "mode": "compare",
+      "exit_code": 0,
+      "duration_s": 99.9
+    },
+    {
+      "name": "desktop-compare",
+      "mode": "compare",
+      "exit_code": 0,
+      "duration_s": 306.1
+    },
+    {
+      "name": "corpus-compare",
+      "mode": "compare",
+      "exit_code": 0,
+      "duration_s": 28.7
+    },
+    {
+      "name": "shared-t7a",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 89.3
+    },
+    {
+      "name": "desktop-t7a",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 300.1
+    },
+    {
+      "name": "corpus-t7a",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 24.2
+    },
+    {
+      "name": "performance-off-runA",
+      "mode": "off",
+      "exit_code": 0,
+      "duration_s": 57.5
+    },
+    {
+      "name": "performance-off-runB",
+      "mode": "off",
+      "exit_code": 0,
+      "duration_s": 53.6
+    },
+    {
+      "name": "performance-t7a-runA",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 41.2
+    },
+    {
+      "name": "performance-t7a-runB",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 42.3
+    }
+  ],
+  "tests": {
+    "shared_compare": {
+      "classes": 44,
+      "tests": 451,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    },
+    "shared_t7a": {
+      "classes": 44,
+      "tests": 451,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    },
+    "desktop_compare": {
+      "classes": 14,
+      "tests": 86,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    },
+    "desktop_t7a": {
+      "classes": 14,
+      "tests": 86,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    }
+  },
+  "ledgers": {
+    "shared_compare": {
+      "certify_calls": 69,
+      "by_context": {
+        "ConstructiveExactContactTest.aDecisionThatTheCertificateDoesNotGiveChangesNothing": 4,
+        "ConstructiveExactContactTest.theContactsAtZeroAreClassTwoWithTheirOrderOfContact": 2,
+        "ConstructiveExactContactTest.theSeamIsReclassifiedAsTheFoldContactAtPi": 9,
+        "ConstructiveIntersectionAdmissionTest.theConflictRuleDecidesInTheConstructiveConfiguration": 2,
+        "ConstructiveIntersectionAdmissionTest.theFoldContactsOfTheModelAreNeverRelaxedByAResidualBound": 7,
+        "ConstructiveSliceEnclosureMemoryTest.theLegacyConfigurationNeverReachesTheMemory": 6,
+        "ConstructiveSliceEnclosureMemoryTest.undoRestoresEnclosuresEqualToAFullEvaluation": 12,
+        "PreG9BCu3CertifiedEvidenceTest.aClassThreeBoxOfACompleteSetOnlyLowersItsCompleteness": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aContactOfClassThreeChangesNothing": 5,
+        "PreG9BCu3CertifiedEvidenceTest.anAbsentIntersectionIsWithdrawnByACertifiedFixedSign": 3,
+        "PreG9BCu3CertifiedEvidenceTest.anEnclosureCompatibleRootIsRelaxedAndAContactNever": 1,
+        "PreG9BCu3CertifiedEvidenceTest.anIncludedEndpointTangencyKeepsItsStateWithoutAnExactDecision": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aTangentCandidateAtACertifiedSimpleRootIsReclassified": 1,
+        "PreG9BCu3CertifiedEvidenceTest.translationsGiveTheResultOfTheOrigin": 4,
+        "PreG9BCu3CertifiedEvidenceTest.twoRootsAroundACertifiedCriticalPointAreExactlyTheSolutions": 4,
+        "PreG9BCu3ExactDoubleRootTest.anExactCurvatureThatDisagreesWithItsEnclosureCertifiesNothing": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactDecisionGivesOneDoubleRootAtTheExactParameter": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactParameterOutsideTheCriticalBracketIsNotUsed": 1,
+        "PreG9BCu3ExactDoubleRootTest.aTransverseClassificationThatMeetsTheDoubleRootIsReclassified": 1,
+        "PreG9BCu3ExactDoubleRootTest.theDoubleRootWithdrawsTheNoiseAndReclassifiesTheContact": 2,
+        "PreG9BCu3ExactDoubleRootTest.withoutAnExactDecisionTheContactStaysClassThree": 1
+      },
+      "constructive_calls": 38,
+      "current_forms": {
+        "NONE": 4,
+        "NOT_CERTIFIED": 26,
+        "ONE_DOUBLE": 29,
+        "ONE_SIMPLE": 5,
+        "TWO_SIMPLE": 5
+      },
+      "current_critical_value": {
+        "MINUS": 4,
+        "NOT_REACHED": 7,
+        "PLUS": 4,
+        "ZERO": 54
+      },
+      "current_work_limit": 0,
+      "same_decision": 69,
+      "different_decision": 0,
+      "differences": [],
+      "evaluations_current": 33826.0,
+      "evaluations_t7a": 7947.0,
+      "critical_value_evaluations_current": 32203.0,
+      "t7a_consultations_where_the_product_consults_none": 0,
+      "t7a_consultations_where_the_product_consults_none_by_current_critical_value": {},
+      "t7a_consultation_ms_where_the_product_consults_none": 0.0,
+      "current_ms": 6650.7011,
+      "t7a_ms_after_the_product": 61.2344,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 5,
+        "NOT_CERTIFIED": 1,
+        "NOT_CONSULTED": 34,
+        "ONE_DOUBLE": 29
+      },
+      "t7a_forms": {
+        "NONE": 4,
+        "NOT_CERTIFIED": 26,
+        "ONE_DOUBLE": 29,
+        "ONE_SIMPLE": 5,
+        "TWO_SIMPLE": 5
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 29,
+        "MINUS": 4,
+        "NOT_REACHED": 7,
+        "PLUS": 4,
+        "ZERO": 25
+      },
+      "t7a_work_limit": 0
+    },
+    "desktop_compare": {
+      "certify_calls": 668,
+      "by_context": {
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aFailingLengthEstimateLeavesTheCertificateUnchanged$16": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anEmptyCertifiedCoverIsPublishedComplete$4": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anExhaustedBudgetIsNeverComplete$14": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aNonDriverChangeComputesOneCertificatePerAffectedLocus$22": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anUndefinedDefinitionInputLeavesNoStaleDefinition$5": 5,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$constructionDegeneraciesAreBandsThatNoComponentCrosses$10": 8,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$consumersReadThePublishedCertificateOnly$23": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically$7": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$driverMovesPublishNoRevisionAndComputeNoCertificate$17": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds$1": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyRevisionPublishesItsOwnGeometry$3": 34,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$nonDriverParametersMoveTheCriticalValue$11": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$pointwiseValidityBeyondTheExactEndIsNotExistence$6": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theAuthorParametersAreCertifiedFromStructuralFactsOnly$0": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theFoldsOfE1RestOnTheCapturedConstants$13": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theLociArePublishedWhileTheSavedDriverIsInTheGap$2": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$27": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$28": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$32": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$33": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$34": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$undoAndRedoRestoreTheCertificates$12": 32,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$atTheTangencyBothLabelledOutputsCoincide$5": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$everyModelSliceHasAClassV3ProgramWithItsAlgorithmRules$0": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$penetrationAndBiteKeepTheSelectionRule$3": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theGapIsUniformlyInvalidWithTheSameRuleOnBothSides$4": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theProgramDoesNotDependOnTheDriverPosition$1": 8,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theRuleIsCapturedWithoutAnyValidSample$2": 10,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anEvaluatorPointInACertifiedGapIsNotPublished$7": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anIntersectionWithAnArcKeepsItsTokensThroughARevision$12": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$routesFollowTheBiteArcOfTheModelAcrossTheSeam$6": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theCertificateIsTheSingleClosureAuthority$8": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$1": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theGeneratingOccurrenceChainStaysDefined$0": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theTotalLengthsOfTheFirstFamilyHaveTheirClass$10": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$withFullCycleTheExcludedStartOfE2IsItsOneSidedLimit$4": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated$2": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$document$12": 12,
+        "PreG9BCu2AuthorModelExportTest.lambda$eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic$0": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$latexClosesOnlyClosedPeriodicComponents$8": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theClosureResidualOfEachClosedLocusIsMeasuredAgainstItsCertificate$1": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theCriticalLociAreClosedInLatexOnlyWhenPeriodic$10": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$containmentCreatesNoCorrespondence$3": 10,
+        "PreG9BCu2AuthorModelLineageTest.lambda$movingEndsKeepTheLineageAndTheBiteIsATypedTransition$1": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theEventOfE2KeepsItsLineageWhenTheOriginMoves$4": 5,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theFirstCertificatesAfterOpeningGuessNoLineage$0": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theSelectorOfN1ResolvesByEqualityOfTheDecomposition$2": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aBiteIsDrawnToTheImagesOfItsCertifiedEnds$4": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aFailingLengthCutsTheStrokeOfE2$11": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawingsAreDeterministicAndTheirTopologyViewInvariant$3": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawnVerticesAreTheEvaluationsOfTheirParameters$0": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$noStrokeBridgesTheRealGapNearTheCriticalValue$7": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theDisplacedE1DeclaresItsTurnsAndExemptsNone$2": 6,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$8": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$turnsAreBoundedOutsideTheCertifiedFolds$1": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$12": 5,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$24": 1,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$oneUlpChangesAtEveryDriverPositionReproduceTheSelection$0": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates$4": 66,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelVariantsStartedInTheGapCaptureTheSameCertificates$3": 63,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSelectionStateIsReadAgainOnUndoRedoAndReopen$1": 32,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSettlementTouchesNeitherTheLiveConstructionNorTheIdentities$2": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theUnlabelledSecondOutputKeepsItsTypedBands$6": 15,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theVariantsCreatedAtTheDoubleRootLeaveItWithATypedTransition$5": 5,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everyIndependentInputOfTheModelSlicesIsReproducedExactly$1": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everySliceOfTheCompleteModelIsReconstructedFaithfully$3": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$lineConicSelectionStatesOfTheModelSlicesAreReproduced$2": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpChangesOfExcCylPublishRevisionsWithExactSliceCopies$0": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpOfExcCylReachesTheUnlabelledOutputExactly$4": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$statesAgainstScratch$5": 24,
+        "PreG9BCu3BaseCharacterizationTest.lambda$absentIntersectionIsCertifiedAbsent$0": 2,
+        "PreG9BCu3BaseCharacterizationTest.lambda$nearTangencyPublishesExactlyTheTwoTrueRoots$1": 2,
+        "PreG9BCu3ProvenanceCensusTest.lambda$everyRelationThatTheProvenanceDeclaresHoldsExactly$0": 4,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$theSeamOfTheAdoptedModelIsTheFoldContactAtPi$0": 8,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withAlphaThirtyFiveOnlyTheTwoFoldContactsStayPublished$1": 15,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withHalfTheDistanceOfDOneOnlyTheTangencyStaysPublished$2": 7,
+        "PreG9BCu3StructuralPointAuthorModelTest.lambda$theMandatoryContactsOfTheAuthorModel$0": 5
+      },
+      "constructive_calls": 13,
+      "current_forms": {
+        "NONE": 2,
+        "NOT_CERTIFIED": 651,
+        "ONE_DOUBLE": 13,
+        "TWO_SIMPLE": 2
+      },
+      "current_critical_value": {
+        "MINUS": 1,
+        "PLUS": 3,
+        "ZERO": 664
+      },
+      "current_work_limit": 0,
+      "same_decision": 668,
+      "different_decision": 0,
+      "differences": [],
+      "evaluations_current": 379940.0,
+      "evaluations_t7a": 367449.0,
+      "critical_value_evaluations_current": 376479.0,
+      "t7a_consultations_where_the_product_consults_none": 0,
+      "t7a_consultations_where_the_product_consults_none_by_current_critical_value": {},
+      "t7a_consultation_ms_where_the_product_consults_none": 0.0,
+      "current_ms": 9408.1779,
+      "t7a_ms_after_the_product": 4001.4342,
+      "t7a_anticipation": {
+        "NOT_CONSULTED": 655,
+        "ONE_DOUBLE": 13
+      },
+      "t7a_forms": {
+        "NONE": 2,
+        "NOT_CERTIFIED": 651,
+        "ONE_DOUBLE": 13,
+        "TWO_SIMPLE": 2
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 13,
+        "MINUS": 1,
+        "PLUS": 3,
+        "ZERO": 651
+      },
+      "t7a_work_limit": 0
+    },
+    "corpus_compare": {
+      "certify_calls": 122,
+      "by_context": {
+        "PreG9BCu3T7aCorpusProbe.corpus": 7,
+        "PreG9BCu3T7aCorpusProbe.corpus adoption and points": 9,
+        "PreG9BCu3T7aCorpusProbe.corpus B -3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B 3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x3.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H -20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 40.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5": 14,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone} restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=35.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=60.0": 6
+      },
+      "constructive_calls": 115,
+      "current_forms": {
+        "NOT_CERTIFIED": 20,
+        "ONE_DOUBLE": 102
+      },
+      "current_critical_value": {
+        "EXHAUSTED": 2,
+        "NOT_REACHED": 8,
+        "ZERO": 112
+      },
+      "current_work_limit": 2,
+      "same_decision": 120,
+      "different_decision": 2,
+      "differences": [
+        {
+          "context": "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5",
+          "box": [
+            "bf3921fb54442d18",
+            "3f3921fb54442d18",
+            -0.0003834951969714103,
+            0.0003834951969714103
+          ],
+          "current": "NOT_CERTIFIED|bf3921fb54442d18,3f3921fb54442d18||||null||the work limit of the certificate is reached",
+          "current_critical_value": "EXHAUSTED",
+          "t7a": "ONE_DOUBLE|bf3921fb54442d18,3f3921fb54442d18|bf3921fb54442d18,3f3921fb54442d18;|0,0;|bf3921fb54442d18,3f3921fb54442d18|CONTACT_EXISTENCE_EXACT|0,0,0,TWO,1,CONTACT_EXISTENCE_EXACT|h(t0) = 0 and h'(t0) = 0 at the exact parameter 0 and h'' has a fixed sign: one double root"
+        },
+        {
+          "context": "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5",
+          "box": [
+            "bf3921fb54442d18",
+            "3f3921fb54442d18",
+            -0.0003834951969714103,
+            0.0003834951969714103
+          ],
+          "current": "NOT_CERTIFIED|bf3921fb54442d18,3f3921fb54442d18||||null||the work limit of the certificate is reached",
+          "current_critical_value": "EXHAUSTED",
+          "t7a": "ONE_DOUBLE|bf3921fb54442d18,3f3921fb54442d18|bf3921fb54442d18,3f3921fb54442d18;|0,0;|bf3921fb54442d18,3f3921fb54442d18|CONTACT_EXISTENCE_EXACT|0,0,0,TWO,1,CONTACT_EXISTENCE_EXACT|h(t0) = 0 and h'(t0) = 0 at the exact parameter 0 and h'' has a fixed sign: one double root"
+        }
+      ],
+      "evaluations_current": 88800.0,
+      "evaluations_t7a": 5238.0,
+      "critical_value_evaluations_current": 87984.0,
+      "t7a_consultations_where_the_product_consults_none": 2,
+      "t7a_consultations_where_the_product_consults_none_by_current_critical_value": {
+        "EXHAUSTED": 2
+      },
+      "t7a_consultation_ms_where_the_product_consults_none": 31.7828,
+      "current_ms": 9771.8282,
+      "t7a_ms_after_the_product": 94.3273,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 3,
+        "NOT_CONSULTED": 15,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_forms": {
+        "NOT_CERTIFIED": 18,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 104,
+        "NOT_REACHED": 8,
+        "ZERO": 10
+      },
+      "t7a_work_limit": 0
+    },
+    "shared_t7a": {
+      "certify_calls": 69,
+      "by_context": {
+        "ConstructiveExactContactTest.aDecisionThatTheCertificateDoesNotGiveChangesNothing": 4,
+        "ConstructiveExactContactTest.theContactsAtZeroAreClassTwoWithTheirOrderOfContact": 2,
+        "ConstructiveExactContactTest.theSeamIsReclassifiedAsTheFoldContactAtPi": 9,
+        "ConstructiveIntersectionAdmissionTest.theConflictRuleDecidesInTheConstructiveConfiguration": 2,
+        "ConstructiveIntersectionAdmissionTest.theFoldContactsOfTheModelAreNeverRelaxedByAResidualBound": 7,
+        "ConstructiveSliceEnclosureMemoryTest.theLegacyConfigurationNeverReachesTheMemory": 6,
+        "ConstructiveSliceEnclosureMemoryTest.undoRestoresEnclosuresEqualToAFullEvaluation": 12,
+        "PreG9BCu3CertifiedEvidenceTest.aClassThreeBoxOfACompleteSetOnlyLowersItsCompleteness": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aContactOfClassThreeChangesNothing": 5,
+        "PreG9BCu3CertifiedEvidenceTest.anAbsentIntersectionIsWithdrawnByACertifiedFixedSign": 3,
+        "PreG9BCu3CertifiedEvidenceTest.anEnclosureCompatibleRootIsRelaxedAndAContactNever": 1,
+        "PreG9BCu3CertifiedEvidenceTest.anIncludedEndpointTangencyKeepsItsStateWithoutAnExactDecision": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aTangentCandidateAtACertifiedSimpleRootIsReclassified": 1,
+        "PreG9BCu3CertifiedEvidenceTest.translationsGiveTheResultOfTheOrigin": 4,
+        "PreG9BCu3CertifiedEvidenceTest.twoRootsAroundACertifiedCriticalPointAreExactlyTheSolutions": 4,
+        "PreG9BCu3ExactDoubleRootTest.anExactCurvatureThatDisagreesWithItsEnclosureCertifiesNothing": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactDecisionGivesOneDoubleRootAtTheExactParameter": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactParameterOutsideTheCriticalBracketIsNotUsed": 1,
+        "PreG9BCu3ExactDoubleRootTest.aTransverseClassificationThatMeetsTheDoubleRootIsReclassified": 1,
+        "PreG9BCu3ExactDoubleRootTest.theDoubleRootWithdrawsTheNoiseAndReclassifiesTheContact": 2,
+        "PreG9BCu3ExactDoubleRootTest.withoutAnExactDecisionTheContactStaysClassThree": 1
+      },
+      "constructive_calls": 38,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 5,
+        "NOT_CERTIFIED": 1,
+        "NOT_CONSULTED": 34,
+        "ONE_DOUBLE": 29
+      },
+      "t7a_forms": {
+        "NONE": 4,
+        "NOT_CERTIFIED": 26,
+        "ONE_DOUBLE": 29,
+        "ONE_SIMPLE": 5,
+        "TWO_SIMPLE": 5
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 29,
+        "MINUS": 4,
+        "NOT_REACHED": 7,
+        "PLUS": 4,
+        "ZERO": 25
+      },
+      "t7a_work_limit": 0
+    },
+    "desktop_t7a": {
+      "certify_calls": 668,
+      "by_context": {
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aFailingLengthEstimateLeavesTheCertificateUnchanged$16": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anEmptyCertifiedCoverIsPublishedComplete$4": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anExhaustedBudgetIsNeverComplete$14": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aNonDriverChangeComputesOneCertificatePerAffectedLocus$22": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anUndefinedDefinitionInputLeavesNoStaleDefinition$5": 5,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$constructionDegeneraciesAreBandsThatNoComponentCrosses$10": 8,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$consumersReadThePublishedCertificateOnly$23": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically$7": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$driverMovesPublishNoRevisionAndComputeNoCertificate$17": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds$1": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyRevisionPublishesItsOwnGeometry$3": 34,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$nonDriverParametersMoveTheCriticalValue$11": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$pointwiseValidityBeyondTheExactEndIsNotExistence$6": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theAuthorParametersAreCertifiedFromStructuralFactsOnly$0": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theFoldsOfE1RestOnTheCapturedConstants$13": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theLociArePublishedWhileTheSavedDriverIsInTheGap$2": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$27": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$28": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$32": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$33": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$34": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$undoAndRedoRestoreTheCertificates$12": 32,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$atTheTangencyBothLabelledOutputsCoincide$5": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$everyModelSliceHasAClassV3ProgramWithItsAlgorithmRules$0": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$penetrationAndBiteKeepTheSelectionRule$3": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theGapIsUniformlyInvalidWithTheSameRuleOnBothSides$4": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theProgramDoesNotDependOnTheDriverPosition$1": 8,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theRuleIsCapturedWithoutAnyValidSample$2": 10,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anEvaluatorPointInACertifiedGapIsNotPublished$7": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anIntersectionWithAnArcKeepsItsTokensThroughARevision$12": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$routesFollowTheBiteArcOfTheModelAcrossTheSeam$6": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theCertificateIsTheSingleClosureAuthority$8": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$1": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theGeneratingOccurrenceChainStaysDefined$0": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theTotalLengthsOfTheFirstFamilyHaveTheirClass$10": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$withFullCycleTheExcludedStartOfE2IsItsOneSidedLimit$4": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated$2": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$document$12": 12,
+        "PreG9BCu2AuthorModelExportTest.lambda$eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic$0": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$latexClosesOnlyClosedPeriodicComponents$8": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theClosureResidualOfEachClosedLocusIsMeasuredAgainstItsCertificate$1": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theCriticalLociAreClosedInLatexOnlyWhenPeriodic$10": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$containmentCreatesNoCorrespondence$3": 10,
+        "PreG9BCu2AuthorModelLineageTest.lambda$movingEndsKeepTheLineageAndTheBiteIsATypedTransition$1": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theEventOfE2KeepsItsLineageWhenTheOriginMoves$4": 5,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theFirstCertificatesAfterOpeningGuessNoLineage$0": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theSelectorOfN1ResolvesByEqualityOfTheDecomposition$2": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aBiteIsDrawnToTheImagesOfItsCertifiedEnds$4": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aFailingLengthCutsTheStrokeOfE2$11": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawingsAreDeterministicAndTheirTopologyViewInvariant$3": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawnVerticesAreTheEvaluationsOfTheirParameters$0": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$noStrokeBridgesTheRealGapNearTheCriticalValue$7": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theDisplacedE1DeclaresItsTurnsAndExemptsNone$2": 6,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$8": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$turnsAreBoundedOutsideTheCertifiedFolds$1": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$12": 5,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$24": 1,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$oneUlpChangesAtEveryDriverPositionReproduceTheSelection$0": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates$4": 66,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelVariantsStartedInTheGapCaptureTheSameCertificates$3": 63,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSelectionStateIsReadAgainOnUndoRedoAndReopen$1": 32,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSettlementTouchesNeitherTheLiveConstructionNorTheIdentities$2": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theUnlabelledSecondOutputKeepsItsTypedBands$6": 15,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theVariantsCreatedAtTheDoubleRootLeaveItWithATypedTransition$5": 5,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everyIndependentInputOfTheModelSlicesIsReproducedExactly$1": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everySliceOfTheCompleteModelIsReconstructedFaithfully$3": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$lineConicSelectionStatesOfTheModelSlicesAreReproduced$2": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpChangesOfExcCylPublishRevisionsWithExactSliceCopies$0": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpOfExcCylReachesTheUnlabelledOutputExactly$4": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$statesAgainstScratch$5": 24,
+        "PreG9BCu3BaseCharacterizationTest.lambda$absentIntersectionIsCertifiedAbsent$0": 2,
+        "PreG9BCu3BaseCharacterizationTest.lambda$nearTangencyPublishesExactlyTheTwoTrueRoots$1": 2,
+        "PreG9BCu3ProvenanceCensusTest.lambda$everyRelationThatTheProvenanceDeclaresHoldsExactly$0": 4,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$theSeamOfTheAdoptedModelIsTheFoldContactAtPi$0": 8,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withAlphaThirtyFiveOnlyTheTwoFoldContactsStayPublished$1": 15,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withHalfTheDistanceOfDOneOnlyTheTangencyStaysPublished$2": 7,
+        "PreG9BCu3StructuralPointAuthorModelTest.lambda$theMandatoryContactsOfTheAuthorModel$0": 5
+      },
+      "constructive_calls": 13,
+      "t7a_anticipation": {
+        "NOT_CONSULTED": 655,
+        "ONE_DOUBLE": 13
+      },
+      "t7a_forms": {
+        "NONE": 2,
+        "NOT_CERTIFIED": 651,
+        "ONE_DOUBLE": 13,
+        "TWO_SIMPLE": 2
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 13,
+        "MINUS": 1,
+        "PLUS": 3,
+        "ZERO": 651
+      },
+      "t7a_work_limit": 0
+    },
+    "corpus_t7a": {
+      "certify_calls": 122,
+      "by_context": {
+        "PreG9BCu3T7aCorpusProbe.corpus": 7,
+        "PreG9BCu3T7aCorpusProbe.corpus adoption and points": 9,
+        "PreG9BCu3T7aCorpusProbe.corpus B -3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B 3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x3.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H -20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 40.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5": 14,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone} restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=35.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=60.0": 6
+      },
+      "constructive_calls": 115,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 3,
+        "NOT_CONSULTED": 15,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_forms": {
+        "NOT_CERTIFIED": 18,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 104,
+        "NOT_REACHED": 8,
+        "ZERO": 10
+      },
+      "t7a_work_limit": 0
+    }
+  },
+  "published_results": {
+    "version_1_against_version_2_same_product": {
+      "available": true,
+      "objects": 140,
+      "raw_equal": 77,
+      "equal_modulo_identities": 0,
+      "equal_modulo_identities_enclosure_counts_and_work": 61,
+      "different": 2,
+      "differences": [
+        "rbCone=7.5 / cu3X4",
+        "rbCone=7.5 / u_1"
+      ]
+    },
+    "t6_product_against_version_2": {
+      "objects": 140,
+      "raw_equal": 77,
+      "equal_modulo_identities": 0,
+      "equal_modulo_identities_counts_and_work": 0,
+      "equal_modulo_also_the_policy_version": 61,
+      "different": 2,
+      "differences": [
+        "rbCone=7.5 / cu3X4",
+        "rbCone=7.5 / u_1"
+      ],
+      "version_only": [
+        "base / cu3X1",
+        "base / cu3X2",
+        "base / cu3X3",
+        "base / cu3X4",
+        "base / u_1",
+        "H 0.5 / cu3X1",
+        "H 0.5 / cu3X2",
+        "H 0.5 / cu3X3",
+        "H 0.5 / cu3X4",
+        "H 0.5 / u_1",
+        "H -20.0 / cu3X1",
+        "H -20.0 / cu3X2",
+        "H -20.0 / cu3X3",
+        "H -20.0 / cu3X4",
+        "H -20.0 / u_1",
+        "H 20.0 / cu3X1",
+        "H 20.0 / cu3X2",
+        "H 20.0 / cu3X3",
+        "H 20.0 / cu3X4",
+        "H 20.0 / u_1",
+        "H 40.0 / cu3X2",
+        "H 40.0 / cu3X3",
+        "B 3.0 / cu3X1",
+        "B 3.0 / cu3X2",
+        "B 3.0 / cu3X3",
+        "B 3.0 / cu3X4",
+        "B 3.0 / u_1",
+        "B -3.0 / cu3X1",
+        "B -3.0 / cu3X2",
+        "B -3.0 / cu3X3",
+        "B -3.0 / cu3X4",
+        "B -3.0 / u_1",
+        "D_1 x3.0 / cu3X2",
+        "D_1 x0.5 / cu3X1",
+        "D_1 x0.5 / cu3X2",
+        "D_1 x0.5 / cu3X3",
+        "D_1 x0.5 / cu3X4",
+        "D_1 x0.5 / u_1",
+        "rbCone=3.0 / cu3X1",
+        "rbCone=3.0 / cu3X2",
+        "rbCone=3.0 / cu3X3",
+        "rbCone=3.0 / cu3X4",
+        "rbCone=3.0 / u_1",
+        "rbCone=7.5 / cu3X1",
+        "rbCone=7.5 / cu3X2",
+        "rbCone=7.5 / cu3X3",
+        "α_{cone}=35.0 / cu3X1",
+        "α_{cone}=35.0 / cu3X2",
+        "α_{cone}=35.0 / cu3X3",
+        "α_{cone}=35.0 / cu3X4",
+        "α_{cone}=35.0 / u_1",
+        "α_{cone}=60.0 / cu3X1",
+        "α_{cone}=60.0 / cu3X2",
+        "α_{cone}=60.0 / cu3X3",
+        "α_{cone}=60.0 / cu3X4",
+        "α_{cone}=60.0 / u_1",
+        "restored / cu3X1",
+        "restored / cu3X2",
+        "restored / cu3X3",
+        "restored / cu3X4",
+        "restored / u_1"
+      ]
+    },
+    "characterized_hypothesis_against_version_2": {
+      "objects": 140,
+      "raw_equal": 77,
+      "equal_modulo_identities": 0,
+      "equal_modulo_identities_counts_and_work": 0,
+      "equal_modulo_also_the_policy_version": 63,
+      "different": 0,
+      "differences": [],
+      "version_only": [
+        "base / cu3X1",
+        "base / cu3X2",
+        "base / cu3X3",
+        "base / cu3X4",
+        "base / u_1",
+        "H 0.5 / cu3X1",
+        "H 0.5 / cu3X2",
+        "H 0.5 / cu3X3",
+        "H 0.5 / cu3X4",
+        "H 0.5 / u_1",
+        "H -20.0 / cu3X1",
+        "H -20.0 / cu3X2",
+        "H -20.0 / cu3X3",
+        "H -20.0 / cu3X4",
+        "H -20.0 / u_1",
+        "H 20.0 / cu3X1",
+        "H 20.0 / cu3X2",
+        "H 20.0 / cu3X3",
+        "H 20.0 / cu3X4",
+        "H 20.0 / u_1",
+        "H 40.0 / cu3X2",
+        "H 40.0 / cu3X3",
+        "B 3.0 / cu3X1",
+        "B 3.0 / cu3X2",
+        "B 3.0 / cu3X3",
+        "B 3.0 / cu3X4",
+        "B 3.0 / u_1",
+        "B -3.0 / cu3X1",
+        "B -3.0 / cu3X2",
+        "B -3.0 / cu3X3",
+        "B -3.0 / cu3X4",
+        "B -3.0 / u_1",
+        "D_1 x3.0 / cu3X2",
+        "D_1 x0.5 / cu3X1",
+        "D_1 x0.5 / cu3X2",
+        "D_1 x0.5 / cu3X3",
+        "D_1 x0.5 / cu3X4",
+        "D_1 x0.5 / u_1",
+        "rbCone=3.0 / cu3X1",
+        "rbCone=3.0 / cu3X2",
+        "rbCone=3.0 / cu3X3",
+        "rbCone=3.0 / cu3X4",
+        "rbCone=3.0 / u_1",
+        "rbCone=7.5 / cu3X1",
+        "rbCone=7.5 / cu3X2",
+        "rbCone=7.5 / cu3X3",
+        "rbCone=7.5 / cu3X4",
+        "rbCone=7.5 / u_1",
+        "α_{cone}=35.0 / cu3X1",
+        "α_{cone}=35.0 / cu3X2",
+        "α_{cone}=35.0 / cu3X3",
+        "α_{cone}=35.0 / cu3X4",
+        "α_{cone}=35.0 / u_1",
+        "α_{cone}=60.0 / cu3X1",
+        "α_{cone}=60.0 / cu3X2",
+        "α_{cone}=60.0 / cu3X3",
+        "α_{cone}=60.0 / cu3X4",
+        "α_{cone}=60.0 / u_1",
+        "restored / cu3X1",
+        "restored / cu3X2",
+        "restored / cu3X3",
+        "restored / cu3X4",
+        "restored / u_1"
+      ]
+    }
+  },
+  "performance": {
+    "performance-off-runA": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 105.4722,
+          "p95_ms": 133.4124,
+          "first_ms": 560.3871,
+          "samples_ms": [
+            560.3871,
+            104.1501,
+            117.7337,
+            107.7896,
+            113.6283,
+            107.7017,
+            105.4722,
+            114.8609,
+            101.3968,
+            105.5148,
+            103.533,
+            109.0905,
+            133.4124,
+            102.0709,
+            101.331,
+            100.1755,
+            105.8905,
+            102.6457,
+            98.9109,
+            99.6632,
+            103.4247
+          ]
+        },
+        "drag_B": {
+          "median_ms": 109.2615,
+          "p95_ms": 119.2649,
+          "first_ms": 106.8158,
+          "samples_ms": [
+            106.8158,
+            107.2315,
+            117.0084,
+            112.2028,
+            106.0164,
+            109.3203,
+            112.2857,
+            107.4591,
+            107.0958,
+            117.5633,
+            111.759,
+            119.2649,
+            109.2615,
+            107.6537,
+            112.6687,
+            106.6041,
+            122.379,
+            108.8569,
+            104.6404,
+            110.9108,
+            108.8022
+          ]
+        },
+        "adoption_ms": 2845.1508,
+        "used_heap_constructive_MB": 41.0,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 129.2093,
+          "p95_ms": 153.3014,
+          "first_ms": 1755.1551,
+          "samples_ms": [
+            1755.1551,
+            136.0728,
+            129.0832,
+            128.2884,
+            125.7047,
+            133.372,
+            128.6465,
+            125.2882,
+            128.317,
+            129.2093,
+            134.4218,
+            126.0456,
+            153.3014,
+            130.7064,
+            132.0199,
+            130.7855,
+            124.804,
+            130.1801,
+            126.6008,
+            128.2545,
+            129.2229
+          ]
+        },
+        "drag_B": {
+          "median_ms": 131.2929,
+          "p95_ms": 138.5245,
+          "first_ms": 130.6927,
+          "samples_ms": [
+            130.6927,
+            131.2929,
+            131.3027,
+            130.0502,
+            130.0478,
+            130.9535,
+            131.4634,
+            132.3915,
+            129.6105,
+            132.8701,
+            129.6584,
+            134.388,
+            130.1772,
+            130.4509,
+            135.0308,
+            133.2812,
+            134.9165,
+            129.387,
+            138.5245,
+            129.6495,
+            140.5174
+          ]
+        },
+        "adoption_ms": 2276.7316,
+        "used_heap_constructive_MB": 67.2,
+        "used_heap_legacy_MB": 48.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.4386,
+          "median_exact_contacts_ms": 4.2641
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1616,
+          "median_exact_contacts_ms": 1.0801
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 33.6445,
+          "median_exact_contacts_ms": 3.6438
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.4443,
+          "median_exact_contacts_ms": 1.0992
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5253,
+          "median_exact_contacts_ms": 4.4031
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.2002,
+          "median_exact_contacts_ms": 1.1131
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 37.6815,
+          "median_exact_contacts_ms": 3.7191
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.2837,
+          "median_exact_contacts_ms": 1.0906
+        }
+      }
+    },
+    "performance-off-runB": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 102.6287,
+          "p95_ms": 118.1171,
+          "first_ms": 493.7105,
+          "samples_ms": [
+            493.7105,
+            104.448,
+            101.5343,
+            106.4601,
+            104.4926,
+            102.5917,
+            104.3511,
+            98.4508,
+            100.8828,
+            103.53,
+            102.2948,
+            106.1126,
+            101.5737,
+            100.3315,
+            102.6287,
+            101.8101,
+            99.7767,
+            118.1171,
+            101.4566,
+            105.9192,
+            104.1223
+          ]
+        },
+        "drag_B": {
+          "median_ms": 107.7347,
+          "p95_ms": 110.4934,
+          "first_ms": 107.9828,
+          "samples_ms": [
+            107.9828,
+            106.5899,
+            109.8328,
+            108.9138,
+            107.2884,
+            107.0259,
+            107.3813,
+            106.9395,
+            107.5294,
+            105.5608,
+            110.683,
+            107.7685,
+            106.1341,
+            109.6819,
+            107.7347,
+            110.4934,
+            108.0068,
+            108.4428,
+            105.6167,
+            109.3137,
+            106.6351
+          ]
+        },
+        "adoption_ms": 2355.3201,
+        "used_heap_constructive_MB": 41.0,
+        "used_heap_legacy_MB": 30.8
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 126.3834,
+          "p95_ms": 144.0653,
+          "first_ms": 1582.6979,
+          "samples_ms": [
+            1582.6979,
+            129.7446,
+            143.5113,
+            144.0653,
+            126.6295,
+            126.9918,
+            122.9168,
+            126.3834,
+            127.1168,
+            126.7865,
+            125.773,
+            127.8956,
+            124.4476,
+            122.287,
+            135.9842,
+            125.5152,
+            123.8968,
+            124.5403,
+            123.6581,
+            124.3924,
+            124.4345
+          ]
+        },
+        "drag_B": {
+          "median_ms": 132.2244,
+          "p95_ms": 137.3297,
+          "first_ms": 133.9133,
+          "samples_ms": [
+            133.9133,
+            132.5864,
+            137.3297,
+            141.9615,
+            130.4314,
+            132.5845,
+            131.8505,
+            131.858,
+            132.9227,
+            132.717,
+            132.1964,
+            132.1356,
+            132.2244,
+            133.3866,
+            130.2127,
+            130.8964,
+            132.5501,
+            132.1158,
+            131.5549,
+            128.3798,
+            133.7645
+          ]
+        },
+        "adoption_ms": 2003.2792,
+        "used_heap_constructive_MB": 67.2,
+        "used_heap_legacy_MB": 48.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.4994,
+          "median_exact_contacts_ms": 4.3873
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1501,
+          "median_exact_contacts_ms": 1.1768
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 33.915,
+          "median_exact_contacts_ms": 3.7374
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.6015,
+          "median_exact_contacts_ms": 1.1189
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5107,
+          "median_exact_contacts_ms": 4.481
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1453,
+          "median_exact_contacts_ms": 1.1102
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 40.6222,
+          "median_exact_contacts_ms": 3.7712
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.4251,
+          "median_exact_contacts_ms": 1.1424
+        }
+      }
+    },
+    "performance-t7a-runA": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 46.5262,
+          "p95_ms": 52.1671,
+          "first_ms": 396.9352,
+          "samples_ms": [
+            396.9352,
+            44.3152,
+            46.8712,
+            51.367,
+            43.4512,
+            46.0959,
+            42.1627,
+            48.5379,
+            44.4677,
+            42.386,
+            46.5262,
+            52.1671,
+            46.7679,
+            42.6811,
+            50.2203,
+            47.5466,
+            42.9674,
+            42.362,
+            41.5856,
+            47.0965,
+            49.4455
+          ]
+        },
+        "drag_B": {
+          "median_ms": 44.8537,
+          "p95_ms": 50.894,
+          "first_ms": 50.5957,
+          "samples_ms": [
+            50.5957,
+            43.4619,
+            43.5586,
+            44.3575,
+            45.743,
+            44.8175,
+            45.5411,
+            43.6913,
+            43.8245,
+            46.7661,
+            45.7153,
+            43.2855,
+            42.616,
+            42.8012,
+            43.0168,
+            46.2757,
+            46.6647,
+            45.6819,
+            52.8375,
+            50.894,
+            44.8537
+          ]
+        },
+        "adoption_ms": 2197.8281,
+        "used_heap_constructive_MB": 40.1,
+        "used_heap_legacy_MB": 30.9
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 67.7615,
+          "p95_ms": 74.14,
+          "first_ms": 1547.5995,
+          "samples_ms": [
+            1547.5995,
+            70.4095,
+            74.14,
+            71.0181,
+            73.3694,
+            66.6589,
+            68.0353,
+            66.9849,
+            67.6408,
+            67.7615,
+            67.6112,
+            68.0628,
+            66.0408,
+            73.218,
+            66.8341,
+            67.2284,
+            66.5787,
+            70.2604,
+            66.1748,
+            68.0587,
+            66.5279
+          ]
+        },
+        "drag_B": {
+          "median_ms": 70.2045,
+          "p95_ms": 77.0551,
+          "first_ms": 75.6695,
+          "samples_ms": [
+            75.6695,
+            68.3863,
+            70.6514,
+            71.294,
+            77.0551,
+            70.6769,
+            69.2295,
+            77.3352,
+            69.2206,
+            76.7884,
+            68.7839,
+            69.1768,
+            70.2045,
+            70.4939,
+            69.7051,
+            68.0623,
+            70.4356,
+            68.4049,
+            69.6173,
+            72.4808,
+            68.2761
+          ]
+        },
+        "adoption_ms": 1961.1214,
+        "used_heap_constructive_MB": 65.3,
+        "used_heap_legacy_MB": 47.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0879,
+          "median_exact_contacts_ms": 4.3562
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1488,
+          "median_exact_contacts_ms": 1.1391
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.6306,
+          "median_exact_contacts_ms": 3.6023
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0872,
+          "median_exact_contacts_ms": 1.2135
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.083,
+          "median_exact_contacts_ms": 4.5176
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1494,
+          "median_exact_contacts_ms": 1.1028
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1336,
+          "median_exact_contacts_ms": 3.6625
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0736,
+          "median_exact_contacts_ms": 1.0956
+        }
+      }
+    },
+    "performance-t7a-runB": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 46.5254,
+          "p95_ms": 51.5416,
+          "first_ms": 396.6247,
+          "samples_ms": [
+            396.6247,
+            51.3649,
+            49.3141,
+            49.6612,
+            51.5416,
+            45.3348,
+            46.5254,
+            44.8964,
+            42.6209,
+            47.8925,
+            45.6662,
+            47.5406,
+            43.5271,
+            44.1254,
+            45.3581,
+            45.6086,
+            48.9108,
+            46.9644,
+            44.0578,
+            44.3506,
+            49.3156
+          ]
+        },
+        "drag_B": {
+          "median_ms": 45.9912,
+          "p95_ms": 48.3358,
+          "first_ms": 46.2555,
+          "samples_ms": [
+            46.2555,
+            47.9733,
+            44.8555,
+            47.5259,
+            46.7819,
+            44.944,
+            45.9912,
+            46.9524,
+            44.6918,
+            45.2736,
+            45.3048,
+            48.3358,
+            43.8341,
+            45.3991,
+            44.2724,
+            46.9153,
+            49.3,
+            47.0683,
+            45.6738,
+            45.9544,
+            46.5559
+          ]
+        },
+        "adoption_ms": 2269.0494,
+        "used_heap_constructive_MB": 40.0,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 71.5414,
+          "p95_ms": 80.9898,
+          "first_ms": 1593.5482,
+          "samples_ms": [
+            1593.5482,
+            79.4091,
+            74.7569,
+            77.3277,
+            71.9488,
+            76.4513,
+            68.9223,
+            68.8183,
+            68.7732,
+            80.9898,
+            75.1919,
+            71.5414,
+            77.855,
+            69.7435,
+            66.9045,
+            70.3712,
+            70.0732,
+            72.7754,
+            68.0826,
+            67.7999,
+            68.5737
+          ]
+        },
+        "drag_B": {
+          "median_ms": 72.2698,
+          "p95_ms": 76.9931,
+          "first_ms": 72.6102,
+          "samples_ms": [
+            72.6102,
+            74.3891,
+            72.3658,
+            75.8822,
+            77.9289,
+            73.8818,
+            72.8663,
+            76.3404,
+            70.3095,
+            76.9931,
+            72.2698,
+            71.9476,
+            71.7741,
+            71.3806,
+            75.4511,
+            70.1389,
+            70.4839,
+            71.1089,
+            71.5924,
+            71.9831,
+            71.417
+          ]
+        },
+        "adoption_ms": 1936.0023,
+        "used_heap_constructive_MB": 65.2,
+        "used_heap_legacy_MB": 47.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0873,
+          "median_exact_contacts_ms": 4.6075
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1675,
+          "median_exact_contacts_ms": 1.1135
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.6659,
+          "median_exact_contacts_ms": 3.9382
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0767,
+          "median_exact_contacts_ms": 1.141
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0848,
+          "median_exact_contacts_ms": 4.7436
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1493,
+          "median_exact_contacts_ms": 1.1306
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1401,
+          "median_exact_contacts_ms": 3.8153
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0718,
+          "median_exact_contacts_ms": 1.0746
+        }
+      }
+    },
+    "performance-off-runC": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 121.3654,
+          "p95_ms": 150.5417,
+          "first_ms": 602.3207,
+          "samples_ms": [
+            602.3207,
+            144.5713,
+            106.9739,
+            115.3731,
+            129.3591,
+            145.2546,
+            121.3654,
+            142.4877,
+            112.264,
+            122.2402,
+            109.3806,
+            124.2651,
+            150.5417,
+            114.2412,
+            104.8847,
+            108.5279,
+            113.9313,
+            105.6119,
+            131.8603,
+            143.0005,
+            103.3387
+          ]
+        },
+        "drag_B": {
+          "median_ms": 121.6849,
+          "p95_ms": 159.096,
+          "first_ms": 126.3532,
+          "samples_ms": [
+            126.3532,
+            120.1241,
+            109.257,
+            112.5096,
+            112.8241,
+            124.4535,
+            116.4328,
+            122.4796,
+            108.1092,
+            122.9823,
+            110.9623,
+            121.6849,
+            103.6275,
+            104.8283,
+            126.0582,
+            159.096,
+            134.5065,
+            126.0382,
+            116.8441,
+            154.1036,
+            161.2982
+          ]
+        },
+        "adoption_ms": 3031.2603,
+        "used_heap_constructive_MB": 40.8,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 135.1609,
+          "p95_ms": 145.933,
+          "first_ms": 1808.3363,
+          "samples_ms": [
+            1808.3363,
+            137.4226,
+            145.933,
+            132.1876,
+            122.4738,
+            143.1211,
+            141.5341,
+            134.2523,
+            132.6881,
+            133.8412,
+            132.6594,
+            130.7747,
+            125.6555,
+            139.7028,
+            128.6196,
+            145.8157,
+            129.9511,
+            144.8408,
+            138.7317,
+            135.1609,
+            141.5164
+          ]
+        },
+        "drag_B": {
+          "median_ms": 138.4131,
+          "p95_ms": 164.3593,
+          "first_ms": 138.4131,
+          "samples_ms": [
+            138.4131,
+            150.4254,
+            147.7206,
+            171.6007,
+            144.8316,
+            164.3593,
+            134.6309,
+            161.5447,
+            146.9352,
+            141.9418,
+            139.4902,
+            136.3568,
+            136.8099,
+            130.4357,
+            142.2234,
+            133.4525,
+            133.3273,
+            131.7369,
+            129.918,
+            131.9574,
+            134.8338
+          ]
+        },
+        "adoption_ms": 2573.6411,
+        "used_heap_constructive_MB": 67.1,
+        "used_heap_legacy_MB": 48.3
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5202,
+          "median_exact_contacts_ms": 4.5019
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.3514,
+          "median_exact_contacts_ms": 1.1271
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 33.9233,
+          "median_exact_contacts_ms": 3.6775
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.4911,
+          "median_exact_contacts_ms": 1.1175
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5271,
+          "median_exact_contacts_ms": 4.4459
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.0945,
+          "median_exact_contacts_ms": 1.1514
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 39.0559,
+          "median_exact_contacts_ms": 3.8338
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.2,
+          "median_exact_contacts_ms": 1.1543
+        }
+      }
+    },
+    "performance-off-runD": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 110.0484,
+          "p95_ms": 165.7575,
+          "first_ms": 780.0422,
+          "samples_ms": [
+            780.0422,
+            165.7575,
+            144.3253,
+            148.2551,
+            146.6676,
+            154.9334,
+            121.4235,
+            112.6778,
+            112.6379,
+            103.8312,
+            104.5052,
+            103.3452,
+            108.2665,
+            107.9273,
+            104.23,
+            110.0484,
+            108.0753,
+            108.6192,
+            116.5672,
+            101.6897,
+            105.162
+          ]
+        },
+        "drag_B": {
+          "median_ms": 112.0915,
+          "p95_ms": 122.8295,
+          "first_ms": 115.2717,
+          "samples_ms": [
+            115.2717,
+            108.6745,
+            122.8295,
+            112.0915,
+            111.7738,
+            110.0639,
+            111.8395,
+            117.5298,
+            120.4809,
+            125.0921,
+            116.2528,
+            107.0646,
+            115.0947,
+            111.7374,
+            117.8914,
+            111.2438,
+            107.8034,
+            111.7744,
+            111.6804,
+            120.4491,
+            121.7597
+          ]
+        },
+        "adoption_ms": 2922.6847,
+        "used_heap_constructive_MB": 41.0,
+        "used_heap_legacy_MB": 30.8
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 130.8714,
+          "p95_ms": 152.9013,
+          "first_ms": 1791.3234,
+          "samples_ms": [
+            1791.3234,
+            152.9013,
+            138.0731,
+            148.3736,
+            136.2653,
+            134.6796,
+            129.9843,
+            128.7862,
+            136.2648,
+            132.3823,
+            123.9497,
+            127.249,
+            126.6952,
+            127.0304,
+            126.0406,
+            130.8714,
+            133.4249,
+            131.6649,
+            128.8987,
+            127.4723,
+            126.0345
+          ]
+        },
+        "drag_B": {
+          "median_ms": 133.6036,
+          "p95_ms": 137.5401,
+          "first_ms": 133.7226,
+          "samples_ms": [
+            133.7226,
+            140.6407,
+            133.9996,
+            137.5401,
+            136.9359,
+            131.6701,
+            133.1941,
+            135.6872,
+            137.069,
+            133.3891,
+            131.5708,
+            135.6318,
+            132.8235,
+            133.7937,
+            133.4335,
+            134.6093,
+            132.136,
+            133.6036,
+            131.1048,
+            131.8971,
+            131.7593
+          ]
+        },
+        "adoption_ms": 2271.1321,
+        "used_heap_constructive_MB": 67.1,
+        "used_heap_legacy_MB": 48.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.554,
+          "median_exact_contacts_ms": 4.3866
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1805,
+          "median_exact_contacts_ms": 1.0783
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 34.1105,
+          "median_exact_contacts_ms": 3.5976
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.542,
+          "median_exact_contacts_ms": 1.1901
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5336,
+          "median_exact_contacts_ms": 4.5697
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1705,
+          "median_exact_contacts_ms": 1.0953
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 38.4854,
+          "median_exact_contacts_ms": 3.7392
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.4422,
+          "median_exact_contacts_ms": 1.1318
+        }
+      }
+    },
+    "performance-off-runE": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 102.9117,
+          "p95_ms": 109.5909,
+          "first_ms": 473.3382,
+          "samples_ms": [
+            473.3382,
+            109.5909,
+            109.4117,
+            102.6382,
+            104.5016,
+            104.017,
+            103.3604,
+            106.6784,
+            99.0859,
+            102.9117,
+            106.2481,
+            100.3661,
+            100.6299,
+            103.6373,
+            99.6296,
+            98.9512,
+            98.4586,
+            105.1858,
+            97.6379,
+            100.4229,
+            100.6811
+          ]
+        },
+        "drag_B": {
+          "median_ms": 104.8794,
+          "p95_ms": 109.3327,
+          "first_ms": 104.0922,
+          "samples_ms": [
+            104.0922,
+            104.8086,
+            105.0658,
+            113.3365,
+            104.3908,
+            107.1892,
+            104.7623,
+            104.8794,
+            105.1195,
+            107.3234,
+            108.394,
+            103.3656,
+            104.3455,
+            105.9254,
+            106.0537,
+            104.8184,
+            102.781,
+            105.4966,
+            104.0615,
+            104.6716,
+            109.3327
+          ]
+        },
+        "adoption_ms": 2323.1558,
+        "used_heap_constructive_MB": 40.8,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 125.6433,
+          "p95_ms": 130.9389,
+          "first_ms": 1724.169,
+          "samples_ms": [
+            1724.169,
+            126.7679,
+            130.3108,
+            127.3933,
+            125.5647,
+            125.2064,
+            125.6269,
+            130.9389,
+            124.3721,
+            124.9465,
+            129.0424,
+            129.5529,
+            125.1059,
+            125.6433,
+            127.983,
+            125.4482,
+            130.2716,
+            125.1447,
+            124.7811,
+            125.6987,
+            125.5898
+          ]
+        },
+        "drag_B": {
+          "median_ms": 130.7924,
+          "p95_ms": 135.5114,
+          "first_ms": 130.4255,
+          "samples_ms": [
+            130.4255,
+            133.0907,
+            131.7294,
+            129.5164,
+            129.9108,
+            131.3481,
+            128.6966,
+            135.7278,
+            131.1611,
+            131.701,
+            135.5114,
+            133.0367,
+            132.7382,
+            132.6312,
+            130.7924,
+            130.047,
+            129.2629,
+            128.3436,
+            129.1893,
+            130.5463,
+            129.6055
+          ]
+        },
+        "adoption_ms": 2008.2593,
+        "used_heap_constructive_MB": 67.1,
+        "used_heap_legacy_MB": 48.3
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.4534,
+          "median_exact_contacts_ms": 4.4657
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1937,
+          "median_exact_contacts_ms": 1.1005
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 34.1742,
+          "median_exact_contacts_ms": 3.6912
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.3994,
+          "median_exact_contacts_ms": 1.0717
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5097,
+          "median_exact_contacts_ms": 4.4739
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1787,
+          "median_exact_contacts_ms": 1.1073
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 38.3292,
+          "median_exact_contacts_ms": 3.8234
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.2659,
+          "median_exact_contacts_ms": 1.1248
+        }
+      }
+    },
+    "performance-product-runA": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 44.7143,
+          "p95_ms": 56.8361,
+          "first_ms": 410.8369,
+          "samples_ms": [
+            410.8369,
+            45.1757,
+            41.3491,
+            51.5363,
+            44.92,
+            44.7143,
+            42.5274,
+            45.4758,
+            40.9351,
+            45.2266,
+            43.0751,
+            56.8361,
+            46.4069,
+            41.35,
+            45.6808,
+            45.3961,
+            43.59,
+            39.8392,
+            43.9571,
+            41.5888,
+            44.707
+          ]
+        },
+        "drag_B": {
+          "median_ms": 44.2797,
+          "p95_ms": 51.157,
+          "first_ms": 45.0367,
+          "samples_ms": [
+            45.0367,
+            43.5529,
+            45.4569,
+            45.431,
+            45.4928,
+            44.2797,
+            42.7282,
+            43.5186,
+            44.0775,
+            51.157,
+            45.6167,
+            45.1114,
+            41.9283,
+            42.7009,
+            47.2369,
+            44.0811,
+            42.9884,
+            44.1751,
+            45.0789,
+            64.5458,
+            42.905
+          ]
+        },
+        "adoption_ms": 2261.9502,
+        "used_heap_constructive_MB": 39.9,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 67.4531,
+          "p95_ms": 99.6166,
+          "first_ms": 1702.293,
+          "samples_ms": [
+            1702.293,
+            67.5209,
+            78.0431,
+            67.4531,
+            65.9213,
+            74.6119,
+            65.7262,
+            77.5453,
+            67.6679,
+            70.046,
+            68.3775,
+            64.6504,
+            64.9019,
+            65.1926,
+            64.9234,
+            65.3187,
+            65.1829,
+            64.9708,
+            99.6166,
+            73.684,
+            65.5141
+          ]
+        },
+        "drag_B": {
+          "median_ms": 66.5582,
+          "p95_ms": 67.9027,
+          "first_ms": 67.9027,
+          "samples_ms": [
+            67.9027,
+            66.7954,
+            66.1301,
+            66.1878,
+            67.7513,
+            66.8377,
+            67.3569,
+            66.215,
+            66.1051,
+            67.9848,
+            66.8835,
+            66.9252,
+            66.0254,
+            67.1068,
+            65.4645,
+            67.6124,
+            66.1035,
+            65.6036,
+            66.5582,
+            65.2938,
+            65.7046
+          ]
+        },
+        "adoption_ms": 2001.1008,
+        "used_heap_constructive_MB": 65.0,
+        "used_heap_legacy_MB": 47.3
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0855,
+          "median_exact_contacts_ms": 4.6517
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1559,
+          "median_exact_contacts_ms": 1.0655
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.6031,
+          "median_exact_contacts_ms": 3.4585
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0695,
+          "median_exact_contacts_ms": 1.0479
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0833,
+          "median_exact_contacts_ms": 4.4357
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1467,
+          "median_exact_contacts_ms": 1.0391
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1307,
+          "median_exact_contacts_ms": 3.8116
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0672,
+          "median_exact_contacts_ms": 1.0328
+        }
+      }
+    },
+    "performance-product-runB": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 46.1688,
+          "p95_ms": 65.7416,
+          "first_ms": 412.6045,
+          "samples_ms": [
+            412.6045,
+            46.1688,
+            44.0312,
+            46.4324,
+            65.7416,
+            44.3241,
+            42.7881,
+            56.479,
+            48.8373,
+            43.0916,
+            44.6821,
+            41.7343,
+            49.1998,
+            43.5706,
+            44.4376,
+            57.2458,
+            41.5906,
+            45.2444,
+            46.5007,
+            48.1141,
+            47.758
+          ]
+        },
+        "drag_B": {
+          "median_ms": 44.5306,
+          "p95_ms": 49.0771,
+          "first_ms": 45.8857,
+          "samples_ms": [
+            45.8857,
+            42.7214,
+            47.0213,
+            42.5027,
+            42.1308,
+            44.5306,
+            48.7492,
+            43.901,
+            52.5357,
+            42.536,
+            45.6753,
+            41.8694,
+            42.327,
+            46.2149,
+            49.0771,
+            45.9618,
+            43.7624,
+            46.3875,
+            42.0654,
+            42.7277,
+            46.5135
+          ]
+        },
+        "adoption_ms": 2467.5663,
+        "used_heap_constructive_MB": 40.0,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 67.8046,
+          "p95_ms": 75.907,
+          "first_ms": 1684.2275,
+          "samples_ms": [
+            1684.2275,
+            69.8268,
+            70.0957,
+            70.6693,
+            72.8234,
+            71.7138,
+            69.1217,
+            67.8046,
+            67.1419,
+            66.957,
+            67.2779,
+            65.5293,
+            65.266,
+            68.416,
+            75.907,
+            63.8346,
+            72.2255,
+            63.4736,
+            64.0264,
+            66.7839,
+            63.9037
+          ]
+        },
+        "drag_B": {
+          "median_ms": 69.3277,
+          "p95_ms": 80.9705,
+          "first_ms": 65.7344,
+          "samples_ms": [
+            65.7344,
+            67.0459,
+            73.2488,
+            80.9705,
+            74.8007,
+            85.7958,
+            77.2851,
+            68.7058,
+            66.3525,
+            75.4582,
+            68.3519,
+            68.3097,
+            67.5394,
+            67.7918,
+            68.4523,
+            69.9673,
+            69.3277,
+            79.1868,
+            69.8124,
+            67.3223,
+            71.4004
+          ]
+        },
+        "adoption_ms": 2215.4356,
+        "used_heap_constructive_MB": 65.2,
+        "used_heap_legacy_MB": 47.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0861,
+          "median_exact_contacts_ms": 4.5397
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.2019,
+          "median_exact_contacts_ms": 1.5493
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.5985,
+          "median_exact_contacts_ms": 3.6137
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0749,
+          "median_exact_contacts_ms": 1.0479
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0826,
+          "median_exact_contacts_ms": 4.4141
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1502,
+          "median_exact_contacts_ms": 1.0821
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1299,
+          "median_exact_contacts_ms": 3.5827
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0691,
+          "median_exact_contacts_ms": 1.1325
+        }
+      }
+    },
+    "performance-product-runC": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 45.8232,
+          "p95_ms": 56.7447,
+          "first_ms": 401.1048,
+          "samples_ms": [
+            401.1048,
+            49.2129,
+            50.8533,
+            49.662,
+            56.7447,
+            49.7635,
+            43.2721,
+            44.5568,
+            47.1078,
+            45.8232,
+            42.873,
+            43.4765,
+            44.6762,
+            39.9397,
+            50.0927,
+            44.0269,
+            46.4678,
+            44.3562,
+            46.452,
+            42.1779,
+            43.4088
+          ]
+        },
+        "drag_B": {
+          "median_ms": 44.4028,
+          "p95_ms": 53.2179,
+          "first_ms": 51.083,
+          "samples_ms": [
+            51.083,
+            59.0621,
+            45.4255,
+            46.0312,
+            43.542,
+            43.8492,
+            44.4028,
+            41.1518,
+            47.5138,
+            53.2179,
+            42.4521,
+            42.7166,
+            43.5959,
+            45.0426,
+            46.9555,
+            45.2067,
+            45.1594,
+            42.5665,
+            43.8174,
+            44.1451,
+            44.1556
+          ]
+        },
+        "adoption_ms": 2303.6423,
+        "used_heap_constructive_MB": 40.0,
+        "used_heap_legacy_MB": 30.7
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 66.8448,
+          "p95_ms": 81.7965,
+          "first_ms": 1544.2814,
+          "samples_ms": [
+            1544.2814,
+            81.7965,
+            75.9967,
+            72.9992,
+            80.2371,
+            65.4747,
+            67.9459,
+            69.1083,
+            66.1227,
+            64.3639,
+            66.4578,
+            72.15,
+            65.0322,
+            67.4275,
+            66.7919,
+            64.9847,
+            66.8448,
+            64.0038,
+            66.7341,
+            63.6974,
+            67.6693
+          ]
+        },
+        "drag_B": {
+          "median_ms": 69.1107,
+          "p95_ms": 76.1722,
+          "first_ms": 66.555,
+          "samples_ms": [
+            66.555,
+            70.5856,
+            68.4721,
+            76.9535,
+            68.3945,
+            67.1101,
+            66.4021,
+            72.8409,
+            67.6456,
+            75.7186,
+            70.4244,
+            67.5038,
+            66.1584,
+            70.5767,
+            69.1107,
+            76.1722,
+            69.8751,
+            69.7995,
+            69.7398,
+            68.2227,
+            65.8875
+          ]
+        },
+        "adoption_ms": 1955.2083,
+        "used_heap_constructive_MB": 65.3,
+        "used_heap_legacy_MB": 47.5
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0864,
+          "median_exact_contacts_ms": 4.6604
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1577,
+          "median_exact_contacts_ms": 1.0542
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.6215,
+          "median_exact_contacts_ms": 3.9505
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0783,
+          "median_exact_contacts_ms": 1.073
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0825,
+          "median_exact_contacts_ms": 4.4633
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1545,
+          "median_exact_contacts_ms": 1.103
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1309,
+          "median_exact_contacts_ms": 3.5623
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0688,
+          "median_exact_contacts_ms": 1.0342
+        }
+      }
+    },
+    "performance-product-runD": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 43.513,
+          "p95_ms": 48.7246,
+          "first_ms": 404.9486,
+          "samples_ms": [
+            404.9486,
+            48.7246,
+            47.8367,
+            43.5363,
+            45.3683,
+            47.9857,
+            42.5394,
+            44.3088,
+            40.834,
+            43.0535,
+            46.0609,
+            43.513,
+            44.4675,
+            42.226,
+            42.5755,
+            43.0391,
+            41.7659,
+            42.4694,
+            40.3242,
+            42.5754,
+            46.9975
+          ]
+        },
+        "drag_B": {
+          "median_ms": 43.3343,
+          "p95_ms": 46.0121,
+          "first_ms": 43.0458,
+          "samples_ms": [
+            43.0458,
+            43.0315,
+            44.2704,
+            46.0121,
+            43.3343,
+            45.7733,
+            41.2827,
+            43.4591,
+            42.8278,
+            48.3295,
+            44.6836,
+            41.7,
+            44.3224,
+            42.3776,
+            42.234,
+            42.4538,
+            43.5602,
+            42.1141,
+            42.435,
+            45.1002,
+            43.6503
+          ]
+        },
+        "adoption_ms": 2245.4316,
+        "used_heap_constructive_MB": 40.0,
+        "used_heap_legacy_MB": 30.8
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 67.5207,
+          "p95_ms": 77.5053,
+          "first_ms": 1576.708,
+          "samples_ms": [
+            1576.708,
+            67.1292,
+            68.2331,
+            77.5053,
+            67.6426,
+            66.021,
+            68.8183,
+            66.1288,
+            68.6189,
+            66.5065,
+            65.4382,
+            69.0947,
+            67.5207,
+            68.7775,
+            68.3869,
+            67.7738,
+            66.8128,
+            67.3688,
+            66.2329,
+            67.1478,
+            66.358
+          ]
+        },
+        "drag_B": {
+          "median_ms": 68.9551,
+          "p95_ms": 72.4855,
+          "first_ms": 70.3479,
+          "samples_ms": [
+            70.3479,
+            68.5092,
+            68.9131,
+            73.077,
+            68.2006,
+            72.4855,
+            68.6629,
+            69.7893,
+            68.3923,
+            67.1555,
+            69.8232,
+            68.7054,
+            69.2934,
+            69.1113,
+            68.9431,
+            68.9551,
+            69.5694,
+            69.0187,
+            69.9232,
+            68.5863,
+            67.8483
+          ]
+        },
+        "adoption_ms": 1965.7822,
+        "used_heap_constructive_MB": 65.2,
+        "used_heap_legacy_MB": 47.4
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0854,
+          "median_exact_contacts_ms": 4.2994
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1502,
+          "median_exact_contacts_ms": 1.1355
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.5967,
+          "median_exact_contacts_ms": 3.5914
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0795,
+          "median_exact_contacts_ms": 1.102
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0826,
+          "median_exact_contacts_ms": 4.5818
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1485,
+          "median_exact_contacts_ms": 1.0691
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1329,
+          "median_exact_contacts_ms": 3.5791
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0713,
+          "median_exact_contacts_ms": 1.1314
+        }
+      }
+    },
+    "performance-product-runE": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 43.0269,
+          "p95_ms": 49.8768,
+          "first_ms": 388.2325,
+          "samples_ms": [
+            388.2325,
+            43.1607,
+            42.7316,
+            43.7245,
+            43.0741,
+            48.3004,
+            43.3514,
+            42.3734,
+            49.8768,
+            43.0269,
+            42.6671,
+            41.1247,
+            47.1264,
+            41.9164,
+            42.7497,
+            44.5935,
+            41.6135,
+            41.4273,
+            40.76,
+            40.8569,
+            45.6498
+          ]
+        },
+        "drag_B": {
+          "median_ms": 43.1232,
+          "p95_ms": 46.5843,
+          "first_ms": 42.6672,
+          "samples_ms": [
+            42.6672,
+            41.6181,
+            42.358,
+            44.8997,
+            44.4295,
+            43.3288,
+            43.6026,
+            42.9506,
+            42.8728,
+            47.5338,
+            43.1232,
+            41.363,
+            44.1354,
+            44.7729,
+            42.6546,
+            41.2932,
+            40.9023,
+            46.1822,
+            42.2634,
+            44.9124,
+            46.5843
+          ]
+        },
+        "adoption_ms": 2235.5715,
+        "used_heap_constructive_MB": 40.1,
+        "used_heap_legacy_MB": 30.9
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 67.8669,
+          "p95_ms": 78.4081,
+          "first_ms": 1562.9568,
+          "samples_ms": [
+            1562.9568,
+            70.5793,
+            78.4081,
+            73.9752,
+            69.4001,
+            76.5755,
+            67.8669,
+            65.8647,
+            68.0016,
+            65.9116,
+            70.735,
+            65.7064,
+            68.5208,
+            65.4379,
+            64.5416,
+            64.0511,
+            64.8013,
+            69.9823,
+            64.2396,
+            66.1617,
+            64.6117
+          ]
+        },
+        "drag_B": {
+          "median_ms": 68.4235,
+          "p95_ms": 73.5359,
+          "first_ms": 68.4235,
+          "samples_ms": [
+            68.4235,
+            73.5359,
+            66.8978,
+            68.2002,
+            67.2197,
+            72.8676,
+            67.5376,
+            69.8578,
+            69.3409,
+            74.4611,
+            68.7537,
+            69.8103,
+            67.7762,
+            68.7969,
+            68.0545,
+            67.0704,
+            68.9615,
+            66.9683,
+            67.7279,
+            73.3381,
+            67.2256
+          ]
+        },
+        "adoption_ms": 1923.8096,
+        "used_heap_constructive_MB": 65.4,
+        "used_heap_legacy_MB": 47.5
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0854,
+          "median_exact_contacts_ms": 4.4018
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1524,
+          "median_exact_contacts_ms": 1.0587
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 29,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.5947,
+          "median_exact_contacts_ms": 3.8554
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0756,
+          "median_exact_contacts_ms": 1.44
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0811,
+          "median_exact_contacts_ms": 4.5007
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1512,
+          "median_exact_contacts_ms": 1.0851
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 10,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.128,
+          "median_exact_contacts_ms": 3.7684
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 5,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0752,
+          "median_exact_contacts_ms": 1.053
+        }
+      }
+    }
+  },
+  "outputs_sha256": {
+    "summary": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/cu3-t7a-characterization.json": "00f16be5fbd5b6121c73d74709fb9d370b1d5186ce5e34201882bd0f4b2e3d3b"
+    },
+    "corpus": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/corpus/cu3-t7a-corpus-compare.json": "679efaf064f8b510c33cb8e02dae107e61d6d90dd810ceb525cd39060529ddfb",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/corpus/cu3-t7a-corpus-t7a.json": "66a7285010d40a35c35ab14320335554e3b3bc331d10c35db882ef47b9092aab"
+    },
+    "ledgers": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/corpus-compare-13852.jsonl": "06275211938868c42009fcaf25331a57a111d3088bf57f304513b8b5bff6b664",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/corpus-t7a-4500.jsonl": "47ca9063fc6499dc25c43c109db9dab1ccc0b996a283aca140177176fdb1d4a2",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/desktop-compare-32384.jsonl": "f8d8ebe25567ea356d0e20bfaa3313058efb04416f8bae70e134a639ac21fd55",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/desktop-t7a-49964.jsonl": "3a15bf0d3c6d1f065c47e446a6760ba13d735024407b9c6abdd332c9ae722e48",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/performance-t7a-runA-15420.jsonl": "75850953d766e8a5b8ac7864b0bc663f85e3f22a58c1c07ac8d5ca86f076c9c5",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/performance-t7a-runB-18892.jsonl": "56e89a58ad9fc8a66f6a01a5656d87cb363d7d293a7e407182c29df25f3bf2e5",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/shared-compare-45248.jsonl": "637ae0b443460e5bc32bf14c939d2b4d6f37cd3462eb4c43ef3433a9785c2cad",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-247f335c/ledger/shared-t7a-12672.jsonl": "e2fc04bfe8c118742a1c36083d585a8df1008099150e76d7f89659ddbc80c310"
+    },
+    "performance": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-off-runC/cu3-performance-characterization.json": "7942b012a5f9739eb849acf203ae71acf60cf1e63e189247c2d92919a80037b6",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-off-runD/cu3-performance-characterization.json": "ca2260a129ba8a73de5a4f964f0fe5df80d3c66f8a7f0c19399424a6d67e7d3c",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-off-runE/cu3-performance-characterization.json": "38f8f7ac07af88abd98731fbab884847003bf330564a899d4c8b40abd44e0173",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-product-runA/cu3-performance-characterization.json": "d839c0effaa853764184149ada4d6ef7f568b82015c487a67017f864d26762a6",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-product-runB/cu3-performance-characterization.json": "79651482c036ad41eb9aba60416f1efa1ac1532e219095ee1b8a801677f62251",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-product-runC/cu3-performance-characterization.json": "bfa2c2e04f9c53d830406dcca90cd8048f42696ca3e494962bf609e75c2d6691",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-product-runD/cu3-performance-characterization.json": "171e710b4fc759514d9faaad12ef13634f702e3bd199c990166c869dd2c1f114",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-candidate-performance-247f335c/performance-product-runE/cu3-performance-characterization.json": "a580984de93fa08a5b61f956ef224b5d2968dc90f13d923c89bad1832b6057cc"
+    }
+  },
+  "integrated_phase": {
+    "candidate": "9f6f27f265725b27673f5c37880947ad6c4f2399",
+    "tree": "abe10e3d4eda338be2b3c36373c4b09af21e7fdd",
+    "class": "INTEGRATED_PHASE",
+    "runs": [
+      {
+        "name": "static",
+        "profile": "STATIC",
+        "run_id": "verification-44a0828328d849059f973c1d8941792f",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 3,
+        "violated": 0,
+        "powershell": "7.6.9",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "af5c45e8831b52fc56b290c22c5d57fe54f597e0adc2b7161104de0b6aca3127",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-static-9f6f27f2"
+      },
+      {
+        "name": "infra-unit-pwsh766",
+        "profile": "INFRA_UNIT",
+        "run_id": "verification-6342897440a547debf5691c31a3b9b1c",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 22,
+        "violated": 0,
+        "powershell": "7.6.6",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "8260926d79953a36e77fc0a23c4a6c4b4925f6d8df2992f88b451431432a89c1",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-infra-unit-pwsh766-9f6f27f2"
+      },
+      {
+        "name": "phase-pre-g9b-cu3",
+        "profile": "PHASE",
+        "run_id": "verification-a731357ab7074d369d0d650a74dadcca",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 4,
+        "violated": 0,
+        "powershell": "7.6.9",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "a42d54b970a470f725366844f36b954d036b499e4aee6712e62830aa5204467b",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-phase-pre-g9b-cu3-9f6f27f2"
+      },
+      {
+        "name": "phase-pre-g9b-cu2",
+        "profile": "PHASE",
+        "run_id": "verification-5a637acd2be145fc8c19665e5bb7cfbf",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 4,
+        "violated": 0,
+        "powershell": "7.6.9",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "86645ec373fe50acb3c3291d5e92bf0bbed5bb520fd50f0bf479e244431828b1",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-phase-pre-g9b-cu2-9f6f27f2"
+      },
+      {
+        "name": "phase-pre-g9b-cu1",
+        "profile": "PHASE",
+        "run_id": "verification-f4aa2e72a95942fb9fff98b97ae60ac4",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 4,
+        "violated": 0,
+        "powershell": "7.6.9",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "497761c9846bfff620fcc39c87d0b6c385c8f3b631c450c133b628e5149738f9",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-phase-pre-g9b-cu1-9f6f27f2"
+      },
+      {
+        "name": "phase-pre-g9b-cu0",
+        "profile": "PHASE",
+        "run_id": "verification-4ae9645951454f4899e15ccc05d43831",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 2,
+        "violated": 0,
+        "powershell": "7.6.9",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "76e0367e9ac44dc3c45d4d00e4136f0970397fc673ca77efdaf2cc1b97631ce4",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-phase-pre-g9b-cu0-9f6f27f2"
+      },
+      {
+        "name": "integration",
+        "profile": "INTEGRATION",
+        "run_id": "verification-9e5c794a18fd4f24b809b0439b86caee",
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "satisfied": 19,
+        "violated": 0,
+        "powershell": "7.6.9",
+        "environment_signature": "de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0",
+        "result_hash": "aa524dea9f06bb7bddd139864374b785f2674a88179bc740d9ff55b48428eb07",
+        "log_directory": "artifacts/agent/pre-g9b-cu3-t7a-integration-9f6f27f2"
+      }
+    ]
+  }
+}
