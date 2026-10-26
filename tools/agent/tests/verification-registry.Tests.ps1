@@ -29,9 +29,8 @@ function Assert-CaseSchemaRejected {
     $observed = $null
     try { & $Action | Out-Null } catch { $observed = $_ }
     Assert-Case ($null -ne $observed) 'Expected JSON schema rejection.'
-    Assert-Case ($observed.FullyQualifiedErrorId -ceq `
-            'InvalidJsonAgainstSchemaDetailed,Microsoft.PowerShell.Commands.TestJsonCommand') `
-        'Schema rejection did not retain the nominal Test-Json error identity.'
+    Assert-Case ($observed.FullyQualifiedErrorId -ceq 'VerificationJsonSchemaRejected') `
+        'Schema rejection did not retain the verifier schema-rejection identity.'
     Assert-Case ($observed.CategoryInfo.Category -eq [Management.Automation.ErrorCategory]::InvalidData) `
         'Schema rejection did not retain the InvalidData category.'
 }

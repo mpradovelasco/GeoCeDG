@@ -426,8 +426,24 @@ function Assert-VerificationJsonSchema {
     $schemaFull = [IO.Path]::GetFullPath($SchemaPath)
     [void](Read-VerificationJson -Path $schemaFull)
     $json = ConvertTo-Json -InputObject $Value -Depth 100
-    if (-not (Test-Json -Json $json -SchemaFile $schemaFull -ErrorAction Stop)) {
-        throw "Verification value does not satisfy schema: $schemaFull"
+    # A schema rejection has one identity whatever the PowerShell release: Test-Json throws it
+    # as InvalidJsonAgainstSchema* in some releases and only returns $false in others (7.6.9 for
+    # conditional constraints). Any other failure, such as malformed JSON, propagates unchanged.
+    $accepted = $false
+    $rejection = $null
+    try {
+        $accepted = Test-Json -Json $json -SchemaFile $schemaFull -ErrorAction Stop
+    } catch {
+        if ($_.FullyQualifiedErrorId -notlike 'InvalidJsonAgainstSchema*') { throw }
+        $rejection = $_.Exception
+    }
+    if (-not $accepted) {
+        $message = "Verification value does not satisfy schema: $schemaFull"
+        if ($null -ne $rejection) { $message += " ($($rejection.Message))" }
+        throw [Management.Automation.ErrorRecord]::new(
+            [InvalidOperationException]::new($message, $rejection),
+            'VerificationJsonSchemaRejected', [Management.Automation.ErrorCategory]::InvalidData,
+            $schemaFull)
     }
     return $true
 }

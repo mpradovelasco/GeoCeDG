@@ -34,9 +34,8 @@ function Assert-CaseSchemaRejected {
     $observed = $null
     try { & $Action | Out-Null } catch { $observed = $_ }
     Assert-Case ($null -ne $observed) 'Expected JSON schema rejection.'
-    Assert-Case ($observed.FullyQualifiedErrorId -ceq `
-            'InvalidJsonAgainstSchemaDetailed,Microsoft.PowerShell.Commands.TestJsonCommand') `
-        'Schema rejection did not retain the nominal Test-Json error identity.'
+    Assert-Case ($observed.FullyQualifiedErrorId -ceq 'VerificationJsonSchemaRejected') `
+        'Schema rejection did not retain the verifier schema-rejection identity.'
     Assert-Case ($observed.CategoryInfo.Category -eq [Management.Automation.ErrorCategory]::InvalidData) `
         'Schema rejection did not retain the InvalidData category.'
 }
@@ -163,6 +162,19 @@ Invoke-Case 'schema prohibits mixed channel terminology' {
     ) -RequiredAcceptanceIds @('product.ok')
     $report.diagnostic_findings[0].outcome = 'PASS'
     Assert-CaseSchemaRejected { Assert-VerificationJsonSchema $report $schemaPath }
+}
+Invoke-Case 'only a schema rejection takes the schema-rejection identity' {
+    $badSchema = Join-Path ([IO.Path]::GetTempPath()) ('verification-invalid-schema-' + [guid]::NewGuid().ToString('N') + '.json')
+    [IO.File]::WriteAllText($badSchema, '{"type": 5}', [Text.UTF8Encoding]::new($false))
+    try {
+        $observed = $null
+        try { Assert-VerificationJsonSchema ([ordered]@{ a = 1 }) $badSchema | Out-Null } catch { $observed = $_ }
+        Assert-Case ($null -ne $observed) 'An invalid schema was not reported.'
+        Assert-Case ($observed.FullyQualifiedErrorId -cne 'VerificationJsonSchemaRejected') `
+            'An invalid schema was reported as a schema rejection.'
+    } finally {
+        [IO.File]::Delete($badSchema)
+    }
 }
 Invoke-Case 'aggregation rejects duplicate or uncovered acceptance results' {
     $result = New-Acceptance product.ok SEMANTIC CONTRACT_SATISFIED
