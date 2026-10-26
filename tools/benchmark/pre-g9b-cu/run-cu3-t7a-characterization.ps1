@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$OutputDirectory,
-    [switch]$SkipPerformance
+    [switch]$SkipPerformance,
+    [switch]$Candidate
 )
 
 # PRE-G9B-CU3 characterization of T7-a (author authorization of 2026-10-26: characterization
@@ -19,6 +20,12 @@ param(
 # run-cu3-performance-characterization.ps1 twice in the modes off and t7a. Nothing in the
 # product changes; the Desktop test source set is recompiled without the probes at the end. It is
 # not a verification profile and assigns no verdict; timings are informative.
+#
+# With -Candidate it compares the implementation of T7-a (author decision of 2026-10-26,
+# cu3-certified-admission/v2) with the procedure of version 1 in the same product: the shadow
+# keeps the early exact decision of the candidate behind the ledger's switch, so that the
+# procedure the ledger calls current is version 1 (the procedure of the T6 candidate) and the one
+# it calls t7a is the candidate; the mode off is then version 1.
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -86,6 +93,48 @@ $shadow = Replace-Exactly $source (@(
         "`tstatic RootCountCertificate2D certifyWith(ResidualJetSource2D source, double lower,",
         "`t`t`tdouble upper) {",
         "`t`tSearch search = new Search(source);") -join "`n")
+if ($Candidate) {
+    $shadow = Replace-Exactly $shadow (@(
+            "`t`t`tif (source.isConstructive()) {",
+            "`t`t`t`t// cu3-certified-admission/v2: the first enclosure of the sign search, then the",
+            "`t`t`t`t// exact decision before any subdivision; otherwise the search goes on from it.",
+            "`t`t`t`tenclosed = enclose(low, high);",
+            "`t`t`t`tif (enclosed == null) {",
+            "`t`t`t`t`treturn invalid(a, b);",
+            "`t`t`t`t}",
+            "`t`t`t`tif (enclosed.sign(0) == ResidualJetEnclosure2D.UNDECIDED) {",
+            "`t`t`t`t`tRootCountCertificate2D early = exactDouble(a, b, curvature, bracket);",
+            "`t`t`t`t`tif (early != null && early.form == Form.ONE_DOUBLE) {",
+            "`t`t`t`t`t`treturn early;",
+            "`t`t`t`t`t}",
+            "`t`t`t`t}",
+            "`t`t`t}",
+            "`t`t`tint value = fixedSign(low, high, 0, enclosed);") -join "`n") (@(
+            "`t`t`tif (source.isConstructive() && PreG9BCu3T7aLedger.anticipate()) {",
+            "`t`t`t`tenclosed = enclose(low, high);",
+            "`t`t`t`tif (enclosed == null) {",
+            "`t`t`t`t`treturn invalid(a, b);",
+            "`t`t`t`t}",
+            "`t`t`t`tif (enclosed.sign(0) == ResidualJetEnclosure2D.UNDECIDED) {",
+            "`t`t`t`t`tlong anticipationBegin = System.nanoTime();",
+            "`t`t`t`t`tRootCountCertificate2D early = exactDouble(a, b, curvature, bracket);",
+            "`t`t`t`t`tPreG9BCu3T7aLedger.anticipation(bracket, early, System.nanoTime() - anticipationBegin);",
+            "`t`t`t`t`tif (early != null && early.form == Form.ONE_DOUBLE) {",
+            "`t`t`t`t`t`treturn early;",
+            "`t`t`t`t`t}",
+            "`t`t`t`t}",
+            "`t`t`t}",
+            "`t`t`tint before = evaluations;",
+            "`t`t`tint value;",
+            "`t`t`ttry {",
+            "`t`t`t`tvalue = fixedSign(low, high, 0, enclosed);",
+            "`t`t`t} catch (RuntimeException exhausted) {",
+            "`t`t`t`tPreG9BCu3T7aLedger.critical(bracket, `"EXHAUSTED`", evaluations - before);",
+            "`t`t`t`tthrow exhausted;",
+            "`t`t`t}",
+            "`t`t`tPreG9BCu3T7aLedger.critical(bracket, value == INVALID ? `"INVALID`" : value == 0 ? `"ZERO`"",
+            "`t`t`t`t`t: value > 0 ? `"PLUS`" : `"MINUS`", evaluations - before);") -join "`n")
+} else {
 $shadow = Replace-Exactly $shadow (@(
         "`t`t`tdouble[] bracket = {low, high};",
         "`t`t`tint value = fixedSign(low, high, 0);") -join "`n") (@(
@@ -108,6 +157,7 @@ $shadow = Replace-Exactly $shadow (@(
         "`t`t`t}",
         "`t`t`tPreG9BCu3T7aLedger.critical(bracket, value == INVALID ? `"INVALID`" : value == 0 ? `"ZERO`"",
         "`t`t`t`t`t: value > 0 ? `"PLUS`" : `"MINUS`", evaluations - before);") -join "`n")
+}
 $shadow = Replace-Exactly $shadow "`t`t`t`tRootCountCertificate2D exactDouble = exactDouble(a, b, curvature, bracket);" (@(
         "`t`t`t`tlong exactBegin = System.nanoTime();",
         "`t`t`t`tRootCountCertificate2D exactDouble = exactDouble(a, b, curvature, bracket);",
@@ -340,6 +390,7 @@ $summary = [ordered]@{
     schema_version = 1
     id = 'pre-g9b-cu3-t7a-characterization'
     status = 'CU3 T7-a CHARACTERIZATION - READ-ONLY WITH RESPECT TO THE PRODUCT; NO VERDICT OF ITS OWN; TIMINGS ARE INFORMATIVE'
+    comparison = if ($Candidate) { 'candidate: current = version 1, t7a = cu3-certified-admission/v2' } else { 'characterization: current = product, t7a = hypothetical T7-a' }
     source_commit = $commit
     source_tree = $tree
     worktree_clean = ($status.Count -eq 0)

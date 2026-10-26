@@ -142,6 +142,14 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 		Map<String, Object> row = new LinkedHashMap<>();
 		row.put("median_ms", median(times));
 		row.put("p95_ms", percentile95(times));
+		// The first drag after the configuration changed, and every drag in order, for the
+		// spread of a run (PRE-G9B-CU3 T7-a implementation).
+		row.put("first_ms", Math.round(times.get(0) / 1E2) / 1E4);
+		List<Double> samples = new ArrayList<>();
+		for (long time : times) {
+			samples.add(Math.round(time / 1E2) / 1E4);
+		}
+		row.put("samples_ms", samples);
 		return row;
 	}
 
