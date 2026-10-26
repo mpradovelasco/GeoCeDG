@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT** |
-| Version | `1.4` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3` and by its constructive authority amendment in `1.4`) |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE ADMISSION POLICY V2 AMENDMENT (VERSION 1.5, LAST SECTION, `cu3-certified-admission/v2`, ONLY UNDER `constructive-authority/v1`) — NORMATIVE DECISIONS AUTHOR APPROVED (2026-10-26), IMPLEMENTATION AUTHORIZED BEHIND ITS VALIDITY GATE, NOT YET APPROVED AS PRODUCT** |
+| Version | `1.5` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3`, by its constructive authority amendment in `1.4` and by its constructive admission policy v2 amendment in `1.5`) |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
@@ -1216,3 +1216,84 @@ event, by the re-qualification of G8B-R1 (`locus-v2-constructive-authority.md` �
 changes only by a rigorous contradiction or by new evidence of the revision. A solution that the
 re-qualification or a later certificate contradicts loses its admissibility with a typed cause and
 is never reassociated.
+
+## Constructive admission policy v2 amendment (version 1.5)
+
+Normative decisions approved by the author on 2026-10-26 ("PRE-G9B-CU3 — Decisión autoral sobre
+T7-a"), with the validity gate recorded in the
+[T7-a Gate N record](../../../docs/validation/pre_g9b_cu3_t7a_gate_n_record.md). It applies only to
+documents governed by `constructive-authority/v1`. Their policy of grades, admission and conflict
+is `cu3-certified-admission/v2`. Documents governed by `legacy-representation-authority/v1` keep
+`cu3-certified-admission/v1` unchanged, with the same decisions, the same work and the same
+diagnostics. Version 2 is version 1 with the single rule below.
+
+**Early exact decision in the root-count certificate.** Let `T` be the box of a root-count
+certificate in the constructive configuration `Σ_C`. Assume the certificate has established, as
+version 1 does:
+
+1. an enclosure of the residual jet on the whole of `T`, which certifies that the source is
+   defined on `T` and is one `C²` function there;
+2. a certified fixed sign `s` of `h''` on `T`;
+3. certified opposite signs of `h'` at the ends of `T`;
+4. a bracket `[l, u]` of the unique zero of `h'`, located by certified signs of `h'`.
+
+The certificate then encloses `h` once on `[l, u]`:
+
+- If that enclosure is not obtained, version 1 applies: the source is not certified valid.
+- If it excludes zero, version 1 continues.
+- If it contains zero, the exact decision of the configuration is consulted before any
+  subdivision of `[l, u]`.
+
+An exact contact at an exact parameter `t0` establishes the form "one double root at an exact
+point" without further subdivision when all of the following hold:
+
+- the outward enclosure of `t0` lies in `[l, u]`;
+- `h(t0) = 0` and `h'(t0) = 0` are established exactly;
+- the exact sign of `h''(t0)` is `s` or is not decided.
+
+Any other outcome continues version 1 from the same enclosure, with the same limits. That covers
+an absent, insufficient or contradictory exact decision, a contact outside the bracket, an exact
+sign of `h''` opposite to `s`, and a higher-order contact.
+
+**Justification.** By items 2 and 3, `h'` is strictly monotone on `T` and has exactly one zero
+there, so `t0` is that zero. By Taylor's theorem, `h` has the sign `s` on the rest of `T`, so `t0`
+is its only root in `T`, isolated and of multiplicity two. The subdivision of the critical value
+proves none of this. A rigorous enclosure never certifies a sign of `h` on an interval that
+contains a zero of `h`.
+
+Validity rests on the enclosures of `T` and `[l, u]` themselves, by containment. It never rests on
+monotonicity with respect to inclusion. A failed enclosure of a sub-box of `[l, u]`, after the
+enclosure of `[l, u]` was obtained, is a numerical failure and not a lack of validity.
+
+**Accepted differences from version 1.**
+
+- A certificate that version 1 leaves `NOT_CERTIFIED` may be `ONE_DOUBLE` under version 2, when
+  the exact decision establishes it. This covers two cases:
+  - version 1 reached its work limit;
+  - an enclosure of a sub-box of `[l, u]` failed numerically.
+- The number of evaluations of a certificate is telemetry. It may differ from version 1 and stays
+  recorded.
+- The exact decision may be consulted in a certificate where version 1 consults none. Its budgets
+  are unchanged.
+
+The following are unchanged:
+
+- the limits of a certificate (`MAXIMUM_EVALUATIONS = 4096`, depth, bisections, bracket width);
+- the fail-closed rules and the grades;
+- the conflict rule and the admissibility rules of CU3.4 and of the constructive authority
+  amendment;
+- the independence of local admissibility from global completeness.
+
+No threshold, tolerance or approximation is added.
+
+**Transition and identity.**
+
+- The policy follows the authority of the document. It changes only through the explicit adoption
+  event, Undo or a reload.
+- The evidence it produces, including its version, is revision evidence. It is never persisted
+  and never enters a root token, a selector or the graph.
+- An adopted document is decided under version 2 at its next computation. A strengthened
+  certificate acts through the conflict rule with its typed diagnostics.
+- Admissibility changes only by a rigorous contradiction.
+- Identities are never reassociated, and tangent tokens are never transferred.
+- No durable format changes.
