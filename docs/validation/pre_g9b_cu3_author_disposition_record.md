@@ -16,8 +16,10 @@
 > científico principal del candidato.
 
 - **Estado:** aceptado provisionalmente, con dos condiciones. No hay `PASS` ni cierre.
-- **Condición 1, pruebas manuales:** pendiente. Se prepara la
-  [guía de prueba manual](pre_g9b_cu3_manual_test_guide.md) (§6).
+- **Condición 1, pruebas manuales:** se prepara la
+  [guía de prueba manual](pre_g9b_cu3_manual_test_guide.md) (§6). Resultado posterior, del mismo
+  día: smoke funcional `PASS — AUTHOR REPORTED` y rendimiento interactivo `NOT ACCEPTED`
+  ([registro del smoke](pre_g9b_cu3_author_smoke_record.md)).
 - **Condición 2, censo:** conciliado en el
   [registro de la caracterización del censo](pre_g9b_cu3_census_characterization_record.md) (§3).
 

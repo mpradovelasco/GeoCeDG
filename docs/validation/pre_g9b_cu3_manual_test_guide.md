@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 |---|---|
-| Carácter | Guía concisa de la prueba manual del autor que pide la disposición autoral de 2026-10-26, punto 6. La prueba sigue pendiente: este documento no la sustituye ni la simula |
+| Carácter | Guía concisa de la prueba manual del autor que pide la disposición autoral de 2026-10-26, punto 6. Este documento no sustituye ni simula la prueba |
 | Producto | el del candidato técnico `3c2ca7e8`. Los commits posteriores de la rama `phase/pre-g9b-cu3-implementation` (registro de verificación, caracterizaciones y documentos) no cambian el producto |
 | Modelo | una **copia** de `models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg`. El original es evidencia autoral fijada por SHA-256: no se abre para guardar ni se modifica |
-| Resultado | el autor anota `PASS` o `FAIL` por paso, con la observación y la posición del modelo si falla |
+| Resultado | el autor anota `PASS` o `FAIL` por paso, con la observación y la posición del modelo si falla. Resultado del 2026-10-26: smoke funcional `PASS — AUTHOR REPORTED`; rendimiento interactivo `NOT ACCEPTED` ([registro del smoke](pre_g9b_cu3_author_smoke_record.md)) |
 | `selfApproved` | `false` |
 
 **Preparación.** Copiar el modelo a una carpeta de trabajo y abrir la copia con el producto del
