@@ -82,20 +82,24 @@ class PreG9BCu3T7aCorpusProbe {
 			PreG9BR6PlusF3Fixtures.must(app, command);
 		}
 		Construction construction = app.getKernel().getConstruction();
+		context("adoption and points");
 		AuthorityPolicyAdoption.adopt(construction);
 		for (String command : POINTS) {
 			PreG9BR6PlusF3Fixtures.must(app, command);
 		}
 		Map<String, Object> rows = new LinkedHashMap<>();
+		context("base");
 		rows.put("base", snapshot(construction));
 		for (String label : new String[] {"H", "B"}) {
 			double t = PreG9BCu0Corpus.pathParameter(app, label);
 			double[] deltas = "H".equals(label) ? new double[] {0.5, -20, 20, 40}
 					: new double[] {3, -3};
 			for (double delta : deltas) {
+				context(label + " " + delta);
 				PreG9BCu0Corpus.movePathPoint(app, label, t + delta);
 				rows.put(label + " " + delta, snapshot(construction));
 			}
+			context(label + " restored");
 			PreG9BCu0Corpus.movePathPoint(app, label, t);
 		}
 		GeoPoint d1 = (GeoPoint) construction.lookupLabel("D_1");
@@ -103,11 +107,13 @@ class PreG9BCu3T7aCorpusProbe {
 		double x = d1.getInhomX();
 		double y = d1.getInhomY();
 		for (double factor : new double[] {3, 0.5}) {
+			context("D_1 x" + factor);
 			d1.setCoords(h.getInhomX() + factor * (x - h.getInhomX()),
 					h.getInhomY() + factor * (y - h.getInhomY()), 1);
 			d1.updateRepaint();
 			rows.put("D_1 x" + factor, snapshot(construction));
 		}
+		context("D_1 restored");
 		d1.setCoords(x, y, 1);
 		d1.updateRepaint();
 		number(app, construction, "rbCone", new double[] {3, 7.5}, rows, 1);
@@ -117,7 +123,7 @@ class PreG9BCu3T7aCorpusProbe {
 	}
 
 	private void number(AppGeoCeDG app, Construction construction, String label,
-			double[] values, Map<String, Object> rows, double unit) {
+			double[] values, Map<String, Object> rows, double unit) throws Exception {
 		GeoElement number = construction.lookupLabel(label);
 		if (number == null) {
 			rows.put(label, "absent");
@@ -125,10 +131,17 @@ class PreG9BCu3T7aCorpusProbe {
 		}
 		double original = ((org.geogebra.common.kernel.geos.GeoNumeric) number).getValue();
 		for (double value : values) {
+			context(label + "=" + value);
 			PreG9BCu0Corpus.setNumber(app, label, value * unit);
 			rows.put(label + "=" + value, snapshot(construction));
 		}
+		context(label + " restored");
 		PreG9BCu0Corpus.setNumber(app, label, original);
+	}
+
+	/** Names the configuration in the records of the T7-a ledger. */
+	private static void context(String name) {
+		System.setProperty("geocedg.t7a.context", name);
 	}
 
 	/** The canonical text of every intersection result and structural point, by label. */

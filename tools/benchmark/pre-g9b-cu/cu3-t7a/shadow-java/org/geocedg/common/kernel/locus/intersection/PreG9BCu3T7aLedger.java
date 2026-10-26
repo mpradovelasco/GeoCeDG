@@ -9,8 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,14 +36,6 @@ public final class PreG9BCu3T7aLedger {
 	private static final ThreadLocal<Run> ACTIVE = new ThreadLocal<>();
 	private static final ThreadLocal<Boolean> ANTICIPATE = ThreadLocal.withInitial(
 			() -> "t7a".equals(MODE));
-	private static final List<String> LINES = Collections.synchronizedList(new ArrayList<>());
-
-	static {
-		if (!"off".equals(MODE)) {
-			Runtime.getRuntime().addShutdownHook(new Thread(PreG9BCu3T7aLedger::flush));
-		}
-	}
-
 	private PreG9BCu3T7aLedger() {
 	}
 
@@ -152,7 +143,7 @@ public final class PreG9BCu3T7aLedger {
 			line.append("\"same_decision\":")
 					.append(signature(current.result).equals(signature(anticipated.result)));
 		}
-		LINES.add(line.append('}').toString());
+		append(line.append('}').toString());
 	}
 
 	/** @return everything a certificate decides, without its work count */
@@ -215,8 +206,9 @@ public final class PreG9BCu3T7aLedger {
 		for (int index = stack.length - 1; index >= 0; index--) {
 			String type = stack[index].getClassName();
 			if ((type.endsWith("Test") || type.endsWith("Probe")) && !type.contains("$")) {
+				String detail = System.getProperty("geocedg.t7a.context", "");
 				return type.substring(type.lastIndexOf('.') + 1) + "." + stack[index]
-						.getMethodName();
+						.getMethodName() + (detail.isEmpty() ? "" : " " + detail);
 			}
 		}
 		return "unknown";
@@ -240,21 +232,20 @@ public final class PreG9BCu3T7aLedger {
 				: value.replace("\\", "\\\\").replace("\"", "\\\"")).append('"');
 	}
 
-	/** Writes the records of this JVM to {@code <geocedg.t7a.ledger>-<pid>.jsonl}. */
-	static void flush() {
+	/**
+	 * Appends one record to {@code <geocedg.t7a.ledger>-<pid>.jsonl} at once: the test JVMs of the
+	 * Desktop module may end without running shutdown hooks.
+	 */
+	private static synchronized void append(String line) {
 		String base = System.getProperty("geocedg.t7a.ledger", "");
 		if (base.isEmpty()) {
 			return;
 		}
-		List<String> lines;
-		synchronized (LINES) {
-			lines = new ArrayList<>(LINES);
-		}
 		try {
-			Path file = Path.of(base + "-" + ProcessHandle.current()
-					.pid() + ".jsonl");
+			Path file = Path.of(base + "-" + ProcessHandle.current().pid() + ".jsonl");
 			Files.createDirectories(file.getParent());
-			Files.write(file, lines, StandardCharsets.UTF_8);
+			Files.write(file, List.of(line), StandardCharsets.UTF_8, StandardOpenOption.CREATE,
+					StandardOpenOption.APPEND);
 		} catch (IOException failed) {
 			System.err.println("T7-a ledger not written: " + failed);
 		}
