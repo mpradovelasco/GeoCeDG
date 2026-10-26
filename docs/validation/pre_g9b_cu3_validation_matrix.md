@@ -325,6 +325,15 @@ Reglas propias:
 | V-AUT-INT-2 | consumidores e interfaz | un consumidor que exige `STRICT` y no la recibe falla de forma explícita, con causa tipada; la consulta de integridad enumera las premisas `RELAXED`, separada de `NumericGuarantee`; `RelationIntegrity` no se persiste ni entra en los tokens | — |
 | V-AUT-INT-3 | sin blanqueo (G-AUT-6) | ninguna relación `CONTRADICTED` pasa a `RELAXED`; un residuo binary64 dentro de la tolerancia no cambia una contradicción constructiva | admitir como relajado un contacto refutado haría fallar la prueba |
 
+**Nota de conciliación de V-AUT-PROV-1 (2026-10-26).** Por la disposición autoral de 2026-10-26, el
+alcance del censo de G-AUT-1 queda conciliado en el
+[registro de la caracterización del censo](pre_g9b_cu3_census_characterization_record.md). Con
+`cu3-exact-evaluation-budget/v1`, el evaluador del producto no refuta ninguna de las 160 relaciones
+de procedencia del modelo, reproduce exactamente 140 (27 sin sustitutos de frontera y 113 relativas
+a ellos) y falla cerrado en veinte. Una caracterización externa, con presupuesto propio y fuera del
+producto, reproduce también esas veinte, relativas a los sustitutos. Ninguna igualdad con
+sustitutos demuestra la relación para los objetos ideales, y el criterio de la fila no cambia.
+
 ### 6.4 Política `RELAXED`: `SUBSTITUTE_GENERIC` versión 1 (D-AUT-5)
 
 Las filas siguen la definición operativa de la propuesta §4.2b. En el modelo del autor, `m = 2` y

@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-performance-characterization",
+  "status": "CU3 PERFORMANCE CHARACTERIZATION - NO VERDICT OF ITS OWN; TIMINGS ARE INFORMATIVE",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-performance-characterization.ps1",
+    "source_commit": "451c1b501f7b010f279b0a1c9af34202c9913af4",
+    "source_tree": "0a40ec38c63ad07e218cc402e05bded5f519af2e",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "runs": 5,
+  "document_drag_reference": {
+    "median_drag_of_H_legacy_ms": 94.5272,
+    "median_drag_of_H_constructive_ms": 748.2211
+  },
+  "instrumented_queries": {
+    "o_1 h_2": {
+      "during_the_drag_of_H": {
+        "residual_sources": 1,
+        "box_enclosures": 504,
+        "exact_contact_queries": 1,
+        "exact_contacts": 1,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0941,
+        "median_enclose_ms": 33.2553,
+        "median_exact_contacts_ms": 454.8677
+      },
+      "recomputation_in_the_same_revision": {
+        "residual_sources": 1,
+        "box_enclosures": 504,
+        "exact_contact_queries": 1,
+        "exact_contacts": 1,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.083,
+        "median_enclose_ms": 33.1789,
+        "median_exact_contacts_ms": 0.0726,
+        "median_total_compute_ms": 33.9947
+      }
+    },
+    "e_1 n": {
+      "during_the_drag_of_H": {
+        "residual_sources": 1,
+        "box_enclosures": 283,
+        "exact_contact_queries": 1,
+        "exact_contacts": 1,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0902,
+        "median_enclose_ms": 13.5557,
+        "median_exact_contacts_ms": 7.0739
+      },
+      "recomputation_in_the_same_revision": {
+        "residual_sources": 1,
+        "box_enclosures": 283,
+        "exact_contact_queries": 1,
+        "exact_contacts": 1,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0937,
+        "median_enclose_ms": 13.8272,
+        "median_exact_contacts_ms": 0.0661,
+        "median_total_compute_ms": 14.6045
+      }
+    },
+    "e_1 c_1": {
+      "during_the_drag_of_H": {
+        "residual_sources": 1,
+        "box_enclosures": 1760,
+        "exact_contact_queries": 2,
+        "exact_contacts": 2,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0836,
+        "median_enclose_ms": 62.525,
+        "median_exact_contacts_ms": 83.0222
+      },
+      "recomputation_in_the_same_revision": {
+        "residual_sources": 1,
+        "box_enclosures": 1760,
+        "exact_contact_queries": 2,
+        "exact_contacts": 2,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0793,
+        "median_enclose_ms": 62.9446,
+        "median_exact_contacts_ms": 0.09,
+        "median_total_compute_ms": 64.0988
+      }
+    },
+    "e_1 r": {
+      "during_the_drag_of_H": {
+        "residual_sources": 1,
+        "box_enclosures": 932,
+        "exact_contact_queries": 1,
+        "exact_contacts": 1,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0807,
+        "median_enclose_ms": 45.7162,
+        "median_exact_contacts_ms": 7.0722
+      },
+      "recomputation_in_the_same_revision": {
+        "residual_sources": 1,
+        "box_enclosures": 932,
+        "exact_contact_queries": 1,
+        "exact_contacts": 1,
+        "normalized_residuals": 0,
+        "counts_identical_over_runs": true,
+        "median_capture_ms": 0.0855,
+        "median_enclose_ms": 46.2794,
+        "median_exact_contacts_ms": 0.0675,
+        "median_total_compute_ms": 47.047
+      }
+    },
+    "boxes_shared_by_the_queries_of_e_1": {
+      "distinct_boxes e_1 n": 282,
+      "distinct_boxes e_1 c_1": 1759,
+      "distinct_boxes e_1 r": 931,
+      "common e_1 n / e_1 c_1": 0,
+      "common e_1 n / e_1 r": 0,
+      "common e_1 c_1 / e_1 r": 775,
+      "distinct_boxes_of_the_three_queries": 2197,
+      "sum_of_their_distinct_boxes": 2972
+    }
+  }
+}

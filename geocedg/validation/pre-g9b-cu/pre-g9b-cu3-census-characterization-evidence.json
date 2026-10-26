@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-census-characterization",
+  "status": "CU3 EXTERNAL CHARACTERIZATION OF THE G-AUT-1 CENSUS - NO VERDICT OF ITS OWN; THE PRODUCT BUDGET IS UNCHANGED",
+  "generator": {
+    "runner": "tools/benchmark/pre-g9b-cu/run-cu3-census-characterization.ps1",
+    "source_commit": "451c1b501f7b010f279b0a1c9af34202c9913af4",
+    "source_tree": "0a40ec38c63ad07e218cc402e05bded5f519af2e",
+    "product_sources_modified_relative_to_commit": false
+  },
+  "budgets": {
+    "product": "cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096]",
+    "characterization": "cu3-exact-evaluation-budget/v1 restricted[operations=200000000, depth=48, bits=4194304]",
+    "characterization_construction": "reflection on the private constructor, in this probe only"
+  },
+  "census": {
+    "relations": 160,
+    "outcomes_under_the_product_budget": {
+      "BUDGET_EXHAUSTED with boundary substitutes": 20,
+      "HOLDS with boundary substitutes": 113,
+      "HOLDS without boundary substitutes": 27
+    },
+    "outcomes_under_the_characterization_budget": {
+      "HOLDS with boundary substitutes": 133,
+      "HOLDS without boundary substitutes": 27
+    },
+    "relations_not_holding_under_the_product_budget": {
+      "H on f_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 1791,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 89
+        }
+      },
+      "S on f_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [8, 16, 17, 24]",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 1824,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 98
+        }
+      },
+      "W on f_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2595,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 142
+        }
+      },
+      "W on i_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2452,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 126
+        }
+      },
+      "W in_limited_part f_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2595,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 142
+        }
+      },
+      "H on j_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 1868,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 100
+        }
+      },
+      "U on j_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [8, 16, 17, 24]",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 1937,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 114
+        }
+      },
+      "A_1 on j_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2780,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 168
+        }
+      },
+      "A_1 on i_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2601,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 147
+        }
+      },
+      "A_1 in_limited_part j_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2780,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 168
+        }
+      },
+      "W on h_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2553,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 126
+        }
+      },
+      "h_1 parallel k": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1544, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096]) / value",
+          "operations": 1544,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 64
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2442,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 120
+        }
+      },
+      "A_1 on k_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 16, 17, 24]",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2702,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 147
+        }
+      },
+      "k_1 parallel k": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "BUDGET_EXHAUSTED at n32: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1585, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096]) / value",
+          "operations": 1585,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 70
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 2591,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 141
+        }
+      },
+      "B_1 on m_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n34: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1797, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 18, 19, 25]",
+          "operations": 1797,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 80
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 3614,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 195
+        }
+      },
+      "B_1 on h_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n34: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1797, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 18, 19, 25]",
+          "operations": 1797,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 80
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 3477,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 181
+        }
+      },
+      "B_1 in_limited_part m_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n34: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1797, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 18, 19, 25]",
+          "operations": 1797,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 80
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 3614,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 195
+        }
+      },
+      "C_1 on l_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n34: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1869, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 18, 19, 25]",
+          "operations": 1869,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 90
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 3887,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 232
+        }
+      },
+      "C_1 on k_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n34: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1869, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 18, 19, 25]",
+          "operations": 1869,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 90
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 3719,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 214
+        }
+      },
+      "C_1 in_limited_part l_1": {
+        "product": {
+          "outcome": "BUDGET_EXHAUSTED",
+          "reads_boundary_substitutes": true,
+          "detail": "NOT_DECIDED (BUDGET_EXHAUSTED at n34: EXACT_EVALUATION_BUDGET_EXHAUSTED: BITS (operations=1869, depth=2, bits=4126; cu3-exact-evaluation-budget/v1[operations=100000, depth=8, bits=4096])) substitutes [6, 18, 19, 25]",
+          "operations": 1869,
+          "depth": 2,
+          "maximum_bits": 4126,
+          "square_roots": 2,
+          "sign_decisions": 90
+        },
+        "characterization": {
+          "outcome": "HOLDS",
+          "reads_boundary_substitutes": true,
+          "operations": 3887,
+          "depth": 2,
+          "maximum_bits": 4514,
+          "square_roots": 2,
+          "sign_decisions": 232
+        }
+      }
+    },
+    "holding_under_the_product_budget_but_not_under_characterization": [],
+    "largest_counters_under_characterization": {
+      "operations": 10893,
+      "depth": 3,
+      "bits": 4514
+    }
+  }
+}
