@@ -1,0 +1,1399 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-t7a-characterization",
+  "status": "CU3 T7-a CHARACTERIZATION - READ-ONLY WITH RESPECT TO THE PRODUCT; NO IMPLEMENTATION; NO VERDICT OF ITS OWN; TIMINGS ARE INFORMATIVE",
+  "authorization": "PRE-G9B-CU3 - Caracterizacion cientifica focal de T7-a (author, 2026-10-26): characterization authorized, implementation not authorized",
+  "reference_candidate": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+  "measured_at": "db75243824df35fe692912329cdc352d9d707844",
+  "measured_tree": "ad3fe07e28dd574159c3fef3de1534217dada30e",
+  "product_identical_to_reference": true,
+  "runner": "tools/benchmark/pre-g9b-cu/run-cu3-t7a-characterization.ps1",
+  "shadow": {
+    "product_class": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RootCountCertificate2D.java",
+    "product_blob": "0fa69e07c21959b4819d022300b062a6856736ff",
+    "shadow_sha256": "50d71b23062fae6ad3bb36179fa117a815f74aec27833e95b67fc950f48fe85e",
+    "ledger_sha256": "41bd9b9003e5df9dbc777e578d86f485aa119ca2d29e9f33efa71f86ab7063f7",
+    "product_jar": "common.jar"
+  },
+  "runs": [
+    {
+      "name": "shared-compare",
+      "mode": "compare",
+      "exit_code": 0,
+      "duration_s": 88.9
+    },
+    {
+      "name": "desktop-compare",
+      "mode": "compare",
+      "exit_code": 0,
+      "duration_s": 289.5
+    },
+    {
+      "name": "corpus-compare",
+      "mode": "compare",
+      "exit_code": 0,
+      "duration_s": 26.9
+    },
+    {
+      "name": "shared-t7a",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 92.3
+    },
+    {
+      "name": "desktop-t7a",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 290.3
+    },
+    {
+      "name": "corpus-t7a",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 22.6
+    },
+    {
+      "name": "performance-off-runA",
+      "mode": "off",
+      "exit_code": 0,
+      "duration_s": 52.1
+    },
+    {
+      "name": "performance-off-runB",
+      "mode": "off",
+      "exit_code": 0,
+      "duration_s": 54.3
+    },
+    {
+      "name": "performance-t7a-runA",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 53.3
+    },
+    {
+      "name": "performance-t7a-runB",
+      "mode": "t7a",
+      "exit_code": 0,
+      "duration_s": 40.2
+    }
+  ],
+  "tests": {
+    "shared_compare": {
+      "classes": 44,
+      "tests": 451,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    },
+    "shared_t7a": {
+      "classes": 44,
+      "tests": 451,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    },
+    "desktop_compare": {
+      "classes": 14,
+      "tests": 86,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    },
+    "desktop_t7a": {
+      "classes": 14,
+      "tests": 86,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failing": []
+    }
+  },
+  "ledgers": {
+    "shared_compare": {
+      "certify_calls": 69,
+      "by_context": {
+        "ConstructiveExactContactTest.aDecisionThatTheCertificateDoesNotGiveChangesNothing": 4,
+        "ConstructiveExactContactTest.theContactsAtZeroAreClassTwoWithTheirOrderOfContact": 2,
+        "ConstructiveExactContactTest.theSeamIsReclassifiedAsTheFoldContactAtPi": 9,
+        "ConstructiveIntersectionAdmissionTest.theConflictRuleDecidesInTheConstructiveConfiguration": 2,
+        "ConstructiveIntersectionAdmissionTest.theFoldContactsOfTheModelAreNeverRelaxedByAResidualBound": 7,
+        "ConstructiveSliceEnclosureMemoryTest.theLegacyConfigurationNeverReachesTheMemory": 6,
+        "ConstructiveSliceEnclosureMemoryTest.undoRestoresEnclosuresEqualToAFullEvaluation": 12,
+        "PreG9BCu3CertifiedEvidenceTest.aClassThreeBoxOfACompleteSetOnlyLowersItsCompleteness": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aContactOfClassThreeChangesNothing": 5,
+        "PreG9BCu3CertifiedEvidenceTest.anAbsentIntersectionIsWithdrawnByACertifiedFixedSign": 3,
+        "PreG9BCu3CertifiedEvidenceTest.anEnclosureCompatibleRootIsRelaxedAndAContactNever": 1,
+        "PreG9BCu3CertifiedEvidenceTest.anIncludedEndpointTangencyKeepsItsStateWithoutAnExactDecision": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aTangentCandidateAtACertifiedSimpleRootIsReclassified": 1,
+        "PreG9BCu3CertifiedEvidenceTest.translationsGiveTheResultOfTheOrigin": 4,
+        "PreG9BCu3CertifiedEvidenceTest.twoRootsAroundACertifiedCriticalPointAreExactlyTheSolutions": 4,
+        "PreG9BCu3ExactDoubleRootTest.anExactCurvatureThatDisagreesWithItsEnclosureCertifiesNothing": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactDecisionGivesOneDoubleRootAtTheExactParameter": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactParameterOutsideTheCriticalBracketIsNotUsed": 1,
+        "PreG9BCu3ExactDoubleRootTest.aTransverseClassificationThatMeetsTheDoubleRootIsReclassified": 1,
+        "PreG9BCu3ExactDoubleRootTest.theDoubleRootWithdrawsTheNoiseAndReclassifiesTheContact": 2,
+        "PreG9BCu3ExactDoubleRootTest.withoutAnExactDecisionTheContactStaysClassThree": 1
+      },
+      "constructive_calls": 38,
+      "current_forms": {
+        "NONE": 4,
+        "NOT_CERTIFIED": 26,
+        "ONE_DOUBLE": 29,
+        "ONE_SIMPLE": 5,
+        "TWO_SIMPLE": 5
+      },
+      "current_critical_value": {
+        "MINUS": 4,
+        "NOT_REACHED": 7,
+        "PLUS": 4,
+        "ZERO": 54
+      },
+      "current_work_limit": 0,
+      "same_decision": 69,
+      "different_decision": 0,
+      "differences": [],
+      "evaluations_current": 33826.0,
+      "evaluations_t7a": 7916.0,
+      "critical_value_evaluations_current": 32203.0,
+      "t7a_consultations_where_the_product_consults_none": 8,
+      "t7a_consultations_where_the_product_consults_none_by_current_critical_value": {
+        "MINUS": 4,
+        "PLUS": 4
+      },
+      "t7a_consultation_ms_where_the_product_consults_none": 0.3927,
+      "current_ms": 5962.3775,
+      "t7a_ms_after_the_product": 57.5174,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 32,
+        "NOT_CERTIFIED": 1,
+        "NOT_CONSULTED": 7,
+        "ONE_DOUBLE": 29
+      },
+      "t7a_forms": {
+        "NONE": 4,
+        "NOT_CERTIFIED": 26,
+        "ONE_DOUBLE": 29,
+        "ONE_SIMPLE": 5,
+        "TWO_SIMPLE": 5
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 30,
+        "MINUS": 4,
+        "NOT_REACHED": 7,
+        "PLUS": 4,
+        "ZERO": 24
+      },
+      "t7a_work_limit": 0
+    },
+    "desktop_compare": {
+      "certify_calls": 668,
+      "by_context": {
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aFailingLengthEstimateLeavesTheCertificateUnchanged$16": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anEmptyCertifiedCoverIsPublishedComplete$4": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anExhaustedBudgetIsNeverComplete$14": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aNonDriverChangeComputesOneCertificatePerAffectedLocus$22": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anUndefinedDefinitionInputLeavesNoStaleDefinition$5": 5,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$constructionDegeneraciesAreBandsThatNoComponentCrosses$10": 8,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$consumersReadThePublishedCertificateOnly$23": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically$7": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$driverMovesPublishNoRevisionAndComputeNoCertificate$17": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds$1": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyRevisionPublishesItsOwnGeometry$3": 34,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$nonDriverParametersMoveTheCriticalValue$11": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$pointwiseValidityBeyondTheExactEndIsNotExistence$6": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theAuthorParametersAreCertifiedFromStructuralFactsOnly$0": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theFoldsOfE1RestOnTheCapturedConstants$13": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theLociArePublishedWhileTheSavedDriverIsInTheGap$2": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$27": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$28": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$32": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$33": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$34": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$undoAndRedoRestoreTheCertificates$12": 32,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$atTheTangencyBothLabelledOutputsCoincide$5": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$everyModelSliceHasAClassV3ProgramWithItsAlgorithmRules$0": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$penetrationAndBiteKeepTheSelectionRule$3": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theGapIsUniformlyInvalidWithTheSameRuleOnBothSides$4": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theProgramDoesNotDependOnTheDriverPosition$1": 8,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theRuleIsCapturedWithoutAnyValidSample$2": 10,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anEvaluatorPointInACertifiedGapIsNotPublished$7": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anIntersectionWithAnArcKeepsItsTokensThroughARevision$12": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$routesFollowTheBiteArcOfTheModelAcrossTheSeam$6": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theCertificateIsTheSingleClosureAuthority$8": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$1": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theGeneratingOccurrenceChainStaysDefined$0": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theTotalLengthsOfTheFirstFamilyHaveTheirClass$10": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$withFullCycleTheExcludedStartOfE2IsItsOneSidedLimit$4": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated$2": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$document$12": 12,
+        "PreG9BCu2AuthorModelExportTest.lambda$eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic$0": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$latexClosesOnlyClosedPeriodicComponents$8": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theClosureResidualOfEachClosedLocusIsMeasuredAgainstItsCertificate$1": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theCriticalLociAreClosedInLatexOnlyWhenPeriodic$10": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$containmentCreatesNoCorrespondence$3": 10,
+        "PreG9BCu2AuthorModelLineageTest.lambda$movingEndsKeepTheLineageAndTheBiteIsATypedTransition$1": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theEventOfE2KeepsItsLineageWhenTheOriginMoves$4": 5,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theFirstCertificatesAfterOpeningGuessNoLineage$0": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theSelectorOfN1ResolvesByEqualityOfTheDecomposition$2": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aBiteIsDrawnToTheImagesOfItsCertifiedEnds$4": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aFailingLengthCutsTheStrokeOfE2$11": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawingsAreDeterministicAndTheirTopologyViewInvariant$3": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawnVerticesAreTheEvaluationsOfTheirParameters$0": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$noStrokeBridgesTheRealGapNearTheCriticalValue$7": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theDisplacedE1DeclaresItsTurnsAndExemptsNone$2": 6,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$8": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$turnsAreBoundedOutsideTheCertifiedFolds$1": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$12": 5,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$24": 1,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$oneUlpChangesAtEveryDriverPositionReproduceTheSelection$0": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates$4": 66,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelVariantsStartedInTheGapCaptureTheSameCertificates$3": 63,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSelectionStateIsReadAgainOnUndoRedoAndReopen$1": 32,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSettlementTouchesNeitherTheLiveConstructionNorTheIdentities$2": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theUnlabelledSecondOutputKeepsItsTypedBands$6": 15,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theVariantsCreatedAtTheDoubleRootLeaveItWithATypedTransition$5": 5,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everyIndependentInputOfTheModelSlicesIsReproducedExactly$1": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everySliceOfTheCompleteModelIsReconstructedFaithfully$3": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$lineConicSelectionStatesOfTheModelSlicesAreReproduced$2": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpChangesOfExcCylPublishRevisionsWithExactSliceCopies$0": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpOfExcCylReachesTheUnlabelledOutputExactly$4": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$statesAgainstScratch$5": 24,
+        "PreG9BCu3BaseCharacterizationTest.lambda$absentIntersectionIsCertifiedAbsent$0": 2,
+        "PreG9BCu3BaseCharacterizationTest.lambda$nearTangencyPublishesExactlyTheTwoTrueRoots$1": 2,
+        "PreG9BCu3ProvenanceCensusTest.lambda$everyRelationThatTheProvenanceDeclaresHoldsExactly$0": 4,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$theSeamOfTheAdoptedModelIsTheFoldContactAtPi$0": 8,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withAlphaThirtyFiveOnlyTheTwoFoldContactsStayPublished$1": 15,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withHalfTheDistanceOfDOneOnlyTheTangencyStaysPublished$2": 7,
+        "PreG9BCu3StructuralPointAuthorModelTest.lambda$theMandatoryContactsOfTheAuthorModel$0": 5
+      },
+      "constructive_calls": 13,
+      "current_forms": {
+        "NONE": 2,
+        "NOT_CERTIFIED": 651,
+        "ONE_DOUBLE": 13,
+        "TWO_SIMPLE": 2
+      },
+      "current_critical_value": {
+        "MINUS": 1,
+        "PLUS": 3,
+        "ZERO": 664
+      },
+      "current_work_limit": 0,
+      "same_decision": 668,
+      "different_decision": 0,
+      "differences": [],
+      "evaluations_current": 379940.0,
+      "evaluations_t7a": 367436.0,
+      "critical_value_evaluations_current": 376479.0,
+      "t7a_consultations_where_the_product_consults_none": 4,
+      "t7a_consultations_where_the_product_consults_none_by_current_critical_value": {
+        "MINUS": 1,
+        "PLUS": 3
+      },
+      "t7a_consultation_ms_where_the_product_consults_none": 0.0018,
+      "current_ms": 9168.2353,
+      "t7a_ms_after_the_product": 3841.8929,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 655,
+        "ONE_DOUBLE": 13
+      },
+      "t7a_forms": {
+        "NONE": 2,
+        "NOT_CERTIFIED": 651,
+        "ONE_DOUBLE": 13,
+        "TWO_SIMPLE": 2
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 13,
+        "MINUS": 1,
+        "PLUS": 3,
+        "ZERO": 651
+      },
+      "t7a_work_limit": 0
+    },
+    "corpus_compare": {
+      "certify_calls": 122,
+      "by_context": {
+        "PreG9BCu3T7aCorpusProbe.corpus": 7,
+        "PreG9BCu3T7aCorpusProbe.corpus adoption and points": 9,
+        "PreG9BCu3T7aCorpusProbe.corpus B -3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B 3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x3.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H -20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 40.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5": 14,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone} restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=35.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=60.0": 6
+      },
+      "constructive_calls": 115,
+      "current_forms": {
+        "NOT_CERTIFIED": 20,
+        "ONE_DOUBLE": 102
+      },
+      "current_critical_value": {
+        "EXHAUSTED": 2,
+        "NOT_REACHED": 8,
+        "ZERO": 112
+      },
+      "current_work_limit": 2,
+      "same_decision": 120,
+      "different_decision": 2,
+      "differences": [
+        {
+          "context": "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5",
+          "box": [
+            "bf3921fb54442d18",
+            "3f3921fb54442d18",
+            -0.0003834951969714103,
+            0.0003834951969714103
+          ],
+          "current": "NOT_CERTIFIED|bf3921fb54442d18,3f3921fb54442d18||||null||the work limit of the certificate is reached",
+          "current_critical_value": "EXHAUSTED",
+          "t7a": "ONE_DOUBLE|bf3921fb54442d18,3f3921fb54442d18|bf3921fb54442d18,3f3921fb54442d18;|0,0;|bf3921fb54442d18,3f3921fb54442d18|CONTACT_EXISTENCE_EXACT|0,0,0,TWO,1,CONTACT_EXISTENCE_EXACT|h(t0) = 0 and h'(t0) = 0 at the exact parameter 0 and h'' has a fixed sign: one double root"
+        },
+        {
+          "context": "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5",
+          "box": [
+            "bf3921fb54442d18",
+            "3f3921fb54442d18",
+            -0.0003834951969714103,
+            0.0003834951969714103
+          ],
+          "current": "NOT_CERTIFIED|bf3921fb54442d18,3f3921fb54442d18||||null||the work limit of the certificate is reached",
+          "current_critical_value": "EXHAUSTED",
+          "t7a": "ONE_DOUBLE|bf3921fb54442d18,3f3921fb54442d18|bf3921fb54442d18,3f3921fb54442d18;|0,0;|bf3921fb54442d18,3f3921fb54442d18|CONTACT_EXISTENCE_EXACT|0,0,0,TWO,1,CONTACT_EXISTENCE_EXACT|h(t0) = 0 and h'(t0) = 0 at the exact parameter 0 and h'' has a fixed sign: one double root"
+        }
+      ],
+      "evaluations_current": 88800.0,
+      "evaluations_t7a": 5134.0,
+      "critical_value_evaluations_current": 87984.0,
+      "t7a_consultations_where_the_product_consults_none": 2,
+      "t7a_consultations_where_the_product_consults_none_by_current_critical_value": {
+        "EXHAUSTED": 2
+      },
+      "t7a_consultation_ms_where_the_product_consults_none": 29.5409,
+      "current_ms": 8823.2416,
+      "t7a_ms_after_the_product": 94.6347,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 10,
+        "NOT_CONSULTED": 8,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_forms": {
+        "NOT_CERTIFIED": 18,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 104,
+        "NOT_REACHED": 8,
+        "ZERO": 10
+      },
+      "t7a_work_limit": 0
+    },
+    "shared_t7a": {
+      "certify_calls": 69,
+      "by_context": {
+        "ConstructiveExactContactTest.aDecisionThatTheCertificateDoesNotGiveChangesNothing": 4,
+        "ConstructiveExactContactTest.theContactsAtZeroAreClassTwoWithTheirOrderOfContact": 2,
+        "ConstructiveExactContactTest.theSeamIsReclassifiedAsTheFoldContactAtPi": 9,
+        "ConstructiveIntersectionAdmissionTest.theConflictRuleDecidesInTheConstructiveConfiguration": 2,
+        "ConstructiveIntersectionAdmissionTest.theFoldContactsOfTheModelAreNeverRelaxedByAResidualBound": 7,
+        "ConstructiveSliceEnclosureMemoryTest.theLegacyConfigurationNeverReachesTheMemory": 6,
+        "ConstructiveSliceEnclosureMemoryTest.undoRestoresEnclosuresEqualToAFullEvaluation": 12,
+        "PreG9BCu3CertifiedEvidenceTest.aClassThreeBoxOfACompleteSetOnlyLowersItsCompleteness": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aContactOfClassThreeChangesNothing": 5,
+        "PreG9BCu3CertifiedEvidenceTest.anAbsentIntersectionIsWithdrawnByACertifiedFixedSign": 3,
+        "PreG9BCu3CertifiedEvidenceTest.anEnclosureCompatibleRootIsRelaxedAndAContactNever": 1,
+        "PreG9BCu3CertifiedEvidenceTest.anIncludedEndpointTangencyKeepsItsStateWithoutAnExactDecision": 1,
+        "PreG9BCu3CertifiedEvidenceTest.aTangentCandidateAtACertifiedSimpleRootIsReclassified": 1,
+        "PreG9BCu3CertifiedEvidenceTest.translationsGiveTheResultOfTheOrigin": 4,
+        "PreG9BCu3CertifiedEvidenceTest.twoRootsAroundACertifiedCriticalPointAreExactlyTheSolutions": 4,
+        "PreG9BCu3ExactDoubleRootTest.anExactCurvatureThatDisagreesWithItsEnclosureCertifiesNothing": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactDecisionGivesOneDoubleRootAtTheExactParameter": 1,
+        "PreG9BCu3ExactDoubleRootTest.anExactParameterOutsideTheCriticalBracketIsNotUsed": 1,
+        "PreG9BCu3ExactDoubleRootTest.aTransverseClassificationThatMeetsTheDoubleRootIsReclassified": 1,
+        "PreG9BCu3ExactDoubleRootTest.theDoubleRootWithdrawsTheNoiseAndReclassifiesTheContact": 2,
+        "PreG9BCu3ExactDoubleRootTest.withoutAnExactDecisionTheContactStaysClassThree": 1
+      },
+      "constructive_calls": 38,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 32,
+        "NOT_CERTIFIED": 1,
+        "NOT_CONSULTED": 7,
+        "ONE_DOUBLE": 29
+      },
+      "t7a_forms": {
+        "NONE": 4,
+        "NOT_CERTIFIED": 26,
+        "ONE_DOUBLE": 29,
+        "ONE_SIMPLE": 5,
+        "TWO_SIMPLE": 5
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 30,
+        "MINUS": 4,
+        "NOT_REACHED": 7,
+        "PLUS": 4,
+        "ZERO": 24
+      },
+      "t7a_work_limit": 0
+    },
+    "desktop_t7a": {
+      "certify_calls": 668,
+      "by_context": {
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aFailingLengthEstimateLeavesTheCertificateUnchanged$16": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anEmptyCertifiedCoverIsPublishedComplete$4": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anExhaustedBudgetIsNeverComplete$14": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$aNonDriverChangeComputesOneCertificatePerAffectedLocus$22": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$anUndefinedDefinitionInputLeavesNoStaleDefinition$5": 5,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$constructionDegeneraciesAreBandsThatNoComponentCrosses$10": 8,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$consumersReadThePublishedCertificateOnly$23": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$contiguousBinary64ValuesAreClassifiedExactlyAndDeterministically$7": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$driverMovesPublishNoRevisionAndComputeNoCertificate$17": 10,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyBiteIsOneArcAcrossTheSeamWithTheAnalyticEnds$1": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$everyRevisionPublishesItsOwnGeometry$3": 34,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$nonDriverParametersMoveTheCriticalValue$11": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$pointwiseValidityBeyondTheExactEndIsNotExistence$6": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theAuthorParametersAreCertifiedFromStructuralFactsOnly$0": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theFoldsOfE1RestOnTheCapturedConstants$13": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$theLociArePublishedWhileTheSavedDriverIsInTheGap$2": 4,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$27": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheAuthorModelGiveIdenticalResults$28": 19,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$32": 7,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$33": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$twoRunsOfTheVariantsAlternatingTheDriverGiveIdenticalResults$34": 18,
+        "PreG9BCu2AuthorModelCertificationTest.lambda$undoAndRedoRestoreTheCertificates$12": 32,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$atTheTangencyBothLabelledOutputsCoincide$5": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$everyModelSliceHasAClassV3ProgramWithItsAlgorithmRules$0": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$penetrationAndBiteKeepTheSelectionRule$3": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theGapIsUniformlyInvalidWithTheSameRuleOnBothSides$4": 4,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theProgramDoesNotDependOnTheDriverPosition$1": 8,
+        "PreG9BCu2AuthorModelClassV3Test.lambda$theRuleIsCapturedWithoutAnyValidSample$2": 10,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anEvaluatorPointInACertifiedGapIsNotPublished$7": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$anIntersectionWithAnArcKeepsItsTokensThroughARevision$12": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$routesFollowTheBiteArcOfTheModelAcrossTheSeam$6": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theCertificateIsTheSingleClosureAuthority$8": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$1": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theGeneratingOccurrenceChainStaysDefined$0": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$theTotalLengthsOfTheFirstFamilyHaveTheirClass$10": 4,
+        "PreG9BCu2AuthorModelConsumerTest.lambda$withFullCycleTheExcludedStartOfE2IsItsOneSidedLimit$4": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$anUnevaluatedEndOfE2IsDeclaredAndNeverExtrapolated$2": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$document$12": 12,
+        "PreG9BCu2AuthorModelExportTest.lambda$eachCertifiedComponentIsOnePolylineClosedOnlyWhenPeriodic$0": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$latexClosesOnlyClosedPeriodicComponents$8": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theClosureResidualOfEachClosedLocusIsMeasuredAgainstItsCertificate$1": 4,
+        "PreG9BCu2AuthorModelExportTest.lambda$theCriticalLociAreClosedInLatexOnlyWhenPeriodic$10": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$containmentCreatesNoCorrespondence$3": 10,
+        "PreG9BCu2AuthorModelLineageTest.lambda$movingEndsKeepTheLineageAndTheBiteIsATypedTransition$1": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theEventOfE2KeepsItsLineageWhenTheOriginMoves$4": 5,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theFirstCertificatesAfterOpeningGuessNoLineage$0": 4,
+        "PreG9BCu2AuthorModelLineageTest.lambda$theSelectorOfN1ResolvesByEqualityOfTheDecomposition$2": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aBiteIsDrawnToTheImagesOfItsCertifiedEnds$4": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$aFailingLengthCutsTheStrokeOfE2$11": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawingsAreDeterministicAndTheirTopologyViewInvariant$3": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$drawnVerticesAreTheEvaluationsOfTheirParameters$0": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$noStrokeBridgesTheRealGapNearTheCriticalValue$7": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theDisplacedE1DeclaresItsTurnsAndExemptsNone$2": 6,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$theExcludedEndOfE2IsItsOneSidedLimit$8": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$turnsAreBoundedOutsideTheCertifiedFolds$1": 4,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$12": 5,
+        "PreG9BCu2AuthorModelRepresentationTest.lambda$zoomOutputResolutionAndViewSizeChangeNoCertificate$24": 1,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$oneUlpChangesAtEveryDriverPositionReproduceTheSelection$0": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelOutputsAreTheRootsThatTheCertifiedSelectionDesignates$4": 66,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theModelVariantsStartedInTheGapCaptureTheSameCertificates$3": 63,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSelectionStateIsReadAgainOnUndoRedoAndReopen$1": 32,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theSettlementTouchesNeitherTheLiveConstructionNorTheIdentities$2": 4,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theUnlabelledSecondOutputKeepsItsTypedBands$6": 15,
+        "PreG9BCu2AuthorModelSelectionSettlementTest.lambda$theVariantsCreatedAtTheDoubleRootLeaveItWithATypedTransition$5": 5,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everyIndependentInputOfTheModelSlicesIsReproducedExactly$1": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$everySliceOfTheCompleteModelIsReconstructedFaithfully$3": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$lineConicSelectionStatesOfTheModelSlicesAreReproduced$2": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpChangesOfExcCylPublishRevisionsWithExactSliceCopies$0": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$oneUlpOfExcCylReachesTheUnlabelledOutputExactly$4": 4,
+        "PreG9BCu2AuthorModelSliceFidelityTest.lambda$statesAgainstScratch$5": 24,
+        "PreG9BCu3BaseCharacterizationTest.lambda$absentIntersectionIsCertifiedAbsent$0": 2,
+        "PreG9BCu3BaseCharacterizationTest.lambda$nearTangencyPublishesExactlyTheTwoTrueRoots$1": 2,
+        "PreG9BCu3ProvenanceCensusTest.lambda$everyRelationThatTheProvenanceDeclaresHoldsExactly$0": 4,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$theSeamOfTheAdoptedModelIsTheFoldContactAtPi$0": 8,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withAlphaThirtyFiveOnlyTheTwoFoldContactsStayPublished$1": 15,
+        "PreG9BCu3SeamReclassificationAuthorModelTest.lambda$withHalfTheDistanceOfDOneOnlyTheTangencyStaysPublished$2": 7,
+        "PreG9BCu3StructuralPointAuthorModelTest.lambda$theMandatoryContactsOfTheAuthorModel$0": 5
+      },
+      "constructive_calls": 13,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 655,
+        "ONE_DOUBLE": 13
+      },
+      "t7a_forms": {
+        "NONE": 2,
+        "NOT_CERTIFIED": 651,
+        "ONE_DOUBLE": 13,
+        "TWO_SIMPLE": 2
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 13,
+        "MINUS": 1,
+        "PLUS": 3,
+        "ZERO": 651
+      },
+      "t7a_work_limit": 0
+    },
+    "corpus_t7a": {
+      "certify_calls": 122,
+      "by_context": {
+        "PreG9BCu3T7aCorpusProbe.corpus": 7,
+        "PreG9BCu3T7aCorpusProbe.corpus adoption and points": 9,
+        "PreG9BCu3T7aCorpusProbe.corpus B -3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B 3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus B restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus D_1 x3.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H -20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 0.5": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 20.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus H 40.0": 4,
+        "PreG9BCu3T7aCorpusProbe.corpus H restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=3.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus rbCone=7.5": 14,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone} restored": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=35.0": 6,
+        "PreG9BCu3T7aCorpusProbe.corpus α_{cone}=60.0": 6
+      },
+      "constructive_calls": 115,
+      "t7a_anticipation": {
+        "NO_EXACT_CONTACT_IN_BRACKET": 10,
+        "NOT_CONSULTED": 8,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_forms": {
+        "NOT_CERTIFIED": 18,
+        "ONE_DOUBLE": 104
+      },
+      "t7a_critical_value": {
+        "ANTICIPATED": 104,
+        "NOT_REACHED": 8,
+        "ZERO": 10
+      },
+      "t7a_work_limit": 0
+    }
+  },
+  "corpus_published_results": {
+    "objects": 140,
+    "raw_equal": 77,
+    "equal_modulo_identities": 0,
+    "equal_modulo_identities_and_counts": 61,
+    "different": 2,
+    "differences": [
+      {
+        "where": "rbCone=7.5 / cu3X4",
+        "compare": "pletenessEvidence2D{getCompleteness=NOT_ESTABLISHED;getCoveredComponentKeys=[generator.main/component-0;];getDiagnostics=[IntersectionDiagnostic2D{getCode=COVERAGE_NOT_ESTABLISHED;getMessage=G8C1 adaptive finite evaluation verifies local candidates but does not prove exhaustive component coverage;};];getMethod=NOT_ESTABLISHED;getVerifiedRootCount=1;}\",\"unresolved\":\"[]\",\"diagnostics\":[\"COVERAGE_NOT_ESTABLISHED: G8C1 adaptive finite evaluation verifies local candidates but does not prove exhaustive component coverage\"],\"solutions\":[{\"identity\":\"IntersectionRootIdentity2D{getConstructiveIntersectionLineage=g9u0-public-intersection/v1;getEstablishedBranchLineage=generator.main;getExplicitContinu",
+        "t7a": "pletenessEvidence2D{getCompleteness=NOT_ESTABLISHED;getCoveredComponentKeys=[generator.main/component-0;];getDiagnostics=[IntersectionDiagnostic2D{getCode=COVERAGE_NOT_ESTABLISHED;getMessage=G8C1 adaptive finite evaluation verifies local candidates but does not prove exhaustive component coverage;};IntersectionDiagnostic2D{getCode=CONTRADICTED_BY_CERTIFIED_EVIDENCE;getMessage=Candidate TANGENT_ESTABLISHED at 0.0 (CONTACT_EXISTENCE_EXACT) withdrawn: reclassified as the one double root at the exact parameter 0 (TWO): ONE_DOUBLE on [-3.834951969714103E-4,3.834951969714103E-4] critical [-3.834951969714103E-4,3.834951969714103E-4] root [0.0,0.0] exact CONTACT_EXISTENCE_EXACT TWO at 0 [0.0,0.0] h'"
+      },
+      {
+        "where": "rbCone=7.5 / u_1",
+        "compare": "pletenessEvidence2D{getCompleteness=NOT_ESTABLISHED;getCoveredComponentKeys=[generator.main/component-0;];getDiagnostics=[IntersectionDiagnostic2D{getCode=COVERAGE_NOT_ESTABLISHED;getMessage=G8C1 adaptive finite evaluation verifies local candidates but does not prove exhaustive component coverage;};];getMethod=NOT_ESTABLISHED;getVerifiedRootCount=1;}\",\"unresolved\":\"[]\",\"diagnostics\":[\"COVERAGE_NOT_ESTABLISHED: G8C1 adaptive finite evaluation verifies local candidates but does not prove exhaustive component coverage\"],\"solutions\":[{\"identity\":\"IntersectionRootIdentity2D{getConstructiveIntersectionLineage=g9u0-public-intersection/v1;getEstablishedBranchLineage=generator.main;getExplicitContinu",
+        "t7a": "pletenessEvidence2D{getCompleteness=NOT_ESTABLISHED;getCoveredComponentKeys=[generator.main/component-0;];getDiagnostics=[IntersectionDiagnostic2D{getCode=COVERAGE_NOT_ESTABLISHED;getMessage=G8C1 adaptive finite evaluation verifies local candidates but does not prove exhaustive component coverage;};IntersectionDiagnostic2D{getCode=CONTRADICTED_BY_CERTIFIED_EVIDENCE;getMessage=Candidate TANGENT_ESTABLISHED at 0.0 (CONTACT_EXISTENCE_EXACT) withdrawn: reclassified as the one double root at the exact parameter 0 (TWO): ONE_DOUBLE on [-3.834951969714103E-4,3.834951969714103E-4] critical [-3.834951969714103E-4,3.834951969714103E-4] root [0.0,0.0] exact CONTACT_EXISTENCE_EXACT TWO at 0 [0.0,0.0] h'"
+      }
+    ]
+  },
+  "performance": {
+    "performance-off-runA": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 105.3062,
+          "p95_ms": 110.9684
+        },
+        "drag_B": {
+          "median_ms": 109.2174,
+          "p95_ms": 111.9407
+        },
+        "adoption_ms": 2425.0331,
+        "used_heap_constructive_MB": 40.9
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 126.8359,
+          "p95_ms": 143.8692
+        },
+        "drag_B": {
+          "median_ms": 132.4431,
+          "p95_ms": 137.2859
+        },
+        "adoption_ms": 2060.13,
+        "used_heap_constructive_MB": 67.2
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.512,
+          "median_exact_contacts_ms": 4.4052
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.4183,
+          "median_exact_contacts_ms": 1.1107
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 34.1609,
+          "median_exact_contacts_ms": 3.7277
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.5654,
+          "median_exact_contacts_ms": 1.1266
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5053,
+          "median_exact_contacts_ms": 4.5479
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.254,
+          "median_exact_contacts_ms": 1.1527
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 38.4991,
+          "median_exact_contacts_ms": 3.859
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.2765,
+          "median_exact_contacts_ms": 1.0962
+        }
+      }
+    },
+    "performance-off-runB": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 101.9532,
+          "p95_ms": 133.1363
+        },
+        "drag_B": {
+          "median_ms": 106.564,
+          "p95_ms": 111.3084
+        },
+        "adoption_ms": 2449.7256,
+        "used_heap_constructive_MB": 40.9
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 125.9633,
+          "p95_ms": 157.079
+        },
+        "drag_B": {
+          "median_ms": 132.3936,
+          "p95_ms": 136.5475
+        },
+        "adoption_ms": 2034.4721,
+        "used_heap_constructive_MB": 67.1
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.6271,
+          "median_exact_contacts_ms": 4.63
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.2545,
+          "median_exact_contacts_ms": 1.1854
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 34.6026,
+          "median_exact_contacts_ms": 3.6506
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.7123,
+          "median_exact_contacts_ms": 1.2011
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5568,
+          "median_exact_contacts_ms": 4.4644
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.3764,
+          "median_exact_contacts_ms": 1.1702
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 38.4502,
+          "median_exact_contacts_ms": 3.8176
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.3796,
+          "median_exact_contacts_ms": 1.1535
+        }
+      }
+    },
+    "performance-t7a-runA": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 46.1298,
+          "p95_ms": 54.0903
+        },
+        "drag_B": {
+          "median_ms": 45.7791,
+          "p95_ms": 60.2294
+        },
+        "adoption_ms": 2331.7633,
+        "used_heap_constructive_MB": 39.9
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 131.4577,
+          "p95_ms": 337.2501
+        },
+        "drag_B": {
+          "median_ms": 115.8514,
+          "p95_ms": 364.7455
+        },
+        "adoption_ms": 2861.9526,
+        "used_heap_constructive_MB": 65.1
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0829,
+          "median_exact_contacts_ms": 4.5439
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1467,
+          "median_exact_contacts_ms": 1.229
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 27,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.6071,
+          "median_exact_contacts_ms": 3.8485
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0784,
+          "median_exact_contacts_ms": 1.0804
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0848,
+          "median_exact_contacts_ms": 4.475
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1462,
+          "median_exact_contacts_ms": 1.0917
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 8,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1318,
+          "median_exact_contacts_ms": 3.623
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0675,
+          "median_exact_contacts_ms": 1.0799
+        }
+      }
+    },
+    "performance-t7a-runB": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 47.0208,
+          "p95_ms": 55.78
+        },
+        "drag_B": {
+          "median_ms": 44.9258,
+          "p95_ms": 50.4209
+        },
+        "adoption_ms": 2549.07,
+        "used_heap_constructive_MB": 40.0
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 73.0695,
+          "p95_ms": 81.4665
+        },
+        "drag_B": {
+          "median_ms": 72.2563,
+          "p95_ms": 77.8148
+        },
+        "adoption_ms": 1914.9745,
+        "used_heap_constructive_MB": 65.2
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.085,
+          "median_exact_contacts_ms": 4.3702
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1498,
+          "median_exact_contacts_ms": 1.0887
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 27,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.5831,
+          "median_exact_contacts_ms": 3.7315
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0699,
+          "median_exact_contacts_ms": 1.1507
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0858,
+          "median_exact_contacts_ms": 4.6176
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1547,
+          "median_exact_contacts_ms": 1.1473
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 8,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1354,
+          "median_exact_contacts_ms": 3.8658
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0692,
+          "median_exact_contacts_ms": 1.0979
+        }
+      }
+    },
+    "performance-off-runC": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 102.2204,
+          "p95_ms": 108.7579
+        },
+        "drag_B": {
+          "median_ms": 109.3591,
+          "p95_ms": 125.5758
+        },
+        "adoption_ms": 2688.5953,
+        "used_heap_constructive_MB": 40.8
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 127.515,
+          "p95_ms": 146.1527
+        },
+        "drag_B": {
+          "median_ms": 134.4013,
+          "p95_ms": 138.4111
+        },
+        "adoption_ms": 2092.0166,
+        "used_heap_constructive_MB": 67.1
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5576,
+          "median_exact_contacts_ms": 4.6137
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1604,
+          "median_exact_contacts_ms": 1.1616
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 34.1661,
+          "median_exact_contacts_ms": 3.769
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.5551,
+          "median_exact_contacts_ms": 1.2007
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.6424,
+          "median_exact_contacts_ms": 4.5095
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.2367,
+          "median_exact_contacts_ms": 1.1648
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 38.7922,
+          "median_exact_contacts_ms": 3.8456
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.3239,
+          "median_exact_contacts_ms": 1.1487
+        }
+      }
+    },
+    "performance-off-runD": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 111.6206,
+          "p95_ms": 138.0307
+        },
+        "drag_B": {
+          "median_ms": 114.8073,
+          "p95_ms": 137.0813
+        },
+        "adoption_ms": 2839.6473,
+        "used_heap_constructive_MB": 40.9
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 130.896,
+          "p95_ms": 152.7698
+        },
+        "drag_B": {
+          "median_ms": 140.3963,
+          "p95_ms": 158.1392
+        },
+        "adoption_ms": 2139.3426,
+        "used_heap_constructive_MB": 67.1
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5228,
+          "median_exact_contacts_ms": 4.6835
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.2395,
+          "median_exact_contacts_ms": 1.2778
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 40.7378,
+          "median_exact_contacts_ms": 4.3341
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 8.4827,
+          "median_exact_contacts_ms": 1.1712
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5525,
+          "median_exact_contacts_ms": 4.6066
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1725,
+          "median_exact_contacts_ms": 1.2101
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 39.5816,
+          "median_exact_contacts_ms": 3.9278
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.3027,
+          "median_exact_contacts_ms": 1.1788
+        }
+      }
+    },
+    "performance-off-runE": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 109.8015,
+          "p95_ms": 131.3357
+        },
+        "drag_B": {
+          "median_ms": 113.4192,
+          "p95_ms": 119.9918
+        },
+        "adoption_ms": 2800.5651,
+        "used_heap_constructive_MB": 41.0
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 127.2487,
+          "p95_ms": 162.1614
+        },
+        "drag_B": {
+          "median_ms": 135.4567,
+          "p95_ms": 157.1401
+        },
+        "adoption_ms": 2282.1527,
+        "used_heap_constructive_MB": 67.2
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 504,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.4401,
+          "median_exact_contacts_ms": 4.3703
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.6145,
+          "median_exact_contacts_ms": 1.6319
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 1760,
+          "exact_contacts": 2,
+          "median_enclose_ms": 35.7834,
+          "median_exact_contacts_ms": 3.6519
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 932,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.5535,
+          "median_exact_contacts_ms": 1.099
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 506,
+          "exact_contacts": 1,
+          "median_enclose_ms": 1.5398,
+          "median_exact_contacts_ms": 4.4722
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 283,
+          "exact_contacts": 1,
+          "median_enclose_ms": 6.1562,
+          "median_exact_contacts_ms": 1.1288
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 2173,
+          "exact_contacts": 2,
+          "median_enclose_ms": 37.8863,
+          "median_exact_contacts_ms": 3.7922
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 908,
+          "exact_contacts": 1,
+          "median_enclose_ms": 7.311,
+          "median_exact_contacts_ms": 1.1158
+        }
+      }
+    },
+    "performance-t7a-runC": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 50.5585,
+          "p95_ms": 79.9338
+        },
+        "drag_B": {
+          "median_ms": 48.6722,
+          "p95_ms": 63.303
+        },
+        "adoption_ms": 2543.0776,
+        "used_heap_constructive_MB": 40.0
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 91.9288,
+          "p95_ms": 122.5747
+        },
+        "drag_B": {
+          "median_ms": 74.931,
+          "p95_ms": 95.5115
+        },
+        "adoption_ms": 2314.8312,
+        "used_heap_constructive_MB": 65.2
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0892,
+          "median_exact_contacts_ms": 4.4198
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.153,
+          "median_exact_contacts_ms": 1.1337
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 27,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.5948,
+          "median_exact_contacts_ms": 3.9176
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0716,
+          "median_exact_contacts_ms": 1.0916
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0978,
+          "median_exact_contacts_ms": 4.4796
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1506,
+          "median_exact_contacts_ms": 1.1679
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 8,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.1397,
+          "median_exact_contacts_ms": 3.6539
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.07,
+          "median_exact_contacts_ms": 1.0802
+        }
+      }
+    },
+    "performance-t7a-runD": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 51.8572,
+          "p95_ms": 75.2547
+        },
+        "drag_B": {
+          "median_ms": 49.559,
+          "p95_ms": 56.403
+        },
+        "adoption_ms": 2457.9357,
+        "used_heap_constructive_MB": 40.0
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 73.6265,
+          "p95_ms": 89.6716
+        },
+        "drag_B": {
+          "median_ms": 70.8722,
+          "p95_ms": 76.6722
+        },
+        "adoption_ms": 2248.8629,
+        "used_heap_constructive_MB": 65.2
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0986,
+          "median_exact_contacts_ms": 4.8362
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1524,
+          "median_exact_contacts_ms": 1.4365
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 27,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.7501,
+          "median_exact_contacts_ms": 5.3587
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0724,
+          "median_exact_contacts_ms": 1.065
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0797,
+          "median_exact_contacts_ms": 4.4277
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1458,
+          "median_exact_contacts_ms": 1.0923
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 8,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.133,
+          "median_exact_contacts_ms": 3.6021
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0669,
+          "median_exact_contacts_ms": 1.1802
+        }
+      }
+    },
+    "performance-t7a-runE": {
+      "E3 bench: four public intersections": {
+        "drag_H": {
+          "median_ms": 55.0764,
+          "p95_ms": 66.8608
+        },
+        "drag_B": {
+          "median_ms": 53.8076,
+          "p95_ms": 64.7759
+        },
+        "adoption_ms": 3158.9297,
+        "used_heap_constructive_MB": 40.0
+      },
+      "author smoke: and the five structural points": {
+        "drag_H": {
+          "median_ms": 69.656,
+          "p95_ms": 83.3375
+        },
+        "drag_B": {
+          "median_ms": 70.9235,
+          "p95_ms": 78.1163
+        },
+        "adoption_ms": 2260.975,
+        "used_heap_constructive_MB": 65.2
+      },
+      "queries_during_the_drag": {
+        "drag of H o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0837,
+          "median_exact_contacts_ms": 4.3749
+        },
+        "drag of H e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.1446,
+          "median_exact_contacts_ms": 1.0796
+        },
+        "drag of H e_1 c_1": {
+          "box_enclosures": 27,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.5889,
+          "median_exact_contacts_ms": 3.8044
+        },
+        "drag of H e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0726,
+          "median_exact_contacts_ms": 1.0608
+        },
+        "drag of B o_1 h_2": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0844,
+          "median_exact_contacts_ms": 4.4348
+        },
+        "drag of B e_1 n": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.15,
+          "median_exact_contacts_ms": 1.0927
+        },
+        "drag of B e_1 c_1": {
+          "box_enclosures": 8,
+          "exact_contacts": 2,
+          "median_enclose_ms": 0.135,
+          "median_exact_contacts_ms": 3.7838
+        },
+        "drag of B e_1 r": {
+          "box_enclosures": 4,
+          "exact_contacts": 1,
+          "median_enclose_ms": 0.0697,
+          "median_exact_contacts_ms": 1.1106
+        }
+      }
+    }
+  },
+  "outputs_sha256": {
+    "summary": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/cu3-t7a-characterization.json": "e02f1e520d5899cae0b4d5e5e687695933a0c0f87f3090d3f9f3f0196c5df896"
+    },
+    "corpus": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/corpus/cu3-t7a-corpus-compare.json": "a587e6e5d59d7694c9ace4c603edee0ecc0c8aa01c6ff22e8ea5622f991e1953",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/corpus/cu3-t7a-corpus-t7a.json": "de3881bb08b1b40f6fe34bcb3e62f12a9e90b0956610bc8b3ad0c6fec8736b1c"
+    },
+    "ledgers": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/corpus-compare-45228.jsonl": "e82a6bfad23d529e7984a6530f5ad4fa7f7decaabd7310c57feecd0d16a72175",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/corpus-t7a-45492.jsonl": "36b2c9f554debad38f4893136349b252cdc3d1491b491d719b0b49a7857ff723",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/desktop-compare-49368.jsonl": "4c2f5c3e8d4e5cd1a77eec5009bb5a7256e4cd48ae98c8ed700b8f81bc800158",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/desktop-t7a-3092.jsonl": "5e44c6ba4796e25c850e6bfcb423e7c2a3f342ed029442decb832b931f5916d0",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/performance-t7a-runA-13888.jsonl": "39f92d22147fec64746100985219522bd7595d3b3588b91cf5b37c5d6e9450aa",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/performance-t7a-runB-42036.jsonl": "073e22a35086f88995bb07e7d76abdefefd128986eac556057920fd1b78affde",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/shared-compare-40160.jsonl": "e8bc6862dea2ab1e4a6b405e8e5bc5f31f97b81674b6caeb624c5b5d90a673b1",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-characterization-db752438/ledger/shared-t7a-39036.jsonl": "2cdf6ab7b12d688d83cf0da98736eaac7beebce86f942e2af3c5c7abb1623f30"
+    },
+    "extra_ledgers": {
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-performance-extra-db752438/ledger/performance-t7a-runC-24656.jsonl": "744f71e5b9ce71e5204e539822f1dd6f4a635805e6754d998fc579d0a61090f1",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-performance-extra-db752438/ledger/performance-t7a-runD-36496.jsonl": "520bd5b2a9138c239b1de5dbe88cec29896042e67328ada7906185718595ffc7",
+      "artifacts/benchmarks/pre-g9b-cu/cu3-t7a-performance-extra-db752438/ledger/performance-t7a-runE-40396.jsonl": "2fb1f332af6fe3375802c026e7d4863d9d7f70a365e94e229e360e68b55574a6"
+    }
+  }
+}

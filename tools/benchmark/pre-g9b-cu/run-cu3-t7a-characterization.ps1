@@ -269,32 +269,42 @@ function Summarize-Results([string]$name) {
     return $row
 }
 function Compare-Corpus {
+    # Raw, then without the durable identities that each load of the model copy creates (geo:<hash>
+    # and the root-token parts derived from them), then also without the enclosure counts in the
+    # certificate descriptions and the work counters, which T7-a changes by design.
     $folder = Join-Path $Output 'corpus'
     $a = Join-Path $folder 'cu3-t7a-corpus-compare.json'
     $b = Join-Path $folder 'cu3-t7a-corpus-t7a.json'
     if (-not (Test-Path $a) -or -not (Test-Path $b)) { return [ordered]@{ available = $false } }
     $left = (Get-Content -Raw $a | ConvertFrom-Json).configurations
     $right = (Get-Content -Raw $b | ConvertFrom-Json).configurations
-    $row = [ordered]@{ available = $true; objects = 0; identical = 0; identical_except_work_and_enclosure_counts = 0; different = 0; differences = @() }
+    $identity = {
+        param([string]$text)
+        $text = [regex]::Replace($text, 'geo:[0-9a-f]{16,}', 'geo:#')
+        $text = [regex]::Replace($text, 'locus-root-local/v1/[0-9a-f]+/', 'locus-root-local/v1/#/')
+        [regex]::Replace($text, '\b[0-9a-f]{64}\b', '#64')
+    }
+    $render = {
+        param($value, [bool]$withoutWork)
+        $copy = $value | ConvertTo-Json -Depth 30 | ConvertFrom-Json
+        if ($withoutWork -and $copy -and $copy.PSObject.Properties.Name -contains 'work') { $copy.work = '' }
+        $copy | ConvertTo-Json -Depth 30 -Compress
+    }
+    $row = [ordered]@{ available = $true; objects = 0; raw_equal = 0; equal_modulo_identities = 0
+        equal_modulo_identities_enclosure_counts_and_work = 0; different = 0; differences = @() }
     foreach ($configuration in $left.PSObject.Properties) {
         $other = $right.($configuration.Name)
         foreach ($object in $configuration.Value.PSObject.Properties) {
             $row.objects++
-            $x = $object.Value | ConvertTo-Json -Depth 20 -Compress
-            $y = $other.($object.Name) | ConvertTo-Json -Depth 20 -Compress
-            if ($x -ceq $y) { $row.identical++; continue }
-            $normalize = {
-                param($value)
-                $copy = $value | ConvertTo-Json -Depth 20 | ConvertFrom-Json
-                if ($copy.PSObject.Properties.Name -contains 'work') { $copy.work = '' }
-                ($copy | ConvertTo-Json -Depth 20 -Compress) -replace ', \d+ enclosures\)', ', N enclosures)'
-            }
-            if ((& $normalize $object.Value) -ceq (& $normalize $other.($object.Name))) {
-                $row.identical_except_work_and_enclosure_counts++
-            } else {
-                $row.different++
-                if ($row.differences.Count -lt 20) { $row.differences += "$($configuration.Name) / $($object.Name)" }
-            }
+            $x = & $render $object.Value $false
+            $y = & $render $other.($object.Name) $false
+            if ($x -ceq $y) { $row.raw_equal++; continue }
+            if ((& $identity $x) -ceq (& $identity $y)) { $row.equal_modulo_identities++; continue }
+            $x = [regex]::Replace((& $identity (& $render $object.Value $true)), ', \d+ enclosures\)', ', N enclosures)')
+            $y = [regex]::Replace((& $identity (& $render $other.($object.Name) $true)), ', \d+ enclosures\)', ', N enclosures)')
+            if ($x -ceq $y) { $row.equal_modulo_identities_enclosure_counts_and_work++; continue }
+            $row.different++
+            $row.differences += "$($configuration.Name) / $($object.Name)"
         }
     }
     return $row
