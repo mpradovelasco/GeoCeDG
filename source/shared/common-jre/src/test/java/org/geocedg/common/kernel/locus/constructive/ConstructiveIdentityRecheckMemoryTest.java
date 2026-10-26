@@ -31,8 +31,9 @@ import org.junit.jupiter.api.Test;
  * decides as the procedure of the candidate; the memory certifies every sign of the cell itself
  * at the base revision; the specialization is exact and canonical whatever the history; a
  * changed point value repeats only the steps from its indeterminate; the prepared margin is the
- * margin; a kept derivative encloses and counts as a fresh one; and a memory that fails leaves
- * every decision to the procedure of the candidate.
+ * margin; a kept derivative encloses and counts as a fresh one; a memory that fails leaves every
+ * decision to the procedure of the candidate; and a certificate whose key changed never reaches
+ * its memory.
  */
 final class ConstructiveIdentityRecheckMemoryTest extends ConstructiveModelReplicaTest {
 
@@ -270,6 +271,39 @@ final class ConstructiveIdentityRecheckMemoryTest extends ConstructiveModelRepli
 		Slice other = slice(CONTACTS[2]);
 		assertFalse(ConstructiveIdentityCertifier.recheckCell(certificate, other.cone,
 				ConstructiveIdentityBudget.V1, true), "and fails closed in another cell");
+	}
+
+	@Test
+	void aCertificateWhoseKeyChangedNeverReachesItsMemory() {
+		add("A0=(0,0)");
+		add("c0=Circle(A0,3)");
+		add("f0=Line((-5,1),(5,1))");
+		add("X0=Intersect(c0,f0,1)");
+		getKernel().updateConstruction(false);
+		ConstructiveCone.Builder builder = ConstructiveCone.builder(getConstruction());
+		int point = builder.add(lookup("X0"));
+		int target = builder.add(lookup("c0"));
+		ConstructiveCone pending = builder.build();
+		ConstructiveIdentityCertificate certificate = ConstructiveIdentityCertifier.incidence(
+				"X0 on c0", pending, point, target, -1, Scope.AUTOMATIC,
+				ConstructiveIdentityBudget.V1);
+		assertTrue(certificate.isIdentityCertified(), certificate.toString());
+		assertTrue(ConstructiveIdentityCertifier.recheck(certificate, pending, point, target, -1,
+				ConstructiveIdentityBudget.V1), "the same state rechecks through the memory");
+		int used = certificate.getRecheckMemory().getSubstitutions();
+
+		// Both outputs of the shared intersection are labelled now: another label state,
+		// another key.
+		getElements("Intersect(c0,f0)");
+		getKernel().updateConstruction(false);
+		ConstructiveCone.Builder again = ConstructiveCone.builder(getConstruction());
+		int settledPoint = again.add(lookup("X0"));
+		int settledTarget = again.add(lookup("c0"));
+		assertFalse(ConstructiveIdentityCertifier.recheck(certificate, again.build(),
+				settledPoint, settledTarget, -1, ConstructiveIdentityBudget.V1),
+				"another key makes the certificate inapplicable");
+		assertEquals(used, certificate.getRecheckMemory().getSubstitutions(),
+				"and its memory is never consulted");
 	}
 
 	// ---------------------------------------------------------------- helpers
