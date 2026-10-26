@@ -44,7 +44,7 @@ final class ConstructiveSliceEnclosureMemory {
 	/** Versioned name of this memory and of the evaluation contract it reuses. */
 	static final String VERSION = "constructive-slice-enclosure-memory/v1";
 	/** Most boxes kept for one key; beyond it enclosures are computed and not kept. */
-	static final int MAXIMUM_BOXES = 1 << 16;
+	static final int MAXIMUM_BOXES = 1 << 14;
 
 	/** The value of a traced point whose evaluation failed on a box. */
 	static final Object FAILED = new Object();
