@@ -1,0 +1,1400 @@
+{
+  "schema_version": 1,
+  "id": "pre-g9b-cu3-enclosure-reuse",
+  "status": "CU3 FOCAL OPTIMIZATION T6 - MEASUREMENTS ONLY; NO VERDICT; TIMINGS ARE INFORMATIVE",
+  "authorization": "PRE-G9B-CU3 - Resultado de auditoria independiente y activacion de T6 (author, 2026-10-26), with the author choice to extend T6 to the per-revision reuse of the values that do not depend on the driver",
+  "reference": "68bfd7640b12c25de0122a666d24f355488d0e22",
+  "candidate": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+  "runners": [
+    "tools/benchmark/pre-g9b-cu/run-cu3-performance-characterization.ps1",
+    "tools/benchmark/pre-g9b-cu/run-cu3-enclosure-reuse.ps1"
+  ],
+  "enclosure_reuse": {
+    "reference_68bfd764": {
+      "run": {
+        "directory": "session scratchpad, same sources as cu3-enclosure-java at b1fed72f",
+        "files_sha256": {
+          "cu3-enclosure-reuse.json": "7d7e40e24dfe194abfd821610c7ed05ef9d31b6e28b119f315e67f6dd482efd3",
+          "gradle-cleanup.log": "9b60f4f6744c42fdb643754bf4187f859823664da7e4ec7ec46f097e28cd27c6",
+          "gradle-probe.log": "ca94168e1cea5ebeb9d53f932bf4cc2ec752fbb37fe9a0b84f5c0cea29b6ed29"
+        }
+      },
+      "generator": {
+        "runner": "tools/benchmark/pre-g9b-cu/run-cu3-enclosure-reuse.ps1",
+        "source_commit": "68bfd7640b12c25de0122a666d24f355488d0e22",
+        "source_tree": "4a17664cf4f8dbb5f16e73088ddc44d15fb99169",
+        "product_sources_modified_relative_to_commit": false
+      },
+      "drags": {
+        "after moving H": {
+          "o_1 h_2": {
+            "boxes": 504,
+            "cone_nodes": 38,
+            "nodes_depending_on_the_driver": 15,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 33.6664,
+            "median_total_driver_point_ms": 0.8343,
+            "median_total_traced_point_ms": 18.7463,
+            "median_total_target_ms": 21.3487,
+            "median_total_traced_point_with_independent_values_ms": 10.0738,
+            "median_total_target_with_independent_values_ms": 0.2946
+          },
+          "e_1 n": {
+            "boxes": 283,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 13.7002,
+            "median_total_driver_point_ms": 0.4576,
+            "median_total_traced_point_ms": 9.573,
+            "median_total_target_ms": 6.3382,
+            "median_total_traced_point_with_independent_values_ms": 4.8012,
+            "median_total_target_with_independent_values_ms": 0.1391
+          },
+          "e_1 c_1": {
+            "boxes": 1760,
+            "cone_nodes": 29,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 6,
+            "median_total_enclose_as_in_the_product_ms": 63.4407,
+            "median_total_driver_point_ms": 2.9157,
+            "median_total_traced_point_ms": 58.1745,
+            "median_total_target_ms": 23.1549,
+            "median_total_traced_point_with_independent_values_ms": 30.0489,
+            "median_total_target_with_independent_values_ms": 0.8214
+          },
+          "e_1 r": {
+            "boxes": 932,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 45.8178,
+            "median_total_driver_point_ms": 1.5377,
+            "median_total_traced_point_ms": 30.9646,
+            "median_total_target_ms": 21.057,
+            "median_total_traced_point_with_independent_values_ms": 16.0836,
+            "median_total_target_with_independent_values_ms": 0.455
+          },
+          "sharing": {
+            "distinct_boxes_of_e_1": 2197,
+            "boxes_of_e_1_in_two_or_more_queries": 775,
+            "shared_boxes_with_bitwise_identical_traced_point": 775,
+            "shared_boxes_with_different_traced_point": 0,
+            "traced_point_ms_all_queries_of_e_1": 97.68199999999935,
+            "traced_point_ms_once_per_distinct_box": 72.28089999999958,
+            "maximum_saving_of_sharing_ms": 25.401099999999772
+          },
+          "lookup": {
+            "entries": 2468,
+            "lookup_ns_per_box": 100.52601322219029,
+            "hits": 69580
+          },
+          "accelerated_against_full_evaluation": {
+            "available": false
+          }
+        },
+        "after moving B": {
+          "o_1 h_2": {
+            "boxes": 506,
+            "cone_nodes": 38,
+            "nodes_depending_on_the_driver": 15,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 33.566,
+            "median_total_driver_point_ms": 0.7925,
+            "median_total_traced_point_ms": 18.0319,
+            "median_total_target_ms": 21.5386,
+            "median_total_traced_point_with_independent_values_ms": 9.9421,
+            "median_total_target_with_independent_values_ms": 0.2621
+          },
+          "e_1 n": {
+            "boxes": 283,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 13.9572,
+            "median_total_driver_point_ms": 0.4439,
+            "median_total_traced_point_ms": 9.3104,
+            "median_total_target_ms": 6.3662,
+            "median_total_traced_point_with_independent_values_ms": 4.8115,
+            "median_total_target_with_independent_values_ms": 0.1409
+          },
+          "e_1 c_1": {
+            "boxes": 2173,
+            "cone_nodes": 29,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 6,
+            "median_total_enclose_as_in_the_product_ms": 77.4362,
+            "median_total_driver_point_ms": 3.5303,
+            "median_total_traced_point_ms": 72.5522,
+            "median_total_target_ms": 28.7219,
+            "median_total_traced_point_with_independent_values_ms": 37.5244,
+            "median_total_target_with_independent_values_ms": 1.0188
+          },
+          "e_1 r": {
+            "boxes": 908,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 45.0567,
+            "median_total_driver_point_ms": 1.5117,
+            "median_total_traced_point_ms": 30.0806,
+            "median_total_target_ms": 20.5622,
+            "median_total_traced_point_with_independent_values_ms": 15.561,
+            "median_total_target_with_independent_values_ms": 0.4615
+          },
+          "sharing": {
+            "distinct_boxes_of_e_1": 2376,
+            "boxes_of_e_1_in_two_or_more_queries": 984,
+            "shared_boxes_with_bitwise_identical_traced_point": 984,
+            "shared_boxes_with_different_traced_point": 0,
+            "traced_point_ms_all_queries_of_e_1": 112.25210000000027,
+            "traced_point_ms_once_per_distinct_box": 79.2701,
+            "maximum_saving_of_sharing_ms": 32.98200000000027
+          },
+          "lookup": {
+            "entries": 2449,
+            "lookup_ns_per_box": 28.36046511627907,
+            "hits": 77400
+          },
+          "accelerated_against_full_evaluation": {
+            "available": false
+          }
+        }
+      }
+    },
+    "t6_b1fed72f": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-enclosure-reuse-b1fed72f",
+        "files_sha256": {
+          "cu3-enclosure-reuse.json": "b55fb789f35df49cb8debb15d0d0658d59944ec93bbd6d0730970a0a43adf253",
+          "gradle-cleanup.log": "9842eeb59214180b7d97e0518e99f781b56cd4daf543fc1035c6c6bd3cd2f723",
+          "gradle-probe.log": "68e54240dd8ecc11f54d2717107d41058b6b45e2487b9f3ac66ce0e7206fec9e",
+          "run-metadata.json": "7f306b6e6d76ad74bffa4205d49970875b8efc2ac2c9366bad74d5e98247b139",
+          "TEST-org.geocedg.desktop.PreG9BCu3EnclosureReuseProbe.xml": "a25522e44c1651e57866a59cac9faddb162dfcaa60b308002a837b8ab4dc975f"
+        },
+        "source_commit": "b1fed72f95fdc33277bd4dbdcb41bb2b2e757b54",
+        "source_tree": "4be38ae520db0fb1daf241bf600f9f84c67f9d80",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "generator": {
+        "runner": "tools/benchmark/pre-g9b-cu/run-cu3-enclosure-reuse.ps1",
+        "source_commit": "b1fed72f95fdc33277bd4dbdcb41bb2b2e757b54",
+        "source_tree": "4be38ae520db0fb1daf241bf600f9f84c67f9d80",
+        "product_sources_modified_relative_to_commit": false
+      },
+      "drags": {
+        "after moving H": {
+          "o_1 h_2": {
+            "boxes": 504,
+            "cone_nodes": 38,
+            "nodes_depending_on_the_driver": 15,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.5526,
+            "median_total_driver_point_ms": 0.7998,
+            "median_total_traced_point_ms": 18.2502,
+            "median_total_target_ms": 21.5026,
+            "median_total_traced_point_with_independent_values_ms": 9.9148,
+            "median_total_target_with_independent_values_ms": 0.2559
+          },
+          "e_1 n": {
+            "boxes": 283,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.4411,
+            "median_total_driver_point_ms": 0.4558,
+            "median_total_traced_point_ms": 9.4891,
+            "median_total_target_ms": 6.422,
+            "median_total_traced_point_with_independent_values_ms": 4.8828,
+            "median_total_target_with_independent_values_ms": 0.1359
+          },
+          "e_1 c_1": {
+            "boxes": 1760,
+            "cone_nodes": 29,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 6,
+            "median_total_enclose_as_in_the_product_ms": 4.6533,
+            "median_total_driver_point_ms": 2.9066,
+            "median_total_traced_point_ms": 58.7186,
+            "median_total_target_ms": 23.0081,
+            "median_total_traced_point_with_independent_values_ms": 30.0831,
+            "median_total_target_with_independent_values_ms": 0.9184
+          },
+          "e_1 r": {
+            "boxes": 932,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 4.8856,
+            "median_total_driver_point_ms": 1.5248,
+            "median_total_traced_point_ms": 31.1768,
+            "median_total_target_ms": 20.9084,
+            "median_total_traced_point_with_independent_values_ms": 15.9156,
+            "median_total_target_with_independent_values_ms": 0.4452
+          },
+          "sharing": {
+            "distinct_boxes_of_e_1": 2197,
+            "boxes_of_e_1_in_two_or_more_queries": 775,
+            "shared_boxes_with_bitwise_identical_traced_point": 775,
+            "shared_boxes_with_different_traced_point": 0,
+            "traced_point_ms_all_queries_of_e_1": 102.11660000000063,
+            "traced_point_ms_once_per_distinct_box": 74.91710000000022,
+            "maximum_saving_of_sharing_ms": 27.199500000000413
+          },
+          "lookup": {
+            "entries": 2468,
+            "lookup_ns_per_box": 98.58292612819776,
+            "hits": 69580
+          },
+          "accelerated_against_full_evaluation": {
+            "available": true,
+            "boxes_compared": 3479,
+            "bitwise_equal": 3479,
+            "of_which_not_enclosed": 0,
+            "differences": [],
+            "slice_memories": {
+              "o_1": {
+                "boxes_kept": 503,
+                "enclosures_reused_so_far": 4036
+              },
+              "e_1": {
+                "boxes_kept": 2197,
+                "enclosures_reused_so_far": 19616
+              }
+            }
+          }
+        },
+        "after moving B": {
+          "o_1 h_2": {
+            "boxes": 506,
+            "cone_nodes": 38,
+            "nodes_depending_on_the_driver": 15,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.5425,
+            "median_total_driver_point_ms": 0.7657,
+            "median_total_traced_point_ms": 18.646,
+            "median_total_target_ms": 21.4072,
+            "median_total_traced_point_with_independent_values_ms": 10.0206,
+            "median_total_target_with_independent_values_ms": 0.261
+          },
+          "e_1 n": {
+            "boxes": 283,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.424,
+            "median_total_driver_point_ms": 0.4326,
+            "median_total_traced_point_ms": 9.619,
+            "median_total_target_ms": 6.6645,
+            "median_total_traced_point_with_independent_values_ms": 4.8439,
+            "median_total_target_with_independent_values_ms": 0.1364
+          },
+          "e_1 c_1": {
+            "boxes": 2173,
+            "cone_nodes": 29,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 6,
+            "median_total_enclose_as_in_the_product_ms": 6.2768,
+            "median_total_driver_point_ms": 3.726,
+            "median_total_traced_point_ms": 77.2056,
+            "median_total_target_ms": 30.7702,
+            "median_total_traced_point_with_independent_values_ms": 39.3142,
+            "median_total_target_with_independent_values_ms": 1.0775
+          },
+          "e_1 r": {
+            "boxes": 908,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 4.7979,
+            "median_total_driver_point_ms": 1.4766,
+            "median_total_traced_point_ms": 31.6829,
+            "median_total_target_ms": 21.0586,
+            "median_total_traced_point_with_independent_values_ms": 15.8166,
+            "median_total_target_with_independent_values_ms": 0.4381
+          },
+          "sharing": {
+            "distinct_boxes_of_e_1": 2376,
+            "boxes_of_e_1_in_two_or_more_queries": 984,
+            "shared_boxes_with_bitwise_identical_traced_point": 984,
+            "shared_boxes_with_different_traced_point": 0,
+            "traced_point_ms_all_queries_of_e_1": 117.45160000000013,
+            "traced_point_ms_once_per_distinct_box": 84.33820000000004,
+            "maximum_saving_of_sharing_ms": 33.113400000000084
+          },
+          "lookup": {
+            "entries": 2449,
+            "lookup_ns_per_box": 29.727390180878555,
+            "hits": 77400
+          },
+          "accelerated_against_full_evaluation": {
+            "available": true,
+            "boxes_compared": 3870,
+            "bitwise_equal": 3870,
+            "of_which_not_enclosed": 0,
+            "differences": [],
+            "slice_memories": {
+              "o_1": {
+                "boxes_kept": 505,
+                "enclosures_reused_so_far": 8086
+              },
+              "e_1": {
+                "boxes_kept": 2376,
+                "enclosures_reused_so_far": 41776
+              }
+            }
+          }
+        }
+      }
+    },
+    "candidate": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-enclosure-reuse-3f096838",
+        "files_sha256": {
+          "cu3-enclosure-reuse.json": "6a455364948133f54bf28af83be6ec1ef6d288b0f8c972dc970467ae15effc57",
+          "gradle-cleanup.log": "c18dadca7e38d8f14482e6224967fe7ec9f540c9973b7397d195472ceb3791f7",
+          "gradle-probe.log": "1dc2237b067c171612b85330516383aeaffee0718f71f1a02d4011695d92c20e",
+          "run-metadata.json": "2a86ce78421d4773a625ed90a1673d845e61da9f6f1a8caa561e4e178ff087cd",
+          "TEST-org.geocedg.desktop.PreG9BCu3EnclosureReuseProbe.xml": "6efa1aa0a2d65792cb9564711466e7b67bb32f02cf494058726f88e0ad8e0cac"
+        },
+        "source_commit": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+        "source_tree": "d3502024fb91ee60a125f3f2a3b34701aafc29c2",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "generator": {
+        "runner": "tools/benchmark/pre-g9b-cu/run-cu3-enclosure-reuse.ps1",
+        "source_commit": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+        "source_tree": "d3502024fb91ee60a125f3f2a3b34701aafc29c2",
+        "product_sources_modified_relative_to_commit": false
+      },
+      "drags": {
+        "after moving H": {
+          "o_1 h_2": {
+            "boxes": 504,
+            "cone_nodes": 38,
+            "nodes_depending_on_the_driver": 15,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.5168,
+            "median_total_driver_point_ms": 0.7771,
+            "median_total_traced_point_ms": 18.7972,
+            "median_total_target_ms": 21.9196,
+            "median_total_traced_point_with_independent_values_ms": 10.0262,
+            "median_total_target_with_independent_values_ms": 0.261
+          },
+          "e_1 n": {
+            "boxes": 283,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.4426,
+            "median_total_driver_point_ms": 0.4419,
+            "median_total_traced_point_ms": 9.5087,
+            "median_total_target_ms": 6.4932,
+            "median_total_traced_point_with_independent_values_ms": 4.9628,
+            "median_total_target_with_independent_values_ms": 0.1371
+          },
+          "e_1 c_1": {
+            "boxes": 1760,
+            "cone_nodes": 29,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 6,
+            "median_total_enclose_as_in_the_product_ms": 4.5801,
+            "median_total_driver_point_ms": 2.8261,
+            "median_total_traced_point_ms": 60.4239,
+            "median_total_target_ms": 23.2231,
+            "median_total_traced_point_with_independent_values_ms": 30.2225,
+            "median_total_target_with_independent_values_ms": 0.818
+          },
+          "e_1 r": {
+            "boxes": 932,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 5.0287,
+            "median_total_driver_point_ms": 1.5107,
+            "median_total_traced_point_ms": 31.7599,
+            "median_total_target_ms": 21.7067,
+            "median_total_traced_point_with_independent_values_ms": 16.3129,
+            "median_total_target_with_independent_values_ms": 0.4642
+          },
+          "sharing": {
+            "distinct_boxes_of_e_1": 2197,
+            "boxes_of_e_1_in_two_or_more_queries": 775,
+            "shared_boxes_with_bitwise_identical_traced_point": 775,
+            "shared_boxes_with_different_traced_point": 0,
+            "traced_point_ms_all_queries_of_e_1": 101.70469999999936,
+            "traced_point_ms_once_per_distinct_box": 75.10729999999973,
+            "maximum_saving_of_sharing_ms": 26.597399999999638
+          },
+          "lookup": {
+            "entries": 2468,
+            "lookup_ns_per_box": 93.38459327392928,
+            "hits": 69580
+          },
+          "accelerated_against_full_evaluation": {
+            "available": true,
+            "boxes_compared": 3479,
+            "bitwise_equal": 3479,
+            "of_which_not_enclosed": 0,
+            "differences": [],
+            "slice_memories": {
+              "o_1": {
+                "boxes_kept": 503,
+                "enclosures_reused_so_far": 4036
+              },
+              "e_1": {
+                "boxes_kept": 2197,
+                "enclosures_reused_so_far": 19616
+              }
+            }
+          }
+        },
+        "after moving B": {
+          "o_1 h_2": {
+            "boxes": 506,
+            "cone_nodes": 38,
+            "nodes_depending_on_the_driver": 15,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.6382,
+            "median_total_driver_point_ms": 0.7797,
+            "median_total_traced_point_ms": 19.0427,
+            "median_total_target_ms": 22.6786,
+            "median_total_traced_point_with_independent_values_ms": 10.5369,
+            "median_total_target_with_independent_values_ms": 0.2689
+          },
+          "e_1 n": {
+            "boxes": 283,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 1.4321,
+            "median_total_driver_point_ms": 0.4291,
+            "median_total_traced_point_ms": 9.9216,
+            "median_total_target_ms": 6.4704,
+            "median_total_traced_point_with_independent_values_ms": 4.8942,
+            "median_total_target_with_independent_values_ms": 0.1398
+          },
+          "e_1 c_1": {
+            "boxes": 2173,
+            "cone_nodes": 29,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 6,
+            "median_total_enclose_as_in_the_product_ms": 5.5851,
+            "median_total_driver_point_ms": 3.4146,
+            "median_total_traced_point_ms": 74.7888,
+            "median_total_target_ms": 29.1093,
+            "median_total_traced_point_with_independent_values_ms": 37.5642,
+            "median_total_target_with_independent_values_ms": 1.0487
+          },
+          "e_1 r": {
+            "boxes": 908,
+            "cone_nodes": 33,
+            "nodes_depending_on_the_driver": 12,
+            "target_depends_on_the_driver": false,
+            "independent_values": 7,
+            "median_total_enclose_as_in_the_product_ms": 5.0722,
+            "median_total_driver_point_ms": 1.4573,
+            "median_total_traced_point_ms": 31.016,
+            "median_total_target_ms": 21.028,
+            "median_total_traced_point_with_independent_values_ms": 16.0098,
+            "median_total_target_with_independent_values_ms": 0.4484
+          },
+          "sharing": {
+            "distinct_boxes_of_e_1": 2376,
+            "boxes_of_e_1_in_two_or_more_queries": 984,
+            "shared_boxes_with_bitwise_identical_traced_point": 984,
+            "shared_boxes_with_different_traced_point": 0,
+            "traced_point_ms_all_queries_of_e_1": 115.4753999999998,
+            "traced_point_ms_once_per_distinct_box": 80.5639000000001,
+            "maximum_saving_of_sharing_ms": 34.91149999999969
+          },
+          "lookup": {
+            "entries": 2449,
+            "lookup_ns_per_box": 28.520671834625322,
+            "hits": 77400
+          },
+          "accelerated_against_full_evaluation": {
+            "available": true,
+            "boxes_compared": 3870,
+            "bitwise_equal": 3870,
+            "of_which_not_enclosed": 0,
+            "differences": [],
+            "slice_memories": {
+              "o_1": {
+                "boxes_kept": 505,
+                "enclosures_reused_so_far": 8086
+              },
+              "e_1": {
+                "boxes_kept": 2376,
+                "enclosures_reused_so_far": 41776
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "performance": {
+    "reference_run_A": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-performance-ref-68bfd764-runA",
+        "files_sha256": {
+          "cu3-performance-characterization.json": "c40bf6fd7615a8cccd1166722bd85e70757cd0465b1f34d02762e9a015eb6e12",
+          "gradle-cleanup.log": "2e7f2d7371131a89f03b0abf005db1cf3865653025b851e1c8891a401706ac83",
+          "gradle-probe.log": "81c9eaffcba3d1f0ef7847d190a9e8ebfbf01f90cedb009665097b5bc1aaa5a6",
+          "run-metadata.json": "b3b7820e474777461382db1fbac1e39b7ebb5d5c2beb440eb089ba83620e4b43",
+          "TEST-org.geocedg.desktop.PreG9BCu3PerformanceCharacterizationProbe.xml": "92e1f870745e3b60bc74e143fbb6e7816071fffe840fb15cca6cd88f40001a2d"
+        },
+        "source_commit": "68bfd7640b12c25de0122a666d24f355488d0e22",
+        "source_tree": "4a17664cf4f8dbb5f16e73088ddc44d15fb99169",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "drags": {
+        "E3 bench: four public intersections": {
+          "drag_H_legacy": {
+            "median_ms": 67.5351,
+            "p95_ms": 95.8895
+          },
+          "drag_B_legacy": {
+            "median_ms": 50.9952,
+            "p95_ms": 60.5808
+          },
+          "drag_H_constructive": {
+            "median_ms": 196.8168,
+            "p95_ms": 200.4484
+          },
+          "drag_B_constructive": {
+            "median_ms": 213.524,
+            "p95_ms": 215.0735
+          },
+          "adoption_ms": 2671.4443,
+          "used_heap_legacy_MB": 30.8,
+          "used_heap_constructive_MB": 40.0
+        },
+        "author smoke: and the five structural points": {
+          "drag_H_legacy": {
+            "median_ms": 42.6333,
+            "p95_ms": 44.3949
+          },
+          "drag_B_legacy": {
+            "median_ms": 43.5327,
+            "p95_ms": 45.3529
+          },
+          "drag_H_constructive": {
+            "median_ms": 219.2952,
+            "p95_ms": 221.5906
+          },
+          "drag_B_constructive": {
+            "median_ms": 236.6152,
+            "p95_ms": 239.3347
+          },
+          "adoption_ms": 2274.5513,
+          "used_heap_legacy_MB": 47.4,
+          "used_heap_constructive_MB": 65.2
+        }
+      },
+      "queries_during_the_drag": {
+        "drag of H": {
+          "o_1 h_2": {
+            "box_enclosures": 504,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 33.3008,
+            "median_exact_contacts_ms": 4.2973
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 13.7162,
+            "median_exact_contacts_ms": 1.1286
+          },
+          "e_1 c_1": {
+            "box_enclosures": 1760,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 62.6459,
+            "median_exact_contacts_ms": 3.5928
+          },
+          "e_1 r": {
+            "box_enclosures": 932,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 45.6162,
+            "median_exact_contacts_ms": 1.1174
+          }
+        },
+        "drag of B": {
+          "o_1 h_2": {
+            "box_enclosures": 506,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 33.6255,
+            "median_exact_contacts_ms": 4.4352
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 13.9649,
+            "median_exact_contacts_ms": 1.119
+          },
+          "e_1 c_1": {
+            "box_enclosures": 2173,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 77.1432,
+            "median_exact_contacts_ms": 3.7344
+          },
+          "e_1 r": {
+            "box_enclosures": 908,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 44.309,
+            "median_exact_contacts_ms": 1.126
+          }
+        }
+      }
+    },
+    "reference_run_B": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-performance-ref-68bfd764-runB",
+        "files_sha256": {
+          "cu3-performance-characterization.json": "15e3e8ac8856768a6c28616d099c0236b2043cdc29bb7b654b521b812624524c",
+          "gradle-cleanup.log": "7b0e8a57ba71e2e086616c4c33a5a99abbd1bef86a03afe9eee45bfc1bdd3177",
+          "gradle-probe.log": "898669fbd772cb2e0a3ab410b599feab6bda5aa9ce2b94f67da4cb09cf39edde",
+          "run-metadata.json": "d7377b174e7b41370c9b25aa265c77295240e52970a55cd08b8b97515d7de256",
+          "TEST-org.geocedg.desktop.PreG9BCu3PerformanceCharacterizationProbe.xml": "fac6f354e658f243a3f1efdf5e75e388345a3a69a0e694f2af4f4aecc5fcc257"
+        },
+        "source_commit": "68bfd7640b12c25de0122a666d24f355488d0e22",
+        "source_tree": "4a17664cf4f8dbb5f16e73088ddc44d15fb99169",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "drags": {
+        "E3 bench: four public intersections": {
+          "drag_H_legacy": {
+            "median_ms": 66.9149,
+            "p95_ms": 112.7323
+          },
+          "drag_B_legacy": {
+            "median_ms": 47.0714,
+            "p95_ms": 56.5664
+          },
+          "drag_H_constructive": {
+            "median_ms": 198.6616,
+            "p95_ms": 205.0985
+          },
+          "drag_B_constructive": {
+            "median_ms": 216.0132,
+            "p95_ms": 220.8181
+          },
+          "adoption_ms": 2564.5509,
+          "used_heap_legacy_MB": 30.8,
+          "used_heap_constructive_MB": 40.1
+        },
+        "author smoke: and the five structural points": {
+          "drag_H_legacy": {
+            "median_ms": 42.2481,
+            "p95_ms": 51.8493
+          },
+          "drag_B_legacy": {
+            "median_ms": 42.8855,
+            "p95_ms": 44.093
+          },
+          "drag_H_constructive": {
+            "median_ms": 225.3828,
+            "p95_ms": 227.2962
+          },
+          "drag_B_constructive": {
+            "median_ms": 242.1832,
+            "p95_ms": 244.3129
+          },
+          "adoption_ms": 2192.3828,
+          "used_heap_legacy_MB": 47.5,
+          "used_heap_constructive_MB": 65.2
+        }
+      },
+      "queries_during_the_drag": {
+        "drag of H": {
+          "o_1 h_2": {
+            "box_enclosures": 504,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 33.9207,
+            "median_exact_contacts_ms": 4.6889
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 13.9551,
+            "median_exact_contacts_ms": 1.1368
+          },
+          "e_1 c_1": {
+            "box_enclosures": 1760,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 63.2406,
+            "median_exact_contacts_ms": 3.8867
+          },
+          "e_1 r": {
+            "box_enclosures": 932,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 46.3147,
+            "median_exact_contacts_ms": 1.1568
+          }
+        },
+        "drag of B": {
+          "o_1 h_2": {
+            "box_enclosures": 506,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 34.1315,
+            "median_exact_contacts_ms": 4.7521
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 14.0848,
+            "median_exact_contacts_ms": 1.1548
+          },
+          "e_1 c_1": {
+            "box_enclosures": 2173,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 78.1108,
+            "median_exact_contacts_ms": 3.8939
+          },
+          "e_1 r": {
+            "box_enclosures": 908,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 45.9615,
+            "median_exact_contacts_ms": 1.1735
+          }
+        }
+      }
+    },
+    "t6_b1fed72f_run_A": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-performance-t6-b1fed72f-runA",
+        "files_sha256": {
+          "cu3-performance-characterization.json": "bd7737b7577a7a992f281e40e72b04942d6cd0f3451c207ebc3e546cee1024ee",
+          "gradle-cleanup.log": "c88d97e8c707245820275944ea16f0dbe22f97f4ba6bec11b747e2e61ba34fc3",
+          "gradle-probe.log": "26dd30ff72d6e168a914e54f06da35991ae8448de2b9651141059037dd55d824",
+          "run-metadata.json": "3182f7c3a23e5fdb1e9e2e95f8990833741c7572498800ee81b2395074e01142",
+          "TEST-org.geocedg.desktop.PreG9BCu3PerformanceCharacterizationProbe.xml": "5e9c091abbc319784c99483a39fe96b88b95caa27f440eae8724edeca366173b"
+        },
+        "source_commit": "b1fed72f95fdc33277bd4dbdcb41bb2b2e757b54",
+        "source_tree": "4be38ae520db0fb1daf241bf600f9f84c67f9d80",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "drags": {
+        "E3 bench: four public intersections": {
+          "drag_H_legacy": {
+            "median_ms": 64.0539,
+            "p95_ms": 91.0856
+          },
+          "drag_B_legacy": {
+            "median_ms": 47.571,
+            "p95_ms": 57.237
+          },
+          "drag_H_constructive": {
+            "median_ms": 100.5436,
+            "p95_ms": 103.7272
+          },
+          "drag_B_constructive": {
+            "median_ms": 105.3294,
+            "p95_ms": 107.5012
+          },
+          "adoption_ms": 2326.5706,
+          "used_heap_legacy_MB": 30.7,
+          "used_heap_constructive_MB": 40.9
+        },
+        "author smoke: and the five structural points": {
+          "drag_H_legacy": {
+            "median_ms": 43.5855,
+            "p95_ms": 47.847
+          },
+          "drag_B_legacy": {
+            "median_ms": 43.2886,
+            "p95_ms": 44.9907
+          },
+          "drag_H_constructive": {
+            "median_ms": 126.2786,
+            "p95_ms": 129.6975
+          },
+          "drag_B_constructive": {
+            "median_ms": 131.7771,
+            "p95_ms": 133.6361
+          },
+          "adoption_ms": 2023.8251,
+          "used_heap_legacy_MB": 48.3,
+          "used_heap_constructive_MB": 67.0
+        }
+      },
+      "queries_during_the_drag": {
+        "drag of H": {
+          "o_1 h_2": {
+            "box_enclosures": 504,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.5167,
+            "median_exact_contacts_ms": 4.4378
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.1262,
+            "median_exact_contacts_ms": 1.0917
+          },
+          "e_1 c_1": {
+            "box_enclosures": 1760,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 34.0214,
+            "median_exact_contacts_ms": 3.7559
+          },
+          "e_1 r": {
+            "box_enclosures": 932,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.4733,
+            "median_exact_contacts_ms": 1.0691
+          }
+        },
+        "drag of B": {
+          "o_1 h_2": {
+            "box_enclosures": 506,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.5325,
+            "median_exact_contacts_ms": 4.4608
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.3186,
+            "median_exact_contacts_ms": 1.1395
+          },
+          "e_1 c_1": {
+            "box_enclosures": 2173,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 37.8249,
+            "median_exact_contacts_ms": 4.0135
+          },
+          "e_1 r": {
+            "box_enclosures": 908,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.4206,
+            "median_exact_contacts_ms": 1.0931
+          }
+        }
+      }
+    },
+    "t6_b1fed72f_run_B": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-performance-t6-b1fed72f-runB",
+        "files_sha256": {
+          "cu3-performance-characterization.json": "049e95cccb3057e8b88c4850f5318a14ecec8d15ea9cee29077c7bd61185efd1",
+          "gradle-cleanup.log": "13afac4c147510efc2fc749d129425b445d4cfd6d63c57eb061163710a4e8442",
+          "gradle-probe.log": "dfdcb10b3c3ada344d97528f9fcdd88b5cc3c26db4c43ac7a80672aef61f4a3e",
+          "run-metadata.json": "75a64bcd9066635f04999d3ed50589f4fe4a8e03ae028f3d411613dcc311485c",
+          "TEST-org.geocedg.desktop.PreG9BCu3PerformanceCharacterizationProbe.xml": "1a0667bcf6f975f281991c25a0797c322323da9a76e9c375c77104055f30b72c"
+        },
+        "source_commit": "b1fed72f95fdc33277bd4dbdcb41bb2b2e757b54",
+        "source_tree": "4be38ae520db0fb1daf241bf600f9f84c67f9d80",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "drags": {
+        "E3 bench: four public intersections": {
+          "drag_H_legacy": {
+            "median_ms": 63.967,
+            "p95_ms": 97.449
+          },
+          "drag_B_legacy": {
+            "median_ms": 48.6319,
+            "p95_ms": 59.2423
+          },
+          "drag_H_constructive": {
+            "median_ms": 100.2596,
+            "p95_ms": 106.7995
+          },
+          "drag_B_constructive": {
+            "median_ms": 106.2643,
+            "p95_ms": 111.5557
+          },
+          "adoption_ms": 2338.2066,
+          "used_heap_legacy_MB": 30.7,
+          "used_heap_constructive_MB": 41.0
+        },
+        "author smoke: and the five structural points": {
+          "drag_H_legacy": {
+            "median_ms": 43.6915,
+            "p95_ms": 51.755
+          },
+          "drag_B_legacy": {
+            "median_ms": 43.0055,
+            "p95_ms": 47.0453
+          },
+          "drag_H_constructive": {
+            "median_ms": 124.7259,
+            "p95_ms": 130.6981
+          },
+          "drag_B_constructive": {
+            "median_ms": 131.5668,
+            "p95_ms": 133.0113
+          },
+          "adoption_ms": 2025.9138,
+          "used_heap_legacy_MB": 48.4,
+          "used_heap_constructive_MB": 67.2
+        }
+      },
+      "queries_during_the_drag": {
+        "drag of H": {
+          "o_1 h_2": {
+            "box_enclosures": 504,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.5057,
+            "median_exact_contacts_ms": 4.4929
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.1156,
+            "median_exact_contacts_ms": 1.1039
+          },
+          "e_1 c_1": {
+            "box_enclosures": 1760,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 33.498,
+            "median_exact_contacts_ms": 3.6851
+          },
+          "e_1 r": {
+            "box_enclosures": 932,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.4379,
+            "median_exact_contacts_ms": 1.0971
+          }
+        },
+        "drag of B": {
+          "o_1 h_2": {
+            "box_enclosures": 506,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.5259,
+            "median_exact_contacts_ms": 4.4338
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.0963,
+            "median_exact_contacts_ms": 1.1046
+          },
+          "e_1 c_1": {
+            "box_enclosures": 2173,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 37.7029,
+            "median_exact_contacts_ms": 3.9181
+          },
+          "e_1 r": {
+            "box_enclosures": 908,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.3662,
+            "median_exact_contacts_ms": 1.1607
+          }
+        }
+      }
+    },
+    "candidate_run_A": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-performance-t6-3f096838-runA",
+        "files_sha256": {
+          "cu3-performance-characterization.json": "5b741437158eb65d3d875f570a5f28684a9237bf8ed2f29b5987132aecb6f235",
+          "gradle-cleanup.log": "b052006a6448ff2757392693ab006f31dc2b7cc66e20783c4cedc07bb91fa5d7",
+          "gradle-probe.log": "12ee15d2a4f4f10d69e2cc456f6a50c6e42b0c007193f1d6fd5340d62b280b48",
+          "run-metadata.json": "41cabc727bb7ee009bb3340512bd25bb306ff1fdd72d080e9870fd2f625a341b",
+          "TEST-org.geocedg.desktop.PreG9BCu3PerformanceCharacterizationProbe.xml": "b65c0db4709ce79dd7f6c8f31f480084f0d077c721495799b44178a129dc1b32"
+        },
+        "source_commit": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+        "source_tree": "d3502024fb91ee60a125f3f2a3b34701aafc29c2",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "drags": {
+        "E3 bench: four public intersections": {
+          "drag_H_legacy": {
+            "median_ms": 68.2227,
+            "p95_ms": 99.7362
+          },
+          "drag_B_legacy": {
+            "median_ms": 49.7964,
+            "p95_ms": 56.9316
+          },
+          "drag_H_constructive": {
+            "median_ms": 103.2633,
+            "p95_ms": 115.2583
+          },
+          "drag_B_constructive": {
+            "median_ms": 106.0858,
+            "p95_ms": 108.5676
+          },
+          "adoption_ms": 2392.5249,
+          "used_heap_legacy_MB": 30.8,
+          "used_heap_constructive_MB": 41.0
+        },
+        "author smoke: and the five structural points": {
+          "drag_H_legacy": {
+            "median_ms": 43.9424,
+            "p95_ms": 48.2677
+          },
+          "drag_B_legacy": {
+            "median_ms": 42.6314,
+            "p95_ms": 44.0793
+          },
+          "drag_H_constructive": {
+            "median_ms": 125.5644,
+            "p95_ms": 144.2422
+          },
+          "drag_B_constructive": {
+            "median_ms": 131.5375,
+            "p95_ms": 135.9649
+          },
+          "adoption_ms": 2001.3279,
+          "used_heap_legacy_MB": 48.4,
+          "used_heap_constructive_MB": 67.2
+        }
+      },
+      "queries_during_the_drag": {
+        "drag of H": {
+          "o_1 h_2": {
+            "box_enclosures": 504,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.505,
+            "median_exact_contacts_ms": 4.4245
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.1808,
+            "median_exact_contacts_ms": 1.084
+          },
+          "e_1 c_1": {
+            "box_enclosures": 1760,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 34.3654,
+            "median_exact_contacts_ms": 3.7137
+          },
+          "e_1 r": {
+            "box_enclosures": 932,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.6364,
+            "median_exact_contacts_ms": 1.097
+          }
+        },
+        "drag of B": {
+          "o_1 h_2": {
+            "box_enclosures": 506,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.5104,
+            "median_exact_contacts_ms": 4.3941
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.2828,
+            "median_exact_contacts_ms": 1.1083
+          },
+          "e_1 c_1": {
+            "box_enclosures": 2173,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 39.4018,
+            "median_exact_contacts_ms": 3.7501
+          },
+          "e_1 r": {
+            "box_enclosures": 908,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.1846,
+            "median_exact_contacts_ms": 1.0715
+          }
+        }
+      }
+    },
+    "candidate_run_B": {
+      "run": {
+        "directory": "artifacts/benchmarks/pre-g9b-cu/cu3-performance-t6-3f096838-runB",
+        "files_sha256": {
+          "cu3-performance-characterization.json": "1d878a0149667110ff56ac34c2cd039d8e491814047ef8457a469b7a10284df1",
+          "gradle-cleanup.log": "e45a67096eb5a807692750442b160b2e3a77c12a40cee26eeddad480ba17f242",
+          "gradle-probe.log": "df648e2bf4fbcc6aa19a5ae071917a3ee464277b7d2d1ada0707ccc98f6613d5",
+          "run-metadata.json": "3fb944d0f6cab5e8c65ae11cdf4d9a73e121a4978d69a6f9075e31cb28debe50",
+          "TEST-org.geocedg.desktop.PreG9BCu3PerformanceCharacterizationProbe.xml": "2ad5a9a032fdf2579ae6fd942e80885286b021bd4827daee597e6623ad8838f6"
+        },
+        "source_commit": "3f0968385920e36b2b48191a4f6e736c4fc11c09",
+        "source_tree": "d3502024fb91ee60a125f3f2a3b34701aafc29c2",
+        "worktree_clean": true,
+        "product_sources_modified": false,
+        "probe_exit_code": 0
+      },
+      "drags": {
+        "E3 bench: four public intersections": {
+          "drag_H_legacy": {
+            "median_ms": 66.5636,
+            "p95_ms": 95.5889
+          },
+          "drag_B_legacy": {
+            "median_ms": 51.2351,
+            "p95_ms": 61.8793
+          },
+          "drag_H_constructive": {
+            "median_ms": 101.615,
+            "p95_ms": 120.5377
+          },
+          "drag_B_constructive": {
+            "median_ms": 106.0809,
+            "p95_ms": 111.6045
+          },
+          "adoption_ms": 2321.2098,
+          "used_heap_legacy_MB": 30.7,
+          "used_heap_constructive_MB": 40.9
+        },
+        "author smoke: and the five structural points": {
+          "drag_H_legacy": {
+            "median_ms": 41.4414,
+            "p95_ms": 42.3414
+          },
+          "drag_B_legacy": {
+            "median_ms": 42.4022,
+            "p95_ms": 44.4937
+          },
+          "drag_H_constructive": {
+            "median_ms": 127.2225,
+            "p95_ms": 141.2631
+          },
+          "drag_B_constructive": {
+            "median_ms": 131.858,
+            "p95_ms": 136.5347
+          },
+          "adoption_ms": 1985.8456,
+          "used_heap_legacy_MB": 48.3,
+          "used_heap_constructive_MB": 67.0
+        }
+      },
+      "queries_during_the_drag": {
+        "drag of H": {
+          "o_1 h_2": {
+            "box_enclosures": 504,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.538,
+            "median_exact_contacts_ms": 4.2344
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.4249,
+            "median_exact_contacts_ms": 1.0922
+          },
+          "e_1 c_1": {
+            "box_enclosures": 1760,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 34.0746,
+            "median_exact_contacts_ms": 3.6891
+          },
+          "e_1 r": {
+            "box_enclosures": 932,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.5993,
+            "median_exact_contacts_ms": 1.0767
+          }
+        },
+        "drag of B": {
+          "o_1 h_2": {
+            "box_enclosures": 506,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 1.5276,
+            "median_exact_contacts_ms": 4.4235
+          },
+          "e_1 n": {
+            "box_enclosures": 283,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 6.2057,
+            "median_exact_contacts_ms": 1.1229
+          },
+          "e_1 c_1": {
+            "box_enclosures": 2173,
+            "exact_contact_queries": 2,
+            "exact_contacts": 2,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 38.0665,
+            "median_exact_contacts_ms": 3.8166
+          },
+          "e_1 r": {
+            "box_enclosures": 908,
+            "exact_contact_queries": 1,
+            "exact_contacts": 1,
+            "normalized_residuals": 0,
+            "counts_identical_over_runs": true,
+            "median_enclose_ms": 7.4448,
+            "median_exact_contacts_ms": 1.0789
+          }
+        }
+      }
+    }
+  }
+}
