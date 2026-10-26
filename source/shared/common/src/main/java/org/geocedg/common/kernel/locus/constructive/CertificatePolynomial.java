@@ -413,22 +413,40 @@ final class CertificatePolynomial {
 
 	/**
 	 * @param point exact values of the indeterminates; {@code null} for one that does not occur
-	 * @return the exact value of the polynomial at the point
+	 * @return the exact value of the polynomial at the point, from the powers of every value
+	 *         computed once; exact arithmetic makes it the value of the term-by-term products
 	 */
 	ExactRational2D valueAt(ExactRational2D[] point) {
+		int[] occurring = maximumExponents();
+		ExactRational2D[][] powers = new ExactRational2D[INDETERMINATES][];
+		for (int index = 0; index < INDETERMINATES; index++) {
+			if (occurring[index] > 0) {
+				powers[index] = powers(Objects.requireNonNull(point[index]), occurring[index]);
+			}
+		}
 		ExactRational2D sum = ExactRational2D.of(0);
 		for (Map.Entry<Monomial, ExactRational2D> term : terms.entrySet()) {
 			ExactRational2D product = term.getValue();
 			Monomial monomial = term.getKey();
 			for (int index = 0; index < INDETERMINATES; index++) {
 				int exponent = monomial.exponent(index);
-				for (int power = 0; power < exponent; power++) {
-					product = product.multiply(Objects.requireNonNull(point[index]));
+				if (exponent > 0) {
+					product = product.multiply(powers[index][exponent]);
 				}
 			}
 			sum = sum.add(product);
 		}
 		return sum;
+	}
+
+	/** @return the powers {@code value^0} to {@code value^maximum} */
+	private static ExactRational2D[] powers(ExactRational2D value, int maximum) {
+		ExactRational2D[] powers = new ExactRational2D[maximum + 1];
+		powers[0] = ExactRational2D.of(1);
+		for (int power = 1; power <= maximum; power++) {
+			powers[power] = powers[power - 1].multiply(value);
+		}
+		return powers;
 	}
 
 	/**
