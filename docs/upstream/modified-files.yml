@@ -7488,7 +7488,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveIdentityRecheckMemoryTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): on the replica, the accelerated recheck decides as the procedure of the candidate in every revision of the lifecycle, the memory certifies every sign at the base revision, the specialization is exact and canonical whatever the history, a changed value repeats only the steps from its indeterminate, the prepared margin is the margin, a kept derivative encloses and counts as a fresh one, and a failing memory leaves every decision to the candidate.",
+      "purpose": "PRE-G9B-CU3 focal optimization of the recheck (T1 to T3): on the replica, the accelerated recheck decides as the procedure of the candidate in every revision of the lifecycle, the memory certifies every sign at the base revision, the specialization is exact and canonical whatever the history, a changed value repeats only the steps from its indeterminate, the prepared margin is the margin, a kept derivative encloses and counts as a fresh one, a failing memory leaves every decision to the candidate, and a certificate whose key changed never reaches its memory.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
     }
   ]
