@@ -1332,7 +1332,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/LocusIntersectionSolver2D.java",
       "change": "added",
-      "purpose": "Retain the closed capability hierarchy, residual/membership checks and R4 deterministic publication; R1 consumes current structural implicit proof and certified root equivalence without generic proximity deduplication or weakening non-spline contracts. PRE-G9B-CU3 piece I-2: the certified route of H02 (certified existence with a residual within tau_rel * L) beside the unchanged G8B-R1 threshold, the declared rejection diagnostics and the existence evidence of each solution.",
+      "purpose": "Retain the closed capability hierarchy, residual/membership checks and R4 deterministic publication; R1 consumes current structural implicit proof and certified root equivalence without generic proximity deduplication or weakening non-spline contracts. PRE-G9B-CU3 piece I-2: the certified route of H02 (certified existence with a residual within tau_rel * L) beside the unchanged G8B-R1 threshold, the declared rejection diagnostics and the existence evidence of each solution. PRE-G9B-CU3 T7-a: the certified route diagnostic names the policy version of its evidence.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -7248,25 +7248,25 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedAdmissionPolicy2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 piece I-2: versioned policy cu3-certified-admission/v1 with tau_rel equal to the approved relative residual of section 8.4 and the work limits of one certificate; the G8B-R1 policy is unchanged.",
+      "purpose": "PRE-G9B-CU3 piece I-2: versioned policy cu3-certified-admission/v1 with tau_rel equal to the approved relative residual of section 8.4 and the work limits of one certificate; the G8B-R1 policy is unchanged. PRE-G9B-CU3 T7-a: version cu3-certified-admission/v2 of the documents under constructive-authority/v1, with every limit unchanged; documents under the legacy policy keep version 1.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/IntersectionExistenceEvidence2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grade, decision configuration, certified route, contact evidence class and constructive re-qualification of one candidate or solution; revision evidence, never persisted or in a token. PRE-G9B-CU3 increment E3: the order of contact of a root that the conflict rule reclassifies, never in a token.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grade, decision configuration, certified route, contact evidence class and constructive re-qualification of one candidate or solution; revision evidence, never persisted or in a token. PRE-G9B-CU3 increment E3: the order of contact of a root that the conflict rule reclassifies, never in a token. PRE-G9B-CU3 T7-a: the policy version follows the constructive re-qualification of the evidence.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/RootCountCertificate2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: root-count certificates of CU3.4 on one parameter box (none, one simple root, two simple roots around a certified critical point) and the critical-point contact classes 3 and 4, from outward enclosures only. PRE-G9B-CU3 increment E3: the form one double root at an exact point, from the exact decisions of the configuration in the bracket of a certified critical point with a second derivative of fixed sign; a disagreeing exact sign certifies nothing.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: root-count certificates of CU3.4 on one parameter box (none, one simple root, two simple roots around a certified critical point) and the critical-point contact classes 3 and 4, from outward enclosures only. PRE-G9B-CU3 increment E3: the form one double root at an exact point, from the exact decisions of the configuration in the bracket of a certified critical point with a second derivative of fixed sign; a disagreeing exact sign certifies nothing. PRE-G9B-CU3 T7-a: under cu3-certified-admission/v2, for a constructive source, the exact decision is consulted as soon as the one enclosure of h on the bracket contains zero, before any subdivision, and ends the search only when it establishes the one double root; otherwise the procedure of version 1 continues from the same enclosure with the same limits.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/CertifiedContactAnalysis2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise. PRE-G9B-CU3 increment E1: in the constructive configuration, the re-qualification of section 7.4 (STRICT by certified existence, RELAXED by ENCLOSURE_COMPATIBLE, never for a contact or at a certified fold) and its entry for the adoption report. PRE-G9B-CU3 increment E3: in the constructive configuration a candidate at a certified fold of CU2 triggers the analysis, and the form one double root at an exact point withdraws the candidates that miss it, merges those that contain it and replaces the closest by a tangent candidate of multiplicity two with EXISTENCE_EXACT, contact class 2 and its order of contact, which gets no transverse germ; the re-qualification of the adoption applies the rule to all the solutions of a result.",
+      "purpose": "PRE-G9B-CU3 pieces I-2 and I-3: existence grades, contact evidence and the conflict rule of cu3-certified-admission/v1 on the candidates of one query; withdraws, merges or reclassifies only on a rigorous count certificate and leaves every candidate unchanged otherwise. PRE-G9B-CU3 increment E1: in the constructive configuration, the re-qualification of section 7.4 (STRICT by certified existence, RELAXED by ENCLOSURE_COMPATIBLE, never for a contact or at a certified fold) and its entry for the adoption report. PRE-G9B-CU3 increment E3: in the constructive configuration a candidate at a certified fold of CU2 triggers the analysis, and the form one double root at an exact point withdraws the candidates that miss it, merges those that contain it and replaces the closest by a tangent candidate of multiplicity two with EXISTENCE_EXACT, contact class 2 and its order of contact, which gets no transverse germ; the re-qualification of the adoption applies the rule to all the solutions of a result. PRE-G9B-CU3 T7-a: the certificate diagnostics name the policy version of the configuration.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     },
     {
@@ -7502,6 +7502,18 @@
       "change": "added",
       "purpose": "PRE-G9B-CU3 focal optimization T6: on the replica, the accelerated enclosures are bitwise those of a full evaluation in every revision, also where it fails; the queries of one locus share the traced point and another locus never does; the key follows the source, its parametrization and its branch and not a target outside the slice; the box is part of the key; the legacy configuration never reaches the memory; Undo and Redo; the bound.",
       "authority": "docs/validation/pre_g9b_cu3_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu3EarlyExactDecisionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 T7-a: the early exact decision of cu3-certified-admission/v2 against the procedure of version 1 on the same residual, behind sources that only widen or refuse enclosures: the same double root with fewer enclosures, also at the work limit and after a numerical failure of a sub-box of the bracket; everything that does not establish the form leaves the certificate of version 1 with the same work; no consultation without validity or with a certified critical value; never early for a source that is not constructive; the policy version follows the configuration.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/constructive/ConstructiveEarlyExactDecisionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-CU3 T7-a on the replica: the contact of o_1 and h_2 at rbCone = 7.5, left by version 1 at its work limit, is the double root of order two under version 2 with its admissibility unchanged; the decision through configuration changes, Undo, Redo and reopen, never persisted; every exact existence is a double root under version 2; a legacy document keeps version 1.",
+      "authority": "geocedg/specs/locus/locus-v2-intersections.md"
     }
   ]
 }

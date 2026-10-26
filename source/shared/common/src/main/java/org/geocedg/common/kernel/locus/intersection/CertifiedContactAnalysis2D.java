@@ -32,9 +32,10 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SolverMethod;
 
 /**
- * Existence grades, contact evidence and the conflict rule of {@code cu3-certified-admission/v1}
- * on the candidates of one query ({@code locus-v2-intersections.md} CU3.2 and CU3.4; Stage B
- * design section 9; PRE-G9B-CU3 pieces I-2 and I-3). The candidates the solver marks as
+ * Existence grades, contact evidence and the conflict rule of {@code cu3-certified-admission/v1},
+ * and of its version 2 under the constructive authority, on the candidates of one query
+ * ({@code locus-v2-intersections.md} CU3.2 and CU3.4; Stage B design section 9; PRE-G9B-CU3
+ * pieces I-2 and I-3). The candidates the solver marks as
  * non-transverse, as not locally isolated (the local minima of its search) or as closer to each
  * other than their own brackets trigger a root-count certificate on a box of their certified
  * continuous component; the trigger reads only parameters and solver states, never the scale of
@@ -307,7 +308,8 @@ final class CertifiedContactAnalysis2D {
 			return;
 		}
 		if (certificate.getForm() == RootCountCertificate2D.Form.ONE_DOUBLE) {
-			resolveDouble(context, window, certificate, members, group, entries, diagnostics);
+			resolveDouble(context, source, window, certificate, members, group, entries,
+					diagnostics);
 			return;
 		}
 		List<double[]> roots = certificate.getRoots();
@@ -349,7 +351,7 @@ final class CertifiedContactAnalysis2D {
 				}
 				continue;
 			}
-			IntersectionCandidate2D replacement = certifiedRoot(context, window, root,
+			IntersectionCandidate2D replacement = certifiedRoot(context, source, window, root,
 					kept != null ? kept.candidate : members.get(0).candidate);
 			if (replacement == null) {
 				// No parameter of the bracket passes the residual check of the verification:
@@ -390,9 +392,10 @@ final class CertifiedContactAnalysis2D {
 	 * being admissible and is never reassociated. When no binary64 parameter of {@code t0} passes
 	 * the residual check of the verification, the candidates that contain it stay as they are.
 	 */
-	private static void resolveDouble(IntersectionCapabilityContext2D context, Window window,
-			RootCountCertificate2D certificate, List<Entry> members, List<Entry> group,
-			List<Entry> entries, List<IntersectionDiagnostic2D> diagnostics) {
+	private static void resolveDouble(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, Window window, RootCountCertificate2D certificate,
+			List<Entry> members, List<Entry> group, List<Entry> entries,
+			List<IntersectionDiagnostic2D> diagnostics) {
 		double lower = certificate.getLower();
 		double upper = certificate.getUpper();
 		double[] root = certificate.getRoots().get(0);
@@ -418,7 +421,7 @@ final class CertifiedContactAnalysis2D {
 				kept = member;
 			}
 		}
-		IntersectionCandidate2D replacement = doubleRoot(context, window, root,
+		IntersectionCandidate2D replacement = doubleRoot(context, source, window, root,
 				kept != null ? kept.candidate : members.get(0).candidate, exact);
 		if (replacement == null) {
 			// No parameter of t0 passes the residual check of the verification: the candidates
@@ -464,8 +467,8 @@ final class CertifiedContactAnalysis2D {
 	 * @return the candidate, or {@code null} when no such parameter passes the check
 	 */
 	private static IntersectionCandidate2D doubleRoot(IntersectionCapabilityContext2D context,
-			Window window, double[] root, IntersectionCandidate2D template,
-			ExactContactEvidence2D exact) {
+			ResidualJetSource2D source, Window window, double[] root,
+			IntersectionCandidate2D template, ExactContactEvidence2D exact) {
 		double own = template.getSemanticParameter();
 		double ownLifted = window.lift(own, root[0], root[1]);
 		double chosen = Double.NaN;
@@ -493,8 +496,9 @@ final class CertifiedContactAnalysis2D {
 				SolverMethod.CERTIFIED_INTERVAL, NumericGuarantee.CERTIFIED_ERROR_BOUND,
 				LineageEventKind.APPEARED, Collections.emptyList(), List.of(
 						new IntersectionDiagnostic2D(DiagnosticCode.CONTACT_EVIDENCE_CLASSIFIED,
-								"Root-count certificate of cu3-certified-admission/v1: one"
-										+ " double root at the exact parameter "
+								"Root-count certificate of "
+										+ CertifiedAdmissionPolicy2D.version(source)
+										+ ": one double root at the exact parameter "
 										+ exact.getParameter() + ", " + exact.getEvidence()
 										+ ", order " + exact.getOrder())));
 	}
@@ -556,7 +560,8 @@ final class CertifiedContactAnalysis2D {
 	 * @return the candidate, or {@code null} when no such point passes the check
 	 */
 	private static IntersectionCandidate2D certifiedRoot(IntersectionCapabilityContext2D context,
-			Window window, double[] root, IntersectionCandidate2D template) {
+			ResidualJetSource2D source, Window window, double[] root,
+			IntersectionCandidate2D template) {
 		double middle = root[0] + (root[1] - root[0]) / 2;
 		double shift = window.canonicalShift(middle);
 		double chosen = Double.NaN;
@@ -582,8 +587,8 @@ final class CertifiedContactAnalysis2D {
 				NumericGuarantee.CERTIFIED_ERROR_BOUND, LineageEventKind.APPEARED,
 				Collections.emptyList(), List.of(new IntersectionDiagnostic2D(
 						DiagnosticCode.LOCAL_ISOLATION_ESTABLISHED,
-						"Root-count certificate of cu3-certified-admission/v1: one simple root"
-								+ " in the bracket")));
+						"Root-count certificate of " + CertifiedAdmissionPolicy2D.version(source)
+								+ ": one simple root in the bracket")));
 	}
 
 	/**

@@ -13,10 +13,22 @@ package org.geocedg.common.kernel.locus.intersection;
  * relative residual is the approved relative residual of section 8.4, a dimensionless
  * multiplier of the characteristic scale {@code L}, which never decides existence. Its limits
  * bound the work of one certificate; reaching one only leaves the certificate unestablished.
+ * A document governed by {@code constructive-authority/v1} decides under version 2, which adds
+ * only the early exact decision of the form one double root at an exact point and keeps every
+ * limit ({@code locus-v2-intersections.md}, constructive admission policy v2 amendment;
+ * PRE-G9B-CU3 T7-a).
  */
 public final class CertifiedAdmissionPolicy2D {
-	/** Version of the policy, recorded in the evidence it produces. */
+	/**
+	 * Version of the policy in a document governed by
+	 * {@code legacy-representation-authority/v1}, recorded in the evidence it produces.
+	 */
 	public static final String VERSION = "cu3-certified-admission/v1";
+	/**
+	 * Version of the policy in a document governed by {@code constructive-authority/v1},
+	 * recorded in the evidence it produces.
+	 */
+	public static final String CONSTRUCTIVE_VERSION = "cu3-certified-admission/v2";
 	/**
 	 * {@code tau_rel}: a transverse root with certified existence satisfies the residual
 	 * condition when its normalized residual is within {@code tau_rel * L}.
@@ -40,6 +52,14 @@ public final class CertifiedAdmissionPolicy2D {
 
 	private CertifiedAdmissionPolicy2D() {
 		// Constants.
+	}
+
+	/**
+	 * @param source the residual of the decision configuration
+	 * @return the version of the policy that decides with it
+	 */
+	static String version(ResidualJetSource2D source) {
+		return source.isConstructive() ? CONSTRUCTIVE_VERSION : VERSION;
 	}
 
 	/**

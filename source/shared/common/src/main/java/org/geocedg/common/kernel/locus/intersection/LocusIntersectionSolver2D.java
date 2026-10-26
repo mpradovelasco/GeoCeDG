@@ -381,7 +381,7 @@ public final class LocusIntersectionSolver2D {
 							+ Math.abs(residual.getNormalizedResidual()) + " <= tau_rel * L = "
 							+ CertifiedAdmissionPolicy2D.RELATIVE_RESIDUAL + " * "
 							+ existence.getCharacteristicScale() + " ("
-							+ CertifiedAdmissionPolicy2D.VERSION + ")"));
+							+ existence.getPolicyVersion() + ")"));
 		}
 		return Verification.accepted(new LocusIntersectionSolution2D(identity,
 				revisionEvidence, evaluation.getPoint(), classification, lineage,

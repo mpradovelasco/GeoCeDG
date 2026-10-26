@@ -39,6 +39,15 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
  * certified critical point whose value enclosure contains zero is contact class 3 and certifies
  * no count. Every sign is that of an outward enclosure that excludes zero or of an exact decision;
  * no tolerance and no binary64 value decides anything.</p>
+ *
+ * <p>Under {@code cu3-certified-admission/v2}, that of a constructive source, the exact decision
+ * is consulted as soon as the one enclosure of {@code h} on the bracket contains zero, before the
+ * bracket is subdivided: the subdivision proves nothing that the form needs, since a rigorous
+ * enclosure never gives a sign of {@code h} where {@code h} vanishes, and the enclosures of the
+ * box and of the bracket certify the source valid there by themselves (PRE-G9B-CU3 T7-a;
+ * {@code locus-v2-intersections.md}, constructive admission policy v2 amendment). An exact
+ * decision that does not establish the form leaves the procedure of version 1 to continue from the
+ * same enclosure, with the same limits.</p>
  */
 final class RootCountCertificate2D {
 
@@ -306,7 +315,22 @@ final class RootCountCertificate2D {
 				}
 			}
 			double[] bracket = {low, high};
-			int value = fixedSign(low, high, 0);
+			ResidualJetEnclosure2D enclosed = null;
+			if (source.isConstructive()) {
+				// cu3-certified-admission/v2: the first enclosure of the sign search, then the
+				// exact decision before any subdivision; otherwise the search goes on from it.
+				enclosed = enclose(low, high);
+				if (enclosed == null) {
+					return invalid(a, b);
+				}
+				if (enclosed.sign(0) == ResidualJetEnclosure2D.UNDECIDED) {
+					RootCountCertificate2D early = exactDouble(a, b, curvature, bracket);
+					if (early != null && early.form == Form.ONE_DOUBLE) {
+						return early;
+					}
+				}
+			}
+			int value = fixedSign(low, high, 0, enclosed);
 			if (value == INVALID) {
 				return invalid(a, b);
 			}
@@ -425,12 +449,22 @@ final class RootCountCertificate2D {
 		 *         source is not valid on the box
 		 */
 		private int fixedSign(double a, double b, int order) {
+			return fixedSign(a, b, order, null);
+		}
+
+		/**
+		 * @param enclosed the enclosure of the whole box, already computed, or {@code null}
+		 * @return the sign of {@link #fixedSign(double, double, int)}, with the same enclosures
+		 */
+		private int fixedSign(double a, double b, int order, ResidualJetEnclosure2D enclosed) {
 			Deque<double[]> boxes = new ArrayDeque<>();
 			boxes.push(new double[] {a, b, 0});
 			int sign = 0;
+			ResidualJetEnclosure2D first = enclosed;
 			while (!boxes.isEmpty()) {
 				double[] box = boxes.pop();
-				ResidualJetEnclosure2D jet = enclose(box[0], box[1]);
+				ResidualJetEnclosure2D jet = first != null ? first : enclose(box[0], box[1]);
+				first = null;
 				if (jet == null) {
 					return INVALID;
 				}

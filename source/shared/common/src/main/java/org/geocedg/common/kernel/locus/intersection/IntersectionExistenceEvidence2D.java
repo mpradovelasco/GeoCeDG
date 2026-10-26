@@ -14,7 +14,9 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 
 /**
  * Existence evidence of one candidate or finite solution under
- * {@link CertifiedAdmissionPolicy2D#VERSION} ({@code locus-v2-intersections.md} CU3.2 and CU3.4):
+ * {@link CertifiedAdmissionPolicy2D#VERSION}, or
+ * {@link CertifiedAdmissionPolicy2D#CONSTRUCTIVE_VERSION} under the constructive authority
+ * ({@code locus-v2-intersections.md} CU3.2 and CU3.4):
  * its existence grade, the decision configuration that computed it, the certified admission
  * route, the contact evidence class of a candidate without a local sign change, the order of
  * contact of a root that the conflict rule reclassifies and, under the constructive authority, the
@@ -124,9 +126,13 @@ public final class IntersectionExistenceEvidence2D {
 		return configuration;
 	}
 
-	/** @return the policy version */
+	/**
+	 * @return the policy version: that of the constructive authority for evidence with its
+	 *         re-qualification, otherwise that of the legacy policy
+	 */
 	public String getPolicyVersion() {
-		return CertifiedAdmissionPolicy2D.VERSION;
+		return constructiveAdmission != null ? CertifiedAdmissionPolicy2D.CONSTRUCTIVE_VERSION
+				: CertifiedAdmissionPolicy2D.VERSION;
 	}
 
 	/**
