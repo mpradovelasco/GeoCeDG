@@ -5,7 +5,7 @@
 | Carácter | Candidato técnico optimizado, entregado para la revisión del autor. No es una aprobación ni un cierre; `CU3` no está `PASS — AUTHOR APPROVED` |
 | Autoridad | instrucción autoral «PRE-G9B-CU3 — Autorización de optimización focal del rendimiento de `CU3-A`», de 2026-10-26 (§1); [plan de optimización](../architecture/pre_g9b_cu3_performance_optimization_plan.md); [registro del smoke](pre_g9b_cu3_author_smoke_record.md) |
 | Referencia congelada | producto del candidato `3c2ca7e8`, medido en `e6254926`, que solo cambia fuera de `source/` (la sonda del paso 0) |
-| Candidato optimizado | `68bfd7640b12c25de0122a666d24f355488d0e22` (árbol `4a17664cf4f8dbb5f16e73088ddc44d15fb99169`), rama local `phase/pre-g9b-cu3-implementation`, no publicada |
+| Candidato optimizado | `68bfd7640b12c25de0122a666d24f355488d0e22` (árbol `4a17664cf4f8dbb5f16e73088ddc44d15fb99169`), rama local `phase/pre-g9b-cu3-implementation`, no publicada; clase `INTEGRATED_PHASE` completa y aceptada técnicamente (§7 y §7.1) |
 | Evidencia | [`pre-g9b-cu3-performance-optimization-evidence.json`](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-performance-optimization-evidence.json) |
 | `selfApproved` | `false` |
 
@@ -223,7 +223,8 @@ el hash coincide, el diario está `COMPLETED` y el candidato es exactamente
 | Perfil | `run_id` | `result_hash` | Plan | Duración | Resultado |
 |---|---|---|---|---|---|
 | `STATIC` | `verification-dfdcc76ccf864540b3323c54a3a16e0d` | `7fcf533bdfea6065d50970234bd6952e0478739faf4c0a1593e9c95584c11aa0` | `25dfacc8` | 0,1 min | `ACCEPTED / COMPLETE`, 3/3; solo los diagnósticos permanentes |
-| `INFRA_UNIT` | `verification-022dd871283448be8acdb6b8057aecf4` | `60c0119abdd04f7c3c2d7dacd2f5bb24216f11b52c0095a8d58f3c2aff5d936b` | `830887b1` | 2,2 min | `REJECTED_VERIFICATION_CORE / COMPLETE`, 20/22: `infra.registry` e `infra.report` violadas por el entorno (véase abajo) |
+| `INFRA_UNIT`, PowerShell 7.6.9 (histórica) | `verification-022dd871283448be8acdb6b8057aecf4` | `60c0119abdd04f7c3c2d7dacd2f5bb24216f11b52c0095a8d58f3c2aff5d936b` | `830887b1` | 2,2 min | `REJECTED_VERIFICATION_CORE / COMPLETE`, 20/22: `infra.registry` e `infra.report` violadas por el entorno (véase abajo); se conserva como evidencia de la incompatibilidad |
+| `INFRA_UNIT`, PowerShell 7.6.6 | `verification-dbee206174f3456a957d20e8df7ef3b6` | `ae475713a694dd32f26dfe48d554c793caab0b5e2ff1248fd85753e6943abbad` | `830887b1` | 2,3 min | `ACCEPTED / COMPLETE`, 22/22 `CONTRACT_SATISFIED` |
 | `PHASE -Phase PRE-G9B-CU3` | `verification-ebdff6c9c48b425b80b8aaf1df972a21` | `6f0777f11a4d0d7b3efa02778b78c8eff37f09d927b80846db960372cbad51d2` | `1d298a3a` | 6,0 min | `ACCEPTED / COMPLETE`, 4/4; `pre-g9b-cu3.shared`: 22 clases y 202 pruebas; `pre-g9b-cu3.desktop`: 5 clases y 14 pruebas; 0 fallos y 0 omitidas |
 | `PHASE -Phase PRE-G9B-CU2` | `verification-6d61a1e724ba4e99bba3a2ade1f579f6` | `d4e9311eea021995a2410b8e1501d429d943d7a963d07ca36064263dd6d7d4be` | `b9dc6d9e` | 9,4 min | `ACCEPTED / COMPLETE`, 4/4; 242 y 72 pruebas, 0 fallos |
 | `PHASE -Phase PRE-G9B-CU1` | `verification-23fab295b97a4ca1a770d6039b422381` | `38aa646e3c268114ca9bc741f51c1e7071d9db9cac8140c8b417e5487e0faafa` | `b0e4f130` | 5,3 min | `ACCEPTED / COMPLETE`, 4/4; 57 y 20 pruebas, 0 fallos |
@@ -245,13 +246,72 @@ rejection did not retain the nominal Test-Json error identity»). Hechos:
 - el candidato solo cambia en `tools/agent` el recuento de `CU3` de
   `verification-final-coverage.Tests.ps1`, cuya comprobación (`infra.final-coverage`) se cumple.
 
-Se cumplen las demás 20 comprobaciones de `INFRA_UNIT`. La clase `INTEGRATED_PHASE` no queda
-completa mientras `INFRA_UNIT` no se acepte. Hay dos salidas, ambas del autor:
+Se cumplen las demás 20 comprobaciones de `INFRA_UNIT`. No se ha tocado la infraestructura de
+verificación.
 
-- volver a PowerShell 7.6.6 en la estación y repetir `INFRA_UNIT` sobre el mismo candidato;
-- autorizar un mantenimiento aparte del verificador para la nueva identidad del error.
+### 7.1 `INFRA_UNIT` con PowerShell 7.6.6
 
-No se ha tocado la infraestructura de verificación ni el entorno.
+Autoridad: la instrucción autoral «PRE-G9B-CU3 — Resolución de INFRA_UNIT mediante entorno de
+verificación compatible», de 2026-10-26, que autoriza restaurar temporalmente PowerShell 7.6.6
+para repetir solo `INFRA_UNIT` sobre `68bfd764`, sin modificar el verificador ni sus contratos.
+
+**Entorno.**
+
+- **Paquete.** `PowerShell-7.6.6-win-x64.zip`, de la publicación oficial `v7.6.6` de
+  `PowerShell/PowerShell` (2026-09-08), con 106 328 873 bytes. Su SHA-256
+  `02fe458be20493fbdf43f61ea20610b811ee6c738ab1676c61b9cfcd1a33c860` coincide con el resumen
+  publicado, y `pwsh.exe` tiene firma Authenticode válida de Microsoft Corporation.
+- **Instalación.** Extraído en un directorio aislado del espacio temporal de la sesión, fuera del
+  repositorio. La instalación global 7.6.9 de `C:\Program Files\PowerShell\7` no se ha desinstalado
+  ni modificado.
+- **Ejecutables de los subprocesos.** `verify.ps1` se lanzó con ese `pwsh.exe`, que informa 7.6.6.
+  El supervisor resuelve los comandos `PWSH` del registro con la ruta del proceso actual. Las
+  pruebas que invocan `pwsh` por nombre lo resuelven en el PATH, al que se antepuso el directorio
+  aislado; se comprobó que `pwsh` resolvía a él.
+- **Contrato.** Exige PowerShell `>=7.2`. El resultado registra `powershell_version` = `7.6.6`.
+
+**Comprobaciones previas.**
+
+- Espacio de trabajo limpio, incluidos los archivos sin seguimiento.
+- Candidato exacto en `HEAD`, por checkout desacoplado: commit
+  `68bfd7640b12c25de0122a666d24f355488d0e22`, árbol `4a17664cf4f8dbb5f16e73088ddc44d15fb99169`. Al
+  terminar se volvió a la rama.
+- Ningún archivo de `tools/agent` ni de `geocedg/specs/operations` cambia entre el candidato y
+  `HEAD`. Desde `3c2ca7e8` solo cambian el inventario JUnit, el pin `junit_inventory` del registro
+  y el recuento de `CU3` de `verification-final-coverage.Tests.ps1`, todo dentro del candidato.
+
+**Ejecución.**
+
+```powershell
+& <pwsh 7.6.6> -NoProfile -NoLogo -File tools/agent/verify.ps1 -Profile INFRA_UNIT -LogDirectory artifacts\agent\pre-g9b-cu3-opt-infra-unit-pwsh766-68bfd764
+```
+
+Salida 0. Resultado `verification-dbee206174f3456a957d20e8df7ef3b6`: `ACCEPTED / COMPLETE`, con
+las 22 comprobaciones `CONTRACT_SATISFIED`, `infra.registry` e `infra.report` incluidas. Se
+reautenticó: el `result_hash` `ae475713a694dd32f26dfe48d554c793caab0b5e2ff1248fd85753e6943abbad`
+se reproduce, el diario está `COMPLETED` y la identidad Git es la del candidato.
+
+**Composición con las demás ejecuciones.**
+
+- **Plan.** El plan de ejecución `830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d`
+  es idéntico al de la `INFRA_UNIT` rechazada sobre el mismo candidato y al de la aceptada de
+  `3c2ca7e8`.
+- **Entorno.** La firma de compatibilidad
+  `de567676a3168eb19a13b0b8764c15e6fdca0d97baec6925aac5b72f6c7dc4c0` es la misma en las ocho
+  ejecuciones sobre el candidato (las siete de §7, con 7.6.9, y esta, con 7.6.6). También es la
+  misma en `INFRA_UNIT` e `INTEGRATION` de `3c2ca7e8`, con 7.6.6. La versión de revisión de
+  PowerShell solo figura en la observación.
+- **Identidad.** Todas las ejecuciones son del mismo commit y del mismo árbol.
+
+Con `STATIC`, las cuatro `PHASE` e `INTEGRATION` de §7, la clase **`INTEGRATED_PHASE` queda
+completa y aceptada técnicamente** sobre el candidato congelado `68bfd764`. Las demás selecciones
+no se repitieron.
+
+- El rechazo con 7.6.9 se conserva como evidencia histórica de la incompatibilidad ambiental y no
+  se convierte en aceptación.
+- La adaptación de la infraestructura a PowerShell 7.6.9 queda como una actuación independiente,
+  sin autorizar.
+- La aceptación técnica no es una aprobación autoral.
 
 ## 8. Limitaciones y decisiones para el autor
 
@@ -272,10 +332,10 @@ No se ha tocado la infraestructura de verificación ni el entorno.
   sustituiría por un intento nuevo. Las dos decisiones serían rigurosas. No ha ocurrido en ninguna
   revisión medida ni probada.
 - **Medida.** Una sola estación y el arnés de pruebas; el smoke interactivo real es del autor.
-- **Verificación incompleta.** `INFRA_UNIT` está rechazado por la actualización de PowerShell
-  (§7); el resto de la clase está aceptado.
+- **Entorno de verificación.** La infraestructura de verificación no es compatible con PowerShell
+  7.6.9 (§7). La clase se completó con 7.6.6 en un directorio aislado (§7.1). Adaptarla a 7.6.9 es
+  una actuación aparte, sin autorizar.
 - **Decisiones del autor:**
-  - la salida para `INFRA_UNIT` (§7);
   - aceptación o no del candidato y de su rendimiento;
   - si autoriza T5 y T6, y si T7 necesita investigación;
   - el coste de memoria;
@@ -284,7 +344,12 @@ No se ha tocado la infraestructura de verificación ni el entorno.
 
 ## 9. Estado
 
+- Clase `INTEGRATED_PHASE` completa y aceptada técnicamente sobre `68bfd764` (§7 y §7.1); no es
+  una aprobación autoral.
+- `CU3-A` sigue pendiente de aceptación definitiva y el rendimiento interactivo, de la decisión
+  del autor.
 - Commits locales sobre `3853f323`: `e6254926` (sonda del paso 0), `e9eb113a`, `ddbdb0c9`,
-  `70b3ada8`, `68bfd764` (candidato) y el de este registro. Nada publicado; `main`, las etiquetas y `geocedg_book` no cambian.
+  `70b3ada8`, `68bfd764` (candidato), `07110295` (este registro) y su actualización con §7.1. Nada
+  publicado; `main`, las etiquetas, las publicaciones y `geocedg_book` no cambian.
 - `CU3-B`, T5, T6, T7 y la autoridad constructiva predeterminada siguen sin autorizar.
 - `CU3` no está `PASS — AUTHOR APPROVED`; el cierre de `CU3-A` sigue pendiente de decisión autoral.
