@@ -38,8 +38,10 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * PRE-G9B-CU3 author disposition of 2026-10-26, item 5, run only through
  * {@code tools/benchmark/pre-g9b-cu/run-cu3-performance-characterization.ps1}: where the time of
- * a drag of {@code H} goes in the adopted author model, to ground optimization proposals that
- * keep every geometric guarantee. For each public intersection of the five contacts it builds an
+ * the drags of {@code H} and {@code B} goes in the adopted author model, to ground optimization
+ * proposals that keep every geometric guarantee (step 0 of the authorized focal optimization:
+ * medians and 95th percentiles, the configuration of the author smoke with the five structural
+ * points, the adoption and an indicative used heap). For each public intersection of the five contacts it builds an
  * internal query with the decision configuration of the document, wrapped to time and count the
  * work asked of the residual source: the capture of the source, the box enclosures of
  * {@code h}, {@code h'} and {@code h''} and the exact-contact queries. It records that work for
@@ -60,6 +62,10 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 			{"e_1", "r"}};
 	private static final String[] RESULTS = {"cu3X1=Intersect(e_1,n)",
 			"cu3X2=Intersect(e_1,c_1)", "cu3X3=Intersect(e_1,r)"};
+	private static final String[] POINTS = {"X1=Intersect(e_1,n,K)", "X2=Intersect(e_1,c_1,K)",
+			"X3=Intersect(o_1,h_2,K)", "X4=Intersect(e_1,c_1,J)", "X5=Intersect(e_1,r,J)"};
+	private static final String[] DRIVEN = {"H", "B"};
+	private static final int DRAGS = 21;
 
 	@TempDir
 	Path work;
@@ -90,35 +96,71 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 
 	// ---------------------------------------------------------------- reference
 
-	/** The drag of H in the adopted document with the commands of the E3 bench. */
+	/**
+	 * The drags of H and of B in the document, in two configurations: the commands of the E3
+	 * bench (the four public intersections of the contacts) and the configuration of the author
+	 * smoke, which adds the five structural points; each under the legacy policy, then adopted.
+	 * Medians and 95th percentiles of {@value #DRAGS} drags, the time of the adoption and the
+	 * used heap after a collection, which is indicative only.
+	 */
 	private Map<String, Object> reference() throws Exception {
+		Map<String, Object> rows = new LinkedHashMap<>();
+		rows.put("drags_per_measure", DRAGS);
+		rows.put("E3 bench: four public intersections", configuration(new String[0]));
+		rows.put("author smoke: and the five structural points", configuration(POINTS));
+		return rows;
+	}
+
+	private Map<String, Object> configuration(String[] points) throws Exception {
 		AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
 		for (String command : RESULTS) {
 			PreG9BR6PlusF3Fixtures.must(app, command);
 		}
-		List<Long> legacy = new ArrayList<>();
-		for (int run = 0; run < RUNS; run++) {
-			legacy.add(drag(app));
-		}
-		AuthorityPolicyAdoption.adopt(app.getKernel().getConstruction());
-		List<Long> constructive = new ArrayList<>();
-		for (int run = 0; run < RUNS; run++) {
-			constructive.add(drag(app));
-		}
 		Map<String, Object> rows = new LinkedHashMap<>();
-		rows.put("median_drag_of_H_legacy_ms", median(legacy));
-		rows.put("median_drag_of_H_constructive_ms", median(constructive));
+		for (String label : DRIVEN) {
+			rows.put("drag of " + label + ", legacy", drags(app, label));
+		}
+		rows.put("used heap after collection, legacy, MB", usedHeapMegabytes());
+		long start = System.nanoTime();
+		AuthorityPolicyAdoption.adopt(app.getKernel().getConstruction());
+		rows.put("adoption_ms", (System.nanoTime() - start) / 1E6);
+		for (String command : points) {
+			PreG9BR6PlusF3Fixtures.must(app, command);
+		}
+		for (String label : DRIVEN) {
+			rows.put("drag of " + label + ", constructive", drags(app, label));
+		}
+		rows.put("used heap after collection, constructive, MB", usedHeapMegabytes());
 		return rows;
 	}
 
-	/** Moves H on its path and back, and returns the time of the first move. */
-	private static long drag(AppGeoCeDG app) {
-		double h = PreG9BCu0Corpus.pathParameter(app, "H");
+	private static Map<String, Object> drags(AppGeoCeDG app, String label) {
+		List<Long> times = new ArrayList<>();
+		for (int run = 0; run < DRAGS; run++) {
+			times.add(drag(app, label));
+		}
+		Map<String, Object> row = new LinkedHashMap<>();
+		row.put("median_ms", median(times));
+		row.put("p95_ms", percentile95(times));
+		return row;
+	}
+
+	/** Moves a point on its path and back, and returns the time of the first move. */
+	private static long drag(AppGeoCeDG app, String label) {
+		double t = PreG9BCu0Corpus.pathParameter(app, label);
 		long start = System.nanoTime();
-		PreG9BCu0Corpus.movePathPoint(app, "H", h + 0.5);
+		PreG9BCu0Corpus.movePathPoint(app, label, t + 0.5);
 		long elapsed = System.nanoTime() - start;
-		PreG9BCu0Corpus.movePathPoint(app, "H", h);
+		PreG9BCu0Corpus.movePathPoint(app, label, t);
 		return elapsed;
+	}
+
+	private static double usedHeapMegabytes() {
+		Runtime runtime = Runtime.getRuntime();
+		for (int run = 0; run < 3; run++) {
+			System.gc();
+		}
+		return Math.round((runtime.totalMemory() - runtime.freeMemory()) / 1E5) / 10.0;
 	}
 
 	// ---------------------------------------------------------------- instrumented
@@ -144,6 +186,16 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 					"perf-pair", "perf-lineage", "perf-target", "perf-topology",
 					new PublicTargetIntersectionCapability2D(timing), new GeoElement[0]));
 		}
+		Map<String, Object> all = new LinkedHashMap<>();
+		for (String label : DRIVEN) {
+			all.put("drag of " + label, measureDrag(app, label, timings, queries));
+		}
+		return all;
+	}
+
+	/** The work of the instrumented queries for drags of one point and for recomputations. */
+	private static Map<String, Object> measureDrag(AppGeoCeDG app, String label,
+			Map<String, Timing> timings, Map<String, AlgoLocusIntersectionV2> queries) {
 		Map<String, List<Map<String, Object>>> duringDrag = new LinkedHashMap<>();
 		Map<String, List<Map<String, Object>>> recompute = new LinkedHashMap<>();
 		Map<String, List<Long>> recomputeTotal = new LinkedHashMap<>();
@@ -154,11 +206,11 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 			recomputeTotal.put(key, new ArrayList<>());
 		}
 		for (int run = 0; run < RUNS; run++) {
-			double h = PreG9BCu0Corpus.pathParameter(app, "H");
+			double h = PreG9BCu0Corpus.pathParameter(app, label);
 			for (Timing timing : timings.values()) {
 				timing.reset();
 			}
-			PreG9BCu0Corpus.movePathPoint(app, "H", h + 0.5);
+			PreG9BCu0Corpus.movePathPoint(app, label, h + 0.5);
 			for (Map.Entry<String, Timing> entry : timings.entrySet()) {
 				duringDrag.get(entry.getKey()).add(entry.getValue().take());
 			}
@@ -175,12 +227,12 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 				}
 				timing.recordBoxes = false;
 			}
-			PreG9BCu0Corpus.movePathPoint(app, "H", h);
+			PreG9BCu0Corpus.movePathPoint(app, label, h);
 		}
 		Map<String, Object> rows = new LinkedHashMap<>();
 		for (String key : queries.keySet()) {
 			Map<String, Object> row = new LinkedHashMap<>();
-			row.put("during_the_drag_of_H", summarize(duringDrag.get(key)));
+			row.put("during_the_drag", summarize(duringDrag.get(key)));
 			Map<String, Object> again = summarize(recompute.get(key));
 			again.put("median_total_compute_ms", median(recomputeTotal.get(key)));
 			row.put("recomputation_in_the_same_revision", again);
@@ -344,6 +396,14 @@ class PreG9BCu3PerformanceCharacterizationProbe {
 		List<Long> sorted = new ArrayList<>(nanos);
 		Collections.sort(sorted);
 		return sorted.get(sorted.size() / 2) / 1E6;
+	}
+
+	/** The nearest-rank 95th percentile. */
+	private static double percentile95(List<Long> nanos) {
+		List<Long> sorted = new ArrayList<>(nanos);
+		Collections.sort(sorted);
+		int rank = (int) Math.ceil(0.95 * sorted.size());
+		return sorted.get(Math.max(0, rank - 1)) / 1E6;
 	}
 
 	private static <T> T onEdt(Callable<T> action) throws Exception {
