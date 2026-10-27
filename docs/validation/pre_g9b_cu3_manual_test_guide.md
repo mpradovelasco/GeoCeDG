@@ -3,14 +3,14 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Guía concisa de la prueba manual del autor que pide la disposición autoral de 2026-10-26, punto 6. Este documento no sustituye ni simula la prueba |
-| Producto | desde 2026-10-27, el del candidato `CU3-A` `9f6f27f265725b27673f5c37880947ad6c4f2399` (árbol `abe10e3d`), con T1 a T3, T6 y T7-a (`cu3-certified-admission/v2`). Los commits posteriores de la rama local `phase/pre-g9b-cu3-implementation` solo cambian documentos. La primera prueba manual, de 2026-10-26, se hizo con el producto de `3c2ca7e8` |
+| Producto | desde 2026-10-27, el del candidato definitivo de `CU3-A` `f61f295447d75755e4c932a0f8f41533563550dd` (árbol `875e1cbf`), con T1 a T3, T6, T7-a (`cu3-certified-admission/v2`) y D1-A. El smoke de 2026-10-27 se hizo sobre `9f6f27f2`, que difiere solo en la contabilidad del presupuesto. Los commits posteriores de la rama local `phase/pre-g9b-cu3-implementation` solo cambian documentos. La primera prueba manual, de 2026-10-26, se hizo con el producto de `3c2ca7e8` |
 | Modelo | una **copia** de `models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg`. El original es evidencia autoral fijada por SHA-256: no se abre para guardar ni se modifica |
-| Resultado | el autor anota `PASS`, `FAIL` o `NOT TESTED` por paso en la [hoja de resultados](pre_g9b_cu3_a_smoke_results_sheet.md), con la observación y la posición del modelo si falla. Resultado de 2026-10-26 sobre `3c2ca7e8`: smoke funcional `PASS — AUTHOR REPORTED`; rendimiento interactivo `NOT ACCEPTED` ([registro del smoke](pre_g9b_cu3_author_smoke_record.md)). La prueba del candidato `9f6f27f2` está pendiente |
+| Resultado | el autor anota `PASS`, `FAIL` o `NOT TESTED` por paso en la [hoja de resultados](pre_g9b_cu3_a_smoke_results_sheet.md), con la observación y la posición del modelo si falla. Resultado de 2026-10-26 sobre `3c2ca7e8`: smoke funcional `PASS — AUTHOR REPORTED`; rendimiento interactivo `NOT ACCEPTED` ([registro del smoke](pre_g9b_cu3_author_smoke_record.md)). Resultado de 2026-10-27 sobre `9f6f27f2`: `AUTHOR SMOKE — FUNCTIONALLY SATISFACTORY WITH TWO OPEN OBSERVATIONS` ([registro de D1-A y del smoke](pre_g9b_cu3_a_d1a_and_smoke_record.md)) |
 | `selfApproved` | `false` |
 
 **Lanzamiento.** En el checkout de la rama local `phase/pre-g9b-cu3-implementation`, comprobar que
-`git rev-parse HEAD` es `9f6f27f2` o un descendiente sin cambios de producto
-(`git diff --stat 9f6f27f2 HEAD -- source` vacío), y lanzar el perfil de producto con
+`git rev-parse HEAD` es `f61f2954` o un descendiente sin cambios de producto
+(`git diff --stat f61f2954 HEAD -- source` vacío), y lanzar el perfil de producto con
 `gradlew.bat :desktop:desktop:runGeoCeDG`, sin argumentos.
 
 **Preparación.** Copiar el modelo a una carpeta de trabajo y abrir la copia con el producto del
