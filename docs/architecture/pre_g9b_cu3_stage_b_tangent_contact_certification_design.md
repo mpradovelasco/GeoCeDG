@@ -256,6 +256,23 @@ No contiene coordenadas, parámetros, índices ni configuración. El selector R4
 cuando dos contactos compartan el selector base. El libro de tokens recibe una versión nueva del
 formato de estado; los tokens transversales y sus versiones no cambian.
 
+**Enmienda de 2026-10-27 (decisiones autorales CU3-B-R1 a R6;
+[hoja de decisiones](pre_g9b_cu3_b_decision_sheet.md)).** El germen de esta sección se sustituye
+por dos gérmenes estructurales, con nombres versionados propios. El germen
+`…/tangent-contact-germ/v1` se retira sin haberse implementado.
+
+| Germen | Contenido | Incremento |
+|---|---|---|
+| `pre-g9b-cu3/fold-contact-germ/v1` | linaje de la componente, objetivo y etiqueta exacta del pliegue (involución y punto fijo certificado); su selector no lleva rango | `CU3-B1`, autorizado |
+| `pre-g9b-cu3/regular-tangent-germ/v1` | linaje de la componente, objetivo y lado del contacto | `CU3-B2`, no autorizado |
+
+- **Lo que sale del germen.** El orden de contacto y la clase de evidencia dejan de formar parte de
+  él (P3), como cualquier otra evidencia de la revisión.
+- **Formato.** El libro de tokens escribe la versión 6 solo con entradas de contacto, con un
+  discriminador del tipo de entrada.
+- **Tokens transversales de una pareja certificada.** Dejan de ser actuales con la causa
+  `SUPERSEDED_BY_CERTIFIED_FOLD_PAIR` y quedan latentes, sin fusión ni reasociación.
+
 ### 6.2 Continuación
 
 En cada revisión se recalcula `t*` por continuación del punto crítico, que es una raíz simple de

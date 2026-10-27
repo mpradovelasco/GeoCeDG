@@ -127,6 +127,26 @@ The `CU3` characterization and the focal review establish seven facts.
    `CONTACT_NOT_CERTIFIED` and `IDENTITY_DISCONTINUITY`. No token is transferred. Transverse germs
    and existing ledger formats are unchanged. The germ is needed only for driverless
    materialization (increment `CU3-B`).
+
+   *Amendment of 2026-10-27 (author decisions CU3-B-R1 to R6,
+   [decision sheet](../architecture/pre_g9b_cu3_b_decision_sheet.md)).*
+
+   - **Germ composition.** The germ holds structural identity only: a versioned germ type, the
+     component lineage, the target and either the exact fold label (involution and certified fixed
+     point) of a fold-anchored contact or the side of contact of a regular tangency. Evidence class,
+     contact order, existence grade, integrity, certificates, cells, enclosures, numeric parameters
+     and the decision configuration are revision evidence and never enter it (consistent with
+     decision 5).
+   - **Fold contacts.** A certified fold contact is one solution anchored on the fold, whose
+     identity is kept through the transition between its two simple preimages and the exact double
+     root (decision 2). Transverse tokens of a certified pair are never fused or reassigned: they
+     stop being current with a typed cause and stay latent until the same full selector is
+     current again.
+   - **Ledger.** The token ledger writes a new state version 6, with an explicit entry-kind
+     discriminator, only when it holds a contact entry. Documents without contacts keep versions 4
+     and 5, and earlier readers reject version 6 closed.
+   - **Increments.** Fold contacts are increment `CU3-B1`; regular tangencies are increment
+     `CU3-B2`, not yet authorized.
 4. **Structural points by driver correspondence** (A3.3-R). `Point(L, D)` and
    `Intersect(L, r, D)` are defined by four facts checked in order, each failing closed with a
    typed cause:

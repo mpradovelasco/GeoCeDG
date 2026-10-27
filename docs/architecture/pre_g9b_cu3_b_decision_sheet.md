@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Carácter | Propuesta candidata para la decisión del autor. Solo diseño: no cambia código, tokens, selectores, gérmenes, serialización ni ADR aprobados |
+| Carácter | **Decisiones aprobadas por el autor el 2026-10-27**: R1 a R6 con la alternativa recomendada en cada una (R6: alternativa B, dos incrementos). Se autoriza `CU3-B1` (contactos en pliegues); `CU3-B2` no está autorizado. Enmiendas aplicadas: ADR 0039, decisión 3, y diseño de la Etapa B, §6.1 |
 | Autoridad | instrucción autoral «PRE-G9B-CU3 — Estabilización de CU3-A, resolución presupuestaria, mantenimiento del verificador y preparación arquitectónica de CU3-B», de 2026-10-27, G4 |
 | Base | [revisión arquitectónica de `CU3-B`](pre_g9b_cu3_b_identity_architecture_review.md) (P1–P3) sobre el candidato `CU3-A` `9f6f27f2` |
 | Contratos | [ADR 0017](../adr/0017-deterministic-intersection-phase-rank-identity.md), [ADR 0039](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md), [ADR 0040](../adr/0040-constructive-geometric-authority-and-relation-integrity.md), [diseño de la Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md) §6 |
