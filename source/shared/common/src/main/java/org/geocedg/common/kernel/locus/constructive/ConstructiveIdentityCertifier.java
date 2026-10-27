@@ -384,19 +384,32 @@ public final class ConstructiveIdentityCertifier {
 	 * Whether every sign of the cell is certified with the same value on the decision box of
 	 * the cone, built as in an attempt, and every checked line-circle output is still certified
 	 * closer to its selected branch than to the other. Accelerated, every sign is first enclosed
-	 * through the recheck memory of the certificate, on the same box and with counters of its
-	 * own; when that enclosure does not certify the sign, or cannot be built, the enclosure of the
-	 * procedure without the memory decides it, so that every sign the procedure without the
-	 * memory certifies stays certified. Without acceleration only that procedure runs: for the
-	 * tests that compare both.
+	 * through the recheck memory of the certificate, on the same box; when that enclosure does
+	 * not certify the sign, or cannot be built, the enclosure of the procedure without the memory
+	 * decides it, so that every sign the procedure without the memory certifies stays certified.
+	 * Without acceleration only that procedure runs: for the tests that compare both. The memory,
+	 * the margin preparations it triggers and that procedure share the one budget of the recheck
+	 * ({@code locus-v2-constructive-authority.md} section 10, author decision D1-A).
 	 */
 	static boolean recheckCell(ConstructiveIdentityCertificate certificate,
 			ConstructiveCone cone, ConstructiveIdentityBudget budget, boolean accelerated) {
-		ConstructiveIdentityArithmetic field = certificate.getArithmetic()
-				.forRecheck(new ConstructiveIdentityCounters(budget));
+		return recheckCell(certificate, cone, new ConstructiveIdentityCounters(budget),
+				accelerated);
+	}
+
+	/**
+	 * @param counters the counters of the recheck, on its one budget: for the tests that read
+	 *        them
+	 * @return whether the certificate applies, as {@link #recheckCell(
+	 *         ConstructiveIdentityCertificate, ConstructiveCone, ConstructiveIdentityBudget,
+	 *         boolean)}
+	 */
+	static boolean recheckCell(ConstructiveIdentityCertificate certificate,
+			ConstructiveCone cone, ConstructiveIdentityCounters counters, boolean accelerated) {
+		ConstructiveIdentityArithmetic field = certificate.getArithmetic().forRecheck(counters);
 		ConstructiveIdentityRecheckMemory memory = accelerated ? certificate.getRecheckMemory()
 				: null;
-		ConstructiveIdentityCounters memoryCounters = new ConstructiveIdentityCounters(budget);
+		ConstructiveIdentityCounters memoryCounters = counters;
 		try {
 			ConstructiveConeEvaluator<OutwardInterval> ideal =
 					ConstructiveConeEvaluator.intervals(cone);

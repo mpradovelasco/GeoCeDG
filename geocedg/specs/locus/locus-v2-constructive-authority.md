@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED AS CONTRACT (2026-10-25); IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4 WITH BLOCKING GATES, NOT YET APPROVED AS PRODUCT** |
-| Version | `1.0` |
+| Status | **NORMATIVE — AUTHOR APPROVED AS CONTRACT (2026-10-25); IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4 WITH BLOCKING GATES, NOT YET APPROVED AS PRODUCT; VERSION 1.1: SHARED BUDGET OF A RECHECK, AUTHOR DECISION D1-A (2026-10-27)** |
+| Version | `1.1` (`1.0` with the shared budget of a recheck in §10) |
 | Phase | `PRE-G9B-CU3` |
 | Scope | Shared-kernel geometric authority of documents governed by `constructive-authority/v1`: single constructive meaning, class table and boundary, document policy, relation integrity, relaxed admission and constructive identity certificates |
 | Product state | Experimental, internal; documents that have not adopted the policy are unchanged |
@@ -428,11 +428,25 @@ reports belong to the external layers.
 | Budget | Scope | Limits | Status |
 |---|---|---|---|
 | `cu3-exact-evaluation-budget/v1` | each exact evaluation of a structural point against its target, including each of the `N + 1` exact evaluations of `SUBSTITUTE_GENERIC` (§7.1, precondition 5) | 100 000 exact operations; tower depth 8; 4 096 bits | approved; exhaustion gives `EXACT_EVALUATION_BUDGET_EXHAUSTED`, fails closed with a diagnostic and deterministic counters, and is never raised automatically nor turned into an accepted approximation |
-| `constructive-identity-certificate-budget/v1` | each attempt of a constructive identity certificate | 16 000 000 term products; 16 indeterminates; 200 000 terms per polynomial; 4 096 bits per coefficient | approved on 2026-10-26, after gate G-AUT-8 measured, instrumented and validated them with adversarial tests; deterministic counters and a budget per attempt; exhaustion gives `BUDGET_EXHAUSTED` and fails closed; never extended without an author authorization, never raised automatically nor turned into an accepted approximation |
+| `constructive-identity-certificate-budget/v1` | each attempt of a constructive identity certificate, and each recheck of a certificate at a revision (§8.2) as one unit | 16 000 000 term products; 16 indeterminates; 200 000 terms per polynomial; 4 096 bits per coefficient | approved on 2026-10-26, after gate G-AUT-8 measured, instrumented and validated them with adversarial tests; deterministic counters and a budget per attempt; exhaustion gives `BUDGET_EXHAUSTED` and fails closed; never extended without an author authorization, never raised automatically nor turned into an accepted approximation |
 
 The monomial representation of the certificate supports all 16 indeterminates without collision
 or overflow; an exponent beyond its representable range fails closed with a typed cause and is
 never wrapped or truncated.
+
+**Shared budget of a recheck (author decision D1-A, 2026-10-27).** A recheck of a certificate at a
+revision is one unit of `constructive-identity-certificate-budget/v1`, whatever internal strategies
+compute it. Its accelerated memory, the margin preparations that it triggers and its fallback
+procedure share one budget and one set of deterministic counters:
+
+`W_recheck = W_memory + Σ W_preparation,i + W_fallback ≤ 16 000 000` term products, with the other
+limits unchanged.
+
+No internal strategy restarts the budget. An exhaustion in any of them makes the recheck fail
+closed, never certifies anything and is never turned into `STRICT`. A preparation that a budget
+exhaustion interrupts is not kept, so a later recheck prepares it again under its own budget. A
+failed recheck leads, as before, to a new attempt with its own budget; attempts are unchanged
+([stabilization record](../../../docs/validation/pre_g9b_cu3_a_stabilization_record.md) §3).
 
 ## 11. Compatibility
 

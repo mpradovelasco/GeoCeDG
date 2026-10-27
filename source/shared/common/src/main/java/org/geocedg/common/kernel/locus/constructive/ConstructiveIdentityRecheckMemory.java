@@ -105,8 +105,7 @@ final class ConstructiveIdentityRecheckMemory {
 	 * @param correspondence the index of the checked output
 	 * @param live the exact live point
 	 * @param box the box of the revision
-	 * @param counters the counters of this accelerated recheck, whose budget also bounds the
-	 *        preparation
+	 * @param counters the counters of this accelerated recheck, which also count the preparation
 	 * @return the enclosure, or {@code null} when it cannot be prepared, built or certified
 	 *         finite
 	 */
@@ -116,7 +115,7 @@ final class ConstructiveIdentityRecheckMemory {
 			return null;
 		}
 		try {
-			Margin prepared = prepared(certificate, correspondence, counters.getBudget());
+			Margin prepared = prepared(certificate, correspondence, counters);
 			if (prepared.constant == null) {
 				return null;
 			}
@@ -145,8 +144,7 @@ final class ConstructiveIdentityRecheckMemory {
 	 */
 	CertificateElement preparedMargin(ConstructiveIdentityCertificate certificate,
 			int correspondence, ExactRational2D[] live, ConstructiveIdentityArithmetic field) {
-		Margin prepared = prepared(certificate, correspondence,
-				field.getCounters().getBudget());
+		Margin prepared = prepared(certificate, correspondence, field.getCounters());
 		if (prepared.constant == null) {
 			return null;
 		}
@@ -183,11 +181,16 @@ final class ConstructiveIdentityRecheckMemory {
 	}
 
 	/**
-	 * @return the prepared margin, built once with its own counters on the budget of the first
-	 *         recheck that asks for it, or an unprepared one when that fails
+	 * @param counters the counters of the recheck that asks for it, which count the preparation
+	 *        (author decision D1-A)
+	 * @return the prepared margin, built once, or an unprepared one when that fails; a
+	 *         preparation that the budget of the recheck interrupts is not kept, so that a later
+	 *         recheck prepares it again on its own budget
+	 * @throws ConstructiveIdentityBudgetExhaustedException when the budget of the recheck is
+	 *         exhausted
 	 */
 	private synchronized Margin prepared(ConstructiveIdentityCertificate certificate,
-			int correspondence, ConstructiveIdentityBudget budget) {
+			int correspondence, ConstructiveIdentityCounters counters) {
 		Margin known = margins.get(correspondence);
 		if (known != null) {
 			return known;
@@ -197,15 +200,17 @@ final class ConstructiveIdentityRecheckMemory {
 			ConstructiveIdentityCertificate.Correspondence checked = certificate
 					.getCorrespondences().get(correspondence);
 			ConstructiveIdentityArithmetic field = certificate.getArithmetic().forRecheck(
-					new ConstructiveIdentityCounters(budget));
+					counters);
 			ConstructiveConeEvaluator.Point<CertificateElement> other = checked.getOther();
 			ConstructiveConeEvaluator.Point<CertificateElement> selected = checked.getSelected();
 			CertificateElement minusTwo = field.ofRational(ExactRational2D.of(-2));
 			built = new Margin(field.subtract(norm(field, other), norm(field, selected)),
 					field.multiply(minusTwo, field.subtract(other.getX(), selected.getX())),
 					field.multiply(minusTwo, field.subtract(other.getY(), selected.getY())));
-		} catch (ConstructiveIdentityException | ConstructiveIdentityBudgetExhaustedException
-				| ArithmeticException | IllegalArgumentException failed) {
+		} catch (ConstructiveIdentityBudgetExhaustedException exhausted) {
+			throw exhausted;
+		} catch (ConstructiveIdentityException | ArithmeticException
+				| IllegalArgumentException failed) {
 			built = new Margin(null, null, null);
 		}
 		margins.put(correspondence, built);

@@ -323,6 +323,102 @@ final class ConstructiveIdentityRecheckMemoryTest extends ConstructiveModelRepli
 		}
 	}
 
+	@Test
+	void oneRecheckSharesOneBudgetAcrossItsStrategies() {
+		buildAuthorReplica();
+		String[] contact = CONTACTS[2];
+		Slice slice = slice(contact);
+		ConstructiveIdentityCertificate certificate = attempt(contact, Scope.AUTOMATIC);
+		assertEquals(2, certificate.getCorrespondences().size(), "two checked outputs");
+		ConstructiveIdentityCounters opening = counters(ConstructiveIdentityBudget.V1);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(certificate, slice.cone, opening,
+				true));
+		ConstructiveIdentityCounters following = counters(ConstructiveIdentityBudget.V1);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(certificate, slice.cone, following,
+				true));
+		long total = opening.getTermProducts();
+		long memory = following.getTermProducts();
+		assertTrue(total > memory, "D1-A: the first recheck also counts the preparation of both"
+				+ " margins: " + total + " against " + memory);
+
+		ConstructiveIdentityCertificate twin = attempt(contact, Scope.AUTOMATIC);
+		ConstructiveIdentityCounters again = counters(ConstructiveIdentityBudget.V1);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(twin, slice.cone, again, true));
+		assertEquals(total, again.getTermProducts(), "deterministic counters");
+
+		// Each strategy alone fits one term product below the aggregate, as the separate
+		// budgets of version 1.0 allowed; the shared budget does not, and fails closed.
+		long limit = total - 1;
+		assertTrue(memory <= limit && total - memory <= limit);
+		ConstructiveIdentityCertificate starved = attempt(contact, Scope.AUTOMATIC);
+		ConstructiveIdentityCounters short1 = counters(restricted(limit));
+		assertFalse(ConstructiveIdentityCertifier.recheckCell(starved, slice.cone, short1, true),
+				"the aggregate is above the budget: the recheck fails closed");
+		ConstructiveIdentityCounters exact = counters(restricted(total));
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(twin(contact), slice.cone, exact,
+				true), "the aggregate within the budget");
+
+		// Completed preparations are kept; a preparation that the budget interrupts is not, so
+		// the next recheck prepares it again on its own budget and counts what a first recheck
+		// counts.
+		ConstructiveIdentityCounters after = counters(ConstructiveIdentityBudget.V1);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(starved, slice.cone, after, true));
+		assertTrue(after.getTermProducts() >= memory && after.getTermProducts() <= total);
+		ConstructiveIdentityCertificate interrupted = attempt(contact, Scope.AUTOMATIC);
+		assertFalse(ConstructiveIdentityCertifier.recheckCell(interrupted, slice.cone,
+				counters(restricted(memory + 1)), true), "interrupted in a preparation");
+		ConstructiveIdentityCounters retried = counters(ConstructiveIdentityBudget.V1);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(interrupted, slice.cone, retried,
+				true));
+		assertTrue(retried.getTermProducts() > memory && retried.getTermProducts() < total,
+				"the interrupted preparation is done again and the completed one is kept: "
+						+ retried.getTermProducts() + " between " + memory + " and " + total);
+	}
+
+	@Test
+	void theFallbackSharesTheBudgetOfItsRecheck() {
+		buildAuthorReplica();
+		String[] contact = CONTACTS[2];
+		Slice slice = slice(contact);
+		ConstructiveIdentityCertificate certificate = attempt(contact, Scope.AUTOMATIC);
+		certificate.getRecheckMemory().disable();
+		ConstructiveIdentityCounters fallback = counters(ConstructiveIdentityBudget.V1);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(certificate, slice.cone, fallback,
+				true));
+		long used = fallback.getTermProducts();
+		assertTrue(used > 0);
+		assertTrue(ConstructiveIdentityCertifier.recheckCell(certificate, slice.cone,
+				counters(restricted(used)), true));
+		assertFalse(ConstructiveIdentityCertifier.recheckCell(certificate, slice.cone,
+				counters(restricted(used - 1)), true), "the fallback exhausts and fails closed");
+	}
+
+	@Test
+	void anExhaustedBudgetNeverDecides() {
+		buildAuthorReplica();
+		ExactContactMemory memory = new ExactContactMemory();
+		org.geocedg.common.kernel.geos.GeoLocusV2 locus =
+				(org.geocedg.common.kernel.geos.GeoLocusV2) geo("e_1");
+		assertEquals(1, ConstructiveResidualJetSource.capture(locus, geo("c_1"), memory,
+				ConstructiveIdentityBudget.V1).exactContacts(Math.PI - 1E-6, Math.PI + 1E-6)
+				.size());
+		assertTrue(ConstructiveResidualJetSource.capture(locus, geo("c_1"), memory,
+				restricted(10)).exactContacts(Math.PI - 1E-6, Math.PI + 1E-6).isEmpty(),
+				"an exhausted recheck, then an exhausted attempt: no exact decision");
+	}
+
+	private ConstructiveIdentityCertificate twin(String[] contact) {
+		return attempt(contact, Scope.AUTOMATIC);
+	}
+
+	private static ConstructiveIdentityCounters counters(ConstructiveIdentityBudget budget) {
+		return new ConstructiveIdentityCounters(budget);
+	}
+
+	private static ConstructiveIdentityBudget restricted(long termProducts) {
+		return ConstructiveIdentityBudget.restrictedTo(termProducts, 16, 200_000, 4_096);
+	}
+
 	private ConstructiveIdentityCertificate attempt(String[] contact, Scope scope) {
 		Slice slice = slice(contact);
 		return ConstructiveIdentityCertifier.incidence(String.join(" ", contact), slice.cone,
