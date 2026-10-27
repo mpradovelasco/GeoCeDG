@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU3",
+  "increment": "CU3-A",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu3_a_closeout_record.md",
+  "instruction": "Decisión autoral — Cierre de CU3-A y continuación de CU3-B1",
+  "authorApprovalDate": "2026-10-27",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "exact technical candidate f61f2954 of the CU3-A increment only; CU3-B and CU3 as a whole are not approved",
+  "authorSmoke": "AUTHOR SMOKE — FUNCTIONALLY SATISFACTORY WITH TWO OPEN OBSERVATIONS on 9f6f27f2 (identical published results to f61f2954); both observations closed by the author",
+  "retractedRecord": {"commit": "e88c6b5bf", "reason": "recorded CU3-A as PASS — AUTHOR APPROVED before the author's precision of 2026-10-27; its OBS-01 mechanism and remedy were wrong; retracted by 774c3125"},
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "productChangeByCloseout": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "observations": {
+    "OBS-CU3A-SMOKE-01": {
+      "status": "CLOSED — AUTHOR ACCEPTED DISPOSITION",
+      "disposition": "the undefined generator of e_2 comes from an avoidable degeneracy of the original construction of K_1 (profile generatrices: K_1 = Intersect(b_1, n_1) undefined at t = ±arccos(d/rbCone) for rbCone >= d = 7.573539944963338), not from a kernel defect or a CU3 regression; the counter-rotation construction of K_1 is approved",
+      "exceptionalDegeneracy": "rbCone = d exactly: E_1(0) = I and the original rotation construction of J_1 degenerates at t = 0",
+      "originalModel": {"path": "C:\\Temp\\InterCilConoOblique.cedg", "sha256": "1AE6F51293FB111B54510948CBCC6E8BA38AB63B658BA3F8A668858AE890456C", "modified": false},
+      "correctedCopy": {"path": "C:\\Temp\\InterCilConoOblique-K1-contragiro.cedg", "bytes": 59277, "sha256": "E967D91EEA30FCB7BDB20ADEA58E7AD53487059571632122AC845B4DDA0A381E", "redefinition": "K_1 = Intersect(b_1, hK1) after eleven hidden auxiliary objects", "identitiesKept": ["K_1", "N_1"], "policy": "legacy-representation-authority/v1"}
+    },
+    "OBS-CU3A-SMOKE-02": {"status": "CLOSED — AUTHOR ACCEPTED EXPLANATION"},
+    "OBS-CU3A-XMLEDIT-01": {"status": "OPEN — NON-BLOCKING", "scope": "copies whose geogebra.xml was edited outside the application", "identifiedCause": "persisted consProtNavigationBar consStep left at the original last step; objects after it are not constructed on load", "productChangeAuthorized": false}
+  },
+  "status": {
+    "PRE-G9B-CU0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU2": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-A": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-B R1–R6": "AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-B1": "AUTHORIZED — IMPLEMENTATION PENDING",
+    "PRE-G9B-CU3 / CU3-B2": "NOT AUTHORIZED",
+    "PRE-G9B-CU3": "NOT APPROVED",
+    "verifierPwsh769": "INCORPORATED AS INDEPENDENT MAINTENANCE (48f0d2ce); AUTHOR ACCEPTED",
+    "PRE-G9B-CU4..CU10": "NOT AUTHORIZED",
+    "G9B": "NOT AUTHORIZED",
+    "reviewBranch": "UNCHANGED: origin phase/pre-g9b-cu3-implementation at b1813da1",
+    "main": "UNCHANGED: e6c908f2",
+    "tag": "NONE CREATED",
+    "book": "UNCHANGED"
+  },
+  "identities": {
+    "technicalCandidate": {"commit": "f61f295447d75755e4c932a0f8f41533563550dd", "tree": "875e1cbf5dca2b6d0bbea8b72d0c24ec3aa306c0", "parent": "17766fcaf82fc94c968c3c70ecc378d5528788eb", "modifiedByCloseout": false},
+    "base": {"commit": "e6c908f2203cd8feb5d4938013e16b212e0fe016", "tree": "fdb0e7027e19ee2b8fc9717f54d545e6ea50f6e1", "equalsMain": true},
+    "ancestry": {"linear": true, "mergeCommits": 0, "commitsFromBaseToCandidate": 82},
+    "deltaBaseToCandidate": {"files": 228, "insertions": 69577, "deletions": 176},
+    "remoteBranchAtCloseout": "b1813da1bf4e8a11abb579e833ab9b3cb45b3906"
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptance": [
+    {"check": "STATIC", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-80b6ae338d504831906be53ae008b1fb", "resultHash": "cddb937d24885f19991fe63f89c1404c26487c6cda3029aacecdbe8832d4b8d8", "planHash": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"},
+    {"check": "INFRA_UNIT (isolated PowerShell 7.6.6)", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-b373cdfdf58b4fe1b38b475486afdefd", "resultHash": "88b5088c305c42c78f0c4005c719c4b0eb7cfd1ff69a53697d276c6ad3265dcf", "planHash": "830887b17bb7030cdacda0da6999ad5fde64c86e52e96361a34d5f4cc2ffce1d", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "22/22"},
+    {"check": "PHASE -Phase PRE-G9B-CU3", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-e1bf5c61e39c45a382b7b756ff44223d", "resultHash": "97ac69dbc08ef3a640b1b2aade7369047133425f240d1340a89cc9ddc4562310", "planHash": "1d298a3a9b9a9c23d54d62f624e5dc2d850758d9f82b0f9e19b8f1364ccf14f7", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU2", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-99063f59d1084745ac46f5d93b337911", "resultHash": "5a55827e57e8368ab43821127f54df81ee84e5c7ae4d2db445a266b15e9513f8", "planHash": "b9dc6d9e5e3a2f011143719955a90279c557411eb162cc4dd683cce055e4a930", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU1", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-1a4dad5532a247079ed77d8f0891b1d1", "resultHash": "527ce06947c17dc3564f23b1c06ba1fdf888ef59496a436446b158a57a0f401f", "planHash": "b0e4f130ce59b79d1f3cdf6dafae3a6ba7fce5bf6da40375d1e4be2ae5a74519", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU0", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-6cf174d0b6e64b57a6f50213f64d4cf0", "resultHash": "9c47f4e236ec6f67a4c815f5810016d943d034afb5a51a47d9fe2811214b1c95", "planHash": "43e3e97e492bb71bcf1552f23402c615d728c259c8c0d2e2266e19fc62c49173", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "2/2"},
+    {"check": "INTEGRATION", "commit": "f61f295447d75755e4c932a0f8f41533563550dd", "runId": "verification-ef34ade20c5d44a79a93926dce2c2ee5", "resultHash": "3a7668aaf39e095e09572884818cc193806c41f037564ee642bc26427d136efb", "planHash": "4502c4bd1bbe1a123089e9e524fd0afb354932afbcb410f93052555a16c77aea", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "19/19"}
+  ],
+  "authentication": {"date": "2026-10-27", "method": "Read-VerificationJson + Get-VerificationResultHash; run journal COMPLETED; candidate commit and tree exact", "allAuthentic": true},
+  "closeoutCommitIdentity": "reported by the next artifact"
+}

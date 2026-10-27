@@ -1,12 +1,33 @@
-# PRE-G9B-CU3 — Expediente de cierre de `CU3-A` (preparado, sin efecto)
+# PRE-G9B-CU3 — Registro de cierre de `CU3-A`
 
 | Campo | Valor |
 |---|---|
-| Carácter | Expediente de cierre de `CU3-A`, preparado y **sin efecto**. La precisión autoral de 2026-10-27 sobre `OBS-CU3A-SMOKE-01` lo deja en suspenso hasta la disposición final de esa observación. No cierra `CU3-B` ni `CU3` global ni publica nada |
-| Autoridad | instrucción autoral «PRE-G9B-CU3 — Resolución de OBS-01, cierre de CU3-A, mantenimiento del verificador y autorización de CU3-B1» (2026-10-27) y precisión autoral «OBS-CU3A-SMOKE-01 y cierre de CU3-A» (2026-10-27) |
+| Carácter | Registro de cierre de `CU3-A`, efectivo por la decisión autoral de 2026-10-27 (§0). Es la única autoridad de ese estado. No cierra `CU3-B` ni `CU3` global ni publica nada |
+| Autoridad | instrucción autoral «PRE-G9B-CU3 — Resolución de OBS-01, cierre de CU3-A, mantenimiento del verificador y autorización de CU3-B1» (2026-10-27); precisión autoral «OBS-CU3A-SMOKE-01 y cierre de CU3-A» (2026-10-27); decisión autoral «Cierre de CU3-A y continuación de CU3-B1» (2026-10-27) |
 | Candidato | `f61f295447d75755e4c932a0f8f41533563550dd` (árbol `875e1cbf5dca2b6d0bbea8b72d0c24ec3aa306c0`), sin cambios de producto |
-| Estado | `CU3-A` **sin** `PASS — AUTHOR APPROVED`; `OBS-CU3A-SMOKE-01` `CHARACTERIZED — FINAL DISPOSITION PENDING`; `OBS-CU3A-SMOKE-02` `CLOSED — AUTHOR ACCEPTED EXPLANATION`; nada publicado |
-| Rectificación | Este texto sustituye al de `e88c6b5b`, que se retira en dos puntos: registraba `CU3-A` como `PASS — AUTHOR APPROVED` y atribuía la indefinición a un paso de `K_1` por el origen de `n_1`. También se retira el remedio `Point(o_1, K)` (§1.4, punto 3) |
+| Estado | `CU3-A` `PASS — AUTHOR APPROVED` sobre `f61f2954`; `OBS-CU3A-SMOKE-01` `CLOSED — AUTHOR ACCEPTED DISPOSITION`; `OBS-CU3A-SMOKE-02` `CLOSED — AUTHOR ACCEPTED EXPLANATION`; `OBS-CU3A-XMLEDIT-01` registrada aparte, no bloqueante (§5); `CU3` global sin `PASS — AUTHOR APPROVED`; nada publicado |
+| Espejo | [`pre-g9b-cu3-a-closeout.json`](../../geocedg/validation/pre-g9b-cu/pre-g9b-cu3-a-closeout.json) |
+| Rectificación | Este texto sustituye al de `e88c6b5b`, que se retira en tres puntos: registraba `CU3-A` como `PASS — AUTHOR APPROVED` antes de la precisión autoral, atribuía la indefinición a un paso de `K_1` por el origen de `n_1` y proponía el remedio `Point(o_1, K)` (§1.4, punto 3) |
+
+## 0. Decisión autoral
+
+Transcripción de la decisión autoral de 2026-10-27, «Cierre de CU3-A y continuación de CU3-B1»:
+
+- **`OBS-CU3A-SMOKE-01` cerrada.**
+  - La indefinición de `e_2` procede de una degeneración evitable del procedimiento constructivo original de `K_1`, no de un defecto del núcleo ni de una regresión de `CU3`.
+  - Se aprueba la construcción alternativa por contragiro en planta, con su equivalencia geométrica, la preservación de identidades y el comportamiento dinámico verificados sobre una copia.
+  - El modelo original de `C:\Temp` se conserva sin modificar, y la copia corregida queda identificada (§1.4, punto 5).
+  - Se mantiene documentada la degeneración excepcional `rbCone = d` (§1.4, punto 1).
+- **Observación aparte.** La omisión de objetos al cargar una copia cuyo XML se editó externamente se registra como observación no bloqueante (§5). No autoriza cambios de producto y no es un fallo de la redefinición interna.
+- **`CU3-A` `PASS — AUTHOR APPROVED`** sobre `f61f295447d75755e4c932a0f8f41533563550dd`:
+  - se apoya en las verificaciones integradas ya autenticadas y en el smoke autoral satisfactorio;
+  - no se repiten verificaciones integradas por cambios solo documentales;
+  - no implica el cierre global de `CU3`.
+- **Continuación.**
+  - Se ratifican R1–R6 y la autorización de `CU3-B1`; `CU3-B2` sigue sin autorización.
+  - `CU3-B1` se entregará como candidato técnico congelado y verificado, pendiente de aceptación autoral.
+  - La corrección del verificador PowerShell queda aceptada como mantenimiento independiente.
+- **Publicación.** No se publican ramas, no se modifica `main` y no se crean etiquetas.
 
 ## 1. `OBS-CU3A-SMOKE-01`
 
@@ -141,18 +162,19 @@ hK1 = Line(KK1, h)        K   = Intersect(b_1, hK1)
   - con `rbCone` = 5, 7,5, 7,58, 8 y 10: `N_1` `RESOLVED`, `o_1` `COMPLETE` con una componente, `R_1` definido y 360 de 360 muestras válidas de `e_2`;
   - el barrido de 5 a 10 y de vuelta, en pasos de 0,25, mantiene `N_1` y `R_1` definidos; las 41 actualizaciones tardan 6,7 s;
   - guardada y reabierta, la copia da los mismos resultados.
-- **Copia corregida.** `InterCilConoOblique-K1-corregido.cedg`, SHA-256 `DA41E8A7DED1D6417115C8625166D1B80F49B47810B07FBA1DCA4557B4C5566E`, guardada por la sonda fuera del árbol del repositorio.
-- **Original.** `C:\Temp\InterCilConoOblique.cedg` no se ha modificado (SHA-256 sin cambios). Aplicar la corrección al modelo del autor es una decisión autoral.
+- **Copia corregida para uso posterior.** `C:\Temp\InterCilConoOblique-K1-contragiro.cedg`, 59 277 bytes, SHA-256 `E967D91EEA30FCB7BDB20ADEA58E7AD53487059571632122AC845B4DDA0A381E`. Se obtuvo así:
+  - en una copia, la aplicación creó los once auxiliares, redefinió `K_1` y guardó (copia intermedia de la sonda, SHA-256 `DA41E8A7…`, con la disposición de ventana de la aplicación de pruebas);
+  - su construcción se insertó en el archivo del autor, que conserva la cabecera de vista y la miniatura;
+  - el paso de la navegación del protocolo se ajustó de 109 a 120, el número de pasos de la construcción corregida (§5);
+  - la carga real de esa copia reproduce los resultados anteriores: ningún objeto ausente, estado del autor idéntico (`8,9·10⁻¹⁶`), `N_1` `RESOLVED`, `o_1` `COMPLETE` y 360 de 360 muestras válidas de `e_2` con `rbCone` = 5, 7,5, 7,58, 8 y 10.
+- **Receta para reproducirla en otra sesión.** Crear los once auxiliares del punto 4 (ocultos) y redefinir `K_1 = Intersect(b_1, hK1)`.
+- **Original.** `C:\Temp\InterCilConoOblique.cedg` no se ha modificado (SHA-256 `1AE6F512…`, sin cambios).
 
-**6. Hallazgo lateral, no aislado.**
+**6. Hallazgo lateral.** Es `OBS-CU3A-XMLEDIT-01` (§5); no forma parte de `OBS-CU3A-SMOKE-01`.
 
-- Una copia en la que se reescribió el XML persistido, sustituyendo solo la orden de `K_1` por la cadena anterior, supera el registro de identidad de `K_1`.
-- Sin embargo, la carga omite en silencio los once objetos posteriores a `i_2` (`u_1`, `text2`, `v_1`, `N_1`, `w_1`, `d_2`, `Q_1`, `j_2`, `R_1`, `k_2` y `e_2`), sin error: `processXMLString` termina sin excepción.
-- No es una vía admitida, porque el documento se editó fuera de la aplicación. Queda para una decisión autoral aparte; no forma parte de `OBS-CU3A-SMOKE-01`.
+### 1.5 Disposición final
 
-### 1.5 Disposición propuesta (pendiente del autor)
-
-`OBS-CU3A-SMOKE-01` sigue `CHARACTERIZED — FINAL DISPOSITION PENDING`. Propuesta:
+`OBS-CU3A-SMOKE-01` — `CLOSED — AUTHOR ACCEPTED DISPOSITION` (decisión autoral de 2026-10-27, §0). La disposición aceptada:
 
 - La indefinición de `N_1` es **matemáticamente legítima** para la construcción escrita: dos generatrices de perfil cortan la componente cerrada desde `rbCone = d`.
 - Es **corregible en el modelo** sin cambiar su significado ni su parametrización (§1.4, punto 4). La corrección en sitio está verificada en una copia (§1.4, punto 5).
@@ -171,19 +193,44 @@ La adopción explícita se comprobó en una copia limpia (registro de D1-A y del
 |---|---|
 | Candidato técnicamente aceptado | `f61f2954`: `INTEGRATED_PHASE` `ACCEPTED / COMPLETE` (`INTEGRATION` `verification-ef34ade20c5d44a79a93926dce2c2ee5`), autenticada ([registro de D1-A y del smoke](pre_g9b_cu3_a_d1a_and_smoke_record.md) §6) |
 | Smoke autoral comunicado | `AUTHOR SMOKE — FUNCTIONALLY SATISFACTORY WITH TWO OPEN OBSERVATIONS`, sobre `9f6f27f2`, que difiere de `f61f2954` solo en la contabilidad D1-A, con resultados publicados idénticos |
-| Observaciones | `OBS-CU3A-SMOKE-01` `CHARACTERIZED — FINAL DISPOSITION PENDING` (§1); `OBS-CU3A-SMOKE-02` cerrada (§2) |
-| Aprobación autoral | condicionada de 2026-10-27, **en suspenso** por la precisión autoral de la misma fecha |
-| Publicación | ninguna: `main`, las etiquetas y `geocedg_book` no cambian |
+| Observaciones | `OBS-CU3A-SMOKE-01` `CLOSED — AUTHOR ACCEPTED DISPOSITION` (§1.5); `OBS-CU3A-SMOKE-02` `CLOSED — AUTHOR ACCEPTED EXPLANATION` (§2); `OBS-CU3A-XMLEDIT-01` abierta, no bloqueante (§5) |
+| Aprobación autoral | decisión autoral de 2026-10-27, «Cierre de CU3-A y continuación de CU3-B1» (§0) |
+| Publicación | ninguna: la rama remota sigue en `b1813da1`; `main`, las etiquetas y `geocedg_book` no cambian |
+
+**Reautenticación de la campaña de `f61f2954`** (2026-10-27): `Read-VerificationJson` y `Get-VerificationResultHash`; diario `COMPLETED`; commit y árbol exactos. No se repitió ninguna verificación.
+
+| Comprobación | `run_id` | Veredicto | `result_hash` |
+|---|---|---|---|
+| `STATIC` | `verification-80b6ae338d504831906be53ae008b1fb` | `ACCEPTED / COMPLETE` 3/3 | `cddb937d24885f19991fe63f89c1404c26487c6cda3029aacecdbe8832d4b8d8` |
+| `INFRA_UNIT` (PowerShell 7.6.6 aislado) | `verification-b373cdfdf58b4fe1b38b475486afdefd` | `ACCEPTED / COMPLETE` 22/22 | `88b5088c305c42c78f0c4005c719c4b0eb7cfd1ff69a53697d276c6ad3265dcf` |
+| `PHASE` `PRE-G9B-CU3` | `verification-e1bf5c61e39c45a382b7b756ff44223d` | `ACCEPTED / COMPLETE` 4/4 | `97ac69dbc08ef3a640b1b2aade7369047133425f240d1340a89cc9ddc4562310` |
+| `PHASE` `PRE-G9B-CU2` | `verification-99063f59d1084745ac46f5d93b337911` | `ACCEPTED / COMPLETE` 4/4 | `5a55827e57e8368ab43821127f54df81ee84e5c7ae4d2db445a266b15e9513f8` |
+| `PHASE` `PRE-G9B-CU1` | `verification-1a4dad5532a247079ed77d8f0891b1d1` | `ACCEPTED / COMPLETE` 4/4 | `527ce06947c17dc3564f23b1c06ba1fdf888ef59496a436446b158a57a0f401f` |
+| `PHASE` `PRE-G9B-CU0` | `verification-6cf174d0b6e64b57a6f50213f64d4cf0` | `ACCEPTED / COMPLETE` 2/2 | `9c47f4e236ec6f67a4c815f5810016d943d034afb5a51a47d9fe2811214b1c95` |
+| `INTEGRATION` | `verification-ef34ade20c5d44a79a93926dce2c2ee5` | `ACCEPTED / COMPLETE` 19/19 | `3a7668aaf39e095e09572884818cc193806c41f037564ee642bc26427d136efb` |
 
 ## 4. Condiciones de la aprobación
 
 | Condición | Cumplimiento |
 |---|---|
-| 1. Causa de OBS-01 rigurosamente establecida | establecida (§1.3 y §1.4); su disposición final es del autor |
-| 2. Defecto corregido dentro del alcance | no hay defecto del producto; la corrección es del modelo (§1.4, puntos 4 y 5) y su aplicación es decisión autoral |
+| 1. Causa de OBS-01 rigurosamente establecida | sí (§1.3 y §1.4), con disposición final aceptada por el autor (§1.5) |
+| 2. Defecto corregido dentro del alcance | no hay defecto del producto; la corrección es del modelo y está aprobada y verificada en una copia (§1.4, puntos 4 y 5) |
 | 3. Garantías geométricas y de identidad | sin cambios de producto desde la verificación; fallo cerrado tipado |
-| 4. Verificación del candidato definitivo | `INTEGRATED_PHASE` de `f61f2954` `ACCEPTED / COMPLETE` |
-| 5. Sin regresiones bloqueantes conocidas | ninguna |
+| 4. Verificación del candidato definitivo | `INTEGRATED_PHASE` de `f61f2954` `ACCEPTED / COMPLETE`, reautenticada (§3) |
+| 5. Sin regresiones bloqueantes conocidas | ninguna; `OBS-CU3A-XMLEDIT-01` no es bloqueante |
 | 6. Comprobación manual por cambios funcionales | no procede: el producto no cambia |
 
-**Resultado: no registrado.** `CU3-A` sigue sin `PASS — AUTHOR APPROVED` hasta que el autor resuelva la disposición final de `OBS-CU3A-SMOKE-01`. Esta aprobación, cuando llegue, no implicará la de `CU3-B` ni la de `CU3` global.
+**Resultado: `CU3-A` `PASS — AUTHOR APPROVED`** sobre `f61f295447d75755e4c932a0f8f41533563550dd`, por la decisión autoral de 2026-10-27 (§0).
+
+- No implica la aprobación de `CU3-B` ni la de `CU3` global.
+- `CU3-B1` continúa como candidato técnico pendiente de aceptación autoral; `CU3-B2` no está autorizado.
+
+## 5. `OBS-CU3A-XMLEDIT-01` — omisión de objetos al cargar un XML editado externamente
+
+| Campo | Valor |
+|---|---|
+| Estado | abierta, **no bloqueante**; registrada por decisión autoral (§0); pendiente de una eventual caracterización completa |
+| Alcance | solo copias cuyo `geogebra.xml` se editó fuera de la aplicación. La redefinición interna de la aplicación no está afectada (§1.4, punto 5) |
+| Hecho | Tres copias editadas externamente cargaron sin error pero sin sus últimos objetos, `N_1` incluido: la sustitución de la orden de `K_1`, la misma con `u_1` retirado y la construcción insertada en el archivo del autor. `processXMLString` terminó sin excepción |
+| Causa identificada | La cabecera conserva `consProtNavigationBar … consStep="109"`, el último paso de la construcción original. La construcción editada tiene más pasos (120 con los once auxiliares), y los objetos posteriores al paso 109 quedan sin construir en la carga. Con `consStep="120"`, la copia combinada carga completa (§1.4, punto 5) |
+| Pendiente | decidir si basta con documentar ese comportamiento de la navegación por pasos o si la carga debería avisar cuando el paso persistido no es el último. No se autorizan cambios de producto |
