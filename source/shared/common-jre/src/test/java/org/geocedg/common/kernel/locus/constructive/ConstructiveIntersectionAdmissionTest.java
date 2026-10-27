@@ -162,10 +162,15 @@ final class ConstructiveIntersectionAdmissionTest extends ConstructiveModelRepli
 
 		GeoLocusIntersectionResult adopted = (GeoLocusIntersectionResult) geo("S");
 		LocusIntersectionSolution2D constructiveSeam = transverse(adopted);
-		assertEquals(ConstructiveAdmission.NOT_ESTABLISHED,
+		// PRE-G9B-CU3 CU3-B1: the contact at the fold of the seam is admitted by its exact form,
+		// anchored at the fold, never by a residual bound (CU3-B1 design section 4).
+		assertTrue(constructiveSeam.getRevisionEvidence().getCurrentRootGerm()
+				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")).isPresent());
+		assertEquals(ExistenceGrade.EXISTENCE_EXACT, evidence(constructiveSeam).getGrade());
+		assertEquals(ConstructiveAdmission.STRICT,
 				evidence(constructiveSeam).getConstructiveAdmission());
-		assertFalse(adopted.isPointAdmissible(constructiveSeam.getIdentity().getRootToken()),
-				"a contact without a sign change is never admitted by a residual bound");
+		assertTrue(adopted.isPointAdmissible(constructiveSeam.getIdentity().getRootToken()),
+				"the fold contact of the seam is admitted by its anchored exact form");
 		assertEquals(ContactEvidenceClass.CONTACT_EXISTENCE_EXACT, contactAtZero(adopted),
 				"V-B-1 under the constructive authority: class 2 since the exact decision of E3"
 						+ " (ConstructiveExactContactTest)");

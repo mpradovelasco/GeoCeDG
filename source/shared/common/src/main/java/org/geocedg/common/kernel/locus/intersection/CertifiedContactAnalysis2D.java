@@ -132,6 +132,9 @@ final class CertifiedContactAnalysis2D {
 			}
 			group.sort((first, second) -> Double.compare(first.candidate.getSemanticParameter(),
 					second.candidate.getSemanticParameter()));
+			if (source.isConstructive()) {
+				anchorFolds(context, source, window, group, entries, diagnostics);
+			}
 			for (Entry entry : new ArrayList<>(group)) {
 				if (entry.state != State.OPEN || !triggered(context, source, entry, group)) {
 					continue;
@@ -458,6 +461,195 @@ final class CertifiedContactAnalysis2D {
 	}
 
 	/**
+	 * The fold-anchored solutions of PRE-G9B-CU3 increment {@code CU3-B1} (CU3-B1 design sections
+	 * 2 to 4). At a certified fold of {@code CU2} with an exact label and a candidate nearby, one
+	 * root-count certificate on a box centred at the fixed point decides the form: one double root
+	 * at {@code t0}, two simple roots paired by the involution, or no root. The two roots of a pair
+	 * are preimages of one point, so the pair and the double root each publish one candidate
+	 * anchored at the fold, and the candidates the box contains are withdrawn; the transverse
+	 * candidates of a pair are superseded, never fused or redirected. The image under the
+	 * involution of every located root must lie in the box, which proves that the double root is
+	 * at {@code t0} and that the two simple roots are paired. Any other form, a box whose images
+	 * leave it, an undecided label or a root that no binary64 parameter verifies leaves the
+	 * candidates to the rules above.
+	 */
+	private static void anchorFolds(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, Window window, List<Entry> group, List<Entry> entries,
+			List<IntersectionDiagnostic2D> diagnostics) {
+		LocusBranch2D branch = context.getDefinition().getBranch(
+				group.get(0).candidate.getBranchKey());
+		if (branch == null) {
+			return;
+		}
+		for (LocusCertifiedFold2D fold : branch.getExistenceStructure().getCertifiedFolds()) {
+			FoldContactAnchor2D anchor = FoldContactAnchor2D.of(fold);
+			if (anchor == null || !window.holds(anchor.center())) {
+				continue;
+			}
+			double half = window.span / CertifiedAdmissionPolicy2D.CELL_DIVISOR;
+			double[] outer = window.box(anchor.center(), half);
+			if (outer == null || members(window, group, outer, false).isEmpty()) {
+				continue;
+			}
+			String unanchored = "no certified form on a box of the fold";
+			for (int reduction = 0; reduction <= CertifiedAdmissionPolicy2D.BOX_REDUCTIONS;
+					reduction++, half /= 4) {
+				double[] box = window.box(anchor.center(), half);
+				if (box == null) {
+					break;
+				}
+				// An upper end a little past the symmetric one keeps the bisections of the
+				// certificate off the fixed point, an exact critical point of every residual at a
+				// fold; the images of the located roots must still lie in the box.
+				box[1] += (box[1] - box[0]) * 0x1p-9;
+				RootCountCertificate2D certificate = RootCountCertificate2D.certify(source,
+						box[0], box[1]);
+				if (certificate.isCertified()) {
+					unanchored = anchor(context, source, window, anchor, box, certificate, group,
+							entries, diagnostics);
+					break;
+				}
+				unanchored = certificate.describe();
+				if (certificate.getCritical() != null) {
+					break;
+				}
+			}
+			if (unanchored != null) {
+				// A former anchored token stays latent (CU3-B1 design section 4).
+				diagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.IDENTITY_DISCONTINUITY,
+						"No solution anchored at the " + anchor + ": " + unanchored));
+			}
+		}
+	}
+
+	/**
+	 * Applies one certified form on the box of a fold anchor.
+	 *
+	 * @return why no solution is anchored, or {@code null} when one is or no root exists
+	 */
+	private static String anchor(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, Window window, FoldContactAnchor2D anchor, double[] box,
+			RootCountCertificate2D certificate, List<Entry> group, List<Entry> entries,
+			List<IntersectionDiagnostic2D> diagnostics) {
+		List<Entry> members = members(window, group, box, true);
+		String evidence = anchor + ", " + certificate.describe();
+		RootCountCertificate2D.Form form = certificate.getForm();
+		if (form == RootCountCertificate2D.Form.NONE) {
+			for (Entry member : members) {
+				member.withdraw(diagnostics, "no root at the " + evidence);
+			}
+			diagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.FOLD_CONTACT_LOST,
+					"No root at the " + evidence));
+			return null;
+		}
+		List<double[]> roots = certificate.getRoots();
+		for (double[] root : roots) {
+			double[] image = anchor.image(root[0], root[1]);
+			if (image[0] < box[0] || image[1] > box[1]) {
+				return "the image of a located root leaves the box: " + evidence;
+			}
+		}
+		IntersectionCandidate2D template = members.isEmpty() ? null : members.get(0).candidate;
+		if (template == null) {
+			return "no candidate lies in the box: " + evidence;
+		}
+		Entry created;
+		if (form == RootCountCertificate2D.Form.ONE_DOUBLE) {
+			ExactContactEvidence2D exact = certificate.getExact();
+			IntersectionCandidate2D replacement = doubleRoot(context, source, window,
+					roots.get(0), template, exact);
+			if (replacement == null) {
+				return "no binary64 parameter of t0 passes the residual check: " + evidence;
+			}
+			created = new Entry(anchored(replacement, anchor, box, window));
+			created.grade = ExistenceGrade.EXISTENCE_EXACT;
+			created.contact = exact.getEvidence();
+			created.order = exact.getOrder();
+		} else if (form == RootCountCertificate2D.Form.TWO_SIMPLE && roots.size() == 2) {
+			double[] first = roots.get(0);
+			double[] second = roots.get(1);
+			double[] image = anchor.image(first[0], first[1]);
+			if (image[0] > second[1] || image[1] < second[0]) {
+				return "the two simple roots are not paired by the involution: " + evidence;
+			}
+			// The canonical preimage: the one after the fixed point.
+			double[] upper = first[0] + first[1] > second[0] + second[1] ? first : second;
+			IntersectionCandidate2D replacement = certifiedRoot(context, source, window, upper,
+					template);
+			if (replacement == null) {
+				return "no binary64 parameter of the canonical preimage passes the residual check: "
+						+ evidence;
+			}
+			created = new Entry(anchored(replacement, anchor, box, window));
+			created.grade = ExistenceGrade.EXISTENCE_CERTIFIED;
+			created.order = ContactOrder.ONE;
+		} else {
+			return "the form " + form + " anchors nothing: " + evidence;
+		}
+		for (Entry member : members) {
+			if (form == RootCountCertificate2D.Form.TWO_SIMPLE) {
+				member.supersede(diagnostics, evidence);
+			} else {
+				member.withdraw(diagnostics, "merged into the one double root at the "
+						+ evidence);
+			}
+		}
+		created.state = State.CERTIFIED;
+		created.certificate = certificate;
+		created.anchor = anchor;
+		group.add(created);
+		entries.add(created);
+		diagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.FOLD_CONTACT_ANCHORED,
+				"One solution anchored at the " + evidence));
+		return null;
+	}
+
+	/**
+	 * @param inside whether only the candidates whose isolating interval lies in the box count,
+	 *        otherwise those whose interval meets it
+	 * @return the candidates of the group that are not withdrawn and lie in or meet the box
+	 */
+	private static List<Entry> members(Window window, List<Entry> group, double[] box,
+			boolean inside) {
+		List<Entry> members = new ArrayList<>();
+		for (Entry entry : group) {
+			if (entry.state == State.OPEN && (inside ? window.inside(entry, box[0], box[1])
+					: window.meets(entry, box[0], box[1]))) {
+				members.add(entry);
+			}
+		}
+		return members;
+	}
+
+	/**
+	 * The candidate anchored at a fold: the verified candidate of its form with the box of the
+	 * certificate as isolating interval, established isolation and the anchor as revision-local
+	 * marker, from which the capability makes its germ.
+	 */
+	private static IntersectionCandidate2D anchored(IntersectionCandidate2D candidate,
+			FoldContactAnchor2D anchor, double[] box, Window window) {
+		double parameter = candidate.getSemanticParameter();
+		IntersectionParameterInterval2D interval = new IntersectionParameterInterval2D(parameter,
+				parameter);
+		for (int shift = -1; shift <= 1; shift++) {
+			double offset = shift * window.period;
+			if (box[0] + offset <= parameter && parameter <= box[1] + offset) {
+				interval = new IntersectionParameterInterval2D(box[0] + offset, box[1] + offset);
+				break;
+			}
+		}
+		List<IntersectionDiagnostic2D> diagnostics = new ArrayList<>(candidate.getDiagnostics());
+		diagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.FOLD_CONTACT_ANCHORED,
+				"Candidate anchored at the " + anchor));
+		return new IntersectionCandidate2D(candidate.getBranchKey(), candidate.getComponentKey(),
+				parameter, OptionalDouble.empty(), interval, LocalIsolationStatus.ESTABLISHED,
+				Optional.of(anchor.marker()), candidate.getContactClass(),
+				candidate.getMultiplicityStatus(), candidate.getEstablishedMultiplicity(),
+				candidate.getSolverMethod(), candidate.getNumericGuarantee(),
+				LineageEventKind.APPEARED, Collections.emptyList(), diagnostics);
+	}
+
+	/**
 	 * A tangent candidate of multiplicity two at an exact parameter, at the binary64 parameter of
 	 * its enclosure whose residual passes the residual check of the verification: the parameter
 	 * of the candidate it replaces when that one lies in the enclosure, otherwise the end with
@@ -649,6 +841,7 @@ final class CertifiedContactAnalysis2D {
 		private ContactEvidenceClass contact;
 		private ContactOrder order;
 		private RootCountCertificate2D certificate;
+		private FoldContactAnchor2D anchor;
 
 		Entry(IntersectionCandidate2D candidate) {
 			this.candidate = candidate;
@@ -665,6 +858,16 @@ final class CertifiedContactAnalysis2D {
 							+ candidate.getContactClass() + " at "
 							+ candidate.getSemanticParameter() + (contact == null ? ""
 									: " (" + contact + ")") + " withdrawn: " + why));
+		}
+
+		/** Withdraws a candidate of a certified fold pair; its token is never redirected. */
+		void supersede(List<IntersectionDiagnostic2D> diagnostics, String anchor) {
+			state = State.WITHDRAWN;
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.SUPERSEDED_BY_CERTIFIED_FOLD_PAIR, "Candidate "
+							+ candidate.getContactClass() + " at "
+							+ candidate.getSemanticParameter()
+							+ " superseded by the one solution of the pair at the " + anchor));
 		}
 
 		IntersectionCandidate2D publish(IntersectionCapabilityContext2D context,
@@ -696,6 +899,14 @@ final class CertifiedContactAnalysis2D {
 		 */
 		private ConstructiveAdmission admission(IntersectionCapabilityContext2D context,
 				ResidualJetSource2D source) {
+			if (anchor != null) {
+				// A fold-anchored solution exists by a certified form with exact or certified
+				// evidence (CU3-B1 design section 4); class 3 to 5 never anchors one.
+				return grade == ExistenceGrade.EXISTENCE_EXACT
+						|| grade == ExistenceGrade.EXISTENCE_CERTIFIED
+								? ConstructiveAdmission.STRICT
+								: ConstructiveAdmission.NOT_ESTABLISHED;
+			}
 			if (!isTransverseIsolated(candidate)) {
 				return ConstructiveAdmission.NOT_ESTABLISHED;
 			}
@@ -850,6 +1061,16 @@ final class CertifiedContactAnalysis2D {
 			double offset = lift(entry.candidate.getSemanticParameter(), low, high)
 					- entry.candidate.getSemanticParameter();
 			return interval.getLower() + offset >= low && interval.getUpper() + offset <= high;
+		}
+
+		/** @return whether the parameter lies in the component, every parameter of a closed one */
+		boolean holds(double parameter) {
+			return periodic || lower <= parameter && parameter <= upper;
+		}
+
+		/** @return whether the isolating interval of the candidate meets the box */
+		boolean meets(Entry entry, double low, double high) {
+			return overlaps(entry, new double[] {low, high}, low, high);
 		}
 
 		/** @return whether the isolating interval of the candidate meets the root bracket */

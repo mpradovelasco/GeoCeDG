@@ -89,6 +89,10 @@ public final class IntersectionRootDeterministicSelector2D
 			throw new IllegalArgumentException(
 					"Selector requires a typed public transverse root germ");
 		}
+		if (FoldContactAnchor2D.isGerm(germ)) {
+			throw new IllegalArgumentException(
+					"A fold-contact selector carries no intrinsic phase");
+		}
 		java.util.Objects.requireNonNull(orientation);
 		if (collisionCardinality < 2 || intrinsicRank < 0
 				|| intrinsicRank >= collisionCardinality) {
@@ -174,6 +178,11 @@ public final class IntersectionRootDeterministicSelector2D
 	/** @return typed current transverse-root germ */
 	public String getCurrentRootGerm() {
 		return currentRootGerm;
+	}
+
+	/** @return whether the germ is a fold-contact germ of PRE-G9B-CU3 increment CU3-B1 */
+	public boolean isFoldContact() {
+		return FoldContactAnchor2D.isGerm(currentRootGerm);
 	}
 
 	/** @return whether this selector needed intrinsic phase disambiguation */

@@ -73,16 +73,19 @@ class PreG9BCu3SeamReclassificationAuthorModelTest {
 		assertEquals("TANGENT_ESTABLISHED", seam.get("contact_class"), PreG9BCu0Baseline
 				.inversionMessage("B08_B09", "CU3", "the seam root of Intersect(e_1, c_1) is"
 						+ " the fold contact at pi"));
-		assertFalse((Boolean) seam.get("admissible"), PreG9BCu0Baseline.inversionMessage(
-				"B08_B09", "CU3", "the seam root has no admissible transverse token"));
+		assertTrue((Boolean) seam.get("admissible"), PreG9BCu0Baseline.inversionMessage(
+				"B08_B09", "CU3-B1", "the seam root is admitted by its fold-anchored token"));
 		for (String pair : PAIRS) {
 			List<?> rows = (List<?>) contacts.get(pair);
 			assertEquals(((JSONArray) pinned.get(pair)).length(), rows.size(), pair);
+			// CU3-B1 anchors the contacts of e_1 at its folds; the regular tangency of o_1 and
+			// h_2 belongs to CU3-B2, which is not authorized.
+			boolean fold = pair.startsWith("Intersect(e_1,");
 			for (Object row : rows) {
 				assertEquals("TANGENT_ESTABLISHED", ((Map<?, ?>) row).get("contact_class"),
 						pair);
-				assertFalse((Boolean) ((Map<?, ?>) row).get("admissible"),
-						pair + ": a contact is materialized only by CU3-B");
+				assertEquals(fold, ((Map<?, ?>) row).get("admissible"),
+						pair + ": a contact is materialized only when anchored at a fold");
 			}
 			PreG9BCu0Baseline.assertMatches("preserve.contacts." + pair,
 					baseline.getJSONObject("preserve").getJSONObject("contacts").get(pair),
@@ -132,7 +135,8 @@ class PreG9BCu3SeamReclassificationAuthorModelTest {
 				"NOT_ESTABLISHED CONTRADICTED_BY_CERTIFIED_EVIDENCE"), rows.get("report"),
 				"V-AUT-ADOPT-8: the report names the two withdrawals before they are applied");
 		assertEquals(1, rows.get("adopted near zero"), "V-B-NOISE-1: " + rows);
-		assertEquals(0, rows.get("adopted admitted"), rows.toString());
+		assertEquals(2, rows.get("adopted admitted"),
+				"CU3-B1: the two fold contacts are admitted through their anchored tokens " + rows);
 		assertEquals(List.of("EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT FOLD_CONTACT",
 				"EXISTENCE_EXACT CONTACT_EXISTENCE_EXACT FOLD_CONTACT"), rows.get("evidence"),
 				"only the seam at pi and the contact at 0: " + rows);

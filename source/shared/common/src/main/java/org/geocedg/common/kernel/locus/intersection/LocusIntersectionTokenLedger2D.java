@@ -34,6 +34,8 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 public final class LocusIntersectionTokenLedger2D {
 	private static final String FORMAT_VERSION = "4";
 	private static final String PAIR_FORMAT_VERSION = "5";
+	// Written only when an entry is fold-anchored (PRE-G9B-CU3 CU3-B1 design section 5).
+	private static final String FOLD_CONTACT_FORMAT_VERSION = "6";
 	private static final String PHASE_FORMAT_VERSION = "3";
 	private static final String PREVIOUS_FORMAT_VERSION = "2";
 	private static final String LEGACY_FORMAT_VERSION = "1";
@@ -715,8 +717,10 @@ public final class LocusIntersectionTokenLedger2D {
 
 	/** @return strict compact XML attribute value for this ledger */
 	public String exportState() {
-		String version = hasPairEntries(current) || hasPairEntries(copySource)
-				? PAIR_FORMAT_VERSION : FORMAT_VERSION;
+		String version = hasFoldContactEntries(current) || hasFoldContactEntries(copySource)
+				? FOLD_CONTACT_FORMAT_VERSION
+				: hasPairEntries(current) || hasPairEntries(copySource)
+						? PAIR_FORMAT_VERSION : FORMAT_VERSION;
 		return version + "|" + nextIncarnation + "|"
 				+ encodeSnapshot(current, version) + "|"
 				+ encodeSnapshot(copySource, version);
@@ -726,11 +730,28 @@ public final class LocusIntersectionTokenLedger2D {
 		return snapshot != null && !snapshot.byPairBinding.isEmpty();
 	}
 
+	private static boolean isFoldContact(Entry entry) {
+		return entry.currentRootBinding.filter(binding -> binding.selector.isFoldContact())
+				.isPresent();
+	}
+
+	private static boolean hasFoldContactEntries(Snapshot snapshot) {
+		if (snapshot != null) {
+			for (Entry entry : snapshot.entries) {
+				if (isFoldContact(entry)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/** Restores only durable lineage/high-water evidence, never numeric results. */
 	public void importState(String state) {
 		String[] fields = requireText(state, "Token-ledger state")
 				.split("\\|", -1);
-		if (fields.length != 4 || (!PAIR_FORMAT_VERSION.equals(fields[0])
+		if (fields.length != 4 || (!FOLD_CONTACT_FORMAT_VERSION.equals(fields[0])
+				&& !PAIR_FORMAT_VERSION.equals(fields[0])
 				&& !FORMAT_VERSION.equals(fields[0])
 				&& !PHASE_FORMAT_VERSION.equals(fields[0])
 				&& !PREVIOUS_FORMAT_VERSION.equals(fields[0])
@@ -744,6 +765,12 @@ public final class LocusIntersectionTokenLedger2D {
 		if (PAIR_FORMAT_VERSION.equals(importedVersion)
 				&& !hasPairEntries(parsedCurrent) && !hasPairEntries(parsedCopySource)) {
 			throw new IllegalArgumentException("Pair format requires a pair binding");
+		}
+		if (FOLD_CONTACT_FORMAT_VERSION.equals(importedVersion)
+				&& !hasFoldContactEntries(parsedCurrent)
+				&& !hasFoldContactEntries(parsedCopySource)) {
+			throw new IllegalArgumentException(
+					"Fold-contact format requires a fold-contact entry");
 		}
 		if (parsedCurrent == null && parsedCopySource != null) {
 			throw new IllegalArgumentException(
@@ -1943,11 +1970,13 @@ public final class LocusIntersectionTokenLedger2D {
 			for (Status status : values()) {
 				if (status.code.equals(value)) {
 					if (status == CLAIMED_PAIR_QUARANTINE
+							&& !FOLD_CONTACT_FORMAT_VERSION.equals(version)
 							&& !PAIR_FORMAT_VERSION.equals(version)) {
 						throw new IllegalArgumentException(
 								"Pair quarantine requires the pair ledger format");
 					}
 					if (status != ACTIVE && !FORMAT_VERSION.equals(version)
+							&& !FOLD_CONTACT_FORMAT_VERSION.equals(version)
 							&& !PAIR_FORMAT_VERSION.equals(version)) {
 						throw new IllegalArgumentException(
 								"Legacy token ledger cannot declare retained status");
@@ -2306,7 +2335,13 @@ public final class LocusIntersectionTokenLedger2D {
 				.append(snapshot.entries.size());
 		for (Entry entry : snapshot.entries) {
 			encoded.append('~');
-			if (PAIR_FORMAT_VERSION.equals(version)) {
+			if (FOLD_CONTACT_FORMAT_VERSION.equals(version)) {
+				// The entry-kind discriminator of ledger v6 (CU3-B1 design section 5).
+				encoded.append(entry.pairRootBinding.isPresent() ? "P,"
+						: isFoldContact(entry) ? "F," : "S,");
+			} else if (isFoldContact(entry)) {
+				throw new IllegalArgumentException("Fold-contact entries require ledger v6");
+			} else if (PAIR_FORMAT_VERSION.equals(version)) {
 				encoded.append(entry.pairRootBinding.isPresent() ? "P," : "S,");
 			} else if (entry.pairRootBinding.isPresent()) {
 				throw new IllegalArgumentException("Pair entries require ledger v5");
@@ -2362,12 +2397,16 @@ public final class LocusIntersectionTokenLedger2D {
 		ArrayList<Entry> entries = new ArrayList<>();
 		for (int index = 0; index < count; index++) {
 			String[] entry = parts[index + 5].split(",", -1);
-			if (PAIR_FORMAT_VERSION.equals(version)) {
+			String kind = null;
+			if (PAIR_FORMAT_VERSION.equals(version)
+					|| FOLD_CONTACT_FORMAT_VERSION.equals(version)) {
 				if (entry.length == 10 && "P".equals(entry[0])) {
 					entries.add(decodePairEntry(entry));
 					continue;
 				}
-				if (entry.length != 11 || !"S".equals(entry[0])) {
+				kind = entry[0];
+				if (entry.length != 11 || !("S".equals(kind) || "F".equals(kind)
+						&& FOLD_CONTACT_FORMAT_VERSION.equals(version))) {
 					throw new IllegalArgumentException("Malformed ledger entry variant");
 				}
 				entry = java.util.Arrays.copyOfRange(entry, 1, entry.length);
@@ -2403,12 +2442,17 @@ public final class LocusIntersectionTokenLedger2D {
 				throw new IllegalArgumentException(
 						"Unsupported token-ledger decoding version");
 			}
-			entries.add(new Entry(unhex(entry[2]), unhex(entry[3]),
+			Entry decoded = new Entry(unhex(entry[2]), unhex(entry[3]),
 					continuation.isEmpty() ? Optional.empty()
 							: Optional.of(continuation),
 					addressProof,
 					parsePositiveLong(entry[1], "entry incarnation"),
-					Status.parse(entry[0], version), binding));
+					Status.parse(entry[0], version), binding);
+			if (kind != null && "F".equals(kind) != isFoldContact(decoded)) {
+				throw new IllegalArgumentException(
+						"Ledger entry kind disagrees with its root selector");
+			}
+			entries.add(decoded);
 		}
 		return new Snapshot(material, entries);
 	}
@@ -2427,7 +2471,8 @@ public final class LocusIntersectionTokenLedger2D {
 	}
 
 	private static boolean hasDeterministicBindingFields(String version) {
-		return PAIR_FORMAT_VERSION.equals(version) || FORMAT_VERSION.equals(version)
+		return FOLD_CONTACT_FORMAT_VERSION.equals(version)
+				|| PAIR_FORMAT_VERSION.equals(version) || FORMAT_VERSION.equals(version)
 				|| PHASE_FORMAT_VERSION.equals(version)
 				|| PREVIOUS_FORMAT_VERSION.equals(version);
 	}

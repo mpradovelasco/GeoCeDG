@@ -75,8 +75,8 @@ final class ConstructiveExactContactTest extends ConstructiveModelReplicaTest {
 		GeoLocusIntersectionResult adopted = (GeoLocusIntersectionResult) geo("S");
 		LocusIntersectionSolution2D foldAtPi = at(adopted, Math.PI);
 		assertDoubleRoot(foldAtPi, ContactOrder.FOLD_CONTACT);
-		assertFalse(adopted.isPointAdmissible(token(foldAtPi)),
-				"a contact gets no transverse token");
+		assertTrue(adopted.isPointAdmissible(token(foldAtPi)),
+				"PRE-G9B-CU3 CU3-B1: the fold contact gets a token anchored at its fold");
 		assertFalse(adopted.isPointAdmissible(legacyToken),
 				"the transverse token is no longer admissible and is never reassociated");
 		assertEquals(legacyPoint[0], point(foldAtPi)[0], 1E-12, "the same point");
@@ -84,8 +84,8 @@ final class ConstructiveExactContactTest extends ConstructiveModelReplicaTest {
 		assertDoubleRoot(at(adopted, 0), ContactOrder.FOLD_CONTACT);
 		assertEquals(2, adopted.getIntersectionResult().getFiniteSolutions().size(),
 				"V-CONF-5: the seam and the contact at t = 0, nothing else");
-		assertTrue(diagnostics(adopted).contains("reclassified as the one double root at the"
-				+ " exact parameter pi"), diagnostics(adopted));
+		assertTrue(diagnostics(adopted).contains("One solution anchored at the fold anchor"
+				+ " (t->-t, pi), ONE_DOUBLE"), diagnostics(adopted));
 
 		getApp().getUndoManager().undo();
 
@@ -196,8 +196,12 @@ final class ConstructiveExactContactTest extends ConstructiveModelReplicaTest {
 		assertEquals(ExistenceGrade.EXISTENCE_EXACT, evidence.getGrade(), evidence.toString());
 		assertEquals(ContactEvidenceClass.CONTACT_EXISTENCE_EXACT, evidence.getContactEvidence());
 		assertEquals(order, evidence.getContactOrder(), evidence.toString());
-		assertEquals(ConstructiveAdmission.NOT_ESTABLISHED, evidence.getConstructiveAdmission(),
-				"a contact is not admitted for point consumption before CU3-B");
+		boolean anchored = solution.getRevisionEvidence().getCurrentRootGerm()
+				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")).isPresent();
+		assertEquals(anchored ? ConstructiveAdmission.STRICT
+				: ConstructiveAdmission.NOT_ESTABLISHED,
+				evidence.getConstructiveAdmission(), "PRE-G9B-CU3 CU3-B1: a contact is admitted"
+						+ " for point consumption only when it is anchored at a certified fold");
 	}
 
 	private static IntersectionExistenceEvidence2D evidence(LocusIntersectionSolution2D solution) {

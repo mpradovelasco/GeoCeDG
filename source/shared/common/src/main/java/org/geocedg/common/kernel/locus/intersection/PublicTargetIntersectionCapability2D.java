@@ -150,6 +150,14 @@ public final class PublicTargetIntersectionCapability2D
 				&& delegated.getOverlapEvidence().isEmpty();
 		ArrayList<IntersectionCandidate2D> publicCandidates = new ArrayList<>();
 		for (IntersectionCandidate2D candidate : candidates) {
+			Optional<FoldContactAnchor2D> anchor = FoldContactAnchor2D.fromMarker(
+					candidate.getContinuationKey());
+			if (anchor.isPresent()) {
+				// A fold-anchored solution of CU3-B1: its germ cites the fold label only.
+				publicCandidates.add(withFoldContactGerm(context, candidate, anchor.get(),
+						finiteAuthority));
+				continue;
+			}
 			Optional<String> germ = finiteAuthority
 					? transverseGerm(context, candidate) : Optional.empty();
 			publicCandidates.add(withCurrentRootGerm(context, candidate, germ));
@@ -189,6 +197,43 @@ public final class PublicTargetIntersectionCapability2D
 				candidate.getLiftedPeriodicParameter(),
 				candidate.getIsolatingInterval(),
 				candidate.getLocalIsolationStatus(), currentGerm,
+				candidate.getContactClass(), candidate.getMultiplicityStatus(),
+				candidate.getEstablishedMultiplicity(), candidate.getSolverMethod(),
+				candidate.getNumericGuarantee(), candidate.getLineageEventKind(),
+				candidate.getCandidateParentContinuationKeys(),
+				diagnostics);
+		IntersectionCandidate2D certified = candidate.getStructuralCertificate() == null
+				? enriched
+				: enriched.withStructuralCertificate(candidate.getStructuralCertificate());
+		return certified.withExistenceEvidence(candidate.getExistenceEvidence());
+	}
+
+	/**
+	 * The candidate of a fold-anchored solution with its fold-contact germ (CU3-B1 design section
+	 * 3), or without any germ when the result is not a finite authority; the revision-local marker
+	 * of the analysis never leaves the capability.
+	 */
+	private static IntersectionCandidate2D withFoldContactGerm(
+			IntersectionCapabilityContext2D context, IntersectionCandidate2D candidate,
+			FoldContactAnchor2D anchor, boolean finiteAuthority) {
+		Optional<String> germ = finiteAuthority ? Optional.of(anchor.germ(
+				LocusComponentLineage2D.identityKey(context.getDefinition()
+						.getBranch(candidate.getBranchKey()).getExistenceStructure(),
+						exactComponent(context, candidate)))) : Optional.empty();
+		ArrayList<IntersectionDiagnostic2D> diagnostics =
+				new ArrayList<>(candidate.getDiagnostics());
+		if (germ.isPresent()) {
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.LOCAL_ISOLATION_ESTABLISHED,
+					"Captured the fold-contact germ of the " + anchor + " as revision "
+							+ "evidence; only a unique current semantic selector may bind it "
+							+ "to durable identity"));
+		}
+		IntersectionCandidate2D enriched = new IntersectionCandidate2D(candidate.getBranchKey(),
+				candidate.getComponentKey(), candidate.getSemanticParameter(),
+				candidate.getLiftedPeriodicParameter(),
+				candidate.getIsolatingInterval(),
+				candidate.getLocalIsolationStatus(), germ,
 				candidate.getContactClass(), candidate.getMultiplicityStatus(),
 				candidate.getEstablishedMultiplicity(), candidate.getSolverMethod(),
 				candidate.getNumericGuarantee(), candidate.getLineageEventKind(),
@@ -241,12 +286,13 @@ public final class PublicTargetIntersectionCapability2D
 	}
 
 	static boolean isCurrentPublicRootGerm(String key) {
-		return parseCurrentPublicRootGerm(key).isPresent();
+		return parseCurrentPublicRootGerm(key).isPresent() || FoldContactAnchor2D.isGerm(key);
 	}
 
 	static boolean isCurrentPublicRootGermForComponent(String key,
 			String componentLineage) {
-		return parseCurrentPublicRootGerm(key)
+		return FoldContactAnchor2D.germLineage(key).filter(componentLineage::equals).isPresent()
+				|| parseCurrentPublicRootGerm(key)
 				.filter(germ -> germ.componentLineage.equals(componentLineage))
 				.isPresent();
 	}

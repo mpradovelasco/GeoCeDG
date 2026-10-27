@@ -202,7 +202,11 @@ final class ConstructiveEarlyExactDecisionTest extends ConstructiveModelReplicaT
 		assertEquals(ExistenceGrade.EXISTENCE_EXACT, evidence.getGrade(), evidence.toString());
 		assertEquals(ContactEvidenceClass.CONTACT_EXISTENCE_EXACT, evidence.getContactEvidence());
 		assertEquals(order, evidence.getContactOrder(), evidence.toString());
-		assertEquals(ConstructiveAdmission.NOT_ESTABLISHED, evidence.getConstructiveAdmission());
+		// PRE-G9B-CU3 CU3-B1: only a contact anchored at a certified fold is admitted.
+		boolean anchored = solution.getRevisionEvidence().getCurrentRootGerm()
+				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")).isPresent();
+		assertEquals(anchored ? ConstructiveAdmission.STRICT
+				: ConstructiveAdmission.NOT_ESTABLISHED, evidence.getConstructiveAdmission());
 	}
 
 	private static IntersectionExistenceEvidence2D evidence(LocusIntersectionSolution2D solution) {

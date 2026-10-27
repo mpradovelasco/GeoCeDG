@@ -174,7 +174,8 @@ public final class PublicIntersectionRootIdentityResolver2D {
 					currentRoot.componentLineage, continuationContract,
 					currentRoot.selector, addressProof,
 					finiteRootsByComponent.getOrDefault(
-							currentRoot.componentLineage, 0) == 1);
+							currentRoot.componentLineage, 0) == 1
+							&& !currentRoot.selector.isFoldContact());
 			boolean reused = allocation.isReused();
 			boolean continuityEstablished = transition
 					.priorFor(currentRoot.solution)
@@ -340,6 +341,12 @@ public final class PublicIntersectionRootIdentityResolver2D {
 					&& solution.getClassification().getContactClass()
 							!= ContactClass.TRANSVERSE_ESTABLISHED;
 			if (!split && !merge) {
+				continue;
+			}
+			if (solution.getRevisionEvidence().getCurrentRootGerm()
+					.filter(FoldContactAnchor2D::isGerm).isPresent()) {
+				// A fold-anchored root keeps its exact selector across a pair-contact
+				// transition (CU3-B1 design section 4); only unanchored roots are guarded.
 				continue;
 			}
 			ComponentAddress address = component(definition,
@@ -991,8 +998,10 @@ public final class PublicIntersectionRootIdentityResolver2D {
 		return !result.getSourceBinding().isLocusPair()
 				&& evidence.getLocalIsolationStatus()
 						== LocalIsolationStatus.ESTABLISHED
-				&& solution.getClassification().getContactClass()
+				&& (solution.getClassification().getContactClass()
 						== ContactClass.TRANSVERSE_ESTABLISHED
+						|| evidence.getCurrentRootGerm()
+								.filter(FoldContactAnchor2D::isGerm).isPresent())
 				&& !solution.getPairEvidence().isPresent()
 				&& (event == LineageEventKind.APPEARED
 						|| event == LineageEventKind.UNCHANGED)
