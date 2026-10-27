@@ -4,7 +4,7 @@
 |---|---|
 | Carácter | Puerta normativa y arquitectónica de `CU3-B1` (instrucción autoral de 2026-10-27, §6.2). Diseño previo al código; no es una aprobación del resultado |
 | Autoridad | decisiones R1–R6 aprobadas el 2026-10-27 ([hoja de decisiones](pre_g9b_cu3_b_decision_sheet.md)); [ADR 0039](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md), decisión 3 enmendada; [diseño de la Etapa B](pre_g9b_cu3_stage_b_tangent_contact_certification_design.md) §6.1 enmendado; [revisión de identidad](pre_g9b_cu3_b_identity_architecture_review.md) P1–P3; ADR 0017 y ADR 0040 |
-| Base | `CU3-A` `PASS — AUTHOR APPROVED` sobre `f61f2954` ([registro de cierre](../validation/pre_g9b_cu3_a_closeout_record.md)) |
+| Base | candidato `CU3-A` `f61f2954`, con su cierre preparado y en suspenso, sin `PASS — AUTHOR APPROVED`, hasta la disposición final de `OBS-CU3A-SMOKE-01` ([expediente de cierre](../validation/pre_g9b_cu3_a_closeout_record.md)) |
 | Alcance | solo contactos en pliegues certificados. `CU3-B2` (tangencias regulares) no está autorizado |
 | `selfApproved` | `false` |
 

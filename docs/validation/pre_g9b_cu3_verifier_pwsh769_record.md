@@ -10,7 +10,7 @@
 
 - **Origen:** commit `08776f45` de la rama local `maintenance/pre-g9b-cu3-verifier-pwsh769`.
 - **Incorporación:** commit propio `48f0d2ce` (`cherry-pick -x`) en la rama
-  `phase/pre-g9b-cu3-implementation`, después del candidato y del cierre de `CU3-A`, sin mezclarse
+  `phase/pre-g9b-cu3-implementation`, después del candidato y del expediente de cierre de `CU3-A`, sin mezclarse
   con cambios geométricos.
 - **Qué cambia.** `Assert-VerificationJsonSchema` da a todo rechazo de esquema, lanzado o devuelto
   por `Test-Json`, la identidad estable `VerificationJsonSchemaRejected`, con categoría
