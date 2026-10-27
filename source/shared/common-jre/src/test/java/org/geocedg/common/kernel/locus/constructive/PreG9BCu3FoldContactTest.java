@@ -242,7 +242,108 @@ final class PreG9BCu3FoldContactTest extends ConstructiveModelReplicaTest {
 				"B1-12: the ledger keeps version 4");
 	}
 
+	@Test
+	void b1x11ReopeningRaisesOnlyTheHighWaterMarkOfIncarnations() {
+		GeoLocusIntersectionResult result = segment(1.9999, true);
+		claim(result);
+		List<String> anchoredTokens = tokens(rich(result));
+		String first = result.getTokenLedgerState();
+
+		getApp().setXML(getApp().getXML(), true);
+		String second = result().getTokenLedgerState();
+		getApp().setXML(getApp().getXML(), true);
+		String third = result().getTokenLedgerState();
+		assertEquals(entries(first), entries(second), "the entries survive each reopening");
+		assertEquals(entries(second), entries(third));
+		assertTrue(highWater(first) <= highWater(second) && highWater(second) <= highWater(third),
+				"the high-water mark is monotone and only reserves incarnations");
+		assertEquals(anchoredTokens, tokens(rich(result())), "durable identity unchanged");
+
+		move(-1.9999);
+		List<String> later = tokens(rich(result()));
+		assertEquals(1, later.size());
+		assertFalse(anchoredTokens.contains(later.get(0)),
+				"a later allocation is fresh and never reuses an identity");
+		move(1.9999);
+		assertEquals(anchoredTokens, tokens(rich(result())), "the claimed anchor reactivates");
+		assertTrue(((GeoPoint) lookup("X")).isDefined());
+	}
+
+	@Test
+	void b1x14DuplicationMintsFreshIdentities() {
+		GeoLocusIntersectionResult result = segment(1.9999, true);
+		GeoPoint point = claim(result);
+		String token = tokens(rich(result)).get(0);
+		int count = getConstruction().getGeoSetConstructionOrder().size();
+
+		org.geogebra.common.util.InternalClipboard.duplicate(getApp(),
+				List.of(result, point));
+
+		assertTrue(getConstruction().getGeoSetConstructionOrder().size() > count);
+		GeoLocusIntersectionResult copy = (GeoLocusIntersectionResult) lookup("R_{1}");
+		List<LocusIntersectionSolution2D> anchored = fold(rich(copy));
+		assertEquals(1, anchored.size(), "B1-14: the copy anchors at the same fold");
+		assertNotEquals(token, anchored.get(0).getIdentity().getRootToken(),
+				"B1-14: fresh closure, no identity is reused");
+		assertTrue(((GeoPoint) lookup("X_{1}")).isDefined());
+		assertEquals(List.of(token), tokens(rich(result())), "the original keeps its identity");
+		assertTrue(point.isDefined());
+	}
+
+	@Test
+	void b1x16RedefinitionsTreatAnchoredAndTransverseSelectorsAlike() {
+		for (boolean adopt : new boolean[] {true, false}) {
+			getApp().getKernel().clearConstruction(true);
+			GeoLocusIntersectionResult result = segment(adopt ? 1.9995 : 1.99, adopt);
+			assertEquals(adopt, !fold(rich(result)).isEmpty());
+			claim(result);
+			String token = rich(result).getFiniteSolutions().stream()
+					.map(solution -> solution.getIdentity().getRootToken())
+					.filter(result::isPointAdmissible).findFirst().orElseThrow();
+
+			redefine("g", "Line(A,Line((0,0),(0.0001,1)))");
+			assertTrue(tokens(rich(result())).contains(token),
+					"B1-16: a redefined target keeps the selector and the token, adopt=" + adopt);
+			assertTrue(((GeoPoint) lookup("X")).isDefined());
+
+			redefine("g", "Line(A,Line((0,0),(0.01,1)))");
+			assertFalse(tokens(rich(result())).contains(token));
+			assertFalse(((GeoPoint) lookup("X")).isDefined(),
+					"B1-16: no root, the claim is latent, adopt=" + adopt);
+
+			redefine("g", "Line(A,Line((0,0),(0,1)))");
+			assertTrue(tokens(rich(result())).contains(token),
+					"B1-16: never reassociated, the same selector reactivates, adopt=" + adopt);
+			assertTrue(((GeoPoint) lookup("X")).isDefined());
+		}
+	}
+
+	@Test
+	void b1x18TheRegularTangencyOfTheReplicaStaysOutsideCu3B1() {
+		buildAuthorReplica();
+		add("U=Intersect(o_1,h_2)");
+		AuthorityPolicyAdoption.adopt(getConstruction());
+
+		GeoLocusIntersectionResult result = (GeoLocusIntersectionResult) lookup("U");
+		assertTrue(fold(rich(result)).isEmpty(), "o_1 has no fold: CU3-B2, not authorized");
+		for (LocusIntersectionSolution2D solution : rich(result).getFiniteSolutions()) {
+			assertFalse(result.isPointAdmissible(solution.getIdentity().getRootToken()),
+					"a regular tangency is not admitted by CU3-B1");
+		}
+	}
+
 	// ---------------------------------------------------------------- helpers
+
+	private void redefine(String label, String definition) {
+		getApp().getKernel().getAlgebraProcessor().changeGeoElement(lookup(label), definition,
+				true, false, org.geogebra.common.main.error.ErrorHelper.silent(), null);
+		assertTrue(lookup(label).getDefinitionForInputBar().replace(" ", "")
+				.endsWith(definition), "redefined as " + definition);
+	}
+
+	private static long highWater(String state) {
+		return Long.parseLong(state.split("\\|")[1]);
+	}
 
 	private GeoLocusIntersectionResult segment(double a, boolean adopt) {
 		add("c=Circle((0,0),2)");
