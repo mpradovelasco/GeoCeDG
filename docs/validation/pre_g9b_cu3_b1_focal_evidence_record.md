@@ -117,7 +117,10 @@ Prueba: `b1x11ReopeningRaisesOnlyTheHighWaterMarkOfIncarnations`.
 
 Usa una copia de `C:\Temp\InterCilConoOblique-K1-contragiro.cedg` (o del original), en GeoCeDG del candidato.
 
-1. **Adopción.** Escribe `S = Intersect(e_1, c_1)` y acepta la autoridad constructiva. `S` muestra la costura y el contacto en `t = 0`, ambos con «Solución anclada en un pliegue».
+1. **Adopción.** La autoridad constructiva se ofrece solo al pedir un punto estructural con conductor. Un `Intersect(L, r)` sin conductor se crea con la política del documento, sin preguntar.
+   - Escribe en la Entrada `X1 = Intersect(e_1, n, K)` y acepta el diálogo «Autoridad constructiva».
+   - Escribe después `S = Intersect(e_1, c_1)`. Debe mostrar la costura y el contacto en `t = 0`, ambos con «Solución anclada en un pliegue».
+   - Sin adopción se ve el comportamiento heredado: solo la raíz de la costura es materializable y aparece y desaparece al barrer `α_cone`. Es lo que `CU3-B1` corrige.
 2. **Materialización.** Crea un punto con `Intersect(e_1, c_1, <token>)`, copiando el token de la solución en `t = 0`: debe quedar sobre el contacto.
 3. **Arrastre.** Mueve `rbCone` y `α_cone` por todo su recorrido. El punto sigue al contacto o queda indefinido, sin saltar nunca a otra raíz, y vuelve al regresar.
 4. **Duplicado.** Duplica `S` y el punto: la copia tiene su propio token.
