@@ -97,12 +97,27 @@ la estación existente, offline, sin instalaciones ni descargas.
 
 ### 2.3 STATIC y revisión final
 
-La verificación canónica aplicable se ejecuta sobre el commit guardado, mediante
-`tools/agent/verify.ps1 -Profile STATIC`, con directorio único bajo
-`artifacts/pre-g9b-cu7-d/`. Su resultado/identidad exacta se añade tras la ejecución, sin
-atribuirle aprobación del diseño. No se sustituye por una invocación de un perfil DEV incompleto.
+Verificación canónica ejecutada:
 
-Revisión focal completada: 7 documentos nuevos, **42 enlaces relativos existentes**, JSON
+```powershell
+& tools/agent/verify.ps1 -Profile STATIC -LogDirectory 'artifacts/pre-g9b-cu7-d/static-design-01'
+```
+
+Exit **0**, `ACCEPTED / COMPLETE`, run
+`verification-2d1e83b58c4148d78d46b1586d8f61f5`, sobre el candidato guardado
+`0bd0221607f058a25e20e99c040ec8f3f52aa9be`, árbol
+`ef624765f0e81389ae1f3f9c049bb7e77e8f69c5`.
+[Resultado y logs canónicos](../../artifacts/pre-g9b-cu7-d/static-design-01/verification-result.json).
+Tres resultados de aceptación SAFETY/SEMANTIC; sin rechazo ni cobertura incompleta.
+
+El diagnóstico de gobernanza indica el contexto heredado del protocolo temporal de recuperación
+(`DIAGNOSTIC_FINDING`, 1); el histórico declara sus proyecciones no disponibles como maquinaria
+de aceptación (`DIAGNOSTIC_UNAVAILABLE`). Se conservan explícitos; no cambian aceptación, no
+otorgan aprobación autoral y no justifican tocar el verificador. Documentación, guía y estilo
+quedan `DIAGNOSTIC_CLEAR`. La entrega informa por separado la comprobación STATIC del
+descendiente documental que incorpora este registro. No se usa el perfil DEV incompleto.
+
+Revisión focal completada: 7 documentos nuevos, **45 enlaces relativos existentes**, JSON
 parseado, 24 observaciones y hashes de la sonda coincidentes; exit 0,
 [registro](../../artifacts/pre-g9b-cu7-d/document-review.json). `git diff --check` exit 0;
 sin cambios en `source/`; main permanece en la base.
