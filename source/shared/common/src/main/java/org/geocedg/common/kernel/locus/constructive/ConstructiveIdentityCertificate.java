@@ -185,6 +185,7 @@ public final class ConstructiveIdentityCertificate {
 	private final Scope scope;
 	private final ContactOrder contactOrder;
 	private final int[] derivativeSigns;
+	private final int canonicalContactSide;
 	private final ConstructiveIdentityCounters counters;
 	private final ConstructiveIdentityArithmetic arithmetic;
 	private final ConstructiveIdentityRecheckMemory recheckMemory =
@@ -203,6 +204,7 @@ public final class ConstructiveIdentityCertificate {
 		scope = builder.scope;
 		contactOrder = builder.contactOrder;
 		derivativeSigns = builder.derivativeSigns.clone();
+		canonicalContactSide = builder.canonicalContactSide;
 		counters = builder.counters;
 		arithmetic = builder.arithmetic;
 	}
@@ -235,6 +237,18 @@ public final class ConstructiveIdentityCertificate {
 			throw new IllegalArgumentException("order " + order);
 		}
 		return derivativeSigns[order - 1];
+	}
+
+	/**
+	 * The side of a regular tangent contact (PRE-G9B-CU3 increment {@code CU3-B2}, design
+	 * section 3): the certified sign of {@code h''(t0)} with the canonical orientation of the
+	 * target, the sign of the relative curvature along its canonical normal.
+	 *
+	 * @return {@code 1} or {@code -1}, or {@code 0} when the contact is not a certified regular
+	 *         tangency or the canonical orientation is not decided
+	 */
+	public int getCanonicalContactSide() {
+		return canonicalContactSide;
 	}
 
 	/** @return the relation, in a report only */
@@ -355,6 +369,7 @@ public final class ConstructiveIdentityCertificate {
 		private ContactOrder contactOrder;
 		private final int[] derivativeSigns = {ConstructiveArithmetic.UNDECIDED,
 				ConstructiveArithmetic.UNDECIDED};
+		private int canonicalContactSide;
 		private ConstructiveIdentityCounters counters;
 		private ConstructiveIdentityArithmetic arithmetic;
 
@@ -367,6 +382,14 @@ public final class ConstructiveIdentityCertificate {
 			contactOrder = value;
 			derivativeSigns[0] = first;
 			derivativeSigns[1] = second;
+			return this;
+		}
+
+		Builder canonicalContactSide(int side) {
+			if (side < -1 || side > 1) {
+				throw new IllegalArgumentException("The side is a sign");
+			}
+			canonicalContactSide = side;
 			return this;
 		}
 

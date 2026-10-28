@@ -325,10 +325,13 @@ final class PreG9BCu3FoldContactTest extends ConstructiveModelReplicaTest {
 		AuthorityPolicyAdoption.adopt(getConstruction());
 
 		GeoLocusIntersectionResult result = (GeoLocusIntersectionResult) lookup("U");
-		assertTrue(fold(rich(result)).isEmpty(), "o_1 has no fold: CU3-B2, not authorized");
+		assertTrue(fold(rich(result)).isEmpty(), "o_1 has no fold: never a fold anchor");
 		for (LocusIntersectionSolution2D solution : rich(result).getFiniteSolutions()) {
-			assertFalse(result.isPointAdmissible(solution.getIdentity().getRootToken()),
-					"a regular tangency is not admitted by CU3-B1");
+			// Explicit inversion by CU3-B2: the regular tangency is admitted only through its
+			// regular tangent germ, never through a fold anchor of CU3-B1.
+			assertEquals(germ(solution).startsWith("pre-g9b-cu3/regular-tangent-germ/v1/"),
+					result.isPointAdmissible(solution.getIdentity().getRootToken()),
+					"a regular tangency is admitted only as a regular tangent contact");
 		}
 	}
 

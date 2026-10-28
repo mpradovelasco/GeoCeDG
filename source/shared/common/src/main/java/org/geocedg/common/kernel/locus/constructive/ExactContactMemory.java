@@ -25,6 +25,7 @@ final class ExactContactMemory {
 	static final class Decision {
 		private final ContactOrder order;
 		private final int curvature;
+		private final int side;
 		private final String description;
 
 		/**
@@ -34,9 +35,23 @@ final class ExactContactMemory {
 		 * @param description a description of the certificates
 		 */
 		Decision(ContactOrder order, int curvature, String description) {
+			this(order, curvature, 0, description);
+		}
+
+		/**
+		 * @param side the certified side of a regular tangent contact with the canonical
+		 *        orientation of the target, or {@code 0} (PRE-G9B-CU3 increment {@code CU3-B2})
+		 */
+		Decision(ContactOrder order, int curvature, int side, String description) {
 			this.order = order;
 			this.curvature = curvature;
+			this.side = side;
 			this.description = Objects.requireNonNull(description);
+		}
+
+		/** @return the certified canonical side of a regular tangent contact, or {@code 0} */
+		int getSide() {
+			return side;
 		}
 
 		/** @return the order of contact, or {@code null} when there is no exact contact */

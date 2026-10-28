@@ -735,10 +735,17 @@ public final class LocusIntersectionTokenLedger2D {
 				.isPresent();
 	}
 
+	/** @return whether the entry is a regular tangent contact of CU3-B2 (ledger v6 kind T) */
+	private static boolean isRegularTangent(Entry entry) {
+		return entry.currentRootBinding.filter(binding ->
+				binding.selector.isRegularTangentContact()).isPresent();
+	}
+
+	/** @return whether the snapshot has a contact entry, of kind F or T, of ledger v6 */
 	private static boolean hasFoldContactEntries(Snapshot snapshot) {
 		if (snapshot != null) {
 			for (Entry entry : snapshot.entries) {
-				if (isFoldContact(entry)) {
+				if (isFoldContact(entry) || isRegularTangent(entry)) {
 					return true;
 				}
 			}
@@ -770,7 +777,7 @@ public final class LocusIntersectionTokenLedger2D {
 				&& !hasFoldContactEntries(parsedCurrent)
 				&& !hasFoldContactEntries(parsedCopySource)) {
 			throw new IllegalArgumentException(
-					"Fold-contact format requires a fold-contact entry");
+					"Ledger v6 requires a contact entry");
 		}
 		if (parsedCurrent == null && parsedCopySource != null) {
 			throw new IllegalArgumentException(
@@ -2338,9 +2345,9 @@ public final class LocusIntersectionTokenLedger2D {
 			if (FOLD_CONTACT_FORMAT_VERSION.equals(version)) {
 				// The entry-kind discriminator of ledger v6 (CU3-B1 design section 5).
 				encoded.append(entry.pairRootBinding.isPresent() ? "P,"
-						: isFoldContact(entry) ? "F," : "S,");
-			} else if (isFoldContact(entry)) {
-				throw new IllegalArgumentException("Fold-contact entries require ledger v6");
+						: isFoldContact(entry) ? "F," : isRegularTangent(entry) ? "T," : "S,");
+			} else if (isFoldContact(entry) || isRegularTangent(entry)) {
+				throw new IllegalArgumentException("Contact entries require ledger v6");
 			} else if (PAIR_FORMAT_VERSION.equals(version)) {
 				encoded.append(entry.pairRootBinding.isPresent() ? "P," : "S,");
 			} else if (entry.pairRootBinding.isPresent()) {
@@ -2405,7 +2412,7 @@ public final class LocusIntersectionTokenLedger2D {
 					continue;
 				}
 				kind = entry[0];
-				if (entry.length != 11 || !("S".equals(kind) || "F".equals(kind)
+				if (entry.length != 11 || !("S".equals(kind) || ("F".equals(kind) || "T".equals(kind))
 						&& FOLD_CONTACT_FORMAT_VERSION.equals(version))) {
 					throw new IllegalArgumentException("Malformed ledger entry variant");
 				}
@@ -2448,7 +2455,8 @@ public final class LocusIntersectionTokenLedger2D {
 					addressProof,
 					parsePositiveLong(entry[1], "entry incarnation"),
 					Status.parse(entry[0], version), binding);
-			if (kind != null && "F".equals(kind) != isFoldContact(decoded)) {
+			if (kind != null && ("F".equals(kind) != isFoldContact(decoded)
+					|| "T".equals(kind) != isRegularTangent(decoded))) {
 				throw new IllegalArgumentException(
 						"Ledger entry kind disagrees with its root selector");
 			}

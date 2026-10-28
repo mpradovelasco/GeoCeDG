@@ -30,6 +30,7 @@ public final class ExactContactEvidence2D {
 	private final ContactOrder order;
 	private final int curvature;
 	private final String description;
+	private final int side;
 
 	/**
 	 * @param parameter the exact parameter, such as {@code 0}, {@code pi/2}, {@code pi} or
@@ -63,6 +64,36 @@ public final class ExactContactEvidence2D {
 		this.order = Objects.requireNonNull(order);
 		this.curvature = curvature;
 		this.description = Objects.requireNonNull(description);
+		this.side = 0;
+	}
+
+	private ExactContactEvidence2D(ExactContactEvidence2D evidence, int side) {
+		this.parameter = evidence.parameter;
+		this.lower = evidence.lower;
+		this.upper = evidence.upper;
+		this.evidence = evidence.evidence;
+		this.order = evidence.order;
+		this.curvature = evidence.curvature;
+		this.description = evidence.description;
+		this.side = side;
+	}
+
+	/**
+	 * @param canonicalSide the certified sign of {@code h''(t0)} with the canonical orientation of
+	 *        the target, or {@code 0} (PRE-G9B-CU3 increment {@code CU3-B2}, design section 3)
+	 * @return this evidence with the side of a regular tangent contact; only an order {@code TWO}
+	 *         carries one
+	 */
+	public ExactContactEvidence2D withCanonicalSide(int canonicalSide) {
+		if (canonicalSide < -1 || canonicalSide > 1) {
+			throw new IllegalArgumentException("The side is a sign");
+		}
+		return new ExactContactEvidence2D(this, order == ContactOrder.TWO ? canonicalSide : 0);
+	}
+
+	/** @return the certified canonical side of a regular tangent contact, or {@code 0} */
+	public int getCanonicalSide() {
+		return side;
 	}
 
 	/** @return the exact parameter */

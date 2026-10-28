@@ -270,7 +270,7 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 				contacts.add(new ExactContactEvidence2D(QUARTERS[quarter], enclosure[0],
 						enclosure[1], ContactEvidenceClass.CONTACT_EXISTENCE_EXACT,
 						decision.getOrder(), decision.getCurvature(),
-						decision.getDescription()));
+						decision.getDescription()).withCanonicalSide(decision.getSide()));
 			}
 		}
 		return contacts;
@@ -339,6 +339,7 @@ public final class ConstructiveResidualJetSource implements ResidualJetSource2D 
 		}
 		int second = certificate.getResidualDerivativeSign(2);
 		return new ExactContactMemory.Decision(order, second == 1 || second == -1 ? second : 0,
+				order == ContactOrder.TWO ? certificate.getCanonicalContactSide() : 0,
 				description);
 	}
 

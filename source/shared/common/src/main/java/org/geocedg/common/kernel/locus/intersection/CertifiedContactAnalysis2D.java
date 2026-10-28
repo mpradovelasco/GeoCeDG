@@ -30,6 +30,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LocalIsolationStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.MultiplicityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SolverMethod;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetFamily;
 
 /**
  * Existence grades, contact evidence and the conflict rule of {@code cu3-certified-admission/v1},
@@ -440,12 +441,17 @@ final class CertifiedContactAnalysis2D {
 						+ exact.getParameter() + ": " + evidence);
 			}
 		}
+		RegularTangentAnchor2D regular = regularAnchor(context, source, window, exact, root);
+		if (regular != null) {
+			replacement = regularAnchored(replacement, regular, lower, upper, window);
+		}
 		Entry created = new Entry(replacement);
 		created.state = State.CERTIFIED;
 		created.grade = ExistenceGrade.EXISTENCE_EXACT;
 		created.certificate = certificate;
 		created.contact = exact.getEvidence();
 		created.order = exact.getOrder();
+		created.regular = regular;
 		if (kept != null) {
 			kept.withdraw(diagnostics, "reclassified as the one double root at the exact"
 					+ " parameter " + exact.getParameter() + " (" + exact.getOrder() + "): "
@@ -458,6 +464,81 @@ final class CertifiedContactAnalysis2D {
 						+ exact.getEvidence() + ", order " + exact.getOrder()
 						+ (kept == null ? " without a published candidate" : "") + ": "
 						+ evidence));
+	}
+
+	/**
+	 * The anchor of a regular tangent contact of PRE-G9B-CU3 increment {@code CU3-B2} (CU3-B2
+	 * design sections 2 and 12.1), only under the constructive authority: an exact double root of
+	 * order two, so of class 1 or 2 at a regular source (the exact jet of the trace has a nonzero
+	 * speed) with {@code h''(t0)} certified away from zero, isolated by the one-double-root
+	 * certificate, interior to its component and away from every certified fold, on an unbounded
+	 * line or a circle target, whose side with the canonical orientation of the target is
+	 * certified.
+	 *
+	 * @return the anchor, or {@code null} when a precondition is not established
+	 */
+	private static RegularTangentAnchor2D regularAnchor(IntersectionCapabilityContext2D context,
+			ResidualJetSource2D source, Window window, ExactContactEvidence2D exact,
+			double[] root) {
+		if (!source.isConstructive() || exact.getOrder() != ContactOrder.TWO) {
+			return null;
+		}
+		TargetFamily family = context.getTarget().getFamily();
+		if (family != TargetFamily.LINE && family != TargetFamily.CIRCLE) {
+			// A bounded target needs its bounded part decided exactly (P1); not in CU3-B2.
+			return null;
+		}
+		if (!window.periodic && !(window.lower < root[0] && root[1] < window.upper)) {
+			return null;
+		}
+		if (atAnyCertifiedFold(context, root)) {
+			return null;
+		}
+		return RegularTangentAnchor2D.of(exact.getCanonicalSide());
+	}
+
+	/** @return whether the enclosure meets a certified fold of any branch of the source */
+	private static boolean atAnyCertifiedFold(IntersectionCapabilityContext2D context,
+			double[] root) {
+		for (LocusBranch2D branch : context.getDefinition().getBranches()) {
+			for (LocusCertifiedFold2D fold : branch.getExistenceStructure()
+					.getCertifiedFolds()) {
+				if (fold.getParameterLower() <= root[1] && fold.getParameterUpper() >= root[0]) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * The candidate of a regular tangent contact: the box of the one-double-root certificate as
+	 * isolating interval, established isolation and the anchor as revision-local marker, from
+	 * which the capability makes its germ.
+	 */
+	private static IntersectionCandidate2D regularAnchored(IntersectionCandidate2D candidate,
+			RegularTangentAnchor2D anchor, double lower, double upper, Window window) {
+		double parameter = candidate.getSemanticParameter();
+		IntersectionParameterInterval2D interval = new IntersectionParameterInterval2D(parameter,
+				parameter);
+		for (int shift = -1; shift <= 1; shift++) {
+			double offset = shift * window.period;
+			if (lower + offset <= parameter && parameter <= upper + offset) {
+				interval = new IntersectionParameterInterval2D(lower + offset, upper + offset);
+				break;
+			}
+		}
+		List<IntersectionDiagnostic2D> diagnostics = new ArrayList<>(candidate.getDiagnostics());
+		diagnostics.add(new IntersectionDiagnostic2D(DiagnosticCode.REGULAR_CONTACT_ANCHORED,
+				"Candidate anchored as a " + anchor));
+		IntersectionCandidate2D anchored = new IntersectionCandidate2D(candidate.getBranchKey(),
+				candidate.getComponentKey(), parameter, OptionalDouble.empty(), interval,
+				LocalIsolationStatus.ESTABLISHED, Optional.of(anchor.marker()),
+				candidate.getContactClass(), candidate.getMultiplicityStatus(),
+				candidate.getEstablishedMultiplicity(), candidate.getSolverMethod(),
+				candidate.getNumericGuarantee(), LineageEventKind.APPEARED,
+				Collections.emptyList(), diagnostics);
+		return anchored.withExistenceEvidence(candidate.getExistenceEvidence());
 	}
 
 	/**
@@ -842,6 +923,7 @@ final class CertifiedContactAnalysis2D {
 		private ContactOrder order;
 		private RootCountCertificate2D certificate;
 		private FoldContactAnchor2D anchor;
+		private RegularTangentAnchor2D regular;
 
 		Entry(IntersectionCandidate2D candidate) {
 			this.candidate = candidate;
@@ -899,9 +981,10 @@ final class CertifiedContactAnalysis2D {
 		 */
 		private ConstructiveAdmission admission(IntersectionCapabilityContext2D context,
 				ResidualJetSource2D source) {
-			if (anchor != null) {
+			if (anchor != null || regular != null) {
 				// A fold-anchored solution exists by a certified form with exact or certified
-				// evidence (CU3-B1 design section 4); class 3 to 5 never anchors one.
+				// evidence (CU3-B1 design section 4), a regular tangent contact by an exact
+				// double root (CU3-B2 design section 2); class 3 to 5 never anchors one.
 				return grade == ExistenceGrade.EXISTENCE_EXACT
 						|| grade == ExistenceGrade.EXISTENCE_CERTIFIED
 								? ConstructiveAdmission.STRICT

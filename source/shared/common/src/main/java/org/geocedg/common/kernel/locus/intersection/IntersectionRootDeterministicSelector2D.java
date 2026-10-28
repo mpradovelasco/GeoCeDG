@@ -185,6 +185,14 @@ public final class IntersectionRootDeterministicSelector2D
 		return FoldContactAnchor2D.isGerm(currentRootGerm);
 	}
 
+	/**
+	 * @return whether the germ is a regular tangent contact germ of PRE-G9B-CU3 increment
+	 *         CU3-B2; unlike a fold label it may need intrinsic phase and rank (D-B2-6)
+	 */
+	public boolean isRegularTangentContact() {
+		return RegularTangentAnchor2D.isGerm(currentRootGerm);
+	}
+
 	/** @return whether this selector needed intrinsic phase disambiguation */
 	public boolean hasIntrinsicPhase() {
 		return phase != null;

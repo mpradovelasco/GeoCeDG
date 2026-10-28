@@ -61,8 +61,12 @@ final class ConstructiveEarlyExactDecisionTest extends ConstructiveModelReplicaT
 		assertDoubleRoot(contact);
 		assertTrue(evidence(contact).getCertificate().startsWith("ONE_DOUBLE"),
 				evidence(contact).getCertificate());
-		assertFalse(adopted.isPointAdmissible(token(contact)), "a contact is not admitted for"
-				+ " point consumption before CU3-B");
+		// Explicit inversion by CU3-B2: the exact double root of order two is a regular tangent
+		// contact, admitted for point consumption through its regular tangent germ only.
+		assertEquals(contact.getRevisionEvidence().getCurrentRootGerm()
+				.filter(germ -> germ.startsWith("pre-g9b-cu3/regular-tangent-germ/v1/"))
+				.isPresent(), adopted.isPointAdmissible(token(contact)),
+				"a contact is admitted for point consumption only as a regular tangent contact");
 		assertTrue(contactDiagnostics(contact).contains("Root-count certificate of "
 				+ CertifiedAdmissionPolicy2D.CONSTRUCTIVE_VERSION + ": one double root"),
 				contactDiagnostics(contact));
@@ -202,9 +206,12 @@ final class ConstructiveEarlyExactDecisionTest extends ConstructiveModelReplicaT
 		assertEquals(ExistenceGrade.EXISTENCE_EXACT, evidence.getGrade(), evidence.toString());
 		assertEquals(ContactEvidenceClass.CONTACT_EXISTENCE_EXACT, evidence.getContactEvidence());
 		assertEquals(order, evidence.getContactOrder(), evidence.toString());
-		// PRE-G9B-CU3 CU3-B1: only a contact anchored at a certified fold is admitted.
+		// PRE-G9B-CU3 CU3-B1 and CU3-B2: only a contact anchored at a certified fold or as a
+		// certified regular tangent contact of order two is admitted.
 		boolean anchored = solution.getRevisionEvidence().getCurrentRootGerm()
-				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")).isPresent();
+				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")
+						|| germ.startsWith("pre-g9b-cu3/regular-tangent-germ/v1/")
+								&& order == ContactOrder.TWO).isPresent();
 		assertEquals(anchored ? ConstructiveAdmission.STRICT
 				: ConstructiveAdmission.NOT_ESTABLISHED, evidence.getConstructiveAdmission());
 	}

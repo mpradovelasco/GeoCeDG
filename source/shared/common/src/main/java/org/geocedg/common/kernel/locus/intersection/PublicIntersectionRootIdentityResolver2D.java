@@ -344,9 +344,11 @@ public final class PublicIntersectionRootIdentityResolver2D {
 				continue;
 			}
 			if (solution.getRevisionEvidence().getCurrentRootGerm()
-					.filter(FoldContactAnchor2D::isGerm).isPresent()) {
+					.filter(germ -> FoldContactAnchor2D.isGerm(germ)
+							|| RegularTangentAnchor2D.isGerm(germ)).isPresent()) {
 				// A fold-anchored root keeps its exact selector across a pair-contact
-				// transition (CU3-B1 design section 4); only unanchored roots are guarded.
+				// transition (CU3-B1 design section 4), and a certified regular tangent contact
+				// its own germ (CU3-B2 design section 5); only unanchored roots are guarded.
 				continue;
 			}
 			ComponentAddress address = component(definition,
@@ -1001,7 +1003,8 @@ public final class PublicIntersectionRootIdentityResolver2D {
 				&& (solution.getClassification().getContactClass()
 						== ContactClass.TRANSVERSE_ESTABLISHED
 						|| evidence.getCurrentRootGerm()
-								.filter(FoldContactAnchor2D::isGerm).isPresent())
+								.filter(germ -> FoldContactAnchor2D.isGerm(germ)
+										|| RegularTangentAnchor2D.isGerm(germ)).isPresent())
 				&& !solution.getPairEvidence().isPresent()
 				&& (event == LineageEventKind.APPEARED
 						|| event == LineageEventKind.UNCHANGED)

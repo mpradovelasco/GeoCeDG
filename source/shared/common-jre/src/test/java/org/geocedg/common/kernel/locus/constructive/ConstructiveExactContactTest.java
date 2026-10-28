@@ -197,11 +197,14 @@ final class ConstructiveExactContactTest extends ConstructiveModelReplicaTest {
 		assertEquals(ContactEvidenceClass.CONTACT_EXISTENCE_EXACT, evidence.getContactEvidence());
 		assertEquals(order, evidence.getContactOrder(), evidence.toString());
 		boolean anchored = solution.getRevisionEvidence().getCurrentRootGerm()
-				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")).isPresent();
+				.filter(germ -> germ.startsWith("pre-g9b-cu3/fold-contact-germ/v1/")
+						|| germ.startsWith("pre-g9b-cu3/regular-tangent-germ/v1/")
+								&& order == ContactOrder.TWO).isPresent();
 		assertEquals(anchored ? ConstructiveAdmission.STRICT
 				: ConstructiveAdmission.NOT_ESTABLISHED,
-				evidence.getConstructiveAdmission(), "PRE-G9B-CU3 CU3-B1: a contact is admitted"
-						+ " for point consumption only when it is anchored at a certified fold");
+				evidence.getConstructiveAdmission(), "PRE-G9B-CU3 CU3-B1 and CU3-B2: a contact is"
+						+ " admitted for point consumption only when it is anchored at a certified"
+						+ " fold or as a certified regular tangent contact of order two");
 	}
 
 	private static IntersectionExistenceEvidence2D evidence(LocusIntersectionSolution2D solution) {

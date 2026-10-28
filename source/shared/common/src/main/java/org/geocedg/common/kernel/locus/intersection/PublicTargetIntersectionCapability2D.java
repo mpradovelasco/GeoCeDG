@@ -158,6 +158,14 @@ public final class PublicTargetIntersectionCapability2D
 						finiteAuthority));
 				continue;
 			}
+			Optional<RegularTangentAnchor2D> regular = RegularTangentAnchor2D.fromMarker(
+					candidate.getContinuationKey());
+			if (regular.isPresent()) {
+				// A regular tangent contact of CU3-B2: its germ cites the target and the side.
+				publicCandidates.add(withRegularTangentGerm(context, candidate, regular.get(),
+						finiteAuthority));
+				continue;
+			}
 			Optional<String> germ = finiteAuthority
 					? transverseGerm(context, candidate) : Optional.empty();
 			publicCandidates.add(withCurrentRootGerm(context, candidate, germ));
@@ -245,6 +253,44 @@ public final class PublicTargetIntersectionCapability2D
 		return certified.withExistenceEvidence(candidate.getExistenceEvidence());
 	}
 
+	/**
+	 * The candidate of a regular tangent contact with its germ (CU3-B2 design section 4), or
+	 * without any germ when the result is not a finite authority; the revision-local marker of the
+	 * analysis never leaves the capability.
+	 */
+	private static IntersectionCandidate2D withRegularTangentGerm(
+			IntersectionCapabilityContext2D context, IntersectionCandidate2D candidate,
+			RegularTangentAnchor2D anchor, boolean finiteAuthority) {
+		Optional<String> germ = finiteAuthority ? Optional.of(anchor.germ(
+				LocusComponentLineage2D.identityKey(context.getDefinition()
+						.getBranch(candidate.getBranchKey()).getExistenceStructure(),
+						exactComponent(context, candidate)),
+				context.getTarget().getFamily().name())) : Optional.empty();
+		ArrayList<IntersectionDiagnostic2D> diagnostics =
+				new ArrayList<>(candidate.getDiagnostics());
+		if (germ.isPresent()) {
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.LOCAL_ISOLATION_ESTABLISHED,
+					"Captured the germ of the " + anchor + " as revision evidence; only a"
+							+ " unique current semantic selector may bind it to durable"
+							+ " identity"));
+		}
+		IntersectionCandidate2D enriched = new IntersectionCandidate2D(candidate.getBranchKey(),
+				candidate.getComponentKey(), candidate.getSemanticParameter(),
+				candidate.getLiftedPeriodicParameter(),
+				candidate.getIsolatingInterval(),
+				candidate.getLocalIsolationStatus(), germ,
+				candidate.getContactClass(), candidate.getMultiplicityStatus(),
+				candidate.getEstablishedMultiplicity(), candidate.getSolverMethod(),
+				candidate.getNumericGuarantee(), candidate.getLineageEventKind(),
+				candidate.getCandidateParentContinuationKeys(),
+				diagnostics);
+		IntersectionCandidate2D certified = candidate.getStructuralCertificate() == null
+				? enriched
+				: enriched.withStructuralCertificate(candidate.getStructuralCertificate());
+		return certified.withExistenceEvidence(candidate.getExistenceEvidence());
+	}
+
 	private static Optional<String> transverseGerm(
 			IntersectionCapabilityContext2D context,
 			IntersectionCandidate2D candidate) {
@@ -286,12 +332,15 @@ public final class PublicTargetIntersectionCapability2D
 	}
 
 	static boolean isCurrentPublicRootGerm(String key) {
-		return parseCurrentPublicRootGerm(key).isPresent() || FoldContactAnchor2D.isGerm(key);
+		return parseCurrentPublicRootGerm(key).isPresent() || FoldContactAnchor2D.isGerm(key)
+				|| RegularTangentAnchor2D.isGerm(key);
 	}
 
 	static boolean isCurrentPublicRootGermForComponent(String key,
 			String componentLineage) {
 		return FoldContactAnchor2D.germLineage(key).filter(componentLineage::equals).isPresent()
+				|| RegularTangentAnchor2D.germLineage(key).filter(componentLineage::equals)
+						.isPresent()
 				|| parseCurrentPublicRootGerm(key)
 				.filter(germ -> germ.componentLineage.equals(componentLineage))
 				.isPresent();
