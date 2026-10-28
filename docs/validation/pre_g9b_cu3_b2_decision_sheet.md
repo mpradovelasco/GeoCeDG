@@ -4,7 +4,7 @@
 |---|---|
 | Carácter | Hoja de decisiones de la puerta G-B2-0, para revisión autoral. Cada decisión tiene una recomendación concluyente; ninguna está aprobada |
 | Diseño | [diseño de `CU3-B2`](../architecture/pre_g9b_cu3_b2_regular_tangent_design.md); [enmiendas candidatas](../architecture/pre_g9b_cu3_b2_normative_proposal.md); [matriz](pre_g9b_cu3_b2_validation_matrix.md) |
-| Estado | pendiente de decisión autoral; implementación de `CU3-B2` no autorizada; `selfApproved=false` |
+| Estado | **decidida por el autor el 2026-10-28**: D-B2-1(a) a D-B2-7(a) aprobadas, con las precisiones P1 (regularidad de la tangencia: fuente, objetivo, dominio, pertenencia al objetivo limitado, aislamiento y continuidad; sin confundir una raíz doble en una fuente singular con una tangencia regular) y P2 (la corrección de `nextIncarnation` preserva unicidad, determinismo, reclamaciones, latencia, duplicación, Deshacer/Rehacer y reapertura, sin redefinir el contrato de identidad durable); D-B2-3 condicionada a que no se distribuya ningún lector v6 anterior; D-B2-4 limitada a eliminar reservas transitorias indebidas. Autorizada solo G-B2-1 ([expediente](pre_g9b_cu3_b2_g1_characterization_record.md)); implementación no autorizada; `selfApproved=false` |
 
 | Id | Decisión | Alternativas | Recomendación | Fundamento |
 |---|---|---|---|---|

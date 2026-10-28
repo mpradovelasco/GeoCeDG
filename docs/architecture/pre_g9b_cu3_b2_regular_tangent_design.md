@@ -6,7 +6,7 @@
 | Autoridad | instrucción autoral de 2026-10-28 (direcciones preferentes 1 a 4); R1–R6 ([hoja de decisiones de la Etapa B](pre_g9b_cu3_b_decision_sheet.md)); [ADR 0039](../adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md); [ADR 0017](../adr/0017-deterministic-intersection-phase-rank-identity.md); [ADR 0040](../adr/0040-constructive-geometric-authority-and-relation-integrity.md); [especificación de intersecciones](../../geocedg/specs/locus/locus-v2-intersections.md) §6.2, §8.3 y CU3.3 |
 | Base | `CU3-A` y `CU3-B1` `PASS — AUTHOR APPROVED` ([cierre de `CU3-B1`](../validation/pre_g9b_cu3_b1_closeout_record.md)); [informe de preparación](pre_g9b_cu3_b2_preparation_brief.md) |
 | Documentos de la puerta | este diseño; [hoja de decisiones de `CU3-B2`](../validation/pre_g9b_cu3_b2_decision_sheet.md); [enmiendas normativas candidatas](pre_g9b_cu3_b2_normative_proposal.md); [matriz de pruebas](../validation/pre_g9b_cu3_b2_validation_matrix.md) |
-| Estado | G-B2-0 entregado para revisión autoral; implementación de `CU3-B2` no autorizada; `CU3` global no aprobado; `selfApproved=false` |
+| Estado | G-B2-0 **aprobado con precisiones P1 y P2** por la decisión autoral de 2026-10-28 (D-B2-1(a) a D-B2-7(a)); G-B2-1 entregado ([expediente](../validation/pre_g9b_cu3_b2_g1_characterization_record.md); §12); G-B2-2 no autorizado; `CU3` global no aprobado; `selfApproved=false` |
 
 ## 1. Objeto y alcance
 
@@ -245,11 +245,68 @@ v7 (hoja de decisiones, D-B2-3).
 
 | Puerta | Contenido | Condición de superación | Estado |
 |---|---|---|---|
-| G-B2-0 | este diseño, la hoja de decisiones, las enmiendas candidatas y la matriz | revisión autoral y decisiones D-B2-1 a D-B2-7 | entregado |
-| G-B2-1 | sondas: alcance de la decisión exacta en tangencias regulares; tokens transversales alrededor de una tangencia; redefinición efectiva del soporte del conductor | informe de sondas sin contradicción con este diseño; matriz cerrada | no autorizado |
+| G-B2-0 | este diseño, la hoja de decisiones, las enmiendas candidatas y la matriz | revisión autoral y decisiones D-B2-1 a D-B2-7 | aprobado con precisiones (2026-10-28) |
+| G-B2-1 | sondas: alcance de la decisión exacta en tangencias regulares; tokens transversales alrededor de una tangencia; redefinición efectiva del soporte del conductor; reservas transitorias; fuentes singulares | informe de sondas sin contradicción con este diseño; matriz cerrada | entregado (§12) |
 | G-B2-2 | código: germen, `σ`, entrada `T`, estados del §5, diagnósticos | pruebas focales B2-1 a B2-20 | no autorizado |
 | G-B2-3 | verificación `INTEGRATED_PHASE` (`STATIC`, `INFRA_UNIT`, `PHASE` de `CU3` a `CU0`, `INTEGRATION`), rendimiento y corpus | `ACCEPTED / COMPLETE` | no autorizado |
 | G-B2-4 | smoke autoral con guía focal | `AUTHOR SMOKE — PASS` y decisión autoral | no autorizado |
 
 Las enmiendas normativas se aplican a las especificaciones y los ADR solo tras su aprobación, al
 inicio de G-B2-2.
+
+## 12. Resultados de G-B2-1 y precisiones autorales P1 y P2 (2026-10-28)
+
+Fuente: [expediente G-B2-1](../validation/pre_g9b_cu3_b2_g1_characterization_record.md) (conclusiones
+K1 a K7). Esta sección prevalece sobre las anteriores donde las precisa.
+
+### 12.1 Precondiciones ampliadas (P1)
+
+Además del §2, la materialización exige, todo certificado en la caja de `t₀`:
+
+- **validez de la fuente** en la caja y pertenencia de `t₀` a su dominio (sin extremos incluidos);
+- **regularidad de la fuente**: el encierro de `L'` excluye el vector cero (CU3.2 de la
+  especificación de intersecciones); una raíz doble del residuo en una fuente singular **no** es una
+  tangencia regular;
+- **regularidad del objetivo**: `∇F_r ≠ 0` en el punto de contacto (se excluyen los puntos singulares
+  de cónicas e implícitas) y, para un objetivo limitado (segmento, rayo, arco), pertenencia del punto
+  a su parte limitada, decidida sin tolerancias;
+- **aislamiento**: el certificado de conteo da `ONE_DOUBLE` y ningún otro cero de `h`;
+- **continuidad suficiente**: `L` y `F_r` de clase C² en la caja, para que `h''` exista y su signo sea
+  el de la curvatura relativa (`h'' = |∇F_r|·|L'|²·(κ_L − κ_r)` con `L' ≠ 0` y `∇F_r ≠ 0`).
+
+Si alguna falta, no hay ancla. K7: ninguna fuente singular se clasifica hoy con orden `TWO`.
+
+### 12.2 Estados precisados
+
+- `CONTACT_LOST` exige un `NONE` **certificado** en la caja. Bajo la autoridad constructiva, la
+  separación sin corte da hoy `UNRESOLVED` con `CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED` (K2): ese caso
+  es `CONTACT_NOT_CERTIFIED`. El efecto en el punto es el mismo (indefinido, token latente); cambia el
+  diagnóstico.
+- `CONTACT_SPLIT` coincide con la revisión en que el motor declara la continuación ambigua (K4). Las
+  raíces transversales reaparecen con sus propios tokens reclamados en la siguiente revisión no
+  ambigua, por ADR 0017 decisión 13, sin ninguna regla nueva.
+
+### 12.3 Alcance real (K1)
+
+Con el producto actual, la clase 2 de una tangencia regular solo se alcanza en `u_1` (vía estructural
+de T7-a). `CU3-B2` no promete tokens admisibles para tangencias regulares con objetivos libres; esos
+contactos siguen como evidencia de clase 3 sin token admisible.
+
+### 12.4 Redefinición del soporte del conductor (K5)
+
+El núcleo rechaza en silencio toda redefinición que cambie el soporte o el conductor de un Locus V2
+existente, y las redefiniciones admitidas actúan sobre el mismo objeto soporte, que conserva su
+identidad persistente. La barrera de linaje por redefinición no es alcanzable. El §5.4 se mantiene
+como regla para cuando exista ese camino (`CU7`); las pruebas cubren los rechazos y las redefiniciones
+en sitio para entradas `F` y `T`.
+
+### 12.5 Persistencia (P2 y K6)
+
+- Las reservas transitorias se deben a evaluaciones de la carga con la política heredada, antes de
+  restaurar el registro de autoridad del documento. La corrección actúa sobre esa causa (vía 1:
+  restaurar antes la autoridad; vía 2: no confirmar en el libro durante la carga), no sobre el
+  contador.
+- Debe preservar unicidad, determinismo, reclamaciones, latencia, duplicación, Deshacer/Rehacer y
+  reapertura, sin redefinir el contrato de identidad durable. Si aparece una incompatibilidad
+  normativa, se prepara una decisión autoral.
+- Condición de D-B2-3 vigente: ningún lector v6 distribuido.

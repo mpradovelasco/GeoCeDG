@@ -77,3 +77,25 @@ pliegue» no cambia.
 | `IDENTITY_DISCONTINUITY` (motivo `CONTACT_SIDE_NOT_CERTIFIED`, `TARGET_ORIENTATION_CHANGED` o `COMPONENT_LINEAGE_CHANGED`) | barreras del diseño §3.3 |
 
 Cada código nuevo necesita sus etiquetas en `menu*.properties` (lección de `CU3-B1`).
+
+## A-B2-7. Precisiones tras G-B2-1 (2026-10-28; candidatas, no promovidas)
+
+Por las precisiones autorales P1 y P2 y el [expediente G-B2-1](../validation/pre_g9b_cu3_b2_g1_characterization_record.md):
+
+- **A-B2-1, precondiciones.** Se añade, tras «no fold certificate at `t₀`»:
+
+  > The source is valid on the box, `t₀` is interior to its domain and the enclosure of `L'` excludes
+  > the zero vector; the target is regular at the contact (`∇F_r ≠ 0`) and, when bounded, the contact
+  > belongs to its bounded part, decided without tolerances; `L` and `F_r` are `C²` on the box. A double
+  > root of the residual at a singular source is never a regular tangent contact.
+
+- **A-B2-1, transiciones.** «a certified `NONE` in the box is `CONTACT_LOST`» se mantiene, y se añade:
+
+  > Any other absence or undecided state, including an unresolved constructive configuration, is
+  > `CONTACT_NOT_CERTIFIED`.
+
+- **A-B2-2, persistencia.** Se añade:
+
+  > Evaluations performed while a document is being loaded never reserve incarnations under a policy
+  > other than the persisted document authority. Reopening and saving an unedited document leaves the
+  > ledger state unchanged.

@@ -28,3 +28,20 @@
 | B2-18 | no regresión | contactos de `CU3-A`, anclas de `CU3-B1` y tokens dorados transversales sin cambios | documentos heredados y adoptados sin tangencias: libro sin cambio de versión |
 | B2-19 | integridad y admisibilidad | `Intersect(L, r, token)` admisible solo con §2 del diseño en la revisión actual | token regular latente usado como selector: inadmisible |
 | B2-20 | rendimiento y corpus | medición E3 de los barridos del modelo del autor; corpus idéntico fuera de las tangencias regulares | presupuesto agotado: fallo cerrado |
+
+## Revisión tras G-B2-1 (2026-10-28)
+
+Fuente: [expediente G-B2-1](pre_g9b_cu3_b2_g1_characterization_record.md). Cambios sobre las filas
+anteriores y filas nuevas:
+
+| Fila | Cambio | Prueba prevista | Prueba adversaria |
+|---|---|---|---|
+| B2-5, B2-6 | las transiciones con existencia exacta no se alcanzan moviendo un objetivo libre (K1) | análisis con contribución exacta declarada, como `PreG9BCu3FoldAnchorTransitionTest`, y la réplica (`u_1`) | igual |
+| B2-7 | cerrada con el comportamiento real (K4) | tokens transversales reclamados: ambiguos en la tangencia y en la primera revisión posterior; reactivados después por su selector completo | ningún token regular en una transversal |
+| B2-8 | `CONTACT_LOST` solo con `NONE` certificado (K2) | contribución declarada con `NONE` | separación con configuración constructiva no resuelta: `CONTACT_NOT_CERTIFIED` |
+| B2-13 | corrección K6 | abrir y guardar sin editar: estado del libro idéntico, con anclas reclamadas y sin reclamar | ninguna encarnación reutilizada; asignaciones posteriores nuevas |
+| B2-14, B2-15 | camino inexistente (K5) | los rechazos de `N = Point(c3)` y `lx = LocusV2(X2, N2)` dejan intactos los tokens `F` y `T` | — |
+| B2-16 | redefiniciones en sitio del soporte | `c = Circle(O, 2)`, cambio de radio y vuelta, `Dilate`: mismo token, latencia y reactivación | sin barrera espuria |
+| B2-21 | **nueva:** fuente singular (P1) | raíz doble del residuo con `L'(t₀) = 0` declarada: sin ancla, orden no `TWO` | punto de retorno sin simetría: dos raíces simples, nunca una tangencia |
+| B2-22 | **nueva:** carga del documento (K6) | ninguna asignación transitoria en la carga (la sonda G-B2-1 sobre el candidato) | documento con anclas sin reclamar: mismos tokens tras reabrir |
+| B2-23 | **nueva:** objetivo limitado y objetivo singular (P1) | contacto fuera de la parte limitada de un segmento o arco, o en un punto singular de una cónica degenerada: sin ancla | — |
