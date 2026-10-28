@@ -281,3 +281,12 @@ The `CU3` characterization and the focal review establish seven facts.
   point there, and it would introduce C22 and C23 implicitly.
 - **A public certified-critical-point object in `CU3`:** deferred as a future option.
 - **Substituting an ordinary line for an axis:** rejected.
+
+## Amendment of 2026-10-28 (CU3-B2, decision 3)
+
+Approved by the author decisions of 2026-10-28 (G-B2-0 with precisions; G-B2-2 authorized). The
+regular tangent germ named in the amendment of 2026-10-27 is defined by the CU3-B2 amendment of
+`locus-v2-intersections.md` (version 1.6). Its side is the certified sign of the relative curvature
+with the canonical target orientation. A regular tangent contact token is never transferred at a
+split. The contact is materialized only for class 1 or 2 evidence with the regularity preconditions
+of that amendment; no new class of exact decisions is introduced.

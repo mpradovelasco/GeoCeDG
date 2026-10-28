@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE ADMISSION POLICY V2 AMENDMENT (VERSION 1.5, LAST SECTION, `cu3-certified-admission/v2`, ONLY UNDER `constructive-authority/v1`) — NORMATIVE DECISIONS AUTHOR APPROVED (2026-10-26), IMPLEMENTATION AUTHORIZED BEHIND ITS VALIDITY GATE, NOT YET APPROVED AS PRODUCT** |
-| Version | `1.5` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3`, by its constructive authority amendment in `1.4` and by its constructive admission policy v2 amendment in `1.5`) |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE ADMISSION POLICY V2 AMENDMENT (VERSION 1.5, LAST SECTION, `cu3-certified-admission/v2`, ONLY UNDER `constructive-authority/v1`) — NORMATIVE DECISIONS AUTHOR APPROVED (2026-10-26), IMPLEMENTATION AUTHORIZED BEHIND ITS VALIDITY GATE, NOT YET APPROVED AS PRODUCT; CU3-B2 REGULAR TANGENT CONTACT AMENDMENT (VERSION 1.6, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-28), IMPLEMENTATION AUTHORIZED (G-B2-2), NOT YET APPROVED AS PRODUCT** |
+| Version | `1.6` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3`, by its constructive authority amendment in `1.4`, by its constructive admission policy v2 amendment in `1.5` and by its CU3-B2 regular tangent contact amendment in `1.6`) |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
@@ -1297,3 +1297,49 @@ No threshold, tolerance or approximation is added.
 - Admissibility changes only by a rigorous contradiction.
 - Identities are never reassociated, and tangent tokens are never transferred.
 - No durable format changes.
+
+## CU3-B2 regular tangent contact amendment (version 1.6)
+
+Approved as contract by the author decisions of 2026-10-28 (G-B2-0 with precisions P1 and P2;
+G-B2-1 accepted; [CU3-B2 design](../../../docs/architecture/pre_g9b_cu3_b2_regular_tangent_design.md)
+section 12; [candidate amendments](../../../docs/architecture/pre_g9b_cu3_b2_normative_proposal.md)
+A-B2-1 to A-B2-7). It applies only under `constructive-authority/v1` and replaces, for regular
+tangent contacts, the retired germ of CU3.3. Fold contacts of `CU3-B1` and transverse roots are
+unchanged.
+
+**Regular tangent contact.** An isolated root `t₀` of the canonically oriented indicator
+`h = F_r ∘ L` with `h(t₀) = h'(t₀) = 0` decided by structural (class 1) or exact (class 2)
+evidence, `sign h''(t₀)` certified away from zero, a count certificate `ONE_DOUBLE` in its box and
+no certified fold at `t₀`. The source is valid on the box, `t₀` is interior to its component and the
+enclosure of `L'` excludes the zero vector; the target is regular at the contact (`∇F_r ≠ 0`) and,
+when bounded, the contact belongs to its bounded part, decided without tolerances (a bounded target
+anchors nothing until that decision exists); `L` and `F_r` are `C²` on the box. A double root of
+the residual at a singular source is never a regular tangent contact. No class of exact decisions
+is added by this amendment: contacts of class 3 to 5 are never materialized.
+
+**Side.** `σ = sign h''(t₀)` with the canonical target orientation of §6.2: the sign of the relative
+curvature `κ_L − κ_r` along the canonical normal. It is invariant under regular reparameterization
+of `L` (including orientation reversal), under legitimate nonzero scalar changes of the target
+equation, under equivalent indicators and under any view state.
+
+**Selector.** The stable component lineage plus the germ `pre-g9b-cu3/regular-tangent-germ/v1`
+(component lineage, target family with its canonical orientation, `σ`). It contains no coordinate,
+parameter, index, contact order or evidence class. A repeated base selector is enriched by the phase
+and rank of ADR 0017.
+
+**Transitions.** The same selector under the preconditions is `CURRENT`; a certified `NONE` in the
+box is `CONTACT_LOST`; two certified transverse roots in the box is `CONTACT_SPLIT`; any other
+absence or undecided state, including an unresolved constructive configuration, is
+`CONTACT_NOT_CERTIFIED`; loss of the certified sign of `h''`, a change of canonical target
+orientation or a lineage change is `IDENTITY_DISCONTINUITY`. In every non-current state the contact
+token is retained only when claimed and is never transferred. At `CONTACT_SPLIT` each transverse
+root keeps or acquires its own identity under the transverse germ and ADR 0017 only; merge and split
+are identity barriers.
+
+**Persistence.** Ledger state version 6 is written when the current or copy-source snapshot contains
+at least one contact entry (`F` fold contact or `T` regular tangent contact); every v6 entry carries
+its kind discriminator (`P`, `S`, `F` or `T`); a reader rejects an unknown kind closed and older
+readers reject version 6 closed. A `T` entry stores the germ and the persisted lineage, never
+revision evidence. Evaluations performed while a document is being loaded never run under a policy
+other than the persisted document authority, and reopening and saving an unedited document leaves
+the ledger state unchanged.

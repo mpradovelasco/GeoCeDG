@@ -231,3 +231,10 @@ path independence.
 Rejected as the solution to this defect. All four roots already have sufficient
 local evidence under the current public materialization contract; their blocker
 was selector collision, not a missing numerical tier.
+
+## Application note of 2026-10-28 (PRE-G9B-CU3 increment CU3-B2)
+
+This note changes none of the decisions above. Regular tangent contacts of `CU3-B2`
+(`locus-v2-intersections.md`, version 1.6) are a new selector family under decisions 6 to 9 and
+13. A regular tangency is the merge/split event of decision 8 for the transverse family, and the
+contact family has its own selector; neither family inherits the other's token.
