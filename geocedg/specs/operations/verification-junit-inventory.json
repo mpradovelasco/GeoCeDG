@@ -10,14 +10,14 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "cc0803a1271a3feb657020434e4f1df62d4dc2824c0a78527552bee5287ca5f9",
-      "discovered_identity_count": 6577,
-      "discovered_identities_sha256": "ad42049f0a3cbb518cc80b431690bf43cc4ca7a195ba1c11d31bc0fb6251be14"
+      "discovery_evidence_sha256": "dbc0b2907e2944b49e4498c878b4b2971f5699d2e0136479c39b76ed7230efe3",
+      "discovered_identity_count": 6597,
+      "discovered_identities_sha256": "1aef04239f6bcdc35d2fa14f3e49964ff87da93543c5161b5d38ab4094cb09f0"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "e7095eaf030dd0214b8b27492342f7888412fdc349bc9bf6c215ae8a830672ea",
+      "discovery_evidence_sha256": "70c11656fe985ec3fd202b9e7993c19088b744114361fb039a98ff95348a3c90",
       "discovered_identity_count": 2271,
       "discovered_identities_sha256": "8c8b2dbc8d614048a5df9ac9914ec95074bcb70de0bbe2ecab3b8b5191e3ffde"
     }
@@ -38,8 +38,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 6577,
-      "expected_identities_sha256": "ad42049f0a3cbb518cc80b431690bf43cc4ca7a195ba1c11d31bc0fb6251be14",
+      "expected_identity_count": 6597,
+      "expected_identities_sha256": "1aef04239f6bcdc35d2fa14f3e49964ff87da93543c5161b5d38ab4094cb09f0",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7494,
-      "expected_identities_sha256": "52663b1c2769a2dac9b0b3f5ea7c1c3607073de785b1b26c56fe47ee1786c254",
+      "expected_identity_count": 7514,
+      "expected_identities_sha256": "a2f59f062b9bb5c449a0e606feced18b68957758d130d77987b8d473eaf19b6f",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -3485,6 +3485,8 @@
         "org.geocedg.common.kernel.locus.constructive.Cu2CertificateTransferTest",
         "org.geocedg.common.kernel.locus.constructive.ExactQuadraticTowerTest",
         "org.geocedg.common.kernel.locus.constructive.PreG9BCu3FoldContactTest",
+        "org.geocedg.common.kernel.locus.constructive.PreG9BCu3RegularTangentTest",
+        "org.geocedg.common.kernel.locus.constructive.PreG9BCu3B2LoadPolicyTest",
         "org.geocedg.common.kernel.locus.constructive.RelationIntegrityTest",
         "org.geocedg.common.kernel.locus.constructive.StructuralPointMatrixTest",
         "org.geocedg.common.kernel.locus.constructive.StructuralPointTest",
@@ -3494,6 +3496,7 @@
         "org.geocedg.common.kernel.locus.intersection.PreG9BCu3EarlyExactDecisionTest",
         "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ExactDoubleRootTest",
         "org.geocedg.common.kernel.locus.intersection.PreG9BCu3FoldAnchorTransitionTest",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3RegularTangentGermTest",
         "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ReservedAxisTargetTest"
       ],
       "excluded_test_filters": [],
@@ -3534,6 +3537,10 @@
         "--tests",
         "org.geocedg.common.kernel.locus.constructive.PreG9BCu3FoldContactTest",
         "--tests",
+        "org.geocedg.common.kernel.locus.constructive.PreG9BCu3RegularTangentTest",
+        "--tests",
+        "org.geocedg.common.kernel.locus.constructive.PreG9BCu3B2LoadPolicyTest",
+        "--tests",
         "org.geocedg.common.kernel.locus.constructive.RelationIntegrityTest",
         "--tests",
         "org.geocedg.common.kernel.locus.constructive.StructuralPointMatrixTest",
@@ -3552,6 +3559,8 @@
         "--tests",
         "org.geocedg.common.kernel.locus.intersection.PreG9BCu3FoldAnchorTransitionTest",
         "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu3RegularTangentGermTest",
+        "--tests",
         "org.geocedg.common.kernel.locus.intersection.PreG9BCu3ReservedAxisTargetTest",
         "--rerun-tasks",
         "--no-build-cache",
@@ -3560,8 +3569,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 237,
-      "expected_identities_sha256": "0b9edff94379b6a69ad103ae17ebdcfff057d3d705da5ec5d7a6ae6e1fb7dbe2",
+      "expected_identity_count": 257,
+      "expected_identities_sha256": "e71531e082c2f0140179477a175a32d13b365c36c6a705ecf3f7bc4b0a235d10",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
