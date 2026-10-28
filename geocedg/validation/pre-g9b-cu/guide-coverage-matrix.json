@@ -2517,6 +2517,42 @@
       "notes": "The author-approved A6 form Point(L,u) (locus-v2-public-surface.md §18; LocusV2PublicOperations.createPrincipalSemanticPoint) creates a semantic point when exactly one eligible branch and component exists at u, and becomes undefined if that later becomes ambiguous. It is absent from the guide and from the Point.Syntax help."
     },
     {
+      "id": "command:Point/driver-correspondence",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdPoint.java:83",
+      "label_en": "Point( <Locus V2>, <Driver Point> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.6",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.6",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "DOC-CU3-CU9-STRUCTURAL-POINTS (plan 2.26, 2.29). The guide documents syntax, geometric meaning, a reproducible example, preconditions and the constructive authority, typed failure causes, dynamic dependencies, identity, and persistence, copy, Undo and Redo (8.6, structural points) and lists the form in the syntax summary (16.2). Normative sources: locus-v2-public-surface.md section 21, locus-v2-point-interaction.md section 18, the constructive authority amendment of locus-v2-intersections.md, ADR 0039 and ADR 0040. The in-app Point.Syntax help does not list the form yet; the complete manual is CU9."
+    },
+    {
+      "id": "command:Intersect/driver-correspondence",
+      "kind": "command",
+      "source": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdIntersect.java:422",
+      "label_en": "Intersect( <Locus V2>, <Object>, <Driver Point> )",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "semantic-points-intersections-materialization/8.6",
+          "command-and-workflow-reference/16.2"
+        ],
+        "es": [
+          "semantic-points-intersections-materialization/8.6",
+          "command-and-workflow-reference/16.2"
+        ]
+      },
+      "notes": "DOC-CU3-CU9-STRUCTURAL-POINTS (plan 2.26, 2.29). Documented with Point(L, D) in 8.6 (structural points): the incidence with the object is proved, never assumed, and fails closed with a typed cause such as INCIDENCE_REFUTED_IN_CONSTRUCTIVE_CONFIGURATION; the form is in the syntax summary (16.2). Normative sources: locus-v2-public-surface.md section 21, the PRE-G9B-CU3 and constructive authority amendments of locus-v2-intersections.md, ADR 0039 and ADR 0040. The in-app Intersect.Syntax help does not list the form yet; the complete manual is CU9."
+    },
+    {
       "id": "command:Intersect/semantic-curve-and-object",
       "kind": "command",
       "source": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties:396",
@@ -4672,7 +4708,7 @@
     }
   ],
   "totals": {
-    "COVERED": 116,
+    "COVERED": 118,
     "PARTIAL": 119,
     "MISSING": 20,
     "EXCLUDED_WITH_REASON": 12

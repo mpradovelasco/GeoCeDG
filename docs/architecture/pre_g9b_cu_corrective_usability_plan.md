@@ -454,7 +454,8 @@ Fuente: la decisión autoral «Aprobación de CU3-B2 y preparación del cierre g
 | `CU3-B2` | `PASS — AUTHOR APPROVED` sobre `2d13ad4c` (árbol `64dca8e5`) y su campaña `INTEGRATED_PHASE` autenticada; `AUTHOR SMOKE — PASS`; se conservan la `INTEGRATION` rechazada (18/19) y la aceptada (19/19) ([registro de cierre](../validation/pre_g9b_cu3_b2_closeout_record.md)) | `CU3` |
 | `OBS-DESKTOP-OFF-EDT-TOOLBAR-MAXSIZE-RACE` | carrera previa del tamaño de la barra de herramientas fuera del EDT, caracterizada y trazable; no es un defecto geométrico de `CU3-B2`; sin corrección dentro de `CU3` | `CU5` o `CU6` |
 | `DEBT-CU3-EXACT-TANGENCY-GENERALIZATION` | ampliar la certificación exacta de tangencias regulares (procedencia constructiva, decisiones algebraicas exactas, familias admitidas progresivamente). La materialización de `CU3-B2` es general respecto de los certificados aceptados, pero su producción actual se limita a las clases demostradas, en especial `o_1·h_2`; no se promete admitir objetivos libres en clase 3. No bloquea `CU3` ni autoriza investigación ni implementación | después de `CU10` y del trabajo editorial del libro |
-| Pendiente | `DOC-CU3-CU9-STRUCTURAL-POINTS`; auditoría y expediente de cierre global; `CU3` global sin `PASS — AUTHOR APPROVED` | `CU3` |
+| `DOC-CU3-CU9-STRUCTURAL-POINTS` | resuelto: complemento breve de la guía en las dos ediciones (§8.6, «Structural points» / «Puntos estructurales», con sintaxis, significado, ejemplo reproducible comprobado en el producto, precondiciones y autoridad constructiva, causas de fallo, dependencias, identidad y persistencia; formas en §16.2) y dos entradas `COVERED` en la [matriz de cobertura](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json) (`command:Point/driver-correspondence`, `command:Intersect/driver-correspondence`) con anclas existentes y trazabilidad normativa; la ayuda de sintaxis de la aplicación aún no lista las formas; el manual completo sigue en `CU9` | `CU9` |
+| Pendiente | auditoría y expediente de cierre global; `CU3` global sin `PASS — AUTHOR APPROVED` | `CU3` |
 
 ## 3. Incidencias y paquetes
 
@@ -685,7 +686,7 @@ objeto distinto que haya adquirido la misma etiqueta.
 
 Revisión exhaustiva, completa, bilingüe y comprensible, partiendo de la
 [matriz de cobertura](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json)
-(267 entradas: 116 cubiertas, 119 parciales, 20 ausentes, 12 excluidas con razón).
+(269 entradas: 118 cubiertas, 119 parciales, 20 ausentes, 12 excluidas con razón, tras las dos de `DOC-CU3-CU9-STRUCTURAL-POINTS`, §2.29).
 
 ### CU10 — Cierre integrado
 

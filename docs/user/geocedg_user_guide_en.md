@@ -1210,6 +1210,60 @@ options**) is an explicit, visible opt-in that applies only to a newly submitted
 query. The query and the points it creates form one compound undo step. It does
 not run when you merely select, reopen or recompute a result.
 
+#### Structural points: `Point(L, D)` and `Intersect(L, r, D)`
+
+```text
+Point( <Locus V2>, <Driver Point> )
+Intersect( <Locus V2>, <Object>, <Driver Point> )
+```
+
+`Point(L, D)` is the point of the Locus V2 `L` at the driver position that
+corresponds to the point `D`. `Intersect(L, r, D)` is the same point, created as
+an intersection of `L` with `r`: it is defined only when that point is proved to
+lie on `r`. The third argument is never a starting guess of a numerical search.
+
+```text
+c=Circle((0,0),2)
+N=Point(c)
+v=Line((0,0),(0,1))
+g=Line((0,3),(1,3))
+X=Intersect(Line(N,v),g)
+L=LocusV2(X,N)
+K=Point(c)
+S=Point(L,K)
+T=Intersect(L,g,K)
+```
+
+With `K` at `(1.2, 1.6)`, `S` and `T` are both `(1.2, 3)`. Dragging `K` moves
+them; the driver `N` of `L` never moves.
+
+**Preconditions and constructive authority.** Both forms need the document to
+have adopted the constructive authority. In a document under the legacy policy
+GeoCeDG offers that adoption; without it nothing is created and the policy is
+kept (cause `CONSTRUCTIVE_AUTHORITY_REQUIRED`). `D` must be a point on the
+driver support of `L` (the same object, not a copy), a defining point of that
+support, or the output of an admitted intersection that has the support among
+its inputs. The driver position must fall inside a certified component of `L`.
+
+**Failures.** When a fact cannot be proved, the point is undefined and keeps a
+typed cause instead of a guessed position, for example
+`DRIVER_SUPPORT_MISMATCH`, `PROVENANCE_NOT_ESTABLISHED`,
+`OUTSIDE_CERTIFIED_COMPONENTS`, `MEMBERSHIP_NOT_TRANSFERRED`, or, for
+`Intersect`, `INCIDENCE_REFUTED_IN_CONSTRUCTIVE_CONFIGURATION` when `r` does not
+pass through the point (in the example, `Intersect(L,Line((0,1),(1,1)),K)`).
+
+**Dynamics and identity.** The point depends on `L`, `D` and, for `Intersect`,
+on `r`; it is recomputed with them and becomes undefined, never moved to another
+point, while a precondition fails. Its identity is its own durable identity with
+those inputs; it contains no token, parameter, coordinate or index.
+
+**Persistence.** The document stores only the command. The point is rebuilt from
+its inputs after reopen, copy, Undo and Redo; no parameter or certificate is
+stored. Readers older than this version reject the two forms.
+
+The normative rules are in `locus-v2-public-surface.md` section 21 and the
+constructive authority amendment of `locus-v2-intersections.md`, with ADR 0039
+and ADR 0040.
 ### 8.7 Intersections of two semantic curves
 
 A pair of semantic curves consumes the same rich-result machinery. Several
@@ -2128,6 +2182,8 @@ IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denom
 Intersect( <Locus V2>, <Supported Object> )
 Intersect( <Locus V2>, <Locus V2> )
 Intersect( <Rich Intersection Result>, <Solution Token> )
+Point( <Locus V2>, <Driver Point> )
+Intersect( <Locus V2>, <Object>, <Driver Point> )
 ```
 
 A Spline V2 is a semantic curve of the Locus V2 family, so the forms written

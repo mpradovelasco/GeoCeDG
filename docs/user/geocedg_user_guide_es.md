@@ -1271,6 +1271,63 @@ aplica solo a una consulta recién enviada. La consulta y los puntos que crea
 forman un único paso compuesto de deshacer. No se ejecuta al seleccionar, reabrir
 o recalcular un resultado.
 
+#### Puntos estructurales: `Point(L, D)` e `Intersect(L, r, D)`
+
+```text
+Point( <Locus V2>, <Driver Point> )
+Intersect( <Locus V2>, <Object>, <Driver Point> )
+```
+
+`Point(L, D)` es el punto del Locus V2 `L` en la posición del conductor que
+corresponde al punto `D`. `Intersect(L, r, D)` es el mismo punto, creado como
+intersección de `L` con `r`: solo está definido cuando se demuestra que ese punto
+está en `r`. El tercer argumento nunca es un valor inicial de una búsqueda
+numérica.
+
+```text
+c=Circle((0,0),2)
+N=Point(c)
+v=Line((0,0),(0,1))
+g=Line((0,3),(1,3))
+X=Intersect(Line(N,v),g)
+L=LocusV2(X,N)
+K=Point(c)
+S=Point(L,K)
+T=Intersect(L,g,K)
+```
+
+Con `K` en `(1.2, 1.6)`, `S` y `T` valen `(1.2, 3)`. Al arrastrar `K` se mueven;
+el conductor `N` de `L` nunca se mueve.
+
+**Precondiciones y autoridad constructiva.** Las dos formas exigen que el
+documento haya adoptado la autoridad constructiva. En un documento con la política
+heredada, GeoCeDG ofrece esa adopción; sin ella no se crea nada y la política se
+conserva (causa `CONSTRUCTIVE_AUTHORITY_REQUIRED`). `D` debe ser un punto del
+soporte del conductor de `L` (el mismo objeto, no una copia), un punto que defina
+ese soporte o la salida de una intersección admitida que tenga el soporte entre
+sus entradas. La posición del conductor debe estar dentro de una componente
+certificada de `L`.
+
+**Fallos.** Cuando un hecho no se puede demostrar, el punto queda indefinido con
+una causa tipada en lugar de una posición supuesta; por ejemplo,
+`DRIVER_SUPPORT_MISMATCH`, `PROVENANCE_NOT_ESTABLISHED`,
+`OUTSIDE_CERTIFIED_COMPONENTS`, `MEMBERSHIP_NOT_TRANSFERRED` o, en `Intersect`,
+`INCIDENCE_REFUTED_IN_CONSTRUCTIVE_CONFIGURATION` cuando `r` no pasa por el punto
+(en el ejemplo, `Intersect(L,Line((0,1),(1,1)),K)`).
+
+**Dinámica e identidad.** El punto depende de `L`, de `D` y, en `Intersect`, de
+`r`; se recalcula con ellos y queda indefinido, nunca trasladado a otro punto,
+mientras falla una precondición. Su identidad es su propia identidad duradera con
+esas entradas; no contiene ningún token, parámetro, coordenada ni índice.
+
+**Persistencia.** El documento guarda solo el comando. El punto se reconstruye a
+partir de sus entradas tras reabrir, copiar, Deshacer y Rehacer; no se guarda
+ningún parámetro ni certificado. Los lectores anteriores a esta versión rechazan
+las dos formas.
+
+Las reglas normativas están en `locus-v2-public-surface.md`, sección 21, y en la
+enmienda de la autoridad constructiva de `locus-v2-intersections.md`, con ADR 0039
+y ADR 0040.
 ### 8.7 Intersecciones de dos curvas semánticas
 
 Un par de curvas semánticas consume la misma maquinaria de resultado rico. Varias
@@ -2232,6 +2289,8 @@ IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denom
 Intersect( <Locus V2>, <Supported Object> )
 Intersect( <Locus V2>, <Locus V2> )
 Intersect( <Rich Intersection Result>, <Solution Token> )
+Point( <Locus V2>, <Driver Point> )
+Intersect( <Locus V2>, <Object>, <Driver Point> )
 ```
 
 Una Spline V2 es una curva semántica de la familia Locus V2, por lo que las
