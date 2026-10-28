@@ -7439,6 +7439,8 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		private boolean finished;
 		private final Map<PersistentGeoId, String> ordinaryEditSteps;
 		private DocumentAuthorityRecord stagedAuthority;
+		private final DocumentAuthorityRecord authorityBeforeLoad = documentAuthority;
+		private boolean authorityGovernsLoad;
 
 		private LoadSession(LoadPurpose purpose, int sectionVersion,
 				RedefineRebuildToken redefineRebuildToken) {
@@ -7511,6 +7513,15 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				stagingFailure = failure(SpatialIdentityDiagnostic.of(code,
 						"Malformed authorityPolicy persistence record"), exception);
 				throw stagingFailure;
+			}
+			// PRE-G9B-CU3-B2 (K6): the section precedes the construction elements, so a load
+			// that restores a document governs their evaluation by its persisted policy from here
+			// on instead of the legacy policy until the commit; abort() restores the policy the
+			// registry had before the load.
+			if (purpose != LoadPurpose.CLIPBOARD_IMPORT && owner != null
+					&& !(owner instanceof MacroConstruction)) {
+				documentAuthority = stagedAuthority;
+				authorityGovernsLoad = true;
 			}
 		}
 
@@ -7660,6 +7671,10 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			finished = true;
 			stagedRecords.clear();
 			attachments.clear();
+			if (authorityGovernsLoad) {
+				documentAuthority = authorityBeforeLoad;
+				authorityGovernsLoad = false;
+			}
 			if (redefineRebuildToken != null) {
 				abortRedefineRebuild(redefineRebuildToken);
 			}
