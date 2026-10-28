@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU3",
+  "increment": "CU3-B2",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu3_b2_closeout_record.md",
+  "instruction": "Decisión autoral — Aprobación de CU3-B2 y preparación del cierre global",
+  "authorApprovalDate": "2026-10-28",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "CU3-B2 only: product candidate 2d13ad4c and its authenticated INTEGRATED_PHASE campaign; CU3 as a whole is not approved",
+  "authorSmoke": "AUTHOR SMOKE — PASS (2026-10-28), guide in docs/validation/pre_g9b_cu3_b2_candidate_record.md section 8",
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "productChangeByCloseout": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "supersededCandidate": {"commit": "a5bd18b8492ddb7937bcce5253acd2a36cd38943", "reason": "the canonical pivot entered the cell of every line certificate (CU3-A and CU3-B1 certificates changed, drags slower); evidence not reused"},
+  "observations": {
+    "OBS-DESKTOP-OFF-EDT-TOOLBAR-MAXSIZE-RACE": "INTEGRATION verification-8a6d1632 REJECTED_SEMANTIC 18/19 in junit.desktop.final (PreG9BR6PlusE3IsoABorderDesktopTest, NPE in Component.getMaximumSize during toolbar rebuild off the EDT); pre-existing, not geometric, not related to CU3-B2; rerun on the same commit ACCEPTED 19/19; left for a later interface phase"
+  },
+  "debts": {
+    "DEBT-CU3-EXACT-TANGENCY-GENERALIZATION": "extend the exact certification of regular tangencies (constructive provenance, exact algebraic decisions, progressively admitted families); non-blocking, not authorized, planned after CU10 and the book editorial work"
+  },
+  "status": {
+    "PRE-G9B-CU0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU2": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-A": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-B1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-B2": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3": "NOT APPROVED",
+    "PRE-G9B-CU4..CU10": "NOT AUTHORIZED",
+    "reviewBranch": "UNCHANGED: origin phase/pre-g9b-cu3-implementation at b1813da1",
+    "main": "UNCHANGED: e6c908f2",
+    "tag": "NONE CREATED",
+    "book": "UNCHANGED"
+  },
+  "identities": {
+    "product": {"commit": "2d13ad4c9b61d6f443b691b8214a8b2361ad0451", "tree": "64dca8e5138050c0e1c5fc6b659dd33ffa430728"}
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptance": [
+    {"check": "STATIC", "runId": "verification-37fbc33a6da54ba0a5f3d623008e3333", "resultHash": "48a742d63b6ccbf22b71a128480b41f32b66707515163ecc49868ef0492036c4", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"},
+    {"check": "INFRA_UNIT", "runId": "verification-743207ebe4854dc19693d383469c710c", "resultHash": "fff8a916c6c65461c8c7e44d5b6c7a5200903fb4ce55321cbe571bb804127b27", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "22/22"},
+    {"check": "PHASE -Phase PRE-G9B-CU3", "runId": "verification-b26af47733144bf69cfbfb19b4220c4c", "resultHash": "5709e80fac9a8681fec7e5286455ee20c63e4536068eccf51756a9a2bef67093", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU2", "runId": "verification-d3b790179f664c65a7c51563c5730f17", "resultHash": "10a96551ef80d6ee56229cf04026a37b10970527aa335ea94affcad32d08aabf", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU1", "runId": "verification-433453be2d524b3291ac4cac590d0725", "resultHash": "902433b526d9d9617f6e955353bad7351e778fcde09b76ad6dde1f59ce3eadc2", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU0", "runId": "verification-f5a4321be18d4fbca0198652f608ee48", "resultHash": "5ebad2b17a235f150dc7a86a110d8cb15880ecb419076c37730503c5f484c8a9", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "2/2"},
+    {"check": "INTEGRATION", "runId": "verification-8a6d1632f8c04a6aaa72d0442b46d63b", "resultHash": "7113af93d766931c12062e151d435ef83c0946d8ce63322ce1130c8f67ad9e9d", "verdict": "REJECTED_SEMANTIC", "coverage": "COMPLETE", "acceptanceLeaves": "18/19"},
+    {"check": "INTEGRATION (rerun)", "runId": "verification-b5021e247450476584409abe807cfcd7", "resultHash": "2b144564fcf9b4abea015e48104db83b8e4020598928e40acb6d01b8e8170759", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "19/19"}
+  ],
+  "authentication": {"date": "2026-10-28", "method": "Read-VerificationJson + Get-VerificationResultHash; run journal COMPLETED; candidate commit and tree exact", "allAuthentic": true},
+  "closeoutCommitIdentity": "reported by the next artifact"
+}
