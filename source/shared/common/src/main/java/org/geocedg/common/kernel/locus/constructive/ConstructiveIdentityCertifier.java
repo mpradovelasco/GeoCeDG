@@ -593,20 +593,16 @@ public final class ConstructiveIdentityCertifier {
 		CertificateElement speed = field.add(field.multiply(dx, dx), field.multiply(dy, dy));
 		CertificateElement first;
 		CertificateElement second;
-		// The canonical orientation of the target (locus-v2-intersections.md section 6.2): a line
-		// by the sign of its larger normal coefficient, x winning an exact tie, decided exactly; a
-		// circle by its center level, which is -r^2 < 0 for this residual, so the residual is
-		// already canonical (PRE-G9B-CU3 increment CU3-B2, design section 3).
-		int canonical = 1;
+		CertificateElement lineA = null;
+		CertificateElement lineB = null;
 		if (target instanceof Line) {
 			Line<CertificateJet> line = (Line<CertificateJet>) target;
 			CertificateElement a = line.getA().getValue();
 			CertificateElement b = line.getB().getValue();
 			first = field.add(field.multiply(a, dx), field.multiply(b, dy));
 			second = field.add(field.multiply(a, ddx), field.multiply(b, ddy));
-			int pivot = field.sign(field.subtract(field.multiply(a, a), field.multiply(b, b)));
-			canonical = pivot == ConstructiveArithmetic.UNDECIDED ? 0
-					: field.sign(pivot >= 0 ? a : b);
+			lineA = a;
+			lineB = b;
 		} else {
 			Circle<CertificateJet> circle = (Circle<CertificateJet>) target;
 			CertificateElement ox = field.subtract(p.getX().getValue(),
@@ -641,8 +637,23 @@ public final class ConstructiveIdentityCertifier {
 		certificate.contactOrder(secondSign == 0 ? ContactOrder.HIGHER_ORDER
 				: secondSign == ConstructiveArithmetic.UNDECIDED ? ContactOrder.NOT_ESTABLISHED
 						: ContactOrder.TANGENT, firstSign, secondSign);
-		if ((secondSign == 1 || secondSign == -1) && (canonical == 1 || canonical == -1)) {
-			certificate.canonicalContactSide(canonical * secondSign);
+		if (secondSign == 1 || secondSign == -1) {
+			// The side of a regular tangent contact (PRE-G9B-CU3 increment CU3-B2, design section
+			// 3), decided only for a certified tangency so that no other certificate gains a
+			// condition: the canonical orientation of the target (locus-v2-intersections.md
+			// section 6.2) is, for a line, the sign of its larger normal coefficient, x winning
+			// an exact tie, and for a circle its center level, -r^2 < 0 for this residual, so
+			// the residual is already canonical.
+			int canonical = 1;
+			if (lineA != null) {
+				int pivot = field.sign(field.subtract(field.multiply(lineA, lineA),
+						field.multiply(lineB, lineB)));
+				canonical = pivot == ConstructiveArithmetic.UNDECIDED ? 0
+						: field.sign(pivot >= 0 ? lineA : lineB);
+			}
+			if (canonical == 1 || canonical == -1) {
+				certificate.canonicalContactSide(canonical * secondSign);
+			}
 		}
 	}
 
