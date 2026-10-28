@@ -1,6 +1,15 @@
 # PRE-G9B-CU7-I — Propuesta concreta de incrementos
 
-- Estado: **IMPLEMENTATION PROPOSAL — NOT AUTHORIZED**, 2026-10-29; `selfApproved=false`.
+## Autorización posterior de 2026-10-29
+
+Author decision of 2026-10-29 approves the consolidated design and prospective normative text
+identified by commit 7e7a90e4e39db04ea49ee9ab1acf69ea34c81080. CU7-D is PASS / AUTHOR APPROVED.
+The same decision separately authorizes only I2a+I2b, M09 singleton. Earlier statements of
+pending review or no authorization below record the preceding design stage and are superseded
+by this decision. I1/I2G/I3/I4/I5-global remain excluded. No future operation is thereby
+implemented. M09 remains partial; see the CU7-D closeout record for exact scope.
+
+- Estado: **I2a+I2b AUTHORIZED — M09 SINGLETON ONLY; OTHER INCREMENTS NOT AUTHORIZED**, 2026-10-29; `selfApproved=false`.
 - Dirección: D-CU7-01–11 adoptadas con precisiones; diseño CU7-D aprobado sujeto a
   conciliación D-CU7-12. D-CU7-13 mantiene CU7-I sin autorización.
 - [Disposición y candidato consolidado](../validation/pre_g9b_cu7_d_consolidated_candidate.md),

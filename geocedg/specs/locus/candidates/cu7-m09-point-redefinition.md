@@ -1,8 +1,15 @@
 # CU7-D / M09 — Proposed point definition update contract
 
-- Status: **CONSOLIDATED NORMATIVE CANDIDATE — PENDING AUTHOR REVIEW**; version candidate-2.
-- Architectural direction approved with precisions on 2026-10-29; CU7-I is not authorized.
-  [Author disposition](../../../../docs/validation/pre_g9b_cu7_d_consolidated_candidate.md).
+## Approval and implementation boundary
+
+Author decision of 2026-10-29 approves the consolidated design and prospective normative text
+identified by commit 7e7a90e4e39db04ea49ee9ab1acf69ea34c81080. CU7-D is PASS / AUTHOR APPROVED.
+The same decision separately authorizes only I2a+I2b, M09 singleton. Earlier statements of
+pending review or no authorization below record the preceding design stage and are superseded
+by this decision. I1/I2G/I3/I4/I5-global remain excluded. No future operation is thereby
+implemented. M09 remains partial; see the CU7-D closeout record for exact scope.
+
+- Status: **NORMATIVE PROSPECTIVE CONTRACT — AUTHOR APPROVED (2026-10-29)**. No future capability is thereby implemented. Implementation authorization is limited to M09 singleton I2a+I2b; M08-S/D, I2G and I3 remain excluded. See [closeout](../../../../docs/validation/pre_g9b_cu7_d_closeout_record.md).
 - No productive behavior, serialized identity or migration changes in CU7-D.
 - Decisions: [proposed ADR 0041](../../../../docs/adr/0041-locus-v2-point-placement-and-point-redefinition.md),
   [author decision sheet](../../../../docs/validation/pre_g9b_cu7_d_author_decision_sheet.md).

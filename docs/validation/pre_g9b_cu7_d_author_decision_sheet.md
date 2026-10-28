@@ -1,8 +1,17 @@
 # PRE-G9B-CU7-D — Hoja de decisiones autorales
 
+## Aprobación final y autorización posterior
+
+Author decision of 2026-10-29 approves the consolidated design and prospective normative text
+identified by commit 7e7a90e4e39db04ea49ee9ab1acf69ea34c81080. CU7-D is PASS / AUTHOR APPROVED.
+The same decision separately authorizes only I2a+I2b, M09 singleton. Earlier statements of
+pending review or no authorization below record the preceding design stage and are superseded
+by this decision. I1/I2G/I3/I4/I5-global remain excluded. No future operation is thereby
+implemented. M09 remains partial; see the CU7-D closeout record for exact scope.
+
 | Campo | Valor |
 |---|---|
-| Estado | **D-CU7-01–11: ARCHITECTURAL DIRECTION AUTHOR APPROVED WITH PRECISIONS** (2026-10-29); D-CU7-12: diseño aprobado sujeto a conciliación; D-CU7-13: CU7-I no autorizada; `selfApproved=false` |
+| Estado | D-CU7-01–12 y conciliación normativa aprobadas el 2026-10-29; CU7-D PASS / AUTHOR APPROVED. Autorización posterior: solo CU7-I/I2a+I2b; M09 singleton. Véase [cierre](pre_g9b_cu7_d_closeout_record.md); `selfApproved=false` |
 | Diseño | [arquitectura](../architecture/pre_g9b_cu7_d_point_placement_and_redefinition_design.md), [ADR 0041 propuesto](../adr/0041-locus-v2-point-placement-and-point-redefinition.md) |
 | Enmiendas candidatas | [M08 §8](../../geocedg/specs/locus/candidates/cu7-m08-point-placement.md), [M09 §10](../../geocedg/specs/locus/candidates/cu7-m09-point-redefinition.md) |
 | Autoridad existente | DA-5 ya retira la coincidencia; CU3 aprobado no aprueba estas nuevas decisiones |

@@ -1,7 +1,15 @@
 # ADR 0041 — Locus V2 point placement and point redefinition
 
-- Status: **ARCHITECTURAL DIRECTION AUTHOR APPROVED WITH PRECISIONS (2026-10-29);
-  CONSOLIDATED NORMATIVE CANDIDATE — PENDING AUTHOR REVIEW; CU7-I NOT AUTHORIZED**.
+## Approval of 2026-10-29 (successor authority)
+
+Author decision of 2026-10-29 approves the consolidated design and prospective normative text
+identified by commit 7e7a90e4e39db04ea49ee9ab1acf69ea34c81080. CU7-D is PASS / AUTHOR APPROVED.
+The same decision separately authorizes only I2a+I2b, M09 singleton. Earlier statements of
+pending review or no authorization below record the preceding design stage and are superseded
+by this decision. I1/I2G/I3/I4/I5-global remain excluded. No future operation is thereby
+implemented. M09 remains partial; see the CU7-D closeout record for exact scope.
+
+- Status: **ACCEPTED — DESIGN AND PROSPECTIVE NORMATIVE CONTRACT AUTHOR APPROVED (2026-10-29)**. CU7-D PASS / AUTHOR APPROVED; implementation authorized only for I2a+I2b, M09 singleton. See [closeout](../validation/pre_g9b_cu7_d_closeout_record.md).
 - Date: 2026-10-28. `selfApproved=false`.
 - Authorization: author instruction «PRE-G9B-CU7-D — Autorización autoral de diseño de M08 y M09».
   It authorizes design and nonproductive characterization, not CU7-I.

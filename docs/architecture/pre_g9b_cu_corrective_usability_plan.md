@@ -509,6 +509,13 @@ El nuevo texto es candidato normativo para revisión; no es implementación ni a
 texto conciliado por el agente. Las evidencias y registros previos conservan sus identidades.
 CU10, E1 y la deuda exacta generalizada de tangencias mantienen sus compromisos y orden.
 
+## 2.33 CU7-D cerrado y primer incremento autorizado (2026-10-29)
+
+CU7-D — PASS / AUTHOR APPROVED sobre 7e7a90e4e39db04ea49ee9ab1acf69ea34c81080,
+árbol 25e0e2f0a78670c31be39766021d3f7561bc3bf6. [Cierre autoral](../validation/pre_g9b_cu7_d_closeout_record.md).
+Solo CU7-I/I2a+I2b, M09 singleton, autorizado desde su cierre verificado en rama independiente.
+I1/I2G/I3/I4/I5 global no autorizados. M09 sigue parcial. Main, libro y publicación sin cambios.
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de
