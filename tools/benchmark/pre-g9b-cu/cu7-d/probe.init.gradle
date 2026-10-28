@@ -1,0 +1,11 @@
+// CU7-D nonproductive characterization. Opt-in test sources only; no product task changes.
+// Invoke with the existing tools/agent/checks/gradle-command-evidence-producer.ps1.
+allprojects { project ->
+    if (project.projectDir.toPath().endsWith(
+            java.nio.file.Paths.get('source', 'shared', 'common-jre'))) {
+        project.afterEvaluate {
+            project.sourceSets.test.java.srcDir(new File(project.projectDir,
+                    '../../../tools/benchmark/pre-g9b-cu/cu7-d/probe-java'))
+        }
+    }
+}
