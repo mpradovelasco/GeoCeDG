@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Clasificación | planificación/diseño normativo y arquitectónico, con documentación candidata y sonda no productiva |
-| Estado | **DESIGN CANDIDATE — PENDING AUTHOR REVIEW**; `selfApproved=false` |
+| Estado | **ARCHITECTURAL DIRECTION AUTHOR APPROVED WITH PRECISIONS** (2026-10-29); conciliación normativa candidata pendiente de revisión; CU7-I sin autorización; `selfApproved=false` |
 | Autorización | instrucción autoral «PRE-G9B-CU7-D — Autorización autoral de diseño de M08 y M09», 2026-10-28; solo CU7-D |
 | Base comprobada | `main` = `origin/main` = `72f1c069586f3cf53f26428d31bfd1cbc7014b43`; árbol `7e2d8a45594bad9f08eff52c41b51c49929379d9`; limpio al entrar |
 | Rama | `phase/pre-g9b-cu7-d-design`, local; worktree principal `C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG` |
@@ -25,7 +25,7 @@ de una raíz de otro resultado. No exigir coincidencia, conforme a DA-5. Mantene
 real como elección independiente con identidad nueva e impacto veraz. No introducir remapeo
 parcial automático. Tratar las salidas múltiples y el cambio de soporte como puertas propias.
 
-La aprobación de este diseño no se presume. La [hoja de decisiones](../validation/pre_g9b_cu7_d_author_decision_sheet.md)
+El autor aprobó el diseño con cinco precisiones y sujeto a conciliación el 2026-10-29; el texto normativo consolidado sigue pendiente de revisión. Véase el [registro de conciliación](../validation/pre_g9b_cu7_d_consolidated_candidate.md). La [hoja de decisiones](../validation/pre_g9b_cu7_d_author_decision_sheet.md)
 reserva al autor el perímetro de CU7-I, especialmente la proyección dinámica y la separación
 de una salida de una intersección ordinaria de varias salidas.
 
@@ -259,6 +259,6 @@ de la guía de `8f5c4f45`. Se mantiene `DEBT-CU3-EXACT-TANGENCY-GENERALIZATION`,
 CU10 y al trabajo editorial del libro. E1 mantiene su expediente de transferencia científica
 en CU10; ninguna fase editorial, cambio de libro o implementación queda iniciado.
 
-CU7-D termina con el candidato, su commit/árbol, caracterización y STATIC aplicable. La próxima
-acción es una decisión del autor sobre el diseño y, separadamente, CU7-I. No se infiere de
+CU7-D termina con el candidato, su commit/árbol, caracterización y STATIC aplicable. Tras la decisión autoral, la próxima
+acción es revisar la conciliación normativa y la [propuesta de incrementos](pre_g9b_cu7_i_increment_proposal.md), y autorizar CU7-I separadamente si procede. No se infiere de
 un resultado técnico autorización de publicación o aprobación del diseño.

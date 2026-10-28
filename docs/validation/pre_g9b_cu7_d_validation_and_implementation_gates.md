@@ -1,6 +1,7 @@
 # PRE-G9B-CU7-D — Matriz focal/adversaria y puertas de implementación
 
-- Estado: **PLAN CANDIDATO — NOT AUTHOR APPROVED**; `selfApproved=false`.
+- Estado: **CONSOLIDATED CANDIDATE — PENDING AUTHOR REVIEW**; dirección arquitectónica
+  aprobada con precisiones el 2026-10-29; CU7-I sin autorización; `selfApproved=false`.
 - [Diseño](../architecture/pre_g9b_cu7_d_point_placement_and_redefinition_design.md),
   [decisiones](pre_g9b_cu7_d_author_decision_sheet.md),
   [evidencia CU7-D ejecutada](pre_g9b_cu7_d_candidate_report.md).
@@ -8,6 +9,11 @@
   La ejecución CU7-D se limita a la sonda C y STATIC; no hay smoke del producto nuevo.
 
 ## 1. Matriz de pruebas
+
+La [conciliación autoral](pre_g9b_cu7_d_consolidated_candidate.md) adopta la dirección
+singleton primero. Los identificadores I1/I2 se conservan para trazabilidad, no indican orden
+de ejecución: I0 → I2 → I1; I2G/I3/I4 tienen entradas independientes según la
+[propuesta concreta](../architecture/pre_g9b_cu7_i_increment_proposal.md).
 
 | Id / puerta | Caso | Oráculo y condición exigida |
 |---|---|---|
@@ -40,7 +46,8 @@
 | R06 / I2 | contacto F/T válido y contacto sin prueba exacta/estructural | preservar evidencia CU3 y grados; no usar certificación de punto crítico como prueba de intersección |
 | R07 / I2 | rol interacción/principal/proyección distinto al candidato | no RETAIN por clase Java; reemplazo solo si evaluación independiente lo ofrece |
 | R08 / I2 | punto viejo sin ID; candidato crea auxiliares con participación | contexto previo al parseo; ID nuevo al commit; ningún objeto/ID publicado si falla |
-| R09 / I2G | productor de 2 salidas con hermanos sin/con ID y dependientes | rechazo antes de borrar, o adaptador completo demostrado; nunca pérdida silenciosa de hermanos |
+| R09 / I2, I2G | productor de 2 salidas con hermanos sin/con ID y dependientes | en I2 rechazo tipado antes de borrar; solo I2G admite adaptador completo demostrado; diferirlo deja M09 incompleto |
+| R16 / I2 | solicitud que necesita la nueva operación coordinada I3 | rechazo explícito y tipado, XML/IDs/claims/Undo sin cambios; rutas ya admitidas conservan su contrato |
 | R10 / I2 | nueva dependencia posterior a P | P3-R1: recolocación mínima legal; mismo orden relativo de elementos no afectados |
 | R11 / I2 | R/L/target/helper depende directa o indirectamente de P | INVALID_DAG antes de publicar; XML/identidades/ledger sin cambios |
 | R12 / I2 | punto redefine a posición que hace una recta dependiente degenerada | operación válida puede confirmar; recta indefinida con diagnóstico, sin identidad nueva por proximidad |
@@ -63,13 +70,20 @@
 
 | Puerta | Entregable futuro y parada | Verificación propuesta |
 |---|---|---|
-| I0 — contrato | decisiones autorales aplicadas expresamente, texto normativo aprobado, tabla de transiciones, codec/lectores definidos y perímetro registrado | STATIC; no código hasta esa autorización |
+| I0 — contrato | decisiones autorales aplicadas expresamente, texto normativo aprobado, tabla de transiciones, persistencia/lectores del incremento autorizado y perímetro registrado; codec D se resuelve en la entrada propia de I4 | STATIC; no código hasta autorización exacta |
+| Orden de entrada | **I2 M09 singleton primero**, después I1 M08-S; numeración histórica conservada | ningún PASS autoriza el incremento siguiente |
 | I1 — M08 S | query/selección/commit por dirección, normal-form Point y consumidores sin nueva verdad geométrica | PHASE propia registrada + regresiones R6/G9U1/CU2/CU3; INTEGRATION del incremento |
 | I2 — M09 singleton | predicado cerrado, target sin ID, impacto completo, claims y snapshot anterior al parseo | PHASE propia + A3/R3/CU3 + pruebas focales de rollback/Undo; INTEGRATION |
-| I2G — grupo opcional | solo si lo exige el autor: adaptador completo, semántica de hermanos y persistencia | puerta bloqueante antes de completar M09 de varias salidas; INTEGRATION; reclasificar impacto si supera perímetro acotado |
+| I2G — grupo independiente | autorización propia: adaptador completo, semántica de hermanos y persistencia; diferirlo deja M09 parcial | puerta bloqueante antes de completar M09 de varias salidas; INTEGRATION; reclasificar impacto si supera perímetro acotado |
 | I3 — soporte/conductor | operación de cierre prospectivo, mensaje tipado y barrera efectiva F/T/transversal | PHASE propia + K01–K05 + CU3-A/B1/B2 + guardado/copia; INTEGRATION |
 | I4 — M08 D | proveedor afín riguroso, receta/versionado/lectores y resultado sin historia | puerta matemática y de persistencia antes de UI; PHASE + INTEGRATION; si no hay prueba, detener D sin aproximación silenciosa |
 | I5 — revisión | congelar commit/árbol, guía mínima del alcance implementado, smoke autoral y limitaciones | INTEGRATED_PHASE completo; aprobación propia, sin publicación implícita |
+
+Precisiones vinculantes: I3 es dirección de diseño, no funcionalidad autorizada por la adopción
+de esta matriz. Requiere contrato de cierre prospectivo, atomicidad, persistencia y barreras,
+y autorización propia. I4 se difiere si no supera su prueba de correspondencia dinámica afín;
+no se sustituye por estimación STRICT. I2 sin I2G deja M09 parcial. Los gates de salida y
+dependencias concretas se detallan en la propuesta de incrementos, todavía candidata.
 
 No hay identificador PHASE `PRE-G9B-CU7-I` registrado por este diseño. Antes de invocarlo se
 necesita un encargo de implementación y el procedimiento canónico de registro/selección; no se

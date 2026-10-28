@@ -1,6 +1,7 @@
 # ADR 0041 — Locus V2 point placement and point redefinition
 
-- Status: **PROPOSED / CU7-D DESIGN CANDIDATE — NOT AUTHOR APPROVED**.
+- Status: **ARCHITECTURAL DIRECTION AUTHOR APPROVED WITH PRECISIONS (2026-10-29);
+  CONSOLIDATED NORMATIVE CANDIDATE — PENDING AUTHOR REVIEW; CU7-I NOT AUTHORIZED**.
 - Date: 2026-10-28. `selfApproved=false`.
 - Authorization: author instruction «PRE-G9B-CU7-D — Autorización autoral de diseño de M08 y M09».
   It authorizes design and nonproductive characterization, not CU7-I.
@@ -8,7 +9,7 @@
 - Design: [architecture and source analysis](../architecture/pre_g9b_cu7_d_point_placement_and_redefinition_design.md).
 - Candidate contracts: [M08](../../geocedg/specs/locus/candidates/cu7-m08-point-placement.md),
   [M09](../../geocedg/specs/locus/candidates/cu7-m09-point-redefinition.md).
-- Decisions still reserved to the author: [decision sheet](../validation/pre_g9b_cu7_d_author_decision_sheet.md).
+- Author decisions and separately reserved implementation scope: [decision sheet](../validation/pre_g9b_cu7_d_author_decision_sheet.md).
 
 ## Context
 
@@ -22,7 +23,28 @@ and the durable-frontier contract nevertheless distinguish compatible retention 
 replacement. Retaining a construction point is also different from transporting the identity
 of a root selected by an intersection ledger.
 
-## Proposed decisions — none effective until author approval
+## Consolidated decisions — approved direction, normative text pending review
+
+The author adopts D-CU7-01 through D-CU7-11 as direction, and approves CU7-D subject to
+reconciliation (D-CU7-12). This text reconciles it; it does not self-approve the new normative
+candidate or authorize CU7-I (D-CU7-13). The following precisions prevail over the original
+recommendations below:
+
+- S normalizes an established address without fictitious proximity dependency; D requires its
+  own dynamic correspondence proof and may be deferred if the affine class fails its gates.
+- M09 compatible object-identity update is atomic, without root-identity transport or coincidence.
+  Specialized roles, dependents and output groups remain protected.
+- The incremental direction starts with M09 singleton. I2G is independent; deferral leaves
+  M09 incomplete, even if the singleton increment is accepted.
+- I3 is design direction only: prospective closure, atomicity, persistence and identity barriers
+  require independent contracts and authorization. Requests requiring the new operation must
+  be rejected explicitly with typed causes until its implementation is authorized and verified;
+  already admitted routes preserve their current contracts.
+- Documentary authority and real evidence grades remain. Proximity/coordinates cannot choose
+  identity; estimates cannot establish STRICT.
+
+See the [author disposition](../validation/pre_g9b_cu7_d_consolidated_candidate.md) and
+[increment proposal](../architecture/pre_g9b_cu7_i_increment_proposal.md).
 
 1. **Two explicit operations for M08.** A snapshot placement selects one current address,
    then persists the existing forward point construction without a dependency on the proposed
@@ -60,7 +82,7 @@ of a root selected by an intersection ledger.
    In the first proposed implementation perimeter, a multi-output producer is rejected with
    a specific cause unless a complete approved provider mapping exists. Detaching a single
    output is a separate author choice and requires a real group adapter; this ADR supplies
-   no fictional upstream detach API. Accepting that bounded perimeter would leave the
+   no fictional upstream detach API. The author accepts the singleton-first direction; deferring I2G leaves the
    multi-output part of M09 explicitly deferred, not complete.
 8. **Replacement and remapping.** Keep explicit legacy replacement independently assessed,
    with fresh IDs and truthful deletion impact. Do not introduce selective downstream remap
@@ -118,9 +140,9 @@ of a root selected by an intersection ledger.
 
 ## Consequences and limits
 
-The recommended first CU7-I perimeter can be reviewed in independent gates: snapshot placement,
-neutral singleton redefinition, rigorous source-closure handling, then a bounded dynamic map.
-The author must decide whether multi-output detachment is required before calling M09 complete.
+The proposed CU7-I order is M09 singleton first, then snapshot placement. I2G, I3 and the
+dynamic map have independent gates. The author has decided that deferring I2G leaves M09
+incomplete; implementation authorization remains separate for every proposed increment.
 No generalized exact tangency work is smuggled into the dynamic map; that scientific debt remains
 after CU10 and the book's later editorial work. A technical STATIC result for this document does
 not approve any proposed decision or authorize implementation.

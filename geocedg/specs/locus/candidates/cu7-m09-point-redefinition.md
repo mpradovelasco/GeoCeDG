@@ -1,6 +1,8 @@
 # CU7-D / M09 — Proposed point definition update contract
 
-- Status: **CANDIDATE — NOT NORMATIVE / NOT AUTHOR APPROVED**; version candidate-1.
+- Status: **CONSOLIDATED NORMATIVE CANDIDATE — PENDING AUTHOR REVIEW**; version candidate-2.
+- Architectural direction approved with precisions on 2026-10-29; CU7-I is not authorized.
+  [Author disposition](../../../../docs/validation/pre_g9b_cu7_d_consolidated_candidate.md).
 - No productive behavior, serialized identity or migration changes in CU7-D.
 - Decisions: [proposed ADR 0041](../../../../docs/adr/0041-locus-v2-point-placement-and-point-redefinition.md),
   [author decision sheet](../../../../docs/validation/pre_g9b_cu7_d_author_decision_sheet.md).
@@ -9,6 +11,12 @@
   [ADR 0026](../../../../docs/adr/0026-advanced-redefine-and-explicit-legacy-fallback.md).
 
 ## 1. Operation and identities
+
+Author precisions 2–5 govern this reconciliation: compatible object-identity update is atomic,
+without root-identity transport or geometric coincidence. Specialized roles, dependents and
+output groups are protected. The incremental direction starts with singleton M09; I2G is an
+independent gate and its deferral leaves M09 incomplete. I3 is design direction only, subject
+to its own prospective-closure, persistence and barrier contract and implementation authorization.
 
 DA-5 is an existing author decision: the proposed point need not coincide with the old point.
 Equality/proximity of values is neither a general precondition nor evidence of continuity.
@@ -112,7 +120,8 @@ before an ordinary replacement snapshot. Neither property can be assumed away.
 
 Recommended bounded CU7-I: reject the unsupported group before any removal with
 `CU7_GROUP_TRANSITION_UNSUPPORTED`, preserving P, siblings and their complete dependent closure.
-This is an honest partial implementation perimeter, requiring author acceptance of the deferral.
+The author accepts this singleton-first direction; its implementation remains unauthorized.
+I2G is independent and its deferral never permits declaring M09 complete.
 
 If the author requires M09 for a selected output of `AlgoIntersectLineConic` in CU7-I, add an
 independent group-adapter increment before accepting M09:
@@ -164,6 +173,12 @@ known undefined outcomes, re-evaluation-required outcomes and removal. It must n
 arbitrary future geometry as certainly valid.
 
 ## 7. Driver/support closure — proposed handling
+
+Until the new coordinated operation has its own authorized implementation, requests that
+require it must be rejected explicitly with a typed cause and no mutation. This future
+diagnostic requirement does not claim that documentation fixes today's silent refusals.
+Already admitted source redefinitions preserve their predicates; do not introduce a blanket
+refusal that regresses them. I3 cannot be enabled by passing a singleton gate.
 
 Distinguish:
 

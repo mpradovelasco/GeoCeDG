@@ -2,14 +2,31 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | **CANDIDATE — PENDING AUTHOR REVIEW**; ninguna fila resuelta; `selfApproved=false` |
+| Estado | **D-CU7-01–11: ARCHITECTURAL DIRECTION AUTHOR APPROVED WITH PRECISIONS** (2026-10-29); D-CU7-12: diseño aprobado sujeto a conciliación; D-CU7-13: CU7-I no autorizada; `selfApproved=false` |
 | Diseño | [arquitectura](../architecture/pre_g9b_cu7_d_point_placement_and_redefinition_design.md), [ADR 0041 propuesto](../adr/0041-locus-v2-point-placement-and-point-redefinition.md) |
 | Enmiendas candidatas | [M08 §8](../../geocedg/specs/locus/candidates/cu7-m08-point-placement.md), [M09 §10](../../geocedg/specs/locus/candidates/cu7-m09-point-redefinition.md) |
 | Autoridad existente | DA-5 ya retira la coincidencia; CU3 aprobado no aprueba estas nuevas decisiones |
 
-Estas son decisiones sobre un resultado revisable. La entrega CU7-D no aplica ninguna de
-ellas ni inicia CU7-I. La autorización de implementación y la publicación son decisiones
-separadas sobre identidades Git exactas.
+La decisión autoral «PRE-G9B-CU7-D — DECISIÓN AUTORAL SOBRE EL CANDIDATO» de 2026-10-29
+adopta las recomendaciones 01–11 como dirección con sus cinco precisiones, aprueba el diseño
+sujeto a conciliación (12) y mantiene CU7-I sin autorización (13). La tabla conserva las
+alternativas presentadas; la disposición siguiente prevalece sobre sus recomendaciones iniciales.
+
+| Decisiones | Disposición autoral conciliada |
+|---|---|
+| 01–03 | S/D distintas; S normaliza dirección establecida sin dependencia ficticia de Q |
+| 04 | D exige prueba propia; puede diferirse si la clase afín no supera puertas |
+| 05–06 | actualización compatible y atómica de P, sin transportar raíz ni exigir coincidencia; protección de roles y dependientes |
+| 07 | empezar por singleton; I2G independiente; diferirlo no completa M09 |
+| 08 | reemplazo explícito; sin remapeo selectivo ni fallback automático |
+| 09 | I3 aprobada solo como dirección de diseño; contrato propio y autorización separada; rechazo explícito y tipado mientras la nueva operación no esté implementada bajo autorización |
+| 10–11 | autoridad documental, evidencia real y persistencia versionada; ninguna identidad por proximidad/coordenadas ni STRICT por estimación |
+| 12 | diseño aprobado con precisiones, conciliadas en el candidato normativo; texto consolidado pendiente de revisión |
+| 13 | CU7-I permanece sin autorización; ninguna ejecución productiva |
+
+La [conciliación](pre_g9b_cu7_d_consolidated_candidate.md) y la
+[propuesta de incrementos](../architecture/pre_g9b_cu7_i_increment_proposal.md) concretan
+esta disposición. No se presume aprobación del nuevo texto ni autorización de implementación.
 
 | Id | Alternativas que corresponden al autor | Recomendación y consecuencia |
 |---|---|---|
@@ -19,7 +36,7 @@ separadas sobre identidades Git exactas.
 | D-CU7-04 | D general por mínimos numéricos; D acotada a mapa afín con prueba; diferir D | **diseñar D afín con puerta propia**. CU7-I no puede prometerla hasta demostrar la capacidad/codec; si se difiere, M08 dinámica queda pendiente expresamente |
 | D-CU7-05 | RETAIN por coincidencia; ampliar todas las familias; actualización cerrada del punto compatible | **actualización cerrada y explícita de objeto P**. Mismo contrato neutral/rol/grupo, DAG y resultado admisible; nuevas coordenadas permitidas. No se transporta identidad de raíz |
 | D-CU7-06 | convertir roles especializados a VALUE; conservar sus requisitos; migrar roles mediante contrato nuevo | **conservar requisitos**. Conversiones incompatibles ofrecen solo reemplazo independiente si es válido, o rechazo; no rebautizar roles para conseguir RETAIN |
-| D-CU7-07 | primer CU7-I singleton con rechazo tipado; exigir adaptador de separación de salida múltiple antes de completar M09 | **primer incremento singleton; adaptador como puerta I2G independiente**. El autor debe decidir si su diferimiento es aceptable. Sin esa decisión M09 no se declara completo, pues incluye puntos de intersección ordinaria con hermanos |
+| D-CU7-07 | primer CU7-I singleton con rechazo tipado; exigir adaptador de separación de salida múltiple antes de completar M09 | **dirección singleton-first adoptada**; I2G independiente. Su diferimiento no permite declarar M09 completo |
 | D-CU7-08 | M09-C explícito; M09-B con remapeo selectivo; fallback automático | **conservar M09-C explícito e impacto completo**; diferir B. No enmendar ADR 0011 para un remapeo parcial sin necesidad demostrada |
 | D-CU7-09 | permitir cambiar solo el soporte visible; operación coordinada de cierre; mantener rechazo con mejor diagnóstico | **operación coordinada gated por I3**, precedida de diagnóstico tipado. N, soporte, fuente, registros y claims se evalúan juntos; no auto-refresh indiscriminado de salidas públicas |
 | D-CU7-10 | estimación numérica implica STRICT; preservar política y grados reales; adoptar política constructiva automáticamente | **preservar autoridad documental y grados reales**. S no afirma proyección exacta; D exige evidencia propia; CU3 clases/garantías no cambian |

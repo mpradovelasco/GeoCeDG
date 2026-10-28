@@ -1,6 +1,8 @@
 # CU7-D / M08 — Proposed point placement contract
 
-- Status: **CANDIDATE — NOT NORMATIVE / NOT AUTHOR APPROVED**; version candidate-1.
+- Status: **CONSOLIDATED NORMATIVE CANDIDATE — PENDING AUTHOR REVIEW**; version candidate-2.
+- Architectural direction approved with precisions on 2026-10-29; CU7-I is not authorized.
+  [Author disposition](../../../../docs/validation/pre_g9b_cu7_d_consolidated_candidate.md).
 - No product API or command in this file is implemented by CU7-D.
 - Decision: [proposed ADR 0041](../../../../docs/adr/0041-locus-v2-point-placement-and-point-redefinition.md).
 - Current authorities: [point interaction](../locus-v2-point-interaction.md),
@@ -8,6 +10,14 @@
   [constructive authority](../locus-v2-constructive-authority.md).
 
 ## 1. Objects and meanings
+
+Author precisions 1 and 5 govern this reconciliation: S normalizes an established semantic
+address without a fictitious dependency on the initial point. D is distinct, requires its own
+dynamic correspondence proof, and may be deferred if the affine class fails its gates. An
+estimate never establishes STRICT. Discovery proximity cannot choose durable identity; the
+explicit admissible address selection does. The
+[increment proposal](../../../../docs/architecture/pre_g9b_cu7_i_increment_proposal.md)
+places M09 singleton before S. No new operation is implemented or automatically authorized.
 
 Let `L` have durable source identity, provider contract, oriented branch `b` and certified
 continuous component `c`, with semantic evaluation `F[b,c](u)`. A proposed world position `q`
