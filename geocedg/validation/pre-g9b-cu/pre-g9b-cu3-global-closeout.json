@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU3",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu3_global_closeout_record.md",
+  "dossier": "docs/validation/pre_g9b_cu3_global_closeout_dossier.md",
+  "instruction": "Autorización autoral condicionada de cierre global",
+  "authorApprovalDate": "2026-10-28",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "decisions": {
+    "D-CU3G-1": "applied: confirms the implemented scope and the limitations and debts already accepted",
+    "D-CU3G-2": "applied by explicit author decision: INTEGRATION on the documentary tree deferred to the CU10 FINAL",
+    "D-CU3G-3": "applied without publication: publication not authorized, left as a separate author decision",
+    "D-CU3G-4": "applied per the plan sequence: next main-line gate CU7-D; CU4, CU5, CU8-D eligible in parallel; none authorized"
+  },
+  "conditionMet": "no new normative decision, no breach of a mandatory requirement, no scope extension",
+  "identities": {
+    "product": {"commit": "2d13ad4c9b61d6f443b691b8214a8b2361ad0451", "tree": "64dca8e5138050c0e1c5fc6b659dd33ffa430728"},
+    "increments": {"CU3-A": "f61f2954", "CU3-B1": "dd3a2676 + aabfd0b9", "CU3-B2": "2d13ad4c"},
+    "documentaryDescendants": ["0e93ff5d", "ba246ffc", "8f5c4f45", "fa7896f3", "this record's commit"]
+  },
+  "verificationTraceability": {
+    "2d13ad4c": "INTEGRATED_PHASE authenticated; INTEGRATION verification-8a6d1632 REJECTED_SEMANTIC 18/19 and rerun verification-b5021e24 ACCEPTED 19/19",
+    "8f5c4f45": "focal guide, matrix and bilingual tests: 113 tests, 0 failures (not a verifier run)",
+    "fa7896f3": "STATIC verification-7cc3beffc795467ab9755e34c5849d86 ACCEPTED/COMPLETE",
+    "documentaryTrees": "no integrated campaign was run on them and none is attributed"
+  },
+  "commitments": ["CU10-GUIDE-INTEGRATION-CHECK: verify in the CU10 FINAL the integration and packaging of the guide changed in 8f5c4f45"],
+  "debts": ["DEBT-CU3-EXACT-TANGENCY-GENERALIZATION"],
+  "resolvedDebts": ["DEBT-CU3B1-LEDGER-V6-HIGHWATER-IDEMPOTENCE (K6 correction of CU3-B2)"],
+  "observations": ["OBS-CU3B1-DRIVER-SUPPORT-REDEFINITION-BARRIER", "OBS-CU3B2-SILENT-DRIVER-REDEFINITION-REFUSAL", "OBS-DESKTOP-OFF-EDT-TOOLBAR-MAXSIZE-RACE", "OBS-CU3A-XMLEDIT-01"],
+  "status": {
+    "PRE-G9B-CU0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU2": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU4..CU10": "NOT AUTHORIZED",
+    "nextEligibleGate": "CU7-D (not authorized)",
+    "reviewBranch": "UNCHANGED: origin phase/pre-g9b-cu3-implementation at b1813da1",
+    "main": "UNCHANGED: e6c908f2",
+    "tag": "NONE CREATED",
+    "book": "UNCHANGED"
+  },
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "productChangeByCloseout": "NONE"
+}
