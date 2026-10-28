@@ -39,7 +39,9 @@ Generated artifacts are evidence, not source authority. Never infer source seman
 
 ### 2.1 Agent-read-only file
 
-`CLAUDE.md` is read-only for automated agents. Agents may read it, but must never create, modify, overwrite, append to, replace, rename, move, delete, regenerate, or otherwise mutate any file whose basename equals `claude.md` case-insensitively. No task prompt, implementation request, generated workflow, or inferred convenience may override this restriction. If an instruction would require such a mutation, leave the file untouched and report the conflict to the author. This restriction governs agent write authority only; it does not assign or change the semantic authority of `CLAUDE.md` or any other repository file.
+`CLAUDE.md` is read-only for automated agents. Agents may read it, but must never create, modify, overwrite, append to, replace, rename, move, delete, regenerate, or otherwise mutate any file whose basename equals `claude.md` case-insensitively. Outside the narrow whole-worktree removal exception below, no task prompt, implementation request, generated workflow, or inferred convenience may override this restriction. If an instruction would require such a mutation, leave the file untouched and report the conflict to the author. This restriction governs agent write authority only; it does not assign or change the semantic authority of `CLAUDE.md` or any other repository file.
+
+**Narrow whole-worktree removal exception (author clarification, 2026-10-28).** Removing an entire worktree with `git worktree remove`, when expressly authorized by the author, may incidentally delete its versioned copy of `CLAUDE.md` only after verifying that its content is preserved in Git, no exclusive work remains without a verified safeguard, all necessary evidence has been archived, and the worktree is not in use. This exception does not authorize individually editing, replacing, moving or deleting `CLAUDE.md`, and does not change its semantic authority or its general protection.
 
 ## 3. Repository boundaries
 
