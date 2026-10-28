@@ -78,14 +78,17 @@ class PreG9BCu3SeamReclassificationAuthorModelTest {
 		for (String pair : PAIRS) {
 			List<?> rows = (List<?>) contacts.get(pair);
 			assertEquals(((JSONArray) pinned.get(pair)).length(), rows.size(), pair);
-			// CU3-B1 anchors the contacts of e_1 at its folds; the regular tangency of o_1 and
-			// h_2 belongs to CU3-B2, which is not authorized.
-			boolean fold = pair.startsWith("Intersect(e_1,");
+			// CU3-B1 anchors the contacts of e_1 at its folds; CU3-B2 anchors the regular
+			// tangency of o_1 and h_2 (u_1), an exact double root of order two (explicit
+			// inversion of B08_B09 by CU3-B2).
+			boolean anchored = pair.startsWith("Intersect(e_1,")
+					|| "Intersect(o_1,h_2)".equals(pair);
 			for (Object row : rows) {
 				assertEquals("TANGENT_ESTABLISHED", ((Map<?, ?>) row).get("contact_class"),
 						pair);
-				assertEquals(fold, ((Map<?, ?>) row).get("admissible"),
-						pair + ": a contact is materialized only when anchored at a fold");
+				assertEquals(anchored, ((Map<?, ?>) row).get("admissible"),
+						pair + ": a contact is materialized only when anchored at a fold or as"
+								+ " a certified regular tangent contact");
 			}
 			PreG9BCu0Baseline.assertMatches("preserve.contacts." + pair,
 					baseline.getJSONObject("preserve").getJSONObject("contacts").get(pair),
