@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU3",
+  "increment": "CU3-B1",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu3_b1_closeout_record.md",
+  "instruction": "Decisión autoral — Aprobación y cierre de PRE-G9B-CU3-B1",
+  "authorApprovalDate": "2026-10-28",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "approvalScope": "CU3-B1 only: product dd3a2676 and its verified test-only descendant aabfd0b9; CU3-B2 and CU3 as a whole are not approved",
+  "authorSmoke": "AUTHOR SMOKE — PASS (2026-10-28), with the guide corrected in 841d33b8",
+  "candidateFrozen": true,
+  "candidateMutated": false,
+  "productChangeByCloseout": "NONE",
+  "newHeavyIntegration": "NONE",
+  "newHeavyFinal": "NONE",
+  "nonBlocking": {
+    "DEBT-CU3B1-LEDGER-V6-HIGHWATER-IDEMPOTENCE": "nextIncarnation rises by two per reopening with anchored entries (transient load-time evaluations without singleton binding); entries, tokens and claims unchanged; no product change presumed",
+    "OBS-CU3B1-DRIVER-SUPPORT-REDEFINITION-BARRIER": "an effective redefinition of the driver support acting as an ADR 0017 identity barrier is not demonstrated; N=Point(c3) was not applied by the kernel and does not count as covered"
+  },
+  "status": {
+    "PRE-G9B-CU0": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU2": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-A": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-B1": "PASS — AUTHOR APPROVED",
+    "PRE-G9B-CU3 / CU3-B2": "NOT AUTHORIZED",
+    "PRE-G9B-CU3": "NOT APPROVED",
+    "PRE-G9B-CU4..CU10": "NOT AUTHORIZED",
+    "reviewBranch": "UNCHANGED: origin phase/pre-g9b-cu3-implementation at b1813da1",
+    "main": "UNCHANGED: e6c908f2",
+    "tag": "NONE CREATED",
+    "book": "UNCHANGED"
+  },
+  "identities": {
+    "product": {"commit": "dd3a2676d231f5c8b2c2bf0a9016eb6d8a5f7d2b", "tree": "f4cbd64e8c147977a5e417fa70182f3b893e6a87"},
+    "verifiedDescendant": {"commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "tree": "c2b061ec0e6345147e561b93dbe0e8ef62898e8d", "productFilesChangedFromProduct": false}
+  },
+  "verificationClass": "INTEGRATED_PHASE",
+  "acceptance": [
+    {"check": "STATIC", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-204b70f61f254392bbdafc7d1c6e0b9e", "resultHash": "9720bab728ae88cc90ba6d564e27a1e03a47a3281c13394e17331fd314c743e8", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "3/3"},
+    {"check": "INFRA_UNIT", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-71180eb1bbe44ff29a1489a5b69b13d3", "resultHash": "7778fc6d6db595c0420c3ed49e58c6f8f0f921b186da76c880813b760cbad85d", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "22/22"},
+    {"check": "PHASE -Phase PRE-G9B-CU3", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-4f4f39f4c5e54aff9c1897533cf22503", "resultHash": "976fe160dfbb3d887f1d402b19d38d84074e0526dd10880bc904a0c00ccc1315", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU2", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-3cd48c0f159d4e869dca563552d306fb", "resultHash": "3e2b5028443036c42aee80f3e4515313cf247c53d2ccdd6070c6342983d46147", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU1", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-b693714b720043e5a39dd52672bc1f4d", "resultHash": "5f9654a3a19e31a752283d11ed2b890fe40dfc6db0a5d254ebe3cc1214267794", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "4/4"},
+    {"check": "PHASE -Phase PRE-G9B-CU0", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-f708b23b3e484e84820eabe00d6d3ff4", "resultHash": "e237870dadbd21818097833f04a8ae8f43dedcb767335ef7df86565eff1e719e", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "2/2"},
+    {"check": "INTEGRATION", "commit": "aabfd0b952838f964d2f2c25b3ebcba643935345", "runId": "verification-bf0133909f704f3091c305b4b31c2ee5", "resultHash": "4547902025b465efaa9a247dba0330f26bde990a7c40889c4097f94c4510cce9", "verdict": "ACCEPTED", "coverage": "COMPLETE", "acceptanceLeaves": "19/19"}
+  ],
+  "productCampaign": {"commit": "dd3a2676d231f5c8b2c2bf0a9016eb6d8a5f7d2b", "integrationRunId": "verification-07c07cc0f5b0419e8b13b1300181e28c", "verdict": "ACCEPTED/COMPLETE, authenticated"},
+  "authentication": {"date": "2026-10-28", "method": "Read-VerificationJson + Get-VerificationResultHash; run journal COMPLETED; candidate commit and tree exact", "allAuthentic": true},
+  "closeoutCommitIdentity": "reported by the next artifact"
+}
