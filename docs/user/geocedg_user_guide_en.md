@@ -1116,6 +1116,15 @@ Two points with identical coordinates may have completely different semantic
 provenance, and one of them may be usable for a given query while the other is
 not.
 
+**Initial selection (M08-S).** A position reference discovers admissible semantic
+addresses. Select one explicitly when several are offered; cancelling creates no point.
+The point stores that address and reevaluates when the locus changes. Moving the initial
+reference adds no new dependency; it can still affect the point through an existing
+dependency of the locus itself. Unresolved searches cannot authorize a selection. Loss
+of address admissibility can make the point undefined; no nearby branch is silently chosen.
+This is not an assertion of exact projection or a global distance minimum.
+Safe M09 redefinition and dynamic M08-D correspondence remain pending.
+
 ### 8.2 Rich intersection results
 
 `Intersect(...)` applied to a semantic curve does not return a list of points.
@@ -2247,16 +2256,6 @@ file extensions and code literals are identifiers and are never translated.
 | `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF (experimental)… |
 
 ---
-
-### Point on Locus V2: initial selection (M08-S)
-
-Initial placement uses a position reference to discover admissible semantic addresses.
-When several are offered, select one explicitly; cancelling creates no point. The point
-stores that address and reevaluates when the locus changes. Moving the initial reference
-later does not move the point. An unresolved search cannot authorize a selection. Loss of
-address admissibility can make the point undefined; no nearby branch is silently chosen.
-This operation does not assert exact projection or a global distance minimum.
-Safe M09 redefinition and dynamic M08-D correspondence remain pending.
 
 *GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
 credits and licenses are retained in `LICENSE`, `NOTICE.md` and

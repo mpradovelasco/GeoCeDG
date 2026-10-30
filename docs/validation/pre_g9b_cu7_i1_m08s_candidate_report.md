@@ -1,11 +1,13 @@
 # CU7-I1 — M08-S: candidato de implementación
 
-Estado: **CANDIDATE — PENDING TECHNICAL VERIFICATION AND AUTHOR REVIEW**, 2026-10-30.
+Estado: **CANDIDATE — PENDING AUTHOR REVIEW**, 2026-10-30.
 No PASS autoral, no publicación. Rama `phase/pre-g9b-cu7-i1-m08-s`.
 Base: main publicado `caf67ffc3758eccdef5202b7524b6c2b4e5d2fd4`, árbol
 `ca8ec1dd869ce8acc9d3c271036f11b6ee878c24`, worktree limpio al crear la rama.
 No se ha incorporado código de ramas de investigación M09. El tracking local origin/main
 coincide; consulta de red inicial no disponible por resolución DNS, sin alterar Git/configuración.
+La consulta posterior read-only `git ls-remote origin refs/heads/main`, fuera del sandbox,
+terminó con exit 0 y confirmó caf67ffc. Main y tracking local permanecen intactos.
 
 ## Disposición autoral de A0 y M09
 
@@ -82,20 +84,75 @@ Resultados reales y SHA/árbol congelados se entregan en recibos bajo
 `artifacts/pre-g9b-cu7-i1/`. No declarar aceptación integrada por un focal ni por STATIC.
 Un fallo de entorno se separa de regresión productiva y se conserva con sus logs/exits.
 
+### Intentos conservados y conciliación de catálogos
+
+Primer candidato técnico: `c82e16f67138916ff80b1bc3101844136f8d012e`, árbol
+`2d51c224585bdde852d749e936d0a09250c8f13a`. STATIC ACCEPTED/COMPLETE y PHASE
+ACCEPTED/COMPLETE (52 shared + 5 Desktop, sin fallos/omisiones). INFRA_UNIT rechazado
+por contadores fijos de selección anteriores al registro I1. INTEGRATION
+`verification-7bcd899a3d414b759b8b466c46c91a28` REJECTED_VERIFICATION_CORE/UNTRUSTED:
+shared 7517 tests, 0 fallos, 10 omisiones preexistentes; catálogo aún esperaba 7514.
+Desktop 2265 tests, 3 fallos y 1 omisión: los tres fallos corresponden a índices/jerarquía
+de guías, por la nueva cabecera añadida. Estos resultados no se relabelan como aceptados.
+
+Correcciones: integrar M08-S como párrafo de §8.1 sin alterar el índice protegido; derivar
+el catálogo shared global con el productor ejecutado y `update-verification-junit-inventory.ps1`;
+actualizar las aserciones de cantidades 70→71 selecciones y 72→73 fases por el registro I1.
+No se alteran geometría, tolerancias, allowlists de omisión ni reglas del verificador.
+Durante la conciliación focal se detectó también hash de catálogo calculado sobre CRLF;
+se normalizó LF y se utilizó la función canónica de hash. El posterior chequeo focal detectó
+el segundo contador PHASE antiguo, corregido explícitamente. No fueron defectos del kernel.
+
+La evidencia inicial queda en `artifacts/pre-g9b-cu7-i1/{static,infra-unit,phase,integration}`;
+la verificación del candidato conciliado se guarda en `artifacts/pre-g9b-cu7-i1/final-2/`.
+Sus recibos identifican SHA/árbol y resultado real; no se incrusta un hash autorreferencial.
+La fuente productiva y los tests Java permanecen como en c82e16f; esta conciliación modifica
+documentación, procedencia y catálogo/fixture de verificación. La API sigue las reglas
+normales del hilo de construcción del kernel; no ofrece una transacción concurrente M09.
+
+El foco correctivo de las guías se ejecuta por `gradle-command-evidence-producer.ps1`
+con filtros PreG9BR5AGuideOutlineTest y PreG9BR6PlusGProductMetadataTest: hijo exit 0,
+evidencia `artifacts/pre-g9b-cu7-i1/guide-focus/process.json`. Es un foco, no aceptación.
+El test puro del catálogo actualizado termina con 8 casos, 576 aserciones y 0 fallos.
+El STATIC de trabajo en repair-static tampoco sustituye la verificación del commit limpio.
+
+Comandos canónicos del candidato conciliado, cada uno en su directorio nuevo:
+
+```powershell
+& tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts/pre-g9b-cu7-i1/final-2/static
+& tools/agent/verify.ps1 -Profile INFRA_UNIT -LogDirectory artifacts/pre-g9b-cu7-i1/final-2/infra-unit
+& tools/agent/verify.ps1 -Profile PHASE -Phase PRE-G9B-CU7-I1 -LogDirectory artifacts/pre-g9b-cu7-i1/final-2/phase
+& tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts/pre-g9b-cu7-i1/final-2/integration
+git diff --check HEAD^ HEAD
+```
+
+Los resultados de esos comandos están en sus verification-result.json; ninguna aprobación
+autoral se deduce de ellos. La comprobación de integridad de INTEGRATION recorre también
+artefactos históricos protegidos; no se eliminan para reducir la campaña.
+
 ## Smoke manual del autor — NO EJECUTADO
 
-1. Abrir GeoCeDG con Locus V2 habilitado; construir una SplineV2 recta y seleccionar su
-   punto próximo con herramienta de punto. Confirmar punto definido y un solo Undo.
-2. Construir spline auto-intersecante; solicitar punto en el cruce. Revisar las direcciones
-   ofrecidas, cancelar y comprobar ausencia de punto/Undo; repetir eligiendo explícitamente.
-3. Mover la referencia geométrica inicial: el punto creado conserva su dirección. Mover
-   entradas del locus: se reevalúa según dirección, no se vuelve a proyectar la referencia.
-4. Cruzar una degeneración/pérdida de componente admitida por fixture R6: comprobar estado
-   indefinido explícito y recuperación únicamente de la misma dirección admisible.
-5. Undo/Redo creación; guardar nativo .ggb/.cedg, cerrar/reabrir y comprobar dirección e ID
-   mediante inspector/diagnóstico. Renombrar objetos no debe reasociar direcciones.
-6. Abrir documento anterior y otro sin asociaciones: no migración automática ni nueva
-   política geométrica; las rutas Point existentes conservan sus contratos.
+1. Abrir GeoCeDG con Locus V2 habilitado. Crear con la herramienta de deslizador `h`, rango
+   [-1,1], paso 1, valor 1. Introducir `A=(-2,1/h)`, `B=(-2/3,1/h)`, `C=(2/3,1/h)`,
+   `D=(2,1/h)`, `S=SplineV2({A,B,C,D},3)` y `Q=(0.25,1)`.
+2. Con la herramienta Punto, pulsar sobre S cerca de Q. Anotar el nombre del nuevo punto
+   (puede renombrarse P). Inmediatamente, un Undo debe quitar solo ese punto y Redo
+   restaurarlo; realizarlo antes de las ediciones siguientes.
+3. Con Mover, desplazar Q fuera del locus: P permanece en su dirección inicial. Desplazar
+   el deslizador h a -1: S cambia y P se recalcula con él. Parar en h=0: fuente/punto quedan
+   indefinidos, sin coordenadas antiguas presentadas como válidas. Volver a h=1: comprobar
+   recuperación de la misma dirección. No redefinir soporte/conductor para este ensayo.
+4. Crear `CA=(-1,0)`, `CB=(0,1)`, `CC=(1,0)`, `CD=(0,1)`, `CE=(-1,0)`,
+   `Cross=SplineV2({CA,CB,CC,CD,CE},3)`. Pulsar con Punto en (0,1); si se ofrecen S y Cross,
+   elegir Cross. Deben ofrecerse direcciones diferentes (parámetros próximos a .25 y .75),
+   aunque las posiciones coincidan. Cancelar: no aparece un punto nuevo. Repetir eligiendo
+   explícitamente una dirección; Undo/Redo debe retirar/restaurar solo el punto creado.
+5. En estado válido, guardar por la ruta nativa .ggb/.cedg, cerrar y reabrir. Comprobar
+   definición/dirección y recomputación. Renombrar no debe reasociar direcciones. La igualdad
+   exacta de ID se comprueba automáticamente en JUnit, no por igualdad de etiquetas en pantalla.
+6. Abrir un documento anterior y otro sin asociaciones: no migración automática ni cambio
+   de política; las rutas Point existentes conservan sus contratos. Si Q ya fuera antecedente
+   del propio locus, su efecto a través de L seguiría siendo legítimo: S no elimina aristas reales.
 
 ## Impacto y límites
 

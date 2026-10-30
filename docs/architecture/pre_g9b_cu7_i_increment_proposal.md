@@ -1,5 +1,16 @@
 # PRE-G9B-CU7-I — Propuesta concreta de incrementos
 
+## Disposición operativa posterior de 2026-10-30
+
+El autor cambia la prioridad a I1 — M08-S desde main caf67ffc, independientemente de M09.
+R3-E/A0 se acepta como caracterización, sin demostrar transacción segura ni superar puertas
+anteriores. M09 permanece parcialmente diseñado y pendiente de implementación segura; A0,
+I2a/I2b, I2G/I3 y M08-D no se reanudan. La investigación general de reconstrucción es deuda
+futura, no prerrequisito de I1. El orden y las autorizaciones anteriores que siguen debajo
+conservan su cronología, supersedidos operativamente por esta disposición.
+[Candidato I1, puerta previa, verificación y smoke](../validation/pre_g9b_cu7_i1_m08s_candidate_report.md).
+La autorización de implementación no aprueba el candidato ni permite publicarlo.
+
 ## Autorización posterior de 2026-10-29
 
 Author decision of 2026-10-29 approves the consolidated design and prospective normative text

@@ -1174,6 +1174,15 @@ Dos puntos de coordenadas idénticas pueden tener proveniencias semánticas
 completamente distintas, y uno de ellos puede ser utilizable para una consulta
 dada mientras el otro no lo es.
 
+**Selección inicial (M08-S).** Una referencia de posición permite descubrir direcciones
+semánticas admisibles. Si se ofrecen varias, elija una explícitamente; cancelar no crea
+un punto. El punto guarda esa dirección y se recalcula cuando cambia el locus. La selección
+no añade una dependencia nueva de la referencia inicial; esta puede seguir afectándolo
+si ya es un antecedente del propio locus. Una búsqueda no resuelta no autoriza una elección.
+Perder la admisibilidad puede dejar el punto indefinido; no se elige otra rama cercana.
+Esta operación no afirma una proyección exacta ni una mínima distancia global.
+La redefinición segura M09 y la correspondencia dinámica M08-D siguen pendientes.
+
 ### 8.2 Resultados ricos de intersección
 
 `Intersect(...)` aplicado a una curva semántica no devuelve una lista de puntos.
@@ -2358,16 +2367,6 @@ y no se traducen nunca.
 | `Ctrl`+`Mayús`+`D` | Exportar geometría 2D como DXF (experimental)… |
 
 ---
-
-### Punto sobre Locus V2: selección inicial (M08-S)
-
-La selección inicial usa una referencia de posición para descubrir direcciones semánticas
-admisibles. Si hay varias, elija explícitamente una; cancelar no crea un punto. El punto
-guarda esa dirección y se recalcula cuando cambia el locus. Mover después la referencia
-inicial no mueve el punto. Una búsqueda no resuelta no autoriza una elección, y perder la
-admisibilidad de la dirección puede dejar el punto indefinido; no se elige otra rama cercana.
-Esta operación no afirma una proyección exacta ni una mínima distancia global.
-La redefinición segura M09 y la correspondencia dinámica M08-D siguen pendientes.
 
 *GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
 licencias upstream obligatorios se conservan en `LICENSE`, `NOTICE.md` y

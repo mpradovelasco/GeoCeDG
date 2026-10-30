@@ -7514,6 +7514,7 @@
       "change": "added",
       "purpose": "PRE-G9B-CU3 T7-a on the replica: the contact of o_1 and h_2 at rbCone = 7.5, left by version 1 at its work limit, is the double root of order two under version 2 with its admissibility unchanged; the decision through configuration changes, Undo, Redo and reopen, never persisted; every exact existence is a double root under version 2; a legacy document keeps version 1.",
       "authority": "geocedg/specs/locus/locus-v2-intersections.md"
-    }
+    },
+    {"purpose":"CU7-I1 M08-S: kernel-owned current query selection and single-use forward point creation, with no dynamic dependency on the initial reference, new geometry or persistence format.","change":"added","path":"source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusSnapshotPlacement2D.java","authority":"docs/adr/0041-locus-v2-point-placement-and-point-redefinition.md"}
   ]
 }
