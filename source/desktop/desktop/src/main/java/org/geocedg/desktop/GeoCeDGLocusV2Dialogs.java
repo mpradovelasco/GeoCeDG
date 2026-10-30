@@ -52,6 +52,7 @@ import org.geogebra.desktop.main.AppD;
 
 /** Keyboard-accessible, text-first dialogs for experimental Locus V2 actions. */
 final class GeoCeDGLocusV2Dialogs {
+	enum InteractionAction { CREATE, EDIT, MOVE }
 	private static final int INSPECTOR_ROWS = 18;
 	private static final int INSPECTOR_COLUMNS = 72;
 
@@ -104,11 +105,46 @@ final class GeoCeDGLocusV2Dialogs {
 	}
 
 	String interactionMessage(LocusPointInteractionResult2D result) {
-		if (result == null || result.getStatus() == LocusPointInteractionStatus2D.INVALID_SOURCE) {
-			return text("point.invalid");
+		return interactionMessage(result, InteractionAction.EDIT);
+	}
+
+	String interactionMessage(LocusPointInteractionResult2D result, boolean creation) {
+		return interactionMessage(result, creation ? InteractionAction.CREATE : InteractionAction.MOVE);
+	}
+
+	String interactionMessage(LocusPointInteractionResult2D result, InteractionAction action) {
+		String key = result == null ? "invalid" : switch (result.getReason()) {
+		case CERTIFIED_ABSENCE -> "absent";
+		case UNIQUE -> "unique";
+		case MULTIPLE -> "multiple";
+		case INVALID_SOURCE -> "invalid";
+		case DEGENERATE_SOURCE -> "degenerate";
+		case UNSUPPORTED_CAPABILITY -> "unsupported";
+		case GLOBAL_UNIQUENESS_NOT_ESTABLISHED -> "globalUnknown";
+		case LOCAL_EVIDENCE_INSUFFICIENT -> "localInsufficient";
+		case BUDGET_EXHAUSTED -> "budget";
+		};
+		String prefix = switch (action) {
+		case CREATE -> "point.creationNotCreated";
+		case EDIT -> "point.editNotChanged";
+		case MOVE -> "point.moveNotChanged";
+		};
+		return text(prefix)
+				+ " " + text("point.reason." + key);
+	}
+
+	void showSelectionFailure(IllegalArgumentException failure, boolean creation) {
+		String key = switch (String.valueOf(failure.getMessage())) {
+		case "CU7_STALE_SELECTION" -> "stale";
+		case "CU7_SELECTION_NOT_IN_QUERY" -> "foreign";
+		default -> "localInsufficient";
+		};
+		if (app.isErrorDialogsActive()) {
+			JOptionPane.showMessageDialog(app.getMainComponent(),
+					text(creation ? "point.creationNotCreated" : "point.moveNotChanged")
+							+ " " + text("point.reason." + key),
+					text("point.choose"), JOptionPane.INFORMATION_MESSAGE);
 		}
-		return text(result.getStatus() == LocusPointInteractionStatus2D.DEGENERATE_SOURCE_IMAGE
-				? "point.degenerate" : "point.unresolved");
 	}
 
 	void showInteractionOutcome(LocusPointInteractionResult2D result, boolean creation) {
@@ -118,7 +154,7 @@ final class GeoCeDGLocusV2Dialogs {
 			return;
 		}
 		if (app.isErrorDialogsActive()) {
-			JOptionPane.showMessageDialog(app.getMainComponent(), interactionMessage(result),
+			JOptionPane.showMessageDialog(app.getMainComponent(), interactionMessage(result, creation),
 					text("point.choose"), JOptionPane.INFORMATION_MESSAGE);
 		}
 	}

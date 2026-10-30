@@ -12,6 +12,12 @@ import java.util.Objects;
 
 /** Immutable typed inverse semantic-address result. */
 public final class LocusPointInteractionResult2D {
+	/** Diagnostic cause only; never a new admission permission. */
+	public enum Reason {
+		CERTIFIED_ABSENCE, UNIQUE, MULTIPLE, INVALID_SOURCE, DEGENERATE_SOURCE,
+		UNSUPPORTED_CAPABILITY, GLOBAL_UNIQUENESS_NOT_ESTABLISHED,
+		LOCAL_EVIDENCE_INSUFFICIENT, BUDGET_EXHAUSTED
+	}
 	/** Strength of whole-domain search evidence. */
 	public enum SearchCoverage {
 		ALL_CERTIFIED_AFFINE_COMPONENTS,
@@ -28,6 +34,7 @@ public final class LocusPointInteractionResult2D {
 	}
 
 	private final LocusPointInteractionStatus2D status;
+	private final Reason reason;
 	private final List<LocusPointInteractionCandidate2D> candidates;
 	private final SearchCoverage searchCoverage;
 	private final String diagnostic;
@@ -38,7 +45,15 @@ public final class LocusPointInteractionResult2D {
 			List<LocusPointInteractionCandidate2D> candidates,
 			SearchCoverage searchCoverage, String diagnostic,
 			LocusPointInteractionInstrumentationSnapshot2D instrumentation) {
+		this(status, candidates, searchCoverage, diagnostic, instrumentation, defaultReason(status));
+	}
+
+	LocusPointInteractionResult2D(LocusPointInteractionStatus2D status,
+			List<LocusPointInteractionCandidate2D> candidates,
+			SearchCoverage searchCoverage, String diagnostic,
+			LocusPointInteractionInstrumentationSnapshot2D instrumentation, Reason reason) {
 		this.status = Objects.requireNonNull(status);
+		this.reason = Objects.requireNonNull(reason);
 		this.candidates = Collections.unmodifiableList(
 				new ArrayList<>(Objects.requireNonNull(candidates)));
 		this.searchCoverage = Objects.requireNonNull(searchCoverage);
@@ -55,6 +70,22 @@ public final class LocusPointInteractionResult2D {
 			throw new IllegalArgumentException(
 					"Definitive inverse result needs complete semantic coverage");
 		}
+	}
+
+	private static Reason defaultReason(LocusPointInteractionStatus2D status) {
+		return switch (status) {
+		case NO_ADMISSIBLE_PREIMAGE -> Reason.CERTIFIED_ABSENCE;
+		case UNIQUE_ADMISSIBLE_PREIMAGE -> Reason.UNIQUE;
+		case MULTIPLE_SEMANTIC_PREIMAGES -> Reason.MULTIPLE;
+		case INVALID_SOURCE -> Reason.INVALID_SOURCE;
+		case DEGENERATE_SOURCE_IMAGE -> Reason.DEGENERATE_SOURCE;
+		case UNSUPPORTED_CAPABILITY -> Reason.UNSUPPORTED_CAPABILITY;
+		case UNRESOLVED_NUMERICAL_SEARCH -> Reason.LOCAL_EVIDENCE_INSUFFICIENT;
+		};
+	}
+
+	public Reason getReason() {
+		return reason;
 	}
 
 	public LocusPointInteractionStatus2D getStatus() {

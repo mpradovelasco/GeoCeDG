@@ -123,7 +123,7 @@ public final class LocusPointInteractionResolver2D {
 					LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 					List.of(), SearchCoverage.NOT_APPLICABLE,
 					"R6 work budget exhausted: " + exception.getMessage(),
-					instrumentation);
+					instrumentation, LocusPointInteractionResult2D.Reason.BUDGET_EXHAUSTED);
 		} catch (IllegalArgumentException exception) {
 			return result(
 					LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
@@ -908,7 +908,8 @@ public final class LocusPointInteractionResolver2D {
 					admissible, search.coverage,
 					"One local candidate was established, but bounded semantic "
 							+ "search did not establish global uniqueness",
-					instrumentation);
+					instrumentation,
+					LocusPointInteractionResult2D.Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED);
 		}
 		return result(admissible.size() == 1
 				? LocusPointInteractionStatus2D.UNIQUE_ADMISSIBLE_PREIMAGE
@@ -1384,6 +1385,16 @@ public final class LocusPointInteractionResolver2D {
 			LocusPointInteractionInstrumentation2D instrumentation) {
 		return new LocusPointInteractionResult2D(status, candidates, coverage,
 				diagnostic, instrumentation.snapshot());
+	}
+
+	private static LocusPointInteractionResult2D result(
+			LocusPointInteractionStatus2D status,
+			List<LocusPointInteractionCandidate2D> candidates,
+			SearchCoverage coverage, String diagnostic,
+			LocusPointInteractionInstrumentation2D instrumentation,
+			LocusPointInteractionResult2D.Reason reason) {
+		return new LocusPointInteractionResult2D(status, candidates, coverage,
+				diagnostic, instrumentation.snapshot(), reason);
 	}
 
 	private static final class RawCandidate {

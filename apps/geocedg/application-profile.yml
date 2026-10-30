@@ -5970,6 +5970,63 @@
       "en": "No uniquely certified semantic position; no point was changed.",
       "es": "No hay una posición semántica certificada única; no se modificó ningún punto."
     },
+    "point.creationNotCreated": {
+      "en": "No point was created.", "es": "No se creó ningún punto."
+    },
+    "point.editNotChanged": {
+      "en": "The point definition was not edited.", "es": "No se editó la definición del punto."
+    },
+    "point.moveNotChanged": {
+      "en": "The point was not moved.", "es": "No se movió el punto."
+    },
+    "point.reason.absent": {
+      "en": "The complete search certified no admissible candidate within the requested radius.",
+      "es": "La búsqueda completa certificó que no hay candidatos admisibles dentro del radio indicado."
+    },
+    "point.reason.unique": {
+      "en": "The query has one admissible direction.",
+      "es": "La consulta tiene una dirección admisible."
+    },
+    "point.reason.multiple": {
+      "en": "Several admissible directions require an explicit choice; cancellation changes nothing.",
+      "es": "Varias direcciones admisibles requieren una elección explícita; cancelar no modifica nada."
+    },
+    "point.reason.invalid": {
+      "en": "The source or reference is invalid or no longer current.",
+      "es": "La fuente o referencia no es válida o ya no está vigente."
+    },
+    "point.reason.degenerate": {
+      "en": "The source image or distance objective is degenerate.",
+      "es": "La imagen de la fuente o el objetivo de distancia es degenerado."
+    },
+    "point.reason.unsupported": {
+      "en": "The source has no supported deterministic evaluator capability.",
+      "es": "La fuente no tiene una capacidad de evaluación determinista admitida."
+    },
+    "point.reason.globalUnknown": {
+      "en": "A local candidate was verified, but search uniqueness is not established. The current policy does not offer it for creation; this does not certify absence.",
+      "es": "Se verificó un candidato local, pero no se estableció la unicidad de la búsqueda. La política vigente no lo ofrece para crear; esto no certifica ausencia."
+    },
+    "point.reason.localInsufficient": {
+      "en": "Local evidence is insufficient or candidates are not separated. No certified absence is claimed.",
+      "es": "La evidencia local es insuficiente o los candidatos no están separados. No se afirma ausencia certificada."
+    },
+    "point.reason.budget": {
+      "en": "The deterministic search budget was exhausted. This does not certify absence.",
+      "es": "Se agotó el presupuesto determinista de búsqueda. Esto no certifica ausencia."
+    },
+    "point.reason.stale": {
+      "en": "The selection expired after a source or document change. Query again.",
+      "es": "La selección caducó tras un cambio de fuente o documento. Repita la consulta."
+    },
+    "point.reason.foreign": {
+      "en": "The chosen direction does not belong to this query.",
+      "es": "La dirección elegida no pertenece a esta consulta."
+    },
+    "point.reason.cancelled": {
+      "en": "Cancelled voluntarily; no point was created.",
+      "es": "Cancelado voluntariamente; no se creó ningún punto."
+    },
     "point.degenerate": {
       "en": "Collapsed source: a new point has no unique preimage.",
       "es": "Fuente colapsada: un punto nuevo no tiene preimagen única."

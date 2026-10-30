@@ -238,7 +238,7 @@ public final class GeoCeDGEuclidianController
 										pointInteraction.getLastResult(), true);
 							}
 						} catch (IllegalArgumentException exception) {
-							locusV2Dialogs.showInteractionOutcome(null, true);
+							locusV2Dialogs.showSelectionFailure(exception, true);
 						}
 					}
 					kernel.notifyRepaint();
