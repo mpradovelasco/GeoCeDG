@@ -77,6 +77,70 @@ final class G9U0R6SemanticLocusPointInteractionTest
 	private static final String SPLINE_BRANCH = "spline-v2/main";
 	private final LocusPointInteractionResolver2D resolver =
 			new LocusPointInteractionResolver2D();
+	@Test
+	void cu7SnapshotDoesNotDependOnReferenceAndSurvivesReopen() {
+		GeoLocusV2 source = createLineSpline("S");
+		GeoPoint reference = add("Reference=(0.25,0.1)");
+		var selection = org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
+				.query(source, reference.inhomX, reference.inhomY, policy(0.2));
+		var candidate = selection.getResult().getUniqueCandidate();
+		assertNotNull(candidate);
+		GeoPoint point = selection.commit("Snapshot", candidate);
+		var address = ((AlgoSemanticLocusPoint2D) point.getParentAlgorithm())
+				.getCurrentSemanticAddress();
+		assertFalse(point.getAllPredecessors().contains(reference));
+		var id = getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point);
+		reference.setCoords(10, 10, 1);
+		reference.updateCascade();
+		assertEquals(0.25, point.inhomX, 1E-9);
+		getApp().setXML(getApp().getXML(), true);
+		GeoPoint reopened = (GeoPoint) requireLookup("Snapshot");
+		assertEquals(id, getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(reopened));
+		assertEquals(address, ((AlgoSemanticLocusPoint2D) reopened.getParentAlgorithm())
+				.getCurrentSemanticAddress());
+		assertThrows(IllegalStateException.class, () -> selection.commit("Again", candidate));
+	}
+
+	@Test
+	void cu7SnapshotRejectsForeignChoiceWithoutPublishing() {
+		GeoLocusV2 source = createLineSpline("S");
+		var selection = org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
+				.query(source, 0, 0, policy(0.2));
+		var foreign = resolve(source, 0, 0, 0.2).getUniqueCandidate();
+		String before = getApp().getXML();
+		assertThrows(IllegalArgumentException.class, () -> selection.commit("P", foreign));
+		assertEquals(before, getApp().getXML());
+		GeoLocusV2 crossingSource = createSelfIntersectingSpline("Cross");
+		LocusPoint2D crossing = evaluate(crossingSource, 0.25);
+		var multiple = org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
+				.query(crossingSource, crossing.getX(), crossing.getY(), policy(1E-6));
+		assertEquals(LocusPointInteractionStatus2D.MULTIPLE_SEMANTIC_PREIMAGES,
+				multiple.getResult().getStatus());
+		assertNull(multiple.getResult().getUniqueCandidate());
+		var chosen = multiple.getResult().getCandidates().get(1);
+		GeoPoint selected = multiple.commit("Chosen", chosen);
+		assertEquals(chosen.getAddress(), ((AlgoSemanticLocusPoint2D)
+				selected.getParentAlgorithm()).getCurrentSemanticAddress());
+	}
+
+	@Test
+	void cu7SnapshotCancelAndStaleChoiceDoNotMutate() {
+		GeoLocusV2 source = createLineSpline("S");
+		var cancelled = org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
+				.query(source, 0, 0, policy(0.2));
+		String before = getApp().getXML();
+		assertNull(cancelled.commit("P", null));
+		assertEquals(before, getApp().getXML());
+		var stale = org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
+				.query(source, 0, 0, policy(0.2));
+		GeoPoint defining = (GeoPoint) requireLookup("SA");
+		defining.setCoords(-3, 0, 1);
+		defining.updateCascade();
+		String changed = getApp().getXML();
+		assertThrows(IllegalArgumentException.class,
+				() -> stale.commit("P", stale.getResult().getUniqueCandidate()));
+		assertEquals(changed, getApp().getXML());
+	}
 
 	@Test
 	void r601SplinePolynomialInverseIsUniqueAndCarriesExactAddressEvidence() {

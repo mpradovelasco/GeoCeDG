@@ -516,6 +516,21 @@ CU7-D — PASS / AUTHOR APPROVED sobre 7e7a90e4e39db04ea49ee9ab1acf69ea34c81080,
 Solo CU7-I/I2a+I2b, M09 singleton, autorizado desde su cierre verificado en rama independiente.
 I1/I2G/I3/I4/I5 global no autorizados. M09 sigue parcial. Main, libro y publicación sin cambios.
 
+## 2.34 Cambio autoral de prioridad: M08-S (2026-10-30)
+
+El autor acepta R3-E como caracterización acotada: el cambio mecánico de token es posible,
+pero la transacción A0 no está demostrada ni autorizada. No se superan puertas anteriores.
+M09 permanece parcialmente diseñado y pendiente de implementación segura; investigación
+general de reconstrucción solo deuda futura, sin ser prerrequisito de M08-S. R1/R2/R3-D/R3-E
+quedan congelados en sus ramas/commits históricos, sin incorporación de sus sondas a main.
+
+Autoriza I1 M08-S desde main publicado caf67ffc, con puerta técnica previa y verificación
+INTEGRATED_PHASE (PHASE registrada e INTEGRATION). Rama local phase/pre-g9b-cu7-i1-m08-s;
+[candidato, disposición experimental y smoke](../validation/pre_g9b_cu7_i1_m08s_candidate_report.md).
+Reutiliza selección inicial y punto forward sin dependencia de la referencia. M08-D, M09/A0,
+I2G/I3 y reconstrucción general excluidos. CU10/guía/E1/deuda científica y libro intactos.
+La implementación autorizada no equivale a aprobación del candidato ni permiso de publicación.
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de

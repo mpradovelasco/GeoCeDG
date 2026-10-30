@@ -2248,6 +2248,16 @@ file extensions and code literals are identifiers and are never translated.
 
 ---
 
+### Point on Locus V2: initial selection (M08-S)
+
+Initial placement uses a position reference to discover admissible semantic addresses.
+When several are offered, select one explicitly; cancelling creates no point. The point
+stores that address and reevaluates when the locus changes. Moving the initial reference
+later does not move the point. An unresolved search cannot authorize a selection. Loss of
+address admissibility can make the point undefined; no nearby branch is silently chosen.
+This operation does not assert exact projection or a global distance minimum.
+Safe M09 redefinition and dynamic M08-D correspondence remain pending.
+
 *GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
 credits and licenses are retained in `LICENSE`, `NOTICE.md` and
 `THIRD_PARTY.md`.*

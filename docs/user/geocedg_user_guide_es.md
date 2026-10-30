@@ -2359,6 +2359,16 @@ y no se traducen nunca.
 
 ---
 
+### Punto sobre Locus V2: selección inicial (M08-S)
+
+La selección inicial usa una referencia de posición para descubrir direcciones semánticas
+admisibles. Si hay varias, elija explícitamente una; cancelar no crea un punto. El punto
+guarda esa dirección y se recalcula cuando cambia el locus. Mover después la referencia
+inicial no mueve el punto. Una búsqueda no resuelta no autoriza una elección, y perder la
+admisibilidad de la dirección puede dejar el punto indefinido; no se elige otra rama cercana.
+Esta operación no afirma una proyección exacta ni una mínima distancia global.
+La redefinición segura M09 y la correspondencia dinámica M08-D siguen pendientes.
+
 *GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
 licencias upstream obligatorios se conservan en `LICENSE`, `NOTICE.md` y
 `THIRD_PARTY.md`.*
