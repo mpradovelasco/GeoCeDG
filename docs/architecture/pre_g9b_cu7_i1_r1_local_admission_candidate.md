@@ -45,6 +45,10 @@ candidatos. Las garantías de exactitud/STRICT no cambian.
 La confirmación elige la definición forward, nunca identidad por distancia, posición, índice
 o enumeración. Q se descarta como dependencia. La edición/arrastre R6 existente no recibe
 automáticamente esta ampliación; requerirá su propio alcance si fuera necesario.
+La autoría general completa debe decidir también si se autoriza una edición local de la
+dirección ya elegida: misma rama/componente, evidencia local y transacción R6 vigente,
+sin seguir Q ni convertirse en M08-D. Esta decisión y sus pruebas siguen pendientes;
+una creación admitida no demuestra por sí sola que una consulta de arrastre sea admitida.
 
 ## Textos a conciliar tras aprobación
 
@@ -66,6 +70,9 @@ unicidad global; varios locales; singular/no aislado; presupuesto agotado; barre
 fuente obsoleta; cancelación; Q libre/dependiente; DAG/identidad, Undo/Redo, .cedg y copia;
 regresión SplineV2 y arrastre existente; selección PHASE e INTEGRATION canónicas.
 
-Hasta esa decisión el h autoral se rechaza explícitamente en creación desde Q. La autoría
-Q para fuentes ya admitidas puede certificarse independientemente. No nueva autorización
+Hasta esa decisión la consulta autoral de h/ReferenceR1/radio 0.1, con un solo candidato
+local, se rechaza explícitamente. No es una exclusión de la familia del proveedor: las
+consultas con varios candidatos ya admitidos por el contrato conservan su elección explícita,
+aun sin cobertura inversa global. La autoría Q para consultas ya admitidas puede certificarse
+independientemente. No nueva autorización
 de M08-D, M09/A0, I2G/I3, CU10, reconstrucción general ni deuda de tangencias.

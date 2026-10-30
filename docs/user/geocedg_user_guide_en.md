@@ -1125,6 +1125,18 @@ of address admissibility can make the point undefined; no nearby branch is silen
 This is not an assertion of exact projection or a global distance minimum.
 Safe M09 redefinition and dynamic M08-D correspondence remain pending.
 
+To use an **existing point Q**, activate **Point on Locus V2**, select L, and open
+**From existing Q (initial reference)**. Choose Q from the existing-point list and
+confirm the model-unit proximity radius and displayed bounded R6 search policy.
+This is separate from ordinary Point-tool clicks and manual branch/parameter entry.
+The saved construction uses the selected forward address, so Q is not a new parent;
+dragging remains subject to an admitted R6 edit query. Evaluator-only sources can still
+reject dragging when uniqueness is unestablished. Several admissible directions retain their
+explicit-choice route even without global search coverage. A general locus can have only
+one forward-valid local candidate while search uniqueness remains unestablished: the current policy
+rejects that query for creation. It does not certify absence. This restriction remains
+pending a separate author decision; user confirmation cannot override it.
+
 ### 8.2 Rich intersection results
 
 `Intersect(...)` applied to a semantic curve does not return a list of points.

@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "09a3c35b0b9b40bd6126d51e181ea09da79055ba6017e26fe33542139bdd0503",
+      "discovery_evidence_sha256": "759602b077f2229314f8c30c3bf35194928a91e81e82c7c00f87feb95b40711b",
       "discovered_identity_count": 6600,
       "discovered_identities_sha256": "940ab7e1d974d660deb64cef7539d0da08aa6e730231f1b9e535681499fe7070"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "f205a22d928734393802dba7e332976f7ec46c6764a366466ac227f92c34a231",
-      "discovered_identity_count": 2271,
-      "discovered_identities_sha256": "8c8b2dbc8d614048a5df9ac9914ec95074bcb70de0bbe2ecab3b8b5191e3ffde"
+      "discovery_evidence_sha256": "a189aa74a1986717354fa8b35c83a17111fcbe1997f972f08ef8366713901462",
+      "discovered_identity_count": 2282,
+      "discovered_identities_sha256": "a43c0f22b0dfb57114e669e542aa1948d800448e44dc2b440d981cf0810151eb"
     }
   ],
   "selections": [
@@ -63,8 +63,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2271,
-      "expected_identities_sha256": "8c8b2dbc8d614048a5df9ac9914ec95074bcb70de0bbe2ecab3b8b5191e3ffde",
+      "expected_identity_count": 2282,
+      "expected_identities_sha256": "a43c0f22b0dfb57114e669e542aa1948d800448e44dc2b440d981cf0810151eb",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -191,8 +191,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2265,
-      "expected_identities_sha256": "814867353cd73e3469b82b468127fa43c24eee42a9f1b3d0afd29159902547b5",
+      "expected_identity_count": 2276,
+      "expected_identities_sha256": "2d639abc3f068eefee55b118ec529071852205e33ef3416f79fe7f5812242a7f",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -3644,6 +3644,35 @@
         {
           "commit": "c82e16f67138916ff80b1bc3101844136f8d012e",
           "tree": "2d51c224585bdde852d749e936d0a09250c8f13a"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu7-i1-r1.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.Cu7M08SCorrectionTest",
+        "org.geocedg.desktop.Cu7M08SGeneralLocusDiagnosticTest",
+        "org.geocedg.desktop.G9U1SemanticPointInteractionTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 31,
+      "expected_identities_sha256": "05253f9b6b9fd13b41d7c5d7acedb794809fcf81e3a2e61d85375d3e1843aace",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "9159f6d8fe67494fde2f6463a1ee2609d6c35a71",
+          "tree": "cd9bcc8d197b002b73481feb388df1e74857f89a"
         }
       ]
     }

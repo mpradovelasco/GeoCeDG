@@ -42,6 +42,12 @@ class Cu7M08SNativeAuthoringDiagnosticTest {
   double x = point.getInhomX(); double y = point.getInhomY();
   q.setCoords(20,20,1); q.updateCascade();
   assertEquals(x, point.getInhomX()); assertEquals(y, point.getInhomY());
+  assertFalse(operation.move(point, x + 0.01, y, 0.1));
+  assertEquals(LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
+     operation.getLastResult().getStatus());
+  assertEquals(address, parent.getCurrentSemanticAddress());
+  System.out.println("AUTHOR general drag rejection=" + operation.getLastResult().getStatus()
+     + " cause=" + operation.getLastResult().getReason());
   Path output = directory.resolve("author-snapshot.cedg");
   assertTrue(((GuiManagerGeoCeDG) app.getGuiManager()).saveAsTo(output.toFile()));
   AppGeoCeDG reopened = G9U1SemanticPointInteractionTest.app();

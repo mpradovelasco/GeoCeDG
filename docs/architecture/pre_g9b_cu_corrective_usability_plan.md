@@ -531,6 +531,19 @@ Reutiliza selección inicial y punto forward sin dependencia de la referencia. M
 I2G/I3 y reconstrucción general excluidos. CU10/guía/E1/deuda científica y libro intactos.
 La implementación autorizada no equivale a aprobación del candidato ni permiso de publicación.
 
+## 2.35 Corrección autoral M08-S-R1 (2026-10-30)
+
+El smoke del candidato 5bc7d7dac no es PASS. El autor señala que la creación arrastrable
+SplineV2 era preexistente, falta autoría Q explícita y falla crear sobre h en su archivo.
+La [caracterización y corrección R1](../validation/pre_g9b_cu7_i1_m08s_r1_report.md)
+reproduce el archivo nativo y main caf67ffc: h tiene un candidato local, hit gráfico y
+forward válido, pero UNRESOLVED por unicidad no establecida. Es limitación heredada.
+Se autoriza corrección de mensajes y Q explícito solo bajo los permisos actuales.
+La [enmienda local candidata](pre_g9b_cu7_i1_r1_local_admission_candidate.md) no está aprobada
+ni implementada. Original y correctivo pendientes de revisión y smoke; no se declara
+M08-S general completo. M08-D, M09/A0, I2G/I3 y reconstrucción general siguen excluidos.
+Compromisos CU10/guía/E1 y deuda de tangencias preservados; libro sin modificación.
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de

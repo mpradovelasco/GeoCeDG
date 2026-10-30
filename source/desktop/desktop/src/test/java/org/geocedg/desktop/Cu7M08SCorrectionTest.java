@@ -218,6 +218,12 @@ class Cu7M08SCorrectionTest {
 				});
 		assertNotNull(selected);
 		assertFalse(selected.getAllPredecessors().contains(center));
+		var retained = parent(selected).getCurrentSemanticAddress();
+		assertFalse(interaction.move(selected, selected.getInhomX() + 0.01,
+				selected.getInhomY(), 0.1));
+		assertEquals(Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED,
+				interaction.getLastResult().getReason());
+		assertEquals(retained, parent(selected).getCurrentSemanticAddress());
 	}
 
 	@Test

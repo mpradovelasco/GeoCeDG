@@ -1183,6 +1183,18 @@ Perder la admisibilidad puede dejar el punto indefinido; no se elige otra rama c
 Esta operación no afirma una proyección exacta ni una mínima distancia global.
 La redefinición segura M09 y la correspondencia dinámica M08-D siguen pendientes.
 
+Para usar un **punto Q existente**, active **Punto sobre Locus V2**, seleccione L y abra
+**Desde Q existente (referencia inicial)**. Elija Q de la lista de puntos existentes y
+confirme el radio en unidades del modelo y la política acotada R6 mostrada.
+Esta operación se distingue del clic con Punto y de la entrada manual de rama/parámetro.
+La construcción guardada usa la dirección forward elegida: Q no es un padre nuevo y
+el arrastre requiere una consulta de edición admitida por R6. Las fuentes de evaluador
+general pueden seguir rechazándolo si no se establece unicidad. Varias direcciones admisibles mantienen su
+elección explícita incluso sin cobertura global de búsqueda. Un locus general puede tener un único candidato
+local válido por evaluación forward sin que se establezca unicidad de la búsqueda:
+la política vigente rechaza esa consulta para crear, sin certificar ausencia.
+Esta restricción requiere una decisión autoral separada; confirmar no la elimina.
+
 ### 8.2 Resultados ricos de intersección
 
 `Intersect(...)` aplicado a una curva semántica no devuelve una lista de puntos.
