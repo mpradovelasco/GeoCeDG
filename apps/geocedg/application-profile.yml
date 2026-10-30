@@ -5962,6 +5962,24 @@
       "en": "Choose a semantic location",
       "es": "Elija una posición semántica"
     },
+    "point.snapshot.forward": {
+      "en": "Explicit semantic direction", "es": "Dirección semántica explícita"
+    },
+    "point.snapshot.fromQ": {
+      "en": "From existing Q (initial reference)", "es": "Desde Q existente (referencia inicial)"
+    },
+    "point.snapshot.source": { "en": "Selected locus L", "es": "Locus L seleccionado" },
+    "point.snapshot.reference": { "en": "Existing point Q", "es": "Punto Q existente" },
+    "point.snapshot.radius": { "en": "Proximity radius (model units)", "es": "Radio de proximidad (unidades del modelo)" },
+    "point.snapshot.policy": { "en": "Search policy", "es": "Política de búsqueda" },
+    "point.snapshot.policyValue": {
+      "en": "All certified components; R6 v1: 32768 evaluations / 512 subdivisions / 80 refinements / 1024 candidates; tolerances 1e-10 / 1e-12",
+      "es": "Todos los componentes certificados; R6 v1: 32768 evaluaciones / 512 subdivisiones / 80 refinamientos / 1024 candidatos; tolerancias 1e-10 / 1e-12"
+    },
+    "point.snapshot.invalidInput": {
+      "en": "Choose an existing point Q and a finite positive model-unit radius. No point was created.",
+      "es": "Elija un punto Q existente y un radio finito positivo en unidades del modelo. No se creó ningún punto."
+    },
     "point.ambiguous": {
       "en": "Several semantic preimages: choose explicitly, or cancel.",
       "es": "Varias preimágenes semánticas: elija explícitamente o cancele."

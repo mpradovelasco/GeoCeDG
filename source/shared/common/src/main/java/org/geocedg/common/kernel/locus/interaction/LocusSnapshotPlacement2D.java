@@ -61,12 +61,12 @@ public final class LocusSnapshotPlacement2D {
 				throw new IllegalArgumentException("CU7_SELECTION_NOT_IN_QUERY");
 			}
 			// Object equality here checks an ephemeral revision, never durable identity.
-			if (definition == null || source.getSemanticDefinition() != definition
-					|| !source.isDefined()
+			if (definition == null || !source.isDefined()
 					|| !Objects.equals(source.getPersistentLocusId(),
 							chosen.getAddress().getSourceLocusId())
 					|| source.getConstruction().getSpatialIdentityRegistry()
-							.getGeo(chosen.getAddress().getSourceLocusId()) != source) {
+							.getGeo(chosen.getAddress().getSourceLocusId()) != source
+					|| source.getSemanticDefinition() != definition) {
 				throw new IllegalArgumentException("CU7_STALE_SELECTION");
 			}
 			return LocusV2PublicOperations.createInteractiveSemanticPoint(

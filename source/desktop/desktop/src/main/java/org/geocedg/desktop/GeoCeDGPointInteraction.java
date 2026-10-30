@@ -30,8 +30,29 @@ final class GeoCeDGPointInteraction {
 	GeoPoint create(GeoLocusV2 source, double x, double y, double radius,
 			Function<LocusPointInteractionResult2D,
 					LocusPointInteractionCandidate2D> chooser) {
+		return create(source, x, y, LocusPointInteractionPolicy2D.initial(radius), chooser);
+	}
+
+	/** Q is read once; only its current value crosses the kernel query boundary. */
+	GeoPoint createFromReference(GeoLocusV2 source, GeoPoint reference,
+			LocusPointInteractionPolicy2D policy,
+			Function<LocusPointInteractionResult2D,
+					LocusPointInteractionCandidate2D> chooser) {
+		if (reference == null || reference.getConstruction() != source.getConstruction()
+				|| !source.getConstruction().getGeoSetConstructionOrder().contains(reference)
+				|| !reference.isDefined() || !Double.isFinite(reference.getInhomX())
+				|| !Double.isFinite(reference.getInhomY())) {
+			throw new IllegalArgumentException("CU7_INVALID_REFERENCE");
+		}
+		return create(source, reference.getInhomX(), reference.getInhomY(), policy, chooser);
+	}
+
+	private GeoPoint create(GeoLocusV2 source, double x, double y,
+			LocusPointInteractionPolicy2D policy,
+			Function<LocusPointInteractionResult2D,
+					LocusPointInteractionCandidate2D> chooser) {
 		try (var selection = LocusSnapshotPlacement2D.query(source, x, y,
-				LocusPointInteractionPolicy2D.initial(radius))) {
+				policy)) {
 			lastResult = selection.getResult();
 			LocusPointInteractionCandidate2D candidate = lastResult.getUniqueCandidate();
 			if (lastResult.getStatus()
