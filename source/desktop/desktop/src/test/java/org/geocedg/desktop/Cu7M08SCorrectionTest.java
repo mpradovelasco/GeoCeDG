@@ -98,8 +98,12 @@ class Cu7M08SCorrectionTest {
 		GeoPoint q = (GeoPoint) G9U1SemanticPointInteractionTest.eval(app, "Q=(0.2,0.01)");
 		GeoPoint dependent = (GeoPoint) G9U1SemanticPointInteractionTest.eval(app,
 				"R=Q+(0.3,0)");
+		var registry = app.getKernel().getConstruction().getSpatialIdentityRegistry();
+		assertNull(registry.getPersistentGeoId(q));
 		GeoPoint p = from(app, source, q);
 		GeoPoint r = from(app, source, dependent);
+		assertNull(registry.getPersistentGeoId(q));
+		assertNull(registry.getPersistentGeoId(dependent));
 		assertNotNull(p);
 		assertNotNull(r);
 		assertFalse(p.getAllPredecessors().contains(q));
@@ -175,6 +179,10 @@ class Cu7M08SCorrectionTest {
 					return result.getCandidates().get(0);
 				}));
 		assertEquals(afterReload[0], app.getXML());
+		assertThrows(IllegalArgumentException.class, () ->
+				org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
+						.query(source, 0, 1, policy()));
+		assertEquals(afterReload[0], app.getXML());
 	}
 
 	@Test
@@ -198,6 +206,18 @@ class Cu7M08SCorrectionTest {
 		assertEquals(before, app.getXML());
 		assertEquals(Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED,
 				interaction.getLastResult().getReason());
+		// The existing multiple-result permission must not be excluded by source family.
+		GeoPoint center = (GeoPoint) G9U1SemanticPointInteractionTest.eval(app,
+				"QC=(0.24829332226784415,1.8854818601338847)");
+		GeoPoint selected = interaction.createFromReference(h, center,
+				LocusPointInteractionPolicy2D.initial(1), result -> {
+					assertEquals(Reason.MULTIPLE, result.getReason());
+					assertFalse(result.getSearchCoverage().establishesCompleteRequestedScope());
+					assertTrue(result.getCandidates().size() > 1);
+					return result.getCandidates().get(0);
+				});
+		assertNotNull(selected);
+		assertFalse(selected.getAllPredecessors().contains(center));
 	}
 
 	@Test

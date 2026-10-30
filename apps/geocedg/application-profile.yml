@@ -1477,7 +1477,7 @@
       "command_surface_profile_id": "semantic-command",
       "planning_disposition": "must",
       "implementation_state": "existing",
-      "notes": "Retained as the exact semantic-address helper and GGBScript command surface; it is not a substitute for the ordinary Point tool's R6 graphical interaction contract."
+      "notes": "Retains manual semantic-address authoring and the GGBScript forward surface. The separate existing-Q tab consumes a transient reference under the current R6 search policy and persists only forward parents. Ordinary Point-tool clicks remain a separate interaction."
     },
     {
       "id": "semantic.spline-v2.create",
@@ -5985,8 +5985,8 @@
       "es": "Varias preimágenes semánticas: elija explícitamente o cancele."
     },
     "point.unresolved": {
-      "en": "No uniquely certified semantic position; no point was changed.",
-      "es": "No hay una posición semántica certificada única; no se modificó ningún punto."
+      "en": "This query does not establish an admissible semantic selection.",
+      "es": "Esta consulta no establece una selección semántica admisible."
     },
     "point.creationNotCreated": {
       "en": "No point was created.", "es": "No se creó ningún punto."
@@ -6022,8 +6022,8 @@
       "es": "La fuente no tiene una capacidad de evaluación determinista admitida."
     },
     "point.reason.globalUnknown": {
-      "en": "A local candidate was verified, but search uniqueness is not established. The current policy does not offer it for creation; this does not certify absence.",
-      "es": "Se verificó un candidato local, pero no se estableció la unicidad de la búsqueda. La política vigente no lo ofrece para crear; esto no certifica ausencia."
+      "en": "A local candidate was verified, but search uniqueness is not established. The current policy does not admit this query result; this does not certify absence.",
+      "es": "Se verificó un candidato local, pero no se estableció la unicidad de la búsqueda. La política vigente no admite este resultado; esto no certifica ausencia."
     },
     "point.reason.localInsufficient": {
       "en": "Local evidence is insufficient or candidates are not separated. No certified absence is claimed.",

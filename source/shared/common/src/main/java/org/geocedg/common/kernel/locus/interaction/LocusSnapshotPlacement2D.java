@@ -20,6 +20,12 @@ public final class LocusSnapshotPlacement2D {
 	/** Copies a world request; no reference point becomes a construction parent. */
 	public static Selection query(GeoLocusV2 source, double x, double y,
 			LocusPointInteractionPolicy2D policy) {
+		Objects.requireNonNull(source);
+		var id = source.getPersistentLocusId();
+		if (id == null || source.getConstruction().getSpatialIdentityRegistry()
+				.getGeo(id) != source) {
+			throw new IllegalArgumentException("CU7_STALE_SELECTION");
+		}
 		return new Selection(new LocusPointInteractionQuery2D(source, x, y, policy));
 	}
 
