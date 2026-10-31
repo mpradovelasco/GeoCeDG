@@ -313,13 +313,26 @@ class M08SnapshotPlacementKernelTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void referenceAncestorKeepsOnlyItsExistingRouteThroughTheLocus() {
-		var source = nativeGraph();
-		GeoPoint q = (GeoPoint) lookup("I");
+		add("S=SplineV2({(-2,0),(-1,0),(1,0),(2,0)},3)");
+		GeoPoint q = add("Reference=(0,0)");
+		GeoLocusV2 source = add("T=Dilate(S,2,Reference)");
 		var selection = M08SnapshotPlacement2D.queryFromReference(source, q,
 				LocusPointInteractionPolicy2D.initial(1));
 		GeoPoint p = selection.commit("P", offered(selection));
 		assertFalse(java.util.Arrays.asList(p.getParentAlgorithm().getInput()).contains(q));
 		assertTrue(p.getAllPredecessors().contains(q));
+	}
+
+	@Test
+	void nativeAncestorQueryWithSeamCandidateKeepsTheConservativeRejection() {
+		var source = nativeGraph();
+		GeoPoint q = (GeoPoint) lookup("I");
+		String before = getApp().getXML();
+		var selection = M08SnapshotPlacement2D.queryFromReference(source, q,
+				LocusPointInteractionPolicy2D.initial(1));
+		assertEquals(Failure.COMPONENT_NOT_ESTABLISHED, selection.getResult().getFailure());
+		assertEquals(Permission.NOT_OFFERABLE, selection.getResult().getPermission());
+		assertEquals(before, getApp().getXML());
 	}
 
 	@Test
