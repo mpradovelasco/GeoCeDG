@@ -55,6 +55,18 @@ public final class LocusPointInteractionResolver2D {
 	 */
 	public LocusPointInteractionResult2D resolve(
 			LocusPointInteractionQuery2D query) {
+		return resolve(query, null);
+	}
+
+	/** Private-to-kernel audit; neither reason strings nor retained candidates imply safety. */
+	SnapshotDiscovery discoverForSnapshot(LocusPointInteractionQuery2D query) {
+		SearchAudit audit = new SearchAudit();
+		LocusPointInteractionResult2D result = resolve(query, audit);
+		return new SnapshotDiscovery(result, audit.safe);
+	}
+
+	private LocusPointInteractionResult2D resolve(
+			LocusPointInteractionQuery2D query, SearchAudit audit) {
 		Objects.requireNonNull(query);
 		LocusPointInteractionInstrumentation2D instrumentation =
 				new LocusPointInteractionInstrumentation2D(
@@ -115,7 +127,7 @@ public final class LocusPointInteractionResolver2D {
 			} finally {
 				instrumentation.sessionCache(session.getHits(), session.getMisses());
 			}
-			return classify(query, search, instrumentation);
+			return classify(query, search, instrumentation, audit);
 		} catch (LocusPointInteractionInstrumentation2D.WorkLimitException
 				| LocusIntersectionWorkLimitException
 				| LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
@@ -859,7 +871,7 @@ public final class LocusPointInteractionResolver2D {
 
 	private static LocusPointInteractionResult2D classify(
 			LocusPointInteractionQuery2D query, Search search,
-			LocusPointInteractionInstrumentation2D instrumentation) {
+			LocusPointInteractionInstrumentation2D instrumentation, SearchAudit audit) {
 		if (search.degenerateDistance
 				<= query.getPolicy().getMaximumWorldDistance()) {
 			return result(LocusPointInteractionStatus2D.DEGENERATE_SOURCE_IMAGE,
@@ -887,6 +899,9 @@ public final class LocusPointInteractionResolver2D {
 			return result(
 					LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 					admissible, search.coverage, search.diagnostic, instrumentation);
+		}
+		if (audit != null) {
+			audit.safe = true;
 		}
 		if (admissible.isEmpty()) {
 			boolean complete = search.coverage
@@ -1432,6 +1447,21 @@ public final class LocusPointInteractionResolver2D {
 			return new Search(canonicalCandidates(candidates), coverage,
 					degenerateDistance, unsafeEvidence, diagnostic);
 		}
+	}
+
+	/** Immutable audit alongside the unchanged historical result. */
+	static final class SnapshotDiscovery {
+		final LocusPointInteractionResult2D historicalResult;
+		final boolean noObservedBarrier;
+
+		SnapshotDiscovery(LocusPointInteractionResult2D result, boolean safe) {
+			historicalResult = result;
+			noObservedBarrier = safe;
+		}
+	}
+
+	private static final class SearchAudit {
+		private boolean safe;
 	}
 
 	private static final class Search {

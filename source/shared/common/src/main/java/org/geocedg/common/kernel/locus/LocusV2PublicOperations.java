@@ -34,6 +34,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionQuery2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResolver2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
+import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
 import org.geocedg.common.kernel.spatial.identity.DurableDependencyProjection;
 import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
@@ -255,20 +256,37 @@ public final class LocusV2PublicOperations {
 			throw new IllegalArgumentException(
 					"Interaction candidate does not belong to the current locus revision");
 		}
+		return createInteractivePointAtAddress(construction, label, source,
+				candidate.getAddress());
+	}
+
+	/** M08-S sealed publication; only an owning explicit commit can consume the choice. */
+	public static GeoPoint createSnapshotSemanticPoint(Construction construction,
+			String label, GeoLocusV2 source, M08SnapshotPlacement2D.Choice choice) {
+		requireAccess(construction);
+		if (construction != source.getConstruction()) {
+			throw new IllegalArgumentException("Snapshot source belongs to another document");
+		}
+		return createInteractivePointAtAddress(construction, label, source,
+				choice.takePublicationAddress(source));
+	}
+
+	private static GeoPoint createInteractivePointAtAddress(Construction construction,
+			String label, GeoLocusV2 source, LocusSemanticAddress2D address) {
+		LocusDefinition2D definition = source.getSemanticDefinition();
 		GeoText branch = new GeoText(construction);
-		branch.setTextString(LocusSemanticAddressState2D.encode(
-				candidate.getAddress()));
+		branch.setTextString(LocusSemanticAddressState2D.encode(address));
 		branch.setAuxiliaryObject(true);
 		branch.setEuclidianVisible(false);
 		branch.setRestrictedEuclidianVisibility(true);
 		GeoNumeric parameter = new GeoNumeric(construction,
-				rawParameter(definition, candidate.getAddress()));
+				rawParameter(definition, address));
 		parameter.setAuxiliaryObject(true);
 		parameter.setEuclidianVisible(false);
 		parameter.setRestrictedEuclidianVisibility(true);
 		try {
 			return createSemanticPoint(construction, label, source, branch, parameter,
-					INTERACTION_POINT_OUTPUT_ROLE, candidate.getAddress());
+					INTERACTION_POINT_OUTPUT_ROLE, address);
 		} catch (RuntimeException exception) {
 			removeFailedDedicatedInput(branch, exception);
 			removeFailedDedicatedInput(parameter, exception);

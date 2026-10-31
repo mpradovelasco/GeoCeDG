@@ -560,6 +560,17 @@ materialize pair roots. `GeoCeDGSimilarityTools` is ordinary Desktop tool
 plumbing to existing R5 operations. None defines new geometry, persistence
 identity, a generic Path adapter or a solver.
 
+The CU7-I1-M08-S-R2 kernel candidate adds `M08SnapshotPlacement2D` as a separate,
+experimental individual-address query/explicit-commit boundary. Its interval model evidence
+is a represented-configuration bound, not a distance minimum, global uniqueness or STRICT
+incidence. It keeps the historical R6 result unchanged and never persists Q as a new parent.
+The first perimeter rejects constructive-authority documents without a demonstrated transfer,
+uncertified local models, unsafe search, exhausted work and boundary/seam cases. Immutable
+query evidence and current selection validity are separate. The caller owns one normal Undo
+boundary. Desktop still uses its preceding R1 flow: neither two-click authoring nor the compact
+advanced dialog is implemented or authorized by this kernel increment. See the
+[kernel bridge plan](../architecture/pre_g9b_cu7_i1_r2_kernel_bridge_plan.md).
+
 For R1 pairs, preserve the `pair-singleton-transverse-germ/v1` admission
 boundary. Canonical source-pair/slot evidence is operand symmetric, while
 independent rich-result owners deliberately have distinct token namespaces.
