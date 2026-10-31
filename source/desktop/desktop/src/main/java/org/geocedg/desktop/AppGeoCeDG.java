@@ -2061,6 +2061,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 					GeoCeDGEuclidianController controller =
 							(GeoCeDGEuclidianController) getActiveEuclidianView()
 									.getEuclidianController();
+					controller.cancelReferencePoint();
 					if (controller.isZoomWindowActive()) {
 						controller.cancelZoomWindow();
 					}

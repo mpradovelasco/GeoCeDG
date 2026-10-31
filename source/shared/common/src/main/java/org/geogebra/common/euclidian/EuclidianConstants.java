@@ -472,6 +472,8 @@ public final class EuclidianConstants {
 	public static final int MODE_LINEAR_DIMENSION = 143;
 	/** GeoCeDG native ISO A sheet border tool, menu only (PRE-G9B-R6-plus-E3). */
 	public static final int MODE_ISO_A_BORDER = 144;
+	/** GeoCeDG M08-S static reference placement. */
+	public static final int MODE_LOCUS_V2_REFERENCE_POINT = 145;
 
 	/** macro tools ID offset */
 	public static final int MACRO_MODE_ID_OFFSET = 100001;
@@ -792,6 +794,9 @@ public final class EuclidianConstants {
 
 		case EuclidianConstants.MODE_LOCUS_V2:
 			return "LocusV2.Tool";
+
+		case EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT:
+			return "LocusV2.ReferencePoint.Tool";
 
 		case EuclidianConstants.MODE_LOCUS_V2_POINT:
 			return "LocusV2.Point.Tool";

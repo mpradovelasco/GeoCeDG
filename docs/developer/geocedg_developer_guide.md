@@ -1395,3 +1395,17 @@ It is not a general waiver of FULL for infrastructure changes or a normal phase
 closeout mechanism. It cannot waive the deliberate commit-first/dual-closeout
 methodology change. If any condition cannot be proven, the normal required
 heavy levels apply.
+
+
+### M08-S-R2: autoría Desktop desde referencia (candidato)
+
+La herramienta experimental «Punto sobre Locus V2 desde referencia» usa dos clics:
+Locus V2 L → punto existente Q. Confirme explícitamente la dirección ofrecida; incluso
+una oferta única local no demuestra unicidad global. No se abre el diálogo avanzado.
+Q sólo aporta su posición inicial; P conserva definición forward y padres legítimos.
+Política opcional de sesión: radio .1 world, tolerancias y presupuestos existentes H1;
+alcance fijo visible sobre todas las ramas/componentes admitidas, sin afirmar cobertura
+inversa completa. Escape/cambio de modo cancela. La autoría por dirección explícita se
+conserva en su modalidad compacta. No se amplía arrastre general ni redefinición M09.
+Véanse el informe Desktop candidato y su matriz/protocolo de smoke. Pendiente de aprobación
+final autoral; los ADR aceptados no se modifican automáticamente por esta guía.

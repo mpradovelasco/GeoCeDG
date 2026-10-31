@@ -41,7 +41,7 @@ class G9U1ProfileCompilerTest {
 		assertEquals(2, profile.getInt("schema_version"));
 		assertEquals(11, profile.getJSONObject("taxonomy").getJSONArray("broad_families").length());
 		assertEquals(18, profile.getJSONArray("clusters").length());
-		assertEquals(133, GeoCeDGProfile.getActions().size());
+		assertEquals(134, GeoCeDGProfile.getActions().size());
 		assertEquals(GeoCeDGProfile.getToolbarDefinition(),
 				GeoCeDGProfile.compileProfile(profile.toString()));
 	}
@@ -54,7 +54,7 @@ class G9U1ProfileCompilerTest {
 		// PRE-G9B-R6-plus-E3 adds a catalog mode but no toolbar entry.
 		assertEquals(49, modes.length);
 		assertEquals(49, new HashSet<>(Arrays.asList(modes)).size());
-		assertEquals(74, GeoCeDGProfile.getActions().stream()
+		assertEquals(75, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));
 		assertFalse(Arrays.asList(modes).contains("54"));
@@ -209,7 +209,7 @@ class G9U1ProfileCompilerTest {
 				assertTrue(ids.add(id), id);
 			}
 		}
-		assertEquals(133, ids.size());
+		assertEquals(134, ids.size());
 		assertEquals(List.of("edit-selection", "construction-lists",
 				"construction-relations", "construction-lines-vectors",
 				"construction-polygons",
@@ -236,7 +236,7 @@ class G9U1ProfileCompilerTest {
 		assertEquals("profile-flyout", semantic.getString("toolbar_rendering"));
 		assertEquals(List.of("semantic.locus-v2.create", "semantic.spline-v2.create",
 				"semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed",
-				"semantic.locus-v2.point-explicit"),
+				"semantic.locus-v2.point-explicit", "semantic.locus-v2.point-from-reference"),
 				GeoCeDGProfile.strings(semantic.getJSONArray("toolbar_action_ids")));
 
 		JSONObject navigation = GeoCeDGMenuBar.find(
@@ -381,7 +381,7 @@ class G9U1ProfileCompilerTest {
 	void validV2DoesNotUseFallback() {
 		var selected = GeoCeDGProfile.loadDefinition(GeoCeDGProfile.getCatalog().toString(), "");
 		assertFalse(selected.legacyFallback);
-		assertEquals(133, selected.actionCount());
+		assertEquals(134, selected.actionCount());
 	}
 
 	@Test

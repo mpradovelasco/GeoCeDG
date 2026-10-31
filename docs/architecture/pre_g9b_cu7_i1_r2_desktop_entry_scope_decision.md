@@ -108,3 +108,14 @@ GUIDE_IMPACT=NO CHANGE: no hay un nuevo flujo disponible que anunciar en la guí
 H1, informes históricos, main, ADR aceptados y libro intactos. Sin publicación,
 etiquetas o releases. Se conservan CU10, deuda de tangencias y exclusiones M08-D,
 M09 y arrastre general. M08-S sigue pendiente de smoke y aprobación final.
+
+
+## Resolución autoral posterior — 2026-11-01
+
+El autor confirma A: alcance fijo visible, todas las ramas/componentes admitidas
+por proveedor y política; configuración sólo de los parámetros existentes. Se
+prohíbe simular restricciones mediante filtrado Desktop. La restricción dinámica
+por rama/componente queda como posible ampliación futura no autorizada y no
+bloqueante. Queda resuelta la condición de parada de esta entrada. El texto anterior
+conserva el estado histórico de 632962595e23b9b7e860d3c3d8dc717248484028;
+la continuación está en el plan e informe Desktop, sin reescribir sus evidencias.

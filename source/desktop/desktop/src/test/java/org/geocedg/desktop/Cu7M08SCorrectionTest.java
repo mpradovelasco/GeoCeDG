@@ -256,35 +256,23 @@ class Cu7M08SCorrectionTest {
 	}
 
 	@Test
-	void explicitReferenceDialogCreatesOneUndoAndCancellationCreatesNone() throws Exception {
+	void referenceToolCreatesOneUndoAndCancellationCreatesNone() throws Exception {
 		AppGeoCeDG app = G9U1SemanticPointInteractionTest.app();
 		GeoLocusV2 source = G9U1SemanticPointInteractionTest.spline(app);
 		GeoPoint q = (GeoPoint) G9U1SemanticPointInteractionTest.eval(app, "Q=(0.3,0.02)");
-		q.setEuclidianVisible(false);
+		q.setEuclidianVisible(true);
 		app.getKernel().initUndoInfo();
 		var undo = app.getKernel().getConstruction().getUndoManager();
 		await(() -> !undo.undoPossible());
-		try (var dialogs = mockStatic(JOptionPane.class)) {
-			dialogs.when(() -> JOptionPane.showConfirmDialog(any(Component.class), any(),
-					anyString(), anyInt(), anyInt())).thenAnswer(call -> {
-				JTabbedPane tabs = call.getArgument(1);
-				tabs.setSelectedIndex(1);
-				JPanel panel = (JPanel) tabs.getComponentAt(1);
-				JComboBox<?> picker = Arrays.stream(panel.getComponents())
-						.filter(JComboBox.class::isInstance).map(JComboBox.class::cast)
-						.findFirst().orElseThrow();
-				for (int i = 0; i < picker.getItemCount(); i++) {
-					if (picker.getItemAt(i).toString().startsWith("Q ")) {
-						picker.setSelectedIndex(i);
-					}
-				}
-				return JOptionPane.OK_OPTION;
-			});
-			app.setMode(EuclidianConstants.MODE_LOCUS_V2_POINT);
-			var controller = G9U1SemanticPointInteractionTest.controller(app);
-			controller.wrapMousePressed(G9U1SemanticPointInteractionTest.event(app, 0.3, 0));
-			controller.wrapMouseReleased(G9U1SemanticPointInteractionTest.event(app, 0.3, 0));
-		}
+		app.setMode(EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT);
+		var controller = G9U1SemanticPointInteractionTest.controller(app);
+		controller.wrapMousePressed(G9U1SemanticPointInteractionTest.event(app, -1, 0));
+		controller.wrapMouseReleased(G9U1SemanticPointInteractionTest.event(app, -1, 0));
+		controller.wrapMousePressed(G9U1SemanticPointInteractionTest.event(app, .3, .02));
+		controller.wrapMouseReleased(G9U1SemanticPointInteractionTest.event(app, .3, .02));
+		var tool = controller.referencePointTool();
+		assertNotNull(tool.pendingSelection());
+		tool.commit(tool.pendingSelection().getResult().getChoices().get(0));
 		GeoPoint p = app.getKernel().getConstruction().getGeoSetConstructionOrder().stream()
 				.filter(GeoPoint.class::isInstance).map(GeoPoint.class::cast)
 				.filter(GeoCeDGPointInteraction::owns).findFirst().orElseThrow();

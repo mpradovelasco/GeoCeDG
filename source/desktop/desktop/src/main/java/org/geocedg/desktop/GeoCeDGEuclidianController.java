@@ -57,6 +57,7 @@ public final class GeoCeDGEuclidianController
 	private final GeoCeDGLocusV2Dialogs locusV2Dialogs;
 	private final GeoCeDGIntersectionSession intersectionSession;
 	private final GeoCeDGPointInteraction pointInteraction;
+	private GeoCeDGReferencePointTool referencePointTool;
 	private final GeoCeDGSimilarityTools similarityTools;
 	private final GeoCeDGSplineV2Authoring splineAuthoring;
 	private final GeoCeDGDimensionTools dimensionTools;
@@ -88,6 +89,7 @@ public final class GeoCeDGEuclidianController
 		locusV2Dialogs = new GeoCeDGLocusV2Dialogs(
 				(AppD) kernel.getApplication(), intersectionSession);
 		referenceMemory = new GeoCeDGLineReferenceMemory(kernel.getApplication());
+		referencePointTool = new GeoCeDGReferencePointTool((AppD) kernel.getApplication());
 	}
 
 	@Override
@@ -131,6 +133,15 @@ public final class GeoCeDGEuclidianController
 	@Override
 	public void wrapMousePressed(AbstractEvent event) {
 		if (isInsertionIsolated()) {
+			return;
+		}
+		if (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+			if (event.isRightClick()) { return; }
+			if (!RuntimeFeatureService.mayCreateLocusV2(kernel.getConstruction())) { return; }
+			setMouseLocation(event);
+			setViewHits(event.getType());
+			referencePointTool.click(new ArrayList<>(getView().getHits()),
+					((org.geogebra.desktop.euclidian.EuclidianViewD) getView()).getJPanel(), event.getX(), event.getY());
 			return;
 		}
 		interactionTailCancelled = false;
@@ -251,6 +262,7 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseDragged(AbstractEvent event, boolean startCapture) {
+		if (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) { return; }
 		if (isInsertionIsolated()) {
 			return;
 		}
@@ -290,6 +302,7 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseReleased(AbstractEvent event) {
+		if (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) { return; }
 		if (isInsertionIsolated()) {
 			return;
 		}
@@ -638,6 +651,11 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void setMode(int newMode, ModeSetter setter) {
+		if (referencePointTool != null && (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+				|| newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT)) {
+			if (mode != newMode) { interactionTailCancelled = true; }
+			referencePointTool.reset();
+		}
 		if (interactionGesture) {
 			if (interactionChanged) {
 				app.storeUndoInfo();
@@ -661,7 +679,16 @@ public final class GeoCeDGEuclidianController
 			cancelZoomWindow();
 		}
 		super.setMode(newMode, setter);
+		if (referencePointTool != null && newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+			referencePointTool.activate();
+		}
 	}
+
+	void cancelReferencePoint() {
+		if (referencePointTool != null && mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) { referencePointTool.activate(); }
+	}
+
+	GeoCeDGReferencePointTool referencePointTool() { return referencePointTool; }
 
 	private boolean inspectMarkerHit(AbstractEvent event) {
 		if (!intersectionSession.isMarkersVisible()) {

@@ -1480,6 +1480,27 @@
       "notes": "Retains manual semantic-address authoring and the GGBScript forward surface. The separate existing-Q tab consumes a transient reference under the current R6 search policy and persists only forward parents. Ordinary Point-tool clicks remain a separate interaction."
     },
     {
+      "id": "semantic.locus-v2.point-from-reference",
+      "kind": "upstream-mode",
+      "target": {
+        "symbol": "MODE_LOCUS_V2_REFERENCE_POINT",
+        "audited_numeric_id": 145
+      },
+      "maturity": "experimental",
+      "feature_requirements": [
+        "cedg.locus.v2"
+      ],
+      "selection_contract_ref": "geocedg.locus-v2-reference-snapshot",
+      "effect_profile_id": "mode-create",
+      "localization_ref": "geocedg.action.LocusV2ReferencePoint",
+      "icon_ref": "geocedg.action.LocusV2Point",
+      "availability_profile_id": "locus-v2-product",
+      "command_surface_profile_id": "mode-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing",
+      "notes": "Static L to existing Q; H1 explicit local choice, fixed visible scope."
+    },
+    {
       "id": "semantic.spline-v2.create",
       "kind": "upstream-mode",
       "target": {
@@ -2961,12 +2982,14 @@
       "broad_family_id": "semantic-curves",
       "toolbar_action_ids": [
         "semantic.locus-v2.create",
-        "semantic.locus-v2.point-explicit"
+        "semantic.locus-v2.point-explicit",
+        "semantic.locus-v2.point-from-reference"
       ],
       "overflow_action_ids": [],
       "menu_action_ids": [
         "semantic.locus-v2.create",
         "semantic.locus-v2.point-explicit",
+        "semantic.locus-v2.point-from-reference",
         "semantic.curve.inspect-definition"
       ],
       "context_action_ids": [
@@ -3630,8 +3653,8 @@
     {
       "id": "construction-semantic-curves",
       "name_key": "Group.Construction.SemanticCurves",
-      "action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-explicit", "semantic.spline-v2.create", "semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed", "semantic.curve.inspect-definition"],
-      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create", "semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit"],
+      "action_ids": ["semantic.locus-v2.create", "semantic.locus-v2.point-from-reference", "semantic.locus-v2.point-explicit", "semantic.spline-v2.create", "semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed", "semantic.curve.inspect-definition"],
+      "toolbar_action_ids": ["semantic.locus-v2.create", "semantic.spline-v2.create", "semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit", "semantic.locus-v2.point-from-reference"],
       "toolbar_rendering": "profile-flyout"
     },
     {

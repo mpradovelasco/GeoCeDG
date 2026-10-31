@@ -19,7 +19,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -207,77 +206,28 @@ final class GeoCeDGLocusV2Dialogs {
 		}
 		String branchLabel = menu("LocusV2.BranchKey");
 		String parameterLabel = menu("LocusV2.Parameter");
-		JTextField branch = new JTextField(24);
-		JTextField parameter = new JTextField(24);
+		JTextField branch = new JTextField(18);
+		JTextField parameter = new JTextField(18);
 		branch.getAccessibleContext().setAccessibleName(branchLabel);
 		parameter.getAccessibleContext().setAccessibleName(parameterLabel);
 		JLabel branchPrompt = new JLabel(branchLabel);
 		JLabel parameterPrompt = new JLabel(parameterLabel);
 		branchPrompt.setLabelFor(branch);
 		parameterPrompt.setLabelFor(parameter);
-		JPanel fields = new JPanel(new GridLayout(2, 2, 8, 6));
-		fields.add(branchPrompt);
-		fields.add(branch);
-		fields.add(parameterPrompt);
-		fields.add(parameter);
-		JTabbedPane authoring = new JTabbedPane();
-		authoring.addTab(text("point.snapshot.forward"), fields);
-		JComboBox<ResultChoice> references = new JComboBox<>();
-		for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
-			if (geo instanceof GeoPoint && geo.isDefined()) {
-				references.addItem(new ResultChoice(geo));
-			}
-		}
-		references.setSelectedIndex(-1);
-		references.getAccessibleContext().setAccessibleName(text("point.snapshot.reference"));
-		JTextField radius = new JTextField("0.1", 12);
-		radius.getAccessibleContext().setAccessibleName(text("point.snapshot.radius"));
-		JPanel snapshot = new JPanel(new GridLayout(0, 2, 8, 6));
-		snapshot.add(new JLabel(text("point.snapshot.source")));
-		snapshot.add(new JLabel(source.getLabelSimple()));
-		snapshot.add(new JLabel(text("point.snapshot.reference")));
-		snapshot.add(references);
-		snapshot.add(new JLabel(text("point.snapshot.radius")));
-		snapshot.add(radius);
-		snapshot.add(new JLabel(text("point.snapshot.policy")));
-		snapshot.add(new JLabel(text("point.snapshot.policyValue")));
-		authoring.addTab(text("point.snapshot.fromQ"), snapshot);
-
-		while (JOptionPane.showConfirmDialog(app.getMainComponent(), authoring,
+		JPanel fields = new JPanel(new java.awt.GridBagLayout());
+		java.awt.GridBagConstraints layout = new java.awt.GridBagConstraints();
+		layout.insets = new java.awt.Insets(3, 3, 3, 3);
+		layout.anchor = java.awt.GridBagConstraints.LINE_START;
+		fields.add(branchPrompt, layout);
+		layout.gridx = 1; layout.weightx = 1; layout.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		fields.add(branch, layout);
+		layout.gridy = 1; layout.gridx = 0; layout.weightx = 0;
+		fields.add(parameterPrompt, layout);
+		layout.gridx = 1; layout.weightx = 1;
+		fields.add(parameter, layout);
+		while (JOptionPane.showConfirmDialog(app.getMainComponent(), fields,
 				menu("LocusV2.Point.Tool"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-			if (authoring.getSelectedIndex() == 1) {
-				Object selected = references.getSelectedItem();
-				double worldRadius;
-				try {
-					worldRadius = Double.parseDouble(radius.getText().trim());
-					if (!(worldRadius > 0) || !Double.isFinite(worldRadius)
-							|| !(selected instanceof ResultChoice)) {
-						throw new NumberFormatException();
-					}
-				} catch (NumberFormatException exception) {
-					if (app.isErrorDialogsActive()) {
-						JOptionPane.showMessageDialog(app.getMainComponent(),
-								text("point.snapshot.invalidInput"), text("point.choose"),
-								JOptionPane.WARNING_MESSAGE);
-					}
-					continue;
-				}
-				GeoCeDGPointInteraction interaction = new GeoCeDGPointInteraction(app);
-				try {
-					GeoPoint point = interaction.createFromReference(source,
-							(GeoPoint) ((ResultChoice) selected).geo,
-							LocusPointInteractionPolicy2D.initial(worldRadius),
-							this::chooseSemanticPreimage);
-					if (point == null) {
-						showInteractionOutcome(interaction.getLastResult(), true);
-					}
-					return point;
-				} catch (IllegalArgumentException exception) {
-					showSelectionFailure(exception, true);
-					return null;
-				}
-			}
 			String branchKey = branch.getText().trim();
 			GeoNumberValue parameterInput = app.getKernel()
 					.getAlgebraProcessor().evaluateToNumeric(
