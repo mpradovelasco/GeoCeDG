@@ -16,6 +16,9 @@ import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.intersection.M08LocalAddressEvidence2D;
+import org.geocedg.common.kernel.locus.intersection.M08LocalAddressEvidence2D.Work;
+import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
+import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
 import org.geocedg.common.kernel.spatial.identity.DocumentAuthorityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
@@ -42,6 +45,54 @@ public final class M08SnapshotPlacement2D {
 		UNSAFE_SEARCH, BUDGET_EXHAUSTED, NO_VERIFIED_ADDRESS, COMPONENT_NOT_ESTABLISHED,
 		LOCAL_EVIDENCE_NOT_ESTABLISHED, FORWARD_MODEL_MISMATCH, STALE_SELECTION,
 		FOREIGN_CHOICE, CONSUMED_SELECTION, WRONG_THREAD, PUBLICATION_NOT_AUTHORIZED
+	}
+
+	/** Immutable counters: semantic misses, interval passes and publication are distinct units. */
+	public static final class WorkSnapshot {
+		private final long semanticMisses;
+		private final long discoveryMisses;
+		private final long[] intervalPasses;
+		private final long semanticLimit;
+		private final long intervalLimit;
+		private final long publications;
+
+		private WorkSnapshot(Selection owner) {
+			semanticMisses = owner.session.getTotalChargedMisses();
+			discoveryMisses = owner.discoveryMisses;
+			intervalPasses = owner.intervalPasses.clone();
+			semanticLimit = owner.query.getPolicy().getWorkBudget().getMaximumSemanticEvaluations();
+			intervalLimit = owner.query.getPolicy().getWorkBudget().getMaximumSubdivisions();
+			publications = owner.publications;
+		}
+
+		public long getSemanticMisses() {
+			return semanticMisses;
+		}
+		public long getDiscoveryMisses() {
+			return discoveryMisses;
+		}
+		public long getSemanticLimit() {
+			return semanticLimit;
+		}
+		public long getIntervalLimit() {
+			return intervalLimit;
+		}
+		public long getPublicationAttempts() {
+			return publications;
+		}
+		public long getRemainingSemanticMisses() {
+			return semanticLimit - semanticMisses;
+		}
+		public long getIntervalPasses(Work kind) {
+			return intervalPasses[kind.ordinal()];
+		}
+		public long getIntervalPasses() {
+			long total = 0;
+			for (long value : intervalPasses) {
+				total += value;
+			}
+			return total;
+		}
 	}
 
 	/** Typed rejection without mutation. */
@@ -130,6 +181,18 @@ public final class M08SnapshotPlacement2D {
 			owner.publicationReady = null;
 			return address;
 		}
+
+		/** One-use initial binding from the normal forward binder, prepared before any ID. */
+		public MetricPositionBinding2D takePreparedBinding(GeoLocusV2 source) {
+			if (source != owner.source || owner.initialBindingReady != this
+					|| Thread.currentThread() != owner.thread || !owner.current()) {
+				throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
+			}
+			MetricPositionBinding2D binding = owner.preparedBinding;
+			owner.initialBindingReady = null;
+			owner.preparedBinding = null;
+			return binding;
+		}
 	}
 
 	private M08SnapshotPlacement2D() {
@@ -179,9 +242,14 @@ public final class M08SnapshotPlacement2D {
 		private final DocumentAuthorityRecord authority;
 		private final Thread thread = Thread.currentThread();
 		private final Result result;
-		private long remainingEvaluations;
+		private final LocusEvaluationSession2D session;
+		private final long[] intervalPasses = new long[Work.values().length];
+		private long discoveryMisses;
+		private long publications;
 		private boolean finished;
 		private Choice publicationReady;
+		private Choice initialBindingReady;
+		private MetricPositionBinding2D preparedBinding;
 
 		private Selection(LocusPointInteractionQuery2D query, GeoPoint reference) {
 			this.query = query;
@@ -191,40 +259,49 @@ public final class M08SnapshotPlacement2D {
 			registry = source.getConstruction().getSpatialIdentityRegistry();
 			sourceId = source.getPersistentLocusId();
 			authority = registry.getDocumentAuthorityRecord();
-			var discovery = new LocusPointInteractionResolver2D().discoverForSnapshot(query);
+			var budget = query.getPolicy().getWorkBudget();
+			session = LocusEvaluationSession2D.hardBoundedForSnapshot(
+					budget.getMaximumSemanticEvaluations(), budget.getMaximumSemanticEvaluations(),
+					budget.getMaximumEvaluatorCompositionDepth());
+			var discovery = new LocusPointInteractionResolver2D().discoverForSnapshot(query, session);
+			discoveryMisses = session.getTotalChargedMisses();
 			var historical = discovery.historicalResult;
 			List<Choice> choices = new ArrayList<>();
 			Failure failure = Failure.NONE;
 			M08LocalAddressEvidence2D.Status localFailure = null;
-			remainingEvaluations = query.getPolicy().getWorkBudget().getMaximumSemanticEvaluations()
-					- historical.getInstrumentation().getSemanticEvaluations();
 			if (!current()) {
 				failure = Failure.INVALID_SOURCE;
 			} else if (authority != null) {
 				// No implicit transfer from captured to constructive configuration.
 				failure = Failure.AUTHORITY_NOT_ESTABLISHED;
-			} else if (historical.getReason() == LocusPointInteractionResult2D.Reason.BUDGET_EXHAUSTED) {
+			} else if (session.isWorkLimitExhausted()
+					|| historical.getReason() == LocusPointInteractionResult2D.Reason.BUDGET_EXHAUSTED) {
 				failure = Failure.BUDGET_EXHAUSTED;
 			} else if (!discovery.noObservedBarrier) {
 				failure = Failure.UNSAFE_SEARCH;
 			} else if (historical.getCandidates().isEmpty()) {
 				failure = Failure.NO_VERIFIED_ADDRESS;
-			} else if (remainingEvaluations < 3L * historical.getCandidates().size() + 3) {
-				failure = Failure.BUDGET_EXHAUSTED;
 			} else {
-				for (var seed : historical.getCandidates()) {
-					var proof = prove(seed.getAddress());
-					if (proof == null || !proof.isEstablished()) {
-						localFailure = proof == null ? null : proof.getStatus();
-						failure = proof == null ? Failure.COMPONENT_NOT_ESTABLISHED
-								: Failure.LOCAL_EVIDENCE_NOT_ESTABLISHED;
-						break;
+				try {
+					for (var seed : historical.getCandidates()) {
+						var proof = prove(seed.getAddress());
+						if (proof == null || !proof.isEstablished()) {
+							localFailure = proof == null ? null : proof.getStatus();
+							failure = proof == null ? Failure.COMPONENT_NOT_ESTABLISHED
+									: Failure.LOCAL_EVIDENCE_NOT_ESTABLISHED;
+							break;
+						}
+						if (prepareForward(seed.getAddress(), proof) == null) {
+							failure = Failure.FORWARD_MODEL_MISMATCH;
+							break;
+						}
+						choices.add(new Choice(this, seed.getAddress(), proof));
 					}
-					if (!forwardMatches(seed.getAddress(), proof)) {
-						failure = Failure.FORWARD_MODEL_MISMATCH;
-						break;
+				} catch (Rejected rejected) {
+					if (rejected.getFailure() != Failure.BUDGET_EXHAUSTED) {
+						throw rejected;
 					}
-					choices.add(new Choice(this, seed.getAddress(), proof));
+					failure = Failure.BUDGET_EXHAUSTED;
 				}
 			}
 			if (failure == Failure.NONE && !current()) {
@@ -232,13 +309,12 @@ public final class M08SnapshotPlacement2D {
 			}
 			result = new Result(historical, failure,
 					failure == Failure.NONE ? choices : Collections.emptyList(), localFailure);
+			if (failure != Failure.NONE) {
+				session.close();
+			}
 		}
 
 		private M08LocalAddressEvidence2D prove(LocusSemanticAddress2D address) {
-			if (remainingEvaluations < 3) {
-				throw new Rejected(Failure.BUDGET_EXHAUSTED);
-			}
-			remainingEvaluations -= 3;
 			var provider = definition.getProvider();
 			if (!address.getSourceLocusId().equals(source.getPersistentLocusId())
 					|| !address.getProviderVersion().equals(provider.getProviderId())
@@ -260,19 +336,39 @@ public final class M08SnapshotPlacement2D {
 			}
 			return M08LocalAddressEvidence2D.establish(definition, address.getBranchKey(),
 					address.getCanonicalParameter(), component.getComponent().getInterval(),
-					query.getTargetX(), query.getTargetY(), query.getPolicy().getMaximumWorldDistance());
+					query.getTargetX(), query.getTargetY(), query.getPolicy().getMaximumWorldDistance(),
+					this::chargeIntervalPass);
 		}
 
-		private boolean forwardMatches(LocusSemanticAddress2D address,
-				M08LocalAddressEvidence2D proof) {
-			try (var session = LocusEvaluationSession2D.reference()) {
-				var evaluation = definition.evaluate(address.getBranchKey(),
-						address.getCanonicalParameter(), session);
-				return evaluation.isValid() && proof.encloses(evaluation.getPoint())
-						&& Math.hypot(evaluation.getPoint().getX() - query.getTargetX(),
-								evaluation.getPoint().getY() - query.getTargetY())
-								<= query.getPolicy().getMaximumWorldDistance();
+		private void chargeIntervalPass(Work kind) {
+			long total = 0;
+			for (long count : intervalPasses) {
+				total += count;
 			}
+			if (total >= query.getPolicy().getWorkBudget().getMaximumSubdivisions()) {
+				throw new Rejected(Failure.BUDGET_EXHAUSTED);
+			}
+			intervalPasses[kind.ordinal()]++;
+		}
+
+		private MetricPositionBinding2D prepareForward(LocusSemanticAddress2D address,
+				M08LocalAddressEvidence2D proof) {
+			// Revalidate by actual work, retaining the accumulated root counters.
+			session.clear();
+			MetricPositionBinding2D binding;
+			try {
+				binding = new LocusMetricPositionBinder2D().bind(address.toMetricPosition(),
+						definition, session);
+			} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exhausted) {
+				throw new Rejected(Failure.BUDGET_EXHAUSTED);
+			}
+			if (session.isWorkLimitExhausted()) {
+				throw new Rejected(Failure.BUDGET_EXHAUSTED);
+			}
+			var point = binding.getEvaluatedPoint().orElse(null);
+			return binding.isValid() && proof.encloses(point)
+					&& Math.hypot(point.getX() - query.getTargetX(), point.getY() - query.getTargetY())
+							<= query.getPolicy().getMaximumWorldDistance() ? binding : null;
 		}
 
 		private boolean current() {
@@ -306,6 +402,11 @@ public final class M08SnapshotPlacement2D {
 			return result;
 		}
 
+		/** @return actual accumulated work, including confirmation; not the historical R6 counters */
+		public WorkSnapshot getWorkSnapshot() {
+			return new WorkSnapshot(this);
+		}
+
 		/** Commits an explicitly chosen member once. Caller owns the single normal Undo. */
 		public GeoPoint commit(String label, Choice choice) {
 			if (Thread.currentThread() != thread) {
@@ -315,28 +416,35 @@ public final class M08SnapshotPlacement2D {
 				throw new Rejected(Failure.CONSUMED_SELECTION);
 			}
 			finished = true;
-			if (choice == null) {
-				return null;
-			}
-			if (choice.owner != this || !result.choices.contains(choice)) {
-				throw new Rejected(Failure.FOREIGN_CHOICE);
-			}
-			if (!current() || !referenceCurrent()) {
-				throw new Rejected(Failure.STALE_SELECTION);
-			}
-			var proof = prove(choice.address);
-			if (proof == null || !proof.isEstablished() || !forwardMatches(choice.address, proof)) {
-				throw new Rejected(Failure.LOCAL_EVIDENCE_NOT_ESTABLISHED);
-			}
-			if (!current() || !referenceCurrent()) {
-				throw new Rejected(Failure.STALE_SELECTION);
-			}
-			publicationReady = choice;
 			try {
+				if (choice == null) {
+					return null;
+				}
+				if (choice.owner != this || !result.choices.contains(choice)) {
+					throw new Rejected(Failure.FOREIGN_CHOICE);
+				}
+				if (!current() || !referenceCurrent()) {
+					throw new Rejected(Failure.STALE_SELECTION);
+				}
+				var proof = prove(choice.address);
+				preparedBinding = proof == null || !proof.isEstablished() ? null
+						: prepareForward(choice.address, proof);
+				if (preparedBinding == null) {
+					throw new Rejected(Failure.LOCAL_EVIDENCE_NOT_ESTABLISHED);
+				}
+				if (!current() || !referenceCurrent()) {
+					throw new Rejected(Failure.STALE_SELECTION);
+				}
+				publicationReady = choice;
+				initialBindingReady = choice;
+				publications++;
 				return LocusV2PublicOperations.createSnapshotSemanticPoint(
 						source.getConstruction(), label, source, choice);
 			} finally {
 				publicationReady = null;
+				initialBindingReady = null;
+				preparedBinding = null;
+				session.close();
 			}
 		}
 
@@ -344,6 +452,9 @@ public final class M08SnapshotPlacement2D {
 		public void close() {
 			finished = true;
 			publicationReady = null;
+			initialBindingReady = null;
+			preparedBinding = null;
+			session.close();
 		}
 	}
 }

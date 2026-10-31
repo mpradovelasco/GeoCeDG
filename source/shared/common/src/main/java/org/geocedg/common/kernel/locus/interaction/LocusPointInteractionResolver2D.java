@@ -60,13 +60,25 @@ public final class LocusPointInteractionResolver2D {
 
 	/** Private-to-kernel audit; neither reason strings nor retained candidates imply safety. */
 	SnapshotDiscovery discoverForSnapshot(LocusPointInteractionQuery2D query) {
+		return discoverForSnapshot(query, null);
+	}
+
+	/** Uses the M08 operation's root so discovery and confirmation share actual work. */
+	SnapshotDiscovery discoverForSnapshot(LocusPointInteractionQuery2D query,
+			LocusEvaluationSession2D session) {
 		SearchAudit audit = new SearchAudit();
-		LocusPointInteractionResult2D result = resolve(query, audit);
+		LocusPointInteractionResult2D result = resolve(query, audit, session);
 		return new SnapshotDiscovery(result, audit.safe);
 	}
 
 	private LocusPointInteractionResult2D resolve(
 			LocusPointInteractionQuery2D query, SearchAudit audit) {
+		return resolve(query, audit, null);
+	}
+
+	private LocusPointInteractionResult2D resolve(
+			LocusPointInteractionQuery2D query, SearchAudit audit,
+			LocusEvaluationSession2D suppliedSession) {
 		Objects.requireNonNull(query);
 		LocusPointInteractionInstrumentation2D instrumentation =
 				new LocusPointInteractionInstrumentation2D(
@@ -105,10 +117,11 @@ public final class LocusPointInteractionResolver2D {
 
 		int maximumEvaluations = query.getPolicy().getWorkBudget()
 				.getMaximumSemanticEvaluations();
-		try (LocusEvaluationSession2D session = LocusEvaluationSession2D
+		try (LocusEvaluationSession2D ownedSession = suppliedSession == null ? LocusEvaluationSession2D
 				.memoizingWithLimits(maximumEvaluations, maximumEvaluations,
 						query.getPolicy().getWorkBudget()
-								.getMaximumEvaluatorCompositionDepth())) {
+								.getMaximumEvaluatorCompositionDepth()) : null) {
+			LocusEvaluationSession2D session = suppliedSession == null ? ownedSession : suppliedSession;
 			Search search;
 			try {
 				search = supportsCertifiedAffine(definition)

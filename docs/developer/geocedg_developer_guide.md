@@ -571,6 +571,18 @@ boundary. Desktop still uses its preceding R1 flow: neither two-click authoring 
 advanced dialog is implemented or authorized by this kernel increment. See the
 [kernel bridge plan](../architecture/pre_g9b_cu7_i1_r2_kernel_bridge_plan.md).
 
+H1 replaces the fixed per-candidate debit with one operation-owned hard semantic
+session spanning discovery and confirmation. Each actual evaluator miss, including
+composed and nested-service work, consumes the same limit; exact cache hits do not.
+Interval-model passes have separate counters/limits and cannot be interpreted as
+semantic misses. Exhaustion is sticky even when an evaluator absorbs its exception.
+The normal forward binder prepares the initial point binding before any identity
+reservation; a sealed one-use Choice supplies that binding to the ordinary algorithm.
+Its later recomputations use the unchanged forward path. Close/cancel the selection
+to dispose its session. Inspect `Selection.getWorkSnapshot()` for actual accumulated
+work, separately from historical R6 instrumentation. See the
+[H1 accounting and validation report](../validation/pre_g9b_cu7_i1_r2_kernel_h1_report.md).
+
 For R1 pairs, preserve the `pair-singleton-transverse-germ/v1` admission
 boundary. Canonical source-pair/slot evidence is operand symmetric, while
 independent rich-result owners deliberately have distinct token namespaces.

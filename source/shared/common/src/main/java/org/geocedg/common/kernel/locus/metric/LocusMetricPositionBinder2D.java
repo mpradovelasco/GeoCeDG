@@ -27,6 +27,15 @@ public final class LocusMetricPositionBinder2D {
 	 */
 	public MetricPositionBinding2D bind(LocusSemanticPosition2D position,
 			LocusDefinition2D definition) {
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
+			return bind(position, definition, session);
+		}
+	}
+
+	/** Same forward binder with an explicit caller-owned, budgeted session. */
+	public MetricPositionBinding2D bind(LocusSemanticPosition2D position,
+			LocusDefinition2D definition, LocusEvaluationSession2D session) {
 		if (!position.getLocusIdentity().equals(definition.getLocusIdentity())) {
 			return invalid(position, definition.getSemanticRevision(),
 					MetricPositionEvaluationStatus.BRANCH_MISSING,
@@ -85,24 +94,21 @@ public final class LocusMetricPositionBinder2D {
 									? "Canonical parameter is outside every valid component"
 									: "Retained component selector is unresolved: " + selector);
 		}
-		try (LocusEvaluationSession2D session =
-				LocusEvaluationSession2D.openServiceSession(false, 1)) {
-			LocusEvaluation2D evaluation = definition.evaluate(
-					branch.getBranchKey(), parameter, session);
-			if (evaluation.isValid()) {
-				return new MetricPositionBinding2D(position,
-						definition.getSemanticRevision(),
-						Optional.of(LocusMetricComponentKey2D.create(
-								definition, branch, components.indexOf(component))),
-						MetricPositionEvaluationStatus.VALID,
-						Optional.of(evaluation.getPoint()),
-						Collections.emptyList());
-			}
-			return invalid(position, definition.getSemanticRevision(),
-					MetricPositionEvaluationStatus.EVALUATION_FAILED,
-					MetricDiagnosticCode2D.EVALUATION_FAILED,
-					evaluation.getDiagnostic());
+		LocusEvaluation2D evaluation = definition.evaluate(
+				branch.getBranchKey(), parameter, session);
+		if (evaluation.isValid()) {
+			return new MetricPositionBinding2D(position,
+					definition.getSemanticRevision(),
+					Optional.of(LocusMetricComponentKey2D.create(
+							definition, branch, components.indexOf(component))),
+					MetricPositionEvaluationStatus.VALID,
+					Optional.of(evaluation.getPoint()),
+					Collections.emptyList());
 		}
+		return invalid(position, definition.getSemanticRevision(),
+				MetricPositionEvaluationStatus.EVALUATION_FAILED,
+				MetricDiagnosticCode2D.EVALUATION_FAILED,
+				evaluation.getDiagnostic());
 	}
 
 	/**

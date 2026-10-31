@@ -23,6 +23,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
+import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.LocusSemanticPosition2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
@@ -54,15 +55,30 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	private long previousRawParameterBits = Long.MIN_VALUE;
 	private String previousBranchInput;
 	private PersistentGeoId previousSourceId;
+	private MetricPositionBinding2D initialBinding;
 
 	/** Creates one exact-address point through normal kernel dependencies. */
 	public AlgoSemanticLocusPoint2D(Construction construction, GeoLocusV2 source,
 			GeoText branchInput, GeoNumberValue parameterInput) {
+		this(construction, source, branchInput, parameterInput, null);
+	}
+
+	/** Consumes only an owning M08 commit's already budgeted normal forward binding. */
+	public static AlgoSemanticLocusPoint2D createWithSnapshotBinding(Construction construction,
+			GeoLocusV2 source, GeoText branchInput, GeoNumberValue parameterInput,
+			M08SnapshotPlacement2D.Choice preparation) {
+		MetricPositionBinding2D binding = preparation.takePreparedBinding(source);
+		return new AlgoSemanticLocusPoint2D(construction, source, branchInput, parameterInput, binding);
+	}
+
+	private AlgoSemanticLocusPoint2D(Construction construction, GeoLocusV2 source,
+			GeoText branchInput, GeoNumberValue parameterInput, MetricPositionBinding2D initialBinding) {
 		super(construction);
 		this.source = Objects.requireNonNull(source);
 		this.branchInput = Objects.requireNonNull(branchInput);
 		this.parameterInput = Objects.requireNonNull(parameterInput);
 		this.point = new GeoPoint(construction);
+		this.initialBinding = initialBinding;
 		setInputOutput();
 		compute();
 	}
@@ -183,8 +199,14 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			undefined(LocusSemanticPointCause2D.COMPONENT_CHANGED);
 			return;
 		}
-		MetricPositionBinding2D candidateBinding = binder.bind(
-				candidate.toMetricPosition(), definition);
+		MetricPositionBinding2D candidateBinding = initialBinding;
+		initialBinding = null;
+		if (candidateBinding == null) {
+			candidateBinding = binder.bind(candidate.toMetricPosition(), definition);
+		} else if (candidateBinding.getSemanticRevision() != definition.getSemanticRevision()
+				|| !candidate.toMetricPosition().equals(candidateBinding.getSemanticPosition())) {
+			throw new IllegalArgumentException("Prepared M08 binding does not match the forward inputs");
+		}
 		if (!candidateBinding.isValid()) {
 			// The invalid binding is kept: it carries the typed cause of the failure.
 			positionBinding = candidateBinding;

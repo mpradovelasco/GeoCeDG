@@ -4,6 +4,8 @@
  */
 package org.geocedg.common.kernel.locus.intersection;
 
+import java.util.function.Consumer;
+
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
@@ -14,6 +16,8 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
  * certificate. Reuses the existing private interval models; no inverse/minimum claim.
  */
 public final class M08LocalAddressEvidence2D {
+	/** A full captured-model pass, not a semantic evaluator miss or scalar FLOP. */
+	public enum Work { CAPTURE, SMOOTHNESS, VALUE_ENCLOSURE, FIRST_JET_ENCLOSURE }
 
 	/** Independent local proof outcome, never an R6 admission state. */
 	public enum Status {
@@ -46,6 +50,14 @@ public final class M08LocalAddressEvidence2D {
 	public static M08LocalAddressEvidence2D establish(LocusDefinition2D definition,
 			String branch, double parameter, LocusInterval2D component,
 			double targetX, double targetY, double radius) {
+		return establish(definition, branch, parameter, component, targetX, targetY,
+				radius, work -> { });
+	}
+
+	/** Same evidence, charging each interval pass before execution to its owner. */
+	public static M08LocalAddressEvidence2D establish(LocusDefinition2D definition,
+			String branch, double parameter, LocusInterval2D component,
+			double targetX, double targetY, double radius, Consumer<Work> charge) {
 		if (!Double.isFinite(parameter) || !Double.isFinite(targetX)
 				|| !Double.isFinite(targetY) || !Double.isFinite(radius) || radius <= 0) {
 			throw new IllegalArgumentException("Finite point placement policy required");
@@ -56,17 +68,21 @@ public final class M08LocalAddressEvidence2D {
 			return refused(Status.DOMAIN_BOUNDARY);
 		}
 		try {
+			charge.accept(Work.CAPTURE);
 			CertifiedIntervalCurveModel2D model =
 					CertifiedIntervalCurveModel2D.capture(definition, branch);
 			if (model == null) {
 				return refused(Status.MODEL_UNAVAILABLE);
 			}
 			SplineOutwardInterval2D neighborhood = new SplineOutwardInterval2D(lower, upper);
+			charge.accept(Work.SMOOTHNESS);
 			if (!model.isSmooth(neighborhood)) {
 				return refused(Status.MODEL_UNRESOLVED);
 			}
+			charge.accept(Work.VALUE_ENCLOSURE);
 			SplineOutwardInterval2D[] value = model.evaluate(
 					SplineOutwardInterval2D.point(parameter), false);
+			charge.accept(Work.FIRST_JET_ENCLOSURE);
 			SplineOutwardInterval2D[] derivative = model.evaluate(neighborhood, true);
 			if (derivative[0].containsZero() && derivative[1].containsZero()) {
 				return refused(Status.REGULARITY_NOT_ESTABLISHED);

@@ -1,0 +1,16 @@
+// GeoCeDG. SPDX-License-Identifier: EUPL-1.2. Explicit diagnostic invocation only.
+allprojects {
+    if (projectDir.absolutePath.replace('\\', '/').endsWith('/source/shared/common-jre')) {
+        def repository = new File(projectDir, '../../..').canonicalFile
+        plugins.withId('java') {
+            sourceSets.test.java.srcDir(new File(repository,
+                'geocedg/validation/pre-g9b-cu/m08s-r2-h1-probe'))
+        }
+        tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+            reports.junitXml.required = true
+            reports.junitXml.outputLocation = new File(repository, System.getProperty(
+                'geocedg.h1.junit', 'artifacts/pre-g9b-cu7-i1-r2-kernel-h1/before/junit'))
+            reports.html.required = false
+        }
+    }
+}

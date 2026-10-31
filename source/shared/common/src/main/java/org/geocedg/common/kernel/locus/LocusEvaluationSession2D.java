@@ -104,6 +104,25 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 				maximumActiveDepth);
 	}
 
+	/**
+	 * Opt-in hard ceiling for M08-S preparation. Unlike the historical service
+	 * boundary mode, every nested child checks the shared limit before its miss.
+	 * An absorbed evaluator exception cannot erase the root's exhausted state.
+	 * @return bounded operation-owned session; does not change ordinary sessions
+	 */
+	public static LocusEvaluationSession2D hardBoundedForSnapshot(
+			int maximumEntries, long maximumMisses, int maximumActiveDepth) {
+		Core core = new Core(validatedMisses(maximumMisses),
+				validatedDepth(maximumActiveDepth));
+		core.hardLimit = true;
+		return new LocusEvaluationSession2D(core, 0, true, maximumEntries);
+	}
+
+	/** @return whether work was refused, even if an evaluator absorbed the exception */
+	public boolean isWorkLimitExhausted() {
+		return core.exhausted;
+	}
+
 	/** @return a reference session with memoization disabled */
 	public static LocusEvaluationSession2D reference() {
 		return new LocusEvaluationSession2D(false, 1);
@@ -201,10 +220,12 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 				return cached;
 			}
 		}
-		if (scope == 0 && core.totalMisses >= core.maximumMisses) {
+		if ((scope == 0 || core.hardLimit) && core.totalMisses >= core.maximumMisses) {
+			core.exhausted = true;
 			throw new EvaluationWorkLimitException(core.maximumMisses);
 		}
 		if (core.activeStack.size() >= core.maximumActiveDepth) {
+			core.exhausted = true;
 			throw EvaluationWorkLimitException.forDepth(core.maximumActiveDepth);
 		}
 		misses++;
@@ -370,6 +391,8 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 		private final Deque<ScopedKey> activeStack = new ArrayDeque<>();
 		private long totalMisses;
 		private long nestedMisses;
+		private boolean hardLimit;
+		private boolean exhausted;
 
 		private Core(long maximumMisses, int maximumActiveDepth) {
 			this.maximumMisses = maximumMisses;

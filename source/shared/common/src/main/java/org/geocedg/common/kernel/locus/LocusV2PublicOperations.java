@@ -268,11 +268,17 @@ public final class LocusV2PublicOperations {
 			throw new IllegalArgumentException("Snapshot source belongs to another document");
 		}
 		return createInteractivePointAtAddress(construction, label, source,
-				choice.takePublicationAddress(source));
+				choice.takePublicationAddress(source), choice);
 	}
 
 	private static GeoPoint createInteractivePointAtAddress(Construction construction,
 			String label, GeoLocusV2 source, LocusSemanticAddress2D address) {
+		return createInteractivePointAtAddress(construction, label, source, address, null);
+	}
+
+	private static GeoPoint createInteractivePointAtAddress(Construction construction,
+			String label, GeoLocusV2 source, LocusSemanticAddress2D address,
+			M08SnapshotPlacement2D.Choice preparation) {
 		LocusDefinition2D definition = source.getSemanticDefinition();
 		GeoText branch = new GeoText(construction);
 		branch.setTextString(LocusSemanticAddressState2D.encode(address));
@@ -286,7 +292,7 @@ public final class LocusV2PublicOperations {
 		parameter.setRestrictedEuclidianVisibility(true);
 		try {
 			return createSemanticPoint(construction, label, source, branch, parameter,
-					INTERACTION_POINT_OUTPUT_ROLE, address);
+					INTERACTION_POINT_OUTPUT_ROLE, address, preparation);
 		} catch (RuntimeException exception) {
 			removeFailedDedicatedInput(branch, exception);
 			removeFailedDedicatedInput(parameter, exception);
@@ -366,6 +372,14 @@ public final class LocusV2PublicOperations {
 			String label, GeoLocusV2 source, GeoText branch,
 			GeoNumberValue parameter, String stableOutputRole,
 			LocusSemanticAddress2D requiredAddress) {
+		return createSemanticPoint(construction, label, source, branch, parameter,
+				stableOutputRole, requiredAddress, null);
+	}
+
+	private static GeoPoint createSemanticPoint(Construction construction,
+			String label, GeoLocusV2 source, GeoText branch,
+			GeoNumberValue parameter, String stableOutputRole,
+			LocusSemanticAddress2D requiredAddress, M08SnapshotPlacement2D.Choice preparation) {
 		requireAccess(construction);
 		GeoElement parameterGeo = parameter.toGeoElement();
 		ParticipationBatch batch = new ParticipationBatch(construction);
@@ -376,8 +390,10 @@ public final class LocusV2PublicOperations {
 		PersistentGeoId outputId = batch.reserveOutput();
 		AlgoSemanticLocusPoint2D algorithm = null;
 		try {
-			algorithm = new AlgoSemanticLocusPoint2D(construction, source, branch,
-					parameter);
+			algorithm = preparation == null
+					? new AlgoSemanticLocusPoint2D(construction, source, branch, parameter)
+					: AlgoSemanticLocusPoint2D.createWithSnapshotBinding(
+							construction, source, branch, parameter, preparation);
 			GeoPoint output = algorithm.getPoint();
 			if (requiredAddress != null && (!output.isDefined()
 					|| !requiredAddress.equals(
