@@ -35,11 +35,18 @@ identity.json con SHA/árbol original y hash de la sonda. El productor neutral d
 0 aunque un hijo falle: sólo inner_exit_code y JUnit establecen el resultado real.
 El foco preparatorio pasó 91 casos: 11 H1, 24 puente, 52 R6 y 4 sesiones CU1.
 
+La ejecución compartida preparatoria sobre 248cdfc87d8ca750f6bef309ffcbcb3bb0f1ae00
+pasó 7552 casos (10 omisiones anteriores), y los dos discovery canónicos terminaron
+con código 0. Después de inspeccionar la captura se amplió el encuadre de servicios y
+se reforzó el oráculo del test anidado, sin cambiar identidades JUnit. El foco posterior
+focal-capture vuelve a pasar sus 91 casos. El catálogo deriva identidades del primer
+cohorte; la aceptación final ejecuta el código posterior sobre su propio SHA congelado.
+
 ## Contrato de contabilidad utilizado
 
 | Unidad | Definición y límite acumulado consulta + confirmación |
 |---|---|
-| Miss semántico | una entrada efectiva a un evaluator de una definición; cada nivel de semejanza y cada hijo de reconstrucción consume su propio miss. Límite: maximumSemanticEvaluations de la política |
+| Miss semántico | solicitud de sesión no servida por caché, cobrada en el guard de evaluación; cada nivel de semejanza y cada hijo de reconstrucción consume su propio miss. Límite: maximumSemanticEvaluations de la política |
 | Hit de caché exacta | no ejecuta evaluator; cero misses. La revalidación limpia valores cacheados, conservando contadores/límites, para ejecutar de nuevo el forward |
 | Pase intervalar | CAPTURE, SMOOTHNESS, VALUE_ENCLOSURE o FIRST_JET_ENCLOSURE del modelo capturado completo. Límite propio acumulado: maximumSubdivisions de la misma política |
 | Intento de instalación/publicación | cero antes de completar todas las pruebas y el binding; uno como máximo por Selection. No tiene evaluación semántica pendiente |
@@ -54,6 +61,12 @@ R6 de componentes, subdivisiones, refinamientos y candidatos. Los dos contadores
 que toman una cota numérica de maximumSubdivisions son unidades distintas, no una
 mezcla ni un aumento oculto del límite semántico. Ninguno cambia la geometría.
 
+En recorridos acíclicos admitidos, cada miss corresponde a una invocación efectiva del
+evaluator y el contador independiente lo comprueba. El guard histórico de ciclo puede
+rechazar un miss antes de compute: sigue siendo trabajo de sesión cobrado, no se afirma
+que su coste sea una invocación geométrica exitosa. Una dirección inválida o cíclica no
+gana evidencia por ese cobro. No se reinterpretan los contadores históricos de R6/CU1.
+
 WorkSnapshot expone límites y remanente reales, total semántico del root, trabajo de
 descubrimiento, pases por clase y publicaciones. La instrumentación R6 histórica
 conserva su significado y no se convierte en contador acumulado M08. Query y commit
@@ -65,6 +78,14 @@ La modalidad hardBoundedForSnapshot comprueba antes de cada miss, incluso en hij
 y conserva agotamiento sticky ante excepciones absorbidas. La modalidad CU1 normal
 se mantiene; sus cuatro pruebas, incluida la frontera histórica 12/10, siguen activas.
 El depth limit existente también impide oferta por BUDGET_EXHAUSTED; no es degeneración.
+
+Capturar un programa real puede llamar resetExternalState/updateCopy o compute de
+una macro: no es necesariamente una lectura pasiva. Descubrimiento y captura se
+ejecutan bajo el canal de servicios ya existente, con propietario/scope de Selection,
+para cobrar también los servicios que abren esas preparaciones. La inspección de
+consumidores normales identifica openServiceSession en binders, métricas,
+intersecciones y constructores; no se introduce ThreadLocal ni estado global nuevo.
+El test de servicios cubre agotamiento fuera de un evaluator y liberación del canal.
 
 ## Reconstrucción y publicación sin deuda de trabajo oculta
 

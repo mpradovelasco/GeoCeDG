@@ -28,6 +28,9 @@ import org.geocedg.common.kernel.locus.LocusSessionDiagnostic2D.Kind;
  * enforces its limit at its own evaluation boundaries, so a nested service is
  * never interrupted by its caller's limit. Memoization, revision coherence and
  * active keys are qualified by the slice scope.</p>
+ *
+ * <p>M08-S preparation explicitly opts into {@link #hardBoundedForSnapshot};
+ * only that mode checks every child miss before execution.</p>
  */
 public final class LocusEvaluationSession2D implements AutoCloseable {
 	/** Shared stack-safe ceiling for nested semantic evaluator composition. */

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
@@ -243,6 +244,7 @@ public final class M08SnapshotPlacement2D {
 		private final Thread thread = Thread.currentThread();
 		private final Result result;
 		private final LocusEvaluationSession2D session;
+		private final long serviceScope = LocusEvaluationSession2D.newSliceScope();
 		private final long[] intervalPasses = new long[Work.values().length];
 		private long discoveryMisses;
 		private long publications;
@@ -263,7 +265,8 @@ public final class M08SnapshotPlacement2D {
 			session = LocusEvaluationSession2D.hardBoundedForSnapshot(
 					budget.getMaximumSemanticEvaluations(), budget.getMaximumSemanticEvaluations(),
 					budget.getMaximumEvaluatorCompositionDepth());
-			var discovery = new LocusPointInteractionResolver2D().discoverForSnapshot(query, session);
+			var discovery = withServiceParent(() -> new LocusPointInteractionResolver2D()
+					.discoverForSnapshot(query, session));
 			discoveryMisses = session.getTotalChargedMisses();
 			var historical = discovery.historicalResult;
 			List<Choice> choices = new ArrayList<>();
@@ -334,10 +337,30 @@ public final class M08SnapshotPlacement2D {
 					|| !component.getComponent().contains(Math.nextUp(address.getCanonicalParameter()), 0)) {
 				return null;
 			}
-			return M08LocalAddressEvidence2D.establish(definition, address.getBranchKey(),
-					address.getCanonicalParameter(), component.getComponent().getInterval(),
-					query.getTargetX(), query.getTargetY(), query.getPolicy().getMaximumWorldDistance(),
-					this::chargeIntervalPass);
+			M08LocalAddressEvidence2D proof;
+			try {
+				// Capture may reset/update a real isolated construction, opening nested services.
+				proof = withServiceParent(() -> M08LocalAddressEvidence2D.establish(definition,
+						address.getBranchKey(), address.getCanonicalParameter(),
+						component.getComponent().getInterval(), query.getTargetX(), query.getTargetY(),
+						query.getPolicy().getMaximumWorldDistance(), this::chargeIntervalPass));
+			} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exhausted) {
+				throw new Rejected(Failure.BUDGET_EXHAUSTED);
+			}
+			if (session.isWorkLimitExhausted()) {
+				throw new Rejected(Failure.BUDGET_EXHAUSTED);
+			}
+			return proof;
+		}
+
+		private <T> T withServiceParent(Supplier<T> operation) {
+			class ResultHolder {
+				private T value;
+			}
+			ResultHolder holder = new ResultHolder();
+			LocusEvaluationSession2D.runWithNestedServiceParent(session, serviceScope,
+					() -> holder.value = operation.get());
+			return holder.value;
 		}
 
 		private void chargeIntervalPass(Work kind) {

@@ -224,13 +224,34 @@ class M08SnapshotPlacementBudgetTest extends G9U0PublicSurfaceTestBase {
 					return inner.evaluate(branch, parameter, session);
 				}, inner.getDeterminism(), "h1-outer/v1", new LocusInstrumentation2D());
 		try (var session = LocusEvaluationSession2D.hardBoundedForSnapshot(16, 3, 128)) {
+			long actualBefore = actualCalls();
 			assertFalse(outer.evaluate(branch, 0.5, session).isValid());
 			assertEquals(3, session.getTotalChargedMisses());
 			assertEquals(2, session.getNestedMisses());
+			assertEquals(3, actualCalls() - actualBefore
+					+ outer.getInstrumentation().snapshot().getEvaluatorCalls());
 			assertTrue(session.isWorkLimitExhausted());
 			session.clear();
 			assertTrue(session.isWorkLimitExhausted());
 			assertEquals(3, session.getTotalChargedMisses());
+		}
+		// Non-evaluator preparation (such as real model capture) uses the same service seam.
+		try (var session = LocusEvaluationSession2D.hardBoundedForSnapshot(16, 1, 128)) {
+			assertThrows(LocusEvaluationSession2D.EvaluationWorkLimitException.class,
+					() -> LocusEvaluationSession2D.runWithNestedServiceParent(session, scope, () -> {
+						try (var child = LocusEvaluationSession2D.openServiceSession(false, 1)) {
+							inner.evaluate(branch, 0.4, child);
+							inner.evaluate(branch, 0.5, child);
+						}
+					}));
+			assertEquals(1, session.getTotalChargedMisses());
+			assertTrue(session.isWorkLimitExhausted());
+			// Failure releases the parent channel; a later ordinary service owns a fresh root.
+			try (var unrelated = LocusEvaluationSession2D.openServiceSession(false, 1)) {
+				assertTrue(inner.evaluate(branch, 0.4, unrelated).isValid());
+				assertEquals(1, unrelated.getTotalChargedMisses());
+			}
+			assertEquals(1, session.getTotalChargedMisses());
 		}
 	}
 
