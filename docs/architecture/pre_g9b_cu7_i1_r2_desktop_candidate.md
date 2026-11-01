@@ -166,3 +166,46 @@ detuvieron aplicaciones/sesiones ajenas. Los resultados bajo final/ se conservan
 La campaña del commit corregido usa final-helpfix/ y sus índices con sufijo helpfix,
 sin sobrescribirlos ni atribuirle resultados del anterior. La entrega se detiene
 pendiente de revisión independiente y smoke autoral, cualquiera que sea el éxito técnico.
+
+
+### Rechazo integrado y catálogo de producto cerrado
+
+INTEGRATION sobre 56104a082bb51004597f47a96d93d9df53af50ae cierra
+REJECTED_SEMANTIC / COMPLETE, código 1: 18 contratos satisfechos y uno violado,
+workspace-profile.product. Los JUnit shared/Desktop/aislados y el diagnóstico de
+revisión 3 terminan con código 0. Ese rechazo NO se reetiqueta como aceptación.
+La sonda nativa posterior del coordinador no se llegó a ejecutar en esa campaña.
+
+Causa: tools/agent/workspace-profile-validation.ps1 compara un conjunto cerrado de
+IDs contra la base G9U1 y sus ampliaciones autorizadas hasta F3; faltaba exactamente
+semantic.locus-v2.point-from-reference. La autorización Desktop exige añadir esa
+herramienta. Se añade sólo ese ID, como implementación autorizada pendiente de
+revisión/smoke, sin permitir acciones arbitrarias ni cambiar las otras comprobaciones.
+No cambia el perfil productivo, Java de producto, kernel, política geométrica, codec o identidad
+respecto a 56104a082bb51004597f47a96d93d9df53af50ae.
+
+El foco PowerShell pasa 39/39, incluidas las nuevas negativas de acción M08 ausente
+y sustitución por una acción ajena. El primer intento del foco se detuvo al crear el
+clon local de prompts por NtCreateDirectoryObject 0xC0000022 de Windows/MSYS dentro
+del sandbox; la misma suite pasó con escalado gestionado. No se parcheó el producto
+por ese fallo de entorno. Se conserva el resultado y el motivo en profile-contract-correction/.
+
+Se actualiza sólo el pin canónico de ese validador en verification-static-contracts.json
+y el hash del catálogo en registry, con Get-VerificationCanonicalTextSha256. Se incluye
+el control existente workspace-profile.product en PHASE Desktop para detectar este
+contrato antes de INTEGRATION. No hay nuevo runner, schema, allowlist, semántica de
+veredicto ni metodología general. Impacto: BOUNDED_PRODUCT_PROFILE_CATALOG_AMENDMENT
+además del registro acotado; VERIFICATION_CLASS=INTEGRATED_PHASE permanece. Bootstrap
+sin cambios. La campaña posterior usa final-profilefix/ y se vincula a su nuevo SHA.
+La implementación de interfaz y sus IDs JUnit permanecen inalterados; no se repite la
+preparación del inventario ni se hereda la aceptación del commit rechazado.
+
+La prueba gráfica R1 existente se refuerza además con comparación del PersistentGeoId
+antes de Undo y después de Redo por el registro actual. No cambia su nombre/identidad JUnit
+ni el inventario; es una aserción independiente de identidad durable, no de referencia Java.
+
+El foco Java reforzado pasa 19/19 (Correction 9 y ReferenceTool 10), código hijo 0,
+incluida igualdad del ID durable tras Redo. Los JUnit se archivan en
+profile-contract-correction/undo-identity/junit. El checker productivo vuelve a
+CONTRACT_SATISFIED después de actualizar sus pins. No se relabela el rechazo previo;
+se exige una campaña nueva sobre el candidato con la corrección acotada.

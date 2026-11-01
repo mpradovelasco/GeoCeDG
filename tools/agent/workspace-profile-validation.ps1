@@ -95,13 +95,17 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         "document.insert-file",
         "document.apply-styles"
     )
+    # CU7 M08-S-R2 Desktop: explicitly authorized implementation, pending final
+    # independent review and author smoke. Only this new action is admitted;
+    # the single live profile continues to own its full runtime record.
+    $cu7M08SReferenceActionIds = @("semantic.locus-v2.point-from-reference")
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
         $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
         $preG9BR6PlusE2ActionIds + $preG9BR6PlusE3ActionIds + $preG9BR6PlusF1ActionIds +
-        $preG9BR6PlusF3ActionIds | Sort-Object -CaseSensitive)
+        $preG9BR6PlusF3ActionIds + $cu7M08SReferenceActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4, R6-plus-A-1, R6-plus-B, R6-plus-D1, R6-plus-E2, R6-plus-E3, R6-plus-F1 and R6-plus-F3 amendments."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4, R6-plus-A-1, R6-plus-B, R6-plus-D1, R6-plus-E2, R6-plus-E3, R6-plus-F1, R6-plus-F3 and authorized CU7 M08-S-R2 Desktop amendments."
     }
     $featureIds = @($profile.features.id)
     if ($featureIds.Count -ne @($candidate.features).Count -or

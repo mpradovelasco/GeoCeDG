@@ -68,6 +68,14 @@ try {
     Run-ProfileCase "kernel creates new points" { param($p) $p.product_policies.materialization.kernel_recompute_creates_new_points = $true } $false
     Run-ProfileCase "duplicate action ID" { param($p) $p.actions[1].id = $p.actions[0].id } $false
     Run-ProfileCase "unapproved action ID" { param($p) $p.actions[0].id = "unapproved.action" } $false
+    Run-ProfileCase "missing authorized M08 reference action" {
+        param($p)
+        $p.actions = @($p.actions | Where-Object id -CNE 'semantic.locus-v2.point-from-reference')
+    } $false
+    Run-ProfileCase "M08 does not authorize another action" {
+        param($p)
+        ($p.actions | Where-Object id -CEQ 'semantic.locus-v2.point-from-reference').id = 'semantic.locus-v2.unapproved-reference'
+    } $false
     Run-ProfileCase "duplicate cluster" { param($p) $p.clusters[1].id = $p.clusters[0].id } $false
     Run-ProfileCase "duplicate family" { param($p) $p.taxonomy.broad_families[1].id = $p.taxonomy.broad_families[0].id } $false
     Run-ProfileCase "missing Spanish" { param($p) $p.product_policies.languages.offered = @("en") } $false

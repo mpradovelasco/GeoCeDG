@@ -279,6 +279,8 @@ class Cu7M08SCorrectionTest {
 		assertEquals(0.3, p.getInhomX(), 1E-8);
 		assertFalse(p.getAllPredecessors().contains(q));
 		String label = p.getLabelSimple();
+		var pointId = app.getKernel().getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(p);
+		assertNotNull(pointId);
 		await(undo::undoPossible);
 		app.getKernel().undo();
 		await(undo::redoPossible);
@@ -286,6 +288,8 @@ class Cu7M08SCorrectionTest {
 		assertFalse(undo.undoPossible(), "More than one undo record for creation");
 		app.getKernel().redo();
 		await(() -> app.getKernel().lookupLabel(label) != null);
+		assertEquals(pointId, app.getKernel().getConstruction().getSpatialIdentityRegistry()
+				.getPersistentGeoId(app.getKernel().lookupLabel(label)));
 		String before = app.getXML();
 		try (var dialogs = mockStatic(JOptionPane.class)) {
 			dialogs.when(() -> JOptionPane.showConfirmDialog(any(Component.class), any(),
