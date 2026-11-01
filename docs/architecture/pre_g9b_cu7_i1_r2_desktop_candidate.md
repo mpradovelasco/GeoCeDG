@@ -128,3 +128,22 @@ Las cinco clases afectadas pasan en el foco catalog-corrections, código hijo 0.
 Una edición documental se interrumpió por el nombre incorrecto utf8-sig en el arnés;
 se corrigió a utf-8-sig, sin defecto de producto ni pérdida de evidencias.
 La verificación final corresponde al candidato posterior, no reetiqueta la ejecución fallida.
+
+
+### Catálogo preparado desde ejecución real
+
+En 42768911948cb58997214c0c27fa6f14d678ed1e / árbol
+36469bcf73da58f456a92b544d081be007fc4d5c, desktop-executed-corrected termina con
+código hijo 0: 2285 PASSED y un SKIPPED_LIKE histórico de CasValueExtractor, ya previsto
+por la allowlist; 2286 identidades. No se añade ninguna exención. Los descubrimientos
+previos registran 6635 shared y 2292 Desktop; la sonda optativa queda fuera del catálogo.
+No cambian nombres de tests en las correcciones; sí sus expectativas y la integración.
+
+Se deriva pre-g9b-cu7-i1-r2-desktop.desktop (47 tests: Tool 10, Profile 5, Compiler 32)
+y se actualiza la huella de la selección R1 (31, un nombre sustituido por el flujo gráfico).
+Read-VerificationJUnitFiles y Get-VerificationDeterministicHash conservan las identidades
+extraídas; update-verification-junit-inventory.ps1 actualiza descubrimiento/final.desktop.
+PHASE PRE-G9B-CU7-I1-M08-S-R2-DESKTOP conserva los contratos H1/R1 y añade el foco nuevo.
+Sólo registro acotado y censo del fixture: 75 selecciones / 77 PHASE; no cambios del runner.
+El informe final sobre el commit posterior congelado se emitirá en delivery.json; estas
+pruebas de preparación no se presentan como sus resultados canónicos.

@@ -29,7 +29,8 @@ focal-complete; no se atribuye a producto. Los estados tipados y códigos no se 
 
 ## Smoke autoral — no ejecutado automáticamente
 
-1. Lanzar el candidato con el perfil GeoCeDG experimental y cedg.locus.v2 habilitado.
+1. Desde la raíz del candidato ejecutar `.\gradlew.bat :desktop:desktop:runGeoCeDG`
+   (ruta existente de la guía Developer), con perfil GeoCeDG y cedg.locus.v2 habilitado.
    Trabajar sobre copia de C:/Temp/TestM08-S.cedg; no sobrescribir el original.
 2. Crear temporalmente ReferenceR1=(0.8976484384297626,1.7854818601338847).
    Es el Q de este ensayo; el original no contiene Q. Mostrarlo y mostrar h si es necesario.
