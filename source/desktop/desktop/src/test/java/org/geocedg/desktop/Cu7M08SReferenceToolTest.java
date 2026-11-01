@@ -108,6 +108,11 @@ class Cu7M08SReferenceToolTest {
  }
  @Test void advancedDialogIsCompactWithoutReferenceTab(){
   var app=G9U1SemanticPointInteractionTest.app();var s=G9U1SemanticPointInteractionTest.spline(app);
+  app.setLanguage(java.util.Locale.ENGLISH);
+  assertTrue(app.getToolHelp(EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT).contains("existing point"));
+  app.setLanguage(java.util.Locale.forLanguageTag("es"));
+  assertTrue(app.getToolHelp(EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT).contains("punto existente"));
+  app.setLanguage(java.util.Locale.ENGLISH);
   try(var dialogs=org.mockito.Mockito.mockStatic(javax.swing.JOptionPane.class)){
    dialogs.when(()->javax.swing.JOptionPane.showConfirmDialog(org.mockito.ArgumentMatchers.any(java.awt.Component.class),
     org.mockito.ArgumentMatchers.any(),org.mockito.ArgumentMatchers.anyString(),org.mockito.ArgumentMatchers.anyInt(),org.mockito.ArgumentMatchers.anyInt()))

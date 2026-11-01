@@ -147,3 +147,22 @@ PHASE PRE-G9B-CU7-I1-M08-S-R2-DESKTOP conserva los contratos H1/R1 y añade el f
 Sólo registro acotado y censo del fixture: 75 selecciones / 77 PHASE; no cambios del runner.
 El informe final sobre el commit posterior congelado se emitirá en delivery.json; estas
 pruebas de preparación no se presentan como sus resultados canónicos.
+
+
+### Ayuda localizada y campaña interrumpida
+
+La inspección de getHelpTransKey detectó que elimina `.Tool`: la clave correcta es
+LocusV2.ReferencePoint.Help. Las tres ediciones se corrigieron por bytes, conservando
+sus demás contenidos. La aserción EN/ES usa app.getToolHelp en un test existente;
+no añade identidades ni cambia el registro. El foco help-correction pasa 14/14,
+código hijo 0, y se compara la misma lista de diez identidades Tool con la derivación.
+
+La campaña de ee847c1769d2c3b346e0f3b896bc4c4be5d821de conservó STATIC e INFRA_UNIT
+ACCEPTED/COMPLETE, ambos código 0. Se canceló manualmente su coordinador propio y
+sus descendientes al detectar el defecto, antes de INTEGRATION; no por duración.
+PHASE quedó interrumpida y no se reclama aceptación ni cierre de esa ejecución.
+La identificación de procesos y motivo están en campaign-interruption.json; no se
+detuvieron aplicaciones/sesiones ajenas. Los resultados bajo final/ se conservan.
+La campaña del commit corregido usa final-helpfix/ y sus índices con sufijo helpfix,
+sin sobrescribirlos ni atribuirle resultados del anterior. La entrega se detiene
+pendiente de revisión independiente y smoke autoral, cualquiera que sea el éxito técnico.
