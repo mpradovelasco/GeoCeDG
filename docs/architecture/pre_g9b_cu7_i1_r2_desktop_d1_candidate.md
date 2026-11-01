@@ -85,8 +85,10 @@ no se aplican a ADR 0019, ADR 0041 ni especificaciones aceptadas.
 - Tests Desktop: Cu7M08SReferenceToolTest; adaptación de Cu7M08SCorrectionTest al
   cliente compuesto. Los casos originales se mantienen, algunos ahora usan R1.
 - Sonda optativa nativa: m08s-r2-desktop-d1-native-probe y su init Gradle separado;
-  no entra en el producto o discovery normal; el arnés nativo previo no se modifica.
+  no entra en el producto o discovery normal; el arnés nativo previo no se modifica
+  y queda ligado a su SHA histórico. Para este candidato se usa exclusivamente el init D1.
 - Documentación: plan, este informe, matriz/smoke D1 y conciliación candidata D2.
+- Procedencia: registro de la nueva clase Desktop en docs/upstream/modified-files.yml.
 - Metadatos derivados de verificación: inventario JUnit y hash en registro, por
   el actualizador canónico y JUnit real; no nuevos comandos/runner/allowlists.
 
@@ -107,6 +109,8 @@ los intentos; no se cambia el producto para hacer pasar esas expectativas.
 focused-attempt3/ completó las 47 pruebas focales (18 herramienta, 9 Correction,
 20 SemanticPointInteraction), child 0, sin fallos/skips. Los perfiles canónicos y
 la sonda nativa posterior se registran separadamente en delivery.json.
+La preparación del catálogo completó final.desktop con código hijo 0, 2294 casos,
+sin fallos/errores y un skip histórico. No sustituye la campaña sobre el SHA final.
 
 La prueba nativa usa el original C:/Temp/TestM08-S.cedg con SHA256
 4f6e1be3c42a892f63f6791f3b8ca6994443863af5c5ad2039531604e27c898d.
@@ -127,3 +131,18 @@ M08-S sigue pendiente de smoke/aprobación final. M09 permanece pendiente, sin
 implementación nueva. M08-D, A0, I2G, I3, reconstrucción general y
 DEBT-CU7-GENERAL-LOCUS-V2-POINT-DRAG quedan fuera de alcance.
 Se preserva DEBT-CU3-EXACT-TANGENCY-GENERALIZATION. Detener tras entrega.
+
+## Fuentes inspeccionadas y trazabilidad
+
+Autoridad operativa: AGENTS.md, verification-levels.md (contrato ACTIVE RECOVERY),
+verification-registry.json, verification-junit-inventory.json y los productores/actualizador
+canónicos bajo tools/agent. .github/copilot-instructions.md no existe en esta base.
+Baseline upstream registrado: 9b93256b7df401ff056c37b502d82df4d72b1522.
+
+Contratos reales leídos: LocusSnapshotPlacement2D, M08SnapshotPlacement2D,
+LocusPointInteractionResolver2D/Result2D/Policy2D/WorkBudget2D, sesiones e instrumentación,
+LocusSemanticAddress2D y forward LocusV2PublicOperations. Consumidores:
+GeoCeDGReferencePointTool, GeoCeDGPointInteraction, GeoCeDGEuclidianController y
+GeoCeDGLocusV2Dialogs. Pruebas R1, R6, H1, herramienta, persistencia y sonda nativa;
+plan y conciliación candidata Desktop anteriores. Código compartido y documentos
+aceptados conservados literalmente en el diff respecto de la base.

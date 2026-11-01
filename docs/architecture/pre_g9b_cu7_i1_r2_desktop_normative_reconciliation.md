@@ -43,8 +43,9 @@ configurable por componentes queda como ampliación futura sin autorización en 
 «For creation, a candidate must be uniquely established under the declared bounded
 interaction contract.» por:
 
-> For historical R6 creation, a candidate must be uniquely established under the
-> declared bounded interaction contract. M08-S separately permits explicit selection
+> Historical R6 creation retains UNIQUE_ADMISSIBLE_PREIMAGE and explicit choice
+> from MULTIPLE_SEMANTIC_PREIMAGES under its existing bounded interaction contract.
+> M08-S separately permits explicit selection
 > of an individually admissible semantic address, with current component, canonical
 > reconstructible direction, finite forward evaluation, proved world-distance bound,
 > provider-supported regularity and no applicable unsafe barrier. The independent
@@ -67,7 +68,10 @@ interaction contract.» por:
 
 **cu7-m08-point-placement.md §2 — reemplazar pasos 3 a 5, sin cambiar los otros**:
 
-> 3. Establish the current admissible component, canonical reconstructible address,
+> 3. Preserve admitted historical R1/R6 selections and their forward commit. Only
+> UNRESOLVED with GLOBAL_UNIQUENESS_NOT_ESTABLISHED permits consulting the separate
+> R2/H1 proof. For that individual-address route, establish the current admissible
+> component, canonical reconstructible address,
 > finite forward evaluation, a numerical guarantee for the world-distance bound,
 > provider-supported regularity and absence of unsafe barriers. Report their actual
 > evidence grade. A distance minimum is not required.
@@ -78,8 +82,9 @@ interaction contract.» por:
 > branches/components. This is distinct from global coverage, which remains not
 > established for the individual-address operation. No Desktop postfilter restricts it.
 > 5. Revalidate the exact source, definition/revision, component, transient request,
-> policy and query-owned choice at commit. Account for the remaining cumulative H1
-> budget through revalidation and prepared publication. A stale, foreign, consumed or
+> policy and query-owned choice at the owning route's commit. For R2/H1, account for
+> the remaining cumulative H1 budget through revalidation and prepared publication.
+> R1/R6 retains its historical budget/forward contract; no H1 guarantee is imputed to it. A stale, foreign, consumed or
 > exhausted selection rejects without publication. No ordinal, coordinate or caption
 > is an executable semantic selector.
 
