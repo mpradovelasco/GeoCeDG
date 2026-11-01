@@ -83,7 +83,7 @@ class Cu7M08SReferenceToolTest {
   t.click(List.of(app.getKernel().lookupLabel("h")),null,0,0);t.click(List.of(app.getKernel().lookupLabel("Q")),null,0,0);
   assertNotNull(t.pendingSelection());assertTrue(t.pendingSelection().getResult().getChoices().size()>1);
   var button=confirm(t);assertFalse(button.isEnabled());var list=component(t.contextMenu(),javax.swing.JList.class);
-  assertEquals(-1,list.getSelectedIndex());String before=app.getXML();button.doClick();assertEquals(before,app.getXML());
+  assertEquals(-1,list.getSelectedIndex());assertEquals(-1,list.getFixedCellWidth());String before=app.getXML();button.doClick();assertEquals(before,app.getXML());
   list.setSelectedIndex(1);assertTrue(button.isEnabled());button.doClick();assertNotEquals(before,app.getXML());t.reset();
  }
  @Test void budgetExhaustionAndEscapeCancelWithoutMutation(){

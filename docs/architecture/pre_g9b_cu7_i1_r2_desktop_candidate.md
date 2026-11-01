@@ -112,3 +112,19 @@ científicos ni razones para alterar admisibilidad. Resultados y fallos reales s
 Los resultados finales y códigos de STATIC/INFRA_UNIT/PHASE/INTEGRATION y las sondas
 nativas se consultan en delivery.json y sus JSON/JUnit/logs originales; este texto no
 anticipa un PASS. No se ejecuta FINAL ni smoke como aprobación automática.
+
+
+### Correcciones de preparación integrada
+
+La primera ejecución final.desktop de preparación (e9afcb8e3f2c93f124fb979788c7fc351368e515)
+terminó con código 1 y cinco fallos: dos expectativas de toolbar/menu en WorkspaceSurface,
+una enumeración de variantes Spline, ausencia de la nueva acción en la matriz de cobertura
+de guía y falta del alias de icono en el lookup heredado de modos. Se conservan sus JUnit.
+Se actualizan las listas exactas, toolbar 59→60, se añade entrada MISSING (sin completar
+CU10 ni modificar guía de usuario/libro) y se reutiliza SEMANTIC_POINT en el lookup propio.
+El viewport contextual se acota sin fijar ancho de celda, permitiendo desplazar IDs largos;
+Enter confirma explícitamente y se solicita foco en la lista. No cambia el kernel.
+Las cinco clases afectadas pasan en el foco catalog-corrections, código hijo 0.
+Una edición documental se interrumpió por el nombre incorrecto utf8-sig en el arnés;
+se corrigió a utf-8-sig, sin defecto de producto ni pérdida de evidencias.
+La verificación final corresponde al candidato posterior, no reetiqueta la ejecución fallida.

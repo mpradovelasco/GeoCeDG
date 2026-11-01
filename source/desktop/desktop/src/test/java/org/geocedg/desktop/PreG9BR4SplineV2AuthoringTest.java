@@ -266,7 +266,7 @@ class PreG9BR4SplineV2AuthoringTest {
 		}
 		assertEquals(List.of("semantic.locus-v2.create", "semantic.spline-v2.create",
 				"semantic.spline-v2.create-degree", "semantic.spline-v2.create-closed",
-				"semantic.locus-v2.point-explicit"), items, "one action per variant, no copy");
+				"semantic.locus-v2.point-explicit", "semantic.locus-v2.point-from-reference"), items, "one action per variant, no copy");
 
 		for (int round = 0; round < 2; round++) {
 			for (int i = 0; i < OPEN_TOOL_ACTIONS.length; i++) {

@@ -109,6 +109,8 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 	 */
 	public static @CheckForNull GeoCeDGToolImageResource forMode(String modeName) {
 		switch (modeName) {
+		case "locusv2.referencepoint":
+			return SEMANTIC_POINT;
 		case "locusv2":
 		case "locusv2.point":
 		case "locuslength.total":

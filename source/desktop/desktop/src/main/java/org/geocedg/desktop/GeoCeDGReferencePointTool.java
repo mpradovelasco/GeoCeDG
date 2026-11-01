@@ -202,9 +202,14 @@ final class GeoCeDGReferencePointTool {
 		JList<String> list = new JList<>(values.stream().map(describe).toArray(String[]::new));
 		list.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 		list.setVisibleRowCount(Math.min(5, values.size()));
-		list.setFixedCellWidth(340);
+		// Bound the viewport, not the semantic text: retain horizontal scrolling.
 		list.getAccessibleContext().setAccessibleName(title);
-		content.add(new JScrollPane(list), BorderLayout.CENTER);
+		JScrollPane addresses = new JScrollPane(list);
+		addresses.setPreferredSize(new java.awt.Dimension(
+				42 * list.getFontMetrics(list.getFont()).charWidth('0') + 24,
+				Math.min(5, values.size()) * list.getFontMetrics(list.getFont()).getHeight()
+						+ addresses.getHorizontalScrollBar().getPreferredSize().height + 8));
+		content.add(addresses, BorderLayout.CENTER);
 		JButton create = new JButton(t("Confirm", "Confirmar"));
 		create.setEnabled(values.size() == 1);
 		list.addListSelectionListener(event -> create.setEnabled(list.getSelectedIndex() >= 0));
@@ -223,6 +228,8 @@ final class GeoCeDGReferencePointTool {
 		cancel.addActionListener(event -> activate());
 		JPanel buttons = new JPanel(); buttons.add(create); buttons.add(cancel);
 		content.add(buttons, BorderLayout.SOUTH);
+		content.registerKeyboardAction(event -> { if (create.isEnabled()) { create.doClick(); } },
+				KeyStroke.getKeyStroke("ENTER"), javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		content.registerKeyboardAction(event -> activate(), KeyStroke.getKeyStroke("ESCAPE"),
 				javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
 		popup.add(content);
@@ -235,7 +242,7 @@ final class GeoCeDGReferencePointTool {
 				if (ticket == generation) { activate(); }
 			}
 		});
-		if (anchor != null && anchor.isShowing()) { popup.show(anchor, x, y); }
+		if (anchor != null && anchor.isShowing()) { popup.show(anchor, x, y); list.requestFocusInWindow(); }
 	}
 
 	private void editPolicy() {
@@ -255,6 +262,8 @@ final class GeoCeDGReferencePointTool {
 		JTextField[] inputs = new JTextField[labels.length];
 		for (int i = 0; i < labels.length; i++) {
 			inputs[i] = new JTextField(initial[i], 14);
+			inputs[i].setToolTipText(i < 3 ? t("Finite positive number; decimal point", "Número finito positivo; punto decimal")
+					: t("Positive integer in existing policy units", "Entero positivo en las unidades de la política vigente"));
 			JLabel label = new JLabel(labels[i]); label.setLabelFor(inputs[i]);
 			inputs[i].getAccessibleContext().setAccessibleName(labels[i]);
 			fields.add(label); fields.add(inputs[i]);

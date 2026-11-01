@@ -396,7 +396,7 @@ class G9U1WorkspaceSurfaceTest {
 				"curve.parabola"));
 		expected.put("construction-semantic-curves", List.of("semantic.locus-v2.create",
 				"semantic.spline-v2.create", "semantic.spline-v2.create-degree",
-				"semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit"));
+				"semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit", "semantic.locus-v2.point-from-reference"));
 		expected.put("construction-metrics", List.of("measure.angle",
 				"measure.distance-length", "measure.aligned-dimension",
 				"measure.linear-dimension", "measure.locus-v2-total-length",
@@ -703,7 +703,7 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(59, toolbarIds.size());
+		assertEquals(60, toolbarIds.size());
 		assertEquals(134, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
