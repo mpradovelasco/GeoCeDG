@@ -8,11 +8,11 @@ Complementa la propuesta de kernel R2 y su contrato H1; no reinterpreta sus evid
 | Fuente/destino | Precisión a añadir, manteniendo el resto |
 |---|---|
 | ADR 0019 decisión 10, remisión M08-S | Separar resultado R6 histórico de permiso M08-S. Una dirección individual puede seleccionarse sólo con evidencia forward, componente, proximidad world acotada, regularidad y ausencia de barreras, todo vigente. No exigir mínimo ni completitud global. UNRESOLVED por sí mismo nunca da permiso. No cambiar arrastre general. |
-| ADR 0041, M08-S estático | La referencia puede ser Q existente, consultado una vez. Herramienta L→Q consume M08SnapshotPlacement2D; confirmación contextual explícita incluso para oferta única sin unicidad global. Sólo dirección forward/parents legítimos se persisten. Q no es nuevo padre. |
+| ADR 0041, M08-S estático | La referencia puede ser Q existente, consultado una vez. Herramienta L→Q conserva primero las admisiones R1/R6 por LocusSnapshotPlacement2D y consume M08SnapshotPlacement2D sólo en el fallback tipado; confirmación contextual explícita incluso para oferta única sin unicidad global. Sólo dirección forward/parents legítimos se persisten. Q no es nuevo padre. |
 | ADR 0041, política de selección | Alcance fijo visible: todas las ramas/componentes admitidas por proveedor y política, distinto de cobertura global NOT_ESTABLISHED. Configuración de sesión sólo radio/tolerancias/presupuestos existentes; no filtro Desktop ni alcance restringible. |
 | locus-v2-point-interaction.md | Documentar modo experimental 145 L→Q, selección de objetos separada de selección de direcciones, cierre de capability por cancelación/modo/documento/política, revalidación al commit, Undo único y diagnóstico tipado. R6 y sus 52 regresiones permanecen. |
 | locus-v2-public-surface.md | Registrar consumidor Desktop del puente R2/H1 y dirección avanzada compacta. No comando dinámico Operación(L,Q), codec nuevo ni generalización de proveedores. |
-| Especificaciones de parametrización/persistencia | Sin cambio de formato: definición forward canónica y ownership/ID existentes. No persistir Q de referencia, política, nonce, selector ni índice de JList. |
+| Especificaciones de parametrización/persistencia | Sin cambio de formato: definición forward canónica y ownership/ID existentes. No persistir Q de referencia, política, nonce, selector visual/capability efímera de elección ni índice de JList. El selector semántico estructural de componente sí pertenece a la dirección durable y se persiste con la construcción forward existente. |
 
 Texto candidato de adición a ADR 0041:
 
@@ -85,7 +85,12 @@ interaction contract.» por:
 
 **locus-v2-point-interaction.md — añadir anexo M08-S, sin cambiar R6**:
 
-> The experimental M08-S consumer uses M08SnapshotPlacement2D. Result separates
+> The experimental M08-S consumer preserves existing R1/R6 admissions through
+> LocusSnapshotPlacement2D. Only historical UNRESOLVED with the typed reason
+> GLOBAL_UNIQUENESS_NOT_ESTABLISHED may query M08SnapshotPlacement2D; all other
+> non-admitted outcomes are terminal. Each route retains its own candidates, permission,
+> revision, coverage and commit. No publication failure triggers a retry. For the R2/H1
+> route, its result separates
 > historical R6 evidence, GlobalCoverage.NOT_ESTABLISHED, local evidence and Permission;
 > only EXPLICIT_LOCAL_SELECTION_REQUIRED permits offering a Choice. Choice is an
 > ephemeral single-use query capability, not durable identity. WorkSnapshot distinguishes
@@ -102,7 +107,7 @@ interaction contract.» por:
 
 > Desktop reference placement is a separate experimental mode (145), registered by
 > the application profile under cedg.locus.v2. It consumes the shared M08-S-R2/H1
-> result and commit with explicit contextual confirmation. Advanced explicit-address
+> result and commit after the R1/R6 route described above, with explicit contextual confirmation. Advanced explicit-address
 > authoring remains available in a compact dialog. There is no persistent L,Q inverse
 > expression, new codec, general point dragging or M09 operation in this increment.
 
@@ -111,3 +116,26 @@ su autorización histórica del 29 de octubre; añadir la posterior autorizació
 M08-S-R2/H1/Desktop como sucesión fechada. No transformar autorización de implementación
 en aprobación final de producto. La aplicación de todos estos bloques exige decisión
 autoral expresa sobre el candidato y sus resultados.
+
+## D1/D2 — precisión focal posterior, candidata
+
+D1 conserva los contratos históricos sin aplicarles el requisito de interior regular
+propio de R2/H1. UNIQUE_ADMISSIBLE_PREIMAGE y MULTIPLE_SEMANTIC_PREIMAGES se
+consumen exclusivamente por la selección/commit R1/R6. Sólo UNRESOLVED con
+GLOBAL_UNIQUENESS_NOT_ESTABLISHED habilita consultar H1 bajo su propio presupuesto
+acumulado y pruebas de admisibilidad. No se mezclan ofertas o permisos. No se afirma
+un límite acumulado entre ambas consultas independientes ni se modifica la contabilidad
+del kernel. La herramienta conserva confirmación compacta para la oferta única R1;
+R1 múltiple exige elección y toda oferta R2 exige confirmación incluso siendo única.
+
+**D2 — texto exacto propuesto para la cláusula de persistencia:**
+
+> The visual choice selector and its query-owned capability are ephemeral and are
+> not persisted. The structural semantic component selector belongs to the durable
+> semantic address and is persisted by the existing forward construction contract.
+> A UI caption, list index or transient capability is never that structural selector.
+
+La distinción también se aplica a «selector» en el cuadro anterior: no suprime rama,
+componente, parámetro ni su representación canónica persistente. No añade codec ni
+cambia documentos existentes. Se modifica únicamente esta conciliación candidata;
+los ADR aceptados y especificaciones normativas permanecen intactos.

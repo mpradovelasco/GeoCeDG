@@ -26,11 +26,11 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.main.AppD;
 
-/** Desktop selection only; all mathematical admission and publication belong to H1. */
+/** Desktop selection only; admission and publication remain with the separate R1/R6 and R2/H1 authorities. */
 final class GeoCeDGReferencePointTool {
 	private final AppD app;
 	private GeoLocusV2 source;
-	private M08SnapshotPlacement2D.Selection selection;
+	private GeoCeDGReferencePlacement selection;
 	private LocusPointInteractionPolicy2D policy = LocusPointInteractionPolicy2D.initial(.1);
 	private Object document;
 	private Object view;
@@ -39,6 +39,7 @@ final class GeoCeDGReferencePointTool {
 	private JWindow strip;
 	private JDialog settings;
 	private JTextField status;
+	private JLabel coverage;
 	private boolean acceptingMenu;
 	private String lastFailure;
 
@@ -68,7 +69,8 @@ final class GeoCeDGReferencePointTool {
 		JPanel scope = new JPanel(new GridLayout(0, 1));
 		scope.add(new JLabel(t("Fixed scope: all supported branches/components",
 				"Alcance fijo: todas las ramas/componentes admitidas")));
-		scope.add(new JLabel(t("Global coverage not established", "Cobertura global no establecida")));
+		coverage = new JLabel(t("Coverage: no query yet", "Cobertura: sin consulta todavía"));
+		scope.add(coverage);
 		panel.add(scope, BorderLayout.SOUTH);
 		panel.add(options, BorderLayout.EAST);
 		panel.registerKeyboardAction(event -> activate(), KeyStroke.getKeyStroke("ESCAPE"),
@@ -127,25 +129,33 @@ final class GeoCeDGReferencePointTool {
 
 	void query(GeoPoint q, Component anchor, int x, int y) {
 		try {
-			selection = M08SnapshotPlacement2D.queryFromReference(source, q, policy);
-			var result = selection.getResult();
-			if (result.getPermission() != M08SnapshotPlacement2D.Permission.EXPLICIT_LOCAL_SELECTION_REQUIRED) {
-				refuse(result.getFailure().name() + " / " + result.getLocalFailure());
+			selection = new GeoCeDGReferencePlacement(source, q, policy);
+			if (selection.getRoute() == GeoCeDGReferencePlacement.Route.REJECTED) {
+				refuse(selection.getFailure());
 				return;
 			}
-			showChoices(result.getChoices(), anchor, x, y, choice -> {
+			boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
+			String title = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
+					: t("Verified local address; global uniqueness not established",
+							"Dirección local verificada; unicidad global no establecida");
+			if (coverage != null) {
+				coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
+						: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
+			}
+			showChoices(selection.getChoices(), anchor, x, y, choice -> {
 				var address = choice.getAddress();
 				return address.getBranchKey() + " / " + address.getComponentLineageKey()
 						+ " / u=" + address.getCanonicalParameter();
-			}, this::commit, t("Verified local address; global uniqueness not established",
-					"Dirección local verificada; unicidad global no establecida"));
+			}, this::commit, title);
 		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
+		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
 	}
 
-	GeoPoint commit(M08SnapshotPlacement2D.Choice choice) {
+	GeoPoint commit(GeoCeDGReferencePlacement.Choice choice) {
 		if (app.getActiveEuclidianView() != view) { refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name()); return null; }
 		try {
-			GeoPoint point = selection.commit(null, choice);
+			GeoPoint point = selection.commit(choice);
+			if (point == null) { activate(); return null; }
 			app.storeUndoInfo();
 			app.getKernel().notifyRepaint();
 			activate();
@@ -154,10 +164,16 @@ final class GeoCeDGReferencePointTool {
 			refuse(failure.getFailure().name());
 			return null;
 		}
+		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); return null; }
 	}
 
 	private String describeFailure(String code) {
 		return switch (code) {
+		case "R1_FORWARD_REJECTED" -> t("R1 forward publication rejected", "Publicación forward R1 rechazada");
+		case "CERTIFIED_ABSENCE" -> t("Certified absence within the R1 query policy", "Ausencia certificada bajo la política R1");
+		case "DEGENERATE_SOURCE" -> t("Degenerate source", "Fuente degenerada");
+		case "UNSUPPORTED_CAPABILITY" -> t("Unsupported capability", "Capacidad no admitida");
+		case "LOCAL_EVIDENCE_INSUFFICIENT" -> t("Insufficient safe local evidence", "Evidencia local segura insuficiente");
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");
 		case "BUDGET_EXHAUSTED" -> t("Work budget exhausted", "Presupuesto de trabajo agotado");
@@ -183,7 +199,7 @@ final class GeoCeDGReferencePointTool {
 		updateStatus(t("No point created: ", "No se creó ningún punto: ") + describeFailure(reason.split(" / ")[0]) + " [" + reason + "]");
 	}
 
-	M08SnapshotPlacement2D.Selection pendingSelection() { return selection; }
+	GeoCeDGReferencePlacement pendingSelection() { return selection; }
 	JPopupMenu contextMenu() { return popup; }
 	String lastFailure() { return lastFailure; }
 	void setPolicy(LocusPointInteractionPolicy2D value) {

@@ -272,7 +272,7 @@ class Cu7M08SCorrectionTest {
 		controller.wrapMouseReleased(G9U1SemanticPointInteractionTest.event(app, .3, .02));
 		var tool = controller.referencePointTool();
 		assertNotNull(tool.pendingSelection());
-		tool.commit(tool.pendingSelection().getResult().getChoices().get(0));
+		tool.commit(tool.pendingSelection().getChoices().get(0));
 		GeoPoint p = app.getKernel().getConstruction().getGeoSetConstructionOrder().stream()
 				.filter(GeoPoint.class::isInstance).map(GeoPoint.class::cast)
 				.filter(GeoCeDGPointInteraction::owns).findFirst().orElseThrow();
