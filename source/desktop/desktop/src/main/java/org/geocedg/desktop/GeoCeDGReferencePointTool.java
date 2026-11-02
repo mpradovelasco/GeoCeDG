@@ -23,6 +23,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionWorkBudget2D;
 import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
+import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.main.AppD;
@@ -45,6 +46,8 @@ final class GeoCeDGReferencePointTool {
 	private boolean fillingPolicy;
 	private boolean policyDirty;
 	private String lastFailure;
+	private boolean worldPlacement;
+	private boolean clickPosition;
 
 	GeoCeDGReferencePointTool(AppD app) { this.app = app; }
 
@@ -58,17 +61,20 @@ final class GeoCeDGReferencePointTool {
 		Object current = app.getKernel().getConstruction().getSpatialIdentityRegistry();
 		if (current != document) {
 			policy = LocusPointInteractionPolicy2D.initial(.1);
+			clickPosition = false;
 			document = current;
 		}
 		buildPanel();
 		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui) {
 			gui.setReferencePointPanel(panel);
 		}
-		updateStatus(t("Select L", "Seleccione L"));
+		updateStatus(clickPosition ? t("Click L to choose a position", "Pulse L para elegir una posición")
+				: t("Select L", "Seleccione L"));
 	}
 
 	void reset() {
 		clearSelection();
+		worldPlacement = false;
 		source = null;
 		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui && panel != null) {
 			gui.removeReferencePointPanel(panel);
@@ -108,6 +114,12 @@ final class GeoCeDGReferencePointTool {
 		if (document != app.getKernel().getConstruction().getSpatialIdentityRegistry()) { activate(); }
 		if (!applyPolicy() || selection != null || choices != null) { return; }
 		List<GeoElement> loci = hits.stream().filter(geo -> geo instanceof GeoLocusV2).toList();
+		if (clickPosition) {
+			choose(loci, geo -> queryWorld((GeoLocusV2) geo,
+					app.getActiveEuclidianView().toRealWorldCoordX(x),
+					app.getActiveEuclidianView().toRealWorldCoordY(y)));
+			return;
+		}
 		if (source == null || !loci.isEmpty() && hits.stream().noneMatch(geo -> geo instanceof GeoPoint)) {
 			choose(loci, geo -> {
 				source = (GeoLocusV2) geo;
@@ -131,34 +143,75 @@ final class GeoCeDGReferencePointTool {
 	void query(GeoPoint q, Component anchor, int x, int y) {
 		try {
 			selection = new GeoCeDGReferencePlacement(source, q, policy);
-			if (selection.getRoute() == GeoCeDGReferencePlacement.Route.REJECTED) {
-				refuse(selection.getFailure());
-				return;
-			}
-			boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
-			String title = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
-					: t("Verified local address; global uniqueness not established",
-							"Dirección local verificada; unicidad global no establecida");
-			coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
-					: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
-			updateStatus(t("Confirm a semantic address", "Confirme una dirección semántica"));
-			showChoices(selection.getChoices(), choice -> {
-				var address = choice.getAddress();
-				return address.getBranchKey() + " / " + address.getComponentLineageKey()
-						+ " / u=" + address.getCanonicalParameter();
-			}, this::commit, title);
+			showSelection();
 		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
+	}
+
+	/** A canvas request uses the same world policy and confirmation as an existing Q. */
+	void queryWorld(GeoLocusV2 target, double x, double y) {
+		if (worldPlacement && !applyPolicy()) { return; }
+		activate();
+		worldPlacement = true;
+		source = target;
+		app.getSelectionManager().addSelectedGeo(source);
+		try {
+			selection = new GeoCeDGReferencePlacement(source, x, y, policy);
+			showSelection();
+		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
+		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
+	}
+
+	boolean isWorldPlacementActive() { return worldPlacement; }
+	boolean hasPendingWorldSelection() { return worldPlacement && selection != null; }
+
+	/** Finish an invalidated world offer before handing a new press to any authoring route. */
+	boolean prepareCanvasRequest() {
+		if (!worldPlacement) { return true; }
+		if (!applyPolicy()) { return false; }
+		if (app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+			activate();
+		} else {
+			reset();
+		}
+		return true;
+	}
+
+	private void restart() {
+		if (worldPlacement && app.getMode() != EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+			reset();
+		} else {
+			activate();
+		}
+	}
+
+	private void showSelection() {
+		if (selection.getRoute() == GeoCeDGReferencePlacement.Route.REJECTED) {
+			refuse(selection.getFailure());
+			return;
+		}
+		boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
+		String title = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
+				: t("Verified local address; global uniqueness not established",
+						"Dirección local verificada; unicidad global no establecida");
+		coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
+				: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
+		updateStatus(t("Confirm a semantic address", "Confirme una dirección semántica"));
+		showChoices(selection.getChoices(), choice -> {
+			var address = choice.getAddress();
+			return address.getBranchKey() + " / " + address.getComponentLineageKey()
+					+ " / u=" + address.getCanonicalParameter();
+		}, this::commit, title);
 	}
 
 	GeoPoint commit(GeoCeDGReferencePlacement.Choice choice) {
 		if (app.getActiveEuclidianView() != view) { refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name()); return null; }
 		try {
 			GeoPoint point = selection.commit(choice);
-			if (point == null) { activate(); return null; }
+			if (point == null) { restart(); return null; }
 			app.storeUndoInfo();
 			app.getKernel().notifyRepaint();
-			activate();
+			restart();
 			return point;
 		} catch (M08SnapshotPlacement2D.Rejected failure) {
 			refuse(failure.getFailure().name());
@@ -177,7 +230,7 @@ final class GeoCeDGReferencePointTool {
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");
 		case "BUDGET_EXHAUSTED" -> t("Work budget exhausted", "Presupuesto de trabajo agotado");
-		case "STALE_SELECTION" -> t("Selection is stale; select L and Q again", "Selección caducada; seleccione L y Q de nuevo");
+		case "STALE_SELECTION" -> t("Selection is stale; make a new request", "Selección caducada; realice una petición nueva");
 		case "FOREIGN_CHOICE" -> t("Choice belongs to another query", "Dirección ajena a la consulta");
 		case "CONSUMED_SELECTION" -> t("Selection already consumed", "Selección ya consumida");
 		case "COMPONENT_NOT_ESTABLISHED" -> t("Component not established", "Componente no establecida");
@@ -208,7 +261,8 @@ final class GeoCeDGReferencePointTool {
 		fillPolicy();
 		if (coverage != null) { coverage.setText(""); }
 		updateStatus(t("Policy applied; select ", "Política aplicada; seleccione ")
-				+ (source == null ? "L" : t("Q again", "Q de nuevo")));
+				+ (worldPlacement ? t("L again", "L de nuevo")
+						: source == null ? "L" : t("Q again", "Q de nuevo")));
 	}
 
 	private <T> void showChoices(List<T> values,
@@ -243,7 +297,7 @@ final class GeoCeDGReferencePointTool {
 			accept.accept(values.get(index)); // exact ephemeral handle, never persisted as an ordinal
 		});
 		JButton cancel = new JButton(t("Cancel", "Cancelar"));
-		cancel.addActionListener(event -> activate());
+		cancel.addActionListener(event -> restart());
 		JPanel buttons = new JPanel(); buttons.add(create); buttons.add(cancel);
 		content.add(buttons, BorderLayout.EAST);
 		content.registerKeyboardAction(event -> { if (create.isEnabled()) { create.doClick(); } },
@@ -284,12 +338,27 @@ final class GeoCeDGReferencePointTool {
 		}
 		fillPolicy();
 		JPanel actions = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.TRAILING, 4, 0));
+		if (app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+			JToggleButton origin = new JToggleButton(t("Click position", "Posición de clic"), clickPosition);
+			origin.setName("m08-click-position");
+			origin.addActionListener(event -> {
+				clickPosition = origin.isSelected();
+				worldPlacement = false;
+				clearSelection();
+				source = null;
+				app.getSelectionManager().clearSelectedGeos();
+				coverage.setText("");
+				updateStatus(clickPosition ? t("Click L to choose a position", "Pulse L para elegir una posición")
+						: t("Select L", "Seleccione L"));
+			});
+			actions.add(origin);
+		}
 		JLabel radius = new JLabel(labels[0]); radius.setLabelFor(inputs[0]);
 		actions.add(radius); actions.add(inputs[0]);
 		JToggleButton options = new JToggleButton(t("Policy", "Política"));
 		actions.add(options);
 		JButton restart = new JButton(t("Restart", "Reiniciar"));
-		restart.addActionListener(event -> activate());
+		restart.addActionListener(event -> restart());
 		actions.add(restart);
 		JPanel header = new JPanel(new BorderLayout(4, 0));
 		header.add(status, BorderLayout.CENTER); header.add(actions, BorderLayout.EAST);
@@ -311,7 +380,7 @@ final class GeoCeDGReferencePointTool {
 		panel.add(technical, BorderLayout.SOUTH);
 		choicesHost = new JPanel(new BorderLayout());
 		panel.add(choicesHost, BorderLayout.CENTER);
-		panel.registerKeyboardAction(event -> activate(), KeyStroke.getKeyStroke("ESCAPE"),
+		panel.registerKeyboardAction(event -> restart(), KeyStroke.getKeyStroke("ESCAPE"),
 				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 	}
 
@@ -321,7 +390,7 @@ final class GeoCeDGReferencePointTool {
 		clearSelection();
 		coverage.setText("");
 		updateStatus(t("Policy edited; previous choice cancelled. Select ", "Política editada; elección anterior cancelada. Seleccione ")
-				+ (source == null ? "L" : "Q"));
+				+ (worldPlacement ? "L" : source == null ? "L" : "Q"));
 	}
 
 	private void fillPolicy() {

@@ -1183,17 +1183,33 @@ Perder la admisibilidad puede dejar el punto indefinido; no se elige otra rama c
 Esta operación no afirma una proyección exacta ni una mínima distancia global.
 La redefinición segura M09 y la correspondencia dinámica M08-D siguen pendientes.
 
-Para usar un **punto Q existente**, active **Punto sobre Locus V2**, seleccione L y abra
-**Desde Q existente (referencia inicial)**. Elija Q de la lista de puntos existentes y
-confirme el radio en unidades del modelo y la política acotada R6 mostrada.
-Esta operación se distingue del clic con Punto y de la entrada manual de rama/parámetro.
-La construcción guardada usa la dirección forward elegida: Q no es un padre nuevo y
-el arrastre requiere una consulta de edición admitida por R6. Las fuentes de evaluador
-general pueden seguir rechazándolo si no se establece unicidad. Varias direcciones admisibles mantienen su
-elección explícita incluso sin cobertura global de búsqueda. Un locus general puede tener un único candidato
-local válido por evaluación forward sin que se establezca unicidad de la búsqueda:
-la política vigente rechaza esa consulta para crear, sin certificar ausencia.
-Esta restricción requiere una decisión autoral separada; confirmar no la elimina.
+Para usar un **punto Q existente**, active **Punto sobre Locus V2**, seleccione el
+locus gráfico L y después Q. Confirme una dirección semántica en el panel sobre la
+entrada algebraica. El radio está en unidades del modelo; **Política** muestra los
+parámetros de búsqueda acotada existentes. Q es una referencia inicial y no se añade
+como padre del resultado.
+
+Para usar la misma política en unidades del modelo con una **posición de clic**, active
+**Posición de clic** en ese panel y haga clic sobre L. Esta opción inicia directamente
+una petición world; no utiliza el radio de búsqueda de pantalla de Punto ordinario.
+Confirme o cancele la dirección como con Q. La opción pertenece a la sesión y no se
+guarda en el punto.
+
+Con la herramienta ordinaria **Punto** o **Punto en objeto**, haga clic sobre el trazo
+del locus. Se conserva la creación R6 existente. Cuando solo falta establecer unicidad
+global, una dirección local admitida por R2/H1 puede ofrecerse en el mismo panel de
+confirmación, con su radio en unidades del modelo. Incluso una oferta única requiere
+confirmación. No se crea un Q auxiliar. Esta creación no inicia un arrastre general
+durante ese gesto.
+
+El kernel decide la admisibilidad de ambas formas de autoría. El resultado guarda su
+dirección forward y sigue los cambios de L. R2/H1 sigue exigiendo su componente
+certificada y las pruebas de regularidad local y proximidad. Una evaluación forward
+finita no autoriza por sí sola la creación desde una búsqueda no resuelta. Si falta
+componente o evidencia, no se ofrece dirección; eso no certifica ausencia. La creación
+sin la guarda de regularidad H1 queda pendiente de una decisión autoral específica.
+Se conserva el arrastre R6 admitido; el arrastre general, la redefinición segura M09 y
+la correspondencia dinámica M08-D quedan fuera de este flujo.
 
 ### 8.2 Resultados ricos de intersección
 

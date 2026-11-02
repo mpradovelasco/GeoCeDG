@@ -1125,17 +1125,29 @@ of address admissibility can make the point undefined; no nearby branch is silen
 This is not an assertion of exact projection or a global distance minimum.
 Safe M09 redefinition and dynamic M08-D correspondence remain pending.
 
-To use an **existing point Q**, activate **Point on Locus V2**, select L, and open
-**From existing Q (initial reference)**. Choose Q from the existing-point list and
-confirm the model-unit proximity radius and displayed bounded R6 search policy.
-This is separate from ordinary Point-tool clicks and manual branch/parameter entry.
-The saved construction uses the selected forward address, so Q is not a new parent;
-dragging remains subject to an admitted R6 edit query. Evaluator-only sources can still
-reject dragging when uniqueness is unestablished. Several admissible directions retain their
-explicit-choice route even without global search coverage. A general locus can have only
-one forward-valid local candidate while search uniqueness remains unestablished: the current policy
-rejects that query for creation. It does not certify absence. This restriction remains
-pending a separate author decision; user confirmation cannot override it.
+To use an **existing point Q**, activate **Point on Locus V2**, select the graphical
+locus L, then select Q. Confirm a displayed semantic address in the panel above the
+algebra input. Its radius is in model units; **Policy** exposes the existing bounded
+search settings. Q is an initial reference and is not added as a parent of the result.
+
+For the same model-unit policy with a **click position**, enable **Click position** in
+that panel and click L. This option starts a new world request directly; it does not
+use the ordinary Point tool's screen-derived search radius. Confirm or cancel the
+offered address as for Q. The option is session state and is not saved in the point.
+
+With the ordinary **Point** or **Point on object** tool, click the locus stroke.
+Existing R6 creation remains available. When global uniqueness alone is unestablished,
+a supported R2/H1 local address can instead be offered in the same confirmation panel,
+using its model-unit radius. Even a single such offer needs confirmation. No helper Q
+is created. This creation does not start general dragging during that gesture.
+
+The kernel decides admission for both forms of authoring. The result stores its forward
+address and follows changes of L. R2/H1 still requires its certified component, local
+regularity and proximity evidence. A finite forward evaluation alone cannot authorize
+creation from an unresolved search. Unsupported components or missing evidence produce no
+offer; that is not certified absence. Creation without the H1 regularity requirement is
+pending a separate author decision. Existing admitted R6 dragging is preserved; general
+dragging, safe M09 redefinition and dynamic M08-D correspondence remain outside this workflow.
 
 ### 8.2 Rich intersection results
 

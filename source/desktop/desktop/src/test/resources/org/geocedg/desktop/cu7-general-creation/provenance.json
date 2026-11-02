@@ -1,0 +1,12 @@
+{
+  "artifact": "TestM08-S.cedg",
+  "purpose": "Immutable native author-model regression for CU7 point creation",
+  "source": "Author-named TestM08-S.cedg; preserved R1 author-input copy",
+  "author_instruction_date": "2026-11-02",
+  "sha256": "4f6e1be3c42a892f63f6791f3b8ca6994443863af5c5ad2039531604e27c898d",
+  "byte_length": 28228,
+  "copy_policy": "Byte-exact test fixture; tests edit temporary copies only",
+  "feature": "cedg.locus.v2",
+  "runtime_authority": "Native construction and current kernel contracts; never render samples",
+  "redistribution_status": "No release or public redistribution authorized by this task"
+}

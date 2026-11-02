@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D.Reason;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.awt.AwtFactory;
@@ -135,6 +136,8 @@ public final class GeoCeDGEuclidianController
 		if (isInsertionIsolated()) {
 			return;
 		}
+		if (referencePointTool.hasPendingWorldSelection()) { return; }
+		if (!referencePointTool.prepareCanvasRequest()) { return; }
 		if (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
 			if (event.isRightClick()) { return; }
 			if (!RuntimeFeatureService.mayCreateLocusV2(kernel.getConstruction())) { return; }
@@ -245,8 +248,17 @@ public final class GeoCeDGEuclidianController
 								interactionDragPoint = null;
 							}
 							if (!created) {
-								locusV2Dialogs.showInteractionOutcome(
-										pointInteraction.getLastResult(), true);
+								var result = pointInteraction.getLastResult();
+								if (result.getStatus() == LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH
+										&& result.getReason() == Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED) {
+									// A new world request keeps the existing kernel priorities and H1 proof.
+									// Its confirmed point never becomes this press's drag target.
+									referencePointTool.queryWorld(source,
+											getView().toRealWorldCoordX(event.getX()),
+											getView().toRealWorldCoordY(event.getY()));
+								} else {
+									locusV2Dialogs.showInteractionOutcome(result, true);
+								}
 							}
 						} catch (IllegalArgumentException exception) {
 							locusV2Dialogs.showSelectionFailure(exception, true);
@@ -262,6 +274,7 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseDragged(AbstractEvent event, boolean startCapture) {
+		if (referencePointTool.hasPendingWorldSelection()) { return; }
 		if (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) { return; }
 		if (isInsertionIsolated()) {
 			return;
@@ -302,6 +315,7 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseReleased(AbstractEvent event) {
+		if (referencePointTool.hasPendingWorldSelection()) { return; }
 		if (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) { return; }
 		if (isInsertionIsolated()) {
 			return;
@@ -653,11 +667,13 @@ public final class GeoCeDGEuclidianController
 	public void setMode(int newMode, ModeSetter setter) {
 		// Host focus/dock synchronization is not a new L -> Q operation.
 		if (referencePointTool != null && mode == newMode
-				&& newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+				&& (newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+						|| referencePointTool.isWorldPlacementActive())) {
 			return;
 		}
 		if (referencePointTool != null && (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
-				|| newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT)) {
+				|| newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+				|| referencePointTool.isWorldPlacementActive())) {
 			if (mode != newMode) { interactionTailCancelled = true; }
 			referencePointTool.reset();
 		}
@@ -691,6 +707,7 @@ public final class GeoCeDGEuclidianController
 
 	void cancelReferencePoint() {
 		if (referencePointTool != null && mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) { referencePointTool.activate(); }
+		else if (referencePointTool != null && referencePointTool.isWorldPlacementActive()) { referencePointTool.reset(); }
 	}
 
 	GeoCeDGReferencePointTool referencePointTool() { return referencePointTool; }

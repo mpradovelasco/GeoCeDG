@@ -1,0 +1,20 @@
+// GeoCeDG. SPDX-License-Identifier: EUPL-1.2.
+// Opt-in creation probes; historical registered test inventories remain unchanged.
+allprojects {
+    // These modules are in included builds, whose local project paths omit the build prefix.
+    if (projectDir.name == 'common-jre'
+            || projectDir.name == 'desktop' && projectDir.parentFile.name == 'desktop') {
+        def repository = new File(projectDir, '../../..').canonicalFile
+        def probeKind = projectDir.name == 'common-jre' ? 'probe-shared' : 'probe-desktop'
+        plugins.withId('java') {
+            sourceSets.test.java.srcDir(new File(repository,
+                    'geocedg/validation/pre-g9b-cu7-general-creation/' + probeKind))
+        }
+        tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+            reports.junitXml.required = true
+            reports.junitXml.outputLocation = new File(System.getProperty(
+                    'geocedg.cu7.creation.junit'))
+            reports.html.required = false
+        }
+    }
+}
