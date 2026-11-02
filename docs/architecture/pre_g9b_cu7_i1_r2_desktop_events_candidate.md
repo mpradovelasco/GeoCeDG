@@ -117,13 +117,41 @@ mantendrá pendiente y no se declarará aceptación integrada. Las sondas nuevas
 las focales de Events no muestran ventanas. Las imágenes de panel son renders
 fuera de pantalla, no capturas del escritorio ni evidencia de foco físico.
 
+### Reanudación autorizada y congelación de verificación (2026-11-02)
+
+El autor autorizó expresamente las ventanas Java de la suite canónica y,
+posteriormente, Computer Use. Se preserva la entrega parcial anterior en
+`artifacts/pre-g9b-cu7-i1-r2-desktop-events/delivery-before-windows-authorization.json`.
+Estas autorizaciones de ejecución no constituyen aprobación del producto.
+
+El cohorte de código limpio `7fac620677f45b1d967f77dd42ef8396eb6ddf8d`, árbol
+`707ecc9b1ed8b5fd418a1b8288050f3704a13002`, produjo Desktop real: 2308 casos,
+2307 PASSED y un skip histórico, código 0. El descubrimiento canónico obtiene
+2314 identidades Desktop, incluidas las 14 nuevas de Events y ninguna sonda optativa.
+Se deriva de esos JUnit la selección Desktop ampliada (69 identidades) y se aplica
+el actualizador canónico del catálogo, sin cambiar allowlists ni filtros de otras
+selecciones. Se actualizan también los conteos/hashes derivados de descubrimiento
+y de final.desktop, conservando la distinción entre descubrimiento y ejecución.
+Los impactos del nodo existente incluyen AppGeoCeDG, GuiManagerGeoCeDG y el nuevo
+test. No se añade un perfil ni una autoridad de aceptación alternativa.
+
+La siguiente congelación sólo añade metadata derivada y esta trazabilidad al
+cohorte de código. STATIC e INFRA_UNIT del cohorte previo se conservan; los cuatro
+perfiles exigidos se ejecutan sobre el SHA/árbol final registrados en delivery.json.
+Primero STATIC/INFRA_UNIT/PHASE y nativo, después la comprobación visual del agente
+en una ventana propia y, tras cerrarla, INTEGRATION. No actuar sobre ventanas de la
+suite mientras ésta corre. No Computer Use sobre sesiones o documentos ajenos.
+El resultado visual, si se obtiene, pertenece al expediente separado
+`visual-smoke/result.json`; no sustituye el smoke ni la aprobación autoral.
+
 BOOTSTRAP IMPACT — NO CHANGE REQUIRED: no cambio de JDK, runtimes, dependencias,
 variables persistentes ni prerrequisitos. Infraestructura: únicamente actualización
 derivada de catálogo JUnit y selección PHASE existente; no nueva semántica del verificador.
 GUIDE_IMPACT=UPDATE: protocolo candidato; deuda editorial CU10 preservada, libro intacto.
 
-Limitaciones: no smoke físico posterior automatizado; render/DPI/foco nativo exigen
-autor. No ejecución de binarios de lectores antiguos; evidencia de codec inalterado
+Limitaciones: smoke autoral pendiente; el eventual control visual del agente no
+acredita todas las resoluciones/DPI ni equivale a aprobación. No ejecución de binarios
+de lectores antiguos; evidencia de codec inalterado
 y regresiones actuales de documentos legacy. M08-S pendiente de aprobación final;
 M09 pendiente y sin implementación. Sin M08-D, A0, I2G, I3, reconstrucción/redefinición
 general ni ampliación del arrastre. Mantener DEBT-CU7-GENERAL-LOCUS-V2-POINT-DRAG,
