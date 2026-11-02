@@ -232,3 +232,90 @@ On author approval only, incorporate the following into the governing sources:
 Approved ADR/specification files remain untouched by CU7-D. Validation and author choices are
 in the [matrix](../../../../docs/validation/pre_g9b_cu7_d_validation_and_implementation_gates.md)
 and [decision sheet](../../../../docs/validation/pre_g9b_cu7_d_author_decision_sheet.md).
+
+## 2026-11-02 — Accepted M08-S-R2 implementation amendment
+
+Authority: definitive author decision, independent review FAVORABLE and author-reported
+manual smoke FAVORABLE of 2026-11-02, for commit
+`86438edabaed06a6509c1be37cf06278941e0e46`, tree
+`96e90172201440739bfe8afb503059379c70ff70`.
+This successor amendment supersedes the implementation exclusions for M08-S and the
+single-route restriction in §2 steps 3–5, without rewriting the historical CU7-D text.
+Only M08-S-R2 is PASS — AUTHOR APPROVED; neither all CU7 nor M08-D is closed.
+
+### Admission and compatibility
+
+Preserve historical R1/R6 admissions through LocusSnapshotPlacement2D, including
+UNIQUE_ADMISSIBLE_PREIMAGE and explicit choice from MULTIPLE_SEMANTIC_PREIMAGES.
+Only UNRESOLVED_NUMERICAL_SEARCH with typed reason
+GLOBAL_UNIQUENESS_NOT_ESTABLISHED permits the separate M08SnapshotPlacement2D
+R2/H1 query. Other rejections are terminal; a publication failure never triggers fallback.
+Candidates, permissions, revisions, coverage and commits of the two routes are not mixed.
+The historical R6 statuses and guarantees, including its 52 regressions, retain their meaning.
+
+The independent M08-S result separates individual evidence, global coverage and permission.
+An individual canonical reconstructible address may be selected without a distance minimum
+(local or global) or global search completeness. UNRESOLVED, isEstablished(), small residual,
+candidate count or render samples alone never grant permission. No proved offer is not a
+certificate of absence. GlobalCoverage.NOT_ESTABLISHED remains truthful.
+
+The new route is limited to the supported R2/H1 model and represented configuration:
+current valid source/component, canonical address, finite valid forward evaluation,
+certified continuous component and interior regularity, and no applicable unsafe barrier.
+An outward enclosure of squared distance at the selected argument must lie strictly below
+the lower bound of squared world radius. The existing interval C1 model on the interior
+neighborhood of adjacent doubles must have a first jet excluding zero in some coordinate
+throughout that neighborhood. The forward value must be finite, inside the enclosure and
+within the numerical radius, and publication must reconstruct the selected address.
+This is CERTIFIED_ERROR_BOUND in the represented configuration, not EXACT or STRICT and
+not a transfer of constructive authority. Unsupported models, unresolved singularities,
+unsafe seams/boundaries, gaps, collapsed components and exhausted proofs fail closed.
+Do not apply H1 interior restrictions to previously admitted R1/R6 endpoints.
+
+### Selection, budget and publication
+
+Only EXPLICIT_LOCAL_SELECTION_REQUIRED offers a new-route Choice. Every new-route offer
+requires explicit contextual confirmation even when only one address was discovered.
+R1 multiple addresses require explicit choice; the integrated tool also confirms R1 unique.
+Selection CURRENT/STALE/CONSUMED is distinct from immutable Result evidence. Commit
+revalidates exact query, source ID/definition/revision, authority, component, transient
+request (including current Q when supplied), policy and query-owned single-use Choice.
+Stale, foreign, consumed, unsafe or budget-exhausted selections reject without publication.
+
+H1 accounting is cumulative across discovery/refinement, semantic cache misses including
+nested/composed evaluation sessions, interval passes, forward reconstruction, revalidation
+and prepared publication. Units are semantic misses, interval passes and publication attempts,
+not Java-call counts. Confirmation consumes the true remaining budget. BUDGET_EXHAUSTED
+never yields partial permission or construction. R1/R6 retains its historical independent
+budget/forward contract; no aggregate cross-route limit or H1 guarantee is imputed to it.
+
+P is published only through the existing forward construction with legitimate semantic
+parents and one host Undo operation. Q is a transient initial value, never a new persistent
+parent; a legitimate dependency through L remains. Recompute follows L, not the reference Q.
+The visual choice selector and its query-owned capability are ephemeral and not persisted.
+The structural semantic component selector belongs to the durable address and is persisted
+by the existing forward contract. No new codec, dynamic L,Q expression, coordinate identity,
+label association, ordinal selector or retrospective identity is introduced. Existing Undo,
+Redo, native .cedg, copy/remap and legacy-document contracts remain unchanged.
+
+### Desktop and scope
+
+Experimental tool 145 under cedg.locus.v2: tool → graphical L → existing Q → contextual
+choice/confirmation → forward P. No habitual creation dialog; advanced explicit-address
+authoring remains available in its compact dialog. The specific contextual panel sits above
+algebra input, with one world radius, advanced Policy and explicit invalidation on edits.
+Escape, cancellation and mode changes clear transient state without mutation. Desktop
+presents evidence; the shared kernel decides admission and publishes geometry.
+
+Search scope is fixed: all branches/components admitted by provider and policy. It is
+accessible in technical Policy diagnostics and distinct from actually established coverage;
+no routine fixed-scope banner or prequery coverage is required. Existing radius, tolerances
+and budgets are session-configurable, with the existing initial radius 0.1. Zoom, DPI and
+hit tolerances do not establish geometric authority. No Desktop postfilter simulates a
+restricted query. Configurable branch/component restriction is a future unapproved extension.
+
+M08-D, M09, I2G/I3 and general dragging are excluded. Existing direct SplineV2 creation,
+Point/Point-on-object and admitted dragging remain unchanged. Maintain
+DEBT-CU7-GENERAL-LOCUS-V2-POINT-DRAG, CU10 and
+DEBT-CU3-EXACT-TANGENCY-GENERALIZATION. A reusable geometric-authoring contextual-panel
+pattern is a future proposal only, not general infrastructure authorized by this closure.

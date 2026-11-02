@@ -185,3 +185,22 @@ The distinct retained risk
 `G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains **OPEN / TRACKED**. The R6
 periodic point-interaction evidence does not supply the missing native
 intersection-quarantine round trip.
+
+## 2026-11-02 — Author-approved M08-S-R2 successor amendment
+
+The definitive author decision approves M08-S-R2 implementation and its normative
+reconciliation on candidate `86438edabaed06a6509c1be37cf06278941e0e46`
+(tree `96e90172201440739bfe8afb503059379c70ff70`). Earlier implementation exclusions and
+creation restrictions remain historical; this dated amendment governs the separate M08-S
+route. R6 itself and its historical states/guarantees are unchanged.
+
+An individually evidenced semantic address may be explicitly selected without a distance
+minimum or global completeness. This never promotes UNRESOLVED by confirmation alone.
+The R2/H1 supported-model, component/interior regularity, certified world proximity,
+configuration fidelity, barrier, budget and freshness predicates remain mandatory.
+R1/R6 admissions retain priority; only the typed global-uniqueness-not-established outcome
+permits the independent R2/H1 query. No other rejection or failed commit is recoverable by it.
+
+The exact normative perimeter, H1 cumulative accounting, single-use selection, forward
+persistence (Q transient; structural component durable; visual selector ephemeral), world
+policy and L→Q Desktop contract are defined in the accepted 2026-11-02 amendment of [M08](../../geocedg/specs/locus/candidates/cu7-m08-point-placement.md#2026-11-02--accepted-m08-s-r2-implementation-amendment). This specifically supersedes the historical creation-only uniqueness sentence in Evidence model for M08-S, and extends decision 10 by the separate experimental consumer; it does not change general dragging or STRICT.

@@ -4343,3 +4343,20 @@ La plataforma deberá añadir:
 - representación 3D derivada;
 - publicación PDF/SVG con tamaño físico y escala controlados;
 - rendimiento medido y mejorado sobre benchmarks canónicos.
+
+## 2026-11-02 — Cierre autoral M08-S-R2 (sucesión de estado)
+
+PRE-G9B-CU7-I1-M08-S-R2 — PASS — AUTHOR APPROVED sobre
+86438edabaed06a6509c1be37cf06278941e0e46, árbol 96e90172201440739bfe8afb503059379c70ff70.
+Dictamen independiente FAVORABLE y smoke manual autoral FAVORABLE comunicado el 2026-11-02;
+no se atribuyen comprobaciones individuales no documentadas al smoke.
+Registro canónico: docs/validation/pre_g9b_cu7_i1_m08s_r2_closeout_record.md.
+La conciliación normativa se adopta por enmiendas fechadas de ADR 0019/0041 y contrato M08;
+las declaraciones anteriores de pendiente/no autorizado conservan su contexto histórico.
+CU7 no está cerrado. M08-D y M09 no están implementados por este cierre; M09 sigue bloqueado
+por sus puertas transaccionales específicas. I2G/I3, arrastre general y restricción configurable
+de ramas/componentes requieren autorización independiente. CU10, deuda científica de tangencias
+y obligaciones editoriales se conservan; libro intacto.
+Siguiente puerta: decisión autoral de priorización. I2a/I2b es candidato pendiente de demostrar
+atomicidad, cierre completo, identidad, vigencia y persistencia; no autorizado para reanudación.
+M08-D exige correspondencia dinámica propia; no se inicia automáticamente ningún incremento.

@@ -832,3 +832,22 @@ The rich result of an intersection carries the evidence grade and the contact cl
 solution (`locus-v2-intersections.md`, PRE-G9B-CU3 amendment, CU3.2 and CU3.4). A tangent root of
 class 3 to 5 remains visible as rich evidence and as a diagnostic and is never a materialized
 point.
+
+## 2026-11-02 — Author-approved M08-S-R2 successor amendment
+
+The definitive author decision approves M08-S-R2 implementation and its normative
+reconciliation on candidate `86438edabaed06a6509c1be37cf06278941e0e46`
+(tree `96e90172201440739bfe8afb503059379c70ff70`). Earlier implementation exclusions and
+creation restrictions remain historical; this dated amendment governs the separate M08-S
+route. R6 itself and its historical states/guarantees are unchanged.
+
+An individually evidenced semantic address may be explicitly selected without a distance
+minimum or global completeness. This never promotes UNRESOLVED by confirmation alone.
+The R2/H1 supported-model, component/interior regularity, certified world proximity,
+configuration fidelity, barrier, budget and freshness predicates remain mandatory.
+R1/R6 admissions retain priority; only the typed global-uniqueness-not-established outcome
+permits the independent R2/H1 query. No other rejection or failed commit is recoverable by it.
+
+The exact normative perimeter, H1 cumulative accounting, single-use selection, forward
+persistence (Q transient; structural component durable; visual selector ephemeral), world
+policy and L→Q Desktop contract are defined in the accepted 2026-11-02 amendment of [M08](candidates/cu7-m08-point-placement.md#2026-11-02--accepted-m08-s-r2-implementation-amendment). The experimental Desktop consumer is implemented; there is no new public dynamic inverse command, format or general dragging operation.
