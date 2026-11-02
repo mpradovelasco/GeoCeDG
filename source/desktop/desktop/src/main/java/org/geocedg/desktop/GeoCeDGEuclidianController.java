@@ -651,6 +651,11 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void setMode(int newMode, ModeSetter setter) {
+		// Host focus/dock synchronization is not a new L -> Q operation.
+		if (referencePointTool != null && mode == newMode
+				&& newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
+			return;
+		}
 		if (referencePointTool != null && (mode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
 				|| newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT)) {
 			if (mode != newMode) { interactionTailCancelled = true; }

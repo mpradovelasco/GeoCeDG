@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
 import java.io.File;
@@ -12,10 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.GPoint;
@@ -46,9 +49,45 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 	private GeoCeDGActionRegistry actionRegistry;
 	private GeoCeDGWorkspaceController workspaceController;
 	private ArrayList<GeoElement> contextGeos;
+	private JComponent referencePointPanel;
 
 	GuiManagerGeoCeDG(AppD app) {
 		super(app);
+	}
+
+	/** M08-S only: retain the native AlgebraInputD and its existing layout. */
+	@Override
+	public JComponent getAlgebraInput() {
+		JComponent input = super.getAlgebraInput();
+		if (referencePointPanel != null && referencePointPanel.getParent() != input) {
+			input.add(referencePointPanel, BorderLayout.NORTH);
+			input.revalidate();
+			input.repaint();
+		}
+		return input;
+	}
+
+	void setReferencePointPanel(JComponent panel) {
+		if (referencePointPanel != null) { removeReferencePointPanel(referencePointPanel); }
+		referencePointPanel = panel;
+		getAlgebraInput();
+	}
+
+	void removeReferencePointPanel(JComponent panel) {
+		if (referencePointPanel != panel) { return; }
+		referencePointPanel = null;
+		if (panel.getParent() != null) {
+			var parent = panel.getParent();
+			parent.remove(panel);
+			parent.revalidate();
+			parent.repaint();
+		}
+	}
+
+	boolean isReferencePointPanelComponent(Component component) {
+		return referencePointPanel != null && component != null
+				&& (component == referencePointPanel
+						|| SwingUtilities.isDescendingFrom(component, referencePointPanel));
 	}
 
 	@Override

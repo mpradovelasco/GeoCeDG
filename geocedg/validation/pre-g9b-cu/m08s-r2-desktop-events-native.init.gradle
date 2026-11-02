@@ -1,0 +1,15 @@
+// GeoCeDG. SPDX-License-Identifier: EUPL-1.2. Opt-in native-file characterization; no windows/input.
+allprojects {
+ if (projectDir.absolutePath.replace('\\','/').endsWith('/source/desktop/desktop')) {
+  def repository = new File(projectDir, '../../..').canonicalFile
+  plugins.withId('java') {
+   sourceSets.test.java.srcDir(new File(repository,'geocedg/validation/pre-g9b-cu/m08s-r2-desktop-events-native-probe'))
+   sourceSets.test.java.srcDir(new File(repository,'geocedg/validation/pre-g9b-cu/m08s-r2-desktop-d1-native-probe'))
+  }
+  tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+   reports.junitXml.required = true
+   reports.junitXml.outputLocation = new File(repository,System.getProperty('geocedg.events.native.junit'))
+   reports.html.required = false
+  }
+ }
+}

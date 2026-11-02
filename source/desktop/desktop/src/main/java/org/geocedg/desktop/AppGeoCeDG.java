@@ -2053,6 +2053,17 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	protected GlobalKeyDispatcherD newGlobalKeyDispatcher() {
 		return new GlobalKeyDispatcherD(this) {
 			@Override
+			public boolean dispatchKeyEvent(KeyEvent event) {
+				// Inline M08-S controls own their Swing keys; arrows/Enter/Space must
+				// not reach global geometry shortcuts while choosing an address.
+				if (getGuiManager() instanceof GuiManagerGeoCeDG gui
+						&& gui.isReferencePointPanelComponent(event.getComponent())) {
+					return false;
+				}
+				return super.dispatchKeyEvent(event);
+			}
+
+			@Override
 			public boolean handleGeneralKeys(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.VK_ESCAPE
 						&& getActiveEuclidianView() != null

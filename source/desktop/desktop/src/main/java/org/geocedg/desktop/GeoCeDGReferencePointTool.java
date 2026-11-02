@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JWindow;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
@@ -26,7 +27,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.main.AppD;
 
-/** Desktop selection only; admission and publication remain with the separate R1/R6 and R2/H1 authorities. */
+/** Desktop selection only; admission/publication remain with the R1/R6 and R2/H1 authorities. */
 final class GeoCeDGReferencePointTool {
 	private final AppD app;
 	private GeoLocusV2 source;
@@ -35,12 +36,14 @@ final class GeoCeDGReferencePointTool {
 	private Object document;
 	private Object view;
 	private long generation;
-	private JPopupMenu popup;
-	private JWindow strip;
-	private JDialog settings;
+	private JPanel panel;
+	private JPanel choicesHost;
+	private JPanel choices;
 	private JTextField status;
 	private JLabel coverage;
-	private boolean acceptingMenu;
+	private JTextField[] inputs;
+	private boolean fillingPolicy;
+	private boolean policyDirty;
 	private String lastFailure;
 
 	GeoCeDGReferencePointTool(AppD app) { this.app = app; }
@@ -57,58 +60,56 @@ final class GeoCeDGReferencePointTool {
 			policy = LocusPointInteractionPolicy2D.initial(.1);
 			document = current;
 		}
-		if (java.awt.GraphicsEnvironment.isHeadless() || app.getMainComponent() == null
-				|| !app.getMainComponent().isShowing()) { return; }
-		strip = new JWindow(javax.swing.SwingUtilities.getWindowAncestor(app.getMainComponent()));
-		JPanel panel = new JPanel(new BorderLayout(6, 3));
-		status = new JTextField(36);
-		status.setEditable(false);
-		JButton options = new JButton(t("Policy…", "Política…"));
-		options.addActionListener(event -> editPolicy());
-		panel.add(status, BorderLayout.CENTER);
-		JPanel scope = new JPanel(new GridLayout(0, 1));
-		scope.add(new JLabel(t("Fixed scope: all supported branches/components",
-				"Alcance fijo: todas las ramas/componentes admitidas")));
-		coverage = new JLabel(t("Coverage: no query yet", "Cobertura: sin consulta todavía"));
-		scope.add(coverage);
-		panel.add(scope, BorderLayout.SOUTH);
-		panel.add(options, BorderLayout.EAST);
-		panel.registerKeyboardAction(event -> activate(), KeyStroke.getKeyStroke("ESCAPE"),
-				javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
-		strip.setContentPane(panel);
+		buildPanel();
+		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui) {
+			gui.setReferencePointPanel(panel);
+		}
 		updateStatus(t("Select L", "Seleccione L"));
-		strip.pack();
-		java.awt.Point origin = app.getMainComponent().getLocationOnScreen();
-		strip.setLocation(origin.x + 12, origin.y + Math.max(0, app.getMainComponent().getHeight() - strip.getHeight() - 16));
-		strip.setAutoRequestFocus(false);
-		strip.setVisible(true);
 	}
 
 	void reset() {
-		generation++;
+		clearSelection();
 		source = null;
-		if (selection != null) { selection.close(); selection = null; }
-		if (popup != null) { popup.setVisible(false); popup = null; }
-		if (settings != null) { settings.dispose(); settings = null; }
-		if (strip != null) { strip.dispose(); strip = null; }
+		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui && panel != null) {
+			gui.removeReferencePointPanel(panel);
+		}
+		panel = null;
+		status = null;
+		coverage = null;
+		inputs = null;
+		policyDirty = false;
 		app.getSelectionManager().clearSelectedGeos();
+	}
+
+	private void clearSelection() {
+		generation++;
+		if (selection != null) { selection.close(); selection = null; }
+		clearChoices();
+	}
+
+	private void clearChoices() {
+		choices = null;
+		if (choicesHost != null) {
+			choicesHost.removeAll();
+			choicesHost.revalidate();
+			choicesHost.repaint();
+		}
 	}
 
 	private void updateStatus(String message) {
 		if (status != null) {
-			status.setText(message + " • r=" + policy.getMaximumWorldDistance()
-					+ " world");
+			status.setText(message);
 			status.setCaretPosition(0);
-			status.setToolTipText(status.getText());
+			status.setToolTipText(message);
 		}
 	}
 
 	void click(List<GeoElement> hits, Component anchor, int x, int y) {
 		if (document != app.getKernel().getConstruction().getSpatialIdentityRegistry()) { activate(); }
-		if (selection != null) { return; }
+		if (!applyPolicy() || selection != null || choices != null) { return; }
 		List<GeoElement> loci = hits.stream().filter(geo -> geo instanceof GeoLocusV2).toList();
 		if (source == null || !loci.isEmpty() && hits.stream().noneMatch(geo -> geo instanceof GeoPoint)) {
-			choose(loci, anchor, x, y, geo -> {
+			choose(loci, geo -> {
 				source = (GeoLocusV2) geo;
 				app.getSelectionManager().clearSelectedGeos();
 				app.getSelectionManager().addSelectedGeo(source);
@@ -116,14 +117,14 @@ final class GeoCeDGReferencePointTool {
 			});
 			return;
 		}
-		choose(hits.stream().filter(geo -> geo instanceof GeoPoint).toList(), anchor, x, y,
+		choose(hits.stream().filter(geo -> geo instanceof GeoPoint).toList(),
 				geo -> query((GeoPoint) geo, anchor, x, y));
 	}
 
-	private <T> void choose(List<T> values, Component anchor, int x, int y, Consumer<T> accept) {
+	private <T> void choose(List<T> values, Consumer<T> accept) {
 		if (values.isEmpty()) { return; }
 		if (values.size() == 1) { accept.accept(values.get(0)); return; }
-		showChoices(values, anchor, x, y, Object::toString, accept,
+		showChoices(values, Object::toString, accept,
 				t("Choose construction object", "Elija objeto de construcción"));
 	}
 
@@ -138,11 +139,10 @@ final class GeoCeDGReferencePointTool {
 			String title = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
 					: t("Verified local address; global uniqueness not established",
 							"Dirección local verificada; unicidad global no establecida");
-			if (coverage != null) {
-				coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
-						: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
-			}
-			showChoices(selection.getChoices(), anchor, x, y, choice -> {
+			coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
+					: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
+			updateStatus(t("Confirm a semantic address", "Confirme una dirección semántica"));
+			showChoices(selection.getChoices(), choice -> {
 				var address = choice.getAddress();
 				return address.getBranchKey() + " / " + address.getComponentLineageKey()
 						+ " / u=" + address.getCanonicalParameter();
@@ -189,41 +189,46 @@ final class GeoCeDGReferencePointTool {
 		};
 	}
 
+
 	private void refuse(String reason) {
-		generation++;
 		lastFailure = reason;
-		if (selection != null) { selection.close(); selection = null; }
-		if (popup != null) { popup.setVisible(false); }
+		clearSelection();
 		source = null;
 		app.getSelectionManager().clearSelectedGeos();
 		updateStatus(t("No point created: ", "No se creó ningún punto: ") + describeFailure(reason.split(" / ")[0]) + " [" + reason + "]");
 	}
 
 	GeoCeDGReferencePlacement pendingSelection() { return selection; }
-	JPopupMenu contextMenu() { return popup; }
+	JPanel contextMenu() { return choices; }
 	String lastFailure() { return lastFailure; }
+
 	void setPolicy(LocusPointInteractionPolicy2D value) {
 		policy = java.util.Objects.requireNonNull(value);
-		activate();
+		clearSelection();
+		fillPolicy();
+		if (coverage != null) { coverage.setText(""); }
+		updateStatus(t("Policy applied; select ", "Política aplicada; seleccione ")
+				+ (source == null ? "L" : t("Q again", "Q de nuevo")));
 	}
 
-	private <T> void showChoices(List<T> values, Component anchor, int x, int y,
+	private <T> void showChoices(List<T> values,
 			java.util.function.Function<T, String> describe, Consumer<T> accept, String title) {
 		long ticket = generation;
-		popup = new JPopupMenu();
-		JPanel content = new JPanel(new BorderLayout(4, 4));
-		JTextField heading = new JTextField(title, 42);
+		JPanel content = new JPanel(new BorderLayout(4, 3));
+		JTextField heading = new JTextField(title, 24);
 		heading.setEditable(false);
+		heading.setFocusable(false);
+		heading.setCaretPosition(0);
+		heading.setToolTipText(title);
 		content.add(heading, BorderLayout.NORTH);
 		JList<String> list = new JList<>(values.stream().map(describe).toArray(String[]::new));
 		list.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-		list.setVisibleRowCount(Math.min(5, values.size()));
-		// Bound the viewport, not the semantic text: retain horizontal scrolling.
+		list.setVisibleRowCount(Math.min(3, values.size()));
 		list.getAccessibleContext().setAccessibleName(title);
 		JScrollPane addresses = new JScrollPane(list);
 		addresses.setPreferredSize(new java.awt.Dimension(
-				42 * list.getFontMetrics(list.getFont()).charWidth('0') + 24,
-				Math.min(5, values.size()) * list.getFontMetrics(list.getFont()).getHeight()
+				32 * list.getFontMetrics(list.getFont()).charWidth('0') + 24,
+				Math.min(3, values.size()) * list.getFontMetrics(list.getFont()).getHeight()
 						+ addresses.getHorizontalScrollBar().getPreferredSize().height + 8));
 		content.add(addresses, BorderLayout.CENTER);
 		JButton create = new JButton(t("Confirm", "Confirmar"));
@@ -234,77 +239,117 @@ final class GeoCeDGReferencePointTool {
 			int index = values.size() == 1 ? 0 : list.getSelectedIndex();
 			if (index < 0) { return; }
 			generation++;
-			acceptingMenu = true;
-			try {
-				popup.setVisible(false);
-				accept.accept(values.get(index)); // transient handle, never a persisted ordinal
-			} finally { acceptingMenu = false; }
+			clearChoices();
+			accept.accept(values.get(index)); // exact ephemeral handle, never persisted as an ordinal
 		});
 		JButton cancel = new JButton(t("Cancel", "Cancelar"));
 		cancel.addActionListener(event -> activate());
 		JPanel buttons = new JPanel(); buttons.add(create); buttons.add(cancel);
-		content.add(buttons, BorderLayout.SOUTH);
+		content.add(buttons, BorderLayout.EAST);
 		content.registerKeyboardAction(event -> { if (create.isEnabled()) { create.doClick(); } },
-				KeyStroke.getKeyStroke("ENTER"), javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		content.registerKeyboardAction(event -> activate(), KeyStroke.getKeyStroke("ESCAPE"),
-				javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
-		popup.add(content);
-		popup.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
-			public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent event) { }
-			public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent event) {
-				if (!acceptingMenu && ticket == generation) { activate(); }
-			}
-			public void popupMenuCanceled(javax.swing.event.PopupMenuEvent event) {
-				if (ticket == generation) { activate(); }
-			}
-		});
-		if (anchor != null && anchor.isShowing()) { popup.show(anchor, x, y); list.requestFocusInWindow(); }
+				KeyStroke.getKeyStroke("ENTER"), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		choices = content;
+		choicesHost.add(content, BorderLayout.CENTER);
+		choicesHost.revalidate();
+		choicesHost.repaint();
 	}
 
-	private void editPolicy() {
-		reset();
-		settings = new JDialog(javax.swing.SwingUtilities.getWindowAncestor(app.getMainComponent()));
-		settings.setTitle(t("Reference point policy (session)", "Política de referencia (sesión)"));
-		JPanel fields = new JPanel(new GridLayout(0, 2, 5, 3));
-		var budget = policy.getWorkBudget();
-		String[] labels = {t("World radius", "Radio world"), t("Equal-distance tolerance", "Tolerancia de empate en distancia"),
+	private void buildPanel() {
+		panel = new JPanel(new BorderLayout(4, 3));
+		panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 4, 3, 4));
+		status = new JTextField(18);
+		status.setEditable(false);
+		status.setFocusable(false);
+		status.getAccessibleContext().setAccessibleName(t("Reference point instruction", "Instrucción de punto desde referencia"));
+		inputs = new JTextField[7];
+		String[] labels = {t("r world", "r world"), t("Equal-distance tolerance", "Tolerancia de empate en distancia"),
 				t("Parameter tolerance", "Tolerancia parámetro"), t("Semantic misses", "Misses semánticos"),
 				t("Subdivisions / interval passes", "Subdivisiones / pases intervalares"),
 				t("Refinement iterations", "Iteraciones refinamiento"), t("Candidates", "Candidatos")};
-		String[] initial = {"" + policy.getMaximumWorldDistance(), "" + policy.getEqualDistanceTolerance(),
-				"" + policy.getParameterTolerance(), "" + budget.getMaximumSemanticEvaluations(),
-				"" + budget.getMaximumSubdivisions(), "" + budget.getMaximumRefinementIterations(),
-				"" + budget.getMaximumCandidates()};
-		JTextField[] inputs = new JTextField[labels.length];
-		for (int i = 0; i < labels.length; i++) {
-			inputs[i] = new JTextField(initial[i], 14);
+		JPanel fields = new JPanel(new GridLayout(0, 2, 4, 2));
+		for (int i = 0; i < inputs.length; i++) {
+			inputs[i] = new JTextField(i == 0 ? 6 : 10);
+			inputs[i].setName("m08-policy-" + i);
 			inputs[i].setToolTipText(i < 3 ? t("Finite positive number; decimal point", "Número finito positivo; punto decimal")
 					: t("Positive integer in existing policy units", "Entero positivo en las unidades de la política vigente"));
 			JLabel label = new JLabel(labels[i]); label.setLabelFor(inputs[i]);
 			inputs[i].getAccessibleContext().setAccessibleName(labels[i]);
-			fields.add(label); fields.add(inputs[i]);
+			if (i > 0) { fields.add(label); fields.add(inputs[i]); }
+			inputs[i].getDocument().addDocumentListener(new DocumentListener() {
+				public void insertUpdate(DocumentEvent event) { policyEdited(); }
+				public void removeUpdate(DocumentEvent event) { policyEdited(); }
+				public void changedUpdate(DocumentEvent event) { policyEdited(); }
+			});
+			inputs[i].addActionListener(event -> applyPolicy());
 		}
+		fillPolicy();
+		JPanel actions = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.TRAILING, 4, 0));
+		JLabel radius = new JLabel(labels[0]); radius.setLabelFor(inputs[0]);
+		actions.add(radius); actions.add(inputs[0]);
+		JToggleButton options = new JToggleButton(t("Policy", "Política"));
+		actions.add(options);
+		JButton restart = new JButton(t("Restart", "Reiniciar"));
+		restart.addActionListener(event -> activate());
+		actions.add(restart);
+		JPanel header = new JPanel(new BorderLayout(4, 0));
+		header.add(status, BorderLayout.CENTER); header.add(actions, BorderLayout.EAST);
+		panel.add(header, BorderLayout.NORTH);
+		JPanel technical = new JPanel(new BorderLayout(4, 2));
+		JLabel scope = new JLabel(t("Scope: all supported branches/components", "Alcance: todas las ramas/componentes admitidas"));
+		technical.add(scope, BorderLayout.NORTH); technical.add(fields, BorderLayout.CENTER);
+		coverage = new JLabel("");
 		JButton apply = new JButton(t("Apply", "Aplicar"));
-		JLabel error = new JLabel(t("Fixed scope: all supported branches/components", "Alcance fijo: todas las ramas/componentes admitidas"));
-		apply.addActionListener(event -> {
-			try {
-				policy = new LocusPointInteractionPolicy2D(Double.parseDouble(inputs[0].getText()),
-						Double.parseDouble(inputs[1].getText()), Double.parseDouble(inputs[2].getText()),
-						new LocusPointInteractionWorkBudget2D(Integer.parseInt(inputs[3].getText()),
-								Integer.parseInt(inputs[4].getText()), Integer.parseInt(inputs[5].getText()),
-								Integer.parseInt(inputs[6].getText())));
-				activate();
-			} catch (IllegalArgumentException invalid) { error.setText(t("Invalid policy", "Política inválida")); }
+		apply.addActionListener(event -> applyPolicy());
+		JPanel footer = new JPanel(new BorderLayout(4, 0));
+		footer.add(coverage, BorderLayout.CENTER); footer.add(apply, BorderLayout.EAST);
+		technical.add(footer, BorderLayout.SOUTH);
+		technical.setVisible(false);
+		options.addActionListener(event -> {
+			technical.setVisible(options.isSelected());
+			panel.revalidate(); panel.repaint();
 		});
-		JPanel panel = new JPanel(new BorderLayout(4, 4));
-		panel.add(error, BorderLayout.NORTH); panel.add(fields, BorderLayout.CENTER); panel.add(apply, BorderLayout.SOUTH);
+		panel.add(technical, BorderLayout.SOUTH);
+		choicesHost = new JPanel(new BorderLayout());
+		panel.add(choicesHost, BorderLayout.CENTER);
 		panel.registerKeyboardAction(event -> activate(), KeyStroke.getKeyStroke("ESCAPE"),
-				javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
-		settings.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		settings.addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override public void windowClosing(java.awt.event.WindowEvent event) { activate(); }
-		});
-		settings.setContentPane(panel); settings.pack(); settings.setLocationRelativeTo(app.getMainComponent());
-		settings.setVisible(true);
+				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+	}
+
+	private void policyEdited() {
+		if (fillingPolicy) { return; }
+		policyDirty = true;
+		clearSelection();
+		coverage.setText("");
+		updateStatus(t("Policy edited; previous choice cancelled. Select ", "Política editada; elección anterior cancelada. Seleccione ")
+				+ (source == null ? "L" : "Q"));
+	}
+
+	private void fillPolicy() {
+		if (inputs == null) { return; }
+		fillingPolicy = true;
+		try {
+			var budget = policy.getWorkBudget();
+			String[] values = {"" + policy.getMaximumWorldDistance(), "" + policy.getEqualDistanceTolerance(),
+					"" + policy.getParameterTolerance(), "" + budget.getMaximumSemanticEvaluations(),
+					"" + budget.getMaximumSubdivisions(), "" + budget.getMaximumRefinementIterations(),
+					"" + budget.getMaximumCandidates()};
+			for (int i = 0; i < values.length; i++) { inputs[i].setText(values[i]); }
+			policyDirty = false;
+		} finally { fillingPolicy = false; }
+	}
+
+	private boolean applyPolicy() {
+		if (!policyDirty) { return true; }
+		try {
+			setPolicy(new LocusPointInteractionPolicy2D(Double.parseDouble(inputs[0].getText()),
+					Double.parseDouble(inputs[1].getText()), Double.parseDouble(inputs[2].getText()),
+					new LocusPointInteractionWorkBudget2D(Integer.parseInt(inputs[3].getText()),
+							Integer.parseInt(inputs[4].getText()), Integer.parseInt(inputs[5].getText()),
+							Integer.parseInt(inputs[6].getText()))));
+			return true;
+		} catch (IllegalArgumentException invalid) {
+			updateStatus(t("Invalid policy; correct the fields before selecting Q", "Política inválida; corrija los campos antes de seleccionar Q"));
+			return false;
+		}
 	}
 }
