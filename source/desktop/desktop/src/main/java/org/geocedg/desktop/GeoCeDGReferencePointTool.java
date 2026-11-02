@@ -115,9 +115,17 @@ final class GeoCeDGReferencePointTool {
 		if (!applyPolicy() || selection != null || choices != null) { return; }
 		List<GeoElement> loci = hits.stream().filter(geo -> geo instanceof GeoLocusV2).toList();
 		if (clickPosition) {
-			choose(loci, geo -> queryWorld((GeoLocusV2) geo,
-					app.getActiveEuclidianView().toRealWorldCoordX(x),
-					app.getActiveEuclidianView().toRealWorldCoordY(y)));
+			var requestView = app.getActiveEuclidianView();
+			if (requestView == null) { refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name()); return; }
+			double worldX = requestView.toRealWorldCoordX(x);
+			double worldY = requestView.toRealWorldCoordY(y);
+			choose(loci, geo -> {
+				if (app.getActiveEuclidianView() != requestView) {
+					refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name());
+					return;
+				}
+				queryWorld((GeoLocusV2) geo, worldX, worldY);
+			});
 			return;
 		}
 		if (source == null || !loci.isEmpty() && hits.stream().noneMatch(geo -> geo instanceof GeoPoint)) {

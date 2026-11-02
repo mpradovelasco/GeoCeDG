@@ -86,6 +86,8 @@ Los dos orígenes comparten la lógica kernel y el normal form publicado. El cli
 
 El modo de referencia conserva L→Q por defecto y añade el selector efímero **Click position / Posición de clic**. En ese origen, un clic sobre L consulta directamente la misma política world del panel que Q; no pasa por el radio de pantalla de la herramienta Punto ordinaria. Esto permite comparar ambas autorías bajo el mismo q y policy incluso al cambiar zoom. La herramienta Punto ordinaria conserva su gesto R6 previo y, solo ante el motivo permitido, puede abrir una petición world contextual; sus radios iniciales de hit/consulta no constituyen una garantía de paridad universal con Q. Cada consulta conserva su presupuesto real; el gesto ordinario puede repetir R6 y no se presenta como un único presupuesto agregado.
 
+La corrección posterior a la cohorte `f3b9d4d86ce514fa2de87854317c86f3bf2e2cb0` captura q world antes de abrir el selector entre varias fuentes superpuestas. Pan/zoom del mismo view mientras se elige L no vuelve a interpretar las coordenadas de pantalla originales; un cambio de view invalida esa petición. La prueba Desktop añadida comprueba el mismo tuple/ofertas antes y después de pan/zoom y que elegir la fuente solo consulta, sin mutar XML. Es una corrección de la captura de autoría, no un criterio de admisibilidad nuevo.
+
 La confirmación contextual H1 y el normal Undo se reutilizan. La creación directa R6/SplineV2 y su gesto de arrastre admitido se conservan; el gesto nuevo de creación H1 termina al confirmar y no se convierte en arrastre general por inferencia. Escape, cambio de herramienta, edición de política o revisión inválida deben retirar/invalidar la oferta y no crear un punto libre heredado.
 
 No se cambian proof H1, resolver, generador, existencia/componentes, codec, normal forms, autoridad constructiva, transacciones generales, algoritmos multisalida o exportación. El criterio B no se implementa llamando una factory de nivel inferior que eluda los placements.
@@ -152,21 +154,43 @@ git diff --check eea7f57b8a7e8be9f5fe9356a9f7f989dd7fdf17 HEAD
 ```
 
 <!-- INTEGRATOR_EXECUTION_EVIDENCE_START -->
-Resultados focales guardados antes del commit: fuente productiva de A estable y pruebas opt-in
-identificadas por hashes en el manifiesto externo. La aceptación de la regresión/STATIC y
-la prueba gráfica sobre el commit congelado se guardan después, externamente, sin modificar
-este artefacto ni atribuir un resultado antes de ejecutarlo.
+Se distinguen dos cohortes. La primera se congeló en
+`f3b9d4d86ce514fa2de87854317c86f3bf2e2cb0`, árbol
+`a01428d7c3919a1021d90b68db6ec7afa8490dc2`: sus resultados focales, PHASE de regresión y
+STATIC conservan esa identidad. Después se corrigió únicamente la captura world previa
+al callback de elección de fuente, se añadió una prueba Desktop y se precisó documentalmente
+el perímetro inicial COMPLETE de B. Las doce pruebas Desktop pasan en esa fuente corregida.
+El sucesor se congelará con su identidad en el manifiesto externo; no se le atribuye la
+PHASE ni el STATIC del commit anterior. La comprobación gráfica y el STATIC final del
+sucesor se registrarán externamente, sin anticipar sus resultados aquí.
 
 | Ejecución | Evidencia guardada / identidad | Resultado conocido al congelar | Límites |
 | --- | --- | --- | --- |
-| Shared focal nuevo | `focus-shared-ascii-02/process.json` y JUnit | Proceso COMPLETED, inner exit 0; 12 tests, 0 fallos/errores/omitidos | Conserva 11 casos ya positivos y confirma fixture v3 corregido sin relajar producción |
-| Desktop focal nuevo | `focus-desktop-02/process.json` y JUnit | Proceso COMPLETED, inner exit 0; 11 tests, 0 fallos/errores/omitidos | Incluye canvas AWT, paridad q/policy en zoom50/150 y radios0.2/0.0001, native/copia/reopen; no es entrada física |
-| Confirmación suplementaria forward v3 | `v3-forward-confirmation/process.json` y JUnit | COMPLETED, inner exit 0; 1 test, 0 fallos/errores/omitidos | Comprueba explícitamente Point(L,branch,0) y rechazo de H1; no cambia admisión |
-| PHASE M08-S-R2-DESKTOP, regresión | PlanOnly exit 0, 15 nodos, hash `17a17d10e05d7bc1884b68575382b29d848b8d5a7e6235ab17fc4973ca90f037` | Ejecución y resultado del commit congelado en `delivery.json` externo | El plan no es aceptación; fase histórica solo de regresión, no incluye probes nuevos |
-| Prueba gráfica técnica | Producto visible, preferencias/copia propias y contexto de lanzamiento del candidato | Evidencia posterior en `visual-smoke/` y `delivery.json` | No se confunde con AWT ni smoke autoral |
-| STATIC y diff del candidato congelado | Informe tipado/exit en `static/`, diff y manifiesto externos | Resultado posterior en `delivery.json` | Aceptación/cobertura/diagnósticos separados; sin receipt FINAL |
+| Shared focal nuevo, cohorte previa a `f3b9d4d8` | `focus-shared-ascii-02/process.json` y JUnit | Proceso COMPLETED, inner exit 0; 12 tests, 0 fallos/errores/omitidos | Conserva 11 casos ya positivos y confirma fixture v3 corregido sin relajar producción; fuente identificada por hashes |
+| Desktop focal nuevo, cohorte previa a `f3b9d4d8` | `focus-desktop-02/process.json` y JUnit | Proceso COMPLETED, inner exit 0; 11 tests, 0 fallos/errores/omitidos | Incluye canvas AWT, paridad q/policy en zoom50/150 y radios0.2/0.0001, native/copia/reopen; no es entrada física |
+| Confirmación suplementaria forward v3, cohorte `f3b9d4d8` | `v3-forward-confirmation/process.json` y JUnit | COMPLETED, inner exit 0; 1 test, 0 fallos/errores/omitidos | Comprueba explícitamente Point(L,branch,0) y rechazo de H1; no cambia admisión |
+| PHASE M08-S-R2-DESKTOP, regresión de `f3b9d4d8` | `regression-phase/verification-result.json`, `regression-phase.exit.txt`, `regression-cases-summary.json` | COMPLETED, ACCEPTED / COMPLETE, exit 0; 196 ejecuciones, 0 fallos/errores/omitidos | Commit `f3b9d4d86ce514fa2de87854317c86f3bf2e2cb0`; árbol `a01428d7c3919a1021d90b68db6ec7afa8490dc2`; no incluye probes nuevos ni acredita el sucesor corregido |
+| STATIC de `f3b9d4d8` | `static/verification-result.json` y `static.exit.txt` | ACCEPTED / COMPLETE, exit 0 | Identidad del commit `f3b9d4d8`; no reatribuido al sucesor; diagnósticos separados |
+| Desktop focal después de la corrección del callback | `corrective-desktop/process.json`, logs `corrective-desktop/process/`, JUnit `TEST-org.geocedg.desktop.Cu7M08SGeneralCreationTest.xml` | COMPLETED, inner exit 0; 12 tests, 0 fallos/errores/omitidos | Añade `sourceChooserKeepsTheWorldRequestCapturedBeforeZoomAndPan`; ejecuta también los once casos anteriores. Es evidencia focal de la fuente corregida, no otra PHASE ni entrada física |
+| Prueba gráfica técnica del sucesor | Producto visible, preferencias/copia propias y contexto de lanzamiento | Evidencia posterior en `visual-smoke/` y `delivery.json` | No se anticipa éxito ni se confunde con AWT o smoke autoral |
+| STATIC final, diff e identidad del sucesor | Informe tipado, diff y manifiesto externos | Resultado posterior en `delivery.json` | Identidad final fijada al congelar; no reemplaza ni extiende retroactivamente las cohortes previas; sin receipt FINAL |
 
 Raíz externa de estas rutas: `C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG/artifacts/pre-g9b-cu7-general-creation/`. El manifiesto registra commit/árbol, comandos/exit/log, hashes, estado final y resultados efectivamente concluidos. No se usa un nombre de archivo para presumir PASS.
+
+El resumen de PHASE desglosa sus 196 ejecuciones: 5 `final.desktop.g9u1-isolated`, 31
+`pre-g9b-cu7-i1-r1.desktop`, 69 `pre-g9b-cu7-i1-r2-desktop.desktop`, 15
+`pre-g9b-cu7-i1-r2-kernel-h1.shared` y 76 `pre-g9b-cu7-i1-r2-kernel.shared`, todas con
+exit 0 y sin fallos, errores u omitidos. Su plan resuelto tiene 15 nodos y hash
+`17a17d10e05d7bc1884b68575382b29d848b8d5a7e6235ab17fc4973ca90f037`.
+Estos números describen la selección registrada ejecutada en `f3b9d4d8`; no una fase nueva
+de creación general ni una aceptación del cambio posterior de callback.
+
+La ejecución correctiva usó el productor neutral existente con tarea
+`:desktop:desktop:test`, filtro `org.geocedg.desktop.Cu7M08SGeneralCreationTest`,
+`focused.init.gradle` y destino JUnit `corrective-desktop/junit`, en el worktree ASCII.
+`process.json` conserva comando/argumentos efectivos, hashes y `inner_exit_code=0`;
+JUnit confirma 12 casos, 0 fallos, 0 errores y 0 omitidos. No se cambian registry, inventario
+histórico, proof H1 o semántica de los tests para obtener este resultado.
 
 Intentos conservados: `focus-shared-01` no descubrió tests por selección incorrecta de proyectos de builds incluidos, corregida solo en init opt-in. `focus-shared-02` compiló la clase pero su worker falló al cargarla en el worktree con ruta acentuada; no se parcheó producto para compensarlo. El mismo candidato ejecutó tests en el worktree ASCII. Eso clasifica el síntoma como contexto de ejecución/ruta, sin afirmar que toda ruta Unicode sea incompatible ni cambiar requisitos de bootstrap. `focus-shared-ascii-01` ejecutó 12 casos y falló la premisa del fixture v3 (`outside-class`): la expresión intermedia `W=2*V` no pertenece a la clase capturada; se sustituyó en el test por el patrón inline admitido `Q=N+(2*v)`. Se conservaron todas las assertions de componente/captura/rechazo. El run ASCII posterior ejecutó los 12 correctamente. Ninguno de esos exits fallidos se borra o reclasifica como PASS.
 <!-- INTEGRATOR_EXECUTION_EVIDENCE_END -->

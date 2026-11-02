@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JToggleButton;
+import javax.swing.JList;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -323,6 +324,48 @@ class Cu7M08SGeneralCreationTest {
 				}
 			}
 			assertTrue(offered > 0); assertTrue(rejected > 0);
+			tool(app).reset();
+		});
+	}
+
+	@Test void sourceChooserKeepsTheWorldRequestCapturedBeforeZoomAndPan() throws Exception {
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var app = G9U1SemanticPointInteractionTest.app();
+			var source = Cu7M08SDesktopEventsTest.general(app);
+			var overlap = (GeoLocusV2) G9U1SemanticPointInteractionTest.eval(app,
+					"h2=Translate(h,(0,0))");
+			overlap.setEuclidianVisible(true); overlap.updateRepaint();
+			Cu7M08SDesktopEventsTest.start(app); origin(app).doClick();
+			var view = app.getEuclidianView1();
+			int screenX = view.toScreenCoordX(.8), screenY = view.toScreenCoordY(2.4);
+			double worldX = view.toRealWorldCoordX(screenX);
+			double worldY = view.toRealWorldCoordY(screenY);
+			try (var expected = new GeoCeDGReferencePlacement(source, worldX, worldY,
+					LocusPointInteractionPolicy2D.initial(.1))) {
+				assertEquals(GeoCeDGReferencePlacement.Route.R2_H1, expected.getRoute());
+				Cu7M08SDesktopEventsTest.pointer(app, .8, 2.4);
+				assertTrue(view.getHits().contains(source));
+				assertTrue(view.getHits().contains(overlap));
+				assertNull(tool(app).pendingSelection(), "The construction source must be chosen first");
+				var sourceList = Cu7M08SDesktopEventsTest.find(tool(app).contextMenu(),
+						JList.class, list -> true);
+				assertNotNull(sourceList); assertEquals(2, sourceList.getModel().getSize());
+				int selected = -1;
+				for (int i = 0; i < sourceList.getModel().getSize(); i++) {
+					if (source.toString().equals(sourceList.getModel().getElementAt(i))) { selected = i; }
+				}
+				assertTrue(selected >= 0);
+				view.setCoordSystem(500, 350, 250, 250);
+				assertNotEquals(worldX, view.toRealWorldCoordX(screenX));
+				assertNotEquals(worldY, view.toRealWorldCoordY(screenY));
+				String before = app.getXML();
+				sourceList.setSelectedIndex(selected); Cu7M08SDesktopEventsTest.confirm(app);
+				var actual = tool(app).pendingSelection(); assertNotNull(actual);
+				assertEquals(expected.getRoute(), actual.getRoute());
+				assertEquals(expected.getChoices().stream().map(GeoCeDGReferencePlacement.Choice::getAddress).toList(),
+						actual.getChoices().stream().map(GeoCeDGReferencePlacement.Choice::getAddress).toList());
+				assertEquals(before, app.getXML(), "Choosing L only queries the captured world request");
+			}
 			tool(app).reset();
 		});
 	}
