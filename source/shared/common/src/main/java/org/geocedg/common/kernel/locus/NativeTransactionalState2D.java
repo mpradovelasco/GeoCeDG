@@ -154,7 +154,7 @@ public final class NativeTransactionalState2D {
 				if (!sourcePass.isFaithful(point.getPath().toGeoElement())) {
 					return UnsupportedReason.UNSUPPORTED_SOURCE_CLOSURE;
 				}
-				if (!geo.isLabelSet() || !construction.isInConstructionList(parent)) {
+				if (!geo.isLabelSet() || !parent.isInConstructionList()) {
 					return UnsupportedReason.NO_PRIVATE_SERIALIZATION_SLOT;
 				}
 			}
