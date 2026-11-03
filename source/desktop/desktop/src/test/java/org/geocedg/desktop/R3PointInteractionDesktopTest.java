@@ -29,6 +29,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionWorkBudg
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.euclidian.event.PointerEventType;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.View;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -226,13 +227,25 @@ class R3PointInteractionDesktopTest {
 			var source = (GeoLocusV2) eval(app,
 					"S=SplineV2({(-1,0),(0,1),(1,0),(0,1),(-1,0)},3)");
 			Object originalView = app.getActiveEuclidianView();
-			var before = Before.capture(app); AtomicBoolean chosen = new AtomicBoolean();
+			var before = Before.capture(app);
+			var constructionBefore = new XMLStringBuilder();
+			app.getKernel().getConstruction().getConstructionXML(constructionBefore, false);
+			var afterViewCallback = new AtomicReference<Before>(); AtomicBoolean chosen = new AtomicBoolean();
 			var point = new GeoCeDGPointInteraction(app).create(source, 0, 1, .01, result -> {
-				chosen.set(true); switchView(app); return result.getCandidates().get(0);
+				chosen.set(true); switchView(app);
+				afterViewCallback.set(Before.capture(app)); return result.getCandidates().get(0);
 			});
 			assertTrue(chosen.get()); assertNull(point);
 			assertNotSame(originalView, app.getActiveEuclidianView());
-			before.assertUnchanged(app);
+			// Creating View2 intentionally changes document view XML, never the construction.
+			var constructionAfter = new XMLStringBuilder();
+			app.getKernel().getConstruction().getConstructionXML(constructionAfter, false);
+			assertEquals(constructionBefore.toString(), constructionAfter.toString());
+			assertEquals(before.geos(), afterViewCallback.get().geos());
+			assertEquals(before.ids(), afterViewCallback.get().ids());
+			assertEquals(before.reservations(), afterViewCallback.get().reservations());
+			assertEquals(before.history(), afterViewCallback.get().history());
+			afterViewCallback.get().assertUnchanged(app);
 		});
 	}
 

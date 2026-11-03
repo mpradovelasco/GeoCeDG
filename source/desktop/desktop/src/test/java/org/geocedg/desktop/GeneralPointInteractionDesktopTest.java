@@ -23,6 +23,7 @@ import javax.swing.JToggleButton;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionWorkBudget2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
@@ -571,8 +572,11 @@ class GeneralPointInteractionDesktopTest {
 			assertEquals("Unit notice retained", bar.getSegment(GeoCeDGStatusBar.PASTE_NOTICE_SEGMENT).getText());
 			bar.showPointInteractionNotice("Retry");
 			app.setMode(EuclidianConstants.MODE_POINT); assertFalse(notice.isVisible());
-			eval(app, "nativeSource=Segment((-1,-1),(1,-1))");
+			// F3 admits ordinary segment points; a function path still lacks a typed restorer.
+			eval(app, "nativeSource=x^2");
 			eval(app, "Existing=Point(nativeSource)");
+			assertEquals(NativeTransactionalState2D.UnsupportedReason.UNSUPPORTED_NATIVE_PLACE,
+					NativeTransactionalState2D.unsupportedReason(app.getKernel().getConstruction()));
 			app.setMode(EuclidianConstants.MODE_MOVE);
 			String unsupportedHost = app.getXML(); int unsupportedHistory = undo.getHistorySize();
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_PRESSED, point.inhomX, point.inhomY);

@@ -173,13 +173,23 @@ class Cu7M08SCorrectionTest {
 		});
 		assertNotNull(p);
 		String[] afterReload = {null};
-		assertThrows(IllegalArgumentException.class, () -> interaction.createFromReference(
-				source, q, policy(), result -> {
-					app.setXML(app.getXML(), true);
-					afterReload[0] = app.getXML();
-					return result.getCandidates().get(0);
-				}));
+		int[] stateAfterReload = {-1, -1, -1};
+		// The frontend cancels a stale callback; direct kernel use of the stale source still rejects.
+		assertNull(interaction.createFromReference(source, q, policy(), result -> {
+			app.setXML(app.getXML(), true);
+			afterReload[0] = app.getXML();
+			var construction = app.getKernel().getConstruction();
+			stateAfterReload[0] = construction.getGeoSetConstructionOrder().size();
+			stateAfterReload[1] = construction.getSpatialIdentityRegistry().getReservedIdentityCount();
+			stateAfterReload[2] = construction.getUndoManager().getHistorySize();
+			return result.getCandidates().get(0);
+		}));
+		assertNotNull(afterReload[0], "The stale-selection callback must actually execute");
 		assertEquals(afterReload[0], app.getXML());
+		var construction = app.getKernel().getConstruction();
+		assertEquals(stateAfterReload[0], construction.getGeoSetConstructionOrder().size());
+		assertEquals(stateAfterReload[1], construction.getSpatialIdentityRegistry().getReservedIdentityCount());
+		assertEquals(stateAfterReload[2], construction.getUndoManager().getHistorySize());
 		assertThrows(IllegalArgumentException.class, () ->
 				org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D
 						.query(source, 0, 1, policy()));
