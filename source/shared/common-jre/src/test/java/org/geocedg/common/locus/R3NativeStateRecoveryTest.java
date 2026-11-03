@@ -271,6 +271,31 @@ class R3NativeStateRecoveryTest extends G9U0PublicSurfaceTestBase {
 		} finally { point.setLabelSet(true); }
 	}
 
+	@Test void nonstandardBuiltinAxisOriginIsRefusedBeforeAnyPublication() {
+		add("P=Point(xAxis)"); add("driver=Circle((0,0),1)"); add("N=Point(driver)");
+		add("v=Vector((0,0),N)"); add("Traced=N+2v");
+		GeoLocusV2 locus = add("L=LocusV2(Traced,N)");
+		assertFalse(LocusV2PublicOperations.hasUnsupportedInteractiveHostState(getConstruction()));
+		GeoPoint changedOrigin = add("ChangedOrigin=(5,5)");
+		getConstruction().getXAxis().setStartPoint(changedOrigin);
+		point("P").setCoords(.74, .61, 1); point("P").updateCascade();
+		assertEquals(NativeTransactionalState2D.UnsupportedReason.UNSUPPORTED_SOURCE_CLOSURE,
+				LocusV2PublicOperations.getUnsupportedInteractiveHostStateReason(getConstruction()));
+		String before = getApp().getXML();
+		try (var selection = IndividualForwardPointCreation2D.query(locus, 3, 0,
+				LocusPointInteractionPolicy2D.initial(.1))) {
+			assertFalse(selection.getChoices().isEmpty(), selection.getFailure().name());
+			var rejection = assertThrows(IndividualForwardPointCreation2D.Rejected.class,
+					() -> selection.commit("Refused", selection.getChoices().get(0)));
+			assertEquals(IndividualForwardPointCreation2D.Failure.UNSUPPORTED_HOST_STATE,
+					rejection.getFailure());
+			assertEquals(0, selection.getPublicationAttempts());
+		}
+		assertEquals(before, getApp().getXML());
+		assertSame(changedOrigin, getConstruction().getXAxis().getStartPoint());
+		assertNull(lookup("Refused"));
+	}
+
 	@Test void classicAtomicBoundaryKeepsItsHistoricalRouteWithoutNativeBindings() {
 		var classic = AppCommonFactory.create();
 		classic.getKernel().getAlgebraProcessor().processAlgebraCommand("c=Circle((0,0),1)", false);

@@ -123,10 +123,15 @@ public final class NativeSourceFidelity2D {
 		memo.put(value, false); // Cycles are not a positive reconstruction witness.
 		if (value.getClass() == GeoAxis.class) {
 			GeoAxis axis = (GeoAxis) value;
-			boolean exact = value == value.getConstruction().getXAxis()
-					? axis.x == 0 && axis.y == 1 && axis.z == 0
-					: value == value.getConstruction().getYAxis()
-							&& axis.x == -1 && axis.y == 0 && axis.z == 0;
+			boolean horizontal = value == value.getConstruction().getXAxis();
+			boolean vertical = value == value.getConstruction().getYAxis();
+			// Built-in axes are reconstructed by the kernel, not by a serialized
+			// mutable line origin. Require their whole native constructor geometry.
+			boolean exact = (horizontal || vertical)
+					&& same(axis.x, horizontal ? 0 : -1) && same(axis.y, horizontal ? 1 : 0)
+					&& same(axis.z, 0) && axis.isDefined()
+					&& axisPoint(axis.getStartPoint(), 0, 0)
+					&& axisPoint(axis.getEndPoint(), horizontal ? 1 : 0, horizontal ? 0 : 1);
 			memo.put(value, exact);
 			return exact;
 		}
@@ -217,6 +222,15 @@ public final class NativeSourceFidelity2D {
 	private static boolean serializable(double value) {
 		return !Double.isInfinite(value)
 				&& Double.doubleToLongBits(value) != Double.doubleToLongBits(-0.0);
+	}
+
+	private static boolean same(double first, double second) {
+		return Double.doubleToLongBits(first) == Double.doubleToLongBits(second);
+	}
+
+	private static boolean axisPoint(GeoPoint point, double x, double y) {
+		return point != null && point.isDefined() && same(point.x, x)
+				&& same(point.y, y) && same(point.z, 1);
 	}
 
 	private boolean expression(ExpressionValue value, int depth) {
