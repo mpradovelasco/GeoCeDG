@@ -400,9 +400,10 @@ class IndividualForwardPointCreationTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	@Test
-	void newForwardPermissionRefusesAnUnrelatedFreeLinePlaceBeforeMutation() {
+	void newForwardPermissionRefusesAnUnsupportedParametricPlaceBeforeMutation() {
 		GeoLocusV2 source = vectorCircle();
-		GeoPoint other = add("Other=Point(x+y=1)");
+		add("unsupportedPath=Curve(cos(t),sin(2t),t,0,6.28)");
+		GeoPoint other = add("Other=Point(unsupportedPath)");
 		other.setCoords(.3, .2, 1); other.updateCascade();
 		long argument = Double.doubleToLongBits(other.getPathParameter().t);
 		assertUnsupportedHostRefusal(source);

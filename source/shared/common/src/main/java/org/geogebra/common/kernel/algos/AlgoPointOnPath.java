@@ -16,7 +16,7 @@
 
 package org.geogebra.common.kernel.algos;
 
-// GeoCeDG modification, 2026-11-03: consume the native conic load state once.
+// GeoCeDG modification, 2026-11-03: consume authenticated memory or native conic load state once.
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -202,6 +202,10 @@ public class AlgoPointOnPath extends AlgoElement
 
 	@Override
 	public final void compute() {
+		if (param == null && P instanceof GeoPoint
+				&& ((GeoPoint) P).restorePendingNativeRollbackState()) {
+			return;
+		}
 		// GeoCeDG CU7: tagged free conic state must survive the loader's final
 		// recomputation, including historical path handling OFF. Consumed once;
 		// explicit numeric inputs and subsequent edits retain normal behavior.

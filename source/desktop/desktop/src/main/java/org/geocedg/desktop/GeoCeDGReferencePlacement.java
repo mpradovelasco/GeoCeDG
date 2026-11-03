@@ -11,6 +11,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
 import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.desktop.main.AppD;
 
 /** Desktop compatibility adapter; routing and publication are kernel-owned. */
 final class GeoCeDGReferencePlacement implements AutoCloseable {
@@ -30,20 +31,40 @@ final class GeoCeDGReferencePlacement implements AutoCloseable {
 
 	private final LocusPointCreation2D.Selection selection;
 	private final List<Choice> choices;
+	private final GeoCeDGPointRequest request;
 
 	GeoCeDGReferencePlacement(GeoLocusV2 source, GeoPoint reference,
 			LocusPointInteractionPolicy2D policy) {
-		this(fromReference(source, reference, policy));
+		this(source, referenceRequest(source, reference, policy));
 	}
 
 	GeoCeDGReferencePlacement(GeoLocusV2 source, double x, double y,
 			LocusPointInteractionPolicy2D policy) {
-		this(fromWorld(source, x, y, policy));
+		this(source, GeoCeDGPointRequest.forSource((AppD) source.getKernel().getApplication(),
+				source, x, y, policy));
 	}
 
-	private GeoCeDGReferencePlacement(LocusPointCreation2D.Selection selection) {
-		this.selection = selection;
+	GeoCeDGReferencePlacement(GeoLocusV2 source, GeoCeDGPointRequest request) {
+		request.requireSource(source);
+		this.request = request;
+		selection = request.getReference() == null
+				? fromWorld(source, request.getX(), request.getY(), request.getPolicy())
+				: fromReference(source, request.getReference(), request.getPolicy());
+		try { request.requireCurrent(); }
+		catch (RuntimeException failure) { selection.close(); throw failure; }
 		choices = selection.getChoices().stream().map(Choice::new).toList();
+	}
+
+	private static GeoCeDGPointRequest referenceRequest(GeoLocusV2 source, GeoPoint reference,
+			LocusPointInteractionPolicy2D policy) {
+		if (reference == null || reference.getConstruction() != source.getConstruction()
+				|| !source.getConstruction().getGeoSetConstructionOrder().contains(reference)
+				|| !reference.isDefined() || !Double.isFinite(reference.getInhomX())
+				|| !Double.isFinite(reference.getInhomY())) {
+			throw new Rejected("INVALID_REFERENCE");
+		}
+		return GeoCeDGPointRequest.forSource((AppD) source.getKernel().getApplication(), source,
+				reference.getInhomX(), reference.getInhomY(), policy).withReference(reference);
 	}
 
 	private static LocusPointCreation2D.Selection fromReference(GeoLocusV2 source,
@@ -65,12 +86,26 @@ final class GeoCeDGReferencePlacement implements AutoCloseable {
 	String getFailure() { return selection.getFailure(); }
 	LocusPointInteractionResult2D getHistoricalResult() { return selection.getHistoricalResult(); }
 	M08SnapshotPlacement2D.Selection getLocalSelection() { return selection.getLocalSelection(); }
-	M08SnapshotPlacement2D.Validity getValidity() { return selection.getValidity(); }
+	M08SnapshotPlacement2D.Validity getValidity() {
+		var validity = selection.getValidity();
+		return validity == M08SnapshotPlacement2D.Validity.CURRENT && !request.isCurrent()
+				? M08SnapshotPlacement2D.Validity.STALE : validity;
+	}
 	long getSemanticMisses() { return selection.getSemanticMisses(); }
+	GeoCeDGPointRequest getRequest() { return request; }
 	GeoPoint commit(Choice choice) {
-		try { return selection.commit(null, choice == null ? null : choice.kernelChoice); }
+		return commit(choice, () -> { });
+	}
+	GeoPoint commit(Choice choice, Runnable contextGuard) {
+		try {
+			return selection.commit(null, choice == null ? null : choice.kernelChoice, () -> {
+				request.requireCurrent();
+				contextGuard.run();
+			});
+		}
 		catch (LocusPointCreation2D.Rejected failure) { throw new Rejected(failure.getMessage()); }
 		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getFailure().name()); }
+		catch (GeoCeDGPointRequest.StaleContext failure) { throw new Rejected(failure.getMessage()); }
 	}
 	@Override public void close() { selection.close(); }
 }

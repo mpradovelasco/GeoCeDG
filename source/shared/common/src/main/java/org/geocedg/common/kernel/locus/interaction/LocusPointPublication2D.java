@@ -28,6 +28,7 @@ public abstract class LocusPointPublication2D {
 			Supplier<? extends RuntimeException> invariantFailure) {
 		GeoPoint[] result = {null};
 		source.getConstruction().runAtomicConstructionMutation(() -> {
+			finalGuard.run();
 			result[0] = publication.get();
 			// Source/reference guards retain their own typed stale-selection diagnostics.
 			finalGuard.run();

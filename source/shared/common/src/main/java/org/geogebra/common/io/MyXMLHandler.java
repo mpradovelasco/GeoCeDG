@@ -14,6 +14,7 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification, 2026-11-03: strict grammar for versioned native state leaves.
 package org.geogebra.common.io;
 
 import java.util.ArrayList;
@@ -324,6 +325,11 @@ public class MyXMLHandler implements DocHandler {
 	// ===============================================
 	// SAX ContentHandler methods
 	// ===============================================
+
+	@Override
+	public boolean hasStrictEmptyElementGrammar(String tag) {
+		return "conicPointState".equals(tag) || "nativeRollbackBinding".equals(tag);
+	}
 
 	@Override
 	final public void text(String str) throws XMLParseException {

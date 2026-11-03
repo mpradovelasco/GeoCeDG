@@ -182,7 +182,7 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 					LocusPointInteractionPolicy2D.initial(0.1), context(point));
 			sample("B", result, started);
 			assertTrue(result.isEstablished(), result.getDiagnostic());
-			assertEquals("CERTIFIED_MONOTONE_COORDINATE_CHART", result.getMethod());
+			assertEquals("LOCAL_STRICT_PROJECTION_CHART", result.getMethod());
 			assertEquals(original + 0.05, parent.getCurrentSemanticAddress()
 					.getCanonicalParameter(), 1E-10);
 		}
@@ -324,7 +324,7 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	@Test
-	void disconnectedLineCirclePreimagesCreateExplicitlyButRefuseUnprovedContinuation() {
+	void disconnectedLineCirclePreimagesContinueLocallyWithoutChangingChosenComponent() {
 		add("c=Circle((0,0),2)");
 		GeoPoint driver = add("N=Point(c)");
 		driver.updatePathParameter(Math.PI / 2);
@@ -368,24 +368,33 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 		var parent = (AlgoSemanticLocusPoint2D) point.getParentAlgorithm();
 		var address = parent.getCurrentSemanticAddress();
 		var id = getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point);
-		String before = getApp().getXML();
 		var near = at(source, address.getCanonicalParameter() + 0.001);
-		var refusal = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+		var continued = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				near.getX(), near.getY(), policy, context(point));
-		assertEquals(LocusPointContinuation2D.Status.NO_CONTINUATION_ESTABLISHED, refusal.getStatus(),
-				"Existence components alone do not establish the LINE_CIRCLE local inverse chart");
-		assertTrue(context(point).isStopped());
-		assertEquals(before, getApp().getXML());
+		assertTrue(continued.isEstablished(), continued.getDiagnostic());
+		assertEquals("LOCAL_STRICT_PROJECTION_CHART", continued.getMethod());
+		assertEquals(address.getCanonicalParameter() + .001,
+				parent.getCurrentSemanticAddress().getCanonicalParameter(), 1E-10);
+		assertEquals(address.getComponentLineageKey(),
+				parent.getCurrentSemanticAddress().getComponentLineageKey());
 		var otherImage = at(source, otherAddress.getCanonicalParameter());
 		var otherRequest = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				otherImage.getX(), otherImage.getY(), policy,
 				LocusV2PublicOperations.beginInteractiveSemanticPointDrag(point));
-		assertEquals(LocusPointContinuation2D.Status.NO_CONTINUATION_ESTABLISHED, otherRequest.getStatus(),
-				"A fresh press and a coincident image do not authorize a component jump");
+		assertTrue(otherRequest.isEstablished(), otherRequest.getDiagnostic());
+		assertTrue(parent.getCurrentSemanticAddress().getCanonicalParameter() > 0,
+				"Coincident images continue on the already chosen component");
 		assertSame(point, lookup("P"));
 		assertEquals(id, getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point));
-		assertEquals(address, parent.getCurrentSemanticAddress());
-		assertEquals(before, getApp().getXML());
+		assertEquals(address.getComponentLineageKey(),
+				parent.getCurrentSemanticAddress().getComponentLineageKey());
+		String beforeGap = getApp().getXML();
+		var beforeGapAddress = parent.getCurrentSemanticAddress();
+		var gap = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point, 2, 0, policy,
+				LocusV2PublicOperations.beginInteractiveSemanticPointDrag(point));
+		assertFalse(gap.isEstablished());
+		assertEquals(beforeGapAddress, parent.getCurrentSemanticAddress());
+		assertEquals(beforeGap, getApp().getXML());
 	}
 
 	@Test

@@ -14,6 +14,7 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification, 2026-11-03: focal private native rollback inputs and fresh file-fidelity pass.
 package org.geogebra.common.kernel;
 
 import java.util.ArrayList;
@@ -40,6 +41,10 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
+import org.geocedg.common.kernel.locus.NativeSourceFidelity2D;
+import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.kernel.geos.GeoPoint.NativeRollbackPointState;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
@@ -246,6 +251,12 @@ public class Construction {
 	/** PRE-G9B-R6-plus-D1 document unit state: metadata, never geometry. */
 	private final DocumentUnitSystem unitSystem;
 	private LoadPurpose nextSpatialIdentityLoadPurpose;
+	// GeoCeDG CU7 R3: private, transaction-scoped native input correspondence.
+	private NativeTransactionalState2D nativeRollbackCapture;
+	private NativeTransactionalState2D nativeRollbackRestore;
+	private LoadPurpose nativeRollbackLoadPurpose;
+	private NativeTransactionalState2D.Metrics lastNativeTransactionMetrics;
+	private NativeSourceFidelity2D nativeFileFidelityPass;
 	private RedefineRebuildToken nextSpatialIdentityRedefineRebuildToken;
 	private int spatialIdentityXmlDepth;
 
@@ -1445,6 +1456,8 @@ public class Construction {
 	 * @param randomize whether to also update random algos
 	 */
 	final public void updateConstruction(boolean randomize) {
+		NativeTransactionalState2D nativeMeasurement = nativeRollbackRestore;
+		long nativeDagStarted = nativeMeasurement == null ? 0 : System.nanoTime();
 		// collect notifyUpdate calls using xAxis as dummy geo
 		updateConstructionRunning = true;
 		try {
@@ -1506,6 +1519,9 @@ public class Construction {
 			}
 		} finally {
 			updateConstructionRunning = false;
+			if (nativeMeasurement != null) {
+				nativeMeasurement.recordDagRestore(System.nanoTime() - nativeDagStarted);
+			}
 		}
 	}
 
@@ -1537,6 +1553,9 @@ public class Construction {
 	 * @param getListenersToo whether to include JS listener names
 	 */
 	public void getConstructionXML(XMLStringBuilder sb, boolean getListenersToo) {
+		NativeSourceFidelity2D previousPass = nativeFileFidelityPass;
+		nativeFileFidelityPass = getApplication().getConfig() instanceof AppConfigGeoCeDG
+				&& !kernel.isMacroKernel() ? NativeSourceFidelity2D.fileSerializationPass() : null;
 		beginSpatialIdentityXML();
 		try {
 			// save construction elements
@@ -1575,7 +1594,14 @@ public class Construction {
 			Log.debug(e);
 		} finally {
 			endSpatialIdentityXML();
+			nativeFileFidelityPass = previousPass;
 		}
+	}
+
+	/** One fresh, pure serialization-pass memo; no cache survives native edits. */
+	public boolean isNativeFileSourceFaithful(GeoElement source) {
+		return nativeFileFidelityPass == null ? NativeSourceFidelity2D.isFaithfulSource(source)
+				: nativeFileFidelityPass.isFaithful(source);
 	}
 
 	private void getGroupsXML(XMLStringBuilder sb) {
@@ -2699,6 +2725,56 @@ public class Construction {
 	 */
 	public void runAtomicConstructionMutation(Runnable mutation) {
 		Objects.requireNonNull(mutation);
+		if (!(getApplication().getConfig() instanceof AppConfigGeoCeDG) || kernel.isMacroKernel()) {
+			runHistoricalAtomicConstructionMutation(mutation);
+			return;
+		}
+		if (nativeRollbackCapture != null || nativeRollbackRestore != null) {
+			throw new IllegalStateException("A native snapshot capture/restore cannot be reentered");
+		}
+		NativeTransactionalState2D nativeState = NativeTransactionalState2D.capture(this);
+		if (!nativeState.isSupported()) {
+			// Existing R1/R6/H1 callers retain their historical boundary. New CU7
+			// permissions independently reject this typed reason before mutation.
+			lastNativeTransactionMetrics = nativeState.metrics();
+			runHistoricalAtomicConstructionMutation(mutation);
+			return;
+		}
+		try {
+			String rollbackXml;
+			long captureStarted = System.nanoTime();
+			nativeRollbackCapture = nativeState;
+			try {
+				rollbackXml = getCurrentUndoXML(false).toString();
+				nativeState.completeCapture(rollbackXml, System.nanoTime() - captureStarted);
+			} finally {
+				nativeRollbackCapture = null;
+			}
+			try {
+				mutation.run();
+			} catch (RuntimeException | MyError failure) {
+				nativeRollbackRestore = nativeState;
+				long restoreStarted = System.nanoTime();
+				try {
+					restoreSpatialRedefineSnapshot(rollbackXml);
+				} catch (RuntimeException | MyError rollbackFailure) {
+					IllegalStateException catastrophic = new IllegalStateException(
+							"Atomic construction mutation could not restore its host snapshot",
+							rollbackFailure);
+					catastrophic.addSuppressed(failure);
+					throw catastrophic;
+				} finally {
+					nativeState.recordXmlRestore(System.nanoTime() - restoreStarted);
+					nativeRollbackRestore = null;
+				}
+				throw failure;
+			}
+		} finally {
+			lastNativeTransactionMetrics = nativeState.metrics();
+		}
+	}
+
+	private void runHistoricalAtomicConstructionMutation(Runnable mutation) {
 		String rollbackXml = getCurrentUndoXML(false).toString();
 		try {
 			mutation.run();
@@ -2716,18 +2792,64 @@ public class Construction {
 		}
 	}
 
+	/** @return private correspondence only during the owning undo-XML capture */
+	public String getNativeRollbackSerializationKey(GeoPoint point) {
+		return nativeRollbackCapture == null ? null : nativeRollbackCapture.serializationKey(point);
+	}
+
+	/** Binds the existing durable element attribute before native coords are processed. */
+	public boolean bindNativeRollbackDurable(GeoPoint point, String id) {
+		return nativeRollbackRestore != null && nativeRollbackLoadPurpose == LoadPurpose.ROLLBACK_RESTORE
+				&& nativeRollbackRestore.bindDurable(point, id);
+	}
+
+	/** Recognized private keys are invalid in ordinary files, macros and inactive sessions. */
+	public void bindNativeRollbackPrivate(GeoPoint point, String key) {
+		if (nativeRollbackRestore == null || nativeRollbackLoadPurpose != LoadPurpose.ROLLBACK_RESTORE) {
+			throw new IllegalStateException("Private native binding outside its rollback session");
+		}
+		nativeRollbackRestore.bindPrivate(point, key);
+	}
+
+	/** @return whether only the active rollback owns this native input payload */
+	public boolean isNativeRollbackStateAuthorized(GeoPoint point, NativeRollbackPointState state) {
+		return nativeRollbackRestore != null && nativeRollbackLoadPurpose == LoadPurpose.ROLLBACK_RESTORE
+				&& nativeRollbackRestore.authorizes(point, state);
+	}
+
+	/** Marks a memory input consumed by the ordinary native algorithm, not a separate evaluator. */
+	public void nativeRollbackStateConsumed(GeoPoint point, NativeRollbackPointState state) {
+		if (!isNativeRollbackStateAuthorized(point, state)) {
+			throw new IllegalStateException("Native rollback input outside its active session");
+		}
+		nativeRollbackRestore.consumed(point, state);
+	}
+
+	/** @return last local transaction telemetry, or null before any transaction */
+	public NativeTransactionalState2D.Metrics getLastNativeTransactionMetrics() {
+		return lastNativeTransactionMetrics;
+	}
+
 	private void restoreSpatialRedefineSnapshot(String rollbackXml) {
 		spatialSemanticRuntime.beginRollbackRestore();
 		setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
 		boolean restored = false;
 		try {
+			if (nativeRollbackRestore != null) {
+				nativeRollbackRestore.beginRestore();
+				nativeRollbackLoadPurpose = LoadPurpose.ROLLBACK_RESTORE;
+			}
 			getXMLio().processXMLString(rollbackXml, true, false);
+			if (nativeRollbackRestore != null) {
+				nativeRollbackRestore.finishRestore();
+			}
 			restored = true;
 		} catch (XMLParseException | RuntimeException failure) {
 			throw new IllegalStateException(
 					"Spatial redefine rollback could not restore the construction",
 					failure);
 		} finally {
+			nativeRollbackLoadPurpose = null;
 			clearNextSpatialIdentityLoadPurpose();
 			spatialSemanticRuntime.finishRollbackRestore(restored);
 		}

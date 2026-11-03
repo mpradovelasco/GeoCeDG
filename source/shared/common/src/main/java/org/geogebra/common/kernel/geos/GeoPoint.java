@@ -16,7 +16,7 @@
 
 package org.geogebra.common.kernel.geos;
 
-// GeoCeDG modification, 2026-11-03: versioned native free-conic point state.
+// GeoCeDG modification, 2026-11-03: versioned native file state and private typed rollback input.
 
 import static org.geogebra.common.kernel.geos.XMLBuilder.coordStyle;
 
@@ -27,6 +27,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.geocedg.common.kernel.locus.NativePathState2D;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.AnimationManager;
@@ -131,6 +133,8 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	private PathParameter tempPathParameter;
 	// GeoCeDG CU7: a tagged native restore bridges only the loader's final compute.
 	private NativeConicPointState nativeConicPointLoadState;
+	// R3: trusted snapshot input, available only during its active rollback.
+	private NativeRollbackPointState nativeRollbackPointLoadState;
 
 	private StringBuilder sbToString = new StringBuilder(50);
 
@@ -738,6 +742,7 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	@Override
 	public void setPath(Path p) {
 		nativeConicPointLoadState = null;
+		nativeRollbackPointLoadState = null;
 		path = p;
 		// tell conic that this point is on it, that's needed to handle
 		// reflections
@@ -840,6 +845,7 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	final public void setCoords(double x, double y, double z,
 			boolean macroFeedback) {
 		nativeConicPointLoadState = null;
+		nativeRollbackPointLoadState = null;
 		// set coordinates
 		this.x = x;
 		this.y = y;
@@ -1738,6 +1744,11 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	 */
 	@Override
 	protected void getXMLTags(XMLStringBuilder sb) {
+		String rollbackKey = cons.getNativeRollbackSerializationKey(this);
+		if (rollbackKey != null) {
+			sb.startTag("nativeRollbackBinding").attr("version", 1)
+					.attr("key", rollbackKey).endTag();
+		}
 		AlgoElement algo = getParentAlgorithm();
 		if (algo instanceof AlgoPointOnPath) {
 			// write parameter just for GeoCurveCartesian/GeoCurveCartesian3D
@@ -1781,6 +1792,25 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	 */
 	public void restoreNativeConicPointState(double t, int pathType, double savedX,
 			double savedY, double savedZ, double tempT, int tempType, double animation) {
+		if (nativeRollbackPointLoadState != null) {
+			NativeRollbackPointState memory = nativeRollbackPointLoadState;
+			PathParameter savedFallback = memory.fallback == null
+					? new PathParameter() : memory.fallback;
+			if (!cons.isNativeRollbackStateAuthorized(this, memory)
+					|| !memory.sourceMatches(this) || nativeFreeConic() == null
+					|| !sameNativeDouble(memory.parameter.t, t)
+					|| memory.parameter.getPathType() != pathType
+					|| !sameNativeDouble(memory.x, savedX) || !sameNativeDouble(memory.y, savedY)
+					|| !sameNativeDouble(memory.z, savedZ)
+					|| !sameNativeDouble(savedFallback.t, tempT)
+					|| savedFallback.getPathType() != tempType
+					|| !sameNativeDouble(memory.animation, animation)) {
+				throw new IllegalArgumentException("Conflicting native conic rollback state");
+			}
+			// The authenticated memory input already owns this restore. Validate the
+			// ordinary file leaf without installing or applying a second checkpoint.
+			return;
+		}
 		GeoConic conic = nativeFreeConic();
 		PathParameter parameter = nativeParameter(t, pathType);
 		PathParameter fallback = nativeParameter(tempT, tempType);
@@ -1802,6 +1832,19 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 		GeoConic conic = nativeFreeConic();
 		return isFinite() && conic != null && conic.isDefined()
 				&& nativeConicPointState() != null;
+	}
+
+	/**
+	 * Local native consistency only; this is not transitive file fidelity or an
+	 * editing permission. CU7 R3's source classifier supplies the separate proof.
+	 * @return whether the current free full-conic representation is locally coherent
+	 */
+	public boolean hasLocallyCoherentNativeConicPointState() {
+		GeoConic conic = nativeFreeConic();
+		return conic != null && supportedNativeConicState(conic, getPathParameter(), x, y, z)
+				&& !Double.isInfinite(animationValue)
+				&& (tempPathParameter == null || !Double.isInfinite(tempPathParameter.t)
+						&& nativeParameterType(tempPathParameter.getPathType()));
 	}
 
 	/**
@@ -1828,10 +1871,151 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 
 	private GeoConic nativeFreeConic() {
 		AlgoElement parent = getParentAlgorithm();
-		return parent instanceof AlgoPointOnPath && parent.getInput().length == 1
+		return parent != null && parent.getClass() == AlgoPointOnPath.class
+				&& parent.getInput().length == 1
 				&& ((AlgoPointOnPath) parent).getPath() == path
 				&& path != null && path.getClass() == GeoConic.class
 				? (GeoConic) path : null;
+	}
+
+	/** @return whether the focal trusted-memory native place table can capture this point */
+	public boolean canCaptureNativeRollbackState() {
+		AlgoElement parent = getParentAlgorithm();
+		if (getClass() != GeoPoint.class || parent == null
+				|| parent.getClass() != AlgoPointOnPath.class || parent.getInputLength() != 1
+				|| path == null || ((AlgoPointOnPath) parent).getPath() != path || pathParameter == null
+				|| !isFinite() || !Double.isFinite(pathParameter.t)
+				|| !(z > 0) || !sameNativeDouble(inhomX, z == 1 ? x : x / z)
+				|| !sameNativeDouble(inhomY, z == 1 ? y : y / z)
+				|| Double.isInfinite(animationValue)
+				|| tempPathParameter != null && Double.isInfinite(tempPathParameter.t)) {
+			return false;
+		}
+		GeoElement source = path.toGeoElement();
+		NativePathState2D sourceState = NativePathState2D.capture(source);
+		if (sourceState == null || !source.isDefined()) {
+			return false;
+		}
+		if (source instanceof GeoConic) {
+			GeoConic conic = (GeoConic) source;
+			if (!regularConicType(conic.getType())
+					|| source instanceof GeoConicPart && (conic.getType()
+							!= GeoConicNDConstants.CONIC_CIRCLE
+							|| ((GeoConicPart) source).getConicPartType()
+									!= GeoConicNDConstants.CONIC_PART_ARC)) {
+				return false;
+			}
+			for (double coefficient : conic.getMatrix()) {
+				if (!Double.isFinite(coefficient)) {
+					return false;
+				}
+			}
+		} else if (source instanceof GeoLine) {
+			GeoLine line = (GeoLine) source;
+			if (!Double.isFinite(line.x) || !Double.isFinite(line.y)
+					|| !Double.isFinite(line.z)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Captures raw native input without projecting, allocating IDs or changing caches. */
+	public NativeRollbackPointState captureNativeRollbackState() {
+		return canCaptureNativeRollbackState() ? new NativeRollbackPointState(this) : null;
+	}
+
+	/** Installs trusted memory only after the active snapshot explicitly bound this output. */
+	public void installNativeRollbackState(NativeRollbackPointState state) {
+		if (!cons.isNativeRollbackStateAuthorized(this, state) || !state.sourceMatches(this)) {
+			throw new IllegalStateException("Native rollback state has no current snapshot binding");
+		}
+		nativeRollbackPointLoadState = state;
+		state.apply(this);
+	}
+
+	/** @return whether this normal compute was satisfied by its active rollback input */
+	public boolean restorePendingNativeRollbackState() {
+		NativeRollbackPointState state = nativeRollbackPointLoadState;
+		if (state == null) {
+			return false;
+		}
+		if (!cons.isNativeRollbackStateAuthorized(this, state) || !state.sourceMatches(this)) {
+			nativeRollbackPointLoadState = null;
+			throw new IllegalStateException("Native rollback source changed during restoration");
+		}
+		state.apply(this);
+		if (!kernel.getLoadingMode()) {
+			nativeRollbackPointLoadState = null;
+			cons.nativeRollbackStateConsumed(this, state);
+		}
+		return true;
+	}
+
+	/** Immutable trusted-memory payload; it never supplies a durable identity. */
+	public static final class NativeRollbackPointState {
+		private final NativePathState2D sourceState;
+		private final PersistentGeoId sourceId;
+		private final PathParameter parameter;
+		private final PathParameter fallback;
+		private final double x;
+		private final double y;
+		private final double z;
+		private final double inhomX;
+		private final double inhomY;
+		private final double animation;
+
+		private NativeRollbackPointState(GeoPoint point) {
+			sourceState = NativePathState2D.capture(point.path.toGeoElement());
+			sourceId = point.cons.getSpatialIdentityRegistry()
+					.getPersistentGeoId(point.path.toGeoElement());
+			parameter = new PathParameter(point.pathParameter);
+			fallback = point.tempPathParameter == null ? null
+					: new PathParameter(point.tempPathParameter);
+			x = point.x; y = point.y; z = point.z;
+			inhomX = point.inhomX; inhomY = point.inhomY;
+			animation = point.animationValue;
+		}
+
+		/** @return the pre-existing durable source ID, or null for a native source */
+		public PersistentGeoId getSourceId() {
+			return sourceId;
+		}
+
+		private boolean sourceMatches(GeoPoint point) {
+			AlgoElement parent = point.getParentAlgorithm();
+			return parent != null && parent.getClass() == AlgoPointOnPath.class
+					&& parent.getInputLength() == 1 && point.path != null
+					&& ((AlgoPointOnPath) parent).getPath() == point.path
+					&& sourceState.matches(point.path.toGeoElement());
+		}
+
+		private void apply(GeoPoint point) {
+			point.nativeConicPointLoadState = null;
+			point.x = x; point.y = y; point.z = z;
+			point.getPathParameter().set(parameter);
+			point.tempPathParameter = fallback == null ? null : new PathParameter(fallback);
+			point.animationValue = animation;
+			point.updateCoords();
+		}
+
+		/** @return exact native input, representation and source after normal DAG restoration */
+		public boolean matches(GeoPoint point) {
+			return sourceMatches(point) && sameNativeDouble(point.x, x)
+					&& sameNativeDouble(point.y, y) && sameNativeDouble(point.z, z)
+					&& sameNativeDouble(point.inhomX, inhomX)
+					&& sameNativeDouble(point.inhomY, inhomY)
+					&& point.pathParameter != null
+					&& sameNativeDouble(point.pathParameter.t, parameter.t)
+					&& point.pathParameter.getPathType() == parameter.getPathType()
+					&& (fallback == null ? point.tempPathParameter == null
+							: point.tempPathParameter != null
+							&& sameNativeDouble(point.tempPathParameter.t, fallback.t)
+							&& point.tempPathParameter.getPathType() == fallback.getPathType())
+					&& sameNativeDouble(point.animationValue, animation)
+					&& (sourceId == null || point.cons.getSpatialIdentityRegistry()
+							.getGeo(sourceId) == point.path.toGeoElement());
+		}
 	}
 
 	private NativeConicPointState nativeConicPointState() {
@@ -1842,6 +2026,7 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 		if (kernel.isMacroKernel() || !(kernel.getApplication().getConfig()
 				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG) || conic == null
 				|| !supportedNativeConicState(conic, getPathParameter(), x, y, z)
+				|| !cons.isNativeFileSourceFaithful(conic)
 				|| Double.isInfinite(animationValue)) {
 			return null;
 		}

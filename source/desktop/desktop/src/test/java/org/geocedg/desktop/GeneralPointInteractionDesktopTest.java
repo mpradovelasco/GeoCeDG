@@ -168,8 +168,7 @@ class GeneralPointInteractionDesktopTest {
 				var q = (GeoPoint) eval(app, "Ref=(" + x + "," + y + ")");
 				try (var world = new GeoCeDGNativePointPlacement(source, null, x, y, .1);
 						var reference = new GeoCeDGNativePointPlacement(source, q, x, y, .1)) {
-					// Q publication checks the pre-existing host. An inherited segment point
-					// may exclude a later Q request, while ordinary native creation stays available.
+					// Native Q and world placement retain the ordinary path constructor.
 					var b = reference.commit(false); var a = world.commit(true);
 					assertEquals(a.inhomX, b.inhomX, 1e-10);
 					assertEquals(a.inhomY, b.inhomY, 1e-10);
@@ -239,23 +238,27 @@ class GeneralPointInteractionDesktopTest {
 		});
 	}
 
-	@Test void nativeReferenceHostRefusalLeavesOrdinaryPointCreationAvailable() throws Exception {
+	@Test void nativeReferenceWithExistingOrdinaryPathPointKeepsBothCreationRoutesAvailable() throws Exception {
 		Cu7M08SDesktopEventsTest.edt(() -> {
 			var app = G9U1SemanticPointInteractionTest.app();
 			var source = eval(app, "s=Segment((0,0),(2,0))"); eval(app, "Existing=Point(s)");
-			var reference = (GeoPoint) eval(app, "Ref=(1,.03)"); String original = app.getXML();
+			var reference = (GeoPoint) eval(app, "Ref=(1,.03)");
+			var existing = (GeoPoint) app.getKernel().lookupLabel("Existing");
+			long parameter = Double.doubleToLongBits(existing.getPathParameter().t);
 			var construction = app.getKernel().getConstruction();
 			int geos = construction.getGeoSetConstructionOrder().size();
 			int history = construction.getUndoManager().getHistorySize();
 			try (var offer = new GeoCeDGNativePointPlacement(source, reference, 1, .03, .1)) {
-				assertEquals("UNSUPPORTED_HOST_STATE", assertThrows(IllegalStateException.class,
-						() -> offer.commit(true)).getMessage());
+				var point = offer.commit(true);
+				assertNotNull(point); assertSame(source, point.getPath());
+				assertFalse(point.getAllPredecessors().contains(reference));
 			}
-			assertEquals(original, app.getXML()); assertEquals(geos, construction.getGeoSetConstructionOrder().size());
+			assertEquals(parameter, Double.doubleToLongBits(existing.getPathParameter().t));
+			assertEquals(geos + 1, construction.getGeoSetConstructionOrder().size());
 			assertEquals(history, construction.getUndoManager().getHistorySize());
 			app.setMode(EuclidianConstants.MODE_POINT);
 			Cu7M08SDesktopEventsTest.pointer(app, 1.5, 0);
-			assertEquals(2, construction.getGeoSetConstructionOrder().stream()
+			assertEquals(3, construction.getGeoSetConstructionOrder().stream()
 					.filter(GeoPoint.class::isInstance).map(GeoPoint.class::cast)
 					.filter(point -> point.getPath() == source).count());
 		});

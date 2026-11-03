@@ -20,6 +20,20 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D
 /** Independent chart proofs; neither an R6 search result nor an H1 creation proof. */
 public final class LocalContinuationEvidence2D {
 
+	/** Opaque immutable equation/root correspondence retained by one host gesture. */
+	public static final class GestureState {
+		private final String method;
+		private final int coordinate;
+		private final LocalStrictProjectionContinuation2D.State projection;
+
+		private GestureState(String method, int coordinate,
+				LocalStrictProjectionContinuation2D.State projection) {
+			this.method = method;
+			this.coordinate = coordinate;
+			this.projection = projection;
+		}
+	}
+
 	/** A deterministic represented-coordinate inverse inside a proven semantic chart. */
 	public static final class Proposal {
 		private final double parameter;
@@ -28,6 +42,9 @@ public final class LocalContinuationEvidence2D {
 		private final double lower;
 		private final double upper;
 		private final int coordinate;
+		private final GestureState gestureState;
+		private final double maximumParameterChange;
+		private final double parameterError;
 
 		private Proposal(double parameter, long lift, String method, double lower,
 				double upper, int coordinate) {
@@ -37,6 +54,22 @@ public final class LocalContinuationEvidence2D {
 			this.lower = lower;
 			this.upper = upper;
 			this.coordinate = coordinate;
+			gestureState = new GestureState(method, coordinate, null);
+			maximumParameterChange = Double.NaN;
+			parameterError = Double.NaN;
+		}
+
+		private Proposal(LocalStrictProjectionContinuation2D.Established established) {
+			var state = established.state;
+			parameter = state.parameter;
+			lift = state.lift;
+			method = LocalStrictProjectionContinuation2D.METHOD;
+			lower = established.lower;
+			upper = established.upper;
+			coordinate = -1;
+			gestureState = new GestureState(method, -1, state);
+			maximumParameterChange = established.maximumParameterChange;
+			parameterError = state.parameterError;
 		}
 
 		public double getParameter() { return parameter; }
@@ -45,6 +78,9 @@ public final class LocalContinuationEvidence2D {
 		public double getLower() { return lower; }
 		public double getUpper() { return upper; }
 		public int getCoordinate() { return coordinate; }
+		public GestureState getGestureState() { return gestureState; }
+		public double getMaximumParameterChange() { return maximumParameterChange; }
+		public double getParameterError() { return parameterError; }
 	}
 
 	/** Charges each proof pass before it runs. */
@@ -60,6 +96,16 @@ public final class LocalContinuationEvidence2D {
 			LocusSemanticAddress2D current, ContinuousComponent component,
 			double x, double y, LocusPointInteractionPolicy2D policy, int fixedCoordinate,
 			Work work) {
+		return establish(definition, current, component, x, y, policy,
+				fixedCoordinate < 0 ? null : new GestureState(
+						"CERTIFIED_MONOTONE_COORDINATE_CHART", fixedCoordinate, null), work);
+	}
+
+	/** Retains the same selection equation while fresh local charts may move. */
+	public static Proposal establish(LocusDefinition2D definition,
+			LocusSemanticAddress2D current, ContinuousComponent component,
+			double x, double y, LocusPointInteractionPolicy2D policy, GestureState previous,
+			Work work) {
 		if (!(definition.getEvaluatorCapability() instanceof ReconstructibleLocusEvaluator2D)) {
 			return null;
 		}
@@ -70,11 +116,26 @@ public final class LocalContinuationEvidence2D {
 		if (program == null || !evaluator.isReconstructionFaithful()) {
 			return null;
 		}
-		Proposal affine = affineCircle(definition, current, program, x, y, policy, work);
-		if (affine != null) {
-			return affine;
+		if (previous != null && previous.projection != null) {
+			var established = LocalStrictProjectionContinuation2D.establish(definition,
+					program, current, component, x, y, policy, previous.projection, work);
+			return established == null ? null : new Proposal(established);
 		}
-		return monotone(definition, current, component, x, y, policy, fixedCoordinate, work);
+		if (previous == null || "STRUCTURAL_AFFINE_CIRCLE_CHART".equals(previous.method)) {
+			Proposal affine = affineCircle(definition, current, program, x, y, policy, work);
+			if (affine != null || previous != null) {
+				return affine;
+			}
+		}
+		if (previous == null) {
+			var established = LocalStrictProjectionContinuation2D.establish(definition,
+					program, current, component, x, y, policy, null, work);
+			if (established != null) {
+				return new Proposal(established);
+			}
+		}
+		return monotone(definition, current, component, x, y, policy,
+				previous == null ? -1 : previous.coordinate, work);
 	}
 
 	private static Proposal affineCircle(LocusDefinition2D definition,

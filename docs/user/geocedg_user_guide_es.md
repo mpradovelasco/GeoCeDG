@@ -1198,7 +1198,10 @@ guarda en el punto.
 Con la herramienta ordinaria **Punto** o **Punto en objeto**, haga clic sobre el trazo
 del locus. Se conserva la creación R6 existente. Cuando solo falta establecer unicidad
 global, una dirección local admitida por R2/H1 puede ofrecerse en el mismo panel de
-confirmación, con su radio en unidades del modelo. Incluso una oferta única requiere
+confirmación, con el radio world capturado para ese clic. La misma petición y radio
+se conservan durante el selector y la confirmación, incluso tras zoom o desplazamiento
+en esa vista. Cambiar de vista, dominio fuente, herramienta o política caduca la oferta.
+Incluso una oferta única requiere
 confirmación. No se crea un Q auxiliar. Esta creación no inicia un arrastre general
 durante ese gesto.
 
@@ -1227,25 +1230,38 @@ selección nativa del objeto; Q no se convierte en padre del punto creado.
 arrástrelo. Se conserva su identidad y la actualización de sus dependientes.
 Además del arrastre R6/Spline V2 existente, se admiten cartas locales demostradas
 para imágenes afines no degeneradas de un conductor circular y para construcciones
-con una coordenada monótona certificada en todo el recorrido local. Una costura
+con una coordenada monótona certificada en todo el recorrido local. El proveedor
+experimental R3 utiliza además programas reconstructibles v3 certificados,
+incluidas construcciones admitidas sobre segmentos/arcos e intersecciones
+recta-circunferencia regulares. Prueba una continuación local única dentro del
+componente retenido; no promete un punto globalmente más próximo. Los extremos
+reales incluidos permiten movimiento unilateral. Una costura
 solo se cruza cuando existe correspondencia periódica demostrada. Al alcanzar una
 barrera, el punto conserva la última dirección válida y aparece un diagnóstico
 breve; no se salta a otra rama por cercanía. Un gesto que cambia el punto produce
 un paso de Deshacer; un intento rechazado o sin cambio no añade otro paso.
-En las nuevas rutas locales, la carta se mantiene durante el gesto; tras una barrera, suelte y vuelva a
+Durante el gesto se conserva la ecuación de continuación demostrada; las cartas
+solapadas pueden cambiar solo con correspondencia acreditada a la misma raíz.
+Tras una barrera, suelte y vuelva a
 seleccionar el punto para iniciar otro intento.
 No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
 
 **Límite del documento.** Las modalidades nuevas también comprueban que el estado
 nativo del documento permite una recuperación acreditada si falla una operación.
-Pueden detenerse por otro punto nativo sobre un objeto, una región, una cónica
-indefinida o un punto editable producido por una herramienta de usuario, aunque L
-sea regular. Esto también limita la nueva creación desde Q
-sobre objetos nativos; la herramienta Punto nativa habitual conserva su comportamiento.
-El diagnóstico indica ese límite del documento, sin cambiar el punto. Los archivos
+Los puntos nativos ordinarios admitidos sobre rectas, semirrectas, segmentos,
+circunferencias y arcos circulares disponen de restauración tipada: su mera presencia
+no prohíbe una nueva solicitud. Las regiones, cónicas indefinidas, salidas editables
+de herramientas de usuario y otros estados sin restaurador demostrado todavía
+pueden detener una operación nueva aunque L sea regular. El diagnóstico distingue
+ese límite documental de la admisibilidad geométrica del objeto elegido.
+La herramienta Punto nativa habitual conserva su comportamiento. Los archivos
 antiguos conservan su lectura histórica; para los puntos libres de cónica admitidos,
 el lector nuevo conserva explícitamente el argumento nativo guardado. Ese estado
-adicional se guarda para puntos ordinarios con el perfil GeoCeDG; las definiciones
+adicional solo se escribe cuando también se acredita la fidelidad de la cadena
+de antecedentes definidores. En otro caso se conserva el payload histórico legible,
+sin prometer persistencia exacta del parámetro. La recuperación transaccional nativa
+es una capacidad separada y no añade campos públicos de archivo para cada camino.
+Las definiciones
 de herramientas de usuario conservan su formato anterior. Un guardado posterior con Classic conserva su
 formato heredado y no promete mantener ese estado adicional. El candidato
 requiere verificación final, revisión independiente y smoke autoral.

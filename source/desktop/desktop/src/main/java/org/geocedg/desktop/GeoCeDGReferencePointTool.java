@@ -39,6 +39,8 @@ final class GeoCeDGReferencePointTool {
 	private Object document;
 	private Object view;
 	private long generation;
+	private long contextVersion;
+	private GeoCeDGPointRequest pendingRequest;
 	private JPanel panel;
 	private JPanel choicesHost;
 	private JPanel choices;
@@ -97,6 +99,8 @@ final class GeoCeDGReferencePointTool {
 
 	private void clearSelection() {
 		generation++;
+		contextVersion++;
+		pendingRequest = null;
 		if (selection != null) { selection.close(); selection = null; }
 		if (nativeSelection != null) { nativeSelection.close(); nativeSelection = null; }
 		clearChoices();
@@ -129,12 +133,14 @@ final class GeoCeDGReferencePointTool {
 			if (requestView == null) { refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name()); return; }
 			double worldX = requestView.toRealWorldCoordX(x);
 			double worldY = requestView.toRealWorldCoordY(y);
+			var request = bindContext(GeoCeDGPointRequest.capture(app, requestView,
+					worldX, worldY, policy, loci));
 			choose(loci, geo -> {
-				if (app.getActiveEuclidianView() != requestView) {
+				try { queryWorld(request.select(geo)); }
+				catch (GeoCeDGPointRequest.StaleContext failure) {
 					refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name());
-					return;
 				}
-				queryWorld(geo, worldX, worldY);
+				catch (IllegalArgumentException failure) { refuse(failure.getMessage()); }
 			});
 			return;
 		}
@@ -160,38 +166,79 @@ final class GeoCeDGReferencePointTool {
 
 	void query(GeoPoint q, Component anchor, int x, int y) {
 		try {
+			if (q == null) { throw new IllegalArgumentException("INVALID_REFERENCE"); }
+			if (app.getActiveEuclidianView() != view) { throw new GeoCeDGPointRequest.StaleContext(); }
+			pendingRequest = bindContext(GeoCeDGPointRequest.forSource(app, source,
+					q.getInhomX(), q.getInhomY(), policy).withReference(q));
 			if (source instanceof GeoLocusV2 locus) {
-				selection = new GeoCeDGReferencePlacement(locus, q, policy);
+				selection = new GeoCeDGReferencePlacement(locus, pendingRequest);
 				showSelection();
 			} else {
-				nativeSelection = new GeoCeDGNativePointPlacement(source, q,
-						q.getInhomX(), q.getInhomY(), policy.getMaximumWorldDistance());
+				nativeSelection = new GeoCeDGNativePointPlacement(source, pendingRequest);
 				showNativeSelection();
 			}
 		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
+		catch (GeoCeDGPointRequest.StaleContext failure) { refuse(failure.getMessage()); }
 		catch (IllegalArgumentException failure) { refuse(failure.getMessage()); }
 	}
 
 	/** A canvas request uses the same world policy and confirmation as an existing Q. */
 	void queryWorld(GeoElement target, double x, double y) {
-		if (worldPlacement && !applyPolicy()) { return; }
+		if (!applyPolicy()) { return; }
 		activate();
-		worldPlacement = true;
-		source = target;
-		app.getSelectionManager().addSelectedGeo(source);
 		try {
-			if (source instanceof GeoLocusV2 locus) {
-				selection = new GeoCeDGReferencePlacement(locus, x, y, policy);
-				showSelection();
-			} else {
-				nativeSelection = new GeoCeDGNativePointPlacement(source, null, x, y,
-						policy.getMaximumWorldDistance());
-				showNativeSelection();
-			}
+			queryWorld(bindContext(GeoCeDGPointRequest.forSource(app, target, x, y, policy)));
 		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
+		catch (GeoCeDGPointRequest.StaleContext failure) { refuse(failure.getMessage()); }
 		catch (IllegalArgumentException failure) { refuse(failure.getMessage()); }
+	}
+
+	/** A canvas handoff retains the original query and all of its charged work. */
+	void offerWorld(GeoCeDGPointRequest request, GeoCeDGReferencePlacement offer) {
+		request.requireCurrent();
+		if (offer.getRequest() != request || panel == null || app.getActiveEuclidianView() != view
+				|| document != app.getKernel().getConstruction().getSpatialIdentityRegistry()
+				|| selection != null || nativeSelection != null) {
+			throw new GeoCeDGPointRequest.StaleContext();
+		}
+		worldPlacement = true;
+		source = request.getSource();
+		policy = request.getPolicy();
+		fillPolicy();
+		pendingRequest = bindContext(request);
+		selection = offer;
+		app.getSelectionManager().addSelectedGeo(source);
+		showSelection();
+	}
+
+	private void queryWorld(GeoCeDGPointRequest request) {
+		request.requireCurrent();
+		if (request.getSource() instanceof GeoLocusV2 locus) {
+			var offer = new GeoCeDGReferencePlacement(locus, request);
+			try { offerWorld(request, offer); }
+			catch (RuntimeException failure) { offer.close(); throw failure; }
+		} else {
+			worldPlacement = true;
+			source = request.getSource();
+			policy = request.getPolicy();
+			fillPolicy();
+			pendingRequest = bindContext(request);
+			nativeSelection = new GeoCeDGNativePointPlacement(source, pendingRequest);
+			app.getSelectionManager().addSelectedGeo(source);
+			showNativeSelection();
+		}
+	}
+
+	GeoCeDGPointRequest bindContext(GeoCeDGPointRequest request) {
+		long ticket = contextVersion;
+		return request.withContext(() -> ticket == contextVersion);
+	}
+
+	LocusPointInteractionPolicy2D canvasPolicy(double radius) {
+		return new LocusPointInteractionPolicy2D(radius, policy.getEqualDistanceTolerance(),
+				policy.getParameterTolerance(), policy.getWorkBudget());
 	}
 
 	boolean isWorldPlacementActive() { return worldPlacement; }
@@ -206,6 +253,14 @@ final class GeoCeDGReferencePointTool {
 
 	/** Finish an invalidated world offer before handing a new press to any authoring route. */
 	boolean prepareCanvasRequest() {
+		boolean pointMode = app.getMode() == EuclidianConstants.MODE_POINT
+				|| app.getMode() == EuclidianConstants.MODE_POINT_ON_OBJECT
+				|| app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT;
+		if (pointMode && (panel == null || view != app.getActiveEuclidianView()
+				|| document != app.getKernel().getConstruction().getSpatialIdentityRegistry())) {
+			activate();
+		}
+		if (pointMode && !applyPolicy()) { return false; }
 		if (!worldPlacement) { return true; }
 		if (!applyPolicy()) { return false; }
 		activate();
@@ -249,9 +304,11 @@ final class GeoCeDGReferencePointTool {
 	GeoPoint commit(GeoCeDGReferencePlacement.Choice choice) {
 		if (app.getActiveEuclidianView() != view) { refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name()); return null; }
 		try {
-			GeoPoint point = selection.commit(choice);
+			if (pendingRequest == null) { throw new GeoCeDGPointRequest.StaleContext(); }
+			boolean allowDragging = draggable;
+			GeoPoint point = selection.commit(choice, pendingRequest::requireCurrent);
 			if (point == null) { restart(); return null; }
-			point.setFixed(!draggable);
+			point.setFixed(!allowDragging);
 			app.storeUndoInfo();
 			app.getKernel().notifyRepaint();
 			restart();
@@ -261,6 +318,7 @@ final class GeoCeDGReferencePointTool {
 			return null;
 		}
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); return null; }
+		catch (GeoCeDGPointRequest.StaleContext failure) { refuse(failure.getMessage()); return null; }
 	}
 
 	private void showNativeSelection() {

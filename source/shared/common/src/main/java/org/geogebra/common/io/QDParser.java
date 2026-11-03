@@ -6,6 +6,7 @@
  * Some optimizations by Markus Hohenwarter, 19.11.2004
  */
 
+// GeoCeDG modification, 2026-11-03: handler-opt-in strict grammar for native state leaves.
 package org.geogebra.common.io;
 
 import java.io.IOException;
@@ -283,6 +284,9 @@ public class QDParser {
 					if (tagName == null) {
 						tagName = sb.toString();
 					}
+					if (doc.hasStrictEmptyElementGrammar(tagName)) {
+						exc("Element must be an empty self-closing leaf: " + tagName, line, col);
+					}
 					sb.setLength(0);
 					depth++;
 					doc.startElement(tagName, attrs);
@@ -337,6 +341,9 @@ public class QDParser {
 				if (c == quotec) {
 					String rvalue = sb.toString();
 					sb.setLength(0);
+					if (doc.hasStrictEmptyElementGrammar(tagName) && attrs.containsKey(lvalue)) {
+						exc("Duplicate attribute " + lvalue + " in " + tagName, line, col);
+					}
 					attrs.put(lvalue, rvalue);
 					mode = IN_TAG;
 					// See section the XML spec, section 3.3.3
@@ -394,6 +401,9 @@ public class QDParser {
 			case IN_TAG:
 				switch (c) {
 				case '>':
+					if (doc.hasStrictEmptyElementGrammar(tagName)) {
+						exc("Element must be an empty self-closing leaf: " + tagName, line, col);
+					}
 					mode = popMode(stack);
 					doc.startElement(tagName, attrs);
 					depth++;

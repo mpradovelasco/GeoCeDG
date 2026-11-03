@@ -290,6 +290,15 @@ public final class LocusPointCreation2D {
 
 		/** Commits one explicit member once. The gesture owner stores one normal Undo. */
 		public GeoPoint commit(String label, Choice choice) {
+			return commit(label, choice, () -> { });
+		}
+
+		/**
+		 * Adds caller-context liveness to the same concrete publication transaction.
+		 * This refusal guard never supplies geometric admission or a second snapshot.
+		 */
+		public GeoPoint commit(String label, Choice choice, Runnable publicationGuard) {
+			java.util.Objects.requireNonNull(publicationGuard);
 			if (Thread.currentThread() != thread) {
 				throw new Rejected(Failure.WRONG_THREAD);
 			}
@@ -310,11 +319,13 @@ public final class LocusPointCreation2D {
 				if (!RuntimeFeatureService.mayCreateLocusV2(source.getConstruction())) {
 					throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
 				}
+				publicationGuard.run();
 				Runnable finalGuard = () -> {
 					if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }
 					if (!RuntimeFeatureService.mayCreateLocusV2(source.getConstruction())) {
 						throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
 					}
+					publicationGuard.run();
 				};
 				if (route == Route.R1_R6) {
 					try {

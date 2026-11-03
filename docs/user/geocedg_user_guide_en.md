@@ -1138,7 +1138,10 @@ offered address as for Q. The option is session state and is not saved in the po
 With the ordinary **Point** or **Point on object** tool, click the locus stroke.
 Existing R6 creation remains available. When global uniqueness alone is unestablished,
 a supported R2/H1 local address can instead be offered in the same confirmation panel,
-using its model-unit radius. Even a single such offer needs confirmation. No helper Q
+using the world radius captured for that click. The same request and radius are kept
+through the source chooser and confirmation, including after zoom or pan in that view.
+A different view, source domain, tool or query policy invalidates the offer.
+Even a single such offer needs confirmation. No helper Q
 is created. This creation does not start general dragging during that gesture.
 
 The kernel decides admission for both forms of authoring. The result stores its forward
@@ -1165,23 +1168,33 @@ the object's native selection; Q does not become a parent of the created point.
 Its identity and dependent updates are preserved. Alongside existing R6/Spline V2
 dragging, supported local charts include nondegenerate affine images of a circular
 driver and constructions with a coordinate proved monotone throughout the local move.
+The R3 experimental provider also uses certified reconstructible v3 programs,
+including admitted segment/arc constructions and regular line-circle intersections.
+It proves a unique local continuation within the retained component; it does not
+promise a globally closest point. Genuine included endpoints permit unilateral motion.
 A seam is crossed only with established periodic correspondence. At a barrier the
 point retains its last valid address and shows a brief diagnostic; it never jumps
 to another branch by proximity. A gesture that changes the point produces one Undo
-step; rejected or unchanged attempts add none. For the new local routes, the chart
-stays fixed for the gesture; after a barrier, release and select the
+step; rejected or unchanged attempts add none. The proved continuation equation
+is retained for the gesture; overlapping charts may change only with demonstrated
+correspondence to the same root. After a barrier, release and select the
 point again to start another attempt. Unresolved
 singularities, gaps and ambiguities need not be traversable.
 
 **Document boundary.** The new modes also check that the document's native state
-supports established recovery if an operation fails. Another native point on an
-object, a region, an undefined conic or an editable point produced by a user tool
-may stop them even when L is regular.
-This also limits the new reference-Q creation on native objects; the usual native
-Point tool keeps its behavior. The diagnostic identifies that document boundary
-without changing the point. Old files retain historical loading; for admitted free
-conic points, the new reader explicitly preserves the saved native argument. The
-GeoCeDG profile writes that extra state for ordinary points; existing user-tool
+supports established recovery if an operation fails. Ordinary supported native
+points on lines, rays, segments, circles and circular arcs have typed recovery;
+their mere presence does not prohibit a new request. Regions, undefined conics,
+editable user-tool outputs and other states without a demonstrated restorer may
+still stop a new operation even when L is regular. The diagnostic distinguishes
+that document boundary from the selected curve's geometric admission.
+The usual native Point tool keeps its behavior. Old files retain historical loading;
+for admitted free conic points, the new reader explicitly preserves the saved native
+argument. The GeoCeDG profile writes that extra state only when the defining ancestor
+chain is also proved faithful. Otherwise it retains the historical readable payload,
+without claiming exact parameter persistence. Transactional native recovery is a
+separate capability and does not add public file fields for every native path.
+Existing user-tool
 definitions retain their historical format. A later Classic save retains its historical
 format and does not promise to preserve the added state. The
 candidate requires final verification, independent review and author smoke.

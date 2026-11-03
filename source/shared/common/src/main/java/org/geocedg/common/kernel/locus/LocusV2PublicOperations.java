@@ -378,69 +378,13 @@ public final class LocusV2PublicOperations {
 	 * Traverse inline inputs too: the construction's geo set contains labeled geos.
 	 */
 	public static boolean hasUnsupportedInteractiveHostState(Construction construction) {
-		var visited = Collections.newSetFromMap(new IdentityHashMap<GeoElement, Boolean>());
-		var pending = new ArrayDeque<>(construction.getGeoSetConstructionOrder());
-		while (!pending.isEmpty()) {
-			GeoElement geo = pending.removeFirst();
-			if (!visited.add(geo)) {
-				continue;
-			}
-			// These independent inputs use a formatter which loses signed zero.
-			if (geo.isIndependent() && (geo instanceof GeoPoint
-					&& (negativeZero(((GeoPoint) geo).x) || negativeZero(((GeoPoint) geo).y)
-							|| negativeZero(((GeoPoint) geo).z))
-					|| geo instanceof GeoNumeric && negativeZero(((GeoNumeric) geo).getDouble()))) {
-				return true;
-			}
-			for (MyDouble literal : ReconstructionExactState2D.literals(geo.getDefinition())) {
-				// Raw angle literals without original text are formatted as degrees;
-				// V-REV-EXACT-4/9 demonstrates that their original bits need not reload.
-				if (literal.getClass() == MyDouble.class && literal.isAngle()) {
-					return true;
-				}
-			}
-			if (geo.getClass() == GeoConic.class) {
-				GeoConic conic = (GeoConic) geo;
-				if (!conic.isDefined()) {
-					return true;
-				}
-				for (double coefficient : conic.getMatrix()) {
-					if (!Double.isFinite(coefficient)) {
-						return true;
-					}
-				}
-			}
-			var parent = geo.getParentAlgorithm();
-			if (geo instanceof GeoPointND) {
-				GeoPointND point = (GeoPointND) geo;
-				// Editable macro outputs own a live native parameter outside the
-				// one-input point codec; cached macro definitions do not restore it.
-				if (parent instanceof AlgoMacro && ((AlgoMacro) parent).isChangeable(point)) {
-					return true;
-				}
-				boolean freePath = parent instanceof AlgoPointOnPath && parent.getInputLength() == 1;
-				if (freePath || point.hasRegion()) {
-					if (!(geo instanceof GeoPoint)
-							|| !((GeoPoint) geo).hasExactFiniteNativeConicPointState()) {
-						return true;
-					}
-				}
-			}
-			if (parent != null) {
-				Collections.addAll(pending, parent.getInput());
-			}
-			if (geo instanceof GeoList) {
-				GeoList list = (GeoList) geo;
-				for (int index = 0; index < list.size(); index++) {
-					pending.addLast(list.get(index));
-				}
-			}
-		}
-		return false;
+		return NativeTransactionalState2D.unsupportedReason(construction) != null;
 	}
 
-	private static boolean negativeZero(double value) {
-		return Double.doubleToLongBits(value) == Double.doubleToLongBits(-0.0);
+	/** @return the actual missing native restorer, independently of point admission */
+	public static NativeTransactionalState2D.UnsupportedReason getUnsupportedInteractiveHostStateReason(
+			Construction construction) {
+		return NativeTransactionalState2D.unsupportedReason(construction);
 	}
 
 	private static AlgoSemanticLocusPoint2D requireInteractionParent(GeoPoint point) {
@@ -462,6 +406,26 @@ public final class LocusV2PublicOperations {
 	public static LocusPointContinuation2D.Result
 			moveGeneralInteractiveSemanticPoint(GeoPoint point, double targetX, double targetY,
 			LocusPointInteractionPolicy2D policy, LocusPointContinuation2D.Context context) {
+		return moveGeneralInteractiveSemanticPoint(point, targetX, targetY, policy, context, () -> { });
+	}
+
+	/** Same semantic operation with a frontend-owned immutable request freshness guard. */
+	public static LocusPointContinuation2D.Result
+			moveGeneralInteractiveSemanticPoint(GeoPoint point, double targetX, double targetY,
+			LocusPointInteractionPolicy2D policy, LocusPointContinuation2D.Context context,
+			Runnable publicationGuard) {
+		Objects.requireNonNull(publicationGuard);
+		Runnable requestGuard = () -> {
+			try {
+				publicationGuard.run();
+			} catch (RuntimeException failure) {
+				if (context != null) {
+					context.stop();
+				}
+				throw failure;
+			}
+		};
+		requestGuard.run();
 		if (point.isLocked()) {
 			if (context != null) {
 				context.stop();
@@ -477,12 +441,16 @@ public final class LocusV2PublicOperations {
 			return LocusPointContinuation2D.refused(LocusPointContinuation2D.Status.INVALID_SOURCE);
 		}
 		LocusDefinition2D definition = parent.getSource().getSemanticDefinition();
+		long resolutionStarted = System.nanoTime();
 		var result = LocusPointContinuation2D.resolve(
 				parent.getSource(), parent.getCurrentSemanticAddress(), targetX, targetY, policy, context);
+		result.recordResolutionNanos(System.nanoTime() - resolutionStarted);
 		if (result.isEstablished()) {
 			if (parent.getSource().getSemanticDefinition() != definition) {
-				return LocusPointContinuation2D.refused(
+				var rejected = LocusPointContinuation2D.refused(
 						LocusPointContinuation2D.Status.INVALID_SOURCE);
+				rejected.recordResolutionNanos(result.getResolutionNanos());
+				return rejected;
 			}
 			if (result.hasChanged()) {
 				if (result.getHistoricalResult() == null
@@ -491,14 +459,17 @@ public final class LocusV2PublicOperations {
 					return result.unsupportedHost();
 				}
 				try {
-					publishInteractionAddress(point, parent, result.getAddress(), result);
+					requestGuard.run();
+					publishInteractionAddress(point, parent, result.getAddress(), result, requestGuard);
 				} catch (RuntimeException failure) {
 					context.stop();
 					throw failure;
 				}
 			} else {
+				requestGuard.run();
 				result.requireCurrentPublication(point);
 				result.takePreparedBinding(point, parent.getSource(), parent.getCurrentSemanticAddress());
+				requestGuard.run();
 			}
 			context.recordPublished(point, result);
 		} else if (result.getHistoricalResult() == null) {
@@ -515,6 +486,12 @@ public final class LocusV2PublicOperations {
 	private static void publishInteractionAddress(GeoPoint point,
 			AlgoSemanticLocusPoint2D parent, LocusSemanticAddress2D address,
 			LocusPointContinuation2D.Result preparation) {
+		publishInteractionAddress(point, parent, address, preparation, () -> { });
+	}
+
+	private static void publishInteractionAddress(GeoPoint point,
+			AlgoSemanticLocusPoint2D parent, LocusSemanticAddress2D address,
+			LocusPointContinuation2D.Result preparation, Runnable publicationGuard) {
 		Construction construction = point.getConstruction();
 		GeoElement parameterGeo = parent.getParameterInput().toGeoElement();
 		if (!(parameterGeo instanceof GeoNumeric)) {
@@ -525,13 +502,21 @@ public final class LocusV2PublicOperations {
 		GeoNumeric parameter = (GeoNumeric) parameterGeo;
 		try {
 			construction.runAtomicConstructionMutation(() -> {
+				publicationGuard.run();
 				if (preparation != null) {
 					parent.prepareContinuationBinding(preparation);
 				}
 				branch.setTextString(LocusSemanticAddressState2D.encode(address));
 				parameter.setValue(rawParameter(
 						parent.getSource().getSemanticDefinition(), address));
-				GeoElement.updateCascade(List.of(branch, parameterGeo));
+				long dagStarted = System.nanoTime();
+				try {
+					GeoElement.updateCascade(List.of(branch, parameterGeo));
+				} finally {
+					if (preparation != null) {
+						preparation.recordDagPropagationNanos(System.nanoTime() - dagStarted);
+					}
+				}
 				if (preparation != null) {
 					preparation.requireCurrentPublication(point);
 				}
@@ -540,6 +525,7 @@ public final class LocusV2PublicOperations {
 					throw new IllegalStateException(
 							"Semantic address edit did not publish the selected candidate");
 				}
+				publicationGuard.run();
 			});
 		} finally {
 			parent.discardContinuationBinding();

@@ -16,7 +16,7 @@
 
 package org.geogebra.common.io;
 
-// GeoCeDG modification, 2026-11-03: strict additive native conic-point XML codec.
+// GeoCeDG modification, 2026-11-03: strict native file leaf and private rollback binding before coords.
 
 import static org.geogebra.common.kernel.geos.GeoButton.DEFAULT_BUTTON_HEIGHT;
 
@@ -139,6 +139,7 @@ public class ConsElementXMLHandler {
 	private GeoElement geo;
 	// GeoCeDG CU7: strict, additive native state; old untagged coords are unchanged.
 	private boolean conicPointStateProcessed;
+	private boolean nativeRollbackStateProcessed;
 	private boolean coordinatesProcessed;
 	private boolean curveParameterProcessed;
 	// List of LocateableExpPair objects
@@ -258,7 +259,7 @@ public class ConsElementXMLHandler {
 	}
 
 	private boolean handleCoords(Map<String, String> attrs) {
-		if (conicPointStateProcessed) {
+		if (conicPointStateProcessed || nativeRollbackStateProcessed) {
 			GeoPoint point = (GeoPoint) geo;
 			if (coordinatesProcessed || attrs.size() != 3
 					|| !sameSerializedCoordinate(point.x, attrs.get("x"))
@@ -295,6 +296,16 @@ public class ConsElementXMLHandler {
 				Integer.parseInt(attrs.get("tempPathType")),
 				Double.parseDouble(attrs.get("animation")));
 		conicPointStateProcessed = true;
+	}
+
+	private void handleNativeRollbackBinding(Map<String, String> attrs) {
+		if (!(geo instanceof GeoPoint) || nativeRollbackStateProcessed || coordinatesProcessed
+				|| curveParameterProcessed || conicPointStateProcessed || attrs.size() != 2
+				|| !"1".equals(attrs.get("version")) || attrs.get("key") == null) {
+			throw new IllegalArgumentException("Invalid private native rollback binding");
+		}
+		geo.getConstruction().bindNativeRollbackPrivate((GeoPoint) geo, attrs.get("key"));
+		nativeRollbackStateProcessed = true;
 	}
 
 	private boolean handleDimensions(Map<String, String> attrs) {
@@ -515,6 +526,7 @@ public class ConsElementXMLHandler {
 
 	protected void init(Map<String, String> attrs) {
 		conicPointStateProcessed = false;
+		nativeRollbackStateProcessed = false;
 		coordinatesProcessed = false;
 		curveParameterProcessed = false;
 		sliderTagProcessed = false;
@@ -524,6 +536,10 @@ public class ConsElementXMLHandler {
 		lineOpacityTagProcessed = false;
 		geo = getGeoElement(attrs);
 		xmlHandler.stageSpatialGeoAttachment(geo, attrs.get("geocedgId"));
+		if (geo instanceof GeoPoint) {
+			nativeRollbackStateProcessed = geo.getConstruction().bindNativeRollbackDurable(
+					(GeoPoint) geo, attrs.get("geocedgId"));
+		}
 		if (needsConstructionDefaults) {
 			// don't set auxiliary prop here, it will be loaded from XML
 			geo.setConstructionDefaults(true, false);
@@ -2099,7 +2115,7 @@ public class ConsElementXMLHandler {
 	}
 
 	protected void finish() {
-		if (conicPointStateProcessed && !coordinatesProcessed) {
+		if ((conicPointStateProcessed || nativeRollbackStateProcessed) && !coordinatesProcessed) {
 			throw new IllegalArgumentException("Missing native conic point coordinates");
 		}
 		if (!sliderTagProcessed && geo.isGeoNumeric()) {
@@ -2338,7 +2354,7 @@ public class ConsElementXMLHandler {
 				handleCropBox(attrs);
 				break;
 			case "curveParam":
-				if (conicPointStateProcessed) {
+				if (conicPointStateProcessed || nativeRollbackStateProcessed) {
 					throw new IllegalArgumentException("Conflicting native point parameter tags");
 				}
 				curveParameterProcessed = true;
@@ -2346,6 +2362,9 @@ public class ConsElementXMLHandler {
 				break;
 			case "conicPointState":
 				handleConicPointState(attrs);
+				break;
+			case "nativeRollbackBinding":
+				handleNativeRollbackBinding(attrs);
 				break;
 			case "casMap":
 				xmlHandler.casMapForElement();

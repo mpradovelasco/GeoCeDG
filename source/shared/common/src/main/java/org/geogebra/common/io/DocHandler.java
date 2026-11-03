@@ -4,6 +4,7 @@
  * http://www.javaworld.com/javaworld/javatips/jw-javatip128.html
  */
 
+// GeoCeDG modification, 2026-11-03: focal empty-leaf grammar opt-in.
 package org.geogebra.common.io;
 
 import java.util.Map;
@@ -12,6 +13,16 @@ import java.util.Map;
  * Event listener for MyXMLio
  */
 public interface DocHandler {
+	/**
+	 * Opt-in grammar for a versioned empty leaf. Other XML consumers retain their
+	 * historical parser policy. Checked before duplicate attributes can collapse.
+	 * @param tag element name
+	 * @return whether this handler requires a duplicate-free, self-closing leaf
+	 */
+	default boolean hasStrictEmptyElementGrammar(String tag) {
+		return false;
+	}
+
 	/**
 	 * @param tag
 	 *            element name

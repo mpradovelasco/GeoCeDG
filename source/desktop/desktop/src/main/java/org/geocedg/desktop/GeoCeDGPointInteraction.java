@@ -7,11 +7,11 @@ package org.geocedg.desktop;
 
 import java.util.function.Function;
 
+import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidate2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
-import org.geocedg.common.kernel.locus.interaction.LocusSnapshotPlacement2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointContinuation2D;
@@ -27,6 +27,7 @@ final class GeoCeDGPointInteraction {
 	private boolean lastMoveChanged;
 	private GeoPoint helperDragPoint;
 	private LocusPointContinuation2D.Context helperDragContext;
+	private GeoCeDGPointRequest helperGestureRequest;
 
 	GeoCeDGPointInteraction(AppD app) {
 		this.app = app;
@@ -35,7 +36,11 @@ final class GeoCeDGPointInteraction {
 	GeoPoint create(GeoLocusV2 source, double x, double y, double radius,
 			Function<LocusPointInteractionResult2D,
 					LocusPointInteractionCandidate2D> chooser) {
-		return create(source, x, y, LocusPointInteractionPolicy2D.initial(radius), chooser);
+		var request = GeoCeDGPointRequest.forSource(app, source, x, y,
+				LocusPointInteractionPolicy2D.initial(radius));
+		try (var selection = query(source, request)) {
+			return createHistorical(selection, request, chooser);
+		}
 	}
 
 	/** Q is read once; only its current value crosses the kernel query boundary. */
@@ -49,36 +54,57 @@ final class GeoCeDGPointInteraction {
 				|| !Double.isFinite(reference.getInhomY())) {
 			throw new IllegalArgumentException("CU7_INVALID_REFERENCE");
 		}
-		return create(source, reference.getInhomX(), reference.getInhomY(), policy, chooser);
+		var request = GeoCeDGPointRequest.forSource(app, source,
+				reference.getInhomX(), reference.getInhomY(), policy).withReference(reference);
+		try (var selection = query(source, request)) {
+			return createHistorical(selection, request, chooser);
+		}
 	}
 
-	private GeoPoint create(GeoLocusV2 source, double x, double y,
-			LocusPointInteractionPolicy2D policy,
+	GeoCeDGReferencePlacement query(GeoLocusV2 source, GeoCeDGPointRequest request) {
+		request.requireSource(source);
+		var selection = new GeoCeDGReferencePlacement(source, request);
+		lastResult = selection.getHistoricalResult();
+		return selection;
+	}
+
+	/** Uses the existing R1/R6 result; a nonhistorical offer is handed to the panel. */
+	GeoPoint createHistorical(GeoCeDGReferencePlacement selection, GeoCeDGPointRequest request,
 			Function<LocusPointInteractionResult2D,
 					LocusPointInteractionCandidate2D> chooser) {
-		try (var selection = LocusSnapshotPlacement2D.query(source, x, y,
-				policy)) {
-			lastResult = selection.getResult();
-			LocusPointInteractionCandidate2D candidate = lastResult.getUniqueCandidate();
-			if (lastResult.getStatus()
-					== LocusPointInteractionStatus2D.MULTIPLE_SEMANTIC_PREIMAGES) {
-				candidate = chooser.apply(lastResult);
-			}
-			if (candidate == null) {
-				return null;
-			}
-			GeoPoint point = selection.commit(null, candidate);
-			point.setLabel(null);
-			return point;
+		if (selection.getRequest() != request) { throw new GeoCeDGPointRequest.StaleContext(); }
+		request.requireCurrent();
+		lastResult = selection.getHistoricalResult();
+		if (selection.getRoute() != GeoCeDGReferencePlacement.Route.R1_R6) { return null; }
+		LocusPointInteractionCandidate2D candidate = lastResult.getUniqueCandidate();
+		if (lastResult.getStatus() == LocusPointInteractionStatus2D.MULTIPLE_SEMANTIC_PREIMAGES) {
+			candidate = chooser.apply(lastResult);
 		}
+		// The chooser is a callback boundary. A changed view/context cannot publish.
+		if (candidate == null || !request.isCurrent()) { return null; }
+		if (!lastResult.getCandidates().contains(candidate)) {
+			throw new IllegalArgumentException("CU7_SELECTION_NOT_IN_QUERY");
+		}
+		var address = candidate.getAddress();
+		var choices = selection.getChoices().stream()
+				.filter(choice -> choice.getAddress().equals(address)).toList();
+		if (choices.size() != 1) { throw new IllegalArgumentException("CU7_SELECTION_NOT_IN_QUERY"); }
+		return selection.commit(choices.get(0), request::requireCurrent);
 	}
 
 	boolean move(GeoPoint point, double x, double y, double radius) {
 		if (helperDragPoint != point || helperDragContext == null) {
 			helperDragContext = beginDrag(point);
 			helperDragPoint = point;
+			helperGestureRequest = GeoCeDGPointRequest.forSource(app,
+					AlgoSemanticLocusPoint2D.requireSemanticParent(point).getSource(),
+					x, y, LocusPointInteractionPolicy2D.initial(radius));
 		}
-		return move(point, x, y, radius, helperDragContext);
+		var request = GeoCeDGPointRequest.forSource(app,
+				AlgoSemanticLocusPoint2D.requireSemanticParent(point).getSource(),
+				x, y, LocusPointInteractionPolicy2D.initial(radius))
+				.withContext(helperGestureRequest::isCurrent);
+		return move(point, request, helperDragContext);
 	}
 
 	LocusPointContinuation2D.Context beginDrag(GeoPoint point) {
@@ -87,9 +113,18 @@ final class GeoCeDGPointInteraction {
 
 	boolean move(GeoPoint point, double x, double y, double radius,
 			LocusPointContinuation2D.Context context) {
-		var policy = LocusPointInteractionPolicy2D.initial(radius);
+		var request = GeoCeDGPointRequest.forSource(app,
+				AlgoSemanticLocusPoint2D.requireSemanticParent(point).getSource(),
+				x, y, LocusPointInteractionPolicy2D.initial(radius));
+		return move(point, request, context);
+	}
+
+	boolean move(GeoPoint point, GeoCeDGPointRequest request,
+			LocusPointContinuation2D.Context context) {
+		request.requireSource(AlgoSemanticLocusPoint2D.requireSemanticParent(point).getSource());
 		var movement = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(
-				point, x, y, policy, context);
+				point, request.getX(), request.getY(), request.getPolicy(), context,
+				request::requireCurrent);
 		lastResult = movement.getHistoricalResult();
 		lastMoveChanged = movement.hasChanged();
 		boolean spanish = "es".equals(app.getLocale().getLanguage());

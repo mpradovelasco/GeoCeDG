@@ -385,6 +385,47 @@ public final class ConstructionBoxModel2D {
 	}
 
 	/**
+	 * One budgeted run for the R3 local-continuation consumer. The outcome retains
+	 * every validity/selection decision; missing jets never become permission.
+	 * Unlike the stationary-point consumer, this run also uses centred predicate
+	 * enclosures. It does not change any existence or global inverse result.
+	 */
+	ContinuationJet continuationJet(SplineOutwardInterval2D box, boolean periodic,
+			boolean secondOrder) {
+		Run run = new Run(periodic, secondOrder ? Mode.SECOND_ORDER : Mode.FIRST_ORDER,
+				null, List.of(), true);
+		ConstructionBoxOutcome2D outcome = run.evaluate(box);
+		if (outcome.kind != ConstructionBoxOutcome2D.Kind.VALID || run.traced == null) {
+			return new ContinuationJet(outcome, null, null, null);
+		}
+		Jet x = run.traced.inhomX;
+		Jet y = run.traced.inhomY;
+		return new ContinuationJet(outcome,
+				new SplineOutwardInterval2D[] {x.value, y.value},
+				x.derivative == null || y.derivative == null ? null
+						: new SplineOutwardInterval2D[] {x.derivative, y.derivative},
+				x.second == null || y.second == null ? null
+						: new SplineOutwardInterval2D[] {x.second, y.second});
+	}
+
+	/** Immutable jets and the uniform selector from the same construction run. */
+	static final class ContinuationJet {
+		final ConstructionBoxOutcome2D outcome;
+		final SplineOutwardInterval2D[] value;
+		final SplineOutwardInterval2D[] first;
+		final SplineOutwardInterval2D[] second;
+
+		private ContinuationJet(ConstructionBoxOutcome2D outcome,
+				SplineOutwardInterval2D[] value, SplineOutwardInterval2D[] first,
+				SplineOutwardInterval2D[] second) {
+			this.outcome = outcome;
+			this.value = value;
+			this.first = first;
+			this.second = second;
+		}
+	}
+
+	/**
 	 * Evaluates the program on a box assuming that one validity predicate holds: its value
 	 * is restricted to its valid set, and every other predicate is decided by value
 	 * enclosures only. A valid outcome certifies existence on the part of the box where the

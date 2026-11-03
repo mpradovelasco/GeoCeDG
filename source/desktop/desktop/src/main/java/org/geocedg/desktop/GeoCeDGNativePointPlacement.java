@@ -1,9 +1,8 @@
 /* GeoCeDG. Copyright (c) 2026 GeoCeDG contributors. SPDX-License-Identifier: EUPL-1.2 */
 package org.geocedg.desktop;
 
-import java.util.Objects;
-
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -17,7 +16,7 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 	private final GeoElement source;
 	private final GeoPoint reference;
 	private final Object document;
-	private final String sourceState;
+	private final GeoCeDGPointRequest request;
 	private final double x;
 	private final double y;
 	private final double radius;
@@ -30,6 +29,16 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 
 	GeoCeDGNativePointPlacement(GeoElement source, GeoPoint reference, double x, double y,
 			double radius) {
+		this(source, reference, x, y, radius, null);
+	}
+
+	GeoCeDGNativePointPlacement(GeoElement source, GeoCeDGPointRequest request) {
+		this(source, request.getReference(), request.getX(), request.getY(),
+				request.getRadius(), request);
+	}
+
+	private GeoCeDGNativePointPlacement(GeoElement source, GeoPoint reference,
+			double x, double y, double radius, GeoCeDGPointRequest request) {
 		if (!supports(source) || !current(source) || !Double.isFinite(x)
 				|| !Double.isFinite(y) || !Double.isFinite(radius) || radius <= 0
 				|| reference != null && (!current(reference)
@@ -44,7 +53,18 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 		this.y = y;
 		this.radius = radius;
 		document = source.getConstruction().getSpatialIdentityRegistry();
-		sourceState = source.getXML();
+		if (request == null) {
+			var captured = GeoCeDGPointRequest.forSource(
+					(org.geogebra.desktop.main.AppD) source.getKernel().getApplication(),
+					source, x, y, LocusPointInteractionPolicy2D.initial(radius));
+			this.request = reference == null ? captured : captured.withReference(reference);
+		} else {
+			request.requireSource(source);
+			if (request.getReference() != reference) {
+				throw new IllegalArgumentException("INVALID_REFERENCE");
+			}
+			this.request = request;
+		}
 	}
 
 	private static boolean current(GeoElement geo) {
@@ -85,7 +105,7 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 
 	private void validateFreshness() {
 		if (!current(source) || document != source.getConstruction().getSpatialIdentityRegistry()
-				|| !Objects.equals(sourceState, source.getXML())
+				|| !request.isCurrent()
 				|| reference != null && (!current(reference)
 						|| reference.getInhomX() != x || reference.getInhomY() != y)) {
 			throw new IllegalStateException("STALE_SELECTION");

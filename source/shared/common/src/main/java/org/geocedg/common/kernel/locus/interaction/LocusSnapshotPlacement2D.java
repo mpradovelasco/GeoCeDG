@@ -72,8 +72,13 @@ public final class LocusSnapshotPlacement2D {
 			return commit(label, chosen, () -> { });
 		}
 
-		/** The facade's reference guard shares the concrete publication snapshot. */
-		GeoPoint commit(String label, LocusPointInteractionCandidate2D chosen, Runnable finalGuard) {
+		/**
+		 * Adds a caller-owned liveness guard to the existing publication transaction.
+		 * The guard can only refuse an operation; it grants no geometric permission.
+		 */
+		public GeoPoint commit(String label, LocusPointInteractionCandidate2D chosen,
+				Runnable finalGuard) {
+			Objects.requireNonNull(finalGuard);
 			if (finished) {
 				throw new IllegalStateException("CU7_SELECTION_CONSUMED");
 			}
@@ -90,6 +95,7 @@ public final class LocusSnapshotPlacement2D {
 				throw new IllegalArgumentException("CU7_SELECTION_NOT_IN_QUERY");
 			}
 			requireCurrent(chosen);
+			finalGuard.run();
 			return LocusPointPublication2D.publishAtomically(source, chosen.getAddress(),
 					() -> LocusV2PublicOperations.createInteractiveSemanticPoint(
 							source.getConstruction(), label, source, chosen),

@@ -36,7 +36,7 @@ public final class LocusPointContinuation2D {
 		private final LocusDefinition2D definition;
 		private final Thread thread = Thread.currentThread();
 		private LocusSemanticAddress2D expectedAddress;
-		private int coordinate = -1;
+		private LocalContinuationEvidence2D.GestureState chartState;
 		private boolean stopped;
 
 		/** Captures the current point/source identity without adding any durable state. */
@@ -67,9 +67,7 @@ public final class LocusPointContinuation2D {
 				throw new IllegalStateException("Continuation context did not publish its edit");
 			}
 			expectedAddress = result.address;
-			if (result.coordinate >= 0) {
-				coordinate = result.coordinate;
-			}
+			chartState = result.chartState;
 		}
 	}
 
@@ -92,11 +90,15 @@ public final class LocusPointContinuation2D {
 		private LocusDefinition2D preparedDefinition;
 		private LocusSemanticAddress2D originatingAddress;
 		private MetricPositionBinding2D preparedBinding;
-		private int coordinate = -1;
+		private LocalContinuationEvidence2D.GestureState chartState;
 		private Context context;
 		private SpatialIdentityRegistry preparedRegistry;
 		private DocumentAuthorityRecord preparedAuthority;
 		private PersistentGeoId pointId;
+		private double maximumParameterChange = Double.NaN;
+		private double parameterError = Double.NaN;
+		private long resolutionNanos;
+		private long dagPropagationNanos;
 
 		private Result(Status status, LocusSemanticAddress2D address, String method,
 				long semanticEvaluations, long intervalPasses,
@@ -120,10 +122,24 @@ public final class LocusPointContinuation2D {
 		public long getSemanticEvaluations() { return semanticEvaluations; }
 		public long getIntervalPasses() { return intervalPasses; }
 		public LocusPointInteractionResult2D getHistoricalResult() { return historical; }
+		/** Local lifted-parameter bound, including both representatives' interval errors. */
+		public double getMaximumParameterChange() { return maximumParameterChange; }
+		/** Error bound relative to the local root; NaN for providers without this evidence. */
+		public double getParameterError() { return parameterError; }
+		/** Observed host resolution time; neither a work budget nor an acceptance condition. */
+		public long getResolutionNanos() { return resolutionNanos; }
+		/** Observed ordinary DAG propagation only; zero for rejection or exact no-op. */
+		public long getDagPropagationNanos() { return dagPropagationNanos; }
+		/** Host telemetry only; never consulted by semantic permission or persistence. */
+		public void recordResolutionNanos(long nanos) { resolutionNanos = nanos; }
+		/** Host telemetry only; never consulted by semantic permission or persistence. */
+		public void recordDagPropagationNanos(long nanos) { dagPropagationNanos = nanos; }
 		/** A host refusal retains the actual proof work already performed. */
 		public Result unsupportedHost() {
-			return new Result(Status.UNSUPPORTED_HOST_STATE, null, method,
+			Result refusal = new Result(Status.UNSUPPORTED_HOST_STATE, null, method,
 					semanticEvaluations, intervalPasses, historical);
+			refusal.resolutionNanos = resolutionNanos;
+			return refusal;
 		}
 		public NumericGuarantee getProximityGuarantee() {
 			return NumericGuarantee.FLOATING_POINT_UNCERTIFIED;
@@ -192,7 +208,7 @@ public final class LocusPointContinuation2D {
 		return resolve(source, current, x, y, policy, null);
 	}
 
-	/** Same operation retaining a fixed coordinate chart throughout one host gesture. */
+	/** Retains one selection equation and its certified root through moving local charts. */
 	public static Result resolve(GeoLocusV2 source, LocusSemanticAddress2D current,
 			double x, double y, LocusPointInteractionPolicy2D policy, Context context) {
 		LocusDefinition2D definition = source.getSemanticDefinition();
@@ -263,7 +279,7 @@ public final class LocusPointContinuation2D {
 						LocusEvaluationSession2D.newSliceScope(), () -> proposal[0] =
 								LocalContinuationEvidence2D.establish(definition, current,
 										component.getComponent(), x, y, policy,
-										context == null ? -1 : context.coordinate, () -> {
+										context == null ? null : context.chartState, () -> {
 											if (passes[0] >= budget.getMaximumSubdivisions()) {
 												throw new ProofBudgetExceeded();
 											}
@@ -302,7 +318,9 @@ public final class LocusPointContinuation2D {
 						accepted ? address : null, proposal[0].getMethod(),
 						session.getTotalChargedMisses(), passes[0], null)
 						.prepared(source, definition, current, accepted ? binding : null, context);
-				result.coordinate = proposal[0].getCoordinate();
+				result.chartState = proposal[0].getGestureState();
+				result.maximumParameterChange = proposal[0].getMaximumParameterChange();
+				result.parameterError = proposal[0].getParameterError();
 				return result;
 			} catch (ProofBudgetExceeded | LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
 				return new Result(Status.BUDGET_EXHAUSTED, null, "",
