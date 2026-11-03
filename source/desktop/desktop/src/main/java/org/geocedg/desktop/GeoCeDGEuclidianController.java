@@ -141,6 +141,7 @@ public final class GeoCeDGEuclidianController
 		if (isInsertionIsolated()) {
 			return;
 		}
+		clearPointInteractionNotice();
 		if (referencePointTool.hasPendingWorldSelection()) { return; }
 		if (!referencePointTool.prepareCanvasRequest()) { return; }
 		if (referencePointTool.isReferenceRequestActive()) {
@@ -316,10 +317,10 @@ public final class GeoCeDGEuclidianController
 						getView().toRealWorldCoordY(event.getY()), interactionRadius(event),
 						interactionDragContext);
 				interactionChanged |= moved && pointInteraction.didLastMoveChange();
-				getView().setToolTipText(moved ? null
-						: pointInteraction.getLastMoveDiagnostic());
+				if (moved) { clearPointInteractionNotice(); }
+				else { showPointInteractionNotice(pointInteraction.getLastMoveDiagnostic()); }
 			} catch (RuntimeException exception) {
-				getView().setToolTipText(locusV2Dialogs.interactionMessage(null));
+				showPointInteractionNotice(locusV2Dialogs.interactionMessage(null));
 				// A rollback can reconstruct host instances. Never keep dragging an
 				// obsolete reference or acquire another point by position.
 				interactionDragPoint = null;
@@ -514,6 +515,14 @@ public final class GeoCeDGEuclidianController
 				* Math.hypot(getView().getInvXscale(), getView().getInvYscale());
 	}
 
+	private void showPointInteractionNotice(String text) {
+		if (app instanceof AppGeoCeDG geoCeDG) { geoCeDG.showPointInteractionNotice(text); }
+	}
+
+	private void clearPointInteractionNotice() {
+		if (app instanceof AppGeoCeDG geoCeDG) { geoCeDG.clearPointInteractionNotice(); }
+	}
+
 	@Override
 	public GeoPointND createNewPoint2D(String label, boolean forPreviewable,
 			Path path, double x, double y, boolean complexPoint, boolean coords2D) {
@@ -695,6 +704,7 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void setMode(int newMode, ModeSetter setter) {
+		if (newMode != mode) { clearPointInteractionNotice(); }
 		// Host focus/dock synchronization is not a new L -> Q operation.
 		if (referencePointTool != null && mode == newMode
 				&& (newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT

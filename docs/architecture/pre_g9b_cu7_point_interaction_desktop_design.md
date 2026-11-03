@@ -79,3 +79,28 @@ prerrequisitos. VERIFICATION_INFRASTRUCTURE_IMPACT=NONE. GUIDE_IMPACT=UPDATE:
 el protocolo de smoke del candidato debe explicar el checkbox y el alcance
 de fuentes 2D nativas. Nivel requerido: PHASE + INTEGRATION según clasificación
 del candidato integrado.
+
+## Enmienda focal de diagnóstico visible — 2026-11-03
+
+La revisión del checkpoint técnico `2a1b6794` demuestra una insuficiencia de
+interfaz: `EuclidianViewD.setToolTipText` delega en Swing y no establece siquiera
+texto cuando la vista tiene tooltips desactivados; además el controlador lo
+borra al soltar. Por tanto esa ruta no garantiza el diagnóstico breve exigido.
+El autor del encargo autoriza esta corrección necesaria de presentación.
+
+Se reutiliza `GeoCeDGStatusBar`: segmento propio, etiqueta no enfocable, diseño
+de una fila y el temporizador cancelable existentes. El aviso se muestra al
+rechazar un movimiento, conserva unos segundos de lectura después de soltar y
+se deduplica mientras conserva el mismo texto. Tiene prioridad visual al inicio
+de la fila; no comparte identidad ni cancelación con el aviso de unidades al
+pegar. Un movimiento válido, una nueva pulsación, el cambio de herramienta o
+documento lo borran. Un vencimiento antiguo no puede borrar un aviso posterior.
+No aparece ventana nueva ni se solicita foco o selección.
+
+Conjunto acotado: barra de estado, controlador, limpieza de sesión en AppGeoCeDG
+y una regresión Desktop sobre tooltips OFF, texto visible tras soltar,
+vencimiento/deduplicación y conservación de XML, ID, Undo, foco y selección.
+El kernel y sus pruebas/proveedores no cambian. Debe existir un nuevo checkpoint
+antes del catálogo y la ejecución Desktop final; la evidencia del checkpoint
+anterior se conserva con su identidad. GUIDE_IMPACT=UPDATE: el mensaje breve
+se describe como aviso de la barra de estado, no como tooltip garantizado.

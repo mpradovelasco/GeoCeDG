@@ -1183,7 +1183,7 @@ Perder la admisibilidad puede dejar el punto indefinido; no se elige otra rama c
 Esta operación no afirma una proyección exacta ni una mínima distancia global.
 La redefinición segura M09 y la correspondencia dinámica M08-D siguen pendientes.
 
-Para usar un **punto Q existente**, active **Punto sobre Locus V2**, seleccione el
+Para usar un **punto Q existente**, active **Punto sobre Locus V2 desde referencia**, seleccione el
 locus gráfico L y después Q. Confirme una dirección semántica en el panel sobre la
 entrada algebraica. El radio está en unidades del modelo; **Política** muestra los
 parámetros de búsqueda acotada existentes. Q es una referencia inicial y no se añade
@@ -1214,7 +1214,8 @@ no certificada: el radio filtra el residual calculado, sin garantizar la distanc
 ideal, una proyección mínima ni unicidad global.
 
 **Libre o bloqueado.** El panel de Punto y Punto en objeto incluye **Permitir
-arrastre**, activado inicialmente. Desactívelo para crear un punto bloqueado con
+arrastre**, activado inicialmente para puntos nuevos sobre los objetos admitidos.
+Desactívelo para crear un punto bloqueado con
 el cerrojo normal. Bloquear impide arrastrarlo; el punto sigue dependiendo de su
 objeto y se recalcula cuando este cambia. **Desde referencia Q** permite seleccionar
 primero un segmento, recta, semirrecta o cónica 2D y después Q. Se utiliza la
@@ -1227,8 +1228,9 @@ para imágenes afines no degeneradas de un conductor circular y para construccio
 con una coordenada monótona certificada en todo el recorrido local. Una costura
 solo se cruza cuando existe correspondencia periódica demostrada. Al alcanzar una
 barrera, el punto conserva la última dirección válida y aparece un diagnóstico
-breve; no se salta a otra rama por cercanía. Un gesto produce un paso de Deshacer.
-La carta se mantiene durante el gesto; tras una barrera, suelte y vuelva a
+breve; no se salta a otra rama por cercanía. Un gesto que cambia el punto produce
+un paso de Deshacer; un intento rechazado o sin cambio no añade otro paso.
+En las nuevas rutas locales, la carta se mantiene durante el gesto; tras una barrera, suelte y vuelva a
 seleccionar el punto para iniciar otro intento.
 No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
 La redefinición segura M09 y la correspondencia dinámica M08-D quedan fuera.

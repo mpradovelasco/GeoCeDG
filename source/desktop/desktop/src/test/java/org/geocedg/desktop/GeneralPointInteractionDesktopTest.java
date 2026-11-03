@@ -4,11 +4,14 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.event.MouseEvent;
+import java.awt.KeyboardFocusManager;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
@@ -18,6 +21,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionWorkBudget2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.util.InternalClipboard;
@@ -412,6 +416,69 @@ class GeneralPointInteractionDesktopTest {
 			assertNotEquals(copiedAddress, parent(copy).getCurrentSemanticAddress());
 			assertEquals(copiedRecord.getId(), registry.getPersistentGeoId(copy));
 			assertEquals(retained, parent(restored).getCurrentSemanticAddress());
+		});
+	}
+
+	@Test void barrierNoticeRemainsVisibleWithoutTooltipsAndExpiresWithoutFocusOrUndoChanges()
+			throws Exception {
+		var host = new AtomicReference<AppGeoCeDG>();
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var app = G9U1SemanticPointInteractionTest.app(); host.set(app);
+			var source = circle(app);
+			try (var offer = new GeoCeDGReferencePlacement(source, 3, .02,
+					LocusPointInteractionPolicy2D.initial(.1))) {
+				var point = offer.commit(offer.getChoices().get(0)); point.setLabel("FeedbackP");
+				point.setEuclidianVisible(true); point.updateRepaint();
+			}
+			app.getKernel().initUndoInfo();
+		});
+		var app = host.get();
+		var undo = app.getKernel().getConstruction().getUndoManager();
+		Cu7M08SDesktopEventsTest.await(() -> undo.getHistorySize() == 0);
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var point = (GeoPoint) app.getKernel().lookupLabel("FeedbackP");
+			app.setMode(EuclidianConstants.MODE_MOVE);
+			app.getEuclidianView1().setAllowToolTips(EuclidianStyleConstants.TOOLTIPS_OFF);
+			var bar = app.getStatusBar();
+			var expiries = new ArrayList<Runnable>();
+			bar.setNoticeTimer((delay, expiry) -> {
+				assertTrue(delay > 0); expiries.add(expiry);
+				return new Runnable() { @Override public void run() { } };
+			});
+			bar.showPasteNotice("Unit notice retained");
+			int height = bar.getPreferredSize().height;
+			String before = app.getXML(); int history = undo.getHistorySize();
+			var registry = app.getKernel().getConstruction().getSpatialIdentityRegistry();
+			var identity = registry.getPersistentGeoId(point);
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_PRESSED, point.inhomX, point.inhomY);
+			var focus = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 0, 0);
+			JLabel notice = bar.getSegment(GeoCeDGStatusBar.POINT_INTERACTION_NOTICE_SEGMENT);
+			assertTrue(notice.isVisible()); assertFalse(notice.getText().isEmpty());
+			int firstExpiry = expiries.size() - 1;
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 0, 0);
+			int latestExpiry = expiries.size() - 1;
+			String diagnostic = notice.getText();
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 0, 0);
+			assertEquals(latestExpiry + 1, expiries.size(), "Repeated feedback does not restart a timer");
+			expiries.get(firstExpiry).run();
+			assertTrue(notice.isVisible(), "An old expiry cannot clear the new notice");
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, 0, 0);
+			assertTrue(notice.isVisible(), "Feedback remains readable after release with tooltips OFF");
+			assertEquals(diagnostic, notice.getText()); assertFalse(notice.isFocusable());
+			assertEquals(height, bar.getPreferredSize().height, "Status feedback adds no layout row");
+			bar.setSize(800, height); bar.doLayout();
+			assertTrue(notice.getWidth() > 0);
+			assertEquals(0, bar.getComponentZOrder(notice), "Feedback has priority over long unit labels");
+			assertSame(focus, KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner());
+			assertTrue(app.getSelectionManager().getSelectedGeos().contains(point));
+			assertEquals(before, app.getXML()); assertEquals(history, undo.getHistorySize());
+			assertEquals(identity, registry.getPersistentGeoId(point));
+			expiries.get(latestExpiry).run(); assertFalse(notice.isVisible());
+			assertTrue(bar.getSegment(GeoCeDGStatusBar.PASTE_NOTICE_SEGMENT).isVisible());
+			assertEquals("Unit notice retained", bar.getSegment(GeoCeDGStatusBar.PASTE_NOTICE_SEGMENT).getText());
+			bar.showPointInteractionNotice("Retry");
+			app.setMode(EuclidianConstants.MODE_POINT); assertFalse(notice.isVisible());
 		});
 	}
 }

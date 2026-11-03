@@ -1125,7 +1125,7 @@ of address admissibility can make the point undefined; no nearby branch is silen
 This is not an assertion of exact projection or a global distance minimum.
 Safe M09 redefinition and dynamic M08-D correspondence remain pending.
 
-To use an **existing point Q**, activate **Point on Locus V2**, select the graphical
+To use an **existing point Q**, activate **Point on Locus V2 from reference**, select the graphical
 locus L, then select Q. Confirm a displayed semantic address in the panel above the
 algebra input. Its radius is in model units; **Policy** exposes the existing bounded
 search settings. Q is an initial reference and is not added as a parent of the result.
@@ -1153,7 +1153,8 @@ filters the computed residual, without guaranteeing ideal distance, a minimum
 projection or global uniqueness.
 
 **Free or locked.** The Point and Point on object panel includes **Allow dragging**,
-initially selected. Clear it to create a point with the normal lock enabled. Locking
+initially selected for new points on supported objects. Clear it to create a point
+with the normal lock enabled. Locking
 prevents dragging; the point still depends on its object and recomputes when it changes.
 **From reference Q** lets you select a 2D segment, line, ray or conic, then Q. It uses
 the object's native selection; Q does not become a parent of the created point.
@@ -1164,8 +1165,9 @@ dragging, supported local charts include nondegenerate affine images of a circul
 driver and constructions with a coordinate proved monotone throughout the local move.
 A seam is crossed only with established periodic correspondence. At a barrier the
 point retains its last valid address and shows a brief diagnostic; it never jumps
-to another branch by proximity. One gesture produces one Undo step.
-The chart stays fixed for the gesture; after a barrier, release and select the
+to another branch by proximity. A gesture that changes the point produces one Undo
+step; rejected or unchanged attempts add none. For the new local routes, the chart
+stays fixed for the gesture; after a barrier, release and select the
 point again to start another attempt. Unresolved
 singularities, gaps and ambiguities need not be traversable. Safe M09 redefinition
 and dynamic M08-D correspondence remain outside this workflow.

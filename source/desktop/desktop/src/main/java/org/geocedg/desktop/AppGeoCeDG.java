@@ -568,6 +568,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		}
 		if (statusBar != null) {
 			statusBar.clearPasteNotice();
+			statusBar.clearPointInteractionNotice();
 		}
 	}
 
@@ -1304,6 +1305,14 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		return statusBar;
 	}
 
+	void showPointInteractionNotice(String text) {
+		getStatusBar().showPointInteractionNotice(text);
+	}
+
+	void clearPointInteractionNotice() {
+		if (statusBar != null) { statusBar.clearPointInteractionNotice(); }
+	}
+
 	/**
 	 * Presentation only, on the thread that changed the scale, like the layer
 	 * workspace listener: a reset or load that changes it refreshes the bar in order
@@ -1371,6 +1380,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	public boolean clearConstruction() {
 		boolean cleared = super.clearConstruction();
+		if (cleared) { clearPointInteractionNotice(); }
 		if (cleared && layerWorkspaceActive) {
 			layerWorkspace.resetForNewDocument();
 			getExportAreaSession().resetForDocument();

@@ -103,6 +103,27 @@ The mouse supplies a transient request, not identity. Residual distance is
 explicit `FLOATING_POINT_UNCERTIFIED`; it is not a certified ideal-distance
 bound, minimum, STRICT incidence or proof of inverse uniqueness.
 
+The mathematical no-jump statement is local and error-controlled. In a closed
+monotone chart J, the interval proof establishes `m = inf_J |F'_k| > 0`.
+The mean value theorem then gives `|u(q)-u(q')| <= |q_k-q'_k|/m` for the two
+coordinate inverses in that same chart. If each numerical argument has error at
+most epsilon, the represented arguments differ by at most that bound plus
+`2*epsilon`. A near-zero derivative therefore does not become a well-conditioned
+inverse by proximity; unresolved error or chart predicates reject the move.
+With a fixed coordinate, overlapping freshly proved charts agree on their common
+monotone sheet; axis switching cannot choose a different inverse for the same q.
+
+For the structural circle chart write `z=A^-1(q-b)`. On a common open hemisphere
+the unwrapped argument of z is continuous and single-valued. On any compact
+request neighborhood separated from z=0 it has a finite local derivative bound;
+in particular `||D arg(z(q))|| <= ||A^-1|| / inf ||z||`. The interval inverse,
+strict hemisphere test and explicit argument enclosure provide the corresponding
+local admission and rounding limits. The provider's proved circle correspondence
+chooses a unique lift at a legitimate seam. These are derivations of the chart
+contracts, not a claim of global projection, uniform screen-speed or injectivity
+of an arbitrary locus. Failed new-chart events stop the context instead of
+silently resuming at a distant inverse after an unproved interval.
+
 The chart is anchored to the old semantic argument. A request outside that
 chart stops the gesture. A nearby Cartesian image on another sheet cannot
 replace it. The affine-circle chart bounds angular change strictly below a

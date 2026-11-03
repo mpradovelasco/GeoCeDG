@@ -71,6 +71,9 @@ final class GeoCeDGStatusBar extends JPanel {
 	static final String TOOL_MEMORY_SEGMENT = "tool-memory";
 	/** Lifetime of the paste notice. */
 	static final int PASTE_NOTICE_MILLIS = 10_000;
+	/** Short, nonmodal feedback for a rejected semantic point gesture. */
+	static final String POINT_INTERACTION_NOTICE_SEGMENT = "point-interaction-notice";
+	static final int POINT_INTERACTION_NOTICE_MILLIS = 4_000;
 
 	/** Starts a one-shot expiry; returns its cancellation. Tests inject a manual one. */
 	interface NoticeTimer {
@@ -82,8 +85,10 @@ final class GeoCeDGStatusBar extends JPanel {
 	private final JLabel noticeSeparator;
 	private final JLabel sheetSeparator;
 	private final JLabel toolMemorySeparator;
+	private final JLabel pointInteractionSeparator;
 	private transient NoticeTimer noticeTimer = GeoCeDGStatusBar::swingTimer;
 	private transient Runnable cancelNotice;
+	private transient Runnable cancelPointInteractionNotice;
 
 	/**
 	 * One row that never wraps (PRE-G9B-R6-plus-D1 remediation). A FlowLayout moves a
@@ -210,6 +215,15 @@ final class GeoCeDGStatusBar extends JPanel {
 		noticeSeparator.setVisible(false);
 		add(noticeSeparator);
 		addSegment(PASTE_NOTICE_SEGMENT).setVisible(false);
+		// Feedback must remain readable even when a long permanent segment fills the row.
+		JLabel pointNotice = addSegment(POINT_INTERACTION_NOTICE_SEGMENT);
+		pointNotice.setFocusable(false);
+		pointNotice.setVisible(false);
+		pointInteractionSeparator = separator();
+		pointInteractionSeparator.setVisible(false);
+		add(pointInteractionSeparator);
+		setComponentZOrder(pointNotice, 0);
+		setComponentZOrder(pointInteractionSeparator, 1);
 		updateText();
 	}
 
@@ -395,6 +409,41 @@ final class GeoCeDGStatusBar extends JPanel {
 
 	void setNoticeTimer(NoticeTimer timer) {
 		noticeTimer = timer;
+	}
+
+	/** Shows gesture feedback without depending on view tooltips, focus or modal windows. */
+	void showPointInteractionNotice(String text) {
+		if (text == null || text.isEmpty()) { clearPointInteractionNotice(); return; }
+		JLabel notice = segments.get(POINT_INTERACTION_NOTICE_SEGMENT);
+		if (notice.isVisible() && text.equals(notice.getText())) { return; }
+		clearPointInteractionNotice();
+		notice.setText(text);
+		notice.setVisible(true);
+		pointInteractionSeparator.setVisible(true);
+		Runnable[] cancel = new Runnable[1];
+		cancel[0] = noticeTimer.start(POINT_INTERACTION_NOTICE_MILLIS, () -> {
+			if (cancelPointInteractionNotice == cancel[0]) { clearPointInteractionNotice(); }
+		});
+		cancelPointInteractionNotice = cancel[0];
+		revalidate();
+		repaint();
+	}
+
+	/** Clears only point feedback; the separate paste notice and its expiry are preserved. */
+	void clearPointInteractionNotice() {
+		if (cancelPointInteractionNotice != null) {
+			Runnable cancel = cancelPointInteractionNotice;
+			cancelPointInteractionNotice = null;
+			cancel.run();
+		}
+		JLabel notice = segments.get(POINT_INTERACTION_NOTICE_SEGMENT);
+		if (notice.isVisible() || !notice.getText().isEmpty()) {
+			notice.setText("");
+			notice.setVisible(false);
+			pointInteractionSeparator.setVisible(false);
+			revalidate();
+			repaint();
+		}
 	}
 
 	private static Runnable swingTimer(int delayMillis, Runnable expiry) {

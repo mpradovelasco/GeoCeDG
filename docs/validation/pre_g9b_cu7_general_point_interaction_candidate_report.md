@@ -64,6 +64,15 @@ actual nested R1 misses are retained separately without changing its historical
 result telemetry. Cache clearing never resets charged work. A publication failure
 is terminal. Prepared normal bindings avoid an uncounted repeated point evaluation.
 
+The ordinary Point tool retains an earlier historical R6 query using its captured
+hit radius. Its unresolved outcome may open a separate contextual query under the
+panel's explicit world policy. The facade's cumulative counters cover that shared
+operation, not the earlier UI query or the whole gesture. Both operations remain
+bounded; their overhead is separate. Click/Q parity means the same copied world
+request and the same explicit policy, not equality between different hit/panel radii.
+This preserves the previously admitted direct R6 workflow; no such repeated global
+discovery is added to the new drag provider.
+
 ## Drag contract and limits
 
 Only a live point with the existing interaction output role and dedicated address
@@ -103,7 +112,7 @@ Historical R6/Spline retains its own approved failed-event recovery behavior.
 Successful edits preserve P and its durable ID, update only the dedicated semantic
 state through the normal DAG, and use one normal construction transaction. Prepared
 binding is one-use and checked against the old address and revision. Rejections
-have no construction or Undo effect; one accepted gesture has one Undo boundary.
+have no construction or Undo effect; one changed gesture has one Undo boundary.
 No new point, generic Path conversion, codec, inverse parent or reconstruction
 architecture is introduced. Copy/remap and `.cedg` reuse the existing forward form.
 
@@ -172,7 +181,8 @@ isolated settings and launcher receipt before starting.
    open a fresh copy, never overwrite the original. Enable Locus V2 in GeoCeDG.
 2. Retain h/ReferenceR1. If needed create the reference explicitly at
    `(0.8976484384297626,1.7854818601338847)`, without attributing it to the original.
-   Choose L then Q, inspect the world policy and confirm a concrete direction.
+   Choose **Point on Locus V2 from reference**, then h and Q, inspect the world
+   policy and confirm a concrete direction. The explicit-address action is different.
 3. Repeat from a nearby physical click. Cancel another offer and change tools with
    one pending: no point, hidden input or extra Undo should remain.
 4. Move Q after creation: it must not add a new dependency. Move a legitimate h
@@ -183,6 +193,8 @@ isolated settings and launcher receipt before starting.
 6. Construct exactly `c=Circle((0,0),1)`, `N=Point(c)`, `v=Vector((0,0),N)`,
    `Q=N+(2*v)`, `L=LocusV2(Q,N)` in an isolated drawing or with distinct labels.
 7. Create by a physical click near `(3,0)`, then from another nearby reference.
+   Hide Q, N and other precursor objects first, leaving L visible: clicking the
+   existing Q at `(3,0)` normally selects Q and must not create a duplicate point.
    No manual parameter is required. Confirm the explicitly uncertified numerical
    proximity of the new forward route.
 8. Add an ordinary dependent of P. Drag P through successive nearby positions in
@@ -200,7 +212,8 @@ isolated settings and launcher receipt before starting.
     dependency closure. Trigger an undefined source, then restore it; no stale
     coordinates or reassociation may stand in for the retained address.
 13. Open a multi-source selector, change the view while it is pending and confirm.
-    Verify the captured world click, or typed invalidation if the view instance changed.
+    Verify the captured world click. A changed view instance aborts the ordinary
+    modal route without creation; the reference panel reports a stale selection.
 14. Record observed values, executed/omitted steps and limitations. Recheck the
     original hash. Communicate the author smoke and any author decision separately.
 
