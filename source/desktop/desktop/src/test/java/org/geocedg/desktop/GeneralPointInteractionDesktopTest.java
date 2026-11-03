@@ -2,6 +2,9 @@
 package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import java.awt.event.MouseEvent;
 import java.awt.KeyboardFocusManager;
@@ -9,6 +12,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -24,6 +30,7 @@ import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.View;
 import org.geogebra.common.util.InternalClipboard;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -161,7 +168,9 @@ class GeneralPointInteractionDesktopTest {
 				var q = (GeoPoint) eval(app, "Ref=(" + x + "," + y + ")");
 				try (var world = new GeoCeDGNativePointPlacement(source, null, x, y, .1);
 						var reference = new GeoCeDGNativePointPlacement(source, q, x, y, .1)) {
-					var a = world.commit(true); var b = reference.commit(false);
+					// Q publication checks the pre-existing host. An inherited segment point
+					// may exclude a later Q request, while ordinary native creation stays available.
+					var b = reference.commit(false); var a = world.commit(true);
 					assertEquals(a.inhomX, b.inhomX, 1e-10);
 					assertEquals(a.inhomY, b.inhomY, 1e-10);
 					assertFalse(a.isLocked()); assertTrue(b.isLocked());
@@ -169,6 +178,86 @@ class GeneralPointInteractionDesktopTest {
 					assertFalse(b.getAllPredecessors().contains(q));
 				}
 			}
+		});
+	}
+
+	private void assertNativePublicationMutationRejected(Consumer<AppGeoCeDG> mutation) throws Exception {
+		var host = new AtomicReference<AppGeoCeDG>();
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var app = G9U1SemanticPointInteractionTest.app(); host.set(app);
+			eval(app, "A=(0,0)"); eval(app, "B=(2,0)"); eval(app, "s=Segment(A,B)");
+			eval(app, "Ref=(1,.03)"); app.getKernel().initUndoInfo();
+		});
+		var app = host.get(); var construction = app.getKernel().getConstruction();
+		var undo = construction.getUndoManager();
+		Cu7M08SDesktopEventsTest.await(() -> undo.getHistorySize() == 0);
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var source = app.getKernel().lookupLabel("s");
+			var reference = (GeoPoint) app.getKernel().lookupLabel("Ref");
+			String original = app.getXML(); int geos = construction.getGeoSetConstructionOrder().size();
+			var registry = construction.getSpatialIdentityRegistry();
+			var identities = registry.getRecords().stream().map(record -> record.getId())
+					.collect(Collectors.toSet());
+			int reservations = registry.getReservedIdentityCount(), history = undo.getHistorySize();
+			AtomicBoolean entered = new AtomicBoolean(); View view = mock(View.class);
+			doAnswer(invocation -> {
+				GeoElement added = invocation.getArgument(0);
+				if (added instanceof GeoPoint point && point.getPath() == source
+						&& entered.compareAndSet(false, true)) { mutation.accept(app); }
+				return null;
+			}).when(view).add(any(GeoElement.class));
+			try (var offer = new GeoCeDGNativePointPlacement(source, reference, 1, .03, .1)) {
+				app.getKernel().attach(view);
+				try {
+					assertEquals("STALE_SELECTION", assertThrows(IllegalStateException.class,
+							() -> offer.commit(false)).getMessage());
+				} finally { app.getKernel().detach(view); }
+				assertTrue(entered.get(), "The mutation must occur inside synchronous native publication");
+				assertEquals("CONSUMED_SELECTION", assertThrows(IllegalStateException.class,
+						() -> offer.commit(true)).getMessage());
+			}
+			assertEquals(original, app.getXML()); assertEquals(geos, construction.getGeoSetConstructionOrder().size());
+			assertEquals(identities, registry.getRecords().stream().map(record -> record.getId())
+					.collect(Collectors.toSet()));
+			assertEquals(reservations, registry.getReservedIdentityCount());
+			assertEquals(history, undo.getHistorySize());
+		});
+	}
+
+	@Test void nativeReferenceChangedInsideOutputAddRejectsAndRestoresExactly() throws Exception {
+		assertNativePublicationMutationRejected(app -> {
+			var reference = (GeoPoint) app.getKernel().lookupLabel("Ref");
+			reference.setCoords(1, .04, 1); reference.updateCascade();
+		});
+	}
+
+	@Test void nativeSourceChangedInsideOutputAddRejectsEvenWhenPlacementRemainsNearRequest()
+			throws Exception {
+		assertNativePublicationMutationRejected(app -> {
+			var endpoint = (GeoPoint) app.getKernel().lookupLabel("B");
+			endpoint.setCoords(2, .02, 1); endpoint.updateCascade();
+		});
+	}
+
+	@Test void nativeReferenceHostRefusalLeavesOrdinaryPointCreationAvailable() throws Exception {
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var app = G9U1SemanticPointInteractionTest.app();
+			var source = eval(app, "s=Segment((0,0),(2,0))"); eval(app, "Existing=Point(s)");
+			var reference = (GeoPoint) eval(app, "Ref=(1,.03)"); String original = app.getXML();
+			var construction = app.getKernel().getConstruction();
+			int geos = construction.getGeoSetConstructionOrder().size();
+			int history = construction.getUndoManager().getHistorySize();
+			try (var offer = new GeoCeDGNativePointPlacement(source, reference, 1, .03, .1)) {
+				assertEquals("UNSUPPORTED_HOST_STATE", assertThrows(IllegalStateException.class,
+						() -> offer.commit(true)).getMessage());
+			}
+			assertEquals(original, app.getXML()); assertEquals(geos, construction.getGeoSetConstructionOrder().size());
+			assertEquals(history, construction.getUndoManager().getHistorySize());
+			app.setMode(EuclidianConstants.MODE_POINT);
+			Cu7M08SDesktopEventsTest.pointer(app, 1.5, 0);
+			assertEquals(2, construction.getGeoSetConstructionOrder().stream()
+					.filter(GeoPoint.class::isInstance).map(GeoPoint.class::cast)
+					.filter(point -> point.getPath() == source).count());
 		});
 	}
 

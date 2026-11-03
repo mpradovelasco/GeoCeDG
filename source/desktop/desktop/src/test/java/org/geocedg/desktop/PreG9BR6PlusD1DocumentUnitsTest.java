@@ -346,7 +346,8 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 		for (Component component : bar.getComponents()) {
 			names.add(component.getName());
 		}
-		assertEquals(List.of("geocedg.status-bar.layer", "geocedg.status-bar.separator",
+		assertEquals(List.of("geocedg.status-bar.point-interaction-notice",
+				"geocedg.status-bar.separator", "geocedg.status-bar.layer", "geocedg.status-bar.separator",
 				"geocedg.status-bar.construction-unit", "geocedg.status-bar.separator",
 				"geocedg.status-bar.presentation-unit", "geocedg.status-bar.separator",
 				// POST-E2-P1-R2 smoke follow-up C adds the drawing-scale segment
@@ -356,6 +357,8 @@ class PreG9BR6PlusD1DocumentUnitsTest {
 				// PRE-G9B-R6-plus-F2-R1 adds the hidden tool-memory segment
 				"geocedg.status-bar.tool-memory", "geocedg.status-bar.separator",
 				"geocedg.status-bar.paste-notice"), names);
+		assertFalse(bar.getSegment(GeoCeDGStatusBar.POINT_INTERACTION_NOTICE_SEGMENT).isVisible());
+		assertFalse(bar.getComponent(1).isVisible(), "the inactive point notice has no visible separator");
 		JLabel construction = bar.getSegment(GeoCeDGStatusBar.CONSTRUCTION_UNIT_SEGMENT);
 		JLabel presentation = bar.getSegment(GeoCeDGStatusBar.PRESENTATION_UNIT_SEGMENT);
 		assertEquals("Layer: 0", bar.getSegment(GeoCeDGStatusBar.LAYER_SEGMENT).getText());

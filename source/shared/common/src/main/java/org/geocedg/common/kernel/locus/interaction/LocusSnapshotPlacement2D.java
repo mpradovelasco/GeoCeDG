@@ -10,6 +10,8 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.kernel.spatial.identity.DocumentAuthorityRecord;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.kernel.geos.GeoPoint;
 
 /** CU7-I1 snapshot selection. Only the forward address survives publication. */
@@ -34,6 +36,8 @@ public final class LocusSnapshotPlacement2D {
 	public static final class Selection implements AutoCloseable {
 		private final GeoLocusV2 source;
 		private final LocusDefinition2D definition;
+		private final SpatialIdentityRegistry registry;
+		private final DocumentAuthorityRecord authority;
 		private final LocusPointInteractionResult2D result;
 		private final long semanticMisses;
 		private boolean finished;
@@ -41,6 +45,8 @@ public final class LocusSnapshotPlacement2D {
 		private Selection(LocusPointInteractionQuery2D query) {
 			source = query.getSource();
 			definition = source.getSemanticDefinition();
+			registry = source.getConstruction().getSpatialIdentityRegistry();
+			authority = registry.getDocumentAuthorityRecord();
 			var budget = query.getPolicy().getWorkBudget();
 			// Same R6 session policy and result; separately retain actual nested work.
 			try (var session = LocusEvaluationSession2D.memoizingWithLimits(
@@ -63,6 +69,11 @@ public final class LocusSnapshotPlacement2D {
 		 * The caller owns the normal single Undo boundary, as for forward creation.
 		 */
 		public GeoPoint commit(String label, LocusPointInteractionCandidate2D chosen) {
+			return commit(label, chosen, () -> { });
+		}
+
+		/** The facade's reference guard shares the concrete publication snapshot. */
+		GeoPoint commit(String label, LocusPointInteractionCandidate2D chosen, Runnable finalGuard) {
 			if (finished) {
 				throw new IllegalStateException("CU7_SELECTION_CONSUMED");
 			}
@@ -78,17 +89,28 @@ public final class LocusSnapshotPlacement2D {
 			if (!result.getCandidates().contains(chosen)) {
 				throw new IllegalArgumentException("CU7_SELECTION_NOT_IN_QUERY");
 			}
+			requireCurrent(chosen);
+			return LocusPointPublication2D.publishAtomically(source, chosen.getAddress(),
+					() -> LocusV2PublicOperations.createInteractiveSemanticPoint(
+							source.getConstruction(), label, source, chosen),
+					() -> {
+						requireCurrent(chosen);
+						finalGuard.run();
+					}, () -> new IllegalArgumentException("CU7_FORWARD_MODEL_MISMATCH"));
+		}
+
+		private void requireCurrent(LocusPointInteractionCandidate2D chosen) {
 			// Object equality here checks an ephemeral revision, never durable identity.
 			if (definition == null || !source.isDefined()
 					|| !Objects.equals(source.getPersistentLocusId(),
 							chosen.getAddress().getSourceLocusId())
-					|| source.getConstruction().getSpatialIdentityRegistry()
-							.getGeo(chosen.getAddress().getSourceLocusId()) != source
+					|| source.getConstruction().getSpatialIdentityRegistry() != registry
+					|| registry.getGeo(chosen.getAddress().getSourceLocusId()) != source
+					|| !Objects.equals(authority, registry.getDocumentAuthorityRecord())
+					|| source.getConstruction().isFileLoading()
 					|| source.getSemanticDefinition() != definition) {
 				throw new IllegalArgumentException("CU7_STALE_SELECTION");
 			}
-			return LocusV2PublicOperations.createInteractiveSemanticPoint(
-					source.getConstruction(), label, source, chosen);
 		}
 
 		@Override

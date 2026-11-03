@@ -3,7 +3,9 @@ package org.geocedg.desktop;
 
 import java.util.Objects;
 
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
@@ -54,26 +56,40 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 	GeoPoint commit(boolean draggable) {
 		if (consumed) { throw new IllegalStateException("CONSUMED_SELECTION"); }
 		consumed = true;
+		validateFreshness();
+		var construction = source.getConstruction();
+		if (reference != null && LocusV2PublicOperations.hasUnsupportedInteractiveHostState(construction)) {
+			throw new IllegalStateException("UNSUPPORTED_HOST_STATE");
+		}
+		GeoPoint[] output = new GeoPoint[1];
+		construction.runAtomicConstructionMutation(() -> {
+			validateFreshness();
+			GeoPoint point = construction.getKernel().getAlgoDispatcher()
+					.point(null, (Path) source, x, y, true, false, true);
+			point.setFixed(!draggable);
+			validateFreshness();
+			if (!current(point) || !Double.isFinite(point.getInhomX())
+					|| !Double.isFinite(point.getInhomY()) || point.getPath() != source
+					|| !(point.getParentAlgorithm() instanceof AlgoPointOnPath parent)
+					|| parent.getPath() != source || parent.getP() != point
+					|| parent.getInput().length != 1 || parent.getInput()[0] != source
+					|| parent.getOutput().length != 1 || parent.getOutput()[0] != point
+					|| point.isLocked() != !draggable
+					|| Math.hypot(point.getInhomX() - x, point.getInhomY() - y) > radius) {
+				throw new IllegalStateException("NATIVE_PLACEMENT_REJECTED");
+			}
+			output[0] = point;
+		});
+		return output[0];
+	}
+
+	private void validateFreshness() {
 		if (!current(source) || document != source.getConstruction().getSpatialIdentityRegistry()
 				|| !Objects.equals(sourceState, source.getXML())
 				|| reference != null && (!current(reference)
 						|| reference.getInhomX() != x || reference.getInhomY() != y)) {
 			throw new IllegalStateException("STALE_SELECTION");
 		}
-		GeoPoint[] output = new GeoPoint[1];
-		var construction = source.getConstruction();
-		construction.runAtomicConstructionMutation(() -> {
-			GeoPoint point = construction.getKernel().getAlgoDispatcher()
-					.point(null, (Path) source, x, y, true, false, true);
-			if (!point.isDefined() || !Double.isFinite(point.getInhomX())
-					|| !Double.isFinite(point.getInhomY()) || point.getPath() != source
-					|| Math.hypot(point.getInhomX() - x, point.getInhomY() - y) > radius) {
-				throw new IllegalStateException("NATIVE_PLACEMENT_REJECTED");
-			}
-			point.setFixed(!draggable);
-			output[0] = point;
-		});
-		return output[0];
 	}
 
 	@Override public void close() { consumed = true; }

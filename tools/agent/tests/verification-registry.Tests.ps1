@@ -325,6 +325,7 @@ Invoke-Case 'CU7 general point interaction includes new tests and historical sem
     $expected = @{
         shared = @(
             'org.geocedg.common.locus.IndividualForwardPointCreationTest',
+            'org.geocedg.common.locus.NativeConicPointPersistenceTest',
             'org.geocedg.common.locus.GeneralPointContinuationTest',
             'org.geocedg.common.locus.M08PointCreationKernelTest',
             'org.geocedg.common.locus.G9S1SemanticSpline2DTest',
@@ -335,7 +336,12 @@ Invoke-Case 'CU7 general point interaction includes new tests and historical sem
             'org.geocedg.desktop.GeneralPointInteractionDesktopTest',
             'org.geocedg.desktop.Cu7M08SGeneralCreationTest',
             'org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest',
-            'org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest')
+            'org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest',
+            'org.geocedg.desktop.Cu7M08SCorrectionTest',
+            'org.geocedg.desktop.Cu7M08SDesktopEventsTest',
+            'org.geocedg.desktop.Cu7M08SReferenceToolTest',
+            'org.geocedg.desktop.PostE2P1R2SmokeFollowUpTest',
+            'org.geocedg.desktop.PreG9BR6PlusD1DocumentUnitsTest')
     }
     foreach ($module in @('shared', 'desktop')) {
         $id = 'pre-g9b-cu7-general-point-interaction.' + $module

@@ -31,6 +31,7 @@ public final class IndividualForwardPointCreation2D {
 		NONE, INVALID_SOURCE, INVALID_REFERENCE, UNSUPPORTED_CAPTURE, AUTHORITY_NOT_ESTABLISHED,
 		UNSAFE_DISCOVERY, COMPONENT_NOT_ESTABLISHED, INVALID_FORWARD, BUDGET_EXHAUSTED,
 		NO_ADDRESS_DISCOVERED, STALE_SELECTION, WRONG_THREAD, CONSUMED_SELECTION,
+		UNSUPPORTED_HOST_STATE,
 		FOREIGN_CHOICE, PUBLICATION_NOT_AUTHORIZED
 	}
 
@@ -247,6 +248,11 @@ public final class IndividualForwardPointCreation2D {
 		}
 
 		public GeoPoint commit(String label, Choice choice) {
+			return commit(label, choice, () -> { });
+		}
+
+		/** The facade contributes freshness to this same concrete publication transaction. */
+		GeoPoint commit(String label, Choice choice, Runnable finalGuard) {
 			if (Thread.currentThread() != thread) { throw new Rejected(Failure.WRONG_THREAD); }
 			if (finished) { throw new Rejected(Failure.CONSUMED_SELECTION); }
 			finished = true;
@@ -256,13 +262,21 @@ public final class IndividualForwardPointCreation2D {
 					throw new Rejected(Failure.FOREIGN_CHOICE);
 				}
 				if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }
+				if (LocusV2PublicOperations.hasUnsupportedInteractiveHostState(source.getConstruction())) {
+					throw new Rejected(Failure.UNSUPPORTED_HOST_STATE);
+				}
 				preparedBinding = validate(choice.address);
 				if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }
 				publicationReady = choice;
 				bindingReady = choice;
 				publications++;
-				return LocusV2PublicOperations.createIndividualForwardSemanticPoint(
-						source.getConstruction(), label, source, choice);
+				return LocusPointPublication2D.publishAtomically(source, choice.address,
+						() -> LocusV2PublicOperations.createIndividualForwardSemanticPoint(
+								source.getConstruction(), label, source, choice),
+						() -> {
+							if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }
+							finalGuard.run();
+						}, () -> new Rejected(Failure.INVALID_FORWARD));
 			} catch (LocusEvaluationSession2D.EvaluationWorkLimitException exhausted) {
 				throw new Rejected(Failure.BUDGET_EXHAUSTED);
 			} finally { close(); }

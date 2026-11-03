@@ -1962,8 +1962,20 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/io/ConsElementXMLHandler.java",
       "change": "modified",
-      "purpose": "Stage optional participating-geo durable-ID attachments during real construction XML parsing.",
+      "purpose": "Stage optional participating-geo durable-ID attachments during real construction XML parsing. PRE-G9B-CU7 general point interaction, explicit author-authorized inherited repair: read additive versioned native state of free points on full 2D conics, preserving the saved native argument and representation rather than reprojecting; absent-tag, Cartesian curve, limited-conic and explicit numeric-input routes retain their prior authority. Candidate authority: docs/architecture/pre_g9b_cu7_native_conic_state_candidate.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoPoint.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-CU7 general point interaction, explicit author-authorized inherited repair: persist the native argument/type of eligible free Point(full 2D conic), restore its raw coordinates and native caches coherently, and carry a source-checked one-use state through the ordinary final load recomputation. Existing untagged and unrelated path semantics remain unchanged.",
+      "authority": "docs/architecture/pre_g9b_cu7_native_conic_state_candidate.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoPointOnPath.java",
+      "change": "modified",
+      "purpose": "PRE-G9B-CU7 general point interaction, explicit author-authorized inherited repair: consume eligible tagged free-conic native load state at the existing point computation boundary only while its captured source state still agrees; all later edits and explicit numeric definitions use the normal DAG computation.",
+      "authority": "docs/architecture/pre_g9b_cu7_native_conic_state_candidate.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLHandler.java",

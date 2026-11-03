@@ -382,6 +382,10 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 		add("D=(2,0)");
 		GeoLocusV2 source = add("L=SplineV2({A,B,C,D},3)");
 		GeoPoint point = point(source, 0, 0);
+		// The new host gate is not a silent change to historical R6 permissions.
+		GeoPoint legacyPlace = add("LegacyPlace=Point(x+y=1)");
+		legacyPlace.setCoords(.3, .2, 1); legacyPlace.updateCascade();
+		assertTrue(LocusV2PublicOperations.hasUnsupportedInteractiveHostState(getConstruction()));
 		var policy = LocusPointInteractionPolicy2D.initial(0.1);
 		String before = getApp().getXML();
 		var refused = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
@@ -413,6 +417,24 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 		var result = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				3 * Math.cos(1E-10), 3 * Math.sin(1E-10), policy, context(point));
 		assertFalse(result.isEstablished());
+		assertEquals(before, getApp().getXML());
+	}
+
+	@Test
+	void newLocalPermissionRefusesUnsupportedHostWithoutSnapshotOrParameterChange() {
+		GeoPoint point = point(circle(), 3, 0);
+		GeoPoint unrelated = add("Other=Point(x+y=1)");
+		unrelated.setCoords(.3, .2, 1); unrelated.updateCascade();
+		var address = AlgoSemanticLocusPoint2D.requireSemanticParent(point).getCurrentSemanticAddress();
+		String before = getApp().getXML();
+		long nativeArgument = Double.doubleToLongBits(unrelated.getPathParameter().t);
+		var result = move(point, .1);
+		assertEquals(LocusPointContinuation2D.Status.UNSUPPORTED_HOST_STATE, result.getStatus());
+		assertTrue(result.getSemanticEvaluations() > 0, "Retain proof work spent before host preflight");
+		assertTrue(context(point).isStopped());
+		assertSame(point, lookup("P")); assertSame(unrelated, lookup("Other"));
+		assertEquals(address, AlgoSemanticLocusPoint2D.requireSemanticParent(point).getCurrentSemanticAddress());
+		assertEquals(nativeArgument, Double.doubleToLongBits(unrelated.getPathParameter().t));
 		assertEquals(before, getApp().getXML());
 	}
 }

@@ -263,7 +263,8 @@ class PostE2P1R2SmokeFollowUpTest {
 		for (Component component : bar.getComponents()) {
 			names.add(component.getName());
 		}
-		assertEquals(List.of("geocedg.status-bar.layer", "geocedg.status-bar.separator",
+		assertEquals(List.of("geocedg.status-bar.point-interaction-notice",
+				"geocedg.status-bar.separator", "geocedg.status-bar.layer", "geocedg.status-bar.separator",
 				"geocedg.status-bar.construction-unit", "geocedg.status-bar.separator",
 				"geocedg.status-bar.presentation-unit", "geocedg.status-bar.separator",
 				"geocedg.status-bar.drawing-scale", "geocedg.status-bar.separator",
@@ -272,6 +273,8 @@ class PostE2P1R2SmokeFollowUpTest {
 				// PRE-G9B-R6-plus-F2-R1: the hidden tool-memory segment
 				"geocedg.status-bar.tool-memory", "geocedg.status-bar.separator",
 				"geocedg.status-bar.paste-notice"), names, "existing segments kept, in order");
+		assertFalse(bar.getSegment(GeoCeDGStatusBar.POINT_INTERACTION_NOTICE_SEGMENT).isVisible());
+		assertFalse(bar.getComponent(1).isVisible(), "the inactive point notice has no visible separator");
 		onEdt(() -> { });
 		assertEquals("Scale: 1:1", scale(app).getText());
 		assertEquals(app.layerText("Units.Status.ScaleTooltip"), scale(app).getToolTipText());

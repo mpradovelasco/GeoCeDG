@@ -77,7 +77,7 @@ public final class LocusPointContinuation2D {
 	public enum Status {
 		CONTINUATION_ESTABLISHED, NO_CONTINUATION_ESTABLISHED, INVALID_SOURCE,
 		AUTHORITY_NOT_ESTABLISHED, COMPONENT_NOT_ESTABLISHED, FIXED_POINT,
-		BUDGET_EXHAUSTED, FORWARD_REJECTED, CONTINUATION_STOPPED
+		BUDGET_EXHAUSTED, FORWARD_REJECTED, CONTINUATION_STOPPED, UNSUPPORTED_HOST_STATE
 	}
 
 	/** Transient local proof result; its address alone is durable. */
@@ -120,6 +120,11 @@ public final class LocusPointContinuation2D {
 		public long getSemanticEvaluations() { return semanticEvaluations; }
 		public long getIntervalPasses() { return intervalPasses; }
 		public LocusPointInteractionResult2D getHistoricalResult() { return historical; }
+		/** A host refusal retains the actual proof work already performed. */
+		public Result unsupportedHost() {
+			return new Result(Status.UNSUPPORTED_HOST_STATE, null, method,
+					semanticEvaluations, intervalPasses, historical);
+		}
 		public NumericGuarantee getProximityGuarantee() {
 			return NumericGuarantee.FLOATING_POINT_UNCERTIFIED;
 		}

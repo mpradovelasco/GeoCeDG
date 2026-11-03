@@ -1233,6 +1233,17 @@ un paso de Deshacer; un intento rechazado o sin cambio no añade otro paso.
 En las nuevas rutas locales, la carta se mantiene durante el gesto; tras una barrera, suelte y vuelva a
 seleccionar el punto para iniciar otro intento.
 No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
+
+**Límite del documento.** Las modalidades nuevas también comprueban que el estado
+nativo del documento permite una recuperación acreditada si falla una operación.
+Pueden detenerse por otro punto nativo sobre un objeto, una región o una cónica
+indefinida, aunque L sea regular. Esto también limita la nueva creación desde Q
+sobre objetos nativos; la herramienta Punto nativa habitual conserva su comportamiento.
+El diagnóstico indica ese límite del documento, sin cambiar el punto. Los archivos
+antiguos conservan su lectura histórica; para los puntos libres de cónica admitidos,
+el lector nuevo conserva explícitamente el argumento nativo guardado. El candidato
+requiere verificación final, revisión independiente y smoke autoral.
+
 La redefinición segura M09 y la correspondencia dinámica M08-D quedan fuera.
 
 ### 8.2 Resultados ricos de intersección

@@ -16,6 +16,8 @@
 
 package org.geogebra.common.io;
 
+// GeoCeDG modification, 2026-11-03: strict additive native conic-point XML codec.
+
 import static org.geogebra.common.kernel.geos.GeoButton.DEFAULT_BUTTON_HEIGHT;
 
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ import org.geogebra.common.kernel.geos.GeoMindMapNode;
 import org.geogebra.common.kernel.geos.GeoMindMapNode.NodeAlignment;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoNumeric;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoPolyLine;
 import org.geogebra.common.kernel.geos.GeoSymbolic;
 import org.geogebra.common.kernel.geos.GeoText;
@@ -134,6 +137,10 @@ public class ConsElementXMLHandler {
 	 */
 	private static final double MIN_TEXT_SIZE = 4;
 	private GeoElement geo;
+	// GeoCeDG CU7: strict, additive native state; old untagged coords are unchanged.
+	private boolean conicPointStateProcessed;
+	private boolean coordinatesProcessed;
+	private boolean curveParameterProcessed;
 	// List of LocateableExpPair objects
 	// for setting the start points at the end of the construction
 	// (needed for GeoText and GeoVector)
@@ -251,10 +258,43 @@ public class ConsElementXMLHandler {
 	}
 
 	private boolean handleCoords(Map<String, String> attrs) {
+		if (conicPointStateProcessed) {
+			GeoPoint point = (GeoPoint) geo;
+			if (coordinatesProcessed || attrs.size() != 3
+					|| !sameSerializedCoordinate(point.x, attrs.get("x"))
+					|| !sameSerializedCoordinate(point.y, attrs.get("y"))
+					|| !sameSerializedCoordinate(point.z, attrs.get("z"))) {
+				throw new IllegalArgumentException("Conflicting native conic point coordinates");
+			}
+			coordinatesProcessed = true;
+			return true;
+		}
+		coordinatesProcessed = true;
 		ExpressionNode def = geo.getDefinition();
 		boolean success = xmlHandler.kernel.handleCoords(geo, attrs);
 		geo.setDefinition(def);
 		return success;
+	}
+
+	private static boolean sameSerializedCoordinate(double expected, String encoded) {
+		double actual = Double.parseDouble(encoded);
+		// Legacy coords formatting loses zero's sign. The new state tag carries it.
+		return expected == actual || Double.isNaN(expected) && Double.isNaN(actual);
+	}
+
+	private void handleConicPointState(Map<String, String> attrs) {
+		if (!(geo instanceof GeoPoint) || conicPointStateProcessed || coordinatesProcessed
+				|| curveParameterProcessed
+				|| attrs.size() != 9 || !"1".equals(attrs.get("version"))) {
+			throw new IllegalArgumentException("Invalid native conic point state tag");
+		}
+		((GeoPoint) geo).restoreNativeConicPointState(
+				Double.parseDouble(attrs.get("t")), Integer.parseInt(attrs.get("pathType")),
+				Double.parseDouble(attrs.get("x")), Double.parseDouble(attrs.get("y")),
+				Double.parseDouble(attrs.get("z")), Double.parseDouble(attrs.get("tempT")),
+				Integer.parseInt(attrs.get("tempPathType")),
+				Double.parseDouble(attrs.get("animation")));
+		conicPointStateProcessed = true;
 	}
 
 	private boolean handleDimensions(Map<String, String> attrs) {
@@ -474,6 +514,9 @@ public class ConsElementXMLHandler {
 	}
 
 	protected void init(Map<String, String> attrs) {
+		conicPointStateProcessed = false;
+		coordinatesProcessed = false;
+		curveParameterProcessed = false;
 		sliderTagProcessed = false;
 		fontTagProcessed = false;
 		symbolicTagProcessed = false;
@@ -2056,6 +2099,9 @@ public class ConsElementXMLHandler {
 	}
 
 	protected void finish() {
+		if (conicPointStateProcessed && !coordinatesProcessed) {
+			throw new IllegalArgumentException("Missing native conic point coordinates");
+		}
 		if (!sliderTagProcessed && geo.isGeoNumeric()) {
 			((GeoNumeric) geo).setAVSliderOrCheckboxVisible(false);
 		} else if (!fontTagProcessed && geo.isGeoText()) {
@@ -2292,7 +2338,14 @@ public class ConsElementXMLHandler {
 				handleCropBox(attrs);
 				break;
 			case "curveParam":
+				if (conicPointStateProcessed) {
+					throw new IllegalArgumentException("Conflicting native point parameter tags");
+				}
+				curveParameterProcessed = true;
 				handleCurveParam(attrs);
+				break;
+			case "conicPointState":
+				handleConicPointState(attrs);
 				break;
 			case "casMap":
 				xmlHandler.casMapForElement();

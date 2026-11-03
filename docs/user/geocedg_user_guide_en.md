@@ -1169,8 +1169,18 @@ to another branch by proximity. A gesture that changes the point produces one Un
 step; rejected or unchanged attempts add none. For the new local routes, the chart
 stays fixed for the gesture; after a barrier, release and select the
 point again to start another attempt. Unresolved
-singularities, gaps and ambiguities need not be traversable. Safe M09 redefinition
-and dynamic M08-D correspondence remain outside this workflow.
+singularities, gaps and ambiguities need not be traversable.
+
+**Document boundary.** The new modes also check that the document's native state
+supports established recovery if an operation fails. Another native point on an
+object, a region or an undefined conic may stop them even when L is regular.
+This also limits the new reference-Q creation on native objects; the usual native
+Point tool keeps its behavior. The diagnostic identifies that document boundary
+without changing the point. Old files retain historical loading; for admitted free
+conic points, the new reader explicitly preserves the saved native argument. The
+candidate requires final verification, independent review and author smoke.
+
+Safe M09 redefinition and dynamic M08-D correspondence remain outside this workflow.
 
 ### 8.2 Rich intersection results
 

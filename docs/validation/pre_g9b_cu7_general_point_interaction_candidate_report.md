@@ -1,8 +1,17 @@
 # CU7 — General point interaction: candidate delivery and author smoke
 
-2026-11-03, Europe/Madrid. Technical candidate under the author's present focal
+2026-11-03, Europe/Madrid. **TECHNICAL CANDIDATE — final verification pending.**
+Technical candidate under the author's present focal
 authorization. `selfApproved=false`, `author_smoke=false`, CU7 remains open.
 No main promotion, publication, release or book modification.
+
+The original fresh-circle native-input rollback defect is recorded in
+`pre_g9b_cu7_native_rollback_stop_record.md`, with its one-ULP witness, failed
+receipts and subsequent explicit author authorization. The corrected native
+codec passes the unchanged original 131-test shared cohort, including both exact
+H1 callback failures, in `focus-shared-native-02` and `-03`. Additional native
+states and the bounded host gate have separate evidence. Required contracts
+below are not blanket claims that every native document restores exactly.
 
 ## Scope, sources and design
 
@@ -28,9 +37,58 @@ Design and exact candidate normative clauses precede implementation in:
   charts, per-gesture context and barriers.
 * `docs/architecture/pre_g9b_cu7_point_interaction_desktop_design.md` — UI, native
   object table, lock, P2 and normal Undo.
+* `docs/architecture/pre_g9b_cu7_native_conic_state_candidate.md` — later explicitly
+  authorized native conic-point persistence/load repair, recorded before its code.
 
 These are candidate successors by reference to the accepted normative documents.
 Accepted ADR text, R1/R6 statuses and H1 proofs are not silently amended.
+
+## Inherited-source repair authorized after the demonstrated stop
+
+The author subsequently authorized precise inherited-source changes for the
+localized native argument loss. This resumes that part of the work. The original
+two exact H1 failures and first-save witness remain historical failed evidence;
+they are not converted to PASS by authorization or by a pre-normalized fixture.
+
+The candidate repair uses the shared native XML codec, because snapshots, Undo,
+copy and load all depend on kernel state regardless of frontend. It adds explicit
+versioned state for eligible free `Point(full 2D conic)`, restores the native
+argument and raw representation coherently, and carries it once through the
+loader's final construction update while the source state still agrees. It does
+not introduce a different transaction system. Old untagged files retain their
+historical load behavior; explicitly parameterized points keep their numeric
+input authority, and limited/3D conics retain their former route. Older readers
+ignore the additive tag and retain their former coordinate-reprojection fidelity.
+
+The native amendment defines precise format, eligibility and rejection policy.
+Its implementation results, exact regression counts and final frozen acceptance
+must be reported from their real receipts, separately from the authorization.
+
+The added version-1 tag carries exact primary/fallback parameters and types,
+raw x/y/z and animation origin using signed-zero-safe strings. It is applied only
+to the native free one-input point on a full 2D conic; explicit parameter inputs,
+limited conics and other native paths keep their previous route. A source/point
+state check consumes the load checkpoint once; it does not freeze subsequent
+dragging, animation or DAG updates. The inherited changes are restricted to
+`GeoPoint`, `ConsElementXMLHandler` and a short `AlgoPointOnPath.compute` hook;
+the upstream modification ledger records their purpose and candidate authority.
+
+The new permissions have an executable host-state boundary, in addition to their
+geometric provider boundary. Native free places outside the exact finite/defined
+conic table, regions, unproved 3D places and known undefined/nonfinite conics refuse
+before mutation. This includes an unrelated native free place in the same document.
+Fresh coordinate-projected hyperbola representations and inactive undefined-conic
+matrix caches are explicit exclusions, characterized by saved failing development
+receipts and new refusal tests. They are not pre-normalized to pass. Native parameter
+edits may produce a distinct forward-coherent hyperbola state that is admitted;
+that test does not stand in for the excluded coordinate-projected representation.
+
+This guard restricts the new individual-forward/local-chart permissions and the
+additional native Q transaction. Historical R1/R6/H1 keep their own admission and
+normal restoration contracts. Fixing the demonstrated circle driver does not prove
+byte-exact restoration of every legacy path/region or malformed macro/defaults
+import. Native normal construction loads reject invalid new state; the inherited
+GGT/defaults best-effort error behavior is not silently claimed as a new guarantee.
 
 ## Creation contract and actual provider perimeter
 
@@ -104,15 +162,17 @@ These proofs establish a local semantic sheet and continuous selection there,
 without global injectivity. Numerical representatives retain the declared
 parameter error. They do not promise traversing all singularities or finding all
 nearby preimages. Same-image directions on another branch/component are never
-selected by Cartesian proximity. A rejected new-chart request leaves the last valid state
+selected by Cartesian proximity. A rejected new-chart proof leaves the last valid state
 and stops that context; a new press is required to start another attempt. This
 also prevents re-entry after a rejected interval from acquiring a distant address.
 Historical R6/Spline retains its own approved failed-event recovery behavior.
 
 Successful edits preserve P and its durable ID, update only the dedicated semantic
 state through the normal DAG, and use one normal construction transaction. Prepared
-binding is one-use and checked against the old address and revision. Rejections
-have no construction or Undo effect; one changed gesture has one Undo boundary.
+binding is one-use and checked against the old address and revision. Pre-mutation
+refusals have no construction or Undo effect; one changed gesture has one Undo
+boundary. Errors after mutation use normal host rollback. Its exact native-input
+limitation for fresh circle drivers is blocking, rather than an accepted tolerance.
 No new point, generic Path conversion, codec, inverse parent or reconstruction
 architecture is introduced. Copy/remap and `.cedg` reuse the existing forward form.
 
@@ -225,7 +285,9 @@ TEST_SELECTION: exact PHASE and JUnit catalog changes require canonical inventor
 refresh, INFRA_UNIT and FINAL. GUIDE_IMPACT=UPDATED: both official language guides
 describe lock, Q table, numerical proximity and bounded continuation.
 
-Proposed reduced closure, only after independent review and author smoke/decision:
+**No reduced closure is recommended while the native rollback blocker remains.**
+The possible future perimeter, after resolving it and obtaining independent review
+and author smoke/decision, is:
 M08-S-R2 plus explicit forward creation on the declared table, local semantic
 chart dragging, historical Spline/R6 and the bounded native-object UI extension.
 Exclude universal arbitrary-locus interaction, unproved singular/gap/seam crossing,

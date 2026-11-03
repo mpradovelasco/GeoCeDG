@@ -310,18 +310,24 @@ public final class LocusPointCreation2D {
 				if (!RuntimeFeatureService.mayCreateLocusV2(source.getConstruction())) {
 					throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
 				}
+				Runnable finalGuard = () -> {
+					if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }
+					if (!RuntimeFeatureService.mayCreateLocusV2(source.getConstruction())) {
+						throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
+					}
+				};
 				if (route == Route.R1_R6) {
 					try {
-						return historical.commit(label, choice.historical);
+						return historical.commit(label, choice.historical, finalGuard);
 					} catch (IllegalArgumentException rejected) {
 						throw new Rejected(Failure.R1_FORWARD_REJECTED, rejected);
 					}
 				}
 				if (route == Route.R2_H1) {
-					return local.commit(label, choice.local);
+					return local.commit(label, choice.local, finalGuard);
 				}
 				if (route == Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION) {
-					return forward.commit(label, choice.forward);
+					return forward.commit(label, choice.forward, finalGuard);
 				}
 				throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
 			} finally {

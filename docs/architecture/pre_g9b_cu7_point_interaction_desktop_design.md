@@ -104,3 +104,21 @@ El kernel y sus pruebas/proveedores no cambian. Debe existir un nuevo checkpoint
 antes del catálogo y la ejecución Desktop final; la evidencia del checkpoint
 anterior se conserva con su identidad. GUIDE_IMPACT=UPDATE: el mensaje breve
 se describe como aviso de la barra de estado, no como tooltip garantizado.
+
+## Enmienda focal de publicación nativa — 2026-11-03
+
+Registrada antes de su código. La ruta adicional de referencia Q nativa llama al
+constructor normal, que publica la etiqueta y notifica sincrónicamente `View.add`
+antes de retornar. Por tanto fuente y Q deben volver a comprobarse dentro de la
+misma transacción, después de esa publicación y del cerrojo. Se reutiliza la guarda
+de vigencia original: fuente/registro/documento y Q actuales, estado de fuente y
+coordenadas copiadas de Q. El punto final debe conservar el padre nativo normal
+de una entrada, la fuente esperada, pertenencia a la construcción y el estado
+fixed solicitado, además de finitud y residual nativo ya comprobados.
+
+Un cambio síncrono de fuente o Q rechaza y restaura la transacción normal. Una
+regresión concreta debe activar esa ventana mediante `View.add`; no basta un
+rechazo anterior al constructor. No se añade solucionador, proximidad certificada,
+identidad por coordenadas ni una segunda instantánea. La garantía fuerte de los
+permisos Locus V2 nuevos sigue delimitada por su enmienda de estado host; no se
+atribuye a todos los Paths heredados una fidelidad de persistencia no demostrada.

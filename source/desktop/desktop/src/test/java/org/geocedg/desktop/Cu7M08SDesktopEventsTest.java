@@ -173,7 +173,11 @@ class Cu7M08SDesktopEventsTest {
   pointer(app,-1,0);var p=panel(app);var escape=p.getActionForKeyStroke(KeyStroke.getKeyStroke("ESCAPE"));assertNotNull(escape);
   escape.actionPerformed(new ActionEvent(p,ActionEvent.ACTION_PERFORMED,"Escape"));assertTrue(app.getSelectionManager().getSelectedGeos().isEmpty());
   pointer(app,-1,0);pointer(app,q.inhomX,q.inhomY);var pending=tool(app).pendingSelection();app.setMode(EuclidianConstants.MODE_POINT);
-  assertNull(tool(app).pendingSelection());assertEquals(M08SnapshotPlacement2D.Validity.CONSUMED,pending.getValidity());assertNull(panel(app));assertEquals(before,app.getXML());
+  assertNull(tool(app).pendingSelection());assertEquals(M08SnapshotPlacement2D.Validity.CONSUMED,pending.getValidity());
+  assertNotNull(panel(app));assertTrue(find(panel(app),JCheckBox.class,b->"m08-allow-dragging".equals(b.getName())).isSelected());
+  assertFalse(find(panel(app),JToggleButton.class,b->"m08-from-reference".equals(b.getName())).isSelected());
+  assertTrue(app.getSelectionManager().getSelectedGeos().isEmpty());assertEquals(before,app.getXML());
+  app.setMode(EuclidianConstants.MODE_MOVE);assertNull(panel(app));assertEquals(before,app.getXML());
  });}
 
  @Test void inlineKeysDoNotReachGlobalGeometryShortcuts()throws Exception {edt(()->{
@@ -199,7 +203,7 @@ class Cu7M08SDesktopEventsTest {
    app.setLanguage(locale);start(app);var input=((GuiManagerGeoCeDG)app.getGuiManager()).getAlgebraInput();var p=panel(app);assertNotNull(p);assertEquals(1,countRadius(p));
    assertTrue(p.getPreferredSize().width<900);assertTrue(p.getPreferredSize().height<90);assertNull(find(p,JLabel.class,l->l.getText().contains("no query yet")));
    var instruction=find(p,JTextField.class,f->!f.isEditable());assertFalse(instruction.getText().contains("r="));
-   assertEquals(locale.getLanguage().equals("es")?"Seleccione L":"Select L",instruction.getText());
+   assertEquals(locale.getLanguage().equals("es")?"Seleccione objeto":"Select object",instruction.getText());
    for(int width:new int[]{640,1280}){input.setSize(width,200);input.doLayout();assertEquals(input.getWidth(),p.getWidth());}
    ((org.geogebra.desktop.gui.inputbar.AlgebraInputD)input).initGUI();assertSame(input,((GuiManagerGeoCeDG)app.getGuiManager()).getAlgebraInput());assertSame(p,panel(app));
    app.setMode(EuclidianConstants.MODE_MOVE);assertNull(panel(app));

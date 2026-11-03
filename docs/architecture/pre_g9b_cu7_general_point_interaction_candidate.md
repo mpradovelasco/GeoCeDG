@@ -47,6 +47,36 @@ preimages remain distinct. Only provider-proved periodic equivalences canonicali
 PARTIAL inventories, arbitrary evaluators, point/collapsed components and unsupported
 captures remain outside this first table. No new existence or reconstruction system is added.
 
+### Exact publication atomicity clarification
+
+Interactive creation owns one normal construction transaction around the complete live
+publication, including promotion/label notifications of hidden state, point construction,
+output labeling, durable batch registration and final postconditions. Synchronous view
+callbacks are part of that publication boundary. On failure, the host restores its complete
+pre-publication snapshot, including unrelated mutations made by such a callback.
+
+After all publication callbacks and before the transaction returns, the concrete creation
+protocol rechecks its original source/definition/revision/authority, its reference when it
+owns one, feature permission, the exact selected forward address, and the new point's
+defined state, ordinary parent, durable ID, interactive role and dedicated input state.
+The published coordinates must equal the finite evaluated point of that parent's current
+normal forward binding. Its dedicated persisted branch/address codec and raw numeric
+argument must still reconstruct the exact selected address under the existing algorithm
+checks; cached current-address fields alone do not prove those inputs stayed unchanged.
+These are representation and reconstruction postconditions, not coordinate-based identity
+or an additional inverse solve, and require no new forward evaluation.
+The facade supplies its own source/Q freshness guard to that same transaction, including
+the R1 route whose lower-level world query has no Q. A stale callback result is rejected
+atomically and its selection remains consumed; publication failure never starts another route.
+
+Existing public R1/R6 and H1 commit signatures retain their admission, numerical evidence,
+budget and selection contracts. Their concrete publication receives the same transaction
+protection; this strengthens atomicity and final freshness only, without reinterpreting
+their scientific permissions. Package-private final-guard delegation lets the facade and
+the concrete protocol share exactly one host snapshot per ordinary creation. The host
+transaction has no implicit nesting-depth optimization, so the facade does not add a
+redundant outer snapshot. No new transaction framework or upstream behavior is introduced.
+
 ## Continuation and user interaction
 
 The separate continuation candidate defines its sufficient local chart evidence before
@@ -67,7 +97,7 @@ it retains native snapping guarantees and makes no new uniqueness/certification 
 Small coherent set: new sealed kernel creation service and shared publication handshake,
 creation facade, continuation provider, normal point factory, Desktop consumer/controller,
 native test sources, effective PHASE selection and evidence documents. Existing codec and
-serialized geometric meaning remain unchanged. Normal form and interactive role are reused;
+Locus V2 serialized geometric meaning remains unchanged. Normal form and interactive role are reused;
 explicitly defined points with other roles are never converted.
 
 Validate v3 circle click/Q/drag/seam, author h and ReferenceR1, Spline endpoints/drag,
@@ -81,3 +111,14 @@ the new SHA. No main promotion, book change, release, M08-D/M09/I2G/I3 or CU7 cl
 BOOTSTRAP IMPACT: NO CHANGE REQUIRED — no prerequisite, runtime or workstation assumption
 changes. VERIFICATION_INFRASTRUCTURE_IMPACT=TEST_SELECTION; refresh inventories through the
 canonical evidence updater. GUIDE_IMPACT=UPDATE for selection, lock and continuation limits.
+
+### Authorized native persistence repair
+
+The later author authorization permits the precise inherited-source repair described
+before implementation in `pre_g9b_cu7_native_conic_state_candidate.md`. It adds explicit
+free-conic native argument state to the shared XML codec and bridges its ordinary
+post-load recomputation. This is an additive native serialization change; the statement
+above about unchanged serialized meaning refers to Locus V2 address/role semantics.
+Old untagged files retain historical loading behavior. Readers predating the new tag
+ignore it and retain their historical coordinate-reprojection fidelity; exact argument
+preservation is a guarantee of the new reader, not of those older readers.

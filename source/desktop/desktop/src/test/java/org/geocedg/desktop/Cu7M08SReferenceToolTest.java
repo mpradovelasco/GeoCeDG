@@ -200,11 +200,19 @@ class Cu7M08SReferenceToolTest {
    discovery=measured.getWorkSnapshot().getDiscoveryMisses();
   }
   var limited=new LocusPointInteractionPolicy2D(.1,1e-10,1e-12,new LocusPointInteractionWorkBudget2D((int)discovery,512,80,1024));
-  String before=app.getXML();try(var selection=new GeoCeDGReferencePlacement(s,q,limited)){
+  String before=app.getXML();
+  // H1 retains its own exhausted-budget result when queried independently.
+  try(var local=M08SnapshotPlacement2D.queryFromReference(s,q,limited)){
+   assertEquals(M08SnapshotPlacement2D.Permission.NOT_OFFERABLE,local.getResult().getPermission());
+   assertEquals(M08SnapshotPlacement2D.Failure.BUDGET_EXHAUSTED,local.getResult().getFailure());
+   assertEquals(0,local.getWorkSnapshot().getPublicationAttempts());
+  }assertEquals(before,app.getXML());
+  try(var selection=new GeoCeDGReferencePlacement(s,q,limited)){
    assertEquals(GeoCeDGReferencePlacement.Route.REJECTED,selection.getRoute());assertTrue(selection.getChoices().isEmpty());
    assertEquals(LocusPointInteractionResult2D.Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED,selection.getHistoricalResult().getReason());
-   assertNotNull(selection.getLocalSelection());assertEquals(M08SnapshotPlacement2D.Failure.BUDGET_EXHAUSTED,selection.getLocalSelection().getResult().getFailure());
-   assertEquals(0,selection.getLocalSelection().getWorkSnapshot().getPublicationAttempts());
+   // The facade cannot reset R1's spent budget to begin H1.
+   assertNull(selection.getLocalSelection());assertEquals("BUDGET_EXHAUSTED",selection.getFailure());
+   assertEquals(discovery,selection.getSemanticMisses());
   }assertEquals(before,app.getXML());
  }
  @Test void d1RoutesCannotExchangeChoicesOrReuseConsumedSelection(){

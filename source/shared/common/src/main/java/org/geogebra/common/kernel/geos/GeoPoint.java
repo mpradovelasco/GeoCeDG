@@ -16,10 +16,13 @@
 
 package org.geogebra.common.kernel.geos;
 
+// GeoCeDG modification, 2026-11-03: versioned native free-conic point state.
+
 import static org.geogebra.common.kernel.geos.XMLBuilder.coordStyle;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +59,7 @@ import org.geogebra.common.kernel.arithmetic.ValueType;
 import org.geogebra.common.kernel.arithmetic.VectorValue;
 import org.geogebra.common.kernel.commands.ParametricProcessor;
 import org.geogebra.common.kernel.kernelND.GeoConicND;
+import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.kernel.kernelND.GeoCurveCartesianND;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoLineND;
@@ -125,6 +129,8 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	private boolean hasPolarParentNumbers = false;
 
 	private PathParameter tempPathParameter;
+	// GeoCeDG CU7: a tagged native restore bridges only the loader's final compute.
+	private NativeConicPointState nativeConicPointLoadState;
 
 	private StringBuilder sbToString = new StringBuilder(50);
 
@@ -731,6 +737,7 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 	 */
 	@Override
 	public void setPath(Path p) {
+		nativeConicPointLoadState = null;
 		path = p;
 		// tell conic that this point is on it, that's needed to handle
 		// reflections
@@ -832,6 +839,7 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 
 	final public void setCoords(double x, double y, double z,
 			boolean macroFeedback) {
+		nativeConicPointLoadState = null;
 		// set coordinates
 		this.x = x;
 		this.y = y;
@@ -900,6 +908,7 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 
 	@Override
 	public void setCoords(Coords v, boolean doPathOrRegion) {
+		nativeConicPointLoadState = null;
 
 		if (doPathOrRegion) {
 			setCoords(v.getX(), v.getY(), v.getLast());
@@ -1739,9 +1748,215 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 				sb.startTag("curveParam").attr("t", getPathParameter().t).endTag();
 			}
 		}
+		NativeConicPointState nativeState = nativeConicPointState();
+		if (nativeState != null) {
+			// Strings deliberately preserve signed zero; attr(double) rounds it away.
+			sb.startTag("conicPointState").attr("version", 1)
+					.attr("t", Double.toString(nativeState.parameter.t))
+					.attr("pathType", nativeState.parameter.getPathType())
+					.attr("x", Double.toString(nativeState.x))
+					.attr("y", Double.toString(nativeState.y))
+					.attr("z", Double.toString(nativeState.z))
+					.attr("tempT", Double.toString(nativeState.fallback.t))
+					.attr("tempPathType", nativeState.fallback.getPathType())
+					.attr("animation", Double.toString(nativeState.animation)).endTag();
+		}
 
 		// write x,y,z after <curveParam>
 		super.getXMLTags(sb);
+	}
+
+	/**
+	 * GeoCeDG CU7 native codec. Only the free, one-input point on a full 2D conic
+	 * owns this argument; explicit numeric definitions and limited parts do not.
+	 *
+	 * @param t exact native argument (NaN only for an undefined saved state)
+	 * @param pathType saved native conic type
+	 * @param savedX homogeneous x
+	 * @param savedY homogeneous y
+	 * @param savedZ homogeneous z
+	 * @param tempT undefined-state fallback argument
+	 * @param tempType fallback conic type
+	 * @param animation saved animation origin
+	 */
+	public void restoreNativeConicPointState(double t, int pathType, double savedX,
+			double savedY, double savedZ, double tempT, int tempType, double animation) {
+		GeoConic conic = nativeFreeConic();
+		PathParameter parameter = nativeParameter(t, pathType);
+		PathParameter fallback = nativeParameter(tempT, tempType);
+		if (conic == null || !supportedNativeConicState(conic, parameter,
+				savedX, savedY, savedZ) || Double.isInfinite(tempT)
+				|| !nativeParameterType(tempType) || Double.isInfinite(animation)) {
+			throw new IllegalArgumentException("Invalid native conic point state");
+		}
+		nativeConicPointLoadState = new NativeConicPointState(conic, parameter,
+				fallback, savedX, savedY, savedZ, animation);
+		applyNativeConicPointState(nativeConicPointLoadState);
+	}
+
+	/**
+	 * @return whether this finite native free conic place has the exact additive
+	 *         codec, for the bounded CU7 transaction host-state preflight
+	 */
+	public boolean hasExactFiniteNativeConicPointState() {
+		GeoConic conic = nativeFreeConic();
+		return isFinite() && conic != null && conic.isDefined()
+				&& nativeConicPointState() != null;
+	}
+
+	/**
+	 * Consumes the tagged state at the first post-load free-point compute. A source
+	 * edit or a normal point edit discards it; it never overrides later DAG work.
+	 * @return whether this compute was satisfied by the native load checkpoint
+	 */
+	public boolean restorePendingNativeConicPointState() {
+		NativeConicPointState state = nativeConicPointLoadState;
+		if (state == null) {
+			return false;
+		}
+		if (nativeFreeConic() != state.source || !state.sourceMatches()
+				|| !state.pointMatches(this)) {
+			nativeConicPointLoadState = null;
+			return false;
+		}
+		applyNativeConicPointState(state);
+		if (!kernel.getLoadingMode()) {
+			nativeConicPointLoadState = null;
+		}
+		return true;
+	}
+
+	private GeoConic nativeFreeConic() {
+		AlgoElement parent = getParentAlgorithm();
+		return parent instanceof AlgoPointOnPath && parent.getInput().length == 1
+				&& ((AlgoPointOnPath) parent).getPath() == path
+				&& path != null && path.getClass() == GeoConic.class
+				? (GeoConic) path : null;
+	}
+
+	private NativeConicPointState nativeConicPointState() {
+		GeoConic conic = nativeFreeConic();
+		if (conic == null || !supportedNativeConicState(conic, getPathParameter(), x, y, z)
+				|| Double.isInfinite(animationValue)) {
+			return null;
+		}
+		PathParameter fallback = tempPathParameter == null
+				? new PathParameter() : tempPathParameter;
+		return Double.isInfinite(fallback.t) || !nativeParameterType(fallback.getPathType())
+				? null : new NativeConicPointState(conic, getPathParameter(), fallback,
+						x, y, z, animationValue);
+	}
+
+	private static boolean nativeParameterType(int type) {
+		return type == -1 || type == GeoConicNDConstants.CONIC_EMPTY
+				|| type == GeoConicNDConstants.CONIC_SINGLE_POINT || regularConicType(type);
+	}
+
+	private static boolean regularConicType(int type) {
+		return type == GeoConicNDConstants.CONIC_CIRCLE
+				|| type == GeoConicNDConstants.CONIC_ELLIPSE
+				|| type == GeoConicNDConstants.CONIC_PARABOLA
+				|| type == GeoConicNDConstants.CONIC_HYPERBOLA;
+	}
+
+	private static boolean supportedNativeConicState(GeoConic conic,
+			PathParameter parameter, double x, double y, double z) {
+		if (Double.isInfinite(parameter.t) || !nativeParameterType(parameter.getPathType())) {
+			return false;
+		}
+		if (!conic.isDefined()) {
+			return Double.isNaN(x) && Double.isNaN(y) && Double.isNaN(z);
+		}
+		if (!regularConicType(conic.getType()) || !Double.isFinite(parameter.t)
+				|| !Double.isFinite(x) || !Double.isFinite(y) || z != 1
+				|| !(parameter.getPathType() == conic.getType()
+						|| parameter.getPathType() == GeoConicNDConstants.CONIC_EMPTY
+						|| parameter.getPathType() == GeoConicNDConstants.CONIC_SINGLE_POINT)) {
+			return false;
+		}
+		// Isolated native forward reconstruction: no registered point, projection,
+		// construction mutation, tolerance, or serialization recursion.
+		Coords forward = new Coords(3);
+		conic.pathChangedWithoutCheck(forward, new PathParameter(parameter), true);
+		return sameNativeDouble(x, forward.getX()) && sameNativeDouble(y, forward.getY())
+				&& sameNativeDouble(z, forward.getZ());
+	}
+
+	private static boolean sameNativeDouble(double first, double second) {
+		return Double.doubleToLongBits(first) == Double.doubleToLongBits(second);
+	}
+
+	private static PathParameter nativeParameter(double t, int type) {
+		PathParameter parameter = new PathParameter(t);
+		parameter.setPathType(type);
+		return parameter;
+	}
+
+	private void applyNativeConicPointState(NativeConicPointState state) {
+		x = state.x;
+		y = state.y;
+		z = state.z;
+		getPathParameter().set(state.parameter);
+		getTempPathparameter().set(state.fallback);
+		animationValue = state.animation;
+		updateCoords();
+	}
+
+	private static final class NativeConicPointState {
+		private final GeoConic source;
+		private final int type;
+		private final boolean defined;
+		private final double[] sourceState;
+		private final PathParameter parameter;
+		private final PathParameter fallback;
+		private final double x;
+		private final double y;
+		private final double z;
+		private final double animation;
+
+		NativeConicPointState(GeoConic source, PathParameter parameter,
+				PathParameter fallback, double x, double y, double z, double animation) {
+			this.source = source;
+			type = source.getType();
+			defined = source.isDefined();
+			sourceState = sourceState(source);
+			this.parameter = new PathParameter(parameter);
+			this.fallback = new PathParameter(fallback);
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.animation = animation;
+		}
+
+		boolean sourceMatches() {
+			return source.getType() == type && source.isDefined() == defined
+					&& Arrays.equals(sourceState, sourceState(source));
+		}
+
+		boolean pointMatches(GeoPoint point) {
+			PathParameter current = point.getPathParameter();
+			PathParameter currentFallback = point.getTempPathparameter();
+			return sameNativeDouble(point.x, x) && sameNativeDouble(point.y, y)
+					&& sameNativeDouble(point.z, z) && sameNativeDouble(current.t, parameter.t)
+					&& current.getPathType() == parameter.getPathType()
+					&& sameNativeDouble(currentFallback.t, fallback.t)
+					&& currentFallback.getPathType() == fallback.getPathType()
+					&& sameNativeDouble(point.animationValue, animation);
+		}
+
+		private static double[] sourceState(GeoConic conic) {
+			double[] state = Arrays.copyOf(conic.getMatrix(), 15);
+			state[6] = conic.getHalfAxes()[0];
+			state[7] = conic.getHalfAxes()[1];
+			state[8] = conic.getEigenvec(0).getX();
+			state[9] = conic.getEigenvec(0).getY();
+			state[10] = conic.getEigenvec(1).getX();
+			state[11] = conic.getEigenvec(1).getY();
+			state[12] = conic.getTranslationVector().getX();
+			state[13] = conic.getTranslationVector().getY();
+			state[14] = conic.p;
+			return state;
+		}
 	}
 
 	@Override

@@ -432,6 +432,11 @@ public final class M08SnapshotPlacement2D {
 
 		/** Commits an explicitly chosen member once. Caller owns the single normal Undo. */
 		public GeoPoint commit(String label, Choice choice) {
+			return commit(label, choice, () -> { });
+		}
+
+		/** The facade contributes freshness inside this same concrete host transaction. */
+		GeoPoint commit(String label, Choice choice, Runnable finalGuard) {
 			if (Thread.currentThread() != thread) {
 				throw new Rejected(Failure.WRONG_THREAD);
 			}
@@ -461,8 +466,15 @@ public final class M08SnapshotPlacement2D {
 				publicationReady = choice;
 				initialBindingReady = choice;
 				publications++;
-				return LocusV2PublicOperations.createSnapshotSemanticPoint(
-						source.getConstruction(), label, source, choice);
+				return LocusPointPublication2D.publishAtomically(source, choice.address,
+						() -> LocusV2PublicOperations.createSnapshotSemanticPoint(
+								source.getConstruction(), label, source, choice),
+						() -> {
+							if (!current() || !referenceCurrent()) {
+								throw new Rejected(Failure.STALE_SELECTION);
+							}
+							finalGuard.run();
+						}, () -> new Rejected(Failure.FORWARD_MODEL_MISMATCH));
 			} finally {
 				publicationReady = null;
 				initialBindingReady = null;

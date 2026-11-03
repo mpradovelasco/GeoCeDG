@@ -308,6 +308,16 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		return semanticAddress;
 	}
 
+	/** Checks current persisted inputs without recomputing or trusting only cached state. */
+	public boolean hasCurrentAddressState(LocusSemanticAddress2D required) {
+		LocusDefinition2D definition = source.getSemanticDefinition();
+		return required != null && required.equals(semanticAddress) && definition != null
+				&& branchInput.isDefined() && parameterInput.toGeoElement().isDefined()
+				&& LocusSemanticAddressState2D.encode(required).equals(branchInput.getTextString())
+				&& persistedAddressMatchesInputs(definition.getProvider(), required,
+						parameterInput.getDouble());
+	}
+
 	/** @return current-bound G7-compatible semantic position, or {@code null} */
 	public LocusSemanticPosition2D getSemanticPosition() {
 		return semanticAddress == null ? null : semanticAddress.toMetricPosition();

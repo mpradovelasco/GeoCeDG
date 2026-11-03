@@ -284,6 +284,8 @@ final class GeoCeDGReferencePointTool {
 		case "UNSUPPORTED_CAPABILITY" -> t("Unsupported capability", "Capacidad no admitida");
 		case "UNSUPPORTED_CAPTURE" -> t("Source outside the supported reconstructible v3 scope",
 				"Fuente fuera del perímetro reconstructible v3 admitido");
+		case "UNSUPPORTED_HOST_STATE" -> t("Current document state does not permit exact restoration",
+				"El estado actual del documento no permite una restauración exacta");
 		case "LOCAL_EVIDENCE_INSUFFICIENT" -> t("Insufficient safe local evidence", "Evidencia local segura insuficiente");
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");

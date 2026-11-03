@@ -34,6 +34,7 @@ import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionQuery2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResolver2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D.Reason;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionStatus2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionWorkBudget2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -219,11 +220,29 @@ class Cu7M08SCorrectionTest {
 		assertNotNull(selected);
 		assertFalse(selected.getAllPredecessors().contains(center));
 		var retained = parent(selected).getCurrentSemanticAddress();
-		assertFalse(interaction.move(selected, selected.getInhomX() + 0.01,
-				selected.getInhomY(), 0.1));
+		double targetX = selected.getInhomX() + 0.01;
+		double targetY = selected.getInhomY() + 0.01;
+		var historicalMove = new LocusPointInteractionResolver2D().resolve(
+				new LocusPointInteractionQuery2D(h, targetX, targetY,
+						LocusPointInteractionPolicy2D.initial(0.1), retained));
+		assertEquals(LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
+				historicalMove.getStatus());
 		assertEquals(Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED,
-				interaction.getLastResult().getReason());
-		assertEquals(retained, parent(selected).getCurrentSemanticAddress());
+				historicalMove.getReason());
+		assertNull(historicalMove.getUniqueCandidate());
+		// The independent continuation permission does not change the R6 oracle.
+		var registry = app.getKernel().getConstruction().getSpatialIdentityRegistry();
+		var identity = registry.getPersistentGeoId(selected);
+		assertTrue(interaction.move(selected, targetX, targetY, 0.1));
+		var moved = parent(selected).getCurrentSemanticAddress();
+		assertFalse(retained.equals(moved));
+		assertEquals(retained.getSourceLocusId(), moved.getSourceLocusId());
+		assertEquals(retained.getBranchKey(), moved.getBranchKey());
+		assertEquals(retained.getComponentLineageKey(), moved.getComponentLineageKey());
+		assertEquals(identity, registry.getPersistentGeoId(selected));
+		assertTrue(selected.isDefined());
+		assertTrue(Math.hypot(selected.getInhomX() - targetX,
+				selected.getInhomY() - targetY) <= 0.1);
 	}
 
 	@Test

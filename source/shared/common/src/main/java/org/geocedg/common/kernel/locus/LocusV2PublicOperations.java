@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.locus;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -50,7 +51,9 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.Transform;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.ConstructionElement;
+import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
@@ -65,6 +68,7 @@ import org.geogebra.common.kernel.geos.GeoSegment;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.geos.GeoVec3D;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
+import org.geogebra.common.kernel.kernelND.GeoPointND;
 
 /**
  * Single feature-gated construction boundary for the public Locus V2 surface.
@@ -366,6 +370,73 @@ public final class LocusV2PublicOperations {
 		return LocusPointContinuation2D.begin(point);
 	}
 
+	/**
+	 * Conservative input-state preflight for new CU7/reference-Q permissions,
+	 * not a universal certificate for arbitrary inherited host state. The existing
+	 * free-place input perimeter is defined by {@link ReconstructionExactState2D}.
+	 * Traverse inline inputs too: the construction's geo set contains labeled geos.
+	 */
+	public static boolean hasUnsupportedInteractiveHostState(Construction construction) {
+		var visited = Collections.newSetFromMap(new IdentityHashMap<GeoElement, Boolean>());
+		var pending = new ArrayDeque<>(construction.getGeoSetConstructionOrder());
+		while (!pending.isEmpty()) {
+			GeoElement geo = pending.removeFirst();
+			if (!visited.add(geo)) {
+				continue;
+			}
+			// These independent inputs use a formatter which loses signed zero.
+			if (geo.isIndependent() && (geo instanceof GeoPoint
+					&& (negativeZero(((GeoPoint) geo).x) || negativeZero(((GeoPoint) geo).y)
+							|| negativeZero(((GeoPoint) geo).z))
+					|| geo instanceof GeoNumeric && negativeZero(((GeoNumeric) geo).getDouble()))) {
+				return true;
+			}
+			for (MyDouble literal : ReconstructionExactState2D.literals(geo.getDefinition())) {
+				// Raw angle literals without original text are formatted as degrees;
+				// V-REV-EXACT-4/9 demonstrates that their original bits need not reload.
+				if (literal.getClass() == MyDouble.class && literal.isAngle()) {
+					return true;
+				}
+			}
+			if (geo.getClass() == GeoConic.class) {
+				GeoConic conic = (GeoConic) geo;
+				if (!conic.isDefined()) {
+					return true;
+				}
+				for (double coefficient : conic.getMatrix()) {
+					if (!Double.isFinite(coefficient)) {
+						return true;
+					}
+				}
+			}
+			var parent = geo.getParentAlgorithm();
+			if (geo instanceof GeoPointND) {
+				GeoPointND point = (GeoPointND) geo;
+				boolean freePath = parent instanceof AlgoPointOnPath && parent.getInputLength() == 1;
+				if (freePath || point.hasRegion()) {
+					if (!(geo instanceof GeoPoint)
+							|| !((GeoPoint) geo).hasExactFiniteNativeConicPointState()) {
+						return true;
+					}
+				}
+			}
+			if (parent != null) {
+				Collections.addAll(pending, parent.getInput());
+			}
+			if (geo instanceof GeoList) {
+				GeoList list = (GeoList) geo;
+				for (int index = 0; index < list.size(); index++) {
+					pending.addLast(list.get(index));
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean negativeZero(double value) {
+		return Double.doubleToLongBits(value) == Double.doubleToLongBits(-0.0);
+	}
+
 	private static AlgoSemanticLocusPoint2D requireInteractionParent(GeoPoint point) {
 		AlgoSemanticLocusPoint2D parent = AlgoSemanticLocusPoint2D.requireSemanticParent(point);
 		Construction construction = point.getConstruction();
@@ -408,6 +479,11 @@ public final class LocusV2PublicOperations {
 						LocusPointContinuation2D.Status.INVALID_SOURCE);
 			}
 			if (result.hasChanged()) {
+				if (result.getHistoricalResult() == null
+						&& hasUnsupportedInteractiveHostState(point.getConstruction())) {
+					context.stop();
+					return result.unsupportedHost();
+				}
 				try {
 					publishInteractionAddress(point, parent, result.getAddress(), result);
 				} catch (RuntimeException failure) {

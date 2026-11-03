@@ -16,6 +16,8 @@
 
 package org.geogebra.common.kernel.algos;
 
+// GeoCeDG modification, 2026-11-03: consume the native conic load state once.
+
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -200,6 +202,13 @@ public class AlgoPointOnPath extends AlgoElement
 
 	@Override
 	public final void compute() {
+		// GeoCeDG CU7: tagged free conic state must survive the loader's final
+		// recomputation, including historical path handling OFF. Consumed once;
+		// explicit numeric inputs and subsequent edits retain normal behavior.
+		if (param == null && P instanceof GeoPoint
+				&& ((GeoPoint) P).restorePendingNativeConicPointState()) {
+			return;
+		}
 		if (param != null) {
 			PathParameter pp = P.getPathParameter();
 			pp.setT(PathNormalizer.toParentPathParameter(param.getDouble(),
