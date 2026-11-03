@@ -9,7 +9,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
+import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.kernel.PathNormalizer;
 import org.geogebra.common.kernel.PathParameter;
 import org.geogebra.common.kernel.PathRegionHandling;
@@ -93,6 +96,70 @@ class NativeConicPointPersistenceTest extends G9U0PublicSurfaceTestBase {
 		freshH();
 		assertTrue(point("D").getXML().contains("<" + STATE_TAG));
 		assertRoundTripsExactly(6, "D", "I", "J", "K", "M");
+	}
+
+	@Test void nativePersistenceStateDoesNotChangeDriverConfigurationButRetainsAnotherFreePlaceInput() {
+		GeoConic support = add("support=Circle((0,0),2)");
+		GeoPoint driver = add("N=Point(support)");
+		driver.updatePathParameter(.1); driver.updateCascade();
+		GeoConic movingSupport = add("movingSupport=Circle(N,1)");
+		GeoPoint other = add("R=Point(movingSupport)");
+		other.updatePathParameter(-.2); other.updateCascade();
+		GeoLocusV2 locus = add("L=LocusV2(R,N)");
+		List<GeoElement> slice = List.of(support, driver, movingSupport, other);
+		var initial = ReconstructionSliceFingerprint2D.snapshot(slice, List.of(driver));
+		long revision = locus.getSemanticRevision();
+		String driverXml = driver.getXML(), otherXml = other.getXML();
+		assertTrue(driverXml.contains("<" + STATE_TAG));
+		assertTrue(otherXml.contains("<" + STATE_TAG));
+		driver.updatePathParameter(.4); driver.updateCascade();
+		assertNotEquals(driverXml, driver.getXML());
+		assertNotEquals(otherXml, other.getXML());
+		var dragged = ReconstructionSliceFingerprint2D.snapshot(slice, List.of(driver));
+		assertEquals(ReconstructionSliceFingerprint2D.Change.NONE, dragged.changeFrom(initial));
+		assertEquals(revision, locus.getSemanticRevision());
+		other.updatePathParameter(.7); other.updateCascade();
+		var otherEdited = ReconstructionSliceFingerprint2D.snapshot(slice, List.of(driver));
+		assertEquals(ReconstructionSliceFingerprint2D.Change.VALUES, otherEdited.changeFrom(dragged));
+		assertEquals(revision + 1, locus.getSemanticRevision());
+	}
+
+	@Test void classicContinuousConicHistoryKeepsItsExistingUntaggedLoadRoute() {
+		for (boolean continuousAtSave : new boolean[] {true, false}) {
+			var classic = AppCommonFactory.create();
+			var kernel = classic.getKernel();
+			kernel.setContinuous(true);
+			assertTrue(kernel.isContinuous(), "Classic retains its existing continuity setting");
+			for (String command : List.of("a=0",
+					"c:(x*cos(a)+y*sin(a))^2/4+(-x*sin(a)+y*cos(a))^2=1", "P=Point(c)")) {
+				kernel.getAlgebraProcessor().processAlgebraCommand(command, false);
+			}
+			GeoNumeric angle = assertInstanceOf(GeoNumeric.class, kernel.lookupLabel("a"));
+			GeoConic conic = assertInstanceOf(GeoConic.class, kernel.lookupLabel("c"));
+			GeoPoint point = assertInstanceOf(GeoPoint.class, kernel.lookupLabel("P"));
+			for (int step = 1; step <= 12; step++) {
+				angle.setValue(step * Math.PI / 12); angle.updateCascade();
+			}
+			angle.setValue(0.0); angle.updateCascade();
+			point.updatePathParameter(0.0); point.updateCascade();
+			kernel.setContinuous(continuousAtSave);
+			assertEquals(continuousAtSave, kernel.isContinuous());
+			assertEquals(-1, conic.getEigenvec(0).getX(), 0);
+			assertEquals(-2, point.inhomX, 0);
+			assertFalse(point.hasExactFiniteNativeConicPointState());
+			assertFalse(point.getXML().contains("<" + STATE_TAG));
+			assertTrue(LocusV2PublicOperations.hasUnsupportedInteractiveHostState(kernel.getConstruction()));
+			String xml = classic.getXML();
+			assertDoesNotThrow(() -> classic.getXMLio().processXMLString(xml, true, false));
+			assertEquals(continuousAtSave, kernel.isContinuous());
+			GeoConic rebuilt = assertInstanceOf(GeoConic.class, kernel.lookupLabel("c"));
+			GeoPoint restored = assertInstanceOf(GeoPoint.class, kernel.lookupLabel("P"));
+			assertEquals(1, rebuilt.getEigenvec(0).getX(), 0);
+			assertTrue(restored.isFinite());
+			assertEquals(Math.PI, Math.abs(restored.getPathParameter().t), 0,
+					"The excluded Classic state follows its historical coordinate reprojection");
+			assertFalse(restored.getXML().contains("<" + STATE_TAG));
+		}
 	}
 
 	@Test void rejectedAtomicMutationRestoresFreshConicDriverAndGraphExactly() {

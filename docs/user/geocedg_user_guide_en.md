@@ -1180,6 +1180,8 @@ This also limits the new reference-Q creation on native objects; the usual nativ
 Point tool keeps its behavior. The diagnostic identifies that document boundary
 without changing the point. Old files retain historical loading; for admitted free
 conic points, the new reader explicitly preserves the saved native argument. The
+GeoCeDG profile writes that extra state; a later Classic save retains its historical
+format and does not promise to preserve the added state. The
 candidate requires final verification, independent review and author smoke.
 
 Safe M09 redefinition and dynamic M08-D correspondence remain outside this workflow.

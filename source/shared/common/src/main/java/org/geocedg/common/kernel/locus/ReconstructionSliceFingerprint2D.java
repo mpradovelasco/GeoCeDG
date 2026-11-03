@@ -63,8 +63,8 @@ public final class ReconstructionSliceFingerprint2D {
 	 * structure part.
 	 */
 	private static final Pattern DERIVED_VALUE_TAG = Pattern.compile(
-			"\\s*<(?:coords|value|matrix|eigenvectors|pathParameter|regionParameters)"
-					+ "\\b[^>]*/>");
+			"\\s*<(?:coords|value|matrix|eigenvectors|pathParameter|regionParameters"
+					+ "|conicPointState)\\b[^>]*/>");
 	/**
 	 * Tags of drawing state that the file loader applies after the whole construction is
 	 * read, once the slice has been published (animation, visibility condition, dynamic

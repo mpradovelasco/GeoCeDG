@@ -60,6 +60,18 @@ historical load behavior; explicitly parameterized points keep their numeric
 input authority, and limited/3D conics retain their former route. Older readers
 ignore the additive tag and retain their former coordinate-reprojection fidelity.
 
+The final writer/positive native capability is restricted to the **shared GeoCeDG
+profile**, whose pre-existing kernel policy starts noncontinuous and prevents
+enabling continuity mode. Reader recognition remains shared. This revises the
+initial ungated-writer recommendation after an actual Classic history witness:
+its dependent ellipse retained e0=−1 while a fresh reload chose e0=+1, so a tagged
+t=0/raw x=−2 conflicted with the rebuilt forward x=+2. Turning the current flag off
+did not erase that frame history. Both Classic flags now retain their historical
+untagged writer, with a permanent regression; no new kernel history field or frame
+remapping was introduced. GeoCeDG Macro kernels share the same application config.
+In-place conversion of an old Classic kernel is outside the authorized profile
+contract. Saving through Classic does not promise to retain GeoCeDG's new state.
+
 The native amendment defines precise format, eligibility and rejection policy.
 Its implementation results, exact regression counts and final frozen acceptance
 must be reported from their real receipts, separately from the authorization.
@@ -100,7 +112,7 @@ external `jvm-provenance-and-native-portability.md` distinguishes the observed
 Gradle/product JVMs, the build's Java-17 test toolchain contract and this material
 interoperability limit. It remains an adoption/review concern.
 
-The inherited patch against the requested base is additive: `GeoPoint` +215
+The inherited patch against the requested base is additive: `GeoPoint` +219
 lines (state codec/coherent restore/one-use correspondence), `ConsElementXMLHandler`
 +53 (strict native state/coords ordering and eligibility), `AlgoPointOnPath` +9
 (dated notice and compute seam). Original copyright remains and each inherited
@@ -287,6 +299,24 @@ run's six stale expectations were updated for intentional new behavior (local
 continuation independent of global R6, panel state, cumulative work and a hidden
 status label); no new exclusions, skips or allowlist entries were added.
 
+The first complete-module measurement attempt, `catalog-native-actual-shared-01`,
+exposed a genuine production integration defect: the new native state tag leaked
+driver position into the structural fingerprint. Four existing cache/revision/
+export assertions failed unchanged. The run was manually stopped after that
+confirmed root cause, while repeated reconstruction was still consuming samples;
+this was not a duration gate. Its raw inner exit 1, 571 partial cases (566 pass,
+four fail, one skip), process/thread/source snapshots and explicit external-stop
+sidecar are retained. It is neither complete acceptance nor catalog input.
+
+The corrective rule strips the whole `conicPointState` tag and preceding whitespace
+with the existing derived/native-place XML tags. Exact non-driver values and place
+arguments still flow through `ReconstructionExactState2D`. The added regression
+proves driver-only snapshot change NONE and retained revision, followed by a
+non-driver place edit producing VALUES and a new revision. All four affected
+classes are added to the effective shared selection (now 13 filters). Their strict
+oracles are preserved. Current source/test counts and the later clean measurement
+checkpoint must be taken from the final manifests, not the earlier 154 receipt.
+
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
 two selectors and one PHASE. New chart failures prompted mathematical/canonical
@@ -319,7 +349,10 @@ all 19 emitted samples, including one without an invented provider label.
 New-route changed moves add a read-only traversal of host roots/inline inputs and
 one native forward consistency check per admitted finite conic point. The required
 normal XML snapshot writer performs another such native check; both are explicit
-freshness/persistence work outside the semantic inverse counter. The prepared
+freshness/persistence work outside the semantic inverse counter. Other ordinary
+native XML requests, including fingerprint normalization before stripping this
+tag, may perform additional codec checks; two is not a claimed total for an entire
+gesture or DAG. Their cost is included in observed whole-mutation latency. The prepared
 binding is consumed once, so ordinary point publication does not repeat its forward
 evaluation. Exact no-ops avoid snapshot, DAG mutation and Undo; each concrete
 creation uses one snapshot including callbacks, with no redundant facade nesting.

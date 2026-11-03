@@ -130,6 +130,51 @@ an admitted finite conic point. Those two checks are explicit freshness/snapshot
 work, additional to the bounded inverse/point-binding budget; no hidden cache or
 new runtime counter framework is introduced merely to remove that small repetition.
 
+## Structural fingerprint compatibility correction
+
+Recorded before the corrective code. The full shared development run detects
+that `conicPointState` was retained in `ReconstructionSliceFingerprint2D`'s
+STRUCTURE digest, although it carries driver/native-place values. Moving only
+the driver then changed the procedure revision and repeated constructive proofs.
+Four existing revision/cache/export regressions demonstrate this defect. Their
+assertions remain unchanged; the interrupted development run is not acceptance.
+
+Classify the whole new tag, including preceding whitespace, with the existing
+derived/native-place XML tags removed from STRUCTURE. Actual non-driver values
+and free-place parameters remain authoritative through `ReconstructionExactState2D`.
+The correction must prove both sides: driver-only motion keeps the fingerprint/
+revision and cached proof, while an independent native place used by the traced
+construction still changes VALUES and recomputes. Add the four affected regression
+classes to the effective shared PHASE selection, not merely to an ad hoc probe.
+The native saved XML and geometric admission contracts are not weakened.
+
+## History-dependent native-frame boundary
+
+Recorded before the conservative eligibility correction. Generic dependent
+conic eigenvector signs may depend on the old frame when the native kernel's
+continuous mode is enabled. A fresh reload ignores a dependent conic's saved
+eigenvectors and can select a different frame; present forward coherence alone
+does not certify this history. GeoCeDG already forces continuous=false, while the
+shared native writer can also serve Classic. Preserve that existing policy and
+do not add invalid new authority to the history-dependent route. A targeted runtime
+probe demonstrates the conflicting frame and rejected reload. Merely checking the
+current flag is insufficient: disabling continuous mode leaves the historic frame.
+
+The revised minimal decision therefore restricts the **writer and positive native
+persistence capability to the shared GeoCeDG application profile**, whose existing
+kernel contract starts noncontinuous and prevents enabling it. Classic writers
+remain entirely historical, including after a true→false toggle. This supersedes
+the initial ungated-writer recommendation for a demonstrated compatibility reason.
+Reader recognition remains shared and strict; the tag is state, never permission
+to edit. Valid GeoCeDG/Macro kernels keep the existing profile-owned invariant;
+in-place conversion of an old Classic kernel without reconstruction is not an
+authorized profile migration. The format is not claimed durable after a Classic
+save, just as older readers retain their historical format.
+
+The permanent Classic history regression covers both current flags without
+normalizing the source before save. No frame-remapping, new kernel history field,
+primitive rewrite, GUI-derived geometric authority or general checkpoint is added.
+
 ## Runtime portability boundary
 
 Exact native host restoration is a same-runtime guarantee in the tested perimeter.

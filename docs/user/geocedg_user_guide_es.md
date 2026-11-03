@@ -1243,7 +1243,9 @@ indefinida, aunque L sea regular. Esto también limita la nueva creación desde 
 sobre objetos nativos; la herramienta Punto nativa habitual conserva su comportamiento.
 El diagnóstico indica ese límite del documento, sin cambiar el punto. Los archivos
 antiguos conservan su lectura histórica; para los puntos libres de cónica admitidos,
-el lector nuevo conserva explícitamente el argumento nativo guardado. El candidato
+el lector nuevo conserva explícitamente el argumento nativo guardado. Ese estado
+adicional se guarda con el perfil GeoCeDG; un guardado posterior con Classic conserva su
+formato heredado y no promete mantener ese estado adicional. El candidato
 requiere verificación final, revisión independiente y smoke autoral.
 
 La redefinición segura M09 y la correspondencia dinámica M08-D quedan fuera.
