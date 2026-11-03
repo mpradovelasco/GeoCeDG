@@ -568,6 +568,19 @@ class GeneralPointInteractionDesktopTest {
 			assertEquals("Unit notice retained", bar.getSegment(GeoCeDGStatusBar.PASTE_NOTICE_SEGMENT).getText());
 			bar.showPointInteractionNotice("Retry");
 			app.setMode(EuclidianConstants.MODE_POINT); assertFalse(notice.isVisible());
+			eval(app, "nativeSource=Segment((-1,-1),(1,-1))");
+			eval(app, "Existing=Point(nativeSource)");
+			app.setMode(EuclidianConstants.MODE_MOVE);
+			String unsupportedHost = app.getXML(); int unsupportedHistory = undo.getHistorySize();
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_PRESSED, point.inhomX, point.inhomY);
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 3, .1);
+			String hostDiagnostic = "es".equals(app.getLocale().getLanguage())
+					? "El estado actual del documento no permite una restauración exacta"
+					: "Current document state does not permit exact restoration";
+			assertEquals(hostDiagnostic, notice.getText()); assertTrue(notice.isVisible());
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, 3, .1);
+			assertEquals(hostDiagnostic, notice.getText()); assertTrue(notice.isVisible());
+			assertEquals(unsupportedHost, app.getXML()); assertEquals(unsupportedHistory, undo.getHistorySize());
 		});
 	}
 }
