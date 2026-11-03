@@ -396,6 +396,17 @@ for this correction. The Macro-reader and disconnected-component controls and al
 original H1/revision/cache/export assertions passed in that failed focus. The
 original failed receipt and classification remain; a new clean focus is required.
 
+On the successor `0e11d8a7`, shared passes 198/198 (inner exit 0). The first
+expanded Desktop focus executes 130 cases: 129 pass and one D1-validator failure
+(inner exit 1), including all ten repaired E1-L cases passing. Its positive test
+fixture exposed an overstrict **test-only** adjacency assumption: the native writer
+places the checkpoint before coordinates but may put existing visual fields
+between them. The candidate contract requires precedence, not adjacency. The
+two-line helper correction checks that order within the same owner and preserves
+the after-coordinates adversary and every byte/field/ownership/forward check.
+Production, guides, fixture and test identity are unchanged. Both failed focus
+receipts and the exact classification/diff remain; neither is final acceptance.
+
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
 two selectors and one PHASE. New chart failures prompted mathematical/canonical

@@ -394,8 +394,8 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 					"single direct checkpoint and ordinary coordinates");
 			Element coords = (Element) coordinates.item(0);
 			Node next = tag.getNextSibling();
-			while (next != null && !(next instanceof Element)) { next = next.getNextSibling(); }
-			require(next == coords, "checkpoint immediately precedes ordinary coordinates");
+			while (next != null && next != coords) { next = next.getNextSibling(); }
+			require(next == coords, "checkpoint precedes ordinary coordinates");
 			require(numeric(Double.parseDouble(coords.getAttribute("x")), point.x)
 					&& numeric(Double.parseDouble(coords.getAttribute("y")), point.y)
 					&& numeric(Double.parseDouble(coords.getAttribute("z")), point.z),
