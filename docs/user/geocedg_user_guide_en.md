@@ -1175,12 +1175,14 @@ singularities, gaps and ambiguities need not be traversable.
 
 **Document boundary.** The new modes also check that the document's native state
 supports established recovery if an operation fails. Another native point on an
-object, a region or an undefined conic may stop them even when L is regular.
+object, a region, an undefined conic or an editable point produced by a user tool
+may stop them even when L is regular.
 This also limits the new reference-Q creation on native objects; the usual native
 Point tool keeps its behavior. The diagnostic identifies that document boundary
 without changing the point. Old files retain historical loading; for admitted free
 conic points, the new reader explicitly preserves the saved native argument. The
-GeoCeDG profile writes that extra state; a later Classic save retains its historical
+GeoCeDG profile writes that extra state for ordinary points; existing user-tool
+definitions retain their historical format. A later Classic save retains its historical
 format and does not promise to preserve the added state. The
 candidate requires final verification, independent review and author smoke.
 

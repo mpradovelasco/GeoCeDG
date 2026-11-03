@@ -14,6 +14,8 @@ import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.kernel.PathNormalizer;
+import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.PathParameter;
 import org.geogebra.common.kernel.PathRegionHandling;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -96,6 +98,30 @@ class NativeConicPointPersistenceTest extends G9U0PublicSurfaceTestBase {
 		freshH();
 		assertTrue(point("D").getXML().contains("<" + STATE_TAG));
 		assertRoundTripsExactly(6, "D", "I", "J", "K", "M");
+	}
+
+	@Test void macroReaderPreservesHostCheckpointButTemplateWriterAndCapabilityStayHistorical()
+			throws Exception {
+		freshH();
+		GeoPoint host = point("D");
+		assertTrue(host.hasExactFiniteNativeConicPointState());
+		assertTrue(host.getXML().contains("<" + STATE_TAG));
+		Macro macro = new Macro(getKernel(), "ConicCheckpoint",
+				new GeoElement[] {lookup("I"), lookup("J")}, new GeoElement[] {host});
+		assertTrue(macro.getMacroKernel().isMacroKernel());
+		GeoPoint internal = assertInstanceOf(GeoPoint.class, macro.getMacroOutput()[0]);
+		assertEquals(bits(host.getPathParameter().t), bits(internal.getPathParameter().t));
+		assertEquals(host.getPathParameter().getPathType(), internal.getPathParameter().getPathType());
+		assertEquals(bits(host.x), bits(internal.x));
+		assertEquals(bits(host.y), bits(internal.y));
+		assertEquals(bits(host.z), bits(internal.z));
+		assertEquals(bits(host.getAnimationValue()), bits(internal.getAnimationValue()));
+		assertFalse(internal.hasExactFiniteNativeConicPointState());
+		assertFalse(internal.getXML().contains("<" + STATE_TAG));
+		XMLStringBuilder template = new XMLStringBuilder();
+		macro.getXML(template);
+		assertFalse(template.toString().contains("<" + STATE_TAG),
+				"The cached definition format must not acquire native host-place metadata");
 	}
 
 	@Test void nativePersistenceStateDoesNotChangeDriverConfigurationButRetainsAnotherFreePlaceInput() {

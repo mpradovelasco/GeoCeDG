@@ -1,5 +1,11 @@
 # CU7 — Demonstrated native rollback stop
 
+**Historical blocking finding.** The specific fresh-circle defect below was
+subsequently repaired within the guarded candidate; see the dated resumption and
+demonstrated-repair sections at the end. Present-tense failure/unchanged-upstream/
+no-persistence-change statements in the original finding describe that earlier
+checkpoint, not the later authorized implementation. Original evidence is retained.
+
 2026-11-03, Europe/Madrid. **Blocking semantic/transactional limitation.**
 `selfApproved=false`. This record invokes the author's section 11 stop condition
 for an exact host-state guarantee that needs a broader native checkpoint or

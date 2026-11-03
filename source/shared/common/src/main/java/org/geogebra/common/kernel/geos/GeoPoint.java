@@ -1838,7 +1838,8 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 		GeoConic conic = nativeFreeConic();
 		// Only the GeoCeDG bootstrap policy forbids continuous-frame history.
 		// Classic can retain that history even after its current flag is disabled.
-		if (!(kernel.getApplication().getConfig()
+		// Macro templates retain their historical definition-bearing XML format.
+		if (kernel.isMacroKernel() || !(kernel.getApplication().getConfig()
 				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG) || conic == null
 				|| !supportedNativeConicState(conic, getPathParameter(), x, y, z)
 				|| Double.isInfinite(animationValue)) {

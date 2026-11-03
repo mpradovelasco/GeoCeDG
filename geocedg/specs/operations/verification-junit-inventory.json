@@ -3841,7 +3841,10 @@
         "org.geocedg.desktop.Cu7M08SDesktopEventsTest",
         "org.geocedg.desktop.Cu7M08SReferenceToolTest",
         "org.geocedg.desktop.PostE2P1R2SmokeFollowUpTest",
-        "org.geocedg.desktop.PreG9BR6PlusD1DocumentUnitsTest"
+        "org.geocedg.desktop.PreG9BR6PlusD1DocumentUnitsTest",
+        "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
+        "org.geocedg.desktop.PreG9BR6PlusE1LBundledCatalogTest",
+        "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -3864,6 +3867,12 @@
         "org.geocedg.desktop.PostE2P1R2SmokeFollowUpTest",
         "--tests",
         "org.geocedg.desktop.PreG9BR6PlusD1DocumentUnitsTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE1LBundledCatalogTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",

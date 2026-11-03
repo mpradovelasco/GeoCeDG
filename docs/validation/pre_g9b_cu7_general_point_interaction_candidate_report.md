@@ -68,7 +68,8 @@ its dependent ellipse retained e0=−1 while a fresh reload chose e0=+1, so a ta
 t=0/raw x=−2 conflicted with the rebuilt forward x=+2. Turning the current flag off
 did not erase that frame history. Both Classic flags now retain their historical
 untagged writer, with a permanent regression; no new kernel history field or frame
-remapping was introduced. GeoCeDG Macro kernels share the same application config.
+remapping was introduced. Macro kernels share the application config but have a
+separate historical definition-format boundary, described below.
 In-place conversion of an old Classic kernel is outside the authorized profile
 contract. Saving through Classic does not promise to retain GeoCeDG's new state.
 
@@ -89,6 +90,11 @@ The new permissions have an executable host-state boundary, in addition to their
 geometric provider boundary. Native free places outside the exact finite/defined
 conic table, regions, unproved 3D places and known undefined/nonfinite conics refuse
 before mutation. This includes an unrelated native free place in the same document.
+Independent signed-zero point/numeric inputs and raw angular literals without
+original text are also outside the new gate's exact native-encoding table.
+Pointer-changeable native point outputs of a macro are outside the one-input
+native codec table and are explicitly refused by the candidate host gate;
+ordinary macro tools and fixed derived outputs retain their existing behavior.
 Fresh coordinate-projected hyperbola representations and inactive undefined-conic
 matrix caches are explicit exclusions, characterized by saved failing development
 receipts and new refusal tests. They are not pre-normalized to pass. Native parameter
@@ -112,7 +118,7 @@ external `jvm-provenance-and-native-portability.md` distinguishes the observed
 Gradle/product JVMs, the build's Java-17 test toolchain contract and this material
 interoperability limit. It remains an adoption/review concern.
 
-The inherited patch against the requested base is additive: `GeoPoint` +219
+The inherited patch against the requested base is additive: `GeoPoint` +220
 lines (state codec/coherent restore/one-use correspondence), `ConsElementXMLHandler`
 +53 (strict native state/coords ordering and eligibility), `AlgoPointOnPath` +9
 (dated notice and compute seam). Original copyright remains and each inherited
@@ -209,14 +215,19 @@ Successful edits preserve P and its durable ID, update only the dedicated semant
 state through the normal DAG, and use one normal construction transaction. Prepared
 binding is one-use and checked against the old address and revision. Pre-mutation
 refusals have no construction or Undo effect; one changed gesture has one Undo
-boundary. Errors after mutation use normal host rollback. Its exact native-input
-limitation for fresh circle drivers is blocking, rather than an accepted tolerance.
-No new point, generic Path conversion, codec, inverse parent or reconstruction
-architecture is introduced. Copy/remap and `.cedg` reuse the existing forward form.
+boundary. Errors after mutation use normal host rollback. The demonstrated fresh-
+circle native-input defect is repaired within the guarded, tested same-runtime
+perimeter. No point is created during dragging; no generic Path conversion, inverse
+parent or new reconstruction architecture is introduced. The separately authorized
+native codec is described above. Copy/remap and `.cedg` reuse the existing forward
+form. Durable identity is preserved; XML restoration can reconstruct Java objects
+and does not promise reference identity for an old Java object after rollback.
 
 ## Interface, fixed/free and P2
 
-`Allow dragging` / `Permitir arrastre` defaults true. False applies the native
+`Allow dragging` / `Permitir arrastre` is initially true in a fresh session. The
+panel retains the user's choices during the session, including after New file.
+False applies the native
 persistent lock; it does not freeze world coordinates or sever the source DAG.
 The normal lock can later change that choice, while kernel continuation permission
 remains separately required.
@@ -266,7 +277,7 @@ cases and four new host-boundary cases. Desktop adds three callback/host-refusal
 cases to the earlier 107. Frozen PHASE/INFRA_UNIT/FINAL are distinct required runs;
 these focal results are not attributed to the later final metadata commit.
 
-The final numerical-proof code checkpoint is
+The earlier numerical-proof code checkpoint is
 `d41c5c513b9c46a3aa5f7e19f51eccc04196cf33`, tree
 `4adc0b20d98dc404f80d35caffd99aaee05d8d09`. Its only production difference from
 9d4f is the circle-chart atan2 enclosure helper: four directed adjacent values
@@ -317,6 +328,63 @@ classes are added to the effective shared selection (now 13 filters). Their stri
 oracles are preserved. Current source/test counts and the later clean measurement
 checkpoint must be taken from the final manifests, not the earlier 154 receipt.
 
+The clean integration checkpoint `90b63f7c43b45c6a5d18ee5d7fb94e93afb286e9`,
+tree `801e05a26c790cb4cad0dfd91eda5dae4d995c01`, has these actual results:
+
+| Selection | Actual result | Inner exit | External receipt |
+| --- | --- | --- | --- |
+| Thirteen-filter shared focus | 195/195 pass; no failures/errors/skips | 0 | `focus-shared-integration-01/producer.json` |
+| Nine-filter Desktop focus | 110/110 pass; no failures/errors/skips | 0 | `focus-desktop-integration-01/producer.json` |
+| Complete shared measurement | 7,628 cases: 7,618 pass and ten existing source-pinned skips; no failures/errors | 0 | `catalog-native-actual-shared-02/producer.json` |
+| Complete Desktop measurement | 2,335 cases: 2,323 pass, eleven failures and one existing skip | 1 | `catalog-native-actual-desktop-01/producer.json` |
+
+The Desktop run completed normally in 1,234.378 s; it was not interrupted.
+Ten failures are a cascade from exactly one changed `CirclebyD` definition digest.
+Its GGT archive and the immutable curated sources did not change. `Macro.initMacro`
+cached the added conic tag in definition-bearing XML. The corrective candidate
+excludes Macro kernels from the new writer and positive capability while retaining
+the shared strict reader for isolated reconstruction loads. The macro digest rule,
+curated artifacts and exact expected digest remain unchanged.
+
+The eleventh failure is the D1 old whole-XML byte-identity oracle on an ordinary
+legacy conic point. An additional persistence field necessarily changes those
+bytes. The native amendment explicitly proposes a narrow serialization-byte
+exception: validate every emitted version-1 checkpoint in its actual point/source
+context, remove only its exact new line for comparison, and require the complete
+remaining construction/full XML to match the unchanged baseline fixture exactly.
+Classic remains a strict whole-XML comparison. This is an explicit candidate
+contract/test amendment, not a claim that the old unqualified byte promise passed,
+not geometric normalization, and not author adoption. Original fresh h/H1/R6 and
+numerical assertions stay strict. Original failed results and generated evidence
+are retained. These fixes require a new clean source cohort and fresh passing
+measurement; the failed Desktop receipt is not inventory input.
+
+Before that corrective production patch, the independent source-90 corpus probe
+completed with inner exit 0 (one diagnostic test, 105.831 s). All 134 successful
+document/configuration loads retain the original baseline hashes: raw Classic XML
+and GeoCeDG XML after the precise validated checkpoint-line projection. Two
+original fixture exclusions remain exact historical exclusions. Seven GeoCeDG
+documents have changed raw XML, with fourteen validated tag occurrences across
+construction/full XML. There are no other byte differences. The original fixture,
+per-document XML/matrix, diagnostic source and actual producer remain in external
+`legacy-native-payload-probe/` (producer SHA-256
+`376cffde4cfa15705b2f15cfb4d2aa3310e53fd98d6034027188960595704687`).
+This is evidence for the narrow candidate exception, not a frozen acceptance run.
+
+A second retained diagnostic, `general-gap-probe/`, completed with inner exit 0
+(one test, 78.564 s) on the corrective production sources. A real circular-driver
+line/circle-intersection program has two certified valid parameter components and
+a genuine undefined gap; its hybrid existence inventory is COMPLETE. The two
+components can produce the same geometric image. Existing R1/R6 offers two explicit
+addresses and constructs the selected positive-component point normally. The new
+local route returns `NO_CONTINUATION_ESTABLISHED`: this v3 line/circle operation
+does not belong to either new continuation provider. Existence and address
+selection therefore do not become drag authority. The permanent
+`disconnectedLineCirclePreimagesCreateExplicitlyButRefuseUnprovedContinuation`
+regression fixes that result, including a new press and exact retained XML/ID/
+address, in the effective shared selector. Its clean-cohort execution is separate
+from this diagnostic. No provider was broadened to make the adversary pass.
+
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
 two selectors and one PHASE. New chart failures prompted mathematical/canonical
@@ -333,18 +401,36 @@ collapse, gaps, coincident directions, singular barriers, stale/foreign/consumed
 handles, exhausted work and source/authority changes. Publication rollback is
 checked against saved XML, registry reservations and hidden inputs.
 
+| Adversarial class | Creation policy | Drag/update policy |
+| --- | --- | --- |
+| Self-intersection or close preimages | Confirm the full displayed address; no Cartesian identity inference | Stay on the established local sheet; stop when its proof fails |
+| Coincident branches/components | Explicit structural address choice only when its independent forward permission is established; collapsed point components excluded | No proximity-based branch/component transfer |
+| Disconnected parameter components | Admit only a proved selectable component under the applicable creation permission | Retain component lineage; a request is not authority to bridge components |
+| Undefined gap or predicate boundary | No unsupported forward argument | Require the complete old-to-new chart to be valid; otherwise stop |
+| Fold, cusp, collapse or singularity | Forward creation still needs the declared component/domain evidence; not universally admitted | Strict local proof required; no unproved crossing |
+| Equivalent parameters and periodic seam | Provider-canonical address and explicit lift/seam | Cross only the certified provider correspondence; no inferred closure |
+| Undefined source | No stale offer | Normal DAG may make P undefined while retaining its address; no reassociation |
+| Structural/source/authority change | Reject stale or consumed choices | Reject stale gesture/binding; retain the last valid edit state |
+| Unsupported native host state | Refuse the new transaction before publication | Refuse the new local edit before snapshot/mutation |
+
+This table is the explicit policy, not a claim that every adversarial class has
+a newly admitted provider. The external evidence map distinguishes direct tests,
+historical regression, indirect evidence and physical observations.
+
 Performance counters cover semantic proof and point-binding work, distinguished
 from structural/interval passes. Ordinary downstream DAG algorithms are not
 automatically included in that inverse-work budget. Observed whole-mutation
 latencies and snapshot costs are reported separately, without a hard realtime
 claim or a silent approximation to meet a timing target.
 
-At checkpoint 9d4f the saved telemetry has 16 Case-A moves: one proof/point
-evaluation and five proof passes each, whole-mutation 0.4173–1.0054 ms,
-median 0.6622 ms. The measured h move used one evaluation/49 passes, 8.5964 ms;
-the historical Spline move used 13 evaluations/0 passes, 0.7166 ms. These are small
-fixture observations, not latency guarantees. `continuation-telemetry.json` keeps
-all 19 emitted samples, including one without an invented provider label.
+At checkpoint 90b6 the saved telemetry has 16 Case-A moves: one proof/point
+evaluation and five proof passes each, whole-mutation 0.2587–1.3814 ms,
+median 0.67025 ms. The measured h move used one evaluation/49 passes, 5.8293 ms;
+the historical Spline move used 13 evaluations/0 passes, 1.095 ms. These are small
+fixture observations, not latency guarantees. The focal `continuation-telemetry.json`
+keeps all 19 emitted samples, including one without an invented provider label.
+Its descriptive "two checks" names the host preflight and snapshot writer; it
+is not a total counter for all native serialization/fingerprint work in a gesture.
 
 New-route changed moves add a read-only traversal of host roots/inline inputs and
 one native forward consistency check per admitted finite conic point. The required
@@ -378,6 +464,17 @@ cases, repeated their motions and closed normally, launcher inner exit 0
 screenshots, unique `.cedg` files and extracted native XML remain in external
 `smoke/`; old captures are not relabelled as the corrected source.
 
+The third session used clean 90b6 after the fingerprint/profile correction. It
+reopened the saved A/h/Spline copies with exact prior point states and durable
+IDs, repeated real mouse movement on all three, crossed the A seam in both
+directions with lift `0→1→0` and dependent updates, and reached Spline endpoints
+`1→0`. It closed normally, launcher inner exit 0 (263.226 s). Exact actions,
+checks, source and saved-state identities are in `physical-90b-observations.md/json`,
+`physical-90b-checks.json` and `physical-90b-source-manifest.json`. That session
+does not supply new physical creation/checkbox/Undo evidence: those earlier
+observations retain their 9d4f attribution. Further source-cohort smoke, if
+executed, must have separate records and cannot relabel these sessions.
+
 | Case | Demonstrated graphical behavior and saved evidence |
 | --- | --- |
 | A, exact vector-circle construction | Click near `(3,0)` and ordinary Point's Q mode both create forward points with explicitly uncertified proximity. Both directions, dependents, exact one-step Undo/Redo, same-ID periodic lift `0→1→0`, fixed checkbox and a visible after-release barrier were exercised. The rejected gesture's parsed construction XML is unchanged. Corrected d41c reopens the same B and repeats the seam both ways with exact saved return. |
@@ -398,6 +495,8 @@ Read `smoke-observations.md/json`, its corrected-code follow-up, and
 Optional native-object Q, full closure clipboard/remap, fixed-point source edits,
 P2's pending-selector view change and tooltips-OFF were covered by automated tests
 but not by this physical session. The fourteen-step author protocol remains pending.
+Physical DPI variation and a closed-Spline seam were not exercised; no new DPI
+or closed-Spline-seam proof is inferred from the open-Spline observations.
 An early clipped-window h attempt was discarded as targeting evidence; later
 verified native states establish the actual h motion. No Codex overlay UI was used.
 
@@ -435,8 +534,11 @@ isolated settings and launcher receipt before starting.
 9. Repeat with `Allow dragging` cleared. The point must not drag. Change its source:
    it must still recompute. Test the native lock and its persistence on reopening.
 10. With Point/Point on object test a native segment and circle, both by click and
-    `From reference Q`. Move Q afterward; the new point remains on its source
-    without Q as a new parent. Verify ordinary native dragging separately.
+    `From reference Q`. Use a fresh admitted drawing for each Q case, or exercise
+    Q before creating unsupported native free places. An existing native
+    `Point(segment)` is expected to refuse an additional Q transaction without
+    mutation. Ordinary native clicks and dragging retain their inherited behavior.
+    Move Q afterward: it must not be a new parent of the created point.
 11. Restore free/direct mode and repeat historical Spline V2 creation, endpoint interaction and drag. Exercise
     ambiguous choices explicitly; never infer identity from visual coincidence.
 12. Verify one Undo/Redo per gesture, saved `.cedg` reopen and copy/remap of a full

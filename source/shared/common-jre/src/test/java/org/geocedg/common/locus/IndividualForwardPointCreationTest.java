@@ -33,6 +33,8 @@ import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialLifecycleRuntime;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
+import org.geogebra.common.kernel.algos.AlgoMacro;
+import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -427,6 +429,29 @@ class IndividualForwardPointCreationTest extends G9U0PublicSurfaceTestBase {
 		badCenter.setUndefined(); badCenter.updateCascade();
 		assertFalse(lookup("badCircle").isDefined());
 		assertUnsupportedHostRefusal(source);
+	}
+
+	@Test
+	void newForwardPermissionRefusesEditableNativeMacroPointWithoutMutation() throws Exception {
+		GeoLocusV2 source = vectorCircle();
+		assertFalse(org.geocedg.common.kernel.locus.LocusV2PublicOperations
+				.hasUnsupportedInteractiveHostState(getConstruction()));
+		Macro macro = new Macro(getKernel(), "NativePlace",
+				new GeoElement[] {lookup("Center")}, new GeoElement[] {lookup("N")});
+		getKernel().addMacro(macro);
+		AlgoMacro placement = new AlgoMacro(getConstruction(), new String[] {"Other"}, macro,
+				new GeoElement[] {lookup("Center")}, true);
+		GeoPoint other = assertInstanceOf(GeoPoint.class, placement.getOutput(0));
+		assertTrue(placement.isChangeable(other), "The native macro owns an editable argument");
+		assertFalse(other.hasExactFiniteNativeConicPointState());
+		long argument = Double.doubleToLongBits(other.getPathParameter().t);
+		assertUnsupportedHostRefusal(source);
+		assertSame(other, lookup("Other"));
+		assertEquals(argument, Double.doubleToLongBits(other.getPathParameter().t));
+		placement.remove();
+		assertFalse(org.geocedg.common.kernel.locus.LocusV2PublicOperations
+				.hasUnsupportedInteractiveHostState(getConstruction()),
+				"A cached template alone does not introduce a live native place");
 	}
 
 	@Test

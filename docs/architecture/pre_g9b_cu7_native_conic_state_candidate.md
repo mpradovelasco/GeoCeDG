@@ -175,6 +175,64 @@ The permanent Classic history regression covers both current flags without
 normalizing the source before save. No frame-remapping, new kernel history field,
 primitive rewrite, GUI-derived geometric authority or general checkpoint is added.
 
+## Macro-definition boundary and exact legacy-payload exception
+
+Recorded before the corrective implementation, after the complete Desktop run on
+`90b63f7c` ended with eleven failures. Ten are a cascade from one changed
+`CirclebyD` definition digest: `Macro.initMacro` serializes its construction into
+the definition cache, and the new tag then becomes definition-bearing XML.
+The curated GGT bytes and immutable originals are unchanged. Do not alter the
+macro digest rule, expected digests, generated library or curation authorities.
+
+The writer and positive native persistence capability shall additionally exclude
+`Kernel.isMacroKernel()`. This supersedes the writer eligibility of Macro kernels
+in the earlier profile paragraph. Macro definitions keep their historical format.
+The shared strict reader remains available to load a tagged ordinary-construction
+slice into an isolated Macro kernel for reconstruction. Ordinary GeoCeDG points
+retain the new state. Registered macro definitions are cached authority, not a
+transient geometric snapshot; normal Undo XML does not rewrite that cache.
+This decision does not certify an editable native macro output's live state.
+`AlgoMacro` can expose a pointer-changeable point whose own native parameter is
+consumed by its computation, outside the one-input `AlgoPointOnPath` codec table.
+The new-operation host gate shall explicitly refuse that unproved editable input,
+with a regression proving no mutation. This is a bounded availability exclusion;
+ordinary macro tools and noneditable derived outputs keep their existing behavior.
+
+The eleventh failure is the D1 legacy byte-identity oracle. Its ordinary-construction
+XML includes a native conic point, so additive persistence metadata intentionally
+changes its saved XML. Exact whole-file byte identity and writing an additional
+field cannot both hold. The following is an explicit **candidate exception to
+that serialization-byte clause**, permitted for review under the author's native
+repair authorization; it is not adoption of an amendment to accepted D1/ADR text:
+
+* Loading an old untagged file retains its historical geometric interpretation.
+  Serializing an eligible ordinary GeoCeDG point may add only the version-1
+  checkpoint defined here. No coordinate, native algorithm, existing attribute,
+  unrelated whitespace or other legacy payload is allowed to change by this
+  exception. A later Classic save keeps its historical writer.
+* Retain the immutable legacy corpus, its baseline fixture and exact expected
+  hashes. Compare both construction and full XML against those original hashes
+  after removing **only structurally validated version-1 checkpoint lines** from
+  the GeoCeDG result. Classic remains a strict, unprojected byte comparison.
+  Unknown versions/attributes, wrong ownership/placement or any remaining byte
+  difference must fail. Do not reserialize XML to normalize unrelated content.
+  The immutable corpus contains only finite tagged points: keep this comparison
+  exception finite-only and require ownership in the main construction. Compare
+  every native/raw/fallback/animation field with the live point, and independently
+  reconstruct its native forward argument through the existing conic API. Test-only
+  reflection may read the private fallback; add no production API for the oracle.
+* Prove by an independent diagnostic on the actual corpus that this is the whole
+  difference, then include the revised, explicitly named payload oracle and the
+  unchanged E1-L classes in the effective CU7 Desktop PHASE. Keep the original
+  failed receipt. Exact native fresh-state, H1 rollback, forward, R6 and numerical
+  assertions remain unchanged; no tolerance or new skip replaces them.
+
+The new tag's exact parameter/raw-state contract remains separately tested.
+Removing it for an old-payload comparison is not a claim that it has no semantic
+meaning. Old readers do not gain the new exact-restoration guarantee. The added
+metadata, Macro exclusion and D1 byte exception must be explicit in the delivery
+and remain pending independent review and author adoption.
+
 ## Runtime portability boundary
 
 Exact native host restoration is a same-runtime guarantee in the tested perimeter.

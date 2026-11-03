@@ -1968,7 +1968,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoPoint.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU7 general point interaction, explicit author-authorized inherited repair: persist the native argument/type of eligible free Point(full 2D conic) under the shared GeoCeDG profile's noncontinuous kernel invariant, restore its raw coordinates and native caches coherently, and carry a source-checked one-use state through the ordinary final load recomputation. Classic writers, existing untagged and unrelated path semantics remain historical; the profile boundary excludes demonstrated conic frame history, including after a continuous-mode flag is disabled.",
+      "purpose": "PRE-G9B-CU7 general point interaction, explicit author-authorized inherited repair: persist the native argument/type of eligible free Point(full 2D conic) under the shared GeoCeDG profile's noncontinuous kernel invariant, restore its raw coordinates and native caches coherently, and carry a source-checked one-use state through the ordinary final load recomputation. Classic and MacroKernel definition writers retain their historical format; absent-tag inputs retain their old load authority. Ordinary GeoCeDG output adds only the explicitly proposed D1 checkpoint-byte exception, with the original legacy payload preserved. The profile boundary excludes demonstrated conic frame history, including after a continuous-mode flag is disabled.",
       "authority": "docs/architecture/pre_g9b_cu7_native_conic_state_candidate.md"
     },
     {

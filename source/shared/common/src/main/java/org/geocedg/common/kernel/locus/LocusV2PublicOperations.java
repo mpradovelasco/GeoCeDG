@@ -51,6 +51,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.Transform;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoMacro;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
@@ -412,6 +413,11 @@ public final class LocusV2PublicOperations {
 			var parent = geo.getParentAlgorithm();
 			if (geo instanceof GeoPointND) {
 				GeoPointND point = (GeoPointND) geo;
+				// Editable macro outputs own a live native parameter outside the
+				// one-input point codec; cached macro definitions do not restore it.
+				if (parent instanceof AlgoMacro && ((AlgoMacro) parent).isChangeable(point)) {
+					return true;
+				}
 				boolean freePath = parent instanceof AlgoPointOnPath && parent.getInputLength() == 1;
 				if (freePath || point.hasRegion()) {
 					if (!(geo instanceof GeoPoint)

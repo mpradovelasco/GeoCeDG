@@ -324,6 +324,71 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	@Test
+	void disconnectedLineCirclePreimagesCreateExplicitlyButRefuseUnprovedContinuation() {
+		add("c=Circle((0,0),2)");
+		GeoPoint driver = add("N=Point(c)");
+		driver.updatePathParameter(Math.PI / 2);
+		driver.updateCascade();
+		add("g=Line(N,yAxis)");
+		add("f=Circle((0,0),1)");
+		add("Q=Intersect(g,f,1)");
+		GeoLocusV2 source = add("L=LocusV2(Q,N)");
+		var definition = source.getSemanticDefinition();
+		var existence = definition.getBranch(BRANCH).getExistenceStructure();
+		assertEquals(org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness.COMPLETE,
+				existence.getCompleteness());
+		assertEquals(2, existence.getContinuousValidComponents().size());
+		assertNotNull(existence.getComponentContaining(Math.PI / 2));
+		assertNotNull(existence.getComponentContaining(-Math.PI / 2));
+		assertNull(existence.getComponentContaining(0));
+		try (var session = org.geocedg.common.kernel.locus.LocusEvaluationSession2D.memoizing(20)) {
+			assertFalse(definition.evaluate(BRANCH, 0, session).isValid(),
+					"The two valid parameter components are separated by genuine nonexistence");
+		}
+		var positiveImage = at(source, Math.PI / 2);
+		var negativeImage = at(source, -Math.PI / 2);
+		assertEquals(positiveImage.getX(), negativeImage.getX(), 1E-14);
+		assertEquals(positiveImage.getY(), negativeImage.getY(), 1E-14);
+		var policy = LocusPointInteractionPolicy2D.initial(0.1);
+		GeoPoint point;
+		LocusSemanticAddress2D otherAddress;
+		try (var selection = LocusPointCreation2D.query(source,
+				positiveImage.getX(), positiveImage.getY(), policy)) {
+			assertEquals(LocusPointCreation2D.Route.R1_R6, selection.getRoute());
+			assertEquals(2, selection.getChoices().size(),
+					"Coincident images retain two explicitly selectable component addresses");
+			var selected = selection.getChoices().stream().filter(choice ->
+					choice.getAddress().getCanonicalParameter() > 0).findFirst().orElseThrow();
+			otherAddress = selection.getChoices().stream().filter(choice ->
+					choice.getAddress().getCanonicalParameter() < 0).findFirst().orElseThrow().getAddress();
+			assertFalse(selected.getAddress().getComponentLineageKey()
+					.equals(otherAddress.getComponentLineageKey()));
+			point = selection.commit("P", selected);
+		}
+		var parent = (AlgoSemanticLocusPoint2D) point.getParentAlgorithm();
+		var address = parent.getCurrentSemanticAddress();
+		var id = getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point);
+		String before = getApp().getXML();
+		var near = at(source, address.getCanonicalParameter() + 0.001);
+		var refusal = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+				near.getX(), near.getY(), policy, context(point));
+		assertEquals(LocusPointContinuation2D.Status.NO_CONTINUATION_ESTABLISHED, refusal.getStatus(),
+				"Existence components alone do not establish the LINE_CIRCLE local inverse chart");
+		assertTrue(context(point).isStopped());
+		assertEquals(before, getApp().getXML());
+		var otherImage = at(source, otherAddress.getCanonicalParameter());
+		var otherRequest = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+				otherImage.getX(), otherImage.getY(), policy,
+				LocusV2PublicOperations.beginInteractiveSemanticPointDrag(point));
+		assertEquals(LocusPointContinuation2D.Status.NO_CONTINUATION_ESTABLISHED, otherRequest.getStatus(),
+				"A fresh press and a coincident image do not authorize a component jump");
+		assertSame(point, lookup("P"));
+		assertEquals(id, getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point));
+		assertEquals(address, parent.getCurrentSemanticAddress());
+		assertEquals(before, getApp().getXML());
+	}
+
+	@Test
 	void sourceMutationDuringPublicationRollsBackBeforeContextAdvance() {
 		add("Radius=1");
 		add("c=Circle((0,0),Radius)");

@@ -356,7 +356,10 @@ Invoke-Case 'CU7 general point interaction includes new tests and historical sem
             'org.geocedg.desktop.Cu7M08SDesktopEventsTest',
             'org.geocedg.desktop.Cu7M08SReferenceToolTest',
             'org.geocedg.desktop.PostE2P1R2SmokeFollowUpTest',
-            'org.geocedg.desktop.PreG9BR6PlusD1DocumentUnitsTest')
+            'org.geocedg.desktop.PreG9BR6PlusD1DocumentUnitsTest',
+            'org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest',
+            'org.geocedg.desktop.PreG9BR6PlusE1LBundledCatalogTest',
+            'org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest')
     }
     foreach ($module in @('shared', 'desktop')) {
         $id = 'pre-g9b-cu7-general-point-interaction.' + $module

@@ -1238,13 +1238,15 @@ No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
 
 **Límite del documento.** Las modalidades nuevas también comprueban que el estado
 nativo del documento permite una recuperación acreditada si falla una operación.
-Pueden detenerse por otro punto nativo sobre un objeto, una región o una cónica
-indefinida, aunque L sea regular. Esto también limita la nueva creación desde Q
+Pueden detenerse por otro punto nativo sobre un objeto, una región, una cónica
+indefinida o un punto editable producido por una herramienta de usuario, aunque L
+sea regular. Esto también limita la nueva creación desde Q
 sobre objetos nativos; la herramienta Punto nativa habitual conserva su comportamiento.
 El diagnóstico indica ese límite del documento, sin cambiar el punto. Los archivos
 antiguos conservan su lectura histórica; para los puntos libres de cónica admitidos,
 el lector nuevo conserva explícitamente el argumento nativo guardado. Ese estado
-adicional se guarda con el perfil GeoCeDG; un guardado posterior con Classic conserva su
+adicional se guarda para puntos ordinarios con el perfil GeoCeDG; las definiciones
+de herramientas de usuario conservan su formato anterior. Un guardado posterior con Classic conserva su
 formato heredado y no promete mantener ese estado adicional. El candidato
 requiere verificación final, revisión independiente y smoke autoral.
 
