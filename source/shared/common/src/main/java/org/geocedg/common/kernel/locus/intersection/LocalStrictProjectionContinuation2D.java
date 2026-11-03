@@ -246,7 +246,10 @@ final class LocalStrictProjectionContinuation2D {
 			LocusSemanticAddress2D current, LiftedDomain domain, SplineOutwardInterval2D root,
 			double x, double y, String selection, double tolerance) {
 		double represented = root.midpoint();
-		double canonical = definition.getProvider().canonicalize(represented);
+		// The provider's modular arithmetic may need its normal stabilization pass.
+		// The complete reduction (both passes) is bounded against canonicalRoot below.
+		double firstCanonical = definition.getProvider().canonicalize(represented);
+		double canonical = definition.getProvider().canonicalize(firstCanonical);
 		if (bits(canonical) != bits(definition.getProvider().canonicalize(canonical))) {
 			return null;
 		}

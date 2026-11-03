@@ -63,10 +63,10 @@ class R3PointInteractionPerformanceTest extends G9U0PublicSurfaceTestBase {
 			point = selection.commit("P", choice);
 		}
 		for (int index = 0; index < 32; index++) {
-			add("dep" + index + "=P+(" + (index + 1) + ",2)");
+			add("Dep" + index + "=P+(" + (index + 1) + ",2)");
 		}
 		for (int index = 0; index < 8; index++) {
-			add("depCircle" + index + "=Circle(dep" + index + ",1)");
+			add("depCircle" + index + "=Circle(Dep" + index + ",1)");
 		}
 		var pointId = registry.getPersistentGeoId(point);
 		assertNotNull(pointId);

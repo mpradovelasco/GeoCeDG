@@ -457,7 +457,8 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 source = add("L=SplineV2({A,B,C,D},3)");
 		GeoPoint point = point(source, 0, 0);
 		// The new host gate is not a silent change to historical R6 permissions.
-		GeoPoint legacyPlace = add("LegacyPlace=Point(x+y=1)");
+		add("unsupportedPath=Curve(t,t^2,t,-2,2)");
+		GeoPoint legacyPlace = add("LegacyPlace=Point(unsupportedPath)");
 		legacyPlace.setCoords(.3, .2, 1); legacyPlace.updateCascade();
 		assertTrue(LocusV2PublicOperations.hasUnsupportedInteractiveHostState(getConstruction()));
 		var policy = LocusPointInteractionPolicy2D.initial(0.1);
@@ -497,7 +498,8 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void newLocalPermissionRefusesUnsupportedHostWithoutSnapshotOrParameterChange() {
 		GeoPoint point = point(circle(), 3, 0);
-		GeoPoint unrelated = add("Other=Point(x+y=1)");
+		add("unsupportedPath=Curve(t,t^2,t,-2,2)");
+		GeoPoint unrelated = add("Other=Point(unsupportedPath)");
 		unrelated.setCoords(.3, .2, 1); unrelated.updateCascade();
 		var address = AlgoSemanticLocusPoint2D.requireSemanticParent(point).getCurrentSemanticAddress();
 		String before = getApp().getXML();

@@ -56,9 +56,12 @@ class R3PointContinuationTest extends G9U0PublicSurfaceTestBase {
 	private LocusPointContinuation2D.Result move(GeoPoint point,
 			LocusPointContinuation2D.Context context, GeoLocusV2 source, double parameter) {
 		var target = at(source, parameter);
+		var previous = address(point);
 		var result = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				target.getX(), target.getY(), policy, context);
-		assertTrue(result.isEstablished(), result.getDiagnostic());
+		assertTrue(result.isEstablished(), () -> "targetParameter=" + parameter
+				+ " previous=" + previous.getCanonicalParameter() + " lift=" + previous.getPeriodicLift()
+				+ " status=" + result.getDiagnostic() + " proofPasses=" + result.getIntervalPasses());
 		assertEquals("LOCAL_STRICT_PROJECTION_CHART", result.getMethod());
 		assertEquals(parameter, address(point).getCanonicalParameter(), 2E-11);
 		return result;
@@ -299,6 +302,11 @@ class R3PointContinuationTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 source = add("L=LocusV2(Q,N)");
 		GeoPoint point = point(source, .2);
 		var context = LocusV2PublicOperations.beginInteractiveSemanticPointDrag(point);
+		// Establish the normal offset first; the following requests are genuinely tiny
+		// displacements from that accepted off-curve target, not from F(a0).
+		var offset = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+				.001, Math.sin(.2), policy, context);
+		assertTrue(offset.isEstablished(), offset.getDiagnostic());
 		for (int event = 1; event <= 12; event++) {
 			double targetParameter = .2 + event * 1E-4;
 			double previous = address(point).getCanonicalParameter();
@@ -307,7 +315,8 @@ class R3PointContinuationTest extends G9U0PublicSurfaceTestBase {
 			assertTrue(result.isEstablished(), result.getDiagnostic());
 			assertEquals("LOCAL_STRICT_PROJECTION_CHART", result.getMethod());
 			assertTrue(Double.isFinite(result.getMaximumParameterChange()));
-			assertTrue(result.getMaximumParameterChange() < .001);
+			assertTrue(result.getMaximumParameterChange() < .001,
+					() -> "bound=" + result.getMaximumParameterChange() + " target=" + targetParameter);
 			assertTrue(Math.abs(address(point).getCanonicalParameter() - previous)
 					<= result.getMaximumParameterChange());
 			assertTrue(result.getParameterError() <= policy.getParameterTolerance());

@@ -122,6 +122,15 @@ class PreG9BR6PlusD1LegacyByteIdentityTest {
 					.projectValidatedCu7NativePayload(unrelated, app), "No unrelated byte normalization");
 			for (String invalidTag : new String[] {
 					tag.replace("version=\"1\"", "version=\"2\""),
+					// F7: DOM must reject both duplicate orders before any attribute
+					// map can select a version. Payload projection accepts one empty
+					// self-closing leaf, matching the native loader's focal grammar.
+					tag.replace("version=\"1\"", "version=\"99\" version=\"1\""),
+					tag.replace("version=\"1\"", "version=\"1\" version=\"99\""),
+					tag.replace("/>", "><unexpected/></conicPointState>"),
+					tag.replace("/>", ">unexpected</conicPointState>"),
+					tag.replace("/>", "></conicPointState>"),
+					tag.replace("/>", "><![CDATA[text]]></conicPointState>"),
 					tag.replace("/>", " extra=\"1\"/>"),
 					tag.replaceFirst("version=\"1\" (t=\"[^\"]*\")", "$1 version=\"1\""),
 					tag.replaceFirst(" t=\"[^\"]*\"", " t=\"0.5\""),

@@ -42,7 +42,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case $inventoryRejected 'JUnit inventory accepted a missing selection fingerprint.'
     Assert-Case (@($inventory.modules).Count -eq 2) 'Module discovery count changed.'
     Assert-Case (@($inventory.modules|Where-Object{$_.PSObject.Properties.Name -ccontains 'identities'}).Count -eq 0) 'Per-method inventory was tracked.'
-    Assert-Case (@($inventory.selections).Count -eq 77) 'Selection inventory count changed.'
+    Assert-Case (@($inventory.selections).Count -eq 79) 'Selection inventory count changed.'
     foreach($selection in $inventory.selections){
         Assert-Case ($selection.expected_identity_count -gt 0) "Selection has zero inventory: $($selection.selection_id)"
         Assert-Case ([string]$selection.expected_identities_sha256 -cmatch '^[0-9a-f]{64}$') "Selection fingerprint is invalid: $($selection.selection_id)"
@@ -247,14 +247,27 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case (($excluded -join "`n") -ceq ($retained -join "`n")) `
         'Desktop partition suppresses or duplicates an excluded JUnit filter.'
 }
-Invoke-Case 'all 78 PHASE selections resolve as complete pure plans' {
-    Assert-Case (@($registry.phase_selections).Count -eq 78) 'PHASE selection count changed.'
+Invoke-Case 'all 79 PHASE selections resolve as complete pure plans' {
+    Assert-Case (@($registry.phase_selections).Count -eq 79) 'PHASE selection count changed.'
     foreach($phase in $registry.phase_selections){
         $plan=Resolve-VerificationRegistryPlan $registry PHASE $phase.phase_id WINDOWS
         Assert-Case ($plan.coverage_state -ceq 'COMPLETE') "PHASE is incomplete: $($phase.phase_id)"
         Assert-Case (@($plan.missing_check_ids).Count -eq 0) "PHASE reports missing coverage: $($phase.phase_id)"
         Assert-Case (@($plan.nodes|Where-Object{(Has-Field $_ 'contract_class') -and (Test-VerificationAcceptanceClass ([string]$_.contract_class))}).Count -gt 0) "PHASE has no acceptance coverage: $($phase.phase_id)"
         Assert-Case (@($plan.nodes.check_id|Sort-Object -Unique -CaseSensitive).Count -eq @($plan.nodes).Count) "PHASE duplicates a node: $($phase.phase_id)"
+    }
+}
+Invoke-Case 'CU7 R3 PHASE executes both corrective semantic selections' {
+    $plan=Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3 WINDOWS
+    Assert-Case ($plan.coverage_state -ceq 'COMPLETE') 'CU7 R3 PHASE is incomplete.'
+    Assert-Case (@($plan.nodes).Count -eq 19) 'CU7 R3 PHASE gate closure changed.'
+    foreach($module in @('shared','desktop')){
+        $id='pre-g9b-cu7-general-point-interaction-r3.'+$module
+        $selection=@($inventory.selections|Where-Object selection_id -CEQ $id)
+        Assert-Case ($selection.Count -eq 1) "CU7 R3 inventory is missing or duplicated: $id"
+        $semanticId='junit.'+$module+'.pre-g9b-cu7-general-point-interaction-r3.semantic'
+        Assert-Case (@($plan.nodes|Where-Object check_id -CEQ $semanticId).Count -eq 1) `
+            "CU7 R3 PHASE omits its corrective semantic evidence: $semanticId"
     }
 }
 Invoke-Case 'INTEGRATION and FINAL are complete unions of pure nodes' {
