@@ -93,8 +93,11 @@ recovery as relevant to the implemented seams. Include all added classes in the
 effective R3 PHASE and calibrate from real executions. Existing document-open,
 Insert File/history, native, H1, Spline and semantic Undo suites remain guards.
 
-The companion adds O(native points) retained data per stored history state,
-bounded by the existing history lifecycle. It does not take an Undo snapshot per
+The companion retains immutable native payloads, the participating registry-ID
+set and SHA-256 digests, not whole XML strings or reconstructed GeoPoints.
+It adds O(native inputs + participating durable IDs) retained data per stored
+history state, bounded by the existing history lifecycle. Capture XML lives only
+through the asynchronous handoff and the existing temporary file. It does not take an Undo snapshot per
 mouse movement: one changed gesture remains one normal Undo store. A pre-load
 atomic safety snapshot is charged separately on Undo/Redo, not hidden as local
 continuation work. No duration threshold, tolerant restore, reprojected replacement

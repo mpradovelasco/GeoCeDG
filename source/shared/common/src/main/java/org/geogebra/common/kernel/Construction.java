@@ -256,6 +256,8 @@ public class Construction {
 	private NativeTransactionalState2D nativeRollbackRestore;
 	private LoadPurpose nativeRollbackLoadPurpose;
 	private NativeTransactionalState2D.Metrics lastNativeTransactionMetrics;
+	private NativeTransactionalState2D.Metrics lastNativeUndoRestoreMetrics;
+	private boolean nativeUndoOperation;
 	private NativeSourceFidelity2D nativeFileFidelityPass;
 	private RedefineRebuildToken nextSpatialIdentityRedefineRebuildToken;
 	private int spatialIdentityXmlDepth;
@@ -2724,6 +2726,10 @@ public class Construction {
 	 * @param mutation complete mutation, including publication and postconditions
 	 */
 	public void runAtomicConstructionMutation(Runnable mutation) {
+		runAtomicConstructionMutation(mutation, false);
+	}
+
+	private void runAtomicConstructionMutation(Runnable mutation, boolean listenersToo) {
 		Objects.requireNonNull(mutation);
 		if (!(getApplication().getConfig() instanceof AppConfigGeoCeDG) || kernel.isMacroKernel()) {
 			runHistoricalAtomicConstructionMutation(mutation);
@@ -2745,8 +2751,8 @@ public class Construction {
 			long captureStarted = System.nanoTime();
 			nativeRollbackCapture = nativeState;
 			try {
-				rollbackXml = getCurrentUndoXML(false).toString();
-				nativeState.completeCapture(rollbackXml, System.nanoTime() - captureStarted);
+				rollbackXml = getCurrentUndoXML(listenersToo).toString();
+				nativeState.completeCapture(rollbackXml, System.nanoTime() - captureStarted, listenersToo);
 			} finally {
 				nativeRollbackCapture = null;
 			}
@@ -2797,15 +2803,97 @@ public class Construction {
 		return nativeRollbackCapture == null ? null : nativeRollbackCapture.serializationKey(point);
 	}
 
+	/** One caller-thread history capture; null keeps the historical empty/unsupported route. */
+	public NativeUndoSnapshot captureNativeUndoSnapshot() {
+		if (!(getApplication().getConfig() instanceof AppConfigGeoCeDG) || kernel.isMacroKernel()) {
+			return null;
+		}
+		if (nativeRollbackCapture != null || nativeRollbackRestore != null) {
+			throw new IllegalStateException("Native history capture cannot be reentered");
+		}
+		NativeTransactionalState2D state = NativeTransactionalState2D.capture(this);
+		if (!state.isSupported() || !state.hasNativeInputs()) { return null; }
+		long started = System.nanoTime();
+		nativeRollbackCapture = state;
+		try {
+			StringBuilder xml = getCurrentUndoXML(true);
+			String frozen = xml.toString();
+			state.completeCapture(frozen, System.nanoTime() - started, true);
+			return new NativeUndoSnapshot(xml, state.freezeUndoTemplate(frozen));
+		} finally { nativeRollbackCapture = null; }
+	}
+
+	/** Private XML and its immutable companion, handed together to the owned history adapter. */
+	public record NativeUndoSnapshot(StringBuilder xml,
+			NativeTransactionalState2D.UndoTemplate template) { }
+
+	/** Loads an owned history companion through the normal reader and one normal DAG pass. */
+	public void restoreNativeUndoSnapshot(NativeTransactionalState2D.UndoTemplate template,
+			Runnable reader) {
+		Objects.requireNonNull(reader);
+		if (template == null || !template.belongsTo(this)
+				|| NativeTransactionalState2D.unsupportedReason(this) != null) {
+			throw new IllegalStateException("Native Undo has no current exact host restoration capability");
+		}
+		// The atomic pre-state is captured before activating the Undo session. Its
+		// existing rollback restores a failed load only after that session is closed.
+		Runnable load = () -> {
+			if (nativeRollbackCapture != null || nativeRollbackRestore != null) {
+				throw new IllegalStateException("Native Undo load cannot be reentered");
+			}
+			NativeTransactionalState2D state = template.newRestoreSession(this);
+			nativeRollbackRestore = state;
+			nativeRollbackLoadPurpose = LoadPurpose.NATIVE_OR_UNDO_RESTORE;
+			setNextSpatialIdentityLoadPurpose(LoadPurpose.NATIVE_OR_UNDO_RESTORE);
+			long started = System.nanoTime();
+			try {
+				state.beginRestore();
+				reader.run();
+				state.finishRestore();
+			} finally {
+				state.recordXmlRestore(System.nanoTime() - started);
+				lastNativeUndoRestoreMetrics = state.metrics();
+				nativeRollbackRestore = null;
+				nativeRollbackLoadPurpose = null;
+				clearNextSpatialIdentityLoadPurpose();
+			}
+		};
+		if (nativeUndoOperation) { load.run(); }
+		else { runNativeUndoOperation(load); }
+	}
+
+	/** One exact pre-state for a complete owned Undo/Redo, including stitched commands. */
+	public void runNativeUndoOperation(Runnable operation) {
+		Objects.requireNonNull(operation);
+		if (nativeUndoOperation || NativeTransactionalState2D.unsupportedReason(this) != null) {
+			throw new IllegalStateException("Native Undo operation has no exact current pre-state");
+		}
+		runAtomicConstructionMutation(() -> {
+			nativeUndoOperation = true;
+			try { operation.run(); }
+			catch (Error failure) {
+				// Translate inside the atomic boundary, including failures after the
+				// reader returned, so host and cursor cannot diverge on a UI callback.
+				throw new IllegalStateException("Owned native Undo operation failed", failure);
+			}
+			finally { nativeUndoOperation = false; }
+		}, true);
+	}
+
+	private boolean hasActiveNativeRestorePurpose() {
+		return nativeRollbackRestore != null && (nativeRollbackLoadPurpose == LoadPurpose.ROLLBACK_RESTORE
+				|| nativeRollbackLoadPurpose == LoadPurpose.NATIVE_OR_UNDO_RESTORE);
+	}
+
 	/** Binds the existing durable element attribute before native coords are processed. */
 	public boolean bindNativeRollbackDurable(GeoPoint point, String id) {
-		return nativeRollbackRestore != null && nativeRollbackLoadPurpose == LoadPurpose.ROLLBACK_RESTORE
+		return hasActiveNativeRestorePurpose()
 				&& nativeRollbackRestore.bindDurable(point, id);
 	}
 
 	/** Recognized private keys are invalid in ordinary files, macros and inactive sessions. */
 	public void bindNativeRollbackPrivate(GeoPoint point, String key) {
-		if (nativeRollbackRestore == null || nativeRollbackLoadPurpose != LoadPurpose.ROLLBACK_RESTORE) {
+		if (!hasActiveNativeRestorePurpose()) {
 			throw new IllegalStateException("Private native binding outside its rollback session");
 		}
 		nativeRollbackRestore.bindPrivate(point, key);
@@ -2813,7 +2901,7 @@ public class Construction {
 
 	/** @return whether only the active rollback owns this native input payload */
 	public boolean isNativeRollbackStateAuthorized(GeoPoint point, NativeRollbackPointState state) {
-		return nativeRollbackRestore != null && nativeRollbackLoadPurpose == LoadPurpose.ROLLBACK_RESTORE
+		return hasActiveNativeRestorePurpose()
 				&& nativeRollbackRestore.authorizes(point, state);
 	}
 
@@ -2828,6 +2916,11 @@ public class Construction {
 	/** @return last local transaction telemetry, or null before any transaction */
 	public NativeTransactionalState2D.Metrics getLastNativeTransactionMetrics() {
 		return lastNativeTransactionMetrics;
+	}
+
+	/** @return last owned native Undo read telemetry, distinct from its atomic pre-state capture */
+	public NativeTransactionalState2D.Metrics getLastNativeUndoRestoreMetrics() {
+		return lastNativeUndoRestoreMetrics;
 	}
 
 	private void restoreSpatialRedefineSnapshot(String rollbackXml) {

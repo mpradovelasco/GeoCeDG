@@ -14,6 +14,7 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification, 2026-11-04: caller-thread owned history capture hook; default unchanged.
 package org.geogebra.common.main.undo;
 
 import java.util.ArrayList;
@@ -224,12 +225,24 @@ public abstract class UndoManager implements UndoProvider {
 	 */
 	final public synchronized void restoreCurrentUndoInfo() {
 		app.getSelectionManager().storeSelectedGeosNames();
-		if (iterator != null) {
-			loadUndoInfo(iterator.previous().getAppState(), null);
-			iterator.next();
-			updateUndoActions();
+		try {
+			if (iterator != null) {
+				int cursor = iterator.nextIndex();
+				try {
+					loadUndoInfo(iterator.previous().getAppState(), null);
+				} finally {
+					restoreUndoCursor(cursor);
+				}
+				updateUndoActions();
+			}
+		} finally {
+			app.getSelectionManager().recallSelectedGeosNames(app.getKernel());
 		}
-		app.getSelectionManager().recallSelectedGeosNames(app.getKernel());
+	}
+
+	/** Restores only a cursor after an owned exact-load failure; command objects stay intact. */
+	protected final void restoreUndoCursor(int cursor) {
+		iterator = undoInfoList.listIterator(cursor);
 	}
 
 	/**
@@ -282,8 +295,13 @@ public abstract class UndoManager implements UndoProvider {
 	 */
 	@Override
 	final public void storeUndoInfo() {
-		storeUndoInfo(construction.getCurrentUndoXML(true));
+		storeUndoInfo(captureUndoXML());
 		storeUndoInfoNeededForProperties = false;
+	}
+
+	/** @return one caller-thread XML capture; profile adapters may attach private history input */
+	protected StringBuilder captureUndoXML() {
+		return construction.getCurrentUndoXML(true);
 	}
 
 	/**

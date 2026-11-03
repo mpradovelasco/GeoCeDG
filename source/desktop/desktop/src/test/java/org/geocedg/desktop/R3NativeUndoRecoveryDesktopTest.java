@@ -162,6 +162,8 @@ class R3NativeUndoRecoveryDesktopTest {
 			assertEquals(expectedInputs.get(), restored(app, expectedTyped.get()).inputs(),
 					"The accepted semantic move itself preserves both unrelated native inputs");
 		});
+		for (int cycle = 0; cycle < 3; cycle++) {
+		System.out.println("R3_NATIVE_UNDO_REPEAT cycle=" + cycle);
 		Cu7M08SDesktopEventsTest.await(() -> undo.isQuiescent() && undo.undoPossible());
 		Cu7M08SDesktopEventsTest.edt(() -> {
 			assertEquals(1, undo.getHistorySize(), "One controller gesture creates one Undo state");
@@ -186,5 +188,6 @@ class R3NativeUndoRecoveryDesktopTest {
 				() -> assertEquals(movedAddress.get(), redoState.get().address(), "Redo semantic address"),
 				() -> assertEquals(identity.get(), redoState.get().pointId(), "Redo semantic identity"),
 				() -> assertTrue(redoState.get().dependentFollows(), "Redo normal DAG dependent"));
+		}
 	}
 }

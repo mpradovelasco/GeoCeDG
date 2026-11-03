@@ -14,11 +14,13 @@
  * See https://www.geogebra.org/license for full licensing details
  */
 
+// GeoCeDG modification, 2026-11-04: owned history state factory/reader/error seams; defaults unchanged.
 package org.geogebra.desktop.main.undo;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.DefaultListSelectionModel;
 
@@ -79,7 +81,7 @@ public class UndoManagerD extends UndoManager {
 			long scheduledGeneration) {
 		try {
 			// save to file
-			AppState appStateToAdd = new FileAppState(undoXML);
+			AppState appStateToAdd = createUndoState(undoXML);
 			if (scheduledGeneration != undoHistoryGeneration) {
 				appStateToAdd.delete();
 				return;
@@ -100,6 +102,11 @@ public class UndoManagerD extends UndoManager {
 		onStoreUndo();
 	}
 
+	/** @return the historical file state by default; called by worker and baseline preparation */
+	protected FileAppState createUndoState(StringBuilder xml) throws IOException {
+		return new FileAppState(xml);
+	}
+
 	/**
 	 * Serializes the current construction into a disposable undo baseline without
 	 * changing the live undo or redo history.
@@ -112,7 +119,7 @@ public class UndoManagerD extends UndoManager {
 		// every recoverable failure happens before the old history is changed.
 		app.getEventDispatcher();
 		return new PreparedUndoBaseline(this, new UndoCommand(
-				new FileAppState(construction.getCurrentUndoXML(true))));
+				createUndoState(captureUndoXML())));
 	}
 
 	/**
@@ -226,7 +233,7 @@ public class UndoManagerD extends UndoManager {
 
 			// load undo info
 			app.getEventDispatcher().disableListeners();
-			((MyXMLioD) construction.getXMLio()).readZipFromMemory(is);
+			readUndoState((FileAppState) info, is);
 			if (changed) {
 				listSelModel.setAnchorSelectionIndex(anchorIndex);
 				listSelModel.setLeadSelectionIndex(leadIndex);
@@ -234,13 +241,33 @@ public class UndoManagerD extends UndoManager {
 			}
 			app.getEventDispatcher().enableListeners();
 		} catch (IOException | XMLParseException | RuntimeException e) {
-			Log.error("Problem setting undo info");
-			Log.debug(e);
-			restoreCurrentUndoInfo();
+			handleUndoLoadFailure(info, e);
 		} catch (java.lang.OutOfMemoryError err) {
-			Log.error("UndoManager.loadUndoInfo: " + err);
+			handleUndoLoadFailure(info, err);
 		}
 
+	}
+
+	/** Existing native ZIP read; owned adapters may scope an authenticated memory companion. */
+	protected void readUndoState(FileAppState state, InputStream input)
+			throws IOException, XMLParseException {
+		((MyXMLioD) construction.getXMLio()).readZipFromMemory(input);
+	}
+
+	/** Default error/fallback policy retained; owned exact states can fail explicitly. */
+	protected void handleUndoLoadFailure(AppState state, Throwable failure) {
+		if (failure instanceof OutOfMemoryError) {
+			Log.error("UndoManager.loadUndoInfo: " + failure);
+		} else {
+			Log.error("Problem setting undo info");
+			Log.debug(failure);
+			restoreCurrentUndoInfo();
+		}
+	}
+
+	/** A profile-owned exact history load failed; never enter the recursive legacy fallback. */
+	public static final class UndoStateLoadFailure extends IllegalStateException {
+		public UndoStateLoadFailure(String message, Throwable cause) { super(message, cause); }
 	}
 
 }

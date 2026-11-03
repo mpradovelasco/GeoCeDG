@@ -1261,6 +1261,14 @@ adicional solo se escribe cuando también se acredita la fidelidad de la cadena
 de antecedentes definidores. En otro caso se conserva el payload histórico legible,
 sin prometer persistencia exacta del parámetro. La recuperación transaccional nativa
 es una capacidad separada y no añade campos públicos de archivo para cada camino.
+Dentro de esa tabla positiva de recuperación nativa, los estados de Deshacer de
+GeoCeDG conservan también un acompañante privado en memoria. Un gesto modificado
+sigue creando un solo paso; Deshacer y Rehacer restauran los estados nativos
+capturados sin volver a deducirlos de coordenadas redondeadas. Ese acompañante
+no se exporta a los documentos públicos.
+Los estados del historial fuera de esa tabla conservan la ruta nativa habitual
+de Deshacer y sus límites históricos; compartir historial con un estado admitido
+no bloquea por sí solo esa herramienta.
 Las definiciones
 de herramientas de usuario conservan su formato anterior. Un guardado posterior con Classic conserva su
 formato heredado y no promete mantener ese estado adicional. El candidato

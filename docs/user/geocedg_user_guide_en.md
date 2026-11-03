@@ -1194,6 +1194,13 @@ argument. The GeoCeDG profile writes that extra state only when the defining anc
 chain is also proved faithful. Otherwise it retains the historical readable payload,
 without claiming exact parameter persistence. Transactional native recovery is a
 separate capability and does not add public file fields for every native path.
+Within that positive native recovery table, GeoCeDG Undo states also retain a
+private memory companion. A changed gesture still creates one Undo step; undoing
+or redoing restores the captured native inputs instead of deriving them again
+from rounded coordinates. This companion is not exported to public documents.
+History states outside that recovery table retain the ordinary native Undo route
+and its historical limits; they do not prevent Undo merely by sharing a history
+with an admitted state.
 Existing user-tool
 definitions retain their historical format. A later Classic save retains its historical
 format and does not promise to preserve the added state. The

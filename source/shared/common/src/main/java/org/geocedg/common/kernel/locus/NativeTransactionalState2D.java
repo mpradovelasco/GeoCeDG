@@ -1,8 +1,12 @@
 /* GeoCeDG. Copyright (c) 2026 GeoCeDG contributors. SPDX-License-Identifier: EUPL-1.2. */
 package org.geocedg.common.kernel.locus;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -56,6 +60,9 @@ public final class NativeTransactionalState2D {
 	private final int reservations;
 	private final UnsupportedReason unsupported;
 	private String ordinaryXml;
+	private String capturedPrivateXml;
+	private byte[] ordinaryDigest;
+	private boolean listenersToo;
 	private boolean restoring;
 	private boolean finished;
 	private long nativeCaptureNanos;
@@ -209,8 +216,18 @@ public final class NativeTransactionalState2D {
 		return unsupported == null;
 	}
 
+	/** @return whether there are actual native inputs to accompany a history state */
+	public boolean hasNativeInputs() {
+		return !entries.isEmpty();
+	}
+
 	/** Removes only freshly generated private binding lines, never normal payload. */
 	public void completeCapture(String privateXml, long elapsedNanos) {
+		completeCapture(privateXml, elapsedNanos, false);
+	}
+
+	/** Same single capture, retaining the serializer mode used by normal Undo. */
+	public void completeCapture(String privateXml, long elapsedNanos, boolean includeListeners) {
 		for (Entry entry : entries) {
 			if (entry.serializationVisits != 1) {
 				throw new IllegalStateException("Native rollback requires one early element serialization slot");
@@ -233,13 +250,15 @@ public final class NativeTransactionalState2D {
 			throw new IllegalStateException("A native snapshot has no private serialization slot");
 		}
 		ordinaryXml = ordinary.toString();
+		capturedPrivateXml = privateXml;
+		listenersToo = includeListeners;
 		xmlCaptureNanos = elapsedNanos;
 		serializationPoints.clear(); // No old Java object is used to resolve restoration.
 	}
 
 	/** Opens a single restoration owned by Construction's ROLLBACK_RESTORE boundary. */
 	public void beginRestore() {
-		if (restoring || finished || ordinaryXml == null) {
+		if (restoring || finished || ordinaryXml == null && ordinaryDigest == null) {
 			throw new IllegalStateException("Native rollback snapshot is inactive or already used");
 		}
 		restoring = true;
@@ -298,13 +317,111 @@ public final class NativeTransactionalState2D {
 				throw new IllegalStateException("Native rollback input, correspondence or DAG restoration failed");
 			}
 		}
+		String restoredXml = owner.getCurrentUndoXML(listenersToo).toString();
+		boolean sameXml = ordinaryXml != null ? ordinaryXml.equals(restoredXml)
+				: Arrays.equals(ordinaryDigest, digest(restoredXml.getBytes(StandardCharsets.UTF_8)));
 		if (!registryIds.equals(ids(owner)) || reservations
-				!= owner.getSpatialIdentityRegistry().getReservedIdentityCount()
-				|| !ordinaryXml.equals(owner.getCurrentUndoXML(false).toString())) {
+				!= owner.getSpatialIdentityRegistry().getReservedIdentityCount() || !sameXml) {
 			throw new IllegalStateException("Native rollback did not preserve registry and ordinary XML exactly");
 		}
 		verifyNanos = System.nanoTime() - started;
 		finished = true;
+	}
+
+	/** Freeze only immutable native data and digests, never retaining whole XML in history. */
+	public UndoTemplate freezeUndoTemplate(String privateXml) {
+		if (ordinaryXml == null || !privateXml.equals(capturedPrivateXml)
+				|| restoring || finished || !isSupported() || !hasNativeInputs()) {
+			throw new IllegalStateException("Native Undo capture is not complete");
+		}
+		return new UndoTemplate(this, privateXml);
+	}
+
+	private NativeTransactionalState2D(UndoTemplate template) {
+		owner = template.owner;
+		unsupported = null;
+		registryIds = template.registryIds;
+		reservations = template.reservations;
+		ordinaryDigest = template.ordinaryDigest;
+		listenersToo = template.listenersToo;
+		for (Captured input : template.inputs) {
+			Entry entry = new Entry(input.id, input.key, input.state);
+			entries.add(entry);
+			if (entry.id == null) { privateKeys.put(entry.key, entry); }
+			else { durable.put(entry.id.toExternalForm(), entry); }
+		}
+	}
+
+	private static byte[] digest(byte[] bytes) {
+		try { return MessageDigest.getInstance("SHA-256").digest(bytes); }
+		catch (NoSuchAlgorithmException failure) {
+			throw new IllegalStateException("SHA-256 is unavailable", failure);
+		}
+	}
+
+	private record Captured(PersistentGeoId id, String key, NativeRollbackPointState state) { }
+
+	/** Immutable, owner-bound input template. Every legitimate history load gets a fresh session. */
+	public static final class UndoTemplate {
+		private final Construction owner;
+		private final List<Captured> inputs;
+		private final Set<SpatialIdentityId> registryIds;
+		private final int reservations;
+		private final boolean listenersToo;
+		private final byte[] ordinaryDigest;
+		private final byte[] privateDigest;
+
+		private UndoTemplate(NativeTransactionalState2D capture, String xml) {
+			owner = capture.owner;
+			inputs = capture.entries.stream().map(entry -> new Captured(entry.id, entry.key, entry.state)).toList();
+			registryIds = Set.copyOf(capture.registryIds);
+			reservations = capture.reservations;
+			listenersToo = capture.listenersToo;
+			ordinaryDigest = digest(capture.ordinaryXml.getBytes(StandardCharsets.UTF_8));
+			privateDigest = digest(xml.getBytes(StandardCharsets.UTF_8));
+		}
+
+		/** @return whether this template belongs to this exact document construction */
+		public boolean belongsTo(Construction construction) { return owner == construction; }
+
+		/** @return whether the frozen private XML bytes match this template */
+		public boolean matchesXml(byte[] xml) { return Arrays.equals(privateDigest, digest(xml)); }
+
+		/** Historical public payload only, for an unsupported current history pre-state. */
+		public byte[] publicXml(byte[] xml) {
+			if (!matchesXml(xml)) {
+				throw new IllegalArgumentException("Native Undo private bytes do not match");
+			}
+			Set<String> expected = new LinkedHashSet<>();
+			for (Captured input : inputs) { if (input.key != null) { expected.add(input.key); } }
+			Set<String> seen = new LinkedHashSet<>();
+			String text = new String(xml, StandardCharsets.UTF_8);
+			Matcher matcher = BINDING.matcher(text);
+			StringBuilder publicText = new StringBuilder(text.length());
+			int previous = 0;
+			while (matcher.find()) {
+				String key = matcher.group(1);
+				if (!expected.contains(key) || !seen.add(key)) {
+					throw new IllegalArgumentException("Foreign or duplicate private history binding");
+				}
+				publicText.append(text, previous, matcher.start());
+				previous = matcher.end();
+			}
+			publicText.append(text, previous, text.length());
+			byte[] result = publicText.toString().getBytes(StandardCharsets.UTF_8);
+			if (!seen.equals(expected) || !Arrays.equals(ordinaryDigest, digest(result))) {
+				throw new IllegalArgumentException("Native Undo public payload digest does not match");
+			}
+			return result;
+		}
+
+		/** @return a new one-use session without any previous reconstructed GeoPoint */
+		public NativeTransactionalState2D newRestoreSession(Construction construction) {
+			if (!belongsTo(construction)) {
+				throw new IllegalArgumentException("Foreign native Undo construction");
+			}
+			return new NativeTransactionalState2D(this);
+		}
 	}
 
 	public void recordXmlRestore(long nanos) {

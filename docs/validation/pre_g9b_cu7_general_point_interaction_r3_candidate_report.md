@@ -33,6 +33,8 @@ The design-before-code record is
 [the integrated R3 contract](../architecture/pre_g9b_cu7_general_point_interaction_r3_candidate.md).
 The additional mathematical argument is in
 [local projection continuation](../architecture/pre_g9b_cu7_r3_local_projection_design.md).
+The subsequently demonstrated native Undo gap and its design-before-code record
+are in [the focal Undo companion design](../architecture/pre_g9b_cu7_r3_native_undo_companion_design.md).
 
 F1/F3 separate positive transitive FILE fidelity from exact typed MEMORY recovery.
 Unknown or lossy native ancestors suppress the optional public conicPointState
@@ -49,6 +51,17 @@ does not allocate a durable ID or match by labels, coordinates or XML position.
 Restoration occurs before coordinate reprojection, is consumed through the normal
 DAG and is verified exactly. Missing/foreign/duplicate/replayed keys and failed
 verification reject safely; unsupported native states retain their typed reason.
+Undo/Redo uses an owned private memory companion to the existing AppState when
+the native table is positive. XML and payload are captured together before the
+asynchronous store; each load receives a fresh scoped restore session. Normal
+public FILE serialization stays distinct. Prepared baselines and held history
+keep their existing ownership and cursor semantics. Exact native Undo is tested
+on the fresh projected hyperbola chain, not inferred from a semantic address test.
+Exact typed Undo requires both the current pre-state and the target companion to
+be admitted. Crossing an unsupported native history state retains historical Undo
+through a digest-checked ordinary XML fallback; it does not disable the native
+tool or claim exact native bits for that excluded transition. New CU7 edits still
+require their own positive host-state gate.
 
 F2 retains structural affine-circle, historical R6 and Spline contracts and adds
 an optional local projection chart using the same certified construction model.
@@ -85,11 +98,12 @@ adopted as an author decision.
 
 ## Inherited-source impact
 
-Seven upstream files are changed, with purpose/authority in
+Nine upstream files are changed, with purpose/authority in
 `docs/upstream/modified-files.yml`: Construction (the existing transaction),
 GeoPoint and AlgoPointOnPath (typed state/load consumption), ConsElementXMLHandler
 and MyXMLHandler (binding/reader scope), DocHandler and QDParser (the focal lexical
-grammar). Shared semantic state and serialization cannot correctly live in a
+grammar), plus UndoManager and UndoManagerD (default-preserving capture/store/load
+extension seams for the existing GeoCeDG manager). Shared semantic state and serialization cannot correctly live in a
 Desktop-only geometry algorithm. No package moves, parser-wide strict mode,
 new upstream baseline or durable identity redesign is introduced.
 
@@ -104,6 +118,24 @@ drivers, regular LINE_CIRCLE, UNIT_VECTOR/DOT/MEET, a rational hyperbolic MEET
 construction and direct admitted intervals are regression families. SplineV2
 retains its historical provider. A missing proof is not geometric impossibility.
 
+Native drivers and derived geometric families are distinct. The construction
+capture currently has typed circle, segment, circular-arc and scalar-affine
+drivers. The following missing capabilities are explicit technical boundaries:
+
+| Family | Current R3 representation | Concrete next capability |
+| --- | --- | --- |
+| Circle, segment, circular arc | Direct typed v3 drivers and admitted derived programs | Extend only where a new construction operation lacks predicates/jets. |
+| Line, ray | Native tools preserved; a finite straight interval can be represented by an admitted segment/scalar-affine program | A typed native driver adapter with explicit oriented finite/unbounded domain and end policy; no generic Path parameter assumption. |
+| Ellipse, parabola, hyperbola | Geometric derived examples through admitted v3 operations; native tools preserved | Typed native conic driver capture with forward parameter correspondence, frame/orientation, connected branches, domains and interval jets. Passing native movement alone does not supply this bridge. |
+| Parametric curve, function | Native tools preserved; a direct semantic provider may have an admitted certified interval | Capture the original expression/argument/domain into a reconstructible certified evaluator, including invalid-set predicates and serialized structural selectors. |
+| Native spline | Native movement preserved; SplineV2 retains its own semantic constructor/provider | Explicit conversion from defining control data with provenance and parameter correspondence; no automatic identity from a sampled shape. |
+| Polyline, implicit curve, legacy locus | Existing native behavior preserved; no new durable V2 bridge | Respectively typed oriented edge/vertex identity, certified local root/topology correspondence, or recovery of the original reconstructible construction. Render proximity supplies none of these. |
+
+Nested v3/semantic similarity compositions also need certified transport of jets,
+predicates and component lineage; the new direct-program adapter does not pretend
+to provide it. Proof depth and work budgets can refuse a regular region. Such a
+refusal records missing evidence/resources and is not geometric nonexistence.
+
 The synthetic ellipse helper called h in a kernel stress test is not the author's
 document h. Actual author-document evidence uses the unchanged M08-S resource and
 a copy of C:/Temp/TestM08-S.cedg. The original file SHA256 is
@@ -117,7 +149,9 @@ R3PointInteractionDesktopTest tests captured radius, source/view/callback stalen
 click/Q/native creation, lock, drag, Undo and exact rejection. The historical
 R6/H1/M08/Spline suites remain selected. R3NativeFamilyCompatibilityTest exercises
 thirteen native families with a free membership witness, unchanged native parent
-and DAG dependents. That is kernel compatibility, not physical mouse evidence or
+and DAG dependents. R3NativeUndoRecoveryDesktopTest separates exact native Undo
+from file fidelity and atomic rollback; R3NativeUndoLifecycleDesktopTest covers
+the companion's existing history lifecycle. That is kernel compatibility, not physical mouse evidence or
 a new durable Locus V2 correspondence for implicit curves, polylines or old loci.
 
 R3PointInteractionPerformanceTest measures circle, segment and LINE_CIRCLE with
@@ -128,7 +162,7 @@ never changes acceptance. GUI is explicitly absent from headless timings.
 
 ## Verification and independent handoff
 
-The effective phase is PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3. It selects all six
+The effective phase is PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3. It selects all eight
 new R3 classes and the historical regression closure. Count/fingerprint metadata
 must be measured from successful real executions with the canonical updater.
 Development probes, discovery, PHASE, FINAL and physical smoke are separate.

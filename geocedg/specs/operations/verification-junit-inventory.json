@@ -3986,7 +3986,9 @@
         "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
         "org.geocedg.desktop.PreG9BR6PlusE1LBundledCatalogTest",
         "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
-        "org.geocedg.desktop.R3PointInteractionDesktopTest"
+        "org.geocedg.desktop.R3PointInteractionDesktopTest",
+        "org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest",
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -4017,6 +4019,10 @@
         "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
         "--tests",
         "org.geocedg.desktop.R3PointInteractionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
