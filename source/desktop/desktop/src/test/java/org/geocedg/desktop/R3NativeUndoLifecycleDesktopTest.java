@@ -191,7 +191,7 @@ class R3NativeUndoLifecycleDesktopTest {
 		var app = onEdt(R3NativeUndoLifecycleDesktopTest::nativeApp); var manager = undo(app);
 		var initial = onEdt(() -> NativeInputs.capture(app));
 		onEdt(() -> { baseline(app); return null; });
-		var changed = onEdt(() -> { changePoint(app, .81234); }); store(app);
+		var changed = onEdt(() -> { return changePoint(app, .81234); }); store(app);
 		onEdt(manager::undo);
 		var original = manager.getCommands(); int cursor = manager.getCursor();
 		original.get(1).labels = List.of("NativeP");
@@ -279,7 +279,7 @@ class R3NativeUndoLifecycleDesktopTest {
 		var app = onEdt(R3NativeUndoLifecycleDesktopTest::nativeApp); var manager = undo(app);
 		var initial = onEdt(() -> NativeInputs.capture(app));
 		onEdt(() -> { baseline(app); return null; });
-		var changed = onEdt(() -> { changePoint(app, .81234); }); store(app);
+		var changed = onEdt(() -> { return changePoint(app, .81234); }); store(app);
 		var baseline = (FileAppState) manager.getCommands().get(0).getAppState();
 		byte[] original = Files.readAllBytes(baseline.getFile().toPath());
 		String tampered = privateXml(baseline).replace("NativeP", "TamperedP");
