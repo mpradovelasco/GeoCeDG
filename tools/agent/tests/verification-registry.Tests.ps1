@@ -300,4 +300,54 @@ Invoke-Case 'phase selection is exact and explicitly incomplete' {
     Assert-CaseThrows { Resolve-VerificationRegistryPlan $registry PHASE missing } 'Unknown PHASE'
 }
 
+Invoke-Case 'CU7 general point interaction includes new tests and historical semantic gates' {
+    $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
+    $registry = Read-VerificationJson -Path (
+        Join-Path $root 'geocedg/specs/operations/verification-registry.json')
+    [void](Assert-VerificationRegistry $registry -SchemaPath $schemaPath)
+    $plan = Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-GENERAL-POINT-INTERACTION
+    foreach ($required in @(
+        'compile.shared.semantic',
+        'compile.desktop.semantic',
+        'workspace-profile.product',
+        'junit.shared.pre-g9b-cu7-i1-r2-kernel.semantic',
+        'junit.shared.pre-g9b-cu7-i1-r2-kernel-h1.semantic',
+        'junit.desktop.pre-g9b-cu7-i1-r1.semantic',
+        'junit.desktop.pre-g9b-cu7-i1-r2-desktop.semantic',
+        'junit.desktop.g9u1-isolated.semantic',
+        'junit.shared.pre-g9b-cu7-general-point-interaction.semantic',
+        'junit.desktop.pre-g9b-cu7-general-point-interaction.semantic')) {
+        Assert-Case (@($plan.nodes.check_id) -ccontains $required) (
+            "CU7 general interaction omitted its required gate: $required")
+    }
+    $inventory = Read-VerificationJson -Path (
+        Join-Path $root 'geocedg/specs/operations/verification-junit-inventory.json')
+    $expected = @{
+        shared = @(
+            'org.geocedg.common.locus.IndividualForwardPointCreationTest',
+            'org.geocedg.common.locus.GeneralPointContinuationTest',
+            'org.geocedg.common.locus.M08PointCreationKernelTest',
+            'org.geocedg.common.locus.G9S1SemanticSpline2DTest',
+            'org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest',
+            'org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest',
+            'org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest')
+        desktop = @(
+            'org.geocedg.desktop.GeneralPointInteractionDesktopTest',
+            'org.geocedg.desktop.Cu7M08SGeneralCreationTest',
+            'org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest',
+            'org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest')
+    }
+    foreach ($module in @('shared', 'desktop')) {
+        $id = 'pre-g9b-cu7-general-point-interaction.' + $module
+        $selection = @($inventory.selections | Where-Object selection_id -CEQ $id)
+        Assert-Case ($selection.Count -eq 1) "CU7 selection is not unique: $id"
+        foreach ($filter in $expected[$module]) {
+            Assert-Case (@($selection[0].test_filters) -ccontains $filter) (
+                "CU7 effective test selection omitted: $filter")
+        }
+        Assert-Case (@($selection[0].excluded_test_filters).Count -eq 0) (
+            "CU7 focused selection unexpectedly excludes tests: $id")
+    }
+}
+
 Write-Host "verification-registry.Tests: $script:Cases cases, $script:Assertions assertions, 0 failures"

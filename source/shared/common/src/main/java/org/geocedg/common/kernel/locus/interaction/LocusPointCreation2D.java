@@ -21,13 +21,13 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 public final class LocusPointCreation2D {
 
 	/** The selected existing kernel protocol, never an additional admission grade. */
-	public enum Route { R1_R6, R2_H1, REJECTED }
+	public enum Route { R1_R6, R2_H1, INDIVIDUAL_FORWARD_ADDRESS_CREATION, REJECTED }
 
 	/** Failures of the outer selection lifecycle; route failures retain their own types. */
 	public enum Failure {
 		INVALID_SOURCE, INVALID_REFERENCE, STALE_SELECTION, WRONG_THREAD,
 		CONSUMED_SELECTION, FOREIGN_CHOICE, PUBLICATION_NOT_AUTHORIZED,
-		R1_FORWARD_REJECTED
+		R1_FORWARD_REJECTED, BUDGET_EXHAUSTED
 	}
 
 	/** A typed lifecycle refusal, before any publication by the selected route. */
@@ -55,16 +55,26 @@ public final class LocusPointCreation2D {
 		private final Selection owner;
 		private final LocusPointInteractionCandidate2D historical;
 		private final M08SnapshotPlacement2D.Choice local;
+		private final IndividualForwardPointCreation2D.Choice forward;
 
 		private Choice(Selection owner, LocusPointInteractionCandidate2D historical,
 				M08SnapshotPlacement2D.Choice local) {
 			this.owner = owner;
 			this.historical = historical;
 			this.local = local;
+			this.forward = null;
+		}
+
+		private Choice(Selection owner, IndividualForwardPointCreation2D.Choice forward) {
+			this.owner = owner;
+			this.historical = null;
+			this.local = null;
+			this.forward = forward;
 		}
 
 		public LocusSemanticAddress2D getAddress() {
-			return historical != null ? historical.getAddress() : local.getAddress();
+			return historical != null ? historical.getAddress()
+					: local != null ? local.getAddress() : forward.getAddress();
 		}
 	}
 
@@ -118,6 +128,7 @@ public final class LocusPointCreation2D {
 		private final LocusSnapshotPlacement2D.Selection historical;
 		private final LocusPointInteractionResult2D historicalResult;
 		private M08SnapshotPlacement2D.Selection local;
+		private IndividualForwardPointCreation2D.Selection forward;
 		private List<Choice> choices = List.of();
 		private Route route = Route.REJECTED;
 		private String failure;
@@ -158,13 +169,40 @@ public final class LocusPointCreation2D {
 				failure = historicalResult.getReason().name();
 				return;
 			}
-			local = reference == null ? M08SnapshotPlacement2D.query(source, x, y, policy)
-					: M08SnapshotPlacement2D.queryFromReference(source, reference, policy);
+			var remaining = remainingPolicy(policy);
+			if (remaining == null) {
+				failure = Failure.BUDGET_EXHAUSTED.name();
+				return;
+			}
+			local = reference == null ? M08SnapshotPlacement2D.query(source, x, y, remaining)
+					: M08SnapshotPlacement2D.queryFromReference(source, reference, remaining);
 			if (local.getResult().getPermission()
 					!= M08SnapshotPlacement2D.Permission.EXPLICIT_LOCAL_SELECTION_REQUIRED) {
 				failure = local.getResult().getFailure().name() + " / "
 						+ local.getResult().getLocalFailure();
 				local.close();
+				if (local.getResult().getFailure() == M08SnapshotPlacement2D.Failure.BUDGET_EXHAUSTED) {
+					return;
+				}
+				// Independent permission and proof, never an upgraded historical result.
+				remaining = remainingPolicy(policy);
+				if (remaining == null) {
+					failure = Failure.BUDGET_EXHAUSTED.name();
+					return;
+				}
+				forward = reference == null
+						? IndividualForwardPointCreation2D.query(source, x, y, remaining)
+						: IndividualForwardPointCreation2D.queryFromReference(source, reference, remaining);
+				if (forward.getPermission() == IndividualForwardPointCreation2D.Permission
+						.EXPLICIT_FORWARD_SELECTION_REQUIRED && current()) {
+					route = Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
+					failure = null;
+					choices = forward.getChoices().stream()
+							.map(candidate -> new Choice(this, candidate)).toList();
+				} else {
+					failure = forward.getFailure().name();
+					forward.close();
+				}
 				return;
 			}
 			if (!current()) {
@@ -175,6 +213,36 @@ public final class LocusPointCreation2D {
 			route = Route.R2_H1;
 			choices = local.getResult().getChoices().stream()
 					.map(candidate -> new Choice(this, null, candidate)).toList();
+		}
+
+		/** Debit completed attempts; a different permission never restarts the operation budget. */
+		private LocusPointInteractionPolicy2D remainingPolicy(LocusPointInteractionPolicy2D policy) {
+			var work = historicalResult.getInstrumentation();
+			long semantic = historical.getSemanticMisses();
+			long subdivisions = work.getSubdivisions();
+			long candidates = work.getRetainedCandidates();
+			if (local != null) {
+				semantic += local.getWorkSnapshot().getSemanticMisses();
+				subdivisions += local.getResult().getHistoricalResult().getInstrumentation()
+						.getSubdivisions() + local.getWorkSnapshot().getIntervalPasses();
+				candidates += local.getResult().getHistoricalResult().getInstrumentation()
+						.getRetainedCandidates();
+			}
+			var budget = policy.getWorkBudget();
+			long evaluationsLeft = budget.getMaximumSemanticEvaluations() - semantic;
+			long subdivisionsLeft = budget.getMaximumSubdivisions() - subdivisions;
+			long candidatesLeft = budget.getMaximumCandidates() - candidates;
+			if (evaluationsLeft < 1 || subdivisionsLeft < 2 || candidatesLeft < 1) { return null; }
+			return new LocusPointInteractionPolicy2D(policy.getMaximumWorldDistance(),
+					policy.getEqualDistanceTolerance(), policy.getParameterTolerance(),
+					new LocusPointInteractionWorkBudget2D((int) evaluationsLeft, (int) subdivisionsLeft,
+							budget.getMaximumRefinementIterations(), (int) candidatesLeft));
+		}
+
+		public long getSemanticMisses() {
+			return historical.getSemanticMisses()
+					+ (local == null ? 0 : local.getWorkSnapshot().getSemanticMisses())
+					+ (forward == null ? 0 : forward.getSemanticMisses());
 		}
 
 		private boolean current() {
@@ -208,6 +276,10 @@ public final class LocusPointCreation2D {
 
 		public M08SnapshotPlacement2D.Selection getLocalSelection() {
 			return local;
+		}
+
+		public IndividualForwardPointCreation2D.Selection getForwardSelection() {
+			return forward;
 		}
 
 		public M08SnapshotPlacement2D.Validity getValidity() {
@@ -248,12 +320,16 @@ public final class LocusPointCreation2D {
 				if (route == Route.R2_H1) {
 					return local.commit(label, choice.local);
 				}
+				if (route == Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION) {
+					return forward.commit(label, choice.forward);
+				}
 				throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
 			} finally {
 				historical.close();
 				if (local != null) {
 					local.close();
 				}
+				if (forward != null) { forward.close(); }
 			}
 		}
 
@@ -264,6 +340,7 @@ public final class LocusPointCreation2D {
 			if (local != null) {
 				local.close();
 			}
+			if (forward != null) { forward.close(); }
 		}
 	}
 }

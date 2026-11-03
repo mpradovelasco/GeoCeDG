@@ -23,6 +23,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointPublication2D;
 import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.LocusSemanticPosition2D;
@@ -67,6 +68,14 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 	public static AlgoSemanticLocusPoint2D createWithSnapshotBinding(Construction construction,
 			GeoLocusV2 source, GeoText branchInput, GeoNumberValue parameterInput,
 			M08SnapshotPlacement2D.Choice preparation) {
+		return createWithSnapshotBinding(construction, source, branchInput, parameterInput,
+				(LocusPointPublication2D) preparation);
+	}
+
+	/** Consumes the selected creation protocol's already budgeted forward binding. */
+	public static AlgoSemanticLocusPoint2D createWithSnapshotBinding(Construction construction,
+			GeoLocusV2 source, GeoText branchInput, GeoNumberValue parameterInput,
+			LocusPointPublication2D preparation) {
 		MetricPositionBinding2D binding = preparation.takePreparedBinding(source);
 		return new AlgoSemanticLocusPoint2D(construction, source, branchInput, parameterInput, binding);
 	}
@@ -337,6 +346,20 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		positionBinding = binder.bind(semanticAddress.toMetricPosition(),
 				source.getSemanticDefinition());
 		return positionBinding;
+	}
+
+	/** One-use counted binding for a local continuation's ordinary DAG publication. */
+	public void prepareContinuationBinding(
+			org.geocedg.common.kernel.locus.interaction.LocusPointContinuation2D.Result result) {
+		if (!ownsDedicatedInteractionInputs()) {
+			throw new IllegalStateException("Only an interaction-owned point accepts continuation");
+		}
+		initialBinding = result.takePreparedBinding(point, source, semanticAddress);
+	}
+
+	/** Discards transient preparation after either successful publication or rollback. */
+	public void discardContinuationBinding() {
+		initialBinding = null;
 	}
 
 	/**

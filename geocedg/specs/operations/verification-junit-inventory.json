@@ -3762,5 +3762,91 @@
         }
       ]
     }
+    ,
+    {
+      "selection_id": "pre-g9b-cu7-general-point-interaction.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.IndividualForwardPointCreationTest",
+        "org.geocedg.common.locus.GeneralPointContinuationTest",
+        "org.geocedg.common.locus.M08PointCreationKernelTest",
+        "org.geocedg.common.locus.G9S1SemanticSpline2DTest",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest",
+        "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.IndividualForwardPointCreationTest",
+        "--tests",
+        "org.geocedg.common.locus.GeneralPointContinuationTest",
+        "--tests",
+        "org.geocedg.common.locus.M08PointCreationKernelTest",
+        "--tests",
+        "org.geocedg.common.locus.G9S1SemanticSpline2DTest",
+        "--tests",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineContinuityTest",
+        "--tests",
+        "org.geocedg.common.locus.G9S1R1StructuralSplineLifecycleTest",
+        "--tests",
+        "org.geocedg.common.locus.PostG9U1A1SplineConstructorProvenanceTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1,
+      "expected_identities_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "f97c691e8557cd4c82e37517d1487f9c5d3012e5",
+          "tree": "2c2cd217f14430b88263aaf26a23db11c08ee616"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu7-general-point-interaction.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.GeneralPointInteractionDesktopTest",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest",
+        "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.GeneralPointInteractionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest",
+        "--tests",
+        "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1,
+      "expected_identities_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "f97c691e8557cd4c82e37517d1487f9c5d3012e5",
+          "tree": "2c2cd217f14430b88263aaf26a23db11c08ee616"
+        }
+      ]
+    }
   ]
 }

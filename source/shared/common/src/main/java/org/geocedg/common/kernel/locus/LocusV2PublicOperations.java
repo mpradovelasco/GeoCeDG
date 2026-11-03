@@ -30,11 +30,14 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.constructive.AuthorityPolicyAdoption;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionCandidate2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointContinuation2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionQuery2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResolver2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D;
 import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
+import org.geocedg.common.kernel.locus.interaction.IndividualForwardPointCreation2D;
+import org.geocedg.common.kernel.locus.interaction.LocusPointPublication2D;
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
 import org.geocedg.common.kernel.spatial.identity.DurableDependencyProjection;
 import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
@@ -271,6 +274,17 @@ public final class LocusV2PublicOperations {
 				choice.takePublicationAddress(source), choice);
 	}
 
+	/** Separate sealed permission for explicitly selected forward creation without H1. */
+	public static GeoPoint createIndividualForwardSemanticPoint(Construction construction,
+			String label, GeoLocusV2 source, IndividualForwardPointCreation2D.Choice choice) {
+		requireAccess(construction);
+		if (construction != source.getConstruction()) {
+			throw new IllegalArgumentException("Forward source belongs to another document");
+		}
+		return createInteractivePointAtAddress(construction, label, source,
+				choice.takePublicationAddress(source), choice);
+	}
+
 	private static GeoPoint createInteractivePointAtAddress(Construction construction,
 			String label, GeoLocusV2 source, LocusSemanticAddress2D address) {
 		return createInteractivePointAtAddress(construction, label, source, address, null);
@@ -278,7 +292,7 @@ public final class LocusV2PublicOperations {
 
 	private static GeoPoint createInteractivePointAtAddress(Construction construction,
 			String label, GeoLocusV2 source, LocusSemanticAddress2D address,
-			M08SnapshotPlacement2D.Choice preparation) {
+			LocusPointPublication2D preparation) {
 		LocusDefinition2D definition = source.getSemanticDefinition();
 		GeoText branch = new GeoText(construction);
 		branch.setTextString(LocusSemanticAddressState2D.encode(address));
@@ -309,6 +323,9 @@ public final class LocusV2PublicOperations {
 	public static LocusPointInteractionResult2D moveInteractiveSemanticPoint(
 			GeoPoint point, double targetX, double targetY,
 			LocusPointInteractionPolicy2D policy) {
+		if (point.isLocked()) {
+			throw new IllegalArgumentException("A fixed point cannot be moved");
+		}
 		AlgoSemanticLocusPoint2D parent =
 				AlgoSemanticLocusPoint2D.requireSemanticParent(point);
 		Construction construction = point.getConstruction();
@@ -339,6 +356,84 @@ public final class LocusV2PublicOperations {
 		if (candidate == null) {
 			return result;
 		}
+		publishInteractionAddress(point, parent, candidate.getAddress());
+		return result;
+	}
+
+	/** Starts one gesture's kernel-owned chart choice without durable construction changes. */
+	public static LocusPointContinuation2D.Context beginInteractiveSemanticPointDrag(GeoPoint point) {
+		requireInteractionParent(point);
+		return LocusPointContinuation2D.begin(point);
+	}
+
+	private static AlgoSemanticLocusPoint2D requireInteractionParent(GeoPoint point) {
+		AlgoSemanticLocusPoint2D parent = AlgoSemanticLocusPoint2D.requireSemanticParent(point);
+		Construction construction = point.getConstruction();
+		requireAccess(construction);
+		SpatialIdentityRegistry registry = construction.getSpatialIdentityRegistry();
+		PersistentGeoId id = registry.getPersistentGeoId(point);
+		GeoIdentityRecord record = id == null ? null : registry.getGeoRecord(id);
+		if (record == null || registry.getGeo(id) != point
+				|| !INTERACTION_POINT_OUTPUT_ROLE.equals(record.getStableOutputRole())
+				|| !ConstructionGeoRedefineProvider.hasDedicatedInteractionPointState(point)) {
+			throw new IllegalArgumentException("Only an interaction-owned semantic point can be moved");
+		}
+		return parent;
+	}
+
+	/** Independent gesture-local edit; unresolved global R6 results are never promoted. */
+	public static LocusPointContinuation2D.Result
+			moveGeneralInteractiveSemanticPoint(GeoPoint point, double targetX, double targetY,
+			LocusPointInteractionPolicy2D policy, LocusPointContinuation2D.Context context) {
+		if (point.isLocked()) {
+			if (context != null) {
+				context.stop();
+			}
+			return LocusPointContinuation2D.refused(LocusPointContinuation2D.Status.FIXED_POINT);
+		}
+		if (context != null && context.isStopped()) {
+			return LocusPointContinuation2D.refused(LocusPointContinuation2D.Status.CONTINUATION_STOPPED);
+		}
+		AlgoSemanticLocusPoint2D parent = requireInteractionParent(point);
+		if (context == null || !context.matches(point, parent.getSource(),
+				parent.getCurrentSemanticAddress())) {
+			return LocusPointContinuation2D.refused(LocusPointContinuation2D.Status.INVALID_SOURCE);
+		}
+		LocusDefinition2D definition = parent.getSource().getSemanticDefinition();
+		var result = LocusPointContinuation2D.resolve(
+				parent.getSource(), parent.getCurrentSemanticAddress(), targetX, targetY, policy, context);
+		if (result.isEstablished()) {
+			if (parent.getSource().getSemanticDefinition() != definition) {
+				return LocusPointContinuation2D.refused(
+						LocusPointContinuation2D.Status.INVALID_SOURCE);
+			}
+			if (result.hasChanged()) {
+				try {
+					publishInteractionAddress(point, parent, result.getAddress(), result);
+				} catch (RuntimeException failure) {
+					context.stop();
+					throw failure;
+				}
+			} else {
+				result.requireCurrentPublication(point);
+				result.takePreparedBinding(point, parent.getSource(), parent.getCurrentSemanticAddress());
+			}
+			context.recordPublished(point, result);
+		} else if (result.getHistoricalResult() == null) {
+			context.stop();
+		}
+		return result;
+	}
+
+	private static void publishInteractionAddress(GeoPoint point,
+			AlgoSemanticLocusPoint2D parent, LocusSemanticAddress2D address) {
+		publishInteractionAddress(point, parent, address, null);
+	}
+
+	private static void publishInteractionAddress(GeoPoint point,
+			AlgoSemanticLocusPoint2D parent, LocusSemanticAddress2D address,
+			LocusPointContinuation2D.Result preparation) {
+		Construction construction = point.getConstruction();
 		GeoElement parameterGeo = parent.getParameterInput().toGeoElement();
 		if (!(parameterGeo instanceof GeoNumeric)) {
 			throw new IllegalStateException(
@@ -346,19 +441,27 @@ public final class LocusV2PublicOperations {
 		}
 		GeoText branch = parent.getBranchInput();
 		GeoNumeric parameter = (GeoNumeric) parameterGeo;
-		construction.runAtomicConstructionMutation(() -> {
-			branch.setTextString(LocusSemanticAddressState2D.encode(
-					candidate.getAddress()));
-			parameter.setValue(rawParameter(
-					parent.getSource().getSemanticDefinition(), candidate.getAddress()));
-			GeoElement.updateCascade(List.of(branch, parameterGeo));
-			if (!point.isDefined() || !candidate.getAddress().equals(
-					parent.getCurrentSemanticAddress())) {
-				throw new IllegalStateException(
-						"Semantic address edit did not publish the selected candidate");
-			}
-		});
-		return result;
+		try {
+			construction.runAtomicConstructionMutation(() -> {
+				if (preparation != null) {
+					parent.prepareContinuationBinding(preparation);
+				}
+				branch.setTextString(LocusSemanticAddressState2D.encode(address));
+				parameter.setValue(rawParameter(
+						parent.getSource().getSemanticDefinition(), address));
+				GeoElement.updateCascade(List.of(branch, parameterGeo));
+				if (preparation != null) {
+					preparation.requireCurrentPublication(point);
+				}
+				if (!point.isDefined() || requireInteractionParent(point) != parent
+						|| !address.equals(parent.getCurrentSemanticAddress())) {
+					throw new IllegalStateException(
+							"Semantic address edit did not publish the selected candidate");
+				}
+			});
+		} finally {
+			parent.discardContinuationBinding();
+		}
 	}
 
 	private static GeoPoint createSemanticPoint(Construction construction,
@@ -379,7 +482,7 @@ public final class LocusV2PublicOperations {
 	private static GeoPoint createSemanticPoint(Construction construction,
 			String label, GeoLocusV2 source, GeoText branch,
 			GeoNumberValue parameter, String stableOutputRole,
-			LocusSemanticAddress2D requiredAddress, M08SnapshotPlacement2D.Choice preparation) {
+			LocusSemanticAddress2D requiredAddress, LocusPointPublication2D preparation) {
 		requireAccess(construction);
 		GeoElement parameterGeo = parameter.toGeoElement();
 		ParticipationBatch batch = new ParticipationBatch(construction);

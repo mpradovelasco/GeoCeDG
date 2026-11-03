@@ -58,6 +58,12 @@ public final class LocusPointInteractionResolver2D {
 		return resolve(query, null);
 	}
 
+	/** Uses the historical resolver while the placement records actual nested work. */
+	LocusPointInteractionResult2D resolveForPlacement(LocusPointInteractionQuery2D query,
+			LocusEvaluationSession2D session) {
+		return resolve(query, null, session);
+	}
+
 	/** Private-to-kernel audit; neither reason strings nor retained candidates imply safety. */
 	SnapshotDiscovery discoverForSnapshot(LocusPointInteractionQuery2D query) {
 		return discoverForSnapshot(query, null);

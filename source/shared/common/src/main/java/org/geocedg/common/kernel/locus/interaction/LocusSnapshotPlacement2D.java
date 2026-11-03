@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geogebra.common.kernel.geos.GeoPoint;
 
@@ -34,17 +35,28 @@ public final class LocusSnapshotPlacement2D {
 		private final GeoLocusV2 source;
 		private final LocusDefinition2D definition;
 		private final LocusPointInteractionResult2D result;
+		private final long semanticMisses;
 		private boolean finished;
 
 		private Selection(LocusPointInteractionQuery2D query) {
 			source = query.getSource();
 			definition = source.getSemanticDefinition();
-			result = new LocusPointInteractionResolver2D().resolve(query);
+			var budget = query.getPolicy().getWorkBudget();
+			// Same R6 session policy and result; separately retain actual nested work.
+			try (var session = LocusEvaluationSession2D.memoizingWithLimits(
+					budget.getMaximumSemanticEvaluations(), budget.getMaximumSemanticEvaluations(),
+					budget.getMaximumEvaluatorCompositionDepth())) {
+				result = new LocusPointInteractionResolver2D().resolveForPlacement(query, session);
+				semanticMisses = session.getTotalChargedMisses();
+			}
 		}
 
 		public LocusPointInteractionResult2D getResult() {
 			return result;
 		}
+
+		/** Actual root and nested charge; does not alter historical R6 result telemetry. */
+		public long getSemanticMisses() { return semanticMisses; }
 
 		/**
 		 * Commits one explicit member of this safe result. Null means cancellation.

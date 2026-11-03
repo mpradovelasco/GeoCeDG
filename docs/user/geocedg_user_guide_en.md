@@ -1146,8 +1146,29 @@ address and follows changes of L. R2/H1 still requires its certified component, 
 regularity and proximity evidence. A finite forward evaluation alone cannot authorize
 creation from an unresolved search. Unsupported components or missing evidence produce no
 offer; that is not certified absence. Creation without the H1 regularity requirement is
-pending a separate author decision. Existing admitted R6 dragging is preserved; general
-dragging, safe M09 redefinition and dynamic M08-D correspondence remain outside this workflow.
+available through a separate experimental route for reconstructible programs with
+certified components and a complete existence inventory. It always requires explicit
+address confirmation. Its numerical proximity is labelled uncertified: the radius
+filters the computed residual, without guaranteeing ideal distance, a minimum
+projection or global uniqueness.
+
+**Free or locked.** The Point and Point on object panel includes **Allow dragging**,
+initially selected. Clear it to create a point with the normal lock enabled. Locking
+prevents dragging; the point still depends on its object and recomputes when it changes.
+**From reference Q** lets you select a 2D segment, line, ray or conic, then Q. It uses
+the object's native selection; Q does not become a parent of the created point.
+
+**Experimental semantic dragging.** With Move, select a free point and drag it.
+Its identity and dependent updates are preserved. Alongside existing R6/Spline V2
+dragging, supported local charts include nondegenerate affine images of a circular
+driver and constructions with a coordinate proved monotone throughout the local move.
+A seam is crossed only with established periodic correspondence. At a barrier the
+point retains its last valid address and shows a brief diagnostic; it never jumps
+to another branch by proximity. One gesture produces one Undo step.
+The chart stays fixed for the gesture; after a barrier, release and select the
+point again to start another attempt. Unresolved
+singularities, gaps and ambiguities need not be traversable. Safe M09 redefinition
+and dynamic M08-D correspondence remain outside this workflow.
 
 ### 8.2 Rich intersection results
 

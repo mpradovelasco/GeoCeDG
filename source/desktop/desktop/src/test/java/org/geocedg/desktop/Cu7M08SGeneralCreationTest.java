@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
-/** Creation-only consumers of unchanged R1/R6 and R2/H1; AWT is not physical input. */
+/** Creation regressions on the native PHASE test path; AWT is not physical input. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class Cu7M08SGeneralCreationTest {
 	private static final String NATIVE_SHA =
@@ -218,7 +218,7 @@ class Cu7M08SGeneralCreationTest {
 			var p = Cu7M08SDesktopEventsTest.point(app);
 			assertSame(spline, parent(p).getSource());
 			assertFalse(tool(app).isWorldPlacementActive());
-			assertNull(Cu7M08SDesktopEventsTest.panel(app));
+			assertNotNull(Cu7M08SDesktopEventsTest.panel(app), "Point options remain available");
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 1, 0);
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, 1, 0);
 			assertEquals(1, p.inhomX, 1e-8);
@@ -245,7 +245,7 @@ class Cu7M08SGeneralCreationTest {
 			Cu7M08SDesktopEventsTest.radius(app).setText("0.2");
 			Cu7M08SDesktopEventsTest.pointer(app, 3, -2);
 			assertFalse(tool(app).isWorldPlacementActive());
-			assertNull(Cu7M08SDesktopEventsTest.panel(app));
+			assertNotNull(Cu7M08SDesktopEventsTest.panel(app), "Point options remain available");
 			assertNotEquals(before, app.getXML(), "Ordinary Point mode resumes only after valid policy");
 			String after = app.getXML(); oldConfirm.doClick();
 			assertEquals(after, app.getXML());

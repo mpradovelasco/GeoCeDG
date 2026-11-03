@@ -1,0 +1,80 @@
+/* GeoCeDG. Copyright (c) 2026 GeoCeDG contributors. SPDX-License-Identifier: EUPL-1.2 */
+package org.geocedg.desktop;
+
+import java.util.Objects;
+
+import org.geogebra.common.kernel.Path;
+import org.geogebra.common.kernel.geos.GeoConic;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.geos.GeoPoint;
+
+/** Copied request for native 2D paths. All snapping remains in AlgoPointOnPath. */
+final class GeoCeDGNativePointPlacement implements AutoCloseable {
+
+	private final GeoElement source;
+	private final GeoPoint reference;
+	private final Object document;
+	private final String sourceState;
+	private final double x;
+	private final double y;
+	private final double radius;
+	private boolean consumed;
+
+	static boolean supports(GeoElement geo) {
+		return geo != null && !geo.isAxis() && !geo.isGeoElement3D()
+				&& (geo instanceof GeoLine || geo instanceof GeoConic);
+	}
+
+	GeoCeDGNativePointPlacement(GeoElement source, GeoPoint reference, double x, double y,
+			double radius) {
+		if (!supports(source) || !current(source) || !Double.isFinite(x)
+				|| !Double.isFinite(y) || !Double.isFinite(radius) || radius <= 0
+				|| reference != null && (!current(reference)
+						|| reference.getConstruction() != source.getConstruction()
+						|| reference.isGeoElement3D() || reference.getInhomX() != x
+						|| reference.getInhomY() != y)) {
+			throw new IllegalArgumentException("INVALID_REFERENCE");
+		}
+		this.source = source;
+		this.reference = reference;
+		this.x = x;
+		this.y = y;
+		this.radius = radius;
+		document = source.getConstruction().getSpatialIdentityRegistry();
+		sourceState = source.getXML();
+	}
+
+	private static boolean current(GeoElement geo) {
+		return geo != null && geo.isDefined()
+				&& geo.getConstruction().getGeoSetConstructionOrder().contains(geo)
+				&& !geo.getConstruction().isFileLoading();
+	}
+
+	GeoPoint commit(boolean draggable) {
+		if (consumed) { throw new IllegalStateException("CONSUMED_SELECTION"); }
+		consumed = true;
+		if (!current(source) || document != source.getConstruction().getSpatialIdentityRegistry()
+				|| !Objects.equals(sourceState, source.getXML())
+				|| reference != null && (!current(reference)
+						|| reference.getInhomX() != x || reference.getInhomY() != y)) {
+			throw new IllegalStateException("STALE_SELECTION");
+		}
+		GeoPoint[] output = new GeoPoint[1];
+		var construction = source.getConstruction();
+		construction.runAtomicConstructionMutation(() -> {
+			GeoPoint point = construction.getKernel().getAlgoDispatcher()
+					.point(null, (Path) source, x, y, true, false, true);
+			if (!point.isDefined() || !Double.isFinite(point.getInhomX())
+					|| !Double.isFinite(point.getInhomY()) || point.getPath() != source
+					|| Math.hypot(point.getInhomX() - x, point.getInhomY() - y) > radius) {
+				throw new IllegalStateException("NATIVE_PLACEMENT_REJECTED");
+			}
+			point.setFixed(!draggable);
+			output[0] = point;
+		});
+		return output[0];
+	}
+
+	@Override public void close() { consumed = true; }
+}

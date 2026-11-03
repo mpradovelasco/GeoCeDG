@@ -267,13 +267,13 @@ class M08PointCreationKernelTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(0, explicit.getInhomY(), 1E-12);
 		String before = getApp().getXML();
 		try (var selection = LocusPointCreation2D.query(source, 3, 0, policy())) {
-			assertEquals(Route.REJECTED, selection.getRoute());
+			assertEquals(Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION, selection.getRoute());
 			assertEquals(LocusPointInteractionResult2D.Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED,
 					selection.getHistoricalResult().getReason());
 			assertNotNull(selection.getLocalSelection());
 			assertEquals(M08SnapshotPlacement2D.Failure.LOCAL_EVIDENCE_NOT_ESTABLISHED,
 					selection.getLocalSelection().getResult().getFailure());
-			assertTrue(selection.getChoices().isEmpty());
+			assertFalse(selection.getChoices().isEmpty());
 			assertEquals(before, getApp().getXML());
 		}
 	}

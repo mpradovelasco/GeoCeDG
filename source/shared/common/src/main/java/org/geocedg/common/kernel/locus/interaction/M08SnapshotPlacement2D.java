@@ -153,7 +153,7 @@ public final class M08SnapshotPlacement2D {
 	}
 
 	/** Unforgeable query-owned choice. Its reference is an ephemeral capability, not identity. */
-	public static final class Choice {
+	public static final class Choice extends LocusPointPublication2D {
 		private final Selection owner;
 		private final LocusSemanticAddress2D address;
 		private final M08LocalAddressEvidence2D evidence;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -28,11 +29,12 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.main.AppD;
 
-/** Desktop selection only; admission/publication remain with the R1/R6 and R2/H1 authorities. */
+/** Desktop selection; semantic admission and native point-on-path evaluation stay kernel-owned. */
 final class GeoCeDGReferencePointTool {
 	private final AppD app;
-	private GeoLocusV2 source;
+	private GeoElement source;
 	private GeoCeDGReferencePlacement selection;
+	private GeoCeDGNativePointPlacement nativeSelection;
 	private LocusPointInteractionPolicy2D policy = LocusPointInteractionPolicy2D.initial(.1);
 	private Object document;
 	private Object view;
@@ -48,6 +50,8 @@ final class GeoCeDGReferencePointTool {
 	private String lastFailure;
 	private boolean worldPlacement;
 	private boolean clickPosition;
+	private boolean draggable = true;
+	private boolean fromReference;
 
 	GeoCeDGReferencePointTool(AppD app) { this.app = app; }
 
@@ -62,14 +66,18 @@ final class GeoCeDGReferencePointTool {
 		if (current != document) {
 			policy = LocusPointInteractionPolicy2D.initial(.1);
 			clickPosition = false;
+			draggable = true;
+			fromReference = false;
 			document = current;
 		}
 		buildPanel();
 		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui) {
 			gui.setReferencePointPanel(panel);
 		}
-		updateStatus(clickPosition ? t("Click L to choose a position", "Pulse L para elegir una posición")
-				: t("Select L", "Seleccione L"));
+		updateStatus(app.getMode() != EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+				&& !fromReference ? t("Click to create a point", "Pulse para crear un punto")
+				: clickPosition ? t("Click object to choose a position", "Pulse el objeto para elegir una posición")
+				: t("Select object", "Seleccione objeto"));
 	}
 
 	void reset() {
@@ -90,6 +98,7 @@ final class GeoCeDGReferencePointTool {
 	private void clearSelection() {
 		generation++;
 		if (selection != null) { selection.close(); selection = null; }
+		if (nativeSelection != null) { nativeSelection.close(); nativeSelection = null; }
 		clearChoices();
 	}
 
@@ -112,9 +121,10 @@ final class GeoCeDGReferencePointTool {
 
 	void click(List<GeoElement> hits, Component anchor, int x, int y) {
 		if (document != app.getKernel().getConstruction().getSpatialIdentityRegistry()) { activate(); }
-		if (!applyPolicy() || selection != null || choices != null) { return; }
-		List<GeoElement> loci = hits.stream().filter(geo -> geo instanceof GeoLocusV2).toList();
-		if (clickPosition) {
+		if (!applyPolicy() || selection != null || nativeSelection != null || choices != null) { return; }
+		List<GeoElement> loci = hits.stream().filter(geo -> geo instanceof GeoLocusV2
+				|| GeoCeDGNativePointPlacement.supports(geo)).toList();
+		if (clickPosition && app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
 			var requestView = app.getActiveEuclidianView();
 			if (requestView == null) { refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name()); return; }
 			double worldX = requestView.toRealWorldCoordX(x);
@@ -124,13 +134,13 @@ final class GeoCeDGReferencePointTool {
 					refuse(M08SnapshotPlacement2D.Failure.STALE_SELECTION.name());
 					return;
 				}
-				queryWorld((GeoLocusV2) geo, worldX, worldY);
+				queryWorld(geo, worldX, worldY);
 			});
 			return;
 		}
 		if (source == null || !loci.isEmpty() && hits.stream().noneMatch(geo -> geo instanceof GeoPoint)) {
 			choose(loci, geo -> {
-				source = (GeoLocusV2) geo;
+				source = geo;
 				app.getSelectionManager().clearSelectedGeos();
 				app.getSelectionManager().addSelectedGeo(source);
 				updateStatus(t("Select existing Q", "Seleccione Q existente"));
@@ -150,46 +160,65 @@ final class GeoCeDGReferencePointTool {
 
 	void query(GeoPoint q, Component anchor, int x, int y) {
 		try {
-			selection = new GeoCeDGReferencePlacement(source, q, policy);
-			showSelection();
+			if (source instanceof GeoLocusV2 locus) {
+				selection = new GeoCeDGReferencePlacement(locus, q, policy);
+				showSelection();
+			} else {
+				nativeSelection = new GeoCeDGNativePointPlacement(source, q,
+						q.getInhomX(), q.getInhomY(), policy.getMaximumWorldDistance());
+				showNativeSelection();
+			}
 		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
+		catch (IllegalArgumentException failure) { refuse(failure.getMessage()); }
 	}
 
 	/** A canvas request uses the same world policy and confirmation as an existing Q. */
-	void queryWorld(GeoLocusV2 target, double x, double y) {
+	void queryWorld(GeoElement target, double x, double y) {
 		if (worldPlacement && !applyPolicy()) { return; }
 		activate();
 		worldPlacement = true;
 		source = target;
 		app.getSelectionManager().addSelectedGeo(source);
 		try {
-			selection = new GeoCeDGReferencePlacement(source, x, y, policy);
-			showSelection();
+			if (source instanceof GeoLocusV2 locus) {
+				selection = new GeoCeDGReferencePlacement(locus, x, y, policy);
+				showSelection();
+			} else {
+				nativeSelection = new GeoCeDGNativePointPlacement(source, null, x, y,
+						policy.getMaximumWorldDistance());
+				showNativeSelection();
+			}
 		} catch (M08SnapshotPlacement2D.Rejected failure) { refuse(failure.getFailure().name()); }
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); }
+		catch (IllegalArgumentException failure) { refuse(failure.getMessage()); }
 	}
 
 	boolean isWorldPlacementActive() { return worldPlacement; }
-	boolean hasPendingWorldSelection() { return worldPlacement && selection != null; }
+	boolean hasPendingWorldSelection() { return worldPlacement && (selection != null || nativeSelection != null); }
+	boolean isReferenceRequestActive() {
+		return app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+				|| fromReference && (app.getMode() == EuclidianConstants.MODE_POINT
+						|| app.getMode() == EuclidianConstants.MODE_POINT_ON_OBJECT);
+	}
+	boolean isPanelActive() { return panel != null; }
+	boolean isDraggingAllowed() { return draggable; }
 
 	/** Finish an invalidated world offer before handing a new press to any authoring route. */
 	boolean prepareCanvasRequest() {
 		if (!worldPlacement) { return true; }
 		if (!applyPolicy()) { return false; }
-		if (app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
-			activate();
-		} else {
-			reset();
-		}
+		activate();
 		return true;
 	}
 
 	private void restart() {
-		if (worldPlacement && app.getMode() != EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
-			reset();
-		} else {
+		if (app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+				|| app.getMode() == EuclidianConstants.MODE_POINT
+				|| app.getMode() == EuclidianConstants.MODE_POINT_ON_OBJECT) {
 			activate();
+		} else {
+			reset();
 		}
 	}
 
@@ -199,10 +228,15 @@ final class GeoCeDGReferencePointTool {
 			return;
 		}
 		boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
+		boolean individual = selection.getRoute() == GeoCeDGReferencePlacement.Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
 		String title = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
+				: individual ? t("Forward address; numerical proximity is uncertified",
+						"Dirección forward; proximidad numérica no certificada")
 				: t("Verified local address; global uniqueness not established",
 						"Dirección local verificada; unicidad global no establecida");
 		coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
+				: individual ? t("Individual forward address; global coverage not established",
+						"Dirección forward individual; cobertura global no establecida")
 				: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
 		updateStatus(t("Confirm a semantic address", "Confirme una dirección semántica"));
 		showChoices(selection.getChoices(), choice -> {
@@ -217,6 +251,7 @@ final class GeoCeDGReferencePointTool {
 		try {
 			GeoPoint point = selection.commit(choice);
 			if (point == null) { restart(); return null; }
+			point.setFixed(!draggable);
 			app.storeUndoInfo();
 			app.getKernel().notifyRepaint();
 			restart();
@@ -228,12 +263,27 @@ final class GeoCeDGReferencePointTool {
 		catch (GeoCeDGReferencePlacement.Rejected failure) { refuse(failure.getMessage()); return null; }
 	}
 
+	private void showNativeSelection() {
+		updateStatus(t("Confirm native point on object", "Confirme un punto nativo sobre el objeto"));
+		showChoices(List.of(nativeSelection), ignored -> source.getLabelSimple(), ignored -> {
+			if (app.getActiveEuclidianView() != view) { refuse("STALE_SELECTION"); return; }
+			try {
+				nativeSelection.commit(draggable);
+				app.storeUndoInfo();
+				app.getKernel().notifyRepaint();
+				restart();
+			} catch (IllegalStateException failure) { refuse(failure.getMessage()); }
+		}, t("Native object placement; numerical selection", "Colocación nativa; selección numérica"));
+	}
+
 	private String describeFailure(String code) {
 		return switch (code) {
 		case "R1_FORWARD_REJECTED" -> t("R1 forward publication rejected", "Publicación forward R1 rechazada");
 		case "CERTIFIED_ABSENCE" -> t("Certified absence within the R1 query policy", "Ausencia certificada bajo la política R1");
 		case "DEGENERATE_SOURCE" -> t("Degenerate source", "Fuente degenerada");
 		case "UNSUPPORTED_CAPABILITY" -> t("Unsupported capability", "Capacidad no admitida");
+		case "UNSUPPORTED_CAPTURE" -> t("Source outside the supported reconstructible v3 scope",
+				"Fuente fuera del perímetro reconstructible v3 admitido");
 		case "LOCAL_EVIDENCE_INSUFFICIENT" -> t("Insufficient safe local evidence", "Evidencia local segura insuficiente");
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");
@@ -242,9 +292,15 @@ final class GeoCeDGReferencePointTool {
 		case "FOREIGN_CHOICE" -> t("Choice belongs to another query", "Dirección ajena a la consulta");
 		case "CONSUMED_SELECTION" -> t("Selection already consumed", "Selección ya consumida");
 		case "COMPONENT_NOT_ESTABLISHED" -> t("Component not established", "Componente no establecida");
-		case "UNSAFE_SEARCH" -> t("Unsafe search barrier", "Barrera de seguridad de búsqueda");
+		case "UNSAFE_SEARCH", "UNSAFE_DISCOVERY" -> t("Unsafe search barrier", "Barrera de seguridad de búsqueda");
 		case "AUTHORITY_NOT_ESTABLISHED" -> t("Source authority not established", "Autoridad de la fuente no establecida");
 		case "FORWARD_MODEL_MISMATCH" -> t("Forward model mismatch", "Discrepancia del modelo forward");
+		case "INVALID_FORWARD" -> t("Forward reconstruction could not be validated",
+				"No se pudo validar la reconstrucción forward");
+		case "NO_ADDRESS_DISCOVERED" -> t("No admissible address found in this query",
+				"No se encontró una dirección admisible en esta consulta");
+		case "NATIVE_PLACEMENT_REJECTED" -> t("Native placement within the query radius could not be validated",
+				"No se pudo validar la colocación nativa dentro del radio de la consulta");
 		case "LOCAL_EVIDENCE_NOT_ESTABLISHED", "NO_VERIFIED_ADDRESS" -> t("No address has sufficient local evidence", "Ninguna dirección tiene evidencia local suficiente");
 		default -> t("Operation rejected", "Operación rechazada");
 		};
@@ -346,6 +402,25 @@ final class GeoCeDGReferencePointTool {
 		}
 		fillPolicy();
 		JPanel actions = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.TRAILING, 4, 0));
+		JCheckBox free = new JCheckBox(t("Allow dragging", "Permitir arrastre"), draggable);
+		free.setName("m08-allow-dragging");
+		free.setToolTipText(t("New points on supported objects; fixed points still follow their source",
+				"Puntos nuevos sobre objetos admitidos; los fijos siguen los cambios de su fuente"));
+		free.addActionListener(event -> draggable = free.isSelected());
+		actions.add(free);
+		if (app.getMode() == EuclidianConstants.MODE_POINT
+				|| app.getMode() == EuclidianConstants.MODE_POINT_ON_OBJECT) {
+			JToggleButton reference = new JToggleButton(t("From reference Q", "Desde referencia Q"), fromReference);
+			reference.setName("m08-from-reference");
+			reference.addActionListener(event -> {
+				fromReference = reference.isSelected();
+				clearSelection(); source = null;
+				app.getSelectionManager().clearSelectedGeos();
+				updateStatus(fromReference ? t("Select object, then Q", "Seleccione objeto y después Q")
+						: t("Click to create a point", "Pulse para crear un punto"));
+			});
+			actions.add(reference);
+		}
 		if (app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
 			JToggleButton origin = new JToggleButton(t("Click position", "Posición de clic"), clickPosition);
 			origin.setName("m08-click-position");

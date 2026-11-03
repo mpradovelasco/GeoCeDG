@@ -1207,9 +1207,31 @@ dirección forward y sigue los cambios de L. R2/H1 sigue exigiendo su componente
 certificada y las pruebas de regularidad local y proximidad. Una evaluación forward
 finita no autoriza por sí sola la creación desde una búsqueda no resuelta. Si falta
 componente o evidencia, no se ofrece dirección; eso no certifica ausencia. La creación
-sin la guarda de regularidad H1 queda pendiente de una decisión autoral específica.
-Se conserva el arrastre R6 admitido; el arrastre general, la redefinición segura M09 y
-la correspondencia dinámica M08-D quedan fuera de este flujo.
+sin la guarda de regularidad H1 tiene una vía experimental separada para programas
+reconstruibles con componentes certificadas e inventario de existencia completo.
+Siempre requiere confirmar una dirección. Su proximidad numérica se presenta como
+no certificada: el radio filtra el residual calculado, sin garantizar la distancia
+ideal, una proyección mínima ni unicidad global.
+
+**Libre o bloqueado.** El panel de Punto y Punto en objeto incluye **Permitir
+arrastre**, activado inicialmente. Desactívelo para crear un punto bloqueado con
+el cerrojo normal. Bloquear impide arrastrarlo; el punto sigue dependiendo de su
+objeto y se recalcula cuando este cambia. **Desde referencia Q** permite seleccionar
+primero un segmento, recta, semirrecta o cónica 2D y después Q. Se utiliza la
+selección nativa del objeto; Q no se convierte en padre del punto creado.
+
+**Arrastre semántico experimental.** Con Mover, seleccione el punto libre y
+arrástrelo. Se conserva su identidad y la actualización de sus dependientes.
+Además del arrastre R6/Spline V2 existente, se admiten cartas locales demostradas
+para imágenes afines no degeneradas de un conductor circular y para construcciones
+con una coordenada monótona certificada en todo el recorrido local. Una costura
+solo se cruza cuando existe correspondencia periódica demostrada. Al alcanzar una
+barrera, el punto conserva la última dirección válida y aparece un diagnóstico
+breve; no se salta a otra rama por cercanía. Un gesto produce un paso de Deshacer.
+La carta se mantiene durante el gesto; tras una barrera, suelte y vuelva a
+seleccionar el punto para iniciar otro intento.
+No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
+La redefinición segura M09 y la correspondencia dinámica M08-D quedan fuera.
 
 ### 8.2 Resultados ricos de intersección
 
