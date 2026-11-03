@@ -78,6 +78,17 @@ class R3NativeUndoRecoveryDesktopTest {
 				bits(dependent.inhomX) == bits(semantic.inhomX + 1)
 						&& bits(dependent.inhomY) == bits(semantic.inhomY + 2));
 	}
+	private static void assertNativeUnchanged(String stage, AppGeoCeDG app,
+			Map<String, NativeInput> expectedInputs, Map<String, NativeRollbackPointState> expectedTyped)
+			throws Exception {
+		Restored current = restored(app, expectedTyped);
+		System.out.println("R3_NATIVE_UNDO_STAGE " + stage + " nativeInputs=" + current.inputs());
+		assertEquals(expectedInputs, current.inputs(), stage + " native input bits");
+		assertTrue(current.typedMatches().values().stream().allMatch(Boolean::booleanValue),
+				stage + " native source/domain and typed input");
+		assertFalse(point(app, "NativeH").getXML().contains("<conicPointState"), stage);
+		assertFalse(point(app, "NativeP").getXML().contains("<conicPointState"), stage);
+	}
 
 	@Test void semanticDragUndoRedoPreserveUnrelatedProjectedNativeAncestorInputsExactly()
 			throws Exception {
@@ -124,9 +135,11 @@ class R3NativeUndoRecoveryDesktopTest {
 			expectedInputs.set(inputs); expectedTyped.set(typed); initialAddress.set(address(app));
 			for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
 				geo.setEuclidianVisible(geo == locus || geo == point(app, "SemanticP"));
-				geo.updateRepaint();
 			}
 			app.getEuclidianView1().setCoordSystem(220, 420, 100, 100);
+			app.getKernel().notifyRepaint();
+			assertNativeUnchanged("after visibility/view setup before baseline", app,
+					expectedInputs.get(), expectedTyped.get());
 			app.getKernel().initUndoInfo();
 		});
 		var app = host.get();
@@ -134,11 +147,16 @@ class R3NativeUndoRecoveryDesktopTest {
 		Cu7M08SDesktopEventsTest.await(() -> undo.isQuiescent() && undo.getHistorySize() == 0);
 		Cu7M08SDesktopEventsTest.edt(() -> {
 			GeoPoint semantic = point(app, "SemanticP");
+			assertNativeUnchanged("immediately before gesture", app, expectedInputs.get(), expectedTyped.get());
 			app.setMode(EuclidianConstants.MODE_MOVE);
+			assertNativeUnchanged("after setMode", app, expectedInputs.get(), expectedTyped.get());
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_PRESSED, semantic.inhomX, semantic.inhomY);
+			assertNativeUnchanged("after press", app, expectedInputs.get(), expectedTyped.get());
 			double x = 3 * Math.cos(.04), y = 3 * Math.sin(.04);
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, x, y);
+			assertNativeUnchanged("after drag before release", app, expectedInputs.get(), expectedTyped.get());
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, x, y);
+			assertNativeUnchanged("after release", app, expectedInputs.get(), expectedTyped.get());
 			assertSame(semantic, point(app, "SemanticP"));
 			movedAddress.set(address(app)); assertNotEquals(initialAddress.get(), movedAddress.get());
 			assertEquals(expectedInputs.get(), restored(app, expectedTyped.get()).inputs(),
