@@ -407,6 +407,20 @@ the after-coordinates adversary and every byte/field/ownership/forward check.
 Production, guides, fixture and test identity are unchanged. Both failed focus
 receipts and the exact classification/diff remain; neither is final acceptance.
 
+The following clean `02a5e9a7` again passes shared 198/198, while Desktop retains
+129/130 with a corpus-context failure. The new adversarial fixture leaked the
+global logger installed by its `AppDNoGui` constructor. That logger converts
+historically handled native-loader exceptions into assertions. A canon-only
+diagnostic passes; the exact adversary-then-corpus diagnostic reproduces 32 such
+assertions and retains their full causes, including the old 3D-grid warning.
+The latter diagnostic ends with inner exit 1 and is preserved as failed evidence
+in `legacy-native-corpus-context-probe/`; it is not product acceptance. The
+correction isolates the new fixture's constructor with the same immediate
+save/restore-Log pattern already used by the original corpus loader. Native
+geometry, forward evaluation, DOM validation, fixtures, hashes and test identity
+do not change. Earlier hypotheses about native F or XML parsing are not findings
+and do not motivate production patches. A successor clean focus remains required.
+
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
 two selectors and one PHASE. New chart failures prompted mathematical/canonical

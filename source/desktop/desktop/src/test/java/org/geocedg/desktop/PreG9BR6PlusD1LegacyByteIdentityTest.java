@@ -24,6 +24,7 @@ import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.move.ggtapi.models.json.JSONArray;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
+import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.headless.AppDNoGui;
 import org.geogebra.desktop.main.LocalizationD;
 import org.junit.jupiter.api.Test;
@@ -95,7 +96,13 @@ class PreG9BR6PlusD1LegacyByteIdentityTest {
 	}
 
 	private static void assertValidatedCu7ProjectionFailsClosedOnEventThread() throws Exception {
-		var app = new AppDNoGui(new LocalizationD(3), true, new AppConfigGeoCeDG(true, true));
+		Log previousLogger = Log.getLogger();
+		AppDNoGui app;
+		try {
+			app = new AppDNoGui(new LocalizationD(3), true, new AppConfigGeoCeDG(true, true));
+		} finally {
+			Log.setLogger(previousLogger);
+		}
 		try {
 			var algebra = app.getKernel().getAlgebraProcessor();
 			algebra.processAlgebraCommand("c=Circle((0,0),1)", false);
