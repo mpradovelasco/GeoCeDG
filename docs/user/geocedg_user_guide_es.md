@@ -1215,6 +1215,8 @@ ideal, una proyección mínima ni unicidad global.
 
 **Libre o bloqueado.** El panel de Punto y Punto en objeto incluye **Permitir
 arrastre**, activado inicialmente para puntos nuevos sobre los objetos admitidos.
+Durante la sesión el panel conserva la elección de arrastre y de referencia Q;
+revise ambas opciones al iniciar otra construcción o documento.
 Desactívelo para crear un punto bloqueado con
 el cerrojo normal. Bloquear impide arrastrarlo; el punto sigue dependiendo de su
 objeto y se recalcula cuando este cambia. **Desde referencia Q** permite seleccionar

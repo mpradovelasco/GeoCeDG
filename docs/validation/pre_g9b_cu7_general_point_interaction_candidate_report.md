@@ -90,6 +90,16 @@ byte-exact restoration of every legacy path/region or malformed macro/defaults
 import. Native normal construction loads reject invalid new state; the inherited
 GGT/defaults best-effort error behavior is not silently claimed as a new guarantee.
 
+**Runtime boundary:** exact native rollback is established on the current runtime
+and admitted host states. Tagged raw coordinates must match the target runtime's
+native forward(t) bits. Because Java Math may differ within its stated accuracy
+across JVM/CPU implementations, a newly tagged file may be refused elsewhere;
+portable parameter encoding alone does not prove portable raw-state coherence.
+No cross-runtime fidelity guarantee or tolerance-based repair is claimed. The
+external `jvm-provenance-and-native-portability.md` distinguishes the observed
+Gradle/product JVMs, the build's Java-17 test toolchain contract and this material
+interoperability limit. It remains an adoption/review concern.
+
 The inherited patch against the requested base is additive: `GeoPoint` +215
 lines (state codec/coherent restore/one-use correspondence), `ConsElementXMLHandler`
 +53 (strict native state/coords ordering and eligibility), `AlgoPointOnPath` +9
@@ -226,7 +236,7 @@ process exits, JUnit identities, logs, source identities, final receipts and smo
 observations. No ancestor PHASE is attributed to this SHA. Development failures
 are preserved with their own causes and do not disappear into later successful runs.
 
-The stable code/test checkpoint is `9d4f2a59ee00ec50ad085e13be9f2a59c275d80c`,
+The native-repair/initial-smoke checkpoint is `9d4f2a59ee00ec50ad085e13be9f2a59c275d80c`,
 tree `07489742898247bd5c0608c5c6f8c488de8a8a8c`. The external
 `checkpoint-native-final-code.json` records 31 changed source/test files and their
 filesystem SHA-256/Git blobs; `technical-code-9d4f.diff` is the reviewable source
@@ -239,10 +249,33 @@ patch against the requested base. The two canonical focal producers at this coho
 
 `verification-focus-summary-9d4f.json` binds both producer/JUnit sets and identity
 hashes. A neutral producer's outer exit 0 alone is never used as test acceptance.
-The current shared matrix comprises the original 131 cases, 17 native persistence
+That shared matrix comprises the original 131 cases, 17 native persistence
 cases and four new host-boundary cases. Desktop adds three callback/host-refusal
 cases to the earlier 107. Frozen PHASE/INFRA_UNIT/FINAL are distinct required runs;
 these focal results are not attributed to the later final metadata commit.
+
+The final numerical-proof code checkpoint is
+`d41c5c513b9c46a3aa5f7e19f51eccc04196cf33`, tree
+`4adc0b20d98dc404f80d35caffd99aaee05d8d09`. Its only production difference from
+9d4f is the circle-chart atan2 enclosure helper: four directed adjacent values
+derive the pointwise two-exact-result-ulp bound across a binade boundary. The
+StrictMath nominal, native codec, H1/monotone chart and historical R6 code are
+unchanged. Two new exact-rational tests fail on the preserved three-step helper
+and pass on four steps. This is a pointwise proof counterexample, not an observed
+JDK failure or a constructed globally semi-monotonic Math implementation.
+
+The new tests are in the **effective nine-class shared selector**. On d41c:
+
+| Selection | Actual result | Inner exit | Time | External receipt |
+| --- | --- | --- | --- | --- |
+| Final-code shared selection | 154/154 pass; no failures/errors/skips | 0 | 76.747 s | `focus-shared-rounding-01/producer.json` |
+| Final-code Desktop selection | 110/110 pass; no failures/errors/skips | 0 | 126.240 s | `focus-desktop-rounding-01/producer.json` |
+
+`checkpoint-rounding-final-code.json`, `technical-code-d41.diff`,
+`verification-focus-summary-d41c.json` and `atan2-binade-proof/` retain exact
+source/test/receipt identities and the earlier two expected failures. The shared
+node is MIXED (scientific and product semantics); Desktop is PRODUCT. The older
+eight-filter 152 receipt is not used to measure the new nine-filter catalog.
 
 Development failures remain visible: `focus-shared-atomic-03` had the two strict
 H1 native rollback failures; native02/03 exposed the extra conic boundaries and
@@ -298,6 +331,43 @@ Math/StrictMath accuracy and fdlibm contracts. The local argument enclosure stil
 includes inverse conditioning, canonical rounding and seam correspondence; the
 API contract alone is not a distance or geometric uniqueness certificate.
 
+## Executed graphical smoke and saved-state checks
+
+The normal canonical application was driven through actual Sky/SendInput clicks
+and drags, with fixture/visibility commands entered only through its normal input.
+No semantic point was moved by a programmatic geometry call or manual parameter.
+This is automated graphical smoke, **not author smoke or author approval**.
+
+The complete first session used 9d4f and closed normally, launcher inner exit 0.
+The second used corrected d41c, reopened private saved copies of **all three**
+cases, repeated their motions and closed normally, launcher inner exit 0
+(673.543 s including interaction). Both launchers, source identities, actions,
+screenshots, unique `.cedg` files and extracted native XML remain in external
+`smoke/`; old captures are not relabelled as the corrected source.
+
+| Case | Demonstrated graphical behavior and saved evidence |
+| --- | --- |
+| A, exact vector-circle construction | Click near `(3,0)` and ordinary Point's Q mode both create forward points with explicitly uncertified proximity. Both directions, dependents, exact one-step Undo/Redo, same-ID periodic lift `0→1→0`, fixed checkbox and a visible after-release barrier were exercised. The rejected gesture's parsed construction XML is unchanged. Corrected d41c reopens the same B and repeats the seam both ways with exact saved return. |
+| B, actual author h | Fresh private copy of `TestM08-S.cedg`; reference explicitly added at approved ReferenceR1 coordinates. Both Q and ordinary click creation succeed. O moves upward/downward with durable ID `geo:51cb87bb5098a9a9a9c46594ffa64afe`; saved arguments `−6.407985253531479E−11→.11362197394113416→−.09509542109578373`. Corrected d41c reopens that actual document and moves the same O again in its regular chart. |
+| C, open SplineV2 | Actual Point click and mouse movement reach right/left endpoint arguments `1/0` with ID `geo:8f18160a112d3d3125c7051832a0e54b`; right raw x `1.9999999999999993`, left −2. Corrected d41c reopens and moves the same endpoint point again. No closed-Spline seam is inferred from coincident coordinates. |
+
+At the corrected A seam, B retains ID
+`geo:c72b44710d69f60454de2d9810e9abe0`. The persisted lifted input is
+`3.085667514287463→3.1975177928921235→3.085667514287463`, with lift `0→1→0`.
+The canonical address encoded alongside it wraps at the provider seam; the lifted
+input and the canonical argument are not conflated. Branch/component and dependent
+relations persist. Native saved address codecs accompany the coordinate records.
+
+The original and untouched starting copy retain SHA-256
+`4f6e1be3c42a892f63f6791f3b8ca6994443863af5c5ad2039531604e27c898d`.
+Read `smoke-observations.md/json`, its corrected-code follow-up, and
+`physical-native-saved-state-checks.json` for actual observations and omissions.
+Optional native-object Q, full closure clipboard/remap, fixed-point source edits,
+P2's pending-selector view change and tooltips-OFF were covered by automated tests
+but not by this physical session. The fourteen-step author protocol remains pending.
+An early clipped-window h attempt was discarded as targeting evidence; later
+verified native states establish the actual h motion. No Codex overlay UI was used.
+
 ## Author smoke protocol
 
 The following is a protocol, not an author PASS. Record candidate commit/tree,
@@ -318,6 +388,8 @@ isolated settings and launcher receipt before starting.
    singularity traversal without proof.
 6. Construct exactly `c=Circle((0,0),1)`, `N=Point(c)`, `v=Vector((0,0),N)`,
    `Q=N+(2*v)`, `L=LocusV2(Q,N)` in an isolated drawing or with distinct labels.
+   Check direct-position mode and Allow dragging: the panel retains the user's
+   choices during the session, including after New file.
 7. Create by a physical click near `(3,0)`, then from another nearby reference.
    Hide Q, N and other precursor objects first, leaving L visible: clicking the
    existing Q at `(3,0)` normally selects Q and must not create a duplicate point.
@@ -332,7 +404,7 @@ isolated settings and launcher receipt before starting.
 10. With Point/Point on object test a native segment and circle, both by click and
     `From reference Q`. Move Q afterward; the new point remains on its source
     without Q as a new parent. Verify ordinary native dragging separately.
-11. Repeat historical Spline V2 creation, endpoint interaction and drag. Exercise
+11. Restore free/direct mode and repeat historical Spline V2 creation, endpoint interaction and drag. Exercise
     ambiguous choices explicitly; never infer identity from visual coincidence.
 12. Verify one Undo/Redo per gesture, saved `.cedg` reopen and copy/remap of a full
     dependency closure. Trigger an undefined source, then restore it; no stale
@@ -351,12 +423,22 @@ TEST_SELECTION: exact PHASE and JUnit catalog changes require canonical inventor
 refresh, INFRA_UNIT and FINAL. GUIDE_IMPACT=UPDATED: both official language guides
 describe lock, Q table, numerical proximity and bounded continuation.
 
-**No reduced closure is recommended while the native rollback blocker remains.**
-The possible future perimeter, after resolving it and obtaining independent review
-and author smoke/decision, is:
+**Propose independent review of a reduced CU7 perimeter, without declaring closure.**
+Its adoption is conditional on the frozen campaign, independent final-candidate
+review and author smoke/decision. The specific fresh-circle defect is repaired;
+the native host exclusions and runtime portability boundary remain material parts
+of the candidate, not blanket waivers or universal host certification. The perimeter is:
 M08-S-R2 plus explicit forward creation on the declared table, local semantic
 chart dragging, historical Spline/R6 and the bounded native-object UI extension.
-Exclude universal arbitrary-locus interaction, unproved singular/gap/seam crossing,
+Exclude universal arbitrary-locus interaction, unsupported native host states,
+cross-runtime raw-state portability, unproved singular/gap/seam crossing,
 new existence/reconstruction providers, M08-D, M09/I2, I2G, I3, releases and publication.
 CU10/E1 and existing scientific/editorial debts remain distinct. Automatic PASS
 does not adopt the candidate amendments, approve the source SHA or close CU7.
+
+The immutable final Git identity and actual canonical STATIC/PHASE/INFRA_UNIT/FINAL
+verdicts are recorded **after the final freeze** in the external delivery manifest
+and verification-result files. This versioned report is prepared before those
+runs; it does not fabricate their success or require a later Git mutation to
+record them. PHASE coverage COMPLETE means an effective verification selection,
+not author approval or product-phase CU7 closure. No further commit follows FINAL.

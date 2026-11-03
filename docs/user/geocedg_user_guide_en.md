@@ -1154,7 +1154,9 @@ projection or global uniqueness.
 
 **Free or locked.** The Point and Point on object panel includes **Allow dragging**,
 initially selected for new points on supported objects. Clear it to create a point
-with the normal lock enabled. Locking
+with the normal lock enabled. During the session the panel retains your dragging
+and reference-Q choices; check both when starting another construction or document.
+Locking
 prevents dragging; the point still depends on its object and recomputes when it changes.
 **From reference Q** lets you select a 2D segment, line, ray or conic, then Q. It uses
 the object's native selection; Q does not become a parent of the created point.

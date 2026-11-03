@@ -130,6 +130,21 @@ an admitted finite conic point. Those two checks are explicit freshness/snapshot
 work, additional to the bounded inverse/point-binding budget; no hidden cache or
 new runtime counter framework is introduced merely to remove that small repetition.
 
+## Runtime portability boundary
+
+Exact native host restoration is a same-runtime guarantee in the tested perimeter.
+The tag stores the parameter bits portably, but the reader also demands bitwise
+coherence of its native forward evaluation with the saved raw representation.
+Java Math permits implementation-dependent sin/cos results within its accuracy
+contract. A different compliant JVM/CPU may therefore refuse a newly tagged state
+whose forward bits differ there. This is a declared interoperability limit, not
+permission to silently reproject, alter the saved argument or certify cross-runtime
+raw fidelity. Old untagged inputs retain their historical route. Current successful
+test and product runs do not, by themselves, prove transfer between every runtime.
+Cross-runtime native compatibility remains an independent review/adoption concern;
+this task does not rewrite the inherited trigonometric implementation or add an
+unproved tolerance-based acceptance rule.
+
 ## Validation gate and compatibility
 
 Keep exact first-roundtrip and rejected-transaction XML/parameter/coordinate
