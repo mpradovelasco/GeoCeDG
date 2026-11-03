@@ -7,15 +7,23 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import javax.swing.JCheckBox;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionWorkBudget2D;
 import org.geogebra.common.awt.GColor;
@@ -29,6 +37,7 @@ import org.geogebra.common.main.App;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 /** Permanent F4–F6 adversaries; AWT callbacks are distinct from physical mouse smoke. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
@@ -548,5 +557,137 @@ class R3PointInteractionDesktopTest {
 			assertEquals(point.inhomX + 1, dependent.inhomX, 1e-8);
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, -.9, 0);
 		});
+	}
+
+	private static LocusSemanticAddress2D address(GeoPoint point) {
+		return AlgoSemanticLocusPoint2D.requireSemanticParent(point).getCurrentSemanticAddress();
+	}
+
+	private static LocusPoint2D authorTarget(GeoLocusV2 source, String branch, double parameter) {
+		try (var session = LocusEvaluationSession2D.memoizing(100)) {
+			var evaluated = source.getSemanticDefinition().evaluate(branch, parameter, session);
+			assertTrue(evaluated.isValid(), evaluated.toString());
+			return evaluated.getPoint();
+		}
+	}
+
+	@Test void exactAuthorDocumentHReferenceCreationDragsBothWaysAndReopens(@TempDir Path directory)
+			throws Exception {
+		Path original = directory.resolve("TestM08-S.cedg");
+		try (var stream = getClass().getResourceAsStream("cu7-general-creation/TestM08-S.cedg")) {
+			assertNotNull(stream, "The exact author fixture must be bundled, never skipped");
+			Files.copy(stream, original);
+		}
+		String originalHash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+				.digest(Files.readAllBytes(original)));
+		assertEquals("4f6e1be3c42a892f63f6791f3b8ca6994443863af5c5ad2039531604e27c898d", originalHash);
+		var host = new AtomicReference<AppGeoCeDG>();
+		var pointId = new AtomicReference<Object>();
+		var sourceId = new AtomicReference<Object>();
+		var initial = new AtomicReference<LocusSemanticAddress2D>();
+		var moved = new AtomicReference<LocusSemanticAddress2D>();
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var app = G9U1SemanticPointInteractionTest.app(); host.set(app);
+			assertTrue(app.loadFile(original.toFile(), false));
+			var h = (GeoLocusV2) app.getKernel().lookupLabel("h"); assertNotNull(h);
+			var priorIds = identities(app);
+			var reference = (GeoPoint) eval(app,
+					"ReferenceR1=(0.8976484384297626,1.7854818601338847)");
+			try (var offer = new GeoCeDGReferencePlacement(h, reference,
+					LocusPointInteractionPolicy2D.initial(.1))) {
+				assertEquals(GeoCeDGReferencePlacement.Route.R2_H1, offer.getRoute());
+				assertEquals(1, offer.getChoices().size());
+				var point = offer.commit(offer.getChoices().get(0)); point.setLabel("AuthorHPoint");
+				assertTrue(GeoCeDGPointInteraction.owns(point)); assertFalse(point.isLocked());
+				assertFalse(point.getAllPredecessors().contains(reference));
+				assertSame(h, AlgoSemanticLocusPoint2D.requireSemanticParent(point).getSource());
+				initial.set(address(point)); sourceId.set(h.getPersistentLocusId());
+				pointId.set(app.getKernel().getConstruction().getSpatialIdentityRegistry()
+						.getPersistentGeoId(point)); assertNotNull(pointId.get());
+				assertTrue(identities(app).containsAll(priorIds));
+			}
+			eval(app, "AuthorHDependent=AuthorHPoint+(1,2)");
+			for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
+				geo.setEuclidianVisible(geo == h || "AuthorHPoint".equals(geo.getLabelSimple()));
+				geo.updateRepaint();
+			}
+			app.getEuclidianView1().setCoordSystem(220, 420, 100, 100);
+			app.getKernel().initUndoInfo();
+		});
+		var app = host.get();
+		var undo = app.getKernel().getConstruction().getUndoManager();
+		Cu7M08SDesktopEventsTest.await(() -> undo.getHistorySize() == 0);
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var h = (GeoLocusV2) app.getKernel().lookupLabel("h");
+			var point = (GeoPoint) app.getKernel().lookupLabel("AuthorHPoint");
+			var dependent = (GeoPoint) app.getKernel().lookupLabel("AuthorHDependent");
+			int count = app.getKernel().getConstruction().getGeoSetConstructionOrder().size();
+			app.setMode(EuclidianConstants.MODE_MOVE);
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_PRESSED, point.inhomX, point.inhomY);
+			double previousParameter = initial.get().getCanonicalParameter(), previousOffset = 0;
+			LocusPoint2D target = null;
+			for (double offset : new double[] {.08, .16, .08, -.04}) {
+				target = authorTarget(h, initial.get().getBranchKey(),
+						initial.get().getCanonicalParameter() + offset);
+				Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, target.getX(), target.getY());
+				var current = address(point);
+				assertTrue((offset - previousOffset) * (current.getCanonicalParameter() - previousParameter) > 0,
+						"The exact author h must continue in both requested directions");
+				assertEquals(initial.get().getBranchKey(), current.getBranchKey());
+				assertEquals(initial.get().getComponentLineageKey(), current.getComponentLineageKey());
+				assertEquals(initial.get().getSourceLocusId(), current.getSourceLocusId());
+				assertSame(point, app.getKernel().lookupLabel("AuthorHPoint"));
+				assertEquals(pointId.get(), app.getKernel().getConstruction().getSpatialIdentityRegistry()
+						.getPersistentGeoId(point));
+				assertEquals(count, app.getKernel().getConstruction().getGeoSetConstructionOrder().size());
+				assertEquals(point.inhomX + 1, dependent.inhomX, 1e-10);
+				assertEquals(point.inhomY + 2, dependent.inhomY, 1e-10);
+				var forward = authorTarget(h, current.getBranchKey(), current.getCanonicalParameter());
+				assertEquals(forward.getX(), point.inhomX, 1e-11);
+				assertEquals(forward.getY(), point.inhomY, 1e-11);
+				previousOffset = offset; previousParameter = current.getCanonicalParameter();
+			}
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, target.getX(), target.getY());
+			moved.set(address(point)); assertNotEquals(initial.get(), moved.get());
+		});
+		Cu7M08SDesktopEventsTest.await(undo::undoPossible);
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			assertEquals(1, undo.getHistorySize(), "The author-h controller gesture is one Undo");
+			app.getKernel().undo();
+		});
+		Cu7M08SDesktopEventsTest.await(undo::redoPossible);
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			var point = (GeoPoint) app.getKernel().lookupLabel("AuthorHPoint");
+			assertEquals(initial.get(), address(point));
+			assertEquals(pointId.get(), app.getKernel().getConstruction().getSpatialIdentityRegistry()
+					.getPersistentGeoId(point)); app.getKernel().redo();
+		});
+		Cu7M08SDesktopEventsTest.await(() -> undo.getHistorySize() == 1);
+		Cu7M08SDesktopEventsTest.edt(() -> {
+			assertEquals(moved.get(), address((GeoPoint) app.getKernel().lookupLabel("AuthorHPoint")));
+			Path file = directory.resolve("author-h-drag.cedg");
+			assertTrue(((GuiManagerGeoCeDG) app.getGuiManager()).saveAsTo(file.toFile()));
+			var reopened = G9U1SemanticPointInteractionTest.app();
+			assertTrue(reopened.loadFile(file.toFile(), false));
+			var point = (GeoPoint) reopened.getKernel().lookupLabel("AuthorHPoint");
+			var h = (GeoLocusV2) reopened.getKernel().lookupLabel("h");
+			assertEquals(pointId.get(), reopened.getKernel().getConstruction().getSpatialIdentityRegistry()
+					.getPersistentGeoId(point));
+			assertEquals(sourceId.get(), h.getPersistentLocusId()); assertEquals(moved.get(), address(point));
+			assertSame(h, AlgoSemanticLocusPoint2D.requireSemanticParent(point).getSource());
+			assertTrue(GeoCeDGPointInteraction.owns(point));
+			assertNotNull(reopened.getKernel().lookupLabel("ReferenceR1"));
+			var target = authorTarget(h, moved.get().getBranchKey(), moved.get().getCanonicalParameter() + .06);
+			reopened.setMode(EuclidianConstants.MODE_MOVE);
+			Cu7M08SDesktopEventsTest.mouse(reopened, MouseEvent.MOUSE_PRESSED, point.inhomX, point.inhomY);
+			Cu7M08SDesktopEventsTest.mouse(reopened, MouseEvent.MOUSE_DRAGGED, target.getX(), target.getY());
+			Cu7M08SDesktopEventsTest.mouse(reopened, MouseEvent.MOUSE_RELEASED, target.getX(), target.getY());
+			assertTrue(address(point).getCanonicalParameter() > moved.get().getCanonicalParameter());
+			var dependent = (GeoPoint) reopened.getKernel().lookupLabel("AuthorHDependent");
+			assertEquals(point.inhomX + 1, dependent.inhomX, 1e-10);
+			assertEquals(point.inhomY + 2, dependent.inhomY, 1e-10);
+		});
+		assertEquals(originalHash, HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+				.digest(Files.readAllBytes(original))));
 	}
 }

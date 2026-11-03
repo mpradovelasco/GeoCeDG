@@ -578,7 +578,7 @@ public final class GeoCeDGEuclidianController
 	}
 
 	private void showStalePointRequest() {
-		showPointInteractionNotice("es".equals(app.getLocale().getLanguage())
+		showPointInteractionNotice(app.getLocalization().languageIs("es")
 				? "La selección ha cambiado; realice una petición nueva"
 				: "Selection changed; make a new request");
 	}
