@@ -85,8 +85,8 @@ captured coefficients alone, in a principal-angle enclosure. The previous
 address authorizes the hemisphere and selects the lift, but does not influence
 rounding of that representative. Identical requests therefore retain the same
 canonical bits on the same runtime across a legitimate seam and its reversal.
-Corner enclosures use the Java [`Math.atan2` accuracy contract](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#atan2(double,double)), widened
-outward by three adjacent doubles. The nominal representative uses reproducible
+Corner enclosures use the Java [`Math.atan2` accuracy contract](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Math.html#atan2(double,double)), widened
+outward by four adjacent doubles. The nominal representative uses reproducible
 fdlibm `StrictMath.atan2`, and is accepted only when contained in that rigorous
 enclosure. No accuracy claim for `StrictMath` is inferred without this check.
 The chosen address bits are persisted and forward reconstructed under the
@@ -150,6 +150,36 @@ binding, consumed once by ordinary DAG publication. They do not bound arbitrary
 dependent algorithms supplied by a document. Whole-mutation latency includes
 those dependents and the existing O(N) atomic construction snapshot. No
 whole-DAG work-budget or universal interactive-latency guarantee is claimed.
+
+## Portable atan2 enclosure correction — recorded before its code
+
+2026-11-03. The Java accuracy contract measures ulps at the exact real result,
+using its bracketing floating-point spacing, not unconditionally at the returned
+double. Three adjacent returned-value steps do not follow from that pointwise
+two-ulp bound alone across a
+binade boundary. Let `U=2^-52`, `h=U/2`, exact `theta=1+2^-55`, and an allowed
+returned value `r=1-3h` allowed by the pointwise error allowance. Its error is
+`1.625U < 2U`; three `nextUp(r)` steps reach
+1, still below theta. Four reach `1+U`, enclosing it. Negative angles mirror the
+case. Within the two-ulp neighborhood the mesh can at most halve across the
+one relevant normal binade boundary; four directed steps cover that worst case,
+and subnormal spacing is constant. The finite interval constructor adds no hidden
+extra widening that could have repaired the previous three-step justification.
+
+The candidate correction extracts one package-private corner-widening helper
+using four directed steps and tests allowed synthetic results against exact rational
+targets around positive/negative binade boundaries. This is an error-contract
+counterexample test, not a mock that requires the current JDK to miscompute atan2.
+The chosen StrictMath nominal, chart, budget, canonicalization and seam rules stay
+the same; a wider proof can conservatively refuse a tighter unresolved request.
+No tolerance is relaxed, and no global inverse result gains editing permission.
+New tests must be included in the actual shared PHASE selection. Rerun focal
+shared/Desktop and recheck an actual mouse seam on the corrected source cohort;
+retain the earlier 9d4f smoke and tests under their actual identities.
+This does not assert that the current JDK returns the synthetic value, or that
+a whole implementation returning it can satisfy every global semi-monotonicity
+constraint. The correction makes the enclosure derivation valid from the stated
+pointwise accuracy premise without relying on an unproved additional coupling.
 
 BOOTSTRAP IMPACT: NO CHANGE REQUIRED: no workstation/runtime prerequisite changes.
 GUIDE_IMPACT: creation and drag controls require focused user guidance.

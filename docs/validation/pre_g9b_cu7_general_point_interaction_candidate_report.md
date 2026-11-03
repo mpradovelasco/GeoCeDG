@@ -90,6 +90,22 @@ byte-exact restoration of every legacy path/region or malformed macro/defaults
 import. Native normal construction loads reject invalid new state; the inherited
 GGT/defaults best-effort error behavior is not silently claimed as a new guarantee.
 
+The inherited patch against the requested base is additive: `GeoPoint` +215
+lines (state codec/coherent restore/one-use correspondence), `ConsElementXMLHandler`
++53 (strict native state/coords ordering and eligibility), `AlgoPointOnPath` +9
+(dated notice and compute seam). Original copyright remains and each inherited
+file has a dated GeoCeDG change notice. No new generic Path, native geometry solver,
+global XML number formatter, host transaction framework or upstream baseline change.
+
+The original fresh h driver now preserves
+`-0x1.d7919666c3e74p0` from its **first** save/load, rather than changing to
+`-0x1.d7919666c3e75p0`. Six repeated exact native argument/raw-coordinate/full-XML
+cycles and rejected-mutation restoration pass. Legacy untagged input deliberately
+still produces the measured historical latter value. The source-undefined codec
+test proves point argument/raw/fallback/animation preservation while explicitly
+characterizing the different inactive source matrix; the new host gate refuses
+that document before mutation. It does not claim whole-host equality for that case.
+
 ## Creation contract and actual provider perimeter
 
 For a complete address `a=(source,provider,branch,component,u,lift,seam)`, the point
@@ -210,6 +226,34 @@ process exits, JUnit identities, logs, source identities, final receipts and smo
 observations. No ancestor PHASE is attributed to this SHA. Development failures
 are preserved with their own causes and do not disappear into later successful runs.
 
+The stable code/test checkpoint is `9d4f2a59ee00ec50ad085e13be9f2a59c275d80c`,
+tree `07489742898247bd5c0608c5c6f8c488de8a8a8c`. The external
+`checkpoint-native-final-code.json` records 31 changed source/test files and their
+filesystem SHA-256/Git blobs; `technical-code-9d4f.diff` is the reviewable source
+patch against the requested base. The two canonical focal producers at this cohort:
+
+| Selection | Actual result | Inner exit | Time | External receipt |
+| --- | --- | --- | --- | --- |
+| New shared PHASE selection | 152/152 pass; 0 failed/errored/skipped | 0 | 74.874 s | `focus-shared-native-05/producer.json` |
+| Expanded Desktop PHASE selection | 110/110 pass; 0 failed/errored/skipped | 0 | 123.140 s | `focus-desktop-native-01/producer.json` |
+
+`verification-focus-summary-9d4f.json` binds both producer/JUnit sets and identity
+hashes. A neutral producer's outer exit 0 alone is never used as test acceptance.
+The current shared matrix comprises the original 131 cases, 17 native persistence
+cases and four new host-boundary cases. Desktop adds three callback/host-refusal
+cases to the earlier 107. Frozen PHASE/INFRA_UNIT/FINAL are distinct required runs;
+these focal results are not attributed to the later final metadata commit.
+
+Development failures remain visible: `focus-shared-atomic-03` had the two strict
+H1 native rollback failures; native02/03 exposed the extra conic boundaries and
+an invalid animation test bound; native04 had a malformed-XML test setup mismatch
+between standalone and full-document point fragments. The fixture now extracts
+the actual document element, keeps every invalid-state oracle, and passes native05.
+The original h/H1 exact assertions were not weakened. The earlier full Desktop
+run's six stale expectations were updated for intentional new behavior (local
+continuation independent of global R6, panel state, cumulative work and a hidden
+status label); no new exclusions, skips or allowlist entries were added.
+
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
 two selectors and one PHASE. New chart failures prompted mathematical/canonical
@@ -231,6 +275,28 @@ from structural/interval passes. Ordinary downstream DAG algorithms are not
 automatically included in that inverse-work budget. Observed whole-mutation
 latencies and snapshot costs are reported separately, without a hard realtime
 claim or a silent approximation to meet a timing target.
+
+At checkpoint 9d4f the saved telemetry has 16 Case-A moves: one proof/point
+evaluation and five proof passes each, whole-mutation 0.4173–1.0054 ms,
+median 0.6622 ms. The measured h move used one evaluation/49 passes, 8.5964 ms;
+the historical Spline move used 13 evaluations/0 passes, 0.7166 ms. These are small
+fixture observations, not latency guarantees. `continuation-telemetry.json` keeps
+all 19 emitted samples, including one without an invented provider label.
+
+New-route changed moves add a read-only traversal of host roots/inline inputs and
+one native forward consistency check per admitted finite conic point. The required
+normal XML snapshot writer performs another such native check; both are explicit
+freshness/persistence work outside the semantic inverse counter. The prepared
+binding is consumed once, so ordinary point publication does not repeat its forward
+evaluation. Exact no-ops avoid snapshot, DAG mutation and Undo; each concrete
+creation uses one snapshot including callbacks, with no redundant facade nesting.
+The ordinary O(N) construction snapshot remains the principal scalability limit.
+No new checkpoint/cache framework or silent approximation is introduced to hide it.
+
+The external `java-math-reference-check.md` verifies the relevant Java 25 official
+Math/StrictMath accuracy and fdlibm contracts. The local argument enclosure still
+includes inverse conditioning, canonical rounding and seam correspondence; the
+API contract alone is not a distance or geometric uniqueness certificate.
 
 ## Author smoke protocol
 

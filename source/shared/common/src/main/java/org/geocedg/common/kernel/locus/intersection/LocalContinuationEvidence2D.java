@@ -179,10 +179,7 @@ public final class LocalContinuationEvidence2D {
 		for (double a : new double[] {x.lower, x.upper}) {
 			for (double b : new double[] {y.lower, y.upper}) {
 				double value = Math.atan2(b, a);
-				// Math.atan2's Java accuracy contract is two ulps; widen by three doubles.
-				SplineOutwardInterval2D corner = new SplineOutwardInterval2D(
-						Math.nextDown(Math.nextDown(Math.nextDown(value))),
-						Math.nextUp(Math.nextUp(Math.nextUp(value))));
+				SplineOutwardInterval2D corner = atan2AccuracyEnvelope(value);
 				if (value - old > Math.PI) {
 					corner = corner.subtract(period);
 				} else if (value - old < -Math.PI) {
@@ -192,6 +189,15 @@ public final class LocalContinuationEvidence2D {
 			}
 		}
 		return result;
+	}
+
+	static SplineOutwardInterval2D atan2AccuracyEnvelope(double value) {
+		// Math's pointwise two-ulp bound uses the exact result's spacing. Four
+		// directed steps cover the finer mesh across a normal binade boundary;
+		// three steps from the returned value need not enclose that real result.
+		return new SplineOutwardInterval2D(
+				Math.nextDown(Math.nextDown(Math.nextDown(Math.nextDown(value)))),
+				Math.nextUp(Math.nextUp(Math.nextUp(Math.nextUp(value)))));
 	}
 
 	private static Affine apply(Step step, Affine[] nodes) {

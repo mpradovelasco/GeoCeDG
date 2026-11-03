@@ -131,3 +131,21 @@ existing load lifecycle, with old untagged and explicit-parameter behavior kept
 separate. Implementation and validation of that repair are pending at this entry.
 Only later actual results can discharge the demonstrated blocker; authorization
 itself does not discharge it or approve the integrated candidate.
+
+## Demonstrated repair within the guarded perimeter
+
+On clean code/test checkpoint `9d4f2a59ee00ec50ad085e13be9f2a59c275d80c`, the
+canonical shared selection passes 152/152 (inner exit 0) and Desktop passes
+110/110 (inner exit 0). Receipts are the external `focus-shared-native-05` and
+`focus-desktop-native-01` producers. The original two H1 whole-XML rollback
+oracles and fresh h parameter witness are unchanged and pass. The new native
+test performs first-load and six-cycle exact comparisons without pre-normalizing.
+
+This discharges the specific fresh-circle defect under the new codec. It does
+not relabel the historical failures or certify all native documents. New
+individual-forward/local-chart permissions and native Q publication refuse the
+explicit unsupported host states before mutation; original R1/R6/H1 retain
+their historical contracts. Coordinate-projected hyperbola caches, undefined
+conic inactive matrices and other unproved native free places remain excluded
+from the new strong perimeter. See the candidate amendment and delivery report.
+Final frozen verification, independent review and author smoke remain separate.

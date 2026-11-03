@@ -306,6 +306,16 @@ Invoke-Case 'CU7 general point interaction includes new tests and historical sem
         Join-Path $root 'geocedg/specs/operations/verification-registry.json')
     [void](Assert-VerificationRegistry $registry -SchemaPath $schemaPath)
     $plan = Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-GENERAL-POINT-INTERACTION
+    $sharedSemantic = @($plan.nodes | Where-Object {
+        $_.check_id -ceq 'junit.shared.pre-g9b-cu7-general-point-interaction.semantic'
+    })[0]
+    $desktopSemantic = @($plan.nodes | Where-Object {
+        $_.check_id -ceq 'junit.desktop.pre-g9b-cu7-general-point-interaction.semantic'
+    })[0]
+    Assert-Case ($sharedSemantic.semantic_domain -ceq 'MIXED') (
+        'CU7 shared geometric/state evidence must identify its mixed scientific/product domain.')
+    Assert-Case ($desktopSemantic.semantic_domain -ceq 'PRODUCT') (
+        'CU7 Desktop evidence must retain its product domain.')
     foreach ($required in @(
         'compile.shared.semantic',
         'compile.desktop.semantic',
@@ -326,6 +336,7 @@ Invoke-Case 'CU7 general point interaction includes new tests and historical sem
         shared = @(
             'org.geocedg.common.locus.IndividualForwardPointCreationTest',
             'org.geocedg.common.locus.NativeConicPointPersistenceTest',
+            'org.geocedg.common.kernel.locus.intersection.LocalContinuationRoundingTest',
             'org.geocedg.common.locus.GeneralPointContinuationTest',
             'org.geocedg.common.locus.M08PointCreationKernelTest',
             'org.geocedg.common.locus.G9S1SemanticSpline2DTest',
