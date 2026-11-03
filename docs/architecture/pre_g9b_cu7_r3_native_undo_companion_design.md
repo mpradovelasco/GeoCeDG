@@ -46,6 +46,21 @@ durable geo identifier. Existing IDs and snapshot-only opaque bindings retain
 their prior roles. No public document receives a private binding. Empty or
 unsupported native tables retain the historical route and its declared scope.
 
+This historical boundary also applies to mixed history transitions. An ordinary
+native edit can legitimately produce a later unsupported state B after an admitted
+typed state A. Its presence must not disable the existing native Undo tool. Exact
+native Undo requires an admitted current pre-state as well as the admitted target
+companion. If the current state is unsupported, load A through its ordinary public
+XML fallback with the inherited guarantee, rather than granting an unproved exact
+transaction or refusing ordinary native Undo merely because A has a companion.
+Derive that fallback only from the frozen matching checkpoint by removing its
+known private bindings and verifying the retained ordinary digest. No identities
+or parameters are guessed or repaired. The fallback may be materialized transiently
+on this exceptional path; no second live construction capture is needed.
+This does not relax the positive host-state gate of new CU7 edits, or claim exact
+native argument preservation outside the table. Test this transition in both
+directions and make its historical scope explicit in the delivery.
+
 Each Undo/Redo creates a fresh restore session from immutable payload/IDs/keys;
 never reuse old GeoPoints, consumed flags or mutable binding maps. Legitimate
 repeated Undo/Redo is explicitly authorized by that owned AppState, not by a
