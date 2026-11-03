@@ -1,6 +1,6 @@
 # CU7 — Native free-conic point state: candidate amendment
 
-2026-11-03, Europe/Madrid. **CANDIDATE; implementation and independent review pending.**
+2026-11-03, Europe/Madrid. **CANDIDATE; implementation evidenced on 713c; independent review and author adoption pending.**
 This design is recorded before the inherited-source patch. The author explicitly
 authorized precise inherited-source changes after the exact native rollback defect
 was demonstrated. That authorization permits this repair; it does not approve its

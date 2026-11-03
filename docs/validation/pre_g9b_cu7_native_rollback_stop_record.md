@@ -54,7 +54,7 @@ The external evidence directory
 * The `publication-window-probe` process/JUnit records: five original failures
   demonstrating stale reference/source publication, callback side-effect leakage,
   an overwritten output coordinate and a hidden parameter changed without cascade.
-* Current-source shared test receipts: exact H1 rollback assertions remain failures.
+* Original failed source-cohort shared receipts: exact H1 rollback assertions remain failures.
 
 ## Governing source and why this is semantic
 

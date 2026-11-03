@@ -1,6 +1,6 @@
 # CU7 — General point interaction: candidate delivery and author smoke
 
-2026-11-03, Europe/Madrid. **TECHNICAL CANDIDATE — final verification pending.**
+2026-11-03, Europe/Madrid. **TECHNICAL CANDIDATE — pre-FINAL record; frozen verification verdicts are external.**
 Technical candidate under the author's present focal
 authorization. `selfApproved=false`, `author_smoke=false`, CU7 remains open.
 No main promotion, publication, release or book modification.
@@ -57,8 +57,15 @@ argument and raw representation coherently, and carries it once through the
 loader's final construction update while the source state still agrees. It does
 not introduce a different transaction system. Old untagged files retain their
 historical load behavior; explicitly parameterized points keep their numeric
-input authority, and limited/3D conics retain their former route. Older readers
-ignore the additive tag and retain their former coordinate-reprojection fidelity.
+input authority, and limited/3D conics retain their former route. The pinned
+upstream reader logs an unknown-child diagnostic and discards this
+additive tag; ordinary coordinates then follow its historical reprojection route
+when the rest of the document is supported. No new exact-restoration guarantee is
+granted to older readers. No old executable was tested, and this review does not
+cover every reader version. Other readers may issue diagnostics or reject
+unsupported document features.
+Current Classic uses the new shared reader and is not proof of old-binary behavior.
+The static pin trace is in `old-reader-compatibility-static-review-9b9325.md/json`.
 
 The final writer/positive native capability is restricted to the **shared GeoCeDG
 profile**, whose pre-existing kernel policy starts noncontinuous and prevents
@@ -193,7 +200,8 @@ Two new sufficient providers supplement historical R6/Spline movement:
   follows the approved class-v3 totality contract, section 10.8; it is distinct
   from the older interval model's period=0. The centre, antipode, ill-conditioned
   unresolved inverse and unsupported program remain barriers.
-* A reconstructible construction with a coordinate derivative of strict sign
+* A direct reconstructible source admitted by the existing v1/v2 certified
+  construction interval model, with a coordinate derivative of strict sign
   throughout the complete local chart containing the old and proposed arguments.
   The coordinate is retained for the entire gesture; it does not switch between
   events. The monotone inverse encloses parameter error within the declared
@@ -291,8 +299,8 @@ The new tests are in the **effective nine-class shared selector**. On d41c:
 
 | Selection | Actual result | Inner exit | Time | External receipt |
 | --- | --- | --- | --- | --- |
-| Final-code shared selection | 154/154 pass; no failures/errors/skips | 0 | 76.747 s | `focus-shared-rounding-01/producer.json` |
-| Final-code Desktop selection | 110/110 pass; no failures/errors/skips | 0 | 126.240 s | `focus-desktop-rounding-01/producer.json` |
+| Historical d41c shared focus | 154/154 pass; no failures/errors/skips | 0 | 76.747 s | `focus-shared-rounding-01/producer.json` |
+| Historical d41c Desktop focus | 110/110 pass; no failures/errors/skips | 0 | 126.240 s | `focus-desktop-rounding-01/producer.json` |
 
 `checkpoint-rounding-final-code.json`, `technical-code-d41.diff`,
 `verification-focus-summary-d41c.json` and `atan2-binade-proof/` retain exact
@@ -356,8 +364,9 @@ Classic remains a strict whole-XML comparison. This is an explicit candidate
 contract/test amendment, not a claim that the old unqualified byte promise passed,
 not geometric normalization, and not author adoption. Original fresh h/H1/R6 and
 numerical assertions stay strict. Original failed results and generated evidence
-are retained. These fixes require a new clean source cohort and fresh passing
-measurement; the failed Desktop receipt is not inventory input.
+are retained. These fixes required a new clean source cohort and fresh passing
+measurement; the current campaign is recorded below. The old failed Desktop
+receipt is not inventory input.
 
 Before that corrective production patch, the independent source-90 corpus probe
 completed with inner exit 0 (one diagnostic test, 105.831 s). All 134 successful
@@ -394,7 +403,7 @@ constructs an unrelated native macro point before L, preserving every refusal,
 identity, XML and no-mutation assertion. Production and API code did not change
 for this correction. The Macro-reader and disconnected-component controls and all
 original H1/revision/cache/export assertions passed in that failed focus. The
-original failed receipt and classification remain; a new clean focus is required.
+original failed receipt and classification remain; a successor clean focus was required.
 
 On the successor `0e11d8a7`, shared passes 198/198 (inner exit 0). The first
 expanded Desktop focus executes 130 cases: 129 pass and one D1-validator failure
@@ -419,7 +428,74 @@ correction isolates the new fixture's constructor with the same immediate
 save/restore-Log pattern already used by the original corpus loader. Native
 geometry, forward evaluation, DOM validation, fixtures, hashes and test identity
 do not change. Earlier hypotheses about native F or XML parsing are not findings
-and do not motivate production patches. A successor clean focus remains required.
+and do not motivate production patches. The passing successor focus and current
+measurement campaign are recorded next.
+
+## Current 713c code-cohort measurements
+
+The source checkpoint is `713c31d29faf142f82c9319601da30aec90483b7`, tree `e95a97ff1d2425a100c41c1a20c158a3d50e2ef4`. The preserved
+`checkpoint-compatible-cohort-713c.json` and `technical-code-713c.diff` bind
+35 changed source/test paths plus 2 packaged guides (37 paths).
+Their filesystem identities remain frozen through the measurement campaign.
+A later metadata-only candidate commit must retain those identities and be
+distinguished from the code-cohort SHA. No ancestor receipt is relabelled.
+
+All seven actual measurement producers completed with inner exit 0.
+
+| Actual measurement | Observed result | Inner exit | Receipt |
+| --- | --- | --- | --- |
+| Raw shared discovery | 6,714 raw discovered cases (dry run, not product executions) | 0 | `catalog-native-discovery-shared-05/producer.json` |
+| Raw Desktop discovery | 2,341 raw discovered cases (dry run, not product executions) | 0 | `catalog-native-discovery-desktop-04/producer.json` |
+| Thirteen-filter shared focus | 198 cases: 198 pass; no failures/errors | 0 | `focus-shared-compatibility-04/producer.json` |
+| Twelve-filter Desktop focus | 130 cases: 130 pass; no failures/errors | 0 | `focus-desktop-compatibility-03/producer.json` |
+| Actual extra pre-g9b-cu1.desktop selection | 20 cases: 20 pass; no failures/errors | 0 | `catalog-native-cu1-desktop-01/producer.json` |
+| Complete shared measurement | 7,631 cases: 7,621 pass; 10 source-pinned allowlisted skips; no failures/errors | 0 | `catalog-native-actual-shared-03/producer.json` |
+| Complete Desktop measurement | 2,335 cases: 2,334 pass; one source-pinned allowlisted skip; no failures/errors | 0 | `catalog-native-actual-desktop-02/producer.json` |
+
+The shared discovery repeat 05 is the actual catalog input, as recorded in
+`catalog-native-discovery-shared-05/observation-only-repeat.json`; 04 stays
+preserved. Discovery is a dry-run inventory, not execution or skipped-test
+acceptance. The full-module results and source-bound historical skip policy
+must be read from their actual measured summaries, not inferred from 90b.
+
+The passing Desktop focus includes the unchanged E1-L digest/golden assertions
+and `legacyCorpusOriginalPayloadIsByteIdenticalAfterValidatedCu7NativeMetadata`.
+That is the explicit candidate payload exception, not a passing result for
+the former unqualified raw whole-XML D1 promise. Classic remains raw-strict;
+GeoCeDG's only removed lines are the independently validated version-1 native
+checkpoints. Original fixture hashes, archives and earlier failures remain.
+
+The direct disconnected-component regression also passes in this source:
+`disconnectedLineCirclePreimagesCreateExplicitlyButRefuseUnprovedContinuation`.
+Its v3 LINE_CIRCLE source has COMPLETE existence and explicit R1/R6 creation
+choices, but the new local route refuses even a small regular move because
+that class has no implemented continuation chart. It is not a demonstration
+of movement up to the gap. No provider was enlarged for this control.
+
+The final readable map is `evidence-map-713c-readable.md/json`; its provenance
+preserves the original map hashes and every case/path/JUnit/source identity.
+`verification-focus-summary-713c.json` binds the two focal producers.
+These measurements are not frozen STATIC/PHASE/INFRA_UNIT/INTEGRATION/FINAL
+verdicts or author approval. Those future results belong in the external
+delivery manifest after the final metadata freeze, with no later Git mutation.
+
+The canonical updater consumed these seven actual receipts. Each of the five
+executed-test evidence projections reports both CONTRACT_SATISFIED and COMPLETE;
+the two discovery records are inventory only. The refreshed catalog's canonical
+SHA-256 is `3a76288167171a325d49a2531c5f1f2e896132d0eb5321024a6165e9b1641ff6`.
+The new verification PHASE is COMPLETE with its unchanged nineteen-node closure.
+Registry tests pass 23 cases/103 assertions and final-coverage tests pass
+8 cases/608 assertions, both exit 0. Exact inputs, projections and before/after
+metadata remain in `catalog-refresh-713c-01/`. These focused infrastructure checks
+do not replace the frozen canonical profiles or imply a product-phase closeout.
+
+Four unrelated historical narrow fingerprints retain observed mismatches. Their
+selection records and selected test-source files are unchanged from the task base;
+none belongs to FINAL, INTEGRATION or this new PHASE's dependency closure. They
+were not recalibrated from fabricated subsets or claimed as passing narrow runs.
+`historical-selector-calibration-review-713c.md/json` preserves the exact scope,
+source comparisons and derived evidence. Invoking those older named PHASEs may
+expose their retained fingerprint mismatch; no broad old-PHASE acceptance is claimed.
 
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
@@ -450,7 +526,9 @@ checked against saved XML, registry reservations and hidden inputs.
 | Unsupported native host state | Refuse the new transaction before publication | Refuse the new local edit before snapshot/mutation |
 
 This table is the explicit policy, not a claim that every adversarial class has
-a newly admitted provider. The external evidence map distinguishes direct tests,
+a newly admitted provider. In particular, the real v3 LINE_CIRCLE example admits
+explicit creation but its new drag remains refused even in a regular region, not
+merely at the separating gap. The external evidence map distinguishes direct tests,
 historical regression, indirect evidence and physical observations.
 
 Performance counters cover semantic proof and point-binding work, distinguished
@@ -459,7 +537,24 @@ automatically included in that inverse-work budget. Observed whole-mutation
 latencies and snapshot costs are reported separately, without a hard realtime
 claim or a silent approximation to meet a timing target.
 
-At checkpoint 90b6 the saved telemetry has 16 Case-A moves: one proof/point
+Current source-713c telemetry is preserved separately in
+`focus-shared-compatibility-04/continuation-telemetry.json`.
+It retains all 19 emitted samples without inventing a provider label.
+
+| Observed fixture | Samples | Whole-move min / median / max (ms) | Proof point evaluations / proof passes |
+| --- | --- | --- | --- |
+| B | 1 | 5.124600 / 5.124600 / 5.124600 | [1] / [49] |
+| A | 16 | 0.269000 / 0.718100 / 1.290600 | [1] / [5] |
+| UNLABELLED | 1 | 0.338700 / 0.338700 / 0.338700 | [1] / [5] |
+| C | 1 | 1.049600 / 1.049600 / 1.049600 | [13] / [0] |
+
+These are small-fixture whole-move observations, not GUI latency or throughput
+guarantees. Timing includes applicable host scan, XML snapshot and ordinary DAG
+work. The semantic counters cover proof/prepared point binding only. Preflight
+and snapshot writer are two known native-check callers, not the total for a
+gesture: other XML/fingerprint requests can also attempt native state capture.
+
+Historical telemetry at checkpoint 90b6 has 16 Case-A moves: one proof/point
 evaluation and five proof passes each, whole-mutation 0.2587–1.3814 ms,
 median 0.67025 ms. The measured h move used one evaluation/49 passes, 5.8293 ms;
 the historical Spline move used 13 evaluations/0 passes, 1.095 ms. These are small
@@ -493,6 +588,51 @@ and drags, with fixture/visibility commands entered only through its normal inpu
 No semantic point was moved by a programmatic geometry call or manual parameter.
 This is automated graphical smoke, **not author smoke or author approval**.
 
+### Current-source 713c physical creation and drag
+
+The new session used clean `713c31d29faf142f82c9319601da30aec90483b7` / `e95a97ff1d2425a100c41c1a20c158a3d50e2ef4` with fresh preferences,
+the normal `runGeoCeDG` launcher and actual mouse events. It created new points
+on this source; it is not a relabelled ancestor reopen. Preparation commands
+used the ordinary input, not geometric movement APIs or manual point parameters.
+The launcher closed normally: COMPLETED, inner exit 0, 2507.840 s
+including interaction. All 37 frozen source/guide byte identities stayed equal.
+
+| Case | Demonstrated in this source |
+| --- | --- |
+| A, vector circle | Initial Allow dragging=true; click near (3,0), free Q and fixed Q creation; fresh free drag with dependent updates; one exact Undo/Redo; the Q point crosses the provider seam in both directions with lift 0→1→0 and retained source/branch/component; fixed drag leaves the exact point/construction unchanged. |
+| Actual author h | A fresh unchanged author-file copy, explicitly added ReferenceR1, Q and click creation, and local drag of the newly created point with retained identity/source. |
+| Open Spline | A large initial request is refused with exact retained state; a fresh short gesture works. The same original A reaches u=0 / raw x=-2; a different B created near the upper end reaches u=1 / raw x=1.9999999999999993. No closed seam or universal large-step mobility is inferred. |
+| Native Q extension | A first segment-Q request in a fresh admitted host creates a fixed native point whose only parent input is the segment, not Q. A second segment-Q request is refused by the host boundary, adds no point and retains the exact construction. Ordinary native Point click still works afterward. A separate fresh circle-Q request creates a free native point with its checkpoint. This is bounded availability, not generic Q support in every host. |
+| Reopen | The newly created A/h/Spline documents reopen and save again without moving points. Checked IDs, sources, semantic addresses, raw coordinates, roles, locks and dependents remain exact. This current reopen does not itself claim an additional post-reopen drag. |
+
+The check `q_reverse_exact_initial_q_parameter=false` is retained and is
+informative: the final mouse pixel is not the initial reference-Q world
+request. The same sheet/component and lift 0 return are established, not a
+bitwise return to that arbitrary Q parameter. It is not replaced by the exact
+return observed in the older 90b session. The Spline's initial large-request
+and later outside-end barriers are recorded with their actual requests; the
+generic visible diagnostic does not invent an internal typed failure cause.
+
+Current durable semantic IDs: A click free `geo:722a59413a7aa0ce4064be44dc39704d`; A Q free `geo:e1e41d8e867e60e796cbe9f520b45bf8`; A Q fixed `geo:6aa54d139d752b22973c263742b6ae6a`; h ReferenceR1 `geo:2213eb344c236c15599442cf175e3ecc`; h click `geo:6ba7e329bc08e245bc2fa2706449f958`; Spline original A `geo:2dacfa20ddbfd6a518eac57fc161b19c`; Spline tip B `geo:438b226d06af1b99e61fdeccefad14e8`.
+
+Read `smoke/physical-final-creation-713c-observations.md/json`, `-checks.json`, `-saved-states.json`,
+`-native-states.json`, `-actions.json`, `-requests.json`, `-source-manifest.json`,
+`-artifact-hashes.json` and `-launcher.json` for exact event/state/provenance data.
+The original author file and immutable input copy retain their recorded SHA.
+
+Physical omissions in this session remain explicit:
+
+* Physical modal source-selector view change(P2), tooltipsOFF and DPI changes were not exercised; existing automated evidence remains separate.
+* Physical full-closure clipboard copy/remap was not exercised in this session.
+* Physical response of fixed points to source edits, native fixed-point drag attempt, native free-point drag, and native Q-reference movement were not exercised; native parent/fixed state was inspected from saved XML.
+* No closed-Spline periodicity, arbitrary singular/gap traversal, universal mobility or author approval claimed.
+
+This is automated graphical smoke, not author smoke, independent approval or
+CU7 closure. The fourteen-step author protocol remains pending. Earlier
+9d4f/d41c/90b sessions below retain their original source attribution.
+
+### Historical graphical sessions (9d4f / d41c / 90b)
+
 The complete first session used 9d4f and closed normally, launcher inner exit 0.
 The second used corrected d41c, reopened private saved copies of **all three**
 cases, repeated their motions and closed normally, launcher inner exit 0
@@ -508,8 +648,8 @@ directions with lift `0→1→0` and dependent updates, and reached Spline endpo
 checks, source and saved-state identities are in `physical-90b-observations.md/json`,
 `physical-90b-checks.json` and `physical-90b-source-manifest.json`. That session
 does not supply new physical creation/checkbox/Undo evidence: those earlier
-observations retain their 9d4f attribution. Further source-cohort smoke, if
-executed, must have separate records and cannot relabel these sessions.
+observations retain their 9d4f attribution. The separate 713c session above
+does not relabel these historical sessions.
 
 | Case | Demonstrated graphical behavior and saved evidence |
 | --- | --- |
@@ -528,9 +668,10 @@ The original and untouched starting copy retain SHA-256
 `4f6e1be3c42a892f63f6791f3b8ca6994443863af5c5ad2039531604e27c898d`.
 Read `smoke-observations.md/json`, its corrected-code follow-up, and
 `physical-native-saved-state-checks.json` for actual observations and omissions.
-Optional native-object Q, full closure clipboard/remap, fixed-point source edits,
-P2's pending-selector view change and tooltips-OFF were covered by automated tests
-but not by this physical session. The fourteen-step author protocol remains pending.
+For these historical sessions, optional native-object Q, full closure copy/remap,
+fixed-point source edits, P2's pending-selector view change and tooltips-OFF were
+automated-test evidence. The separate 713c session adds bounded native-Q evidence;
+its other physical omissions remain listed above. The fourteen-step author protocol remains pending.
 Physical DPI variation and a closed-Spline seam were not exercised; no new DPI
 or closed-Spline-seam proof is inferred from the open-Spline observations.
 An early clipped-window h attempt was discarded as targeting evidence; later
@@ -599,8 +740,11 @@ Its adoption is conditional on the frozen campaign, independent final-candidate
 review and author smoke/decision. The specific fresh-circle defect is repaired;
 the native host exclusions and runtime portability boundary remain material parts
 of the candidate, not blanket waivers or universal host certification. The perimeter is:
-M08-S-R2 plus explicit forward creation on the declared table, local semantic
-chart dragging, historical Spline/R6 and the bounded native-object UI extension.
+M08-S-R2 plus explicit forward creation on the declared COMPLETE/certified table;
+structural affine-circle and direct v1/v2 monotone local-chart dragging; historical
+Spline/R6; and the bounded native-object UI extension. The v3 LINE_CIRCLE regular
+refusal, native-host exclusions and intentional D1 payload exception are part of
+that reduced proposal, not hidden universal compatibility claims.
 Exclude universal arbitrary-locus interaction, unsupported native host states,
 cross-runtime raw-state portability, unproved singular/gap/seam crossing,
 new existence/reconstruction providers, M08-D, M09/I2, I2G, I3, releases and publication.
