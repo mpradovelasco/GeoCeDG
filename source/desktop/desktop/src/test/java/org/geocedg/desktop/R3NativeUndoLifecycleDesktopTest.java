@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.Construction;
@@ -149,19 +151,25 @@ class R3NativeUndoLifecycleDesktopTest {
 	}
 	private static void assertObjectUpdateListener(AppGeoCeDG app) {
 		var listeners = app.getScriptManager().getUpdateListenerMap(); assertNotNull(listeners);
-		assertNotNull(listeners.get(point(app, "NativeP")));
-		assertEquals("r3NativeUpdate", listeners.get(point(app, "NativeP")).getText());
+		assertNotNull(listeners.get(point(app, "ListenerAnchor")));
+		assertEquals("r3NativeUpdate", listeners.get(point(app, "ListenerAnchor")).getText());
 	}
 
 	@Test void preparedBaselineFreezesNativeInputsAndObjectUpdateListeners() throws Exception {
 		var app = onEdt(R3NativeUndoLifecycleDesktopTest::nativeApp);
 		var manager = undo(app);
+		// Inherited algorithm-output XML omits listeners; test the supported independent listener slot.
+		onEdt(() -> { eval(app, "ListenerAnchor=(8,9)"); });
 		var initial = onEdt(() -> NativeInputs.capture(app));
 		var changed = onEdt(() -> {
-			app.getScriptManager().registerObjectUpdateListener("NativeP", "r3NativeUpdate");
+			app.getScriptManager().registerObjectUpdateListener("ListenerAnchor", "r3NativeUpdate");
+			assertObjectUpdateListener(app);
 			try (var prepared = manager.prepareUndoBaseline()) {
 				var next = changePoint(app, .81234);
 				manager.commitUndoBaseline(prepared); next.assertExact(app);
+				String captured = privateXml((FileAppState) manager.getCommands().get(0).getAppState());
+				assertTrue(captured.contains("<listener type=\"objectUpdate\" val=\"r3NativeUpdate\"/>"),
+						"Prepared native baseline must use listeners=true at its single capture");
 				return next;
 			}
 		});
@@ -334,8 +342,16 @@ class R3NativeUndoLifecycleDesktopTest {
 			eval(host, "nativeCircle=Circle((0,0),1)");
 			var nativePoint = (GeoPoint) eval(host, "NativeP=Point(nativeCircle)");
 			nativePoint.updatePathParameter(.73123); nativePoint.updateCascade();
-			var source = G9U1SemanticPointInteractionTest.spline(host);
-			var semantic = new GeoCeDGPointInteraction(host).create(source, -1, .01, .1, result -> null);
+			for (String command : List.of("driverCircle=Circle((0,0),1)", "N=Point(driverCircle)",
+					"v=Vector((0,0),N)", "Q=N+(2*v)", "L=LocusV2(Q,N)")) { eval(host, command); }
+			var source = (GeoLocusV2) host.getKernel().lookupLabel("L");
+			GeoPoint semantic;
+			try (var offer = new GeoCeDGReferencePlacement(source, 3, .02,
+					LocusPointInteractionPolicy2D.initial(.1))) {
+				assertEquals(GeoCeDGReferencePlacement.Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION,
+						offer.getRoute());
+				semantic = offer.commit(offer.getChoices().get(0));
+			}
 			assertNotNull(semantic); semantic.setLabel("SemanticP");
 			eval(host, "SemanticDependent=SemanticP+(1,2)");
 			assertNull(NativeTransactionalState2D.unsupportedReason(host.getKernel().getConstruction()));
@@ -356,7 +372,7 @@ class R3NativeUndoLifecycleDesktopTest {
 			assertEquals(NativeTransactionalState2D.UnsupportedReason.UNSUPPORTED_NATIVE_PLACE,
 					NativeTransactionalState2D.unsupportedReason(app.getKernel().getConstruction()));
 			String before = app.getXML();
-			assertFalse(new GeoCeDGPointInteraction(app).move(semantic, 0, 0, .1),
+			assertFalse(new GeoCeDGPointInteraction(app).move(semantic, 3 * Math.cos(.04), 3 * Math.sin(.04), .1),
 					"The legacy Undo fallback cannot grant a new CU7 editing permission");
 			assertEquals(before, app.getXML());
 		});

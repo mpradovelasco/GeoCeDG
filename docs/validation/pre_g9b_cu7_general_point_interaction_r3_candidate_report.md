@@ -63,6 +63,18 @@ through a digest-checked ordinary XML fallback; it does not disable the native
 tool or claim exact native bits for that excluded transition. New CU7 edits still
 require their own positive host-state gate.
 
+Listener scope remains inherited. The prepared-baseline regression verifies an
+independent anchor's actually serialized objectUpdate listener and the exact
+native chain in the same document. A separate failed development probe exposed
+that AlgoElement ignores getListenersToo for dependent output serialization;
+therefore a runtime listener on NativeP is absent even from ordinary Undo XML.
+That pre-existing generic listener defect is preserved as evidence and is not
+silently repaired or certified by this native-state companion. A focused future
+repair would propagate the listener flag through the algorithm-output serializer
+and separately test update/click handlers; it requires its own compatibility
+checks. Native parameter/source state and normal DAG dependents remain the exact
+contracts tested here.
+
 F2 retains structural affine-circle, historical R6 and Spline contracts and adds
 an optional local projection chart using the same certified construction model.
 For g=(F-q)·F', prove positive speed, uniform validity/selection, gu>=mu>0 and
