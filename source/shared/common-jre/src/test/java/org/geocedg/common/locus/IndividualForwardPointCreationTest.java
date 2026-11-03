@@ -433,14 +433,19 @@ class IndividualForwardPointCreationTest extends G9U0PublicSurfaceTestBase {
 
 	@Test
 	void newForwardPermissionRefusesEditableNativeMacroPointWithoutMutation() throws Exception {
+		// This native template has no participating Locus identity closure. A partial
+		// macro of the already registered driver must correctly fail before placement.
+		GeoPoint macroCenter = add("MacroCenter=(5,5)");
+		add("macroCircle=Circle(MacroCenter,1)");
+		GeoPoint macroPoint = add("MacroPoint=Point(macroCircle)");
+		Macro macro = new Macro(getKernel(), "NativePlace",
+				new GeoElement[] {macroCenter}, new GeoElement[] {macroPoint});
+		getKernel().addMacro(macro);
 		GeoLocusV2 source = vectorCircle();
 		assertFalse(org.geocedg.common.kernel.locus.LocusV2PublicOperations
 				.hasUnsupportedInteractiveHostState(getConstruction()));
-		Macro macro = new Macro(getKernel(), "NativePlace",
-				new GeoElement[] {lookup("Center")}, new GeoElement[] {lookup("N")});
-		getKernel().addMacro(macro);
 		AlgoMacro placement = new AlgoMacro(getConstruction(), new String[] {"Other"}, macro,
-				new GeoElement[] {lookup("Center")}, true);
+				new GeoElement[] {macroCenter}, true);
 		GeoPoint other = assertInstanceOf(GeoPoint.class, placement.getOutput(0));
 		assertTrue(placement.isChangeable(other), "The native macro owns an editable argument");
 		assertFalse(other.hasExactFiniteNativeConicPointState());

@@ -385,6 +385,17 @@ regression fixes that result, including a new press and exact retained XML/ID/
 address, in the effective shared selector. Its clean-cohort execution is separate
 from this diagnostic. No provider was broadened to make the adversary pass.
 
+The first corrective shared focus on clean `d29a65fd` executed 198 cases:
+197 passed, one failed, with no skips/errors (inner exit 1,
+`focus-shared-compatibility-01/producer.json`). The new editable-macro-host fixture
+copied N/Center already participating in L's identity closure; `MACRO_MAP_INCOMPLETE`
+rejected that incomplete macro before the host guard was reached. The fixture now
+constructs an unrelated native macro point before L, preserving every refusal,
+identity, XML and no-mutation assertion. Production and API code did not change
+for this correction. The Macro-reader and disconnected-component controls and all
+original H1/revision/cache/export assertions passed in that failed focus. The
+original failed receipt and classification remain; a new clean focus is required.
+
 Observed development classifications: Windows Gradle-cache permission failures
 required managed escalation; verification count expectations were stale after adding
 two selectors and one PHASE. New chart failures prompted mathematical/canonical
