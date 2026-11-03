@@ -82,6 +82,13 @@ class NativeConicPointPersistenceTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(matcher.find()); return matcher.group();
 	}
 
+	private static String elementBlock(String xml, String label) {
+		var matcher = java.util.regex.Pattern.compile("(?s)<element\\b(?=[^>]*\\blabel=\""
+				+ java.util.regex.Pattern.quote(label) + "\")[^>]*>.*?</element>").matcher(xml);
+		assertTrue(matcher.find(), "The actual document element must exist: " + label);
+		return matcher.group();
+	}
+
 	@Test void freshCircleDriverAndDependentGraphRoundTripExactlyFromFirstSave() {
 		freshH();
 		assertTrue(point("D").getXML().contains("<" + STATE_TAG));
@@ -339,7 +346,7 @@ class NativeConicPointPersistenceTest extends G9U0PublicSurfaceTestBase {
 			getApp().setXML(original, true);
 			assertEquals(original, getApp().getXML());
 		}
-		String driver = point("D").getXML(); assertTrue(original.contains(driver));
+		String driver = elementBlock(original, "D");
 		var coords = java.util.regex.Pattern.compile("<coords\\b[^>]*/>").matcher(driver);
 		assertTrue(coords.find()); String coordinateTag = coords.group();
 		List<String> incompatibleElements = List.of(
@@ -355,7 +362,7 @@ class NativeConicPointPersistenceTest extends G9U0PublicSurfaceTestBase {
 			assertEquals(original, getApp().getXML());
 		}
 		add("u=.2"); add("Explicit=Point(f,u)");
-		String explicitDocument = getApp().getXML(); String explicit = point("Explicit").getXML();
+		String explicitDocument = getApp().getXML(); String explicit = elementBlock(explicitDocument, "Explicit");
 		assertFalse(explicit.contains("<" + STATE_TAG)); assertTrue(explicitDocument.contains(explicit));
 		String injected = explicit.replace("<coords", tag + "<coords");
 		assertNotEquals(explicit, injected);
