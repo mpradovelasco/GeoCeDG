@@ -185,6 +185,17 @@ never changes acceptance. GUI is explicitly absent from headless timings.
 
 ## Verification and independent handoff
 
+Development measurements remain bound to their actual technical checkpoints:
+9e8b6322 supplies the 250-case shared focus and 7,683-case shared module (ten
+historical source-pinned skips, no failures); 4a0fed85 supplies the 185-case
+Desktop focus and 2,371-case Desktop module (one historical skip, no failures).
+The first full Desktop attempt at 0cdaf075 failed the unchanged F2 axis case;
+the original failure and exact-difference probe remain preserved. The separate
+inline FILE baseline at 4a0fed85 failed on its actual saved XML before the slot
+guard. Discovery is dry-run inventory only. The canonical updater consumes real
+passing measurements with their actual cohort identities; these checkpoints do
+not establish acceptance or coverage of the later frozen source.
+
 The effective phase is PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3. It selects all eight
 new R3 classes and the historical regression closure. Count/fingerprint metadata
 must be measured from successful real executions with the canonical updater.
