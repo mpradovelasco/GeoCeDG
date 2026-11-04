@@ -1216,18 +1216,38 @@ Siempre requiere confirmar una dirección. Su proximidad numérica se presenta c
 no certificada: el radio filtra el residual calculado, sin garantizar la distancia
 ideal, una proyección mínima ni unicidad global.
 
+Que no se haya establecido un mínimo de proyección métrica no impide por sí
+solo esa selección forward separada. El panel solo puede ofrecer una dirección
+cuando la operación forward acredita sus propios requisitos de componente,
+selección estructural y reconstrucción; su proximidad numérica sigue siendo
+no certificada.
+
 **Libre o bloqueado.** El panel de Punto y Punto en objeto incluye **Permitir
 arrastre**, activado inicialmente para puntos nuevos sobre los objetos admitidos.
 Durante la sesión el panel conserva la elección de arrastre y de referencia Q;
 revise ambas opciones al iniciar otra construcción o documento.
-Desactívelo para crear un punto bloqueado con
-el cerrojo normal. Bloquear impide arrastrarlo; el punto sigue dependiendo de su
-objeto y se recalcula cuando este cambia. **Desde referencia Q** permite seleccionar
-primero un segmento, recta, semirrecta o cónica 2D y después Q. Se utiliza la
-selección nativa del objeto; Q no se convierte en padre del punto creado.
+Desactívelo para crear un punto bloqueado con el cerrojo normal. Bloquear impide
+arrastrarlo; el punto sigue dependiendo de su objeto y se recalcula cuando este
+cambia. Los controles contextuales siguen disponibles en una fila inferior
+propia cuando la barra de entrada algebraica está oculta.
 
-**Arrastre semántico experimental.** Con Mover, seleccione el punto libre y
-arrástrelo. Se conserva su identidad y la actualización de sus dependientes.
+Para un objeto nativo admitido, su menú contextual ofrece **Crear punto desde
+referencia Q**. La acción selecciona el conductor y abre el panel de referencia
+existente. Seleccione un Q existente en Gráfica o Álgebra, mantenga **Permitir
+arrastre** si lo desea y pulse **Confirmar**. También puede activar **Desde
+referencia Q** en el panel ordinario de Punto o Punto en objeto y seleccionar
+el conductor y después Q. La tabla nativa admitida incluye rectas, semirrectas,
+segmentos, cónicas 2D (como circunferencias y parábolas) y partes de cónica
+admitidas. Se utiliza la colocación y el movimiento nativos sobre caminos, sin
+imponer las condiciones de búsqueda de Locus V2. Q solo aporta la posición
+inicial; no se añade como padre nuevo. Mover Q después no mueve el resultado,
+salvo que Q ya defina el propio conductor. La colocación nativa no utiliza el
+control de radio V2. Deje **Desde referencia Q** desactivado para el clic directo
+habitual, que no requiere un diálogo de confirmación adicional.
+
+**Arrastre semántico experimental.** Con Mover, seleccione un punto con
+**Permitir arrastre** activado y arrástrelo. Se conserva su identidad y la
+actualización de sus dependientes.
 Además del arrastre R6/Spline V2 existente, se admiten cartas locales demostradas
 para imágenes afines no degeneradas de un conductor circular y para construcciones
 con una coordenada monótona certificada en todo el recorrido local. El proveedor
@@ -1245,6 +1265,14 @@ solapadas pueden cambiar solo con correspondencia acreditada a la misma raíz.
 Tras una barrera, suelte y vuelva a
 seleccionar el punto para iniciar otro intento.
 No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
+
+El puntero puede alejarse del trazo exacto. Para un punto semántico existente,
+la vecindad finita de la petición de movimiento sigue el desplazamiento del
+puntero respecto de su posición actual; es independiente del radio de
+descubrimiento por clic/Q. Eso no acredita por sí solo la continuación: el
+kernel debe certificar el mismo componente y preimagen antes de cambiar el
+punto. Un movimiento rechazado conserva la última posición válida y su
+diagnóstico.
 
 La corrección experimental R4 permite encadenar varias cartas acreditadas para
 un mismo movimiento del ratón. Interpreta como recorrido de solicitud el segmento

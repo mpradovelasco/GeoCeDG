@@ -533,4 +533,71 @@ Invoke-Case 'CU7 R4 preserves the R3 gates and includes all four P2 regressions'
     }
 }
 
+Invoke-Case 'CU7 R5 preserves R4 gates and includes actual pointer and creation entry routes' {
+    $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
+    $registry = Read-VerificationJson -Path (
+        Join-Path $root 'geocedg/specs/operations/verification-registry.json')
+    [void](Assert-VerificationRegistry $registry -SchemaPath $schemaPath)
+    $historical = Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R4
+    $plan = Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-R5
+    Assert-Case ($plan.coverage_state -ceq 'COMPLETE') 'CU7 R5 registry coverage is incomplete.'
+    Assert-Case (@($plan.nodes).Count -eq 19) 'CU7 R5 changed the R4 19-node gate closure.'
+    $expectedIds = @($historical.nodes.check_id | ForEach-Object {
+        $_.Replace('pre-g9b-cu7-general-point-interaction-r4.', 'pre-g9b-cu7-r5.')
+    } | Sort-Object -CaseSensitive)
+    Assert-Case ((@($plan.nodes.check_id | Sort-Object -CaseSensitive) -join "`n") -ceq
+        ($expectedIds -join "`n")) 'CU7 R5 must preserve every R4 gate.'
+    $inventory = Read-VerificationJson -Path (
+        Join-Path $root 'geocedg/specs/operations/verification-junit-inventory.json')
+    $added = @{
+        shared = @('org.geocedg.common.locus.R5ForwardCreationRoutingTest')
+        desktop = @('org.geocedg.desktop.R5SemanticPointPointerDesktopTest',
+            'org.geocedg.desktop.R5ReferenceCreationDesktopTest')
+    }
+    foreach ($module in @('shared', 'desktop')) {
+        $old = @($inventory.selections | Where-Object selection_id -CEQ (
+            'pre-g9b-cu7-general-point-interaction-r4.' + $module))
+        $id = 'pre-g9b-cu7-r5.' + $module
+        $selection = @($inventory.selections | Where-Object selection_id -CEQ $id)
+        Assert-Case ($old.Count -eq 1 -and $selection.Count -eq 1) (
+            "CU7 R5/R4 inventory selection is not unique: $id")
+        $filters = @($old[0].test_filters) + $added[$module]
+        Assert-Case ((@($selection[0].test_filters) -join "`n") -ceq ($filters -join "`n")) (
+            "CU7 R5 omits a new or historical filter: $id")
+        Assert-Case (@($selection[0].excluded_test_filters).Count -eq 0) (
+            "CU7 R5 unexpectedly excludes tests: $id")
+        $arguments = @($selection[0].gradle_task)
+        foreach ($filter in $filters) { $arguments += @('--tests', $filter) }
+        $arguments += @('--rerun-tasks', '--no-build-cache', '--no-daemon',
+            '--no-problems-report', '--console=plain',
+            '-Dorg.gradle.java.installations.auto-download=false')
+        Assert-Case ((@($selection[0].effective_arguments) -join "`n") -ceq
+            ($arguments -join "`n")) "CU7 R5 execution arguments differ: $id"
+        $producerId = 'junit.' + $module + '.pre-g9b-cu7-r5.producer'
+        $semanticId = 'junit.' + $module + '.pre-g9b-cu7-r5.semantic'
+        $producer = @($plan.nodes | Where-Object check_id -CEQ $producerId)
+        $semantic = @($plan.nodes | Where-Object check_id -CEQ $semanticId)
+        Assert-Case ($producer.Count -eq 1 -and $semantic.Count -eq 1) (
+            "CU7 R5 producer/projection is not unique: $id")
+        $argumentIndex = [Array]::IndexOf([string[]]@($producer[0].argv), '-SelectionId')
+        Assert-Case ($producer[0].node_kind -ceq 'PROCESS_PRODUCER' -and
+            $producer[0].output_adapter -ceq 'RAW_PROCESS_V1' -and
+            $argumentIndex -ge 0 -and $producer[0].argv[$argumentIndex + 1] -ceq $id) (
+            "CU7 R5 producer does not execute its exact registered selection: $id")
+        Assert-Case ((@($producer[0].resource_locks) -join ',') -ceq 'gradle-build-tree') (
+            "CU7 R5 lost serialized Gradle build ownership: $id")
+        $domain = if ($module -ceq 'shared') { 'MIXED' } else { 'PRODUCT' }
+        Assert-Case ($semantic[0].node_kind -ceq 'EVIDENCE_PROJECTION' -and
+            $semantic[0].contract_class -ceq 'SEMANTIC' -and
+            $semantic[0].semantic_domain -ceq $domain -and
+            $semantic[0].output_adapter -ceq 'PROJECTION_JUNIT_SELECTION_V1' -and
+            $semantic[0].producer_dependency -ceq $producerId -and
+            (@($semantic[0].dependencies) -join ',') -ceq $producerId) (
+            "CU7 R5 verdict is not projected from its own producer: $id")
+        Assert-Case (@($producer[0].required_for_profiles).Count -eq 0 -and
+            @($semantic[0].required_for_profiles).Count -eq 0) (
+            "CU7 R5 must not change the historical global profile unions: $id")
+    }
+}
+
 Write-Host "verification-registry.Tests: $script:Cases cases, $script:Assertions assertions, 0 failures"

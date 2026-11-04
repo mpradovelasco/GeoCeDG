@@ -1155,16 +1155,34 @@ address confirmation. Its numerical proximity is labelled uncertified: the radiu
 filters the computed residual, without guaranteeing ideal distance, a minimum
 projection or global uniqueness.
 
+An unestablished metric projection minimum does not by itself prohibit that
+separate forward selection. The panel may offer a direction only when the
+forward operation establishes its own component, structural selection and
+reconstruction requirements; its numerical proximity remains uncertified.
+
 **Free or locked.** The Point and Point on object panel includes **Allow dragging**,
 initially selected for new points on supported objects. Clear it to create a point
 with the normal lock enabled. During the session the panel retains your dragging
 and reference-Q choices; check both when starting another construction or document.
-Locking
-prevents dragging; the point still depends on its object and recomputes when it changes.
-**From reference Q** lets you select a 2D segment, line, ray or conic, then Q. It uses
-the object's native selection; Q does not become a parent of the created point.
+Locking prevents dragging; the point still depends on its object and recomputes
+when it changes. The contextual controls remain available in their own bottom
+row when the algebra input bar is hidden.
 
-**Experimental semantic dragging.** With Move, select a free point and drag it.
+For a supported native object, its context menu provides **Create point from
+reference Q**. This selects the conductor and opens the existing reference
+panel. Select an existing Q in Graphics or Algebra, leave **Allow dragging**
+selected if desired, then **Confirm**. You can also enable **From reference Q**
+in the ordinary Point or Point on object panel and select the conductor, then Q.
+The supported native table includes 2D lines, rays, segments, conics (including
+circles and parabolas) and admitted conic parts. It uses native point-on-path
+placement and movement, without imposing Locus V2's search conditions. Q supplies
+only the initial position; it does not become a new parent. Moving Q later does
+not move the result unless Q already defines the conductor itself. Native
+placement does not use the V2 radius control. Leave **From reference Q** off for
+the usual direct click, which requires no additional confirmation dialog.
+
+**Experimental semantic dragging.** With Move, select a point whose **Allow
+dragging** option is enabled and drag it.
 Its identity and dependent updates are preserved. Alongside existing R6/Spline V2
 dragging, supported local charts include nondegenerate affine images of a circular
 driver and constructions with a coordinate proved monotone throughout the local move.
@@ -1180,6 +1198,13 @@ is retained for the gesture; overlapping charts may change only with demonstrate
 correspondence to the same root. After a barrier, release and select the
 point again to start another attempt. Unresolved
 singularities, gaps and ambiguities need not be traversable.
+
+The pointer can move away from the exact stroke. For an existing semantic point,
+the finite movement request neighborhood follows the pointer's displacement
+from its current position; this is separate from click/Q discovery radius. It
+does not establish continuation by itself: the kernel must still certify the
+same component and preimage before changing the point. A refused move retains
+the last valid position and its diagnostic.
 
 The experimental R4 correction can chain several established local charts for
 one mouse move. It treats the segment from the previous request to the new target

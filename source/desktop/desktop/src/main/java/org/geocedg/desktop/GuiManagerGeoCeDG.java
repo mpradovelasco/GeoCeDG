@@ -21,6 +21,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.main.feature.RuntimeFeatureService;
+import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -59,7 +62,8 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 	@Override
 	public JComponent getAlgebraInput() {
 		JComponent input = super.getAlgebraInput();
-		if (referencePointPanel != null && referencePointPanel.getParent() != input) {
+		if (getApp().showAlgebraInput() && referencePointPanel != null
+				&& referencePointPanel.getParent() != input) {
 			input.add(referencePointPanel, BorderLayout.NORTH);
 			input.revalidate();
 			input.repaint();
@@ -67,10 +71,19 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 		return input;
 	}
 
+	/** The point-tool controls also exist when a document hides its input bar. */
+	void refreshReferencePointPanel() {
+		if (referencePointPanel == null) { return; }
+		if (getApp().showAlgebraInput()) { getAlgebraInput(); }
+		else if (getApp() instanceof AppGeoCeDG product) {
+			product.mountReferencePointPanel(referencePointPanel);
+		}
+	}
+
 	void setReferencePointPanel(JComponent panel) {
 		if (referencePointPanel != null) { removeReferencePointPanel(referencePointPanel); }
 		referencePointPanel = panel;
-		getAlgebraInput();
+		refreshReferencePointPanel();
 	}
 
 	void removeReferencePointPanel(JComponent panel) {
@@ -197,7 +210,36 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 		if (offset != null) {
 			menu.add(offset);
 		}
+		JMenuItem reference = referencePointMenuItem(geos);
+		if (reference != null) { menu.add(reference); }
 		menu.add(product);
+	}
+
+	/** Discoverable selection of the existing reference-placement flow. */
+	JMenuItem referencePointMenuItem(Collection<GeoElement> geos) {
+		if (geos == null || geos.size() != 1 || GeoCeDGProfile.isLegacyFallback()) { return null; }
+		GeoElement source = geos.iterator().next();
+		var active = getApp().getActiveEuclidianView();
+		if (source == null || !source.isDefined()
+				|| active == null || !(active.getEuclidianController()
+						instanceof GeoCeDGEuclidianController)
+				|| !(source instanceof GeoLocusV2
+						? RuntimeFeatureService.mayCreateLocusV2(source.getConstruction())
+						: GeoCeDGNativePointPlacement.supports(source))) { return null; }
+		boolean spanish = "es".equals(getApp().getLocale().getLanguage());
+		JMenuItem item = new JMenuItem(spanish ? "Crear punto desde referencia Q"
+				: "Create point from reference Q");
+		item.setName("geocedg-point-from-reference");
+		item.addActionListener(event -> {
+			if (getApp().getActiveEuclidianView().getEuclidianController()
+					instanceof GeoCeDGEuclidianController controller
+					&& source.getConstruction() == getApp().getKernel().getConstruction()
+					&& source.isDefined() && source.getConstruction().getGeoSetConstructionOrder().contains(source)) {
+				getApp().setMode(EuclidianConstants.MODE_POINT);
+				controller.referencePointTool().startFromReference(source);
+			}
+		});
+		return item;
 	}
 
 	/**
@@ -210,7 +252,8 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 	public void showPopupChooseGeo(ArrayList<GeoElement> selectedGeos,
 			ArrayList<GeoElement> geos, EuclidianView view, GPoint p) {
 		JMenuItem offset = chooseGeoOffsetItem(selectedGeos);
-		if (offset == null) {
+		JMenuItem reference = referencePointMenuItem(selectedGeos);
+		if (offset == null && reference == null) {
 			super.showPopupChooseGeo(selectedGeos, geos, view, p);
 			return;
 		}
@@ -222,7 +265,8 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 		JPopupMenu menu = new ContextMenuChooseGeoD(getApp(), view, selectedGeos, geos,
 				screenPos, p).getWrappedPopup();
 		menu.addSeparator();
-		menu.add(offset);
+		if (offset != null) { menu.add(offset); }
+		if (reference != null) { menu.add(reference); }
 		showContextMenu(menu, invoker, p);
 	}
 

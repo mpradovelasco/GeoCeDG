@@ -77,6 +77,30 @@ public final class LocusPointInteractionResolver2D {
 		return new SnapshotDiscovery(result, audit.safe);
 	}
 
+	/**
+	 * Numerical discovery for the independent individual-forward permission.
+	 * Seeds are not R6 candidates: no metric minimum/isolation claim is attached.
+	 * The caller must prove its own structural component and forward contract.
+	 */
+	ForwardDiscovery discoverForForwardAddress(LocusPointInteractionQuery2D query,
+			LocusEvaluationSession2D session) {
+		SearchAudit audit = new SearchAudit();
+		audit.collectForwardSeeds = true;
+		var result = resolve(query, audit, session);
+		boolean safe = !audit.forwardBarrier
+				&& result.getStatus() != LocusPointInteractionStatus2D.INVALID_SOURCE
+				&& result.getStatus() != LocusPointInteractionStatus2D.UNSUPPORTED_CAPABILITY
+				&& result.getStatus() != LocusPointInteractionStatus2D.DEGENERATE_SOURCE_IMAGE
+				&& result.getReason() != LocusPointInteractionResult2D.Reason.BUDGET_EXHAUSTED;
+		// Affine/polynomial providers already supply usable numerical seeds.
+		if (audit.forwardSeeds.isEmpty() && safe) {
+			for (var candidate : result.getCandidates()) {
+				audit.forwardSeeds.add(candidate.getAddress());
+			}
+		}
+		return new ForwardDiscovery(result, List.copyOf(audit.forwardSeeds), safe);
+	}
+
 	private LocusPointInteractionResult2D resolve(
 			LocusPointInteractionQuery2D query, SearchAudit audit) {
 		return resolve(query, audit, null);
@@ -142,7 +166,7 @@ public final class LocusPointInteractionResolver2D {
 											.getEvaluatorCapability(), session,
 									instrumentation)
 							: evaluatorSearch(query, definition, session,
-									instrumentation);
+									instrumentation, audit);
 			} finally {
 				instrumentation.sessionCache(session.getHits(), session.getMisses());
 			}
@@ -156,6 +180,7 @@ public final class LocusPointInteractionResolver2D {
 					"R6 work budget exhausted: " + exception.getMessage(),
 					instrumentation, LocusPointInteractionResult2D.Reason.BUDGET_EXHAUSTED);
 		} catch (IllegalArgumentException exception) {
+			if (audit != null) { audit.forwardBarrier = true; }
 			return result(
 					LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH,
 					List.of(), SearchCoverage.NOT_APPLICABLE,
@@ -424,8 +449,8 @@ public final class LocusPointInteractionResolver2D {
 
 	private static Search evaluatorSearch(LocusPointInteractionQuery2D query,
 			LocusDefinition2D definition, LocusEvaluationSession2D session,
-			LocusPointInteractionInstrumentation2D instrumentation) {
-		SearchAccumulator accumulated = new SearchAccumulator();
+			LocusPointInteractionInstrumentation2D instrumentation, SearchAudit audit) {
+		SearchAccumulator accumulated = new SearchAccumulator(audit);
 		ArrayList<SemanticSegment> segments = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
 			if (!matchesCurrentBranch(query, branch)) {
@@ -469,7 +494,7 @@ public final class LocusPointInteractionResolver2D {
 					session, instrumentation, accumulated.candidates,
 					LocusPointInteractionLocalEvidence2D.Method
 							.ISOLATED_SEMANTIC_COMPONENT,
-					"bounded-semantic-evaluator-isolated/v2"));
+					"bounded-semantic-evaluator-isolated/v2", accumulated.audit));
 			return;
 		}
 		double sampleLower = sampleEndpoint(segment.lower,
@@ -539,7 +564,7 @@ public final class LocusPointInteractionResolver2D {
 					instrumentation, accumulated.candidates,
 					LocusPointInteractionLocalEvidence2D.Method
 							.SEMANTIC_EVALUATOR_BRACKET,
-					"bounded-semantic-evaluator/v2"));
+					"bounded-semantic-evaluator/v2", accumulated.audit));
 		}
 	}
 
@@ -599,6 +624,19 @@ public final class LocusPointInteractionResolver2D {
 			List<RawCandidate> candidates,
 			LocusPointInteractionLocalEvidence2D.Method evidenceMethod,
 			String method) {
+		return retain(query, definition, branch, component, parameter, cellLower,
+				cellUpper, session, instrumentation, candidates, evidenceMethod, method, null);
+	}
+
+	private static LocusPointInteractionLocalEvidence2D.Status retain(
+			LocusPointInteractionQuery2D query,
+			LocusDefinition2D definition, LocusBranch2D branch,
+			LocusInterval2D component, double parameter, double cellLower,
+			double cellUpper, LocusEvaluationSession2D session,
+			LocusPointInteractionInstrumentation2D instrumentation,
+			List<RawCandidate> candidates,
+			LocusPointInteractionLocalEvidence2D.Method evidenceMethod,
+			String method, SearchAudit audit) {
 		double canonical = definition.getProvider().canonicalize(parameter);
 		if (!Double.isFinite(canonical) || !component.contains(canonical,
 				definition.getProvider().getDomainEpsilon())) {
@@ -607,12 +645,27 @@ public final class LocusPointInteractionResolver2D {
 		LocusEvaluation2D evaluation = evaluate(definition, branch, canonical,
 				session);
 		if (!evaluation.isValid() || evaluation.getPoint() == null) {
+			if (audit != null) { audit.forwardBarrier = true; }
 			return LocusPointInteractionLocalEvidence2D.Status.NOT_ESTABLISHED;
+		}
+		LocusSemanticAddress2D forwardSeed = null;
+		if (audit != null && audit.collectForwardSeeds
+				&& evaluation.getRegularity() != Regularity.SINGULAR
+				&& Math.hypot(evaluation.getPoint().getX() - query.getTargetX(),
+						evaluation.getPoint().getY() - query.getTargetY())
+						<= query.getPolicy().getMaximumWorldDistance()) {
+			forwardSeed = address(query, definition, branch, component, canonical);
 		}
 		LocusPointInteractionLocalEvidence2D localEvidence = localEvidence(query,
 				definition, branch, component, canonical, cellLower, cellUpper,
-				evaluation, evidenceMethod, session);
+				evaluation, evidenceMethod, session, audit);
 		if (!localEvidence.isEstablished()) {
+			if (forwardSeed != null
+					&& localEvidence.getStatus() != LocusPointInteractionLocalEvidence2D.Status.SINGULAR
+					&& !audit.forwardSeeds.contains(forwardSeed)) {
+				instrumentation.candidate();
+				audit.forwardSeeds.add(forwardSeed);
+			}
 			return localEvidence.getStatus();
 		}
 		double distance = Math.hypot(evaluation.getPoint().getX()
@@ -621,6 +674,9 @@ public final class LocusPointInteractionResolver2D {
 		LocusSemanticAddress2D address = address(query, definition, branch,
 				component, canonical);
 		instrumentation.candidate();
+		if (forwardSeed != null && !audit.forwardSeeds.contains(forwardSeed)) {
+			audit.forwardSeeds.add(forwardSeed);
+		}
 		candidates.add(new RawCandidate(new LocusPointInteractionCandidate2D(
 				address, definition.getSemanticRevision(), evaluation.getPoint(),
 				distance, cellLower, cellUpper, evaluation.getRegularity(),
@@ -634,7 +690,7 @@ public final class LocusPointInteractionResolver2D {
 			LocusBranch2D branch, LocusInterval2D component, double canonical,
 			double cellLower, double cellUpper, LocusEvaluation2D center,
 			LocusPointInteractionLocalEvidence2D.Method method,
-			LocusEvaluationSession2D session) {
+			LocusEvaluationSession2D session, SearchAudit audit) {
 		if (component.getLower() == component.getUpper()) {
 			if (center.getRegularity() == Regularity.SINGULAR) {
 				return LocusPointInteractionLocalEvidence2D.singular(
@@ -651,6 +707,7 @@ public final class LocusPointInteractionResolver2D {
 		Sample right = neighborhood.hasRight
 				? sample(query, definition, branch, neighborhood.right, session) : null;
 		if (left != null && !left.valid || right != null && !right.valid) {
+			if (audit != null) { audit.forwardBarrier = true; }
 			return LocusPointInteractionLocalEvidence2D.unresolved(
 					"A local semantic-minimum guard could not be evaluated");
 		}
@@ -687,11 +744,21 @@ public final class LocusPointInteractionResolver2D {
 				|| right != null && right.squaredDistance > centerDistance
 						+ comparisonTolerance;
 		if (!strict) {
+			if (audit != null && audit.collectForwardSeeds) {
+				// Missing metric strictness is not a forward requirement. Still
+				// preserve an observed zero-speed/undefined guard as a barrier;
+				// in particular a collapsed v3 image cannot offer arbitrary seeds.
+				var observed = regularityEvidence(definition, branch, canonical,
+						center, neighborhood, session, audit);
+				if (observed.getStatus() == LocusPointInteractionLocalEvidence2D.Status.SINGULAR) {
+					audit.forwardBarrier = true;
+				}
+			}
 			return LocusPointInteractionLocalEvidence2D.unresolved(
 					"The bounded cell does not isolate a strict semantic minimum");
 		}
 		LocusPointInteractionLocalEvidence2D regularity = regularityEvidence(
-				definition, branch, canonical, center, neighborhood, session);
+				definition, branch, canonical, center, neighborhood, session, audit);
 		if (!regularity.isEstablished()) {
 			return regularity;
 		}
@@ -703,7 +770,7 @@ public final class LocusPointInteractionResolver2D {
 	private static LocusPointInteractionLocalEvidence2D regularityEvidence(
 			LocusDefinition2D definition, LocusBranch2D branch, double canonical,
 			LocusEvaluation2D center, Neighborhood neighborhood,
-			LocusEvaluationSession2D session) {
+			LocusEvaluationSession2D session, SearchAudit audit) {
 		if (center.getRegularity() == Regularity.REGULAR) {
 			return LocusPointInteractionLocalEvidence2D.established(
 					LocusPointInteractionLocalEvidence2D.Method
@@ -720,8 +787,12 @@ public final class LocusPointInteractionResolver2D {
 						.evaluateDifferential(definition, branch.getBranchKey(),
 								canonical, session);
 				if (evaluation == null || !evaluation.isValid()) {
+					if (audit != null) { audit.forwardBarrier = true; }
 					return LocusPointInteractionLocalEvidence2D.unresolved(
 							"Explicit differential evidence is unavailable");
+				}
+				if (audit != null && !Double.isFinite(evaluation.getSpeed())) {
+					audit.forwardBarrier = true;
 				}
 				if (!(evaluation.getSpeed() > differentialFloor(center.getPoint(),
 						neighborhood.step))) {
@@ -736,23 +807,26 @@ public final class LocusPointInteractionResolver2D {
 			}
 		}
 		return finiteDifferenceRegularity(definition, branch, canonical, center,
-				neighborhood, session);
+				neighborhood, session, audit);
 	}
 
 	private static LocusPointInteractionLocalEvidence2D finiteDifferenceRegularity(
 			LocusDefinition2D definition, LocusBranch2D branch, double canonical,
 			LocusEvaluation2D center, Neighborhood neighborhood,
-			LocusEvaluationSession2D session) {
+			LocusEvaluationSession2D session, SearchAudit audit) {
 		DerivativeEstimate coarse = derivativeEstimate(definition, branch,
 				canonical, center.getPoint(), neighborhood, neighborhood.step,
-				session);
+				session, audit);
 		DerivativeEstimate fine = derivativeEstimate(definition, branch, canonical,
-				center.getPoint(), neighborhood, neighborhood.step / 2, session);
+				center.getPoint(), neighborhood, neighborhood.step / 2, session, audit);
 		if (!coarse.valid || !fine.valid) {
 			return LocusPointInteractionLocalEvidence2D.unresolved(
 					"Finite-difference semantic regularity could not be established");
 		}
 		double maximumSpeed = Math.max(coarse.speed(), fine.speed());
+		if (audit != null && (!Double.isFinite(coarse.speed()) || !Double.isFinite(fine.speed()))) {
+			audit.forwardBarrier = true;
+		}
 		if (!(maximumSpeed > differentialFloor(center.getPoint(),
 				neighborhood.step))) {
 			return LocusPointInteractionLocalEvidence2D.singular(
@@ -760,6 +834,7 @@ public final class LocusPointInteractionResolver2D {
 		}
 		double difference = Math.hypot(coarse.x - fine.x,
 				coarse.y - fine.y);
+		if (audit != null && !Double.isFinite(difference)) { audit.forwardBarrier = true; }
 		if (difference > 0.25 * maximumSpeed) {
 			return LocusPointInteractionLocalEvidence2D.singular(
 					"Multi-scale semantic differential evidence is unstable");
@@ -774,7 +849,7 @@ public final class LocusPointInteractionResolver2D {
 	private static DerivativeEstimate derivativeEstimate(
 			LocusDefinition2D definition, LocusBranch2D branch, double canonical,
 			LocusPoint2D center, Neighborhood neighborhood, double step,
-			LocusEvaluationSession2D session) {
+			LocusEvaluationSession2D session, SearchAudit audit) {
 		if (!(step > 0) || !Double.isFinite(step)) {
 			return DerivativeEstimate.invalid();
 		}
@@ -784,6 +859,7 @@ public final class LocusPointInteractionResolver2D {
 			LocusEvaluation2D evaluation = evaluate(definition, branch,
 					definition.getProvider().canonicalize(canonical - step), session);
 			if (!evaluation.isValid() || evaluation.getPoint() == null) {
+				if (audit != null) { audit.forwardBarrier = true; }
 				return DerivativeEstimate.invalid();
 			}
 			left = evaluation.getPoint();
@@ -792,23 +868,30 @@ public final class LocusPointInteractionResolver2D {
 			LocusEvaluation2D evaluation = evaluate(definition, branch,
 					definition.getProvider().canonicalize(canonical + step), session);
 			if (!evaluation.isValid() || evaluation.getPoint() == null) {
+				if (audit != null) { audit.forwardBarrier = true; }
 				return DerivativeEstimate.invalid();
 			}
 			right = evaluation.getPoint();
 		}
 		if (left != null && right != null) {
-			return DerivativeEstimate.valid((right.getX() - left.getX())
-					/ (2 * step), (right.getY() - left.getY()) / (2 * step));
+			return checkedDerivative((right.getX() - left.getX())
+					/ (2 * step), (right.getY() - left.getY()) / (2 * step), audit);
 		}
 		if (right != null) {
-			return DerivativeEstimate.valid((right.getX() - center.getX()) / step,
-					(right.getY() - center.getY()) / step);
+			return checkedDerivative((right.getX() - center.getX()) / step,
+					(right.getY() - center.getY()) / step, audit);
 		}
 		if (left != null) {
-			return DerivativeEstimate.valid((center.getX() - left.getX()) / step,
-					(center.getY() - left.getY()) / step);
+			return checkedDerivative((center.getX() - left.getX()) / step,
+					(center.getY() - left.getY()) / step, audit);
 		}
 		return DerivativeEstimate.invalid();
+	}
+
+	private static DerivativeEstimate checkedDerivative(double x, double y, SearchAudit audit) {
+		var result = DerivativeEstimate.valid(x, y);
+		if (audit != null && !result.valid) { audit.forwardBarrier = true; }
+		return result;
 	}
 
 	private static double differentialFloor(LocusPoint2D point, double step) {
@@ -1440,23 +1523,31 @@ public final class LocusPointInteractionResolver2D {
 	}
 
 	private static final class SearchAccumulator {
+		private final SearchAudit audit;
 		private final List<RawCandidate> candidates = new ArrayList<>();
 		private double degenerateDistance = Double.POSITIVE_INFINITY;
 		private boolean unsafeEvidence;
 		private String diagnostic =
 				"Bounded semantic evidence is incomplete";
 
+		private SearchAccumulator() { this(null); }
+		private SearchAccumulator(SearchAudit audit) { this.audit = audit; }
+
 		private void record(LocusPointInteractionLocalEvidence2D.Status status) {
 			if (status == LocusPointInteractionLocalEvidence2D.Status.NOT_ESTABLISHED
 					|| status == LocusPointInteractionLocalEvidence2D.Status.SINGULAR) {
-				barrier(status == LocusPointInteractionLocalEvidence2D.Status.SINGULAR
-						? "Singular local evidence prevents deterministic resolution"
-						: "Local minimum evidence was not established");
+				if (status == LocusPointInteractionLocalEvidence2D.Status.SINGULAR) {
+					barrier("Singular local evidence prevents deterministic resolution");
+				} else {
+					unsafeEvidence = true;
+					diagnostic = "Local minimum evidence was not established";
+				}
 			}
 		}
 
 		private void barrier(String reason) {
 			unsafeEvidence = true;
+			if (audit != null) { audit.forwardBarrier = true; }
 			if (reason != null && !reason.trim().isEmpty()) {
 				diagnostic = reason;
 			}
@@ -1479,8 +1570,24 @@ public final class LocusPointInteractionResolver2D {
 		}
 	}
 
+	/** Private discovery evidence; membership/forward authorization belongs to its consumer. */
+	static final class ForwardDiscovery {
+		final LocusPointInteractionResult2D historicalResult;
+		final List<LocusSemanticAddress2D> addresses;
+		final boolean noObservedBarrier;
+		ForwardDiscovery(LocusPointInteractionResult2D result,
+				List<LocusSemanticAddress2D> addresses, boolean safe) {
+			historicalResult = result;
+			this.addresses = addresses;
+			noObservedBarrier = safe;
+		}
+	}
+
 	private static final class SearchAudit {
 		private boolean safe;
+		private boolean collectForwardSeeds;
+		private boolean forwardBarrier;
+		private final List<LocusSemanticAddress2D> forwardSeeds = new ArrayList<>();
 	}
 
 	private static final class Search {

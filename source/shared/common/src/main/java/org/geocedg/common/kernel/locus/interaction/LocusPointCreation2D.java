@@ -161,17 +161,26 @@ public final class LocusPointCreation2D {
 				return;
 			}
 			historical.close();
-			// This typed reason follows the unchanged R6 separation and safety checks.
+			// R6/H1 keep their minimum/uniqueness contract. A failed numerical
+			// minimum proof does not prevent a different, independently proved
+			// individual-forward permission from considering raw semantic seeds.
 			if (historicalResult.getStatus()
 					!= LocusPointInteractionStatus2D.UNRESOLVED_NUMERICAL_SEARCH
 					|| historicalResult.getReason()
-							!= LocusPointInteractionResult2D.Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED) {
+							!= LocusPointInteractionResult2D.Reason.GLOBAL_UNIQUENESS_NOT_ESTABLISHED
+						&& historicalResult.getReason()
+								!= LocusPointInteractionResult2D.Reason.LOCAL_EVIDENCE_INSUFFICIENT) {
 				failure = historicalResult.getReason().name();
 				return;
 			}
 			var remaining = remainingPolicy(policy);
 			if (remaining == null) {
 				failure = Failure.BUDGET_EXHAUSTED.name();
+				return;
+			}
+			if (historicalResult.getReason()
+					== LocusPointInteractionResult2D.Reason.LOCAL_EVIDENCE_INSUFFICIENT) {
+				queryForward(remaining);
 				return;
 			}
 			local = reference == null ? M08SnapshotPlacement2D.query(source, x, y, remaining)
@@ -190,19 +199,7 @@ public final class LocusPointCreation2D {
 					failure = Failure.BUDGET_EXHAUSTED.name();
 					return;
 				}
-				forward = reference == null
-						? IndividualForwardPointCreation2D.query(source, x, y, remaining)
-						: IndividualForwardPointCreation2D.queryFromReference(source, reference, remaining);
-				if (forward.getPermission() == IndividualForwardPointCreation2D.Permission
-						.EXPLICIT_FORWARD_SELECTION_REQUIRED && current()) {
-					route = Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
-					failure = null;
-					choices = forward.getChoices().stream()
-							.map(candidate -> new Choice(this, candidate)).toList();
-				} else {
-					failure = forward.getFailure().name();
-					forward.close();
-				}
+				queryForward(remaining);
 				return;
 			}
 			if (!current()) {
@@ -213,6 +210,22 @@ public final class LocusPointCreation2D {
 			route = Route.R2_H1;
 			choices = local.getResult().getChoices().stream()
 					.map(candidate -> new Choice(this, null, candidate)).toList();
+		}
+
+		private void queryForward(LocusPointInteractionPolicy2D remaining) {
+			forward = reference == null
+					? IndividualForwardPointCreation2D.query(source, x, y, remaining)
+					: IndividualForwardPointCreation2D.queryFromReference(source, reference, remaining);
+			if (forward.getPermission() == IndividualForwardPointCreation2D.Permission
+					.EXPLICIT_FORWARD_SELECTION_REQUIRED && current()) {
+				route = Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
+				failure = null;
+				choices = forward.getChoices().stream()
+						.map(candidate -> new Choice(this, candidate)).toList();
+			} else {
+				failure = current() ? forward.getFailure().name() : Failure.STALE_SELECTION.name();
+				forward.close();
+			}
 		}
 
 		/** Debit completed attempts; a different permission never restarts the operation budget. */

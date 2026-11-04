@@ -36,6 +36,8 @@ final class GeoCeDGReferencePointTool {
 	private GeoCeDGReferencePlacement selection;
 	private GeoCeDGNativePointPlacement nativeSelection;
 	private LocusPointInteractionPolicy2D policy = LocusPointInteractionPolicy2D.initial(.1);
+	/** A screen-derived radius describes one canvas offer, not subsequent Q requests. */
+	private LocusPointInteractionPolicy2D canvasPreviousPolicy;
 	private Object document;
 	private Object view;
 	private long generation;
@@ -57,11 +59,27 @@ final class GeoCeDGReferencePointTool {
 
 	GeoCeDGReferencePointTool(AppD app) { this.app = app; }
 
+	/** Explicit object-context entry; the ordinary Point click remains native. */
+	void startFromReference(GeoElement object) {
+		if (!(object instanceof GeoLocusV2) && !GeoCeDGNativePointPlacement.supports(object)) {
+			throw new IllegalArgumentException("UNSUPPORTED_CAPABILITY");
+		}
+		activate(true);
+		source = object;
+		app.getSelectionManager().addSelectedGeo(source);
+		updateStatus(t("Select existing Q in Graphics or Algebra",
+				"Seleccione Q existente en Gráfica o Álgebra"));
+	}
+
 	private String t(String en, String es) {
 		return "es".equals(app.getLocale().getLanguage()) ? es : en;
 	}
 
 	void activate() {
+		activate(false);
+	}
+
+	private void activate(boolean referenceRequested) {
 		reset();
 		view = app.getActiveEuclidianView();
 		Object current = app.getKernel().getConstruction().getSpatialIdentityRegistry();
@@ -72,6 +90,7 @@ final class GeoCeDGReferencePointTool {
 			fromReference = false;
 			document = current;
 		}
+		if (referenceRequested) { fromReference = true; }
 		buildPanel();
 		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui) {
 			gui.setReferencePointPanel(panel);
@@ -84,6 +103,7 @@ final class GeoCeDGReferencePointTool {
 
 	void reset() {
 		clearSelection();
+		restoreReferencePolicy();
 		worldPlacement = false;
 		source = null;
 		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui && panel != null) {
@@ -95,6 +115,13 @@ final class GeoCeDGReferencePointTool {
 		inputs = null;
 		policyDirty = false;
 		app.getSelectionManager().clearSelectedGeos();
+	}
+
+	private void restoreReferencePolicy() {
+		if (canvasPreviousPolicy != null) {
+			policy = canvasPreviousPolicy;
+			canvasPreviousPolicy = null;
+		}
 	}
 
 	private void clearSelection() {
@@ -149,12 +176,26 @@ final class GeoCeDGReferencePointTool {
 				source = geo;
 				app.getSelectionManager().clearSelectedGeos();
 				app.getSelectionManager().addSelectedGeo(source);
-				updateStatus(t("Select existing Q", "Seleccione Q existente"));
+				updateStatus(t("Select existing Q in Graphics or Algebra",
+						"Seleccione Q existente en Gráfica o Álgebra"));
 			});
 			return;
 		}
 		choose(hits.stream().filter(geo -> geo instanceof GeoPoint).toList(),
 				geo -> query((GeoPoint) geo, anchor, x, y));
+	}
+
+	/** Algebra supplies an object selection, never a screen position or parameter. */
+	boolean selectFromAlgebra(GeoElement geo, Component anchor) {
+		if (!isReferenceRequestActive() || panel == null
+				|| clickPosition && app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
+				|| geo == null || selection != null || nativeSelection != null || choices != null) {
+			return false;
+		}
+		if (!(geo instanceof GeoPoint) && !(geo instanceof GeoLocusV2)
+				&& !GeoCeDGNativePointPlacement.supports(geo)) { return false; }
+		click(List.of(geo), anchor, 0, 0);
+		return true;
 	}
 
 	private <T> void choose(List<T> values, Consumer<T> accept) {
@@ -205,6 +246,7 @@ final class GeoCeDGReferencePointTool {
 		}
 		worldPlacement = true;
 		source = request.getSource();
+		canvasPreviousPolicy = policy;
 		policy = request.getPolicy();
 		fillPolicy();
 		pendingRequest = bindContext(request);
@@ -222,6 +264,7 @@ final class GeoCeDGReferencePointTool {
 		} else {
 			worldPlacement = true;
 			source = request.getSource();
+			canvasPreviousPolicy = policy;
 			policy = request.getPolicy();
 			fillPolicy();
 			pendingRequest = bindContext(request);
@@ -331,7 +374,8 @@ final class GeoCeDGReferencePointTool {
 				app.getKernel().notifyRepaint();
 				restart();
 			} catch (IllegalStateException failure) { refuse(failure.getMessage()); }
-		}, t("Native object placement; numerical selection", "Colocación nativa; selección numérica"));
+		}, t("Native point on object; Q is an initial reference",
+				"Punto nativo sobre objeto; Q es referencia inicial"));
 	}
 
 	private String describeFailure(String code) {
@@ -348,6 +392,9 @@ final class GeoCeDGReferencePointTool {
 				"Native restoration verification work budget reached; document unchanged",
 				"Se alcanzó el presupuesto para verificar la restauración nativa; documento sin cambios");
 		case "LOCAL_EVIDENCE_INSUFFICIENT" -> t("Insufficient safe local evidence", "Evidencia local segura insuficiente");
+		case "GLOBAL_UNIQUENESS_NOT_ESTABLISHED" -> t(
+				"No authorized address selection could be established; global metric uniqueness is not claimed",
+				"No se pudo establecer una selección autorizada; no se afirma unicidad métrica global");
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");
 		case "BUDGET_EXHAUSTED" -> t("Work budget exhausted", "Presupuesto de trabajo agotado");
@@ -384,6 +431,7 @@ final class GeoCeDGReferencePointTool {
 
 	void setPolicy(LocusPointInteractionPolicy2D value) {
 		policy = java.util.Objects.requireNonNull(value);
+		canvasPreviousPolicy = null;
 		clearSelection();
 		fillPolicy();
 		if (coverage != null) { coverage.setText(""); }
@@ -477,7 +525,10 @@ final class GeoCeDGReferencePointTool {
 			reference.setName("m08-from-reference");
 			reference.addActionListener(event -> {
 				fromReference = reference.isSelected();
+				restoreReferencePolicy();
+				worldPlacement = false;
 				clearSelection(); source = null;
+				fillPolicy();
 				app.getSelectionManager().clearSelectedGeos();
 				updateStatus(fromReference ? t("Select object, then Q", "Seleccione objeto y después Q")
 						: t("Click to create a point", "Pulse para crear un punto"));

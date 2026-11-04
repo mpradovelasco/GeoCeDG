@@ -3,12 +3,11 @@ package org.geocedg.desktop;
 
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
+import org.geocedg.common.kernel.locus.NativePathState2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
-import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
-import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoPoint;
 
 /** Copied request for native 2D paths. All snapping remains in AlgoPointOnPath. */
@@ -25,7 +24,7 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 
 	static boolean supports(GeoElement geo) {
 		return geo != null && !geo.isAxis() && !geo.isGeoElement3D()
-				&& (geo instanceof GeoLine || geo instanceof GeoConic);
+				&& NativePathState2D.capture(geo) != null;
 	}
 
 	GeoCeDGNativePointPlacement(GeoElement source, GeoPoint reference, double x, double y,
@@ -100,7 +99,10 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 					|| parent.getInput().length != 1 || parent.getInput()[0] != source
 					|| parent.getOutput().length != 1 || parent.getOutput()[0] != point
 					|| point.isLocked() != !draggable
-					|| Math.hypot(point.getInhomX() - x, point.getInhomY() - y) > radius) {
+					// Q initializes the ordinary native point-on-path projection. The
+					// V2 discovery radius does not constrain native reference placement.
+					|| reference == null && Math.hypot(point.getInhomX() - x,
+							point.getInhomY() - y) > radius) {
 				throw new IllegalStateException("NATIVE_PLACEMENT_REJECTED");
 			}
 			output[0] = point;

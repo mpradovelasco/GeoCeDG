@@ -25,6 +25,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -1351,6 +1352,24 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			panel.add(getStatusBar(), BorderLayout.SOUTH);
 		}
 		return panel;
+	}
+
+	/** Keep contextual point controls independent of the optional Algebra input bar. */
+	@Override
+	public void updateApplicationLayout() {
+		super.updateApplicationLayout();
+		if (getGuiManager() instanceof GuiManagerGeoCeDG gui) {
+			gui.refreshReferencePointPanel();
+		}
+	}
+
+	/** Product context row; this does not change the document's view preferences. */
+	void mountReferencePointPanel(JComponent panel) {
+		if (southPanel != null && panel.getParent() != southPanel) {
+			southPanel.add(panel, BorderLayout.SOUTH);
+			southPanel.revalidate();
+			southPanel.repaint();
+		}
 	}
 
 	@Override

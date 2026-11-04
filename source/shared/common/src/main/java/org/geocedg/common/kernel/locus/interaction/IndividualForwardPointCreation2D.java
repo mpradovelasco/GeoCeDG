@@ -146,7 +146,7 @@ public final class IndividualForwardPointCreation2D {
 			try {
 				requireCapability();
 				var discovery = withParent(() -> new LocusPointInteractionResolver2D()
-						.discoverForSnapshot(query, session));
+						.discoverForForwardAddress(query, session));
 				discoveryMisses = session.getTotalChargedMisses();
 				if (session.isWorkLimitExhausted() || discovery.historicalResult.getReason()
 						== LocusPointInteractionResult2D.Reason.BUDGET_EXHAUSTED) {
@@ -154,10 +154,10 @@ public final class IndividualForwardPointCreation2D {
 				}
 				if (!discovery.noObservedBarrier) { throw new Rejected(Failure.UNSAFE_DISCOVERY); }
 				var offered = new ArrayList<Choice>();
-				for (var seed : discovery.historicalResult.getCandidates()) {
-					var binding = validate(seed.getAddress());
+				for (var seed : discovery.addresses) {
+					var binding = validate(seed);
 					var point = binding.getEvaluatedPoint().orElseThrow();
-					offered.add(new Choice(this, seed.getAddress(), Math.hypot(
+					offered.add(new Choice(this, seed, Math.hypot(
 							point.getX() - x, point.getY() - y)));
 				}
 				if (offered.isEmpty()) { throw new Rejected(Failure.NO_ADDRESS_DISCOVERED); }

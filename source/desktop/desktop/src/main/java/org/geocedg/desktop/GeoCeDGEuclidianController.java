@@ -357,7 +357,7 @@ public final class GeoCeDGEuclidianController
 			try {
 				if (interactionGestureRequest == null) { throw new GeoCeDGPointRequest.StaleContext(); }
 				var source = AlgoSemanticLocusPoint2D.requireSemanticParent(interactionDragPoint).getSource();
-				var request = capturePointRequest(event, List.of(source))
+				var request = capturePointRequest(event, List.of(source), interactionDragPoint)
 						.select(source).withContext(interactionGestureRequest::isCurrent);
 				boolean moved = pointInteraction.move(interactionDragPoint, request, interactionDragContext);
 				interactionChanged |= moved && pointInteraction.didLastMoveChange();
@@ -564,12 +564,29 @@ public final class GeoCeDGEuclidianController
 
 	private GeoCeDGPointRequest capturePointRequest(AbstractEvent event,
 			List<? extends GeoElement> sources) {
+		return capturePointRequest(event, sources, null);
+	}
+
+	/**
+	 * A movement request may be off the trace. Its finite current-anchor neighborhood
+	 * is a declared numerical proximity policy, never a continuation certificate.
+	 * Creation retains the hit-discovery radius; every movement still requires the
+	 * kernel's independent local correspondence and forward/publication checks.
+	 */
+	private GeoCeDGPointRequest capturePointRequest(AbstractEvent event,
+			List<? extends GeoElement> sources, GeoPoint dragAnchor) {
 		var requestView = getView();
 		if (app.getActiveEuclidianView() != requestView) { throw new GeoCeDGPointRequest.StaleContext(); }
+		double worldX = requestView.toRealWorldCoordX(event.getX());
+		double worldY = requestView.toRealWorldCoordY(event.getY());
+		double radius = interactionRadius(event);
+		if (dragAnchor != null) {
+			radius = Math.nextUp(Math.hypot(dragAnchor.getInhomX() - worldX,
+					dragAnchor.getInhomY() - worldY) + radius);
+		}
 		return referencePointTool.bindContext(GeoCeDGPointRequest.capture((AppD) app,
-				requestView, requestView.toRealWorldCoordX(event.getX()),
-				requestView.toRealWorldCoordY(event.getY()),
-				referencePointTool.canvasPolicy(interactionRadius(event)), sources)
+				requestView, worldX, worldY,
+				referencePointTool.canvasPolicy(radius), sources)
 				.withContext(() -> getView() == requestView));
 	}
 

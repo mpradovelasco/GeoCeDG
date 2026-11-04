@@ -42,6 +42,8 @@ final class GeoCeDGAlgebraView extends AlgebraViewD {
 	private final AppGeoCeDG app;
 	/** Whether the current press gesture was consumed by a layer eye. */
 	private boolean eyeGesture;
+	/** Reference selection is one press/release/click gesture, not an edit. */
+	private boolean referenceGesture;
 
 	GeoCeDGAlgebraView(AlgebraControllerD controller, AppGeoCeDG app) {
 		super(controller);
@@ -77,13 +79,36 @@ final class GeoCeDGAlgebraView extends AlgebraViewD {
 		}
 		if (eyeGesture && (id == MouseEvent.MOUSE_PRESSED
 				|| id == MouseEvent.MOUSE_RELEASED || id == MouseEvent.MOUSE_CLICKED)) {
+			referenceGesture = false;
 			if (id == MouseEvent.MOUSE_CLICKED) {
 				eyeGesture = false;
 			}
 			event.consume();
 			return;
 		}
+		if (id == MouseEvent.MOUSE_PRESSED) {
+			referenceGesture = SwingUtilities.isLeftMouseButton(event)
+					&& !event.isControlDown() && !event.isShiftDown()
+					&& selectReferenceAt(event.getX(), event.getY());
+		}
+		if (referenceGesture && (id == MouseEvent.MOUSE_PRESSED
+				|| id == MouseEvent.MOUSE_RELEASED || id == MouseEvent.MOUSE_CLICKED)) {
+			if (id == MouseEvent.MOUSE_CLICKED) { referenceGesture = false; }
+			event.consume();
+			return;
+		}
 		super.processMouseEvent(event);
+	}
+
+	private boolean selectReferenceAt(int x, int y) {
+		TreePath path = getPathForLocation(x, y);
+		Rectangle bounds = path == null ? null : getPathBounds(path);
+		if (bounds == null || !(path.getLastPathComponent() instanceof GeoMutableTreeNode node)
+				// Preserve the native visibility marble on the left of an object row.
+				|| x < bounds.x + renderer.getIconShown().getIconWidth()) { return false; }
+		var view = app.getActiveEuclidianView();
+		return view != null && view.getEuclidianController() instanceof GeoCeDGEuclidianController controller
+				&& controller.referencePointTool().selectFromAlgebra(node.getGeo(), this);
 	}
 
 	/**
