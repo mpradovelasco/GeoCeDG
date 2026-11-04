@@ -86,6 +86,29 @@ states. Scheduling/factory failures must clear unadopted pending handoffs.
 
 ## Validation and cost
 
+### Exact view-visibility complement found by full regression
+
+The full Desktop run at 0cdaf075 exposes one existing F2 authoring-memory case:
+native inputs, registry IDs and reservations restore exactly, but evSettings.axes
+changes from false to true. The diagnostic rerun at 12ef530 confirms the precise
+first XML difference. The live view and EuclidianSettings carry distinct axis
+visibility arrays. The writer emits the aggregate flag from the live view and
+the following per-axis flags from settings; the reader's later per-axis flags
+overwrite the former. F2 legitimately exercises the live-view-only setter.
+Authoring-memory reset only clears session references and is not an XML mutation.
+
+Preserve this distinction in the same private checkpoint: capture live x/y axis
+visibility and settings x/y visibility for already existing 2D views 1/2. Restore
+settings through its no-fire setter and live flags through the ordinary no-update
+view setter after normal loading and before the unchanged full XML verification.
+Do not create views, treat visibility as geometric authority, normalize XML,
+change the public file reader or run another DAG. The immutable Undo template
+carries only these few presentation booleans with the native payload. Atomic
+rollback uses the same complement, so failure restoration remains exact.
+Add the unchanged PreG9BR6PlusF2AuthoringMemoryTest to the effective R3 selection.
+This is a focal repair of demonstrated checkpoint fidelity, not adoption of a
+general view snapshot framework or a new D1 byte exception.
+
 Keep the exact fresh mixed-chain regression unchanged after reproduction. Extend
 it to repeated Undo/Redo and test listeners, prepared baselines, held history,
 pruning/disposal, stale/foreign or malformed state rejection and exact failure
