@@ -952,6 +952,11 @@ public class DockManagerD extends DockManager implements AWTEventListener {
 	 */
 	public void setFocusedPanel(DockPanelD panel,
 			boolean updatePropertiesView) {
+		// GeoCeDG CU7 R5: global AWT listeners also see other application windows.
+		// Reject foreign panels before changing activation tickets or invoking callbacks.
+		if (panel != null && !dockPanels.contains(panel)) {
+			return;
+		}
 		if (focusedDockPanel == panel) {
 			return;
 		}

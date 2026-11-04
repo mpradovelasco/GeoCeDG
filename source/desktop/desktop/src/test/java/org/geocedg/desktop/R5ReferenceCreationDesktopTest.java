@@ -4,10 +4,14 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -19,9 +23,13 @@ import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.main.App;
+import org.geogebra.desktop.gui.layout.DockManagerD;
+import org.geogebra.desktop.gui.layout.DockPanelD;
 import org.geogebra.desktop.gui.view.algebra.GeoMutableTreeNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -83,6 +91,166 @@ class R5ReferenceCreationDesktopTest {
                     id == MouseEvent.MOUSE_PRESSED ? InputEvent.BUTTON1_DOWN_MASK : 0,
                     x, y, count, false, MouseEvent.BUTTON1));
         }
+    }
+
+    private static DockManagerD manager(AppGeoCeDG app) {
+        return ((GuiManagerGeoCeDG) app.getGuiManager()).getLayout().getDockManager();
+    }
+
+    private static void globalCanvasClick(AppGeoCeDG app) {
+        var canvas = app.getEuclidianView1().getJPanel();
+        assertNotNull(javax.swing.SwingUtilities.getAncestorOfClass(DockPanelD.class, canvas));
+        canvas.dispatchEvent(new MouseEvent(canvas, MouseEvent.MOUSE_CLICKED,
+                System.currentTimeMillis(), 0, 10, 10, 1, false, MouseEvent.BUTTON1));
+    }
+
+    private record DesktopContext(String xml, int history, DockPanelD focused,
+            Object view, long generation, int mode, List<GeoElement> selection) {
+        static DesktopContext capture(AppGeoCeDG app) {
+            var xml = new XMLStringBuilder();
+            app.getKernel().getConstruction().getConstructionXML(xml, false);
+            return new DesktopContext(xml.toString(),
+                    app.getKernel().getConstruction().getUndoManager().getHistorySize(),
+                    manager(app).getFocusedPanel(), app.getActiveEuclidianView(),
+                    manager(app).getEuclidianViewActivationGeneration(), app.getMode(),
+                    List.copyOf(app.getSelectionManager().getSelectedGeos()));
+        }
+        void assertUnchanged(AppGeoCeDG app) { assertEquals(this, capture(app)); }
+    }
+
+    @Test void globalAwtClicksKeepTwoApplicationsAndTheirReferenceContextsSeparate() throws Exception {
+        record Hosts(AppGeoCeDG first, GeoLocusV2 semantic, GeoPoint firstQ,
+                AppGeoCeDG second, GeoElement nativeSource, GeoPoint secondQ) { }
+        var hosts = new AtomicReference<Hosts>();
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            var first = G9U1SemanticPointInteractionTest.app(); first.buildApplicationPanel();
+            var semantic = parabola(first);
+            var firstQ = (GeoPoint) eval(first, "ReferenceQ=(.43,.12)");
+            var second = G9U1SemanticPointInteractionTest.app(); second.buildApplicationPanel();
+            var nativeSource = eval(second, "source=Segment((0,0),(2,0))");
+            var secondQ = (GeoPoint) eval(second, "ReferenceQ=(1,.03)");
+            first.setActiveView(App.VIEW_EUCLIDIAN); second.setActiveView(App.VIEW_EUCLIDIAN);
+            hosts.set(new Hosts(first, semantic, firstQ, second, nativeSource, secondQ));
+        });
+        var pair = hosts.get(); var first = pair.first(); var second = pair.second();
+        var firstUndo = (GeoCeDGUndoManager) first.getKernel().getConstruction().getUndoManager();
+        var secondUndo = (GeoCeDGUndoManager) second.getKernel().getConstruction().getUndoManager();
+        Cu7M08SDesktopEventsTest.await(() -> firstUndo.isQuiescent() && secondUndo.isQuiescent());
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            first.getKernel().initUndoInfo(); second.getKernel().initUndoInfo();
+        });
+        Cu7M08SDesktopEventsTest.await(() -> firstUndo.isQuiescent() && secondUndo.isQuiescent()
+                && firstUndo.getHistorySize() == 0 && secondUndo.getHistorySize() == 0);
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            assertTrue(G9U1TestApp.dockManagers().containsAll(List.of(manager(first), manager(second))));
+            var delivered = new AtomicInteger();
+            AWTEventListener observer = event -> {
+                if (event.getID() == MouseEvent.MOUSE_CLICKED
+                        && (event.getSource() == first.getEuclidianView1().getJPanel()
+                        || event.getSource() == second.getEuclidianView1().getJPanel())) {
+                    delivered.incrementAndGet();
+                }
+            };
+            Toolkit.getDefaultToolkit().addAWTEventListener(observer, java.awt.AWTEvent.MOUSE_EVENT_MASK);
+            try {
+                var beforeFirst = DesktopContext.capture(first);
+                globalCanvasClick(second); beforeFirst.assertUnchanged(first);
+                assertSame(second.getEuclidianView1(), second.getActiveEuclidianView());
+                var beforeSecond = DesktopContext.capture(second);
+                globalCanvasClick(first); beforeSecond.assertUnchanged(second);
+                assertSame(first.getEuclidianView1(), first.getActiveEuclidianView());
+                assertEquals(2, delivered.get(), "Component dispatch must traverse the global AWT listeners");
+            } finally { Toolkit.getDefaultToolkit().removeAWTEventListener(observer); }
+            var untouchedSecond = DesktopContext.capture(second);
+            ((GuiManagerGeoCeDG) first.getGuiManager()).referencePointMenuItem(List.of(pair.semantic())).doClick();
+            assertEquals(EuclidianConstants.MODE_POINT, first.getMode());
+            assertTrue(reference(Cu7M08SDesktopEventsTest.panel(first)).isSelected());
+            assertTrue(first.getSelectionManager().getSelectedGeos().contains(pair.semantic()));
+            algebraClick((GeoCeDGAlgebraView) first.getGuiManager().getAlgebraView(), pair.firstQ(), 1);
+            assertNotNull(tool(first).pendingSelection(), tool(first).lastFailure());
+            assertTrue(tool(first).pendingSelection().getRequest().isCurrent());
+            Cu7M08SDesktopEventsTest.confirm(first);
+            var semanticPoint = Cu7M08SDesktopEventsTest.point(first);
+            assertSame(pair.semantic(), ((AlgoSemanticLocusPoint2D) semanticPoint.getParentAlgorithm()).getSource());
+            untouchedSecond.assertUnchanged(second);
+        });
+        // Ordinary Desktop stores are asynchronous; measure isolation only after our own store ends.
+        Cu7M08SDesktopEventsTest.await(() -> firstUndo.isQuiescent() && firstUndo.getHistorySize() == 1);
+        var untouchedFirst = new AtomicReference<DesktopContext>();
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            assertEquals(0, secondUndo.getHistorySize());
+            untouchedFirst.set(DesktopContext.capture(first));
+            ((GuiManagerGeoCeDG) second.getGuiManager()).referencePointMenuItem(List.of(pair.nativeSource())).doClick();
+            assertTrue(reference(Cu7M08SDesktopEventsTest.panel(second)).isSelected());
+            algebraClick((GeoCeDGAlgebraView) second.getGuiManager().getAlgebraView(), pair.secondQ(), 1);
+            Cu7M08SDesktopEventsTest.confirm(second);
+            var point = nativePoint(second, pair.nativeSource());
+            assertSame(pair.nativeSource(), point.getPath());
+            assertFalse(point.getAllPredecessors().contains(pair.secondQ()));
+            untouchedFirst.get().assertUnchanged(first);
+        });
+        Cu7M08SDesktopEventsTest.await(() -> secondUndo.isQuiescent() && secondUndo.getHistorySize() == 1);
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            assertTrue(firstUndo.isQuiescent()); assertEquals(1, firstUndo.getHistorySize());
+            untouchedFirst.get().assertUnchanged(first);
+        });
+    }
+
+    @Test void foreignProgrammaticPanelsCannotChangeFocusTicketsOrConstruction() throws Exception {
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            var first = G9U1SemanticPointInteractionTest.app(); first.buildApplicationPanel();
+            var source = eval(first, "source=Segment((0,0),(2,0))");
+            var second = G9U1SemanticPointInteractionTest.app(); second.buildApplicationPanel();
+            first.setActiveView(App.VIEW_EUCLIDIAN); second.setActiveView(App.VIEW_EUCLIDIAN);
+            var request = GeoCeDGPointRequest.forSource(first, source, 1, .03,
+                    LocusPointInteractionPolicy2D.initial(.1));
+            var beforeFirst = DesktopContext.capture(first); var beforeSecond = DesktopContext.capture(second);
+            for (int viewId : new int[] {App.VIEW_EUCLIDIAN, App.VIEW_ALGEBRA}) {
+                var foreign = manager(second).getPanel(viewId); assertNotNull(foreign);
+                manager(first).setFocusedPanel(foreign, false);
+                manager(first).setFocusedPanel(foreign);
+                assertTrue(request.isCurrent());
+                beforeFirst.assertUnchanged(first); beforeSecond.assertUnchanged(second);
+            }
+            manager(second).setFocusedPanel(manager(first).getPanel(App.VIEW_EUCLIDIAN), false);
+            beforeFirst.assertUnchanged(first); beforeSecond.assertUnchanged(second);
+        });
+    }
+
+    @Test void ownViewAbaAndNullStillInvalidateWhileANewOwnReferenceRequestWorks() throws Exception {
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            var app = G9U1SemanticPointInteractionTest.app(); app.buildApplicationPanel();
+            app.getGuiManager().setShowView(true, App.VIEW_EUCLIDIAN2);
+            app.setActiveView(App.VIEW_EUCLIDIAN);
+            var source = eval(app, "source=Segment((0,0),(2,0))");
+            var q = (GeoPoint) eval(app, "ReferenceQ=(1,.03)");
+            var request = GeoCeDGPointRequest.forSource(app, source, 1, .03,
+                    LocusPointInteractionPolicy2D.initial(.1));
+            var before = DesktopContext.capture(app);
+            manager(app).setFocusedPanel(manager(app).getPanel(App.VIEW_EUCLIDIAN2), false);
+            long secondGeneration = manager(app).getEuclidianViewActivationGeneration();
+            assertTrue(secondGeneration > before.generation());
+            manager(app).setFocusedPanel(manager(app).getPanel(App.VIEW_EUCLIDIAN), false);
+            assertSame(app.getEuclidianView1(), app.getActiveEuclidianView());
+            assertTrue(manager(app).getEuclidianViewActivationGeneration() > secondGeneration);
+            assertFalse(request.isCurrent());
+            var afterAba = DesktopContext.capture(app);
+            assertEquals(before.xml(), afterAba.xml()); assertEquals(before.history(), afterAba.history());
+            var current = GeoCeDGPointRequest.forSource(app, source, 1, .03,
+                    LocusPointInteractionPolicy2D.initial(.1));
+            manager(app).setFocusedPanel(manager(app).getPanel(App.VIEW_ALGEBRA), false);
+            assertEquals(afterAba.generation(), manager(app).getEuclidianViewActivationGeneration());
+            assertTrue(current.isCurrent());
+            manager(app).setFocusedPanel(null, false);
+            assertFalse(current.isCurrent());
+            assertTrue(manager(app).getEuclidianViewActivationGeneration() > afterAba.generation());
+            app.setActiveView(App.VIEW_EUCLIDIAN);
+            ((GuiManagerGeoCeDG) app.getGuiManager()).referencePointMenuItem(List.of(source)).doClick();
+            assertTrue(reference(Cu7M08SDesktopEventsTest.panel(app)).isSelected());
+            assertTrue(tool(app).selectFromAlgebra(q, app.getMainComponent()));
+            Cu7M08SDesktopEventsTest.confirm(app);
+            assertSame(source, nativePoint(app, source).getPath());
+        });
     }
 
     @Test void secondAlgebraClickKeepsThePendingNativeAndV2OffersInsteadOfRedefiningQ() throws Exception {
