@@ -21,6 +21,7 @@ import org.geocedg.common.kernel.spatial.identity.DefaultSpatialTokenSource;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoMacro;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -59,6 +60,7 @@ public final class NativeTransactionalState2D {
 	private final Set<SpatialIdentityId> registryIds;
 	private final int reservations;
 	private final UnsupportedReason unsupported;
+	private final List<AxisVisibility> axisVisibility;
 	private String ordinaryXml;
 	private String capturedPrivateXml;
 	private byte[] ordinaryDigest;
@@ -76,6 +78,7 @@ public final class NativeTransactionalState2D {
 		long started = System.nanoTime();
 		owner = construction;
 		unsupported = unsupportedReason(construction);
+		axisVisibility = unsupported == null ? captureAxes(construction) : List.of();
 		registryIds = ids(construction);
 		reservations = construction.getSpatialIdentityRegistry().getReservedIdentityCount();
 		if (unsupported == null) {
@@ -202,6 +205,49 @@ public final class NativeTransactionalState2D {
 		return ids;
 	}
 
+	private record AxisVisibility(int view, boolean liveX, boolean liveY,
+			boolean settingsX, boolean settingsY) {
+		static AxisVisibility capture(int number, EuclidianView view) {
+			return new AxisVisibility(number, view.getShowAxis(0), view.getShowAxis(1),
+					view.getSettings().getShowAxis(0), view.getSettings().getShowAxis(1));
+		}
+	}
+
+	private static List<AxisVisibility> captureAxes(Construction construction) {
+		var app = construction.getApplication();
+		List<AxisVisibility> axes = new ArrayList<>();
+		EuclidianView first = app.getEuclidianView1(); // Existing view getter; never creates a view.
+		if (first != null && first.getSettings() != null) {
+			axes.add(AxisVisibility.capture(1, first));
+		}
+		if (app.hasEuclidianView2EitherShowingOrNot(1)) {
+			EuclidianView second = app.getEuclidianView2(1);
+			if (second != null && second.getSettings() != null) {
+				axes.add(AxisVisibility.capture(2, second));
+			}
+		}
+		return List.copyOf(axes);
+	}
+
+	private void restoreAxes() {
+		var app = owner.getApplication();
+		for (AxisVisibility saved : axisVisibility) {
+			EuclidianView view = saved.view == 1 ? app.getEuclidianView1()
+					: app.hasEuclidianView2EitherShowingOrNot(1) ? app.getEuclidianView2(1) : null;
+			if (view == null || view.getSettings() == null) {
+				throw new IllegalStateException("Captured native checkpoint view is no longer present");
+			}
+			// The public writer records live evSettings.axes and separate settings
+			// axis.show values. Preserve both captured values without normalizing
+			// either one, firing settings listeners, or recomputing geometry.
+			view.getSettings().setShowAxisNoFireSettingChanged(0, saved.settingsX);
+			view.getSettings().setShowAxisNoFireSettingChanged(1, saved.settingsY);
+			boolean changed = view.setShowAxis(0, saved.liveX, false);
+			changed |= view.setShowAxis(1, saved.liveY, false);
+			if (changed) { view.updateBackgroundImage(); }
+		}
+	}
+
 	/** Called only while Construction owns this snapshot's private XML pass. */
 	public String serializationKey(GeoPoint point) {
 		Entry entry = serializationPoints.get(point);
@@ -317,6 +363,7 @@ public final class NativeTransactionalState2D {
 				throw new IllegalStateException("Native rollback input, correspondence or DAG restoration failed");
 			}
 		}
+		restoreAxes();
 		String restoredXml = owner.getCurrentUndoXML(listenersToo).toString();
 		boolean sameXml = ordinaryXml != null ? ordinaryXml.equals(restoredXml)
 				: Arrays.equals(ordinaryDigest, digest(restoredXml.getBytes(StandardCharsets.UTF_8)));
@@ -358,6 +405,7 @@ public final class NativeTransactionalState2D {
 	private NativeTransactionalState2D(UndoTemplate template) {
 		owner = template.owner;
 		unsupported = null;
+		axisVisibility = template.axisVisibility;
 		registryIds = template.registryIds;
 		reservations = template.reservations;
 		ordinaryDigest = template.ordinaryDigest;
@@ -386,6 +434,7 @@ public final class NativeTransactionalState2D {
 		private final Set<SpatialIdentityId> registryIds;
 		private final int reservations;
 		private final boolean listenersToo;
+		private final List<AxisVisibility> axisVisibility;
 		private final byte[] ordinaryDigest;
 		private final byte[] privateDigest;
 
@@ -395,6 +444,7 @@ public final class NativeTransactionalState2D {
 			registryIds = Set.copyOf(capture.registryIds);
 			reservations = capture.reservations;
 			listenersToo = capture.listenersToo;
+			axisVisibility = capture.axisVisibility;
 			ordinaryDigest = digest(capture.ordinaryXml.getBytes(StandardCharsets.UTF_8));
 			privateDigest = digest(xml.getBytes(StandardCharsets.UTF_8));
 		}

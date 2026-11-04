@@ -62,6 +62,11 @@ be admitted. Crossing an unsupported native history state retains historical Und
 through a digest-checked ordinary XML fallback; it does not disable the native
 tool or claim exact native bits for that excluded transition. New CU7 edits still
 require their own positive host-state gate.
+The full-suite F2 authoring-memory regression exposed distinct live/settings axis
+visibility flags in the inherited view XML. The private checkpoint now carries
+both flags for existing 2D views and restores them before the unchanged exact
+verification, without another DAG, view creation, public format change or metric
+authority in the frontend. The unchanged nineteen-test F2 class is an R3 guard.
 
 Listener scope remains inherited. The prepared-baseline regression verifies an
 independent anchor's actually serialized objectUpdate listener and the exact

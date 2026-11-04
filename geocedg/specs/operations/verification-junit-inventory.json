@@ -3988,7 +3988,8 @@
         "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
         "org.geocedg.desktop.R3PointInteractionDesktopTest",
         "org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest",
-        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest"
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest",
+        "org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -4023,6 +4024,8 @@
         "org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest",
         "--tests",
         "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
