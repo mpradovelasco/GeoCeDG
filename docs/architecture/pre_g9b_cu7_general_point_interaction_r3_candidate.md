@@ -196,3 +196,23 @@ VERIFICATION_INFRASTRUCTURE_IMPACT: TEST_SELECTION; required level FINAL because
 shared native serialization/loading and atomic reconstruction are affected.
 Do not modify verification infrastructure to conceal failures. No main/book
 changes, release, historical closure mutation or CU7 closure.
+
+## F1 serialization-slot amendment — 2026-11-04, before code
+
+The external inline-native-file-baseline-02 probe at clean 4a0fed85 reproduces
+another false FILE witness: Circle(Point(c),1), after moving c's center, emits an
+exact descendant field although its free inline ancestor has no output element.
+Reopening that actual XML throws Invalid native conic point state. The preceding
+probe attempt did not discover its external test and is retained as setup failure.
+
+A positive FILE witness for a free one-input AlgoPointOnPath ancestor must also
+require its own serialized element slot: a set label and its algorithm present
+in the construction list. These are serialization eligibility conditions, not
+identities or reconstruction matching keys. Without that slot, suppress the
+optional descendant field and preserve historical readable XML. Keep the strict
+reader, MEMORY gate and explicit two-input Point(c,u) reconstruction unchanged.
+The MEMORY closure already rejects a missing private serialization slot.
+
+Add a permanent regression for that actual inline expression and three public
+load cycles; separately retain the explicit Point(c,u) positive field over three
+cycles. Do not claim exact arguments for the historical one-input inline case.
