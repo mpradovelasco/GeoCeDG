@@ -23,7 +23,7 @@ final class LocalStrictProjectionContinuation2D {
 	static final String METHOD = "LOCAL_STRICT_PROJECTION_CHART";
 	private static final int MAXIMUM_PROOF_DEPTH = 6;
 	private static final int MAXIMUM_REQUEST_DEPTH = 24;
-	private static final int MAXIMUM_CHART_TRIALS = 12;
+	private static final int INITIAL_RADIUS_TRIALS = 12;
 
 	/** Immutable accepted target/root correspondence, installed only after publication. */
 	static final class State {
@@ -174,16 +174,21 @@ final class LocalStrictProjectionContinuation2D {
 					|| !(gu(anchor, q1, anchorSpeed).lower > 0)) { return null; }
 			Set<String> attempted = new HashSet<>();
 			double length = domain.upper - domain.lower;
+			double smallestRadius = Double.POSITIVE_INFINITY;
+			boolean smallerChartMayProve = false;
 			for (int attempt = 0;
-					attempt < Math.min(MAXIMUM_CHART_TRIALS,
-							policy.getWorkBudget().getMaximumRefinementIterations()); attempt++) {
+					attempt < policy.getWorkBudget().getMaximumRefinementIterations(); attempt++) {
+				boolean contractionTail = attempt >= INITIAL_RADIUS_TRIALS;
+				if (contractionTail && !smallerChartMayProve) { return null; }
 				int exponent = attempt == 0 ? 0
 						: (attempt % 2 == 1 ? (attempt + 1) / 2 : -attempt / 2);
-				double radius = Math.scalb(length / 16, exponent);
+				double radius = contractionTail ? smallestRadius / 2 : Math.scalb(length / 16, exponent);
+				if (radius < smallestRadius) { smallestRadius = radius; }
 				double lower = Math.max(domain.lower, prior.lower - radius);
 				double upper = Math.min(domain.upper, prior.upper + radius);
 				if (!(lower < upper) || lower > prior.lower || upper < prior.upper
 						|| !attempted.add(Double.toHexString(lower) + ":" + Double.toHexString(upper))) {
+					if (contractionTail) { return null; }
 					continue;
 				}
 				SplineOutwardInterval2D chart = new SplineOutwardInterval2D(lower, upper);
@@ -191,13 +196,28 @@ final class LocalStrictProjectionContinuation2D {
 				boolean rightEnd = upper == domain.upper && domain.rightEnd;
 				ContinuationJet left = model.jet(p(lower), domain.periodic, false, work);
 				ContinuationJet right = model.jet(p(upper), domain.periodic, false, work);
-				if (!sameSelection(left, selection) || !sameSelection(right, selection)
-						|| !leftEnd && !(g(left, q0).upper < 0 && g(left, q1).upper < 0)
+				if (!sameSelection(left, selection) || !sameSelection(right, selection)) {
+					continue;
+				}
+				if (!leftEnd && !(g(left, q0).upper < 0 && g(left, q1).upper < 0)
 						|| !rightEnd && !(g(right, q0).lower > 0 && g(right, q1).lower > 0)) {
+					if (contractionTail) {
+						Proof local = prove(model, chart, domain.periodic, q0, q1, selection, work, 0);
+						// With proven monotonicity, strict endpoint signs can exclude the
+						// final root from this chart and every smaller nested chart. Merely
+						// failing to bracket cannot: a smaller chart may leave another sheet.
+						if (local != null && (!leftEnd && g(left, q1).lower > 0
+								|| !rightEnd && g(right, q1).upper < 0)) { return null; }
+					}
 					continue;
 				}
 				Proof proof = prove(model, chart, domain.periodic, q0, q1, selection, work, 0);
-				if (proof == null) { continue; }
+				if (proof == null) {
+					// This bracketed failure permits finer search. Every accepted smaller
+					// chart must independently reestablish the same root correspondence.
+					smallerChartMayProve = true;
+					continue;
+				}
 				// The same equation, selector and prior root are certified in this chart.
 				if (previous != null && sameTarget(previous.target, q1)) {
 					return new Established(previous, lower, upper, 0);

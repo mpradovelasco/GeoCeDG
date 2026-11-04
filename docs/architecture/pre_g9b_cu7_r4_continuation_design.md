@@ -67,11 +67,16 @@ link. The normal similarity algorithm already transports that structure; the
 adapter verifies it rather than matching coordinates. A signature records each
 source identity/revision, captured transform signature and ordered chain.
 
-Replay the root ConstructionBoxModel once for F/F'/F'' and all predicates. Apply
-captured transforms innermost first: values receive A and b; both derivative
-orders receive only A. Root validity predicates and raw selectors remain attached
-to that same run. Outward operations retain transformation coefficient/function
-uncertainty, without flattened rounded coefficients or inverse mouse mapping.
+Replay the root ConstructionBoxModel once for F/F'/F'' and all predicates.
+Compose the captured map coefficient **intervals** once per event in functional
+order: `A=A_outer A_inner`, `b=A_outer b_inner+b_outer`. Every operation is
+outward; retain the individual maps and signatures. Apply the resulting enclosure
+to each complete jet once: values receive A,b and both derivative orders receive
+only A. Root validity predicates and raw selectors remain attached to that same
+run. This is neither fitting a map, flattening to rounded coefficient authority
+nor inverse mouse mapping. Require the composite determinant enclosure to exclude
+zero. `similarityApplications` counts actual composite-jet transports;
+correspondence checks still count the captured links.
 
 The admitted transformation kinds are the existing constructive similarities:
 translation, rotation, point/line reflection and finite nonzero dilation. Their
@@ -85,26 +90,53 @@ normalization, zero dilation, missing jets or unproved correspondence refuse.
 Negative scale/reflection changes image orientation but never reverses the
 declared source parameter or fabricates a new component/lift.
 
-### Focal-run transport correction, recorded before its implementation
+## Chart search and accumulated resource contract
 
-The first R4 shared run accepts all seven local wrapper families and the direct
-single-event chord, but the three-wrapper seam chain exhausts the unchanged 512
-proof-work ceiling. Each root jet currently repeats all three immutable maps.
-Compose their coefficient **intervals**, once per event, in captured order:
-`A=A_outer A_inner`, `b=A_outer b_inner+b_outer`, with every operation outward.
-Retain the individual maps/signatures and typed similarity checks. This is not
-flattening to rounded binary64 coefficients, fitting a transform or increasing a
-budget. Evaluate the root jet once and transport its three orders by the resulting
-outward affine enclosure once. The `similarityApplications` counter then counts
-actual composite-jet transports; correspondence checks still count all captured
-links. Reject a composite determinant enclosure containing zero. Keep the failed
-receipt and unchanged extreme regression; root measures the successor cohort.
+A chart attempt first uses the original 12 radius candidates in their existing
+priority, centred on the entire prior root enclosure. Those candidates do not
+impose a minimum radius. If an initially bracketed same-selector chart lacks its
+uniform proof, a contraction tail can try radii below the smallest initial one.
+The policy refinement ceiling (default80) bounds the complete radius search.
 
-The first implementation's additional bounds are 24 request-bisection levels,
-12 radius trials per chart attempt and 6 parameter-box proof levels. The one
-policy subdivisions ceiling (initially 512) remains the total charged-work bound,
-including failed attempts, request subdivisions and interval/transformation work;
-none of the individual ceilings resets or multiplies that allowance.
+The tail contracts without assuming that a missing bracket excludes smaller
+charts: a large projected-circle chart may cross another preimage, while a
+smaller chart can rebracket the retained root. Every accepted chart must freshly
+prove all endpoint, predicate, selector, speed, gu, isolation and error conditions.
+Invalid/undecided endpoints can therefore be retried at a smaller radius. A
+repeated or degenerate box terminates the attempt. A stronger early stop is
+available only when a uniform same-selector positive-gu proof and strict endpoint
+signs exclude the final target's root from that chart, hence from every smaller
+nested chart. Genuine DOMAIN_END KKT cases are excluded from that no-root stop.
+These are local search outcomes, never global geometric impossibility claims.
+
+The initial work policy remains unchanged: maximum32768 semantic evaluations,
+512 **total charged proof-work units**,80 refinements and the existing composition
+ceiling. Request-path recursion is additionally bounded at24 levels and parameter
+box proof subdivision at6 levels. Failed chart attempts, tail contractions,
+request subdivisions, interval runs and similarity preparation/application share
+that one event Work and semantic session. None of the limits resets or multiplies
+512 between internal charts. Exhaustion remains typed and publishes no prefix.
+Proof-work units are not a count of primitive CPU operations or all normal DAG
+work. No quota, tolerance or scientific permission was increased for this fix.
+
+## Preserved diagnostic history
+
+The [first focal](C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG/artifacts/pre-g9b-cu7-general-point-interaction-r4/focal-shared-01/process-evidence.json)
+retains the three-wrapper seam budget failure before outward map composition;
+the extreme test itself was unchanged when the composition correction passed.
+Its original untracked A/B sources were recovered against their exact recorded
+hashes in the external evidence tree.
+
+The interrupted frozen8cfacdd cohort imposed a 12-trial radius floor. The same
+plain-Java probe and512 policy [passes the regular positive sheet in R3](C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG/artifacts/pre-g9b-cu7-general-point-interaction-r4/radius-regression-probe/run-r3-01/result.json)
+and [refuses .025→.024 in8cfacdd](C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG/artifacts/pre-g9b-cu7-general-point-interaction-r4/radius-regression-probe/run-r4-01/result.json).
+No fold is crossed. The [first directed-radius correction](C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG/artifacts/pre-g9b-cu7-general-point-interaction-r4/focal-shared-03/process-evidence.json)
+regressed the existing LINE_CIRCLE gesture and remains failed. The final bounded
+search above preserves the original candidate priority while allowing finer
+charts. [Focal04](C:/DesarrolloyDatos/Areas/ProyectosNoFinanciados/CeDG/GeoCeDG/artifacts/pre-g9b-cu7-general-point-interaction-r4/focal-shared-04/process-evidence.json)
+completes67 cases with inner exit0 and stable source, including the unchanged R3
+oracles, large MEET, nested seams and the new14-event positive-sheet regression.
+This development receipt does not replace verification of the next frozen SHA.
 
 Historical continuation is selected only when supportsPiecewisePolynomial or
 supportsCertifiedAffine is actually true. Interface presence alone is insufficient.

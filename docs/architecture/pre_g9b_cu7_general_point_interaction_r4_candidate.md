@@ -53,6 +53,16 @@ g_u=||F'||²+(F-q)·F'', positive speed and uniform g_u>0 on every admitted link
 It does not impose C2 on R6, SplineV2 or other providers. No global nearest or
 global uniqueness claim is added.
 
+The focal radius correction preserves the first twelve preferred radii in the
+8c ordering, but removes their artificial minimum radius. A bracketed-but-unproved
+chart enables an evidence-triggered half-radius contraction tail, bounded by the
+same refinement80 and total512 policies. Every accepted smaller chart must prove
+all the existing conditions. Missing bracketing alone is not an impossibility
+proof; a proved same-selector positive-gu chart with strict endpoint signs may
+exclude the final root from it and its nested subcharts, respecting true ends.
+There is no expansion cycle, budget increase or weaker continuation permission.
+The detailed correction was recorded in the continuation design before code.
+
 ## P2-B — Typed similarity transport and effective dispatch
 
 Consume the existing typed similarity evaluator and its nested lineage. For
@@ -106,6 +116,9 @@ regressions, recording source cohorts and raw process/JUnit evidence. The MEET
 circle request .11→1.91 at radius .5 must agree with the 24 certified subsegments.
 Test both directions, seams, true ends, reversal, last-link failure, cumulative
 work exhaustion, changed source/revision and unchanged construction on rejection.
+Retain the projected-circle positive-preimage regression through fourteen regular
+targets from .1 to .01, including .025 to .024, using the same Projection context
+and radius .1; do not replace its evidence by an independent C1-only check.
 Test Translate/Rotate/negative Dilate/nested compositions, degenerate transforms,
 created-point roles, identity, DAG, Undo/Redo, copy/remap and reopen.
 
@@ -126,6 +139,12 @@ Performance separates request subdivisions, interval work, correspondence,
 budget, snapshot and DAG, with informational latency and deterministic counters.
 Prepare a focal independent-audit/manual-author-smoke protocol; approval remains
 the author's separate action.
+
+Canonical attempt01 on8cfacdd was stopped during INTEGRATION after the additional
+regular small-radius regression; its completed first three profiles remain
+historical, FINAL was not executed. Preserve all receipts and repeat all five
+profiles after the corrected descendant is calibrated and frozen. Focal04's
+67 passing cases do not supply a successor canonical acceptance receipt.
 
 BOOTSTRAP IMPACT: NO CHANGE REQUIRED. No prerequisites, runtime, toolchain or
 dependency changes. GUIDE_IMPACT: UPDATE EN/ES for chaining, similarities and

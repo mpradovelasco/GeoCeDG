@@ -3,8 +3,9 @@
 2026-11-04. Technical candidate, not author approval, a new independent audit,
 D1 adoption, F8 activation or CU7 closeout. Exact final SHA/tree and executable
 results belong to the task-owned delivery manifest and frozen canonical receipts.
-This source report is committed before calibration/final verification; it does
-not fabricate their later outcomes.
+This source report records the interrupted first frozen attempt and its focal
+correction before successor calibration/final verification. Historical receipts
+are preserved; it does not fabricate the successor's later outcomes.
 
 ## Authority and scope
 
@@ -57,11 +58,21 @@ prior root enclosure, canonical representative, lift, correspondence and errors
 pass to the next link. Event parameter-change bounds are summed outward.
 
 One existing Work/session covers successes, failed attempts and subdivisions.
-Default512 proof units remain unchanged, with request-depth24, chart-trials12
-and interval-box depth6 additional ceilings. Resource exhaustion terminates;
-no budget resets, intermediate point mutation, binder, DAG, snapshot or Undo
-occur between internal charts. The host revalidates and publishes only the final
-address through its ordinary atomic transaction. Failed prefixes remain transient.
+Default512 proof units remain unchanged, with request-depth24 and interval-box
+depth6 ceilings. The first12 chart radii retain the ordering already verified on
+large MEET, LINE_CIRCLE and nested seam requests. They are a preferred prefix,
+not a minimum-radius floor. A bracketed-but-unproved chart enables subsequent
+half-radius contraction under the same refinement80 and total512 ceilings.
+Each smaller chart must independently prove correspondence and all existing
+conditions. Missing bracketing alone does not exclude a smaller chart: it may
+leave another preimage. A same-selector positive-gu proof with strict final
+endpoint signs may establish no root in that chart and its nested subcharts,
+consistently with the existing true-end/KKT policy. Otherwise contraction stays
+bounded by work, refinement and representability; there is no expansion cycle.
+Resource exhaustion terminates; no budget resets, intermediate point mutation,
+binder, DAG, snapshot or Undo occur between internal charts. The host revalidates
+and publishes only the final address through its ordinary atomic transaction.
+Failed prefixes remain transient.
 
 Similarity capture validates each typed map, provider/domain/orientation and
 structural lineage. Compose interval matrices/offsets once with outward operations,
@@ -111,6 +122,41 @@ Preserve focal-shared-01 (63cases,1failure): a triple-wrapper/seam request exhau
 test, quota and tolerances. Preserve focal-desktop-01/-02: new-fixture corrections
 respect R2-H1 priority and count only the single native editable input N; semantic
 P/dependent are DAG results. Production was not changed for these test assumptions.
+
+### Additional radius regression and interrupted frozen attempt01
+
+An external plain-Java diagnostic on the clean first frozen candidate
+8cfacdd97e80612adac064e58867d17fbcc199b6 (tree
+77174ab9c31e7a1458c75aa4bf052ba6d1922bab) confirmed a functional regression:
+for the projected circle F(u)=(cos(u),0), a Projection-context path accepts six
+requests down to .025, then rejects the regular .025 to .024 request with
+BUDGET_EXHAUSTED,512work,0charts,6subdivisions and no semantic evaluation or
+mutation. The same helper, with the same hash, accepts all14requests through .01
+on unchanged R3 00d65aa0c1cba9c4c0f673abebb1c446c65f98a7. These are diagnostic
+reproductions, not canonical acceptance; their source/process/stdout receipts
+remain in the external radius-regression-probe/run-r4-01 and run-r3-01 folders.
+
+The root stopped canonical attempt01 during INTEGRATION, preserving its process
+tree, original journal and results in canonical-attempt-01-interruption.json.
+STATIC, INFRA_UNIT and PHASE had completed on8c; they remain historical results
+for that exact candidate. INTEGRATION was interrupted and FINAL was not executed.
+None supplies acceptance of the corrected descendant.
+
+Preserve focal-shared-03:67cases,2failures (the new small-radius case and the
+existing regular LINE_CIRCLE case). The final correction retains the original
+12-radius prefix and enables only the evidence-triggered contraction tail
+described above; it does not replace that prefix by a different eager ordering,
+increase512/80 or weaken proof. Focal-shared-04 then completes67cases with
+0failures/0skips, source_delta_stable=true and inner_exit0. These actual results
+and both failed attempts remain external evidence, not a new frozen receipt.
+
+The permanent R4PointContinuationChainTest regression keeps the Projection
+context and positive preimage through all14targets, with unchanged ID, component
+and lift. It is not a post-hoc C1-only permission check. The new regression brings
+the R4 addition to35shared and21Desktop JUnit cases,56total; the corresponding
+class filters already belong to PHASE. Successor catalog counts must be measured
+from execution before a new freeze. All five canonical profiles must then run on
+the new exact SHA; no attempt02 outcome is asserted here.
 
 The portable benchmark has identical source on R3 and R4,3modes,2warmups and9samples
 per mode, with all raw data emitted before the new large-event assertions. On R3

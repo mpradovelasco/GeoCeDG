@@ -17,6 +17,27 @@ import org.junit.jupiter.api.Test;
 
 /** R4 adaptive request-path proof, with no geometric mutation of internal charts. */
 class R4PointContinuationChainTest extends R4ContinuationTestBase {
+	@Test void regularPositiveProjectionSheetCanUseSmallChartsWithoutAParameterRadiusFloor() {
+		policy = LocusPointInteractionPolicy2D.initial(.1);
+		add("c=Circle((0,0),1)"); add("N=Point(c)");
+		add("axis=Line((0,0),(1,0))"); add("normal=PerpendicularLine(N,axis)");
+		add("Q=Intersect(axis,normal)"); GeoLocusV2 source = add("L=LocusV2(Q,N)");
+		GeoPoint point = offered(source, .1, "P");
+		var context = LocusV2PublicOperations.beginInteractiveSemanticPointDrag(point);
+		var id = getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point);
+		var component = address(point).getComponentLineageKey();
+		for (double parameter : new double[] {.099, .08, .06, .04, .03, .025, .024,
+				.02, .018, .016, .014, .012, .011, .010}) {
+			var target = at(source, parameter); var result = move(point, context, target.getX(), target.getY());
+			assertEquals(parameter, address(point).getCanonicalParameter(), 3e-11);
+			assertTrue(address(point).getCanonicalParameter() > 0, "Never change to the negative preimage");
+			assertEquals(0, address(point).getPeriodicLift());
+			assertEquals(component, address(point).getComponentLineageKey());
+			assertEquals(id, getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(point));
+			assertTrue(result.getIntervalPasses() <= policy.getWorkBudget().getMaximumSubdivisions());
+		}
+	}
+
 	@Test void oneEventCompletesTheIndependentChordAndMatchesTwentyFourSubrequests() {
 		GeoLocusV2 source = meetCircle();
 		GeoPoint point = offered(source, .1, "P");
