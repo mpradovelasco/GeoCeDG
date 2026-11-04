@@ -49,14 +49,22 @@ explicitly selected address only if all the following hold at query and commit:
    exhaustion publish nothing. The normal atomic transaction and its demonstrated
    native restoration capability cover publication and callbacks.
 
-Global completeness may be PARTIAL or another typed non-COMPLETE state only when
+Global inventory completeness may be `Completeness.NOT_ESTABLISHED` only when
 the selected component's positive certificate remains valid independently of
 the unresolved coverage. No permission follows from pointwise F(u).isValid alone,
 an assumed predicate, a sampled interval, or a Boolean check after a global
 UNRESOLVED result. An inventory with no certified component remains ineligible.
 
-The offer must distinguish GLOBAL_COVERAGE_INCOMPLETE from LOCAL_COMPONENT_VALID
-and retain both values. Do not rewrite source completeness, source existence,
+R4 vocabulary correction (2026-11-04; proposal still disabled): the actual
+`LocusExistenceStructure2D.Completeness` values are `COMPLETE` and
+`NOT_ESTABLISHED`; `PARTIAL` is not a value of that inventory contract.
+`CoverageState.UNRESOLVED` describes interval-wide uncertainty and is a separate
+axis from inventory completeness. A locally certified component can coexist
+with unresolved coverage elsewhere without changing either recorded fact.
+
+The offer must retain the actual inventory completeness and local component
+certificate separately, rather than invent a PARTIAL completeness state.
+Do not rewrite source completeness, source existence,
 R6 statuses, or H1 guarantees. Existing COMPLETE-only operations retain their
 own permission and diagnostics; this clause does not silently widen them.
 

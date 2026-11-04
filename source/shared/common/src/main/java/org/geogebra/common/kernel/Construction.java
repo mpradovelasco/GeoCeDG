@@ -259,6 +259,8 @@ public class Construction {
 	private NativeTransactionalState2D.Metrics lastNativeUndoRestoreMetrics;
 	private boolean nativeUndoOperation;
 	private NativeSourceFidelity2D nativeFileFidelityPass;
+	// GeoCeDG CU7 R4: resource observations never grant native persistence fidelity.
+	private NativeSourceFidelity2D.Metrics lastNativeFileFidelityMetrics;
 	private RedefineRebuildToken nextSpatialIdentityRedefineRebuildToken;
 	private int spatialIdentityXmlDepth;
 
@@ -1596,14 +1598,25 @@ public class Construction {
 			Log.debug(e);
 		} finally {
 			endSpatialIdentityXML();
+			if (nativeFileFidelityPass != null) {
+				lastNativeFileFidelityMetrics = nativeFileFidelityPass.metrics();
+			}
 			nativeFileFidelityPass = previousPass;
 		}
 	}
 
 	/** One fresh, pure serialization-pass memo; no cache survives native edits. */
 	public boolean isNativeFileSourceFaithful(GeoElement source) {
-		return nativeFileFidelityPass == null ? NativeSourceFidelity2D.isFaithfulSource(source)
-				: nativeFileFidelityPass.isFaithful(source);
+		NativeSourceFidelity2D pass = nativeFileFidelityPass == null
+				? NativeSourceFidelity2D.fileSerializationPass() : nativeFileFidelityPass;
+		NativeSourceFidelity2D.Assessment result = pass.assess(source);
+		lastNativeFileFidelityMetrics = result.metrics();
+		return result.outcome() == NativeSourceFidelity2D.Outcome.SUPPORTED;
+	}
+
+	/** Resource observations for the last optional native FILE-field assessment. */
+	public NativeSourceFidelity2D.Metrics getLastNativeFileFidelityMetrics() {
+		return lastNativeFileFidelityMetrics;
 	}
 
 	private void getGroupsXML(XMLStringBuilder sb) {
@@ -2743,6 +2756,7 @@ public class Construction {
 			// Existing R1/R6/H1 callers retain their historical boundary. New CU7
 			// permissions independently reject this typed reason before mutation.
 			lastNativeTransactionMetrics = nativeState.metrics();
+			NativeTransactionalState2D.requireAvailable(lastNativeTransactionMetrics.unsupported);
 			runHistoricalAtomicConstructionMutation(mutation);
 			return;
 		}
@@ -2812,6 +2826,7 @@ public class Construction {
 			throw new IllegalStateException("Native history capture cannot be reentered");
 		}
 		NativeTransactionalState2D state = NativeTransactionalState2D.capture(this);
+		NativeTransactionalState2D.requireAvailable(state.metrics().unsupported);
 		if (!state.isSupported() || !state.hasNativeInputs()) { return null; }
 		long started = System.nanoTime();
 		nativeRollbackCapture = state;
@@ -2831,8 +2846,11 @@ public class Construction {
 	public void restoreNativeUndoSnapshot(NativeTransactionalState2D.UndoTemplate template,
 			Runnable reader) {
 		Objects.requireNonNull(reader);
+		NativeTransactionalState2D.UnsupportedReason currentReason =
+				NativeTransactionalState2D.unsupportedReason(this);
+		NativeTransactionalState2D.requireAvailable(currentReason);
 		if (template == null || !template.belongsTo(this)
-				|| NativeTransactionalState2D.unsupportedReason(this) != null) {
+				|| currentReason != null) {
 			throw new IllegalStateException("Native Undo has no current exact host restoration capability");
 		}
 		// The atomic pre-state is captured before activating the Undo session. Its
@@ -2865,7 +2883,10 @@ public class Construction {
 	/** One exact pre-state for a complete owned Undo/Redo, including stitched commands. */
 	public void runNativeUndoOperation(Runnable operation) {
 		Objects.requireNonNull(operation);
-		if (nativeUndoOperation || NativeTransactionalState2D.unsupportedReason(this) != null) {
+		NativeTransactionalState2D.UnsupportedReason currentReason =
+				NativeTransactionalState2D.unsupportedReason(this);
+		NativeTransactionalState2D.requireAvailable(currentReason);
+		if (nativeUndoOperation || currentReason != null) {
 			throw new IllegalStateException("Native Undo operation has no exact current pre-state");
 		}
 		runAtomicConstructionMutation(() -> {

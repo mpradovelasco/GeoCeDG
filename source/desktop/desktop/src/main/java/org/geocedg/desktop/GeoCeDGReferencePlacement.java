@@ -71,14 +71,14 @@ final class GeoCeDGReferencePlacement implements AutoCloseable {
 			GeoPoint reference, LocusPointInteractionPolicy2D policy) {
 		try { return LocusPointCreation2D.queryFromReference(source, reference, policy); }
 		catch (LocusPointCreation2D.Rejected failure) { throw new Rejected(failure.getMessage()); }
-		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getFailure().name()); }
+		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getDiagnostic()); }
 	}
 
 	private static LocusPointCreation2D.Selection fromWorld(GeoLocusV2 source,
 			double x, double y, LocusPointInteractionPolicy2D policy) {
 		try { return LocusPointCreation2D.query(source, x, y, policy); }
 		catch (LocusPointCreation2D.Rejected failure) { throw new Rejected(failure.getMessage()); }
-		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getFailure().name()); }
+		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getDiagnostic()); }
 	}
 
 	Route getRoute() { return Route.valueOf(selection.getRoute().name()); }
@@ -104,7 +104,7 @@ final class GeoCeDGReferencePlacement implements AutoCloseable {
 			});
 		}
 		catch (LocusPointCreation2D.Rejected failure) { throw new Rejected(failure.getMessage()); }
-		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getFailure().name()); }
+		catch (IndividualForwardPointCreation2D.Rejected failure) { throw new Rejected(failure.getDiagnostic()); }
 		catch (GeoCeDGPointRequest.StaleContext failure) { throw new Rejected(failure.getMessage()); }
 	}
 	@Override public void close() { selection.close(); }

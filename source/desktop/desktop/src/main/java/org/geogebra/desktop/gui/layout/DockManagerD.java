@@ -82,6 +82,9 @@ public class DockManagerD extends DockManager implements AWTEventListener {
 	 */
 	private EuclidianDockPanelAbstract focusedEuclidianDockPanel;
 
+	/** GeoCeDG CU7 R4: transient currentness ticket, not a geometric identity. */
+	private long euclidianViewActivationGeneration;
+
 	/**
 	 * A list with all registered dock panels.
 	 */
@@ -952,6 +955,14 @@ public class DockManagerD extends DockManager implements AWTEventListener {
 		if (focusedDockPanel == panel) {
 			return;
 		}
+		// GeoCeDG CU7 R4: invalidate requests before focus callbacks can publish.
+		if ((panel == null && focusedEuclidianDockPanel != null)
+				|| (panel instanceof EuclidianDockPanelAbstract
+						&& focusedEuclidianDockPanel != panel)) {
+			if (euclidianViewActivationGeneration != Long.MAX_VALUE) {
+				euclidianViewActivationGeneration++;
+			}
+		}
 		// euclidian focus
 
 		// in case there is no focused panel there is also no focused euclidian
@@ -1004,6 +1015,17 @@ public class DockManagerD extends DockManager implements AWTEventListener {
 			panel.getFrame().toFront();
 		}
 
+	}
+
+	/**
+	 * GeoCeDG CU7 R4: activation ticket shared by docking and programmatic focus.
+	 * Long.MAX_VALUE is an exhausted sentinel; consumers must reject that ticket.
+	 * Pan/zoom and focus changes retaining the same euclidian panel do not advance it.
+	 *
+	 * @return monotonic, transient activation generation, never wrapped
+	 */
+	public long getEuclidianViewActivationGeneration() {
+		return euclidianViewActivationGeneration;
 	}
 
 	/**

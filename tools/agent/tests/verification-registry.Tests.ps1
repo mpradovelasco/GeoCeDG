@@ -455,4 +455,82 @@ Invoke-Case 'CU7 R3 preserves historical gates and selects every corrective regr
     }
 }
 
+Invoke-Case 'CU7 R4 preserves the R3 gates and includes all four P2 regressions' {
+    $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
+    $registry = Read-VerificationJson -Path (
+        Join-Path $root 'geocedg/specs/operations/verification-registry.json')
+    [void](Assert-VerificationRegistry $registry -SchemaPath $schemaPath)
+    $historical = Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3
+    $plan = Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R4
+    Assert-Case ($plan.coverage_state -ceq 'COMPLETE') 'CU7 R4 has incomplete registry coverage.'
+    Assert-Case (@($plan.nodes).Count -eq 19) 'CU7 R4 changed the R3 19-node gate closure.'
+    $expectedIds = @($historical.nodes.check_id | ForEach-Object {
+        $_.Replace('pre-g9b-cu7-general-point-interaction-r3.',
+            'pre-g9b-cu7-general-point-interaction-r4.')
+    } | Sort-Object -CaseSensitive)
+    $actualIds = @($plan.nodes.check_id | Sort-Object -CaseSensitive)
+    Assert-Case (($actualIds -join "`n") -ceq ($expectedIds -join "`n")) (
+        'CU7 R4 must preserve every R3 gate and replace only its focused selections.')
+    $inventory = Read-VerificationJson -Path (
+        Join-Path $root 'geocedg/specs/operations/verification-junit-inventory.json')
+    $addedFilters = @{
+        shared = @(
+            'org.geocedg.common.locus.R4PointContinuationChainTest',
+            'org.geocedg.common.locus.R4SimilarityContinuationTest',
+            'org.geocedg.common.locus.R4NativeFidelityBudgetTest',
+            'org.geocedg.common.locus.R4ContinuationPerformanceTest')
+        desktop = @(
+            'org.geocedg.desktop.R4ViewActivationDesktopTest',
+            'org.geocedg.desktop.R4ContinuationGestureDesktopTest',
+            'org.geocedg.desktop.R4NativeBudgetDesktopTest')
+    }
+    foreach ($module in @('shared', 'desktop')) {
+        $oldId = 'pre-g9b-cu7-general-point-interaction-r3.' + $module
+        $id = 'pre-g9b-cu7-general-point-interaction-r4.' + $module
+        $historicalSelection = @($inventory.selections | Where-Object selection_id -CEQ $oldId)
+        $selection = @($inventory.selections | Where-Object selection_id -CEQ $id)
+        Assert-Case ($historicalSelection.Count -eq 1 -and $selection.Count -eq 1) (
+            "CU7 R4 or R3 inventory selection is not unique: $id")
+        $expectedFilters = @($historicalSelection[0].test_filters) + $addedFilters[$module]
+        Assert-Case ((@($selection[0].test_filters) -join "`n") -ceq ($expectedFilters -join "`n")) (
+            "CU7 R4 effective filters differ from the complete corrective selection: $id")
+        Assert-Case (@($selection[0].excluded_test_filters).Count -eq 0) (
+            "CU7 R4 unexpectedly excludes tests: $id")
+        $expectedArguments = @($selection[0].gradle_task)
+        foreach ($filter in $expectedFilters) { $expectedArguments += @('--tests', $filter) }
+        $expectedArguments += @('--rerun-tasks', '--no-build-cache', '--no-daemon',
+            '--no-problems-report', '--console=plain',
+            '-Dorg.gradle.java.installations.auto-download=false')
+        Assert-Case ((@($selection[0].effective_arguments) -join "`n") -ceq
+            ($expectedArguments -join "`n")) "CU7 R4 execution arguments differ: $id"
+        $producerId = 'junit.' + $module + '.pre-g9b-cu7-general-point-interaction-r4.producer'
+        $semanticId = 'junit.' + $module + '.pre-g9b-cu7-general-point-interaction-r4.semantic'
+        $producer = @($plan.nodes | Where-Object check_id -CEQ $producerId)
+        $semantic = @($plan.nodes | Where-Object check_id -CEQ $semanticId)
+        Assert-Case ($producer.Count -eq 1 -and $semantic.Count -eq 1) (
+            "CU7 R4 producer/projection is not unique: $id")
+        Assert-Case ($producer[0].node_kind -ceq 'PROCESS_PRODUCER' -and
+            $producer[0].output_adapter -ceq 'RAW_PROCESS_V1') (
+            "CU7 R4 producer must remain a raw evidence process: $id")
+        $selectionArgument = [Array]::IndexOf([string[]]@($producer[0].argv), '-SelectionId')
+        Assert-Case ($selectionArgument -ge 0 -and
+            $producer[0].argv[$selectionArgument + 1] -ceq $id) (
+            "CU7 R4 producer does not execute its registered selection: $id")
+        Assert-Case ((@($producer[0].resource_locks) -join ',') -ceq 'gradle-build-tree') (
+            "CU7 R4 lost the serialized Gradle build resource: $id")
+        Assert-Case ($semantic[0].node_kind -ceq 'EVIDENCE_PROJECTION' -and
+            $semantic[0].contract_class -ceq 'SEMANTIC' -and
+            $semantic[0].output_adapter -ceq 'PROJECTION_JUNIT_SELECTION_V1' -and
+            $semantic[0].producer_dependency -ceq $producerId -and
+            (@($semantic[0].dependencies) -join ',') -ceq $producerId) (
+            "CU7 R4 verdict is not projected from its own producer: $id")
+        $expectedDomain = if ($module -ceq 'shared') { 'MIXED' } else { 'PRODUCT' }
+        Assert-Case ($semantic[0].semantic_domain -ceq $expectedDomain) (
+            "CU7 R4 semantic domain changed: $id")
+        Assert-Case (@($producer[0].required_for_profiles).Count -eq 0 -and
+            @($semantic[0].required_for_profiles).Count -eq 0) (
+            "CU7 R4 focal checks must not change historical profile unions: $id")
+    }
+}
+
 Write-Host "verification-registry.Tests: $script:Cases cases, $script:Assertions assertions, 0 failures"

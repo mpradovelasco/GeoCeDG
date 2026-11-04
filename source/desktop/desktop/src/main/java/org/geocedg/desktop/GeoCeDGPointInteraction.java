@@ -134,7 +134,10 @@ final class GeoCeDGPointInteraction {
 				: "Drag stopped; release and select the point again";
 		case BUDGET_EXHAUSTED -> spanish ? "Se alcanzó el presupuesto de continuación"
 				: "Continuation work budget reached";
-		case UNSUPPORTED_HOST_STATE -> spanish
+		case UNSUPPORTED_HOST_STATE -> "SOURCE_FIDELITY_RESOURCE_EXHAUSTED".equals(movement.getDiagnostic())
+				? spanish ? "Se alcanzó el presupuesto para verificar la restauración nativa; documento sin cambios"
+						: "Native restoration verification work budget reached; document unchanged"
+				: spanish
 				? "El estado actual del documento no permite una restauración exacta"
 				: "Current document state does not permit exact restoration";
 		case INVALID_SOURCE, AUTHORITY_NOT_ESTABLISHED, COMPONENT_NOT_ESTABLISHED -> spanish

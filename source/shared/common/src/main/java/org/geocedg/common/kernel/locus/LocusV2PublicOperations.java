@@ -453,10 +453,12 @@ public final class LocusV2PublicOperations {
 				return rejected;
 			}
 			if (result.hasChanged()) {
-				if (result.getHistoricalResult() == null
-						&& hasUnsupportedInteractiveHostState(point.getConstruction())) {
-					context.stop();
-					return result.unsupportedHost();
+				if (result.getHistoricalResult() == null) {
+					var reason = getUnsupportedInteractiveHostStateReason(point.getConstruction());
+					if (reason != null) {
+						context.stop();
+						return result.unsupportedHost(reason);
+					}
 				}
 				try {
 					requestGuard.run();

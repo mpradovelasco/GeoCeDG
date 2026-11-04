@@ -415,7 +415,7 @@ public final class ConstructionBoxModel2D {
 		final SplineOutwardInterval2D[] first;
 		final SplineOutwardInterval2D[] second;
 
-		private ContinuationJet(ConstructionBoxOutcome2D outcome,
+		ContinuationJet(ConstructionBoxOutcome2D outcome,
 				SplineOutwardInterval2D[] value, SplineOutwardInterval2D[] first,
 				SplineOutwardInterval2D[] second) {
 			this.outcome = outcome;

@@ -41,12 +41,17 @@ import org.geogebra.common.kernel.kernelND.GeoPointND;
  */
 public final class NativeTransactionalState2D {
 
-	/** Missing concrete restoration capability; separate from geometric admission. */
+	/** Intrinsic restoration failure or exhausted work; separate from geometric admission. */
 	public enum UnsupportedReason {
 		UNSUPPORTED_NATIVE_PROFILE, LOSSY_NATIVE_LITERAL, UNDEFINED_NATIVE_CONIC,
 		EDITABLE_MACRO_PLACE, UNSUPPORTED_NATIVE_PLACE, UNSUPPORTED_SOURCE_CLOSURE,
-		NO_PRIVATE_SERIALIZATION_SLOT
+		NO_PRIVATE_SERIALIZATION_SLOT, SOURCE_FIDELITY_RESOURCE_EXHAUSTED
 	}
+
+	/** Host-node count is the collected closure size, separate from source exploration. */
+	public record HostAssessment(UnsupportedReason reason, int hostNodes,
+			NativeSourceFidelity2D.Metrics sourceMetrics) { }
+	private record Inspection(HostAssessment assessment, List<GeoElement> closure) { }
 
 	public static final String BINDING_TAG = "nativeRollbackBinding";
 	private static final Pattern BINDING = Pattern.compile("\\t<" + BINDING_TAG
@@ -60,6 +65,8 @@ public final class NativeTransactionalState2D {
 	private final Set<SpatialIdentityId> registryIds;
 	private final int reservations;
 	private final UnsupportedReason unsupported;
+	private final int hostNodes;
+	private final NativeSourceFidelity2D.Metrics sourceMetrics;
 	private final List<AxisVisibility> axisVisibility;
 	private String ordinaryXml;
 	private String capturedPrivateXml;
@@ -74,16 +81,19 @@ public final class NativeTransactionalState2D {
 	private long verifyNanos;
 	private int dagCalls;
 
-	private NativeTransactionalState2D(Construction construction) {
+	private NativeTransactionalState2D(Construction construction, NativeSourceFidelity2D.Limits limits) {
 		long started = System.nanoTime();
 		owner = construction;
-		unsupported = unsupportedReason(construction);
+		Inspection inspection = inspect(construction, limits);
+		unsupported = inspection.assessment.reason();
+		hostNodes = inspection.assessment.hostNodes();
+		sourceMetrics = inspection.assessment.sourceMetrics();
 		axisVisibility = unsupported == null ? captureAxes(construction) : List.of();
 		registryIds = ids(construction);
 		reservations = construction.getSpatialIdentityRegistry().getReservedIdentityCount();
 		if (unsupported == null) {
 			DefaultSpatialTokenSource tokens = new DefaultSpatialTokenSource();
-			for (GeoElement geo : closure(construction)) {
+			for (GeoElement geo : inspection.closure) {
 				if (!(geo instanceof GeoPoint)) {
 					continue;
 				}
@@ -115,17 +125,51 @@ public final class NativeTransactionalState2D {
 
 	/** Captures without assigning IDs or changing the construction or random state. */
 	public static NativeTransactionalState2D capture(Construction construction) {
-		return new NativeTransactionalState2D(construction);
+		return capture(construction, NativeSourceFidelity2D.DEFAULT_LIMITS);
 	}
 
-	/** @return an actual missing restorer, or null for the positive native table */
+	/** Explicit technical limits; no geometric permission is changed by this overload. */
+	public static NativeTransactionalState2D capture(Construction construction,
+			NativeSourceFidelity2D.Limits limits) {
+		return new NativeTransactionalState2D(construction, limits);
+	}
+
+	/** @return the intrinsic/resource failure, or null for the positive native table */
 	public static UnsupportedReason unsupportedReason(Construction construction) {
+		return assessHost(construction).reason();
+	}
+
+	public static HostAssessment assessHost(Construction construction) {
+		return assessHost(construction, NativeSourceFidelity2D.DEFAULT_LIMITS);
+	}
+
+	public static HostAssessment assessHost(Construction construction,
+			NativeSourceFidelity2D.Limits limits) {
+		return inspect(construction, limits).assessment;
+	}
+
+	/** Never downgrade exhausted exact-state work to the unsupported historical route. */
+	public static void requireAvailable(UnsupportedReason reason) {
+		if (reason == UnsupportedReason.SOURCE_FIDELITY_RESOURCE_EXHAUSTED) {
+			throw new IllegalStateException(reason.name());
+		}
+	}
+
+	private static Inspection inspect(Construction construction, NativeSourceFidelity2D.Limits limits) {
+		NativeSourceFidelity2D sourcePass = NativeSourceFidelity2D.restorationPass(limits);
 		if (!(construction.getApplication().getConfig() instanceof AppConfigGeoCeDG)
 				|| construction.getKernel().isMacroKernel()) {
-			return UnsupportedReason.UNSUPPORTED_NATIVE_PROFILE;
+			return new Inspection(new HostAssessment(UnsupportedReason.UNSUPPORTED_NATIVE_PROFILE,
+					0, sourcePass.metrics()), List.of());
 		}
-		NativeSourceFidelity2D sourcePass = NativeSourceFidelity2D.restorationPass();
-		for (GeoElement geo : closure(construction)) {
+		List<GeoElement> closure = closure(construction);
+		UnsupportedReason reason = inspectClosure(closure, sourcePass);
+		return new Inspection(new HostAssessment(reason, closure.size(), sourcePass.metrics()), closure);
+	}
+
+	private static UnsupportedReason inspectClosure(List<GeoElement> closure,
+			NativeSourceFidelity2D sourcePass) {
+		for (GeoElement geo : closure) {
 			if (geo.isIndependent() && (geo instanceof GeoPoint
 					&& (negativeZero(((GeoPoint) geo).x) || negativeZero(((GeoPoint) geo).y)
 							|| negativeZero(((GeoPoint) geo).z))
@@ -161,7 +205,12 @@ public final class NativeTransactionalState2D {
 				if (!(geo instanceof GeoPoint) || !((GeoPoint) geo).canCaptureNativeRollbackState()) {
 					return UnsupportedReason.UNSUPPORTED_NATIVE_PLACE;
 				}
-				if (!sourcePass.isFaithful(point.getPath().toGeoElement())) {
+				NativeSourceFidelity2D.Outcome outcome = sourcePass.assess(
+						point.getPath().toGeoElement()).outcome();
+				if (outcome == NativeSourceFidelity2D.Outcome.RESOURCE_EXHAUSTED) {
+					return UnsupportedReason.SOURCE_FIDELITY_RESOURCE_EXHAUSTED;
+				}
+				if (outcome == NativeSourceFidelity2D.Outcome.UNSUPPORTED) {
 					return UnsupportedReason.UNSUPPORTED_SOURCE_CLOSURE;
 				}
 				if (!geo.isLabelSet() || !parent.isInConstructionList()) {
@@ -405,6 +454,8 @@ public final class NativeTransactionalState2D {
 	private NativeTransactionalState2D(UndoTemplate template) {
 		owner = template.owner;
 		unsupported = null;
+		hostNodes = template.hostNodes;
+		sourceMetrics = template.sourceMetrics;
 		axisVisibility = template.axisVisibility;
 		registryIds = template.registryIds;
 		reservations = template.reservations;
@@ -437,6 +488,8 @@ public final class NativeTransactionalState2D {
 		private final List<AxisVisibility> axisVisibility;
 		private final byte[] ordinaryDigest;
 		private final byte[] privateDigest;
+		private final int hostNodes;
+		private final NativeSourceFidelity2D.Metrics sourceMetrics;
 
 		private UndoTemplate(NativeTransactionalState2D capture, String xml) {
 			owner = capture.owner;
@@ -447,6 +500,8 @@ public final class NativeTransactionalState2D {
 			axisVisibility = capture.axisVisibility;
 			ordinaryDigest = digest(capture.ordinaryXml.getBytes(StandardCharsets.UTF_8));
 			privateDigest = digest(xml.getBytes(StandardCharsets.UTF_8));
+			hostNodes = capture.hostNodes;
+			sourceMetrics = capture.sourceMetrics;
 		}
 
 		/** @return whether this template belongs to this exact document construction */
@@ -504,7 +559,8 @@ public final class NativeTransactionalState2D {
 	/** @return immutable telemetry; DAG/verify are subsets of inclusive XML restoration */
 	public Metrics metrics() {
 		return new Metrics(entries.size(), privateKeys.size(), nativeCaptureNanos, xmlCaptureNanos,
-				xmlRestoreNanos, dagRestoreNanos, verifyNanos, dagCalls, unsupported);
+				xmlRestoreNanos, dagRestoreNanos, verifyNanos, dagCalls, unsupported,
+				hostNodes, sourceMetrics);
 	}
 
 	private static final class Entry {
@@ -531,13 +587,18 @@ public final class NativeTransactionalState2D {
 		public final long verifySubsetNanos;
 		public final int dagCalls;
 		public final UnsupportedReason unsupported;
+		public final int hostNodes;
+		public final NativeSourceFidelity2D.Metrics sourceMetrics;
 
 		private Metrics(int points, int keys, long capture, long xml, long restore, long dag,
-				long verify, int calls, UnsupportedReason reason) {
+				long verify, int calls, UnsupportedReason reason, int hostNodes,
+				NativeSourceFidelity2D.Metrics sourceMetrics) {
 			capturedPoints = points; privateBindings = keys; nativeCaptureNanos = capture;
 			xmlCaptureNanos = xml; xmlRestoreInclusiveNanos = restore;
 			dagRestoreSubsetNanos = dag; verifySubsetNanos = verify; dagCalls = calls;
 			unsupported = reason;
+			this.hostNodes = hostNodes;
+			this.sourceMetrics = sourceMetrics;
 		}
 	}
 }

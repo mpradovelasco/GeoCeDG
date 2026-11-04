@@ -144,7 +144,10 @@ class GeoCeDGUndoManager extends UndoManagerD {
 					throw new UndoStateLoadFailure("Native Undo snapshot bytes do not match their companion", null);
 				}
 			}
-			if (NativeTransactionalState2D.unsupportedReason(construction) != null) {
+			var currentReason = NativeTransactionalState2D.unsupportedReason(construction);
+			// GeoCeDG CU7 R4: exhausted work is not an unsupported-history permission.
+			NativeTransactionalState2D.requireAvailable(currentReason);
+			if (currentReason != null) {
 				// No exact pre-state exists for this legacy history transition. Project
 				// only this authenticated snapshot's private bindings, validating the
 				// original public digest; never grant a new CU7 editing permission.
@@ -188,7 +191,9 @@ class GeoCeDGUndoManager extends UndoManagerD {
 		boolean nativeHistory = undoInfoList.stream()
 				.anyMatch(command -> command.getAppState() instanceof NativeFileAppState);
 		if (!nativeHistory) { operation.run(); return; }
-		boolean exactCurrent = NativeTransactionalState2D.unsupportedReason(construction) == null;
+		var currentReason = NativeTransactionalState2D.unsupportedReason(construction);
+		NativeTransactionalState2D.requireAvailable(currentReason);
+		boolean exactCurrent = currentReason == null;
 		List<UndoCommand> originalCommands = new ArrayList<>(undoInfoList);
 		int originalCursor = getCursor();
 		try {

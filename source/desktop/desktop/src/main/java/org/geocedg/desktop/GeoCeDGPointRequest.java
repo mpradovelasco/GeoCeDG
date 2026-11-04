@@ -14,6 +14,8 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.desktop.gui.GuiManagerD;
+import org.geogebra.desktop.gui.layout.DockManagerD;
 import org.geogebra.desktop.main.AppD;
 
 /**
@@ -31,6 +33,8 @@ final class GeoCeDGPointRequest {
 	private final AppD app;
 	private final SpatialIdentityRegistry document;
 	private final Object view;
+	private final DockManagerD viewActivationOwner;
+	private final long viewActivationGeneration;
 	private final int mode;
 	private final double x;
 	private final double y;
@@ -45,6 +49,9 @@ final class GeoCeDGPointRequest {
 			LocusPointInteractionPolicy2D policy, List<? extends GeoElement> sources) {
 		this.app = Objects.requireNonNull(app);
 		this.view = Objects.requireNonNull(view);
+		viewActivationOwner = activationOwner(app);
+		viewActivationGeneration = viewActivationOwner == null ? 0
+				: viewActivationOwner.getEuclidianViewActivationGeneration();
 		if (!Double.isFinite(x) || !Double.isFinite(y)) {
 			throw new IllegalArgumentException("INVALID_REFERENCE");
 		}
@@ -69,6 +76,8 @@ final class GeoCeDGPointRequest {
 		app = original.app;
 		document = original.document;
 		view = original.view;
+		viewActivationOwner = original.viewActivationOwner;
+		viewActivationGeneration = original.viewActivationGeneration;
 		mode = original.mode;
 		x = original.x;
 		y = original.y;
@@ -130,6 +139,10 @@ final class GeoCeDGPointRequest {
 	boolean isCurrent() {
 		var construction = app.getKernel().getConstruction();
 		return app.getActiveEuclidianView() == view && app.getMode() == mode
+				&& activationOwner(app) == viewActivationOwner
+				&& viewActivationGeneration != Long.MAX_VALUE
+				&& (viewActivationOwner == null || viewActivationOwner
+						.getEuclidianViewActivationGeneration() == viewActivationGeneration)
 				&& construction.getSpatialIdentityRegistry() == document
 				&& !construction.isFileLoading() && contextCurrent.getAsBoolean()
 				&& (selectedSource == null || selectedSource.source.getConstruction() == construction
@@ -147,6 +160,11 @@ final class GeoCeDGPointRequest {
 	GeoElement getSource() { return selectedSource == null ? null : selectedSource.source; }
 	GeoPoint getReference() { return reference; }
 	double[] getCapturedViewTransform() { return viewTransform.clone(); }
+
+	private static DockManagerD activationOwner(AppD app) {
+		return app.getGuiManager() instanceof GuiManagerD gui && gui.getLayout() != null
+				? gui.getLayout().getDockManager() : null;
+	}
 
 	private static boolean same(double first, double second) {
 		return Double.isFinite(first) && Double.doubleToLongBits(first)

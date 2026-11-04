@@ -76,12 +76,49 @@ public final class NativeSourceFidelity2D {
 			"SQRT", "ABS", "SGN", "ARCSIN", "ARCCOS", "ARCTAN", "SINH", "COSH", "TANH");
 	private static final Set<Class<?>> VALUES = Set.of(GeoPoint.class, GeoNumeric.class,
 			GeoLine.class, GeoRay.class, GeoSegment.class, GeoConic.class, GeoVector.class, GeoList.class);
-	private final Map<GeoElement, Boolean> memo = new IdentityHashMap<>();
-	private final boolean typedMemory;
-	private int remaining = 4096;
+	/** A resource limit is not an intrinsic negative reconstruction witness. */
+	public enum Outcome { SUPPORTED, UNSUPPORTED, RESOURCE_EXHAUSTED }
+	public enum Exhaustion { NONE, NODES, EDGES, DEPTH }
+	private enum Memo { ACTIVE, SUPPORTED, UNSUPPORTED }
 
-	private NativeSourceFidelity2D(boolean typedMemory) {
+	/** Technical work limits, independent of any geometric tolerance. */
+	public record Limits(int nodes, int edges, int depth) {
+		public Limits {
+			if (nodes < 1 || nodes > 4096 || edges < 1 || edges > 65536
+					|| depth < 0 || depth > 256) {
+				throw new IllegalArgumentException("Invalid native fidelity work limits");
+			}
+		}
+	}
+	public static final Limits DEFAULT_LIMITS = new Limits(4096, 65536, 256);
+
+	/** Cumulative pass observations; memo queries are not new exploration. */
+	public record Metrics(Limits limits, long queries, long memoHits, long explorations, int geoNodes,
+			int expressionNodes, int edges, int maximumDepth, long cycleHits,
+			Exhaustion exhaustion) {
+		public int processedNodes() { return geoNodes + expressionNodes; }
+	}
+	/** Outcome of this query together with an immutable cumulative observation. */
+	public record Assessment(Outcome outcome, Metrics metrics) { }
+
+	private final Map<ExpressionValue, Memo> memo = new IdentityHashMap<>();
+	private final Set<ExpressionValue> explored =
+			java.util.Collections.newSetFromMap(new IdentityHashMap<>());
+	private final boolean typedMemory;
+	private final Limits limits;
+	private long queries;
+	private long memoHits;
+	private long cycleHits;
+	private long explorations;
+	private int geoNodes;
+	private int expressionNodes;
+	private int edges;
+	private int maximumDepth;
+	private Exhaustion exhaustion = Exhaustion.NONE;
+
+	private NativeSourceFidelity2D(boolean typedMemory, Limits limits) {
 		this.typedMemory = typedMemory;
+		this.limits = java.util.Objects.requireNonNull(limits);
 	}
 
 	/**
@@ -90,37 +127,97 @@ public final class NativeSourceFidelity2D {
 	 * @return whether the pertinent defining closure has a positive file witness
 	 */
 	public static boolean isFaithfulSource(GeoElement source) {
-		return new NativeSourceFidelity2D(false).geo(source, 0);
+		return fileSerializationPass().isFaithful(source);
 	}
 
 	/** @return one fresh memo confined to a single pure XML serialization pass */
 	public static NativeSourceFidelity2D fileSerializationPass() {
-		return new NativeSourceFidelity2D(false);
+		return fileSerializationPass(DEFAULT_LIMITS);
+	}
+
+	public static NativeSourceFidelity2D fileSerializationPass(Limits limits) {
+		return new NativeSourceFidelity2D(false, limits);
 	}
 
 	/** @return positive fidelity in this pass; never retain this memo across edits */
 	public boolean isFaithful(GeoElement source) {
-		return geo(source, 0);
+		return assess(source).outcome() == Outcome.SUPPORTED;
+	}
+
+	public Assessment assess(GeoElement source) {
+		queries++;
+		return new Assessment(geo(source, 0), metrics());
+	}
+
+	public Metrics metrics() {
+		return new Metrics(limits, queries, memoHits, explorations, geoNodes, expressionNodes,
+				edges, maximumDepth, cycleHits, exhaustion);
 	}
 
 	/** @return whether the source closure is supported by the typed rollback table */
 	public static boolean isRecoverableSource(GeoElement source) {
-		return new NativeSourceFidelity2D(true).geo(source, 0);
+		return restorationPass().isFaithful(source);
 	}
 
 	static NativeSourceFidelity2D restorationPass() {
-		return new NativeSourceFidelity2D(true);
+		return restorationPass(DEFAULT_LIMITS);
 	}
 
-	private boolean geo(GeoElement value, int depth) {
-		if (value == null || depth > 256 || --remaining < 0) {
-			return false;
+	static NativeSourceFidelity2D restorationPass(Limits limits) {
+		return new NativeSourceFidelity2D(true, limits);
+	}
+
+	private Outcome known(ExpressionValue value) {
+		Memo known = memo.get(value);
+		if (known == null) { return null; }
+		memoHits++;
+		if (known == Memo.ACTIVE) { cycleHits++; }
+		return known == Memo.SUPPORTED ? Outcome.SUPPORTED : Outcome.UNSUPPORTED;
+	}
+
+	private Outcome exhausted(Exhaustion kind) {
+		if (exhaustion == Exhaustion.NONE) { exhaustion = kind; }
+		return Outcome.RESOURCE_EXHAUSTED;
+	}
+
+	private Outcome begin(ExpressionValue value, int depth, boolean geo) {
+		if (depth > limits.depth()) { return exhausted(Exhaustion.DEPTH); }
+		if (!explored.contains(value)) {
+			if (geoNodes + expressionNodes >= limits.nodes()) { return exhausted(Exhaustion.NODES); }
+			explored.add(value);
+			if (geo) { geoNodes++; } else { expressionNodes++; }
 		}
-		Boolean known = memo.get(value);
-		if (known != null) {
-			return known;
+		explorations++;
+		maximumDepth = Math.max(maximumDepth, depth);
+		memo.put(value, Memo.ACTIVE);
+		return null;
+	}
+
+	private Outcome complete(ExpressionValue value, Outcome result) {
+		if (result == Outcome.RESOURCE_EXHAUSTED) {
+			memo.remove(value);
+		} else {
+			memo.put(value, result == Outcome.SUPPORTED ? Memo.SUPPORTED : Memo.UNSUPPORTED);
 		}
-		memo.put(value, false); // Cycles are not a positive reconstruction witness.
+		return result;
+	}
+
+	private Outcome edge() {
+		if (edges >= limits.edges()) { return exhausted(Exhaustion.EDGES); }
+		edges++;
+		return null;
+	}
+
+	private Outcome geo(GeoElement value, int depth) {
+		if (value == null) { return Outcome.UNSUPPORTED; }
+		Outcome known = known(value);
+		if (known != null) { return known; }
+		Outcome limit = begin(value, depth, true);
+		if (limit != null) { return limit; }
+		return complete(value, exploreGeo(value, depth));
+	}
+
+	private Outcome exploreGeo(GeoElement value, int depth) {
 		if (value.getClass() == GeoAxis.class) {
 			GeoAxis axis = (GeoAxis) value;
 			boolean horizontal = value == value.getConstruction().getXAxis();
@@ -132,54 +229,59 @@ public final class NativeSourceFidelity2D {
 					&& same(axis.z, 0) && axis.isDefined()
 					&& axisPoint(axis.getStartPoint(), 0, 0)
 					&& axisPoint(axis.getEndPoint(), horizontal ? 1 : 0, horizontal ? 0 : 1);
-			memo.put(value, exact);
-			return exact;
+			return exact ? Outcome.SUPPORTED : Outcome.UNSUPPORTED;
 		}
 		AlgoElement parent = value.getParentAlgorithm();
 		boolean expressionProcedure = parent == null
 				|| parent.getClass().getSimpleName().startsWith("AlgoDependent");
 		if (!(VALUES.contains(value.getClass())
-				|| typedMemory && value.getClass() == GeoConicPart.class)
-				|| expressionProcedure && !expression(value.getDefinition(), depth + 1)) {
-			return false;
+				|| typedMemory && value.getClass() == GeoConicPart.class)) {
+			return Outcome.UNSUPPORTED;
+		}
+		if (expressionProcedure && value.getDefinition() != null) {
+			Outcome limit = edge();
+			if (limit != null) { return limit; }
+			Outcome expression = expression(value.getDefinition(), depth + 1);
+			if (expression != Outcome.SUPPORTED) { return expression; }
 		}
 		if (parent != null && parent.getClass() == AlgoPointOnPath.class
 				&& parent.getInputLength() == 1) {
 			// An inline Point[c] definition does not carry its editable native
 			// argument. FILE fidelity requires that point's own element slot.
 			if (!typedMemory && (!value.isLabelSet() || !parent.isInConstructionList())) {
-				return false;
+				return Outcome.UNSUPPORTED;
 			}
 			if (!(value instanceof GeoPoint)
 					|| !(typedMemory ? ((GeoPoint) value).canCaptureNativeRollbackState()
 							: ((GeoPoint) value).hasLocallyCoherentNativeConicPointState())) {
-				return false;
+				return Outcome.UNSUPPORTED;
 			}
 		} else if (parent != null && !(parent.getClass() == AlgoPointOnPath.class
 				&& parent.getInputLength() == 2)
 				&& !ALGORITHMS.contains(parent.getClass())) {
-			return false;
+			return Outcome.UNSUPPORTED;
 		}
 		if (parent == null && !independent(value)) {
-			return false;
+			return Outcome.UNSUPPORTED;
 		}
 		if (parent != null) {
 			for (GeoElement input : parent.getInput()) {
-				if (!geo(input, depth + 1)) {
-					return false;
-				}
+				Outcome limit = edge();
+				if (limit != null) { return limit; }
+				Outcome inputResult = geo(input, depth + 1);
+				if (inputResult != Outcome.SUPPORTED) { return inputResult; }
 			}
 		}
 		if (value instanceof GeoList) {
 			GeoList list = (GeoList) value;
 			for (int index = 0; index < list.size(); index++) {
-				if (!geo(list.get(index), depth + 1)) {
-					return false;
-				}
+				Outcome limit = edge();
+				if (limit != null) { return limit; }
+				Outcome item = geo(list.get(index), depth + 1);
+				if (item != Outcome.SUPPORTED) { return item; }
 			}
 		}
-		memo.put(value, true);
-		return true;
+		return Outcome.SUPPORTED;
 	}
 
 	private static boolean independent(GeoElement value) {
@@ -238,48 +340,55 @@ public final class NativeSourceFidelity2D {
 				&& same(point.y, y) && same(point.z, 1);
 	}
 
-	private boolean expression(ExpressionValue value, int depth) {
+	private Outcome expression(ExpressionValue value, int depth) {
 		if (value == null) {
-			return true;
-		}
-		if (depth > 256) {
-			return false;
+			return Outcome.SUPPORTED;
 		}
 		ExpressionValue node = value.unwrap();
 		if (node == null) {
-			return false;
+			return Outcome.UNSUPPORTED;
 		}
 		if (node instanceof GeoElement) {
 			return geo((GeoElement) node, depth + 1);
 		}
+		Outcome known = known(node);
+		if (known != null) { return known; }
+		Outcome limit = begin(node, depth, false);
+		if (limit != null) { return limit; }
+		return complete(node, exploreExpression(node, depth));
+	}
+
+	private Outcome exploreExpression(ExpressionValue node, int depth) {
 		if (node.getClass() == FunctionVariable.class) {
-			return true;
+			return Outcome.SUPPORTED;
 		}
 		if (node.getClass() == MyDouble.class || node.getClass() == MySpecialDouble.class) {
 			MyDouble literal = (MyDouble) node;
 			if (literal.isAngle() || !serializable(literal.getDouble())) {
-				return false;
+				return Outcome.UNSUPPORTED;
 			}
 			try {
 				return Double.doubleToLongBits(literal.getDouble()) == Double.doubleToLongBits(
-						Double.parseDouble(literal.toString(StringTemplate.xmlTemplate)));
+						Double.parseDouble(literal.toString(StringTemplate.xmlTemplate)))
+						? Outcome.SUPPORTED : Outcome.UNSUPPORTED;
 			} catch (NumberFormatException failure) {
-				return false;
+				return Outcome.UNSUPPORTED;
 			}
 		}
 		if (node.getClass() == ExpressionNode.class
 				&& !OPERATIONS.contains(((ExpressionNode) node).getOperation().name())) {
-			return false;
+			return Outcome.UNSUPPORTED;
 		}
 		if (node.getClass() != ExpressionNode.class && node.getClass() != MyVecNode.class
 				&& node.getClass() != MyList.class && node.getClass() != Equation.class) {
-			return false;
+			return Outcome.UNSUPPORTED;
 		}
 		for (int index = 0; index < node.getChildCount(); index++) {
-			if (!expression(node.getChild(index), depth + 1)) {
-				return false;
-			}
+			Outcome limit = edge();
+			if (limit != null) { return limit; }
+			Outcome child = expression(node.getChild(index), depth + 1);
+			if (child != Outcome.SUPPORTED) { return child; }
 		}
-		return true;
+		return Outcome.SUPPORTED;
 	}
 }

@@ -14,7 +14,6 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
-import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 
 /** Independent chart proofs; neither an R6 search result nor an H1 creation proof. */
@@ -86,6 +85,12 @@ public final class LocalContinuationEvidence2D {
 	/** Charges each proof pass before it runs. */
 	public interface Work {
 		void charge();
+		default void chartAttempt() { }
+		default void certifiedChart() { }
+		default void requestSubdivision() { }
+		default void intervalEvaluation() { }
+		default void correspondence() { }
+		default void similarityApplication() { }
 	}
 
 	private LocalContinuationEvidence2D() {
@@ -106,22 +111,16 @@ public final class LocalContinuationEvidence2D {
 			LocusSemanticAddress2D current, ContinuousComponent component,
 			double x, double y, LocusPointInteractionPolicy2D policy, GestureState previous,
 			Work work) {
-		if (!(definition.getEvaluatorCapability() instanceof ReconstructibleLocusEvaluator2D)) {
-			return null;
-		}
-		ReconstructibleLocusEvaluator2D evaluator =
-				(ReconstructibleLocusEvaluator2D) definition.getEvaluatorCapability();
-		work.charge();
-		CertifiedConstructionProgram2D program = evaluator.captureCertifiedProgramV3().orElse(null);
-		if (program == null || !evaluator.isReconstructionFaithful()) {
-			return null;
-		}
+		LocalContinuationModel2D model = LocalContinuationModel2D.capture(definition,
+				current.getBranchKey(), policy.getWorkBudget().getMaximumEvaluatorCompositionDepth(), work);
+		if (model == null) { return null; }
+		CertifiedConstructionProgram2D program = model.program();
 		if (previous != null && previous.projection != null) {
 			var established = LocalStrictProjectionContinuation2D.establish(definition,
-					program, current, component, x, y, policy, previous.projection, work);
+					model, current, component, x, y, policy, previous.projection, work);
 			return established == null ? null : new Proposal(established);
 		}
-		if (previous == null || "STRUCTURAL_AFFINE_CIRCLE_CHART".equals(previous.method)) {
+		if (model.isDirect() && (previous == null || "STRUCTURAL_AFFINE_CIRCLE_CHART".equals(previous.method))) {
 			Proposal affine = affineCircle(definition, current, program, x, y, policy, work);
 			if (affine != null || previous != null) {
 				return affine;
@@ -129,7 +128,7 @@ public final class LocalContinuationEvidence2D {
 		}
 		if (previous == null) {
 			var established = LocalStrictProjectionContinuation2D.establish(definition,
-					program, current, component, x, y, policy, null, work);
+					model, current, component, x, y, policy, null, work);
 			if (established != null) {
 				return new Proposal(established);
 			}

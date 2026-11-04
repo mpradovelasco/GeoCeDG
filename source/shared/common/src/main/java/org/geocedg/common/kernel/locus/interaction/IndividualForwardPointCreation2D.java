@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.spatial.identity.DocumentAuthorityRecord;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geocedg.common.kernel.locus.NativeTransactionalState2D.UnsupportedReason;
 
 /** Separate, explicitly selected forward creation permission; never an R6/H1 result upgrade. */
 public final class IndividualForwardPointCreation2D {
@@ -37,11 +38,21 @@ public final class IndividualForwardPointCreation2D {
 
 	public static final class Rejected extends IllegalStateException {
 		private final Failure failure;
+		private final UnsupportedReason nativeHostReason;
 		private Rejected(Failure failure) {
+			this(failure, null);
+		}
+		private Rejected(Failure failure, UnsupportedReason nativeHostReason) {
 			super("INDIVIDUAL_FORWARD_" + failure.name());
 			this.failure = failure;
+			this.nativeHostReason = nativeHostReason;
 		}
 		public Failure getFailure() { return failure; }
+		public UnsupportedReason getNativeHostReason() { return nativeHostReason; }
+		public String getDiagnostic() {
+			return nativeHostReason == UnsupportedReason.SOURCE_FIDELITY_RESOURCE_EXHAUSTED
+					? nativeHostReason.name() : failure.name();
+		}
 	}
 
 	/** Immutable structural/forward evidence, separate from the numerical proximity grade. */
@@ -262,8 +273,10 @@ public final class IndividualForwardPointCreation2D {
 					throw new Rejected(Failure.FOREIGN_CHOICE);
 				}
 				if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }
-				if (LocusV2PublicOperations.hasUnsupportedInteractiveHostState(source.getConstruction())) {
-					throw new Rejected(Failure.UNSUPPORTED_HOST_STATE);
+				var hostReason = LocusV2PublicOperations.getUnsupportedInteractiveHostStateReason(
+						source.getConstruction());
+				if (hostReason != null) {
+					throw new Rejected(Failure.UNSUPPORTED_HOST_STATE, hostReason);
 				}
 				preparedBinding = validate(choice.address);
 				if (!current()) { throw new Rejected(Failure.STALE_SELECTION); }

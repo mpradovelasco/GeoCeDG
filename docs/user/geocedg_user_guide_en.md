@@ -1181,6 +1181,16 @@ correspondence to the same root. After a barrier, release and select the
 point again to start another attempt. Unresolved
 singularities, gaps and ambiguities need not be traversable.
 
+The experimental R4 correction can chain several established local charts for
+one mouse move. It treats the segment from the previous request to the new target
+as the request trajectory and subdivides it when continuation needs further
+proof. The point updates once, after the entire trajectory is established;
+failure or an exhausted budget preserves the last valid position. Translations,
+rotations and nondegenerate dilations of supported sources, including compatible
+compositions, retain semantic continuation. Switching to another view and back
+also invalidates a pending offer. Panning or zooming the same view preserves the
+captured world request.
+
 **Document boundary.** The new modes also check that the document's native state
 supports established recovery if an operation fails. Ordinary supported native
 points on lines, rays, segments, circles and circular arcs have typed recovery;

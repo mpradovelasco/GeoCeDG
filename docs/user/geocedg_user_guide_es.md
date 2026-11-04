@@ -1246,6 +1246,16 @@ Tras una barrera, suelte y vuelva a
 seleccionar el punto para iniciar otro intento.
 No se promete atravesar singularidades, huecos o ambigüedades sin resolver.
 
+La corrección experimental R4 permite encadenar varias cartas acreditadas para
+un mismo movimiento del ratón. Interpreta como recorrido de solicitud el segmento
+entre la petición anterior y la nueva y lo subdivide cuando hace falta demostrar
+continuación. El punto se actualiza una sola vez, cuando se acredita el recorrido
+completo; un fallo o presupuesto agotado conserva la última posición válida.
+Las traslaciones, rotaciones y dilataciones no degeneradas de fuentes admitidas,
+incluidas sus composiciones compatibles, conservan esa continuación semántica.
+Cambiar a otra vista y volver también caduca una oferta pendiente. Desplazar o
+ampliar la misma vista conserva la petición world capturada.
+
 **Límite del documento.** Las modalidades nuevas también comprueban que el estado
 nativo del documento permite una recuperación acreditada si falla una operación.
 Los puntos nativos ordinarios admitidos sobre rectas, semirrectas, segmentos,

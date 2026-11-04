@@ -22,6 +22,8 @@ final class LocalStrictProjectionContinuation2D {
 
 	static final String METHOD = "LOCAL_STRICT_PROJECTION_CHART";
 	private static final int MAXIMUM_PROOF_DEPTH = 6;
+	private static final int MAXIMUM_REQUEST_DEPTH = 24;
+	private static final int MAXIMUM_CHART_TRIALS = 12;
 
 	/** Immutable accepted target/root correspondence, installed only after publication. */
 	static final class State {
@@ -32,9 +34,11 @@ final class LocalStrictProjectionContinuation2D {
 		final SplineOutwardInterval2D root;
 		final String selection;
 		final double parameterError;
+		final SplineOutwardInterval2D[] target;
 
 		private State(double x, double y, double parameter, long lift,
-				SplineOutwardInterval2D root, String selection, double parameterError) {
+				SplineOutwardInterval2D root, String selection, double parameterError,
+				SplineOutwardInterval2D[] target) {
 			this.x = x;
 			this.y = y;
 			this.parameter = parameter;
@@ -42,6 +46,7 @@ final class LocalStrictProjectionContinuation2D {
 			this.root = root;
 			this.selection = selection;
 			this.parameterError = parameterError;
+			this.target = target.clone();
 		}
 	}
 
@@ -63,7 +68,7 @@ final class LocalStrictProjectionContinuation2D {
 	}
 
 	static Established establish(LocusDefinition2D definition,
-			CertifiedConstructionProgram2D program, LocusSemanticAddress2D current,
+			LocalContinuationModel2D model, LocusSemanticAddress2D current,
 			ContinuousComponent component, double x, double y,
 			LocusPointInteractionPolicy2D policy, State previous, Work work) {
 		if (!component.getNature().certifies() || previous != null
@@ -72,25 +77,106 @@ final class LocalStrictProjectionContinuation2D {
 			return null;
 		}
 		try {
-			ConstructionBoxModel2D model = new ConstructionBoxModel2D(program);
-			LiftedDomain domain = new LiftedDomain(definition, program, component, current);
+			LiftedDomain domain = new LiftedDomain(definition, model.program(), component, current);
 			SplineOutwardInterval2D prior = domain.align(previous == null
 					? p(current.getCanonicalParameter()) : previous.root);
-			work.charge();
-			ContinuationJet anchor = model.continuationJet(prior, domain.periodic, true);
+			ContinuationJet anchor = model.jet(prior, domain.periodic, true, work);
 			if (!valid(anchor, true) || previous != null
 					&& !previous.selection.equals(anchor.outcome.selection)) {
 				return null;
 			}
-			// Initially q0 is the exact F(a0), enclosed here, not rounded forward output.
 			SplineOutwardInterval2D[] q0 = previous == null ? anchor.value
-					: new SplineOutwardInterval2D[] {p(previous.x), p(previous.y)};
-			SplineOutwardInterval2D[] q1 = {p(x), p(y)};
+						: previous.target;
+			return new Chain(definition, model, component, policy, work, q0,
+					new SplineOutwardInterval2D[] {p(x), p(y)})
+					.advance(current, previous, 0, 1, 0);
+		} catch (ArithmeticException | IllegalArgumentException exception) {
+			// Nonfinite enclosures and unrepresentable canonical/lift changes refuse proof.
+		}
+		return null;
+	}
+
+	/** All internal targets enclose the same original affine request path. No publication. */
+	private static final class Chain {
+		private final LocusDefinition2D definition;
+		private final LocalContinuationModel2D model;
+		private final ContinuousComponent component;
+		private final LocusPointInteractionPolicy2D policy;
+		private final Work work;
+		private final SplineOutwardInterval2D[] from, to;
+
+		private Chain(LocusDefinition2D definition, LocalContinuationModel2D model,
+				ContinuousComponent component, LocusPointInteractionPolicy2D policy,
+				Work work, SplineOutwardInterval2D[] from, SplineOutwardInterval2D[] to) {
+			this.definition = definition; this.model = model; this.component = component;
+			this.policy = policy; this.work = work; this.from = from; this.to = to;
+		}
+
+		private Established advance(LocusSemanticAddress2D current, State previous,
+				double start, double end, int depth) {
+			work.charge();
+			work.chartAttempt();
+			Established whole = step(definition, model, current, component, at(start), at(end),
+					policy, previous, work);
+			if (whole != null) { work.certifiedChart(); return whole; }
+			if (depth >= Math.min(MAXIMUM_REQUEST_DEPTH,
+					policy.getWorkBudget().getMaximumRefinementIterations())) { return null; }
+			double middle = start / 2 + end / 2;
+			if (middle == start || middle == end) { return null; }
+			work.charge();
+			work.requestSubdivision();
+			Established left = advance(current, previous, start, middle, depth + 1);
+			if (left == null) { return null; }
+			State next = left.state;
+			var seam = !definition.getProvider().isPeriodic()
+					? LocusSemanticAddress2D.SeamSide.NOT_PERIODIC
+					: next.parameter == definition.getProvider().getDeclaredDomain().getLower()
+							? next.lift == 0 ? LocusSemanticAddress2D.SeamSide.LOWER_APPROACH
+									: LocusSemanticAddress2D.SeamSide.UPPER_APPROACH
+							: LocusSemanticAddress2D.SeamSide.INTERIOR;
+			LocusSemanticAddress2D internal = new LocusSemanticAddress2D(current.getSourceLocusId(),
+					current.getProviderVersion(), current.getBranchKey(), current.getComponentLineageKey(),
+					next.parameter, next.lift, seam);
+			Established right = advance(internal, next, middle, end, depth + 1);
+			if (right == null) { return null; }
+			double bound = Math.nextUp(left.maximumParameterChange + right.maximumParameterChange);
+			return Double.isFinite(bound)
+					? new Established(right.state, right.lower, right.upper, bound) : null;
+		}
+
+		private SplineOutwardInterval2D[] at(double fraction) {
+			if (fraction == 0) { return from; }
+			if (fraction == 1) { return to; }
+			SplineOutwardInterval2D s = p(fraction), complement = p(1).subtract(s);
+			return new SplineOutwardInterval2D[] {
+					from[0].multiply(complement).add(to[0].multiply(s)),
+					from[1].multiply(complement).add(to[1].multiply(s))};
+		}
+	}
+
+	private static Established step(LocusDefinition2D definition, LocalContinuationModel2D model,
+			LocusSemanticAddress2D current, ContinuousComponent component,
+			SplineOutwardInterval2D[] q0, SplineOutwardInterval2D[] q1,
+			LocusPointInteractionPolicy2D policy, State previous, Work work) {
+		try {
+			LiftedDomain domain = new LiftedDomain(definition, model.program(), component, current);
+			SplineOutwardInterval2D prior = domain.align(previous == null
+					? p(current.getCanonicalParameter()) : previous.root);
+			ContinuationJet anchor = model.jet(prior, domain.periodic, true, work);
+			work.correspondence();
+			if (!valid(anchor, true) || previous != null
+					&& !previous.selection.equals(anchor.outcome.selection)) { return null; }
 			String selection = anchor.outcome.selection;
+			SplineOutwardInterval2D anchorSpeed = square(anchor.first[0]).add(square(anchor.first[1]));
+			// No chart containing this root can use the strict provider if this necessary
+			// enclosure cannot establish gu>0. Subdivide the request, not a doomed chart.
+			if (!(anchorSpeed.lower > 0) || !(gu(anchor, q0, anchorSpeed).lower > 0)
+					|| !(gu(anchor, q1, anchorSpeed).lower > 0)) { return null; }
 			Set<String> attempted = new HashSet<>();
 			double length = domain.upper - domain.lower;
 			for (int attempt = 0;
-					attempt < policy.getWorkBudget().getMaximumRefinementIterations(); attempt++) {
+					attempt < Math.min(MAXIMUM_CHART_TRIALS,
+							policy.getWorkBudget().getMaximumRefinementIterations()); attempt++) {
 				int exponent = attempt == 0 ? 0
 						: (attempt % 2 == 1 ? (attempt + 1) / 2 : -attempt / 2);
 				double radius = Math.scalb(length / 16, exponent);
@@ -101,23 +187,19 @@ final class LocalStrictProjectionContinuation2D {
 					continue;
 				}
 				SplineOutwardInterval2D chart = new SplineOutwardInterval2D(lower, upper);
-				Proof proof = prove(model, chart, domain.periodic, q0, q1, selection, work, 0);
-				if (proof == null) {
-					continue;
-				}
 				boolean leftEnd = lower == domain.lower && domain.leftEnd;
 				boolean rightEnd = upper == domain.upper && domain.rightEnd;
-				work.charge();
-				ContinuationJet left = model.continuationJet(p(lower), domain.periodic, false);
-				work.charge();
-				ContinuationJet right = model.continuationJet(p(upper), domain.periodic, false);
+				ContinuationJet left = model.jet(p(lower), domain.periodic, false, work);
+				ContinuationJet right = model.jet(p(upper), domain.periodic, false, work);
 				if (!sameSelection(left, selection) || !sameSelection(right, selection)
 						|| !leftEnd && !(g(left, q0).upper < 0 && g(left, q1).upper < 0)
 						|| !rightEnd && !(g(right, q0).lower > 0 && g(right, q1).lower > 0)) {
 					continue;
 				}
+				Proof proof = prove(model, chart, domain.periodic, q0, q1, selection, work, 0);
+				if (proof == null) { continue; }
 				// The same equation, selector and prior root are certified in this chart.
-				if (previous != null && bits(previous.x) == bits(x) && bits(previous.y) == bits(y)) {
+				if (previous != null && sameTarget(previous.target, q1)) {
 					return new Established(previous, lower, upper, 0);
 				}
 				SplineOutwardInterval2D root = isolate(model, chart, domain.periodic,
@@ -126,7 +208,7 @@ final class LocalStrictProjectionContinuation2D {
 				if (root == null) {
 					continue;
 				}
-				State state = canonicalState(definition, current, domain, root, x, y,
+				State state = canonicalState(definition, current, domain, root, q1,
 						selection, policy.getParameterTolerance());
 				if (state != null) {
 					SplineOutwardInterval2D priorError = domain.align(
@@ -148,12 +230,16 @@ final class LocalStrictProjectionContinuation2D {
 		return null;
 	}
 
+	private static boolean sameTarget(SplineOutwardInterval2D[] a, SplineOutwardInterval2D[] b) {
+		return bits(a[0].lower) == bits(b[0].lower) && bits(a[0].upper) == bits(b[0].upper)
+				&& bits(a[1].lower) == bits(b[1].lower) && bits(a[1].upper) == bits(b[1].upper);
+	}
+
 	/** The local equation is strictly increasing for the entire target segment. */
-	private static Proof prove(ConstructionBoxModel2D model, SplineOutwardInterval2D box,
+	private static Proof prove(LocalContinuationModel2D model, SplineOutwardInterval2D box,
 			boolean periodic, SplineOutwardInterval2D[] q0,
 			SplineOutwardInterval2D[] q1, String selection, Work work, int depth) {
-		work.charge();
-		ContinuationJet jet = model.continuationJet(box, periodic, true);
+		ContinuationJet jet = model.jet(box, periodic, true, work);
 		if (valid(jet, true) && !selection.equals(jet.outcome.selection)) {
 			return null;
 		}
@@ -188,7 +274,7 @@ final class LocalStrictProjectionContinuation2D {
 	}
 
 	/** Monotone root isolation, with clipping only at genuine included domain ends. */
-	private static SplineOutwardInterval2D isolate(ConstructionBoxModel2D model,
+	private static SplineOutwardInterval2D isolate(LocalContinuationModel2D model,
 			SplineOutwardInterval2D chart, boolean periodic, SplineOutwardInterval2D[] target,
 			SplineOutwardInterval2D mu, String selection, boolean leftEnd, boolean rightEnd,
 			SplineOutwardInterval2D leftValue, SplineOutwardInterval2D rightValue,
@@ -210,8 +296,7 @@ final class LocalStrictProjectionContinuation2D {
 			if (middle == lower || middle == upper) {
 				return null;
 			}
-			work.charge();
-			ContinuationJet jet = model.continuationJet(p(middle), periodic, false);
+			ContinuationJet jet = model.jet(p(middle), periodic, false, work);
 			if (!sameSelection(jet, selection)) {
 				return null;
 			}
@@ -244,7 +329,7 @@ final class LocalStrictProjectionContinuation2D {
 
 	private static State canonicalState(LocusDefinition2D definition,
 			LocusSemanticAddress2D current, LiftedDomain domain, SplineOutwardInterval2D root,
-			double x, double y, String selection, double tolerance) {
+			SplineOutwardInterval2D[] target, String selection, double tolerance) {
 		double represented = root.midpoint();
 		// The provider's modular arithmetic may need its normal stabilization pass.
 		// The complete reduction (both passes) is bounded against canonicalRoot below.
@@ -264,7 +349,8 @@ final class LocalStrictProjectionContinuation2D {
 			return null;
 		}
 		long lift = Math.addExact(current.getPeriodicLift(), turn - domain.oldTurn);
-		return new State(x, y, canonical, lift, canonicalRoot, selection, magnitude(error));
+		return new State(target[0].midpoint(), target[1].midpoint(), canonical, lift,
+				canonicalRoot, selection, magnitude(error), target);
 	}
 
 	private static boolean valid(ContinuationJet jet, boolean second) {

@@ -2,6 +2,7 @@
 package org.geocedg.desktop;
 
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -78,8 +79,12 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 		consumed = true;
 		validateFreshness();
 		var construction = source.getConstruction();
-		if (reference != null && LocusV2PublicOperations.hasUnsupportedInteractiveHostState(construction)) {
-			throw new IllegalStateException("UNSUPPORTED_HOST_STATE");
+		if (reference != null) {
+			var reason = LocusV2PublicOperations.getUnsupportedInteractiveHostStateReason(construction);
+			if (reason != null) {
+				NativeTransactionalState2D.requireAvailable(reason);
+				throw new IllegalStateException("UNSUPPORTED_HOST_STATE");
+			}
 		}
 		GeoPoint[] output = new GeoPoint[1];
 		construction.runAtomicConstructionMutation(() -> {

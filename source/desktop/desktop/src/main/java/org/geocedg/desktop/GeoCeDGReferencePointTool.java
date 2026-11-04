@@ -344,6 +344,9 @@ final class GeoCeDGReferencePointTool {
 				"Fuente fuera del perímetro reconstructible v3 admitido");
 		case "UNSUPPORTED_HOST_STATE" -> t("Current document state does not permit exact restoration",
 				"El estado actual del documento no permite una restauración exacta");
+		case "SOURCE_FIDELITY_RESOURCE_EXHAUSTED" -> t(
+				"Native restoration verification work budget reached; document unchanged",
+				"Se alcanzó el presupuesto para verificar la restauración nativa; documento sin cambios");
 		case "LOCAL_EVIDENCE_INSUFFICIENT" -> t("Insufficient safe local evidence", "Evidencia local segura insuficiente");
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");
