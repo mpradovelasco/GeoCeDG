@@ -196,6 +196,17 @@ guard. Discovery is dry-run inventory only. The canonical updater consumes real
 passing measurements with their actual cohort identities; these checkpoints do
 not establish acceptance or coverage of the later frozen source.
 
+The first frozen candidate ad5b6914 passed STATIC, INFRA_UNIT and PHASE (631
+executed JUnit cases), but its INTEGRATION result is REJECTED_SEMANTIC. One of
+2,371 Desktop cases failed in PostE2P3DocumentToolsTest during concurrent view
+resize from JUnit and AWT. The complete original result and causal source trace
+remain preserved. The bounded correction confines fixture creation and that
+graphical method to Swing's EDT using an existing helper. It preserves all seven
+test identities and every original oracle; production drawing is unchanged.
+The class joins the effective R3 Desktop guard. A descendant must receive new
+exact-SHA STATIC, INFRA_UNIT, PHASE, INTEGRATION and FINAL results; no earlier
+passing profile is reused as acceptance of that descendant.
+
 The effective phase is PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3. It selects all eight
 new R3 classes and the historical regression closure. Count/fingerprint metadata
 must be measured from successful real executions with the canonical updater.

@@ -403,7 +403,8 @@ Invoke-Case 'CU7 R3 preserves historical gates and selects every corrective regr
             'org.geocedg.desktop.R3PointInteractionDesktopTest',
             'org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest',
             'org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest',
-            'org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest')
+            'org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest',
+            'org.geocedg.desktop.PostE2P3DocumentToolsTest')
     }
     foreach ($module in @('shared', 'desktop')) {
         $oldId = 'pre-g9b-cu7-general-point-interaction.' + $module

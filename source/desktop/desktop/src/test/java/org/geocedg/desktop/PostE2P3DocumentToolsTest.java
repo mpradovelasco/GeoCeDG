@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -74,9 +75,12 @@ class PostE2P3DocumentToolsTest {
 	private GeoCeDGUserToolLibrary library;
 
 	@BeforeEach
-	void setUp() throws IOException {
-		app = G9U1TestApp.create();
-		library = new GeoCeDGUserToolLibrary(app, temporary.resolve("tools.json"));
+	void setUp() throws Exception {
+		onEdt(() -> {
+			app = G9U1TestApp.create();
+			library = new GeoCeDGUserToolLibrary(app, temporary.resolve("tools.json"));
+			return null;
+		});
 	}
 
 	private static File template() {
@@ -151,31 +155,34 @@ class PostE2P3DocumentToolsTest {
 	}
 
 	@Test
-	void aChosenTemplateToolBuildsItsResultFromGraphicalSelection() {
-		assertTrue(app.loadFile(template(), false));
-		EuclidianView view = app.getEuclidianView1();
-		app.getEuclidianView1().setSize(new Dimension(800, 500));
-		view.updateSize();
-		view.setCoordSystem(400, 250, 50, 50);
-		GeoElement a = G9U1TestApp.eval(app, "Pa=(1,1)");
-		GeoElement b = G9U1TestApp.eval(app, "Pb=(3,2)");
-		Macro square = app.getKernel().getMacro("SquarebyDiagonal");
-		item(documentMenu(), "SquarebyDiagonal").doClick(0);
-		assertActiveMacro(square);
-		int before = app.getKernel().getConstruction().steps();
-		click(view, a);
-		click(view, b);
-		assertTrue(app.getKernel().getConstruction().steps() > before, "the tool built");
-		AlgoElement parent = null;
-		for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
-			if (geo.getParentAlgorithm() instanceof AlgoMacro) {
-				parent = geo.getParentAlgorithm();
+	void aChosenTemplateToolBuildsItsResultFromGraphicalSelection() throws Exception {
+		onEdt(() -> {
+			assertTrue(app.loadFile(template(), false));
+			EuclidianView view = app.getEuclidianView1();
+			app.getEuclidianView1().setSize(new Dimension(800, 500));
+			view.updateSize();
+			view.setCoordSystem(400, 250, 50, 50);
+			GeoElement a = G9U1TestApp.eval(app, "Pa=(1,1)");
+			GeoElement b = G9U1TestApp.eval(app, "Pb=(3,2)");
+			Macro square = app.getKernel().getMacro("SquarebyDiagonal");
+			item(documentMenu(), "SquarebyDiagonal").doClick(0);
+			assertActiveMacro(square);
+			int before = app.getKernel().getConstruction().steps();
+			click(view, a);
+			click(view, b);
+			assertTrue(app.getKernel().getConstruction().steps() > before, "the tool built");
+			AlgoElement parent = null;
+			for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
+				if (geo.getParentAlgorithm() instanceof AlgoMacro) {
+					parent = geo.getParentAlgorithm();
+				}
 			}
-		}
-		assertNotNull(parent, "an AlgoMacro output");
-		assertSame(square, ((AlgoMacro) parent).getMacro());
-		assertSame(a, parent.getInput(0));
-		assertSame(b, parent.getInput(1));
+			assertNotNull(parent, "an AlgoMacro output");
+			assertSame(square, ((AlgoMacro) parent).getMacro());
+			assertSame(a, parent.getInput(0));
+			assertSame(b, parent.getInput(1));
+			return null;
+		});
 	}
 
 	private void click(EuclidianView view, GeoElement point) {
