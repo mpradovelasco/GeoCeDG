@@ -320,12 +320,30 @@ public final class NativeTransactionalState2D {
 		String restoredXml = owner.getCurrentUndoXML(listenersToo).toString();
 		boolean sameXml = ordinaryXml != null ? ordinaryXml.equals(restoredXml)
 				: Arrays.equals(ordinaryDigest, digest(restoredXml.getBytes(StandardCharsets.UTF_8)));
-		if (!registryIds.equals(ids(owner)) || reservations
-				!= owner.getSpatialIdentityRegistry().getReservedIdentityCount() || !sameXml) {
-			throw new IllegalStateException("Native rollback did not preserve registry and ordinary XML exactly");
+		Set<SpatialIdentityId> restoredIds = ids(owner);
+		int restoredReservations = owner.getSpatialIdentityRegistry().getReservedIdentityCount();
+		boolean sameRegistry = registryIds.equals(restoredIds);
+		if (!sameRegistry || reservations != restoredReservations || !sameXml) {
+			throw new IllegalStateException("Native rollback did not preserve registry and ordinary XML exactly"
+					+ "; registry=" + sameRegistry + " expectedIds=" + registryIds.size()
+					+ " actualIds=" + restoredIds.size() + " reservations=" + reservations
+					+ "/" + restoredReservations + " xml=" + sameXml + " listeners=" + listenersToo
+					+ (ordinaryXml == null ? "; expectedXml=digest-only"
+							: firstXmlDifference(ordinaryXml, restoredXml)));
 		}
 		verifyNanos = System.nanoTime() - started;
 		finished = true;
+	}
+
+	private static String firstXmlDifference(String expected, String actual) {
+		int index = 0, common = Math.min(expected.length(), actual.length());
+		while (index < common && expected.charAt(index) == actual.charAt(index)) { index++; }
+		int start = Math.max(0, index - 80);
+		return "; firstXmlDifference=" + index + " lengths=" + expected.length() + "/" + actual.length()
+				+ " expected=" + expected.substring(start, Math.min(expected.length(), index + 160))
+						.replace("\n", "\\n").replace("\r", "\\r")
+				+ " actual=" + actual.substring(start, Math.min(actual.length(), index + 160))
+						.replace("\n", "\\n").replace("\r", "\\r");
 	}
 
 	/** Freeze only immutable native data and digests, never retaining whole XML in history. */
