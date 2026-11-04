@@ -15,6 +15,7 @@ import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -279,6 +280,47 @@ class R5ReferenceCreationDesktopTest {
             assertNull(((GuiManagerGeoCeDG) app.getGuiManager()).referencePointMenuItem(List.of(source)));
             assertThrows(IllegalArgumentException.class,
                     () -> new GeoCeDGNativePointPlacement(source, null, 0, 0, .1));
+        });
+    }
+
+    @Test void dimensionFigureSegmentsRetainP4InsteadOfAcquiringNativeReferencePlacement() throws Exception {
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            var app = G9U1SemanticPointInteractionTest.app();
+            eval(app, "A=(-2,0)"); eval(app, "B=(2,0)");
+            var ordinary = eval(app, "ordinary=Segment(A,B)");
+            var q = (GeoPoint) eval(app, "ReferenceQ=(.5,1.03)");
+            var gui = (GuiManagerGeoCeDG) app.getGuiManager();
+            assertTrue(GeoCeDGNativePointPlacement.supports(ordinary));
+            assertNotNull(gui.referencePointMenuItem(List.of(ordinary)));
+            for (String command : List.of("AlignedDimension(A,B,1)", "LinearDimension(A,B,xAxis,1)")) {
+                var outputs = app.getKernel().getAlgebraProcessor().processAlgebraCommand(command, false);
+                assertNotNull(outputs); assertEquals(5, outputs.length);
+                var owner = assertInstanceOf(AlgoNativeDimension.class, outputs[0].getParentAlgorithm());
+                app.setMode(EuclidianConstants.MODE_POINT);
+                var option = reference(Cu7M08SDesktopEventsTest.panel(app));
+                if (!option.isSelected()) { option.doClick(); }
+                assertTrue(tool(app).isReferenceRequestActive());
+                String before = app.getXML();
+                int history = app.getKernel().getConstruction().getUndoManager().getHistorySize();
+                var selection = List.copyOf(app.getSelectionManager().getSelectedGeos());
+                for (var figure : List.of(owner.getDimensionLine(), owner.getExtensionA(), owner.getExtensionB())) {
+                    assertSame(owner, AlgoNativeDimension.ownerOf(figure));
+                    assertFalse(GeoCeDGNativePointPlacement.supports(figure));
+                    assertNull(gui.referencePointMenuItem(List.of(figure)));
+                    assertThrows(IllegalArgumentException.class, () -> tool(app).startFromReference(figure));
+                    assertThrows(IllegalArgumentException.class,
+                            () -> new GeoCeDGNativePointPlacement(figure, q, q.inhomX, q.inhomY, .1));
+                    assertFalse(tool(app).selectFromAlgebra(figure, app.getMainComponent()));
+                    tool(app).click(List.of(figure), app.getMainComponent(), 0, 0);
+                    assertNull(tool(app).contextMenu()); assertNull(tool(app).pendingSelection());
+                }
+                assertEquals(before, app.getXML());
+                assertEquals(history, app.getKernel().getConstruction().getUndoManager().getHistorySize());
+                assertEquals(selection, app.getSelectionManager().getSelectedGeos());
+                assertTrue(GeoCeDGNativePointPlacement.supports(ordinary));
+                assertNotNull(gui.referencePointMenuItem(List.of(ordinary)));
+                app.setMode(EuclidianConstants.MODE_MOVE);
+            }
         });
     }
 }

@@ -4345,7 +4345,8 @@
         "org.geocedg.desktop.R4ContinuationGestureDesktopTest",
         "org.geocedg.desktop.R4NativeBudgetDesktopTest",
         "org.geocedg.desktop.R5SemanticPointPointerDesktopTest",
-        "org.geocedg.desktop.R5ReferenceCreationDesktopTest"
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest",
+        "org.geocedg.desktop.PostE2P4GraphicsContextMenuTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -4394,6 +4395,8 @@
         "org.geocedg.desktop.R5SemanticPointPointerDesktopTest",
         "--tests",
         "org.geocedg.desktop.R5ReferenceCreationDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PostE2P4GraphicsContextMenuTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",

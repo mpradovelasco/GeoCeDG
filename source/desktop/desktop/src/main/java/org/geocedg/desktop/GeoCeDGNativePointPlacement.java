@@ -1,6 +1,7 @@
 /* GeoCeDG. Copyright (c) 2026 GeoCeDG contributors. SPDX-License-Identifier: EUPL-1.2 */
 package org.geocedg.desktop;
 
+import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.kernel.locus.NativePathState2D;
@@ -24,6 +25,8 @@ final class GeoCeDGNativePointPlacement implements AutoCloseable {
 
 	static boolean supports(GeoElement geo) {
 		return geo != null && !geo.isAxis() && !geo.isGeoElement3D()
+				// Dimension figure outputs retain their E2/P4 interaction contract.
+				&& AlgoNativeDimension.ownerOf(geo) == null
 				&& NativePathState2D.capture(geo) != null;
 	}
 

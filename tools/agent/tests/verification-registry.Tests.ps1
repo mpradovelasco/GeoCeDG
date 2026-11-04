@@ -552,7 +552,8 @@ Invoke-Case 'CU7 R5 preserves R4 gates and includes actual pointer and creation 
     $added = @{
         shared = @('org.geocedg.common.locus.R5ForwardCreationRoutingTest')
         desktop = @('org.geocedg.desktop.R5SemanticPointPointerDesktopTest',
-            'org.geocedg.desktop.R5ReferenceCreationDesktopTest')
+            'org.geocedg.desktop.R5ReferenceCreationDesktopTest',
+            'org.geocedg.desktop.PostE2P4GraphicsContextMenuTest')
     }
     foreach ($module in @('shared', 'desktop')) {
         $old = @($inventory.selections | Where-Object selection_id -CEQ (
