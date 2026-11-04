@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
+import org.geocedg.common.kernel.locus.NativeSourceFidelity2D;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.kernel.locus.interaction.IndividualForwardPointCreation2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
@@ -23,10 +24,13 @@ import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.PathParameter;
+import org.geogebra.common.kernel.PathRegionHandling;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.View;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
@@ -112,6 +116,47 @@ class R3NativeStateRecoveryTest extends G9U0PublicSurfaceTestBase {
 		add("r=0.4097°");
 		assertTrue(point("P").isFinite());
 		assertFalse(getApp().getXML().contains("<conicPointState"));
+	}
+
+	@Test void anInlineFreeNativeAncestorWithoutAnElementSlotKeepsItsPublicFileReadable()
+			throws Exception {
+		getKernel().setUsePathAndRegionParameters(PathRegionHandling.ON);
+		GeoPoint center = add("A=(0,0)"); add("c=Circle(A,1)");
+		GeoConic outer = add("d=Circle(Point(c),1)");
+		GeoPoint inline = (GeoPoint) outer.getParentAlgorithm().getInput(0);
+		assertFalse(inline.isLabelSet());
+		center.setCoords(2, 1, 1); center.updateCascade();
+		GeoPoint point = add("P=Point(d)");
+		point.updatePathParameter(.73123); point.updateCascade();
+		assertTrue(inline.isFinite()); assertTrue(point.isFinite());
+		assertTrue(inline.hasLocallyCoherentNativeConicPointState());
+		assertTrue(point.hasLocallyCoherentNativeConicPointState());
+		assertFalse(inline.getParentAlgorithm().getXML().contains("<element"));
+		String xml = getApp().getXML();
+		assertTrue(xml.contains("a0=\"" + inline.getLabel(StringTemplate.xmlTemplate) + "\""));
+		assertFalse(NativeSourceFidelity2D.isFaithfulSource(outer));
+		assertFalse(point.getXML().contains("<conicPointState"));
+		for (int cycle = 0; cycle < 3; cycle++) {
+			getApp().getXMLio().processXMLString(xml, true, false);
+			assertTrue(((GeoPoint) lookup("P")).isFinite());
+			assertFalse(((GeoPoint) lookup("P")).getXML().contains("<conicPointState"));
+			xml = getApp().getXML();
+		}
+		// Explicit Point(c,u) carries its argument in its definition. It must not
+		// acquire the editable free-point slot requirement.
+		add("u=.2"); GeoConic explicit = add("explicitCircle=Circle(Point(c,u),1)");
+		GeoPoint explicitPoint = add("ExplicitP=Point(explicitCircle)");
+		explicitPoint.updatePathParameter(.73123); explicitPoint.updateCascade();
+		assertFalse(explicit.getParentAlgorithm().getInput(0).isLabelSet());
+		assertTrue(NativeSourceFidelity2D.isFaithfulSource(explicit));
+		assertTrue(explicitPoint.getXML().contains("<conicPointState"));
+		xml = getApp().getXML();
+		for (int cycle = 0; cycle < 3; cycle++) {
+			getApp().getXMLio().processXMLString(xml, true, false);
+			assertTrue(((GeoPoint) lookup("ExplicitP")).isFinite());
+			assertTrue(((GeoPoint) lookup("ExplicitP")).getXML().contains("<conicPointState"));
+			xml = getApp().getXML();
+		}
 	}
 
 	@ParameterizedTest @ValueSource(strings = {"xAxis", "Line((0,0),(1,1))", "Ray((0,0),(1,1))",

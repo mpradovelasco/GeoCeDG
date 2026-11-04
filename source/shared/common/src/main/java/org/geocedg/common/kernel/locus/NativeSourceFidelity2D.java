@@ -145,6 +145,11 @@ public final class NativeSourceFidelity2D {
 		}
 		if (parent != null && parent.getClass() == AlgoPointOnPath.class
 				&& parent.getInputLength() == 1) {
+			// An inline Point[c] definition does not carry its editable native
+			// argument. FILE fidelity requires that point's own element slot.
+			if (!typedMemory && (!value.isLabelSet() || !parent.isInConstructionList())) {
+				return false;
+			}
 			if (!(value instanceof GeoPoint)
 					|| !(typedMemory ? ((GeoPoint) value).canCaptureNativeRollbackState()
 							: ((GeoPoint) value).hasLocallyCoherentNativeConicPointState())) {

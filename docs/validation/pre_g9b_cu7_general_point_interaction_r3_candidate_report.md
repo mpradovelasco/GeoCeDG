@@ -41,6 +41,12 @@ Unknown or lossy native ancestors suppress the optional public conicPointState
 field and retain the historical readable payload. This is a readability fallback,
 not an exact file-parameter promise for that excluded closure. File classification
 is fresh for every serialization pass and includes defining inline/list inputs.
+Free one-input native ancestors additionally need an actual serialized element
+slot. The inline expression Circle(Point(c),1), after a source-center change,
+reproduced an unreadable false exact descendant field on 4a0fed85. Its permanent
+regression suppresses that field and repeats readable loads; the separate inline
+Point(c,u) control retains its explicitly reconstructible argument and field.
+This slot condition grants no durable identity and does not relax MEMORY safety.
 
 Atomic construction mutation still uses its existing XML/DAG lifecycle. A focal
 native complement captures raw point caches, parameter/fallback/type, animation
@@ -185,8 +191,8 @@ must be measured from successful real executions with the canonical updater.
 Development probes, discovery, PHASE, FINAL and physical smoke are separate.
 Failed development runs remain failed records, even after correction.
 
-Required final checks: STATIC, INFRA_UNIT, this exact PHASE and FINAL at a frozen
-clean SHA. FINAL includes the composed obligations by its typed execution plan;
+Required final checks: STATIC, INFRA_UNIT, this exact PHASE, INTEGRATION and FINAL
+at a frozen clean SHA. FINAL includes the composed obligations by its typed execution plan;
 its receipt claims only the profile actually established. Use a contained ignored
 output directory for FINAL/PACKAGING. Preserve diagnostics independently from
 acceptance, including missing historical sources; do not call them PASS.
