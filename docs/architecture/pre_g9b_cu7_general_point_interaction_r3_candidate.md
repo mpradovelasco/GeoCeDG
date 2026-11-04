@@ -216,3 +216,24 @@ The MEMORY closure already rejects a missing private serialization slot.
 Add a permanent regression for that actual inline expression and three public
 load cycles; separately retain the explicit Point(c,u) positive field over three
 cycles. Do not claim exact arguments for the historical one-input inline case.
+
+## Validation fixture amendment — 2026-11-04, before code
+
+INTEGRATION at ad5b6914 completed with one failing Desktop case:
+PostE2P3DocumentToolsTest.aChosenTemplateToolBuildsItsResultFromGraphicalSelection.
+Its JUnit worker calls JPanel.setSize and immediately view.updateSize, while the
+registered AWT componentResized listener also calls updateSize on Swing's event
+dispatch thread. Both can reset/build the same triangle DrawPoint path. The
+observed IllegalPathStateException is consistent with that concurrent reset;
+there is no dump of the exact interleaving. The failing stack precedes the macro
+gesture and contains no native-state restore. Do not change production drawing
+or the private axis complement to compensate for this invalid test threading.
+
+Confine this fixture's app/library construction and its complete graphical test
+body to the EDT using the existing checked Callable helper. Preserve all seven
+test identities and every macro/output/input assertion. Leave the other bodies'
+thread-local MockedStatic ownership intact; lifecycle cleanup already uses EDT.
+Add the existing class to the effective R3 Desktop selection as a native-tool
+guard, measure that selection, freeze a descendant and rerun all five canonical
+profiles on that exact identity. Retain ad5b6914's rejection, with no exclusion,
+sleep, retry-until-green policy or new production synchronization framework.
