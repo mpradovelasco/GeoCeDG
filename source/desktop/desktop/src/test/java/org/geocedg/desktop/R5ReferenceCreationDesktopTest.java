@@ -72,6 +72,51 @@ class R5ReferenceCreationDesktopTest {
         throw new AssertionError("Algebra row missing for " + geo.getLabelSimple());
     }
 
+    private static void algebraClick(GeoCeDGAlgebraView tree, GeoElement geo, int count) {
+        tree.setSize(800, 600);
+        var path = algebraPath(tree, geo); tree.expandPath(path.getParentPath());
+        var bounds = tree.getPathBounds(path); assertNotNull(bounds);
+        int x = bounds.x + Math.min(80, bounds.width - 1), y = bounds.y + bounds.height / 2;
+        for (int id : new int[] {MouseEvent.MOUSE_PRESSED, MouseEvent.MOUSE_RELEASED, MouseEvent.MOUSE_CLICKED}) {
+            tree.dispatchEvent(new MouseEvent(tree, id, System.currentTimeMillis(),
+                    id == MouseEvent.MOUSE_PRESSED ? InputEvent.BUTTON1_DOWN_MASK : 0,
+                    x, y, count, false, MouseEvent.BUTTON1));
+        }
+    }
+
+    @Test void secondAlgebraClickKeepsThePendingNativeAndV2OffersInsteadOfRedefiningQ() throws Exception {
+        Cu7M08SDesktopEventsTest.edt(() -> {
+            for (boolean semantic : new boolean[] {false, true}) {
+                var app = G9U1SemanticPointInteractionTest.app();
+                GeoElement source = semantic ? parabola(app)
+                        : eval(app, "source=Segment((0,0),(2,0))");
+                var q = (GeoPoint) eval(app, semantic ? "ReferenceQ=(.43,.12)" : "ReferenceQ=(1,.03)");
+                var gui = (GuiManagerGeoCeDG) app.getGuiManager();
+                gui.referencePointMenuItem(List.of(source)).doClick();
+                var tree = (GeoCeDGAlgebraView) gui.getAlgebraView();
+                algebraClick(tree, q, 1);
+                var offerPanel = tool(app).contextMenu(); assertNotNull(offerPanel);
+                var semanticOffer = tool(app).pendingSelection();
+                long misses = semanticOffer == null ? 0 : semanticOffer.getSemanticMisses();
+                int geos = app.getKernel().getConstruction().getGeoSetConstructionOrder().size();
+                int history = app.getKernel().getConstruction().getUndoManager().getHistorySize();
+                algebraClick(tree, q, 2);
+                assertFalse(tree.isEditing());
+                assertEquals(EuclidianConstants.MODE_POINT, app.getMode());
+                assertSame(offerPanel, tool(app).contextMenu());
+                assertSame(semanticOffer, tool(app).pendingSelection());
+                if (semanticOffer != null) { assertEquals(misses, semanticOffer.getSemanticMisses()); }
+                assertEquals(geos, app.getKernel().getConstruction().getGeoSetConstructionOrder().size());
+                assertEquals(history, app.getKernel().getConstruction().getUndoManager().getHistorySize());
+                Cu7M08SDesktopEventsTest.confirm(app);
+                assertEquals(1, app.getKernel().getConstruction().getGeoSetConstructionOrder().stream()
+                        .filter(GeoPoint.class::isInstance).map(GeoPoint.class::cast)
+                        .filter(point -> semantic ? GeoCeDGPointInteraction.owns(point)
+                                : point.getPath() == source).count());
+            }
+        });
+    }
+
     @Test void algebraObjectRowClicksReachReferenceSelectionWithoutChangingTools() throws Exception {
         Cu7M08SDesktopEventsTest.edt(() -> {
             var app = G9U1SemanticPointInteractionTest.app();
@@ -80,15 +125,7 @@ class R5ReferenceCreationDesktopTest {
             var gui = (GuiManagerGeoCeDG) app.getGuiManager();
             gui.referencePointMenuItem(List.of(source)).doClick();
             var tree = (GeoCeDGAlgebraView) gui.getAlgebraView();
-            tree.setSize(800, 600);
-            var path = algebraPath(tree, q); tree.expandPath(path.getParentPath());
-            var bounds = tree.getPathBounds(path); assertNotNull(bounds);
-            int x = bounds.x + Math.min(80, bounds.width - 1), y = bounds.y + bounds.height / 2;
-            for (int id : new int[] {MouseEvent.MOUSE_PRESSED, MouseEvent.MOUSE_RELEASED, MouseEvent.MOUSE_CLICKED}) {
-                tree.dispatchEvent(new MouseEvent(tree, id, System.currentTimeMillis(),
-                        id == MouseEvent.MOUSE_PRESSED ? InputEvent.BUTTON1_DOWN_MASK : 0,
-                        x, y, 1, false, MouseEvent.BUTTON1));
-            }
+            algebraClick(tree, q, 1);
             assertEquals(EuclidianConstants.MODE_POINT, app.getMode());
             assertNotNull(tool(app).contextMenu());
             Cu7M08SDesktopEventsTest.confirm(app);

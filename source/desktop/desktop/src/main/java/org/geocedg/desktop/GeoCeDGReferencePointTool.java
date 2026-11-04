@@ -189,11 +189,14 @@ final class GeoCeDGReferencePointTool {
 	boolean selectFromAlgebra(GeoElement geo, Component anchor) {
 		if (!isReferenceRequestActive() || panel == null
 				|| clickPosition && app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
-				|| geo == null || selection != null || nativeSelection != null || choices != null) {
+				|| geo == null) {
 			return false;
 		}
 		if (!(geo instanceof GeoPoint) && !(geo instanceof GeoLocusV2)
 				&& !GeoCeDGNativePointPlacement.supports(geo)) { return false; }
+		// Match canvas selection: a second click/double click belongs to the
+		// pending reference gesture, never to inherited Algebra redefinition.
+		if (selection != null || nativeSelection != null || choices != null) { return true; }
 		click(List.of(geo), anchor, 0, 0);
 		return true;
 	}
