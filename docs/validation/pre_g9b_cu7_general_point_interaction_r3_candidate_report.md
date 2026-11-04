@@ -206,6 +206,10 @@ test identities and every original oracle; production drawing is unchanged.
 The class joins the effective R3 Desktop guard. A descendant must receive new
 exact-SHA STATIC, INFRA_UNIT, PHASE, INTEGRATION and FINAL results; no earlier
 passing profile is reused as acceptance of that descendant.
+The corrected Desktop focus at ebbc1c648 then executes 192 cases with no failures,
+errors or skips, including all seven document-tool cases. Its measured identity
+catalog is the input to the next freeze, not a substitute for the new canonical
+profile results or physical smoke.
 
 The effective phase is PRE-G9B-CU7-GENERAL-POINT-INTERACTION-R3. It selects all eight
 new R3 classes and the historical regression closure. Count/fingerprint metadata
