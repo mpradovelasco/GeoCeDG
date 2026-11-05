@@ -977,6 +977,13 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	}
 
 	/**
+	 * @return the stored object color before dynamic color and visibility effects
+	 */
+	public final GColor getStaticObjectColor() {
+		return objColor;
+	}
+
+	/**
 	 * @return true, if the geo is hidden, but currently should be shown,
 	 *         because Show/Hide tool selected
 	 */

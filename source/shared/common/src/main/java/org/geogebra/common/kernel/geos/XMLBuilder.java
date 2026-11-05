@@ -12,12 +12,15 @@
  * Note: The overall GeoGebra software package is free to use for
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
+ *
+ * Modified for GeoCeDG: preserve explicit slider label mode in construction XML.
  */
 
 package org.geogebra.common.kernel.geos;
 
 import java.util.Locale;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.io.XMLStringBuilder;
@@ -158,12 +161,17 @@ public class XMLBuilder {
 			sb.endTag();
 		}
 
-		if (geo.isDrawable()) {
-			if (!geo.isGeoNumeric() || geo.getDefinition() == null
-					|| geo.labelMode != GeoElement.LABEL_NAME_VALUE) {
-				sb.startTag("labelMode").attr("val", geo.labelMode).endTag();
-			}
+		if (isDrawable && (!geo.isGeoNumeric() || geo.getDefinition() == null
+				|| geo.labelMode != GeoElement.LABEL_NAME_VALUE)) {
+			sb.startTag("labelMode").attr("val", geo.labelMode).endTag();
+		} else if (geo instanceof GeoNumeric numeric && numeric.hasExplicitNameAndValueSliderLabel()
+				&& !geo.getKernel().isMacroKernel()
+				&& geo.getKernel().getApplication().getConfig() instanceof AppConfigGeoCeDG) {
+			// Older readers already resolve this alias to Name + Value on ordinary objects.
+			sb.startTag("labelMode").attr("val", GeoElement.LABEL_DEFAULT_NAME_VALUE).endTag();
+		}
 
+		if (isDrawable) {
 			if (geo.getTooltipMode() != GeoElementND.TOOLTIP_ALGEBRAVIEW_SHOWING) {
 				sb.startTag("tooltipMode").attr("val", geo.getTooltipMode()).endTag();
 			}

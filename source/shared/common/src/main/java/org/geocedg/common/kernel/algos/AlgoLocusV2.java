@@ -10,6 +10,7 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.V2RedefineContractSource;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.Algos;
 import org.geogebra.common.kernel.algos.GetCommand;
@@ -42,6 +43,7 @@ public abstract class AlgoLocusV2 extends AlgoElement
 		configuredInputs = inputs.clone();
 		setInputOutput();
 		setDependencies();
+		initializeAppearance(construction);
 	}
 
 	/**
@@ -56,11 +58,20 @@ public abstract class AlgoLocusV2 extends AlgoElement
 		configuredInputs = commandInputs.clone();
 		setInputOutput();
 		setEfficientDependencies(configuredInputs, evaluatorInputs.clone());
+		initializeAppearance(construction);
+	}
+
+	private void initializeAppearance(Construction construction) {
+		ConstructionDefaults defaults = construction.getConstructionDefaults();
+		if (defaults != null && defaults.getDefaultGeo(ConstructionDefaults.DEFAULT_LOCUS_V2)
+				!= null && !construction.isFileLoading() && !construction.getKernel().getLoadingMode()) {
+			locus.setConstructionDefaults(false, false);
+		}
 	}
 
 	/**
-	 * PRE-G9B-R6-plus-A-1: the V2 output never reaches the construction-defaults
-	 * path, so it asks the same application seam for its creation layer. Outside
+	 * PRE-G9B-R6-plus-A-1: the V2 output asks the application seam for its
+	 * creation layer. The curve prototype owns appearance only. Outside
 	 * GeoCeDG interactive creation the seam returns the current layer unchanged;
 	 * a stored layer is restored afterwards from the document.
 	 */

@@ -47,6 +47,9 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 		setInputOutput();
 		setUpdateAfterAlgo(richInput.getParentAlgorithm());
 		setDependencies();
+		if (addToConstructionList) {
+			construction.getConstructionDefaults().setLabelVisibilityAtCreation(scalarOutput);
+		}
 		compute();
 		if (label != null) {
 			scalarOutput.setLabel(label);

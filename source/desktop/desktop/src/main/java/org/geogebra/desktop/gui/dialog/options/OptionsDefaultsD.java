@@ -12,6 +12,8 @@
  * Note: The overall GeoGebra software package is free to use for
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
+ *
+ * Modified for GeoCeDG: expose the separate V2 construction style defaults.
  */
 
 package org.geogebra.desktop.gui.dialog.options;
@@ -104,6 +106,8 @@ public class OptionsDefaultsD
 	private DefaultMutableTreeNode polygonNode;
 	private DefaultMutableTreeNode polylineNode;
 	private DefaultMutableTreeNode locusNode;
+	private DefaultMutableTreeNode locusV2Node;
+	private DefaultMutableTreeNode splineV2Node;
 
 	private DefaultMutableTreeNode textNode;
 	private DefaultMutableTreeNode imageNode;
@@ -129,7 +133,7 @@ public class OptionsDefaultsD
 	 * A dictionary which assigns a constant of the ConstructionsDefaults class
 	 * to the tree nodes.
 	 */
-	private static Hashtable<DefaultMutableTreeNode, Integer> typeToNode;
+	private Hashtable<DefaultMutableTreeNode, Integer> typeToNode;
 
 	/**
 	 * Construct an panel where the user can assign new values to the default
@@ -264,6 +268,12 @@ public class OptionsDefaultsD
 		rootNode.add(solidsNode);
 		rootNode.add(polygonNode);
 		rootNode.add(locusNode);
+		if (defaults.getDefaultGeo(ConstructionDefaults.DEFAULT_LOCUS_V2) != null) {
+			locusV2Node = new DefaultMutableTreeNode();
+			splineV2Node = new DefaultMutableTreeNode();
+			rootNode.add(locusV2Node);
+			rootNode.add(splineV2Node);
+		}
 		rootNode.add(textNode);
 		rootNode.add(imageNode);
 		rootNode.add(numberNode);
@@ -309,6 +319,10 @@ public class OptionsDefaultsD
 		typeToNode.put(polygonNode, ConstructionDefaults.DEFAULT_POLYGON);
 		typeToNode.put(polylineNode, ConstructionDefaults.DEFAULT_POLYLINE);
 		typeToNode.put(locusNode, ConstructionDefaults.DEFAULT_LOCUS);
+		if (locusV2Node != null) {
+			typeToNode.put(locusV2Node, ConstructionDefaults.DEFAULT_LOCUS_V2);
+			typeToNode.put(splineV2Node, ConstructionDefaults.DEFAULT_SPLINE_V2);
+		}
 		typeToNode.put(textNode, ConstructionDefaults.DEFAULT_TEXT);
 		typeToNode.put(imageNode, ConstructionDefaults.DEFAULT_IMAGE);
 		typeToNode.put(numberNode, ConstructionDefaults.DEFAULT_NUMBER);
@@ -372,6 +386,10 @@ public class OptionsDefaultsD
 		polygonNode.setUserObject(loc.getMenu("Polygon"));
 		polylineNode.setUserObject(loc.getMenu("PolyLine"));
 		locusNode.setUserObject(loc.getMenu("Locus"));
+		if (locusV2Node != null) {
+			locusV2Node.setUserObject("Locus V2");
+			splineV2Node.setUserObject("SplineV2");
+		}
 		textNode.setUserObject(loc.getMenu("Text"));
 		imageNode.setUserObject(loc.getMenu("Image"));
 		numberNode.setUserObject(loc.getMenu("Slider"));

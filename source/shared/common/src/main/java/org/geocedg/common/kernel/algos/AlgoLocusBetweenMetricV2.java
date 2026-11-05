@@ -103,6 +103,7 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 		result.enablePublicPersistence();
 		setProtectedInput(true);
 		setInputOutput();
+		construction.getConstructionDefaults().setLabelVisibilityAtCreation(result);
 		compute();
 		result.setLabel(label);
 	}

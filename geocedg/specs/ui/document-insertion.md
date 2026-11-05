@@ -66,7 +66,8 @@ completely or not at all. Admission and a strict dry run precede any mutation;
 existing objects are never overwritten, replaced or rebound.
 
 2.2 **[AD]** Admission (`P4`, `DQ-F3-14`), evaluated on the loaded helper.
-Every object of the source construction must match a row:
+Every object of the source construction must match a row. §10 adds the two
+CU4 rows and their strict conditions.
 
 | Family | Rows | Condition |
 |---|---|---|
@@ -78,7 +79,7 @@ Every object of the source construction must match a row:
 | macro-generated objects | objects of a macro whose output class is elementary | M1 (§3) |
 
 Rejected before mutation: objects with any script; 3D objects; projection
-bindings and spatial objects; static (free) texts, arcs, images, buttons, input
+bindings and spatial objects; static (free) texts outside §10, arcs, images, buttons, input
 boxes, CAS cells and every class or algorithm not listed; a source with identity
 records and macros (`DQ-F3-24`); an empty source; a source that fails the native
 preflight. **[ID]** Rows are matched by exact object class and parent-algorithm
@@ -237,7 +238,7 @@ success.
 point size and fill opacity from the source document's construction default of
 each object's default type to the selected objects, or to every object when
 nothing is selected, except native-dimension, IsoABorder and Locus V2 family
-outputs.
+outputs. §10 defines the CU4 exception for public curves.
 
 8.2 **[AD]** Nothing else changes: no geometry, label, layer, hidden-layer
 membership, caption, label offset, label visibility, fixed flag, visibility,
@@ -273,3 +274,28 @@ styles of corresponding source objects; the author then clarified that this
 expectation was a misunderstanding and accepted the construction-default
 semantics as intended (`F3R2-T0-CONTRACT-DISCREPANCY` resolved by author
 clarification, `P5` unchanged; per-object transfer not authorized).
+
+## 10. PRE-G9B-CU4 amendment
+
+The author authorized the following scope for implementation under DC-1 and
+DC-3. The technical candidate and its approval have separate records.
+[Author decision](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)
+
+1. P4 §2.2 admits a free 2D angle with a valid slider and an independent static
+   2D text. Other angles, macros and excluded families retain their prior
+   admission rules. The receiver keeps its angular display unit. For a free
+   angle, source and target must have the same angular display unit. The
+   reconstructed angle must also preserve its native display override, raw and
+   effective values, angle style, bounds, step, speed, animation and slider
+   presentation.
+2. The §2.6 dry-run and commit checks compare the new rows' values and
+   position, including text content and its native anchor. References in
+   slider bounds, animation and anchors must map to their copied construction
+   objects. Reject an unverifiable row before mutation and use the §5 recovery
+   contract if commit verification fails. L1 continues to assign indexed
+   names. Static text remains literal.
+3. P5 §8.1 includes persistible public Locus V2 and SplineV2 curves. Copy their
+   colour, line thickness and line type from the source default of the
+   respective curve type. The other P5 properties and exceptions apply as
+   before to the applicable classes. Label visibility, label mode and
+   semantic geometry are outside the T0 transfer.

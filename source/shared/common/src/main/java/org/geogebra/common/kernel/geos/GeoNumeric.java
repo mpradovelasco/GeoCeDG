@@ -12,6 +12,8 @@
  * Note: The overall GeoGebra software package is free to use for
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
+ *
+ * Modified for GeoCeDG: preserve explicit slider label mode.
  */
 
 package org.geogebra.common.kernel.geos;
@@ -150,6 +152,7 @@ public class GeoNumeric extends GeoElement
 	private ArrayList<EuclidianViewInterfaceSlim> evListeners = null;
 
 	private boolean showAVSlider = false;
+	private boolean explicitNameAndValueLabel;
 	private static volatile Comparator<GeoNumberValue> comparator;
 	private BigDecimal exactValue;
 	private @CheckForNull GeoPointND startPoint;
@@ -776,7 +779,10 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public void setBasicVisualStyle(GeoElement geo) {
+		boolean explicitLabel = geo instanceof GeoNumeric numeric
+				&& numeric.explicitNameAndValueLabel;
 		super.setBasicVisualStyle(geo);
+		explicitNameAndValueLabel = explicitLabel;
 
 		if (geo.isGeoNumeric()) {
 			slopeTriangleSize = ((GeoNumeric) geo).slopeTriangleSize;
@@ -1827,6 +1833,42 @@ public class GeoNumeric extends GeoElement
 	@Override
 	public void setAVSliderOrCheckboxVisible(boolean showSliderOrCheckbox) {
 		this.showAVSlider = showSliderOrCheckbox;
+	}
+
+	@Override
+	public void setLabelMode(int mode) {
+		super.setLabelMode(mode);
+		explicitNameAndValueLabel = mode != LABEL_DEFAULT && labelMode == LABEL_NAME_VALUE;
+	}
+
+	/**
+	 * Reads a stored label mode. The existing default-name-value alias records
+	 * an explicit slider choice that should survive a later save with a definition.
+	 *
+	 * @param mode serialized label mode
+	 */
+	public void setLabelModeFromXML(int mode) {
+		super.setLabelMode(mode);
+		explicitNameAndValueLabel = mode == LABEL_DEFAULT_NAME_VALUE
+				&& labelMode == LABEL_NAME_VALUE;
+	}
+
+	@Override
+	public void setLabelModeFromStylebar(int index) {
+		super.setLabelModeFromStylebar(index);
+		if (index > 0) {
+			explicitNameAndValueLabel = index - 1 != LABEL_DEFAULT && labelMode == LABEL_NAME_VALUE;
+		}
+	}
+
+	/**
+	 * Whether a slider, including one hidden with configured bounds, carries an
+	 * explicit Name + Value choice.
+	 */
+	boolean hasExplicitNameAndValueSliderLabel() {
+		return explicitNameAndValueLabel && labelMode == LABEL_NAME_VALUE
+				&& !isDefaultGeo() && isIndependent()
+				&& (isSetEuclidianVisible() || intervalMin != null && intervalMax != null);
 	}
 
 	@Override

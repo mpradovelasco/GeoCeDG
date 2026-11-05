@@ -20,6 +20,7 @@ import org.geocedg.common.kernel.dimension.AlgoLinearDimension;
 import org.geocedg.common.kernel.sheet.AlgoIsoABorder;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.algos.AlgoAnglePoints;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -53,6 +54,10 @@ final class GeoCeDGInsertionAdmission {
 	enum Family {
 		/** elementary 2D construction types admitted without condition */
 		ELEMENTARY,
+		/** free 2D angle with a valid native slider */
+		ANGLE_SLIDER,
+		/** independent literal 2D text */
+		STATIC_TEXT,
 		/** Locus V2 family: identity-bearing, conditions of P4 */
 		LOCUS_V2,
 		/** Spline V2: identity-bearing, conditions of P4 */
@@ -110,6 +115,7 @@ final class GeoCeDGInsertionAdmission {
 		}
 		List<String> scripted = new ArrayList<>();
 		List<String> unsupported = new ArrayList<>();
+		List<String> incompatibleAngles = new ArrayList<>();
 		Map<GeoElement, Family> families = new LinkedHashMap<>();
 		boolean identity = false;
 		for (GeoElement geo : source) {
@@ -122,6 +128,10 @@ final class GeoCeDGInsertionAdmission {
 				unsupported.add(geo.getLabelSimple() + " (" + geo.getTypeString() + ")");
 				continue;
 			}
+			if (family == Family.ANGLE_SLIDER && !compatibleAngleUnits(
+					helper.getKernel().getAngleUnit(), target.getKernel().getAngleUnit())) {
+				incompatibleAngles.add(geo.getLabelSimple());
+			}
 			families.put(geo, family);
 			identity |= sourceConstruction.getSpatialIdentityRegistry().isParticipating(geo);
 		}
@@ -130,6 +140,9 @@ final class GeoCeDGInsertionAdmission {
 		}
 		if (!unsupported.isEmpty()) {
 			return reject("Insert.Reject.Unsupported", String.join(", ", unsupported));
+		}
+		if (!incompatibleAngles.isEmpty()) {
+			return reject("Insert.Reject.AngleUnit", String.join(", ", incompatibleAngles));
 		}
 		// Elementary inputs of a Locus V2 or Spline V2 (its parameter, its point) take part
 		// in the identity registry with it; spatial and projection-binding records are
@@ -239,14 +252,21 @@ final class GeoCeDGInsertionAdmission {
 			return null;
 		}
 		if (geo.getClass() == GeoAngle.class && !(parent instanceof AlgoAnglePoints)) {
-			// angles are admitted from three points only
-			return null;
+			GeoAngle angle = (GeoAngle) geo;
+			return parent == null && angle.isSliderable() && Double.isFinite(angle.getRawAngle())
+					? Family.ANGLE_SLIDER : null;
 		}
 		if (geo.getClass() == GeoText.class && parent == null) {
-			// dependent texts only
-			return null;
+			return geo.isDefined() ? Family.STATIC_TEXT : null;
 		}
 		return Family.ELEMENTARY;
+	}
+
+	/** Radians, degrees and DMS are distinct native document display modes. */
+	static boolean compatibleAngleUnits(int sourceUnit, int targetUnit) {
+		return sourceUnit == targetUnit && (sourceUnit == Kernel.ANGLE_RADIANT
+				|| sourceUnit == Kernel.ANGLE_DEGREE
+				|| sourceUnit == Kernel.ANGLE_DEGREES_MINUTES_SECONDS);
 	}
 
 	private static boolean isThreeDimensional(AlgoElement parent) {

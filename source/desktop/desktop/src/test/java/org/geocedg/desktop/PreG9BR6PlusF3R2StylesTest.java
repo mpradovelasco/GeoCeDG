@@ -281,16 +281,17 @@ class PreG9BR6PlusF3R2StylesTest {
 				"Lt=LocusV2(Q,s,Dl)"}) {
 			must(target, c);
 		}
-		baseline(target);
 		final GeoElement locus = target.getKernel().lookupLabel("Lt");
-		assertTrue(GeoCeDGStyleApplication.isExcluded(locus));
+		locus.setObjColor(GColor.MAGENTA);
+		baseline(target);
+		assertFalse(GeoCeDGStyleApplication.isExcluded(locus));
 		Map<String, String> before = styles(target);
 		final String xml = GeoCeDGDocumentInsertion.Certificate.normalize(target.getXML());
 		final int cursor = undo(target).getCursor();
 		select(target, target.getKernel().lookupLabel("f"), target.getKernel().lookupLabel("B"),
 				target.getKernel().lookupLabel("c"), locus);
 		GeoCeDGStyleApplication.Result result = apply(target, styled);
-		assertEquals(3, result.getRestyled(), "segment, point and circle; Locus V2 excluded");
+		assertEquals(4, result.getRestyled(), "segment, point, circle and public Locus V2");
 		Map<String, String> after = styles(target);
 		assertEquals(point(POINT, 7, EuclidianStyleConstants.POINT_STYLE_CROSS), after.get("B"));
 		assertEquals(line(SEGMENT, 2, EuclidianStyleConstants.LINE_TYPE_DASHED_LONG, 0.0),
@@ -298,7 +299,7 @@ class PreG9BR6PlusF3R2StylesTest {
 		assertEquals(line(CIRCLE, 2, EuclidianStyleConstants.LINE_TYPE_DOTTED, 0.25),
 				after.get("c"));
 		for (String label : before.keySet()) {
-			if (!List.of("B", "c", "f").contains(label)) {
+			if (!List.of("B", "c", "f", "Lt").contains(label)) {
 				assertEquals(before.get(label), after.get(label), "unchanged " + label);
 			}
 		}

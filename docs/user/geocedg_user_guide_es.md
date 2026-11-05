@@ -393,7 +393,8 @@ mensaje y no cambia nada.
 el dibujo actual, completa o nada. Antes de cambiar nada, GeoCeDG comprueba cada
 objeto del documento y prueba la inserción sobre una copia. Se admiten puntos,
 rectas, semirrectas, segmentos, vectores, circunferencias, elipses, funciones,
-polígonos, ángulos de tres puntos, números, booleanos, textos dependientes, listas
+polígonos, ángulos de tres puntos, ángulos libres con deslizador, números,
+booleanos, textos dependientes y estáticos, listas
 y sucesiones, y también objetos Locus V2 y Spline V2, cotas lineales y alineadas,
 láminas ISO A y objetos construidos con herramientas. Los documentos con guiones,
 objetos 3D u otros tipos de objeto se rechazan con un mensaje que los nombra, y no
@@ -414,14 +415,28 @@ restauración no pueda verificarse, el dibujo queda aislado: no puede editarse,
 guardarse ni exportarse, y solo puede guardar la última versión verificada en un
 archivo nuevo, reabrir el documento desde su archivo o cerrarlo.
 
+Para insertar un ángulo libre con deslizador, usa la misma unidad de
+presentación angular en ambos documentos. GeoCeDG rechaza toda la inserción si
+no puede conservar el ángulo, sus límites, su incremento, su animación o sus
+referencias. El texto estático conserva su contenido y posición.
+
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de
 un documento `.cedg` o `.ggb` (los estilos que ese documento da a los objetos
 nuevos de cada tipo, no los de sus objetos existentes) a los objetos
-seleccionados, o a todos si no hay selección. Las cotas nativas, las láminas ISO A y los resultados Locus V2 conservan
-sus estilos; la geometría, los nombres, las capas, los rótulos, la visibilidad y
+seleccionados, o a todos si no hay selección. Las curvas Locus V2 y SplineV2
+reciben color, tipo y grosor de línea del predeterminado de su tipo. Las cotas
+nativas, las láminas ISO A y los demás resultados Locus V2 conservan sus estilos.
+La geometría, los nombres, las capas, los rótulos, la visibilidad y
 las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores; un
 documento que no puede leerse no cambia nada.
+
+En Preferencias, la sección Predeterminados permite elegir estilos de creación
+distintos para Locus V2 y SplineV2. Guardar configuración conserva tus estilos
+entre sesiones. Los predeterminados de un dibujo guardado tienen prioridad al
+crear objetos en él. Los objetos que ya existen conservan su presentación.
+El modo de etiqueta elegido para un deslizador, como «Nombre + valor», se
+conserva al guardar, copiar, deshacer y rehacer.
 
 ### 4.3 Qué conserva un documento
 

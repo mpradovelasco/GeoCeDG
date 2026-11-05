@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geogebra.common.awt.GColor;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.geos.GProperty;
@@ -22,7 +24,8 @@ import org.geogebra.desktop.io.DocumentArchivePreflight;
  * colour, line style, line thickness, point style, point size and fill opacity from the
  * source document's construction default of each object's default type to the selected
  * objects, or to every object when nothing is selected, except native-dimension,
- * IsoABorder and Locus V2 family outputs. Nothing else changes (no geometry, label,
+ * IsoABorder and non-curve Locus V2 family outputs. Persistent Locus V2 and SplineV2
+ * curves receive only colour, line style and line thickness. Nothing else changes (no geometry, label,
  * layer, hidden-layer membership, caption, label offset or visibility, fixed flag,
  * visibility, show condition, dynamic colour, construction default, labeling style or
  * unit). One undoable step; a source that cannot be validated and loaded changes
@@ -87,6 +90,7 @@ final class GeoCeDGStyleApplication {
 		AppGeoCeDG helper = null;
 		try {
 			helper = app.newInsertionHelper();
+			helper.getKernel().getConstruction().getConstructionDefaults().clearPersonalDefaults();
 			if (!helper.loadFile(file, false)) {
 				return refused(name, "Insert.Reject.Invalid");
 			}
@@ -147,9 +151,12 @@ final class GeoCeDGStyleApplication {
 	/**
 	 * @param geo target object
 	 * @return whether T0 never restyles it (native dimensions, IsoABorder, Locus V2
-	 *         family outputs)
+	 *         results other than persistent curves)
 	 */
 	static boolean isExcluded(GeoElement geo) {
+		if (geo instanceof GeoLocusV2 curve) {
+			return curve.getPersistentLocusId() == null;
+		}
 		GeoCeDGInsertionAdmission.Family family = GeoCeDGInsertionAdmission.classify(geo);
 		return family == GeoCeDGInsertionAdmission.Family.DIMENSION
 				|| family == GeoCeDGInsertionAdmission.Family.ISO_A_BORDER
@@ -159,8 +166,9 @@ final class GeoCeDGStyleApplication {
 	/** The six whitelisted properties only. */
 	private static boolean restyle(GeoElement geo, GeoElement defaults) {
 		boolean changed = false;
-		if (!geo.getObjectColor().equals(defaults.getObjectColor())) {
-			geo.setObjColor(defaults.getObjectColor());
+		GColor color = defaults.getStaticObjectColor();
+		if (!geo.getStaticObjectColor().equals(color)) {
+			geo.setObjColor(color);
 			changed = true;
 		}
 		if (geo.getLineThickness() != defaults.getLineThickness()) {
@@ -181,7 +189,7 @@ final class GeoCeDGStyleApplication {
 				changed = true;
 			}
 		}
-		if (geo.getAlphaValue() != defaults.getAlphaValue()) {
+		if (!(geo instanceof GeoLocusV2) && geo.getAlphaValue() != defaults.getAlphaValue()) {
 			geo.setAlphaValue(defaults.getAlphaValue());
 			changed = true;
 		}

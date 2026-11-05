@@ -142,7 +142,8 @@ class PreG9BR6PlusF3InsertionTest {
 			PreG9BR6PlusF3Documents.empty(dir, "empty"),
 			PreG9BR6PlusF3Documents.scripted(dir, "scripted"),
 			PreG9BR6PlusF3Documents.single(dir, "three-d", "P3=(1,2,3)"),
-			PreG9BR6PlusF3Documents.single(dir, "free-text", "tx=\"hello\""),
+			PreG9BR6PlusF3Documents.single(dir, "angle-between-vectors",
+					"u=Vector((0,0),(1,0))", "v=Vector((0,0),(0,1))", "theta=Angle(u,v)"),
 			PreG9BR6PlusF3Documents.single(dir, "arc", "A=(0,0)", "B=(1,0)",
 					"arc=CircularArc(A,B,(0,1))"),
 			PreG9BR6PlusF3Documents.identityWithMacro(dir, "identity-macro")};

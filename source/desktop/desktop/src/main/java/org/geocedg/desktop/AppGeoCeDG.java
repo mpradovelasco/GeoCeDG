@@ -92,6 +92,8 @@ import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolNavigation
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.AppD.UpstreamExportEntry;
+import org.geogebra.desktop.main.GeoGebraPortablePreferences;
+import org.geogebra.desktop.main.GeoGebraPreferencesD;
 import org.geogebra.desktop.main.GlobalKeyDispatcherD;
 import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.geogebra.desktop.util.CopyPasteD;
@@ -584,6 +586,10 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private boolean runOpenRoute(BooleanSupplier route) {
 		boolean outerRunning = openRouteRunning;
 		boolean outerReset = documentSessionReset;
+		if (!outerRunning && !insertionHelper
+				&& GeoGebraPreferencesD.getPref() instanceof GeoGebraPortablePreferences portable) {
+			portable.rememberGeoCeDGObjectPreferences(this);
+		}
 		openRouteRunning = true;
 		documentSessionReset = false;
 		boolean opened = false;
@@ -2190,6 +2196,21 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	protected boolean isAdditionalTransactionalDocument(FileExtensions extension) {
 		return FileExtensions.GEOGEBRA.equals(extension);
+	}
+
+	@Override
+	protected void prepareNativeDocumentAppearance() {
+		if (GeoGebraPreferencesD.getPref() instanceof GeoGebraPortablePreferences portable) {
+			setLabelingStyle(portable.getFactoryLabelingStyle(this).getValue());
+		}
+	}
+
+	@Override
+	protected void applyNativeDocumentPreferenceFallback() {
+		if (!insertionHelper && !getXMLio().hasDocumentLabelingStyle()
+				&& GeoGebraPreferencesD.getPref() instanceof GeoGebraPortablePreferences portable) {
+			setLabelingStyle(portable.getGeoCeDGLabelingStyle(this).getValue());
+		}
 	}
 
 	void setSpatialRedefinePresentation(

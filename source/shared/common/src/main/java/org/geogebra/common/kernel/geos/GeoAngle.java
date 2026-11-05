@@ -410,6 +410,11 @@ public class GeoAngle extends GeoNumeric implements AngleProperties {
 		return rawValue;
 	}
 
+	/** @return whether the angle's definition overrides radian display */
+	public boolean isKeepDegrees() {
+		return keepDegrees;
+	}
+
 	@Override
 	final public String toValueString(StringTemplate tpl) {
 		if (isEuclidianVisible()) {

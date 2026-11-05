@@ -556,7 +556,7 @@ public class CopyPasteD extends CopyPaste {
 				.getSpatialIdentityRegistry().isParticipating(geo))) {
 			app.getUndoManager().storeAddGeo(createdGeos);
 		}
-		onPasteCompleted(app, putdown);
+		onPasteCompleted(app, putdown, createdGeos);
 	}
 
 	/**
@@ -569,6 +569,17 @@ public class CopyPasteD extends CopyPaste {
 	 */
 	protected void onPasteCompleted(App app, boolean putdown) {
 		// upstream: nothing
+	}
+
+	/**
+	 * Observes the native clipboard correspondence after label conflict resolution.
+	 *
+	 * @param app target application
+	 * @param putdown whether this is the Insert File paste
+	 * @param createdGeos copied objects in the order of their resolved clipboard labels
+	 */
+	protected void onPasteCompleted(App app, boolean putdown, List<GeoElement> createdGeos) {
+		onPasteCompleted(app, putdown);
 	}
 
 	private boolean evalClipboardXML(App app, String xml, boolean scriptsBlocked) {

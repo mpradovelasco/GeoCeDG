@@ -120,6 +120,9 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 		setProtectedInput(true);
 		setInputOutput();
 		setDependencies();
+		if (publicCommand) {
+			construction.getConstructionDefaults().setLabelVisibilityAtCreation(result);
+		}
 		compute();
 		if (label != null) {
 			result.setLabel(label);

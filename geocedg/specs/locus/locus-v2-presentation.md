@@ -246,3 +246,21 @@ of the certificate.
 **Declared fidelity.** Each rendering or export approximation declares its effective fidelity
 per component (complete, partial or failed) with its causes, and fails explicitly when it
 cannot represent a result. It never invents a point, a join or an end.
+
+## PRE-G9B-CU4 creation appearance
+
+Locus V2 and SplineV2 have independent creation styles initialized from
+Classic Locus. The producer determines the type. A document default for the
+type takes precedence, followed by a Classic Locus default from that document
+when present, a personal default for the type, and the effective Classic
+Locus fallback. Existing object appearance is restored from object state.
+
+Creation uses the existing labeling policy. Both curve types show labels
+under AlwaysOn, hide labels under AlwaysOff and PointsOnly, and use their
+prototype under UseDefaults. Automatic retains the host's Algebra-view
+resolution. Public algebra-only GeoCeDG results follow the creation label
+policy without acquiring a graphics representation. Apply creation styles at
+publication, outside evaluation and reconstruction. Document load, paste,
+Undo and Redo restore object appearance independently of the current personal
+defaults. The style operation leaves the semantic graph and its revisions
+intact. [CU4 authorization](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)

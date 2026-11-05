@@ -3907,6 +3907,7 @@
     "Insert.Reject.Empty": {"en": "the document has no objects", "es": "el documento no tiene objetos"},
     "Insert.Reject.Scripts": {"en": "objects with scripts cannot be inserted (%0)", "es": "no pueden insertarse objetos con guiones (%0)"},
     "Insert.Reject.Unsupported": {"en": "these objects cannot be inserted: %0", "es": "estos objetos no pueden insertarse: %0"},
+    "Insert.Reject.AngleUnit": {"en": "source and target use different angle units for %0", "es": "el origen y el destino usan distintas unidades angulares para %0"},
     "Insert.Reject.IdentityMacros": {"en": "a document that needs both tools and Locus V2 or Spline V2 objects cannot be inserted (tools: %0)", "es": "no puede insertarse un documento que necesita herramientas y objetos Locus V2 o Spline V2 a la vez (herramientas: %0)"},
     "Insert.Reject.LocusV2Unavailable": {"en": "this window cannot create Locus V2 or Spline V2 objects", "es": "esta ventana no puede crear objetos Locus V2 ni Spline V2"},
     "Insert.Reject.MacroMalformed": {"en": "the tool %0 has an invalid definition", "es": "la herramienta %0 tiene una definición no válida"},

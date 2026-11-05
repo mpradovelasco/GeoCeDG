@@ -28,15 +28,19 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.geocedg.common.kernel.geos.V2StyleDefaults;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.awt.annotations.HasNativeSubclass;
 import org.geogebra.common.io.MyXMLHandler;
@@ -48,6 +52,7 @@ import org.geogebra.common.io.file.ByteArrayZipFile;
 import org.geogebra.common.io.file.ZipFile;
 import org.geogebra.common.jre.io.file.InputStreamZipFile;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.algos.ChartStyle;
@@ -62,6 +67,7 @@ import org.geogebra.common.util.debug.Log;
  */
 @HasNativeSubclass
 public abstract class MyXMLioJre extends MyXMLio {
+	private boolean documentLabelingStyle;
 
 	// Use the default (non-validating) parser
 	// private static XMLReaderFactory factory;
@@ -97,20 +103,17 @@ public abstract class MyXMLioJre extends MyXMLio {
 	public final void readZipFromInputStream(InputStream is, boolean isGGTFile)
 			throws IOException, XMLParseException {
 
-		ZipInputStream zip = new ZipInputStream(is);
-
-		readZip(zip, isGGTFile);
-
+		try (ZipInputStream zip = new ZipInputStream(is)) {
+			readZip(zip, isGGTFile);
+		}
 	}
 
 	@Override
 	public void readZipFromString(ZipFile zipFile) throws IOException, XMLParseException {
 		if (zipFile instanceof ByteArrayZipFile) {
 			ByteArrayZipFile byteArrayZipFile = (ByteArrayZipFile) zipFile;
-			ZipInputStream zip = new ZipInputStream(
-					new ByteArrayInputStream(byteArrayZipFile.getByteArray()));
-
-			readZip(zip, false);
+			readZipFromInputStream(new ByteArrayInputStream(byteArrayZipFile.getByteArray()),
+					false);
 		} else if (zipFile instanceof InputStreamZipFile) {
 			InputStreamZipFile inputStreamZipFile = (InputStreamZipFile) zipFile;
 			readZipFromInputStream(inputStreamZipFile.getInputStream(), false);
@@ -130,6 +133,7 @@ public abstract class MyXMLioJre extends MyXMLio {
 	 */
 	protected void readZip(ZipInputStream zip, boolean isGGTFile)
 			throws IOException, XMLParseException {
+		documentLabelingStyle = false;
 		// we have to read everything (i.e. all images)
 		// before we process the XML file, that's why we
 		// read the XML file into a buffer first
@@ -137,6 +141,10 @@ public abstract class MyXMLioJre extends MyXMLio {
 		byte[] macroXmlFileBuffer = null;
 		byte[] defaults2dXmlFileBuffer = null;
 		byte[] defaults3dXmlFileBuffer = null;
+		Map<Integer, V2StyleDefaults.Style> v2Defaults = null;
+		boolean geoCeDGDocument = !isGGTFile && app.getConfig() instanceof AppConfigGeoCeDG
+				&& !kernel.isMacroKernel();
+		String geoCeDGLibraryJavaScript = null;
 		boolean javaScriptFound = false;
 		boolean structureFound = false;
 
@@ -163,6 +171,19 @@ public abstract class MyXMLioJre extends MyXMLio {
 				// load defaults xml file into memory first
 				defaults2dXmlFileBuffer = StreamUtil.loadIntoMemory(zip);
 				handler = getGGBHandler();
+			} else if (name.equals(V2StyleDefaults.ZIP_ENTRY)) {
+				if (geoCeDGDocument) {
+					if (v2Defaults != null) {
+						throw new XMLParseException("Duplicate V2 construction defaults");
+					}
+					byte[] bytes = zip.readNBytes(V2StyleDefaults.MAX_BYTES + 1);
+					if (bytes.length > V2StyleDefaults.MAX_BYTES) {
+						throw new XMLParseException("V2 construction defaults exceed size limit");
+					}
+					String xml = StandardCharsets.UTF_8.newDecoder()
+							.decode(ByteBuffer.wrap(bytes)).toString();
+					v2Defaults = V2StyleDefaults.read(xml);
+				}
 			} else if (app.is3D() && name.equals(XML_FILE_DEFAULTS_3D)) {
 				// load defaults xml file into memory first
 				defaults3dXmlFileBuffer = StreamUtil.loadIntoMemory(zip);
@@ -173,7 +194,12 @@ public abstract class MyXMLioJre extends MyXMLio {
 				handler = getGGBHandler();
 			} else if (name.equals(JAVASCRIPT_FILE)) {
 				// load JavaScript
-				kernel.setLibraryJavaScript(StreamUtil.loadIntoString(zip));
+				String libraryJavaScript = StreamUtil.loadIntoString(zip);
+				if (geoCeDGDocument) {
+					geoCeDGLibraryJavaScript = libraryJavaScript;
+				} else {
+					kernel.setLibraryJavaScript(libraryJavaScript);
+				}
 				javaScriptFound = true;
 			} else if (StringUtil.toLowerCaseUS(name).endsWith("svg")) {
 				String svg = StreamUtil.loadIntoString(zip);
@@ -190,6 +216,15 @@ public abstract class MyXMLioJre extends MyXMLio {
 			}
 		}
 		zip.close();
+		if (geoCeDGLibraryJavaScript != null) {
+			kernel.setLibraryJavaScript(geoCeDGLibraryJavaScript);
+		}
+		ConstructionDefaults defaults = cons.getConstructionDefaults();
+		boolean resolveDefaults = geoCeDGDocument && xmlFileBuffer != null;
+		if (resolveDefaults) {
+			// Restore historical object styles before overlaying creation preferences.
+			defaults.resetCreationDefaults();
+		}
 
 		if (!isGGTFile) {
 			// ggb file: remove all macros from kernel before processing
@@ -219,10 +254,14 @@ public abstract class MyXMLioJre extends MyXMLio {
 						LoadPurpose.NATIVE_OR_UNDO_RESTORE);
 			}
 			processXMLBuffer(xmlFileBuffer, macroXmlFileBuffer == null, isGGTFile);
+			documentLabelingStyle = handler.hasLabelingStyle();
 			kernel.getConstruction().setFileLoading(false);
 		}
 
 		// process defaults (after construction for labeling styles)
+		if (resolveDefaults) {
+			defaults.overlayPersonalDefaults();
+		}
 		if (defaults2dXmlFileBuffer != null) {
 			kernel.getConstruction().setFileLoading(true);
 			processXMLBuffer(defaults2dXmlFileBuffer, false, true);
@@ -233,6 +272,9 @@ public abstract class MyXMLioJre extends MyXMLio {
 			processXMLBuffer(defaults3dXmlFileBuffer, false, true);
 			kernel.getConstruction().setFileLoading(false);
 		}
+		if (resolveDefaults) {
+			defaults.applyDocumentV2Defaults(v2Defaults == null ? Map.of() : v2Defaults);
+		}
 
 		if (!javaScriptFound && !isGGTFile) {
 			kernel.resetLibraryJavaScript();
@@ -240,6 +282,11 @@ public abstract class MyXMLioJre extends MyXMLio {
 		if (macroXmlFileBuffer == null && xmlFileBuffer == null && !structureFound) {
 			throw new IOException("No XML data found in file.");
 		}
+	}
+
+	/** @return whether the most recently read archive supplied its own labeling policy */
+	public boolean hasDocumentLabelingStyle() {
+		return documentLabelingStyle;
 	}
 
 	protected abstract void loadSVG(String svg, String name);
@@ -383,6 +430,13 @@ public abstract class MyXMLioJre extends MyXMLio {
 			if (app.is3D()) {
 				zip.putNextEntry(new ZipEntry(XML_FILE_DEFAULTS_3D));
 				osw.write(sb3d.toString());
+				osw.flush();
+				zip.closeEntry();
+			}
+			String v2Defaults = cons.getConstructionDefaults().getV2DefaultsXML();
+			if (v2Defaults != null) {
+				zip.putNextEntry(new ZipEntry(V2StyleDefaults.ZIP_ENTRY));
+				osw.write(v2Defaults);
 				osw.flush();
 				zip.closeEntry();
 			}

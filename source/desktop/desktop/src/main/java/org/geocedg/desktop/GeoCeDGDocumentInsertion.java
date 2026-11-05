@@ -35,11 +35,13 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoMacro;
+import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.undo.AppState;
 import org.geogebra.common.main.undo.UndoCommand;
@@ -202,6 +204,7 @@ final class GeoCeDGDocumentInsertion {
 			if (!helper.loadFile(file, false)) {
 				return rejected(name, "Insert.Reject.Invalid", "");
 			}
+			helper.getKernel().getAnimationManager().stopAnimation();
 			GeoCeDGInsertionAdmission admission = GeoCeDGInsertionAdmission.admit(app, helper);
 			if (!admission.isAdmitted()) {
 				return rejected(name, admission.getReasonKey(), admission.getReasonArgument());
@@ -266,6 +269,8 @@ final class GeoCeDGDocumentInsertion {
 			if (!helper.loadFile(file, false)) {
 				return "source";
 			}
+			helper.getKernel().getAnimationManager().stopAnimation();
+			scratch.getKernel().getAnimationManager().stopAnimation();
 			GeoCeDGInsertionAdmission scratchAdmission = GeoCeDGInsertionAdmission.admit(scratch,
 					helper);
 			if (!scratchAdmission.isAdmitted()) {
@@ -273,11 +278,12 @@ final class GeoCeDGDocumentInsertion {
 			}
 			Set<GeoElement> before = identitySet(scratch);
 			Map<GeoElement, PersistentGeoId> idsBefore = identities(scratch);
-			new GeoCeDGInsertionCopyPaste(scratchAdmission.getTransferredMacros()).insertFrom(
-					helper, scratch, scratchAdmission.getDuplicateLabels(), false);
+			GeoCeDGInsertionCopyPaste buffer = new GeoCeDGInsertionCopyPaste(
+					scratchAdmission.getTransferredMacros());
+			buffer.insertFrom(helper, scratch, scratchAdmission.getDuplicateLabels(), false);
 			List<GeoElement> created = createdSince(scratch, before);
 			String mismatch = verify(scratchAdmission.getSource(), created, scratch, helper,
-					idsBefore);
+					idsBefore, buffer.getCopies());
 			return mismatch != null ? mismatch : verifyMacros(scratchAdmission, scratch, helper);
 		} catch (Exception | Error failure) {
 			Log.debug(failure);
@@ -474,7 +480,7 @@ final class GeoCeDGDocumentInsertion {
 					}
 					// 3 STRICT VERIFY
 					String mismatch = verify(admission.getSource(), created, app, helper,
-							idsBefore);
+							idsBefore, buffer.getCopies());
 					if (mismatch == null) {
 						mismatch = verifyMacros(admission, app, helper);
 					}
@@ -820,6 +826,12 @@ final class GeoCeDGDocumentInsertion {
 	 */
 	static String verify(List<GeoElement> source, List<GeoElement> created, AppGeoCeDG target,
 			AppGeoCeDG helper, Map<GeoElement, PersistentGeoId> idsBefore) {
+		return verify(source, created, target, helper, idsBefore, Map.of());
+	}
+
+	private static String verify(List<GeoElement> source, List<GeoElement> created,
+			AppGeoCeDG target, AppGeoCeDG helper, Map<GeoElement, PersistentGeoId> idsBefore,
+			Map<GeoElement, GeoElement> copies) {
 		if (created.size() != source.size()) {
 			return "count " + created.size() + "/" + source.size();
 		}
@@ -849,7 +861,20 @@ final class GeoCeDGDocumentInsertion {
 			if (!sameValue(from, to)) {
 				return "value " + label;
 			}
-			if (toAlgo != null && !closed(fromAlgo, toAlgo, inserted, helper, target)) {
+			if (fromAlgo == null && from instanceof GeoAngle angle) {
+				String mismatch = copies.get(from) == to
+						? GeoCeDGInsertionFidelity.angleMismatch(angle, (GeoAngle) to, copies)
+						: "copy correspondence";
+				if (mismatch != null) {
+					return "angle slider " + label + " [" + mismatch + "]";
+				}
+			}
+			if (fromAlgo == null && from instanceof GeoText literal
+					&& (copies.get(from) != to
+							|| !GeoCeDGInsertionFidelity.sameText(literal, (GeoText) to, copies))) {
+				return "static text " + label;
+			}
+			if (toAlgo != null && !closed(fromAlgo, toAlgo, inserted, helper, target, copies)) {
 				return "closure " + label;
 			}
 			if (fromAlgo instanceof AlgoMacro fromMacro) {
@@ -883,7 +908,8 @@ final class GeoCeDGDocumentInsertion {
 	 * failure, as before.
 	 */
 	private static boolean closed(AlgoElement fromAlgo, AlgoElement toAlgo,
-			Set<GeoElement> inserted, AppGeoCeDG helper, AppGeoCeDG target) {
+			Set<GeoElement> inserted, AppGeoCeDG helper, AppGeoCeDG target,
+			Map<GeoElement, GeoElement> copies) {
 		GeoElement[] toInputs = toAlgo.getInput();
 		GeoElement[] fromInputs = fromAlgo.getInput();
 		if (toInputs.length != fromInputs.length) {
@@ -893,6 +919,12 @@ final class GeoCeDGDocumentInsertion {
 		Construction to = target.getKernel().getConstruction();
 		for (int k = 0; k < toInputs.length; k++) {
 			GeoElement input = toInputs[k];
+			GeoElement original = fromInputs[k];
+			if (original.isIndependent() && (original instanceof GeoAngle
+					|| original instanceof GeoText) && copies.containsKey(original)
+					&& copies.get(original) != input) {
+				return false;
+			}
 			if (!input.isLabelSet() || inserted.contains(input)) {
 				continue;
 			}

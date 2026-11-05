@@ -487,6 +487,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		// open file given by startup parameter
 		handleOptionArgsEarly(args); // for --regressionFile=...
 
+		if (GeoGebraPreferencesD.getPref() instanceof GeoGebraPortablePreferences portable) {
+			portable.rememberGeoCeDGObjectPreferences(this);
+		}
 		boolean fileLoaded = handleFileArg(args);
 
 		// initialize GUI
@@ -3301,11 +3304,13 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		try (InputStream input = new ByteArrayInputStream(archive)) {
 			// Native rollback must capture presentation state before changing it.
 			setHideConstructionProtocolNavigation();
+			prepareNativeDocumentAppearance();
 			if (!wasIniting) {
 				initing = true;
 			}
 			loaded = doLoadNativeXML(input);
 			if (loaded) {
+				applyNativeDocumentPreferenceFallback();
 				if (undoManager != null) {
 					undoBaseline = undoManager.prepareUndoBaseline();
 				}
@@ -3341,6 +3346,16 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		refreshNativeDocumentPublication(wasIniting);
 		nativeDocumentLoadCommitted();
 		return true;
+	}
+
+	/** Set product-specific compatibility appearance before native objects are restored. */
+	protected void prepareNativeDocumentAppearance() {
+		// upstream: nothing
+	}
+
+	/** Publish product-specific creation defaults after restoring a native document. */
+	protected void applyNativeDocumentPreferenceFallback() {
+		// upstream: nothing
 	}
 
 	/**

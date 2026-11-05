@@ -20,14 +20,20 @@ import static org.geogebra.common.kernel.geos.GeoButton.DEFAULT_BUTTON_HEIGHT;
 import static org.geogebra.common.main.GeoGebraColorConstants.GEOGEBRA_OBJECT_BLACK;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.geocedg.common.kernel.algos.AlgoSplineV2;
+import org.geocedg.common.kernel.geos.V2StyleDefaults;
 import org.geocedg.common.kernel.layers.LayerDomain;
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.io.MyXMLio;
+import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoAngle.AngleStyle;
@@ -65,6 +71,7 @@ import org.geogebra.common.main.settings.LabelSettings;
 import org.geogebra.common.main.settings.SettingListener;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.common.plugin.GeoClass;
+import org.geogebra.common.util.debug.Log;
 
 import com.google.j2objc.annotations.Weak;
 
@@ -134,6 +141,10 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	public static final int DEFAULT_POLYLINE = 71;
 	/** default locus */
 	public static final int DEFAULT_LOCUS = 80;
+	/** GeoCeDG default for Locus V2. */
+	public static final int DEFAULT_LOCUS_V2 = 81;
+	/** GeoCeDG default for SplineV2. */
+	public static final int DEFAULT_SPLINE_V2 = 82;
 	/** default text */
 	public static final int DEFAULT_TEXT = 100;
 	/** default image */
@@ -311,6 +322,10 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	private float filling = DEFAULT_POLYGON_ALPHA;
 
 	private boolean blackWhiteMode = false;
+	private String personalDefaults;
+	private Map<Integer, V2StyleDefaults.Style> personalV2Defaults = Map.of();
+	private Set<Integer> explicitV2Defaults = Set.of();
+	private boolean documentLocusDefaultSeen;
 	/** suffix for default free point name */
 	protected String strFree = " (free)";
 	/** suffix for default dependent point name */
@@ -688,6 +703,10 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		setDefaultLineStyle(locus);
 		locus.setDefaultGeoType(DEFAULT_LOCUS);
 		defaultGeoElements.put(DEFAULT_LOCUS, locus);
+		if (isGeoCeDGDefaults()) {
+			addCurvePrototype(DEFAULT_LOCUS_V2, "LocusV2", locus);
+			addCurvePrototype(DEFAULT_SPLINE_V2, "SplineV2", locus);
+		}
 
 		// text
 		GeoText text = new GeoText(cons);
@@ -727,6 +746,144 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		list.setDefaultGeoType(DEFAULT_LIST);
 		list.setPointStyle(EuclidianStyleConstants.POINT_STYLE_DOT);
 		defaultGeoElements.put(DEFAULT_LIST, list);
+	}
+
+	private boolean isGeoCeDGDefaults() {
+		return cons.getApplication().getConfig() instanceof AppConfigGeoCeDG
+				&& !cons.getKernel().isMacroKernel();
+	}
+
+	private void addCurvePrototype(int type, String name, GeoLocus inherited) {
+		GeoLocus prototype = new CurveStylePrototype(cons);
+		prototype.setLocalVariableLabel(name);
+		prototype.setDefaultGeoType(type);
+		V2StyleDefaults.Style.of(inherited).apply(prototype);
+		defaultGeoElements.put(type, prototype);
+	}
+
+	private static final class CurveStylePrototype extends GeoLocus {
+		CurveStylePrototype(Construction construction) {
+			super(construction);
+		}
+
+		@Override
+		public boolean isLabelVisible() {
+			return getLabelVisible();
+		}
+
+		@Override
+		public void setLabelMode(int mode) {
+			if (isDefaultGeo()) {
+				labelMode = mode;
+				getKernel().getApplication().getSettings().getLabelSettings().resetDefaultForMenu();
+			} else {
+				super.setLabelMode(mode);
+			}
+		}
+	}
+
+	private static boolean isV2Default(int type) {
+		return type == DEFAULT_LOCUS_V2 || type == DEFAULT_SPLINE_V2;
+	}
+
+	/** Reinitialize the creation prototypes for a new document or native file load. */
+	public void resetCreationDefaults() {
+		resetDefaultDimensions();
+		createDefaultGeoElements();
+		explicitV2Defaults = Set.of();
+		documentLocusDefaultSeen = false;
+	}
+
+	/** Use independent copies of the effective classic Locus appearance. */
+	public void inheritV2DefaultsFromLocus() {
+		if (getDefaultGeo(DEFAULT_LOCUS_V2) != null) {
+			V2StyleDefaults.Style inherited = V2StyleDefaults.Style.of(getDefaultGeo(DEFAULT_LOCUS));
+			inherited.apply(getDefaultGeo(DEFAULT_LOCUS_V2));
+			inherited.apply(getDefaultGeo(DEFAULT_SPLINE_V2));
+			explicitV2Defaults = Set.of();
+		}
+	}
+
+	/**
+	 * Keep the preferences snapshot separate from document-owned defaults.
+	 * @param legacy2dXml preferences for ordinary types
+	 * @param v2Xml preferences for the two V2 prototypes
+	 */
+	public void setPersonalDefaults(String legacy2dXml, String v2Xml) {
+		personalDefaults = legacy2dXml;
+		try {
+			personalV2Defaults = V2StyleDefaults.read(v2Xml);
+		} catch (XMLParseException malformed) {
+			Log.warn(malformed.getMessage());
+			personalV2Defaults = Map.of();
+		}
+	}
+
+	/** A document-source helper uses document defaults and the factory fallback. */
+	public void clearPersonalDefaults() {
+		setPersonalDefaults(null, null);
+	}
+
+	/** Set the creation prototypes of a blank document from the retained preferences. */
+	public void applyPersonalDefaults() {
+		resetCreationDefaults();
+		overlayPersonalDefaults();
+	}
+
+	/** Overlay preferences after a native file's objects have been reconstructed. */
+	public void overlayPersonalDefaults() {
+		if (personalDefaults != null) {
+			try {
+				V2StyleDefaults.validateLegacyDefaults(personalDefaults, this);
+				cons.getXMLio().processXMLString(personalDefaults, false, true, false, false);
+			} catch (XMLParseException malformed) {
+				Log.warn(malformed.getMessage());
+			}
+		}
+		inheritV2DefaultsFromLocus();
+		applyV2Defaults(personalV2Defaults);
+		documentLocusDefaultSeen = false;
+	}
+
+	/** Record presence of a classic Locus prototype in the document defaults. */
+	public void noteDocumentLocusDefault() {
+		documentLocusDefaultSeen = true;
+	}
+
+	/**
+	 * Complete native defaults resolution with the document's higher-priority styles.
+	 * @param styles validated document V2 styles
+	 */
+	public void applyDocumentV2Defaults(Map<Integer, V2StyleDefaults.Style> styles) {
+		if (documentLocusDefaultSeen) {
+			inheritV2DefaultsFromLocus();
+		}
+		applyV2Defaults(styles);
+	}
+
+	private void applyV2Defaults(Map<Integer, V2StyleDefaults.Style> styles) {
+		if (!styles.isEmpty() && getDefaultGeo(DEFAULT_LOCUS_V2) != null) {
+			styles.forEach((type, style) -> style.apply(getDefaultGeo(type)));
+			Set<Integer> loaded = new HashSet<>(explicitV2Defaults);
+			loaded.addAll(styles.keySet());
+			explicitV2Defaults = loaded;
+		}
+	}
+
+	/** @return versioned V2 defaults XML or null when the inherited defaults suffice */
+	public String getV2DefaultsXML() {
+		if (getDefaultGeo(DEFAULT_LOCUS_V2) == null) {
+			return null;
+		}
+		Map<Integer, V2StyleDefaults.Style> styles = new LinkedHashMap<>();
+		V2StyleDefaults.Style inherited = V2StyleDefaults.Style.of(getDefaultGeo(DEFAULT_LOCUS));
+		for (int type : new int[]{DEFAULT_LOCUS_V2, DEFAULT_SPLINE_V2}) {
+			V2StyleDefaults.Style style = V2StyleDefaults.Style.of(getDefaultGeo(type));
+			if (explicitV2Defaults.contains(type) || !inherited.equals(style)) {
+				styles.put(type, style);
+			}
+		}
+		return V2StyleDefaults.write(styles);
 	}
 
 	private GColor getPointColor() {
@@ -784,6 +941,12 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		int type;
 
 		switch (geoClass) {
+		case LOCUS_V2:
+			if (getDefaultGeo(DEFAULT_LOCUS_V2) == null) {
+				return DEFAULT_LINE;
+			}
+			return geo.getParentAlgorithm() instanceof AlgoSplineV2
+					? DEFAULT_SPLINE_V2 : DEFAULT_LOCUS_V2;
 		case POINT:
 			GeoPointND p = (GeoPointND) geo;
 
@@ -967,6 +1130,20 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		GeoElement defaultGeo = getDefaultGeo(type);
 		App app = cons.getApplication();
 
+		if (isV2Default(type)) {
+			if (!isReset && (cons.isFileLoading() || cons.getKernel().getLoadingMode())) {
+				return;
+			}
+			// A curve prototype owns appearance only. Layer and auxiliary state
+			// remain with the construction and its producer.
+			V2StyleDefaults.Style.of(defaultGeo).apply(geo);
+			applyLabelVisibility(geo, app);
+			if (blackWhiteMode) {
+				geo.setObjColor(GColor.BLACK);
+			}
+			return;
+		}
+
 		boolean defaultLabelMode = true;
 
 		if (defaultGeo != null) {
@@ -1009,38 +1186,7 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		}
 
 		if (defaultLabelMode) {
-			// label visibility
-			int labelingStyle = app.getCurrentLabelingStyle().getValue();
-
-			// automatic labelling:
-			// if algebra window open -> all labels
-			// else -> no labels
-
-			switch (labelingStyle) {
-			case LABEL_VISIBLE_ALWAYS_ON:
-				geo.setLabelVisible(true);
-				break;
-
-			case LABEL_VISIBLE_ALWAYS_OFF:
-				// we want sliders, angles, and checkboxes to be labeled always
-				geo.setLabelVisible(geo.isGeoBoolean() || geo.isGeoNumeric()
-						&& (geo.isGeoAngle() || geo.isIndependent()));
-				break;
-
-			case LABEL_VISIBLE_POINTS_ONLY:
-				// we want sliders, angles, and checkboxes to be labeled always
-				geo.setLabelVisible(geo.isGeoPoint() || geo.isGeoNumeric() || geo.isGeoBoolean());
-				break;
-
-			case LABEL_VISIBLE_USE_DEFAULTS:
-				// override for 3D objects: only points and angles
-				if (geo.isGeoElement3D()) {
-					geo.setLabelVisible(geo.isGeoPoint() || geo.isGeoNumeric());
-				}
-				break;
-			default: // do nothing
-				break;
-			}
+			applyLabelVisibility(geo, app);
 		}
 
 		if (blackWhiteMode) {
@@ -1053,6 +1199,36 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		 * void initSetLabelVisible() { labelVisible = ! isPath() ||
 		 * app.showAlgebraView(); }
 		 */
+	}
+
+	/** Apply the shared labeling policy to a newly created public GeoCeDG result. */
+	public void setLabelVisibilityAtCreation(GeoElement geo) {
+		if (isGeoCeDGDefaults() && !cons.isFileLoading() && !cons.getKernel().getLoadingMode()) {
+			applyLabelVisibility(geo, cons.getApplication());
+		}
+	}
+
+	private static void applyLabelVisibility(GeoElement geo, App app) {
+		switch (app.getCurrentLabelingStyle().getValue()) {
+		case LABEL_VISIBLE_ALWAYS_ON:
+			geo.setLabelVisible(true);
+			break;
+		case LABEL_VISIBLE_ALWAYS_OFF:
+			// Sliders, angles and checkboxes retain their inherited exception.
+			geo.setLabelVisible(geo.isGeoBoolean() || geo.isGeoNumeric()
+					&& (geo.isGeoAngle() || geo.isIndependent()));
+			break;
+		case LABEL_VISIBLE_POINTS_ONLY:
+			geo.setLabelVisible(geo.isGeoPoint() || geo.isGeoNumeric() || geo.isGeoBoolean());
+			break;
+		case LABEL_VISIBLE_USE_DEFAULTS:
+			if (geo.isGeoElement3D()) {
+				geo.setLabelVisible(geo.isGeoPoint() || geo.isGeoNumeric());
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	/**
@@ -1074,16 +1250,20 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	 * Reset construction defaults
 	 */
 	public void resetDefaults() {
-		lineThickness = EuclidianStyleConstants.DEFAULT_LINE_THICKNESS;
-		pointSize = EuclidianStyleConstants.DEFAULT_POINT_SIZE;
-		dependentPointSize = getDependentPointSize();
-		angleSize = EuclidianStyleConstants.DEFAULT_ANGLE_SIZE;
-		filling = DEFAULT_POLYGON_ALPHA;
+		resetDefaultDimensions();
 
 		setDefaultLineThickness(lineThickness);
 		setDefaultPointSize(pointSize, dependentPointSize);
 		setDefaultAngleSize(angleSize);
 		setDefaultFilling(filling);
+	}
+
+	private void resetDefaultDimensions() {
+		lineThickness = EuclidianStyleConstants.DEFAULT_LINE_THICKNESS;
+		pointSize = EuclidianStyleConstants.DEFAULT_POINT_SIZE;
+		dependentPointSize = getDependentPointSize();
+		angleSize = EuclidianStyleConstants.DEFAULT_ANGLE_SIZE;
+		filling = DEFAULT_POLYGON_ALPHA;
 	}
 
 	/**
@@ -1222,6 +1402,9 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	@Override
 	public void settingsChanged(LabelSettings settings) {
 		for (GeoElement geo : defaultGeoElements.values()) {
+			if (isV2Default(geo.getDefaultGeoType())) {
+				continue;
+			}
 			if (!cons.getApplication().isUnbundledOrWhiteboard()
 					|| !(geo instanceof GeoAngle)) {
 				geo.labelMode = GeoElementND.LABEL_DEFAULT;
@@ -1250,6 +1433,9 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		}
 
 		for (GeoElement geo : defaultGeoElements.values()) {
+			if (isV2Default(geo.getDefaultGeoType())) {
+				continue;
+			}
 			if (geo.isGeoElement3D()) {
 				if (sb3d != null) {
 					geo.getXML(false, sb3d);
@@ -1280,7 +1466,9 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		MyXMLio.addGeoGebraHeader(sb, true, null, app);
 		sb.startOpeningTag("defaults", 0).endTag();
 		for (GeoElement geo : defaultGeoElements.values()) {
-			geo.getXML(false, sb);
+			if (!isV2Default(geo.getDefaultGeoType())) {
+				geo.getXML(false, sb);
+			}
 		}
 		sb.closeTag("defaults");
 		sb.closeTag("geogebra");

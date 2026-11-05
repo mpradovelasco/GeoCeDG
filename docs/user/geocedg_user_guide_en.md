@@ -378,7 +378,8 @@ message and nothing changes.
 the current drawing, completely or not at all. Before anything changes, GeoCeDG
 checks every object of the document and tries the insertion on a copy. Points,
 lines, rays, segments, vectors, circles, ellipses, functions, polygons, angles
-from three points, numbers, booleans, dependent texts, lists and sequences are
+from three points, free angles with sliders, numbers, booleans, dependent and
+static texts, lists and sequences are
 supported, and so are Locus V2 and Spline V2 objects, Linear and Aligned
 dimensions, ISO A sheets and objects built with tools. Documents with scripts,
 3D objects or other object types are refused with a message naming them, and
@@ -398,14 +399,26 @@ restoration cannot be verified, the drawing is isolated: it cannot be edited,
 saved or exported, and you can only save the last verified version to a new
 file, reopen the document from its file, or close it.
 
+When inserting a free angle slider, use the same angular display unit in both
+documents. GeoCeDG refuses the entire insertion if it cannot preserve the
+slider's angle, bounds, increment, animation or construction references.
+Static text keeps its content and position.
+
 **Apply Styles…** copies colour, line style, line thickness, point style, point
 size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the
 styles that document gives to new objects of each type, not the styles of its
 existing objects) to the selected objects, or to all objects when nothing is
-selected. Native
-dimensions, ISO A sheets and Locus V2 results keep their styles; geometry,
+selected. Locus V2 and SplineV2 curves receive colour, line style and line
+thickness from their own default types. Native dimensions, ISO A sheets and
+other Locus V2 results keep their styles. Geometry,
 names, layers, captions, visibility and units never change. One Undo restores
 the previous styles; a document that cannot be read changes nothing.
+
+In Preferences, set separate creation styles for Locus V2 and SplineV2 under
+Defaults. Save Settings keeps your styles for later sessions. A saved drawing's
+defaults take precedence for new objects in that drawing. Objects already in
+the drawing keep their saved appearance. A slider's selected label mode, such
+as Name + Value, is kept through saving, copying and Undo or Redo.
 
 ### 4.3 What a document preserves
 

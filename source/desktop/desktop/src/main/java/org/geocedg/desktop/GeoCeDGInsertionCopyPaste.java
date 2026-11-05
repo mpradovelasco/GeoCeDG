@@ -6,7 +6,10 @@
 package org.geocedg.desktop;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.geocedg.common.kernel.units.UnitState;
@@ -29,6 +32,8 @@ import org.geogebra.desktop.util.CopyPasteD;
  */
 final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	private final Set<String> transferredMacros;
+	private final Map<String, GeoElement> sourceByLabel = new HashMap<>();
+	private final Map<GeoElement, GeoElement> copies = new IdentityHashMap<>();
 	private UnitState provenance;
 
 	/**
@@ -40,6 +45,7 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 
 	@Override
 	public void copyToXML(App app, List<GeoElement> geos, boolean putdown) {
+		geos.forEach(geo -> sourceByLabel.put(geo.getLabelSimple(), geo));
 		StringBuilder before = copiedXML;
 		super.copyToXML(app, geos, putdown);
 		if (copiedXML != before) {
@@ -72,6 +78,26 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 			copiedMacros.clear();
 		}
 		super.pasteFromXML(app, putdown);
+	}
+
+	@Override
+	protected void onPasteCompleted(App app, boolean putdown, List<GeoElement> createdGeos) {
+		// The kernel returns the copied instances in prefixed-label order after L1.
+		// If a label was skipped, the positional association cannot be certified.
+		if (copiedXMLLabels.size() == createdGeos.size()) {
+			for (int i = 0; i < createdGeos.size(); i++) {
+				GeoElement original = sourceByLabel.get(
+						copiedXMLLabels.get(i).substring(labelPrefix.length()));
+				if (original != null) {
+					copies.put(original, createdGeos.get(i));
+				}
+			}
+		}
+	}
+
+	/** @return native copy correspondence before and after L1 */
+	Map<GeoElement, GeoElement> getCopies() {
+		return copies;
 	}
 
 	/** @return unit state of the inserted document, or null before the copy */

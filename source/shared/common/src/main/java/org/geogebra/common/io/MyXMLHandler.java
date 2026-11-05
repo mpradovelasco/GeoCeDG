@@ -15,6 +15,7 @@
  */
 
 // GeoCeDG modification, 2026-11-03: strict grammar for versioned native state leaves.
+// GeoCeDG modification: report an explicit labeling policy to the native archive reader.
 package org.geogebra.common.io;
 
 import java.util.ArrayList;
@@ -243,6 +244,7 @@ public class MyXMLHandler implements DocHandler {
 	/** Euclidian settings */
 	protected EuclidianSettings evSettings = null;
 	private boolean isPreferencesXML = false;
+	private boolean labelingStylePresent;
 
 	TreeMap<String, String> casMap;
 
@@ -305,6 +307,7 @@ public class MyXMLHandler implements DocHandler {
 		xValuesLabel = null;
 		xValuesCaption = null;
 		isPreferencesXML = false;
+		labelingStylePresent = false;
 	}
 
 	private void initKernelVars() {
@@ -2358,10 +2361,16 @@ public class MyXMLHandler implements DocHandler {
 		try {
 			int style = Integer.parseInt(attrs.get("val"));
 			app.setLabelingStyle(style);
+			labelingStylePresent = true;
 			return true;
 		} catch (RuntimeException e) {
 			return false;
 		}
+	}
+
+	/** @return whether the most recent parse set an explicit labeling policy */
+	public boolean hasLabelingStyle() {
+		return labelingStylePresent;
 	}
 
 	// ====================================

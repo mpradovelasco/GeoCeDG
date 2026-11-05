@@ -12,6 +12,8 @@
  * Note: The overall GeoGebra software package is free to use for
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
+ *
+ * Modified for GeoCeDG: persist 2D construction appearance defaults.
  */
 
 package org.geogebra.desktop.main;
@@ -21,12 +23,21 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.StringReader;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.jre.util.Base64;
+import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.main.GeoGebraPreferences;
+import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.util.debug.Log;
 
 /**
@@ -64,6 +75,7 @@ import org.geogebra.common.util.debug.Log;
  * @version 2010-03-07
  */
 public class GeoGebraPortablePreferences extends GeoGebraPreferencesD {
+	private static final String GEOCEDG_V2_DEFAULTS = "geocedg.defaults.v2";
 
 	private final static String ERROR = "Error?"; // For debugging
 	private final static String COMMENT = "GeoGebra Portable preferences (GeoGebra settings file)";
@@ -239,10 +251,21 @@ public class GeoGebraPortablePreferences extends GeoGebraPreferencesD {
 
 		set(GeoGebraPreferences.XML_USER_PREFERENCES, xml);
 
-		if (!app.is3D()) { // TODO: implement it in Application3D!
+		ConstructionDefaults defaults = app.getKernel().getConstruction()
+				.getConstructionDefaults();
+		if (app.getConfig() instanceof AppConfigGeoCeDG) {
 			XMLStringBuilder sb = new XMLStringBuilder();
-			app.getKernel().getConstruction().getConstructionDefaults()
-					.getDefaultsXML(sb);
+			defaults.getDefaultsXML(sb, null);
+			set(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES, sb.toString());
+			String v2 = defaults.getV2DefaultsXML();
+			if (v2 == null) {
+				properties.remove(GEOCEDG_V2_DEFAULTS);
+			} else {
+				set(GEOCEDG_V2_DEFAULTS, v2);
+			}
+		} else if (!app.is3D()) { // TODO: implement it in Application3D!
+			XMLStringBuilder sb = new XMLStringBuilder();
+			defaults.getDefaultsXML(sb);
 			String objectPrefsXML = sb.toString();
 
 			set(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES, objectPrefsXML);
@@ -254,6 +277,74 @@ public class GeoGebraPortablePreferences extends GeoGebraPreferencesD {
 		set(TOOLS_FILE_GGT, macrostring);
 
 		storePreferences();
+		rememberGeoCeDGObjectPreferences(app);
+	}
+
+	/**
+	 * Record the Portable defaults used as fallback for the next native load.
+	 * @param app application receiving the personal defaults
+	 */
+	public void rememberGeoCeDGObjectPreferences(AppD app) {
+		if (app.getConfig() instanceof AppConfigGeoCeDG) {
+			app.getKernel().getConstruction().getConstructionDefaults().setPersonalDefaults(
+					get(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES, null),
+					get(GEOCEDG_V2_DEFAULTS, null));
+		}
+	}
+
+	/**
+	 * @param app GeoCeDG application whose native file is about to load
+	 * @return saved personal label policy, with the factory policy as fallback
+	 */
+	public LabelVisibility getGeoCeDGLabelingStyle(AppD app) {
+		LabelVisibility saved = readLabelingStyle(get(GeoGebraPreferences.XML_USER_PREFERENCES,
+				null));
+		return saved == null ? getFactoryLabelingStyle(app) : saved;
+	}
+
+	/**
+	 * @param app application restoring styles from a document
+	 * @return factory policy for old objects with no serialized label visibility
+	 */
+	public LabelVisibility getFactoryLabelingStyle(AppD app) {
+		initDefaultXML(app);
+		LabelVisibility factory = readLabelingStyle(factoryDefaultXml);
+		return factory == null ? app.getConfig().getDefaultLabelingStyle() : factory;
+	}
+
+	private static LabelVisibility readLabelingStyle(String xml) {
+		if (xml == null) {
+			return null;
+		}
+		XMLInputFactory factory = XMLInputFactory.newDefaultFactory();
+		factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+		factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+		try {
+			XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(xml));
+			try {
+				int depth = 0;
+				boolean gui = false;
+				while (reader.hasNext()) {
+					int event = reader.next();
+					if (event == XMLStreamConstants.START_ELEMENT) {
+						depth++;
+						if (depth == 2) {
+							gui = "gui".equals(reader.getLocalName());
+						} else if (depth == 3 && gui && "labelingStyle".equals(reader.getLocalName())) {
+							return LabelVisibility.get(Integer.parseInt(
+									reader.getAttributeValue(null, "val")));
+						}
+					} else if (event == XMLStreamConstants.END_ELEMENT) {
+						depth--;
+					}
+				}
+			} finally {
+				reader.close();
+			}
+		} catch (XMLStreamException | IllegalArgumentException | IndexOutOfBoundsException malformed) {
+			Log.debug(malformed);
+		}
+		return null;
 	}
 
 	/**
@@ -283,7 +374,10 @@ public class GeoGebraPortablePreferences extends GeoGebraPreferencesD {
 			String xml = get(GeoGebraPreferences.XML_USER_PREFERENCES, factoryDefaultXml);
 			app.setXML(xml, true);
 
-			if (!app.is3D()) { // TODO: implement it in Application3D!
+			if (app.getConfig() instanceof AppConfigGeoCeDG) {
+				rememberGeoCeDGObjectPreferences(app);
+				app.getKernel().getConstruction().getConstructionDefaults().applyPersonalDefaults();
+			} else if (!app.is3D()) { // TODO: implement it in Application3D!
 				String xmlDef = get(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES,
 						factoryDefaultXml);
 				if (!xmlDef.equals(factoryDefaultXml)) {

@@ -28,12 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EuclidianView;
+import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.LinearEquationRepresentable;
 import org.geogebra.common.kernel.Locateable;
@@ -683,6 +685,12 @@ public class ConsElementXMLHandler {
 			if (strStep != null) {
 				// store speed expression to be processed later
 				animationStepList.add(geo, strStep);
+			} else if (sliderTagProcessed && geo.getClass() == GeoAngle.class
+					&& geo.isIndependent() && geo.getDefaultGeoType() < 0
+					&& !geo.getKernel().isMacroKernel()
+					&& app.getConfig() instanceof AppConfigGeoCeDG) {
+				// The native animation writer omits the step in automatic mode.
+				((GeoAngle) geo).setAutoStep(true);
 			}
 			String strSpeed = attrs.get("speed");
 			if (strSpeed != null && !strSpeed.equals("1")) {
@@ -1830,7 +1838,12 @@ public class ConsElementXMLHandler {
 
 	private boolean handleLabelMode(Map<String, String> attrs) {
 		try {
-			geo.setLabelMode(Integer.parseInt(attrs.get("val")));
+			int labelMode = Integer.parseInt(attrs.get("val"));
+			if (geo instanceof GeoNumeric numeric) {
+				numeric.setLabelModeFromXML(labelMode);
+			} else {
+				geo.setLabelMode(labelMode);
+			}
 			return true;
 		} catch (RuntimeException e) {
 			return false;
@@ -2676,6 +2689,9 @@ public class ConsElementXMLHandler {
 	protected void initDefault(Map<String, String> attrs) {
 		geo = getGeoElement(attrs);
 		geo.setLineOpacity(255);
+		if (geo.getDefaultGeoType() == ConstructionDefaults.DEFAULT_LOCUS) {
+			xmlHandler.cons.getConstructionDefaults().noteDocumentLocusDefault();
+		}
 	}
 
 	private void processStartPointList() {

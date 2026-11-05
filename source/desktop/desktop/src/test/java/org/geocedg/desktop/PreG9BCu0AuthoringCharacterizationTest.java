@@ -44,15 +44,11 @@ class PreG9BCu0AuthoringCharacterizationTest {
 				() -> PreG9BR6PlusF3Fixtures.app(PreG9BR6PlusF3Documents.M));
 		GeoCeDGDocumentInsertion.Result result = PreG9BR6PlusF3Fixtures.insert(app,
 				PreG9BCu0Corpus.workingCopy(PreG9BCu0Corpus.GGB, work));
-		assertEquals("REJECTED_BEFORE_MUTATION", result.getOutcome().name(),
-				PreG9BCu0Baseline.pinMessage("B01", "CU4", "the P4 matrix rejects the model"));
-		String message = result.getMessage();
-		for (String name : List.of("text4 (Text)", "α_C (Angle)",
-				"α_{cyl} (Angle)")) {
-			assertTrue(message.contains(name), PreG9BCu0Baseline.pinMessage("B01", "CU4",
-					"rejected " + name));
-		}
-		assertEquals(0, app.getKernel().getConstruction().getGeoSetConstructionOrder().size());
+		assertEquals(GeoCeDGDocumentInsertion.Outcome.INSERTED, result.getOutcome(),
+				PreG9BCu0Baseline.inversionMessage("B01", "CU4", result.getMessage()));
+		assertTrue(app.getKernel().lookupLabel("text4").isGeoText());
+		assertTrue(app.getKernel().lookupLabel("α_C").isGeoAngle());
+		assertTrue(app.getKernel().lookupLabel("α_{cyl}").isGeoAngle());
 	}
 
 	@Test
@@ -75,8 +71,8 @@ class PreG9BCu0AuthoringCharacterizationTest {
 			assertFalse(visible.get(label), label + " follows the labeling style");
 		}
 		for (String label : List.of("L", "M", "SP")) {
-			assertTrue(visible.get(label), PreG9BCu0Baseline.pinMessage("B05", "CU4", label
-					+ " is created with a visible label under No New Objects"));
+			assertFalse(visible.get(label), PreG9BCu0Baseline.inversionMessage("B05", "CU4", label
+					+ " follows No New Objects"));
 		}
 	}
 
@@ -99,8 +95,8 @@ class PreG9BCu0AuthoringCharacterizationTest {
 			return new int[] {kernel.lookupLabel("a").getLabelMode(),
 					kernel.lookupLabel("b").getLabelMode()};
 		});
-		assertEquals(GeoElement.LABEL_VALUE, modes[0], PreG9BCu0Baseline.pinMessage("M05.1",
-				"CU4", "a typed number shown as name + value comes back as value only"));
+		assertEquals(GeoElement.LABEL_NAME_VALUE, modes[0], PreG9BCu0Baseline.inversionMessage("M05.1",
+				"CU4", "the typed slider retains Name + Value"));
 		assertEquals(GeoElement.LABEL_NAME_VALUE, modes[1], "Slider() keeps name + value");
 	}
 

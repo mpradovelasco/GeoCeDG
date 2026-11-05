@@ -84,6 +84,23 @@ semantic migration is outside G9U0-R2. If implementation evidence proves one
 necessary, work stops for a separate compatibility decision and migration
 design. A filename alone is never such evidence.
 
+**PRE-G9B-CU4 compatibility amendment.** GeoCeDG may write one optional ZIP
+entry, `geocedg_defaults_v2.xml`, for Locus V2 and SplineV2 appearance defaults.
+It uses version 1, bounded to 16 KiB uncompressed. The reader validates the
+complete block before applying it to creation prototypes. An absent entry
+selects the legacy fallback. An invalid block is a preflight failure. Existing
+archive entries, format version, app code and construction semantics retain
+their format. An older reader may discard the optional defaults on save.
+
+An explicit slider label mode is object presentation and uses the existing
+`labelMode` tag in native archives, clipboard XML and history. For GeoCeDG
+sliders, an explicitly selected Name + Value survives these routes even when
+the slider has a definition. Where the historical writer would omit the tag,
+CU4 writes the existing alias `LABEL_DEFAULT_NAME_VALUE` (6). The reader
+resolves it to Name + Value. The historical writer rule still applies to
+legacy files that contain only the ordinary value 1 or omit the field.
+[CU4 authorization](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)
+
 ## Save and Save As state machine
 
 This state machine governs the normal GeoCeDG product route. The separate
