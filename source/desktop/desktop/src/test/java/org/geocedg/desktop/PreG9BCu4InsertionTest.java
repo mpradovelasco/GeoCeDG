@@ -16,6 +16,7 @@ import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.save;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.undo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -27,7 +28,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoAngle;
+import org.geogebra.common.kernel.geos.GeoAngle.AngleStyle;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -161,6 +164,106 @@ class PreG9BCu4InsertionTest {
 				}
 			}
 		}
+	}
+
+	@Test
+	void crossUnitCopyCanPreserveAngularValuesWhilePublicInsertionRejects() throws Exception {
+		onEdt(() -> {
+			assertCrossUnitCounterexample(Kernel.ANGLE_DEGREE, Kernel.ANGLE_RADIANT,
+					Math.toRadians(47), AngleStyle.ANTICLOCKWISE);
+			assertCrossUnitCounterexample(Kernel.ANGLE_RADIANT, Kernel.ANGLE_DEGREES_MINUTES_SECONDS,
+					-1.25, AngleStyle.UNBOUNDED);
+			assertCrossUnitCounterexample(Kernel.ANGLE_DEGREES_MINUTES_SECONDS, Kernel.ANGLE_DEGREE,
+					Math.toRadians(40.5), AngleStyle.ANTICLOCKWISE);
+			assertPresentationDependentTextIsUnitSensitive();
+			return null;
+		});
+	}
+
+	private void assertPresentationDependentTextIsUnitSensitive() throws Exception {
+		AppGeoCeDG origin = app(M);
+		origin.getKernel().setAngleUnit(Kernel.ANGLE_DEGREE);
+		GeoAngle slider = (GeoAngle) must(origin, "theta=47°");
+		slider.setEuclidianVisible(true);
+		must(origin, "formatted=Text(theta)");
+		File source = save(origin, dir, "cross-unit-text");
+		AppGeoCeDG loaded = app(M);
+		assertTrue(loaded.loadFile(source, false));
+		AppGeoCeDG receiver = app(M);
+		receiver.getKernel().setAngleUnit(Kernel.ANGLE_RADIANT);
+		new GeoCeDGInsertionCopyPaste(Set.of()).insertFrom(loaded, receiver, Set.of(), false);
+		GeoText original = (GeoText) loaded.getKernel().lookupLabel("formatted");
+		GeoText copied = (GeoText) receiver.getKernel().lookupLabel("formatted");
+		assertNotEquals(original.getTextString(), copied.getTextString());
+	}
+
+	private void assertCrossUnitCounterexample(int from, int to, double raw, AngleStyle style)
+			throws Exception {
+		AppGeoCeDG origin = app(M);
+		origin.getKernel().setAngleUnit(from);
+		GeoAngle slider = from == Kernel.ANGLE_DEGREE
+				? (GeoAngle) must(origin, "theta=47°")
+				: new GeoAngle(origin.getKernel().getConstruction(), raw, style, false);
+		if (!slider.isLabelSet()) {
+			slider.setLabel("theta");
+		}
+		slider.setEuclidianVisible(true);
+		slider.setIntervalMin(style == AngleStyle.UNBOUNDED ? -2 : 0);
+		slider.setIntervalMax(2);
+		slider.setAutoStep(false);
+		slider.setAnimationStep(0.015625);
+		slider.setAnimationSpeed(1.75);
+		slider.setAnimationType(GeoElement.ANIMATION_DECREASING);
+		must(origin, "dependent=sin(theta)");
+		File source = save(origin, dir, "cross-unit-" + from);
+		AppGeoCeDG receiver = app(M);
+		receiver.getKernel().setAngleUnit(to);
+		baseline(receiver);
+		var before = new PreG9BR6PlusF3Documents.Observation(receiver);
+		var rejected = insert(receiver, source);
+		assertEquals(GeoCeDGDocumentInsertion.Outcome.REJECTED_BEFORE_MUTATION,
+				rejected.getOutcome(), rejected.getMessage());
+		assertUnchanged(receiver, before);
+
+		// Exercise the native copy independently of the public admission gate.
+		AppGeoCeDG loaded = app(M);
+		assertTrue(loaded.loadFile(source, false));
+		var clipboard = new GeoCeDGInsertionCopyPaste(Set.of());
+		clipboard.insertFrom(loaded, receiver, Set.of(), false);
+		var original = (GeoAngle) loaded.getKernel().lookupLabel("theta");
+		var copied = (GeoAngle) receiver.getKernel().lookupLabel("theta");
+		assertSame(clipboard.getCopies().get(original), copied);
+		assertEquals(raw, original.getRawAngle());
+		assertEquals(raw, copied.getRawAngle());
+		assertEquals(original.getValue(), copied.getValue());
+		assertEquals(original.getAngleStyle(), copied.getAngleStyle());
+		assertEquals(original.isKeepDegrees(), copied.isKeepDegrees());
+		assertEquals(original.getIntervalMin(), copied.getIntervalMin());
+		assertEquals(original.getIntervalMax(), copied.getIntervalMax());
+		assertEquals(original.getIntervalMinObject().getAngleDim(),
+				copied.getIntervalMinObject().getAngleDim());
+		assertEquals(original.getIntervalMaxObject().getAngleDim(),
+				copied.getIntervalMaxObject().getAngleDim());
+		assertEquals(original.getAnimationStep(), copied.getAnimationStep());
+		assertEquals(original.getAnimationStepObject().getAngleDim(),
+				copied.getAnimationStepObject().getAngleDim());
+		assertEquals(original.getAnimationSpeed(), copied.getAnimationSpeed());
+		assertEquals(original.isAutoStep(), copied.isAutoStep());
+		assertEquals(original.isAnimating(), copied.isAnimating());
+		assertEquals(original.getAnimationType(), copied.getAnimationType());
+		assertEquals(to, receiver.getKernel().getAngleUnit());
+		assertNotEquals(original.toValueString(StringTemplate.defaultTemplate),
+				copied.toValueString(StringTemplate.defaultTemplate));
+		GeoElement dependent = receiver.getKernel().lookupLabel("dependent");
+		assertSame(copied, dependent.getParentAlgorithm().getInput()[0]);
+		GeoElement originalDependent = loaded.getKernel().lookupLabel("dependent");
+		assertEquals(originalDependent.evaluateDouble(), dependent.evaluateDouble());
+		double sample = (original.getIntervalMin() + original.getIntervalMax()) / 2;
+		original.setValue(sample);
+		copied.setValue(sample);
+		original.updateCascade();
+		copied.updateCascade();
+		assertEquals(originalDependent.evaluateDouble(), dependent.evaluateDouble());
 	}
 
 	@Test

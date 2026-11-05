@@ -11,11 +11,13 @@ import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.must;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.save;
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.store;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.undo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -24,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
@@ -32,20 +35,27 @@ import java.util.zip.ZipOutputStream;
 
 import javax.swing.JPanel;
 
+import org.geocedg.common.jre.io.LegacyStyleDefaultsReader;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.io.XMLParseException;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.ConstructionDefaults;
+import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.GeoGebraPreferences;
 import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.desktop.CommandLineArguments;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
+import org.geogebra.desktop.main.GeoGebraPortablePreferences;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -198,6 +208,11 @@ class PreG9BCu4StylesTest {
 		runSession("reopen");
 	}
 
+	@Test
+	void portableAppearancePreferencesCannotEvaluateOrChangeTheConstruction() throws Exception {
+		runSession("graph-invariance");
+	}
+
 	private void runSession(String action) throws Exception {
 		List<String> command = new ArrayList<>();
 		command.add(ProcessHandle.current().info().command().orElseThrow());
@@ -231,7 +246,10 @@ class PreG9BCu4StylesTest {
 				GeoGebraPreferencesD.setPropertyFileName(work.resolve("settings.properties").toString());
 				onEdt(() -> {
 					AppGeoCeDG app = app(M);
-					if ("save".equals(args[1])) {
+					if ("graph-invariance".equals(args[1])) {
+						assertAppearancePreferencesPreserveGraph(app);
+					} else if ("save".equals(args[1])) {
+						prototype(app, ConstructionDefaults.DEFAULT_LOCUS).setObjColor(GColor.ORANGE);
 						prototype(app, ConstructionDefaults.DEFAULT_LOCUS_V2).setObjColor(GColor.RED);
 						prototype(app, ConstructionDefaults.DEFAULT_SPLINE_V2).setObjColor(GColor.BLUE);
 						app.setLabelingStyle(LabelVisibility.AlwaysOn.getValue());
@@ -243,6 +261,8 @@ class PreG9BCu4StylesTest {
 						File document = save(app, work, "document");
 						removeLabelingStyle(document.toPath(), work.resolve("legacy.cedg"));
 					} else {
+						assertEquals(GColor.ORANGE, prototype(app, ConstructionDefaults.DEFAULT_LOCUS)
+								.getObjectColor());
 						assertEquals(GColor.RED, prototype(app, ConstructionDefaults.DEFAULT_LOCUS_V2)
 								.getObjectColor());
 						assertEquals(GColor.BLUE, prototype(app, ConstructionDefaults.DEFAULT_SPLINE_V2)
@@ -282,6 +302,121 @@ class PreG9BCu4StylesTest {
 				failure.printStackTrace();
 				System.exit(1);
 			}
+		}
+
+		private static void assertAppearancePreferencesPreserveGraph(AppGeoCeDG app)
+				throws Exception {
+			setCurves(app);
+			must(app, "d=Distance((1,2),(4,6))");
+			baseline(app);
+			must(app, "Next=(4,5)");
+			store(app);
+			undo(app).undo();
+			awaitQuiescent(app);
+			assertTrue(undo(app).redoPossible());
+
+			Construction construction = app.getKernel().getConstruction();
+			var before = new PreG9BR6PlusF3Documents.Observation(app);
+			var geos = List.copyOf(construction.getGeoSetConstructionOrder());
+			var algorithms = List.copyOf(construction.getAlgoList());
+			var dependencies = dependencies(algorithms);
+			var identities = List.copyOf(construction.getSpatialIdentityRegistry().getRecords());
+			int steps = construction.steps();
+			var prefs = (GeoGebraPortablePreferences) GeoGebraPreferencesD.getPref();
+			ConstructionDefaults defaults = defaults(app);
+			GeoElement locus = prototype(app, ConstructionDefaults.DEFAULT_LOCUS);
+			GeoNumeric slider = (GeoNumeric) prototype(app, ConstructionDefaults.DEFAULT_NUMBER);
+			var anchor = slider.getStartPoint();
+			int maxLayer = app.getMaxLayerUsed();
+			String green = """
+					<element type="locus" label="Locus" default="80">
+					  <objColor r="0" g="255" b="0" alpha="0"/>
+					  <lineStyle thickness="7" type="15"/>
+					</element>
+					""";
+			String number = """
+					<element type="numeric" label="Number" default="50">
+					  <show object="true" label="true"/>
+					  <layer val="20"/>
+					  <slider min="-2" max="8" width="175" fixed="true" horizontal="true"/>
+					  <animation step="0.25" speed="2" type="0" playing="false"/>
+					</element>
+					""";
+			readPersonalStyles(prefs, app, wrapDefaults(green + number));
+			assertEquals(GColor.GREEN, locus.getObjectColor());
+			assertEquals(7, locus.getLineThickness());
+			assertEquals(-2, slider.getIntervalMin());
+			assertEquals(8, slider.getIntervalMax());
+			assertEquals(0.25, slider.getAnimationStep());
+			assertEquals(2, slider.getAnimationSpeed());
+			assertTrue(slider.isSetEuclidianVisible());
+			assertSame(anchor, slider.getStartPoint());
+			assertEquals(maxLayer, app.getMaxLayerUsed());
+			assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps);
+
+			String red = green.replace("r=\"0\" g=\"255\"", "r=\"255\" g=\"0\"");
+			String blue = green.replace("g=\"255\" b=\"0\"", "g=\"0\" b=\"255\"");
+			for (String invalid : List.of(
+					wrapDefaults(red + number.replace("step=\"0.25\"",
+							"step=\"Distance((0,0),(1,0))\"")),
+					wrapDefaults(red + number.replace("min=\"-2\"", "min=\"d\"")),
+					wrapDefaults(red + blue),
+					wrapDefaults(red.replace("thickness=\"7\"", "thickness=\"7\" thickness=\"8\"")),
+					wrapDefaults(red.replace("</element>", "<condition show=\"d>0\"/></element>")),
+					wrapDefaults(red.replace("alpha=\"0\"", "alpha=\"0\" dynamicr=\"d\"")),
+					wrapDefaults(red + """
+							<element type="text" label="Text" default="100">
+							  <startPoint exp="Point(Circle((0,0),1))"/>
+							</element>
+							"""),
+					wrapDefaults(red).replace("</geogebra>", "<construction/></geogebra>"),
+					wrapDefaults(red) + "<geogebra/>",
+					"<!DOCTYPE geogebra>" + wrapDefaults(red))) {
+				assertThrows(XMLParseException.class, () -> LegacyStyleDefaultsReader.read(invalid, defaults));
+				readPersonalStyles(prefs, app, invalid);
+				assertEquals(GColor.GREEN, locus.getObjectColor());
+				assertEquals(0.25, slider.getAnimationStep());
+				assertEquals(maxLayer, app.getMaxLayerUsed());
+				assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps);
+			}
+			defaults.applyPersonalDefaults();
+			assertEquals(maxLayer, app.getMaxLayerUsed());
+			assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps);
+			undo(app).redo();
+			awaitQuiescent(app);
+			assertNotNull(app.getKernel().lookupLabel("Next"));
+		}
+
+		private static String wrapDefaults(String elements) {
+			return "<geogebra format=\"5.0\"><defaults>" + elements + "</defaults></geogebra>";
+		}
+
+		private static void readPersonalStyles(GeoGebraPortablePreferences prefs, AppGeoCeDG app,
+				String xml) {
+			prefs.savePreference(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES, xml);
+			prefs.rememberGeoCeDGObjectPreferences(app);
+			defaults(app).overlayPersonalDefaults();
+		}
+
+		private static List<List<GeoElement>> dependencies(List<AlgoElement> algorithms) {
+			return algorithms.stream().map(algo -> Arrays.asList(algo.getInput().clone())).toList();
+		}
+
+		private static void assertGraphUnchanged(AppGeoCeDG app,
+				PreG9BR6PlusF3Documents.Observation before, List<GeoElement> geos,
+				List<AlgoElement> algorithms, List<List<GeoElement>> dependencies,
+				List<?> identities, int steps) {
+			Construction construction = app.getKernel().getConstruction();
+			var after = new PreG9BR6PlusF3Documents.Observation(app);
+			assertEquals(geos, List.copyOf(construction.getGeoSetConstructionOrder()));
+			assertEquals(algorithms, construction.getAlgoList());
+			assertEquals(dependencies, dependencies(construction.getAlgoList()));
+			assertEquals(identities, List.copyOf(construction.getSpatialIdentityRegistry().getRecords()));
+			assertEquals(steps, construction.steps());
+			assertEquals(List.of(), before.serializableDifferences(after));
+			assertTrue(before.sameInstances(after));
+			assertEquals(0, undo(app).getPendingStores());
+			assertTrue(undo(app).redoPossible());
 		}
 
 		private static void assertPersonalLabelFallback(AppGeoCeDG app) {

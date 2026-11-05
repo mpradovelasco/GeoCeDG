@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
+import org.geocedg.common.kernel.geos.LegacyStyleDefaults;
 import org.geocedg.common.kernel.geos.V2StyleDefaults;
 import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -322,7 +323,7 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 	private float filling = DEFAULT_POLYGON_ALPHA;
 
 	private boolean blackWhiteMode = false;
-	private String personalDefaults;
+	private LegacyStyleDefaults personalDefaults = LegacyStyleDefaults.empty();
 	private Map<Integer, V2StyleDefaults.Style> personalV2Defaults = Map.of();
 	private Set<Integer> explicitV2Defaults = Set.of();
 	private boolean documentLocusDefaultSeen;
@@ -816,11 +817,11 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 
 	/**
 	 * Keep the preferences snapshot separate from document-owned defaults.
-	 * @param legacy2dXml preferences for ordinary types
-	 * @param v2Xml preferences for the two V2 prototypes
+	 * @param legacy2d validated preferences for ordinary types
+	 * @param v2Xml versioned preferences for the two V2 prototypes
 	 */
-	public void setPersonalDefaults(String legacy2dXml, String v2Xml) {
-		personalDefaults = legacy2dXml;
+	public void setPersonalDefaults(LegacyStyleDefaults legacy2d, String v2Xml) {
+		personalDefaults = legacy2d;
 		try {
 			personalV2Defaults = V2StyleDefaults.read(v2Xml);
 		} catch (XMLParseException malformed) {
@@ -831,7 +832,7 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 
 	/** A document-source helper uses document defaults and the factory fallback. */
 	public void clearPersonalDefaults() {
-		setPersonalDefaults(null, null);
+		setPersonalDefaults(LegacyStyleDefaults.empty(), null);
 	}
 
 	/** Set the creation prototypes of a blank document from the retained preferences. */
@@ -842,15 +843,9 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 
 	/** Overlay preferences after a native file's objects have been reconstructed. */
 	public void overlayPersonalDefaults() {
-		if (personalDefaults != null) {
-			try {
-				V2StyleDefaults.validateLegacyDefaults(personalDefaults, this);
-				cons.getXMLio().processXMLString(personalDefaults, false, true, false, false);
-			} catch (XMLParseException malformed) {
-				Log.warn(malformed.getMessage());
-			}
+		if (personalDefaults.applyTo(this)) {
+			inheritV2DefaultsFromLocus();
 		}
-		inheritV2DefaultsFromLocus();
 		applyV2Defaults(personalV2Defaults);
 		documentLocusDefaultSeen = false;
 	}

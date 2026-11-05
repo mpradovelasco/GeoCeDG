@@ -268,3 +268,13 @@ publication, outside evaluation and reconstruction. Document load, paste,
 Undo and Redo restore object appearance independently of the current personal
 defaults. The style operation leaves the semantic graph and its revisions
 intact. [CU4 authorization](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)
+
+Personal appearance defaults are read as a bounded set of validated style
+values. GeoCeDG Portable accepts one legacy 2D prototype per default type
+and one value per field. Static values, including literal slider parameters,
+configure detached prototypes. Known geometry placeholders from legacy
+writers carry no appearance and are ignored after validation. References,
+expressions, scripts and unsupported structures reject the ordinary style
+block before application. The versioned V2 block is validated independently.
+Applying either block preserves the existing construction graph, identities
+and history. [CU4-R1](../../../docs/validation/pre_g9b_cu4_r1_candidate_report.md)

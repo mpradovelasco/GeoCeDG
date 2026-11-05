@@ -7,9 +7,7 @@ package org.geocedg.common.kernel.geos;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.geogebra.common.awt.GColor;
@@ -50,7 +48,7 @@ public final class V2StyleDefaults implements DocHandler {
 		 * @return the detached style snapshot
 		 */
 		public static Style of(GeoElement geo) {
-			return new Style(geo.getObjectColor(), geo.getLineThickness(), geo.getLineType(),
+			return new Style(geo.getStaticObjectColor(), geo.getLineThickness(), geo.getLineType(),
 					geo.getLabelVisible(), geo.getLabelMode());
 		}
 
@@ -121,86 +119,6 @@ public final class V2StyleDefaults implements DocHandler {
 			throw new XMLParseException("Invalid V2 construction defaults", failure);
 		}
 		return handler.styles;
-	}
-
-	/**
-	 * Check the scope of retained ordinary preferences before applying them to a live document.
-	 * @param xml legacy preferences produced by the ordinary defaults writer
-	 * @param defaults known prototype IDs
-	 * @throws XMLParseException if the payload can escape the defaults section
-	 */
-	public static void validateLegacyDefaults(String xml, ConstructionDefaults defaults)
-			throws XMLParseException {
-		try {
-			new QDParser().parse(new LegacyScope(defaults), new StringReader(xml));
-		} catch (IOException | IllegalArgumentException failure) {
-			throw new XMLParseException("Invalid personal construction defaults", failure);
-		}
-	}
-
-	private static final class LegacyScope implements DocHandler {
-		private final ConstructionDefaults defaults;
-		private final List<String> open = new ArrayList<>();
-
-		LegacyScope(ConstructionDefaults defaults) {
-			this.defaults = defaults;
-		}
-
-		@Override
-		public void startElement(String tag, Map<String, String> attrs) throws XMLParseException {
-			switch (open.size()) {
-			case 0:
-				require("geogebra".equals(tag));
-				break;
-			case 1:
-				require("defaults".equals(tag));
-				break;
-			case 2:
-				int id = Integer.parseInt(attrs.get("default"));
-				GeoElement prototype = defaults.getDefaultGeo(id);
-				require("element".equals(tag) && prototype != null && !prototype.isGeoElement3D()
-						&& id != ConstructionDefaults.DEFAULT_LOCUS_V2
-						&& id != ConstructionDefaults.DEFAULT_SPLINE_V2
-						&& prototype.getXMLTypeString().equals(attrs.get("type"))
-						&& attrs.get("label") != null && !attrs.containsKey("geocedgId"));
-				break;
-			case 3:
-				require(!"element".equals(tag) && !"command".equals(tag)
-						&& !"script".equals(tag) && !"condition".equals(tag)
-						&& !attrs.containsKey("dynamicr"));
-				break;
-			default:
-				throw invalid();
-			}
-			open.add(tag);
-		}
-
-		private static void require(boolean valid) throws XMLParseException {
-			if (!valid) {
-				throw new XMLParseException("Invalid personal construction defaults");
-			}
-		}
-
-		@Override
-		public void endElement(String tag) throws XMLParseException {
-			int last = open.size() - 1;
-			require(last >= 0 && tag.equals(open.get(last)));
-			open.remove(last);
-		}
-
-		@Override
-		public void startDocument() {
-		}
-
-		@Override
-		public void endDocument() throws XMLParseException {
-			require(open.isEmpty());
-		}
-
-		@Override
-		public void text(String value) throws XMLParseException {
-			require(value.trim().isEmpty());
-		}
 	}
 
 	private static String compact(String xml) {

@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.geocedg.common.jre.io.LegacyStyleDefaultsReader;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.geos.V2StyleDefaults;
 import org.geogebra.common.awt.GColor;
@@ -109,7 +110,8 @@ class Cu4V2StyleDefaultsTest extends G9U0PublicSurfaceTestBase {
 		defaults.getDefaultGeo(DEFAULT_LOCUS).setObjColor(GColor.GREEN);
 		XMLStringBuilder legacy = new XMLStringBuilder();
 		defaults.getDefaultsXML(legacy, null);
-		defaults.setPersonalDefaults(legacy.toString(), xml.replace("version=\"1\"", "version=\"2\""));
+		defaults.setPersonalDefaults(LegacyStyleDefaultsReader.read(legacy.toString(), defaults),
+				xml.replace("version=\"1\"", "version=\"2\""));
 		defaults.applyPersonalDefaults();
 		assertEquals(GColor.GREEN, defaults.getDefaultGeo(DEFAULT_LOCUS_V2).getObjectColor());
 		assertEquals(GColor.GREEN, defaults.getDefaultGeo(DEFAULT_SPLINE_V2).getObjectColor());

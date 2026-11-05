@@ -32,7 +32,10 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.geocedg.common.jre.io.LegacyStyleDefaultsReader;
+import org.geocedg.common.kernel.geos.LegacyStyleDefaults;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.jre.util.Base64;
 import org.geogebra.common.kernel.ConstructionDefaults;
@@ -286,9 +289,16 @@ public class GeoGebraPortablePreferences extends GeoGebraPreferencesD {
 	 */
 	public void rememberGeoCeDGObjectPreferences(AppD app) {
 		if (app.getConfig() instanceof AppConfigGeoCeDG) {
-			app.getKernel().getConstruction().getConstructionDefaults().setPersonalDefaults(
-					get(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES, null),
-					get(GEOCEDG_V2_DEFAULTS, null));
+			ConstructionDefaults defaults = app.getKernel().getConstruction().getConstructionDefaults();
+			LegacyStyleDefaults legacy;
+			try {
+				legacy = LegacyStyleDefaultsReader.read(
+						get(GeoGebraPreferences.XML_DEFAULT_OBJECT_PREFERENCES, null), defaults);
+			} catch (XMLParseException malformed) {
+				Log.warn(malformed.getMessage());
+				legacy = LegacyStyleDefaults.empty();
+			}
+			defaults.setPersonalDefaults(legacy, get(GEOCEDG_V2_DEFAULTS, null));
 		}
 	}
 

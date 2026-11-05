@@ -1013,6 +1013,19 @@ public class GeoNumeric extends GeoElement
 	}
 
 	/**
+	 * Store literal defaults for future sliders without running slider updates.
+	 * @param min finite lower bound
+	 * @param max finite upper bound above min
+	 */
+	public final void setPrototypeSliderBounds(double min, double max) {
+		if (!isDefaultGeo() || !Double.isFinite(min) || !Double.isFinite(max) || min >= max) {
+			throw new IllegalArgumentException("Invalid slider prototype bounds");
+		}
+		intervalMin = new MyDouble(kernel, min);
+		intervalMax = new MyDouble(kernel, max);
+	}
+
+	/**
 	 * Changes slider width in pixels
 	 * 
 	 * @param width

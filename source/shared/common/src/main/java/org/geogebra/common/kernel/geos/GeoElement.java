@@ -1033,6 +1033,14 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		return layer;
 	}
 
+	/** @param value layer preference for a detached default prototype */
+	public final void setPrototypeLayer(int value) {
+		if (!isDefaultGeo()) {
+			throw new IllegalStateException("A construction default is required");
+		}
+		layer = LayerDomain.clamp(value, LayerDomain.maxLayer(app));
+	}
+
 	@Override
 	public void setAlphaValue(final double alpha) {
 		if ((fillColor == null) || (alpha < 0.0f) || (alpha > 1.0f)) {
@@ -1457,6 +1465,14 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 
 	@Override
 	public void setEuclidianVisible(final boolean visible) {
+		euclidianVisible = visible;
+	}
+
+	/** @param visible visibility preference for a detached default prototype */
+	public final void setPrototypeVisibility(boolean visible) {
+		if (!isDefaultGeo()) {
+			throw new IllegalStateException("A construction default is required");
+		}
 		euclidianVisible = visible;
 	}
 

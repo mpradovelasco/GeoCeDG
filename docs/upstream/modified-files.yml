@@ -2028,7 +2028,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoElement.java",
       "change": "modified",
-      "purpose": "Preserve durable-ID support and add a narrow visual-property refresh hook whose default remains the historical update cascade; only contractually presentation-only types may narrow it. PRE-G9B-R6-plus-A-2: setLayer clamps to the configured product layer domain; the inherited configuration keeps 0..9. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-CU4: Read the stored object color without evaluating dynamic color during Apply Styles. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md.",
+      "purpose": "Preserve durable-ID support and add a narrow visual-property refresh hook whose default remains the historical update cascade; only contractually presentation-only types may narrow it. PRE-G9B-R6-plus-A-2: setLayer clamps to the configured product layer domain; the inherited configuration keeps 0..9. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-CU4: Read the stored object color without evaluating dynamic color during Apply Styles. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md. PRE-G9B-CU4-R1: Assign prototype visibility and layer without publishing construction changes. Authority: docs/validation/pre_g9b_cu4_r1_candidate_report.md.",
       "authority": "geocedg/specs/locus/locus-v2-presentation.md"
     },
     {
@@ -5202,7 +5202,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/ConstructionDefaults.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R6-plus-A-1: ask the application layer seam for the default layer of a new object; the host returns its unchanged top-layer rule. PRE-G9B-R6-plus-A-2 (DQ-A2-7): the default-layer cap reads the configured domain, min(L_MAX - 1, maxLayerUsed). Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-CU4: Own the two typed V2 appearance prototypes and compose their personal and document defaults. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md.",
+      "purpose": "PRE-G9B-R6-plus-A-1: ask the application layer seam for the default layer of a new object; the host returns its unchanged top-layer rule. PRE-G9B-R6-plus-A-2 (DQ-A2-7): the default-layer cap reads the configured domain, min(L_MAX - 1, maxLayerUsed). Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-CU4: Own the two typed V2 appearance prototypes and compose their personal and document defaults. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md. PRE-G9B-CU4-R1: Overlay validated personal styles without a construction XML parser. Authority: docs/validation/pre_g9b_cu4_r1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_r6_plus_a1_candidate_report.md"
     },
     {
@@ -7597,7 +7597,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/main/GeoGebraPortablePreferences.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU4: Persist and restore GeoCeDG 2D and V2 appearance defaults through the isolated Portable store and read the saved personal label policy independently of document settings.",
+      "purpose": "PRE-G9B-CU4: Persist and restore GeoCeDG 2D and V2 appearance defaults through the isolated Portable store and read the saved personal label policy independently of document settings. PRE-G9B-CU4-R1: Decode the ordinary style block before handing it to the kernel. Authority: docs/validation/pre_g9b_cu4_r1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_cu4_author_design_approval_record.md"
     },
     {
@@ -7609,7 +7609,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoNumeric.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU4: Retain provenance of an explicitly chosen Name + Value label on a slider.",
+      "purpose": "PRE-G9B-CU4: Retain provenance of an explicitly chosen Name + Value label on a slider. PRE-G9B-CU4-R1: Store literal slider bounds on detached prototypes without notifying the graph. Authority: docs/validation/pre_g9b_cu4_r1_candidate_report.md.",
       "authority": "docs/validation/pre_g9b_cu4_author_design_approval_record.md"
     },
     {

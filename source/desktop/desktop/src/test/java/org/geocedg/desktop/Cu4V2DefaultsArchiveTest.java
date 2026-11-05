@@ -30,6 +30,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.geos.LegacyStyleDefaults;
 import org.geocedg.common.kernel.geos.V2StyleDefaults;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.io.MyXMLio;
@@ -71,7 +72,8 @@ class Cu4V2DefaultsArchiveTest {
 
 			AppGeoCeDG receiver = app(M);
 			defaults(receiver).getDefaultGeo(DEFAULT_SPLINE_V2).setObjColor(GColor.GREEN);
-			defaults(receiver).setPersonalDefaults(null, defaults(receiver).getV2DefaultsXML());
+			defaults(receiver).setPersonalDefaults(LegacyStyleDefaults.empty(),
+					defaults(receiver).getV2DefaultsXML());
 			for (Path file : new Path[]{nativePath, compatibilityPath}) {
 				assertTrue(receiver.loadFile(file.toFile(), false));
 				GeoLocusV2 loaded = (GeoLocusV2) receiver.getKernel().lookupLabel("S");
@@ -101,7 +103,8 @@ class Cu4V2DefaultsArchiveTest {
 
 			AppGeoCeDG receiver = app(M);
 			defaults(receiver).getDefaultGeo(DEFAULT_LOCUS_V2).setObjColor(GColor.BLUE);
-			defaults(receiver).setPersonalDefaults(null, defaults(receiver).getV2DefaultsXML());
+			defaults(receiver).setPersonalDefaults(LegacyStyleDefaults.empty(),
+					defaults(receiver).getV2DefaultsXML());
 			assertTrue(receiver.loadFile(nativePath.toFile(), false));
 			assertEquals(GColor.RED, defaults(receiver).getDefaultGeo(DEFAULT_LOCUS_V2)
 					.getObjectColor());
