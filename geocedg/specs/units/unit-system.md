@@ -416,6 +416,13 @@ document with the hidden policy writes the element (§20.1, §20.3); a document
 that never acquired unit metadata or the hidden policy keeps this byte
 identity.
 
+Author-approved amendment of 2026-11-05 (`CU7 R5`, D1). The byte comparison
+above admits the sole additive exception defined by the nine clauses and
+audited conditions in the [D1 amendment text](../../../docs/architecture/pre_g9b_cu7_r5_d1_adoption_proposal.md#texto-candidato-de-enmienda).
+The [author decision](../../../docs/validation/pre_g9b_cu7_r5_author_decision_record.md)
+adopts that exact text for `conicPointState` v1. The omission rule and grammar
+for `geocedgUnits` retain their existing scope.
+
 ### 8.4 Factor lexical form
 
 - **Writer (canonical form).** `factor-canonical` is the string specified for
