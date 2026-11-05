@@ -298,7 +298,7 @@ Invoke-Case 'CU7 R5 PHASE executes both GUI corrective semantic selections' {
 }
 Invoke-Case 'CU4 PHASE binds both measured JUnit selections and their build gates' {
     $plan=Resolve-VerificationRegistryPlan $registry PHASE PRE-G9B-CU4 WINDOWS
-    $expectedCounts=@{shared=53;desktop=69}
+    $expectedCounts=@{shared=53;desktop=71}
     $required=@('workspace-profile.product')
     foreach($module in @('shared','desktop')){
         $id='pre-g9b-cu4.'+$module
