@@ -40,9 +40,17 @@ class Cu4V2StyleDefaultsTest extends G9U0PublicSurfaceTestBase {
 		GeoElement splinePrototype = defaults.getDefaultGeo(DEFAULT_SPLINE_V2);
 		assertNotSame(classic, locusPrototype);
 		assertNotSame(locusPrototype, splinePrototype);
-		assertEquals(V2StyleDefaults.Style.of(classic), V2StyleDefaults.Style.of(locusPrototype));
-		assertEquals(V2StyleDefaults.Style.of(classic), V2StyleDefaults.Style.of(splinePrototype));
+		V2StyleDefaults.Style classicStyle = V2StyleDefaults.Style.of(classic);
+		V2StyleDefaults.Style expectedFactoryV2 = new V2StyleDefaults.Style(GColor.BLACK,
+				classicStyle.thickness(), classicStyle.lineType(), classicStyle.labelVisible(),
+				classicStyle.labelMode());
+		assertEquals(expectedFactoryV2, V2StyleDefaults.Style.of(locusPrototype));
+		assertEquals(expectedFactoryV2, V2StyleDefaults.Style.of(splinePrototype));
 		assertTrue(getConstruction().getGeoSetConstructionOrder().isEmpty());
+		GeoLocusV2 factoryLocus = createLine();
+		assertEquals(GColor.BLACK, factoryLocus.getObjectColor());
+		GeoLocusV2 factorySpline = add("S0=SplineV2({(0,0),(1,2),(3,1),(4,0)},3)");
+		assertEquals(GColor.BLACK, factorySpline.getObjectColor());
 		assertNull(defaults.getV2DefaultsXML());
 
 		locusPrototype.setObjColor(GColor.RED);
@@ -54,7 +62,7 @@ class Cu4V2StyleDefaultsTest extends G9U0PublicSurfaceTestBase {
 		splinePrototype.setLineType(EuclidianStyleConstants.LINE_TYPE_DOTTED);
 		splinePrototype.setLabelVisible(false);
 		getApp().setLabelingStyle(LABEL_VISIBLE_ALWAYS_OFF);
-		GeoLocusV2 locus = createLine();
+		GeoLocusV2 locus = add("W=LocusV2(Q,s,D)");
 		assertEquals(DEFAULT_LOCUS_V2, defaults.getDefaultType(locus));
 		assertEquals(GColor.RED, locus.getObjectColor());
 		assertEquals(9, locus.getLineThickness());

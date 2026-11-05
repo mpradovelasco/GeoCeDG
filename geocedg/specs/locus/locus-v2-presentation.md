@@ -254,6 +254,10 @@ Classic Locus. The producer determines the type. A document default for the
 type takes precedence, followed by a Classic Locus default from that document
 when present, a personal default for the type, and the effective Classic
 Locus fallback. Existing object appearance is restored from object state.
+When Classic Locus has its factory black, the inherited V2 color uses the
+historical V2 factory RGB `#000000` to preserve existing export compatibility.
+Other Classic Locus colors and the remaining appearance fields are inherited.
+An explicit V2 color is stored and used exactly.
 
 Creation uses the existing labeling policy. Both curve types show labels
 under AlwaysOn, hide labels under AlwaysOff and PointsOnly, and use their

@@ -757,8 +757,18 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		GeoLocus prototype = new CurveStylePrototype(cons);
 		prototype.setLocalVariableLabel(name);
 		prototype.setDefaultGeoType(type);
-		V2StyleDefaults.Style.of(inherited).apply(prototype);
+		inheritedCurveStyle(inherited).apply(prototype);
 		defaultGeoElements.put(type, prototype);
+	}
+
+	private static V2StyleDefaults.Style inheritedCurveStyle(GeoElement classic) {
+		V2StyleDefaults.Style style = V2StyleDefaults.Style.of(classic);
+		if (colLocus.equals(style.color())) {
+			// Preserve the historical V2 factory black, also used in exported RGB.
+			return new V2StyleDefaults.Style(GColor.BLACK, style.thickness(), style.lineType(),
+					style.labelVisible(), style.labelMode());
+		}
+		return style;
 	}
 
 	private static final class CurveStylePrototype extends GeoLocus {
@@ -794,10 +804,10 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 		documentLocusDefaultSeen = false;
 	}
 
-	/** Use independent copies of the effective classic Locus appearance. */
+	/** Use independent copies of the compatible classic Locus appearance. */
 	public void inheritV2DefaultsFromLocus() {
 		if (getDefaultGeo(DEFAULT_LOCUS_V2) != null) {
-			V2StyleDefaults.Style inherited = V2StyleDefaults.Style.of(getDefaultGeo(DEFAULT_LOCUS));
+			V2StyleDefaults.Style inherited = inheritedCurveStyle(getDefaultGeo(DEFAULT_LOCUS));
 			inherited.apply(getDefaultGeo(DEFAULT_LOCUS_V2));
 			inherited.apply(getDefaultGeo(DEFAULT_SPLINE_V2));
 			explicitV2Defaults = Set.of();
@@ -876,7 +886,7 @@ public class ConstructionDefaults implements SettingListener<LabelSettings> {
 			return null;
 		}
 		Map<Integer, V2StyleDefaults.Style> styles = new LinkedHashMap<>();
-		V2StyleDefaults.Style inherited = V2StyleDefaults.Style.of(getDefaultGeo(DEFAULT_LOCUS));
+		V2StyleDefaults.Style inherited = inheritedCurveStyle(getDefaultGeo(DEFAULT_LOCUS));
 		for (int type : new int[]{DEFAULT_LOCUS_V2, DEFAULT_SPLINE_V2}) {
 			V2StyleDefaults.Style style = V2StyleDefaults.Style.of(getDefaultGeo(type));
 			if (explicitV2Defaults.contains(type) || !inherited.equals(style)) {

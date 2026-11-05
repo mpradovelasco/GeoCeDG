@@ -32,7 +32,9 @@ La selección PHASE propia agrupa pruebas de los tipos y rutas modificados con r
 | A5 | `PreG9BCu4StylesTest` comprueba los dos tipos V2 y que el color dinámico sigue activo. `PreG9BR6PlusF3R2StylesTest` comprueba las propiedades por tipo, selección, repintado y repetición sin paso adicional de Undo. |
 | A6 | `PreG9BCu4StylesTest` comprueba las direcciones semánticas de clic y Q tras T0. Las guardas CU7 y del ciclo nativo prueban creación, arrastre, dependencia, persistencia e historial. |
 
-El manifiesto conserva los intentos intermedios con su resultado original. La resolución de los perfiles se guarda junto a la ejecución. La compuesta se ejecuta una vez como INTEGRATION.
+El manifiesto conserva los intentos intermedios con su resultado original. La resolución de los perfiles se guarda junto a la ejecución. La compuesta se ejecuta como INTEGRATION una vez por candidato.
+
+El primer INTEGRATION detectó una diferencia de color en dos hashes DXF del caso protegido de SplineV2. El fallback de fábrica conserva el negro histórico V2 cuando Locus clásico tiene su color de fábrica. Los otros colores y atributos de Locus clásico se heredan. Los colores explícitos V2 se preservan exactamente. Se mantienen el exportador y las referencias DXF.
 
 La prueba del lector anterior usó las clases empaquetadas de GeoCeDG
 `b9bdb1e119fcc6d8f5bcdf3e1dea43c1a9a64513` y dos copias del `.ggb` de CU0.
