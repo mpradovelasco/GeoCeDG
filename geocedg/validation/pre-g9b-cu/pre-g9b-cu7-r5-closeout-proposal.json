@@ -1,0 +1,223 @@
+{
+  "record_kind": "CU7_R5_INDEPENDENT_CLOSEOUT_PROPOSAL",
+  "date": "2026-11-05",
+  "timezone": "Europe/Madrid",
+  "status": "PREPARED_FOR_AUTHOR_DECISION",
+  "selfApproved": false,
+  "author_approved": false,
+  "D1_adopted": false,
+  "F8_enabled": false,
+  "CU7_closed": false,
+  "publication_authorized": false,
+  "technical_candidate": {
+    "commit": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+    "tree": "a4fead2412bbb8859dd167e3c22b82c54e584633",
+    "base_R4": "585c536a2986c929b1d64b31ae75967baa9afc9e",
+    "branch": "codex/pre-g9b-cu7-general-point-interaction-r5",
+    "clean": true
+  },
+  "audit_verdict": "ACCEPTABLE WITH CONDITIONS",
+  "new_blocking_findings": [],
+  "R5_A": "ACCEPTABLE_WITHIN_AUDITED_PERIMETER",
+  "R5_B": "ACCEPTABLE_WITHIN_AUDITED_PERIMETER",
+  "R5_C": "ACCEPTABLE_WITHIN_POSITIVE_NATIVE_TABLE",
+  "interface_recommendation": "U2",
+  "D1_recommendation": "ADOPTAR CON CONDICIONES",
+  "author_smoke": {
+    "status": "SMOKE PASS — AUTHOR REPORTED",
+    "candidate": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+    "communication_date": "2026-11-05",
+    "timezone": "Europe/Madrid",
+    "provenance": "Direct author message in this audit chat, section 2",
+    "quote": "El smoke es perfecto",
+    "correct_worktree_confirmed_by_author": true,
+    "initial_main_execution_reported_and_corrected": true,
+    "functional_defects_reported_during_correct_smoke": false,
+    "individual_steps": "NOT_REPORTED; no inferred checklist",
+    "distinct_from": [
+      "implementer Computer Use / Win32",
+      "AWT tests",
+      "kernel tests"
+    ],
+    "package_author_approved": false,
+    "selfApproved": false
+  },
+  "canonical_profiles": [
+    {
+      "run_id": "verification-3a17e7606cb04a24952435c4c1ccec0d",
+      "candidate_commit": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+      "candidate_tree": "a4fead2412bbb8859dd167e3c22b82c54e584633",
+      "acceptance_verdict": "ACCEPTED",
+      "coverage_verdict": "COMPLETE",
+      "result_hash": "96b1edb89c94cc40858e7872de2a5f52ec0717c44e7aaaec556aa8c3c15217d7",
+      "summary": {
+        "acceptance_satisfied": 3,
+        "acceptance_violated": 0,
+        "acceptance_untrusted": 0,
+        "acceptance_not_run": 0,
+        "producer_count": 1,
+        "diagnostic_count": 6
+      },
+      "profile": "STATIC",
+      "artifact": "artifacts/cu7-r5-worktree/artifacts/pre-g9b-cu7-r5/frozen-static-01/verification-result.json",
+      "sha256": "d4106252a6f466c72f6b8dbc34cd521ec254505f4f5d0609dab4830e11134595"
+    },
+    {
+      "run_id": "verification-3ac33d0bea25423cb6fe8a2b02bd56bb",
+      "candidate_commit": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+      "candidate_tree": "a4fead2412bbb8859dd167e3c22b82c54e584633",
+      "acceptance_verdict": "ACCEPTED",
+      "coverage_verdict": "COMPLETE",
+      "result_hash": "c1c19eaec4801c48826a565562cf8de7125b164c3d97961d37ac319dd63169bb",
+      "summary": {
+        "acceptance_satisfied": 22,
+        "acceptance_violated": 0,
+        "acceptance_untrusted": 0,
+        "acceptance_not_run": 0,
+        "producer_count": 0,
+        "diagnostic_count": 0
+      },
+      "profile": "INFRA_UNIT",
+      "artifact": "artifacts/cu7-r5-worktree/artifacts/pre-g9b-cu7-r5/frozen-infra_unit-01/verification-result.json",
+      "sha256": "e9b6ee49793043f965d748e85c996d4c64f6e8c55a3c8297233b08ad1ff62c3c"
+    },
+    {
+      "run_id": "verification-ba51ae43ead746eb8e6c92003372286b",
+      "candidate_commit": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+      "candidate_tree": "a4fead2412bbb8859dd167e3c22b82c54e584633",
+      "acceptance_verdict": "ACCEPTED",
+      "coverage_verdict": "COMPLETE",
+      "result_hash": "55d63034862a3f8f47f05aa8bff0fc57edca8e3fd84ae34ef37bcf84498b5074",
+      "summary": {
+        "acceptance_satisfied": 10,
+        "acceptance_violated": 0,
+        "acceptance_untrusted": 0,
+        "acceptance_not_run": 0,
+        "producer_count": 9,
+        "diagnostic_count": 0
+      },
+      "profile": "PHASE",
+      "artifact": "artifacts/cu7-r5-worktree/artifacts/pre-g9b-cu7-r5/frozen-phase-01/verification-result.json",
+      "sha256": "d2ab5c27512bea877ee5bc65706ba160b8218050711c4cb5be01714bbfdf6fe5"
+    },
+    {
+      "run_id": "verification-34e64e961ccf4dc0b5d21a2899262f52",
+      "candidate_commit": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+      "candidate_tree": "a4fead2412bbb8859dd167e3c22b82c54e584633",
+      "acceptance_verdict": "ACCEPTED",
+      "coverage_verdict": "COMPLETE",
+      "result_hash": "9930798b458b8cc47051001128266135f5606e85e0c514a4406365b096c29946",
+      "summary": {
+        "acceptance_satisfied": 19,
+        "acceptance_violated": 0,
+        "acceptance_untrusted": 0,
+        "acceptance_not_run": 0,
+        "producer_count": 17,
+        "diagnostic_count": 10
+      },
+      "profile": "INTEGRATION",
+      "artifact": "artifacts/cu7-r5-worktree/artifacts/pre-g9b-cu7-r5/frozen-integration-01/verification-result.json",
+      "sha256": "971a3fe0722343781989e194786b170ded6303dbeff663143e30bee15c4141ee"
+    },
+    {
+      "run_id": "verification-8f8c5274954a40f7b2c2b17cffb9d087",
+      "candidate_commit": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+      "candidate_tree": "a4fead2412bbb8859dd167e3c22b82c54e584633",
+      "acceptance_verdict": "ACCEPTED",
+      "coverage_verdict": "COMPLETE",
+      "result_hash": "0be86bbd60695d577a72f54e29dfce54ed659f0ada434039c8b4dd321c03fb4e",
+      "summary": {
+        "acceptance_satisfied": 41,
+        "acceptance_violated": 0,
+        "acceptance_untrusted": 0,
+        "acceptance_not_run": 0,
+        "producer_count": 17,
+        "diagnostic_count": 10
+      },
+      "profile": "FINAL",
+      "artifact": "artifacts/cu7-r5-worktree/artifacts/pre-g9b-cu7-r5/frozen-final-01/verification-result.json",
+      "sha256": "d3a19bd1f257f63442d806c902774793e568ef49eb2ab9e5ceff8846d917af38"
+    }
+  ],
+  "final_receipt": {
+    "id": "aa8d0c33de7dd092b77f1d2ac5a9a8477ef910cdaa1e0d362fd4b230ce310222",
+    "artifact": "artifacts/cu7-r5-worktree/artifacts/pre-g9b-cu7-r5/frozen-final-01/verification-receipt.json",
+    "sha256": "2b60e2d4ee13a41598172becced78b27e47cff223757db0a68c48f405063d1b3",
+    "identity_inspection": "artifacts/cu7-r5-independent-audit/closeout-inspection.json"
+  },
+  "delivery_manifest": {
+    "artifact": "artifacts/pre-g9b-cu7-general-point-interaction-r5/delivery/candidate-manifest.json",
+    "sha256": "a8fecbe7fb25b4ed4cd6bc69630474b3bd32dfe04d1d715ee12a8eea29dd217c"
+  },
+  "delivery_hash_index": {
+    "artifact": "artifacts/pre-g9b-cu7-general-point-interaction-r5/delivery/SHA256SUMS.txt",
+    "sha256": "0806c8d9cb932350124c6bb023989e393f070ea42904424915c8aa6697c16c12",
+    "verified_entries": 9286,
+    "mismatches": 0
+  },
+  "independent_probes": {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "inner_exit_code": 0,
+    "kind": "SYNTHETIC_CONTROLLER_AND_KERNEL_NOT_PHYSICAL_SMOKE",
+    "cases": [
+      "foreignAndUnregisteredPanelsDoNotChangeTicketsButOwnABAInvalidates()",
+      "forwardQChangesAndForeignChoicesCannotPublish()",
+      "forwardBudgetSweepNeverResetsHistoricalWork()",
+      "nativeQMutationDuringFinalGuardCannotLeavePartialPoint()",
+      "nativeFarQRemainsTransientForAdditionalPositiveFamilies()",
+      "radiusFiniteExtremesAndOverflowAreFailClosed()",
+      "forwardGuardFailureAfterPublicationRollsBackEntireConstruction()"
+    ],
+    "junit": "artifacts/cu7-r5-independent-audit/desktop-02/junit/TEST-org.geocedg.desktop.R5IndependentAuditTest.xml",
+    "junit_sha256": "fca857580ea54bc588b245ed579b4815440e7cb1250f535a0e471b7d21633780",
+    "command": "./artifacts/cu7-r5-independent-audit/run-probes.ps1 -Module desktop -RunName desktop-02",
+    "process_evidence": "artifacts/cu7-r5-independent-audit/desktop-02/process-evidence.json"
+  },
+  "gui_evidence_review": {
+    "implementer_events": 328,
+    "verified_images": 439,
+    "saved_documents": 21,
+    "new_physical_auditor_smoke": false,
+    "independent_analysis": "artifacts/cu7-r5-independent-audit/gui-independent-check.json"
+  },
+  "diagnostics_preserved": [
+    "11 historical skipped acceptance cases in each INTEGRATION/FINAL",
+    "Revision3 missing fixture: one diagnostic failing case in each INTEGRATION/FINAL",
+    "recovery governance finding",
+    "historical consistency unavailable"
+  ],
+  "excluded_scope": [
+    "M08-D",
+    "M09/I2",
+    "I2G",
+    "I3",
+    "LOCAL_COMPONENT_FORWARD_ADDRESS_CREATION",
+    "universal native Path coverage",
+    "universal V2 mobility",
+    "cross-platform bitwise guarantee",
+    "geocedg_book",
+    "tags/releases"
+  ],
+  "documentation_preparation": {
+    "branch": "codex/pre-g9b-cu7-r5-reduced-closeout-proposal",
+    "base": "13ee3b8746d4d874824eb44ca1d05a3e57b494c2",
+    "class": "DOCUMENTATION_STATUS_ONLY",
+    "validation": "STATIC_AFTER_DOCUMENTATION_FREEZE",
+    "frozenAtPhaseStart": true,
+    "bootstrap_impact": "NO_CHANGE_REQUIRED",
+    "verification_infrastructure_impact": "NONE",
+    "guide_impact": "NO_CHANGE_REQUIRED",
+    "protected_file_materialization_exception": "CLAUDE.md omitted from checkout, original Git blob preserved; only this path skip-worktree; no complete materialization/FINAL claim",
+    "identity_and_results_external": "artifacts/cu7-r5-independent-audit/documentation-delivery.json"
+  },
+  "author_decisions_required": [
+    "D1 adoption with audited conditions",
+    "U2 preserve R5 and defer UI reorganization",
+    "reduced CU7 closure with exact scope",
+    "controlled main promotion"
+  ],
+  "audit_report_sha256": "1f15f11fea90745b4ea695043dd18c1fc6ff58598a87efac6dbf8a1829636738"
+}
