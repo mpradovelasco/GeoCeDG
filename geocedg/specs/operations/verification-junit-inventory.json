@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7724,
-      "expected_identities_sha256": "10aab3629a1d46089b21fdfaf2af8f3f69a9486858439b7e6dc5426ceca70759",
+      "expected_identity_count": 7726,
+      "expected_identities_sha256": "2c928095b4b8352e2e1902c0bb9a57d78138a530bb96fe25d88f369bd60d6e49",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -166,6 +166,10 @@
         {
           "commit": "0692d78cd2cbee21c4e687f3f3cdb8a896019d77",
           "tree": "51fdd4ec3ca7686922e1c07d319f038e6aaac028"
+        },
+        {
+          "commit": "a06e81cba690f27d575e0dd747728a8a76f5c72f",
+          "tree": "dd5e0598344eef07ad464364a089fceb13f42208"
         }
       ]
     },
@@ -191,8 +195,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2411,
-      "expected_identities_sha256": "ed6720332c99b928d591f608976db3c679c29f0bb533253969b15efe74208fd6",
+      "expected_identity_count": 2427,
+      "expected_identities_sha256": "6c75b9e7287b682dbc188c415fc46440401e636a8cb49ac9680f6f5f93fae99b",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -206,6 +210,10 @@
         {
           "commit": "0692d78cd2cbee21c4e687f3f3cdb8a896019d77",
           "tree": "51fdd4ec3ca7686922e1c07d319f038e6aaac028"
+        },
+        {
+          "commit": "a06e81cba690f27d575e0dd747728a8a76f5c72f",
+          "tree": "dd5e0598344eef07ad464364a089fceb13f42208"
         }
       ]
     },
@@ -4411,6 +4419,115 @@
         {
           "commit": "0692d78cd2cbee21c4e687f3f3cdb8a896019d77",
           "tree": "51fdd4ec3ca7686922e1c07d319f038e6aaac028"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu4.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.Cu4V2StyleDefaultsTest",
+        "org.geocedg.common.locus.NativeConicPointPersistenceTest",
+        "org.geocedg.common.locus.R5ForwardCreationRoutingTest",
+        "org.geocedg.common.locus.G9S1SemanticSpline2DTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.Cu4V2StyleDefaultsTest",
+        "--tests",
+        "org.geocedg.common.locus.NativeConicPointPersistenceTest",
+        "--tests",
+        "org.geocedg.common.locus.R5ForwardCreationRoutingTest",
+        "--tests",
+        "org.geocedg.common.locus.G9S1SemanticSpline2DTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 53,
+      "expected_identities_sha256": "f05f34392daf0adb66b6ed7c0e8684be87cee3d7a9a9067d7db062323a1fb9d8",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "a06e81cba690f27d575e0dd747728a8a76f5c72f",
+          "tree": "dd5e0598344eef07ad464364a089fceb13f42208"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu4.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.Cu4SliderLabelPersistenceTest",
+        "org.geocedg.desktop.Cu4V2DefaultsArchiveTest",
+        "org.geocedg.desktop.PreG9BCu4InsertionTest",
+        "org.geocedg.desktop.PreG9BCu4StylesTest",
+        "org.geocedg.desktop.PreG9BCu0AuthoringCharacterizationTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3InsertionTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3RecoveryTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3R2StylesTest",
+        "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "org.geocedg.desktop.Cu7M08SDesktopEventsTest.policyToggleIsInlineAndDoesNotResetSelection",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest.nativeContextReferenceWorksForCircleSegmentAndParabolaWithoutAQParent",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest.nativeReferenceFixedOptionBlocksEditingButKeepsConductorDependence",
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest.heldHistoryKeepsOriginalCompanionsAndRedo",
+        "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.Cu4SliderLabelPersistenceTest",
+        "--tests",
+        "org.geocedg.desktop.Cu4V2DefaultsArchiveTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu4InsertionTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu4StylesTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0AuthoringCharacterizationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3InsertionTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3RecoveryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3R2StylesTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SDesktopEventsTest.policyToggleIsInlineAndDoesNotResetSelection",
+        "--tests",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest.nativeContextReferenceWorksForCircleSegmentAndParabolaWithoutAQParent",
+        "--tests",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest.nativeReferenceFixedOptionBlocksEditingButKeepsConductorDependence",
+        "--tests",
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest.heldHistoryKeepsOriginalCompanionsAndRedo",
+        "--tests",
+        "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 69,
+      "expected_identities_sha256": "fe78b4b745e88dd1a5c75f12f97ad8ee2127c018de92565296833fc118aba77c",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "a06e81cba690f27d575e0dd747728a8a76f5c72f",
+          "tree": "dd5e0598344eef07ad464364a089fceb13f42208"
         }
       ]
     }
