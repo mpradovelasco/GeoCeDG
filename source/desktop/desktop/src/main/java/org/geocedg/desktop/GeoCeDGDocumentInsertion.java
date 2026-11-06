@@ -317,6 +317,7 @@ final class GeoCeDGDocumentInsertion {
 			if (!offer.isCurrent(app) || !passiveReceiver() || !sameSource(file, bytes)) {
 				return staleOffer(name);
 			}
+			prepareCopyBaseline(adapted);
 			String mismatch = dryRun(file, adapted, proof);
 			if (mismatch != null) {
 				return rejected(name, "Insert.Reject.DryRun", mismatch);
@@ -528,9 +529,18 @@ final class GeoCeDGDocumentInsertion {
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			app.getXMLio().writeGeoGebraFile(target, false);
 			scratch = app.newInsertionHelper();
+			if (proof != null) {
+				// The native stream loader normally schedules its initial Undo store.
+				// The trial paste needs a current state before it can start.
+				scratch.getKernel().setUndoActive(false);
+			}
 			if (!GFileHandler.loadXML(scratch, new ByteArrayInputStream(target.toByteArray()),
 					false)) {
 				return "target";
+			}
+			if (proof != null) {
+				scratch.getKernel().setUndoActive(true);
+				prepareCopyBaseline(scratch);
 			}
 			if (helper == null) {
 				helper = app.newInsertionHelper();
@@ -566,6 +576,14 @@ final class GeoCeDGDocumentInsertion {
 				app.releaseInsertionHelper(helper);
 			}
 			app.releaseInsertionHelper(scratch);
+		}
+	}
+
+	/** The native clipboard reads the current Undo state of both disposable hosts. */
+	private static void prepareCopyBaseline(AppGeoCeDG helper) throws IOException {
+		GeoCeDGUndoManager undo = (GeoCeDGUndoManager) helper.getUndoManager();
+		try (PreparedUndoBaseline baseline = undo.prepareUndoBaseline()) {
+			undo.commitUndoBaseline(baseline);
 		}
 	}
 

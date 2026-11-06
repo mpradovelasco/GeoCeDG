@@ -26,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -320,14 +324,19 @@ class Cu4B2InsertionTest {
 			int from, int to) {
 		List<String> order = new ArrayList<>();
 		Observation before = new Observation(receiver);
-		var insertion = receiver.getDocumentInsertion();
+		AtomicReference<AngularPreview> confirmed = new AtomicReference<>();
+		AtomicInteger coldHelpers = new AtomicInteger();
+		boolean coldTrial = from == Kernel.ANGLE_DEGREE;
+		boolean coldSource = coldTrial && to == Kernel.ANGLE_DEGREES_MINUTES_SECONDS;
+		var insertion = coldTrial
+				? withColdHelpers(receiver, () -> coldSource || confirmed.get() != null,
+						coldHelpers) : receiver.getDocumentInsertion();
 		insertion.setFaults(new GeoCeDGDocumentInsertion.Faults() {
 			@Override
 			public void beforeSnapshot() {
 				order.add("transaction");
 			}
 		});
-		AtomicReference<AngularPreview> confirmed = new AtomicReference<>();
 		assertInserted(insertion.insert(source, preview -> {
 			assertTrue(SwingUtilities.isEventDispatchThread());
 			assertUnchanged(receiver, before);
@@ -339,13 +348,14 @@ class Cu4B2InsertionTest {
 			assertEquals(presentation(lookup(original, "theta")), preview.samples().get(0).original());
 			order.add("confirm");
 			assertNull(confirmed.getAndSet(preview));
-			if (from == Kernel.ANGLE_DEGREE && to == Kernel.ANGLE_RADIANT) {
+			if (coldTrial && !coldSource) {
 				assertRejected(insertion.insert(source,
 						ignored -> fail("Reentrant insertion offered a second confirmation")));
 				assertUnchanged(receiver, before);
 			}
 			return true;
 		}));
+		assertEquals(coldSource ? 3 : coldTrial ? 1 : 0, coldHelpers.get());
 		assertEquals(List.of("confirm", "transaction"), order);
 		assertEquals(to, receiver.getKernel().getAngleUnit());
 		assertEquals(presentation(lookup(receiver, "theta_{1}")),
@@ -558,6 +568,24 @@ class Cu4B2InsertionTest {
 		assertEquals(REJECTED_BEFORE_MUTATION, result.getOutcome(),
 				() -> result.getMessage() + " " + result.getFailure());
 		assertNull(result.getFailure(), result::getMessage);
+	}
+
+	private static GeoCeDGDocumentInsertion withColdHelpers(AppGeoCeDG receiver,
+			BooleanSupplier shouldClear, AtomicInteger coldHelpers) {
+		AppGeoCeDG receiverWithColdHelpers = mock(AppGeoCeDG.class, delegatesTo(receiver));
+		doAnswer(invocation -> {
+			AppGeoCeDG helper = receiver.newInsertionHelper();
+			if (shouldClear.getAsBoolean()) {
+				awaitQuiescent(helper);
+				// Reproduce the empty history seen before the file loader's worker stores.
+				helper.getKernel().setUndoActive(false);
+				undo(helper).clearUndoInfo();
+				assertTrue(undo(helper).getCommands().isEmpty());
+				coldHelpers.incrementAndGet();
+			}
+			return helper;
+		}).when(receiverWithColdHelpers).newInsertionHelper();
+		return new GeoCeDGDocumentInsertion(receiverWithColdHelpers);
 	}
 
 	private enum Invalidation {
