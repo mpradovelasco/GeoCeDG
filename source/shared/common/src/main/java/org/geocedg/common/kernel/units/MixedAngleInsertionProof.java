@@ -359,9 +359,11 @@ public final class MixedAngleInsertionProof {
 			if (geo instanceof GeoText) {
 				return null;
 			}
-			// The scalar operands have no drawing. Native copy clears their graphical label bit.
-			boolean labelVisible = geo.getClass() != GeoNumeric.class && geo.getLabelVisible();
-			Label label = new Label(labelVisible, geo.getLabelMode(), geo.getRawCaption(),
+			// The certified scalar operands cannot draw a label. Native XML omits its
+			// visibility and mode, and reconstruction may resolve a different default mode.
+			boolean graphicalLabel = geo.getClass() != GeoNumeric.class;
+			Label label = new Label(graphicalLabel && geo.getLabelVisible(),
+					graphicalLabel ? geo.getLabelMode() : GeoElement.LABEL_DEFAULT, geo.getRawCaption(),
 					geo.labelOffsetX, geo.labelOffsetY);
 			Stroke stroke = new Stroke(geo.getLineThickness(), geo.getLineType(),
 					geo.getLineTypeHidden(), geo.getLineOpacity());

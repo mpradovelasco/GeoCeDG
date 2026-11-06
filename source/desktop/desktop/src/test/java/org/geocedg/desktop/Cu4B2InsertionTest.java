@@ -64,6 +64,7 @@ import org.geogebra.common.kernel.geos.GeoAngle.AngleStyle;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
+import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.plugin.ActionType;
 import org.geogebra.common.plugin.Operation;
 import org.junit.jupiter.api.Test;
@@ -95,14 +96,22 @@ class Cu4B2InsertionTest {
 						continue;
 					}
 					AppGeoCeDG receiver = receiver(to);
-					if (from == Kernel.ANGLE_DEGREE && to == Kernel.ANGLE_RADIANT) {
+					boolean differentPresentation = from == Kernel.ANGLE_DEGREE
+							&& to == Kernel.ANGLE_RADIANT;
+					if (differentPresentation) {
 						receiver.getKernel().setPrintDecimals(5);
+						receiver.setLabelingStyle(LabelVisibility.AlwaysOn.getValue());
 					}
 					AppGeoCeDG original = receiver.newInsertionHelper();
 					try {
 						assertTrue(original.loadFile(source, false));
 						assertEquals(from, original.getKernel().getAngleUnit());
 						confirmAndCheck(source, original, receiver, from, to);
+						if (differentPresentation) {
+							assertEquals(GeoElement.LABEL_VALUE, lookup(original, "s").getLabelMode());
+							assertEquals(GeoElement.LABEL_NAME_VALUE,
+									lookup(receiver, "s_{1}").getLabelMode());
+						}
 						assertArrayEquals(bytes, Files.readAllBytes(source.toPath()));
 					} finally {
 						receiver.releaseInsertionHelper(original);
