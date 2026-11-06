@@ -99,6 +99,8 @@ public final class LegacyStyleDefaults {
 					&& !prototypes.containsKey(id), "invalid or duplicate prototype");
 			type = id;
 			values = new ArrayList<>();
+			// Native defaults loading starts each present prototype at full line opacity.
+			add(255, GeoElement::setLineOpacity);
 		}
 
 		/** Finish the current prototype. */
@@ -154,8 +156,8 @@ public final class LegacyStyleDefaults {
 				break;
 			case "pointStyle":
 				require(prototype instanceof PointProperties, name);
-				int style = integer(attributes, "val", null);
-				add(style == -1 ? 0 : style, (geo, value) -> ((PointProperties) geo).setPointStyle(value));
+				add(integer(attributes, "val", null),
+						(geo, value) -> ((PointProperties) geo).setPointStyle(value));
 				break;
 			case "headStyle":
 				require(prototype instanceof GeoVector, name);
@@ -329,8 +331,8 @@ public final class LegacyStyleDefaults {
 			require(!flag(attributes, "playing", false), "active animation");
 			Double step = decimal(attributes, "step", prototype instanceof GeoAngle);
 			add(step, GeoElement::setAnimationStep);
-			if (prototype instanceof GeoNumeric) {
-				add(step == null, (geo, value) -> ((GeoNumeric) geo).setAutoStep(value));
+			if (step != null && prototype instanceof GeoNumeric) {
+				add(false, (geo, value) -> ((GeoNumeric) geo).setAutoStep(value));
 			}
 			// Bypass construction defaults for the detached scalar slot.
 			add(decimal(attributes, "speed", false), (geo, value) -> geo.setAnimationSpeedObject(

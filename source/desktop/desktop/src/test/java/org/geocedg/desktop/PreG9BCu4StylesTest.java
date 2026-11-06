@@ -27,7 +27,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -41,6 +43,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.io.XMLParseException;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -50,7 +53,6 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.GeoGebraPreferences;
-import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.plugin.EuclidianStyleConstants;
 import org.geogebra.desktop.CommandLineArguments;
@@ -322,6 +324,7 @@ class PreG9BCu4StylesTest {
 			var dependencies = dependencies(algorithms);
 			var identities = List.copyOf(construction.getSpatialIdentityRegistry().getRecords());
 			int steps = construction.steps();
+			int cursor = undo(app).getCursor();
 			var prefs = (GeoGebraPortablePreferences) GeoGebraPreferencesD.getPref();
 			ConstructionDefaults defaults = defaults(app);
 			GeoElement locus = prototype(app, ConstructionDefaults.DEFAULT_LOCUS);
@@ -352,39 +355,101 @@ class PreG9BCu4StylesTest {
 			assertTrue(slider.isSetEuclidianVisible());
 			assertSame(anchor, slider.getStartPoint());
 			assertEquals(maxLayer, app.getMaxLayerUsed());
-			assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps);
+			assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps,
+					cursor);
 
-			String red = green.replace("r=\"0\" g=\"255\"", "r=\"255\" g=\"0\"");
-			String blue = green.replace("g=\"255\" b=\"0\"", "g=\"0\" b=\"255\"");
-			for (String invalid : List.of(
-					wrapDefaults(red + number.replace("step=\"0.25\"",
-							"step=\"Distance((0,0),(1,0))\"")),
-					wrapDefaults(red + number.replace("min=\"-2\"", "min=\"d\"")),
-					wrapDefaults(red + blue),
-					wrapDefaults(red.replace("thickness=\"7\"", "thickness=\"7\" thickness=\"8\"")),
-					wrapDefaults(red.replace("</element>", "<condition show=\"d>0\"/></element>")),
-					wrapDefaults(red.replace("alpha=\"0\"", "alpha=\"0\" dynamicr=\"d\"")),
-					wrapDefaults(red + """
-							<element type="text" label="Text" default="100">
-							  <startPoint exp="Point(Circle((0,0),1))"/>
-							</element>
-							"""),
-					wrapDefaults(red).replace("</geogebra>", "<construction/></geogebra>"),
-					wrapDefaults(red) + "<geogebra/>",
-					"<!DOCTYPE geogebra>" + wrapDefaults(red))) {
-				assertThrows(XMLParseException.class, () -> LegacyStyleDefaultsReader.read(invalid, defaults));
+			XMLStringBuilder legacyBefore = new XMLStringBuilder();
+			defaults.getDefaultsXML(legacyBefore, null);
+			String v2Before = defaults.getV2DefaultsXML();
+			var inputs = adversarialDefaults(green, number);
+			assertEquals(39, inputs.size());
+			for (var entry : inputs.entrySet()) {
+				String invalid = entry.getValue();
+				assertThrows(XMLParseException.class,
+						() -> LegacyStyleDefaultsReader.read(invalid, defaults), entry.getKey());
+				assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps,
+						cursor);
 				readPersonalStyles(prefs, app, invalid);
-				assertEquals(GColor.GREEN, locus.getObjectColor());
-				assertEquals(0.25, slider.getAnimationStep());
-				assertEquals(maxLayer, app.getMaxLayerUsed());
-				assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps);
+				XMLStringBuilder legacyAfter = new XMLStringBuilder();
+				defaults.getDefaultsXML(legacyAfter, null);
+				assertEquals(legacyBefore.toString(), legacyAfter.toString(), entry.getKey());
+				assertEquals(v2Before, defaults.getV2DefaultsXML(), entry.getKey());
+				assertEquals(maxLayer, app.getMaxLayerUsed(), entry.getKey());
+				assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps,
+						cursor);
 			}
 			defaults.applyPersonalDefaults();
 			assertEquals(maxLayer, app.getMaxLayerUsed());
-			assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps);
+			assertGraphUnchanged(app, before, geos, algorithms, dependencies, identities, steps,
+					cursor);
 			undo(app).redo();
 			awaitQuiescent(app);
 			assertNotNull(app.getKernel().lookupLabel("Next"));
+		}
+
+		private static Map<String, String> adversarialDefaults(String green, String number) {
+			String red = green.replace("r=\"0\" g=\"255\"", "r=\"255\" g=\"0\"");
+			String validRed = wrapDefaults(red);
+			Map<String, String> invalid = new LinkedHashMap<>();
+			for (String step : List.of("Distance((0,0),(1,0))", "d", "1+2", "NaN", "Infinity",
+					"-Infinity", "1e309", "0x1p2", "1/0", "2pi")) {
+				invalid.put("step " + step, wrapDefaults(red + number.replace("step=\"0.25\"",
+						"step=\"" + step + "\"")));
+			}
+			invalid.put("nonfinite speed", wrapDefaults(red + number.replace("speed=\"2\"",
+					"speed=\"NaN\"")));
+			for (String attribute : List.of("min=\"-2\"", "max=\"8\"", "width=\"175\"")) {
+				invalid.put("nonfinite " + attribute, wrapDefaults(red + number.replace(attribute,
+						attribute.substring(0, attribute.indexOf('=')) + "=\"Infinity\"")));
+			}
+			invalid.put("minimum reference", wrapDefaults(red + number.replace("min=\"-2\"",
+					"min=\"d\"")));
+			invalid.put("equal bounds", wrapDefaults(red + number.replace("max=\"8\"", "max=\"-2\"")));
+			invalid.put("duplicate prototype", wrapDefaults(red + green));
+			invalid.put("duplicate leaf", appendLeaf(red,
+					"<labelMode val=\"4\"/><labelMode val=\"5\"/>"));
+			invalid.put("duplicate attribute", wrapDefaults(red.replace("thickness=\"7\"",
+					"thickness=\"7\" thickness=\"8\"")));
+			invalid.put("type mismatch", wrapDefaults(red + number.replace("type=\"numeric\"",
+					"type=\"point\"")));
+			invalid.put("V2 type", wrapDefaults(red.replace("default=\"80\"", "default=\"81\"")));
+			invalid.put("unknown type", wrapDefaults(red.replace("default=\"80\"", "default=\"99999\"")));
+			invalid.put("slider on text", wrapDefaults(red
+					+ "<element type=\"text\" default=\"100\"><slider min=\"0\" max=\"1\"/></element>"));
+			invalid.put("active animation", wrapDefaults(red + number.replace("playing=\"false\"",
+					"playing=\"true\"")));
+			invalid.put("reference anchor", wrapDefaults(red + """
+					<element type="text" label="Text" default="100">
+					  <startPoint exp="Point(Circle((0,0),1))"/>
+					</element>
+					"""));
+			invalid.put("script", wrapDefaults(red + addLeaf(number, "<script val=\"SetValue(d,9)\"/>")));
+			invalid.put("command", wrapDefaults(red + addLeaf(number, "<command name=\"Distance\"/>")));
+			invalid.put("condition", wrapDefaults(red + addLeaf(number, "<condition show=\"d>0\"/>")));
+			invalid.put("dynamic color", wrapDefaults(red.replace("alpha=\"0\"",
+					"alpha=\"0\" dynamicr=\"d\"")));
+			invalid.put("nested leaf", wrapDefaults(red.replace("type=\"15\"/>",
+					"type=\"15\"><value val=\"1\"/></lineStyle>")));
+			invalid.put("construction section", validRed.replace("</geogebra>",
+					"<construction/></geogebra>"));
+			invalid.put("second root", validRed + "<geogebra/>");
+			invalid.put("unclosed defaults", validRed.replace("</defaults>", ""));
+			invalid.put("doctype", "<!DOCTYPE geogebra [<!ENTITY x '1'>]>" + validRed);
+			invalid.put("processing instruction", "<?audit test?>" + validRed);
+			invalid.put("namespace", validRed.replace("<defaults>", "<defaults xmlns=\"urn:audit\">"));
+			invalid.put("text", validRed.replace("<defaults>", "<defaults>unexpected"));
+			invalid.put("oversize", validRed + " ".repeat(262145));
+			invalid.put("unknown attribute", wrapDefaults(red.replace("alpha=\"0\"",
+					"alpha=\"0\" unexpected=\"1\"")));
+			return invalid;
+		}
+
+		private static String appendLeaf(String prototype, String leaf) {
+			return wrapDefaults(addLeaf(prototype, leaf));
+		}
+
+		private static String addLeaf(String prototype, String leaf) {
+			return prototype.replace("</element>", leaf + "</element>");
 		}
 
 		private static String wrapDefaults(String elements) {
@@ -399,13 +464,17 @@ class PreG9BCu4StylesTest {
 		}
 
 		private static List<List<GeoElement>> dependencies(List<AlgoElement> algorithms) {
-			return algorithms.stream().map(algo -> Arrays.asList(algo.getInput().clone())).toList();
+			return algorithms.stream().map(algo -> {
+				List<GeoElement> edges = new ArrayList<>(Arrays.asList(algo.getInput()));
+				edges.addAll(Arrays.asList(algo.getOutput()));
+				return edges;
+			}).toList();
 		}
 
 		private static void assertGraphUnchanged(AppGeoCeDG app,
 				PreG9BR6PlusF3Documents.Observation before, List<GeoElement> geos,
 				List<AlgoElement> algorithms, List<List<GeoElement>> dependencies,
-				List<?> identities, int steps) {
+				List<?> identities, int steps, int cursor) {
 			Construction construction = app.getKernel().getConstruction();
 			var after = new PreG9BR6PlusF3Documents.Observation(app);
 			assertEquals(geos, List.copyOf(construction.getGeoSetConstructionOrder()));
@@ -416,6 +485,7 @@ class PreG9BCu4StylesTest {
 			assertEquals(List.of(), before.serializableDifferences(after));
 			assertTrue(before.sameInstances(after));
 			assertEquals(0, undo(app).getPendingStores());
+			assertEquals(cursor, undo(app).getCursor());
 			assertTrue(undo(app).redoPossible());
 		}
 
