@@ -401,12 +401,17 @@ file, reopen the document from its file, or close it.
 
 When inserting a free angle slider across different angular display modes,
 GeoCeDG checks a temporary copy before offering to use the current drawing's
-format. The confirmation shows examples of the format change. The current
-drawing keeps its angular mode and precision. Cancel or close the confirmation
-to keep the drawing as it is. GeoCeDG refuses the entire insertion when it
-cannot verify the slider's angle, bounds, increment, animation or construction
-references. This includes mixed-mode sources with dynamic angular text. Static
-text keeps its content and position.
+format. The confirmation shows examples of the format change. A text created
+with `Text(theta)` can adopt the new format when `theta` is a verified angle
+and no other construction step uses the text. The confirmation previews the
+text before and after the change. Static text keeps its content and position.
+The current drawing keeps its angular mode and precision. Cancel or close the
+confirmation to keep the drawing as it is.
+
+If GeoCeDG cannot verify the automatic change, it refuses the insertion. Open
+the source drawing, set its angular format to match the current drawing, check
+that the construction and its presentation are still correct, and save a copy.
+You can then try inserting that copy. The usual insertion checks still apply.
 
 **Apply Styles…** copies colour, line style, line thickness, point style, point
 size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the

@@ -58,6 +58,7 @@ import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoDependentPoint;
+import org.geogebra.common.kernel.algos.AlgoText;
 import org.geogebra.common.kernel.arithmetic.MyVecNode;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoAngle.AngleStyle;
@@ -66,7 +67,9 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.plugin.ActionType;
+import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.plugin.Operation;
+import org.geogebra.common.plugin.ScriptType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -88,7 +91,9 @@ class Cu4B2InsertionTest {
 	void confirmsEveryDirectedPairAndRetainsTheTypedConstruction() throws Exception {
 		onEdt(() -> {
 			for (int from : MODES) {
-				File source = archive(source(from, false), "source-" + from,
+				AppGeoCeDG candidate = source(from, false);
+				addAngularText(candidate);
+				File source = archive(candidate, "source-" + from,
 						from == Kernel.ANGLE_RADIANT);
 				byte[] bytes = Files.readAllBytes(source.toPath());
 				for (int to : MODES) {
@@ -125,13 +130,16 @@ class Cu4B2InsertionTest {
 	@Test
 	void cancellationAndStaleOffersDoNotReachTheTransaction() throws Exception {
 		onEdt(() -> {
-			File source = archive(source(Kernel.ANGLE_DEGREE, false), "candidate", false);
+			AppGeoCeDG candidate = source(Kernel.ANGLE_DEGREE, false);
+			addAngularText(candidate);
+			File source = archive(candidate, "candidate", false);
 			byte[] originalBytes = Files.readAllBytes(source.toPath());
 			AppGeoCeDG cancelled = receiver(Kernel.ANGLE_RADIANT);
 			Observation beforeCancel = new Observation(cancelled);
 			AtomicInteger confirmations = new AtomicInteger();
 			AtomicInteger barriers = countBarriers(cancelled);
 			Result declined = cancelled.getDocumentInsertion().insert(source, preview -> {
+				assertEquals("formatted", preview.dynamicTexts().get(0).label());
 				confirmations.incrementAndGet();
 				return false;
 			});
@@ -211,9 +219,22 @@ class Cu4B2InsertionTest {
 			AppGeoCeDG ordinary = receiver(Kernel.ANGLE_DEGREE);
 			assertInserted(ordinary.getDocumentInsertion().insert(computedText,
 					preview -> fail("Same-mode computed text offered mixed adaptation")));
-			assertNotNull(lookup(ordinary, "formatted"));
+			assertAngularText(ordinary, "theta_{1}");
 			must(text, "chars=Length(formatted)");
 			File textConsumer = archive(text, "text-consumer", false);
+			AppGeoCeDG parsed = source(Kernel.ANGLE_DEGREE, false);
+			must(parsed, "formatted=Text(theta)");
+			must(parsed, "parsed=ParseToNumber(formatted)");
+			File numericConsumer = archive(parsed, "parsed-text", false);
+			AppGeoCeDG composed = source(Kernel.ANGLE_DEGREE, false);
+			must(composed, "formatted=\"Angle \"+theta");
+			File literalAndAngle = archive(composed, "literal-and-angle", false);
+			File changedInput = rewriteEntry(computedText, "changed-input", MyXMLio.XML_FILE,
+					"(<command name=\"Text\">\\s*<input a0=)\"theta\"", "$1\"s\"");
+			File expressionInput = rewriteEntry(computedText, "expression-input", MyXMLio.XML_FILE,
+					"(<command name=\"Text\">\\s*<input a0=)\"theta\"", "$1\"theta+1\"");
+			File extraInput = rewriteEntry(computedText, "extra-input", MyXMLio.XML_FILE,
+					"(<command name=\"Text\">\\s*<input a0=\"theta\")", "$1 a1=\"true\"");
 			AppGeoCeDG floor = source(Kernel.ANGLE_DEGREE, true);
 			GeoElement expression = must(floor, "number=sin(theta)+floor(theta)");
 			assertEquals(0, expression.evaluateDouble());
@@ -233,15 +254,61 @@ class Cu4B2InsertionTest {
 			File anchor = rewriteEntry(valid, "legacy-anchor-command", MyXMLio.XML_FILE,
 					"<startPoint exp=\"A\"\\s*/>",
 					"<startPoint label=\"Point((1,2))\" x=\"1\" y=\"2\" z=\"1\"/>");
+			File corrupt = rewriteEntry(valid, "corrupt-xml", MyXMLio.XML_FILE,
+					"</construction>", "</corrupt>");
 			AppGeoCeDG receiver = receiver(Kernel.ANGLE_RADIANT);
 			AtomicInteger barriers = countBarriers(receiver);
 			Observation before = new Observation(receiver);
 			assertRejected(receiver.getDocumentInsertion().insert(valid));
 			assertUnchanged(receiver, before);
-			for (File file : List.of(computedText, textConsumer, modeSensitiveNumber,
-					absent, malformed, duplicate, library, bound, anchor)) {
+			for (File file : List.of(numericConsumer, literalAndAngle, changedInput, expressionInput, extraInput,
+					modeSensitiveNumber, absent, malformed, duplicate, bound, anchor)) {
 				assertRejected(receiver.getDocumentInsertion().insert(file,
 						preview -> fail("Uncertified source offered: " + file.getName())));
+				assertUnchanged(receiver, before);
+			}
+			List<String> messages = new ArrayList<>();
+			receiver.setInsertionMessageSink(messages::add);
+			receiver.setInsertionSourceChooser((host, title) -> textConsumer);
+			byte[] consumerBytes = Files.readAllBytes(textConsumer.toPath());
+			receiver.insertFileAction();
+			assertEquals(1, messages.size());
+			String alternative = messages.get(0);
+			for (String fragment : List.of("cannot guarantee the automatic change of angular format",
+					"Length", "Open the source", "check that", "Save a copy",
+					"all the normal insertion requirements")) {
+				assertTrue(alternative.contains(fragment), alternative);
+			}
+			assertUnchanged(receiver, before);
+
+			text.getKernel().setAngleUnit(Kernel.ANGLE_RADIANT);
+			text.getKernel().updateConstruction(false);
+			File reviewedCopy = archive(text, "reviewed-copy", false);
+			AppGeoCeDG reviewedTarget = receiver(Kernel.ANGLE_RADIANT);
+			assertInserted(reviewedTarget.getDocumentInsertion().insert(reviewedCopy,
+					preview -> fail("Reviewed copy already uses the receiver's format")));
+			assertAngularText(reviewedTarget, "theta_{1}");
+			assertNotNull(lookup(reviewedTarget, "chars"));
+			assertArrayEquals(consumerBytes, Files.readAllBytes(textConsumer.toPath()));
+
+			AppGeoCeDG scripted = source(Kernel.ANGLE_DEGREE, false);
+			lookup(scripted, "A").setScript(ScriptType.GGBSCRIPT.newScript(scripted,
+					"SetValue(theta,1)"), EventType.CLICK);
+			File withScript = archive(scripted, "mixed-script", false);
+			scripted.getKernel().setAngleUnit(Kernel.ANGLE_RADIANT);
+			File reviewedWithScript = archive(scripted, "reviewed-with-script", false);
+			AppGeoCeDG unsupported = source(Kernel.ANGLE_DEGREE, false);
+			must(unsupported, "B=Button()");
+			File button = archive(unsupported, "mixed-button", false);
+			List<File> unrelated = List.of(library, withScript, reviewedWithScript, button, corrupt);
+			List<String> reasons = List.of("JavaScript", "scripts", "scripts", "B (button)",
+					"not a valid GeoCeDG document");
+			for (int i = 0; i < unrelated.size(); i++) {
+				Result rejected = receiver.getDocumentInsertion().insert(unrelated.get(i),
+						preview -> fail("Unrelated rejection cannot offer an adaptation"));
+				assertRejected(rejected);
+				assertTrue(rejected.getMessage().contains(reasons.get(i)), rejected::getMessage);
+				assertFalse(rejected.getMessage().contains("Save a copy"), rejected::getMessage);
 				assertUnchanged(receiver, before);
 			}
 			assertEquals(0, barriers.get());
@@ -252,7 +319,9 @@ class Cu4B2InsertionTest {
 	@Test
 	void restoresMixedModeHistoryOnFailureAndPersistsRemappedInsertion() throws Exception {
 		onEdt(() -> {
-			File source = archive(source(Kernel.ANGLE_DEGREE, false), "lifecycle", true);
+			AppGeoCeDG candidate = source(Kernel.ANGLE_DEGREE, false);
+			addAngularText(candidate);
+			File source = archive(candidate, "lifecycle", true);
 			byte[] sourceBytes = Files.readAllBytes(source.toPath());
 			File originalFile = PreG9BR6PlusF3Documents.locus(dir, "native-receiver");
 			AppGeoCeDG receiver = PreG9BCu0Corpus.open(originalFile);
@@ -287,6 +356,30 @@ class Cu4B2InsertionTest {
 			assertEquals(1, corruptions.get());
 			assertEquals(1, confirmations.get());
 			assertUnchanged(receiver, before);
+			insertion.setFaults(new GeoCeDGDocumentInsertion.Faults() {
+				@Override
+				public void afterCommit() {
+					assertAngularText(receiver, "theta_{1}").setTextString("uncertified");
+				}
+			});
+			Result failedText = insertion.insert(source, preview -> true);
+			assertEquals(FAILED_RECOVERY_CERTIFIED, failedText.getOutcome(), failedText.getMessage());
+			assertEquals("verification failed: certified angular values or dependencies",
+					assertInstanceOf(IllegalStateException.class, failedText.getFailure()).getMessage());
+			assertUnchanged(receiver, before);
+			insertion.setFaults(new GeoCeDGDocumentInsertion.Faults() {
+				@Override
+				public void afterCommit() {
+					GeoText copied = assertAngularText(receiver, "theta_{1}");
+					copied.getParentAlgorithm().getInput()[0] = oldAngleLabel;
+				}
+			});
+			Result failedDependency = insertion.insert(source, preview -> true);
+			assertEquals(FAILED_RECOVERY_CERTIFIED, failedDependency.getOutcome(),
+					failedDependency.getMessage());
+			assertEquals("verification failed: closure formatted",
+					assertInstanceOf(IllegalStateException.class, failedDependency.getFailure()).getMessage());
+			assertUnchanged(receiver, before);
 			assertArrayEquals(sourceBytes, Files.readAllBytes(source.toPath()));
 			insertion.setFaults(null);
 
@@ -305,6 +398,7 @@ class Cu4B2InsertionTest {
 				assertEquals(before.cursor, undo(receiver).getCursor());
 				assertNull(lookup(receiver, "theta_{1}"));
 				assertNull(lookup(receiver, "P"));
+				assertNull(lookup(receiver, "formatted"));
 				assertEquals(Kernel.ANGLE_RADIANT, receiver.getKernel().getAngleUnit());
 				undo(receiver).redo();
 				awaitQuiescent(receiver);
@@ -355,6 +449,10 @@ class Cu4B2InsertionTest {
 			assertEquals(1, preview.samples().size());
 			assertEquals("theta", preview.samples().get(0).label());
 			assertEquals(presentation(lookup(original, "theta")), preview.samples().get(0).original());
+			assertEquals(1, preview.dynamicTexts().size());
+			assertEquals("formatted", preview.dynamicTexts().get(0).label());
+			assertEquals(((GeoText) lookup(original, "formatted")).getTextString(),
+					preview.dynamicTexts().get(0).original());
 			order.add("confirm");
 			assertNull(confirmed.getAndSet(preview));
 			if (coldTrial && !coldSource) {
@@ -371,6 +469,10 @@ class Cu4B2InsertionTest {
 				confirmed.get().samples().get(0).adapted());
 		assertNotEquals(confirmed.get().samples().get(0).original(),
 				confirmed.get().samples().get(0).adapted());
+		assertEquals(assertAngularText(receiver, "theta_{1}").getTextString(),
+				confirmed.get().dynamicTexts().get(0).adapted());
+		assertNotEquals(confirmed.get().dynamicTexts().get(0).original(),
+				confirmed.get().dynamicTexts().get(0).adapted());
 		awaitQuiescent(receiver);
 		assertEquals(before.cursor + 1, undo(receiver).getCursor());
 		assertContent(original, receiver);
@@ -409,6 +511,14 @@ class Cu4B2InsertionTest {
 		GeoPoint anchor = (GeoPoint) must(source, "A=(1,2)");
 		((GeoText) must(source, "literal=\"" + LITERAL + "\"")).setStartPoint(anchor);
 		return source;
+	}
+
+	private static void addAngularText(AppGeoCeDG source) throws CircularDefinitionException {
+		GeoText text = (GeoText) must(source, "formatted=Text(theta)");
+		text.setStartPoint((GeoPoint) lookup(source, "A"));
+		text.setFontSizeMultiplier(1.5);
+		text.setObjColor(GColor.BLUE);
+		text.setEuclidianVisible(true);
 	}
 
 	private static AppGeoCeDG receiver(int mode) throws IOException {
@@ -454,6 +564,23 @@ class Cu4B2InsertionTest {
 		GeoText text = (GeoText) lookup(receiver, "literal");
 		assertEquals(LITERAL, text.getTextString());
 		assertSame(lookup(receiver, "A_{1}"), text.getStartPoint());
+		GeoText angular = assertAngularText(receiver, "theta_{1}");
+		assertFalse(angular.hasChildren());
+		assertSame(lookup(receiver, "A_{1}"), angular.getStartPoint());
+		assertTrue(angular.isSetEuclidianVisible());
+		assertEquals(GColor.BLUE, angular.getStaticObjectColor());
+		assertEquals(1.5, angular.getFontSizeMultiplier());
+	}
+
+	private static GeoText assertAngularText(AppGeoCeDG receiver, String angleLabel) {
+		GeoText text = assertInstanceOf(GeoText.class, lookup(receiver, "formatted"));
+		GeoAngle angle = assertInstanceOf(GeoAngle.class, lookup(receiver, angleLabel));
+		AlgoText producer = assertInstanceOf(AlgoText.class, text.getParentAlgorithm());
+		assertArrayEquals(new GeoElement[]{angle}, producer.getInput());
+		assertSame(text, producer.getOutput(0));
+		assertNull(text.getDefinition());
+		assertEquals(angle.toValueString(text.getStringTemplate()), text.getTextString());
+		return text;
 	}
 
 	private static List<Object> angleSlots(GeoAngle angle) {
@@ -493,6 +620,7 @@ class Cu4B2InsertionTest {
 				assertEquals(Math.cos(angle.getValue()), cosine.evaluateDouble());
 				assertEquals(cosine.evaluateDouble(), point.getInhomX());
 				assertEquals(sine.evaluateDouble(), point.getInhomY());
+				assertAngularText(receiver, "theta_{1}");
 			}
 		} finally {
 			angle.setValue(raw);

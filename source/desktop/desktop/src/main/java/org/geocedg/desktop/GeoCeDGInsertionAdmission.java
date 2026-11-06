@@ -41,6 +41,7 @@ import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.geos.GeoVector;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.common.plugin.EventType;
+import org.geogebra.common.plugin.GeoClass;
 
 /**
  * PRE-G9B-R6-plus-F3 admission of an Insert File source (contract R, matrix P4, macro
@@ -207,6 +208,18 @@ final class GeoCeDGInsertionAdmission {
 	static boolean hasScript(GeoElement geo) {
 		for (EventType type : EventType.values()) {
 			if (geo.getScript(type) != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Raw XML classes that cannot match a P4 family, independent of their producer. */
+	static boolean excludesXmlType(String type) {
+		for (GeoClass geoClass : GeoClass.values()) {
+			if (geoClass.xmlName.equals(type) && (geoClass.is3D || geoClass == GeoClass.BUTTON
+					|| geoClass == GeoClass.TEXTFIELD || geoClass == GeoClass.IMAGE
+					|| geoClass == GeoClass.CAS_CELL)) {
 				return true;
 			}
 		}

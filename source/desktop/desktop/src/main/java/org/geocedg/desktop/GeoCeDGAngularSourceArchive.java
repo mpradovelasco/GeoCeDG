@@ -9,6 +9,7 @@ import static org.geogebra.common.io.MyXMLio.JAVASCRIPT_FILE;
 import static org.geogebra.common.io.MyXMLio.XML_FILE;
 import static org.geogebra.common.io.MyXMLio.XML_FILE_DEFAULTS_2D;
 import static org.geogebra.common.io.MyXMLio.XML_FILE_DEFAULTS_3D;
+import static org.geogebra.common.io.MyXMLio.XML_FILE_MACRO;
 import static org.geogebra.common.io.MyXMLio.XML_FILE_THUMBNAIL;
 import static org.geogebra.common.main.GeoGebraPreferencesXML.ANGLE_DEGREES_MINUTES_SECONDS_XML_NAME;
 import static org.geogebra.common.main.GeoGebraPreferencesXML.ANGLE_DEGREE_XML_NAME;
@@ -101,7 +102,8 @@ final class GeoCeDGAngularSourceArchive {
 		ORDINARY, ADAPTABLE, REJECTED
 	}
 
-	record Inspection(Status status, int sourceMode) {
+	record Inspection(Status status, int sourceMode, boolean differentModes,
+			String refusalKey, String detail) {
 	}
 
 	private GeoCeDGAngularSourceArchive() {
@@ -114,12 +116,14 @@ final class GeoCeDGAngularSourceArchive {
 		boolean identifiedMode = main.documentEntries == 1 && main.modeTags == 1
 				&& main.kernels == 1 && main.sourceMode != UNKNOWN_MODE;
 		if (!main.angleSlider || identifiedMode && main.sourceMode == targetMode) {
-			return new Inspection(Status.ORDINARY, main.sourceMode);
+			return new Inspection(Status.ORDINARY, main.sourceMode, false, null, "");
 		}
+		boolean differentModes = identifiedMode && knownMode(targetMode);
 		if (!safe || !identifiedMode || !knownMode(targetMode)) {
-			return new Inspection(Status.REJECTED, main.sourceMode);
+			return new Inspection(Status.REJECTED, main.sourceMode, differentModes,
+					main.refusalKey, main.detail);
 		}
-		return new Inspection(Status.ADAPTABLE, main.sourceMode);
+		return new Inspection(Status.ADAPTABLE, main.sourceMode, true, null, "");
 	}
 
 	private static boolean scanZip(byte[] bytes, XmlScan main) {
@@ -145,14 +149,19 @@ final class GeoCeDGAngularSourceArchive {
 				}
 				remaining -= raw.length;
 				try {
-					safe &= !entry.isDirectory() && safeEntry(name, raw, main);
+					if (entry.isDirectory() || !safeEntry(name, raw, main)) {
+						safe = false;
+						main.note(safeDiagnosticName(name));
+					}
 				} catch (IOException malformedEntry) {
 					// Keep scanning for the construction header even if a prior entry was unsafe.
 					safe = false;
+					main.refuse("Insert.Reject.Invalid", "");
 				}
 				zip.closeEntry();
 			}
 		} catch (IOException | IllegalArgumentException malformed) {
+			main.refuse("Insert.Reject.Invalid", "");
 			return false;
 		}
 		return safe && main.safe && main.documentEntries == 1;
@@ -164,10 +173,18 @@ final class GeoCeDGAngularSourceArchive {
 		case XML_FILE_DEFAULTS_2D, XML_FILE_DEFAULTS_3D -> scanXml(raw, new XmlScan(true));
 		case JAVASCRIPT_FILE -> {
 			String javascript = utf8(raw);
-			yield Kernel.defaultLibraryJavaScript.equals(javascript)
+			boolean standard = Kernel.defaultLibraryJavaScript.equals(javascript)
 					|| (Kernel.defaultLibraryJavaScript + "\n").equals(javascript);
+			if (!standard) {
+				main.refuse("Insert.Reject.ScriptLibrary", "");
+			}
+			yield standard;
 		}
 		case V2StyleDefaults.ZIP_ENTRY -> safeCurveDefaults(raw);
+		case XML_FILE_MACRO -> {
+			main.note(XML_FILE_MACRO);
+			yield false;
+		}
 		case XML_FILE_THUMBNAIL -> true;
 		default -> false;
 		};
@@ -207,7 +224,7 @@ final class GeoCeDGAngularSourceArchive {
 						scan.start(reader);
 						break;
 					case XMLStreamConstants.END_ELEMENT:
-						scan.path.removeLast();
+						scan.end();
 						break;
 					case XMLStreamConstants.CHARACTERS, XMLStreamConstants.CDATA:
 						scan.safe &= reader.isWhiteSpace();
@@ -224,7 +241,7 @@ final class GeoCeDGAngularSourceArchive {
 				reader.close();
 			}
 		} catch (XMLStreamException malformed) {
-			scan.safe = false;
+			throw new IOException("Invalid insertion XML", malformed);
 		}
 		return scan.safe;
 	}
@@ -233,6 +250,7 @@ final class GeoCeDGAngularSourceArchive {
 		private final ArrayDeque<String> path = new ArrayDeque<>();
 		private final boolean defaults;
 		private final Set<Integer> prototypeIds = new HashSet<>();
+		private final Set<String> angleSliders = new HashSet<>();
 		private boolean safe = true;
 		private boolean angleElement;
 		private boolean angleSlider;
@@ -243,6 +261,11 @@ final class GeoCeDGAngularSourceArchive {
 		private int constructions;
 		private int defaultsSections;
 		private String documentSection = "";
+		private String elementLabel;
+		private String commandName;
+		private int commandParts;
+		private String refusalKey;
+		private String detail = "";
 
 		private XmlScan(boolean defaults) {
 			this.defaults = defaults;
@@ -252,8 +275,12 @@ final class GeoCeDGAngularSourceArchive {
 			String name = reader.getLocalName();
 			String parent = path.peekLast();
 			int depth = path.size();
-			safe &= plainXml(reader, depth) && ScriptType.getTypeWithXMLName(name) == null
-					&& !"listener".equals(name);
+			boolean script = ScriptType.getTypeWithXMLName(name) != null || "listener".equals(name);
+			if (script && !defaults && "construction".equals(documentSection)
+					&& "element".equals(parent)) {
+				refuse("Insert.Reject.Scripts", elementLabel == null ? name : elementLabel);
+			}
+			safe &= plainXml(reader, depth) && !script;
 			if (depth == 0) {
 				safe &= "geogebra".equals(name);
 			} else if (defaults) {
@@ -262,6 +289,28 @@ final class GeoCeDGAngularSourceArchive {
 				safe &= documentNode(reader, name, parent, depth);
 			}
 			path.addLast(name);
+		}
+
+		private void end() {
+			String name = path.removeLast();
+			if (!defaults && path.size() == 2 && "construction".equals(documentSection)
+					&& "command".equals(name) && commandParts != 2) {
+				safe = false;
+				note(commandName);
+			}
+		}
+
+		private void note(String object) {
+			if (detail.isEmpty() && object != null) {
+				detail = object;
+			}
+		}
+
+		private void refuse(String key, String object) {
+			if (refusalKey == null || "Insert.Reject.Scripts".equals(key)) {
+				refusalKey = key;
+				detail = object == null ? "" : object;
+			}
 		}
 
 		private boolean documentNode(XMLStreamReader reader, String name, String parent, int depth) {
@@ -300,20 +349,75 @@ final class GeoCeDGAngularSourceArchive {
 			if (depth == 2) {
 				if ("element".equals(name)) {
 					String type = attr(reader, "type");
+					elementLabel = safeDiagnosticName(attr(reader, "label"));
 					angleElement = "angle".equals(type);
-					return type != null && GEO_TYPES.contains(type) && attr(reader, "default") == null;
+					if (type != null && GEO_TYPES.contains(type) && attr(reader, "default") == null) {
+						return true;
+					}
+					String object = objectDetail(elementLabel, safeDiagnosticName(type));
+					if (GeoCeDGInsertionAdmission.excludesXmlType(type)) {
+						refuse("Insert.Reject.Unsupported", object);
+					} else {
+						note(object);
+					}
+					return false;
 				}
 				return switch (name) {
-				case "expression" -> pureExpression(attr(reader, "exp"));
+				case "expression" -> {
+					boolean pure = pureExpression(attr(reader, "exp"));
+					if (!pure) {
+						note(safeDiagnosticName(attr(reader, "label")));
+					}
+					yield pure;
+				}
+				case "command" -> beginCommand(reader);
+				case "cascell" -> {
+					refuse("Insert.Reject.Unsupported", "CAS");
+					yield false;
+				}
 				case "geocedgUnits", "worksheetText" -> true;
 				default -> false;
 				};
 			}
+			if (depth == 3 && "command".equals(parent)) {
+				return textCommandPart(reader, name);
+			}
 			if (depth != 3 || !"element".equals(parent)) {
 				return false;
 			}
-			angleSlider |= angleElement && "slider".equals(name);
-			return safeGeoLeaf(reader, name, false);
+			if (angleElement && "slider".equals(name)) {
+				angleSlider = true;
+				if (elementLabel != null) {
+					angleSliders.add(elementLabel);
+				}
+			}
+			boolean safeLeaf = safeGeoLeaf(reader, name, false);
+			if (!safeLeaf) {
+				note(elementLabel);
+			}
+			return safeLeaf;
+		}
+
+		private boolean beginCommand(XMLStreamReader reader) {
+			commandName = safeDiagnosticName(attr(reader, "name"));
+			commandParts = 0;
+			boolean text = "Text".equals(commandName) && reader.getAttributeCount() == 1;
+			if (!text) {
+				note(commandName);
+			}
+			return text;
+		}
+
+		private boolean textCommandPart(XMLStreamReader reader, String name) {
+			int part = ++commandParts;
+			String label = safeDiagnosticName(attr(reader, "a0"));
+			boolean valid = "Text".equals(commandName) && reader.getAttributeCount() == 1
+					&& label != null && (part == 1 && "input".equals(name) && angleSliders.contains(label)
+							|| part == 2 && "output".equals(name));
+			if (!valid) {
+				note(objectDetail(label, commandName));
+			}
+			return valid;
 		}
 
 		private boolean defaultNode(XMLStreamReader reader, String name, String parent, int depth) {
@@ -330,6 +434,14 @@ final class GeoCeDGAngularSourceArchive {
 			}
 			return depth == 3 && "element".equals(parent) && safeGeoLeaf(reader, name, true);
 		}
+	}
+
+	private static String safeDiagnosticName(String name) {
+		return name != null && name.length() <= 128 && IDENTIFIER.matcher(name).matches() ? name : null;
+	}
+
+	private static String objectDetail(String label, String type) {
+		return label == null ? type : type == null ? label : label + " (" + type + ")";
 	}
 
 	private static boolean plainXml(XMLStreamReader reader, int depth) {

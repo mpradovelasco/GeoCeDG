@@ -93,8 +93,25 @@ final class GeoCeDGInsertionFidelity {
 	}
 
 	static boolean sameText(GeoText from, GeoText to, Map<GeoElement, GeoElement> copies) {
+		return Objects.equals(from.getTextString(), to.getTextString())
+				&& sameTextPresentation(from, to, copies);
+	}
+
+	static boolean sameDynamicTextPresentation(GeoText from, GeoText to,
+			Map<GeoElement, GeoElement> copies) {
+		return sameTextPresentation(from, to, copies)
+				&& from.useSignificantFigures() == to.useSignificantFigures()
+				&& from.isAlwaysFixed() == to.isAlwaysFixed()
+				&& from.isAuxiliaryObject() == to.isAuxiliaryObject()
+				&& from.isSelectionAllowed(null) == to.isSelectionAllowed(null)
+				&& from.getTooltipMode() == to.getTooltipMode()
+				&& Objects.equals(from.getHorizontalAlignment(), to.getHorizontalAlignment())
+				&& Objects.equals(from.getVerticalAlignment(), to.getVerticalAlignment());
+	}
+
+	private static boolean sameTextPresentation(GeoText from, GeoText to,
+			Map<GeoElement, GeoElement> copies) {
 		return to.isDefined()
-				&& Objects.equals(from.getTextString(), to.getTextString())
 				&& from.isLaTeX() == to.isLaTeX()
 				&& from.isSymbolicMode() == to.isSymbolicMode()
 				&& from.isSerifFont() == to.isSerifFont()

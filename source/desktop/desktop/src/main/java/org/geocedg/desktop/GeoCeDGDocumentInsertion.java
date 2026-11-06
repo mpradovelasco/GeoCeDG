@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -170,9 +171,10 @@ final class GeoCeDGDocumentInsertion {
 	}
 
 	record AngularPreview(String sourceName, int sourceMode, int targetMode,
-			List<AngularSample> samples) {
+			List<AngularSample> samples, List<AngularSample> dynamicTexts) {
 		AngularPreview {
 			samples = List.copyOf(samples);
+			dynamicTexts = List.copyOf(dynamicTexts);
 		}
 	}
 
@@ -226,7 +228,11 @@ final class GeoCeDGDocumentInsertion {
 		GeoCeDGAngularSourceArchive.Inspection angular = confirmation == null ? null
 				: GeoCeDGAngularSourceArchive.inspect(bytes, targetMode);
 		if (angular != null && angular.status() == GeoCeDGAngularSourceArchive.Status.REJECTED) {
-			return rejected(name, "Insert.Angle.Unverified", "");
+			if (angular.refusalKey() != null) {
+				return rejected(name, angular.refusalKey(), angular.detail());
+			}
+			return angular.differentModes() ? unverifiedAdaptation(name, angular.detail())
+					: rejected(name, "Insert.Angle.Unverified", "");
 		}
 		if (!preflight(bytes)) {
 			return rejected(name, "Insert.Reject.Invalid", "");
@@ -274,26 +280,36 @@ final class GeoCeDGDocumentInsertion {
 			adapted = app.newInsertionHelper();
 			if (!GeoCeDGAngularSourceArchive.load(original, bytes, targetMode, sourceMode)
 					|| !GeoCeDGAngularSourceArchive.load(adapted, bytes, sourceMode, sourceMode)) {
-				return rejected(name, "Insert.Angle.Unverified", "");
+				return rejected(name, "Insert.Reject.Invalid", "");
 			}
 			GeoCeDGInsertionAdmission originalAdmission = GeoCeDGInsertionAdmission.admit(app,
 					original);
 			if (!"Insert.Reject.AngleUnit".equals(originalAdmission.getReasonKey())) {
-				return rejected(name, "Insert.Angle.Unverified", "");
+				return originalAdmission.isAdmitted() ? unverifiedAdaptation(name, "")
+						: rejected(name, originalAdmission.getReasonKey(), originalAdmission.getReasonArgument());
 			}
 			Construction originalConstruction = original.getKernel().getConstruction();
 			Construction isolatedConstruction = adapted.getKernel().getConstruction();
-			MixedAngleInsertionProof source = MixedAngleInsertionProof.capture(originalConstruction);
-			MixedAngleInsertionProof copy = MixedAngleInsertionProof.capture(isolatedConstruction);
+			StringBuilder detail = new StringBuilder();
+			Consumer<GeoElement> report = geo -> {
+				if (detail.length() == 0) {
+					detail.append(geo.getLabelSimple()).append(" (").append(geo.getTypeString()).append(')');
+				}
+			};
+			MixedAngleInsertionProof source = MixedAngleInsertionProof.capture(originalConstruction, report);
+			MixedAngleInsertionProof copy = MixedAngleInsertionProof.capture(isolatedConstruction, report);
 			if (source == null || !source.sameState(copy)) {
-				return rejected(name, "Insert.Angle.Unverified", "");
+				return unverifiedAdaptation(name, detail.toString());
 			}
 			adapted.getKernel().setAngleUnit(targetMode);
 			adapted.getKernel().updateConstruction(false);
-			MixedAngleInsertionProof proof = MixedAngleInsertionProof.capture(isolatedConstruction);
+			MixedAngleInsertionProof proof = MixedAngleInsertionProof.capture(isolatedConstruction, report);
 			GeoCeDGInsertionAdmission admission = GeoCeDGInsertionAdmission.admit(app, adapted);
-			if (!copy.sameState(proof) || !admission.isAdmitted()) {
-				return rejected(name, "Insert.Angle.Unverified", "");
+			if (!admission.isAdmitted()) {
+				return rejected(name, admission.getReasonKey(), admission.getReasonArgument());
+			}
+			if (!copy.sameState(proof)) {
+				return unverifiedAdaptation(name, detail.toString());
 			}
 			if (!app.getKernel().isUndoActive() || !(app.getKernel().getConstruction()
 					.getUndoManager() instanceof GeoCeDGUndoManager undo)) {
@@ -349,21 +365,27 @@ final class GeoCeDGDocumentInsertion {
 	private AngularPreview preview(String name, AppGeoCeDG original, AppGeoCeDG adapted,
 			List<GeoElement> source) {
 		List<AngularSample> samples = new ArrayList<>();
+		List<AngularSample> dynamicTexts = new ArrayList<>();
 		for (GeoElement geo : source) {
+			String label = geo.getLabelSimple();
 			if (geo instanceof GeoAngle angle) {
-				String label = angle.getLabelSimple();
 				GeoElement prior = original.getKernel().lookupLabel(label);
 				samples.add(new AngularSample(label, prior.toValueString(StringTemplate.defaultTemplate),
-						formatForReceiver(angle)));
+						formatForReceiver(angle, StringTemplate.defaultTemplate)));
+			} else if (geo instanceof GeoText angleText && !angleText.isIndependent()) {
+				// The mixed-mode certificate only admits native terminal angle text here.
+				GeoAngle angle = (GeoAngle) angleText.getParentAlgorithm().getInput(0);
+				GeoText prior = (GeoText) original.getKernel().lookupLabel(label);
+				dynamicTexts.add(new AngularSample(label, prior.getTextString(),
+						formatForReceiver(angle, angleText.getStringTemplate())));
 			}
 		}
 		return new AngularPreview(name, original.getKernel().getAngleUnit(),
-				adapted.getKernel().getAngleUnit(), samples);
+				adapted.getKernel().getAngleUnit(), samples, dynamicTexts);
 	}
 
-	private String formatForReceiver(GeoAngle angle) {
+	private String formatForReceiver(GeoAngle angle, StringTemplate template) {
 		Kernel kernel = app.getKernel();
-		StringTemplate template = StringTemplate.defaultTemplate;
 		boolean unbounded = angle.getAngleStyle() == GeoAngle.AngleStyle.UNBOUNDED;
 		return angle.isEuclidianVisible()
 				? kernel.formatAngle(angle.getValue(), angle.toDecimal(), 1 / angle.getAnimationStep(),
@@ -383,6 +405,12 @@ final class GeoCeDGDocumentInsertion {
 	private Result staleOffer(String name) {
 		return new Result(Outcome.REJECTED_BEFORE_MUTATION, text("Insert.Angle.Stale", name),
 				List.of(), null);
+	}
+
+	private Result unverifiedAdaptation(String name, String detail) {
+		String explanation = detail.isEmpty() ? "" : "\n" + text("Insert.Angle.Detail", detail);
+		return new Result(Outcome.REJECTED_BEFORE_MUTATION,
+				text("Insert.Angle.ManualAlternative", name, explanation), List.of(), null);
 	}
 
 	private static final class AngularOfferState implements EventListener {
@@ -598,6 +626,13 @@ final class GeoCeDGDocumentInsertion {
 		}
 		if (!proof.preservesCopy(buffer.getCopies())) {
 			return "certified angular values or dependencies";
+		}
+		for (Map.Entry<GeoElement, GeoElement> copy : buffer.getCopies().entrySet()) {
+			if (copy.getKey() instanceof GeoText from && !from.isIndependent()
+					&& !GeoCeDGInsertionFidelity.sameDynamicTextPresentation(from,
+							(GeoText) copy.getValue(), buffer.getCopies())) {
+				return "angular text presentation " + from.getLabelSimple();
+			}
 		}
 		return proof.sameState(MixedAngleInsertionProof.capture(helper.getKernel().getConstruction()))
 				? null : "adapted source changed during copy";

@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoText;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.MyStringBuffer;
@@ -59,6 +62,16 @@ public final class MixedAngleInsertionProof {
 	 * @return a certificate, or null if the whole source cannot be verified
 	 */
 	public static MixedAngleInsertionProof capture(Construction construction) {
+		return capture(construction, unsupported -> { });
+	}
+
+	/**
+	 * @param construction source or isolated source copy
+	 * @param unsupportedObject reports the first object outside the certified class, if known
+	 * @return a certificate, or null if the whole source cannot be verified
+	 */
+	public static MixedAngleInsertionProof capture(Construction construction,
+			Consumer<GeoElement> unsupportedObject) {
 		Kernel kernel = construction.getKernel();
 		if (kernel.hasMacros() || kernel.wantAnimationStarted()
 				|| !construction.getSpatialIdentityRegistry().isEmpty()
@@ -82,6 +95,7 @@ public final class MixedAngleInsertionProof {
 			if (entry == null || construction.getSpatialIdentityRegistry().isParticipating(geo)
 					|| construction.getConstructionElement(entries.size())
 							!= (parent == null ? geo : parent)) {
+				unsupportedObject.accept(geo);
 				return null;
 			}
 			entries.add(entry);
@@ -174,7 +188,7 @@ public final class MixedAngleInsertionProof {
 		if (geo.getClass() == GeoPoint.class) {
 			return pointEntry((GeoPoint) geo, geos);
 		}
-		if (geo.getClass() == GeoText.class && parent == null) {
+		if (geo.getClass() == GeoText.class) {
 			return textEntry((GeoText) geo, geos);
 		}
 		return null;
@@ -305,18 +319,46 @@ public final class MixedAngleInsertionProof {
 	}
 
 	private static Entry textEntry(GeoText text, Set<GeoElement> geos) {
-		if (text.getDefinition() != null
-				&& !(text.getDefinition().unwrap() instanceof MyStringBuffer)) {
+		List<GeoElement> inputs = new ArrayList<>(2);
+		Value value;
+		if (text.isIndependent()) {
+			if (text.getDefinition() != null
+					&& !(text.getDefinition().unwrap() instanceof MyStringBuffer)) {
+				return null;
+			}
+			value = new TextState(text.getTextString());
+		} else {
+			GeoAngle angle = terminalTextAngle(text, geos);
+			if (angle == null) {
+				return null;
+			}
+			inputs.add(angle);
+			// Capture validates the rendered value in this host's presentation context.
+			// The certificate compares the producer and its operands across hosts.
+			value = AngleTextState.NATIVE_ANGLE_VALUE;
+		}
+		if (text.getStartPoint() != null) {
+			if (!(text.getStartPoint() instanceof GeoPoint anchor) || !geos.contains(anchor)
+					|| anchor.getClass() != GeoPoint.class || !anchor.isIndependent()) {
+				return null;
+			}
+			inputs.add(anchor);
+		}
+		return new Entry(text, List.copyOf(inputs), value);
+	}
+
+	private static GeoAngle terminalTextAngle(GeoText text, Set<GeoElement> geos) {
+		AlgoElement producer = text.getParentAlgorithm();
+		if (producer.getClass() != AlgoText.class || producer.getInputLength() != 1
+				|| !(producer.getInput(0) instanceof GeoAngle angle) || !geos.contains(angle)
+				|| text.hasChildren() || text.getDefinition() != null || !text.isTextCommand()
+				|| text.isLaTeX() || !angle.isAllowedToShowValue()) {
 			return null;
 		}
-		if (text.getStartPoint() == null) {
-			return new Entry(text, List.of(), new TextState(text.getTextString()));
-		}
-		if (text.getStartPoint() instanceof GeoPoint anchor && geos.contains(anchor)
-				&& anchor.getClass() == GeoPoint.class && anchor.isIndependent()) {
-			return new Entry(text, List.of(anchor), new TextState(text.getTextString()));
-		}
-		return null;
+		StringTemplate template = text.getStringTemplate();
+		String formatted = angle.toValueString(template);
+		return formatted.equals(text.getTextString())
+				&& formatted.equals(angle.getFormulaString(template, true)) ? angle : null;
 	}
 
 	private static long bits(double value) {
@@ -327,7 +369,8 @@ public final class MixedAngleInsertionProof {
 		return Collections.newSetFromMap(new IdentityHashMap<>());
 	}
 
-	private sealed interface Value permits AngleState, TrigState, PointState, TextState {
+	private sealed interface Value permits AngleState, TrigState, PointState, TextState,
+			AngleTextState {
 	}
 
 	private record Entry(GeoElement geo, AlgoElement producer, List<GeoElement> operands,
@@ -399,5 +442,9 @@ public final class MixedAngleInsertionProof {
 	}
 
 	private record TextState(String text) implements Value {
+	}
+
+	private enum AngleTextState implements Value {
+		NATIVE_ANGLE_VALUE
 	}
 }

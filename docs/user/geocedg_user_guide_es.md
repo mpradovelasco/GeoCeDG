@@ -417,12 +417,19 @@ archivo nuevo, reabrir el documento desde su archivo o cerrarlo.
 
 Al insertar un ángulo libre con deslizador entre distintos modos de presentación,
 GeoCeDG comprueba una copia temporal antes de ofrecer usar el formato del dibujo
-actual. La confirmación muestra ejemplos del cambio de formato. El dibujo actual
-conserva su modo angular y su precisión. Puedes cancelar o cerrar la confirmación
-para conservar el dibujo tal como está. GeoCeDG rechaza toda la inserción si no
-puede verificar el ángulo, sus límites, su incremento, su animación o sus
-referencias. Esto incluye orígenes de modo distinto con textos angulares
-dinámicos. El texto estático conserva su contenido y posición.
+actual. La confirmación muestra ejemplos del cambio de formato. Un texto creado
+con `Text(theta)` puede adoptar el nuevo formato si `theta` es un ángulo
+verificado y ningún paso posterior de la construcción usa el texto. La
+confirmación muestra el texto antes y después del cambio. El texto estático
+conserva su contenido y posición. El dibujo actual conserva su modo angular y
+su precisión. Puedes cancelar o cerrar la confirmación para conservar el dibujo
+tal como está.
+
+Si GeoCeDG no puede verificar el cambio automático, rechaza la inserción. Abre
+el dibujo de origen, iguala su formato angular al del dibujo actual, comprueba
+que la construcción y su presentación siguen siendo correctas y guarda una
+copia. Puedes intentar insertar esa copia. Se aplicarán las comprobaciones
+habituales de inserción.
 
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de

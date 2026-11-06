@@ -1680,6 +1680,13 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			message.append('\n').append(sample.label()).append("   ").append(sample.original())
 					.append(" → ").append(sample.adapted());
 		}
+		if (!preview.dynamicTexts().isEmpty()) {
+			message.append("\n\n").append(layerText("Insert.Angle.DynamicTexts"));
+			for (GeoCeDGDocumentInsertion.AngularSample sample : preview.dynamicTexts()) {
+				message.append('\n').append(sample.label()).append("   ").append(sample.original())
+						.append(" → ").append(sample.adapted());
+			}
+		}
 		JTextArea details = new JTextArea(message.toString(), 10, 60);
 		details.setEditable(false);
 		details.setLineWrap(true);
