@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -29,10 +31,14 @@ import javax.swing.SwingUtilities;
 
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.units.MixedAngleInsertionProof;
 import org.geocedg.common.kernel.units.UnitState;
+import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoMacro;
 import org.geogebra.common.kernel.geos.GeoAngle;
@@ -45,6 +51,8 @@ import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.undo.AppState;
 import org.geogebra.common.main.undo.UndoCommand;
+import org.geogebra.common.plugin.Event;
+import org.geogebra.common.plugin.EventListener;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.headless.GFileHandler;
 import org.geogebra.desktop.io.DocumentArchivePreflight;
@@ -156,6 +164,17 @@ final class GeoCeDGDocumentInsertion {
 
 	private final AppGeoCeDG app;
 	private Faults faults = NO_FAULTS;
+	private boolean awaitingAngularConfirmation;
+
+	record AngularSample(String label, String original, String adapted) {
+	}
+
+	record AngularPreview(String sourceName, int sourceMode, int targetMode,
+			List<AngularSample> samples) {
+		AngularPreview {
+			samples = List.copyOf(samples);
+		}
+	}
 
 	/**
 	 * @param app target document window
@@ -178,12 +197,20 @@ final class GeoCeDGDocumentInsertion {
 	 * @return the outcome
 	 */
 	Result insert(File file) {
+		return insert(file, null);
+	}
+
+	/** Inserts with explicit consent available for a certified mixed-mode source. */
+	Result insert(File file, Predicate<AngularPreview> confirmation) {
 		if (!SwingUtilities.isEventDispatchThread()) {
 			throw new IllegalStateException("Insert File runs on the event dispatch thread");
 		}
 		String name = file == null ? "" : file.getName();
 		if (app.isInsertionIsolated()) {
 			return rejected(name, "Insert.Reject.Isolated", "");
+		}
+		if (awaitingAngularConfirmation) {
+			return rejected(name, "Insert.Angle.Pending", "");
 		}
 		String extensionReason = GeoCeDGDocumentPolicy.insertionRefusal(file);
 		if (extensionReason != null) {
@@ -195,11 +222,20 @@ final class GeoCeDGDocumentInsertion {
 		} catch (IOException unreadable) {
 			return rejected(name, "Insert.Reject.Invalid", "");
 		}
+		int targetMode = app.getKernel().getAngleUnit();
+		GeoCeDGAngularSourceArchive.Inspection angular = confirmation == null ? null
+				: GeoCeDGAngularSourceArchive.inspect(bytes, targetMode);
+		if (angular != null && angular.status() == GeoCeDGAngularSourceArchive.Status.REJECTED) {
+			return rejected(name, "Insert.Angle.Unverified", "");
+		}
 		if (!preflight(bytes)) {
 			return rejected(name, "Insert.Reject.Invalid", "");
 		}
 		AppGeoCeDG helper = null;
 		try {
+			if (angular != null && angular.status() == GeoCeDGAngularSourceArchive.Status.ADAPTABLE) {
+				return insertMixedAngles(file, bytes, angular.sourceMode(), targetMode, confirmation);
+			}
 			helper = app.newInsertionHelper();
 			if (!helper.loadFile(file, false)) {
 				return rejected(name, "Insert.Reject.Invalid", "");
@@ -209,11 +245,11 @@ final class GeoCeDGDocumentInsertion {
 			if (!admission.isAdmitted()) {
 				return rejected(name, admission.getReasonKey(), admission.getReasonArgument());
 			}
-			String dryRun = dryRun(file, admission);
+			String dryRun = dryRun(file, null, null);
 			if (dryRun != null) {
 				return rejected(name, "Insert.Reject.DryRun", dryRun);
 			}
-			return transact(name, helper, admission);
+			return transact(name, helper, admission, null);
 		} catch (RuntimeException unexpected) {
 			Log.debug(unexpected);
 			// PRE-G9B-R6-plus-F3-R1: the stage and cause are kept, never a generic reason
@@ -222,6 +258,237 @@ final class GeoCeDGDocumentInsertion {
 							describe(unexpected))), List.of(), unexpected);
 		} finally {
 			app.releaseInsertionHelper(helper);
+		}
+	}
+
+	private Result insertMixedAngles(File file, byte[] bytes, int sourceMode, int targetMode,
+			Predicate<AngularPreview> confirmation) {
+		String name = file.getName();
+		AppGeoCeDG original = null;
+		AppGeoCeDG adapted = null;
+		try {
+			if (!passiveReceiver()) {
+				return rejected(name, "Insert.Angle.UnverifiedReceiver", "");
+			}
+			original = app.newInsertionHelper();
+			adapted = app.newInsertionHelper();
+			if (!GeoCeDGAngularSourceArchive.load(original, bytes, targetMode, sourceMode)
+					|| !GeoCeDGAngularSourceArchive.load(adapted, bytes, sourceMode, sourceMode)) {
+				return rejected(name, "Insert.Angle.Unverified", "");
+			}
+			GeoCeDGInsertionAdmission originalAdmission = GeoCeDGInsertionAdmission.admit(app,
+					original);
+			if (!"Insert.Reject.AngleUnit".equals(originalAdmission.getReasonKey())) {
+				return rejected(name, "Insert.Angle.Unverified", "");
+			}
+			Construction originalConstruction = original.getKernel().getConstruction();
+			Construction isolatedConstruction = adapted.getKernel().getConstruction();
+			MixedAngleInsertionProof source = MixedAngleInsertionProof.capture(originalConstruction);
+			MixedAngleInsertionProof copy = MixedAngleInsertionProof.capture(isolatedConstruction);
+			if (source == null || !source.sameState(copy)) {
+				return rejected(name, "Insert.Angle.Unverified", "");
+			}
+			adapted.getKernel().setAngleUnit(targetMode);
+			adapted.getKernel().updateConstruction(false);
+			MixedAngleInsertionProof proof = MixedAngleInsertionProof.capture(isolatedConstruction);
+			GeoCeDGInsertionAdmission admission = GeoCeDGInsertionAdmission.admit(app, adapted);
+			if (!copy.sameState(proof) || !admission.isAdmitted()) {
+				return rejected(name, "Insert.Angle.Unverified", "");
+			}
+			if (!app.getKernel().isUndoActive() || !(app.getKernel().getConstruction()
+					.getUndoManager() instanceof GeoCeDGUndoManager undo)) {
+				return rejected(name, "Insert.Reject.UndoUnavailable", "");
+			}
+			if (!awaitQuiescence(undo)) {
+				return rejected(name, "Insert.Reject.HistoryBusy", "");
+			}
+			AngularOfferState offer = new AngularOfferState(app, undo);
+			AngularPreview preview = preview(name, original, adapted, admission.getSource());
+			app.getEventDispatcher().addEventListener(offer);
+			awaitingAngularConfirmation = true;
+			try {
+				if (!confirmation.test(preview)) {
+					return new Result(Outcome.REJECTED_BEFORE_MUTATION, null, List.of(), null);
+				}
+			} finally {
+				awaitingAngularConfirmation = false;
+				app.getEventDispatcher().removeEventListener(offer);
+			}
+			if (!offer.isCurrent(app) || !passiveReceiver() || !sameSource(file, bytes)) {
+				return staleOffer(name);
+			}
+			String mismatch = dryRun(file, adapted, proof);
+			if (mismatch != null) {
+				return rejected(name, "Insert.Reject.DryRun", mismatch);
+			}
+			if (!offer.isCurrent(app) || !passiveReceiver() || !sameSource(file, bytes)) {
+				return staleOffer(name);
+			}
+			return transact(name, adapted, admission, proof);
+		} catch (IOException | XMLParseException invalid) {
+			Log.debug(invalid);
+			return rejected(name, "Insert.Angle.Unverified", "");
+		} finally {
+			app.releaseInsertionHelper(adapted);
+			app.releaseInsertionHelper(original);
+		}
+	}
+
+	private boolean passiveReceiver() {
+		Kernel kernel = app.getKernel();
+		String script = kernel.getLibraryJavaScript();
+		return !kernel.wantAnimationStarted() && !kernel.getAnimationManager().isRunning()
+				&& !kernel.getAnimationManager().isPaused()
+				&& (script == null || script.isBlank() || Kernel.defaultLibraryJavaScript.equals(script.strip()))
+				&& !app.getScriptManager().hasListeners()
+				&& kernel.getConstruction().getGeoSetConstructionOrder().stream()
+						.noneMatch(GeoCeDGInsertionAdmission::hasScript);
+	}
+
+	private AngularPreview preview(String name, AppGeoCeDG original, AppGeoCeDG adapted,
+			List<GeoElement> source) {
+		List<AngularSample> samples = new ArrayList<>();
+		for (GeoElement geo : source) {
+			if (geo instanceof GeoAngle angle) {
+				String label = angle.getLabelSimple();
+				GeoElement prior = original.getKernel().lookupLabel(label);
+				samples.add(new AngularSample(label, prior.toValueString(StringTemplate.defaultTemplate),
+						formatForReceiver(angle)));
+			}
+		}
+		return new AngularPreview(name, original.getKernel().getAngleUnit(),
+				adapted.getKernel().getAngleUnit(), samples);
+	}
+
+	private String formatForReceiver(GeoAngle angle) {
+		Kernel kernel = app.getKernel();
+		StringTemplate template = StringTemplate.defaultTemplate;
+		boolean unbounded = angle.getAngleStyle() == GeoAngle.AngleStyle.UNBOUNDED;
+		return angle.isEuclidianVisible()
+				? kernel.formatAngle(angle.getValue(), angle.toDecimal(), 1 / angle.getAnimationStep(),
+						template, unbounded, angle.isKeepDegrees()).toString()
+				: kernel.formatAngle(angle.getValue(), angle.toDecimal(), template, unbounded,
+						angle.isKeepDegrees()).toString();
+	}
+
+	private static boolean sameSource(File file, byte[] bytes) {
+		try (InputStream input = Files.newInputStream(file.toPath())) {
+			return Arrays.equals(bytes, input.readNBytes(bytes.length + 1));
+		} catch (IOException unreadable) {
+			return false;
+		}
+	}
+
+	private Result staleOffer(String name) {
+		return new Result(Outcome.REJECTED_BEFORE_MUTATION, text("Insert.Angle.Stale", name),
+				List.of(), null);
+	}
+
+	private static final class AngularOfferState implements EventListener {
+		private final Certificate document;
+		private final ReceiverGeometry geometry;
+		private final GeoCeDGUndoManager undo;
+		private final HistoryRecord history;
+		private final int tool;
+		private final boolean displayable;
+		private final List<GeoElement> selection;
+		private volatile boolean changed;
+
+		AngularOfferState(AppGeoCeDG app, GeoCeDGUndoManager undo) {
+			document = Certificate.of(app);
+			geometry = new ReceiverGeometry(app);
+			this.undo = undo;
+			history = HistoryRecord.of(undo);
+			tool = app.getMode();
+			displayable = app.getMainComponent().isDisplayable();
+			selection = List.copyOf(app.getSelectionManager().getSelectedGeos());
+		}
+
+		@Override
+		public void sendEvent(Event event) {
+			switch (event.type) {
+				case ADD, REMOVE, RENAME, REDEFINE, UPDATE, UPDATE_STYLE, STOREUNDO, UNDO, REDO,
+						SET_MODE, SELECT, DESELECT, VIEW_PROPERTIES_CHANGED -> changed = true;
+				default -> { }
+			}
+		}
+
+		@Override
+		public void reset() {
+			changed = true;
+		}
+
+		boolean isCurrent(AppGeoCeDG app) {
+			if (changed || app.isInsertionIsolated() || !app.getKernel().isUndoActive()
+					|| app.getKernel().getConstruction().getUndoManager() != undo
+					|| app.getMainComponent().isDisplayable() != displayable
+					|| app.getMode() != tool
+					|| !selection.equals(app.getSelectionManager().getSelectedGeos())
+					|| !geometry.sameGraph(app)) {
+				return false;
+			}
+			synchronized (undo) {
+				if (!undo.isQuiescent() || history.mismatch(undo, null) != null) {
+					return false;
+				}
+			}
+			Certificate current = Certificate.of(app);
+			return document.sameInstances(current) && document.serializableDifferences(current).isEmpty();
+		}
+	}
+
+	/** The preexisting graph and styles must survive B2 in both the trial and the commit. */
+	private static final class ReceiverGeometry {
+		private final Construction construction;
+		private final int mode;
+		private final Map<GeoElement, String> xml = new IdentityHashMap<>();
+		private final Map<GeoElement, PersistentGeoId> ids;
+		private final Map<AlgoElement, AlgorithmEdges> edges = new IdentityHashMap<>();
+
+		ReceiverGeometry(AppGeoCeDG app) {
+			construction = app.getKernel().getConstruction();
+			mode = app.getKernel().getAngleUnit();
+			identitySet(app).forEach(geo -> xml.put(geo, Certificate.normalize(geo.getXML())));
+			ids = identities(app);
+			construction.getAlgoList().forEach(algo -> edges.put(algo, new AlgorithmEdges(algo)));
+		}
+
+		boolean sameGraph(AppGeoCeDG app) {
+			return identitySet(app).size() == xml.size()
+					&& construction.getAlgoList().size() == edges.size() && preservedBy(app);
+		}
+
+		boolean preservedBy(AppGeoCeDG app) {
+			if (app.getKernel().getConstruction() != construction
+					|| app.getKernel().getAngleUnit() != mode || !identitySet(app).containsAll(xml.keySet())) {
+				return false;
+			}
+			Map<GeoElement, PersistentGeoId> liveIds = identities(app);
+			for (Map.Entry<GeoElement, String> entry : xml.entrySet()) {
+				GeoElement geo = entry.getKey();
+				if (!entry.getValue().equals(Certificate.normalize(geo.getXML()))
+						|| !Objects.equals(ids.get(geo), liveIds.get(geo))) {
+					return false;
+				}
+			}
+			Set<AlgoElement> algorithms = Collections.newSetFromMap(new IdentityHashMap<>());
+			algorithms.addAll(construction.getAlgoList());
+			return algorithms.containsAll(edges.keySet())
+					&& edges.entrySet().stream().allMatch(e -> e.getValue().matches(e.getKey()));
+		}
+	}
+
+	private record AlgorithmEdges(GeoElement[] input, GeoElement[] output) {
+		AlgorithmEdges(AlgoElement algo) {
+			this(copy(algo.getInput()), copy(algo.getOutput()));
+		}
+
+		private static GeoElement[] copy(GeoElement[] geos) {
+			return geos == null ? null : geos.clone();
+		}
+
+		boolean matches(AlgoElement algo) {
+			return Arrays.equals(input, algo.getInput()) && Arrays.equals(output, algo.getOutput());
 		}
 	}
 
@@ -254,9 +521,9 @@ final class GeoCeDGDocumentInsertion {
 	 *
 	 * @return null when the dry run succeeds, otherwise the failure class
 	 */
-	private String dryRun(File file, GeoCeDGInsertionAdmission admission) {
+	private String dryRun(File file, AppGeoCeDG adapted, MixedAngleInsertionProof proof) {
 		AppGeoCeDG scratch = null;
-		AppGeoCeDG helper = null;
+		AppGeoCeDG helper = adapted;
 		try {
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			app.getXMLio().writeGeoGebraFile(target, false);
@@ -265,9 +532,11 @@ final class GeoCeDGDocumentInsertion {
 					false)) {
 				return "target";
 			}
-			helper = app.newInsertionHelper();
-			if (!helper.loadFile(file, false)) {
-				return "source";
+			if (helper == null) {
+				helper = app.newInsertionHelper();
+				if (!helper.loadFile(file, false)) {
+					return "source";
+				}
 			}
 			helper.getKernel().getAnimationManager().stopAnimation();
 			scratch.getKernel().getAnimationManager().stopAnimation();
@@ -278,31 +547,54 @@ final class GeoCeDGDocumentInsertion {
 			}
 			Set<GeoElement> before = identitySet(scratch);
 			Map<GeoElement, PersistentGeoId> idsBefore = identities(scratch);
+			ReceiverGeometry geometry = proof == null ? null : new ReceiverGeometry(scratch);
 			GeoCeDGInsertionCopyPaste buffer = new GeoCeDGInsertionCopyPaste(
 					scratchAdmission.getTransferredMacros());
 			buffer.insertFrom(helper, scratch, scratchAdmission.getDuplicateLabels(), false);
 			List<GeoElement> created = createdSince(scratch, before);
 			String mismatch = verify(scratchAdmission.getSource(), created, scratch, helper,
 					idsBefore, buffer.getCopies());
+			if (mismatch == null) {
+				mismatch = angularCopyMismatch(proof, geometry, helper, scratch, buffer);
+			}
 			return mismatch != null ? mismatch : verifyMacros(scratchAdmission, scratch, helper);
 		} catch (Exception | Error failure) {
 			Log.debug(failure);
 			return "commit: " + describe(failure);
 		} finally {
-			app.releaseInsertionHelper(helper);
+			if (adapted == null) {
+				app.releaseInsertionHelper(helper);
+			}
 			app.releaseInsertionHelper(scratch);
 		}
+	}
+
+	private static String angularCopyMismatch(MixedAngleInsertionProof proof,
+			ReceiverGeometry geometry, AppGeoCeDG helper, AppGeoCeDG target,
+			GeoCeDGInsertionCopyPaste buffer) {
+		if (proof == null) {
+			return null;
+		}
+		if (!geometry.preservedBy(target)) {
+			return "preexisting receiver geometry";
+		}
+		if (!proof.preservesCopy(buffer.getCopies())) {
+			return "certified angular values or dependencies";
+		}
+		return proof.sameState(MixedAngleInsertionProof.capture(helper.getKernel().getConstruction()))
+				? null : "adapted source changed during copy";
 	}
 
 	// ------------------------------------------------------------------ transaction
 
 	private Result transact(String name, AppGeoCeDG helper,
-			GeoCeDGInsertionAdmission admission) {
+			GeoCeDGInsertionAdmission admission, MixedAngleInsertionProof proof) {
 		if (!app.getKernel().isUndoActive() || !(app.getKernel().getConstruction()
 				.getUndoManager() instanceof GeoCeDGUndoManager undo)) {
 			return rejected(name, "Insert.Reject.UndoUnavailable", "");
 		}
 		Certificate before = Certificate.of(app);
+		ReceiverGeometry geometry = proof == null ? null : new ReceiverGeometry(app);
 		String uuid = app.getUniqueId();
 		String tube = app.getTubeId();
 		boolean saved = app.isSaved();
@@ -318,7 +610,7 @@ final class GeoCeDGDocumentInsertion {
 		Transaction tx = new Transaction(name, undo, barrier, admission, before, uuid, tube,
 				saved);
 		try {
-			return tx.run(helper);
+			return tx.run(helper, proof, geometry);
 		} finally {
 			tx.finish();
 		}
@@ -437,7 +729,7 @@ final class GeoCeDGDocumentInsertion {
 			this.saved = saved;
 		}
 
-		Result run(AppGeoCeDG helper) {
+		Result run(AppGeoCeDG helper, MixedAngleInsertionProof proof, ReceiverGeometry geometry) {
 			macrosBefore.addAll(macroNames(app));
 			Set<GeoElement> instancesBefore = identitySet(app);
 			Map<GeoElement, PersistentGeoId> idsBefore = identities(app);
@@ -481,6 +773,9 @@ final class GeoCeDGDocumentInsertion {
 					// 3 STRICT VERIFY
 					String mismatch = verify(admission.getSource(), created, app, helper,
 							idsBefore, buffer.getCopies());
+					if (mismatch == null) {
+						mismatch = angularCopyMismatch(proof, geometry, helper, app, buffer);
+					}
 					if (mismatch == null) {
 						mismatch = verifyMacros(admission, app, helper);
 					}
@@ -1097,12 +1392,13 @@ final class GeoCeDGDocumentInsertion {
 				if (live.size() != commands.size()) {
 					return "size " + live.size() + "/" + commands.size();
 				}
-				if (undo.getCursor() != cursor || held.getCursor() != cursor) {
+				if (undo.getCursor() != cursor || held != null && held.getCursor() != cursor) {
 					return "cursor";
 				}
 				for (int i = 0; i < live.size(); i++) {
 					UndoCommand command = live.get(i);
-					if (command != commands.get(i) || command != held.getCommands().get(i)) {
+					if (command != commands.get(i)
+							|| held != null && command != held.getCommands().get(i)) {
 						return "command " + i;
 					}
 					if (!Objects.equals(labels.get(i), command.labels)) {

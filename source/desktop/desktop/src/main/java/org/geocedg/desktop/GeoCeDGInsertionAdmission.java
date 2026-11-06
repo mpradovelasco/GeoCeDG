@@ -204,7 +204,7 @@ final class GeoCeDGInsertionAdmission {
 				Collections.unmodifiableSet(reused), Collections.unmodifiableSet(transferred));
 	}
 
-	private static boolean hasScript(GeoElement geo) {
+	static boolean hasScript(GeoElement geo) {
 		for (EventType type : EventType.values()) {
 			if (geo.getScript(type) != null) {
 				return true;

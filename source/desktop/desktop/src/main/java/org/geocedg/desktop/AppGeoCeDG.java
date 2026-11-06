@@ -28,6 +28,8 @@ import javax.swing.JFrame;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.geocedg.common.export.PhysicalExportScale;
@@ -1663,12 +1665,39 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			return;
 		}
 		GeoCeDGDocumentInsertion.Result result = getDocumentInsertion().insert(
-				GeoCeDGDocumentPolicy.resolveInsertionName(chosen));
+				GeoCeDGDocumentPolicy.resolveInsertionName(chosen), this::confirmAngularInsertion);
 		// the isolation dialog itself shows the serious-failure message
 		if (result.getMessage() != null && result.getOutcome()
 				!= GeoCeDGDocumentInsertion.Outcome.SERIOUS_RECOVERY_FAILURE) {
 			showInsertionMessage(result.getMessage());
 		}
+	}
+
+	private boolean confirmAngularInsertion(GeoCeDGDocumentInsertion.AngularPreview preview) {
+		StringBuilder message = new StringBuilder(layerText("Insert.Angle.Confirmation",
+				preview.sourceName(), angleModeName(preview.sourceMode()), angleModeName(preview.targetMode())));
+		for (GeoCeDGDocumentInsertion.AngularSample sample : preview.samples()) {
+			message.append('\n').append(sample.label()).append("   ").append(sample.original())
+					.append(" → ").append(sample.adapted());
+		}
+		JTextArea details = new JTextArea(message.toString(), 10, 60);
+		details.setEditable(false);
+		details.setLineWrap(true);
+		details.setWrapStyleWord(true);
+		details.setCaretPosition(0);
+		Object[] choices = {layerText("Insert.Angle.Accept"), getLocalization().getMenu("Cancel")};
+		return JOptionPane.showOptionDialog(getMainComponent(), new JScrollPane(details),
+				layerText("Insert.Title"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+				null, choices, choices[1]) == 0;
+	}
+
+	private String angleModeName(int mode) {
+		return getLocalization().getMenu(switch (mode) {
+			case Kernel.ANGLE_DEGREE -> "Degree";
+			case Kernel.ANGLE_RADIANT -> "Radiant";
+			case Kernel.ANGLE_DEGREES_MINUTES_SECONDS -> "DegreesMinutesSeconds";
+			default -> throw new IllegalArgumentException("Unrecognized angular display mode");
+		});
 	}
 
 	/** File -> Insert -> Apply Styles... (document.apply-styles). */

@@ -415,10 +415,14 @@ restauración no pueda verificarse, el dibujo queda aislado: no puede editarse,
 guardarse ni exportarse, y solo puede guardar la última versión verificada en un
 archivo nuevo, reabrir el documento desde su archivo o cerrarlo.
 
-Para insertar un ángulo libre con deslizador, usa la misma unidad de
-presentación angular en ambos documentos. GeoCeDG rechaza toda la inserción si
-no puede conservar el ángulo, sus límites, su incremento, su animación o sus
-referencias. El texto estático conserva su contenido y posición.
+Al insertar un ángulo libre con deslizador entre distintos modos de presentación,
+GeoCeDG comprueba una copia temporal antes de ofrecer usar el formato del dibujo
+actual. La confirmación muestra ejemplos del cambio de formato. El dibujo actual
+conserva su modo angular y su precisión. Puedes cancelar o cerrar la confirmación
+para conservar el dibujo tal como está. GeoCeDG rechaza toda la inserción si no
+puede verificar el ángulo, sus límites, su incremento, su animación o sus
+referencias. Esto incluye orígenes de modo distinto con textos angulares
+dinámicos. El texto estático conserva su contenido y posición.
 
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de

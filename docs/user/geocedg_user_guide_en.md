@@ -399,10 +399,14 @@ restoration cannot be verified, the drawing is isolated: it cannot be edited,
 saved or exported, and you can only save the last verified version to a new
 file, reopen the document from its file, or close it.
 
-When inserting a free angle slider, use the same angular display unit in both
-documents. GeoCeDG refuses the entire insertion if it cannot preserve the
-slider's angle, bounds, increment, animation or construction references.
-Static text keeps its content and position.
+When inserting a free angle slider across different angular display modes,
+GeoCeDG checks a temporary copy before offering to use the current drawing's
+format. The confirmation shows examples of the format change. The current
+drawing keeps its angular mode and precision. Cancel or close the confirmation
+to keep the drawing as it is. GeoCeDG refuses the entire insertion when it
+cannot verify the slider's angle, bounds, increment, animation or construction
+references. This includes mixed-mode sources with dynamic angular text. Static
+text keeps its content and position.
 
 **Apply Styles…** copies colour, line style, line thickness, point style, point
 size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the

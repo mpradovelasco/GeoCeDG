@@ -6268,6 +6268,18 @@
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGAngularSourceArchive.java",
+      "change": "added",
+      "purpose": "CU4-R2 B2 candidate. Screen native source metadata and load screened bytes into disposable helpers for mixed angular display insertion.",
+      "authority": "docs/validation/pre_g9b_cu4_r2_candidate_report.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/units/MixedAngleInsertionProof.java",
+      "change": "added",
+      "purpose": "CU4-R2 B2 candidate. Certify native angular values, the closed set of consumers, dependencies and copy correspondence before publication.",
+      "authority": "docs/validation/pre_g9b_cu4_r2_candidate_report.md"
+    },
+    {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInsertionIsolation.java",
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F3 serious-failure isolation (P7): guards, the modal dialog and its exits (save verified copy, reopen, close) without any save-changes prompt; the snapshot is released only after Reopen or Close.",
