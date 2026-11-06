@@ -195,8 +195,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2429,
-      "expected_identities_sha256": "2f32382d62c806a104d228c89345e38d8d99c4048f2fce8a3df8a425cbc4c7e4",
+      "expected_identity_count": 2431,
+      "expected_identities_sha256": "069b67919d36a2fb3ca99be2df6ae20ca5faca83e856750eb7485badb4feca07",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -218,6 +218,10 @@
         {
           "commit": "ecbb947164e5893a91f71dfcf26b0b3b14d270b5",
           "tree": "d2047d8d2befee5f5100e63a69ea666ed630125e"
+        },
+        {
+          "commit": "30825392c34d1f2fafc7ffcbd7d6e0b86dbd16aa",
+          "tree": "fad1cb84253bfa7fc1348b2682d77292b1a8b4ff"
         }
       ]
     },
@@ -4483,7 +4487,8 @@
         "org.geocedg.desktop.R5ReferenceCreationDesktopTest.nativeContextReferenceWorksForCircleSegmentAndParabolaWithoutAQParent",
         "org.geocedg.desktop.R5ReferenceCreationDesktopTest.nativeReferenceFixedOptionBlocksEditingButKeepsConductorDependence",
         "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest.heldHistoryKeepsOriginalCompanionsAndRedo",
-        "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest"
+        "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest",
+        "org.geocedg.desktop.Cu4LegacyDefaultsCompatibilityTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -4518,6 +4523,8 @@
         "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest.heldHistoryKeepsOriginalCompanionsAndRedo",
         "--tests",
         "org.geocedg.desktop.G9U0R6NativeArchivePersistenceTest",
+        "--tests",
+        "org.geocedg.desktop.Cu4LegacyDefaultsCompatibilityTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
@@ -4525,8 +4532,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 71,
-      "expected_identities_sha256": "8eb8b92115ad47e0c009bf76350465a5a4413017e721bbae3355ab2bfc875021",
+      "expected_identity_count": 73,
+      "expected_identities_sha256": "346a0482c56976972d9a2e151ee0c61b75b22f4080fbe54248be013093842e9f",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -4536,6 +4543,10 @@
         {
           "commit": "ecbb947164e5893a91f71dfcf26b0b3b14d270b5",
           "tree": "d2047d8d2befee5f5100e63a69ea666ed630125e"
+        },
+        {
+          "commit": "30825392c34d1f2fafc7ffcbd7d6e0b86dbd16aa",
+          "tree": "fad1cb84253bfa7fc1348b2682d77292b1a8b4ff"
         }
       ]
     }
