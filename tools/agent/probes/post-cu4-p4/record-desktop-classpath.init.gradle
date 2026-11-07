@@ -1,0 +1,19 @@
+/* GeoCeDG
+ * Copyright (c) 2026 GeoCeDG contributors
+ * SPDX-License-Identifier: EUPL-1.2
+ */
+
+// Captures the classpath of a focused Gradle test build without changing its selection.
+allprojects {
+    if (name == 'desktop') {
+        tasks.withType(Test).configureEach {
+            if (name == 'test') {
+                doFirst {
+                    def target = file(System.getProperty('geocedg.p4.classpathFile'))
+                    target.parentFile.mkdirs()
+                    target.setText('"' + classpath.asPath.replace('\\', '/') + '"\n', 'UTF-8')
+                }
+            }
+        }
+    }
+}

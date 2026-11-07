@@ -15,12 +15,15 @@ import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.save;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.undo;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.geogebra.common.awt.GColor;
+import org.geogebra.common.kernel.algos.AlgoConicPartCircle;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoCurveCartesian;
@@ -39,6 +44,8 @@ import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
+import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
+import org.geogebra.desktop.headless.GFileHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,7 +71,7 @@ class PostCu4P4Probe {
 
 	static Stream<Case> cases() {
 		return Stream.of(
-				new Case("arc", new String[] {"A=(0,0)", "B=(2,0)", "C=(0,2)",
+				new Case("arc", new String[] {"A=(0,0)", "B=(2,0)", "C=(0,5)",
 						"obj=CircularArc(A,B,C)", "W=Point(obj,0.5)"}, "C",
 						new double[] {-2, 0}, new double[] {0, 0}, false),
 				new Case("sector", new String[] {"A=(0,0)", "B=(2,0)", "C=(0,2)",
@@ -95,27 +102,29 @@ class PostCu4P4Probe {
 	}
 
 	@Test
-	void reportBaselineFixtureRefusals() throws Exception {
+	void explainBaselineFixtureLayerResults() throws Exception {
 		Path output = Path.of(System.getProperty("geocedg.p4.dir"), "f3-controls");
 		Files.createDirectory(output);
 		onEdt(() -> {
-			var samples = List.of(
-					PreG9BR6PlusF3Documents.elementary(output, "elementary"),
-					PreG9BR6PlusF3Documents.locus(output, "locus-spline"));
-			for (var file : samples) {
-				reportBaselineFixture(output, file, 4);
-				reportBaselineFixture(output, file, 0);
+			File elementary = PreG9BR6PlusF3Documents.elementary(output, "elementary");
+			File locusSpline = PreG9BR6PlusF3Documents.locus(output, "locus-spline");
+			for (int layer : new int[] {4, 0}) {
+				reportBaselineFixture(output, elementary, "a", layer);
+				reportBaselineFixture(output, locusSpline, "s", layer);
 			}
 			return null;
 		});
 	}
 
-	private void reportBaselineFixture(Path output, File file, int workingLayer)
+	private void reportBaselineFixture(Path output, File file, String driver, int workingLayer)
 			throws Exception {
 		var target = PreG9BR6PlusF3Documents.target(output,
 				"receiver-layer-" + workingLayer + "-" + file.getName());
 		target.getLayerWorkspace().setWorkingLayer(workingLayer);
 		var before = new PreG9BR6PlusF3Documents.Observation(target);
+		byte[] original = Files.readAllBytes(file.toPath());
+		var receiver = new ByteArrayOutputStream();
+		target.getXMLio().writeGeoGebraFile(receiver, false);
 		var result = target.getDocumentInsertion().insert(file);
 		System.out.printf("P4PROBE f3-control %s working=%d %s %s%n",
 				file.getName(), workingLayer, result.getOutcome(), result.getMessage());
@@ -126,12 +135,71 @@ class PostCu4P4Probe {
 			assertEquals(List.of(), before.serializableDifferences(after));
 			assertTrue(before.sameInstances(after));
 		}
+		assertArrayEquals(original, Files.readAllBytes(file.toPath()));
+		replayScratchCopy(file, driver, target, receiver.toByteArray(), result.getOutcome());
+	}
+
+	private static void replayScratchCopy(File file, String driver, AppGeoCeDG target,
+			byte[] receiver, GeoCeDGDocumentInsertion.Outcome outcome) throws Exception {
+		var source = target.newInsertionHelper();
+		var scratch = target.newInsertionHelper();
+		try {
+			assertTrue(source.loadFile(file, false));
+			assertTrue(GFileHandler.loadXML(scratch, new ByteArrayInputStream(receiver), false));
+			baseline(source);
+			baseline(scratch);
+			var admission = GeoCeDGInsertionAdmission.admit(scratch, source);
+			assertTrue(admission.isAdmitted());
+			int maxLayer = scratch.getMaxLayerUsed();
+			int working = scratch.getLayerWorkspace().getWorkingLayer();
+			var initial = GeoCeDGDocumentInsertion.identitySet(scratch);
+			var ids = GeoCeDGDocumentInsertion.identities(scratch);
+			var buffer = new GeoCeDGInsertionCopyPaste(admission.getTransferredMacros());
+			buffer.insertFrom(source, scratch, admission.getDuplicateLabels(), false);
+			var created = GeoCeDGDocumentInsertion.createdSince(scratch, initial);
+			var from = named(source, driver);
+			// Trace the exact pair read by the inherited F3 verifier. Its ordered
+			// comparison is not evidence of durable identity or expert provenance.
+			assertEquals(admission.getSource().size(), created.size());
+			var to = created.get(admission.getSource().indexOf(from));
+			assertEquals(from.getClass(), to.getClass());
+			String mismatch = GeoCeDGDocumentInsertion.verify(admission.getSource(), created,
+					scratch, source, ids);
+			System.out.printf("P4PROBE layer-witness %s driver=%s source=%d copy=%d "
+					+ "serializedLayer=%s scratchMax=%d scratchWorking=%d hidden=%s "
+					+ "mapped=%s mismatch=%s%n",
+					file.getName(), driver, from.getLayer(), to.getLayer(),
+					from.getXML().contains("<layer "), maxLayer, working,
+					scratch.getLayerWorkspace().getHiddenLayers(), buffer.getCopies().get(from) == to,
+					mismatch);
+			assertEquals(List.of(3), scratch.getLayerWorkspace().getHiddenLayers());
+			assertEquals(3, named(scratch, "B").getLayer());
+			var sourcePoint = named(source, "B");
+			assertEquals(sourcePoint.getLayer(), created.get(admission.getSource()
+					.indexOf(sourcePoint)).getLayer());
+			if (outcome == GeoCeDGDocumentInsertion.Outcome.INSERTED) {
+				assertNull(mismatch);
+			} else {
+				assertEquals("layer " + driver, mismatch);
+				assertFalse(from.getXML().contains("<layer "));
+				assertNotEquals(from.getLayer(), to.getLayer());
+			}
+		} finally {
+			target.releaseInsertionHelper(scratch);
+			target.releaseInsertionHelper(source);
+		}
 	}
 
 	private Stage prepare(Case sample, Path output) throws Exception {
 		AppGeoCeDG source = app(M);
 		for (String command : sample.commands()) {
 			must(source, command);
+		}
+		if (sample.name().equals("arc")) {
+			var arc = named(source, "obj");
+			arc.setLayer(2);
+			arc.setObjColor(GColor.RED);
+			assertTrue(source.getLayerWorkspace().setLayerHidden(2, true));
 		}
 		var input = save(source, output, "source");
 		byte[] bytes = Files.readAllBytes(input.toPath());
@@ -140,6 +208,10 @@ class PostCu4P4Probe {
 		baseline(loaded);
 		GeoElement original = named(loaded, "obj");
 		assertGeometry(named(source, "obj"), original);
+		if (sample.name().equals("arc")) {
+			assertEquals(List.of(2), loaded.getLayerWorkspace().getHiddenLayers());
+			assertArc(original, named(loaded, "W"), Math.PI / 2);
+		}
 		trace(sample, "load", original.getClass().getSimpleName() + " producer="
 				+ original.getParentAlgorithm().getClass().getSimpleName());
 
@@ -201,6 +273,10 @@ class PostCu4P4Probe {
 		}
 		assertNotEquals("obj", copied.getLabelSimple());
 		assertGeometry(original, copied);
+		if (sample.name().equals("arc")) {
+			assertArc(copied, copies.get(named(loaded, "W")), Math.PI / 2);
+			assertEquals(List.of(), target.getLayerWorkspace().getHiddenLayers());
+		}
 		assertNotEquals(driver.getLabelSimple(), copiedDriver.getLabelSimple());
 		trace(sample, "copy", "label=" + copied.getLabelSimple() + " driver="
 				+ copiedDriver.getLabelSimple() + " mapped=" + copies.size()
@@ -209,8 +285,10 @@ class PostCu4P4Probe {
 		assertEquals(commandCount, undo(target).getCommands().size());
 		trace(sample, "native-history", "no checkpoint by the copy primitive");
 		target.getKernel().getConstruction().getUndoManager().storeUndoInfo();
+		String witnessLabel = sample.name().equals("arc")
+				? copies.get(named(loaded, "W")).getLabelSimple() : null;
 		return new Stage(loaded, target, copied.getLabelSimple(), copiedDriver.getLabelSimple(),
-				receiverXml, uuid, nativeUuid, commandCount);
+				witnessLabel, receiverXml, uuid, nativeUuid, commandCount);
 	}
 
 	private Void checkHistoryAndSave(Case sample, Stage stage, Path output) {
@@ -225,6 +303,9 @@ class PostCu4P4Probe {
 		GeoElement copied = named(target, stage.label());
 		assertEquals(stage.nativeUuid(), target.getUniqueId());
 		assertGeometry(original, copied);
+		if (stage.witnessLabel() != null) {
+			assertArc(copied, named(target, stage.witnessLabel()), Math.PI / 2);
+		}
 		trace(sample, "history", "explicit checkpoint; Undo restored receiver XML; Redo restored witness");
 
 		var archive = save(target, output, "merged");
@@ -236,6 +317,9 @@ class PostCu4P4Probe {
 		assertEquals(copied.getParentAlgorithm().getClass(),
 				persisted.getParentAlgorithm().getClass());
 		assertInputs(copied, persisted);
+		if (stage.witnessLabel() != null) {
+			assertArc(persisted, named(reopened, stage.witnessLabel()), Math.PI / 2);
+		}
 		assertEquals(GeoNumeric.class, named(reopened, "obj").getClass());
 		assertEquals(41, named(reopened, "obj").evaluateDouble(), EPS);
 		trace(sample, "reopen", "witness, typed producer, labeled inputs and stored UUID");
@@ -263,7 +347,51 @@ class PostCu4P4Probe {
 			assertGeometry(original, persisted);
 		}
 		trace(sample, "dynamic", "paired input change after reopen");
+		if (stage.witnessLabel() != null) {
+			GeoElement pathPoint = named(reopened, stage.witnessLabel());
+			assertArc(persisted, pathPoint, Math.PI);
+			move(mergedDriver, new double[] {0, -2});
+			assertArc(persisted, pathPoint, 3 * Math.PI / 2);
+			move(mergedDriver, new double[] {4, 0});
+			assertArc(persisted, pathPoint, 0);
+			mergedDriver.setUndefined();
+			mergedDriver.updateCascade();
+			assertFalse(persisted.isDefined());
+			move(mergedDriver, new double[] {0, 5});
+			assertArc(persisted, pathPoint, Math.PI / 2);
+			trace(sample, "analytic", "end ray off circle, seam, zero extent, "
+					+ "undefined input, recovery, path identity and presentation");
+		}
 		return null;
+	}
+
+	private static void assertArc(GeoElement geo, GeoElement point, double extent) {
+		assertEquals(GeoConicPart.class, geo.getClass());
+		var arc = (GeoConicPart) geo;
+		assertEquals(AlgoConicPartCircle.class, arc.getParentAlgorithm().getClass());
+		assertEquals(GeoConicNDConstants.CONIC_PART_ARC, arc.getConicPartType());
+		assertEquals(GeoConicNDConstants.CONIC_CIRCLE, arc.getType());
+		assertTrue(arc.isDefined());
+		assertTrue(arc.positiveOrientation());
+		assertEquals(2, arc.getHalfAxis(0), EPS);
+		assertEquals(extent, arc.getParameterExtent(), EPS);
+		assertEquals(2 * extent, arc.getArcLength(), EPS);
+		assertEquals(0, arc.getMinParameter(), EPS);
+		assertEquals(1, arc.getMaxParameter(), EPS);
+		assertOnCircle(arc.getPointParam(0), 0);
+		assertOnCircle(arc.getPointParam(1), extent);
+		var pathPoint = (GeoPoint) point;
+		assertSame(arc, pathPoint.getPath());
+		assertEquals(0.5, pathPoint.getPathParameter().getT(), EPS);
+		assertOnCircle(pathPoint, extent / 2);
+		assertEquals(2, arc.getLayer());
+		assertEquals(GColor.RED, arc.getObjectColor());
+		assertTrue(arc.isSetEuclidianVisible());
+	}
+
+	private static void assertOnCircle(GeoPoint point, double angle) {
+		assertEquals(2 * Math.cos(angle), point.getInhomX(), EPS);
+		assertEquals(2 * Math.sin(angle), point.getInhomY(), EPS);
 	}
 
 	private static GeoElement uniqueAdded(GeoElement original, List<GeoElement> added) {
@@ -373,6 +501,6 @@ class PostCu4P4Probe {
 	}
 
 	private record Stage(AppGeoCeDG source, AppGeoCeDG target, String label, String driverLabel,
-			String before, String uuid, String nativeUuid, int commandCount) {
+			String witnessLabel, String before, String uuid, String nativeUuid, int commandCount) {
 	}
 }

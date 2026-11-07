@@ -3,18 +3,26 @@
 param(
     [Parameter(Mandatory)] [string]$Jdk,
     [Parameter(Mandatory)] [string]$ClasspathArgs,
-    [Parameter(Mandatory)] [ValidatePattern('^run-[0-9]+$')] [string]$Run
+    [Parameter(Mandatory)] [string]$BuildEvidence,
+    [Parameter(Mandatory)] [ValidatePattern('^run-[0-9]+$')] [string]$Run,
+    [switch]$PortablePreferences
 )
 
 $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../../..'))
 Set-Location -LiteralPath $repo
-$base = 'd5332e400b0ab68afd14273495b9ae5f03e6c911'
-$headCommit = git rev-parse HEAD
+$headCommit, $headTree = git rev-parse HEAD 'HEAD^{tree}'
 if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve the source commit.' }
-git diff --quiet $base -- source gradle apps/geocedg
-if ($LASTEXITCODE -ne 0) { throw 'Probe requires the baseline product sources.' }
+$trackedBuildDelta = git diff --name-only HEAD -- source gradle apps/geocedg
+if ($LASTEXITCODE -ne 0) { throw 'Cannot record the build source delta.' }
+$buildEvidencePath = (Resolve-Path -LiteralPath $BuildEvidence).Path
+$build = Get-Content -LiteralPath $buildEvidencePath -Raw | ConvertFrom-Json
+if ($build.producer_kind -ne 'GRADLE_COMMAND' -or
+        $build.completion_state -ne 'COMPLETED' -or $build.inner_exit_code -ne 0 -or
+        $build.arguments[0] -ne ':desktop:desktop:test') {
+    throw 'Expected evidence of a successful Desktop Gradle test build.'
+}
 $bin = Join-Path $Jdk 'bin'
 $reference = (Resolve-Path -LiteralPath $ClasspathArgs).Path
 $classPathLine = @(Get-Content -LiteralPath $reference | Where-Object {
@@ -33,38 +41,35 @@ foreach ($entry in $entries) {
 }
 $classPath = $entries -join ';'
 
-$output = Join-Path $repo "artifacts/agent/post-cu4-insertion-review/p4/$Run"
+$output = Join-Path $repo "artifacts/agent/post-cu4-increments/i1-p4/$Run"
 if (Test-Path -LiteralPath $output) { throw "Run already exists $output" }
 $classes = Join-Path $output 'classes'
 $tmp = Join-Path $output 'tmp'
 [void][IO.Directory]::CreateDirectory($classes)
 [void][IO.Directory]::CreateDirectory($tmp)
-$main = 'source/desktop/desktop/src/main/java/org/geocedg/desktop'
-$test = 'source/desktop/desktop/src/test/java/org/geocedg/desktop'
 $sources = @(
     "$PSScriptRoot/P4ProbeRunner.java"
     "$PSScriptRoot/PostCu4P4Probe.java"
-    "$main/GeoCeDGDocumentInsertion.java"
-    "$main/GeoCeDGInsertionAdmission.java"
-    "$main/GeoCeDGInsertionFidelity.java"
-    "$main/GeoCeDGInsertionCopyPaste.java"
-    "$main/GeoCeDGAngularSourceArchive.java"
-    'source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java'
-    'source/shared/common/src/main/java/org/geocedg/common/kernel/units/MixedAngleInsertionProof.java'
-    "$test/PreG9BR6PlusF3InsertionTest.java"
-    "$test/PreG9BCu4InsertionTest.java"
-    "$test/Cu4B2InsertionTest.java"
 )
 $java = Join-Path $bin 'java.exe'
 & $java -version *> "$output/java-version.txt"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 @{
-    product_base = $base
     head = $headCommit
+    tree = $headTree
+    tracked_build_delta = @($trackedBuildDelta)
+    build_evidence = Get-FileHash -LiteralPath $buildEvidencePath
     classpath_source = $reference
     classpath_entries = $entries
     sources = @(Get-FileHash -LiteralPath ($sources + $PSCommandPath))
-    common_jar = Get-FileHash -LiteralPath 'source/shared/common/build/libs/common.jar'
+    product_classes = @(Get-FileHash -LiteralPath @(
+        'source/shared/common/build/libs/common.jar'
+        'source/desktop/desktop/build/classes/java/main/org/geocedg/desktop/AppGeoCeDG.class'
+        'source/desktop/desktop/build/classes/java/main/org/geocedg/desktop/GeoCeDGDocumentInsertion.class'
+        'source/desktop/desktop/build/classes/java/main/org/geogebra/desktop/util/CopyPasteD.class'
+        'source/desktop/desktop/build/classes/java/test/org/geocedg/desktop/PreG9BR6PlusF3InsertionTest.class'
+    ))
+    portable_preferences = [bool]$PortablePreferences
 } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath "$output/inputs.json"
 
 function Quote-Java([string]$Value) {
@@ -83,16 +88,32 @@ if ($code -ne 0) {
     exit $code
 }
 
-$runArgs = Join-Path $output 'java.args'
-@('-Dfile.encoding=UTF-8', (Quote-Java "-Djava.io.tmpdir=$tmp"),
-    (Quote-Java "-Dgeocedg.p4.dir=$output"),
-    '-cp', (Quote-Java "$classes;$classPath"),
-    'P4ProbeRunner', (Quote-Java "$output/portable.properties")) |
-    Set-Content -LiteralPath $runArgs
-& $java "@$runArgs" *> "$output/java.log"
-$code = $LASTEXITCODE
-$code | Set-Content -LiteralPath "$output/java.exit.txt"
-Select-String -LiteralPath "$output/java.log" -Pattern '^P4PROBE|tests (found|successful|failed)' |
-    ForEach-Object Line
-if ($code -ne 0) { Get-Content -LiteralPath "$output/java.log" -Tail 100 }
-exit $code
+$failed = $false
+$originalAppData = $env:APPDATA
+try {
+    foreach ($suite in @('f3', 'study')) {
+        $env:APPDATA = Join-Path $output "$suite-appdata"
+        [void][IO.Directory]::CreateDirectory($env:APPDATA)
+        $preference = if ($PortablePreferences) { "$output/$suite.properties" } else { '-' }
+        $runArgs = Join-Path $output "$suite.args"
+        @('-Dfile.encoding=UTF-8', (Quote-Java "-Djava.io.tmpdir=$tmp"),
+            (Quote-Java "-Dgeocedg.p4.dir=$output"),
+            '-Djava.util.prefs.PreferencesFactory=P4ProbeRunner$MemoryPreferencesFactory',
+            '-cp', (Quote-Java "$classes;$classPath"),
+            'P4ProbeRunner', (Quote-Java $preference), $suite) |
+            Set-Content -LiteralPath $runArgs
+        & $java "@$runArgs" *> "$output/$suite.log"
+        $code = $LASTEXITCODE
+        $code | Set-Content -LiteralPath "$output/$suite.exit.txt"
+        Select-String -LiteralPath "$output/$suite.log" -Pattern '^P4PROBE|tests (found|successful|failed)' |
+            ForEach-Object Line
+        if ($code -ne 0) {
+            $failed = $true
+            Get-Content -LiteralPath "$output/$suite.log" -Tail 70
+        }
+    }
+} finally {
+    $env:APPDATA = $originalAppData
+}
+if ($failed) { exit 1 }
+exit 0
