@@ -73,7 +73,7 @@ class PreG9BR6PlusF3InsertionTest {
 	@Test
 	void f3i01ElementaryInsertionIsOneUndoStepWithIdentityKept() throws Exception {
 		AppGeoCeDG target = PreG9BR6PlusF3Documents.target(dir, "t1");
-		File source = PreG9BR6PlusF3Documents.elementary(dir, "s1");
+		File source = PreG9BR6PlusF3Documents.elementaryReference(dir, "s1");
 		PreG9BR6PlusF3Documents.Observation before = new PreG9BR6PlusF3Documents.Observation(
 				target);
 		String uuid = target.getUniqueId();
@@ -81,7 +81,7 @@ class PreG9BR6PlusF3InsertionTest {
 		int n = count(target);
 		GeoCeDGDocumentInsertion.Result result = insert(target, source);
 		assertEquals(GeoCeDGDocumentInsertion.Outcome.INSERTED, result.getOutcome(),
-				String.valueOf(result.getFailure()));
+				() -> result.getMessage() + " " + result.getFailure());
 		assertNull(result.getMessage());
 		assertEquals(uuid, target.getUniqueId());
 		assertTrue(count(target) > n);
@@ -109,7 +109,7 @@ class PreG9BR6PlusF3InsertionTest {
 
 	@Test
 	void f3i02LabelRenamingIsDeterministicAndClosed() throws Exception {
-		File source = PreG9BR6PlusF3Documents.elementary(dir, "s2");
+		File source = PreG9BR6PlusF3Documents.elementaryReference(dir, "s2");
 		List<String> first = new ArrayList<>();
 		List<String> second = new ArrayList<>();
 		List<List<String>> runs = List.of(first, second);
@@ -117,8 +117,9 @@ class PreG9BR6PlusF3InsertionTest {
 			List<String> labels = runs.get(run);
 			AppGeoCeDG target = PreG9BR6PlusF3Documents.target(dir, "t2-" + run);
 			int n = count(target);
-			assertEquals(GeoCeDGDocumentInsertion.Outcome.INSERTED,
-					insert(target, source).getOutcome());
+			GeoCeDGDocumentInsertion.Result result = insert(target, source);
+			assertEquals(GeoCeDGDocumentInsertion.Outcome.INSERTED, result.getOutcome(),
+					result::getMessage);
 			List<GeoElement> all = new ArrayList<>(
 					target.getKernel().getConstruction().getGeoSetConstructionOrder());
 			for (GeoElement geo : all.subList(n, all.size())) {
@@ -234,9 +235,9 @@ class PreG9BR6PlusF3InsertionTest {
 				target);
 		String uuid = target.getUniqueId();
 		GeoCeDGDocumentInsertion.Result result = insert(target,
-				PreG9BR6PlusF3Documents.locus(dir, "s7"));
+				PreG9BR6PlusF3Documents.locusReference(dir, "s7"));
 		assertEquals(GeoCeDGDocumentInsertion.Outcome.INSERTED, result.getOutcome(),
-				String.valueOf(result.getFailure()));
+				() -> result.getMessage() + " " + result.getFailure());
 		assertEquals(uuid, target.getUniqueId());
 		assertOneUndoStep(target, before);
 		Map<GeoElement, PersistentGeoId> idsAfter = GeoCeDGDocumentInsertion.identities(target);

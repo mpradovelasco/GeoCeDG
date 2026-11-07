@@ -60,6 +60,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     tracked_build_delta = @($trackedBuildDelta)
     build_evidence = Get-FileHash -LiteralPath $buildEvidencePath
     classpath_source = $reference
+    classpath_sha256 = (Get-FileHash -LiteralPath $reference).Hash
     classpath_entries = $entries
     sources = @(Get-FileHash -LiteralPath ($sources + $PSCommandPath))
     product_classes = @(Get-FileHash -LiteralPath @(
@@ -91,12 +92,15 @@ if ($code -ne 0) {
 $failed = $false
 $originalAppData = $env:APPDATA
 try {
-    foreach ($suite in @('f3', 'study')) {
+    foreach ($suite in @('f3', 'study', 'catalog')) {
         $env:APPDATA = Join-Path $output "$suite-appdata"
         [void][IO.Directory]::CreateDirectory($env:APPDATA)
-        $preference = if ($PortablePreferences) { "$output/$suite.properties" } else { '-' }
+        # The catalog regression exercises the fallback used by the installed backend.
+        $preference = if ($PortablePreferences -and $suite -ne 'catalog') {
+            "$output/$suite.properties"
+        } else { '-' }
         $runArgs = Join-Path $output "$suite.args"
-        @('-Dfile.encoding=UTF-8', (Quote-Java "-Djava.io.tmpdir=$tmp"),
+        @('-ea', '-Dfile.encoding=UTF-8', (Quote-Java "-Djava.io.tmpdir=$tmp"),
             (Quote-Java "-Dgeocedg.p4.dir=$output"),
             '-Djava.util.prefs.PreferencesFactory=P4ProbeRunner$MemoryPreferencesFactory',
             '-cp', (Quote-Java "$classes;$classPath"),

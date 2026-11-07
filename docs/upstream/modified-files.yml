@@ -6336,7 +6336,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF3Documents.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-F3 test documents (every matrix row, macros, specialized objects, rejected sources) and the serializable and runtime observation of a target.",
+      "purpose": "PRE-G9B-R6-plus-F3 test documents (every matrix row, macros, specialized objects, rejected sources) and the serializable and runtime observation of a target. POST-CU4 PRE-I3 C1 adds explicit layer anchors for the positive references and retains the historical sources for the negative layer witness.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {
@@ -6372,7 +6372,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF3InsertionTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-F3 Stage B/C: insertion success per matrix family, rejections without change, L1, M1/MU-1, D1 buffer independence, document identity, EDT and accounting gates.",
+      "purpose": "PRE-G9B-R6-plus-F3 Stage B/C: insertion success per matrix family, rejections without change, L1, M1/MU-1, D1 buffer independence, document identity, EDT and accounting gates. POST-CU4 PRE-I3 C1 uses layer-anchored positive references and includes the F3 refusal reason on failure.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {

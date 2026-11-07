@@ -6,6 +6,7 @@
 package org.geocedg.desktop;
 
 import static org.geocedg.desktop.PreG9BR6PlusF3Documents.M;
+import static org.geocedg.desktop.PreG9BR6PlusF3Documents.REFERENCE_LAYER;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.app;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.awaitQuiescent;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.algos.AlgoConicPartCircle;
 import org.geogebra.common.kernel.geos.GeoConic;
 import org.geogebra.common.kernel.geos.GeoConicPart;
@@ -46,6 +48,7 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoConicNDConstants;
 import org.geogebra.desktop.headless.GFileHandler;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -103,20 +106,77 @@ class PostCu4P4Probe {
 
 	@Test
 	void explainBaselineFixtureLayerResults() throws Exception {
+		System.out.printf("P4PROBE runtime java=%s cwd=%s assertions=%s preferences=%s%n",
+				System.getProperty("java.runtime.version"), System.getProperty("user.dir"),
+				PostCu4P4Probe.class.desiredAssertionStatus(),
+				System.getProperty("java.util.prefs.PreferencesFactory", "installed"));
+		for (Class<?> type : List.of(AppGeoCeDG.class, GeoCeDGDocumentInsertion.class,
+				PreG9BR6PlusF3InsertionTest.class, GeoNumeric.class,
+				org.geogebra.desktop.util.CopyPasteD.class)) {
+			System.out.printf("P4PROBE class %s origin=%s%n", type.getName(),
+					type.getProtectionDomain().getCodeSource().getLocation());
+		}
 		Path output = Path.of(System.getProperty("geocedg.p4.dir"), "f3-controls");
 		Files.createDirectory(output);
 		onEdt(() -> {
 			File elementary = PreG9BR6PlusF3Documents.elementary(output, "elementary");
 			File locusSpline = PreG9BR6PlusF3Documents.locus(output, "locus-spline");
-			for (int layer : new int[] {4, 0}) {
-				reportBaselineFixture(output, elementary, "a", layer);
-				reportBaselineFixture(output, locusSpline, "s", layer);
+			File elementaryReference = PreG9BR6PlusF3Documents.elementaryReference(output,
+					"elementary-reference");
+			File locusReference = PreG9BR6PlusF3Documents.locusReference(output,
+					"locus-spline-reference");
+			for (int layer : new int[] {REFERENCE_LAYER, 0}) {
+				reportBaselineFixture(output, elementary, "a", layer, 0, REFERENCE_LAYER);
+				reportBaselineFixture(output, locusSpline, "s", layer, 0, REFERENCE_LAYER);
+				reportBaselineFixture(output, elementaryReference, "a", layer,
+						REFERENCE_LAYER, REFERENCE_LAYER);
+				reportBaselineFixture(output, locusReference, "s", layer,
+						REFERENCE_LAYER, REFERENCE_LAYER);
 			}
 			return null;
 		});
 	}
 
-	private void reportBaselineFixture(Path output, File file, String driver, int workingLayer)
+	@Test
+	@Tag("synthetic-catalog")
+	void reproducesUserCatalogLayerLeakInAnEmptyProfile() throws Exception {
+		Path root = Path.of(System.getProperty("geocedg.p4.dir")).toAbsolutePath().normalize();
+		Path appData = Path.of(System.getenv("APPDATA")).toAbsolutePath().normalize();
+		assertEquals(root.resolve("catalog-appdata"), appData);
+		Path output = Files.createDirectory(root.resolve("f3-catalog"));
+		Path preferences = GeoCeDG.getDefaultPreferencesFile();
+		Path store = preferences.resolveSibling(preferences.getFileName() + ".user-tools-v1.json");
+		assertFalse(Files.exists(store));
+		Files.createDirectories(store.getParent());
+		onEdt(() -> {
+			AppGeoCeDG author = app(M);
+			assertEquals(0, author.getMaxLayerUsed());
+			GeoElement a = must(author, "A=(0,0)");
+			GeoElement b = must(author, "B=(2,0)");
+			GeoElement middle = must(author, "M=Midpoint(A,B)");
+			int macroLayer = REFERENCE_LAYER + 1;
+			a.setLayer(macroLayer);
+			Macro macro = new Macro(author.getKernel(), "C1LayerWitness",
+					new GeoElement[] {a, b}, new GeoElement[] {middle});
+			author.getKernel().addMacro(macro);
+			var archive = new ByteArrayOutputStream();
+			author.getXMLio().writeMacroStream(archive, new ArrayList<>(List.of(macro)),
+					new ArrayList<>());
+			new GeoCeDGUserToolLibrary(author, store).install("c1-layer-witness.ggt",
+					archive.toByteArray());
+			AppGeoCeDG initialized = app(M);
+			assertEquals(macroLayer, initialized.getMaxLayerUsed());
+			assertNull(initialized.getKernel().getMacro("C1LayerWitness"));
+			assertNull(initialized.getKernel().lookupLabel("A"));
+			System.out.printf("P4PROBE synthetic catalog raised empty app maximum to %d%n", macroLayer);
+			File elementary = PreG9BR6PlusF3Documents.elementary(output, "elementary");
+			reportBaselineFixture(output, elementary, "a", REFERENCE_LAYER, macroLayer, macroLayer);
+			return null;
+		});
+	}
+
+	private void reportBaselineFixture(Path output, File file, String driver, int workingLayer,
+			int sourceLayer, int copyLayer)
 			throws Exception {
 		var target = PreG9BR6PlusF3Documents.target(output,
 				"receiver-layer-" + workingLayer + "-" + file.getName());
@@ -128,6 +188,9 @@ class PostCu4P4Probe {
 		var result = target.getDocumentInsertion().insert(file);
 		System.out.printf("P4PROBE f3-control %s working=%d %s %s%n",
 				file.getName(), workingLayer, result.getOutcome(), result.getMessage());
+		assertEquals(sourceLayer == copyLayer ? GeoCeDGDocumentInsertion.Outcome.INSERTED
+				: GeoCeDGDocumentInsertion.Outcome.REJECTED_BEFORE_MUTATION, result.getOutcome(),
+				result::getMessage);
 		if (result.getOutcome() != GeoCeDGDocumentInsertion.Outcome.INSERTED) {
 			assertEquals(GeoCeDGDocumentInsertion.Outcome.REJECTED_BEFORE_MUTATION,
 					result.getOutcome());
@@ -136,11 +199,11 @@ class PostCu4P4Probe {
 			assertTrue(before.sameInstances(after));
 		}
 		assertArrayEquals(original, Files.readAllBytes(file.toPath()));
-		replayScratchCopy(file, driver, target, receiver.toByteArray(), result.getOutcome());
+		replayScratchCopy(file, driver, target, receiver.toByteArray(), sourceLayer, copyLayer);
 	}
 
 	private static void replayScratchCopy(File file, String driver, AppGeoCeDG target,
-			byte[] receiver, GeoCeDGDocumentInsertion.Outcome outcome) throws Exception {
+			byte[] receiver, int sourceLayer, int copyLayer) throws Exception {
 		var source = target.newInsertionHelper();
 		var scratch = target.newInsertionHelper();
 		try {
@@ -166,10 +229,13 @@ class PostCu4P4Probe {
 			String mismatch = GeoCeDGDocumentInsertion.verify(admission.getSource(), created,
 					scratch, source, ids);
 			System.out.printf("P4PROBE layer-witness %s driver=%s source=%d copy=%d "
-					+ "serializedLayer=%s scratchMax=%d scratchWorking=%d hidden=%s "
+					+ "type=%s producer=%s definedBy=%s drawable=%s "
+					+ "serializedLayer=%s liveMax=%d scratchMax=%d scratchWorking=%d hidden=%s "
 					+ "mapped=%s mismatch=%s%n",
 					file.getName(), driver, from.getLayer(), to.getLayer(),
-					from.getXML().contains("<layer "), maxLayer, working,
+					from.getClass().getSimpleName(), from.getParentAlgorithm(),
+					from.getDefinition(), from.isDrawable(), from.getXML().contains("<layer "),
+					target.getMaxLayerUsed(), maxLayer, working,
 					scratch.getLayerWorkspace().getHiddenLayers(), buffer.getCopies().get(from) == to,
 					mismatch);
 			assertEquals(List.of(3), scratch.getLayerWorkspace().getHiddenLayers());
@@ -177,12 +243,14 @@ class PostCu4P4Probe {
 			var sourcePoint = named(source, "B");
 			assertEquals(sourcePoint.getLayer(), created.get(admission.getSource()
 					.indexOf(sourcePoint)).getLayer());
-			if (outcome == GeoCeDGDocumentInsertion.Outcome.INSERTED) {
+			assertEquals(sourceLayer, from.getLayer());
+			assertEquals(copyLayer, to.getLayer());
+			assertEquals(copyLayer, maxLayer);
+			assertFalse(from.getXML().contains("<layer "));
+			if (sourceLayer == copyLayer) {
 				assertNull(mismatch);
 			} else {
 				assertEquals("layer " + driver, mismatch);
-				assertFalse(from.getXML().contains("<layer "));
-				assertNotEquals(from.getLayer(), to.getLayer());
 			}
 		} finally {
 			target.releaseInsertionHelper(scratch);

@@ -14,6 +14,7 @@ import java.util.prefs.PreferencesFactory;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.launcher.TagFilter;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
@@ -21,6 +22,7 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 /** Standalone launcher for the diagnostic and explicit baseline controls. */
 public final class P4ProbeRunner {
 	private static final String F3 = "org.geocedg.desktop.PreG9BR6PlusF3InsertionTest#";
+	private static final String PROBE = "org.geocedg.desktop.PostCu4P4Probe";
 
 	private P4ProbeRunner() {
 	}
@@ -30,8 +32,9 @@ public final class P4ProbeRunner {
 			GeoGebraPreferencesD.setPropertyFileName(args[0]);
 		}
 		List<DiscoverySelector> selectors = switch (args[1]) {
-		case "study" -> List.of(DiscoverySelectors.selectClass(
-				"org.geocedg.desktop.PostCu4P4Probe"));
+		case "study" -> List.of(DiscoverySelectors.selectClass(PROBE));
+		case "catalog" -> List.of(DiscoverySelectors.selectMethod(PROBE
+				+ "#reproducesUserCatalogLayerLeakInAnEmptyProfile"));
 		case "f3" -> List.of(
 				DiscoverySelectors.selectMethod(F3
 						+ "f3i01ElementaryInsertionIsOneUndoStepWithIdentityKept"),
@@ -41,16 +44,24 @@ public final class P4ProbeRunner {
 						+ "f3i07LocusV2AndSplineV2ReceiveFreshIdentitiesAndPersist"));
 		default -> throw new IllegalArgumentException("Unknown probe selection: " + args[1]);
 		};
-		var request = LauncherDiscoveryRequestBuilder.request().selectors(selectors).build();
+		var request = LauncherDiscoveryRequestBuilder.request().selectors(selectors);
+		if ("study".equals(args[1])) {
+			request.filters(TagFilter.excludeTags("synthetic-catalog"));
+		}
 		var listener = new SummaryGeneratingListener();
-		LauncherFactory.create().execute(request, listener);
+		LauncherFactory.create().execute(request.build(), listener);
 		var summary = listener.getSummary();
 		var writer = new PrintWriter(System.out, true);
 		summary.printTo(writer);
 		summary.printFailuresTo(writer);
 		long found = summary.getTestsFoundCount();
-		long expected = "f3".equals(args[1]) ? 3 : found;
-		System.exit(found > 0 && found == expected && summary.getTestsSucceededCount() == found
+		long expected = switch (args[1]) {
+		case "f3" -> 3;
+		case "study" -> 8;
+		case "catalog" -> 1;
+		default -> throw new IllegalArgumentException(args[1]);
+		};
+		System.exit(found == expected && summary.getTestsSucceededCount() == found
 				? 0 : 1);
 	}
 

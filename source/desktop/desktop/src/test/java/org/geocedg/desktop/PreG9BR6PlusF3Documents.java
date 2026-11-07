@@ -31,14 +31,32 @@ import org.geogebra.common.plugin.ScriptType;
 final class PreG9BR6PlusF3Documents {
 	static final UnitState MM = UnitState.of(UnitToken.MM, null, null);
 	static final UnitState M = UnitState.of(UnitToken.M, null, null);
+	static final int REFERENCE_LAYER = 4;
 
 	private PreG9BR6PlusF3Documents() {
 	}
 
 	/** Every elementary row of the matrix, with label conflicts against the target. */
 	static File elementary(Path dir, String name) throws Exception {
+		return elementary(dir, name, false);
+	}
+
+	/** Positive reference with an explicit layer anchor before any scalar without a tag. */
+	static File elementaryReference(Path dir, String name) throws Exception {
+		return elementary(dir, name, true);
+	}
+
+	private static File elementary(Path dir, String name, boolean referenceLayer) throws Exception {
 		AppGeoCeDG s = app(M);
-		for (String c : new String[] {"a=2", "A=(1,1)", "B=(4,2)", "C=(2,5)",
+		if (referenceLayer) {
+			s.getLayerWorkspace().setWorkingLayer(REFERENCE_LAYER);
+			must(s, "A=(1,1)");
+			must(s, "a=2");
+		} else {
+			must(s, "a=2");
+			must(s, "A=(1,1)");
+		}
+		for (String c : new String[] {"B=(4,2)", "C=(2,5)",
 				"f(x)=a x^2/8", "g(x)=f(x)+1", "P=Point(g)", "sg=Segment(A,B)",
 				"pol=Polygon(A,B,C)", "cA=Circle(A,B)", "el=Ellipse(A,B,6)", "m=Midpoint(sg)",
 				"rA=Ray(A,C)", "vA=Vector(A,C)", "lAB=Line(A,B)", "t1=\"len \" + sg",
@@ -53,7 +71,19 @@ final class PreG9BR6PlusF3Documents {
 
 	/** Locus V2 family (locus, length, intersection) and Spline V2. */
 	static File locus(Path dir, String name) {
+		return locus(dir, name, false);
+	}
+
+	/** Positive reference whose first serialized point anchors the numeric fallback. */
+	static File locusReference(Path dir, String name) {
+		return locus(dir, name, true);
+	}
+
+	private static File locus(Path dir, String name, boolean referenceLayer) {
 		AppGeoCeDG s = app(MM);
+		if (referenceLayer) {
+			s.getLayerWorkspace().setWorkingLayer(REFERENCE_LAYER);
+		}
 		for (String c : new String[] {"A=(1,1)", "B=(4,2)", "C=(2,5)", "E=(5,0)", "s=0",
 				"Q=(s,0)", "D={false,{-2,2,true,true}}", "L=LocusV2(Q,s,D)",
 				"len=LocusLength(L)", "S=SplineV2({A,B,C,E},3)", "lenS=LocusLength(S)"}) {
@@ -155,7 +185,7 @@ final class PreG9BR6PlusF3Documents {
 			must(t, c);
 		}
 		t.getKernel().lookupLabel("B").setLayer(3);
-		t.getLayerWorkspace().setWorkingLayer(4);
+		t.getLayerWorkspace().setWorkingLayer(REFERENCE_LAYER);
 		t.getLayerWorkspace().setLayerHidden(3, true);
 		File file = save(t, dir, name);
 		t.setCurrentFile(file);
