@@ -331,8 +331,9 @@ Windows bootstrap verifies supported workstation prerequisites and delegates
 product coverage to the canonical authority. Its audited default/stages and
 toolchain requirements are not replaced by DEV. Review bootstrap-impact and
 verification-infrastructure changes using the linked contract; a smaller PHASE
-selection never weakens FULL. CI explicitly selects FULL with the existing
-benchmark/evidence steps and the same level meanings used locally.
+selection never weakens FULL. The
+[operations manual](geocedg_operations_manual.md#github-actions-workflow-archive)
+records the retirement of the GitHub Actions workflow and the deferred CI redesign.
 
 Historical G7/G8 evidence is verified from the fixed `geocedg-g8-pass` tag;
 living documents are current-HEAD checks. Never update a historical hash

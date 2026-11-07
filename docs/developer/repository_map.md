@@ -48,7 +48,7 @@ insufficient.
 | `tools/benchmark`, `benchmarks` | Informational harnesses and reproducible suites | Source definitions; raw outputs generated |
 | `packaging` | Windows `jpackage` configuration and notices | Durable packaging source; default profile `INTERNAL`; a public release requires a separate author decision |
 | `.github/prompts`, `ai-shell/prompts` | Canonical tasks/reviews, bounded book operations, and lightweight profiles | Operational instructions, not geometric or editorial truth; prompts never self-authorize phases |
-| `.github/workflows` | CI invocation of repository verification | Automation source |
+| `docs/archive/github-actions` | Historical [GitHub Actions workflow](../archive/github-actions/verify.yml) | Archived automation source |
 | local `/book` | Optional filesystem link to the independent `mpradovelasco/geocedg_book` worktree | Ignored local convenience; never GeoCeDG authority, content or Git state |
 | `artifacts` | Packaging, export, `knowledge` bundles, book technical-baseline candidates, and other generated output boundary | Regenerable/ignored except explicit README/manifests; generated book evidence is not editorial acceptance |
 | module `build/`, `.gradle/`, `.kotlin/` | Build caches and generated outputs | Regenerable/ignored; verifiers restore entry state |

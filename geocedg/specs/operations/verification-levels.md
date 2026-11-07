@@ -413,8 +413,9 @@ exit propagation. Moving exhaustive checks to FULL requires a documented reason
 and preserved coverage. It never permits a workstation incapable of canonical
 verification to pass.
 
-CI and workstation invocations use identical level meanings. The candidate CI
-policy explicitly runs FULL, retaining existing benchmarks and evidence uploads.
+CI and workstation invocations use identical level meanings. The retirement of
+the GitHub Actions workflow is recorded in the
+[operations manual](../../../docs/developer/geocedg_operations_manual.md#github-actions-workflow-archive).
 No path-based or prose-based exemption is introduced. A timeout, missing runtime
 or unexecuted required gate is incomplete/failed evidence, not a PASS. Any later
 selective CI policy needs conservative, tested scope routing and FULL for

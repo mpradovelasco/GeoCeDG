@@ -704,6 +704,34 @@ Do not commit Gradle outputs, package binaries, or generated benchmark
 evidence. Generated evidence belongs outside durable sources or under the ignored `artifacts/`
 boundary defined by the operational contracts.
 
+### GitHub Actions workflow archive
+
+The author retired automatic verification in GitHub Actions as an independent
+operational change based on `6c8ccfe7ab6b6f82f35aa508c2c0843692d76293`.
+The [historical YAML](../archive/github-actions/verify.yml) preserves the Git
+blob from `.github/workflows/verify.yml`. Local verification uses the
+[canonical verifier](../../tools/agent/verify.ps1) and its
+[verification contract](../../geocedg/specs/operations/verification-levels.md).
+Existing approvals and receipts apply to their original commits and evidence.
+
+#### DEBT-OPS-GITHUB-ACTIONS-VERIFY
+
+**Deferred, non-urgent.** The historical workflow consumed runner resources,
+and its recurrent failures provided an unreliable signal for the current
+acceptance process.
+
+- It ran on pull requests, pushes to `main`, `integration` and `feature/**`,
+  and manual dispatches.
+- It used a Windows runner and checked out the full Git history and tags.
+- It installed Temurin JDKs 17, 22 and 25 and prepared Gradle through the
+  repository wrapper with JDK 22 as the launcher.
+- It provisioned and checked the Conda `cedg_env` environment.
+- It ran `verify.ps1 -Profile FINAL` and uploaded verification evidence as
+  GitHub Actions artifacts.
+
+Future work is to design an incremental CI process that provides actionable
+feedback at a cost proportionate to the verification required.
+
 ## 8. Technical references
 
 - Governance: [AGENTS.md](../../AGENTS.md)

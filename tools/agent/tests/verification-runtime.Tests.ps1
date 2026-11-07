@@ -2214,14 +2214,15 @@ Invoke-RuntimeTest "operational CI guard binds literal FULL to one canonical com
             -not $operationalSource.Contains('Invoke-VerificationSupervisor',
                 [StringComparison]::Ordinal)) `
             'Operational compatibility adapter duplicates or bypasses the canonical runner.'
-        $workflow = [IO.File]::ReadAllText((Join-Path $RepositoryRootPath '.github/workflows/verify.yml'))
-        Assert-TestCondition ([regex]::Matches($workflow,
+        $archivedWorkflow = [IO.File]::ReadAllText(
+            (Join-Path $RepositoryRootPath 'docs/archive/github-actions/verify.yml'))
+        Assert-TestCondition ([regex]::Matches($archivedWorkflow,
                 [regex]::Escape('.\tools\agent\verify.ps1 -Profile FINAL')).Count -eq 1) `
-            'CI does not invoke exactly one canonical FINAL profile.'
-        Assert-TestCondition (-not $workflow.Contains('timeout-minutes',
+            'Archived workflow does not invoke exactly one canonical FINAL profile.'
+        Assert-TestCondition (-not $archivedWorkflow.Contains('timeout-minutes',
                 [StringComparison]::Ordinal) -and
-            -not $workflow.Contains('-Level FULL', [StringComparison]::Ordinal)) `
-            'CI retains timeout configuration or a legacy FULL selector.'
+            -not $archivedWorkflow.Contains('-Level FULL', [StringComparison]::Ordinal)) `
+            'Archived workflow contains timeout configuration or a legacy FULL selector.'
         return
     }
     $starts = @($operationalAst.FindAll({ param($node)
