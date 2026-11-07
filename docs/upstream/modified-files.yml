@@ -6262,6 +6262,36 @@
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertInspection.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: inspect file snapshots on a separate Desktop worker and run the native copy and reopen only on passive disposable documents.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionArchive.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: bound and fingerprint archive input and expose only admitted native members to the worker.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionXml.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: screen passive native XML before kernel evaluation and report refusals and declarations.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionResult.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: model scoped object, identity and dependency comparisons with explicit evidence and uncertainty.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionReport.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: project the worker result into a versioned JSON report and a readable summary.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentInsertion.java",
       "change": "added",
       "purpose": "PRE-G9B-R6-plus-F3 Insert File orchestration: preflight, helper, admission, strict dry run, generation barrier with native snapshot and detached history, commit, strict verification, one undo step with the document UUID kept, K1-S, K1-R-H guarded reload, certificates, attach quiescence and serious-failure hand-over. PRE-G9B-R6-plus-F3-R1: the closure check treats the built-in coordinate axes as construction constants, mapped axis to axis; rejections keep the stage and cause of an unexpected exception.",
@@ -6326,6 +6356,18 @@
       "change": "added",
       "purpose": "I0: verify Swing selector projection across open, reopen, lazy creation, reactivation and native Undo and Redo without generating user actions or changing document state.",
       "authority": "docs/architecture/post_cu4_angle_preferences_observation.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertInspectionTest.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: verify passive native inspection, additive trial, durable round trip, dependency witnesses and blocked content.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGInspectionArchiveTest.java",
+      "change": "added",
+      "purpose": "POST-CU4 I2: test bounded archive and XML preflight with passive, active, invalid and ambiguous input.",
+      "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF3InsertionTest.java",
