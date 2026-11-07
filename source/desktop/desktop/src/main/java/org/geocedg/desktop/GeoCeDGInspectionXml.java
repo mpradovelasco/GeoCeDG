@@ -174,6 +174,7 @@ final class GeoCeDGInspectionXml {
 	private final List<Finding> findings;
 	private final List<Declaration> declarations = new ArrayList<>();
 	private final Map<String, String> labels = new HashMap<>();
+	private final Map<String, String> referencedLabels = new HashMap<>();
 	private final Set<String> declared = new HashSet<>();
 	private boolean safe = true;
 
@@ -535,6 +536,13 @@ final class GeoCeDGInspectionXml {
 				break;
 			}
 		}
+		for (var reference : referencedLabels.entrySet()) {
+			if (!declared.contains(reference.getKey())
+					|| !reference.getValue().equals(labels.get(reference.getKey()))) {
+				refuse(Code.INVALID_XML, "construction", "Missing or incompatible reference "
+						+ reference.getKey());
+			}
+		}
 		// Every serialized creation must be represented by an element declaration.
 		return declared.containsAll(labels.keySet());
 	}
@@ -628,15 +636,23 @@ final class GeoCeDGInspectionXml {
 				&& angularNumbers(node, "min", "max") && numbers(node, "width", "x", "y");
 		case "value" -> node.leaf("val") && (number(node.attr("val"))
 				|| Set.of("?", "NaN", "true", "false").contains(node.attr("val")));
-		case "startPoint" -> !defaults && (node.leaf("exp") && "point".equals(labels.get(node.attr("exp")))
+		case "startPoint" -> !defaults && (node.leaf("exp") && reference(node.attr("exp"), "point")
 				|| node.leaf("x y z") && numbers(node, "x", "y", "z"));
 		case "file" -> defaults && "image".equals(type) && node.leaf("name") && node.attr("name").isEmpty();
-		case "condition" -> !defaults && node.leaf("showObject") && label(node.attr("showObject"));
+		case "condition" -> !defaults && node.leaf("showObject") && reference(node.attr("showObject"), "boolean");
 		default -> {
 			String style = STYLE_ATTRIBUTES.get(node.name());
 			yield style != null && node.leaf(style);
 		}
 		};
+	}
+
+	private boolean reference(String label, String type) {
+		if (!label(label)) {
+			return false;
+		}
+		String existing = referencedLabels.putIfAbsent(label, type);
+		return existing == null || existing.equals(type);
 	}
 
 	private boolean expression(Node node) {

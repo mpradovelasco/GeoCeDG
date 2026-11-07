@@ -208,6 +208,7 @@ public class Construction {
 	private AlgorithmSet algoSetCurrentlyUpdated;
 
 	private final HashSet<String> protectedLabels = new HashSet<>();
+	private long protectedLabelRevision;
 
 	/**
 	 * Table for (label, GeoCasCell) pairs, contains global variables used in
@@ -4402,7 +4403,10 @@ public class Construction {
 
 		this.corner5Algos = null;
 		this.corner11Algos = null;
-		this.protectedLabels.clear();
+		if (!protectedLabels.isEmpty()) {
+			protectedLabels.clear();
+			protectedLabelRevision++;
+		}
 		initGeoTables();
 
 		// reinit construction step
@@ -4647,7 +4651,31 @@ public class Construction {
 	 * Make sure a label won't be used by automatic labeling.
 	 */
 	public void addProtectedLabel(String label) {
-		protectedLabels.add(label);
+		if (protectedLabels.add(label)) {
+			protectedLabelRevision++;
+		}
+	}
+
+	/** @return the label reservations before an operation-scoped document copy */
+	public Set<String> snapshotProtectedLabels() {
+		return Set.copyOf(protectedLabels);
+	}
+
+	/** @return monotonic activity of this construction's reserved-label set */
+	public long getProtectedLabelRevision() {
+		return protectedLabelRevision;
+	}
+
+	/**
+	 * Restores session reservations after an operation-scoped document copy.
+	 * @param labels the reservations captured from this construction
+	 */
+	public void restoreProtectedLabels(Set<String> labels) {
+		if (!protectedLabels.equals(labels)) {
+			protectedLabels.clear();
+			protectedLabels.addAll(labels);
+			protectedLabelRevision++;
+		}
 	}
 
 	/**

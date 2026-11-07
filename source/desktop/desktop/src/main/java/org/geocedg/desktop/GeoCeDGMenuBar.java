@@ -168,7 +168,9 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 			if (!projectedActions.add(actionId)) {
 				throw new IllegalStateException("Duplicate menu action projection " + actionId);
 			}
-			menu.add(createItem(registry.get(actionId), radios));
+			if (registry.isMenuActionVisible(actionId)) {
+				menu.add(createItem(registry.get(actionId), radios));
+			}
 		}
 	}
 

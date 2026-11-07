@@ -388,7 +388,7 @@ final class GeoCeDGInspectionArchive {
 		return output.toByteArray();
 	}
 
-	private static String digest(byte[] bytes) {
+	static String digest(byte[] bytes) {
 		try {
 			return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
 		} catch (NoSuchAlgorithmException impossible) {

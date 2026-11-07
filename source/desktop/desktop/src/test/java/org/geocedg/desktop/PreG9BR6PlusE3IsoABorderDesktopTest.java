@@ -406,7 +406,7 @@ class PreG9BR6PlusE3IsoABorderDesktopTest {
 					GeoCeDGProfile.getAction("export.area.iso-a").kind());
 			assertEquals("product-action",
 					GeoCeDGProfile.getAction("export.area.use-iso-a-border").kind());
-			assertEquals(134, GeoCeDGProfile.getActions().size());
+			assertEquals(135, GeoCeDGProfile.getActions().size());
 			JSONObject profile = new JSONObject(Files.readString(
 					PreG9BR6PlusE1LCuratedLibraryTest.repositoryRoot()
 							.resolve("apps/geocedg/application-profile.yml")));

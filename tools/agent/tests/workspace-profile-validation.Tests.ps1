@@ -85,6 +85,14 @@ try {
     Run-ProfileCase "wrong typed feature source" { param($p) $p.features[0].source = 'geocedg/features/experimental.yml' } $false
     Run-ProfileCase "required profile disabled" { param($p) $p.features[0].enabled_by_default = $false } $false
     Run-ProfileCase "Laboratory silently enabled" { param($p) ($p.features | Where-Object id -CEQ 'cedg.laboratory.legacy').enabled_by_default = $true } $false
+    Run-ProfileCase "expert insertion silently enabled" {
+        param($p)
+        ($p.features | Where-Object id -CEQ 'cedg.document.expert-insertion').enabled_by_default = $true
+    } $false
+    Run-ProfileCase "expert insertion action loses opt-in gate" {
+        param($p)
+        ($p.actions | Where-Object id -CEQ 'document.insert-expert').feature_requirements = @()
+    } $false
     Run-PackagingCase "exact v2 and historical v1 resource blocks" $desktopBuild $true
     Run-PackagingCase "missing live profile resource" ($desktopBuild.Replace('"application-profile.yml", ', '')) $false
     Run-PackagingCase "missing historical fallback resource" ($desktopBuild.Replace(', "application-profile-v1.yml"', '')) $false

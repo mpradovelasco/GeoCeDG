@@ -77,7 +77,8 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.export.area.show", "geocedg.export.area.clear",
 			"geocedg.export.area.iso-a", "geocedg.export.area.use-iso-a-border",
 			"geocedg.document.units", "geocedg.presentation.orientation-cue",
-			"geocedg.document.insert-file", "geocedg.document.apply-styles");
+			"geocedg.document.insert-file", "geocedg.document.apply-styles",
+			"geocedg.document.insert-expert");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -148,6 +149,12 @@ public final class GeoCeDGActionRegistry {
 		return Set.copyOf(actions.keySet());
 	}
 
+	boolean isMenuActionVisible(String id) {
+		ActionDefinition action = GeoCeDGProfile.getAction(id);
+		return !action.features().contains(GeoCeDGExpertReview.FEATURE_ID)
+				|| app instanceof AppGeoCeDG geoCeDG && geoCeDG.isExpertInsertionEnabled();
+	}
+
 	/** Refresh names, availability and checked state from current host authority. */
 	public void refresh() {
 		for (ActionDefinition definition : GeoCeDGProfile.getActions()) {
@@ -189,6 +196,9 @@ public final class GeoCeDGActionRegistry {
 		}
 		if ("gated-g9u2".equals(definition.availability())) {
 			return text("GeoCeDG.Workspace.Unavailable.G9U2");
+		}
+		if (!isMenuActionVisible(definition.id())) {
+			return text("Action.Unavailable.Feature");
 		}
 		if (definition.features().contains(RuntimeFeatureService.LOCUS_V2_FEATURE_ID)
 				&& !RuntimeFeatureService.mayCreateLocusV2(app.getKernel().getConstruction())) {
@@ -355,6 +365,9 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.document.insert-file":
 			((AppGeoCeDG) app).insertFileAction();
+			break;
+		case "geocedg.document.insert-expert":
+			((AppGeoCeDG) app).expertInsertionAction();
 			break;
 		case "geocedg.document.apply-styles":
 			((AppGeoCeDG) app).applyStylesAction();

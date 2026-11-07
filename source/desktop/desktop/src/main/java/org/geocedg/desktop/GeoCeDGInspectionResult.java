@@ -31,7 +31,7 @@ record GeoCeDGInspectionResult(List<Stage> stages, Admission admission,
 		NOT_EVALUATED, INVALID, TECHNICAL_FAILURE
 	}
 
-	enum Basis { LIVE_INSTANCE, NATIVE_COPY_TRACE, DURABLE_ID_IN_SAME_DOCUMENT }
+	enum Basis { LIVE_INSTANCE, NATIVE_COPY_TRACE, DURABLE_ID_IN_SAME_DOCUMENT, NATIVE_ARCHIVE_DECLARATION }
 
 	enum Dimension {
 		DOCUMENT_INTEGRITY, CONSTRUCTIVE_CORRESPONDENCE, GEOMETRIC_EQUIVALENCE,
@@ -56,7 +56,7 @@ record GeoCeDGInspectionResult(List<Stage> stages, Admission admission,
 	}
 
 	record DocumentContext(UnitState units, List<Integer> hiddenLayers, int displayPrecision,
-			boolean significantFigures) {
+			boolean significantFigures, int workingLayer, int maxLayerUsed, int activeView) {
 		DocumentContext {
 			hiddenLayers = List.copyOf(hiddenLayers);
 		}
@@ -146,7 +146,8 @@ record GeoCeDGInspectionResult(List<Stage> stages, Admission admission,
 			boolean durableChange = fields.stream().anyMatch(fact -> fact.property() == Property.DURABLE_ID
 					&& fact.status() == Status.VERIFIED_CHANGED);
 			Status persistence = after != Phase.REOPENED ? Status.NOT_EVALUATED
-					: durableChange ? Status.VERIFIED_CHANGED : incomplete;
+					: basis == Basis.NATIVE_ARCHIVE_DECLARATION ? Status.VERIFIED_UNCHANGED
+							: durableChange ? Status.VERIFIED_CHANGED : incomplete;
 			return List.of(
 					new Assessment(Dimension.DOCUMENT_INTEGRITY, incomplete,
 							"NATIVE_LOAD_AND_DECLARATIONS_ONLY"),
@@ -158,7 +159,8 @@ record GeoCeDGInspectionResult(List<Stage> stages, Admission admission,
 					new Assessment(Dimension.PRESENTATION, presentation ? Status.VERIFIED_CHANGED : incomplete,
 							"LABEL_AND_OBSERVED_PRESENTATION_FIELDS"),
 					new Assessment(Dimension.PERSISTENCE, persistence,
-							"DURABLE_RECORDS_IN_THE_SAME_PERSISTED_UUID"),
+							basis == Basis.NATIVE_ARCHIVE_DECLARATION ? "NATIVE_ARCHIVE_AND_ORDERED_PORTS"
+									: "DURABLE_RECORDS_IN_THE_SAME_PERSISTED_UUID"),
 					new Assessment(Dimension.PUBLICABILITY, Status.NOT_EVALUATED, "INSPECTION_ONLY"));
 		}
 	}

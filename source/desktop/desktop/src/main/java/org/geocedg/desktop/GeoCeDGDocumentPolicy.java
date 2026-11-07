@@ -152,4 +152,14 @@ final class GeoCeDGDocumentPolicy {
 		return new File(suggestion.getParentFile(),
 				name.substring(0, name.length() - ".cedg".length()) + "-recovered.cedg");
 	}
+
+	static File expertCopySuggestion(File currentFile, String suffix) {
+		File nativeFile = nativeSuggestion(currentFile);
+		if (nativeFile == null) {
+			return new File("GeoCeDG" + suffix + ".cedg");
+		}
+		String name = nativeFile.getName();
+		return new File(nativeFile.getParentFile(),
+				name.substring(0, name.length() - ".cedg".length()) + suffix + ".cedg");
+	}
 }

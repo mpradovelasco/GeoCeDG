@@ -416,6 +416,16 @@ presentation, and save a copy. You can then try inserting that copy. The usual
 insertion checks still apply. Excluded objects, scripts and unresolved tool
 compatibility have separate diagnostics.
 
+**Insert with expert review…** is an experimental action in **File → Insert**.
+Enable it by launching GeoCeDG with `--enableExpertInsertion=true`. It tries
+the insertion on a copy of the current drawing, including unsaved work. Review
+the objects, differences and uncertainties before confirming. Where available,
+the preview shows the actual trial drawing. Changes in layer, view or
+presentation can be accepted when the result passes the integrity checks. A
+blocked review explains which condition prevents insertion. Cancel leaves the
+drawing as it was. A successful insertion is one Undo step. Review the drawing
+and choose **Save as…** to keep a separate copy.
+
 **Apply Styles…** copies colour, line style, line thickness, point style, point
 size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the
 styles that document gives to new objects of each type, not the styles of its

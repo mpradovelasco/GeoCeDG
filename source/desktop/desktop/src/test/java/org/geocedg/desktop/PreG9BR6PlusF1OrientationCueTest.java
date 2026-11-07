@@ -652,7 +652,7 @@ class PreG9BR6PlusF1OrientationCueTest {
 
 	@Test
 	void theCatalogHoldsOneDeclarativePreferenceActionInTheViewMenu() throws Exception {
-		assertEquals(134, GeoCeDGProfile.getActions().size());
+		assertEquals(135, GeoCeDGProfile.getActions().size());
 		GeoCeDGProfile.ActionDefinition definition = GeoCeDGProfile.getActions().stream()
 				.filter(a -> "presentation.orientation-cue".equals(a.id())).findFirst()
 				.orElseThrow();

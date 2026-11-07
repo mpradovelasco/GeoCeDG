@@ -189,6 +189,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private GeoCeDGInsertionIsolation insertionIsolation;
 	private GeoCeDGInsertionSourceChooser insertionSourceChooser;
 	private Consumer<String> insertionMessageSink;
+	private boolean expertInsertionEnabled;
+	private GeoCeDGExpertSaveState expertSaveState;
 
 	/**
 	 * @param args command line arguments
@@ -201,6 +203,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private AppGeoCeDG(CommandLineArguments args, JFrame frame,
 			AppConfigGeoCeDG config) {
 		super(args, frame, config);
+		expertInsertionEnabled = expertInsertionRequested(args);
 		bindFeatureService(config);
 		initializeLayerWorkspace();
 		initializePresentationTheme();
@@ -219,6 +222,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	private AppGeoCeDG(CommandLineArguments args, Container component,
 			AppConfigGeoCeDG config, boolean newDocumentDefaults) {
 		super(args, component, config);
+		expertInsertionEnabled = expertInsertionRequested(args);
 		bindFeatureService(config);
 		initializeLayerWorkspace();
 		initializePresentationTheme();
@@ -580,6 +584,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 */
 	private void resetDocumentSession(boolean openRoute) {
 		documentSessionReset = true;
+		clearExpertSaveState();
 		if (openRoute) {
 			getExportAreaSession().resetForDocument();
 		}
@@ -1421,6 +1426,9 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	public boolean clearConstruction() {
 		boolean cleared = super.clearConstruction();
+		if (cleared) {
+			clearExpertSaveState();
+		}
 		if (cleared) { clearPointInteractionNotice(); }
 		if (cleared && layerWorkspaceActive) {
 			layerWorkspace.resetForNewDocument();
@@ -1626,6 +1634,50 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			documentInsertion = new GeoCeDGDocumentInsertion(this);
 		}
 		return documentInsertion;
+	}
+
+	private static boolean expertInsertionRequested(CommandLineArguments args) {
+		return args != null && args.getBooleanValue(GeoCeDGExpertReview.ARGUMENT, false);
+	}
+
+	boolean isExpertInsertionEnabled() {
+		return expertInsertionEnabled && !insertionHelper;
+	}
+
+	void expertInsertionAction() {
+		if (isExpertInsertionEnabled() && !isInsertionIsolated()) {
+			new GeoCeDGExpertReview(this).start();
+		}
+	}
+
+	void recordExpertInsertion(File source, org.geogebra.common.main.undo.UndoCommand step) {
+		recordExpertInsertion(source, source, step);
+	}
+
+	void recordExpertInsertion(File source, File resolvedSource,
+			org.geogebra.common.main.undo.UndoCommand step) {
+		if (expertSaveState == null) {
+			expertSaveState = new GeoCeDGExpertSaveState(
+					(GeoCeDGUndoManager) getKernel().getConstruction().getUndoManager(),
+					this::setUnsaved);
+		}
+		expertSaveState.add(step, source, resolvedSource, getCurrentFile());
+	}
+
+	private void clearExpertSaveState() {
+		if (expertSaveState != null) {
+			expertSaveState.close();
+			expertSaveState = null;
+		}
+	}
+
+	boolean requiresExpertSaveAs() {
+		return expertSaveState != null && expertSaveState.isPending();
+	}
+
+	File expertSaveSuggestion() {
+		return GeoCeDGDocumentPolicy.expertCopySuggestion(getCurrentFile(),
+				layerText("Insert.Expert.SaveSuffix"));
 	}
 
 	GeoCeDGStyleApplication getStyleApplication() {
@@ -2196,6 +2248,14 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 
 	@Override
 	public boolean saveGeoGebraFile(File file) {
+		return saveNativeDocument(file, false);
+	}
+
+	boolean saveNativeAs(File file) {
+		return requiresExpertSaveAs() ? saveNativeDocument(file, true) : saveGeoGebraFile(file);
+	}
+
+	private boolean saveNativeDocument(File file, boolean saveAs) {
 		if (isInsertionIsolated()) {
 			// P7: the uncertified drawing is never written
 			showInsertionMessage(layerText("Insert.Isolation.Refused"));
@@ -2205,7 +2265,16 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			showError(Errors.InvalidInput, file == null ? "" : file.getName());
 			return false;
 		}
-		return super.saveGeoGebraFile(file);
+		boolean expert = requiresExpertSaveAs();
+		if (expert && (!saveAs || !expertSaveState.isDistinctTarget(file))) {
+			showInsertionMessage(layerText("Insert.Expert.NewPath"));
+			return false;
+		}
+		boolean saved = super.saveGeoGebraFile(file);
+		if (saved && expert) {
+			expertSaveState.savedCopy();
+		}
+		return saved;
 	}
 
 	@Override

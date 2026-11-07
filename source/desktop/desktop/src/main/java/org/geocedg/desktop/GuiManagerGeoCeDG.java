@@ -437,7 +437,8 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 		getDialogManager().closeAll();
 		File currentFile = getApp().getCurrentFile();
 		boolean success;
-		if (GeoCeDGDocumentPolicy.requiresNativeSaveAs(currentFile)
+		if (((AppGeoCeDG) getApp()).requiresExpertSaveAs()
+				|| GeoCeDGDocumentPolicy.requiresNativeSaveAs(currentFile)
 				|| !currentFile.canWrite()) {
 			success = saveAs();
 		} else {
@@ -455,8 +456,10 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 			return false;
 		}
 		getApp().needThumbnailFor3D();
-		File file = showSaveDialog(FileExtensions.GEOCEDG,
-				GeoCeDGDocumentPolicy.nativeSuggestion(getApp().getCurrentFile()),
+		AppGeoCeDG app = (AppGeoCeDG) getApp();
+		File suggestion = app.requiresExpertSaveAs() ? app.expertSaveSuggestion()
+				: GeoCeDGDocumentPolicy.nativeSuggestion(app.getCurrentFile());
+		File file = showSaveDialog(FileExtensions.GEOCEDG, suggestion,
 				AppConfigGeoCeDG.APPLICATION_NAME + " "
 						+ getLocalization().getMenu("Files"), true, false);
 		return saveAsTo(file);
@@ -473,7 +476,7 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 		if (file == null) {
 			return false;
 		}
-		boolean success = getApp().saveGeoGebraFile(file);
+		boolean success = ((AppGeoCeDG) getApp()).saveNativeAs(file);
 		if (success) {
 			getApp().setCurrentFile(file);
 		}

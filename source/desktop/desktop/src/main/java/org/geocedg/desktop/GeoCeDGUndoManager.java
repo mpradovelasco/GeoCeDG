@@ -61,6 +61,7 @@ class GeoCeDGUndoManager extends UndoManagerD {
 	private int pending;
 	private boolean degraded;
 	private long epoch;
+	private long historyActivity;
 	// Lazily initialized: this manager may be called during application bootstrap.
 	private Map<StringBuilder, UndoTemplate> pendingNativeStates;
 
@@ -120,6 +121,16 @@ class GeoCeDGUndoManager extends UndoManagerD {
 			try { super.delete(); }
 			finally { template = null; }
 		}
+	}
+
+	/** Removes only authenticated private Undo bindings from an expert comparison. */
+	String publicUndoXml(UndoCommand command, String xml) {
+		if (command.getAppState() instanceof NativeFileAppState nativeState) {
+			UndoTemplate template = nativeState.requireTemplate(this, construction);
+			return new String(template.publicXml(xml.getBytes(StandardCharsets.UTF_8)),
+					StandardCharsets.UTF_8);
+		}
+		return xml;
 	}
 
 	@Override
@@ -184,8 +195,17 @@ class GeoCeDGUndoManager extends UndoManagerD {
 		super.handleUndoLoadFailure(state, failure);
 	}
 
-	@Override public synchronized void undo() { runOwnedHistoryOperation(super::undo); }
-	@Override public synchronized void redo() { runOwnedHistoryOperation(super::redo); }
+	@Override
+	public synchronized void undo() {
+		historyActivity++;
+		runOwnedHistoryOperation(super::undo);
+	}
+
+	@Override
+	public synchronized void redo() {
+		historyActivity++;
+		runOwnedHistoryOperation(super::redo);
+	}
 
 	private void runOwnedHistoryOperation(Runnable operation) {
 		boolean nativeHistory = undoInfoList.stream()
@@ -230,6 +250,7 @@ class GeoCeDGUndoManager extends UndoManagerD {
 	@Override
 	public void storeUndoInfo(StringBuilder currentUndoXML) {
 		synchronized (this) {
+			historyActivity++;
 			pending++;
 		}
 		try {
@@ -246,6 +267,9 @@ class GeoCeDGUndoManager extends UndoManagerD {
 
 	@Override
 	protected void storeAndNotifyUnsaved(UndoCommand command) {
+		synchronized (this) {
+			historyActivity++;
+		}
 		enterSynchronous();
 		try {
 			super.storeAndNotifyUnsaved(command);
@@ -270,6 +294,7 @@ class GeoCeDGUndoManager extends UndoManagerD {
 		pending = 0;
 		degraded = false;
 		epoch++;
+		historyActivity++;
 	}
 
 	/**
@@ -336,6 +361,11 @@ class GeoCeDGUndoManager extends UndoManagerD {
 	/** @return number of committed baselines (accounting re-establishments) */
 	synchronized long getEpoch() {
 		return epoch;
+	}
+
+	/** @return monotonic history activity, including discarded stores and reverts */
+	synchronized long getHistoryActivity() {
+		return historyActivity;
 	}
 
 	/** @return the live command objects in history order (a new list) */

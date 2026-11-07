@@ -99,26 +99,40 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     # independent review and author smoke. Only this new action is admitted;
     # the single live profile continues to own its full runtime record.
     $cu7M08SReferenceActionIds = @("semantic.locus-v2.point-from-reference")
+    # POST-CU4 I3–I5 authorizes one opt-in expert document action.
+    $expertInsertionActionIds = @("document.insert-expert")
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
         $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
         $preG9BR6PlusE2ActionIds + $preG9BR6PlusE3ActionIds + $preG9BR6PlusF1ActionIds +
-        $preG9BR6PlusF3ActionIds + $cu7M08SReferenceActionIds | Sort-Object -CaseSensitive)
+        $preG9BR6PlusF3ActionIds + $cu7M08SReferenceActionIds +
+        $expertInsertionActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved A7, R4, R6-plus-A-1, R6-plus-B, R6-plus-D1, R6-plus-E2, R6-plus-E3, R6-plus-F1, R6-plus-F3 and authorized CU7 M08-S-R2 Desktop amendments."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved amendments and the authorized CU7 M08-S-R2 and POST-CU4 I3–I5 Desktop actions."
     }
     $featureIds = @($profile.features.id)
-    if ($featureIds.Count -ne @($candidate.features).Count -or
+    $approvedFeatures = @($candidate.features) + @(@{
+        id = "cedg.document.expert-insertion"
+        source = "geocedg/features/experimental.yml"
+        enabled_by_default = $false
+    })
+    if ($featureIds.Count -ne $approvedFeatures.Count -or
         @($featureIds | Sort-Object -Unique -CaseSensitive).Count -ne $featureIds.Count) {
         throw "Live feature records are missing, extra or duplicated."
     }
-    foreach ($approvedFeature in $candidate.features) {
+    foreach ($approvedFeature in $approvedFeatures) {
         $liveFeature = @($profile.features | Where-Object { $_.id -ceq $approvedFeature.id })
         if ($liveFeature.Count -ne 1 -or
             $liveFeature[0].source -cne $approvedFeature.source -or
             $liveFeature[0].enabled_by_default -ne $approvedFeature.enabled_by_default) {
             throw "Live feature identity/source/default differs: $($approvedFeature.id)"
         }
+    }
+    $expertAction = $profile.actions | Where-Object id -CEQ "document.insert-expert"
+    if ($expertAction.maturity -cne "experimental" -or
+        $expertAction.target.symbol -cne "geocedg.document.insert-expert" -or
+        ($expertAction.feature_requirements -join ",") -cne "cedg.document.expert-insertion") {
+        throw "Expert insertion must stay on its separate opt-in action."
     }
     if ($profile.product_policies.continuity.value -ne $false -or
         $profile.product_policies.continuity.locked -ne $true -or

@@ -31,16 +31,19 @@ import org.geogebra.common.plugin.EventListener;
 final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 	private final String archiveSha256;
 	private final Map<String, String> members;
+	private final GeoCeDGExpertContext expertContext;
 	private Session session;
 	private byte[] archive;
 
 	private GeoCeDGLiveInspectionSnapshot(byte[] archive,
-			GeoCeDGInspectionArchive.Inspection inspection, Session session) {
+			GeoCeDGInspectionArchive.Inspection inspection, Session session,
+			GeoCeDGExpertContext expertContext) {
 		this.archive = archive;
 		this.archiveSha256 = inspection.sha256();
 		this.members = inspection.entries().stream().collect(Collectors.toUnmodifiableMap(
 				GeoCeDGInspectionArchive.Entry::name, GeoCeDGInspectionArchive.Entry::sha256));
 		this.session = session;
+		this.expertContext = expertContext;
 	}
 
 	static GeoCeDGLiveInspectionSnapshot capture(AppGeoCeDG app) throws IOException {
@@ -70,6 +73,7 @@ final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 				requirePassiveWrite(macro.getMacroConstruction());
 			}
 			Session before = Session.read(app, construction, undo);
+			var expertContext = GeoCeDGExpertContext.capture(app);
 			var dispatcher = new EventDispatcher(app);
 			ChangeWatch watch = new ChangeWatch();
 			dispatcher.addEventListener(watch);
@@ -86,11 +90,12 @@ final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 						})) {
 					throw new IOException("Receiver archive failed passive validation or identity check");
 				}
-				if (watch.changed || !before.matches(app)) {
+				if (watch.changed || !before.matches(app)
+						|| !expertContext.equals(GeoCeDGExpertContext.capture(app))) {
 					throw new IOException("Receiver changed during capture");
 				}
 				requireQuiescent(app, construction, undo);
-				return new GeoCeDGLiveInspectionSnapshot(bytes, inspection, before);
+				return new GeoCeDGLiveInspectionSnapshot(bytes, inspection, before, expertContext);
 			} catch (RuntimeException failure) {
 				throw new IOException("Live native capture failed", failure);
 			} finally {
@@ -144,7 +149,7 @@ final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 				return false;
 			}
 			try (var current = capture(app)) {
-				return members.equals(current.members);
+				return members.equals(current.members) && expertContext.equals(current.expertContext);
 			} catch (IOException failure) {
 				return false;
 			}
@@ -162,6 +167,14 @@ final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 			throw new IOException("Receiver snapshot is closed");
 		}
 		Files.write(target, archive, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+	}
+
+	void stageLayerContext(Path target) throws IOException {
+		requireEdt();
+		if (archive == null) {
+			throw new IOException("Receiver snapshot is closed");
+		}
+		expertContext.write(target);
 	}
 
 	@Override

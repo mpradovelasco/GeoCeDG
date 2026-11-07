@@ -191,6 +191,20 @@ public class GeoCeDGInspectionArchiveTest {
 	}
 
 	@Test
+	public void presentationReferencesMustResolveToTheDeclaredNativeType() throws IOException {
+		String content = """
+				<element type="point" label="A"><condition showObject="visible"/></element>
+				<element type="boolean" label="visible"><value val="true"/></element>
+				""";
+		var valid = GeoCeDGInspectionArchive.inspect(zip("geogebra.xml", document(content)));
+		assertTrue(valid.findings().toString(), valid.loadable());
+		assertRefused(Code.INVALID_XML, zip("geogebra.xml", document(content.replace(
+				"showObject=\"visible\"", "showObject=\"missing\""))));
+		assertRefused(Code.INVALID_XML, zip("geogebra.xml", document(content.replace(
+				"type=\"boolean\"", "type=\"numeric\""))));
+	}
+
+	@Test
 	public void securelyParsedSyntaxMustAgreeWithTheNativeTokenizer() throws IOException {
 		String valid = document(POINTS);
 		assertRefused(Code.UNSUPPORTED_XML, zip("geogebra.xml",

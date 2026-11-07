@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
@@ -32,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
+import org.geocedg.common.kernel.units.DocumentUnitSystem;
 import org.geocedg.common.kernel.units.MixedAngleInsertionProof;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.desktop.GeoCeDGAngularSourceArchive.Finding;
@@ -40,6 +43,7 @@ import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.LayerView;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -55,6 +59,7 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.main.undo.AppState;
 import org.geogebra.common.main.undo.UndoCommand;
 import org.geogebra.common.plugin.Event;
+import org.geogebra.common.plugin.EventDispatcher;
 import org.geogebra.common.plugin.EventListener;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.gui.GuiManagerD;
@@ -80,6 +85,7 @@ import org.geogebra.desktop.main.undo.UndoManagerD.PreparedUndoBaseline;
 final class GeoCeDGDocumentInsertion {
 	/** Bounded wait for pending undo stores (EDT; never indefinite). */
 	static final long STORE_WAIT_MS = 5000;
+	private static final long EXPERT_OFFER_NANOS = TimeUnit.MINUTES.toNanos(10);
 	private static final String ROLLBACK_FAILURE =
 			"Clipboard identity rollback could not restore the construction";
 
@@ -139,12 +145,19 @@ final class GeoCeDGDocumentInsertion {
 		private final String message;
 		private final List<String> declaredResets;
 		private final Throwable failure;
+		private final UndoCommand expertStep;
 
 		Result(Outcome outcome, String message, List<String> declaredResets, Throwable failure) {
+			this(outcome, message, declaredResets, failure, null);
+		}
+
+		private Result(Outcome outcome, String message, List<String> declaredResets, Throwable failure,
+				UndoCommand expertStep) {
 			this.outcome = outcome;
 			this.message = message;
 			this.declaredResets = List.copyOf(declaredResets);
 			this.failure = failure;
+			this.expertStep = expertStep;
 		}
 
 		Outcome getOutcome() {
@@ -165,11 +178,17 @@ final class GeoCeDGDocumentInsertion {
 		Throwable getFailure() {
 			return failure;
 		}
+
+		/** The original attached history command for a successful expert publication. */
+		UndoCommand getExpertStep() {
+			return expertStep;
+		}
 	}
 
 	private final AppGeoCeDG app;
 	private Faults faults = NO_FAULTS;
 	private boolean awaitingAngularConfirmation;
+	private ExpertReview activeExpertReview;
 
 	record AngularSample(String label, String original, String adapted) {
 	}
@@ -191,6 +210,175 @@ final class GeoCeDGDocumentInsertion {
 
 	void setFaults(Faults faults) {
 		this.faults = faults == null ? NO_FAULTS : faults;
+	}
+
+	/** Opens the one live review for this document. Invalidations start before capture. */
+	ExpertReview beginExpertReview() throws IOException {
+		requireExpertEdt();
+		if (activeExpertReview != null || awaitingAngularConfirmation || app.isInsertionIsolated()
+				|| !app.getKernel().isUndoActive() || !(app.getUndoManager() instanceof GeoCeDGUndoManager undo)
+				|| !awaitQuiescence(undo)) {
+			throw new IOException("Receiver cannot start an expert review");
+		}
+		ExpertReview review = new ExpertReview(undo);
+		try {
+			review.snapshot = GeoCeDGLiveInspectionSnapshot.capture(app);
+			if (!review.watch.isCurrent()) {
+				throw new IOException("Receiver changed during expert capture");
+			}
+			activeExpertReview = review;
+			return review;
+		} catch (IOException | RuntimeException failure) {
+			review.close();
+			throw failure;
+		}
+	}
+
+	final class ExpertReview implements AutoCloseable {
+		private final ExpertInvalidation watch;
+		private GeoCeDGLiveInspectionSnapshot snapshot;
+		private ExpertOffer offer;
+		private boolean consumed;
+		private boolean closed;
+		private boolean invalidated;
+
+		private ExpertReview(GeoCeDGUndoManager undo) {
+			watch = new ExpertInvalidation(app, undo);
+		}
+
+		GeoCeDGLiveInspectionSnapshot snapshot() {
+			return snapshot;
+		}
+
+		boolean isCurrent() {
+			requireExpertEdt();
+			return !consumed && isFresh();
+		}
+
+		private boolean isFresh() {
+			if (!invalidated) {
+				invalidated = closed || activeExpertReview != this || !watch.isCurrent()
+						|| offer != null && !offer.sourceVersionCurrent();
+			}
+			return !invalidated;
+		}
+
+		ExpertOffer offer(File source, byte[] sourceBytes, String fingerprint, String reportSha256,
+				BooleanSupplier sourceCurrent) throws IOException {
+			if (!isCurrent() || offer != null || !sourceStillCurrent(sourceCurrent)) {
+				throw new IOException("Expert review is no longer current");
+			}
+			if (GeoCeDGDocumentPolicy.insertionRefusal(source) != null || sourceBytes == null
+					|| sourceBytes.length == 0 || sourceBytes.length > GeoCeDGInspectionArchive.MAX_ARCHIVE_BYTES
+					|| !isSha256(fingerprint) || !isSha256(reportSha256)) {
+				throw new IOException("Expert evidence is incomplete");
+			}
+			offer = new ExpertOffer(this, source, sourceBytes, fingerprint, reportSha256,
+					sourceCurrent);
+			return offer;
+		}
+
+		@Override
+		public void close() {
+			requireExpertEdt();
+			if (!closed) {
+				closed = true;
+				watch.close();
+				if (snapshot != null) {
+					snapshot.close();
+				}
+				if (activeExpertReview == this) {
+					activeExpertReview = null;
+				}
+			}
+		}
+	}
+
+	/** Opaque, one-use local handle for the exact report and trial shown to the user. */
+	static final class ExpertOffer {
+		private final ExpertReview review;
+		private final File source;
+		private final byte[] sourceBytes;
+		private final String fingerprint;
+		private final String reportSha256;
+		private final BooleanSupplier sourceCurrent;
+		private final long issuedAt = System.nanoTime();
+
+		private ExpertOffer(ExpertReview review, File source, byte[] sourceBytes, String fingerprint,
+				String reportSha256, BooleanSupplier sourceCurrent) {
+			this.review = review;
+			this.source = source;
+			this.sourceBytes = sourceBytes.clone();
+			this.fingerprint = fingerprint;
+			this.reportSha256 = reportSha256;
+			this.sourceCurrent = sourceCurrent;
+		}
+
+		private boolean sourceVersionCurrent() {
+			return System.nanoTime() - issuedAt < EXPERT_OFFER_NANOS
+					&& sourceStillCurrent(sourceCurrent);
+		}
+
+		private boolean exactSourceCurrent() {
+			return sourceVersionCurrent() && sameSource(source, sourceBytes) && sourceVersionCurrent();
+		}
+	}
+
+	/** Consumes the consent before any native source load or barrier entry. */
+	Result publishExpert(ExpertOffer offer, String acceptedReportSha256) {
+		requireExpertEdt();
+		ExpertReview review = offer.review;
+		String name = offer.source.getName();
+		if (activeExpertReview != review || review.offer != offer || review.consumed) {
+			return staleExpertOffer(name);
+		}
+		review.consumed = true;
+		AppGeoCeDG helper = null;
+		try {
+			if (!offer.reportSha256.equals(acceptedReportSha256) || !review.isFresh()) {
+				return staleExpertOffer(name);
+			}
+			try {
+				if (!passiveReceiver()) {
+					throw new IOException("The receiver has active content or animation");
+				}
+				helper = GeoCeDGExpertIntegrity.loadSource(app, offer.sourceBytes);
+			} catch (IOException | RuntimeException failure) {
+				Log.debug(failure);
+				return new Result(Outcome.REJECTED_BEFORE_MUTATION,
+						text("Insert.Expert.CommitRejected", name, describe(failure)), List.of(), failure);
+			}
+			return transactExpert(name, helper, offer);
+		} finally {
+			try {
+				GeoCeDGExpertIntegrity.releaseSource(app, helper);
+			} finally {
+				review.close();
+			}
+		}
+	}
+
+	private static boolean sourceStillCurrent(BooleanSupplier watch) {
+		try {
+			return watch.getAsBoolean();
+		} catch (RuntimeException unavailable) {
+			return false;
+		}
+	}
+
+	private static boolean isSha256(String digest) {
+		return digest != null && digest.matches("[0-9a-f]{64}");
+	}
+
+	private static void requireExpertEdt() {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			throw new IllegalStateException("Expert insertion runs on the event dispatch thread");
+		}
+	}
+
+	private Result staleExpertOffer(String name) {
+		return new Result(Outcome.REJECTED_BEFORE_MUTATION,
+				text("Insert.Expert.Stale", name), List.of(), null);
 	}
 
 	// ------------------------------------------------------------------ entry
@@ -499,6 +687,97 @@ final class GeoCeDGDocumentInsertion {
 		}
 	}
 
+	/** A latched invalidation, including presentation changes omitted by native XML. */
+	private static final class ExpertInvalidation implements EventListener, AutoCloseable {
+		private final AppGeoCeDG app;
+		private final GeoCeDGUndoManager undo;
+		private final DocumentUnitSystem units;
+		private final EventDispatcher dispatcher;
+		private final LayerEvents layerEvents;
+		private final Runnable workspaceListener = this::reset;
+		private final DockManagerD dock;
+		private final long viewActivation;
+		private final boolean displayable;
+		private final Construction construction;
+		private final long protectedLabelRevision;
+		private final long historyActivity;
+		private volatile boolean changed;
+
+		ExpertInvalidation(AppGeoCeDG app, GeoCeDGUndoManager undo) {
+			this.app = app;
+			this.undo = undo;
+			dock = app.getGuiManager() instanceof GuiManagerD gui && gui.getLayout() != null
+					? gui.getLayout().getDockManager() : null;
+			viewActivation = dock == null ? 0 : dock.getEuclidianViewActivationGeneration();
+			displayable = app.getMainComponent().isDisplayable();
+			construction = app.getKernel().getConstruction();
+			protectedLabelRevision = construction.getProtectedLabelRevision();
+			dispatcher = app.getEventDispatcher();
+			synchronized (undo) {
+				historyActivity = undo.getHistoryActivity();
+				dispatcher.addEventListener(this);
+			}
+			layerEvents = new LayerEvents(app, this::reset);
+			layerEvents.addEventListener(this);
+			app.getLayerWorkspace().addListener(workspaceListener);
+			units = app.getDocumentUnits();
+			units.addListener(workspaceListener);
+		}
+
+		@Override
+		public void sendEvent(Event event) {
+			switch (event.type) {
+			case ADD, REMOVE, RENAME, REDEFINE, UPDATE, UPDATE_STYLE, STOREUNDO, UNDO, REDO,
+					SET_MODE, SELECT, DESELECT, VIEW_PROPERTIES_CHANGED, VIEW_CHANGED_2D,
+					VIEW_CHANGED_3D, PERSPECTIVE_CHANGE, PASTE_ELMS, CLEAR, ADD_MACRO, REMOVE_MACRO,
+					RENAME_MACRO, MOVED_GEOS, DELETE_GEOS, START_ANIMATION, STOP_ANIMATION -> reset();
+			default -> { }
+			}
+		}
+
+		@Override
+		public void reset() {
+			changed = true;
+		}
+
+		boolean isCurrent() {
+			return !changed && !app.isInsertionIsolated()
+					&& undo.getHistoryActivity() == historyActivity
+					&& app.getKernel().getConstruction() == construction
+					&& construction.getProtectedLabelRevision() == protectedLabelRevision
+					&& app.getMainComponent().isDisplayable() == displayable
+					&& (dock == null || dock.getEuclidianViewActivationGeneration() == viewActivation);
+		}
+
+		@Override
+		public void close() {
+			synchronized (undo) {
+				dispatcher.removeEventListener(this);
+			}
+			layerEvents.removeEventListener(this);
+			app.getKernel().detach(layerEvents);
+			app.getLayerWorkspace().removeListener(workspaceListener);
+			units.removeListener(workspaceListener);
+		}
+	}
+
+	/** Receives native layer events even though the script dispatcher ignores them. */
+	private static final class LayerEvents extends EventDispatcher implements LayerView {
+		private final Runnable invalidation;
+
+		LayerEvents(AppGeoCeDG app, Runnable invalidation) {
+			super(app);
+			this.invalidation = invalidation;
+		}
+
+		@Override
+		public void changeLayer(GeoElement geo, int oldLayer, int newLayer) {
+			if (oldLayer != newLayer) {
+				invalidation.run();
+			}
+		}
+	}
+
 	/** The preexisting graph and styles must survive B2 in both the trial and the commit. */
 	private static final class ReceiverGeometry {
 		private final Construction construction;
@@ -704,12 +983,12 @@ final class GeoCeDGDocumentInsertion {
 		// 0 BARRIER BLOCK: nothing is mutated before it ends
 		Barrier barrier;
 		try {
-			barrier = barrier(undo, operationId);
+			barrier = barrier(undo, operationId, null, null);
 		} catch (BarrierRejection rejection) {
 			return rejected(name, rejection.getMessage(), "");
 		}
 		Transaction tx = new Transaction(name, undo, barrier, admission, before, uuid, tube,
-				saved);
+				saved, null);
 		try {
 			return tx.run(helper, proof, geometry);
 		} finally {
@@ -717,7 +996,38 @@ final class GeoCeDGDocumentInsertion {
 		}
 	}
 
-	private Barrier barrier(GeoCeDGUndoManager undo, String operationId)
+	private Result transactExpert(String name, AppGeoCeDG helper, ExpertOffer offer) {
+		if (!app.getKernel().isUndoActive() || !(app.getUndoManager() instanceof GeoCeDGUndoManager undo)) {
+			return rejected(name, "Insert.Reject.UndoUnavailable", "");
+		}
+		Barrier barrier;
+		Certificate before;
+		ExpertRecoveryState recovery;
+		try {
+			before = Certificate.of(app);
+			recovery = ExpertRecoveryState.capture(app);
+			barrier = barrier(undo, UUID.randomUUID().toString(), () -> offer.review.isFresh()
+					&& offer.review.snapshot.matchesCurrentState(app) && offer.review.isFresh(),
+					offer::exactSourceCurrent);
+		} catch (BarrierRejection rejection) {
+			return "Insert.Expert.Stale".equals(rejection.getMessage())
+					? staleExpertOffer(name) : rejected(name, rejection.getMessage(), "");
+		} catch (IOException | RuntimeException failure) {
+			Log.debug(failure);
+			return new Result(Outcome.REJECTED_BEFORE_MUTATION,
+					text("Insert.Expert.CommitRejected", name, describe(failure)), List.of(), failure);
+		}
+		Transaction tx = new Transaction(name, undo, barrier, null, before, before.uuid, recovery.tube,
+				before.saved, recovery);
+		try {
+			return tx.runExpert(helper, offer);
+		} finally {
+			tx.finish();
+		}
+	}
+
+	private Barrier barrier(GeoCeDGUndoManager undo, String operationId, BooleanSupplier freshness,
+			BooleanSupplier sourceFreshness)
 			throws BarrierRejection {
 		long deadline = System.nanoTime() + STORE_WAIT_MS * 1_000_000L;
 		while (true) {
@@ -726,7 +1036,7 @@ final class GeoCeDGDocumentInsertion {
 					throw new BarrierRejection("Insert.Reject.HistoryBusy");
 				}
 				if (undo.isQuiescent()) {
-					return barrierBlock(undo, operationId);
+					return barrierBlock(undo, operationId, freshness, sourceFreshness);
 				}
 			}
 			if (System.nanoTime() > deadline) {
@@ -737,7 +1047,8 @@ final class GeoCeDGDocumentInsertion {
 	}
 
 	/** Runs inside the monitor of the undo manager. */
-	private Barrier barrierBlock(GeoCeDGUndoManager undo, String operationId)
+	private Barrier barrierBlock(GeoCeDGUndoManager undo, String operationId, BooleanSupplier freshness,
+			BooleanSupplier sourceFreshness)
 			throws BarrierRejection {
 		GeoCeDGRecoverySnapshot snapshot;
 		try {
@@ -746,6 +1057,10 @@ final class GeoCeDGDocumentInsertion {
 		} catch (Exception failure) {
 			Log.debug(failure);
 			throw new BarrierRejection("Insert.Reject.Snapshot");
+		}
+		if (freshness != null && !sourceStillCurrent(freshness)) {
+			snapshot.release();
+			throw new BarrierRejection("Insert.Expert.Stale");
 		}
 		HistoryRecord history = HistoryRecord.of(undo);
 		GeoCeDGUndoManager.HeldHistory held = undo.detach();
@@ -766,7 +1081,10 @@ final class GeoCeDGDocumentInsertion {
 			if (!preflight(baselineArchive)) {
 				throw new IOException("barrier baseline failed the preflight");
 			}
-		} catch (IOException | RuntimeException failure) {
+			if (sourceFreshness != null && !sourceStillCurrent(sourceFreshness)) {
+				throw new BarrierRejection("Insert.Expert.Stale");
+			}
+		} catch (IOException | RuntimeException | BarrierRejection failure) {
 			Log.debug(failure);
 			List<UndoCommand> temporary = undo.getCommands();
 			undo.attach(held.getCommands(), held.getCursor());
@@ -774,6 +1092,9 @@ final class GeoCeDGDocumentInsertion {
 				deleteQuietly(command, null);
 			}
 			snapshot.release();
+			if (failure instanceof BarrierRejection rejection) {
+				throw rejection;
+			}
 			throw new BarrierRejection("Insert.Reject.Snapshot");
 		}
 		return new Barrier(held, history, baseline, snapshot);
@@ -799,6 +1120,89 @@ final class GeoCeDGDocumentInsertion {
 		return true;
 	}
 
+	/** Session state the F3 archive and Undo XML can omit. */
+	private record ExpertRecoveryState(Map<String, EffectiveLayer> layers, Set<String> reservations,
+			int workingLayer, int maxLayer, int activeView, int tool, List<GeoElement> selection,
+			String tube, boolean scriptsBlocked, Map<String, String> resources) {
+		private record EffectiveLayer(GeoElement instance, int layer) {
+		}
+
+		static ExpertRecoveryState capture(AppGeoCeDG app) throws IOException {
+			Construction construction = app.getKernel().getConstruction();
+			Map<String, EffectiveLayer> layers = new LinkedHashMap<>();
+			for (GeoElement geo : construction.getGeoSetWithCasCellsConstructionOrder()) {
+				layers.put(geo.getLabelSimple(), new EffectiveLayer(geo, geo.getLayer()));
+			}
+			return new ExpertRecoveryState(layers, construction.snapshotProtectedLabels(),
+					app.getLayerWorkspace().getWorkingLayer(), app.getMaxLayerUsed(),
+					app.getActiveEuclidianView().getViewID(), app.getMode(),
+					List.copyOf(app.getSelectionManager().getSelectedGeos()), app.getTubeId(),
+					app.isBlockUpdateScripts(), GeoCeDGExpertIntegrity.receiverResources(app));
+		}
+
+		void restore(AppGeoCeDG app) {
+			Construction construction = app.getKernel().getConstruction();
+			boolean sameInstances = true;
+			for (var entry : layers.entrySet()) {
+				// This address belongs to the certified barrier snapshot of this same document.
+				GeoElement geo = app.getKernel().lookupLabel(entry.getKey());
+				EffectiveLayer previous = entry.getValue();
+				if (geo == null || geo.getClass() != previous.instance().getClass()) {
+					throw new IllegalStateException("Missing recovery layer address " + entry.getKey());
+				}
+				sameInstances &= geo == previous.instance();
+				geo.setLayer(previous.layer());
+			}
+			construction.restoreProtectedLabels(reservations);
+			app.restoreMaxLayerUsed(maxLayer);
+			if (app.getLayerWorkspace().getWorkingLayer() != workingLayer) {
+				if (!app.getLayerWorkspace().isLayerShown(workingLayer)) {
+					throw new IllegalStateException("The pre-insertion working layer became hidden");
+				}
+				app.getLayerWorkspace().setWorkingLayer(workingLayer);
+			}
+			if (app.getActiveEuclidianView().getViewID() != activeView) {
+				app.setActiveView(activeView);
+			}
+			if (sameInstances) {
+				if (app.getMode() != tool) {
+					app.setMode(tool);
+				}
+				if (!selection.equals(app.getSelectionManager().getSelectedGeos())) {
+					app.getSelectionManager().clearSelectedGeos(false, false);
+					for (GeoElement geo : selection) {
+						app.getSelectionManager().addSelectedGeo(geo, false, false);
+					}
+					app.updateSelection(false);
+				}
+			}
+			app.setBlockUpdateScripts(scriptsBlocked);
+		}
+
+		void requireResources(AppGeoCeDG app) throws IOException {
+			if (!resources.equals(GeoCeDGExpertIntegrity.receiverResources(app))) {
+				throw new IOException("Receiver defaults or resources differ after expert recovery");
+			}
+		}
+
+		boolean matches(AppGeoCeDG app, boolean sameInstances) {
+			Construction construction = app.getKernel().getConstruction();
+			return reservations.equals(construction.snapshotProtectedLabels())
+					&& app.getLayerWorkspace().getWorkingLayer() == workingLayer
+					&& app.getMaxLayerUsed() == maxLayer
+					&& app.getActiveEuclidianView().getViewID() == activeView
+					&& Objects.equals(app.getTubeId(), tube)
+					&& app.isBlockUpdateScripts() == scriptsBlocked
+					&& (!sameInstances || app.getMode() == tool
+							&& selection.equals(app.getSelectionManager().getSelectedGeos()))
+					&& construction.getGeoSetWithCasCellsConstructionOrder().size() == layers.size()
+					&& construction.getGeoSetWithCasCellsConstructionOrder().stream().allMatch(geo -> {
+						EffectiveLayer layer = layers.get(geo.getLabelSimple());
+						return layer != null && geo.getLayer() == layer.layer();
+					});
+		}
+	}
+
 	/** One insertion attempt after the barrier. */
 	private final class Transaction {
 		private final String name;
@@ -809,6 +1213,7 @@ final class GeoCeDGDocumentInsertion {
 		private final String uuid;
 		private final String tube;
 		private final boolean saved;
+		private final ExpertRecoveryState expertBefore;
 		private final Set<String> macrosBefore = new java.util.LinkedHashSet<>();
 		private final List<UndoCommand> ownStores = new ArrayList<>();
 		private List<GeoElement> created = List.of();
@@ -819,7 +1224,7 @@ final class GeoCeDGDocumentInsertion {
 
 		Transaction(String name, GeoCeDGUndoManager undo, Barrier barrier,
 				GeoCeDGInsertionAdmission admission, Certificate before, String uuid, String tube,
-				boolean saved) {
+				boolean saved, ExpertRecoveryState expertBefore) {
 			this.name = name;
 			this.undo = undo;
 			this.barrier = barrier;
@@ -828,6 +1233,45 @@ final class GeoCeDGDocumentInsertion {
 			this.uuid = uuid;
 			this.tube = tube;
 			this.saved = saved;
+			this.expertBefore = expertBefore;
+		}
+
+		Result runExpert(AppGeoCeDG helper, ExpertOffer offer) {
+			Set<GeoElement> instancesBefore = identitySet(app);
+			macrosBefore.addAll(macroNames(app));
+			try {
+				var trial = GeoCeDGExpertIntegrity.copy(helper, app);
+				created = createdSince(app, instancesBefore);
+				faults.afterCommit();
+				restoreIdentity();
+				if (!Objects.equals(app.getCurrentFile(), before.file)
+						|| app.isBlockUpdateScripts() != expertBefore.scriptsBlocked()) {
+					throw new IllegalStateException("Expert copy changed file association or scripting policy");
+				}
+				if (!awaitQuiescence(undo) || !undo.getCommands().equals(List.of(barrier.baseline))) {
+					throw new IllegalStateException("Unexpected history change in expert publication");
+				}
+				verifyExpertFingerprint(offer, trial.fingerprint(), "native copy");
+				verifyExpertFingerprint(offer, GeoCeDGExpertIntegrity.fingerprint(app, expertBefore.resources()),
+						"pre-history state");
+				return succeed(helper.getDocumentUnits().getState(), offer);
+			} catch (Exception | Error commitFailure) {
+				failure = commitFailure;
+				try {
+					created = createdSince(app, instancesBefore);
+				} catch (RuntimeException | Error observationFailure) {
+					addSuppressed(observationFailure);
+					return serious(null);
+				}
+				return recover(isRollbackFailure(commitFailure));
+			}
+		}
+
+		private void verifyExpertFingerprint(ExpertOffer offer, String actual, String stage) {
+			if (!offer.fingerprint.equals(actual)) {
+				throw new IllegalStateException("Expert publication differs from the consented trial at "
+						+ stage + " (expected " + offer.fingerprint + ", observed " + actual + ")");
+			}
 		}
 
 		Result run(AppGeoCeDG helper, MixedAngleInsertionProof proof, ReceiverGeometry geometry) {
@@ -883,7 +1327,7 @@ final class GeoCeDGDocumentInsertion {
 					if (mismatch != null) {
 						throw new IllegalStateException("verification failed: " + mismatch);
 					}
-					return succeed(buffer.getProvenance());
+					return succeed(buffer.getProvenance(), null);
 				}
 			} catch (Exception | Error verificationFailure) {
 				failure = verificationFailure;
@@ -893,7 +1337,7 @@ final class GeoCeDGDocumentInsertion {
 
 		// ---------------------------------------------------- 4 SUCCESS
 
-		private Result succeed(UnitState provenance) throws Exception {
+		private Result succeed(UnitState provenance, ExpertOffer offer) throws Exception {
 			faults.beforeOwnStore();
 			// one undo step made by the orchestration, carrying the kept document identity
 			String live = currentUndoXml();
@@ -903,29 +1347,59 @@ final class GeoCeDGDocumentInsertion {
 			}
 			List<UndoCommand> temporary = undo.getCommands();
 			UndoCommand own = temporary.get(temporary.size() - 1);
-			if (temporary.size() != ownStores.size() + 2 || !live.equals(undoXml(own))) {
+			if (temporary.size() != ownStores.size() + 2 || !live.equals(transactionUndoXml(own))) {
 				throw new IllegalStateException("the insertion's undo store was not identified");
 			}
 			ownStores.add(own);
 			List<UndoCommand> finalHistory = new ArrayList<>(barrier.held.getPrefix());
+			if (expertBefore != null && !topMatchesLiveBaseline(finalHistory)) {
+				// Preserve unsaved live edits that had not received their own checkpoint.
+				finalHistory.add(barrier.baseline);
+			}
 			finalHistory.add(own);
 			List<UndoCommand> discarded = new ArrayList<>(barrier.held.getRedo());
-			attachBlock(temporary, finalHistory, finalHistory.size(), discarded);
+			if (expertBefore != null) {
+				app.setUnsaved();
+			}
+			attachBlock(temporary, finalHistory, finalHistory.size(), discarded, offer);
+			if (expertBefore != null) {
+				barrier.snapshot.release();
+				try {
+					app.unitPasteCompleted(provenance, app);
+				} catch (RuntimeException noticeFailure) {
+					Log.debug(noticeFailure);
+				}
+				return new Result(Outcome.INSERTED, null, List.of(), null, own);
+			}
 			app.setUnsaved();
 			app.unitPasteCompleted(provenance, app);
 			barrier.snapshot.release();
 			return new Result(Outcome.INSERTED, null, List.of(), null);
 		}
 
+		private boolean topMatchesLiveBaseline(List<UndoCommand> prefix) throws IOException {
+			if (prefix.isEmpty() || !(prefix.get(prefix.size() - 1).getAppState() instanceof FileAppState)) {
+				return false;
+			}
+			return transactionUndoXml(barrier.baseline)
+					.equals(transactionUndoXml(prefix.get(prefix.size() - 1)));
+		}
+
+		private String transactionUndoXml(UndoCommand command) throws IOException {
+			String xml = undoXml(command);
+			return expertBefore == null ? xml : undo.publicUndoXml(command, xml);
+		}
+
 		// ---------------------------------------------------- 5-7 RECOVERY
 
 		private Result recover(boolean rollbackFailed) {
-			String reason = text("Insert.Failure.Commit");
+			String reason = text(failure instanceof ExpertSourceChanged
+					? "Insert.Expert.SourceChanged" : "Insert.Failure.Commit");
 			if (rollbackFailed) {
 				// DQ21-Q5: the inherited rollback itself failed
 				return serious(null);
 			}
-			if (!admission.isIdentityBearing()) {
+			if (expertBefore != null || !admission.isIdentityBearing()) {
 				try {
 					// 5 K1-S
 					compensate();
@@ -965,6 +1439,10 @@ final class GeoCeDGDocumentInsertion {
 				guardedReload();
 				removeTransferredMacros();
 				restoreIdentity();
+				if (expertBefore != null) {
+					expertBefore.restore(app);
+					expertBefore.requireResources(app);
+				}
 				attachBlock(expectedTemporary(), barrier.held.getCommands(),
 						barrier.held.getCursor(), List.of());
 				restoreSaved();
@@ -1006,7 +1484,11 @@ final class GeoCeDGDocumentInsertion {
 			}
 			removeTransferredMacros();
 			restoreIdentity();
-			if (!currentUndoXml().equals(undoXml(barrier.baseline))) {
+			if (expertBefore != null) {
+				expertBefore.restore(app);
+				expertBefore.requireResources(app);
+			}
+			if (!currentUndoXml().equals(transactionUndoXml(barrier.baseline))) {
 				throw new IllegalStateException("subtractive compensation left a difference");
 			}
 		}
@@ -1014,6 +1496,12 @@ final class GeoCeDGDocumentInsertion {
 		/** Reload of the barrier baseline only: no history access, no inherited fallback. */
 		private void guardedReload() throws Exception {
 			File source = ((FileAppState) barrier.baseline.getAppState()).getFile();
+			byte[] publicBaseline = null;
+			if (expertBefore != null) {
+				ByteArrayOutputStream archive = new ByteArrayOutputStream();
+				MyXMLioJre.writeZipped(archive, new StringBuilder(transactionUndoXml(barrier.baseline)));
+				publicBaseline = archive.toByteArray();
+			}
 			Exception last = null;
 			for (int attempt = 1; attempt <= 2; attempt++) {
 				try {
@@ -1021,8 +1509,12 @@ final class GeoCeDGDocumentInsertion {
 					synchronized (undo) {
 						app.setActiveView(App.VIEW_EUCLIDIAN);
 						app.getEventDispatcher().disableListeners();
-						try (InputStream in = new FileInputStream(source)) {
+						try (InputStream in = publicBaseline == null ? new FileInputStream(source)
+								: new ByteArrayInputStream(publicBaseline)) {
 							((MyXMLioJre) app.getXMLio()).readZipFromMemory(in);
+							if (expertBefore != null && app.getXMLio().hasErrors()) {
+								throw new IOException("Native recovery reported reader errors");
+							}
 						} finally {
 							app.getEventDispatcher().enableListeners();
 						}
@@ -1061,8 +1553,14 @@ final class GeoCeDGDocumentInsertion {
 			}
 		}
 
-		private String certify(Certificate after) {
+		private String certify(Certificate after) throws IOException {
 			List<String> differences = before.serializableDifferences(after);
+			if (expertBefore != null) {
+				expertBefore.requireResources(app);
+				if (!expertBefore.matches(app, before.sameInstances(after))) {
+					differences.add("expert recovery session state");
+				}
+			}
 			String history = barrier.history.mismatch(undo, barrier.held);
 			if (history != null) {
 				differences.add("history " + history);
@@ -1120,8 +1618,17 @@ final class GeoCeDGDocumentInsertion {
 		private void attachBlock(List<UndoCommand> expectedTemporary,
 				List<UndoCommand> finalHistory, int cursor, List<UndoCommand> discarded)
 				throws Exception {
+			attachBlock(expectedTemporary, finalHistory, cursor, discarded, null);
+		}
+
+		private void attachBlock(List<UndoCommand> expectedTemporary,
+				List<UndoCommand> finalHistory, int cursor, List<UndoCommand> discarded,
+				ExpertOffer offer) throws Exception {
 			faults.beforeAttach();
 			synchronized (undo) {
+				if (offer != null && !offer.exactSourceCurrent()) {
+					throw new ExpertSourceChanged();
+				}
 				List<UndoCommand> temporary = undo.getCommands();
 				if (!undo.isQuiescent() || !temporary.equals(expectedTemporary)) {
 					try (PreparedUndoBaseline closing = undo.prepareUndoBaseline()) {
@@ -1169,6 +1676,14 @@ final class GeoCeDGDocumentInsertion {
 
 		private String currentUndoXml() {
 			return app.getKernel().getConstruction().getCurrentUndoXML(true).toString();
+		}
+	}
+
+	private static final class ExpertSourceChanged extends IOException {
+		private static final long serialVersionUID = 1L;
+
+		private ExpertSourceChanged() {
+			super("The consented source changed before history attachment");
 		}
 	}
 

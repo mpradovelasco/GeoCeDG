@@ -23,19 +23,31 @@ final class GeoCeDGInspectionReport {
 	}
 
 	static String json(GeoCeDGInspectionResult report) throws JSONException {
+		return json(report, null);
+	}
+
+	static String json(GeoCeDGInspectionResult report, GeoCeDGExpertInspection.ExpertTrial expert)
+			throws JSONException {
 		var admission = report.admission();
-		return object("schemaVersion", 2, "policy", "POST_CU4_I2_PASSIVE_1",
+		var result = object("schemaVersion", 2, "policy", "POST_CU4_I2_PASSIVE_1",
 				"analysisVersion", "POST_CU4_I2_DIFFERENTIAL_2",
 				"inputScope", "NATIVE_ARCHIVE_SNAPSHOTS", "workerProfile", "ISOLATED_PORTABLE_DESKTOP",
-				"publication", object("available", false, "reason", "INSPECTION_ONLY"),
+				"publication", object("available", expert != null && expert.available(),
+						"reason", expert == null ? "INSPECTION_ONLY" : expert.reason()),
 				"admission", object("state", admission.state(), "reason", admission.reason(),
 						"detail", admission.detail()),
 				"stages", array(report.stages(), GeoCeDGInspectionReport::stage),
 				"comparisons", array(report.comparisons(), GeoCeDGInspectionReport::comparison),
 				"diagnostics", array(report.diagnostics(), diagnostic ->
 						object("phase", diagnostic.phase(), "status", diagnostic.status(),
-								"code", diagnostic.code(), "detail", diagnostic.detail())))
-				.toString(2);
+								"code", diagnostic.code(), "detail", diagnostic.detail())));
+		if (expert != null) {
+			result.put("expert", object("version", GeoCeDGExpertIntegrity.VERSION,
+					"available", expert.available(), "reason", expert.reason(),
+					"fingerprint", expert.fingerprint(), "previewSha256", expert.previewSha256(),
+					"trialContextSha256", expert.trialContextSha256()));
+		}
+		return result.toString(2);
 	}
 
 	private static JSONObject stage(Stage stage) {
@@ -65,6 +77,8 @@ final class GeoCeDGInspectionReport {
 				"usm", usm == null ? null : object("metresPerUnit", usm.getMetresPerUnit(),
 						"name", usm.getName(), "symbol", usm.getSymbol()),
 				"hiddenLayers", new JSONArray(context.hiddenLayers()),
+				"workingLayer", context.workingLayer(), "maxLayerUsed", context.maxLayerUsed(),
+				"activeView", context.activeView(),
 				"displayPrecision", context.displayPrecision(),
 				"significantFigures", context.significantFigures());
 	}
@@ -101,7 +115,12 @@ final class GeoCeDGInspectionReport {
 	}
 
 	static String summary(GeoCeDGInspectionResult report) {
-		StringBuilder text = new StringBuilder("GeoCeDG I2 | File snapshot inspection\n");
+		return summary(report, null);
+	}
+
+	static String summary(GeoCeDGInspectionResult report, GeoCeDGExpertInspection.ExpertTrial expert) {
+		StringBuilder text = new StringBuilder(expert == null ? "GeoCeDG I2 | File snapshot inspection\n"
+				: "GeoCeDG | Expert insertion trial\n");
 		for (Stage stage : report.stages()) {
 			text.append(stage.phase()).append(" ").append(stage.sha256() == null ? ""
 					: stage.sha256() + " ").append(stage.angleUnit() == null ? "archive inventory"
@@ -125,8 +144,8 @@ final class GeoCeDGInspectionReport {
 			text.append(diagnostic.phase()).append(" ").append(diagnostic.status()).append(" ")
 					.append(diagnostic.code()).append(" | ").append(diagnostic.detail()).append('\n');
 		}
-		return text.append("Publication unavailable in I2. See JSON for property evidence.\n")
-				.toString();
+		return text.append(expert == null ? "Publication unavailable in I2. See JSON for property evidence.\n"
+				: "Expert trial: " + expert.reason() + "\n").toString();
 	}
 
 	private static <T> JSONArray array(List<T> items, Function<T, JSONObject> projection) {

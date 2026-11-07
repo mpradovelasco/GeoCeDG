@@ -33,6 +33,11 @@ public final class GeoCeDG {
 	 */
 	public static void main(String[] args) {
 		String[] effectiveArguments = args == null ? new String[0] : args;
+		if (GeoCeDGExpertWorker.isDispatch(effectiveArguments)) {
+			GeoCeDGExpertInspection.main(java.util.Arrays.copyOfRange(effectiveArguments,
+					1, effectiveArguments.length));
+			return;
+		}
 		if (GeoCeDGClassicDiagnosticLaunch.isDispatch(effectiveArguments)) {
 			// PRE-G9B-R6-plus-E1-X1: internal launcher protocol of the separate
 			// diagnostic Classic process; it runs before any GeoCeDG preference,

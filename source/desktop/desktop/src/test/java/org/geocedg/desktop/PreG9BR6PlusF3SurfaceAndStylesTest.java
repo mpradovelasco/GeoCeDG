@@ -97,7 +97,7 @@ class PreG9BR6PlusF3SurfaceAndStylesTest {
 		for (Component child : insert.getMenuComponents()) {
 			assertNull(((JMenuItem) child).getAccelerator(), "no accelerator");
 		}
-		assertEquals(134, GeoCeDGProfile.getActions().size());
+		assertEquals(135, GeoCeDGProfile.getActions().size());
 	}
 
 	@Test

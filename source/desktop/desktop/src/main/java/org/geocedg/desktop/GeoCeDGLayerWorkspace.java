@@ -224,6 +224,10 @@ final class GeoCeDGLayerWorkspace {
 		listeners.add(listener);
 	}
 
+	void removeListener(Runnable listener) {
+		listeners.remove(listener);
+	}
+
 	private void fireChanged() {
 		for (Runnable listener : new ArrayList<>(listeners)) {
 			listener.run();

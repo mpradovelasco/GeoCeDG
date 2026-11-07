@@ -1562,6 +1562,15 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	}
 
 	/**
+	 * Restores the session counter after a failed document transaction without
+	 * changing any construction default.
+	 * @param maxLayer the value captured from this document before the transaction
+	 */
+	public final void restoreMaxLayerUsed(int maxLayer) {
+		maxLayerUsed = LayerDomain.clamp(maxLayer, LayerDomain.maxLayer(this));
+	}
+
+	/**
 	 * @return whether 3D view was initialized
 	 */
 	public boolean isEuclidianView3Dinited() {

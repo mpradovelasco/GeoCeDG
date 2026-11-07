@@ -619,8 +619,25 @@ public class InternalClipboard {
 	 */
 	public static boolean evalClipboardXMLAtomically(App app, String clipboardXml,
 			String rollbackXml, Runnable beforeImport) {
+		return evalClipboardXMLAtomically(app, clipboardXml, rollbackXml, beforeImport, false);
+	}
+
+	/**
+	 * Evaluates the fragment with optional strict diagnostics. In strict mode the
+	 * caller owns a document transaction and must recover from any thrown failure.
+	 *
+	 * @param app receiving application
+	 * @param clipboardXml construction-element fragment
+	 * @param rollbackXml optional native clipboard rollback snapshot
+	 * @param beforeImport optional mutation before native evaluation
+	 * @param strictDiagnostics whether any native reader diagnostic aborts the transaction
+	 * @return whether the fragment was imported
+	 */
+	public static boolean evalClipboardXMLAtomically(App app, String clipboardXml,
+			String rollbackXml, Runnable beforeImport, boolean strictDiagnostics) {
 		app.getActiveEuclidianView().saveInlines();
-		String effectiveRollbackXml = rollbackXml == null ? app.getXML() : rollbackXml;
+		String effectiveRollbackXml = !strictDiagnostics && rollbackXml == null
+				? app.getXML() : rollbackXml;
 		boolean identityBearing =
 				SpatialIdentityRegistry.preflightClipboardFragment(clipboardXml);
 		XMLStringBuilder wrapped = new XMLStringBuilder();
@@ -638,6 +655,9 @@ public class InternalClipboard {
 			}
 			construction.setNextSpatialIdentityLoadPurpose(LoadPurpose.CLIPBOARD_IMPORT);
 			app.getXMLio().processXMLString(wrapped.toString(), false, false);
+			if (strictDiagnostics && app.getXMLio().hasErrors()) {
+				throw new IllegalStateException("Native clipboard reader reported errors");
+			}
 			if (identityBearing && app.getXMLio().hasErrors()) {
 				// a copied element the host could not rebuild would survive degraded
 				throw new SpatialIdentityException(SpatialIdentityDiagnostic.of(
@@ -648,6 +668,9 @@ public class InternalClipboard {
 			app.getActiveEuclidianView().updateInlines();
 			return true;
 		} catch (Exception | MyError failure) {
+			if (strictDiagnostics) {
+				throw new IllegalStateException("Strict clipboard import failed", failure);
+			}
 			Log.debug("Clipboard import rolled back: " + failure);
 			restoreClipboardSnapshot(app, construction, effectiveRollbackXml, failure);
 			return false;

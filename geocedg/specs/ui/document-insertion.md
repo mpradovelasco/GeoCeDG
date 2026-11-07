@@ -25,6 +25,10 @@ decision), **[OBS]** recorded observation.
 
 ## 1. Surface
 
+The separate [expert insertion candidate](expert-document-insertion-candidate.md)
+defines its experimental review and publication route. The certified surface
+and admission in this section retain their approved scope.
+
 1.1 **[AD]** (`DQ-F3-1` N1, `DQ-F3-23`) The File menu has an **Insert /
 Insertar** submenu, directly after the Open group, with two independent actions:
 `document.insert-file` "Insert File… / Insertar archivo…" and

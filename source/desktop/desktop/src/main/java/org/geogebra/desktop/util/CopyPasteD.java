@@ -571,6 +571,11 @@ public class CopyPasteD extends CopyPaste {
 		// upstream: nothing
 	}
 
+	/** @return whether the caller requires strict native diagnostics and owns recovery */
+	protected boolean requiresStrictImport() {
+		return false;
+	}
+
 	/**
 	 * Called once after a successful paste from the internal buffer; the product may
 	 * present a notice (PRE-G9B-R6-plus-D1). It must not change the construction, the
@@ -598,7 +603,7 @@ public class CopyPasteD extends CopyPaste {
 		boolean imported = false;
 		try {
 			imported = InternalClipboard.evalClipboardXMLAtomically(app, xml,
-					spatialInsertRollbackXml, spatialInsertMutation);
+					spatialInsertRollbackXml, spatialInsertMutation, requiresStrictImport());
 			return imported;
 		} finally {
 			// a rejected or failed import returns the previous script policy

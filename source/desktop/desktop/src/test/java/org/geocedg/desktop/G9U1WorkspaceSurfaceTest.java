@@ -173,8 +173,10 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collectOccurrences(component, occurrences);
 		}
-		assertEquals(((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry().ids(),
-				occurrences.keySet());
+		Set<String> defaultActions = new HashSet<>(
+				((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry().ids());
+		assertTrue(defaultActions.remove("document.insert-expert"));
+		assertEquals(defaultActions, occurrences.keySet());
 		occurrences.forEach((id, count) -> assertEquals(1, count, id));
 	}
 

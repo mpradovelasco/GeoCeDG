@@ -38,6 +38,7 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	private final Map<GeoElement, GeoElement> addressedCopies = new IdentityHashMap<>();
 	private final Set<String> occupiedAddresses = new HashSet<>();
 	private final boolean inspectAddresses;
+	private final boolean strictImport;
 	private int unresolvedAuxiliaryAddresses;
 	private UnitState provenance;
 
@@ -49,8 +50,19 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	}
 
 	GeoCeDGInsertionCopyPaste(Set<String> transferredMacros, boolean inspectAddresses) {
+		this(transferredMacros, inspectAddresses, false);
+	}
+
+	GeoCeDGInsertionCopyPaste(Set<String> transferredMacros, boolean inspectAddresses,
+			boolean strictImport) {
 		this.transferredMacros = transferredMacros;
 		this.inspectAddresses = inspectAddresses;
+		this.strictImport = strictImport;
+	}
+
+	@Override
+	protected boolean requiresStrictImport() {
+		return strictImport;
 	}
 
 	@Override

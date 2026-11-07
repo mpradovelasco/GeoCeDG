@@ -432,6 +432,17 @@ presentación y guarda una copia. Puedes intentar insertar esa copia. Se
 aplicarán las comprobaciones habituales. Los objetos excluidos, los guiones y
 la compatibilidad de herramientas sin determinar tienen diagnósticos propios.
 
+**Insertar con revisión experta…** es una acción experimental de **Archivo →
+Insertar**. Para activarla, inicia GeoCeDG con `--enableExpertInsertion=true`.
+Prueba la inserción sobre una copia del dibujo actual, incluidos los cambios
+sin guardar. Revisa los objetos, las diferencias y las incertidumbres antes
+de confirmar. Cuando está disponible, la vista previa muestra el dibujo del
+ensayo. Puedes aceptar cambios de capa, vista o presentación si el resultado
+supera las comprobaciones de integridad. Una revisión bloqueada indica la
+condición que impide insertar. Cancelar deja el dibujo como estaba. Una
+inserción correcta ocupa un paso de Deshacer. Revisa el dibujo y elige
+**Guardar como…** para conservar una copia separada.
+
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de
 un documento `.cedg` o `.ggb` (los estilos que ese documento da a los objetos
