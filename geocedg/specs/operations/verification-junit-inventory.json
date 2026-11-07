@@ -4560,6 +4560,115 @@
           "tree": "b59f0978b0000f47d0fea48e0fc5d00a0cc6701b"
         }
       ]
+    },
+    {
+      "selection_id": "post-cu4-expert-insertion.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.GeoCeDGExpert*Test",
+        "org.geocedg.desktop.GeoCeDGInspectionArchiveTest",
+        "org.geocedg.desktop.GeoCeDGLiveInspectionSnapshotTest",
+        "org.geocedg.desktop.PostCu4AnglePreferencesTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3*Test",
+        "org.geocedg.desktop.PreG9BCu4*Test",
+        "org.geocedg.desktop.Cu4*Test",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "org.geogebra.desktop.util.CopyPasteDTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGExpert*Test",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGInspectionArchiveTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGLiveInspectionSnapshotTest",
+        "--tests",
+        "org.geocedg.desktop.PostCu4AnglePreferencesTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3*Test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu4*Test",
+        "--tests",
+        "org.geocedg.desktop.Cu4*Test",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "--tests",
+        "org.geogebra.desktop.util.CopyPasteDTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 224,
+      "expected_identities_sha256": "9defcfe49b7c61200c46f95441f70f1fb31d7881ed00197d40dd02395fe68a3a",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "41b2beaa25056ad9294ee0546e2381ef23400564",
+          "tree": "7834a15509a3520103a5d699e3d1689b9ae4b74b"
+        }
+      ]
+    },
+    {
+      "selection_id": "post-cu4-expert-insertion.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geogebra.common.util.InternalClipboardTest",
+        "org.geogebra.common.util.CopyPasteTest",
+        "org.geocedg.common.spatial.PreG9bR3C1U1PlainClipboardClosureTest",
+        "org.geocedg.common.spatial.PreG9bR3C1U1CedgClipboardClosureTest",
+        "org.geocedg.common.layers.PreG9BR6PlusA2LayerDomainTest",
+        "org.geocedg.common.locus.Cu4V2StyleDefaultsTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geogebra.common.util.InternalClipboardTest",
+        "--tests",
+        "org.geogebra.common.util.CopyPasteTest",
+        "--tests",
+        "org.geocedg.common.spatial.PreG9bR3C1U1PlainClipboardClosureTest",
+        "--tests",
+        "org.geocedg.common.spatial.PreG9bR3C1U1CedgClipboardClosureTest",
+        "--tests",
+        "org.geocedg.common.layers.PreG9BR6PlusA2LayerDomainTest",
+        "--tests",
+        "org.geocedg.common.locus.Cu4V2StyleDefaultsTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 35,
+      "expected_identities_sha256": "d3c262d67249cf84b9741be949b223d06a8ffb63622a327be2b1928188c043e2",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "41b2beaa25056ad9294ee0546e2381ef23400564",
+          "tree": "7834a15509a3520103a5d699e3d1689b9ae4b74b"
+        }
+      ]
     }
   ]
 }
