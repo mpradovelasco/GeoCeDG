@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -179,14 +180,18 @@ final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 	private record Session(AppGeoCeDG owner, Construction construction, GeoCeDGUndoManager undo,
 			long epoch, GeoCeDGDocumentInsertion.HistoryRecord history, String documentId,
 			String tubeId, File file, boolean saved, boolean undoActive, int mode,
-			int workingLayer, int maxLayerUsed, List<GeoElement> selection) {
+			int workingLayer, int maxLayerUsed, List<GeoElement> selection,
+			Map<GeoElement, Integer> effectiveLayers) {
 		private static Session read(AppGeoCeDG app, Construction construction,
 				GeoCeDGUndoManager undo) {
+			Map<GeoElement, Integer> layers = new IdentityHashMap<>();
+			construction.getGeoSetWithCasCellsConstructionOrder()
+					.forEach(geo -> layers.put(geo, geo.getLayer()));
 			return new Session(app, construction, undo, undo.getEpoch(),
 					GeoCeDGDocumentInsertion.HistoryRecord.of(undo), app.getUniqueId(), app.getTubeId(),
 					app.getCurrentFile(), app.isSaved(), app.getKernel().isUndoActive(), app.getMode(),
 					app.getLayerWorkspace().getWorkingLayer(), app.getMaxLayerUsed(),
-					List.copyOf(app.getSelectionManager().getSelectedGeos()));
+					List.copyOf(app.getSelectionManager().getSelectedGeos()), layers);
 		}
 
 		private boolean matches(AppGeoCeDG app) {
@@ -199,7 +204,14 @@ final class GeoCeDGLiveInspectionSnapshot implements AutoCloseable {
 					&& workingLayer == app.getLayerWorkspace().getWorkingLayer()
 					&& maxLayerUsed == app.getMaxLayerUsed()
 					&& selection.equals(app.getSelectionManager().getSelectedGeos())
+					&& sameEffectiveLayers()
 					&& history.mismatch(undo, null) == null;
+		}
+
+		private boolean sameEffectiveLayers() {
+			var geos = construction.getGeoSetWithCasCellsConstructionOrder();
+			return geos.size() == effectiveLayers.size() && geos.stream()
+					.allMatch(geo -> Objects.equals(effectiveLayers.get(geo), geo.getLayer()));
 		}
 	}
 

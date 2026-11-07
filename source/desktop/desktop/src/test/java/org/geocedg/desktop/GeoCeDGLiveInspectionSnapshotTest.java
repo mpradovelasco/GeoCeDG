@@ -147,6 +147,26 @@ class GeoCeDGLiveInspectionSnapshotTest {
 	}
 
 	@Test
+	void detectsScalarLayerChangeOmittedByNativeWriter() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create(false);
+			app.getLayerWorkspace().setWorkingLayer(4);
+			must(app, "A=(0,0)");
+			var scalar = must(app, "n=2");
+			assertEquals(4, scalar.getLayer());
+			String nativeXml = app.getXML();
+			int maxLayer = app.getMaxLayerUsed();
+			try (var snapshot = GeoCeDGLiveInspectionSnapshot.capture(app)) {
+				scalar.setLayer(0);
+				assertEquals(nativeXml, app.getXML());
+				assertEquals(maxLayer, app.getMaxLayerUsed());
+				assertFalse(snapshot.matchesCurrentState(app));
+			}
+			return null;
+		});
+	}
+
+	@Test
 	void rejectsFailedOrReentrantCaptureAndReleasesTheWitness() throws Exception {
 		AppGeoCeDG app = onEdt(() -> G9U1TestApp.create(false));
 		assertThrows(IllegalStateException.class, () -> GeoCeDGLiveInspectionSnapshot.capture(app));

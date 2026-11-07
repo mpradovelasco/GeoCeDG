@@ -83,7 +83,10 @@ una oferta publicable.
    efecto ejecutable o pérdida en persistencia bloquea el plan. Conocer un
    cambio de capa permite proponerlo solo si la fila permite ese cambio y se
    verifican sus consecuencias visibles. La fidelidad de capa F3 conserva
-   su propio contrato.
+   su propio contrato. La capa efectiva de cada objeto residente debe
+   concordar entre receptor vivo y receptor de ensayo. La capa reconstruida
+   por defecto a partir de un archivo que omite el atributo requiere prueba
+   separada. Si esa paridad queda sin establecer, el ensayo es informativo.
 4. El archivo nativo del ensayo y la reapertura tienen la misma construcción
    en el perímetro prometido, con aristas, parámetros, dominios, unidades,
    validez, identidades y recursos esperados. Las diferencias voluntarias se
@@ -118,6 +121,9 @@ registrar invalidaciones desde antes de capturar hasta que se consume la
 oferta, aun si el documento vuelve al estado anterior. El informe I2 aporta
 inventario y pruebas parciales por etapa. Los puertos anónimos o locales y
 la reapertura de objetos ordinarios aún pueden quedar sin correspondencia.
+El modelo de revisión consume también los diagnósticos por etapa. I5
+entrega atributos de presentación tipados para toda diferencia que
+intervenga en la política. I3 solo presenta el texto de observación I2.
 [Captura I2](post_cu4_live_inspection_snapshot_candidate.md) · [Diferencial I2](post_cu4_pre_i3_differential_contract.md)
 
 El plan necesita una traza total por registro para los objetos ordinarios del
@@ -247,9 +253,11 @@ admitidas. Nunca se pasa contenido hostil directamente a
 
 La ruta F3 tiene `barrier`, `Transaction`, `attachBlock` y `guardedReload`
 privados y acoplados a sus verificadores. La reutilización prevista es una
-extracción pequeña de esa misma orquestación con verificadores explícitos
-por política. El constructor de un plan experto no recibe un modo de omitir
-la admisión o la recuperación F3. La prueba común debe cubrir también el
+extracción pequeña de esa misma orquestación con certificados tipados
+por ruta. La entrada F3 exige un certificado P4. El ensayo y la entrada
+experta exigen el certificado de una fila FamilyPolicy expresamente
+aprobada, incluso para ARC-01 fuera de P4. Ambas rutas pasan por las
+barreras comunes de integridad y recuperación. La prueba común cubre también el
 estado que queda fuera del XML. Por ejemplo, la copia nativa reserva
 etiquetas del origen en el receptor. `Construction` expone `addProtectedLabel`
 y el predicado de disponibilidad, sin una API de snapshot/restauración del

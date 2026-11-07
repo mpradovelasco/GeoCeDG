@@ -40,8 +40,10 @@ Los informes y sondas prueban sus propios candidatos y casos.
    enganche a `CopyPasteD`, `InternalClipboard`, `Construction` y los puntos
    nativos del escritor/lector estrictamente necesarios para la prueba de
    `EXP-02`. Validar integridad, resultados, persistencia y diagnósticos del
-   worker. Aplicar el oráculo ARC-01 de I1 al primer arco y documentar las
-   causas concretas de cada fila que quede en inspección.
+   worker y cotejar la capa efectiva del receptor con la capa reconstruida.
+   Un ensayo experto fuera de P4 exige el certificado tipado de una fila
+   aprobada. Aplicar el oráculo ARC-01 de I1 al primer arco y documentar
+   las causas concretas de cada fila que quede en inspección.
 2. **I3 · Acción y sesión de revisión.** `apps/geocedg/application-profile.yml`,
    los recursos EN/ES y los puntos Desktop `GeoCeDGActionRegistry`,
    `GeoCeDGMenuBar`, `AppGeoCeDG`, `GuiManagerGeoCeDG` y sus servicios de

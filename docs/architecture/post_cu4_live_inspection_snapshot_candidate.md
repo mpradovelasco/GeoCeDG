@@ -27,7 +27,8 @@ unidades, propiedades persistidas y presentación. El informe expone el
 contexto nativo cargado (unidades, precisión y capas ocultas) como
 observaciones tipadas. El testigo local conserva archivo asociado, flag
 guardado, identificador Tube, modo, selección, capa de trabajo y máximo
-de capa, dueño de la construcción e identidad de su historial.
+de capa, capas efectivas por instancia, dueño de la construcción e
+identidad de su historial.
 Estos datos de sesión quedan en Desktop. El cierre libera bytes y
 referencias. El transporte usa un archivo nuevo en el directorio
 privado de la operación. Su propietario lo elimina tras el trabajador,
@@ -63,7 +64,14 @@ comparación. Un receptor incapturable o una captura cerrada dan un
 resultado no vigente. El hash de transporte identifica los bytes
 declarados por el trabajador. La capa de trabajo de sesión no forma parte
 del archivo nativo. El ensayo usa el contexto del trabajador y conserva
-las diferencias observadas. Un cambio revertido puede devolver el
+las diferencias observadas. C1 demuestra que ciertos escalares no emiten
+su capa. La comprobación por instancia detecta un cambio efectivo incluso
+cuando se conservan el XML y el máximo de capa. El inventario I2 sigue
+exponiendo la capa reconstruida por el lector. La futura publicación
+exige comprobar su paridad con la capa efectiva en el receptor vivo.
+[Reconciliación C1](post_cu4_pre_i3_c1_layer_reconciliation.md)
+
+Un cambio revertido puede devolver el
 mismo estado. I4 requiere además invalidación monotónica durante la
 vida de la oferta y revalidación dentro de la barrera de publicación,
 incluidos estados relevantes ausentes en el archivo nativo. P7 y Undo
