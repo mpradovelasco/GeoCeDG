@@ -218,6 +218,9 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 
 		if (!isIniting && selectedOptionType == type
 				&& type != OptionType.EUCLIDIAN_FOR_PLANE) {
+			if (type == OptionType.GLOBAL && advancedPanel != null) {
+				advancedPanel.setSelected(true);
+			}
 			updateTitleBar();
 			return;
 		}
@@ -242,6 +245,13 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 
 		wrappedPanel.revalidate();
 		wrappedPanel.repaint();
+	}
+
+	/** Refresh the angle selector if its panel has already been created. */
+	public void refreshAngleUnit() {
+		if (advancedPanel != null) {
+			advancedPanel.refreshAngleUnit();
+		}
 	}
 
 	/**

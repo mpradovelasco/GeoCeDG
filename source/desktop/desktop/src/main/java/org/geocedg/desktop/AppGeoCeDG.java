@@ -478,6 +478,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		// undoable: the document becomes unsaved and no undo point is stored.
 		workspace.setPersistedSetEditListener(this::setUnsaved);
 		layerWorkspaceActive = true;
+		refreshAngleUnitPreferences();
 	}
 
 	/** PRE-G9B-R6-plus-A-2 (DQ-A2-3): the persisted set of the full document XML. */
@@ -560,6 +561,13 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		parsedHiddenLayers = null;
 		documentTransitionCommitted = true;
 		layerWorkspace.commitOpenedDocument(persisted);
+		refreshAngleUnitPreferences();
+	}
+
+	private void refreshAngleUnitPreferences() {
+		if (getGuiManager() instanceof GuiManagerGeoCeDG manager) {
+			manager.refreshAngleUnitPreferences();
+		}
 	}
 
 	/**
@@ -1406,6 +1414,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 			setSaved();
 			// PRE-G9B-R6-plus-C (DQ-C7) E1: a completed New
 			resetDrawingScale();
+			refreshAngleUnitPreferences();
 		}
 	}
 

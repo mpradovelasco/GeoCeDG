@@ -459,11 +459,7 @@ public class OptionsAdvancedD implements OptionPanelD,
 		cbUseLocalDigits.setSelected(loc.isUsingLocalizedDigits());
 		cbUseLocalLabels.setSelected(loc.isUsingLocalizedLabels());
 
-		int angleUnit = app.getKernel().getAngleUnit();
-		angleUnitRadioDegree.setSelected(angleUnit == Kernel.ANGLE_DEGREE);
-		angleUnitRadioRadian.setSelected(angleUnit == Kernel.ANGLE_RADIANT);
-		angleUnitRadioDegreesMinutesSeconds.setSelected(
-				angleUnit == Kernel.ANGLE_DEGREES_MINUTES_SECONDS);
+		refreshAngleUnit();
 
 		continuityRadioOn.setSelected(app.getKernel().isContinuous());
 		continuityRadioOff.setSelected(!app.getKernel().isContinuous());
@@ -522,6 +518,15 @@ public class OptionsAdvancedD implements OptionPanelD,
 		cbTooltipTimeout.addActionListener(this);
 
 		updateTooltipLanguages();
+	}
+
+	/** Reflect the effective kernel unit without dispatching a user action. */
+	public void refreshAngleUnit() {
+		int angleUnit = app.getKernel().getAngleUnit();
+		angleUnitRadioDegree.setSelected(angleUnit == Kernel.ANGLE_DEGREE);
+		angleUnitRadioRadian.setSelected(angleUnit == Kernel.ANGLE_RADIANT);
+		angleUnitRadioDegreesMinutesSeconds.setSelected(
+				angleUnit == Kernel.ANGLE_DEGREES_MINUTES_SECONDS);
 	}
 
 	private void updateGUIFont() {
@@ -1006,7 +1011,10 @@ public class OptionsAdvancedD implements OptionPanelD,
 
 	@Override
 	public void setSelected(boolean flag) {
-		// see OptionsEuclidianD for possible implementation
+		if (flag && app.getConfig()
+				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG) {
+			refreshAngleUnit();
+		}
 	}
 
 	/** available tooltip timeouts (will be reused in OptionsAdvanced) */

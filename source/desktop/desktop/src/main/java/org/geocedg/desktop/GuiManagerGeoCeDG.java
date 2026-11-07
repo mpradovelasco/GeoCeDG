@@ -30,6 +30,7 @@ import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.settings.EuclidianSettings;
+import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
@@ -45,6 +46,7 @@ import org.geogebra.desktop.gui.toolbar.ToolbarContainer;
 import org.geogebra.desktop.gui.util.GeoGebraFileChooser;
 import org.geogebra.desktop.gui.view.algebra.AlgebraControllerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
+import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
 import org.geogebra.desktop.main.AppD;
 
 /** GeoCeDG GUI manager preserving all inherited 3D/Desktop behavior. */
@@ -56,6 +58,20 @@ final class GuiManagerGeoCeDG extends GuiManager3D {
 
 	GuiManagerGeoCeDG(AppD app) {
 		super(app);
+		app.getEventDispatcher().addEventListener(event -> {
+			if (event.type == EventType.UNDO || event.type == EventType.REDO) {
+				refreshAngleUnitPreferences();
+			}
+		});
+	}
+
+	void refreshAngleUnitPreferences() {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			// Read the effective unit when the refresh runs, even after another replacement.
+			SwingUtilities.invokeLater(this::refreshAngleUnitPreferences);
+		} else if (hasPropertiesView()) {
+			((PropertiesViewD) getPropertiesView()).refreshAngleUnit();
+		}
 	}
 
 	/** M08-S only: retain the native AlgebraInputD and its existing layout. */
