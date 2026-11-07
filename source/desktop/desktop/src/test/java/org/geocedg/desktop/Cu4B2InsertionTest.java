@@ -12,6 +12,7 @@ import static org.geocedg.desktop.PreG9BR6PlusF3Documents.M;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.app;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.awaitQuiescent;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.defineMyMid;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.must;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.save;
@@ -65,6 +66,7 @@ import org.geogebra.common.kernel.geos.GeoAngle.AngleStyle;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
+import org.geogebra.common.main.App;
 import org.geogebra.common.main.settings.LabelVisibility;
 import org.geogebra.common.plugin.ActionType;
 import org.geogebra.common.plugin.EventType;
@@ -123,8 +125,37 @@ class Cu4B2InsertionTest {
 					}
 				}
 			}
+			assertViewAssignmentFollowsNativeCopy();
 			return null;
 		});
+	}
+
+	private void assertViewAssignmentFollowsNativeCopy() throws Exception {
+		AppGeoCeDG source = source(Kernel.ANGLE_DEGREE, false);
+		addAngularText(source);
+		GeoText from = assertAngularText(source, "theta");
+		from.removeView(App.VIEW_EUCLIDIAN);
+		from.addView(App.VIEW_EUCLIDIAN2);
+		File file = archive(source, "text-in-view-2", false);
+		byte[] bytes = Files.readAllBytes(file.toPath());
+		GeoText reopened = assertAngularText(PreG9BCu0Corpus.open(file), "theta");
+		assertFalse(reopened.isVisibleInView(App.VIEW_EUCLIDIAN));
+		assertTrue(reopened.isVisibleInView(App.VIEW_EUCLIDIAN2));
+		for (int mode : new int[]{Kernel.ANGLE_DEGREE, Kernel.ANGLE_RADIANT}) {
+			AppGeoCeDG receiver = receiver(mode);
+			assertFalse(receiver.hasEuclidianView2(1));
+			assertEquals(App.VIEW_EUCLIDIAN, receiver.getActiveEuclidianView().getViewID());
+			AtomicInteger confirmations = new AtomicInteger();
+			assertInserted(receiver.getDocumentInsertion().insert(file, preview -> {
+				confirmations.incrementAndGet();
+				return true;
+			}));
+			assertEquals(mode == Kernel.ANGLE_DEGREE ? 0 : 1, confirmations.get());
+			GeoText copied = assertAngularText(receiver, "theta_{1}");
+			assertTrue(copied.isVisibleInView(App.VIEW_EUCLIDIAN));
+			assertTrue(copied.isVisibleInView(App.VIEW_EUCLIDIAN2));
+		}
+		assertArrayEquals(bytes, Files.readAllBytes(file.toPath()));
 	}
 
 	@Test
@@ -156,6 +187,18 @@ class Cu4B2InsertionTest {
 				File offered = Files.copy(source.toPath(),
 						dir.resolve("stale-" + invalidation.name() + ".cedg")).toFile();
 				AppGeoCeDG receiver = receiver(Kernel.ANGLE_RADIANT);
+				if (invalidation == Invalidation.TEXT_CACHE) {
+					must(receiver, "u=47°");
+					GeoText resident = (GeoText) must(receiver, "resident=Text(u)");
+					String original = resident.getTextString();
+					receiver.getGgbApi().setTextValue("resident", "public setter cannot change this text");
+					assertEquals(original, resident.getTextString());
+					baseline(receiver);
+				}
+				if (invalidation == Invalidation.ACTIVE_GRAPHICS) {
+					receiver.getGuiManager().setShowView(true, App.VIEW_EUCLIDIAN2);
+					receiver.setActiveView(App.VIEW_EUCLIDIAN);
+				}
 				if (invalidation == Invalidation.HISTORY) {
 					undo(receiver).storeAction(ActionType.UPDATE, new String[0],
 							ActionType.UPDATE);
@@ -165,7 +208,7 @@ class Cu4B2InsertionTest {
 				Observation before = new Observation(receiver);
 				AtomicReference<Observation> changed = new AtomicReference<>();
 				AtomicInteger entered = countBarriers(receiver);
-				assertRejected(receiver.getDocumentInsertion().insert(offered, preview -> {
+				Result stale = receiver.getDocumentInsertion().insert(offered, preview -> {
 					assertUnchanged(receiver, before);
 					switch (invalidation) {
 					case GEOMETRY:
@@ -188,13 +231,30 @@ class Cu4B2InsertionTest {
 						assertEquals(List.of(), before.certificate.serializableDifferences(
 								new Observation(receiver).certificate));
 						break;
+					case TEXT_CACHE:
+						GeoText resident = (GeoText) lookup(receiver, "resident");
+						String xml = resident.getXML();
+						resident.setTextString("changed without an update event");
+						assertEquals(xml, resident.getXML());
+						break;
+					case ACTIVE_GRAPHICS:
+						receiver.setActiveView(App.VIEW_EUCLIDIAN2);
+						assertEquals(App.VIEW_EUCLIDIAN2, receiver.getActiveEuclidianView().getViewID());
+						receiver.setActiveView(App.VIEW_EUCLIDIAN);
+						break;
 					}
 					assertNull(changed.getAndSet(new Observation(receiver)));
 					return true;
-				}));
+				});
+				assertRejected(stale);
+				assertTrue(stale.getMessage().contains("changed during confirmation"), stale::getMessage);
 				assertNotNull(changed.get(), invalidation.name());
 				assertEquals(0, entered.get(), invalidation.name());
 				assertUnchanged(receiver, changed.get());
+				if (invalidation == Invalidation.TEXT_CACHE) {
+					assertEquals("changed without an update event",
+							((GeoText) lookup(receiver, "resident")).getTextString());
+				}
 				assertArrayEquals(invalidation == Invalidation.SOURCE_FILE
 						? replacementBytes : originalBytes, Files.readAllBytes(offered.toPath()));
 			}
@@ -312,8 +372,70 @@ class Cu4B2InsertionTest {
 				assertUnchanged(receiver, before);
 			}
 			assertEquals(0, barriers.get());
+			assertIndependentRejectionReasons();
 			return null;
 		});
+	}
+
+	private void assertIndependentRejectionReasons() throws Exception {
+		AppGeoCeDG arcSource = source(Kernel.ANGLE_DEGREE, false);
+		must(arcSource, "U=(0,0)");
+		must(arcSource, "V=(1,0)");
+		must(arcSource, "W=(0,1)");
+		must(arcSource, "arc=CircularArc(U,V,W)");
+		File arc = archive(arcSource, "arc-%1$", false);
+
+		AppGeoCeDG macroSource = source(Kernel.ANGLE_DEGREE, false);
+		defineMyMid(macroSource, "Source", false);
+		must(macroSource, "mid=MyMid(A,P)");
+		File mixedTool = archive(macroSource, "tool-deg", false);
+		macroSource.getKernel().setAngleUnit(Kernel.ANGLE_RADIANT);
+		File sameModeTool = archive(macroSource, "tool-rad", false);
+
+		AppGeoCeDG unknownSource = source(Kernel.ANGLE_DEGREE, false);
+		must(unknownSource, "formatted=Text(theta)");
+		File text = archive(unknownSource, "known-command", true);
+		File unresolved = rewriteEntry(text, "unresolved-tool", MyXMLio.XML_FILE,
+				"<command name=\"Text\">", "<command name=\"MissingTool\">");
+		must(unknownSource, "u=Vector(A,P)");
+		must(unknownSource, "v=Vector(P,A)");
+		GeoElement vectorAngle = must(unknownSource, "beta=Angle(u,v)");
+		assertNull(GeoCeDGInsertionAdmission.classify(vectorAngle));
+		File angleOfVectors = archive(unknownSource, "angle-of-vectors", false);
+
+		lookup(arcSource, "A").setScript(ScriptType.GGBSCRIPT.newScript(arcSource,
+				"SetValue(theta,1)"), EventType.CLICK);
+		File arcAndScript = archive(arcSource, "arc-and-script", false);
+		File invalidAndScript = rewriteEntry(arcAndScript, "invalid-and-script", MyXMLio.XML_FILE,
+				"</construction>", "</corrupt>");
+
+		AppGeoCeDG receiver = receiver(Kernel.ANGLE_RADIANT);
+		defineMyMid(receiver, "Receiver", true);
+		baseline(receiver);
+		Observation before = new Observation(receiver);
+		AtomicInteger barriers = countBarriers(receiver);
+		assertRejection(receiver, arc, "arc-%1$.cedg was not inserted: these objects cannot be inserted",
+				"arc (conicpart)");
+		assertRejection(receiver, mixedTool, "embedded tools (MyMid)", "reused or transferred");
+		assertRejection(receiver, sameModeTool, "already has a different tool named MyMid", "MyMid");
+		assertRejection(receiver, unresolved, "eligibility for certified insertion", "MissingTool");
+		assertRejection(receiver, angleOfVectors, "eligibility for certified insertion",
+				vectorAngle.getLabelSimple() + " (angle)");
+		assertRejection(receiver, arcAndScript, "objects with scripts cannot be inserted",
+				"Also detected · these objects cannot be inserted under the certified admission rules (arc (conicpart))");
+		assertRejection(receiver, invalidAndScript, "not a valid GeoCeDG document",
+				"Also detected · objects with scripts cannot be inserted");
+		assertEquals(0, barriers.get());
+		assertUnchanged(receiver, before);
+	}
+
+	private static void assertRejection(AppGeoCeDG receiver, File file, String decisive, String detail) {
+		Result result = receiver.getDocumentInsertion().insert(file,
+				preview -> fail("Refused file cannot offer a B2 insertion"));
+		assertRejected(result);
+		assertTrue(result.getMessage().split("\n", 2)[0].contains(decisive), result::getMessage);
+		assertTrue(result.getMessage().contains(detail), result::getMessage);
+		assertFalse(result.getMessage().contains("Save a copy"), result::getMessage);
 	}
 
 	@Test
@@ -726,6 +848,6 @@ class Cu4B2InsertionTest {
 	}
 
 	private enum Invalidation {
-		GEOMETRY, MODE, RECEIVER_FILE, SOURCE_FILE, HISTORY
+		GEOMETRY, MODE, RECEIVER_FILE, SOURCE_FILE, HISTORY, TEXT_CACHE, ACTIVE_GRAPHICS
 	}
 }

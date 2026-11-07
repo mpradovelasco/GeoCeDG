@@ -34,6 +34,8 @@ import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.units.MixedAngleInsertionProof;
 import org.geocedg.common.kernel.units.UnitState;
+import org.geocedg.desktop.GeoCeDGAngularSourceArchive.Finding;
+import org.geocedg.desktop.GeoCeDGAngularSourceArchive.Refusal;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.Construction;
@@ -55,6 +57,8 @@ import org.geogebra.common.main.undo.UndoCommand;
 import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventListener;
 import org.geogebra.common.util.debug.Log;
+import org.geogebra.desktop.gui.GuiManagerD;
+import org.geogebra.desktop.gui.layout.DockManagerD;
 import org.geogebra.desktop.headless.GFileHandler;
 import org.geogebra.desktop.io.DocumentArchivePreflight;
 import org.geogebra.desktop.main.undo.FileAppState;
@@ -228,8 +232,8 @@ final class GeoCeDGDocumentInsertion {
 		GeoCeDGAngularSourceArchive.Inspection angular = confirmation == null ? null
 				: GeoCeDGAngularSourceArchive.inspect(bytes, targetMode);
 		if (angular != null && angular.status() == GeoCeDGAngularSourceArchive.Status.REJECTED) {
-			if (angular.refusalKey() != null) {
-				return rejected(name, angular.refusalKey(), angular.detail());
+			if (!angular.findings().isEmpty()) {
+				return rejectedArchive(name, angular.findings());
 			}
 			return angular.differentModes() ? unverifiedAdaptation(name, angular.detail())
 					: rejected(name, "Insert.Angle.Unverified", "");
@@ -333,7 +337,12 @@ final class GeoCeDGDocumentInsertion {
 			if (!offer.isCurrent(app) || !passiveReceiver() || !sameSource(file, bytes)) {
 				return staleOffer(name);
 			}
-			prepareCopyBaseline(adapted);
+			try {
+				prepareCopyBaseline(adapted);
+			} catch (IOException failure) {
+				Log.debug(failure);
+				return rejected(name, "Insert.Reject.DryRun", text("Insert.Reject.TrialSourceUndo"));
+			}
 			String mismatch = dryRun(file, adapted, proof);
 			if (mismatch != null) {
 				return rejected(name, "Insert.Reject.DryRun", mismatch);
@@ -344,7 +353,7 @@ final class GeoCeDGDocumentInsertion {
 			return transact(name, adapted, admission, proof);
 		} catch (IOException | XMLParseException invalid) {
 			Log.debug(invalid);
-			return rejected(name, "Insert.Angle.Unverified", "");
+			return rejected(name, "Insert.Reject.Invalid", "");
 		} finally {
 			app.releaseInsertionHelper(adapted);
 			app.releaseInsertionHelper(original);
@@ -413,6 +422,22 @@ final class GeoCeDGDocumentInsertion {
 				text("Insert.Angle.ManualAlternative", name, explanation), List.of(), null);
 	}
 
+	private Result rejectedArchive(String name, List<Finding> findings) {
+		String message = text("Insert.Rejected", name, describeFinding(findings.get(0)));
+		List<String> additional = findings.stream().skip(1).filter(Finding::independentlyKnown)
+				.map(this::describeFinding).toList();
+		if (!additional.isEmpty()) {
+			message += "\n" + text("Insert.Reject.AlsoDetected", String.join(" · ", additional));
+		}
+		return new Result(Outcome.REJECTED_BEFORE_MUTATION, message, List.of(), null);
+	}
+
+	private String describeFinding(Finding finding) {
+		String reason = refusalText(finding.cause().key, finding.detail());
+		return finding.cause() == Refusal.UNDETERMINED && !finding.detail().isEmpty()
+				? reason + " (" + finding.detail() + ")" : reason;
+	}
+
 	private static final class AngularOfferState implements EventListener {
 		private final Certificate document;
 		private final ReceiverGeometry geometry;
@@ -420,6 +445,8 @@ final class GeoCeDGDocumentInsertion {
 		private final HistoryRecord history;
 		private final int tool;
 		private final boolean displayable;
+		private final DockManagerD viewActivationOwner;
+		private final long viewActivationGeneration;
 		private final List<GeoElement> selection;
 		private volatile boolean changed;
 
@@ -430,6 +457,10 @@ final class GeoCeDGDocumentInsertion {
 			history = HistoryRecord.of(undo);
 			tool = app.getMode();
 			displayable = app.getMainComponent().isDisplayable();
+			viewActivationOwner = app.getGuiManager() instanceof GuiManagerD gui && gui.getLayout() != null
+					? gui.getLayout().getDockManager() : null;
+			viewActivationGeneration = viewActivationOwner == null ? 0
+					: viewActivationOwner.getEuclidianViewActivationGeneration();
 			selection = List.copyOf(app.getSelectionManager().getSelectedGeos());
 		}
 
@@ -452,6 +483,8 @@ final class GeoCeDGDocumentInsertion {
 					|| app.getKernel().getConstruction().getUndoManager() != undo
 					|| app.getMainComponent().isDisplayable() != displayable
 					|| app.getMode() != tool
+					|| viewActivationOwner != null && viewActivationOwner.getEuclidianViewActivationGeneration()
+							!= viewActivationGeneration
 					|| !selection.equals(app.getSelectionManager().getSelectedGeos())
 					|| !geometry.sameGraph(app)) {
 				return false;
@@ -470,32 +503,36 @@ final class GeoCeDGDocumentInsertion {
 	private static final class ReceiverGeometry {
 		private final Construction construction;
 		private final int mode;
-		private final Map<GeoElement, String> xml = new IdentityHashMap<>();
+		private final Map<GeoElement, ReceiverObject> objects = new IdentityHashMap<>();
 		private final Map<GeoElement, PersistentGeoId> ids;
 		private final Map<AlgoElement, AlgorithmEdges> edges = new IdentityHashMap<>();
 
 		ReceiverGeometry(AppGeoCeDG app) {
 			construction = app.getKernel().getConstruction();
 			mode = app.getKernel().getAngleUnit();
-			identitySet(app).forEach(geo -> xml.put(geo, Certificate.normalize(geo.getXML())));
+			identitySet(app).forEach(geo -> objects.put(geo, new ReceiverObject(
+					Certificate.normalize(geo.getXML()), displayedText(geo))));
 			ids = identities(app);
 			construction.getAlgoList().forEach(algo -> edges.put(algo, new AlgorithmEdges(algo)));
 		}
 
 		boolean sameGraph(AppGeoCeDG app) {
-			return identitySet(app).size() == xml.size()
-					&& construction.getAlgoList().size() == edges.size() && preservedBy(app);
+			return identitySet(app).size() == objects.size()
+					&& construction.getAlgoList().size() == edges.size() && preservedBy(app)
+					&& objects.entrySet().stream().allMatch(e ->
+							Objects.equals(e.getValue().text(), displayedText(e.getKey())));
 		}
 
 		boolean preservedBy(AppGeoCeDG app) {
 			if (app.getKernel().getConstruction() != construction
-					|| app.getKernel().getAngleUnit() != mode || !identitySet(app).containsAll(xml.keySet())) {
+					|| app.getKernel().getAngleUnit() != mode
+					|| !identitySet(app).containsAll(objects.keySet())) {
 				return false;
 			}
 			Map<GeoElement, PersistentGeoId> liveIds = identities(app);
-			for (Map.Entry<GeoElement, String> entry : xml.entrySet()) {
+			for (Map.Entry<GeoElement, ReceiverObject> entry : objects.entrySet()) {
 				GeoElement geo = entry.getKey();
-				if (!entry.getValue().equals(Certificate.normalize(geo.getXML()))
+				if (!entry.getValue().xml().equals(Certificate.normalize(geo.getXML()))
 						|| !Objects.equals(ids.get(geo), liveIds.get(geo))) {
 					return false;
 				}
@@ -505,6 +542,13 @@ final class GeoCeDGDocumentInsertion {
 			return algorithms.containsAll(edges.keySet())
 					&& edges.entrySet().stream().allMatch(e -> e.getValue().matches(e.getKey()));
 		}
+
+		private static String displayedText(GeoElement geo) {
+			return geo instanceof GeoText text ? text.getTextString() : null;
+		}
+	}
+
+	private record ReceiverObject(String xml, String text) {
 	}
 
 	private record AlgorithmEdges(GeoElement[] input, GeoElement[] output) {
@@ -537,9 +581,13 @@ final class GeoCeDGDocumentInsertion {
 	}
 
 	private Result rejected(String name, String key, String argument) {
-		String reason = argument == null || argument.isEmpty() ? text(key) : text(key, argument);
-		return new Result(Outcome.REJECTED_BEFORE_MUTATION, text("Insert.Rejected", name, reason),
+		return new Result(Outcome.REJECTED_BEFORE_MUTATION,
+				text("Insert.Rejected", name, refusalText(key, argument)),
 				List.of(), null);
+	}
+
+	private String refusalText(String key, String argument) {
+		return argument == null || argument.isEmpty() ? text(key) : text(key, argument);
 	}
 
 	// ------------------------------------------------------------------ dry run
@@ -581,7 +629,7 @@ final class GeoCeDGDocumentInsertion {
 			GeoCeDGInsertionAdmission scratchAdmission = GeoCeDGInsertionAdmission.admit(scratch,
 					helper);
 			if (!scratchAdmission.isAdmitted()) {
-				return "admission";
+				return refusalText(scratchAdmission.getReasonKey(), scratchAdmission.getReasonArgument());
 			}
 			Set<GeoElement> before = identitySet(scratch);
 			Map<GeoElement, PersistentGeoId> idsBefore = identities(scratch);

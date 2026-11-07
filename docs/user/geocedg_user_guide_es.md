@@ -422,14 +422,15 @@ con `Text(theta)` puede adoptar el nuevo formato si `theta` es un ángulo
 verificado y ningún paso posterior de la construcción usa el texto. La
 confirmación muestra el texto antes y después del cambio. El texto estático
 conserva su contenido y posición. El dibujo actual conserva su modo angular y
-su precisión. Puedes cancelar o cerrar la confirmación para conservar el dibujo
-tal como está.
+su precisión. El pegado habitual asigna los objetos a la vista Gráfica activa.
+Su pertenencia a las demás vistas Gráficas puede cambiar. Puedes cancelar o
+cerrar la confirmación para conservar el dibujo tal como está.
 
-Si GeoCeDG no puede verificar el cambio automático, rechaza la inserción. Abre
-el dibujo de origen, iguala su formato angular al del dibujo actual, comprueba
-que la construcción y su presentación siguen siendo correctas y guarda una
-copia. Puedes intentar insertar esa copia. Se aplicarán las comprobaciones
-habituales de inserción.
+Si el aviso ofrece reintentar con formatos iguales, abre el dibujo de origen,
+iguala el formato angular al del dibujo actual, revisa la construcción y su
+presentación y guarda una copia. Puedes intentar insertar esa copia. Se
+aplicarán las comprobaciones habituales. Los objetos excluidos, los guiones y
+la compatibilidad de herramientas sin determinar tienen diagnósticos propios.
 
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de

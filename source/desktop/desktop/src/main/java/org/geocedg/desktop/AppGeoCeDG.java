@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JComponent;
@@ -105,6 +107,8 @@ import org.geogebra.editor.share.util.KeyCodes;
  * Desktop application instance bound to the GeoCeDG product profile.
  */
 public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
+	private static final Pattern TEXT_ARGUMENT = Pattern.compile("%[0-9]");
+
 	private GeoCeDGPresentationPreferences presentationPreferences;
 	private GeoCeDGThemePreference themePreference;
 	/**
@@ -1345,10 +1349,11 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 */
 	String layerText(String key, String... arguments) {
 		String text = GeoCeDGProfile.getText(key, getLocale().getLanguage());
-		for (int i = 0; i < arguments.length; i++) {
-			text = text.replace("%" + i, arguments[i]);
-		}
-		return text;
+		return TEXT_ARGUMENT.matcher(text).replaceAll(match -> {
+			String placeholder = match.group();
+			int index = placeholder.charAt(1) - '0';
+			return index < arguments.length ? Matcher.quoteReplacement(arguments[index]) : placeholder;
+		});
 	}
 
 	@Override

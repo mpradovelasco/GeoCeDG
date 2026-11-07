@@ -21,7 +21,11 @@ import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -37,6 +41,8 @@ import org.geogebra.common.geogebra3D.kernel3D.ConstructionDefaults3D;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.commands.Commands;
+import org.geogebra.common.kernel.commands.CommandsConstants;
 import org.geogebra.common.main.error.ErrorHandler;
 import org.geogebra.common.plugin.ScriptType;
 import org.geogebra.common.util.AsyncOperation;
@@ -102,8 +108,35 @@ final class GeoCeDGAngularSourceArchive {
 		ORDINARY, ADAPTABLE, REJECTED
 	}
 
+	// Priority is independent of ZIP entry and construction order.
+	enum Refusal {
+		INVALID("Insert.Reject.Invalid"),
+		SCRIPTS("Insert.Reject.Scripts"),
+		SCRIPT_LIBRARY("Insert.Reject.ScriptLibrary"),
+		P4("Insert.Reject.Unsupported"),
+		MACROS("Insert.Angle.SourceTools"),
+		MODE("Insert.Angle.Unverified"),
+		UNDETERMINED("Insert.Angle.EligibilityUnknown");
+
+		final String key;
+
+		Refusal(String key) {
+			this.key = key;
+		}
+	}
+
+	record Finding(Refusal cause, String detail) {
+		boolean independentlyKnown() {
+			return cause != Refusal.MODE && cause != Refusal.UNDETERMINED;
+		}
+	}
+
 	record Inspection(Status status, int sourceMode, boolean differentModes,
-			String refusalKey, String detail) {
+			List<Finding> findings, String detail) {
+	}
+
+	private enum Section {
+		DOCUMENT, DEFAULTS, MACRO_METADATA
 	}
 
 	private GeoCeDGAngularSourceArchive() {
@@ -111,19 +144,22 @@ final class GeoCeDGAngularSourceArchive {
 
 	/** Inspect the operation's captured bytes without starting any native reader. */
 	static Inspection inspect(byte[] bytes, int targetMode) {
-		XmlScan main = new XmlScan(false);
+		XmlScan main = new XmlScan(Section.DOCUMENT);
 		boolean safe = bytes.length <= MAX_ARCHIVE_BYTES && scanZip(bytes, main);
 		boolean identifiedMode = main.documentEntries == 1 && main.modeTags == 1
 				&& main.kernels == 1 && main.sourceMode != UNKNOWN_MODE;
 		if (!main.angleSlider || identifiedMode && main.sourceMode == targetMode) {
-			return new Inspection(Status.ORDINARY, main.sourceMode, false, null, "");
+			return new Inspection(Status.ORDINARY, main.sourceMode, false, List.of(), "");
 		}
 		boolean differentModes = identifiedMode && knownMode(targetMode);
 		if (!safe || !identifiedMode || !knownMode(targetMode)) {
+			if (!differentModes) {
+				main.refuse(Refusal.MODE, null);
+			}
 			return new Inspection(Status.REJECTED, main.sourceMode, differentModes,
-					main.refusalKey, main.detail);
+					main.findings(), main.detail);
 		}
-		return new Inspection(Status.ADAPTABLE, main.sourceMode, true, null, "");
+		return new Inspection(Status.ADAPTABLE, main.sourceMode, true, List.of(), "");
 	}
 
 	private static boolean scanZip(byte[] bytes, XmlScan main) {
@@ -135,33 +171,40 @@ final class GeoCeDGAngularSourceArchive {
 			ZipEntry entry;
 			while ((entry = zip.getNextEntry()) != null) {
 				if (++entryCount > MAX_ENTRIES) {
+					main.refuse(Refusal.UNDETERMINED, null);
 					return false;
 				}
 				String name = entry.getName();
-				safe &= names.add(name);
+				if (!names.add(name)) {
+					main.refuse(Refusal.INVALID, null);
+					safe = false;
+				}
 				if (XML_FILE.equals(name)) {
 					main.documentEntries++;
 				}
 				int limit = Math.min(remaining, MAX_ENTRY_BYTES);
 				byte[] raw = zip.readNBytes(limit + 1);
 				if (raw.length > limit) {
+					main.refuse(Refusal.UNDETERMINED, null);
 					return false;
 				}
 				remaining -= raw.length;
 				try {
-					if (entry.isDirectory() || !safeEntry(name, raw, main)) {
+					if (entry.isDirectory()) {
+						main.refuse(Refusal.UNDETERMINED, null);
 						safe = false;
-						main.note(safeDiagnosticName(name));
+					} else if (!safeEntry(name, raw, main)) {
+						safe = false;
 					}
 				} catch (IOException malformedEntry) {
 					// Keep scanning for the construction header even if a prior entry was unsafe.
 					safe = false;
-					main.refuse("Insert.Reject.Invalid", "");
+					main.refuse(Refusal.INVALID, null);
 				}
 				zip.closeEntry();
 			}
 		} catch (IOException | IllegalArgumentException malformed) {
-			main.refuse("Insert.Reject.Invalid", "");
+			main.refuse(Refusal.INVALID, null);
 			return false;
 		}
 		return safe && main.safe && main.documentEntries == 1;
@@ -170,23 +213,30 @@ final class GeoCeDGAngularSourceArchive {
 	private static boolean safeEntry(String name, byte[] raw, XmlScan main) throws IOException {
 		return switch (name) {
 		case XML_FILE -> scanXml(raw, main);
-		case XML_FILE_DEFAULTS_2D, XML_FILE_DEFAULTS_3D -> scanXml(raw, new XmlScan(true));
+		case XML_FILE_DEFAULTS_2D, XML_FILE_DEFAULTS_3D -> main.checkStructure(
+				scanXml(raw, new XmlScan(Section.DEFAULTS)), name);
 		case JAVASCRIPT_FILE -> {
 			String javascript = utf8(raw);
 			boolean standard = Kernel.defaultLibraryJavaScript.equals(javascript)
 					|| (Kernel.defaultLibraryJavaScript + "\n").equals(javascript);
 			if (!standard) {
-				main.refuse("Insert.Reject.ScriptLibrary", "");
+				main.refuse(Refusal.SCRIPT_LIBRARY, null);
 			}
 			yield standard;
 		}
-		case V2StyleDefaults.ZIP_ENTRY -> safeCurveDefaults(raw);
+		case V2StyleDefaults.ZIP_ENTRY -> main.checkStructure(safeCurveDefaults(raw), name);
 		case XML_FILE_MACRO -> {
-			main.note(XML_FILE_MACRO);
+			XmlScan macros = new XmlScan(Section.MACRO_METADATA);
+			boolean readable = scanXml(raw, macros);
+			if (readable && !macros.macroNames.isEmpty()) {
+				macros.macroNames.forEach(command -> main.refuse(Refusal.MACROS, command));
+			} else {
+				main.refuse(Refusal.MACROS, XML_FILE_MACRO);
+			}
 			yield false;
 		}
 		case XML_FILE_THUMBNAIL -> true;
-		default -> false;
+		default -> main.checkStructure(false, safeDiagnosticName(name));
 		};
 	}
 
@@ -219,7 +269,7 @@ final class GeoCeDGAngularSourceArchive {
 					switch (reader.next()) {
 					case XMLStreamConstants.START_ELEMENT:
 						if (scan.path.size() >= MAX_XML_DEPTH) {
-							return false;
+							return scan.checkStructure(false, null);
 						}
 						scan.start(reader);
 						break;
@@ -229,9 +279,12 @@ final class GeoCeDGAngularSourceArchive {
 					case XMLStreamConstants.CHARACTERS, XMLStreamConstants.CDATA:
 						scan.safe &= reader.isWhiteSpace();
 						break;
-					case XMLStreamConstants.DTD, XMLStreamConstants.ENTITY_REFERENCE,
-							XMLStreamConstants.PROCESSING_INSTRUCTION:
+					case XMLStreamConstants.DTD, XMLStreamConstants.ENTITY_REFERENCE:
+						scan.refuse(Refusal.INVALID, null);
 						scan.safe = false;
+						break;
+					case XMLStreamConstants.PROCESSING_INSTRUCTION:
+						scan.safe = scan.checkStructure(false, null);
 						break;
 					default:
 						break;
@@ -248,11 +301,14 @@ final class GeoCeDGAngularSourceArchive {
 
 	private static final class XmlScan {
 		private final ArrayDeque<String> path = new ArrayDeque<>();
-		private final boolean defaults;
+		private final Section section;
 		private final Set<Integer> prototypeIds = new HashSet<>();
 		private final Set<String> angleSliders = new HashSet<>();
+		private final Set<String> macroNames = new LinkedHashSet<>();
+		private final Map<Refusal, Set<String>> refusals = new EnumMap<>(Refusal.class);
 		private boolean safe = true;
 		private boolean angleElement;
+		private boolean angleElementHasSlider;
 		private boolean angleSlider;
 		private int documentEntries;
 		private int sourceMode = UNKNOWN_MODE;
@@ -264,39 +320,48 @@ final class GeoCeDGAngularSourceArchive {
 		private String elementLabel;
 		private String commandName;
 		private int commandParts;
-		private String refusalKey;
 		private String detail = "";
 
-		private XmlScan(boolean defaults) {
-			this.defaults = defaults;
+		private XmlScan(Section section) {
+			this.section = section;
 		}
 
 		private void start(XMLStreamReader reader) {
 			String name = reader.getLocalName();
 			String parent = path.peekLast();
 			int depth = path.size();
-			boolean script = ScriptType.getTypeWithXMLName(name) != null || "listener".equals(name);
-			if (script && !defaults && "construction".equals(documentSection)
+			boolean script = section != Section.MACRO_METADATA
+					&& (ScriptType.getTypeWithXMLName(name) != null || "listener".equals(name));
+			if (script && section == Section.DOCUMENT && "construction".equals(documentSection)
 					&& "element".equals(parent)) {
-				refuse("Insert.Reject.Scripts", elementLabel == null ? name : elementLabel);
+				refuse(Refusal.SCRIPTS, elementLabel == null ? name : elementLabel);
 			}
-			safe &= plainXml(reader, depth) && !script;
+			safe &= checkStructure(plainXml(reader, depth), null) && !script;
 			if (depth == 0) {
-				safe &= "geogebra".equals(name);
-			} else if (defaults) {
-				safe &= defaultNode(reader, name, parent, depth);
+				safe &= checkStructure("geogebra".equals(name), null);
 			} else {
-				safe &= documentNode(reader, name, parent, depth);
+				safe &= switch (section) {
+				case DOCUMENT -> documentNode(reader, name, parent, depth);
+				case DEFAULTS -> defaultNode(reader, name, parent, depth);
+				case MACRO_METADATA -> depth > 1 || macroName(reader, name);
+				};
 			}
 			path.addLast(name);
 		}
 
 		private void end() {
 			String name = path.removeLast();
-			if (!defaults && path.size() == 2 && "construction".equals(documentSection)
-					&& "command".equals(name) && commandParts != 2) {
+			if (section != Section.DOCUMENT || path.size() != 2
+					|| !"construction".equals(documentSection)) {
+				return;
+			}
+			if ("command".equals(name) && commandParts != 2) {
 				safe = false;
 				note(commandName);
+			}
+			if ("element".equals(name) && angleElement && !angleElementHasSlider) {
+				// Without a slider, admission can depend on the precise angle producer.
+				safe = checkStructure(false, objectDetail(elementLabel, "angle"));
 			}
 		}
 
@@ -306,11 +371,28 @@ final class GeoCeDGAngularSourceArchive {
 			}
 		}
 
-		private void refuse(String key, String object) {
-			if (refusalKey == null || "Insert.Reject.Scripts".equals(key)) {
-				refusalKey = key;
-				detail = object == null ? "" : object;
+		private void refuse(Refusal cause, String object) {
+			Set<String> details = refusals.computeIfAbsent(cause, ignored -> new LinkedHashSet<>());
+			if (object != null && details.size() < 4) {
+				details.add(object);
 			}
+		}
+
+		private List<Finding> findings() {
+			return refusals.entrySet().stream().map(entry ->
+					new Finding(entry.getKey(), String.join(", ", entry.getValue()))).toList();
+		}
+
+		private boolean checkStructure(boolean allowed, String object) {
+			if (!allowed) {
+				refuse(Refusal.UNDETERMINED, object);
+			}
+			return allowed;
+		}
+
+		private boolean macroName(XMLStreamReader reader, String name) {
+			String command = safeDiagnosticName(attr(reader, "cmdName"));
+			return "macro".equals(name) && command != null && macroNames.add(command);
 		}
 
 		private boolean documentNode(XMLStreamReader reader, String name, String parent, int depth) {
@@ -331,17 +413,17 @@ final class GeoCeDGAngularSourceArchive {
 				case "tableview" -> attr(reader, "xValues") == null
 						&& decimal(attr(reader, "min")) && decimal(attr(reader, "max"))
 						&& decimal(attr(reader, "step"));
-				default -> DOCUMENT_SECTIONS.contains(name);
+				default -> checkStructure(DOCUMENT_SECTIONS.contains(name), safeDiagnosticName(name));
 				};
 			}
 			return switch (documentSection) {
 			case "construction" -> constructionNode(reader, name, parent, depth);
 			case "kernel" -> depth == 2 && KERNEL_SETTINGS.contains(name)
 					&& (!"startAnimation".equals(name) || "false".equals(attr(reader, "val")));
-			case "euclidianView" -> depth == 2 && safeViewNode(reader, name);
+			case "euclidianView" -> checkStructure(depth == 2 && safeViewNode(reader, name), name);
 			case "gui", "algebraView" -> !DOCUMENT_SECTIONS.contains(name)
 					&& !"macro".equals(name) && !"defaults".equals(name);
-			default -> false;
+			default -> checkStructure(false, safeDiagnosticName(documentSection));
 			};
 		}
 
@@ -351,14 +433,15 @@ final class GeoCeDGAngularSourceArchive {
 					String type = attr(reader, "type");
 					elementLabel = safeDiagnosticName(attr(reader, "label"));
 					angleElement = "angle".equals(type);
+					angleElementHasSlider = false;
 					if (type != null && GEO_TYPES.contains(type) && attr(reader, "default") == null) {
 						return true;
 					}
 					String object = objectDetail(elementLabel, safeDiagnosticName(type));
-					if (GeoCeDGInsertionAdmission.excludesXmlType(type)) {
-						refuse("Insert.Reject.Unsupported", object);
-					} else {
-						note(object);
+					switch (GeoCeDGInsertionAdmission.archiveType(type)) {
+					case EXCLUDED -> refuse(Refusal.P4, object);
+					case UNDETERMINED -> refuse(Refusal.UNDETERMINED, object);
+					case POTENTIAL -> note(object);
 					}
 					return false;
 				}
@@ -372,11 +455,11 @@ final class GeoCeDGAngularSourceArchive {
 				}
 				case "command" -> beginCommand(reader);
 				case "cascell" -> {
-					refuse("Insert.Reject.Unsupported", "CAS");
+					refuse(Refusal.P4, "CAS");
 					yield false;
 				}
 				case "geocedgUnits", "worksheetText" -> true;
-				default -> false;
+				default -> checkStructure(false, safeDiagnosticName(name));
 				};
 			}
 			if (depth == 3 && "command".equals(parent)) {
@@ -387,12 +470,16 @@ final class GeoCeDGAngularSourceArchive {
 			}
 			if (angleElement && "slider".equals(name)) {
 				angleSlider = true;
+				angleElementHasSlider = true;
 				if (elementLabel != null) {
 					angleSliders.add(elementLabel);
 				}
 			}
 			boolean safeLeaf = safeGeoLeaf(reader, name, false);
 			if (!safeLeaf) {
+				if ("slider".equals(name) || "animation".equals(name) || "value".equals(name)) {
+					return checkStructure(false, elementLabel);
+				}
 				note(elementLabel);
 			}
 			return safeLeaf;
@@ -403,6 +490,11 @@ final class GeoCeDGAngularSourceArchive {
 			commandParts = 0;
 			boolean text = "Text".equals(commandName) && reader.getAttributeCount() == 1;
 			if (!text) {
+				String internal = Commands.lookupInternal(commandName);
+			if (internal == null
+					|| Commands.valueOf(internal).getTable() == CommandsConstants.TABLE_SCRIPTING) {
+					refuse(Refusal.UNDETERMINED, commandName);
+				}
 				note(commandName);
 			}
 			return text;

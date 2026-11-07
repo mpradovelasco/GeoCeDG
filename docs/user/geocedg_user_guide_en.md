@@ -405,13 +405,16 @@ format. The confirmation shows examples of the format change. A text created
 with `Text(theta)` can adopt the new format when `theta` is a verified angle
 and no other construction step uses the text. The confirmation previews the
 text before and after the change. Static text keeps its content and position.
-The current drawing keeps its angular mode and precision. Cancel or close the
-confirmation to keep the drawing as it is.
+The current drawing keeps its angular mode and precision. The usual paste
+rules assign inserted objects to the active Graphics view. Membership in
+other Graphics views can change. Cancel or close the confirmation to keep the
+drawing as it is.
 
-If GeoCeDG cannot verify the automatic change, it refuses the insertion. Open
-the source drawing, set its angular format to match the current drawing, check
-that the construction and its presentation are still correct, and save a copy.
-You can then try inserting that copy. The usual insertion checks still apply.
+If the notice offers a retry with matching formats, open the source drawing,
+match the current drawing's angular format, check the construction and its
+presentation, and save a copy. You can then try inserting that copy. The usual
+insertion checks still apply. Excluded objects, scripts and unresolved tool
+compatibility have separate diagnostics.
 
 **Apply Styles…** copies colour, line style, line thickness, point style, point
 size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the

@@ -142,9 +142,6 @@ final class GeoCeDGInsertionAdmission {
 		if (!unsupported.isEmpty()) {
 			return reject("Insert.Reject.Unsupported", String.join(", ", unsupported));
 		}
-		if (!incompatibleAngles.isEmpty()) {
-			return reject("Insert.Reject.AngleUnit", String.join(", ", incompatibleAngles));
-		}
 		// Elementary inputs of a Locus V2 or Spline V2 (its parameter, its point) take part
 		// in the identity registry with it; spatial and projection-binding records are
 		// rejected by the matrix itself (their algorithms and classes are not admitted).
@@ -193,6 +190,9 @@ final class GeoCeDGInsertionAdmission {
 			}
 			reused.add(macro.getCommandName());
 		}
+		if (!incompatibleAngles.isEmpty()) {
+			return reject("Insert.Reject.AngleUnit", String.join(", ", incompatibleAngles));
+		}
 		Set<String> duplicates = new LinkedHashSet<>();
 		for (GeoElement geo : source) {
 			if (geo.isLabelSet() && target.getKernel().lookupLabel(geo.getLabelSimple()) != null) {
@@ -214,16 +214,30 @@ final class GeoCeDGInsertionAdmission {
 		return false;
 	}
 
-	/** Raw XML classes that cannot match a P4 family, independent of their producer. */
-	static boolean excludesXmlType(String type) {
+	enum ArchiveType {
+		POTENTIAL, EXCLUDED, UNDETERMINED
+	}
+
+	/** Raw class evidence for diagnostics. P4 admission still uses the loaded construction. */
+	static ArchiveType archiveType(String type) {
 		for (GeoClass geoClass : GeoClass.values()) {
-			if (geoClass.xmlName.equals(type) && (geoClass.is3D || geoClass == GeoClass.BUTTON
-					|| geoClass == GeoClass.TEXTFIELD || geoClass == GeoClass.IMAGE
-					|| geoClass == GeoClass.CAS_CELL)) {
-				return true;
+			if (!geoClass.xmlName.equals(type)) {
+				continue;
 			}
+			if (geoClass.is3D) {
+				return ArchiveType.EXCLUDED;
+			}
+			return switch (geoClass) {
+			case BUTTON, TEXTFIELD, IMAGE, CAS_CELL, CONICPART, LOCUS, PENSTROKE, TURTLE ->
+				ArchiveType.EXCLUDED;
+			case ANGLE, BOOLEAN, FUNCTION, LINE, LOCUS_V2, NUMERIC, POINT, POLYGON, RAY,
+					SEGMENT, TEXT, VECTOR -> ArchiveType.POTENTIAL;
+			// Conics, lists and polylines require evidence about their subtype,
+			// contents or producer. In particular, IsoABorder can emit a polyline.
+			default -> ArchiveType.UNDETERMINED;
+			};
 		}
-		return false;
+		return ArchiveType.UNDETERMINED;
 	}
 
 	/**
