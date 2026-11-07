@@ -30,11 +30,14 @@ import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.ProjectionBindingRole;
 import org.geocedg.desktop.GeoCeDGInspectionResult.AdmissionState;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Basis;
+import org.geocedg.desktop.GeoCeDGInspectionResult.Dimension;
+import org.geocedg.desktop.GeoCeDGInspectionResult.ObjectOutcome;
 import org.geocedg.desktop.GeoCeDGInspectionResult.ObservedObject;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Phase;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Property;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Stage;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Status;
+import org.geogebra.common.util.CopyPaste;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -73,6 +76,9 @@ class GeoCeDGExpertInspectionTest {
 				() -> GeoCeDGInspectionReport.summary(report));
 		assertEquals(3, comparison(report, Phase.RECEIVER, Phase.TRIAL).added().size(),
 				() -> GeoCeDGInspectionReport.summary(report));
+		assertTrue(comparison(report, Phase.RECEIVER, Phase.TRIAL).additions().stream()
+				.allMatch(addition -> addition.basis() == Basis.NATIVE_COPY_TRACE
+						&& addition.sourceRef() != null));
 		var segment = object(stage(report, Phase.SOURCE), "s");
 		var copied = comparison(report, Phase.SOURCE, Phase.TRIAL);
 		assertEquals(Basis.NATIVE_COPY_TRACE, copied.basis());
@@ -102,7 +108,7 @@ class GeoCeDGExpertInspectionTest {
 				new String[]{"arc", "a", "AlgoConicPartCircle",
 						"O=(0,0)", "A=(1,0)", "B=(0,1)", "a=CircularArc(O,A,B)"},
 				new String[]{"curve", "c", "AlgoCurveCartesian", "c=Curve(t,t^2,t,0,2)"},
-				new String[]{"sequence", "l", "AlgoSequence", "l=Sequence(k^2,k,1,4)"},
+				new String[]{"sequence", "l", "AlgoSequence", "a=2", "l=Sequence(k*a,k,1,4)"},
 				new String[]{"text", "t", "AlgoText", "n=2", "t=Text(n)"});
 		for (String[] entry : cases) {
 			var path = onEdt(() -> write(model(java.util.Arrays.copyOfRange(entry, 3, entry.length)),
@@ -114,9 +120,29 @@ class GeoCeDGExpertInspectionTest {
 			assertTrue(object.producer().endsWith(entry[2]), object.producer());
 			assertFalse(object.inputs().isEmpty());
 			if (entry[0].equals("arc") || entry[0].equals("curve")) {
+				assertNotNull(object.domain());
 				assertEquals(AdmissionState.REJECTED, report.admission().state());
 				assertEquals(Status.NOT_EVALUATED, comparison(report, Phase.SOURCE, Phase.TRIAL)
 						.status());
+			}
+			if (entry[0].equals("sequence")) {
+				assertEquals(AdmissionState.ADMITTED, report.admission().state());
+				var copied = comparison(report, Phase.SOURCE, Phase.TRIAL);
+				assertEquals(ObjectOutcome.CORRESPONDENCE_PROVEN, delta(copied, object.ref()).outcome());
+				assertEquals(Status.NOT_ESTABLISHED, property(copied, object.ref(), Property.INPUTS));
+				assertEquals(Status.VERIFIED_UNCHANGED, property(copied, object.ref(), Property.CURRENT_VALUE));
+				assertEquals(Status.VERIFIED_UNCHANGED, property(copied, object.ref(), Property.PARAMETER_DOMAIN));
+				assertEquals(Status.NOT_ESTABLISHED, copied.assessments().stream()
+						.filter(row -> row.dimension() == Dimension.GEOMETRIC_EQUIVALENCE)
+						.findFirst().orElseThrow().status());
+				assertTrue(report.diagnostics().stream()
+						.anyMatch(diagnostic -> diagnostic.code().equals("AUXILIARY_COPY_ADDRESS")));
+				assertFalse(report.diagnostics().stream()
+						.anyMatch(diagnostic -> diagnostic.code().equals("COPY_TRACE_INCOMPLETE")));
+			}
+			if (entry[0].equals("text")) {
+				var copied = comparison(report, Phase.SOURCE, Phase.TRIAL);
+				assertEquals(Status.VERIFIED_UNCHANGED, property(copied, object.ref(), Property.INPUTS));
 			}
 		}
 	}
@@ -131,15 +157,22 @@ class GeoCeDGExpertInspectionTest {
 				+ "</element>" + tail));
 		var macro = zip("macro", Map.of("geogebra.xml", header + tail,
 				"geogebra_macro.xml", "<geogebra format=\"5.0\"><macro cmdName=\"Tool\"/></geogebra>"));
+		var resource = zip("resource", Map.of("geogebra.xml", header
+				+ "<element type=\"image\" label=\"I\"/>" + tail, "external.svg", "<svg/>"));
 		Path invalid = directory.resolve("invalid.ggb");
 		Files.writeString(invalid, "not a ZIP");
-		for (var entry : Map.of(scripted, "SCRIPT", macro, "MACRO", invalid, "INVALID_ARCHIVE")
+		for (var entry : Map.of(scripted, "SCRIPT", macro, "MACRO", resource, "RESOURCE",
+				invalid, "INVALID_ARCHIVE")
 				.entrySet()) {
 			var report = inspect(entry.getKey(), receiver);
 			assertTrue(report.diagnostics().stream()
 					.anyMatch(diagnostic -> diagnostic.code().equals(entry.getValue())),
 					() -> GeoCeDGInspectionReport.summary(report));
 			assertTrue(stage(report, Phase.SOURCE).objects().isEmpty());
+			if (entry.getKey().equals(scripted) || entry.getKey().equals(resource)) {
+				assertEquals(1, stage(report, Phase.SOURCE).archiveDeclarations().size());
+				assertTrue(GeoCeDGInspectionReport.json(report).contains("\"archiveDeclarations\""));
+			}
 			assertEquals(AdmissionState.NOT_EVALUATED, report.admission().state());
 			assertEquals(Status.NOT_EVALUATED, comparison(report, Phase.SOURCE, Phase.TRIAL).status());
 		}
@@ -155,12 +188,14 @@ class GeoCeDGExpertInspectionTest {
 				fact("z", "C", "3", List.of("y"))));
 		var durable = GeoCeDGExpertInspection.compareDurable(from, to);
 		assertEquals(Status.VERIFIED_CHANGED, property(durable, "c", Property.INPUTS));
+		assertEquals(ObjectOutcome.RECONSTRUCTED_DIFFERENTLY, delta(durable, "c").outcome());
 		assertEquals(Status.VERIFIED_CHANGED, property(durable, "a", Property.LABEL));
 		var incomplete = GeoCeDGInspectionResult.compare(from, to, Basis.NATIVE_COPY_TRACE,
 				Map.of("c", "z"), Set.of("b"));
 		assertEquals(Status.NOT_ESTABLISHED, property(incomplete, "c", Property.INPUTS));
 		assertEquals(Status.NOT_ESTABLISHED, property(incomplete, "a", Property.PRESENCE));
 		assertEquals(Status.KNOWN_OMISSION, property(incomplete, "b", Property.PRESENCE));
+		assertEquals(ObjectOutcome.OMISSION_PROVEN, delta(incomplete, "b").outcome());
 		Stage replacement = new Stage(Phase.TRIAL, null, "d", 0, List.of(),
 				List.of(fact("q", "A", null, List.of()), fact("b", "B", "2", List.of())));
 		var instance = GeoCeDGInspectionResult.compare(from, replacement, Basis.LIVE_INSTANCE,
@@ -174,9 +209,34 @@ class GeoCeDGExpertInspectionTest {
 				GeoCeDGExpertInspection.compareDurable(from, inventoryOnly).status());
 	}
 
+	@Test
+	void transportAddressAlreadyInReceiverCannotProveSourceCorrespondence() throws Exception {
+		Path source = onEdt(() -> write(model("A=(1,2)"), "collision-source"));
+		String address = CopyPaste.labelPrefix + "A";
+		Path receiver = onEdt(() -> write(model(address + "=(9,9)"), "collision-receiver"));
+		var report = inspect(source, receiver);
+		assertNotNull(object(stage(report, Phase.RECEIVER), address));
+		var copied = comparison(report, Phase.SOURCE, Phase.TRIAL);
+		assertTrue(copied.objects().stream().allMatch(delta -> delta.afterRef() == null),
+				() -> GeoCeDGInspectionReport.summary(report));
+	}
+
+	@Test
+	void missingDurableAttachmentDoesNotProveAnObjectWasOmitted() {
+		Stage before = new Stage(Phase.TRIAL, null, "d", 0, List.of(),
+				List.of(fact("a", "A", "1", List.of())));
+		Stage reopened = new Stage(Phase.REOPENED, "t", "d", 0, List.of(),
+				List.of(fact("a", "A", null, List.of())));
+		var comparison = GeoCeDGExpertInspection.compareDurable(before, reopened);
+		assertEquals(Status.VERIFIED_CHANGED, property(comparison, "a", Property.DURABLE_ID));
+		assertEquals(Status.NOT_ESTABLISHED, property(comparison, "a", Property.PRESENCE));
+		assertEquals(ObjectOutcome.NOT_ESTABLISHED, delta(comparison, "a").outcome());
+		assertEquals(List.of("a"), comparison.unmatchedAfter());
+	}
+
 	private static ObservedObject fact(String ref, String label, String id, List<String> input) {
 		return new ObservedObject(ref, label, id, null, "point", "algo", "ELEMENTARY", input,
-				List.of(ref), "", true, null, "");
+				List.of(ref), "", true, null, null, "");
 	}
 
 	private AppGeoCeDG model(String... commands) {
@@ -227,9 +287,14 @@ class GeoCeDGExpertInspectionTest {
 
 	private static Status property(GeoCeDGInspectionResult.Comparison row, String ref,
 			Property property) {
-		return row.objects().stream().filter(delta -> ref.equals(delta.beforeRef()))
-				.flatMap(delta -> delta.observations().stream())
+		return delta(row, ref).observations().stream()
 				.filter(observation -> observation.property() == property)
 				.findFirst().orElseThrow().status();
+	}
+
+	private static GeoCeDGInspectionResult.ObjectDelta delta(GeoCeDGInspectionResult.Comparison row,
+			String ref) {
+		return row.objects().stream().filter(delta -> ref.equals(delta.beforeRef()))
+				.findFirst().orElseThrow();
 	}
 }

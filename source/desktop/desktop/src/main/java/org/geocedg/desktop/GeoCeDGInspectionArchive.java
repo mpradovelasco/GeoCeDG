@@ -62,7 +62,7 @@ final class GeoCeDGInspectionArchive {
 	record Finding(Code code, String location, String detail) {
 	}
 
-	record Entry(String name, int expandedBytes, Disposition disposition) {
+	record Entry(String name, int expandedBytes, String sha256, Disposition disposition) {
 	}
 
 	/** An XML address, not a correspondence or proof of an identity. */
@@ -195,7 +195,7 @@ final class GeoCeDGInspectionArchive {
 					} else {
 						disposition = checkEntry(name, raw, findings);
 					}
-					entries.add(new Entry(name, raw.length, disposition));
+					entries.add(new Entry(name, raw.length, digest(raw), disposition));
 					if (disposition == Disposition.NATIVE_XML) {
 						nativeEntries.put(name, raw);
 					}

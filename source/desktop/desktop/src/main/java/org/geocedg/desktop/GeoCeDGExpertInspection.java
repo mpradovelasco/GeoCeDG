@@ -46,13 +46,18 @@ import org.geocedg.desktop.GeoCeDGInspectionArchive.Inspection;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Admission;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Comparison;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Diagnostic;
+import org.geocedg.desktop.GeoCeDGInspectionResult.DocumentContext;
 import org.geocedg.desktop.GeoCeDGInspectionResult.ObservedObject;
+import org.geocedg.desktop.GeoCeDGInspectionResult.ParameterDomain;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Phase;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Stage;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoSequence;
 import org.geogebra.common.kernel.geos.GeoBoolean;
+import org.geogebra.common.kernel.geos.GeoConicPart;
+import org.geogebra.common.kernel.geos.GeoCurveCartesian;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -203,7 +208,7 @@ public final class GeoCeDGExpertInspection {
 		if (app == null) {
 			if (archive != null) {
 				stages.add(new Stage(phase, archive.sha256(), archive.documentId().orElse(null),
-						null, archive.entries(), List.of()));
+						null, null, archive.entries(), archive.declarations(), List.of()));
 			}
 			return null;
 		}
@@ -230,7 +235,7 @@ public final class GeoCeDGExpertInspection {
 			prepareBaseline(receiver);
 			String uuid = receiver.getUniqueId();
 			String tube = receiver.getTubeId();
-			GeoCeDGInsertionCopyPaste buffer = new GeoCeDGInsertionCopyPaste(Set.of());
+			GeoCeDGInsertionCopyPaste buffer = new GeoCeDGInsertionCopyPaste(Set.of(), true);
 			buffer.insertFrom(source, receiver, decision.getDuplicateLabels(), false);
 			// F3 restores receiver identity after the native buffer evaluates clipboard XML.
 			receiver.setUniqueId(uuid);
@@ -240,7 +245,12 @@ public final class GeoCeDGExpertInspection {
 			}
 			Snapshot trial = snapshot(TRIAL, receiver, null, original.stage().documentId());
 			stages.add(trial.stage());
-			compareTrial(initial, original, trial, buffer.getCopies());
+			compareTrial(initial, original, trial, buffer.getAddressedCopies());
+			if (buffer.getUnresolvedAuxiliaryAddresses() > 0) {
+				diagnostics.add(new Diagnostic(TRIAL, NOT_ESTABLISHED, "AUXILIARY_COPY_ADDRESS",
+						buffer.getUnresolvedAuxiliaryAddresses()
+								+ " clipboard auxiliary addresses have no top-level target"));
+			}
 			if (trial.refs().keySet().stream().anyMatch(geo -> !original.refs().containsKey(geo))) {
 				reopen(host, receiver, trial);
 			} else {
@@ -266,21 +276,26 @@ public final class GeoCeDGExpertInspection {
 		Set<String> trialIds = new LinkedHashSet<>();
 		trial.stage().objects().stream().filter(geo -> geo.identity() != null)
 				.forEach(geo -> trialIds.add(geo.identity()));
-		Set<String> removed = new LinkedHashSet<>();
+		Set<String> lostIdentities = new LinkedHashSet<>();
 		original.stage().objects().stream()
 				.filter(geo -> geo.identity() != null && !trialIds.contains(geo.identity()))
-				.forEach(geo -> removed.add(geo.ref()));
+				.forEach(geo -> lostIdentities.add(geo.ref()));
 		// Retention and loss of a durable record are separate facts about the same instance.
-		removed.removeAll(retained.keySet());
-		comparisons.add(compare(original.stage(), trial.stage(), LIVE_INSTANCE, retained, removed));
+		lostIdentities.removeAll(retained.keySet());
 		Map<String, String> inserted = mapInstances(initial, trial, copies::get);
 		Set<String> retainedOutputs = new LinkedHashSet<>(retained.values());
 		inserted.values().removeIf(retainedOutputs::contains);
+		Map<String, String> origins = new LinkedHashMap<>();
+		inserted.forEach((sourceRef, targetRef) -> origins.put(targetRef, sourceRef));
+		comparisons.add(compare(original.stage(), trial.stage(), LIVE_INSTANCE, retained, Set.of(),
+				lostIdentities, origins));
 		comparisons.add(compare(initial.stage(), trial.stage(), NATIVE_COPY_TRACE,
 				inserted, Set.of()));
 		if (inserted.size() != initial.refs().size()) {
+			List<String> unresolved = initial.stage().objects().stream().map(ObservedObject::ref)
+					.filter(ref -> !inserted.containsKey(ref)).toList();
 			diagnostics.add(new Diagnostic(TRIAL, NOT_ESTABLISHED, "COPY_TRACE_INCOMPLETE",
-					"Some source objects have no native copy witness"));
+					"Source references without a native copy witness: " + unresolved));
 		}
 	}
 
@@ -309,7 +324,7 @@ public final class GeoCeDGExpertInspection {
 					List.of(), List.of(), List.of());
 		}
 		Map<String, String> correspondence = new LinkedHashMap<>();
-		Set<String> omissions = new LinkedHashSet<>();
+		Set<String> lostIdentities = new LinkedHashSet<>();
 		if (before.documentId() != null && before.documentId().equals(after.documentId())) {
 			Map<String, String> targetIds = new HashMap<>();
 			after.objects().stream().filter(geo -> geo.identity() != null)
@@ -318,14 +333,15 @@ public final class GeoCeDGExpertInspection {
 				if (geo.identity() != null) {
 					String target = targetIds.get(geo.identity());
 					if (target == null) {
-						omissions.add(geo.ref());
+						lostIdentities.add(geo.ref());
 					} else {
 						correspondence.put(geo.ref(), target);
 					}
 				}
 			}
 		}
-		return compare(before, after, DURABLE_ID_IN_SAME_DOCUMENT, correspondence, omissions);
+		return compare(before, after, DURABLE_ID_IN_SAME_DOCUMENT, correspondence, Set.of(),
+				lostIdentities, Map.of());
 	}
 
 	private void recordUnrunComparison(Phase from, Phase to) {
@@ -378,9 +394,14 @@ public final class GeoCeDGExpertInspection {
 		};
 		List<ObservedObject> observations = geos.stream()
 				.map(geo -> observeObject(geo, refs.get(geo), endpoint)).toList();
+		var context = new DocumentContext(app.getDocumentUnits().getState(),
+				app.getLayerWorkspace().getHiddenLayers(), kernel.useSignificantFigures
+						? kernel.getPrintFigures() : kernel.getPrintDecimals(),
+				kernel.useSignificantFigures);
 		return new Snapshot(new Stage(phase, archive == null ? null : archive.sha256(),
-				documentId,
-				kernel.getAngleUnit(), archive == null ? List.of() : archive.entries(),
+				documentId, kernel.getAngleUnit(), context,
+				archive == null ? List.of() : archive.entries(),
+				archive == null ? List.of() : archive.declarations(),
 				observations), refs);
 	}
 
@@ -401,7 +422,28 @@ public final class GeoCeDGExpertInspection {
 				parent == null ? List.of() : Arrays.stream(parent.getInput()).map(endpoint).toList(),
 				parent == null ? List.of() : Arrays.stream(parent.getOutput()).map(endpoint).toList(),
 				geo.getDefinition(StringTemplate.xmlTemplate), geo.isDefined(), currentValue(geo, 0),
-				presentation(geo));
+				parameterDomain(geo, parent), presentation(geo));
+	}
+
+	private static ParameterDomain parameterDomain(GeoElement geo, AlgoElement parent) {
+		if (!geo.isDefined()) {
+			return null;
+		}
+		if (geo instanceof GeoConicPart conic) {
+			return new ParameterDomain("CONIC_PART", Double.toHexString(conic.getParameterStart()),
+					Double.toHexString(conic.getParameterEnd()), null,
+					conic.positiveOrientation() ? "POSITIVE" : "NEGATIVE");
+		}
+		if (geo instanceof GeoCurveCartesian curve) {
+			return new ParameterDomain("CARTESIAN_CURVE", Double.toHexString(curve.getMinParameter()),
+					Double.toHexString(curve.getMaxParameter()), null, null);
+		}
+		if (parent instanceof AlgoSequence) {
+			GeoElement[] inputs = parent.getInput();
+			return new ParameterDomain("SEQUENCE", currentValue(inputs[2], 0), currentValue(inputs[3], 0),
+					inputs.length == 4 ? Double.toHexString(1.0) : currentValue(inputs[4], 0), null);
+		}
+		return null;
 	}
 
 	private static String durableId(GeoElement geo) {

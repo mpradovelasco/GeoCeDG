@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.geocedg.desktop.GeoCeDGInspectionResult.Comparison;
+import org.geocedg.desktop.GeoCeDGInspectionResult.DocumentContext;
 import org.geocedg.desktop.GeoCeDGInspectionResult.ObservedObject;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Stage;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Status;
@@ -23,8 +24,9 @@ final class GeoCeDGInspectionReport {
 
 	static String json(GeoCeDGInspectionResult report) throws JSONException {
 		var admission = report.admission();
-		return object("schemaVersion", 1, "policy", "POST_CU4_I2_PASSIVE_1",
-				"inputScope", "FILE_SNAPSHOTS", "workerProfile", "ISOLATED_PORTABLE_DESKTOP",
+		return object("schemaVersion", 2, "policy", "POST_CU4_I2_PASSIVE_1",
+				"analysisVersion", "POST_CU4_I2_DIFFERENTIAL_2",
+				"inputScope", "NATIVE_ARCHIVE_SNAPSHOTS", "workerProfile", "ISOLATED_PORTABLE_DESKTOP",
 				"publication", object("available", false, "reason", "INSPECTION_ONLY"),
 				"admission", object("state", admission.state(), "reason", admission.reason(),
 						"detail", admission.detail()),
@@ -39,28 +41,59 @@ final class GeoCeDGInspectionReport {
 	private static JSONObject stage(Stage stage) {
 		return object("phase", stage.phase(), "sha256", stage.sha256(),
 				"documentId", stage.documentId(), "angleUnit", stage.angleUnit(),
+				"documentContext", context(stage.context()),
 				"nativeEvaluated", stage.angleUnit() != null,
 				"entries", array(stage.entries(), entry -> object("name", entry.name(),
-						"expandedBytes", entry.expandedBytes(), "disposition", entry.disposition())),
+						"expandedBytes", entry.expandedBytes(), "sha256", entry.sha256(),
+						"disposition", entry.disposition())),
+				"archiveDeclarations", array(stage.archiveDeclarations(), declaration ->
+						object("label", declaration.label(), "nativeType", declaration.nativeType(),
+								"claimedDurableId", declaration.durableId())),
 				"objects", array(stage.objects(), GeoCeDGInspectionReport::geo));
 	}
 
+	private static JSONObject context(DocumentContext context) {
+		if (context == null) {
+			return null;
+		}
+		var units = context.units();
+		var usm = units.getUsm();
+		return object("constructionUnit", units.getConstructionSelection(),
+				"presentationUnit", units.getPresentationSelection(),
+				"effectivePresentationUnit", units.effectivePresentationUnit(),
+				"dimensionUnitSuffixShown", units.isDimensionUnitSuffixShown(),
+				"usm", usm == null ? null : object("metresPerUnit", usm.getMetresPerUnit(),
+						"name", usm.getName(), "symbol", usm.getSymbol()),
+				"hiddenLayers", new JSONArray(context.hiddenLayers()),
+				"displayPrecision", context.displayPrecision(),
+				"significantFigures", context.significantFigures());
+	}
+
 	private static JSONObject geo(ObservedObject geo) {
+		var domain = geo.domain();
 		return object("ref", geo.ref(), "label", geo.label(), "identity", geo.identity(),
 				"copySourceId", geo.copySourceId(),
 				"geoClass", geo.geoClass(), "producer", geo.producer(), "p4Family", geo.p4Family(),
 				"inputs", new JSONArray(geo.inputs()), "outputs", new JSONArray(geo.outputs()),
 				"definition", geo.definition(), "defined", geo.defined(), "currentValue", geo.value(),
+				"parameterDomain", domain == null ? null : object("parameterization", domain.parameterization(),
+						"start", domain.start(), "end", domain.end(), "step", domain.step(),
+						"orientation", domain.orientation()),
 				"presentation", geo.presentation());
 	}
 
 	private static JSONObject comparison(Comparison comparison) {
 		return object("before", comparison.before(), "after", comparison.after(),
 				"basis", comparison.basis(), "status", comparison.status(),
+				"assessments", array(comparison.assessments(), assessment ->
+						object("dimension", assessment.dimension(), "status", assessment.status(),
+								"coverage", assessment.coverage())),
 				"added", new JSONArray(comparison.added()),
+				"additions", array(comparison.additions(), addition -> object("afterRef", addition.afterRef(),
+						"sourceRef", addition.sourceRef(), "basis", addition.basis())),
 				"unmatchedAfter", new JSONArray(comparison.unmatchedAfter()),
 				"objects", array(comparison.objects(), delta -> object("beforeRef", delta.beforeRef(),
-						"afterRef", delta.afterRef(), "observations",
+						"afterRef", delta.afterRef(), "outcome", delta.outcome(), "observations",
 						array(delta.observations(), observation ->
 								object("property", observation.property(), "status",
 										observation.status(), "before", observation.before(),

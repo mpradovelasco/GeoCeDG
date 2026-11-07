@@ -7,6 +7,7 @@ package org.geocedg.desktop;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +35,22 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	private final Set<String> transferredMacros;
 	private final Map<String, GeoElement> sourceByLabel = new HashMap<>();
 	private final Map<GeoElement, GeoElement> copies = new IdentityHashMap<>();
+	private final Map<GeoElement, GeoElement> addressedCopies = new IdentityHashMap<>();
+	private final Set<String> occupiedAddresses = new HashSet<>();
+	private final boolean inspectAddresses;
+	private int unresolvedAuxiliaryAddresses;
 	private UnitState provenance;
 
 	/**
 	 * @param transferredMacros admitted macros to transfer, in dependency order
 	 */
 	GeoCeDGInsertionCopyPaste(Set<String> transferredMacros) {
+		this(transferredMacros, false);
+	}
+
+	GeoCeDGInsertionCopyPaste(Set<String> transferredMacros, boolean inspectAddresses) {
 		this.transferredMacros = transferredMacros;
+		this.inspectAddresses = inspectAddresses;
 	}
 
 	@Override
@@ -56,6 +66,13 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 
 	@Override
 	public void pasteFromXML(App app, boolean putdown) {
+		if (inspectAddresses && copiedXMLLabels != null) {
+			for (String address : copiedXMLLabels) {
+				if (app.getKernel().lookupLabel(address) != null) {
+					occupiedAddresses.add(address);
+				}
+			}
+		}
 		if (copiedMacros != null && !copiedMacros.isEmpty() && copySource != null) {
 			App source = copySource.getApplication();
 			List<Macro> transfer = new ArrayList<>();
@@ -81,6 +98,23 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	}
 
 	@Override
+	protected void onClipboardXmlImported(App app, List<String> addresses) {
+		if (!inspectAddresses) {
+			return;
+		}
+		for (String address : addresses) {
+			GeoElement original = sourceByLabel.get(address.substring(labelPrefix.length()));
+			GeoElement created = app.getKernel().lookupLabel(address);
+			if (original == null && created == null) {
+				unresolvedAuxiliaryAddresses++;
+			} else if (original != null && created != null && !occupiedAddresses.contains(address)
+					&& address.equals(created.getLabelSimple()) && !created.isLocalVariable()) {
+				addressedCopies.put(original, created);
+			}
+		}
+	}
+
+	@Override
 	protected void onPasteCompleted(App app, boolean putdown, List<GeoElement> createdGeos) {
 		// The kernel returns the copied instances in prefixed-label order after L1.
 		// If a label was skipped, the positional association cannot be certified.
@@ -98,6 +132,14 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	/** @return native copy correspondence before and after L1 */
 	Map<GeoElement, GeoElement> getCopies() {
 		return copies;
+	}
+
+	Map<GeoElement, GeoElement> getAddressedCopies() {
+		return Map.copyOf(addressedCopies);
+	}
+
+	int getUnresolvedAuxiliaryAddresses() {
+		return unresolvedAuxiliaryAddresses;
 	}
 
 	/** @return unit state of the inserted document, or null before the copy */

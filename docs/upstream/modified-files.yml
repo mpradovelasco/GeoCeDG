@@ -1650,7 +1650,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/util/CopyPasteD.java",
       "change": "modified",
-      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically. PRE-G9B-R3-C1: complete identity-bearing copy payloads with the parent algorithms of copied geos, including commands with a construction-constant input, and restore the previous script policy on every failed import exit. PRE-G9B-R3-C1-U1: apply the same completion to every Desktop payload, ordinary and same-window, so a dependent geo whose predecessor command has a construction-constant input is not pasted as free geometry. Authority: docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md. PRE-G9B-R6-plus-D1: call a no-op protected hook once after each successful internal-buffer paste so the product can present its non-blocking unit notice; the paste itself is unchanged. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-CU4: Expose the native prefix-to-instance correspondence for strict CU4 insertion checks. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md.",
+      "purpose": "Route participating Desktop clipboard operations through the shared complete-closure export/import transaction and stop rejected pastes atomically. PRE-G9B-R3-C1: complete identity-bearing copy payloads with the parent algorithms of copied geos, including commands with a construction-constant input, and restore the previous script policy on every failed import exit. PRE-G9B-R3-C1-U1: apply the same completion to every Desktop payload, ordinary and same-window, so a dependent geo whose predecessor command has a construction-constant input is not pasted as free geometry. Authority: docs/architecture/pre_g9b_r3_c1_u1_ordinary_clipboard_closure_design.md. PRE-G9B-R6-plus-D1: call a no-op protected hook once after each successful internal-buffer paste so the product can present its non-blocking unit notice; the paste itself is unchanged. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-CU4: Expose the native prefix-to-instance correspondence for strict CU4 insertion checks. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md. POST-CU4 PRE-I3: optional pre-renaming witness for the disposable inspection trial. Design: docs/architecture/post_cu4_pre_i3_differential_contract.md.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -6258,19 +6258,19 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInsertionCopyPaste.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-F3 operation-scoped insertion buffer (P2): the kernel construction copy with D1 provenance and the ordered M1 macro transfer; never the window buffer.",
+      "purpose": "PRE-G9B-R6-plus-F3 operation-scoped insertion buffer (P2): the kernel construction copy with D1 provenance and the ordered M1 macro transfer; never the window buffer. POST-CU4 PRE-I3: retain partial witnesses from native transport addresses for inspection only, while F3/B2 keep their strict copy map.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertInspection.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: inspect file snapshots on a separate Desktop worker and run the native copy and reopen only on passive disposable documents.",
+      "purpose": "POST-CU4 I2: inspect native archive snapshots on a separate Desktop worker. PRE-I3: consume scoped transport witnesses and retain independent inventory and comparisons for passive disposable documents.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionArchive.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: bound and fingerprint archive input and expose only admitted native members to the worker.",
+      "purpose": "POST-CU4 I2: bound and fingerprint archive input and expose only admitted native members to the worker. PRE-I3: fingerprint individual native members for receiver freshness and resource evidence.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
     },
     {
@@ -6282,14 +6282,20 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionResult.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: model scoped object, identity and dependency comparisons with explicit evidence and uncertainty.",
+      "purpose": "POST-CU4 I2: model scoped object, identity and dependency comparisons with explicit evidence and uncertainty. PRE-I3: distinguish proven additions, unpaired destinations and coverage by dimension.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionReport.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: project the worker result into a versioned JSON report and a readable summary.",
+      "purpose": "POST-CU4 I2: project the worker result into a versioned JSON report and a readable summary. PRE-I3: serialize the v2 evidence and analysis identity.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLiveInspectionSnapshot.java",
+      "change": "added",
+      "purpose": "POST-CU4 PRE-I3: capture the quiescent live receiver with the native writer and compare its effective state for passive inspection.",
+      "authority": "docs/architecture/post_cu4_live_inspection_snapshot_candidate.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDocumentInsertion.java",
@@ -6360,8 +6366,14 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertInspectionTest.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: verify passive native inspection, additive trial, durable round trip, dependency witnesses and blocked content.",
+      "purpose": "POST-CU4 I2: verify passive native inspection, additive trial, durable round trip, dependency witnesses and blocked content. PRE-I3: exercise native Sequence transport, conservative evidence and adversarial correspondence.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGLiveInspectionSnapshotTest.java",
+      "change": "added",
+      "purpose": "POST-CU4 PRE-I3: verify saved and unsaved live capture, change detection, history, identity, resource rejection and worker handoff.",
+      "authority": "docs/architecture/post_cu4_live_inspection_snapshot_candidate.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGInspectionArchiveTest.java",

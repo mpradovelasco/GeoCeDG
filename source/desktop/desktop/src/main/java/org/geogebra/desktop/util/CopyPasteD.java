@@ -535,6 +535,7 @@ public class CopyPasteD extends CopyPaste {
 			if (!evalClipboardXML(app, pasteXml, scriptsBlocked)) {
 				return;
 			}
+			onClipboardXmlImported(app, copiedXMLLabels);
 			app.getKernel().getConstruction().updateConstruction(false);
 			if (ev == app.getEuclidianView1()) {
 				app.setActiveView(App.VIEW_EUCLIDIAN);
@@ -557,6 +558,17 @@ public class CopyPasteD extends CopyPaste {
 			app.getUndoManager().storeAddGeo(createdGeos);
 		}
 		onPasteCompleted(app, putdown, createdGeos);
+	}
+
+	/**
+	 * Observes the cross-document clipboard import before its labels are restored.
+	 * Implementations must leave the construction unchanged.
+	 *
+	 * @param app target application
+	 * @param addresses synthetic addresses emitted by this clipboard operation
+	 */
+	protected void onClipboardXmlImported(App app, List<String> addresses) {
+		// upstream: nothing
 	}
 
 	/**
