@@ -2,21 +2,21 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR APPROVED** (joint F3/F3-R1/F3-R2 author closeout of 2026-10-13, [F3/F3-R1/F3-R2 closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_f3r1_f3r2_closeout_record.md)); the approved implementation is the F3-R2 corrective candidate `2d7b2cae23d5229f889877f22924b3669f98b755`; the original F3 candidate `16547115` and the F3-R1 candidate `c4dffe60` are historical evidence, not separate implementations. Earlier: `PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` |
-| Approval scope | restricted native insertion R with L1, M1/MU-1, the operation-scoped buffer and `D1`, the recovery, snapshot and isolation contract, and Apply Styles T0 (source construction defaults by object type), as implemented by the approved candidate; it does not extend to per-object style transfer, 3D or spatial import, the deferred items `DEFER-F3-*`, Classic or any additional functional scope |
-| Version | `1.2` (1.0 F3 candidate; 1.1 F3-R1 corrective candidate: §1.5 helper windows, §2.6 axes; 1.2 F3-R2 corrective candidate: §8.3 scope, §9.4); promoted to normative without requirement change |
+| Status | **NORMATIVE / AUTHOR APPROVED**. The [joint F3 closeout](../../../docs/validation/pre_g9b_r6_plus_f3_f3r1_f3r2_closeout_record.md) of 2026-10-13 approved the F3-R2 base `2d7b2cae23d5229f889877f22924b3669f98b755`. The [CU4 closeout](../../../docs/validation/pre_g9b_cu4_closeout_record.md) of 2026-11-07 approves the CU4 amendment and certified B2 route on `ba4d16018cf683750a20619d9d59c84428bcbef7`. |
+| Approval scope | Restricted native insertion R with L1, M1/MU-1, the operation-scoped buffer and `D1`, the recovery, snapshot and isolation contract, and Apply Styles T0 using source construction defaults by object type. §10 limits the CU4 extension. The F3 exclusions for per-object style transfer, 3D or spatial import, `DEFER-F3-*` and Classic still apply. |
+| Version | `1.3` (§10, CU4 and the certified B2 route). Earlier versions are 1.0 (F3), 1.1 (F3-R1 §1.5 and §2.6) and 1.2 (F3-R2 §8.3 and §9.4). |
 | Owner phase | `PRE-G9B-R6-plus-F3` (File → Insert surface; `DEBT-R6PLUS-FILE-INSERT-SURFACE`); corrective `PRE-G9B-R6-plus-F3-R1` (author smoke failures) and `PRE-G9B-R6-plus-F3-R2` (Apply Styles author smoke) |
 | Governing author decisions | [F3 author design closeout record](../../../docs/validation/pre_g9b_r6_plus_f3_author_design_closeout_record.md) (Q1–Q7, `DQ-F3-1` to `DQ-F3-24`, `P1`–`P7`, FR-F3-1 to FR-F3-8); [implementation authorization record](../../../docs/validation/pre_g9b_r6_plus_f3_implementation_authorization_record.md) |
 | Approved design transcribed | [recovery design addendum successor](../../../docs/architecture/pre_g9b_r6_plus_f3_recovery_design_addendum_successor_candidate.md); [restricted insertion design successor](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_successor_candidate.md) and [candidate](../../../docs/architecture/pre_g9b_r6_plus_f3_restricted_insertion_design_candidate.md); [reconciled amendment texts](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals_reconciled.md) (`P1`, `P6`, `P7`) and [proposals](../../../docs/validation/pre_g9b_r6_plus_f3_normative_amendment_proposals.md) (`P2`–`P5`); all `DESIGN — AUTHOR APPROVED` or `APPROVED` |
 | Normative inputs used, not restated | [unit-system specification](../units/unit-system.md) §11 (`D1` provenance and notice); `geocedg/specs/operations/verification-levels.md` §12.8 |
-| Serialization effect | none (no format, XML, parser, preference or unit change) |
+| Serialization | F3 uses the existing native format. The [native document contract](native-document-identity.md) records the CU4 compatibility amendment for appearance defaults and slider labels. B2 uses the existing angular document setting. |
 
 ## 0. Status and normative language
 
 This specification transcribes the approved F3 design into one durable contract.
 It was written as the contract of the technical candidates and became normative
-through the joint F3/F3-R1/F3-R2 author closeout of 2026-10-13, without any change
-of requirement. It changes no approved decision. `MUST`, `MUST NOT`,
+through the joint F3/F3-R1/F3-R2 author closeout of 2026-10-13. The CU4 author
+closeout adopts the limited amendment in §10. `MUST`, `MUST NOT`,
 `SHOULD` and `MAY` have their usual meaning. Where an author decision and this
 text differ, the decision prevails and this text is defective. Provenance
 markers: **[AD]** author decision, **[NI]** normative inheritance, **[ID]**
@@ -277,17 +277,19 @@ clarification, `P5` unchanged; per-object transfer not authorized).
 
 ## 10. PRE-G9B-CU4 amendment
 
-The author authorized the following scope for implementation under DC-1 and
-DC-3. The technical candidate and its approval have separate records.
-[Author decision](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)
+The author approved the CU4 implementation of DC-1 and DC-3 and adopted the
+B2 route within the scope certified on the approved product.
+[Design authorization](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)
+and [author closeout](../../../docs/validation/pre_g9b_cu4_closeout_record.md).
 
 1. P4 §2.2 admits a free 2D angle with a valid slider and an independent static
    2D text. Other angles, macros and excluded families retain their prior
-   admission rules. The receiver keeps its angular display unit. For a free
-   angle, source and target must have the same angular display unit. The
-   reconstructed angle must also preserve its native display override, raw and
-   effective values, angle style, bounds, step, speed, animation and slider
-   presentation.
+   admission rules. For a free angle with a slider, matching recognized modes
+   use ordinary F3 admission. Different explicit recognized modes may use
+   the certified B2 route in §10.4. The receiver keeps its angular mode and
+   precision. The reconstructed angle preserves its native display override,
+   raw and effective values, angle style, bounds, step, speed, animation and
+   slider presentation.
 2. The §2.6 dry-run and commit checks compare the new rows' values and
    position, including text content and its native anchor. References in
    slider bounds, animation and anchors must map to their copied construction
@@ -299,3 +301,60 @@ DC-3. The technical candidate and its approval have separate records.
    respective curve type. The other P5 properties and exceptions apply as
    before to the applicable classes. Label visibility, label mode and
    semantic geometry are outside the T0 transfer.
+
+### 10.4 Certified insertion across angular modes (B2)
+
+**[AD]** B2 requires degrees, radians or degrees-minutes-seconds as the
+recognized source and receiver modes. The captured source archive must pass
+the bounded, non-evaluating guard. The receiver must have an available undo
+history and be passive. This excludes object scripts, a custom JavaScript
+library, script listeners, and running, paused or scheduled animation. Every
+source participant must be labeled, defined and within P4 and the class
+below. The certificate covers the entire source construction, including its
+algorithms and edges, and excludes a source with scripts, macros or spatial
+identity records or authority.
+
+- Free finite 2D angular sliders with an ordered literal domain containing
+  the raw value, a fixed positive literal step, and a verifiable explicit
+  finite dimensionless speed distinct from the writer's omitted default of
+  one. They have a supported animation type and no active animation,
+  randomness, automatic step or forced degree display. Their definition
+  is absent or a closed degree literal with the exact stored value.
+- Direct native `sin(theta)` and `cos(theta)` scalar outputs of a certified
+  angle, and a native Cartesian dependent point of the form
+  `(cos(theta), sin(theta))` whose two inputs reference that same angle.
+- Literal text and a terminal, non-LaTeX native `Text(theta)` with one direct
+  argument referencing a certified angle. The latter has no consumers and
+  its content must match the native formatter for the same angle. The
+  certificate covers the native anchor by identity when present. The only
+  free points in this class are finite Cartesian literal text anchors. Local
+  precision overrides on dynamic text and other text expressions are outside
+  this certified route.
+
+The native loads first reproduce the explicit source mode. B2 changes only
+the angular mode on an isolated copy and verifies exact internal values,
+definitions, dependencies, slider configuration and applicable appearance.
+The native clipboard may represent a certified closed degree literal by the
+exact equivalent stored value. A terminal text may change solely by the
+formatting of its angle. Literal text content stays the same. New objects
+follow the inherited F3 copy rules for graphics views, including the active
+view and possible changes in view membership.
+
+The offer names both modes and previews the certified presentation changes
+using the receiver's precision. Explicit consent applies to the captured
+source and to the receiver state checked by B2, including construction,
+graphics-view activation and undo history. Closing, cancelling or invalidating
+the offer ends the operation before mutation. A current accepted offer must
+pass the §2.4 dry run. The §2.5–2.7 and §5 transaction then verifies the remap,
+dependency closure and identity and publishes atomically with one undo step
+on success.
+
+The rejection identifies established blockers, including invalid archives,
+scripts, P4 exclusions and failures at load, trial or recovery. Embedded
+tools are outside B2. Metadata may identify them, while actual compatibility,
+transfer and conflicts remain subject to the ordinary M1 checks in §3. When
+different modes are established and ordinary admission is potentially
+applicable, an uncertified adaptation may offer matching the mode in the
+source, reviewing construction and presentation, saving a copy and retrying
+all F3/P4 checks. If potential admission cannot be established, the diagnostic
+reports the uncertainty. A P4 exclusion has its own rejection.

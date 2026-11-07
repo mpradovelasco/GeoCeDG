@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "phase": "PRE-G9B-CU4",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu4_closeout_record.md",
+  "instruction": "GeoCeDG — PRE-G9B-CU4 · Aprobación autoral, cierre normativo, registro de deuda y publicación",
+  "authorApprovalDate": "2026-11-07",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "status": "PASS — AUTHOR APPROVED",
+  "identities": {
+    "technicalCandidate": {
+      "branch": "codex/pre-g9b-cu4-r2-text-diag",
+      "commit": "ba4d16018cf683750a20619d9d59c84428bcbef7",
+      "tree": "6dc9ae9ecdd4dc05f3fb0a5fb23d3320d06ea477"
+    },
+    "publishedBaseline": {
+      "ref": "refs/heads/main",
+      "commit": "1c3893f539d926c16da837a42d439a1cf8bea34f",
+      "tree": "1c0f6e9187663b586acfc7c425053d7be0349c21"
+    },
+    "documentaryCloseout": {
+      "branch": "codex/pre-g9b-cu4-closeout",
+      "parent": "ba4d16018cf683750a20619d9d59c84428bcbef7",
+      "commitIdentity": "commit containing this record"
+    }
+  },
+  "authorSmoke": {
+    "status": "PASS — AUTHOR REPORTED",
+    "nonblockingObservation": "OBS-CU4-ANGLE-PREFERENCES-REFRESH"
+  },
+  "approvedScope": [
+    "B01", "B05", "M01", "M05.1", "H09", "legacy appearance preference compatibility",
+    "certified B2 with terminal Text(theta)", "trigonometric scalar label-mode false-refusal correction",
+    "P4, B2 and tool diagnostics", "manual alternative subject to ordinary F3/P4 admission",
+    "identity, atomicity, persistence and Undo/Redo"
+  ],
+  "normativeAdoption": {
+    "contract": "geocedg/specs/ui/document-insertion.md",
+    "section": "10",
+    "version": "1.3",
+    "proposalAtTechnicalCandidate": "docs/architecture/pre_g9b_cu4_b2_document_insertion_amendment_candidate.md",
+    "scope": "exact class and preconditions certified by the approved product",
+    "p4RowsChangedByCloseout": false
+  },
+  "verificationTraceability": {
+    "productFinal": {
+      "runId": "verification-09c9bfe645124b19976cc9975ca7bd6e",
+      "acceptance": "ACCEPTED",
+      "coverage": "COMPLETE",
+      "exitCode": 0,
+      "acceptanceSatisfied": 41,
+      "phaseCu4CasesAuthenticated": 130,
+      "receiptId": "65a6ab2e89a1e83b7f375624903cc4912f9f152b7b6b796e8de5e2923bad47b0",
+      "receiptSha256": "a4f164a7dc7055a66893701d827c8ddab715cd2894bff8b25b49644939894741",
+      "acceptedReportHash": "f4da6fb58fbd0e16207a7822620d7946c30afd1987e516c7e05f3af0e6ff9262",
+      "reportFileSha256": "70f6418b7c4b1006784e190b5cd44469fadbbdd2df7e560e396194cfdee07eeb",
+      "evidenceRoot": "artifacts/agent/pre-g9b-cu4-r2-text-diag"
+    },
+    "documentaryClass": "DOCUMENTATION_STATUS_ONLY",
+    "documentaryChecks": ["STATIC", "exact delta", "mirror and links"],
+    "productReceiptCoversDocumentaryCommit": false,
+    "newFinal": false,
+    "evidenceRoot": "artifacts/agent/pre-g9b-cu4-closeout"
+  },
+  "openLimitations": ["P4 exclusions", "inherited graphics-view membership", "H08 deferred", "historical F3 Undo snapshot with macros"],
+  "debt": {
+    "id": "OBS-CU4-ANGLE-PREFERENCES-REFRESH",
+    "status": "OPEN — DEFERRED",
+    "blockingCu4": false,
+    "roadmapPhase": null,
+    "priority": "NEXT_AUTHORIZED_ACTION",
+    "reproduction": "A document loads degrees into the kernel while an existing Preferences selector still displays radians.",
+    "evidence": "artifacts/agent/pre-g9b-cu4-r2-text-diag/smoke-angle-preferences/",
+    "probeLogSha256": "2ecedde3080b664374820608a974a49a5b32883e6ffbf3a4a7f12155923db0fc",
+    "acceptance": [
+      "refresh on document open and switch",
+      "selector matches kernel in degrees, radians and DMS",
+      "existing or subsequently created panel, reopen and relevant Undo/Redo",
+      "visual refresh preserves the effective kernel setting",
+      "Swing regression and focused smoke"
+    ]
+  },
+  "futureProposal": {
+    "record": "docs/architecture/pre_g9b_cu4_p4_expert_insertion_followup_proposal.md",
+    "subjects": ["P4 exclusions review and evidence-based expansion", "expert insertion with explicit risk acceptance", "OBS-CU4-ANGLE-PREFERENCES-REFRESH"],
+    "implementationAuthorized": false
+  },
+  "publication": {
+    "authorAuthorized": true,
+    "reviewBranch": "refs/heads/codex/pre-g9b-cu4-closeout",
+    "target": "refs/heads/main",
+    "method": "exact-commit non-forced fast-forward under effective remote rules",
+    "observedResult": "external closeout evidence"
+  },
+  "productChangeByCloseout": "NONE",
+  "verificationInfrastructureImpact": "NONE",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "guideImpact": "NONE"
+}
