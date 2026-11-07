@@ -6390,7 +6390,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusF3RecoveryTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-F3 recovery: K1-S, K1-R-H guarded reload, closing barrier, serious failure with isolation routes and exits, exception preservation.",
+      "purpose": "PRE-G9B-R6-plus-F3 recovery: K1-S, K1-R-H guarded reload, closing barrier, serious failure with isolation routes and exits, exception preservation. POST-CU4 PRE-I3 C1 uses layer-anchored references to reach the intended post-commit fault injections in a clean profile.",
       "authority": "docs/validation/pre_g9b_r6_plus_f3_candidate_report.md"
     },
     {

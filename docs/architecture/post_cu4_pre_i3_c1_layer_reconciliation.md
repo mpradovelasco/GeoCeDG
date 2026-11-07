@@ -79,6 +79,7 @@ reprodujo la propagación sin cargar un catálogo personal.
 | `c1-appdata-witness` | Trazas de origen, copia y máximo con el mismo backend en memoria | `5→5` y `0→4`. Crear el subdirectorio de preferencias vacío conserva `0→4` |
 | `c1-corrected-focused/catalog` | Raíz nueva con GGT sintético nativo de capa 5 | 1/1. Aplicación vacía con máximo 5, macro sin registrar. El histórico pasa `5→5` |
 | `c1-corrected-focused/f3` | Raíz nueva, controles de referencia corregidos | 3/3. Código 0 |
+| `c1-corrected-focused/study` | Raíz nueva, fuentes históricas y corregidas, más casos P4 | 8/8. Rechazo `0→4` y éxito `4→4` con capa de trabajo viva 0 y 4 |
 
 Las rutas de la tabla parten de `artifacts/agent/post-cu4-pre-i3/`. Las
 ejecuciones anteriores al cambio prueban su causa. El ensayo focal posterior
@@ -92,7 +93,9 @@ identidad, L1 y persistencia. Sus fuentes positivas crean en capa 4 y tienen
 un punto ordinario con tag explícito antes del primer escalar sin tag. En
 `elementaryReference` se crea `A` antes de `a`. En `locusReference` los puntos
 ya precedían a `s`. Las variantes históricas quedan como negativos en el
-perfil vacío. La sonda exige las cuatro parejas de casos por ambas capas de
+perfil vacío. `f3r02`, `f3r03` y `f3r05` usan las variantes positivas para
+alcanzar la inyección posterior al commit también en ese perfil. La sonda
+exige las cuatro parejas de casos por ambas capas de
 trabajo, compara capa, clase y valores, y verifica receptor intacto y bytes
 de origen intactos en el rechazo. El caso sintético se ejecuta en su propia
 JVM y tiene su propio código de salida.

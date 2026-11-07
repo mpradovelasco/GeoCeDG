@@ -157,7 +157,7 @@ class PreG9BR6PlusF3RecoveryTest {
 		PreG9BR6PlusF3Documents.Observation before = new PreG9BR6PlusF3Documents.Observation(
 				target);
 		GeoCeDGDocumentInsertion.Result result = insert(target,
-				PreG9BR6PlusF3Documents.elementary(dir, "r2-src"));
+				PreG9BR6PlusF3Documents.elementaryReference(dir, "r2-src"));
 		assertEquals(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET,
 				result.getOutcome(), String.valueOf(result.getFailure()));
 		assertEquals(List.of(), before.serializableDifferences(
@@ -177,7 +177,7 @@ class PreG9BR6PlusF3RecoveryTest {
 				target);
 		String uuid = target.getUniqueId();
 		GeoCeDGDocumentInsertion.Result result = insert(target,
-				PreG9BR6PlusF3Documents.locus(dir, "r3-src"));
+				PreG9BR6PlusF3Documents.locusReference(dir, "r3-src"));
 		assertEquals(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET,
 				result.getOutcome(), String.valueOf(result.getFailure()));
 		awaitQuiescent(target);
@@ -258,7 +258,7 @@ class PreG9BR6PlusF3RecoveryTest {
 			}
 		};
 		GeoCeDGDocumentInsertion.Result result = insert(target,
-				PreG9BR6PlusF3Documents.locus(dir, "r5-src"));
+				PreG9BR6PlusF3Documents.locusReference(dir, "r5-src"));
 		assertEquals(GeoCeDGDocumentInsertion.Outcome.SERIOUS_RECOVERY_FAILURE,
 				result.getOutcome());
 		assertEquals(3, dialog.choices, "save copy twice, then reopen");
