@@ -38,7 +38,6 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GPoint;
@@ -279,6 +278,8 @@ public abstract class EuclidianController implements SpecialPointsListener {
 	protected GeoBoolean movedGeoBoolean;
 	private AbsoluteScreenLocateable movedObject;
 	protected GeoElement movedLabelGeoElement;
+	private int originalLabelOffsetX;
+	private int originalLabelOffsetY;
 	protected GeoElement movedGeoElement;
 	protected Drawable resizedShape = null;
 	protected DrawInline resizedInline;
@@ -5675,7 +5676,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 	}
 
 	protected final void moveLabel() {
-		if (app.getConfig() instanceof AppConfigGeoCeDG) {
+		if (Drawable.usesExtendedLabelPlacement(view)) {
 			// CU6 M03: native labelOffset already stores signed logical pixels.
 			movedLabelGeoElement.labelOffsetX = (int) Math.max(Integer.MIN_VALUE,
 					Math.min(Integer.MAX_VALUE, (long) oldLoc.x + mouseLoc.x - startLoc.x));
@@ -8239,8 +8240,10 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		if (geo != null) {
 			moveMode = MoveMode.LABEL;
 			movedLabelGeoElement = geo;
-			oldLoc.setLocation(geo.labelOffsetX, geo.labelOffsetY);
-			if (app.getConfig() instanceof AppConfigGeoCeDG
+			originalLabelOffsetX = geo.labelOffsetX;
+			originalLabelOffsetY = geo.labelOffsetY;
+			oldLoc.setLocation(originalLabelOffsetX, originalLabelOffsetY);
+			if (Drawable.usesExtendedLabelPlacement(view)
 					&& view.getDrawableFor(geo) instanceof Drawable drawable) {
 				drawable.useDisplayedLabelOffset(oldLoc);
 			}
@@ -10440,7 +10443,12 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 		// handle moving
 		boolean changedKernel = false;
-		if (isDraggingOccurredBeyondThreshold()) {
+		boolean changedLabelOffset = draggingOccurred && moveMode == MoveMode.LABEL
+				&& Drawable.usesExtendedLabelPlacement(view) && movedLabelGeoElement != null
+				&& movedLabelGeoElement.isLabelSet()
+				&& (originalLabelOffsetX != movedLabelGeoElement.labelOffsetX
+						|| originalLabelOffsetY != movedLabelGeoElement.labelOffsetY);
+		if (isDraggingOccurredBeyondThreshold() || changedLabelOffset) {
 			draggingOccurredBeforeRelease = true;
 			draggingOccurred = false;
 
@@ -10449,7 +10457,9 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			boolean labeledGeoMoved = (movedGeoElement != null)
 					&& movedGeoElement.isLabelSet() && (moveMode != MoveMode.NONE)
 					&& modeTriggersUndoOnDragGeo(mode);
-			if (labeledGeoMoved) {
+			if (changedLabelOffset) {
+				changedKernel = true;
+			} else if (labeledGeoMoved) {
 				if (storeUndo.storeUndo()) {
 					changedKernel = true;
 				}

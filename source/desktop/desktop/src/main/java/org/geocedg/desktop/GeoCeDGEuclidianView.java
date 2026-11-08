@@ -25,9 +25,10 @@ import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
 import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
 
-/** GeoCeDG-only transient rich-result overlay; creates no construction objects. */
+/** GeoCeDG Desktop view with live presentation overlays. */
 public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 	private static final GColor EXPORT_AREA_OVERLAY = GColor.newColor(230, 120, 0);
+	private static final GColor INTERSECTION_BADGE_BACKGROUND = GColor.newColor(0, 90, 125);
 
 	/** Creates the regular Desktop view with a non-semantic overlay. */
 	public GeoCeDGEuclidianView(EuclidianController controller, boolean[] axes,
@@ -129,14 +130,14 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 
 	private void paintIndexedIntersections(GGraphics2D graphics) {
 		var app = getApplication();
-		graphics.setFont(getFontPoint());
 		int size = Math.max(14, (int) Math.ceil(getFontPoint().getSize()) + 5);
 		for (GeoElement geo : app.getSelectionManager().getSelectedGeos()) {
 			int index = indexedIntersectionSlot(geo);
+			var drawable = getDrawableFor(geo);
 			if (index == 0 || !geo.isEuclidianVisible() || !isVisibleInThisView(geo)
 					|| !app.isLayerShown(geo.getLayer())
 					|| !geo.isAvailableAtConstructionStep(app.getKernel().getConstructionStep())
-					|| getDrawableFor(geo) == null) {
+					|| drawable == null || drawable.getGeoElement() != geo) {
 				continue;
 			}
 			GeoPoint point = (GeoPoint) geo;
@@ -146,8 +147,11 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 				continue;
 			}
 			int left = Math.min(x + 7, Math.max(0, getWidth() - size));
-			int top = Math.max(0, y - size - 3);
-			graphics.setColor(GColor.newColor(0, 90, 125));
+			// Both labelled slots can remain defined at tangency and share the same point.
+			int top = index == 1 ? Math.max(0, Math.min(y - size - 3, getHeight() - 2 * size))
+					: Math.max(0, Math.min(getHeight() - size, Math.max(size, y + 3)));
+			graphics.setFont(getFontPoint());
+			graphics.setColor(INTERSECTION_BADGE_BACKGROUND);
 			graphics.fillRect(left, top, size, size);
 			graphics.setColor(GColor.WHITE);
 			graphics.drawString(Integer.toString(index), left + 3, top + size - 3);

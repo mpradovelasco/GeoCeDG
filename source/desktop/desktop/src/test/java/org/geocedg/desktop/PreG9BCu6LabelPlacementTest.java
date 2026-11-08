@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.DrawableND;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.MoveMode;
 import org.geogebra.common.euclidian.event.AbstractEvent;
 import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -70,6 +71,21 @@ class PreG9BCu6LabelPlacementTest {
 			view.setCoordSystem(380, 300, 50, 50);
 			paint(view);
 			assertTrue(view.getDrawableFor(segment).getLabelX() > 540);
+
+			segment.labelOffsetY = Integer.MAX_VALUE;
+			paint(view);
+			assertTrue(view.getDrawableFor(segment).getLabelY() < view.getHeight() - 1,
+					"indexed descenders stay above the lower clip");
+			segment.setCaption("$\\frac{x^2}{y}$");
+			segment.setLabelMode(GeoElement.LABEL_CAPTION);
+			segment.updateRepaint();
+			paint(view);
+			double edge = view.getDrawableFor(segment).getLabelY();
+			assertTrue(edge < view.getHeight() - 1, "formula height fits above the lower clip");
+			assertEquals(Integer.MAX_VALUE, segment.labelOffsetY);
+			dragLabel(view, segment, 0, -35);
+			assertTrue(view.getDrawableFor(segment).getLabelY() < edge - 25,
+					"another drag starts from the displayed formula position");
 			return null;
 		});
 	}
@@ -107,7 +123,11 @@ class PreG9BCu6LabelPlacementTest {
 		int y = (int) drawable.getLabelY() - 4;
 		assertSame(geo, view.getLabelHit(new GPoint(x, y), PointerEventType.MOUSE));
 		var controller = view.getEuclidianController();
+		controller.setDraggingDelay(0);
 		controller.wrapMousePressed(event(view, MouseEvent.MOUSE_PRESSED, x, y));
+		assertEquals(MoveMode.LABEL, controller.getMoveMode());
+		controller.wrapMouseDragged(
+				event(view, MouseEvent.MOUSE_DRAGGED, x + dx / 2, y + dy / 2), true);
 		controller.wrapMouseDragged(event(view, MouseEvent.MOUSE_DRAGGED, x + dx, y + dy), true);
 		controller.wrapMouseReleased(event(view, MouseEvent.MOUSE_RELEASED, x + dx, y + dy));
 		paint(view);

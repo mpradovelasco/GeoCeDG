@@ -51,6 +51,7 @@ class PreG9BCu6AlgebraPresentationTest {
 			field.postActionEvent();
 			assertSame(first, AlgebraTree.getGeoElementForPath(view.getSelectionPath()));
 			assertEquals(List.of(first), app.getSelectionManager().getSelectedGeos());
+			first.updateRepaint();
 			field.postActionEvent();
 			assertSame(second, AlgebraTree.getGeoElementForPath(view.getSelectionPath()));
 			assertEquals(xml, app.getXML(), "search leaves the saved construction unchanged");
@@ -67,7 +68,8 @@ class PreG9BCu6AlgebraPresentationTest {
 			AppGeoCeDG app = G9U1TestApp.create();
 			app.setLocale(Locale.ENGLISH);
 			GeoCeDGAlgebraView view = algebra(app);
-			GeoElement input = G9U1TestApp.eval(app, "a=2");
+			GeoElement input = new GeoNumeric(app.getKernel().getConstruction(), 2);
+			input.setLabel("a");
 			GeoElement value = G9U1TestApp.eval(app, "b=3*a");
 			GeoElement undefined = G9U1TestApp.eval(app, "u=a/(a-a)");
 			GeoElement text = G9U1TestApp.eval(app, "T=Text(\"<script>" + "x".repeat(300)

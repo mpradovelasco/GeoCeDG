@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -27,11 +28,14 @@ import javax.swing.tree.TreePath;
 import org.geogebra.desktop.gui.view.algebra.AlgebraHelperBar;
 import org.geogebra.desktop.gui.view.algebra.GeoMutableTreeNode;
 
+import com.formdev.flatlaf.FlatClientProperties;
+
 /** Literal name search over the current Algebra tree, including collapsed categories. */
 final class GeoCeDGAlgebraSearchBar extends AlgebraHelperBar {
 	private static final long serialVersionUID = 1L;
 	private static final String SUBSCRIPTS = "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ";
 	private static final String NORMAL_SUBSCRIPTS = "0123456789+-=()aeoxəhklmnpst";
+	private static final Pattern BRACED_INDEX = Pattern.compile("_\\{([^{}]+)}");
 
 	private final GeoCeDGAlgebraView view;
 	private final AppGeoCeDG product;
@@ -70,7 +74,8 @@ final class GeoCeDGAlgebraSearchBar extends AlgebraHelperBar {
 		TreeModelListener changes = new TreeModelListener() {
 			@Override
 			public void treeNodesChanged(TreeModelEvent event) {
-				invalidateMatches();
+				// Algebra renames remove/reinsert the node. Value and style repaints
+				// leave the set of names intact, even during an animation.
 			}
 
 			@Override
@@ -106,6 +111,8 @@ final class GeoCeDGAlgebraSearchBar extends AlgebraHelperBar {
 	private void addSearch() {
 		addSeparator();
 		query.setFont(product.getAlgebraFont());
+		previous.setFont(product.getAlgebraFont());
+		next.setFont(product.getAlgebraFont());
 		position.setFont(product.getAlgebraFont());
 		add(query);
 		add(previous);
@@ -129,6 +136,7 @@ final class GeoCeDGAlgebraSearchBar extends AlgebraHelperBar {
 
 	private void updateSearchLabels() {
 		label(query, "Algebra.Search.Name");
+		query.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, query.getToolTipText());
 		label(previous, "Algebra.Search.Previous");
 		label(next, "Algebra.Search.Next");
 	}
@@ -219,8 +227,8 @@ final class GeoCeDGAlgebraSearchBar extends AlgebraHelperBar {
 	}
 
 	private static String normalize(String text) {
-		String input = Normalizer.normalize(text, Normalizer.Form.NFC)
-				.toLowerCase(Locale.ROOT).replaceAll("_\\{([^{}]+)}", "_$1");
+		String input = BRACED_INDEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFC)
+				.toLowerCase(Locale.ROOT)).replaceAll("_$1");
 		StringBuilder plain = new StringBuilder(input.length());
 		boolean inSubscript = false;
 		for (int i = 0; i < input.length(); i++) {

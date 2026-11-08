@@ -9,11 +9,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.SecondaryLoop;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.dnd.DragSource;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -21,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -56,6 +59,7 @@ import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraTree;
+import org.geogebra.desktop.gui.view.algebra.AlgebraTreeCellRenderer;
 import org.geogebra.desktop.main.AppD;
 
 /** One modeless Desktop argument prompt with a document-local input shield. */
@@ -94,14 +98,18 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 
 	static boolean supports(AppD app) {
 		return app instanceof AppGeoCeDG && EventQueue.isDispatchThread()
-				&& SwingUtilities.getWindowAncestor(app.getMainComponent()) instanceof RootPaneContainer;
+				&& owner(app) instanceof RootPaneContainer;
+	}
+
+	private static Window owner(AppD app) {
+		Component main = app.getMainComponent();
+		return main instanceof Window window ? window : SwingUtilities.getWindowAncestor(main);
 	}
 
 	static void show(AppGeoCeDG app, String title, JComponent form, JTextField field,
 			List<GeoElement> operands, Consumer<GeoCeDGArgumentDialog> submit) {
 		if (!EventQueue.isDispatchThread() || app.isInsertionIsolated()
-				|| !(SwingUtilities.getWindowAncestor(app.getMainComponent())
-						instanceof RootPaneContainer owner)
+				|| !(owner(app) instanceof RootPaneContainer owner)
 				|| owner.getRootPane().getClientProperty(SESSION) != null
 				|| app.getEuclidianView1().getEuclidianController()
 						instanceof GeoCeDGEuclidianController controller
@@ -175,7 +183,15 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		}
 		document.setDocumentFilter(references);
 		var events = app.getEventDispatcher();
+		var focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		PropertyChangeListener focusListener = event -> {
+			if (armed && event.getNewValue() instanceof Window window && !ownsFocus(window)) {
+				armed = false;
+				resetError();
+			}
+		};
 		events.addEventListener(this);
+		focusManager.addPropertyChangeListener("focusedWindow", focusListener);
 		loop = Toolkit.getDefaultToolkit().getSystemEventQueue().createSecondaryLoop();
 		try {
 			if (!shield(owner)) {
@@ -207,8 +223,21 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 				}
 			});
 			events.removeEventListener(this);
+			focusManager.removePropertyChangeListener("focusedWindow", focusListener);
 			document.setDocumentFilter(null);
 		}
+	}
+
+	private boolean ownsFocus(Window window) {
+		if (window instanceof RootPaneContainer root && shields.containsKey(root.getRootPane())) {
+			return true;
+		}
+		for (Window owned = window; owned != null; owned = owned.getOwner()) {
+			if (owned == dialog) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean shield(JRootPane root) {
@@ -224,19 +253,22 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		shield.setOpaque(false);
 		shield.setFocusTraversalKeysEnabled(false);
 		MouseAdapter pointer = new MouseAdapter() {
+			private Point press;
+
 			@Override
 			public void mousePressed(MouseEvent event) {
 				event.consume();
-				if (armed && event.getClickCount() == 1
-						&& SwingUtilities.isLeftMouseButton(event)
-						&& !event.isControlDown() && !event.isShiftDown()) {
-					pickAt(event);
-				}
+				press = armed && isPickClick(event) ? event.getPoint() : null;
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent event) {
 				event.consume();
+				boolean pick = armed && isPickClick(event) && withinDragThreshold(event);
+				press = null;
+				if (pick) {
+					pickAt(event);
+				}
 			}
 
 			@Override
@@ -247,6 +279,13 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 			@Override
 			public void mouseDragged(MouseEvent event) {
 				event.consume();
+				if (!withinDragThreshold(event)) {
+					press = null;
+				}
+			}
+
+			private boolean withinDragThreshold(MouseEvent event) {
+				return press != null && press.distance(event.getPoint()) <= DragSource.getDragThreshold();
 			}
 		};
 		shield.addMouseListener(pointer);
@@ -256,6 +295,12 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		root.setGlassPane(shield);
 		shield.setVisible(true);
 		return true;
+	}
+
+	private static boolean isPickClick(MouseEvent event) {
+		return event.getClickCount() == 1 && SwingUtilities.isLeftMouseButton(event)
+				&& !event.isControlDown() && !event.isShiftDown()
+				&& !event.isAltDown() && !event.isMetaDown();
 	}
 
 	private void arm() {
@@ -276,13 +321,18 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		List<GeoElement> choices = new ArrayList<>();
 		if (point != null) {
 			GPoint location = new GPoint(point.x, point.y);
-			GeoElement label = view.getLabelHit(location, PointerEventType.MOUSE);
-			if (references.canPick(label)) {
-				choices.add(label);
-			} else {
+			for (var drawable : view.getAllDrawableList()) {
+				GeoElement geo = drawable.getGeoElement();
+				if (geo.isEuclidianVisible() && geo.isLabelVisible() && geo.isSelectionAllowed(view)
+						&& app.isLayerShown(geo.getLayer()) && drawable.hitLabel(point.x, point.y)
+						&& references.canPick(geo)) {
+					choices.add(geo);
+				}
+			}
+			if (choices.isEmpty()) {
 				view.setHits(location, PointerEventType.MOUSE);
 				for (GeoElement hit : view.getHits()) {
-					if (references.canPick(hit) && !choices.contains(hit)) {
+					if (references.canPick(hit) && choices.stream().noneMatch(geo -> geo == hit)) {
 						choices.add(hit);
 					}
 				}
@@ -294,7 +344,9 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 				var path = tree.getPathForLocation(point.x, point.y);
 				Rectangle bounds = path == null ? null : tree.getPathBounds(path);
 				GeoElement geo = AlgebraTree.getGeoElementForPath(path);
-				if (bounds != null && point.x >= bounds.x + tree.getIconShownHeight()
+				if (bounds != null
+						&& tree.getCellRenderer() instanceof AlgebraTreeCellRenderer renderer
+						&& point.x >= bounds.x + renderer.getIconShown().getIconWidth()
 						&& references.canPick(geo)) {
 					choices.add(geo);
 				}

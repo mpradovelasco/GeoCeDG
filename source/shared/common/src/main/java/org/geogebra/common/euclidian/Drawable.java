@@ -499,8 +499,8 @@ public abstract class Drawable extends DrawableND {
 			return false;
 		}
 
-		if (view.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
-			placeExtendedLabel(1, 1, view.getFontLine());
+		if (usesExtendedLabelPlacement(view)) {
+			placeExtendedLabel(1, 1, view.getFontLine(), true);
 			return true;
 		}
 
@@ -549,8 +549,8 @@ public abstract class Drawable extends DrawableND {
 	 */
 	public final void addLabelOffsetEnsureOnScreen(double Xmultiplier,
 			double Ymultiplier, GFont font) {
-		if (view.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
-			placeExtendedLabel(Xmultiplier, Ymultiplier, font);
+		if (usesExtendedLabelPlacement(view)) {
+			placeExtendedLabel(Xmultiplier, Ymultiplier, font, false);
 			return;
 		}
 		// MAKE SURE LABEL STAYS ON SCREEN
@@ -561,18 +561,56 @@ public abstract class Drawable extends DrawableND {
 		ensureLabelDrawsOnScreen(Xmultiplier, Ymultiplier, font);
 	}
 
+	static boolean usesExtendedLabelPlacement(EuclidianView view) {
+		int viewId = view.getViewID();
+		return view.getApplication().getConfig() instanceof AppConfigGeoCeDG
+				&& (viewId == App.VIEW_EUCLIDIAN || viewId == App.VIEW_EUCLIDIAN2);
+	}
+
 	/** CU6 M03: use the visible edge during a drag, keeping the stored offset until then. */
-	private void placeExtendedLabel(double xMultiplier, double yMultiplier, GFont font) {
+	private void placeExtendedLabel(double xMultiplier, double yMultiplier, GFont font,
+			boolean liftFormula) {
 		int anchorX = xLabel;
 		int anchorY = yLabel;
+		int styleStart = labelDesc.indexOf("%style=");
+		int end = styleStart < 0 ? labelDesc.length() : styleStart;
+		boolean formula = end > 1 && labelDesc.charAt(0) == '$'
+				&& labelDesc.charAt(end - 1) == '$'
+				&& (getDynamicCaption() == null || !getDynamicCaption().isEnabled());
+		int formulaLift = formula && liftFormula ? LATEX_Y_LABEL_OFFSET : 0;
 		xLabel = (int) Math.max(0, Math.min(view.getWidth(), (long) anchorX + geo.labelOffsetX));
-		yLabel = (int) Math.max(0, Math.min(view.getHeight(), (long) anchorY + geo.labelOffsetY));
-		ensureLabelDrawsOnScreen(xMultiplier, yMultiplier, font);
+		yLabel = (int) Math.max(0,
+				Math.min(view.getHeight(), (long) anchorY + geo.labelOffsetY - formulaLift));
+		if (formula) {
+			// Formula drawing uses a top edge derived from yLabel, rather than a baseline.
+			drawLabel(view.getTempGraphics2D(font));
+			fitMeasuredLabel(0);
+		} else {
+			ensureLabelDrawsOnScreen(xMultiplier, yMultiplier, font);
+			if (yLabel >= view.getHeight() - view.getSafeAreaInsets().getBottom() - font.getSize()) {
+				drawLabel(view.getTempGraphics2D(font));
+				GTextLayout layout = getTextLayout("gj", font);
+				fitMeasuredLabel(layout == null ? 0 : (int) Math.ceil(layout.getDescent()));
+			}
+		}
 		displayedLabelOffsetX = (int) Math.max(Integer.MIN_VALUE,
 				Math.min(Integer.MAX_VALUE, (long) xLabel - anchorX));
 		displayedLabelOffsetY = (int) Math.max(Integer.MIN_VALUE,
-				Math.min(Integer.MAX_VALUE, (long) yLabel - anchorY));
+				Math.min(Integer.MAX_VALUE, (long) yLabel - anchorY + formulaLift));
 		hasDisplayedLabelOffset = true;
+	}
+
+	private void fitMeasuredLabel(int descent) {
+		EdgeInsets insets = view.getSafeAreaInsets();
+		int left = (int) labelRectangle.getX();
+		int top = (int) labelRectangle.getY();
+		int x = Math.max(insets.getLeft(), Math.min(left,
+				view.getWidth() - insets.getRight() - (int) labelRectangle.getWidth()));
+		int y = Math.max(insets.getTop(), Math.min(top,
+				view.getHeight() - insets.getBottom() - (int) labelRectangle.getHeight() - descent));
+		xLabel += x - left;
+		yLabel += y - top;
+		labelRectangle.setLocation(x, y);
 	}
 
 	void useDisplayedLabelOffset(GPoint offset) {
