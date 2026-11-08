@@ -704,6 +704,33 @@ Do not commit Gradle outputs, package binaries, or generated benchmark
 evidence. Generated evidence belongs outside durable sources or under the ignored `artifacts/`
 boundary defined by the operational contracts.
 
+### Promote and publish an approved GeoCeDG candidate
+
+Follow the [GeoCeDG publication policy](../../AGENTS.md#81-geocedg-publication-policy).
+Record the candidate's approved commit and tree and the author's express
+authorization for publication. Record technical acceptance and any applicable
+closeout evidence separately. The closeout command performs identity inspection.
+
+1. Read GitHub's live branch with `git ls-remote --exit-code origin refs/heads/main`.
+   Refresh `origin/main` and compare it to that live SHA. Check the exact
+   candidate commit and tree with `git rev-parse`. Check ancestry with
+   `git merge-base --is-ancestor origin/main <approved-commit>` and check both
+   worktrees with `git status --porcelain`.
+2. Recheck the live remote baseline and stop if it has moved. From the clean
+   `main` checkout, run `git merge --ff-only <approved-commit>`. Check local
+   `main` against the approved commit and tree.
+3. Recheck the live baseline immediately before `git push origin main`. If the
+   server rejects the push, save its exact output and stop. Keep GitHub
+   protections intact. Record any administrative bypass reported by a successful
+   push.
+4. Re-read the live branch and confirm that local `main`, `origin/main` and
+   GitHub's `refs/heads/main` all identify the approved commit and tree.
+
+For ordinary GeoCeDG promotions, use the direct procedure when the author
+authorizes it. A separate approved review requirement or an author request can
+select a pull request. GeoGebra upstream synchronization follows its dedicated
+pull-request procedure in [AGENTS.md section 8](../../AGENTS.md#8-upstream-synchronization).
+
 ### GitHub Actions workflow archive
 
 The author retired automatic verification in GitHub Actions as an independent

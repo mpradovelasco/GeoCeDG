@@ -236,6 +236,39 @@ Upstream synchronization must be performed through a dedicated branch and pull r
 
 Never use force-push, history rewriting, or a destructive reset on shared branches without explicit human instruction.
 
+### 8.1 GeoCeDG publication policy
+
+Publishing to `main` requires express author authorization for the exact
+candidate and the publication operation. Implementation approval and technical
+acceptance each leave that authorization pending.
+
+For an authorized direct publication:
+
+1. Read the live `refs/heads/main` on `origin` and reconcile `origin/main`
+   with it. Record the remote baseline.
+2. Verify the approved candidate's commit SHA and tree SHA.
+3. Verify that `origin/main` is an ancestor of the approved candidate.
+4. Check that the candidate worktree and the worktree for local `main` are clean.
+5. Read the live remote `main` again and stop if it differs from the checked
+   baseline.
+6. Advance local `main` to the approved candidate by a non-force fast-forward.
+7. Confirm the remote baseline still matches immediately before running
+   `git push origin main`.
+8. Read the live remote `main` after the push. Verify that it, local `main`,
+   and `origin/main` all resolve to the approved commit and tree.
+
+GeoCeDG's administrative exception has allowed previous authorized direct
+publications. Its availability depends on the current server rules and
+credentials. Branch protection alone does not make a pull request mandatory
+for an ordinary author-authorized GeoCeDG promotion. Use a pull request when
+the author requests one or a separate approved review rule requires one.
+GeoGebra upstream synchronization still requires the dedicated branch and
+pull request described above.
+
+Preserve approved commits and branch-protection settings. Force-push and
+rewriting approved commits are prohibited. If the server rejects the push,
+record the exact response and stop publication.
+
 ## 9. Design-before-code protocol
 
 Before implementation, produce or update:
