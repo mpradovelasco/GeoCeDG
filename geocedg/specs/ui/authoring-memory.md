@@ -15,6 +15,11 @@
 
 ## 0. Status and normative language
 
+The [CU5 implementation design](../../../docs/architecture/pre_g9b_cu5_implementation_design.md)
+records the author-directed B03/H05 successor for the CU5 candidate. Its
+activation, status and protocol-step rules supersede the corresponding F2/F2-R1
+rules within that candidate. The approved F2/F2-R1 baseline is recorded below.
+
 This specification is the durable contract of the GeoCeDG authoring memory
 (F2, with the F2-R1 dual activation of §11). It was written as the contract of
 the technical candidates and became normative through the joint F2/F2-R1

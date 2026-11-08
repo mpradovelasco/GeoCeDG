@@ -1893,7 +1893,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		refreshToolMemoryStatus();
 	}
 
-	private void refreshToolMemoryStatus() {
+	void refreshToolMemoryStatus() {
 		if (statusBar != null) {
 			statusBar.updateToolMemory();
 		}

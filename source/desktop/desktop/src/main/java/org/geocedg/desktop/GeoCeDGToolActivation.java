@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 
 import org.geocedg.desktop.GeoCeDGLineReferenceMemory.Slot;
@@ -22,10 +23,9 @@ import org.geogebra.desktop.main.AppD;
  * (modifier read from its own action event and bound to the AWT event being
  * dispatched), and the single-argument {@code AppGeoCeDG.setMode(int)} entry used by
  * the toolbar button, menus, the action registry, user tools and scripting, which is a
- * {@code NORMAL} request unless a mark or an enclosing scope already decides (Option
- * O1, decision record v1.3 section 7; reference memory is interactive only). Every
- * other mode change is host synchronization: a different mode is a tool departure
- * (both tools return to {@code NORMAL}), the same mode changes nothing. A mark is
+ * {@code NORMAL} request unless a mark or an enclosing scope already decides.
+ * Native toolbar activation applies the per-tool CU5 preference; its modifier toggles
+ * the preference. Only the active mode uses the effective behaviour. A mark is
  * consumed by the first activation it decides and never reaches a later one.
  */
 final class GeoCeDGToolActivation {
@@ -68,8 +68,9 @@ final class GeoCeDGToolActivation {
 	}
 
 	private final Map<Slot, Behaviour> behaviours = new EnumMap<>(Slot.class);
+	private final EnumSet<Slot> toolbarMemory = EnumSet.noneOf(Slot.class);
 	private int toolbarMode = -1;
-	private Behaviour toolbarBehaviour;
+	private boolean toolbarToggle;
 	private Object toolbarToken;
 	private Behaviour scopedBehaviour;
 	private boolean scopedGenuine;
@@ -105,8 +106,7 @@ final class GeoCeDGToolActivation {
 			return;
 		}
 		toolbarMode = mode;
-		toolbarBehaviour = requestsMemory(event) ? Behaviour.MEMORY_ENABLED
-				: Behaviour.NORMAL;
+		toolbarToggle = requestsMemory(event);
 		toolbarToken = EventQueue.getCurrentEvent();
 	}
 
@@ -205,7 +205,12 @@ final class GeoCeDGToolActivation {
 		boolean genuine = false;
 		if (toolbarToken != null) {
 			if (toolbarMode == targetMode && toolbarToken == EventQueue.getCurrentEvent()) {
-				requested = toolbarBehaviour;
+				Slot slot = Slot.forMode(targetMode);
+				if (toolbarToggle && !toolbarMemory.remove(slot)) {
+					toolbarMemory.add(slot);
+				}
+				requested = toolbarMemory.contains(slot) ? Behaviour.MEMORY_ENABLED
+						: Behaviour.NORMAL;
 				genuine = true;
 			}
 			toolbarToken = null;

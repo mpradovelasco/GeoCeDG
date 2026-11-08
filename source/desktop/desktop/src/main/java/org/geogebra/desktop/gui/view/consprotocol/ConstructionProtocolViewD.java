@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
@@ -56,6 +57,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -63,7 +65,9 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.View;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.gui.view.consprotocol.ConstructionProtocolView;
@@ -116,6 +120,8 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 	// public JPanel cpPanel;
 
 	private final TableColumn[] tableColumns;
+	private final boolean sizeRowsToContent;
+	private boolean rowHeightUpdatePending;
 
 	// private AbstractAction printPreviewAction, exportHtmlAction;
 
@@ -139,11 +145,22 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 	public ConstructionProtocolViewD(final AppD app) {
 		super(app);
 		this.loc = app.getLocalization();
+		sizeRowsToContent = app.getConfig() instanceof AppConfigGeoCeDG;
 		data = new ConstructionTableDataD(this);
 		useColors = true;
 		addIcons = false;
 
-		table = new JTable();
+		table = new JTable() {
+			@Override
+			public void updateUI() {
+				super.updateUI();
+				// The look and feel may clear the per-row heights. During
+				// JTable construction the protocol renderers are not installed.
+				if (sizeRowsToContent && table == this) {
+					updateRowHeights(0, getRowCount() - 1);
+				}
+			}
+		};
 		table.setAutoCreateColumnsFromModel(false);
 		table.setModel(((ConstructionTableDataD) data).getImpl());
 		table.setRowSelectionAllowed(true);
@@ -180,6 +197,10 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 
 		table.getColumnModel().addColumnModelListener(
 				((ConstructionTableDataD) data).new ColumnMovementListener());
+		if (sizeRowsToContent) {
+			table.addPropertyChangeListener("font", event ->
+					updateRowHeights(0, table.getRowCount() - 1));
+		}
 
 		scrollPane = new JScrollPane(table);
 		scrollPane.getViewport().setBackground(panelBackground());
@@ -240,6 +261,48 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 
 	protected void repaintScrollpane() {
 		scrollPane.repaint();
+	}
+
+	private void updateRowHeights(int firstRow, int lastRow) {
+		if (firstRow > lastRow || table.getFont() == null) {
+			return;
+		}
+		// Keep the inherited two-line reading space, using the actual font
+		// metrics. Expand only when a visible renderer needs more room.
+		int minimum = 2 * table.getFontMetrics(table.getFont()).getHeight();
+		for (int row = firstRow; row <= lastRow; row++) {
+			int height = minimum;
+			for (int column = 0; column < table.getColumnCount(); column++) {
+				height = Math.max(height, getPreferredCellHeight(row, column));
+			}
+			height += table.getRowMargin();
+			if (table.getRowHeight(row) != height) {
+				table.setRowHeight(row, height);
+			}
+		}
+	}
+
+	private int getPreferredCellHeight(int row, int column) {
+		Component cell = table.prepareRenderer(table.getCellRenderer(row, column), row, column);
+		if (cell instanceof JLabel label
+				&& label.getClientProperty(BasicHTML.propertyKey) instanceof View html) {
+			Insets insets = label.getInsets();
+			int width = table.getCellRect(row, column, false).width - insets.left - insets.right;
+			html.setSize(Math.max(1, width), 0);
+			return (int) Math.ceil(html.getPreferredSpan(View.Y_AXIS)) + insets.top + insets.bottom;
+		}
+		return cell.getPreferredSize().height;
+	}
+
+	private void scheduleRowHeightUpdate() {
+		// A Swing layout pass can change several column widths in succession.
+		if (sizeRowsToContent && !rowHeightUpdatePending) {
+			rowHeightUpdatePending = true;
+			SwingUtilities.invokeLater(() -> {
+				rowHeightUpdatePending = false;
+				updateRowHeights(0, table.getRowCount() - 1);
+			});
+		}
 	}
 
 	/**
@@ -813,11 +876,13 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 				return cbTemp;
 			}
 			if (isImage) {
-				this.setIcon((Icon) value);
+				setIcon((Icon) value);
 				return this;
 			}
-
-			setText((value == null) ? "" : value.toString());
+			if (sizeRowsToContent) {
+				setIcon(null);
+			}
+			setText(value == null ? "" : value.toString());
 			return this;
 
 		}
@@ -960,46 +1025,25 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 			}
 			int size = rowList.size();
 
-			int toolbarIconHeight = 0;
-			// If displaying toolbarIcon is set, row height must be at least 32
-			// + 1:
-			if (isColumnInModel(tableColumns[1])) {
-				toolbarIconHeight = 32 + 1;
-				/*
-				 * FIXME: The cell content is not aligned vertically centered. I
-				 * don't think it is possible to easily solve this because
-				 * JTable does not offer a convenient way for vertical alignment
-				 * of the cell content. Probably
-				 * http://articles.techrepublic.com.com/5100-10878_11-5032692.
-				 * html may help, or to use the same technique which is
-				 * introduced in GeoGebraCAS.
-				 */
-			}
-
+			int legacyIconHeight = !sizeRowsToContent && isColumnInModel(tableColumns[1]) ? 33 : 0;
 			for (int i = 0; i < size; ++i) {
 				RowData row = rowList.get(i);
 				row.updateAll();
-
-				// it seems there isn't fit to content (automatic) row height in
-				// JTable,
-				// so we use the most frequent option, 2 lines of text in a row
-				// (this is still better than 1 lines of text in a row)
-				if (row.getIncludesIndex()) {
-					table.setRowHeight(i,
-							Math.max(table.getFont().getSize() * 2 + 16,
-									toolbarIconHeight));
-				} else {
-					table.setRowHeight(i,
-							Math.max(table.getFont().getSize() * 2 + 12,
-									toolbarIconHeight));
+				if (!sizeRowsToContent) {
+					int legacyTextHeight = table.getFont().getSize() * 2
+							+ (row.getIncludesIndex() ? 16 : 12);
+					table.setRowHeight(i, Math.max(legacyTextHeight, legacyIconHeight));
 				}
 			}
-			ctDataImpl.fireTableRowsUpdated(0, size - 1);
+			fireTableRowsUpdated(0, size - 1);
 		}
 
 		@Override
 		protected void fireTableRowsUpdated(int rowNumber, int rowNumber2) {
 			ctDataImpl.fireTableRowsUpdated(rowNumber, rowNumber2);
+			if (sizeRowsToContent) {
+				updateRowHeights(rowNumber, rowNumber2);
+			}
 		}
 
 		@Override
@@ -1018,16 +1062,18 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 			@Override
 			public void columnAdded(TableColumnModelEvent e) {
 				columnsCount++;
+				scheduleRowHeightUpdate();
 			}
 
 			@Override
 			public void columnRemoved(TableColumnModelEvent e) {
 				columnsCount--;
+				scheduleRowHeightUpdate();
 			}
 
 			@Override
 			public void columnMarginChanged(ChangeEvent e) {
-				// only handle removed / added
+				scheduleRowHeightUpdate();
 			}
 
 			@Override

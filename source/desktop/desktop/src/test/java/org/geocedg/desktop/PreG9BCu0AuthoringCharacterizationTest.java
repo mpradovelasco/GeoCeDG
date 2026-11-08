@@ -7,6 +7,8 @@ package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
@@ -112,8 +114,8 @@ class PreG9BCu0AuthoringCharacterizationTest {
 		assertEquals(27, counts[0]);
 		assertEquals(27, counts[1], "every line of the Classic model roots at segment f");
 		assertEquals(41, counts[2]);
-		assertEquals(19, counts[3], PreG9BCu0Baseline.pinMessage("M04", "CU5",
-				"22 lines whose reference chain starts at OrthogonalLine(A, xAxis) are excluded"));
+		assertEquals(41, counts[3], PreG9BCu0Baseline.inversionMessage("M04", "CU5",
+				"22 lines whose reference chain starts at OrthogonalLine(A, xAxis) are admitted"));
 	}
 
 	private static void count(AppGeoCeDG app, int[] counts, int offset) {
@@ -170,16 +172,20 @@ class PreG9BCu0AuthoringCharacterizationTest {
 			memory.remember(Slot.PARALLEL, reference);
 			app.getKernel().setConstructionStep(1);
 			String early = String.valueOf(memory.getState(Slot.PARALLEL));
+			assertNull(memory.getUsable(Slot.PARALLEL));
+			PreG9BR6PlusF3Fixtures.must(app, "M=(7,5)");
+			assertNull(memory.getUsable(Slot.PARALLEL));
 			boolean available = reference.isAvailableAtConstructionStep(
 					app.getKernel().getConstructionStep())
 					|| app.getKernel().lookupLabel("l") != null;
 			app.getKernel().lastStep();
+			assertSame(reference, memory.getUsable(Slot.PARALLEL));
 			return new String[] {early, String.valueOf(available),
 					String.valueOf(memory.getState(Slot.PARALLEL))};
 		});
 		assertEquals("false", states[1], "l does not exist at the current protocol step");
-		assertEquals("HELD", states[0], PreG9BCu0Baseline.pinMessage("H05", "CU5",
-				"the slot reports HELD for a reference that does not exist at this step"));
+		assertEquals("SUSPENDED_BY_STEP", states[0], PreG9BCu0Baseline.inversionMessage("H05", "CU5",
+				"the slot suspends a reference that does not exist at this step"));
 		assertEquals("HELD", states[2]);
 	}
 }

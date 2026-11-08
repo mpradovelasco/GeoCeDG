@@ -5,7 +5,9 @@
 
 package org.geocedg.desktop;
 
+import java.awt.EventQueue;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -74,18 +76,27 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 		/** current and usable reference */
 		HELD,
 		/** current reference, temporarily unusable */
-		SUSPENDED
+		SUSPENDED,
+		/** current reference, introduced after the current protocol step */
+		SUSPENDED_BY_STEP,
+		/** prior reference lost its identity; selection required */
+		INVALIDATED
 	}
 
 	private final App app;
+	private final Runnable refreshStatus;
 	private final Map<Slot, GeoElement> slots = new EnumMap<>(Slot.class);
+	private final EnumSet<Slot> invalidated = EnumSet.noneOf(Slot.class);
 	private boolean listening;
+	private boolean refreshPending;
 
 	/**
 	 * @param app application of the Graphics View 1 controller
+	 * @param refreshStatus refreshes the current tool indicator on the Swing event thread
 	 */
-	GeoCeDGLineReferenceMemory(App app) {
+	GeoCeDGLineReferenceMemory(App app, Runnable refreshStatus) {
 		this.app = app;
+		this.refreshStatus = refreshStatus;
 	}
 
 	/**
@@ -132,16 +143,19 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 
 	/**
 	 * @param slot slot
-	 * @return the slot state; a reference that is no longer current is cleared
+	 * @return the slot state; a reference that is no longer current is invalidated
 	 */
 	State getState(Slot slot) {
 		GeoElement held = slots.get(slot);
 		if (held == null) {
-			return State.EMPTY;
+			return invalidated.contains(slot) ? State.INVALIDATED : State.EMPTY;
 		}
 		if (!isCurrent(held)) {
-			slots.remove(slot);
-			return State.EMPTY;
+			invalidate(slot);
+			return State.INVALIDATED;
+		}
+		if (!held.isAvailableAtConstructionStep(app.getKernel().getConstructionStep())) {
+			return State.SUSPENDED_BY_STEP;
 		}
 		return isUsable(held) ? State.HELD : State.SUSPENDED;
 	}
@@ -173,19 +187,44 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 			return;
 		}
 		slots.put(slot, reference);
+		invalidated.remove(slot);
 		if (!listening) {
 			app.getEventDispatcher().addEventListener(this);
 			listening = true;
 		}
+		queueStatusRefresh();
 	}
 
-	/** Clears both slots. */
+	private void invalidate(Slot slot) {
+		slots.remove(slot);
+		invalidated.add(slot);
+	}
+
+	private void invalidateStale() {
+		for (Slot slot : Slot.values()) {
+			GeoElement held = slots.get(slot);
+			if (held != null && !isCurrent(held)) {
+				invalidate(slot);
+			}
+		}
+	}
+
 	void clear() {
+		invalidated.addAll(slots.keySet());
 		slots.clear();
+		queueStatusRefresh();
 	}
 
-	private void clearStale() {
-		slots.values().removeIf(held -> !isCurrent(held));
+	private void queueStatusRefresh() {
+		// Protocol notifications precede the new Construction.step. Read it after
+		// the synchronous navigation batch, without measuring every intermediate step.
+		if (!refreshPending) {
+			refreshPending = true;
+			EventQueue.invokeLater(() -> {
+				refreshPending = false;
+				refreshStatus.run();
+			});
+		}
 	}
 
 	@Override
@@ -200,7 +239,17 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 			break;
 		case REMOVE:
 		case REDEFINE:
-			clearStale();
+			invalidateStale();
+			queueStatusRefresh();
+			break;
+		case ADD:
+			queueStatusRefresh();
+			break;
+		case UPDATE:
+		case UPDATE_STYLE:
+			if (slots.containsValue(evt.target)) {
+				queueStatusRefresh();
+			}
 			break;
 		default:
 			break;

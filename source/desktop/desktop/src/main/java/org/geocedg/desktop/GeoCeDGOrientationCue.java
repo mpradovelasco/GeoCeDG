@@ -293,7 +293,8 @@ final class GeoCeDGOrientationCue {
 		}
 		if (POINT_LINE_ROUTES.contains(route)) {
 			return input.length == 2 && finitePoint(input[0], current)
-					&& admitted(input[1], current, depth + 1);
+					&& (isCanonicalAxis(resolve(input[1], current))
+							|| admitted(input[1], current, depth + 1));
 		}
 		if (route == AlgoLineBisectorSegment.class) {
 			return input.length == 1 && admitted(input[0], current, depth + 1);
@@ -317,6 +318,10 @@ final class GeoCeDGOrientationCue {
 			return macroAdmitted(resolved, (AlgoMacro) algo, current, depth + 1);
 		}
 		return false;
+	}
+
+	private static boolean isCanonicalAxis(GeoElement geo) {
+		return geo != null && geo.isAxis() && geo.getKernel().isAxis(geo);
 	}
 
 	/**

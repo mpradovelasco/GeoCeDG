@@ -4320,7 +4320,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/view/consprotocol/ConstructionProtocolViewD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4: apply the independent Construction Protocol font to its table, header and scroll presentation without protocol semantics changes. PRE-G9B-P0: resolve the protocol content surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined.",
+      "purpose": "PRE-G9B-S4: apply the independent Construction Protocol font to its table, header and scroll presentation without protocol semantics changes. PRE-G9B-P0: resolve the protocol content surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined. PRE-G9B-CU5 B02: derive stable GeoCeDG row heights from font metrics and visible cell content across table-model, column and look-and-feel refreshes while retaining the Classic sizing policy. Authority: docs/architecture/pre_g9b_cu_corrective_usability_plan.md.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
     {

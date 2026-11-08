@@ -113,7 +113,11 @@ public final class GeoCeDGEuclidianController
 		locusV2Dialogs = new GeoCeDGLocusV2Dialogs(
 				(AppD) kernel.getApplication(), intersectionSession);
 		semanticSourceChooser = locusV2Dialogs::chooseSemanticSource;
-		referenceMemory = new GeoCeDGLineReferenceMemory(kernel.getApplication());
+		referenceMemory = new GeoCeDGLineReferenceMemory(kernel.getApplication(), () -> {
+			if (kernel.getApplication() instanceof AppGeoCeDG geoCeDG) {
+				geoCeDG.refreshToolMemoryStatus();
+			}
+		});
 		referencePointTool = new GeoCeDGReferencePointTool((AppD) kernel.getApplication());
 	}
 

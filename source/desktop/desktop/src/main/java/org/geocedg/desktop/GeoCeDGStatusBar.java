@@ -306,12 +306,24 @@ final class GeoCeDGStatusBar extends JPanel {
 	/** PRE-G9B-R6-plus-F2-R1: synchronous refresh after every activation and language change. */
 	void updateToolMemory() {
 		JLabel label = segments.get(TOOL_MEMORY_SEGMENT);
-		int mode = app.getEuclidianView1() == null ? -1 : app.getEuclidianView1().getMode();
-		boolean shown = app.getToolActivation().isMemoryEnabled(mode);
+		var view = app.getEuclidianView1();
+		int mode = view == null ? -1 : view.getMode();
+		var slot = GeoCeDGLineReferenceMemory.Slot.forMode(mode);
+		boolean shown = app.getToolActivation().isMemoryEnabled(mode)
+				&& view.getEuclidianController() instanceof GeoCeDGEuclidianController;
 		if (shown) {
-			label.setText(app.layerText(mode == EuclidianConstants.MODE_PARALLEL
+			var controller = (GeoCeDGEuclidianController) view.getEuclidianController();
+			String tool = app.layerText(mode == EuclidianConstants.MODE_PARALLEL
 					? "AuthoringMemory.Status.Parallel"
-					: "AuthoringMemory.Status.Perpendicular"));
+					: "AuthoringMemory.Status.Perpendicular");
+			String state = switch (controller.getReferenceMemory().getState(slot)) {
+			case EMPTY -> "Empty";
+			case HELD -> "Held";
+			case SUSPENDED -> "Suspended";
+			case SUSPENDED_BY_STEP -> "SuspendedByStep";
+			case INVALIDATED -> "Invalidated";
+			};
+			label.setText(tool + " · " + app.layerText("AuthoringMemory.Status." + state));
 			label.setToolTipText(app.layerText("AuthoringMemory.Status.Tooltip"));
 		}
 		if (label.isVisible() != shown) {

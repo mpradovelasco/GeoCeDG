@@ -373,6 +373,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 	void plainToolbarActivationIsNormalAndNeverReadsAValidSlot() throws Exception {
 		try (Window w = Window.open()) {
 			w.rememberParallelL();
+			w.toolbar(PAR, true);
 			w.app.setMoveMode();
 			w.toolbar(PAR, false);
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL));
@@ -424,13 +425,13 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			w.toolbar(PAR, true);
 			w.click(ON_M);
 			assertEquals(1, w.selection());
-			w.toolbar(PAR, true);
-			assertEquals(1, w.selection(), "Ctrl reclick in MEMORY_ENABLED keeps it");
+			w.toolbar(PAR, false);
+			assertEquals(1, w.selection(), "ordinary reactivation preserves the gesture");
 			w.click(P);
 			assertConstruction(w.created(), AlgoLinePointLine.class, w.lookup("P"),
 					w.lookup("m"));
 			w.app.setMoveMode();
-			w.toolbar(PAR, false);
+			w.toolbar(PAR, true);
 			w.click(Q);
 			w.toolbar(PAR, false);
 			assertEquals(1, w.selection(), "plain reclick in NORMAL keeps it");
@@ -457,7 +458,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			w.memory().clear();
 			w.click(EMPTY);
 			assertEquals(completed.size() + 1, w.size(), "provisional free point");
-			w.toolbar(PERP, false);
+			w.toolbar(PERP, true);
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PERPENDICULAR));
 			w.awaitUndo();
 			assertEquals(completed, w.objects(), "only the provisional point is removed");
@@ -501,6 +502,14 @@ class PreG9BR6PlusF2R1DualActivationTest {
 					w.lookup("m"));
 			assertSame(w.lookup("m"), w.memory().peek(Slot.PERPENDICULAR));
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
+			w.toolbar(PAR, false);
+			w.click(R);
+			assertConstruction(w.created(), AlgoLinePointLine.class, w.lookup("R"),
+					w.lookup("l"));
+			w.toolbar(PERP, false);
+			w.click(S);
+			assertConstruction(w.created(), AlgoOrthoLinePointLine.class, w.lookup("S"),
+					w.lookup("m"));
 		}
 	}
 
@@ -526,7 +535,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			});
 			w.settle();
 			assertEquals(PAR, w.app.getMode());
-			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL));
+			assertEquals(Behaviour.MEMORY_ENABLED, w.behaviour(Slot.PARALLEL));
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
 		}
 	}
@@ -535,7 +544,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 	void normalKeepsTheInheritedPointOnPathGestureAndNeverWritesTheSlot() throws Exception {
 		try (Window w = Window.open()) {
 			w.rememberParallelL();
-			w.toolbar(PAR, false);
+			w.toolbar(PAR, true);
 			w.click(ON_M);
 			int before = w.size();
 			w.click(new double[] {-4, -4});
@@ -567,7 +576,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			assertEquals(0, w.selection(), "the behaviour change cancelled the gesture");
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
 			// a single-argument activation of another tool (user tools, dialogs) departs
-			w.toolbar(PAR, true);
+			w.toolbar(PAR, false);
 			w.app.setMode(EuclidianConstants.MODE_POINT);
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL));
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
@@ -598,13 +607,13 @@ class PreG9BR6PlusF2R1DualActivationTest {
 					w.lookup("m"));
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
 			// MEMORY_ENABLED Parallel -> script Perpendicular -> NORMAL
-			w.toolbar(PAR, true);
+			w.toolbar(PAR, false);
 			w.js("ggbApplet.setMode(" + PERP + ")");
 			assertEquals(PERP, w.app.getMode());
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PERPENDICULAR));
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL));
-			// Ctrl activation after scripted selections reuses the still-valid memory
-			w.toolbar(PAR, true);
+			// Toolbar activation after scripted selections reuses the still-valid memory
+			w.toolbar(PAR, false);
 			w.click(R);
 			assertConstruction(w.created(), AlgoLinePointLine.class, w.lookup("R"),
 					w.lookup("l"));
@@ -708,7 +717,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			w.app.setMode(EuclidianConstants.MODE_POINT);
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL), "another tool");
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
-			w.toolbar(PAR, true);
+			w.toolbar(PAR, false);
 			SwingUtilities.invokeAndWait(() -> w.app.dispatchKeyEvent(new KeyEvent(
 					w.app.getMainComponent(), KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
 					0, KeyEvent.VK_ESCAPE, KeyEvent.CHAR_UNDEFINED)));
@@ -717,8 +726,16 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL), "Escape");
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
 			w.toolbar(PAR, false);
-			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL), "return without Ctrl");
-			w.toolbar(PAR, true);
+			assertEquals(Behaviour.MEMORY_ENABLED, w.behaviour(Slot.PARALLEL), "return without Ctrl");
+			GeoElement reference = w.lookup("l");
+			SwingUtilities.invokeAndWait(() -> w.app.getKernel()
+					.setConstructionStep(reference.getConstructionIndex() - 1));
+			w.settle();
+			assertEquals("Parallel Line · Memory · Later step", w.status().getText());
+			assertNull(w.memory().getUsable(Slot.PARALLEL));
+			SwingUtilities.invokeAndWait(() -> w.app.getKernel().lastStep());
+			w.settle();
+			assertSame(reference, w.memory().getUsable(Slot.PARALLEL));
 			w.click(R);
 			assertConstruction(w.created(), AlgoLinePointLine.class, w.lookup("R"),
 					w.lookup("l"));
@@ -731,6 +748,9 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			w.settle();
 			assertEquals(Behaviour.NORMAL, w.behaviour(Slot.PARALLEL), "New");
 			assertNull(w.memory().peek(Slot.PARALLEL));
+			w.toolbar(PAR, false);
+			assertEquals(Behaviour.MEMORY_ENABLED, w.behaviour(Slot.PARALLEL));
+			assertEquals("Parallel Line · Memory · Select again", w.status().getText());
 		}
 	}
 
@@ -745,7 +765,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			w.settle();
 			assertEquals(PERP, w.app.getMode());
 			assertEquals(Behaviour.MEMORY_ENABLED, w.behaviour(Slot.PERPENDICULAR));
-			assertEquals("Perpendicular · Memoria", w.status().getText());
+			assertEquals("Perpendicular · Memoria · Disponible", w.status().getText());
 			assertSame(w.lookup("l"), w.memory().peek(Slot.PARALLEL));
 			assertSame(w.lookup("m"), w.memory().peek(Slot.PERPENDICULAR));
 			w.click(R);
@@ -754,8 +774,8 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			SwingUtilities.invokeAndWait(() -> w.app.setLanguage(Locale.ENGLISH));
 			w.settle();
 			assertEquals(Behaviour.MEMORY_ENABLED, w.behaviour(Slot.PERPENDICULAR));
-			assertEquals("Perpendicular Line · Memory", w.status().getText());
-			w.toolbar(PERP, false);
+			assertEquals("Perpendicular Line · Memory · Available", w.status().getText());
+			w.toolbar(PERP, true);
 			SwingUtilities.invokeAndWait(() -> w.app.setLanguage(Locale.forLanguageTag("es")));
 			w.settle();
 			assertEquals(PERP, w.app.getMode());
@@ -769,7 +789,7 @@ class PreG9BR6PlusF2R1DualActivationTest {
 	void aSlotInvalidatedWhileNormalIsNotRevivedByALaterCtrlActivation() throws Exception {
 		try (Window w = Window.open()) {
 			w.rememberParallelL();
-			w.toolbar(PAR, false);
+			w.toolbar(PAR, true);
 			SwingUtilities.invokeAndWait(() -> w.lookup("l").remove());
 			w.settle();
 			w.toolbar(PAR, true);
@@ -791,20 +811,20 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			assertFalse(status.isVisible(), "hidden in NORMAL");
 			w.toolbar(PAR, true);
 			assertNull(w.memory().peek(Slot.PARALLEL), "shown although no slot is held");
-			assertLaidOut(w, "Parallel Line · Memory");
+			assertLaidOut(w, "Parallel Line · Memory · Select reference");
 			w.toolbar(PERP, true);
-			assertLaidOut(w, "Perpendicular Line · Memory");
-			w.toolbar(PERP, false);
+			assertLaidOut(w, "Perpendicular Line · Memory · Select reference");
+			w.toolbar(PERP, true);
 			assertFalse(status.isVisible(), "hidden after a behaviour change");
-			w.toolbar(PAR, true);
+			w.toolbar(PAR, false);
 			w.app.setMode(EuclidianConstants.MODE_POINT);
 			assertFalse(status.isVisible(), "hidden for other tools");
 			SwingUtilities.invokeAndWait(() -> w.app.setLanguage(Locale.forLanguageTag("es")));
 			w.settle();
-			w.toolbar(PAR, true);
-			assertLaidOut(w, "Paralela · Memoria");
+			w.toolbar(PAR, false);
+			assertLaidOut(w, "Paralela · Memoria · Seleccione referencia");
 			w.toolbar(PERP, true);
-			assertLaidOut(w, "Perpendicular · Memoria");
+			assertLaidOut(w, "Perpendicular · Memoria · Seleccione referencia");
 			w.app.setMoveMode();
 			SwingUtilities.invokeAndWait(() -> w.app.setLanguage(Locale.ENGLISH));
 			w.settle();

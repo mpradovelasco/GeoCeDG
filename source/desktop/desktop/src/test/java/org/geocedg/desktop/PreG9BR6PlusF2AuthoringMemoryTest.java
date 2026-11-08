@@ -558,7 +558,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		assertEquals(State.HELD, memory(app).getState(Slot.PARALLEL), "recompute keeps it");
 		redefine(app, l, "Line(A,Q)");
 		assertNotSame(l, lookup(app, "base"));
-		assertEquals(State.EMPTY, memory(app).getState(Slot.PARALLEL),
+		assertEquals(State.INVALIDATED, memory(app).getState(Slot.PARALLEL),
 				"a replaced object clears the slot");
 		assertNull(memory(app).peek(Slot.PARALLEL));
 
@@ -567,10 +567,10 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		GeoElement m = lookup(app, "m");
 		assertSame(m, memory(app).peek(Slot.PARALLEL));
 		m.remove();
-		assertEquals(State.EMPTY, memory(app).getState(Slot.PARALLEL), "removal clears the slot");
+		assertEquals(State.INVALIDATED, memory(app).getState(Slot.PARALLEL), "removal clears the slot");
 		assertNull(memory(app).peek(Slot.PARALLEL));
 		GeoElement recreated = eval(app, "m=Line(C,D)")[0].toGeoElement();
-		assertEquals(State.EMPTY, memory(app).getState(Slot.PARALLEL),
+		assertEquals(State.INVALIDATED, memory(app).getState(Slot.PARALLEL),
 				"a recreated label is never adopted");
 		int before = size(app);
 		click(app, R);
@@ -624,7 +624,7 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			SwingUtilities.invokeAndWait(() -> { });
 			assertNull(memory(app).peek(Slot.PARALLEL), action);
 			assertNull(memory(app).peek(Slot.PERPENDICULAR), action);
-			assertEquals(State.EMPTY, memory(app).getState(Slot.PARALLEL), action);
+			assertEquals(State.INVALIDATED, memory(app).getState(Slot.PARALLEL), action);
 		}
 	}
 

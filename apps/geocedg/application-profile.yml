@@ -5705,7 +5705,12 @@
     "IsoA.Status.Tooltip": {"en": "Presentation only, compared with the current unit and session scale; never saved or exported. Click to use the sheet scale.", "es": "Solo presentación, comparada con la unidad y la escala de la sesión actuales; nunca se guarda ni se exporta. Haga clic para usar la escala de la lámina."},
     "AuthoringMemory.Status.Parallel": {"en": "Parallel Line · Memory", "es": "Paralela · Memoria"},
     "AuthoringMemory.Status.Perpendicular": {"en": "Perpendicular Line · Memory", "es": "Perpendicular · Memoria"},
-    "AuthoringMemory.Status.Tooltip": {"en": "Remembered reference active: Ctrl+click on the tool turned it on; a plain click on the tool, Esc or another tool turns it off. It shows the mode, not whether a reference is remembered.", "es": "Referencia recordada activa: se activó con Ctrl+clic en la herramienta; un clic normal en la herramienta, Esc u otra herramienta la desactivan. Indica el modo, no si hay una referencia recordada."},
+    "AuthoringMemory.Status.Tooltip": {"en": "Ctrl+click the tool to toggle its memory for this session. A click on the toolbar uses the saved setting for that tool.", "es": "Ctrl+clic en la herramienta para alternar su memoria durante la sesión. El clic en la barra aplica el estado guardado de esa herramienta."},
+    "AuthoringMemory.Status.Empty": {"en": "Select reference", "es": "Seleccione referencia"},
+    "AuthoringMemory.Status.Held": {"en": "Available", "es": "Disponible"},
+    "AuthoringMemory.Status.Suspended": {"en": "Unavailable", "es": "No disponible"},
+    "AuthoringMemory.Status.SuspendedByStep": {"en": "Later step", "es": "Paso posterior"},
+    "AuthoringMemory.Status.Invalidated": {"en": "Select again", "es": "Seleccione de nuevo"},
     "Properties.LineThickness.Field": {
       "en": "Line thickness: type a whole number within the slider range and press Enter",
       "es": "Grosor de línea: escribe un número entero dentro del rango del deslizador y pulsa Intro"

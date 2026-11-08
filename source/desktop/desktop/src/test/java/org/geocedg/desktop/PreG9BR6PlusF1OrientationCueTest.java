@@ -129,6 +129,10 @@ class PreG9BR6PlusF1OrientationCueTest {
 		admitted.put("A5", "lPv=Line(P,v)");
 		admitted.put("A6", "par=Line(P,lAB)");
 		admitted.put("A7", "perp=PerpendicularLine(P,lAB)");
+		admitted.put("CU5 parallel x", "parX=Line(P,xAxis)");
+		admitted.put("CU5 parallel y", "parY=Line(P,yAxis)");
+		admitted.put("CU5 perpendicular x", "perpX=PerpendicularLine(P,xAxis)");
+		admitted.put("CU5 perpendicular y", "perpY=PerpendicularLine(P,yAxis)");
 		admitted.put("A8", "perpV=PerpendicularLine(Q,v)");
 		admitted.put("A9", "pb=PerpendicularBisector(A,B)");
 		admitted.put("A10", "pbS=PerpendicularBisector(sAB)");
@@ -211,6 +215,7 @@ class PreG9BR6PlusF1OrientationCueTest {
 		assertTrue(checked >= 17, "every excluded route produced its defined lines: " + checked);
 		// X10: axes, list members, native dimensions and macros with an excluded chain
 		assertNull(GeoCeDGOrientationCue.cue(view, app.getKernel().lookupLabel("xAxis")));
+		assertNull(GeoCeDGOrientationCue.cue(view, app.getKernel().lookupLabel("yAxis")));
 		run(app, "L={Line(A,P)}");
 		GeoElement member = (GeoElement) ((org.geogebra.common.kernel.geos.GeoList) app
 				.getKernel().lookupLabel("L")).get(0);
