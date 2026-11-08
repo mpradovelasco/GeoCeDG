@@ -6276,7 +6276,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGInspectionXml.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: screen passive native XML before kernel evaluation and report refusals and declarations. POST-CU4 I3–I5: Keep the expert envelope aligned with the passive native reader and verified command grammar. Authority: geocedg/specs/ui/expert-document-insertion-candidate.md.",
+      "purpose": "POST-CU4 I2: screen passive native XML before kernel evaluation and report refusals and declarations. POST-CU4 I3–I5: Keep the expert envelope aligned with the passive native reader and verified command grammar. Admit remembered window placement for hidden panels and identify refused settings in the report. Authority: geocedg/specs/ui/expert-document-insertion-candidate.md.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
     },
     {
@@ -6378,7 +6378,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGInspectionArchiveTest.java",
       "change": "added",
-      "purpose": "POST-CU4 I2: test bounded archive and XML preflight with passive, active, invalid and ambiguous input. POST-CU4 I3–I5: Verify the authorized experimental action and the unchanged default Desktop surface. Authority: geocedg/specs/ui/expert-document-insertion-candidate.md.",
+      "purpose": "POST-CU4 I2: test bounded archive and XML preflight with passive, active, invalid and ambiguous input, including visible detached views. POST-CU4 I3–I5: Verify the authorized experimental action and the unchanged default Desktop surface. Authority: geocedg/specs/ui/expert-document-insertion-candidate.md.",
       "authority": "docs/architecture/post_cu4_i2_i5_inspection_contract.md"
     },
     {
@@ -7691,12 +7691,12 @@
       "authority": "docs/validation/pre_g9b_cu4_author_design_approval_record.md"
     },
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertContext.java", "change": "added", "purpose": "POST-CU4 I3–I5: Transport effective layer and view context with the live receiver snapshot.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
-    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertIntegrity.java", "change": "added", "purpose": "POST-CU4 I3–I5: Validate passive native copy provenance, producer ports, geometry and reopening without requiring P4.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
+    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertIntegrity.java", "change": "added", "purpose": "POST-CU4 I3–I5: Version and validate passive native copy provenance, producer ports, geometry and reopening without requiring P4.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertReview.java", "change": "added", "purpose": "POST-CU4 I3–I5: Show the bounded isolated trial, localize review, and consume exact consent.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertReviewModel.java", "change": "added", "purpose": "POST-CU4 I3–I5: Project typed differential evidence into the localized Desktop review.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertSaveState.java", "change": "added", "purpose": "POST-CU4 I3–I5: Track the first distinct Save As by expert history checkpoint in the current session.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
-    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertWorker.java", "change": "added", "purpose": "POST-CU4 I3–I5: Launch the separate JVM and verify its bounded report, input hashes and preview.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
-    {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertArcLifecycleTest.java", "change": "added", "purpose": "POST-CU4 I3–I5: Exercise the separate worker, replay, arc dynamics, Undo/Redo and native reopening.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
+    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertWorker.java", "change": "added", "purpose": "POST-CU4 I3–I5: Launch the separate JVM and verify its bounded report, analysis version, input hashes and preview.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
+    {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertArcLifecycleTest.java", "change": "added", "purpose": "POST-CU4 I3–I5: Exercise the separate worker, replay, arc dynamics, Undo/Redo and native reopening, including a hidden panel with remembered window placement.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertPublicationTest.java", "change": "added", "purpose": "POST-CU4 I3–I5: Cover one-use consent, live state, reversible publication and injected F3 recovery failures.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertReviewTest.java", "change": "added", "purpose": "POST-CU4 I3–I5: Cover the review surface, source currentness and save destination policy.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertTrialTest.java", "change": "added", "purpose": "POST-CU4 I3–I5: Cover native passive family trials, layer evidence and invalid geometry.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"}

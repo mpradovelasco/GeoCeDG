@@ -141,6 +141,19 @@ public class GeoCeDGInspectionArchiveTest {
 		assertRefused(Code.ANIMATION, zip("geogebra.xml", document("""
 				<element type="numeric" label="a"><animation step="1" playing="true"/></element>
 				""")));
+		String detachedView = document(POINTS).replace("<construction>", """
+				<gui><perspectives><perspective id="tmp"><views>
+				<view id="1" visible="true" inframe="true" stylebar="false"
+					location="1" size="300" window="100,100,600,400"/>
+				</views></perspective></perspectives></gui><construction>
+				""");
+		Inspection detached = assertRefused(Code.UNSUPPORTED_XML, zip("geogebra.xml", detachedView));
+		assertEquals(List.of(new GeoCeDGInspectionArchive.Finding(Code.UNSUPPORTED_XML,
+				"geogebra.xml/gui/perspectives/perspective/views/view",
+				"Visible detached views are outside the passive trial")), detached.findings());
+		assertRefused(Code.UNSUPPORTED_XML, zip("geogebra.xml",
+				detachedView.replace("visible=\"true\"", "visible=\"false\"")
+						.replace("inframe=\"true\"", "inframe=\"invalid\"")));
 		assertRefused(Code.SCRIPT, zip("geogebra.xml", document(POINTS), "geogebra_defaults2d.xml",
 				"""
 				<geogebra format="5.0"><defaults><element default="10" type="point" label="Point">
@@ -235,12 +248,13 @@ public class GeoCeDGInspectionArchiveTest {
 				document("<geocedgUnits version=\"3\"/>" + POINTS)));
 	}
 
-	private static void assertRefused(Code expected, byte[] bytes) {
+	private static Inspection assertRefused(Code expected, byte[] bytes) {
 		Inspection inspection = GeoCeDGInspectionArchive.inspect(bytes);
 		assertFalse(inspection.loadable());
 		assertTrue(inspection.findings().toString(),
 				inspection.findings().stream().anyMatch(finding -> finding.code() == expected));
 		assertThrows(IllegalStateException.class, inspection::openForNativeLoad);
+		return inspection;
 	}
 
 	private static String document(String contents) {

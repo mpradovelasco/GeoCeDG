@@ -32,6 +32,8 @@ import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
+import org.geogebra.desktop.gui.layout.DockManagerD;
+import org.geogebra.desktop.gui.layout.DockPanelD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -66,6 +68,10 @@ class GeoCeDGExpertArcLifecycleTest {
 			baseline(model);
 			must(model, "LiveOnly=(3,1)");
 			model.storeUndoInfo();
+			DockPanelD properties = propertiesPanel(model);
+			assertFalse(properties.isVisible());
+			properties.setOpenInFrame(true);
+			assertFalse(properties.isInFrame());
 			return model;
 		});
 		awaitQuiescent(receiver);
@@ -98,6 +104,8 @@ class GeoCeDGExpertArcLifecycleTest {
 					assertTrue(receiver.requiresExpertSaveAs());
 					assertSame(initial, named(receiver, "A"));
 					assertEquals(uuid, receiver.getUniqueId());
+					assertTrue(propertiesPanel(receiver).isOpenInFrame());
+					assertFalse(propertiesPanel(receiver).isInFrame());
 					assertTrue(assertArc(receiver, Math.PI / 2).isVisibleInView(App.VIEW_EUCLIDIAN));
 					assertEquals(4, named(receiver, "u").getLayer());
 					undo(receiver).undo();
@@ -148,6 +156,11 @@ class GeoCeDGExpertArcLifecycleTest {
 			assertArc(reopened, Math.PI / 2);
 		});
 		assertArrayEquals(originalSource, Files.readAllBytes(source.toPath()));
+	}
+
+	private static DockPanelD propertiesPanel(AppGeoCeDG app) {
+		DockManagerD dock = (DockManagerD) app.getGuiManager().getLayout().getDockManager();
+		return dock.getPanel(App.VIEW_PROPERTIES);
 	}
 
 	private static String workerClassPath() throws Exception {

@@ -447,7 +447,10 @@ final class GeoCeDGInspectionXml {
 				continue;
 			}
 			boolean allowed = switch (name) {
-			case "gui", "euclidianView", "algebraView", "kernel" -> settingsSection(node);
+			case "gui", "euclidianView", "algebraView", "kernel" -> {
+				checkSettingsSection(node);
+				yield true;
+			}
 			case "tableview" -> node.leaf("min max step") && numbers(node, "min", "max", "step");
 			case "scripting" -> node.leaf("blocked disabled");
 			case "geocedgHiddenLayers" -> node.leaf("version layers")
@@ -464,30 +467,62 @@ final class GeoCeDGInspectionXml {
 		}
 	}
 
-	private boolean settingsSection(Node node) {
-		return node.attrs().isEmpty()
-				&& node.children().stream().allMatch(child -> settingsChild(node.name(), child));
+	private void checkSettingsSection(Node node) {
+		if (!node.attrs().isEmpty()) {
+			refuse(Code.UNSUPPORTED_XML, node.name(), "Unsupported settings section attributes");
+			return;
+		}
+		node.children().forEach(child -> checkSettingsChild(node.name(), node.name(), child));
 	}
 
-	private boolean settingsChild(String parent, Node node) {
+	private void checkSettingsChild(String parent, String parentPath, Node node) {
 		String name = node.name();
 		String allowed = SETTINGS_ATTRIBUTES.get(parent + "/" + name);
-		if (allowed == null || !node.attributes(allowed)) {
-			return false;
+		String path = parentPath + "/" + name;
+		if (allowed == null) {
+			refuse(Code.UNSUPPORTED_XML, path, "Unrecognized settings element");
+			return;
+		}
+		if (!node.attributes(allowed)) {
+			refuse(Code.UNSUPPORTED_XML, path, "Unsupported settings attributes");
+			return;
 		}
 		if (SETTINGS_CONTAINERS.contains(name)) {
-			return node.children().stream().allMatch(child -> settingsChild(name, child));
+			node.children().forEach(child -> checkSettingsChild(name, path, child));
+			return;
 		}
-		return node.children().isEmpty() && switch (name) {
-		case "axis" -> numbers(node, "tickDistance", "tickExpression");
-		case "coordSystem" -> numbers(node, "xZero", "yZero", "scale", "yscale");
-		case "view" -> optionalFalse(node, "inframe")
-				&& ("false".equals(node.attr("visible")) || Set.of("1", "2", "16", "32", "64")
-						.contains(node.attr("id")));
-		case "viewNumber" -> Set.of("1", "2").contains(node.attr("viewNo"));
-		case "startAnimation" -> "false".equals(node.attr("val"));
-		default -> true;
+		if (!node.children().isEmpty()) {
+			refuse(Code.UNSUPPORTED_XML, path, "Unexpected nested settings");
+			return;
+		}
+		String refusal = switch (name) {
+		case "axis" -> numbers(node, "tickDistance", "tickExpression")
+				? null : "Unsupported axis tick distance or expression";
+		case "coordSystem" -> numbers(node, "xZero", "yZero", "scale", "yscale")
+				? null : "Unsupported coordinate system values";
+		case "view" -> viewRefusal(node);
+		case "viewNumber" -> Set.of("1", "2").contains(node.attr("viewNo"))
+				? null : "Unsupported graphics view number";
+		case "startAnimation" -> "false".equals(node.attr("val"))
+				? null : "The passive trial cannot start animations";
+		default -> null;
 		};
+		if (refusal != null) {
+			refuse(Code.UNSUPPORTED_XML, path, refusal);
+		}
+	}
+
+	private static String viewRefusal(Node node) {
+		boolean hidden = "false".equals(node.attr("visible"));
+		if ("true".equals(node.attr("inframe"))) {
+			// The native layout reader records this flag but only opens visible views.
+			return hidden ? null : "Visible detached views are outside the passive trial";
+		}
+		if (!optionalFalse(node, "inframe")) {
+			return "Unsupported detached view setting";
+		}
+		return hidden || Set.of("1", "2", "16", "32", "64").contains(node.attr("id"))
+				? null : "Visible view is outside the passive trial";
 	}
 
 	private boolean construction(Node construction) {

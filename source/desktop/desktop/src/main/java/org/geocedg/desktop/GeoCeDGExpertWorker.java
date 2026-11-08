@@ -282,7 +282,7 @@ final class GeoCeDGExpertWorker {
 					|| tokens.nextClean() != 0 || !Integer.valueOf(2).equals(report.get("schemaVersion"))
 					|| !"POST_CU4_I2_PASSIVE_1".equals(report.getString("policy"))
 					|| !"POST_CU4_I2_DIFFERENTIAL_2".equals(report.getString("analysisVersion"))
-					|| !"POST_CU4_EXPERT_1".equals(expert.getString("version"))
+					|| !GeoCeDGExpertIntegrity.VERSION.equals(expert.getString("version"))
 					|| !availability.equals(publication.get("available"))
 					|| !reason.equals(publication.getString("reason"))
 					|| (available && (fingerprint == null || !SHA256.matcher(fingerprint).matches()))

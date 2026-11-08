@@ -53,7 +53,7 @@ import org.geogebra.desktop.headless.GFileHandler;
 
 /** Expert-only native transport and integrity checks, shared by rehearsal and commit. */
 final class GeoCeDGExpertIntegrity {
-	static final String VERSION = "POST_CU4_EXPERT_1";
+	static final String VERSION = "POST_CU4_EXPERT_2";
 	private static final int MAX_GRAPH_DEPTH = 160;
 	private static final int MAX_GRAPH_NODES = 4096;
 	// These producers populate getInput() via setInputFrom(), which enumerates
