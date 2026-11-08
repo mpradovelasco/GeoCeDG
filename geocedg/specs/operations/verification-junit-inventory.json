@@ -4673,6 +4673,47 @@
           "tree": "7834a15509a3520103a5d699e3d1689b9ae4b74b"
         }
       ]
+    },
+    {
+      "selection_id": "pre-g9b-cu5.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BCu5ConstructionProtocolTest",
+        "org.geocedg.desktop.PreG9BCu0AuthoringCharacterizationTest",
+        "org.geocedg.desktop.PreG9BR6PlusF1OrientationCueTest",
+        "org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest",
+        "org.geocedg.desktop.PreG9BR6PlusF2R1DualActivationTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu5ConstructionProtocolTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0AuthoringCharacterizationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF1OrientationCueTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF2R1DualActivationTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 57,
+      "expected_identities_sha256": "c7871627c39afcc957d82acb61c4b420ea46ecf42b4aeecd8c316bf4a2c6adbb",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "47bac988c1313b0406c919660e6fa079cced3152",
+          "tree": "95243ee19f7878cf3ae498f35473ace0e6a43cec"
+        }
+      ]
     }
   ]
 }
