@@ -350,7 +350,7 @@ public abstract class Log {
 
 	private void doRead(String string) {
 		if (reading) {
-			error(string);
+			debug(string);
 		}
 	}
 

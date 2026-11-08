@@ -179,7 +179,6 @@ public class ImageManagerD extends ImageManager {
 	 * @param img image
 	 */
 	public void addExternalImage(String fileName0, MyImage img) {
-		Log.error("adding " + fileName0);
 		if (fileName0 != null && img != null) {
 			String fileName = fileName0;
 			// GIF saved as PNG in .ggb files so need to change extension

@@ -94,6 +94,19 @@ public final class GeoCeDGProfile {
 		}
 	}
 
+	static boolean isFeatureEnabledByDefault(String id) {
+		JSONArray features = DEFINITION.catalog.optJSONArray("features");
+		if (features != null) {
+			for (int index = 0; index < features.length(); index++) {
+				JSONObject feature = features.optJSONObject(index);
+				if (feature != null && id.equals(feature.optString("id"))) {
+					return feature.optBoolean("enabled_by_default");
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * @param key profile-owned localization key
 	 * @param language requested language; unsupported languages use English

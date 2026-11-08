@@ -85,11 +85,11 @@ try {
     Run-ProfileCase "wrong typed feature source" { param($p) $p.features[0].source = 'geocedg/features/experimental.yml' } $false
     Run-ProfileCase "required profile disabled" { param($p) $p.features[0].enabled_by_default = $false } $false
     Run-ProfileCase "Laboratory silently enabled" { param($p) ($p.features | Where-Object id -CEQ 'cedg.laboratory.legacy').enabled_by_default = $true } $false
-    Run-ProfileCase "expert insertion silently enabled" {
+    Run-ProfileCase "expert insertion disabled by default" {
         param($p)
-        ($p.features | Where-Object id -CEQ 'cedg.document.expert-insertion').enabled_by_default = $true
+        ($p.features | Where-Object id -CEQ 'cedg.document.expert-insertion').enabled_by_default = $false
     } $false
-    Run-ProfileCase "expert insertion action loses opt-in gate" {
+    Run-ProfileCase "expert insertion action loses the feature gate" {
         param($p)
         ($p.actions | Where-Object id -CEQ 'document.insert-expert').feature_requirements = @()
     } $false

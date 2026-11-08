@@ -308,7 +308,7 @@ class PreG9BR6PlusF3RecoveryTest {
 			violations.add("Save / Save As");
 		}
 		for (String action : new String[] {"document.save", "document.save-as",
-				"document.insert-file", "document.apply-styles", "export.dxf-2d",
+				"document.insert-file", "document.insert-expert", "document.apply-styles", "export.dxf-2d",
 				"document.new", "document.open"}) {
 			if (gui.getActionRegistry().unavailableReason(action) == null) {
 				violations.add("action " + action);

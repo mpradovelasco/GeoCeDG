@@ -121,7 +121,8 @@ class G9U1WorkspaceSurfaceTest {
 		for (Component component : bar.getComponents()) {
 			collect(component, ids);
 		}
-		assertEquals(134, ids.size());
+		assertEquals(135, ids.size());
+		assertTrue(ids.contains("document.insert-expert"));
 		assertEquals(7, bar.getMenuCount());
 		assertTrue(ids.contains("navigation.zoom-window"));
 		assertTrue(ids.contains("navigation.zoom-factor-in"));
@@ -175,7 +176,6 @@ class G9U1WorkspaceSurfaceTest {
 		}
 		Set<String> defaultActions = new HashSet<>(
 				((GuiManagerGeoCeDG) app.getGuiManager()).getActionRegistry().ids());
-		assertTrue(defaultActions.remove("document.insert-expert"));
 		assertEquals(defaultActions, occurrences.keySet());
 		occurrences.forEach((id, count) -> assertEquals(1, count, id));
 	}
@@ -706,7 +706,7 @@ class G9U1WorkspaceSurfaceTest {
 					.getJSONArray("toolbar_action_ids")));
 		}
 		assertEquals(60, toolbarIds.size());
-		assertEquals(134, menuIds.size());
+		assertEquals(135, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();

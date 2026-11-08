@@ -20,8 +20,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.JPanel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 
 import org.geogebra.common.move.ggtapi.models.json.JSONException;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
@@ -41,21 +41,22 @@ class GeoCeDGExpertReviewTest {
 	}
 
 	@Test
-	void actionIsOptInLocalizedAndChooserCancellationKeepsLiveState() throws Exception {
+	void actionIsDefaultLocalizedAndChooserCancellationKeepsLiveState() throws Exception {
 		onEdt(() -> {
-			AppGeoCeDG defaultApp = app(false);
-			defaultApp.getGuiManager().initMenubar();
-			var defaultMenu = (JMenuBar) defaultApp.getGuiManager().getMenuBar();
-			assertNull(G9U1WorkspaceSurfaceTest.findItem(defaultMenu.getMenu(0), ACTION));
-			assertNotNull(G9U1WorkspaceSurfaceTest.findItem(defaultMenu.getMenu(0),
+			AppGeoCeDG disabled = app("--silent", "--enableExpertInsertion=false");
+			disabled.getGuiManager().initMenubar();
+			var disabledMenu = (JMenuBar) disabled.getGuiManager().getMenuBar();
+			assertNull(G9U1WorkspaceSurfaceTest.findItem(disabledMenu.getMenu(0), ACTION));
+			assertNotNull(G9U1WorkspaceSurfaceTest.findItem(disabledMenu.getMenu(0),
 					"document.insert-file"));
 
-			AppGeoCeDG enabled = app(true);
+			AppGeoCeDG enabled = app("--silent");
 			enabled.setLocale(Locale.forLanguageTag("es"));
 			enabled.getGuiManager().initMenubar();
 			var fileMenu = ((JMenuBar) enabled.getGuiManager().getMenuBar()).getMenu(0);
 			var action = G9U1WorkspaceSurfaceTest.findItem(fileMenu, ACTION);
 			assertNotNull(action);
+			assertTrue(action.isEnabled());
 			assertEquals("Insertar con revisión experta…", action.getText());
 			assertNotNull(action.getAccessibleContext().getAccessibleDescription());
 			var construction = enabled.getKernel().getConstruction();
@@ -85,6 +86,7 @@ class GeoCeDGExpertReviewTest {
 			assertFalse(enabled.requiresExpertSaveAs());
 			assertEquals("Insert with expert review…",
 					GeoCeDGProfile.getText("geocedg.document.InsertExpert.name", "en"));
+			return null;
 		});
 	}
 
@@ -108,7 +110,7 @@ class GeoCeDGExpertReviewTest {
 				 "admission":{"state":"REJECTED","reason":"P4"},"diagnostics":[]}
 				""");
 		onEdt(() -> {
-			AppGeoCeDG app = app(true);
+			AppGeoCeDG app = app("--silent");
 			app.setLocale(Locale.forLanguageTag("es"));
 			var model = GeoCeDGExpertReviewModel.project(app, report, true, "PASSIVE_NATIVE_REPLAY");
 			assertTrue(model.summary().contains("1 incorporaciones"));
@@ -148,9 +150,8 @@ class GeoCeDGExpertReviewTest {
 		}
 	}
 
-	private static AppGeoCeDG app(boolean expert) {
+	private static AppGeoCeDG app(String... arguments) {
 		return G9U1TestApp.withoutWindowDispatcher(new AppGeoCeDG(
-				new CommandLineArguments(new String[]{"--silent", "--enableExpertInsertion=" + expert}),
-				new JPanel()));
+				new CommandLineArguments(arguments), new JPanel()));
 	}
 }

@@ -113,7 +113,7 @@ public class GeoGebra {
 				initialize.run();
 			}
 		} catch (Throwable e) {
-			Log.debug(e);
+			Log.error(e);
 			System.err.flush();
 			AppD.exit(10);
 		}

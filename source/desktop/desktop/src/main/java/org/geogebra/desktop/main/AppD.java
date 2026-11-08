@@ -868,7 +868,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			this.macsandbox = true;
 		}
 
-		setVersionCheckAllowed(args.getStringValue("versionCheckAllow"));
+		setVersionCheckAllowed(args.containsArg("versionCheckAllow")
+				? args.getStringValue("versionCheckAllow") : null);
 
 	}
 

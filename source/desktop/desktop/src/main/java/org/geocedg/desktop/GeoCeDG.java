@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
 import org.geogebra.desktop.CommandLineArguments;
@@ -34,7 +35,7 @@ public final class GeoCeDG {
 	public static void main(String[] args) {
 		String[] effectiveArguments = args == null ? new String[0] : args;
 		if (GeoCeDGExpertWorker.isDispatch(effectiveArguments)) {
-			GeoCeDGExpertInspection.main(java.util.Arrays.copyOfRange(effectiveArguments,
+			GeoCeDGExpertInspection.main(Arrays.copyOfRange(effectiveArguments,
 					1, effectiveArguments.length));
 			return;
 		}
@@ -57,6 +58,11 @@ public final class GeoCeDG {
 								+ preferencesFile.getParent(), exception);
 			}
 			GeoGebraPreferencesD.setPropertyFileName(preferencesFile.toString());
+		}
+		if (!parsedArguments.containsArg("logLevel") && !parsedArguments.containsArg("logFile")
+				&& !parsedArguments.containsArg("silent")) {
+			effectiveArguments = Arrays.copyOf(effectiveArguments, effectiveArguments.length + 1);
+			effectiveArguments[effectiveArguments.length - 1] = "--logLevel=INFO";
 		}
 		GeoGebra.doMain(effectiveArguments, GeoCeDGFrame::new,
 				GeoCeDG::getSplashResource);

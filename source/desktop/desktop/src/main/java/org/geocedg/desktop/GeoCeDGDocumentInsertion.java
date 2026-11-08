@@ -1613,6 +1613,12 @@ final class GeoCeDGDocumentInsertion {
 			}
 			barrier.snapshot.retainForIsolation();
 			handedOver = true;
+			if (expertBefore != null) {
+				Log.error("Expert insertion recovery could not be certified");
+				if (failure != null) {
+					Log.error(failure);
+				}
+			}
 			app.getInsertionIsolation().enter(barrier.snapshot, name, keptAside);
 			return new Result(Outcome.SERIOUS_RECOVERY_FAILURE, text("Insert.Serious", name),
 					List.of(), failure);

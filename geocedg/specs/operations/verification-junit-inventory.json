@@ -4617,7 +4617,7 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 228,
-      "expected_identities_sha256": "280f6e012c2b2ca301dbc9fbd5c1b3f1cd4156f0e92d3feb2ba7c23946f4fefc",
+      "expected_identities_sha256": "62b506d8970d1b5fb18e6a6eab8e2dd5f270cb5a4602851bd9a4105352777852",
       "not_applicable_allowlist": [],
       "input_identities": [
         {

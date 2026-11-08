@@ -1637,7 +1637,10 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	}
 
 	private static boolean expertInsertionRequested(CommandLineArguments args) {
-		return args != null && args.getBooleanValue(GeoCeDGExpertReview.ARGUMENT, false);
+		boolean enabledByDefault = GeoCeDGProfile.isFeatureEnabledByDefault(
+				GeoCeDGExpertReview.FEATURE_ID);
+		return args == null ? enabledByDefault
+				: args.getBooleanValue(GeoCeDGExpertReview.ARGUMENT, enabledByDefault);
 	}
 
 	boolean isExpertInsertionEnabled() {

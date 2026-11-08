@@ -93,7 +93,8 @@ class PreG9BR6PlusF3SurfaceAndStylesTest {
 		assertNotNull(insert, "File -> Insert");
 		assertTrue(openIndex >= 0 && insertIndex > openIndex);
 		assertEquals("Insert", insert.getText());
-		assertEquals(List.of("document.insert-file", "document.apply-styles"), actionIds(insert));
+		assertEquals(List.of("document.insert-file", "document.insert-expert",
+				"document.apply-styles"), actionIds(insert));
 		for (Component child : insert.getMenuComponents()) {
 			assertNull(((JMenuItem) child).getAccelerator(), "no accelerator");
 		}

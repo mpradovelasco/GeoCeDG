@@ -99,7 +99,7 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     # independent review and author smoke. Only this new action is admitted;
     # the single live profile continues to own its full runtime record.
     $cu7M08SReferenceActionIds = @("semantic.locus-v2.point-from-reference")
-    # POST-CU4 I3–I5 authorizes one opt-in expert document action.
+    # POST-CU4 authorizes one default-enabled expert document action.
     $expertInsertionActionIds = @("document.insert-expert")
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
         $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
@@ -113,8 +113,8 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     $featureIds = @($profile.features.id)
     $approvedFeatures = @($candidate.features) + @(@{
         id = "cedg.document.expert-insertion"
-        source = "geocedg/features/experimental.yml"
-        enabled_by_default = $false
+        source = "geocedg/features/stable.yml"
+        enabled_by_default = $true
     })
     if ($featureIds.Count -ne $approvedFeatures.Count -or
         @($featureIds | Sort-Object -Unique -CaseSensitive).Count -ne $featureIds.Count) {
@@ -129,10 +129,10 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         }
     }
     $expertAction = $profile.actions | Where-Object id -CEQ "document.insert-expert"
-    if ($expertAction.maturity -cne "experimental" -or
+    if ($expertAction.maturity -cne "stable" -or
         $expertAction.target.symbol -cne "geocedg.document.insert-expert" -or
         ($expertAction.feature_requirements -join ",") -cne "cedg.document.expert-insertion") {
-        throw "Expert insertion must stay on its separate opt-in action."
+        throw "Expert insertion must retain its separate, feature-controlled action."
     }
     if ($profile.product_policies.continuity.value -ne $false -or
         $profile.product_policies.continuity.locked -ne $true -or

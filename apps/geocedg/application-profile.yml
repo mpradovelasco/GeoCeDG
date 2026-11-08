@@ -2237,7 +2237,7 @@
       "target": {
         "symbol": "geocedg.document.insert-expert"
       },
-      "maturity": "experimental",
+      "maturity": "stable",
       "feature_requirements": ["cedg.document.expert-insertion"],
       "selection_contract_ref": "geocedg.expert-document-insertion",
       "effect_profile_id": "document-lifecycle",
@@ -3395,8 +3395,8 @@
     },
     {
       "id": "cedg.document.expert-insertion",
-      "source": "geocedg/features/experimental.yml",
-      "enabled_by_default": false
+      "source": "geocedg/features/stable.yml",
+      "enabled_by_default": true
     }
   ],
   "deferred_inventory": [
