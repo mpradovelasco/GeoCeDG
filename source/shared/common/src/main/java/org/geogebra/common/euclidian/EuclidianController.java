@@ -38,6 +38,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GPoint;
@@ -5674,9 +5675,17 @@ public abstract class EuclidianController implements SpecialPointsListener {
 	}
 
 	protected final void moveLabel() {
-		movedLabelGeoElement.setLabelOffset(
-				oldLoc.x + mouseLoc.x - startLoc.x,
-				oldLoc.y + mouseLoc.y - startLoc.y);
+		if (app.getConfig() instanceof AppConfigGeoCeDG) {
+			// CU6 M03: native labelOffset already stores signed logical pixels.
+			movedLabelGeoElement.labelOffsetX = (int) Math.max(Integer.MIN_VALUE,
+					Math.min(Integer.MAX_VALUE, (long) oldLoc.x + mouseLoc.x - startLoc.x));
+			movedLabelGeoElement.labelOffsetY = (int) Math.max(Integer.MIN_VALUE,
+					Math.min(Integer.MAX_VALUE, (long) oldLoc.y + mouseLoc.y - startLoc.y));
+		} else {
+			movedLabelGeoElement.setLabelOffset(
+					oldLoc.x + mouseLoc.x - startLoc.x,
+					oldLoc.y + mouseLoc.y - startLoc.y);
+		}
 		movedLabelGeoElement.notifyUpdate();
 		kernel.notifyRepaint();
 	}
@@ -8231,6 +8240,10 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			moveMode = MoveMode.LABEL;
 			movedLabelGeoElement = geo;
 			oldLoc.setLocation(geo.labelOffsetX, geo.labelOffsetY);
+			if (app.getConfig() instanceof AppConfigGeoCeDG
+					&& view.getDrawableFor(geo) instanceof Drawable drawable) {
+				drawable.useDisplayedLabelOffset(oldLoc);
+			}
 			startLoc = mouseLoc;
 			setDragCursor();
 			return;

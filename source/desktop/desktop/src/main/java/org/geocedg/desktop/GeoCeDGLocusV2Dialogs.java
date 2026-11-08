@@ -225,33 +225,56 @@ final class GeoCeDGLocusV2Dialogs {
 		fields.add(parameterPrompt, layout);
 		layout.gridx = 1; layout.weightx = 1;
 		fields.add(parameter, layout);
+		if (!GeoCeDGArgumentDialog.supports(app)) {
+			return legacySemanticPoint(source, fields, branch, parameter);
+		}
+		GeoPoint[] result = new GeoPoint[1];
+		GeoCeDGArgumentDialog.show((AppGeoCeDG) app, menu("LocusV2.Point.Tool"), fields,
+				parameter, List.of(source), session -> {
+					String branchKey = branch.getText().trim();
+					GeoNumberValue parameterInput = app.getKernel().getAlgebraProcessor()
+							.evaluateToNumeric(session.input(), true);
+					if (!session.isCurrent()) {
+						session.retry(null);
+						return;
+					}
+					try {
+						result[0] = semanticPoint(source, branchKey, parameterInput);
+						session.finish();
+					} catch (IllegalArgumentException exception) {
+						session.retry(menu("LocusV2.InvalidPosition"));
+					}
+				});
+		return result[0];
+	}
+
+	private GeoPoint legacySemanticPoint(GeoLocusV2 source, JPanel fields,
+			JTextField branch, JTextField parameter) {
 		while (JOptionPane.showConfirmDialog(app.getMainComponent(), fields,
 				menu("LocusV2.Point.Tool"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-			String branchKey = branch.getText().trim();
-			GeoNumberValue parameterInput = app.getKernel()
-					.getAlgebraProcessor().evaluateToNumeric(
-							parameter.getText().trim(), true);
-			if (branchKey.isEmpty() || parameterInput == null
-					|| !parameterInput.toGeoElement().isDefined()
-					|| !Double.isFinite(parameterInput.getDouble())) {
-				showMessage("LocusV2.InvalidPosition",
-						"LocusV2.Point.Tool", JOptionPane.ERROR_MESSAGE);
-				continue;
-			}
-			GeoText branchInput = new GeoText(
-					app.getKernel().getConstruction(), branchKey);
-			branchInput.setAuxiliaryObject(true);
 			try {
-				return LocusV2PublicOperations.createSemanticPoint(
-						app.getKernel().getConstruction(), null, source,
-						branchInput, parameterInput);
+				return semanticPoint(source, branch.getText().trim(),
+						app.getKernel().getAlgebraProcessor().evaluateToNumeric(
+								parameter.getText().trim(), true));
 			} catch (IllegalArgumentException exception) {
 				showMessage("LocusV2.InvalidPosition",
 						"LocusV2.Point.Tool", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		return null;
+	}
+
+	private GeoPoint semanticPoint(GeoLocusV2 source, String branchKey, GeoNumberValue parameter) {
+		if (branchKey.isEmpty() || parameter == null || !parameter.toGeoElement().isDefined()
+				|| !Double.isFinite(parameter.getDouble())) {
+			throw new IllegalArgumentException("Invalid semantic point position");
+		}
+		var construction = app.getKernel().getConstruction();
+		GeoText branchInput = new GeoText(construction, branchKey);
+		branchInput.setAuxiliaryObject(true);
+		return LocusV2PublicOperations.createSemanticPoint(construction, null, source,
+				branchInput, parameter);
 	}
 
 	/** Inspects selected/current rich results and optionally creates one token point. */

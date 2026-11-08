@@ -5711,6 +5711,16 @@
     "AuthoringMemory.Status.Suspended": {"en": "Unavailable", "es": "No disponible"},
     "AuthoringMemory.Status.SuspendedByStep": {"en": "Later step", "es": "Paso posterior"},
     "AuthoringMemory.Status.Invalidated": {"en": "Select again", "es": "Seleccione de nuevo"},
+    "ArgumentPick.Button": {"en": "Pick object", "es": "Seleccionar objeto"},
+    "ArgumentPick.Armed": {"en": "Pick a number in Graphics 1 or Algebra.", "es": "Seleccione un número en Gráficos 1 o Álgebra."},
+    "ArgumentPick.None": {"en": "No numeric reference is available here.", "es": "No hay una referencia numérica disponible aquí."},
+    "ArgumentPick.Stale": {"en": "The reference has changed. Pick it again.", "es": "La referencia ha cambiado. Vuelva a seleccionarla."},
+    "ArgumentPick.OperandStale": {"en": "The initial selection has changed. Cancel and reopen the tool.", "es": "La selección inicial ha cambiado. Cancele y vuelva a abrir la herramienta."},
+    "Algebra.Search.Name": {"en": "Find by name", "es": "Buscar por nombre"},
+    "Algebra.Search.Previous": {"en": "Previous match", "es": "Coincidencia anterior"},
+    "Algebra.Search.Next": {"en": "Next match", "es": "Coincidencia siguiente"},
+    "Algebra.Tooltip.NoDefinition": {"en": "Definition unavailable", "es": "Definición no disponible"},
+    "Algebra.Tooltip.Undefined": {"en": "Undefined", "es": "Indefinido"},
     "Properties.LineThickness.Field": {
       "en": "Line thickness: type a whole number within the slider range and press Enter",
       "es": "Grosor de línea: escribe un número entero dentro del rango del deslizador y pulsa Intro"

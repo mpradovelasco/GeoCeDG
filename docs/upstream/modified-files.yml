@@ -3774,7 +3774,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGEuclidianView.java",
       "change": "added",
-      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects. PRE-G9B-R6-plus-B: paint the transient export-area overlay in the live view only; exports never paint it. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E3: validate the ISO A export-area link by identity when painting. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: paints the orientation cue in the live Graphics 1 paint only, after the export-area overlay; exportPaint never calls it. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F4-A: the Graphics 1 style bar is the GeoCeDG style bar with the numeric line-thickness field. Authority: docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md.",
+      "purpose": "Render transient exact-token markers and view-only ZoomWindow feedback without creating semantic objects. PRE-G9B-R6-plus-B: paint the transient export-area overlay in the live view only; exports never paint it. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E3: validate the ISO A export-area link by identity when painting. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: paints the orientation cue in the live Graphics 1 paint only, after the export-area overlay; exportPaint never calls it. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F4-A: the Graphics 1 style bar is the GeoCeDG style bar with the numeric line-thickness field. Authority: docs/validation/pre_g9b_r6_plus_f4_a_candidate_report.md. PRE-G9B-CU6 B04 paints the current ordinary line-conic intersection index on selected outputs in the live view. Authority: docs/architecture/pre_g9b_cu6_d_interaction_design.md.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
@@ -4650,7 +4650,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/EuclidianController.java",
       "change": "modified",
-      "purpose": "POST-G9U1-A7: Add the bounded cursor/rectangle navigation hooks while preserving Classic controller and geometry behavior.",
+      "purpose": "POST-G9U1-A7: Add the bounded cursor/rectangle navigation hooks while preserving Classic controller and geometry behavior. PRE-G9B-CU6 M03 extends the GeoCeDG label-drag range and starts from the visible label position. Authority: docs/architecture/pre_g9b_cu6_d_interaction_design.md.",
       "authority": "docs/validation/post_g9u1_a7_navigation_design_matrix.md"
     },
     {
@@ -5994,7 +5994,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/euclidian/Drawable.java",
       "change": "modified",
-      "purpose": "GeoCeDG POST-E2-P1-R2: updateStrokes and updateStrokesJustLineThickness size objStroke and decoStroke in physical style pixels when the view's physical style scale is not 1 (only GeoCeDG's physical PDF export viewport); with 1 every stroke is unchanged.",
+      "purpose": "GeoCeDG POST-E2-P1-R2: updateStrokes and updateStrokesJustLineThickness size objStroke and decoStroke in physical style pixels when the view's physical style scale is not 1 (only GeoCeDG's physical PDF export viewport); with 1 every stroke is unchanged. PRE-G9B-CU6 M03 uses the visible edge for GeoCeDG label placement without replacing the stored offset. Authority: docs/architecture/pre_g9b_cu6_d_interaction_design.md.",
       "authority": "geocedg/specs/export/physical-pdf-style-sizes.md"
     },
     {

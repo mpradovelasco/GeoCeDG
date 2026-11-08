@@ -13,8 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,6 +39,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.geocedg.desktop.GeoCeDGLineReferenceMemory.Slot;
+import org.geocedg.desktop.GeoCeDGToolActivation.Behaviour;
 import org.geogebra.common.euclidian.EuclidianConstants;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -557,6 +562,123 @@ class PreG9BR6PlusF4AStyleBarThicknessTest {
 		Thread.sleep(500);
 		onEdt(() -> { });
 		assertEquals(1, stores.get(), "one undo step; none for a refusal or a plain close");
+	}
+
+	@Test
+	void escapeClosesLightweightPopupAndDiscardsDraftWithoutChangingModeOrHistory()
+			throws Exception {
+		AppGeoCeDG app = english();
+		EuclidianStyleBarD bar = bar(app.getEuclidianView1());
+		GeoElement segment = G9U1TestApp.eval(app, "s=Segment((0,0),(4,0))");
+		select(app, bar, segment);
+		onEdt(() -> app.setMode(EuclidianConstants.MODE_SEGMENT));
+		UndoManagerD undo = baseline(app);
+		int history = undo.getHistorySize();
+		try (StylePopupWindow window = StylePopupWindow.open(app, bar)) {
+			String xml = onEdt(app::getXML);
+			GeoCeDGLineThicknessField field = field(lineButton(bar));
+			JFormattedTextField text = ((JSpinner.DefaultEditor) ((JSpinner) field.getComponent())
+					.getEditor()).getTextField();
+			int value = field.getShownValue();
+			for (String draft : new String[] {value == 7 ? "6" : "7", "abc"}) {
+				window.show(true);
+				onEdt(() -> {
+					assertSame(window.frame, SwingUtilities.getWindowAncestor(window.popup));
+					assertTrue(text.isEnabled());
+					text.setText(draft);
+					assertTrue(escape(app, text, KeyEvent.KEY_PRESSED));
+					assertFalse(window.popup.isVisible());
+					assertEquals(Integer.toString(value), field.getShownText());
+					assertEquals(value, field.getShownValue());
+					assertEquals(EuclidianConstants.MODE_SEGMENT, app.getMode());
+					assertTrue(escape(app, window.canvas, KeyEvent.KEY_RELEASED));
+				});
+			}
+			PreG9BR6PlusF3Fixtures.awaitQuiescent(app);
+			assertEquals(xml, app.getXML());
+			assertEquals(history, undo.getHistorySize());
+		}
+	}
+
+	@Test
+	void escapeFromCanvasClosesHeavyweightPopupAndConsumesOnlyThatGesture() throws Exception {
+		AppGeoCeDG app = english();
+		EuclidianStyleBarD bar = bar(app.getEuclidianView1());
+		GeoElement line = G9U1TestApp.eval(app, "r=Line((0,0),(4,0))");
+		GeoCeDGLineReferenceMemory memory = ((GeoCeDGEuclidianController) app
+				.getEuclidianView1().getEuclidianController()).getReferenceMemory();
+		onEdt(() -> {
+			app.getToolActivation().runWithRequest(Behaviour.MEMORY_ENABLED, true,
+					() -> app.setMode(EuclidianConstants.MODE_PARALLEL));
+			memory.remember(Slot.PARALLEL, line);
+		});
+		AppGeoCeDG another = english();
+		try (StylePopupWindow window = StylePopupWindow.open(app, bar)) {
+			window.show(false);
+			onEdt(() -> {
+				assertTrue(SwingUtilities.getWindowAncestor(window.popup) instanceof JWindow);
+				assertTrue(escape(another, another.getMainComponent(), KeyEvent.KEY_PRESSED));
+				assertTrue(window.popup.isVisible(), "the other document owns its ESC");
+				assertTrue(escape(app, window.canvas, KeyEvent.KEY_PRESSED));
+				assertFalse(window.popup.isVisible());
+				assertTrue(escape(app, window.canvas, KeyEvent.KEY_PRESSED), "key repeat");
+				assertTrue(escape(app, window.canvas, KeyEvent.KEY_TYPED));
+				assertTrue(escape(app, window.canvas, KeyEvent.KEY_RELEASED));
+				assertEquals(EuclidianConstants.MODE_PARALLEL, app.getMode());
+				assertEquals(Behaviour.MEMORY_ENABLED,
+						app.getToolActivation().behaviour(Slot.PARALLEL));
+				assertSame(line, memory.peek(Slot.PARALLEL));
+				assertTrue(escape(app, window.canvas, KeyEvent.KEY_PRESSED));
+				assertEquals(EuclidianConstants.MODE_MOVE, app.getMode(), "a new ESC is ordinary");
+			});
+		}
+	}
+
+	private static boolean escape(AppGeoCeDG app, Component target, int id) {
+		boolean typed = id == KeyEvent.KEY_TYPED;
+		KeyEvent event = new KeyEvent(target, id, System.currentTimeMillis(), 0,
+				typed ? KeyEvent.VK_UNDEFINED : KeyEvent.VK_ESCAPE,
+				typed ? (char) KeyEvent.VK_ESCAPE : KeyEvent.CHAR_UNDEFINED);
+		return app.dispatchKeyEvent(event);
+	}
+
+	private record StylePopupWindow(JFrame frame, JPanel canvas, JPopupMenu popup,
+			EuclidianStyleBarD bar) implements AutoCloseable {
+		static StylePopupWindow open(AppGeoCeDG app, EuclidianStyleBarD bar) throws Exception {
+			JPopupMenu popup = PreG9BR6PlusF4AStyleBarThicknessTest.popup(lineButton(bar));
+			return onEdt(() -> {
+				JFrame frame = new JFrame("GeoCeDG compact style ESC");
+				frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
+				JPanel main = (JPanel) app.getMainComponent();
+				JPanel canvas = app.getEuclidianView1().getJPanel();
+				main.setLayout(new BorderLayout());
+				main.add(bar, BorderLayout.NORTH);
+				main.add(canvas, BorderLayout.CENTER);
+				frame.setContentPane(main);
+				frame.setBounds(20, 20, 720, 480);
+				frame.setVisible(true);
+				return new StylePopupWindow(frame, canvas, popup, bar);
+			});
+		}
+
+		void show(boolean lightweight) throws Exception {
+			onEdt(() -> {
+				popup.setLightWeightPopupEnabled(lightweight);
+				popup.show(bar, 8, bar.getHeight());
+			});
+			// The F4-A placement listener can re-show a separate popup once.
+			onEdt(() -> { });
+			onEdt(() -> { });
+		}
+
+		@Override
+		public void close() throws Exception {
+			onEdt(() -> {
+				popup.setVisible(false);
+				frame.setContentPane(new JPanel());
+				frame.dispose();
+			});
+		}
 	}
 
 	@Test

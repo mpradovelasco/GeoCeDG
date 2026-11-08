@@ -9,10 +9,14 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
@@ -20,6 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.PopupMenuEvent;
@@ -27,6 +33,7 @@ import javax.swing.event.PopupMenuListener;
 
 import org.geogebra.common.euclidian.EuclidianViewInterfaceCommon;
 import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
+import org.geogebra.desktop.main.AppD;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
@@ -95,7 +102,9 @@ final class GeoCeDGEuclidianStyleBar extends EuclidianStyleBarD {
 		popup.setLightWeightPopupEnabled(true);
 		popup.putClientProperty(FlatClientProperties.POPUP_DROP_SHADOW_PAINTED,
 				Boolean.FALSE);
-		popup.addPopupMenuListener(new FieldPopupListener(btnLineStyle, field, slider));
+		FieldPopupListener listener = new FieldPopupListener(app, btnLineStyle, field, slider);
+		popup.addPopupMenuListener(listener);
+		popup.putClientProperty(FieldPopupListener.class, listener);
 		btnLineStyle.putClientProperty(GeoCeDGLineThicknessField.class, field);
 	}
 
@@ -150,6 +159,65 @@ final class GeoCeDGEuclidianStyleBar extends EuclidianStyleBarD {
 		return false;
 	}
 
+	/** One ESC gesture dispatched by the owner of the compact line-style popup. */
+	static final class PopupEscape {
+		private final AppD owner;
+		private final WindowAdapter lostFocus = new WindowAdapter() {
+			@Override
+			public void windowLostFocus(WindowEvent event) {
+				endGesture();
+			}
+		};
+		private boolean inProgress;
+		private Window sourceWindow;
+
+		PopupEscape(AppD owner) {
+			this.owner = owner;
+		}
+
+		boolean dispatch(KeyEvent event) {
+			boolean escape = event.getKeyCode() == KeyEvent.VK_ESCAPE
+					|| (event.getID() == KeyEvent.KEY_TYPED
+					&& event.getKeyChar() == KeyEvent.VK_ESCAPE);
+			if (!escape || event.isConsumed()) {
+				return false;
+			}
+			if (inProgress) {
+				if (event.getID() == KeyEvent.KEY_RELEASED) {
+					endGesture();
+				}
+				event.consume();
+				return true;
+			}
+			if (event.getID() != KeyEvent.KEY_PRESSED) {
+				return false;
+			}
+			MenuElement[] path = MenuSelectionManager.defaultManager().getSelectedPath();
+			if (path.length == 0 || !(path[0] instanceof JPopupMenu popup)
+					|| !popup.isVisible()
+					|| !(popup.getClientProperty(FieldPopupListener.class)
+					instanceof FieldPopupListener listener) || listener.owner != owner) {
+				return false;
+			}
+			listener.cancel(popup);
+			inProgress = true;
+			sourceWindow = SwingUtilities.getWindowAncestor(event.getComponent());
+			if (sourceWindow != null) {
+				sourceWindow.addWindowFocusListener(lostFocus);
+			}
+			event.consume();
+			return true;
+		}
+
+		private void endGesture() {
+			inProgress = false;
+			if (sourceWindow != null) {
+				sourceWindow.removeWindowFocusListener(lostFocus);
+				sourceWindow = null;
+			}
+		}
+	}
+
 	/**
 	 * Opening: the button's tooltip, a window of the application over the popup that
 	 * would keep it from being light-weight, is dismissed as a press on the button
@@ -162,13 +230,17 @@ final class GeoCeDGEuclidianStyleBar extends EuclidianStyleBarD {
 	 * meant for.
 	 */
 	private static final class FieldPopupListener implements PopupMenuListener {
+		private final AppD owner;
 		private final JComponent button;
 		private final GeoCeDGLineThicknessField field;
 		private final JSlider slider;
+		private Component previousFocus;
+		private boolean canceling;
 		private boolean shownAgain;
 
-		FieldPopupListener(JComponent button, GeoCeDGLineThicknessField field,
+		FieldPopupListener(AppD owner, JComponent button, GeoCeDGLineThicknessField field,
 				JSlider slider) {
+			this.owner = owner;
 			this.button = button;
 			this.field = field;
 			this.slider = slider;
@@ -176,6 +248,10 @@ final class GeoCeDGEuclidianStyleBar extends EuclidianStyleBarD {
 
 		@Override
 		public void popupMenuWillBecomeVisible(PopupMenuEvent event) {
+			Component focus = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.getFocusOwner();
+			previousFocus = focus != null && SwingUtilities.getWindowAncestor(focus)
+					== SwingUtilities.getWindowAncestor(button) ? focus : null;
 			ToolTipManager.sharedInstance().mousePressed(new MouseEvent(button,
 					MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 0, 0, 1, false));
 			// runs after the popup has been placed in its window
@@ -204,8 +280,29 @@ final class GeoCeDGEuclidianStyleBar extends EuclidianStyleBarD {
 
 		@Override
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
-			field.commitText(field.getShownText());
+			if (!canceling) {
+				field.commitText(field.getShownText());
+			}
+			previousFocus = null;
 			field.getComponent().setEnabled(slider.isEnabled());
+		}
+
+		private void cancel(JPopupMenu popup) {
+			Component focus = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.getFocusOwner();
+			Component returnFocus = previousFocus;
+			boolean restoreFocus = focus != null && SwingUtilities.isDescendingFrom(focus, popup);
+			canceling = true;
+			try {
+				field.discardText();
+				popup.setVisible(false);
+			} finally {
+				canceling = false;
+			}
+			if (restoreFocus && returnFocus != null && returnFocus.isShowing()
+					&& returnFocus.isEnabled() && returnFocus.isFocusable()) {
+				returnFocus.requestFocusInWindow();
+			}
 		}
 
 		@Override

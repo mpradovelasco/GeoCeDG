@@ -18,6 +18,9 @@ import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EuclidianController;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
 import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
@@ -87,6 +90,7 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 			// exportPaint never calls this method, so no export or print shows it
 			GeoCeDGOrientationCueRenderer.paint(this, graphics);
 		}
+		paintIndexedIntersections(graphics);
 		if (!(getEuclidianController() instanceof GeoCeDGEuclidianController)) {
 			return;
 		}
@@ -121,5 +125,47 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 				graphics.drawRect(x - 8, y - 8, 16, 16);
 			}
 		}
+	}
+
+	private void paintIndexedIntersections(GGraphics2D graphics) {
+		var app = getApplication();
+		graphics.setFont(getFontPoint());
+		int size = Math.max(14, (int) Math.ceil(getFontPoint().getSize()) + 5);
+		for (GeoElement geo : app.getSelectionManager().getSelectedGeos()) {
+			int index = indexedIntersectionSlot(geo);
+			if (index == 0 || !geo.isEuclidianVisible() || !isVisibleInThisView(geo)
+					|| !app.isLayerShown(geo.getLayer())
+					|| !geo.isAvailableAtConstructionStep(app.getKernel().getConstructionStep())
+					|| getDrawableFor(geo) == null) {
+				continue;
+			}
+			GeoPoint point = (GeoPoint) geo;
+			int x = toScreenCoordX(point.getInhomX());
+			int y = toScreenCoordY(point.getInhomY());
+			if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) {
+				continue;
+			}
+			int left = Math.min(x + 7, Math.max(0, getWidth() - size));
+			int top = Math.max(0, y - size - 3);
+			graphics.setColor(GColor.newColor(0, 90, 125));
+			graphics.fillRect(left, top, size, size);
+			graphics.setColor(GColor.WHITE);
+			graphics.drawString(Integer.toString(index), left + 3, top + size - 3);
+		}
+	}
+
+	/** Returns the current one-based command slot, or zero for an ineligible output. */
+	static int indexedIntersectionSlot(GeoElement geo) {
+		if (!(geo instanceof GeoPoint point) || !point.isDefined() || !point.isFinite()
+				|| !(point.getParentAlgorithm() instanceof AlgoIntersectLineConic intersection)) {
+			return 0;
+		}
+		GeoPoint[] slots = intersection.getIntersectionPoints();
+		for (int index = 0; index < slots.length; index++) {
+			if (slots[index] == point) {
+				return index + 1;
+			}
+		}
+		return 0;
 	}
 }

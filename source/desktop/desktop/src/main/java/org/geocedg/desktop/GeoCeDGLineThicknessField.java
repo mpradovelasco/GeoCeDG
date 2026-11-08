@@ -135,9 +135,14 @@ public final class GeoCeDGLineThicknessField {
 			text.commitEdit();
 			return true;
 		} catch (ParseException refused) {
-			text.setValue(model.getValue());
+			discardText();
 			return false;
 		}
+	}
+
+	/** Restore the last accepted value before the editor can lose focus. */
+	void discardText() {
+		text.setValue(model.getValue());
 	}
 
 	/** @return the spinner shown beside the slider */

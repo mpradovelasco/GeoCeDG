@@ -23,6 +23,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GArea;
 import org.geogebra.common.awt.GBasicStroke;
@@ -97,6 +98,10 @@ public abstract class Drawable extends DrawableND {
 	public int xLabel;
 	/** y-coord of the label */
 	public int yLabel;
+
+	private boolean hasDisplayedLabelOffset;
+	private int displayedLabelOffsetX;
+	private int displayedLabelOffsetY;
 	/** label Description */
 	public String labelDesc;
 	private String oldLabelDesc;
@@ -489,8 +494,14 @@ public abstract class Drawable extends DrawableND {
 	 * @return whether the label fits on screen
 	 */
 	final protected boolean addLabelOffset() {
+		hasDisplayedLabelOffset = false;
 		if (geo.labelOffsetX == 0 && geo.labelOffsetY == 0) {
 			return false;
+		}
+
+		if (view.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
+			placeExtendedLabel(1, 1, view.getFontLine());
+			return true;
 		}
 
 		int x = xLabel + geo.labelOffsetX;
@@ -538,12 +549,36 @@ public abstract class Drawable extends DrawableND {
 	 */
 	public final void addLabelOffsetEnsureOnScreen(double Xmultiplier,
 			double Ymultiplier, GFont font) {
+		if (view.getApplication().getConfig() instanceof AppConfigGeoCeDG) {
+			placeExtendedLabel(Xmultiplier, Ymultiplier, font);
+			return;
+		}
 		// MAKE SURE LABEL STAYS ON SCREEN
 		xLabel += geo.labelOffsetX;
 		yLabel += geo.labelOffsetY;
 
 		// change xLabel and yLabel so that label stays on screen
 		ensureLabelDrawsOnScreen(Xmultiplier, Ymultiplier, font);
+	}
+
+	/** CU6 M03: use the visible edge during a drag, keeping the stored offset until then. */
+	private void placeExtendedLabel(double xMultiplier, double yMultiplier, GFont font) {
+		int anchorX = xLabel;
+		int anchorY = yLabel;
+		xLabel = (int) Math.max(0, Math.min(view.getWidth(), (long) anchorX + geo.labelOffsetX));
+		yLabel = (int) Math.max(0, Math.min(view.getHeight(), (long) anchorY + geo.labelOffsetY));
+		ensureLabelDrawsOnScreen(xMultiplier, yMultiplier, font);
+		displayedLabelOffsetX = (int) Math.max(Integer.MIN_VALUE,
+				Math.min(Integer.MAX_VALUE, (long) xLabel - anchorX));
+		displayedLabelOffsetY = (int) Math.max(Integer.MIN_VALUE,
+				Math.min(Integer.MAX_VALUE, (long) yLabel - anchorY));
+		hasDisplayedLabelOffset = true;
+	}
+
+	void useDisplayedLabelOffset(GPoint offset) {
+		if (hasDisplayedLabelOffset) {
+			offset.setLocation(displayedLabelOffsetX, displayedLabelOffsetY);
+		}
 	}
 
 	/**

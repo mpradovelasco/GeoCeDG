@@ -7,8 +7,10 @@ package org.geocedg.desktop;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
@@ -87,19 +89,36 @@ final class GeoCeDGSimilarityTools {
 			finish();
 			return null;
 		}
-		String input = null;
-		if (mode == EuclidianConstants.MODE_ROTATE_BY_ANGLE
-				|| mode == EuclidianConstants.MODE_DILATE_FROM_POINT) {
-			input = JOptionPane.showInputDialog(app.getMainComponent(),
-					app.getLocalization().getMenu(mode == EuclidianConstants.MODE_ROTATE_BY_ANGLE
-							? "Angle" : "Dilate.Factor"),
-					mode == EuclidianConstants.MODE_ROTATE_BY_ANGLE ? "45\u00b0" : "2");
-			if (input == null) {
-				finish();
-				return null;
+		try {
+			if (mode == EuclidianConstants.MODE_ROTATE_BY_ANGLE
+					|| mode == EuclidianConstants.MODE_DILATE_FROM_POINT) {
+				boolean rotate = mode == EuclidianConstants.MODE_ROTATE_BY_ANGLE;
+				String initial = rotate ? "45\u00b0" : "2";
+				String prompt = app.getLocalization().getMenu(rotate ? "Angle" : "Dilate.Factor");
+				if (!GeoCeDGArgumentDialog.supports(app)) {
+					String input = JOptionPane.showInputDialog(app.getMainComponent(), prompt, initial);
+					return input == null ? null : constructSelected(mode, argument, input, () -> true);
+				}
+				JTextField field = new JTextField(initial, 18);
+				field.selectAll();
+				GeoLocusV2[] selectedResult = new GeoLocusV2[1];
+				GeoCeDGArgumentDialog.show((AppGeoCeDG) app, app.getToolName(mode),
+						GeoCeDGArgumentDialog.numberForm(prompt, field), field,
+						List.of(source, argument), session -> {
+							selectedResult[0] = constructSelected(mode, argument,
+									session.input(), session::isCurrent);
+							session.finish();
+						});
+				return selectedResult[0];
 			}
+			return constructSelected(mode, argument, null, () -> true);
+		} finally {
+			finish();
 		}
-		String numericInput = input;
+	}
+
+	private GeoLocusV2 constructSelected(int mode, GeoElement argument, String numericInput,
+			BooleanSupplier current) {
 		GeoLocusV2[] result = new GeoLocusV2[1];
 		try {
 			var registry = app.getKernel().getConstruction().getSpatialIdentityRegistry();
@@ -115,7 +134,7 @@ final class GeoCeDGSimilarityTools {
 				GeoNumberValue value = numericInput == null ? null : app.getKernel()
 						.getAlgebraProcessor().evaluateToNumeric(numericInput,
 								ErrorHelper.silent());
-				if (numericInput != null && (value == null
+				if (!current.getAsBoolean() || numericInput != null && (value == null
 						|| !Double.isFinite(value.getDouble()))) {
 					throw new IllegalArgumentException("Invalid similarity input");
 				}
@@ -126,8 +145,6 @@ final class GeoCeDGSimilarityTools {
 		} catch (IllegalArgumentException exception) {
 			app.showError("InvalidInput");
 			return null;
-		} finally {
-			finish();
 		}
 	}
 

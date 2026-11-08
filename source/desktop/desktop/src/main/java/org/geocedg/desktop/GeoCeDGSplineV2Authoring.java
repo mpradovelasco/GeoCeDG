@@ -5,10 +5,14 @@
 
 package org.geocedg.desktop;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import javax.swing.JTextField;
+
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.gui.dialog.handler.NumberInputHandler;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.Command;
 import org.geogebra.common.kernel.arithmetic.MyList;
@@ -45,7 +49,7 @@ final class GeoCeDGSplineV2Authoring {
 	}
 
 	private final AppD app;
-	private DegreeInput degreeInput = GeoCeDGSplineV2Authoring::hostDegreeDialog;
+	private DegreeInput degreeInput;
 	private MyError lastFailure;
 
 	GeoCeDGSplineV2Authoring(AppD app) {
@@ -73,7 +77,7 @@ final class GeoCeDGSplineV2Authoring {
 		Kernel kernel = app.getKernel();
 		Command command = new Command(kernel, Commands.SplineV2.name(), false);
 		if (mode == EuclidianConstants.MODE_SPLINE_V2_DEGREE) {
-			GeoNumberValue degree = requestDegree(mode);
+			GeoNumberValue degree = requestDegree(mode, ordered);
 			if (degree == null) {
 				return null;
 			}
@@ -104,18 +108,31 @@ final class GeoCeDGSplineV2Authoring {
 		}
 	}
 
-	private GeoNumberValue requestDegree(int mode) {
+	private GeoNumberValue requestDegree(int mode, GeoPointND[] ordered) {
 		AtomicReference<GeoNumberValue> entered = new AtomicReference<>();
-		degreeInput.request(app, mode, entered::set);
+		String prompt = app.getLocalization().getMenu("SplineV2.DegreePrompt");
+		if (degreeInput != null) {
+			degreeInput.request(app, mode, entered::set);
+		} else if (GeoCeDGArgumentDialog.supports(app)) {
+			JTextField field = new JTextField(DEFAULT_DEGREE_TEXT, 18);
+			field.selectAll();
+			NumberInputHandler handler = new NumberInputHandler(app.getKernel().getAlgebraProcessor());
+			GeoCeDGArgumentDialog.show((AppGeoCeDG) app, app.getToolName(mode),
+					GeoCeDGArgumentDialog.numberForm(prompt, field), field,
+					Arrays.stream(ordered).map(GeoPointND::toGeoElement).toList(),
+					session -> handler.processInput(session.input(), session, ok -> {
+						if (ok && session.isCurrent()) {
+							entered.set(handler.getNum());
+							session.finish();
+						} else {
+							session.retry(null);
+						}
+					}));
+		} else {
+			app.getDialogManager().showNumberInputDialog(app.getToolName(mode), prompt,
+					DEFAULT_DEGREE_TEXT, entered::set);
+		}
 		return entered.get();
-	}
-
-	/** The host number dialog is modal on Desktop, so it answers before returning. */
-	private static void hostDegreeDialog(AppD app, int mode,
-			Consumer<GeoNumberValue> accept) {
-		app.getDialogManager().showNumberInputDialog(app.getToolName(mode),
-				app.getLocalization().getMenu("SplineV2.DegreePrompt"),
-				DEFAULT_DEGREE_TEXT, accept::accept);
 	}
 
 	void setDegreeInput(DegreeInput input) {

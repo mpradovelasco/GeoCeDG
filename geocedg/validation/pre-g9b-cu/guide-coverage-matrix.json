@@ -1721,6 +1721,18 @@
       "notes": "The route File → Insert → Insert File… is correct, and the admission, rollback and isolation behaviour is documented."
     },
     {
+      "id": "action:document.insert-expert",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2235",
+      "label_en": "Insert with expert review…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": ["documents/4.2"],
+        "es": ["documents/4.2"]
+      },
+      "notes": "Both editions describe the expert review, isolated trial, consent, cancellation, Undo and saving a separate copy."
+    },
+    {
       "id": "action:document.apply-styles",
       "kind": "action",
       "source": "apps/geocedg/application-profile.yml:2179",
@@ -4709,7 +4721,7 @@
     {"id": "action:semantic.locus-v2.point-from-reference", "kind": "action", "source": "apps/geocedg/application-profile.yml:1483", "label_en": "Point on Locus V2 from reference", "coverage": "MISSING", "anchors": {"en": [], "es": []}, "notes": "M08-S-R2 Desktop candidate: L to existing Q, H1 individual permission and explicit contextual confirmation. The integrated user guide remains a later CU10 obligation; no claim of completed EN/ES guide coverage or author approval."}
   ],
   "totals": {
-    "COVERED": 118,
+    "COVERED": 119,
     "PARTIAL": 119,
     "MISSING": 21,
     "EXCLUDED_WITH_REASON": 12

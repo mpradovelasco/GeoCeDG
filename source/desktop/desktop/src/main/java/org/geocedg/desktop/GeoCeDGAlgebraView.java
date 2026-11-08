@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 import javax.swing.GrayFilter;
 import javax.swing.Icon;
@@ -19,8 +20,12 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
+import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.main.settings.AlgebraStyle;
+import org.geogebra.common.util.IndexHTMLBuilder;
 import org.geogebra.desktop.gui.view.algebra.AlgebraControllerD;
+import org.geogebra.desktop.gui.view.algebra.AlgebraHelperBar;
 import org.geogebra.desktop.gui.view.algebra.AlgebraTree;
 import org.geogebra.desktop.gui.view.algebra.AlgebraTreeCellRenderer;
 import org.geogebra.desktop.gui.view.algebra.AlgebraViewCellRenderer;
@@ -39,7 +44,9 @@ import org.geogebra.desktop.main.ScaledIcon;
  */
 final class GeoCeDGAlgebraView extends AlgebraViewD {
 	private static final long serialVersionUID = 1L;
+	private static final int TOOLTIP_CODE_POINTS = 240;
 	private final AppGeoCeDG app;
+	private GeoCeDGAlgebraSearchBar searchBar;
 	/** Whether the current press gesture was consumed by a layer eye. */
 	private boolean eyeGesture;
 	/** Reference selection is one press/release/click gesture, not an edit. */
@@ -49,6 +56,72 @@ final class GeoCeDGAlgebraView extends AlgebraViewD {
 		super(controller);
 		this.app = app;
 		app.getLayerWorkspace().addListener(this::layerStateChanged);
+	}
+
+	@Override
+	public AlgebraHelperBar getHelperBar() {
+		if (searchBar == null) {
+			searchBar = new GeoCeDGAlgebraSearchBar(this, app);
+		}
+		return searchBar;
+	}
+
+	@Override
+	public void setLabels() {
+		super.setLabels();
+		if (searchBar != null) {
+			searchBar.updateLabels();
+		}
+	}
+
+	@Override
+	public void updateFonts() {
+		super.updateFonts();
+		if (searchBar != null) {
+			searchBar.update();
+		}
+	}
+
+	@Override
+	public String getToolTipText(MouseEvent event) {
+		GeoElement geo = AlgebraTree.getGeoElementForPath(
+				getPathForLocation(event.getX(), event.getY()));
+		return geo == null ? null : complementaryToolTip(geo);
+	}
+
+	String complementaryToolTip(GeoElement geo) {
+		boolean noDefinition = geo.isIndependent() && geo.getDefinition() == null;
+		boolean showsValue = noDefinition || app.getAlgebraStyle() == AlgebraStyle.VALUE;
+		String heading = app.getLocalization().getMenu(showsValue ? "Definition" : "Value");
+		String body;
+		if (showsValue) {
+			body = noDefinition ? "" : geo.getDefinition(StringTemplate.defaultTemplate);
+			if (body == null || body.isBlank()) {
+				body = app.layerText("Algebra.Tooltip.NoDefinition");
+			}
+		} else {
+			body = geo.isDefined() ? Objects.toString(
+					geo.toValueString(StringTemplate.defaultTemplate), "")
+					: app.layerText("Algebra.Tooltip.Undefined");
+		}
+		boolean shortened = body.codePointCount(0, body.length()) > TOOLTIP_CODE_POINTS;
+		String display = shortened
+				? body.substring(0, body.offsetByCodePoints(0, TOOLTIP_CODE_POINTS)) + "…" : body;
+		if (!shortened && !geo.isGeoText()) {
+			IndexHTMLBuilder builder = new IndexHTMLBuilder(false);
+			IndexHTMLBuilder.convertIndicesToHTML(display.replace("&", "&amp;"), builder);
+			display = builder.toString();
+		} else {
+			display = escapeHtml(display);
+		}
+		String undefined = showsValue && !geo.isDefined()
+				? "<br>" + escapeHtml(app.layerText("Algebra.Tooltip.Undefined")) : "";
+		return "<html><b>" + escapeHtml(heading) + "</b><br>" + display
+				+ undefined + "</html>";
+	}
+
+	private static String escapeHtml(String text) {
+		return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	@Override

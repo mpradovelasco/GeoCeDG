@@ -1808,7 +1808,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		if (isInsertionIsolated()) {
 			return false;
 		}
-		return super.dispatchKeyEvent(event);
+		return GeoCeDGArgumentDialog.dispatchKey(event) || super.dispatchKeyEvent(event);
 	}
 
 	/**
@@ -2192,8 +2192,14 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	protected GlobalKeyDispatcherD newGlobalKeyDispatcher() {
 		return new GlobalKeyDispatcherD(this) {
+			private final GeoCeDGEuclidianStyleBar.PopupEscape popupEscape =
+					new GeoCeDGEuclidianStyleBar.PopupEscape(AppGeoCeDG.this);
+
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent event) {
+				if (popupEscape.dispatch(event)) {
+					return true;
+				}
 				// Inline M08-S controls own their Swing keys; arrows/Enter/Space must
 				// not reach global geometry shortcuts while choosing an address.
 				if (getGuiManager() instanceof GuiManagerGeoCeDG gui
