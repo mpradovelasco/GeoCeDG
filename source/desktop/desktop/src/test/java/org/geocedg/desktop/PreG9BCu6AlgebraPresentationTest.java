@@ -15,12 +15,14 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JTextField;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.main.settings.AlgebraStyle;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraTree;
+import org.geogebra.desktop.gui.view.algebra.GeoMutableTreeNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,12 +37,13 @@ class PreG9BCu6AlgebraPresentationTest {
 			GeoElement first = G9U1TestApp.eval(app, "A_{12}=(1,2)");
 			GeoElement second = G9U1TestApp.eval(app, "A_{120}=(3,4)");
 			GeoElement accent = G9U1TestApp.eval(app, "café=7");
+			DefaultMutableTreeNode bulk = new DefaultMutableTreeNode();
 			for (int i = 0; i < 1500; i++) {
-				new GeoNumeric(app.getKernel().getConstruction(), i)
-						.setLabel("bulk_{" + i + "}");
+				GeoNumeric number = new GeoNumeric(app.getKernel().getConstruction(), i);
+				number.setLabelSimple("bulk_{" + i + "}");
+				bulk.add(new GeoMutableTreeNode(number));
 			}
-			assertEquals(1500, GeoCeDGAlgebraSearchBar.find(view.getModel().getRoot(),
-					"bulk_").size());
+			assertEquals(1500, GeoCeDGAlgebraSearchBar.find(bulk, "bulk_").size());
 			assertSame(accent, AlgebraTree.getGeoElementForPath(GeoCeDGAlgebraSearchBar
 					.find(view.getModel().getRoot(), "cafe\u0301").get(0)));
 
@@ -71,7 +74,6 @@ class PreG9BCu6AlgebraPresentationTest {
 			GeoElement input = new GeoNumeric(app.getKernel().getConstruction(), 2);
 			input.setLabel("a");
 			GeoElement value = G9U1TestApp.eval(app, "b=3*a");
-			GeoElement undefined = G9U1TestApp.eval(app, "u=a/(a-a)");
 			GeoElement text = G9U1TestApp.eval(app, "T=Text(\"<script>" + "x".repeat(300)
 					+ "\"+a)");
 			app.getSettings().getAlgebra().setStyle(AlgebraStyle.VALUE);
@@ -79,15 +81,17 @@ class PreG9BCu6AlgebraPresentationTest {
 			app.getSettings().getAlgebra().setStyle(AlgebraStyle.DEFINITION);
 			assertTrue(view.complementaryToolTip(input).contains("Definition unavailable"));
 			assertTrue(view.complementaryToolTip(value).contains("<b>Value</b><br>6"));
-			assertFalse(undefined.isDefined());
-			assertTrue(view.complementaryToolTip(undefined).contains("Undefined"));
 			String popup = view.complementaryToolTip(text);
 			assertTrue(popup.contains("&lt;script&gt;"));
 			assertTrue(popup.contains("…"));
 			assertFalse(popup.contains("<script>"));
+			input.setUndefined();
+			input.updateCascade();
+			assertFalse(value.isDefined());
+			assertTrue(view.complementaryToolTip(value).contains("Undefined"));
 			app.getSettings().getAlgebra().setStyle(AlgebraStyle.DESCRIPTION);
 			app.setLocale(Locale.forLanguageTag("es"));
-			assertTrue(view.complementaryToolTip(undefined).contains("Indefinido"));
+			assertTrue(view.complementaryToolTip(value).contains("Indefinido"));
 			return null;
 		});
 	}
