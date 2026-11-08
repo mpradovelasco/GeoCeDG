@@ -181,6 +181,7 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		baseline(undo);
 		workspace.setWorkingLayer(2);
 		eval(app, "B=(2,2)");
+		n.setLayer(3);
 		awaitStore(app, undo);
 		workspace.setWorkingLayer(8);
 
@@ -189,12 +190,11 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		assertEquals(6, lookup(app, "A").getLayer());
 		assertEquals(null, app.getKernel().lookupLabel("B"));
 		GeoElement reloaded = lookup(app, "n");
-		int upstream = Math.min(app.getConfig().getMaxLayer() - 1, app.getMaxLayerUsed());
-		assertEquals(upstream, reloaded.getLayer(),
-				"a numeric without <layer> takes the host value on reload");
+		assertEquals(1, reloaded.getLayer(), "undo restores the stored numeric layer");
 		assertNotEquals(workspace.getWorkingLayer(), reloaded.getLayer());
 		app.getKernel().redo();
 		assertEquals(2, lookup(app, "B").getLayer());
+		assertEquals(3, lookup(app, "n").getLayer(), "redo restores the stored numeric layer");
 		assertEquals(8, workspace.getWorkingLayer());
 	}
 
