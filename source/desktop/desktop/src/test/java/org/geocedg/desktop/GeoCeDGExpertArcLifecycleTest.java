@@ -72,6 +72,8 @@ class GeoCeDGExpertArcLifecycleTest {
 			assertFalse(properties.isVisible());
 			properties.setOpenInFrame(true);
 			assertFalse(properties.isInFrame());
+			// The session can remember a higher layer than any resident object uses.
+			model.restoreMaxLayerUsed(5);
 			return model;
 		});
 		awaitQuiescent(receiver);
@@ -91,7 +93,7 @@ class GeoCeDGExpertArcLifecycleTest {
 				assertTrue(trial.available(), () -> trial.report().toString());
 				onEdt(() -> {
 					var detail = GeoCeDGExpertReviewModel.project(receiver, trial).details();
-					assertTrue(detail.contains("layer=0") && detail.contains("layer=4"), () -> detail);
+					assertTrue(detail.contains("layer=0") && detail.contains("layer=5"), () -> detail);
 					assertTrue(detail.contains("view1=false") && detail.contains("view1=true"), () -> detail);
 					assertNotNull(named(receiver, "LiveOnly"));
 					assertNull(named(receiver, "arc"));
@@ -107,7 +109,7 @@ class GeoCeDGExpertArcLifecycleTest {
 					assertTrue(propertiesPanel(receiver).isOpenInFrame());
 					assertFalse(propertiesPanel(receiver).isInFrame());
 					assertTrue(assertArc(receiver, Math.PI / 2).isVisibleInView(App.VIEW_EUCLIDIAN));
-					assertEquals(4, named(receiver, "u").getLayer());
+					assertEquals(5, named(receiver, "u").getLayer());
 					undo(receiver).undo();
 					assertNull(named(receiver, "arc"));
 					assertNotNull(named(receiver, "LiveOnly"));
@@ -115,6 +117,7 @@ class GeoCeDGExpertArcLifecycleTest {
 					receiver.setSaved();
 					undo(receiver).redo();
 					assertArc(receiver, Math.PI / 2);
+					assertEquals(5, named(receiver, "u").getLayer());
 					assertTrue(receiver.requiresExpertSaveAs());
 					assertFalse(receiver.isSaved());
 					return null;
@@ -150,7 +153,7 @@ class GeoCeDGExpertArcLifecycleTest {
 			assertTrue(reopened.loadFile(copy, false));
 			assertEquals(uuid, reopened.getUniqueId());
 			assertNotNull(named(reopened, "LiveOnly"));
-			assertEquals(4, named(reopened, "u").getLayer());
+			assertEquals(5, named(reopened, "u").getLayer());
 			assertArc(reopened, 3 * Math.PI / 2);
 			move((GeoPoint) named(reopened, "C"), 0, 2);
 			assertArc(reopened, Math.PI / 2);

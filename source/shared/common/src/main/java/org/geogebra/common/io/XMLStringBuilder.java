@@ -21,6 +21,7 @@ import org.geogebra.common.util.debug.Log;
 public class XMLStringBuilder {
 
 	private final StringBuilder sb;
+	private boolean writeNumericLayers;
 	boolean currentTagEmpty = false;
 	String currentTag = null;
 
@@ -30,6 +31,16 @@ public class XMLStringBuilder {
 
 	public XMLStringBuilder(StringBuilder sb) {
 		this.sb = sb;
+	}
+
+	/** @return whether to persist the layer of every numeric in the construction */
+	public boolean writesNumericLayers() {
+		return writeNumericLayers;
+	}
+
+	/** @param writeNumericLayers whether to persist numeric layers in this section */
+	public void setWriteNumericLayers(boolean writeNumericLayers) {
+		this.writeNumericLayers = writeNumericLayers;
 	}
 
 	/**

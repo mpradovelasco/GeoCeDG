@@ -154,11 +154,13 @@ class GeoCeDGLiveInspectionSnapshotTest {
 			must(app, "A=(0,0)");
 			var scalar = must(app, "n=2");
 			assertEquals(4, scalar.getLayer());
+			String fragment = scalar.getXML();
 			String nativeXml = app.getXML();
 			int maxLayer = app.getMaxLayerUsed();
 			try (var snapshot = GeoCeDGLiveInspectionSnapshot.capture(app)) {
 				scalar.setLayer(0);
-				assertEquals(nativeXml, app.getXML());
+				assertEquals(fragment, scalar.getXML());
+				assertFalse(nativeXml.equals(app.getXML()));
 				assertEquals(maxLayer, app.getMaxLayerUsed());
 				assertFalse(snapshot.matchesCurrentState(app));
 			}

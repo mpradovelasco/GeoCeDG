@@ -22,7 +22,8 @@ $preferences = Join-Path (Resolve-Path $fixtures).Path 'smoke-preferences.proper
 | 7 | Desde la acción experta, selecciona `source-unusable-direction.ggb`, `source-broken-arc.ggb` y `source-invalid.ggb`. | The first lacks a usable terminal ray for a defined arc. The second has a dangling reference. The last is a malformed archive. Each review identifies the blocked condition and offers no operative confirmation. |
 
 Anotar SHA, idioma, nombre de cada fixture, valor observado de capa, ruta de
-la copia y cualquier diferencia respecto a la tabla. Si un catálogo local
-altera el máximo inicial de capas, repetir el paso 3 en un perfil de prueba
-vacío y registrar ambos contextos. Para el paso 6 puede usarse `Guardar`
-cuando el aviso redirige a `Guardar como…`.
+la copia y cualquier diferencia respecto a la tabla. Con las preferencias
+habituales, el contexto de la sesión puede producir otra capa final. La capa
+indicada para `u` en el paso 3 debe conservarse tras aceptar, rehacer y
+reabrir. Para el paso 6 puede usarse `Guardar` cuando el aviso redirige a
+`Guardar como…`.

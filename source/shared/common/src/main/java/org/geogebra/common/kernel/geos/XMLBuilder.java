@@ -13,7 +13,8 @@
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
  *
- * Modified for GeoCeDG: preserve explicit slider label mode in construction XML.
+ * Modified for GeoCeDG: preserve explicit slider label mode and numeric layers
+ * in construction XML.
  */
 
 package org.geogebra.common.kernel.geos;
@@ -33,6 +34,7 @@ import org.geogebra.common.kernel.geos.properties.VerticalAlignment;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoEvaluatable;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
+import org.geogebra.common.plugin.GeoClass;
 import org.geogebra.common.main.App;
 
 /**
@@ -141,12 +143,12 @@ public class XMLBuilder {
 
 		// don't remove layer 0 information
 		// we always need it in case an earlier element has higher layer eg 1
-		if (isDrawable && (!geo.isGeoNumeric() || geo.getDefinition() == null)) {
+		boolean writeDrawableLayer = isDrawable && (!geo.isGeoNumeric() || geo.getDefinition() == null);
+		if (writeDrawableLayer || sb.writesNumericLayers() && geo.getGeoClassType() == GeoClass.NUMERIC) {
 			sb.startTag("layer").attr("val", geo.getLayer()).endTag();
-
-			if (!Double.isNaN(geo.getOrdering())) {
-				sb.startTag("ordering").attr("val", geo.getOrdering()).endTag();
-			}
+		}
+		if (writeDrawableLayer && !Double.isNaN(geo.getOrdering())) {
+			sb.startTag("ordering").attr("val", geo.getOrdering()).endTag();
 		}
 
 		if (geo.isDefaultGeo()) {

@@ -52,6 +52,11 @@ El ajuste de apertura en ventana separada de un panel oculto es pasivo y
 puede acompañar a la captura. Si el panel está visible en una ventana
 separada, el filtro impide el ensayo e identifica ese ajuste en el informe.
 
+El XML de construcción de GeoCeDG conserva la capa de cada número mediante
+el elemento nativo `<layer>`, tanto al guardar como en el historial. Al cargar
+archivos anteriores sin ese dato se aplica la asignación nativa. La copia
+desde el portapapeles mantiene su propia serialización.
+
 Los defaults y recursos se comprueban antes y después de la copia en cada
 entorno. La reapertura puede normalizar defaults según el lector nativo. El
 cotejo entre JVM compara el resultado efectivo y mantiene el archivo original

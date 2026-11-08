@@ -1559,8 +1559,11 @@ public class Construction {
 	 */
 	public void getConstructionXML(XMLStringBuilder sb, boolean getListenersToo) {
 		NativeSourceFidelity2D previousPass = nativeFileFidelityPass;
-		nativeFileFidelityPass = getApplication().getConfig() instanceof AppConfigGeoCeDG
-				&& !kernel.isMacroKernel() ? NativeSourceFidelity2D.fileSerializationPass() : null;
+		boolean geoCeDGDocument = getApplication().getConfig() instanceof AppConfigGeoCeDG
+				&& !kernel.isMacroKernel();
+		nativeFileFidelityPass = geoCeDGDocument ? NativeSourceFidelity2D.fileSerializationPass() : null;
+		boolean previousNumericLayers = sb.writesNumericLayers();
+		sb.setWriteNumericLayers(geoCeDGDocument);
 		beginSpatialIdentityXML();
 		try {
 			// save construction elements
@@ -1599,6 +1602,7 @@ public class Construction {
 			Log.debug(e);
 		} finally {
 			endSpatialIdentityXML();
+			sb.setWriteNumericLayers(previousNumericLayers);
 			if (nativeFileFidelityPass != null) {
 				lastNativeFileFidelityMetrics = nativeFileFidelityPass.metrics();
 			}
