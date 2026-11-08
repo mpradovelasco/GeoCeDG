@@ -968,7 +968,19 @@ public final class GeoCeDGEuclidianController
 			return super.switchModeForProcessMode(hits, controlDown, shiftDown, callback,
 					selectionPreview);
 		}
-		GeoElement injected = selectionPreview ? null : injectRememberedReference(slot, hits);
+		boolean staleSelection = getSelectedPointList().stream().anyMatch(this::unavailableInput)
+				|| getSelectedLineList().stream().anyMatch(this::unavailableInput)
+				|| getSelectedVectorList().stream().anyMatch(this::unavailableInput)
+				|| getSelectedFunctionList().stream().anyMatch(this::unavailableInput);
+		if (staleSelection) {
+			if (selectionPreview) {
+				return false;
+			}
+			clearSelections();
+		}
+		// A lost explicit selection must never silently switch to the remembered input.
+		GeoElement injected = selectionPreview || staleSelection ? null
+				: injectRememberedReference(slot, hits);
 		boolean created = super.switchModeForProcessMode(hits, controlDown, shiftDown,
 				callback, selectionPreview);
 		if (injected != null) {
@@ -978,6 +990,12 @@ public final class GeoCeDGEuclidianController
 			rememberCertifiedReference(slot);
 		}
 		return created;
+	}
+
+	private boolean unavailableInput(GeoElementND input) {
+		GeoElement geo = input.toGeoElement();
+		return !geo.isAvailableAtConstructionStep(kernel.getConstructionStep())
+				|| !kernel.isAxis(geo) && !referenceMemory.isCurrent(geo);
 	}
 
 	private GeoElement injectRememberedReference(GeoCeDGLineReferenceMemory.Slot slot,

@@ -728,6 +728,16 @@ class PreG9BR6PlusF2R1DualActivationTest {
 			w.toolbar(PAR, false);
 			assertEquals(Behaviour.MEMORY_ENABLED, w.behaviour(Slot.PARALLEL), "return without Ctrl");
 			GeoElement reference = w.lookup("l");
+			w.click(ON_M);
+			assertEquals(1, w.selection(), "explicit reference-first gesture");
+			SwingUtilities.invokeAndWait(() -> w.app.getKernel()
+					.setConstructionStep(w.lookup("m").getConstructionIndex() - 1));
+			w.settle();
+			int before = w.size();
+			w.click(new double[] {-6, -4});
+			assertEquals(before, w.size(), "neither the later m nor the remembered l was used");
+			assertSame(reference, w.memory().getUsable(Slot.PARALLEL));
+			SwingUtilities.invokeAndWait(w.controller()::clearSelections);
 			SwingUtilities.invokeAndWait(() -> w.app.getKernel()
 					.setConstructionStep(reference.getConstructionIndex() - 1));
 			w.settle();

@@ -40,6 +40,10 @@ momento de utilizar la ranura. La navegación no elimina miembros del conjunto
 de orden constructivo. Un avance recupera la misma instancia si todos los
 predicados vuelven a cumplirse. Borrado, reemplazo estructural y reconstrucción
 invalidan cualquier instancia que no se pueda conservar con el contrato F2.
+Antes de delegar un gesto de memoria, la herramienta comprueba también la
+identidad y el paso de las entradas que ya había seleccionado explícitamente.
+Si una entrada deja de estar disponible, descarta la selección parcial sin
+sustituir la referencia perdida por otra guardada en esa misma pulsación.
 Undo/Redo invalidan las referencias guardadas. No se incorpora un mecanismo
 de correspondencia entre instancias reconstruidas. La referencia de un documento
 anterior queda invalidada al reconstruir, aunque la nueva construcción contenga

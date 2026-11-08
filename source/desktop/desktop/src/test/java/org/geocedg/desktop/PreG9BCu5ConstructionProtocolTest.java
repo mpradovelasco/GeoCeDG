@@ -25,13 +25,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import org.geocedg.desktop.GeoCeDGPresentationPreferences.Category;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 /** B02 through the attached Swing protocol and its inherited cell renderers. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
@@ -52,7 +53,8 @@ class PreG9BCu5ConstructionProtocolTest {
 				originalIconSize.set(app.getPresentationSize(Category.TOOLBAR_ICON));
 				app.setPresentationSize(Category.TOOLBAR_ICON, 48);
 				GeoElement indexed = G9U1TestApp.eval(app, "A_1=(1,2)");
-				indexed.setCaption("A_1 ample readable spacing for every indexed caption in this row");
+				indexed.setCaption(
+						"A_1 ample readable spacing for every indexed caption in this row");
 				indexed.update();
 				G9U1TestApp.eval(app, "B=(3,4)");
 				G9U1TestApp.eval(app, "s=Segment(A_1,B)");
@@ -68,7 +70,8 @@ class PreG9BCu5ConstructionProtocolTest {
 				toggleColumn(protocol, CAPTION);
 				assertTrue(table.getRowHeight(0) < wrappedHeight.get());
 				toggleColumn(protocol, TOOLBAR_ICON);
-				Icon icon = assertInstanceOf(Icon.class, table.getModel().getValueAt(2, TOOLBAR_ICON));
+				Icon icon = assertInstanceOf(Icon.class,
+						table.getModel().getValueAt(2, TOOLBAR_ICON));
 				assertTrue(table.getRowHeight(2) >= icon.getIconHeight() + table.getRowMargin());
 				toggleColumn(protocol, TOOLBAR_ICON);
 				assertEquals(-1, table.convertColumnIndexToView(TOOLBAR_ICON));
