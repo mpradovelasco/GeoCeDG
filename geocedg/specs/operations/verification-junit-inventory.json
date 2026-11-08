@@ -4616,13 +4616,17 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 224,
-      "expected_identities_sha256": "9defcfe49b7c61200c46f95441f70f1fb31d7881ed00197d40dd02395fe68a3a",
+      "expected_identity_count": 228,
+      "expected_identities_sha256": "280f6e012c2b2ca301dbc9fbd5c1b3f1cd4156f0e92d3feb2ba7c23946f4fefc",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "41b2beaa25056ad9294ee0546e2381ef23400564",
           "tree": "7834a15509a3520103a5d699e3d1689b9ae4b74b"
+        },
+        {
+          "commit": "e0cce788d3531e9b496455f07f207bcd3bed6106",
+          "tree": "dd7860bcd876f8ad98a6d06a5fe5c06c0c989304"
         }
       ]
     },
