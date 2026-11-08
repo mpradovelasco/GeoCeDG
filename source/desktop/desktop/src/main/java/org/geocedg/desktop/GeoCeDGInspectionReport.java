@@ -79,6 +79,7 @@ final class GeoCeDGInspectionReport {
 				"hiddenLayers", new JSONArray(context.hiddenLayers()),
 				"workingLayer", context.workingLayer(), "maxLayerUsed", context.maxLayerUsed(),
 				"activeView", context.activeView(),
+				"pathRegionHandling", context.pathRegionHandling(),
 				"displayPrecision", context.displayPrecision(),
 				"significantFigures", context.significantFigures());
 	}

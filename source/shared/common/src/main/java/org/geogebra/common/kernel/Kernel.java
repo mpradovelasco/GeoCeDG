@@ -207,6 +207,7 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	private boolean continuous = false;
 	/** Whether to move point on path together with path */
 	public PathRegionHandling usePathAndRegionParameters = PathRegionHandling.ON;
+	private long pathRegionHandlingRevision;
 	private GeoGebraCasInterface ggbCAS;
 	/** Angle unit: radians */
 	final public static int ANGLE_RADIANT = 1;
@@ -1026,7 +1027,15 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	 *            new flag for using path/region parameters
 	 */
 	public void setUsePathAndRegionParameters(PathRegionHandling flag) {
-		this.usePathAndRegionParameters = flag;
+		if (usePathAndRegionParameters != flag) {
+			usePathAndRegionParameters = flag;
+			pathRegionHandlingRevision++;
+		}
+	}
+
+	/** @return changes of the native path/region evaluation mode in this kernel */
+	public long getPathRegionHandlingRevision() {
+		return pathRegionHandlingRevision;
 	}
 
 	// loading mode: true when a ggb file is being loaded. Devised for backward

@@ -1559,8 +1559,7 @@ public class Construction {
 	 */
 	public void getConstructionXML(XMLStringBuilder sb, boolean getListenersToo) {
 		NativeSourceFidelity2D previousPass = nativeFileFidelityPass;
-		boolean geoCeDGDocument = getApplication().getConfig() instanceof AppConfigGeoCeDG
-				&& !kernel.isMacroKernel();
+		boolean geoCeDGDocument = usesGeoCeDGConstructionXml();
 		nativeFileFidelityPass = geoCeDGDocument ? NativeSourceFidelity2D.fileSerializationPass() : null;
 		boolean previousNumericLayers = sb.writesNumericLayers();
 		sb.setWriteNumericLayers(geoCeDGDocument);
@@ -1608,6 +1607,10 @@ public class Construction {
 			}
 			nativeFileFidelityPass = previousPass;
 		}
+	}
+
+	private boolean usesGeoCeDGConstructionXml() {
+		return getApplication().getConfig() instanceof AppConfigGeoCeDG && !kernel.isMacroKernel();
 	}
 
 	/** One fresh, pure serialization-pass memo; no cache survives native edits. */
@@ -3243,8 +3246,7 @@ public class Construction {
 				}
 			}
 
-			oldXML = (oldGeoAlgo == null) ? oldGeo.getXML()
-					: oldGeoAlgo.getXML();
+			oldXML = redefineXml(oldGeoAlgo == null ? oldGeo : oldGeoAlgo);
 			newXML = ""; // remove oldGeo from construction
 		} else {
 			// newGeo doesn't exist in construction, so we take oldGeo's label
@@ -3264,12 +3266,9 @@ public class Construction {
 			}
 
 			isGettingXMLForReplace = true;
-			oldXML = (oldGeoAlgo == null) ? oldGeo.getXML()
-					: oldGeoAlgo.getXML();
-			if (newGeoAlgo == null) {
-				newXML = newGeo.getXML();
-			} else {
-				newXML = newGeoAlgo.getXML();
+			oldXML = redefineXml(oldGeoAlgo == null ? oldGeo : oldGeoAlgo);
+			newXML = redefineXml(newGeoAlgo == null ? newGeo : newGeoAlgo);
+			if (newGeoAlgo != null) {
 				// get new geo inputs to check if we have to put the newXML
 				// further in consXML
 				newGeoInputs = newGeoAlgo.getInputForUpdateSetPropagation();
@@ -3313,6 +3312,14 @@ public class Construction {
 			consXML.replace(pos, pos + oldXML.length(), "");
 		}
 		return true;
+	}
+
+	private String redefineXml(ConstructionElement element) {
+		XMLStringBuilder xml = new XMLStringBuilder();
+		// Match the native construction XML being replaced, including numeric layers.
+		xml.setWriteNumericLayers(usesGeoCeDGConstructionXml());
+		element.getXML(false, xml);
+		return xml.toString();
 	}
 
 	private static void copyStyleForRedefine(GeoElement oldGeo,

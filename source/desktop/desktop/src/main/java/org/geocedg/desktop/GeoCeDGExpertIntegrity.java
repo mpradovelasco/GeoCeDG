@@ -53,7 +53,7 @@ import org.geogebra.desktop.headless.GFileHandler;
 
 /** Expert-only native transport and integrity checks, shared by rehearsal and commit. */
 final class GeoCeDGExpertIntegrity {
-	static final String VERSION = "POST_CU4_EXPERT_3";
+	static final String VERSION = "POST_CU4_EXPERT_4";
 	private static final int MAX_GRAPH_DEPTH = 160;
 	private static final int MAX_GRAPH_NODES = 4096;
 	// These producers populate getInput() via setInputFrom(), which enumerates
@@ -141,6 +141,7 @@ final class GeoCeDGExpertIntegrity {
 			retained.put(geo, residentState(geo));
 		}
 		var receiverKernel = receiver.getKernel();
+		var pathMode = receiverKernel.usePathAndRegionParameters;
 		var construction = receiverKernel.getConstruction();
 		var unsetSteps = construction.getConstructionDefaults().getDefaultGeos().stream()
 				.map(Map.Entry::getValue).filter(geo -> geo.getAnimationStepObject() == null).toList();
@@ -194,7 +195,8 @@ final class GeoCeDGExpertIntegrity {
 		if (!units.equals(receiver.getDocumentUnits().getState())
 				|| !hidden.equals(receiver.getLayerWorkspace().getHiddenLayers())
 				|| working != receiver.getLayerWorkspace().getWorkingLayer()
-				|| activeView != receiver.getActiveEuclidianView().getViewID()) {
+				|| activeView != receiver.getActiveEuclidianView().getViewID()
+				|| pathMode != receiverKernel.usePathAndRegionParameters) {
 			throw new IOException("The native copy changed receiver document context");
 		}
 		verifyMappedGraph(source, receiver, copies);
@@ -249,6 +251,7 @@ final class GeoCeDGExpertIntegrity {
 			field(out, VERSION);
 			field(out, app.getUniqueId());
 			out.writeInt(app.getKernel().getAngleUnit());
+			field(out, app.getKernel().usePathAndRegionParameters.name());
 			out.writeBoolean(app.getKernel().useSignificantFigures);
 			out.writeInt(app.getKernel().useSignificantFigures ? app.getKernel().getPrintFigures()
 					: app.getKernel().getPrintDecimals());
@@ -289,6 +292,8 @@ final class GeoCeDGExpertIntegrity {
 				|| !trial.getLayerWorkspace().getHiddenLayers().equals(
 						reopened.getLayerWorkspace().getHiddenLayers())
 				|| trial.getKernel().getAngleUnit() != reopened.getKernel().getAngleUnit()
+				|| trial.getKernel().usePathAndRegionParameters
+						!= reopened.getKernel().usePathAndRegionParameters
 				|| !trial.getDocumentUnits().getState().equals(reopened.getDocumentUnits().getState())
 				|| !constructionXml(trial).equals(constructionXml(reopened))) {
 			throw new IOException("Native reopening changed the document construction or context");

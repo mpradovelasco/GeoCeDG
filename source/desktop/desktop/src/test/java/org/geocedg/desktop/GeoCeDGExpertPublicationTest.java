@@ -34,7 +34,9 @@ import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.ProjectionBindingRole;
 import org.geogebra.common.kernel.ConstructionDefaults;
+import org.geogebra.common.kernel.PathRegionHandling;
 import org.geogebra.common.kernel.geos.GeoConicPart;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -114,18 +116,55 @@ class GeoCeDGExpertPublicationTest {
 	void rejectsAnUnexpectedResultAndRestoresTheReceiverBeforeHistoryPublication() throws Exception {
 		onEdt(() -> {
 			Source source = source();
-			AppGeoCeDG app = receiver();
-			var service = app.getDocumentInsertion();
-			var review = service.beginExpertReview();
-			Trial trial = trial(app, review, source);
-			var history = GeoCeDGDocumentInsertion.HistoryRecord.of(undo(app));
-			var offer = review.offer(source.file(), source.bytes(), REPORT, REPORT, () -> true);
-			var result = service.publishExpert(offer, REPORT);
-			assertEquals(FAILED_RECOVERY_CERTIFIED, result.getOutcome(), String.valueOf(result.getFailure()));
-			assertTrue(result.getFailure().getMessage().contains("differs from the consented trial"));
-			assertNull(app.getKernel().lookupLabel(trial.arcLabel()));
-			assertNull(result.getExpertStep());
-			assertNull(history.mismatch(undo(app), null));
+			for (boolean afterStore : List.of(false, true)) {
+				AppGeoCeDG app = receiver();
+				var before = GeoCeDGDocumentInsertion.Certificate.of(app);
+				var service = app.getDocumentInsertion();
+				var review = service.beginExpertReview();
+				Trial trial = trial(app, review, source);
+				var history = GeoCeDGDocumentInsertion.HistoryRecord.of(undo(app));
+				var offer = review.offer(source.file(), source.bytes(), trial.fingerprint(), REPORT, () -> true);
+				var changed = new AtomicBoolean();
+				service.setFaults(new GeoCeDGDocumentInsertion.Faults() {
+					@Override
+					public void beforeOwnStore() {
+						if (!afterStore) {
+							changeCopiedPoint();
+						}
+					}
+
+					@Override
+					public void beforeAttach() {
+						if (afterStore) {
+							changeCopiedPoint();
+						}
+					}
+
+					private void changeCopiedPoint() {
+						if (changed.compareAndSet(false, true)) {
+							var arc = (GeoConicPart) app.getKernel().lookupLabel(trial.arcLabel());
+							var point = (GeoPoint) app.getKernel().lookupLabel("B");
+							assertEquals(3.0, arc.getHalfAxis(0));
+							point.setCoords(4, 0, 1);
+							point.updateCascade();
+							assertTrue(arc.isDefined());
+							assertEquals(4.0, arc.getHalfAxis(0));
+						}
+					}
+				});
+				var result = service.publishExpert(offer, REPORT);
+				assertTrue(changed.get(), String.valueOf(result.getFailure()));
+				assertEquals(FAILED_RECOVERY_CERTIFIED, result.getOutcome(), String.valueOf(result.getFailure()));
+				String stage = afterStore ? "history attachment" : "pre-history state";
+				assertTrue(result.getFailure().getMessage().contains("differs from the consented trial at " + stage));
+				var after = GeoCeDGDocumentInsertion.Certificate.of(app);
+				assertTrue(before.sameInstances(after));
+				assertEquals(List.of(), before.serializableDifferences(after));
+				assertNull(app.getKernel().lookupLabel(trial.arcLabel()));
+				assertNull(app.getKernel().lookupLabel("B"));
+				assertNull(result.getExpertStep());
+				assertNull(history.mismatch(undo(app), null));
+			}
 			return null;
 		});
 	}
@@ -146,6 +185,35 @@ class GeoCeDGExpertPublicationTest {
 			assertFalse(review.isCurrent(), "the offer stays stale after a reversion");
 			assertEquals(REJECTED_BEFORE_MUTATION, service.publishExpert(offer, REPORT).getOutcome());
 			assertNull(app.getKernel().lookupLabel("arc"));
+			return null;
+		});
+	}
+
+	@Test
+	void invalidatesAnOfferAcrossARevertedPathRegionModeEdit() throws Exception {
+		onEdt(() -> {
+			Source source = source();
+			AppGeoCeDG app = receiver();
+			var kernel = app.getKernel();
+			kernel.setUsePathAndRegionParameters(PathRegionHandling.ON);
+			app.setUnsaved();
+			var before = GeoCeDGDocumentInsertion.Certificate.of(app);
+			var history = GeoCeDGDocumentInsertion.HistoryRecord.of(undo(app));
+			var service = app.getDocumentInsertion();
+			var review = service.beginExpertReview();
+			Trial trial = trial(app, review, source);
+			var offer = review.offer(source.file(), source.bytes(), trial.fingerprint(), REPORT, () -> true);
+			assertTrue(review.isCurrent());
+			kernel.setUsePathAndRegionParameters(PathRegionHandling.OFF);
+			kernel.setUsePathAndRegionParameters(PathRegionHandling.ON);
+			assertTrue(review.snapshot().matchesCurrentState(app), "the native drawing matches again");
+			assertFalse(review.isCurrent(), "the offer stays stale after restoring the mode");
+			assertEquals(REJECTED_BEFORE_MUTATION, service.publishExpert(offer, REPORT).getOutcome());
+			var after = GeoCeDGDocumentInsertion.Certificate.of(app);
+			assertTrue(before.sameInstances(after));
+			assertEquals(List.of(), before.serializableDifferences(after));
+			assertNull(history.mismatch(undo(app), null));
+			assertNull(kernel.lookupLabel(trial.arcLabel()));
 			return null;
 		});
 	}

@@ -700,6 +700,7 @@ final class GeoCeDGDocumentInsertion {
 		private final boolean displayable;
 		private final Construction construction;
 		private final long protectedLabelRevision;
+		private final long pathRegionHandlingRevision;
 		private final long historyActivity;
 		private volatile boolean changed;
 
@@ -712,6 +713,7 @@ final class GeoCeDGDocumentInsertion {
 			displayable = app.getMainComponent().isDisplayable();
 			construction = app.getKernel().getConstruction();
 			protectedLabelRevision = construction.getProtectedLabelRevision();
+			pathRegionHandlingRevision = app.getKernel().getPathRegionHandlingRevision();
 			dispatcher = app.getEventDispatcher();
 			synchronized (undo) {
 				historyActivity = undo.getHistoryActivity();
@@ -745,6 +747,7 @@ final class GeoCeDGDocumentInsertion {
 					&& undo.getHistoryActivity() == historyActivity
 					&& app.getKernel().getConstruction() == construction
 					&& construction.getProtectedLabelRevision() == protectedLabelRevision
+					&& app.getKernel().getPathRegionHandlingRevision() == pathRegionHandlingRevision
 					&& app.getMainComponent().isDisplayable() == displayable
 					&& (dock == null || dock.getEuclidianViewActivationGeneration() == viewActivation);
 		}
@@ -1244,16 +1247,10 @@ final class GeoCeDGDocumentInsertion {
 				created = createdSince(app, instancesBefore);
 				faults.afterCommit();
 				restoreIdentity();
-				if (!Objects.equals(app.getCurrentFile(), before.file)
-						|| app.isBlockUpdateScripts() != expertBefore.scriptsBlocked()) {
-					throw new IllegalStateException("Expert copy changed file association or scripting policy");
-				}
 				if (!awaitQuiescence(undo) || !undo.getCommands().equals(List.of(barrier.baseline))) {
 					throw new IllegalStateException("Unexpected history change in expert publication");
 				}
 				verifyExpertFingerprint(offer, trial.fingerprint(), "native copy");
-				verifyExpertFingerprint(offer, GeoCeDGExpertIntegrity.fingerprint(app, expertBefore.resources()),
-						"pre-history state");
 				return succeed(helper.getDocumentUnits().getState(), offer);
 			} catch (Exception | Error commitFailure) {
 				failure = commitFailure;
@@ -1272,6 +1269,16 @@ final class GeoCeDGDocumentInsertion {
 				throw new IllegalStateException("Expert publication differs from the consented trial at "
 						+ stage + " (expected " + offer.fingerprint + ", observed " + actual + ")");
 			}
+		}
+
+		private void verifyExpertLiveState(ExpertOffer offer, String stage) throws IOException {
+			if (!Objects.equals(app.getCurrentFile(), before.file)
+					|| !Objects.equals(app.getTubeId(), expertBefore.tube())
+					|| app.isBlockUpdateScripts() != expertBefore.scriptsBlocked()) {
+				throw new IllegalStateException("Expert publication changed file association or scripting policy");
+			}
+			verifyExpertFingerprint(offer, GeoCeDGExpertIntegrity.fingerprint(app, expertBefore.resources()),
+					stage);
 		}
 
 		Result run(AppGeoCeDG helper, MixedAngleInsertionProof proof, ReceiverGeometry geometry) {
@@ -1339,6 +1346,9 @@ final class GeoCeDGDocumentInsertion {
 
 		private Result succeed(UnitState provenance, ExpertOffer offer) throws Exception {
 			faults.beforeOwnStore();
+			if (offer != null) {
+				verifyExpertLiveState(offer, "pre-history state");
+			}
 			// one undo step made by the orchestration, carrying the kept document identity
 			String live = currentUndoXml();
 			app.getKernel().getConstruction().getUndoManager().storeUndoInfo();
@@ -1626,15 +1636,18 @@ final class GeoCeDGDocumentInsertion {
 				ExpertOffer offer) throws Exception {
 			faults.beforeAttach();
 			synchronized (undo) {
-				if (offer != null && !offer.exactSourceCurrent()) {
-					throw new ExpertSourceChanged();
-				}
 				List<UndoCommand> temporary = undo.getCommands();
 				if (!undo.isQuiescent() || !temporary.equals(expectedTemporary)) {
 					try (PreparedUndoBaseline closing = undo.prepareUndoBaseline()) {
 						undo.commitUndoBaseline(closing);
 					}
 					temporary.addAll(undo.getCommands());
+				}
+				if (offer != null) {
+					verifyExpertLiveState(offer, "history attachment");
+					if (!offer.exactSourceCurrent()) {
+						throw new ExpertSourceChanged();
+					}
 				}
 				RuntimeException refresh = undo.attach(finalHistory, cursor);
 				attached = true;

@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -90,6 +91,22 @@ final class PreG9BR6PlusF3Fixtures {
 
 	static GeoCeDGUndoManager undo(AppD app) {
 		return (GeoCeDGUndoManager) app.getKernel().getConstruction().getUndoManager();
+	}
+
+	static String expertWorkerClassPath() throws Exception {
+		var entries = new ArrayList<String>();
+		for (ClassLoader loader = GeoCeDGExpertWorker.class.getClassLoader(); loader != null;
+				loader = loader.getParent()) {
+			if (loader instanceof URLClassLoader urls) {
+				for (var url : urls.getURLs()) {
+					if ("file".equals(url.getProtocol())) {
+						entries.add(Path.of(url.toURI()).toString());
+					}
+				}
+			}
+		}
+		entries.add(System.getProperty("java.class.path"));
+		return String.join(File.pathSeparator, entries);
 	}
 
 	/** A fresh one-state history; the document is saved. */

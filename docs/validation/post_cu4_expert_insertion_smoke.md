@@ -27,3 +27,11 @@ habituales, el contexto de la sesión puede producir otra capa final. La capa
 indicada para `u` en el paso 3 debe conservarse tras aceptar, rehacer y
 reabrir. Para el paso 6 puede usarse `Guardar` cuando el aviso redirige a
 `Guardar como…`.
+
+## Evidencia autoral declarada
+
+`SMOKE PASS — AUTHOR REPORTED — EXPERT INSERTION` corresponde a
+`8abfd2df3d0255c7505649b5be520c9cd3e6b39e`, árbol
+`b02aa93a1a771b61cddd0b97a6357434b562365a`. El autor comunicó que completó
+el smoke tras las correcciones focales. La declaración se conserva para
+ese candidato y el recorrido del arco.

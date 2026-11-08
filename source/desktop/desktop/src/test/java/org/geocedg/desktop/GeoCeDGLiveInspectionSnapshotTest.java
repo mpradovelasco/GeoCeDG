@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.app;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.must;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
@@ -25,10 +26,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
 import org.geocedg.common.kernel.spatial.identity.EditAuthorityMode;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.ProjectionBindingRole;
+import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Phase;
 import org.geogebra.common.kernel.geos.ChartStyleGeo;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -166,6 +169,69 @@ class GeoCeDGLiveInspectionSnapshotTest {
 			}
 			return null;
 		});
+	}
+
+	@Test
+	void persistsExplicitLayersOfHiddenNumbersThroughHistoryAndFile() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG model = app(UnitState.EMPTY);
+			int upperLayer = LayerDomain.maxLayer(model);
+			var resident = must(model, "A=(1,2)");
+			resident.setLayer(12);
+			resident.setEuclidianVisible(false);
+			must(model, "n=2").setLayer(5);
+			must(model, "m=4");
+			var upper = must(model, "hi=n+1");
+			upper.setLayer(upperLayer);
+			var lower = must(model, "lo=2*n");
+			lower.setLayer(0);
+			assertFalse(upper.isDrawable());
+			assertFalse(lower.isDrawable());
+			baseline(model);
+
+			upper.setLayer(4);
+			lower.setLayer(5);
+			store(model);
+			undo(model).undo();
+			assertNumericLayers(model, upperLayer, 0);
+			undo(model).redo();
+			assertNumericLayers(model, 4, 5);
+			undo(model).undo();
+
+			var file = save(model, directory, "explicit-numeric-layers");
+			AppGeoCeDG reopened = app(UnitState.EMPTY);
+			assertTrue(reopened.loadFile(file, false));
+			// The earlier high layer makes 0 different from the loader's inherited layer.
+			assertNumericLayers(reopened, upperLayer, 0);
+			var input = (GeoNumeric) reopened.getKernel().lookupLabel("n");
+			input.setValue(3);
+			input.updateCascade();
+			assertEquals(4, ((GeoNumeric) reopened.getKernel().lookupLabel("hi")).getDouble());
+			assertEquals(6, ((GeoNumeric) reopened.getKernel().lookupLabel("lo")).getDouble());
+			assertNumericLayers(reopened, upperLayer, 0);
+
+			var redefined = (GeoNumeric) must(reopened, "n=m+1");
+			assertFalse(redefined.isIndependent());
+			assertEquals(5, redefined.getDouble());
+			assertNumericLayers(reopened, upperLayer, 0);
+			var newInput = (GeoNumeric) reopened.getKernel().lookupLabel("m");
+			newInput.setValue(6);
+			newInput.updateCascade();
+			assertEquals(7, redefined.getDouble());
+			assertEquals(8, ((GeoNumeric) reopened.getKernel().lookupLabel("hi")).getDouble());
+			assertEquals(14, ((GeoNumeric) reopened.getKernel().lookupLabel("lo")).getDouble());
+			assertNumericLayers(reopened, upperLayer, 0);
+			return null;
+		});
+	}
+
+	private static void assertNumericLayers(AppGeoCeDG app, int upper, int lower) {
+		var resident = app.getKernel().lookupLabel("A");
+		assertEquals(12, resident.getLayer());
+		assertFalse(resident.isSetEuclidianVisible());
+		assertEquals(5, app.getKernel().lookupLabel("n").getLayer());
+		assertEquals(upper, app.getKernel().lookupLabel("hi").getLayer());
+		assertEquals(lower, app.getKernel().lookupLabel("lo").getLayer());
 	}
 
 	@Test

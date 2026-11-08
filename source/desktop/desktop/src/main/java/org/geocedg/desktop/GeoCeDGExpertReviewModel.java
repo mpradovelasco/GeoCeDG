@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import org.geocedg.desktop.GeoCeDGInspectionResult.Phase;
 import org.geocedg.desktop.GeoCeDGInspectionResult.Status;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.move.ggtapi.models.json.JSONException;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 
@@ -24,6 +25,9 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 	private static final Pattern UNSAFE_CONTROLS = Pattern.compile("[\\p{Cc}\\p{Cf}]");
 	private static final Pattern LAYER = Pattern.compile("^layer=(\\d+),");
 	private static final Pattern VIEWS = Pattern.compile(",view1=(true|false),view2=(true|false),");
+
+	private record ObjectDisplay(String name, boolean point) {
+	}
 
 	static void validateReport(JSONObject report, boolean available, String source, String receiver)
 			throws JSONException, IOException {
@@ -77,21 +81,28 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 		boolean trialObserved = false;
 		boolean technicalFailure = false;
 		Set<String> modified = new HashSet<>();
-		Map<Phase, Map<String, String>> labels = new EnumMap<>(Phase.class);
+		Map<Phase, Map<String, ObjectDisplay>> labels = new EnumMap<>(Phase.class);
+		Map<Phase, String> pathModes = new EnumMap<>(Phase.class);
 		var stages = report.getJSONArray("stages");
 		for (int i = 0; i < stages.length(); i++) {
 			JSONObject stage = stages.getJSONObject(i);
 			Phase phase = phase(stage, "phase");
 			trialObserved |= phase == Phase.TRIAL;
 			var objects = stage.getJSONArray("objects");
-			Map<String, String> stageLabels = new HashMap<>();
+			Map<String, ObjectDisplay> stageLabels = new HashMap<>();
 			for (int j = 0; j < objects.length(); j++) {
 				JSONObject object = objects.getJSONObject(j);
 				String ref = object.getString("ref");
 				String label = object.isNull("label") ? ref : object.getString("label");
-				stageLabels.put(ref, plain(label) + " (" + plain(object.getString("geoClass")) + ")");
+				String geoClass = object.getString("geoClass");
+				stageLabels.put(ref, new ObjectDisplay(plain(label) + " (" + plain(geoClass) + ")",
+						GeoPoint.class.getName().equals(geoClass)));
 			}
 			labels.put(phase, stageLabels);
+			var context = stage.optJSONObject("documentContext");
+			if (context != null && context.has("pathRegionHandling")) {
+				pathModes.put(phase, context.getString("pathRegionHandling"));
+			}
 			var entries = stage.getJSONArray("entries");
 			for (int j = 0; j < entries.length(); j++) {
 				JSONObject entry = entries.getJSONObject(j);
@@ -138,16 +149,16 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 			}
 			var unmatched = comparison.getJSONArray("unmatchedAfter");
 			for (int j = 0; j < unmatched.length(); j++) {
-				line(uncertainties, scope + " · " + labels.getOrDefault(after, Map.of())
-						.getOrDefault(unmatched.getString(j), plain(unmatched.getString(j)))
+				line(uncertainties, scope + " · " + display(labels, after, unmatched.getString(j)).name()
 						+ " · " + statusName(app, Status.NOT_ESTABLISHED));
 				uncertain++;
 			}
 			var objects = comparison.getJSONArray("objects");
 			for (int j = 0; j < objects.length(); j++) {
 				JSONObject object = objects.getJSONObject(j);
-				String names = objectName(labels, before, object, "beforeRef") + " → "
-						+ objectName(labels, after, object, "afterRef");
+				var from = display(labels, before, object, "beforeRef");
+				var to = display(labels, after, object, "afterRef");
+				String names = from.name() + " → " + to.name();
 				if ("OMISSION_PROVEN".equals(object.getString("outcome"))) {
 					line(omissions, scope + " · " + names);
 					omitted++;
@@ -163,6 +174,10 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 					case VERIFIED_CHANGED -> {
 						String oldValue = value(field, "before");
 						String newValue = value(field, "after");
+						if ("CURRENT_VALUE".equals(property) && from.point() && to.point()) {
+							oldValue = pointCoordinates(oldValue);
+							newValue = pointCoordinates(newValue);
+						}
 						if ("PRESENTATION_FIELDS".equals(property)) {
 							describePresentation(app, changes, scope + " · " + names,
 									oldValue, newValue);
@@ -184,6 +199,13 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 					}
 				}
 			}
+		}
+		String sourcePathMode = pathModes.get(Phase.SOURCE);
+		String trialPathMode = pathModes.get(Phase.TRIAL);
+		if (sourcePathMode != null && trialPathMode != null && !sourcePathMode.equals(trialPathMode)) {
+			line(assessments, phaseName(app, Phase.SOURCE) + " → " + phaseName(app, Phase.TRIAL)
+					+ " · " + app.layerText("Insert.Expert.PathRegionHandling") + " · "
+					+ pathModeName(app, sourcePathMode) + " → " + pathModeName(app, trialPathMode));
 		}
 		if (available && (!comparisonPairs.contains("SOURCE>TRIAL")
 				|| !comparisonPairs.contains("RECEIVER>TRIAL")
@@ -261,11 +283,43 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 				+ "\n";
 	}
 
-	private static String objectName(Map<Phase, Map<String, String>> labels, Phase phase,
+	private static String objectName(Map<Phase, Map<String, ObjectDisplay>> labels, Phase phase,
 			JSONObject object, String key) {
-		String ref = object.optString(key, null);
-		return object.isNull(key) ? "—" : labels.getOrDefault(phase, Map.of())
-				.getOrDefault(ref, plain(ref));
+		return display(labels, phase, object, key).name();
+	}
+
+	private static ObjectDisplay display(Map<Phase, Map<String, ObjectDisplay>> labels,
+			Phase phase, JSONObject object, String key) {
+		return display(labels, phase, object.isNull(key) ? null : object.optString(key, null));
+	}
+
+	private static ObjectDisplay display(Map<Phase, Map<String, ObjectDisplay>> labels,
+			Phase phase, String ref) {
+		if (ref == null) {
+			return new ObjectDisplay("—", false);
+		}
+		return labels.getOrDefault(phase, Map.of()).getOrDefault(ref,
+				new ObjectDisplay(plain(ref), false));
+	}
+
+	private static String pointCoordinates(String encoded) {
+		String[] coordinates = encoded.split(",", -1);
+		if (coordinates.length != 2) {
+			return encoded;
+		}
+		try {
+			return "(" + Double.parseDouble(coordinates[0]) + ", "
+					+ Double.parseDouble(coordinates[1]) + ")";
+		} catch (NumberFormatException malformed) {
+			return encoded;
+		}
+	}
+
+	private static String pathModeName(AppGeoCeDG app, String mode) {
+		return switch (mode) {
+		case "ON", "OFF" -> app.layerText("Insert.Expert.PathRegionHandling." + mode);
+		default -> plain(mode);
+		};
 	}
 
 	private static String value(JSONObject object, String key) {

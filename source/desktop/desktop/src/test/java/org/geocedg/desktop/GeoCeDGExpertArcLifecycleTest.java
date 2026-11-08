@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.app;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.awaitQuiescent;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.expertWorkerClassPath;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.must;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.save;
@@ -21,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ class GeoCeDGExpertArcLifecycleTest {
 		String uuid = onEdt(receiver::getUniqueId);
 		var review = onEdt(insertion::beginExpertReview);
 		try {
-			String classPath = workerClassPath();
+			String classPath = expertWorkerClassPath();
 			var worker = onEdt(() -> new GeoCeDGExpertWorker(review.snapshot(), classPath));
 			try (var trial = worker.inspect(source, () -> false)) {
 				assertTrue(trial.available(), () -> trial.report().toString());
@@ -164,22 +164,6 @@ class GeoCeDGExpertArcLifecycleTest {
 	private static DockPanelD propertiesPanel(AppGeoCeDG app) {
 		DockManagerD dock = (DockManagerD) app.getGuiManager().getLayout().getDockManager();
 		return dock.getPanel(App.VIEW_PROPERTIES);
-	}
-
-	private static String workerClassPath() throws Exception {
-		var entries = new ArrayList<String>();
-		for (ClassLoader loader = GeoCeDGExpertWorker.class.getClassLoader(); loader != null;
-				loader = loader.getParent()) {
-			if (loader instanceof URLClassLoader urls) {
-				for (var url : urls.getURLs()) {
-					if ("file".equals(url.getProtocol())) {
-						entries.add(Path.of(url.toURI()).toString());
-					}
-				}
-			}
-		}
-		entries.add(System.getProperty("java.class.path"));
-		return String.join(File.pathSeparator, entries);
 	}
 
 	private static GeoConicPart assertArc(AppGeoCeDG app, double sweep) {

@@ -37,6 +37,12 @@ normalizada por radio con tolerancia `1e-9`. Las tres evaluaciones puntuales
 de una curva cartesiana sirven al diferencial. Su equivalencia global queda
 sin establecer.
 
+Un productor de punto sobre trayectoria se evalúa con el modo nativo de
+parámetros del receptor. La revisión distingue ese modo en origen y
+receptor y muestra las coordenadas observadas de los puntos trazados. El
+consentimiento vincula el modo efectivo a la huella del resultado. Cambiar
+el modo durante la revisión invalida la oferta aunque se restituya.
+
 ## Ensayo y consentimiento
 
 La captura se realiza en EDT y recoge el dibujo efectivo, incluido lo que
@@ -47,6 +53,10 @@ separado los cambios conocidos, las propiedades no establecidas y las
 condiciones que impiden ofrecer la incorporación. La reapertura usa el
 escritor y el lector nativos. La vista previa gráfica, cuando está disponible,
 procede del dibujo de ensayo.
+
+La publicación comprueba de nuevo la huella antes de capturar Undo y bajo
+la barrera antes de publicar el historial. Una diferencia sobrevenida en
+el resultado sigue la ruta de recuperación F3.
 
 El ajuste de apertura en ventana separada de un panel oculto es pasivo y
 puede acompañar a la captura. Si el panel está visible en una ventana
@@ -86,7 +96,8 @@ copia requiere una decisión explícita del usuario y usa el ciclo nativo.
 - El plan usa una selección integrada acotada a las rutas afectadas. El
   perfil global `INTEGRATION` incluye además las suites científicas y los
   paquetes ajenos a esta operación. El alcance de este cambio no exige una
-  campaña `FINAL` de producto.
+  campaña `FINAL` de producto. La consolidación añade una comprobación
+  de ejecución mediante la app-image interna de Windows del candidato.
 - `BOOTSTRAP IMPACT — NO CHANGE REQUIRED`. Se usa la JVM y el launcher
   Desktop ya distribuidos. Los cambios de catálogos de verificación se
   limitan a la cobertura de esta fase y a las identidades derivadas de sus

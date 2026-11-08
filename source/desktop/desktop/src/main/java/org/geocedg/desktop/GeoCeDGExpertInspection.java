@@ -514,7 +514,8 @@ public final class GeoCeDGExpertInspection {
 				app.getLayerWorkspace().getHiddenLayers(), kernel.useSignificantFigures
 						? kernel.getPrintFigures() : kernel.getPrintDecimals(),
 				kernel.useSignificantFigures, app.getLayerWorkspace().getWorkingLayer(),
-				app.getMaxLayerUsed(), app.getActiveEuclidianView().getViewID());
+				app.getMaxLayerUsed(), app.getActiveEuclidianView().getViewID(),
+				kernel.usePathAndRegionParameters.name());
 		return new Snapshot(new Stage(phase, archive == null ? null : archive.sha256(),
 				documentId, kernel.getAngleUnit(), context,
 				archive == null ? List.of() : archive.entries(),

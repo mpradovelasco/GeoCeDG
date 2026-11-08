@@ -56,7 +56,8 @@ record GeoCeDGInspectionResult(List<Stage> stages, Admission admission,
 	}
 
 	record DocumentContext(UnitState units, List<Integer> hiddenLayers, int displayPrecision,
-			boolean significantFigures, int workingLayer, int maxLayerUsed, int activeView) {
+			boolean significantFigures, int workingLayer, int maxLayerUsed, int activeView,
+			String pathRegionHandling) {
 		DocumentContext {
 			hiddenLayers = List.copyOf(hiddenLayers);
 		}
