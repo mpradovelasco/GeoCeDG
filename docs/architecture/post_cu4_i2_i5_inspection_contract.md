@@ -1,5 +1,9 @@
 # POST-CU4 · Contrato candidato de inspección y revisión
 
+Este texto conserva el contrato de la inspección I2 mediante archivos.
+La revisión integrada del receptor vivo se rige por la
+[normativa experta v1](../../geocedg/specs/ui/expert-document-insertion-candidate.md).
+
 I2 pertenece a la capa de aplicación Desktop. Lee las construcciones y sus
 algoritmos con las APIs del kernel y usa el lector, el escritor y el buffer de
 inserción nativos. El DAG, sus aristas y la interpretación geométrica pertenecen

@@ -25,9 +25,11 @@ decision), **[OBS]** recorded observation.
 
 ## 1. Surface
 
-The separate [expert insertion candidate](expert-document-insertion-candidate.md)
-defines its experimental review and publication route. The certified surface
-and admission in this section retain their approved scope.
+The [expert insertion contract](expert-document-insertion-candidate.md) defines
+the separate `document.insert-expert` action between Insert File and Apply
+Styles. The two original actions and the catalog count in §1.1 refer to the F3
+approval. F3/P4/B2 admission and the style-transfer contract apply to their
+respective actions.
 
 1.1 **[AD]** (`DQ-F3-1` N1, `DQ-F3-23`) The File menu has an **Insert /
 Insertar** submenu, directly after the Open group, with two independent actions:

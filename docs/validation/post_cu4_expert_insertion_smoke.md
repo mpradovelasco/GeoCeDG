@@ -1,14 +1,13 @@
 # POST-CU4 I3–I5 · Smoke autoral Desktop
 
-Usar el build del SHA y árbol indicados en el informe técnico. Crear un
+Usar el build del SHA y árbol indicados en el [cierre](post_cu4_expert_insertion_closeout_record.md). Crear un
 directorio de prueba nuevo. Los archivos son sintéticos. El generador escribe
 solo en el destino indicado y registra el SHA-256 de cada entrada.
 
 ```powershell
-$fixtures = 'artifacts/agent/post-cu4-i3-i5/author-smoke'
+$fixtures = 'artifacts/agent/post-cu4-i3-i5/author-smoke-default'
 ./tools/agent/probes/post-cu4-i3-i5/new-smoke-fixtures.ps1 -OutputDirectory $fixtures
-$preferences = Join-Path (Resolve-Path $fixtures).Path 'smoke-preferences.properties'
-.\gradlew.bat :desktop:desktop:runGeoCeDG "--args=--enableExpertInsertion=true --settingsfile=`"$preferences`""
+.\gradlew.bat :desktop:desktop:runGeoCeDG
 ```
 
 | Paso | Acción en español | Expected result in English |
@@ -35,3 +34,10 @@ reabrir. Para el paso 6 puede usarse `Guardar` cuando el aviso redirige a
 `b02aa93a1a771b61cddd0b97a6357434b562365a`. El autor comunicó que completó
 el smoke tras las correcciones focales. La declaración se conserva para
 ese candidato y el recorrido del arco.
+
+El autor también declaró satisfactorio el smoke manual de
+`066b53d0cc2dd8e78cf1c542e6adea820ec77d5c`, árbol
+`b60b95dec5c6c7de1e52b28c8de878d72f552448`. Ambos candidatos históricos
+usaban la activación explícita mediante `--enableExpertInsertion=true`.
+El cierre registra por separado los ensayos automatizados del arranque
+predeterminado en el producto posterior.

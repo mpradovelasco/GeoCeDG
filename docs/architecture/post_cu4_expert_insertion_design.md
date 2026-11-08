@@ -1,5 +1,9 @@
 # Inserción con revisión experta
 
+Este estudio conserva el diseño de partida. La
+[normativa experta v1](../../geocedg/specs/ui/expert-document-insertion-candidate.md)
+delimita las capacidades adoptadas.
+
 **Propuesta para revisión autoral.** Estudio de diseño `POST-CU4-INSERTION-REVIEW` sobre `d5332e400b0ab68afd14273495b9ae5f03e6c911`, árbol `e8ee4b4b371d34f7f22cc081dee1f429963150dd`. La autoridad vigente es el contrato de inserción 1.3. El cierre CU4 atribuye sus pruebas y su recibo al producto `ba4d16018cf683750a20619d9d59c84428bcbef7`. Las observaciones de código de este documento son estáticas. Las pruebas citadas indican cobertura existente y las pruebas propuestas son condiciones para una implementación futura. [Contrato F3/CU4](../../geocedg/specs/ui/document-insertion.md) · [Cierre CU4](../validation/pre_g9b_cu4_closeout_record.md) · [Propuesta de seguimiento](pre_g9b_cu4_p4_expert_insertion_followup_proposal.md)
 
 ## 1. Límites de las rutas existentes

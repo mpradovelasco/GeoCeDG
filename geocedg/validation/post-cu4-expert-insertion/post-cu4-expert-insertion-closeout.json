@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "track": "POST-CU4",
+  "phase": "POST-CU4-EXPERT-INSERTION",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/post_cu4_expert_insertion_closeout_record.md",
+  "instruction": "GeoCeDG — POST-CU4-EXPERT-INSERTION · Aprobación autoral condicionada, consolidación final, cierre normativo y publicación",
+  "authorApprovalDate": "2026-11-08",
+  "selfApproved": false,
+  "authorApproved": true,
+  "passClaimed": true,
+  "status": "PASS — AUTHOR APPROVED",
+  "identities": {
+    "publishedBaseline": {
+      "ref": "refs/heads/main",
+      "commit": "d5332e400b0ab68afd14273495b9ae5f03e6c911",
+      "tree": "e8ee4b4b371d34f7f22cc081dee1f429963150dd"
+    },
+    "technicalCandidate": {
+      "branch": "codex/post-cu4-i3-i5-expert-insertion",
+      "commit": "bf25d95355e2cd27555e316cf8024e7fa927052e",
+      "tree": "eabab698973f25b36791780f3809916a180b5208"
+    },
+    "documentaryCloseout": {
+      "branch": "codex/post-cu4-expert-insertion-closeout",
+      "parent": "bf25d95355e2cd27555e316cf8024e7fa927052e",
+      "commitIdentity": "commit containing this record"
+    }
+  },
+  "authorSmoke": {
+    "status": "PASS — AUTHOR REPORTED",
+    "commit": "066b53d0cc2dd8e78cf1c542e6adea820ec77d5c",
+    "tree": "b60b95dec5c6c7de1e52b28c8de878d72f552448",
+    "newManualSmokeClaimed": false
+  },
+  "approvedScope": [
+    "passive 2D",
+    "native isolated trial",
+    "live unsaved receiver capture",
+    "known layer, view, presentation and valid geometry changes",
+    "declared uncertainty with integrity",
+    "current one-use consent",
+    "F3 transaction and recovery",
+    "Undo/Redo and native persistence",
+    "Save As"
+  ],
+  "normativeAdoption": {
+    "contract": "geocedg/specs/ui/expert-document-insertion-candidate.md",
+    "version": "1.0",
+    "decisions": [
+      "EXP-01",
+      "EXP-02",
+      "EXP-03",
+      "EXP-04"
+    ],
+    "priorProposal": "docs/architecture/post_cu4_expert_publication_contract_candidate.md",
+    "certifiedContract": "geocedg/specs/ui/document-insertion.md",
+    "p4RowsChangedByCloseout": false
+  },
+  "productDelta": {
+    "expertDefaultEnabled": true,
+    "ordinaryLogLevel": "INFO",
+    "classicProfilePreserved": true,
+    "diagnosticOverride": "--enableExpertInsertion=false",
+    "guideImpact": "UPDATED"
+  },
+  "verificationTraceability": {
+    "verificationClass": "INTEGRATED_PHASE",
+    "changeRoute": "ORDINARY",
+    "static": {
+      "runId": "verification-03ec1182cc5d4e039991ae2c6ffdaaf6",
+      "profile": "STATIC",
+      "acceptance": "ACCEPTED",
+      "coverage": "COMPLETE",
+      "exitCode": 0,
+      "acceptanceSatisfied": 3,
+      "planSha256": "25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52",
+      "resultHash": "050e8254a74e14ff4726588f35a71fac796943796e48b6ef799838ff5ba42e3d",
+      "reportFile": "artifacts/agent/post-cu4-expert-closeout/frozen-static-01/static/supervisor/verification-result.json",
+      "reportFileSha256": "b836b805f2a5a0411f477529fbdaccd03038318c6cea36fe58f221686880867f"
+    },
+    "phase": {
+      "runId": "verification-f4175924e794445397bea4dfde6d48b2",
+      "profile": "PHASE",
+      "acceptance": "ACCEPTED",
+      "coverage": "COMPLETE",
+      "exitCode": 0,
+      "acceptanceSatisfied": 6,
+      "planSha256": "af79ea8a0dd0061be62f94a62d145d17a44cb220cd2720789eae4f3aadadaddd",
+      "resultHash": "f3fa0324626c342d372c287c5e8dabc53bd1a6dfb6a9833c900ec5f1a975b48c",
+      "reportFile": "artifacts/agent/post-cu4-expert-closeout/frozen-phase-01/phase/supervisor/verification-result.json",
+      "reportFileSha256": "9dcd93dad58f38d8ed6aa581c5f6af478fcd95e384b71fb5ac0f5dccac56d9f5",
+      "selection": "POST-CU4-I3-I5-EXPERT-INSERTION",
+      "junitCases": {
+        "desktop": 228,
+        "shared": 35
+      }
+    },
+    "globalIntegrationRequired": false,
+    "finalRequired": false,
+    "finalReceipt": null,
+    "ordinarySmoke": {
+      "exitCode": 0,
+      "applicationArguments": [],
+      "eventsFile": "artifacts/agent/post-cu4-expert-closeout/dev-smoke-03/ordinary/events.txt",
+      "eventsSha256": "e92deea34dd8fd10a17c05a4c6c700cc0dbf59d8d8c95422a888abfa2c700896"
+    },
+    "packagedSmoke": {
+      "exitCode": 0,
+      "applicationArguments": [],
+      "profile": "INTERNAL",
+      "platform": "Windows x64",
+      "packagedFilesVerified": 433,
+      "imageManifestFile": "artifacts/agent/post-cu4-expert-closeout/package-build-01/app-image.SHA256SUMS.txt",
+      "imageManifestSha256": "c18b118aabfca15e664eaef04361dcd928e99000151d2394a26bb5d0547ef926",
+      "eventsFile": "artifacts/agent/post-cu4-expert-closeout/package-smoke-02/events.txt",
+      "eventsSha256": "46bf9aad328f099f8c28454253f0fec132a696523b5bb1f0a967bb0e7f7b86c1"
+    },
+    "documentaryClass": "DOCUMENTATION_STATUS_ONLY",
+    "documentaryChecks": [
+      "STATIC",
+      "exact delta",
+      "mirror and links"
+    ],
+    "evidenceRoot": "artifacts/agent/post-cu4-expert-closeout"
+  },
+  "openLimitations": [
+    "macros outside the demonstrated expert scope",
+    "active content",
+    "3D and spatial semantics",
+    "participant durable identity remapping",
+    "mixed angular modes",
+    "malformed or unrecoverable construction"
+  ],
+  "futureWork": [
+    "independent ARC-01/P4 proposal",
+    "expanded semantic oracles and supported families",
+    "platform-specific packaging coverage"
+  ],
+  "publication": {
+    "authorAuthorized": true,
+    "reviewBranch": "refs/heads/codex/post-cu4-expert-insertion-closeout",
+    "target": "refs/heads/main",
+    "method": "exact-commit non-forced fast-forward under effective remote rules",
+    "preflight": {
+      "mainLocked": true,
+      "requiresPullRequest": true,
+      "approvingReviews": 1,
+      "evidence": "artifacts/agent/post-cu4-expert-closeout/github-effective-protection.json",
+      "evidenceSha256": "5c65b1041e65856a17ae2e222aa42293a69a3b23c7473fcdb144481d5770ae2f"
+    },
+    "observedResult": "external closeout evidence"
+  },
+  "productChangeByCloseout": "NONE",
+  "verificationInfrastructureImpact": "NONE",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "guideImpact": "NONE"
+}

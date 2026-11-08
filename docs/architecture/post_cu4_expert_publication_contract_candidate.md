@@ -1,6 +1,13 @@
 # POST-CU4 · Contrato candidato de publicación experta
 
-**Para decisión autoral.** C3 de `POST-CU4-INSERTION-PRE-I3`. La publicación
+**Antecedente de diseño C3.** La [normativa v1 adoptada](../../geocedg/specs/ui/expert-document-insertion-candidate.md)
+recoge el perímetro pasivo 2D del [cierre autoral](../validation/post_cu4_expert_insertion_closeout_record.md).
+La activación ordinaria y la diferencia de un punto sobre trayectoria se
+rigen por la normativa v1. La propuesta de ampliación de P4 y las
+capacidades que requieren pruebas adicionales mantienen su carácter de
+propuesta.
+
+Este texto conserva el diseño de `POST-CU4-INSERTION-PRE-I3`. La publicación
 significa incorporar al dibujo activo en memoria. La aprobación del usuario
 de una oferta es distinta de la aprobación autoral del contrato y de la
 publicación de código o binarios. Este documento se apoya en la inspección

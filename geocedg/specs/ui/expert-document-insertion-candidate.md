@@ -1,19 +1,27 @@
 # GeoCeDG · Inserción con revisión experta
 
-**Enmienda candidata I3–I5.** La autorización de implementación permite
-probar esta vía en una rama técnica. La adopción del contrato y la
-publicación del producto quedan pendientes de revisión autoral.
+**Normativa v1 · AUTHOR APPROVED.** El autor adopta el perímetro pasivo 2D
+demostrado por el producto exacto del registro de cierre. Se conserva la ruta
+histórica de esta especificación para las referencias de I3–I5.
+
+[Cierre autoral](../../../docs/validation/post_cu4_expert_insertion_closeout_record.md) ·
 [Diseño PRE-I3](../../../docs/architecture/post_cu4_expert_publication_contract_candidate.md) ·
 [Inserción certificada F3/P4/B2](document-insertion.md)
 
 ## Alcance y decisiones EXP
 
-| Decisión | Enmienda candidata |
+| Decisión | Perímetro adoptado |
 |---|---|
-| EXP-01 | La acción experimental inspecciona una fuente `.cedg` o `.ggb` frente al receptor vivo. La admisión exige integridad verificable en el perímetro ensayado. Un cambio conocido de capa, vista, estilo, rótulo o geometría válida se puede consentir si figura en el informe y el ensayo y la publicación reproducen el efecto. `NOT_ESTABLISHED` expresa falta de evidencia. Una incertidumbre en equivalencia geométrica puede consentirse cuando las comprobaciones técnicas independientes cubren la adición. |
+| EXP-01 | **Archivo → Insertar → Insertar con revisión experta…** inspecciona una fuente `.cedg` o `.ggb` frente al receptor vivo. La admisión exige integridad verificable en el perímetro ensayado. Un cambio conocido de capa, vista, estilo, rótulo o geometría válida se puede consentir si figura en el informe y el ensayo y la publicación reproducen el efecto. `NOT_ESTABLISHED` expresa falta de evidencia. Una incertidumbre en equivalencia geométrica puede consentirse cuando las comprobaciones técnicas independientes cubren la adición. |
 | EXP-02 | El ensayo y el commit usan la copia nativa. Los ganchos optativos de diagnóstico, procedencia y reservas se acotan a la operación. El commit reutiliza la barrera, la historia y la recuperación F3. El ensayo no modifica el receptor vivo. La vía certificada mantiene sus comprobaciones y alcance. |
-| EXP-03 | El consentimiento es explícito y de un solo uso. Identifica la captura exacta de origen, la sesión viva y el resultado revisado. Una invalidación observada es terminal. Después de incorporar, se ofrece un destino de guardado distinto sin escritura automática. El estado de sesión no amplía el formato. |
+| EXP-03 | La acción está disponible por defecto en GeoCeDG. El consentimiento es explícito y de un solo uso. Identifica la captura exacta de origen, la sesión viva, la versión de análisis, el informe y el resultado revisado. Una invalidación observada es terminal. Después de incorporar, se recomienda **Guardar como…** en un destino distinto. La escritura requiere una decisión del usuario y el estado de sesión conserva el formato nativo. |
 | EXP-04 | El trabajador intenta las construcciones pasivas admitidas por su gramática y mide el cierre, la trazabilidad, la geometría y la reapertura. La pertenencia a P4 queda fuera de este predicado. La pérdida de cobertura obligatoria se comunica por capacidad o propiedad concreta. El arco circular directo puede participar como construcción experta. ARC-01/P4 sigue una decisión independiente. |
+
+La activación pertenece al perfil GeoCeDG. Para diagnóstico se puede usar
+`--enableExpertInsertion=false` o solicitar detalle de consola mediante
+`--logLevel=DEBUG`. Classic conserva su perfil y sus acciones. El arranque
+ordinario de GeoCeDG usa nivel `INFO` y conserva los diagnósticos de error
+y de recuperación grave.
 
 ## Geometría e integridad
 
@@ -42,6 +50,10 @@ parámetros del receptor. La revisión distingue ese modo en origen y
 receptor y muestra las coordenadas observadas de los puntos trazados. El
 consentimiento vincula el modo efectivo a la huella del resultado. Cambiar
 el modo durante la revisión invalida la oferta aunque se restituya.
+El caso verificado de `Point(s,t)` sobre un segmento conserva el productor
+y sus puertos, aunque el modo del receptor produzca un punto válido en
+otras coordenadas. Su valor aceptado y su actualización dinámica se
+comprueban en la incorporación, el historial y la reapertura.
 
 ## Ensayo y consentimiento
 
@@ -73,18 +85,22 @@ cotejo entre JVM compara el resultado efectivo y mantiene el archivo original
 de captura como evidencia de los defaults del receptor vivo. Las diferencias
 de presentación observadas en la reapertura se someten a la misma revisión.
 
-La primera política bloquea scripts, bibliotecas ejecutables, animaciones y
-recursos fuera de la envoltura pasiva. Las macros se caracterizan sin
-ejecutarlas. Su incorporación exige garantías independientes de identidad de
-definición, dependencias, recuperación e historial. La JVM separada aísla la
-sesión de trabajo. La barrera pasiva es el control de ejecución de código.
+La primera versión bloquea scripts, bibliotecas ejecutables, animaciones y
+recursos fuera de la envoltura pasiva. Las macros quedan en inspección.
+También quedan fuera los objetos 3D, la semántica espacial, el remapeo de
+identidad durable participante y la conversión entre modos angulares.
+La geometría malformada, las dependencias rotas y la recuperación sin una
+vía certificable impiden ofrecer la incorporación. La JVM separada aísla
+la sesión de trabajo. La barrera pasiva es el control de ejecución de código.
 
 Tras el cotejo final bajo barrera, una incorporación correcta añade un paso
 Undo. Los fallos durante la mutación usan las rutas de recuperación F3. Una
-recuperación sin certificado conduce al aislamiento grave. Guardar una
-copia requiere una decisión explícita del usuario y usa el ciclo nativo.
+recuperación sin certificado conduce al aislamiento grave. Mientras quede
+pendiente guardar el paso experto, Guardar abre **Guardar como…** y el
+destino debe ser distinto del origen y del receptor inicial. La asociación
+documental se actualiza después de guardar correctamente la copia nativa.
 
-## Plan de verificación congelado
+## Verificación del perímetro adoptado
 
 - `CHANGE_ROUTE = ORDINARY`
 - `VERIFICATION_CLASS = INTEGRATED_PHASE`, `frozenAtPhaseStart = true`
@@ -96,8 +112,9 @@ copia requiere una decisión explícita del usuario y usa el ciclo nativo.
 - El plan usa una selección integrada acotada a las rutas afectadas. El
   perfil global `INTEGRATION` incluye además las suites científicas y los
   paquetes ajenos a esta operación. El alcance de este cambio no exige una
-  campaña `FINAL` de producto. La consolidación añade una comprobación
-  de ejecución mediante la app-image interna de Windows del candidato.
+  campaña `FINAL` de producto. El cierre identifica los informes tipados
+  del SHA verificado y las comprobaciones de arranque ordinario y de la
+  app-image interna Windows sin argumentos de aplicación.
 - `BOOTSTRAP IMPACT — NO CHANGE REQUIRED`. Se usa la JVM y el launcher
   Desktop ya distribuidos. Los cambios de catálogos de verificación se
   limitan a la cobertura de esta fase y a las identidades derivadas de sus
