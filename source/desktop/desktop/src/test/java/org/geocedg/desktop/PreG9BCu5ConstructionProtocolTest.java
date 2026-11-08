@@ -11,6 +11,7 @@ import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.store;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
@@ -24,9 +25,11 @@ import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.TableModelEvent;
 
 import org.geocedg.desktop.GeoCeDGPresentationPreferences.Category;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.desktop.gui.view.consprotocol.ConstructionProtocolViewD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -141,11 +144,37 @@ class PreG9BCu5ConstructionProtocolTest {
 					app.setPresentationSize(Category.CONSTRUCTION_PROTOCOL_FONT, originalFont);
 				}
 				assertArrayEquals(editedHeights, heights(table));
+				updateNewRowBeforeBatchCompletes(app, protocol);
 			} finally {
 				install(originalLaf);
 			}
 			return null;
 		});
+	}
+
+	private static void updateNewRowBeforeBatchCompletes(AppGeoCeDG app,
+			ConstructionProtocolViewD protocol) {
+		JTable table = protocol.getTable();
+		int newRow = table.getRowCount();
+		AtomicInteger headerEvents = new AtomicInteger();
+		table.getModel().addTableModelListener(event -> {
+			if (event.getFirstRow() == TableModelEvent.HEADER_ROW) {
+				headerEvents.incrementAndGet();
+			}
+		});
+		app.getKernel().notifyBatchUpdate();
+		try {
+			GeoPoint point = new GeoPoint(app.getKernel().getConstruction(), "D_1", 7, 8, 1);
+			assertSame(point, protocol.getData().getRow(newRow).getGeo());
+			assertEquals(-1, protocol.getData().getRow(newRow).getRowNumber());
+			point.update();
+		} finally {
+			app.getKernel().notifyEndBatchUpdate();
+		}
+		assertEquals(0, headerEvents.get(), "a provisional row is not a structure change");
+		assertEquals(newRow + 1, table.getRowCount());
+		assertEquals(newRow, protocol.getData().getRow(newRow).getRowNumber());
+		assertReadable(table);
 	}
 
 	private static ConstructionProtocolViewD protocol(AppGeoCeDG app) {

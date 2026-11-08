@@ -1040,9 +1040,17 @@ public class ConstructionProtocolViewD extends ConstructionProtocolView
 
 		@Override
 		protected void fireTableRowsUpdated(int rowNumber, int rowNumber2) {
-			ctDataImpl.fireTableRowsUpdated(rowNumber, rowNumber2);
-			if (sizeRowsToContent) {
-				updateRowHeights(rowNumber, rowNumber2);
+			if (!sizeRowsToContent) {
+				ctDataImpl.fireTableRowsUpdated(rowNumber, rowNumber2);
+				return;
+			}
+			// A new row can be updated before endBatchUpdate assigns its number.
+			// Swing treats -1 as a structure change, not as a pending row.
+			int firstRow = Math.max(0, rowNumber);
+			int lastRow = Math.min(rowNumber2, getRowCount() - 1);
+			if (firstRow <= lastRow) {
+				ctDataImpl.fireTableRowsUpdated(firstRow, lastRow);
+				updateRowHeights(firstRow, lastRow);
 			}
 		}
 
