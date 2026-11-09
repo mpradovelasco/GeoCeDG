@@ -32,8 +32,16 @@ anterior abrió la casilla desbloqueada, omitió el desbloqueo al guardar
 y recuperó el bloqueo de posición al reabrir. En el archivo de control
 sin paneles, su escritor ya omitía esa propiedad. El autor autorizó
 por separado únicamente este cambio de bloqueo en lectores anteriores.
-La advertencia de la distribución nueva indica las dos limitaciones.
 Los lectores nuevos conservan el desbloqueo de la casilla agrupada.
+
+Con un deslizador que tiene una definición y el modo Nombre y valor,
+los lectores anteriores pueden omitir `labelMode` al volver a guardar.
+Al reabrir, el modo puede pasar a Valor según el etiquetado efectivo.
+El mismo comportamiento se comprobó sin paneles. GeoCeDG anterior
+conserva la selección explícita con el alias `6`. Classic anterior
+puede omitir también ese alias. El aviso de la distribución nueva
+informa de los efectos verificados. La aceptación del cambio de
+rótulo requiere una decisión autoral específica separada.
 
 ## Formato
 
@@ -86,6 +94,13 @@ conservan ZIP, versión XML, `app="classic"`, identidad durable,
 `Group` y las excepciones de persistencia ya aprobadas. Las macros,
 defaults, estilos, portapapeles y fragmentos de inserción carecen de
 autoridad para publicar pertenencia.
+
+Para un deslizador que ocupa una ranura, la escritura completa de
+archivo e historial conserva el modo efectivo en la etiqueta nativa
+`labelMode`, incluso si el deslizador tiene una definición. Se usa
+el alias nativo `6` solo cuando consta una selección explícita de
+Nombre y valor según CU4. Los deslizadores sueltos y los fragmentos
+conservan las reglas históricas de ese campo.
 
 ## Transporte
 

@@ -13,8 +13,8 @@
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
  *
- * Modified for GeoCeDG: preserve explicit slider label mode and numeric layers
- * in construction XML.
+ * Modified for GeoCeDG: preserve explicit slider label mode, numeric layers,
+ * and the label mode of panel-owned sliders in construction XML.
  */
 
 package org.geogebra.common.kernel.geos;
@@ -166,7 +166,12 @@ public class XMLBuilder {
 			sb.endTag();
 		}
 
-		if (isDrawable && (!geo.isGeoNumeric() || geo.getDefinition() == null
+		var layout = sb.getControlLayout();
+		if (geo instanceof GeoNumeric panelNumeric && layout != null && layout.slot(geo) != null) {
+			int mode = panelNumeric.hasExplicitNameAndValueSliderLabel()
+					? GeoElement.LABEL_DEFAULT_NAME_VALUE : geo.labelMode;
+			sb.startTag("labelMode").attr("val", mode).endTag();
+		} else if (isDrawable && (!geo.isGeoNumeric() || geo.getDefinition() == null
 				|| geo.labelMode != GeoElement.LABEL_NAME_VALUE)) {
 			sb.startTag("labelMode").attr("val", geo.labelMode).endTag();
 		} else if (geo instanceof GeoNumeric numeric && numeric.hasExplicitNameAndValueSliderLabel()

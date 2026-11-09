@@ -7705,7 +7705,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/XMLBuilder.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU6: Write accepted explicit layers in Classic without changing the inherited layer and ordering rule. Authority: geocedg/specs/ui/native-document-identity.md. PRE-G9B-CU4: Write the existing labelMode tag for explicit GeoCeDG slider labels. POST-CU4 I3–I5: write the existing layer tag for numerics in GeoCeDG construction documents and Undo.",
+      "purpose": "PRE-G9B-CU6: Write accepted explicit layers in Classic without changing the inherited layer and ordering rule. Authority: geocedg/specs/ui/native-document-identity.md. PRE-G9B-CU4: Write the existing labelMode tag for explicit GeoCeDG slider labels. POST-CU4 I3–I5: write the existing layer tag for numerics in GeoCeDG construction documents and Undo. PRE-G9B-CU8-I: Retain the native slider label mode on marked construction and history owners in both profiles. Authority: geocedg/specs/ui/control-layout-v1.md.",
       "authority": "docs/validation/pre_g9b_cu4_author_design_approval_record.md"
     },
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGExpertContext.java", "change": "added", "purpose": "POST-CU4 I3–I5: Transport effective layer and view context with the live receiver snapshot.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},

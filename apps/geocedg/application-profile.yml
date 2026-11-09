@@ -3908,7 +3908,7 @@
     "Presentation.GraphicsFont": {"en": "Graphics font size", "es": "Tamaño de fuente de Gráficos"},
     "Presentation.OrientationCue.Title": {"en": "Orientation cue", "es": "Indicación de orientación"},
     "ControlLayout.Title": {"en": "Control layout", "es": "Disposición de controles"},
-    "ControlLayout.LegacyWarning": {"en": "Opening and saving this file with an older version can permanently remove the control layout. Older versions can also lock the position of unlocked checkboxes on reopening. Keep a copy of the original file.", "es": "Abrir y volver a guardar este archivo con una versión anterior puede eliminar irreversiblemente la disposición de los paneles. Las versiones anteriores también pueden bloquear la posición de casillas desbloqueadas al reabrir. Conserva una copia del archivo original."},
+    "ControlLayout.LegacyWarning": {"en": "Opening and saving this file with an older version can permanently remove the control layout. On reopening, an older version may relock checkbox positions or show only the value for sliders with a definition. Keep a copy of the original file.", "es": "Abrir y volver a guardar este archivo con una versión anterior puede eliminar irreversiblemente la disposición de los paneles. Al reabrir, una versión anterior puede volver a bloquear la posición de las casillas o mostrar solo el valor en deslizadores con definición. Conserva una copia del archivo original."},
     "ControlLayout.New": {"en": "Create panel", "es": "Crear panel"},
     "ControlLayout.Attach": {"en": "Attach control", "es": "Añadir control"},
     "ControlLayout.Detach": {"en": "Detach control", "es": "Separar control"},

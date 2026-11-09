@@ -41,6 +41,8 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.settings.LabelVisibility;
+import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.plugin.ScriptType;
 import org.geogebra.desktop.CommandLineArguments;
@@ -65,22 +67,53 @@ class Cu8ControlLayoutClassicTest {
 	void classicOpensAtNativeFallbackAndResavesBothAnchors() throws Exception {
 		onEdt(() -> {
 			Fixture source = fixture();
+			AppGeoCeDG authoring = source.app();
+			GeoElement slider = named(authoring, "n");
+			GeoElement button = named(authoring, "push");
+			authoring.setLabelingStyle(LabelVisibility.AlwaysOn.getValue());
+			slider.setLabelMode(GeoElement.LABEL_DEFAULT);
+			assertEquals(GeoElement.LABEL_NAME_VALUE, slider.getLabelMode());
+			assertTrue(button.getScript(EventType.CLICK).run(new Event(EventType.CLICK, button)));
+			((GeoInputBox) named(authoring, "edit")).updateLinkedGeo("4");
+			assertSame(slider, named(authoring, "n"));
+			assertNotNull(slider.getDefinition());
+			authoring.setLabelingStyle(LabelVisibility.AlwaysOff.getValue());
+			assertControls(authoring, 4);
+			assertTrue(authoring.saveGeoGebraFile(source.archive()));
+			String sourceXml = archiveXml(source.archive().toPath());
+			assertSliderMode(sourceXml, GeoElement.LABEL_NAME_VALUE);
+			assertSliderMode(authoring.getKernel().getConstruction().getCurrentUndoXML(true).toString(),
+					GeoElement.LABEL_NAME_VALUE);
+
 			AppD classic = classic();
+			classic.setLabelingStyle(LabelVisibility.AlwaysOff.getValue());
 			assertTrue(classic.loadFile(source.archive(), false));
 			assertRegistry(classic, source);
-			assertControls(classic, 3);
+			assertControls(classic, 4);
 			assertClassicSliderOrigin(classic);
+			assertEquals(GeoElement.LABEL_NAME_VALUE, named(classic, "n").getLabelMode());
 
 			Path saved = temporary.resolve("classic-resaved.cedg");
 			assertTrue(classic.saveGeoGebraFile(saved.toFile()));
 			String savedXml = archiveXml(saved);
+			assertEquals(constructionXml(sourceXml), constructionXml(savedXml));
 			assertTrue(savedXml.contains(LAYOUT));
 			assertEquals(LABELS.size(), savedXml.split(SLOT, -1).length - 1);
 
 			AppGeoCeDG reopened = G9U1TestApp.create();
 			assertTrue(reopened.loadFile(saved.toFile(), false));
 			assertRegistry(reopened, source);
-			assertControls(reopened, 3);
+			assertControls(reopened, 4);
+			assertEquals(GeoElement.LABEL_NAME_VALUE, named(reopened, "n").getLabelMode());
+
+			named(classic, "n").setLabelMode(GeoElement.LABEL_NAME_VALUE);
+			Path explicit = temporary.resolve("classic-explicit-name-value.cedg");
+			assertTrue(classic.saveGeoGebraFile(explicit.toFile()));
+			assertSliderMode(archiveXml(explicit), GeoElement.LABEL_DEFAULT_NAME_VALUE);
+			assertTrue(reopened.loadFile(explicit.toFile(), false));
+			assertEquals(GeoElement.LABEL_NAME_VALUE, named(reopened, "n").getLabelMode());
+			assertRegistry(reopened, source);
+			assertControls(reopened, 4);
 			return null;
 		});
 	}
@@ -205,7 +238,7 @@ class Cu8ControlLayoutClassicTest {
 		}
 		File archive = temporary.resolve("layout.cedg").toFile();
 		assertTrue(app.saveGeoGebraFile(archive));
-		return new Fixture(archive, List.of(fixed, world), slots);
+		return new Fixture(app, archive, List.of(fixed, world), slots);
 	}
 
 	private static AppD classic() {
@@ -290,7 +323,18 @@ class Cu8ControlLayoutClassicTest {
 		}
 	}
 
-	private record Fixture(File archive, List<Panel> panels, Map<String, Slot> slots) {
+	private static void assertSliderMode(String xml, int mode) {
+		int start = xml.indexOf("<element type=\"numeric\" label=\"n\" ");
+		assertTrue(start >= 0);
+		int end = xml.indexOf("</element>", start);
+		assertTrue(xml.substring(start, end).contains("<labelMode val=\"" + mode + "\"/>"));
+	}
+
+	private static String constructionXml(String xml) {
+		return xml.substring(xml.indexOf("<construction "), xml.indexOf("</construction>"));
+	}
+
+	private record Fixture(AppGeoCeDG app, File archive, List<Panel> panels, Map<String, Slot> slots) {
 	}
 
 	private static final class FailingClassic extends App3D {
