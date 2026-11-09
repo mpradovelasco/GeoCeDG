@@ -698,3 +698,14 @@ amendment task would need to:
 - record the author's placeholder, function-name and caption decisions;
 - add the gate, shadowing, autocomplete-identity and dynamic-text obligations to
   the focal tests.
+
+## Author-approved amendment of 2026-11-09 — CU6
+
+Decision 17 and `T-XML` retain the historical `P_DOTXML` reference and
+the EN/ES identity and value checks. The comparison of the GeoCeDG writer
+against that reference admits only the validated addition of numeric
+layer lines defined by the
+[native identity amendment](../../geocedg/specs/ui/native-document-identity.md#historical-xml-comparison).
+The remaining XML must match the historical reference byte for byte.
+The amendment applies prospectively and leaves historical outcomes
+and fixtures as recorded.

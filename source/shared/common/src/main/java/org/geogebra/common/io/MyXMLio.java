@@ -50,6 +50,16 @@ import com.google.j2objc.annotations.Weak;
 @HasNativeSubclass
 public abstract class MyXMLio {
 
+	/** Context for a document's explicit numeric layer properties. */
+	protected enum NumericLayerInput {
+		/** Compatibility, merge, defaults or macro input. */
+		LEGACY,
+		/** A replacing XML load which may supply validated native G9 data. */
+		DIRECT,
+		/** A preflighted native archive or a locally written snapshot. */
+		NATIVE
+	}
+
 	/**
 	 * All xml output is zipped. The created zip archive contains an entry named
 	 * XML_FILE for the construction
@@ -382,9 +392,30 @@ public abstract class MyXMLio {
 	final public void processXMLString(String str, boolean clearAll,
 			boolean isGGTOrDefaults, boolean settingsBatch, boolean randomize)
 			throws XMLParseException {
+		NumericLayerInput input = NumericLayerInput.LEGACY;
+		if (clearAll && !isGGTOrDefaults) {
+			input = restoringRejectedSpatialParse ? NumericLayerInput.NATIVE : NumericLayerInput.DIRECT;
+		}
+		processXMLString(str, clearAll, isGGTOrDefaults, settingsBatch, randomize, input);
+	}
+
+	/**
+	 * Restores a construction XML snapshot produced locally for history or rebuild.
+	 * @param xml locally written XML
+	 * @param randomize whether random numbers should be updated
+	 * @throws XMLParseException if the snapshot is invalid
+	 */
+	public final void processConstructionSnapshot(String xml, boolean randomize)
+			throws XMLParseException {
+		processXMLString(xml, true, false, true, randomize, NumericLayerInput.NATIVE);
+	}
+
+	private void processXMLString(String str, boolean clearAll, boolean isGGTOrDefaults,
+			boolean settingsBatch, boolean randomize, NumericLayerInput input)
+			throws XMLParseException {
 		try {
 			doParseXML(createXMLStreamString(str), clearAll, isGGTOrDefaults,
-					clearAll, settingsBatch, randomize);
+					clearAll, settingsBatch, randomize, input);
 		} catch (IOException ex) {
 			throw new XMLParseException(ex);
 		}
@@ -409,6 +440,26 @@ public abstract class MyXMLio {
 	final protected void doParseXML(XMLStream stream, boolean clearConstruction,
 			boolean isGGTOrDefaults, boolean mayZoom, boolean settingsBatch,
 			boolean randomize) throws XMLParseException, IOException {
+		doParseXML(stream, clearConstruction, isGGTOrDefaults, mayZoom, settingsBatch,
+				randomize, NumericLayerInput.LEGACY);
+	}
+
+	/**
+	 * Parses XML in a caller-supplied numeric layer input context.
+	 * @param stream XML source
+	 * @param clearConstruction whether to replace the construction
+	 * @param isGGTOrDefaults whether the input contains macros or defaults
+	 * @param mayZoom whether the view can change
+	 * @param settingsBatch whether to batch settings changes
+	 * @param randomize whether to update random numbers
+	 * @param numericLayerInput evidence supplied by the load route
+	 * @throws XMLParseException if parsing fails
+	 * @throws IOException if the stream cannot be read
+	 */
+	protected final void doParseXML(XMLStream stream, boolean clearConstruction,
+			boolean isGGTOrDefaults, boolean mayZoom, boolean settingsBatch,
+			boolean randomize, NumericLayerInput numericLayerInput)
+			throws XMLParseException, IOException {
 		String rejectedSpatialRollbackXml = kernel.isMacroKernel()
 				? null : app.getXML();
 		boolean oldVal = kernel.isNotifyViewsActive();
@@ -429,13 +480,16 @@ public abstract class MyXMLio {
 				: LoadPurpose.GENERIC_MERGE);
 		handler.beginUnitLoad();
 		handler.beginHiddenLayerLoad();
+		handler.beginNumericLayerLoad(numericLayerInput);
 		try {
 			parseXmlUnsafe(stream, settingsBatch, isGGTOrDefaults);
+			handler.commitNumericLayerLoad();
 			handler.reportHiddenLayerLoad();
 		} catch (CommandNotLoadedError e) {
-			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
+			boolean restoreEntry = handler.isSpatialIdentityBearingParse()
+					|| handler.preservesNumericLayers();
 			handler.abortSpatialIdentityLoad();
-			if (identityBearingParse && canRestoreRejectedSpatialParse()) {
+			if (restoreEntry && canRestoreRejectedSpatialParse()) {
 				try {
 					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
 				} catch (RuntimeException | XMLParseException rollbackFailure) {
@@ -444,9 +498,10 @@ public abstract class MyXMLio {
 			}
 			throw e;
 		} catch (Error | XMLParseException | IOException | RuntimeException e) {
-			boolean identityBearingParse = handler.isSpatialIdentityBearingParse();
+			boolean restoreEntry = handler.isSpatialIdentityBearingParse()
+					|| handler.preservesNumericLayers();
 			handler.abortSpatialIdentityLoad();
-			if (isRejectedSpatialParse(e, identityBearingParse)
+			if (requiresParseRollback(e, restoreEntry)
 					&& canRestoreRejectedSpatialParse()) {
 				try {
 					restoreRejectedSpatialParse(rejectedSpatialRollbackXml);
@@ -460,6 +515,7 @@ public abstract class MyXMLio {
 				throw e;
 			}
 		} finally {
+			handler.endNumericLayerLoad();
 			handler.endUnitLoad();
 			handler.endHiddenLayerLoad();
 			cons.clearNextSpatialIdentityLoadPurpose();
@@ -506,14 +562,13 @@ public abstract class MyXMLio {
 
 	}
 
-	private boolean isRejectedSpatialParse(Throwable failure,
-			boolean identityBearingParse) {
+	private boolean requiresParseRollback(Throwable failure, boolean restoreEntry) {
 		// PRE-G9B-R6-plus-D1: a fail-closed unit rejection restores the entry snapshot
 		// too, so a non-native route never leaves a half-loaded construction;
 		// PRE-G9B-R6-plus-A-2: so does a fail-closed hidden-layer rejection.
 		return failure instanceof SpatialIdentityException
 				|| failure instanceof UnitMetadataException
-				|| failure instanceof HiddenLayerMetadataException || identityBearingParse;
+				|| failure instanceof HiddenLayerMetadataException || restoreEntry;
 	}
 
 	private boolean canRestoreRejectedSpatialParse() {

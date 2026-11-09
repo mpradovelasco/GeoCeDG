@@ -488,6 +488,12 @@ La sesión de diagnóstico Classic de GeoCeDG es un proceso separado con
 preferencias aisladas. Lee documentos ordinarios, pero no adquiere la creación de
 curvas semánticas de GeoCeDG. Véase la sección 14.
 
+Al abrir un `.cedg` nativo válido en Classic, las capas guardadas
+explícitamente en los números se conservan al guardar y en el historial,
+incluida la capa 0. Classic admite las capas de 0 a 9. Las capas superiores
+se limitan a 9 al abrir. Conserve una copia en GeoCeDG si el documento
+utiliza capas superiores.
+
 ### 4.5 Exportación de imágenes y área de exportación
 
 **Archivo → Importar y exportar** ofrece **Vista gráfica como imagen…** (PNG,

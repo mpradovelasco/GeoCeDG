@@ -3401,8 +3401,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		Throwable rollbackFailure = null;
 		try {
 			kernel.setUserStopsLoading(false);
-			getXMLio().readZipFromInputStream(
-					new ByteArrayInputStream(state.archive), false);
+			getXMLio().readNativeZipFromInputStream(new ByteArrayInputStream(state.archive));
 			updateCommandDictionary();
 		} catch (Exception | MyError | CommandNotLoadedError failure) {
 			rollbackFailure = failure;

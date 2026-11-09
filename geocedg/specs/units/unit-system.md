@@ -423,6 +423,20 @@ The [author decision](../../../docs/validation/pre_g9b_cu7_r5_author_decision_re
 adopts that exact text for `conicPointState` v1. The omission rule and grammar
 for `geocedgUnits` retain their existing scope.
 
+Author-approved amendment of 2026-11-09 (`CU6`). In GeoCeDG, the legacy
+byte comparison also admits the independent, strict projection of newly
+emitted numeric layer lines defined in
+[native document identity](../ui/native-document-identity.md#historical-xml-comparison).
+The historical references and their hashes remain fixed. All other bytes
+remain subject to this section and the separately validated
+`conicPointState` v1 exception. Clause 7 of the 2026-11-05 amendment
+continues to require strict Classic identity for the historical
+compatibility route, including `conicPointState`. This amendment narrows
+clause 7 only for explicit numeric layers accepted in the validated native
+preservation loads defined by the 2026-11-09 native identity amendment.
+It preserves the unit serialization rules and the unprojected comparison
+of Classic output.
+
 ### 8.4 Factor lexical form
 
 - **Writer (canonical form).** `factor-canonical` is the string specified for

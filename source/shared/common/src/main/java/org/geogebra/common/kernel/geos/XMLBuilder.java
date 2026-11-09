@@ -144,7 +144,10 @@ public class XMLBuilder {
 		// don't remove layer 0 information
 		// we always need it in case an earlier element has higher layer eg 1
 		boolean writeDrawableLayer = isDrawable && (!geo.isGeoNumeric() || geo.getDefinition() == null);
-		if (writeDrawableLayer || sb.writesNumericLayers() && geo.getGeoClassType() == GeoClass.NUMERIC) {
+		boolean writeNumericLayer = geo instanceof GeoNumeric numeric
+				&& geo.getGeoClassType() == GeoClass.NUMERIC && (sb.writesNumericLayers()
+						|| sb.writesPreservedNumericLayers() && numeric.hasPreservedNumericLayer());
+		if (writeDrawableLayer || writeNumericLayer) {
 			sb.startTag("layer").attr("val", geo.getLayer()).endTag();
 		}
 		if (writeDrawableLayer && !Double.isNaN(geo.getOrdering())) {

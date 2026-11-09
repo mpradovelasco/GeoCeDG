@@ -6,6 +6,7 @@
 package org.geocedg.common.spatial;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -56,6 +57,7 @@ import org.geocedg.common.kernel.spatial.semantic.Vector3;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
+import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -228,6 +230,9 @@ class G9A3SpatialExplicitMigrationTest extends BaseUnitTest {
 
 		assertEquals(expected,
 				G9A3SpatialGraphSnapshot.capture(classicConstruction));
+		for (String label : List.of("G9A3M6One", "G9A3M6Zero", "G9A3M6CopyOne", "G9A3M6CopyZero")) {
+			assertLayer(classic, label, 0);
+		}
 		assertEquals(saved, classic.getXML());
 		assertEquals(SpatialObjectRecord.EXPLICIT_ASSOCIATION,
 				((SpatialObjectRecord) classicConstruction.getSpatialIdentityRegistry()
@@ -238,6 +243,132 @@ class G9A3SpatialExplicitMigrationTest extends BaseUnitTest {
 				copiedObject.getId());
 		assertThrows(ClassNotFoundException.class, () -> Class.forName(
 				"org.geocedg.common.kernel.spatial.commands.CmdSpatialPoint"));
+	}
+
+	@Test
+	void classicPreservesOnlyTheExplicitNumericLayersOfTheCurrentNativeDocument()
+			throws Exception {
+		String nativeXml = nativeLayerFixture();
+		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
+		classic.getXMLio().processXMLString(nativeXml, true, false, false);
+		assertNativeLayerFixture(classic);
+		assertEquals(nativeXml, classic.getXML());
+
+		GeoElement previous = classic.getKernel().lookupLabel("NumericLayerMiddle");
+		previous.remove();
+		classic.getKernel().getAlgebraProcessor().processAlgebraCommandNoExceptions(
+				"NumericLayerMiddle=NumericLayerOne+1", false);
+		GeoElement replacement = classic.getKernel().lookupLabel("NumericLayerMiddle");
+		assertNotNull(replacement);
+		assertNotSame(previous, replacement);
+		assertFalse(numericXml(classic.getXML(), "NumericLayerMiddle").contains("<layer"));
+
+		AppCommon legacy = AppCommonFactory.create3D(new AppConfigDefault());
+		var algebra = legacy.getKernel().getAlgebraProcessor();
+		algebra.processAlgebraCommandNoExceptions("A=(1,1)", false);
+		legacy.getKernel().lookupLabel("A").setLayer(6);
+		algebra.processAlgebraCommandNoExceptions("NumericLayerOne=x(A)+1", false);
+		String legacyXml = legacy.getXML();
+		assertFalse(numericXml(legacyXml, "NumericLayerOne").contains("<layer"));
+		classic.getXMLio().processXMLString(legacyXml, true, false, false);
+		assertLayer(classic, "NumericLayerOne", 6);
+		assertEquals(legacyXml, classic.getXML());
+		assertTrue(classic.getKernel().getConstruction().getSpatialIdentityRegistry().isEmpty());
+	}
+
+	@Test
+	void classicRestoresNativeNumericLayersAndSpatialGraphAfterAtomicFailure()
+			throws Exception {
+		String nativeXml = nativeLayerFixture();
+		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
+		classic.getXMLio().processXMLString(nativeXml, true, false, false);
+		Construction construction = classic.getKernel().getConstruction();
+		var before = G9A3SpatialGraphSnapshot.capture(construction);
+		assertNativeLayerFixture(classic);
+
+		assertThrows(IllegalStateException.class, () ->
+				construction.runAtomicConstructionMutation(() -> {
+					classic.getKernel().lookupLabel("NumericLayerOne").setLayer(0);
+					classic.getKernel().lookupLabel("NumericLayerMiddle").setLayer(4);
+					classic.getKernel().lookupLabel("NumericLayerZero").setLayer(5);
+					throw new IllegalStateException("force rollback");
+				}));
+
+		assertNativeLayerFixture(classic);
+		assertEquals(nativeXml, classic.getXML());
+		assertEquals(before, G9A3SpatialGraphSnapshot.capture(construction));
+	}
+
+	@Test
+	void classicRejectsMalformedNativeNumericLayersAndRestoresItsDocument()
+			throws Exception {
+		String nativeXml = nativeLayerFixture();
+		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
+		classic.getXMLio().processXMLString(nativeXml, true, false, false);
+		Construction construction = classic.getKernel().getConstruction();
+		var before = G9A3SpatialGraphSnapshot.capture(construction);
+		String valid = "<layer val=\"6\"/>";
+		assertTrue(numericXml(nativeXml, "NumericLayerOne").contains(valid));
+
+		for (String invalid : List.of("<layer val=\"bad\"/>", valid + valid,
+				"<layer val=\"6\" extra=\"1\"/>", "<layer val=\"3\" val=\"0\"/>",
+				"<layer val=\"3\"></layer>", "<unknown>" + valid + "</unknown>")) {
+			String owner = numericXml(nativeXml, "NumericLayerOne");
+			String malformed = nativeXml.replace(owner, owner.replace(valid, invalid));
+			assertThrows(XMLParseException.class,
+					() -> classic.getXMLio().processXMLString(malformed, true, false, false),
+					invalid);
+			assertNativeLayerFixture(classic);
+			assertEquals(nativeXml, classic.getXML(), invalid);
+			assertEquals(before, G9A3SpatialGraphSnapshot.capture(construction), invalid);
+		}
+	}
+
+	@Test
+	void classicClampsAnExplicitNumericLayerOutsideItsDomainWithoutRetainingIt()
+			throws Exception {
+		nativeLayerFixture();
+		lookup("NumericLayerOne").setLayer(99);
+		String nativeXml = getApp().getXML();
+		assertTrue(numericXml(nativeXml, "NumericLayerOne").contains("<layer val=\"99\"/>"));
+
+		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
+		classic.getXMLio().processXMLString(nativeXml, true, false, false);
+		assertLayer(classic, "NumericLayerOne", 9);
+		assertLayer(classic, "NumericLayerMiddle", 3);
+		assertLayer(classic, "NumericLayerZero", 0);
+		String saved = classic.getXML();
+		assertFalse(numericXml(saved, "NumericLayerOne").contains("<layer"));
+		assertTrue(numericXml(saved, "NumericLayerMiddle").contains("<layer val=\"3\"/>"));
+		assertTrue(numericXml(saved, "NumericLayerZero").contains("<layer val=\"0\"/>"));
+	}
+
+	private String nativeLayerFixture() {
+		MigrationFixture fixture = MigrationFixture.create(getConstruction(), this::add,
+				"NumericLayer");
+		lifecycle().prepareMigration(fixture.plan(MIGRATION_PROVENANCE)).commit();
+		lookup("NumericLayerOne").setLayer(6);
+		lookup("NumericLayerZero").setLayer(0);
+		add("NumericLayerMiddle=NumericLayerOne+2").setLayer(3);
+		return getApp().getXML();
+	}
+
+	private static void assertNativeLayerFixture(AppCommon app) {
+		assertLayer(app, "NumericLayerOne", 6);
+		assertLayer(app, "NumericLayerMiddle", 3);
+		assertLayer(app, "NumericLayerZero", 0);
+	}
+
+	private static void assertLayer(AppCommon app, String label, int expected) {
+		GeoElement geo = app.getKernel().lookupLabel(label);
+		assertNotNull(geo, label);
+		assertEquals(expected, geo.getLayer(), label);
+	}
+
+	private static String numericXml(String xml, String label) {
+		int start = xml.indexOf("<element type=\"numeric\" label=\"" + label + "\"");
+		assertTrue(start >= 0, label);
+		return xml.substring(start, xml.indexOf("</element>", start));
 	}
 
 	private void assertStaleHandleRejected() throws Exception {

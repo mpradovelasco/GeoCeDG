@@ -24,6 +24,8 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,7 +52,9 @@ import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.gui.dialog.ToolCreationDialogModel;
 import org.geogebra.common.gui.toolbar.ToolBar;
 import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
+import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
+import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.error.ErrorHelper;
@@ -60,6 +64,9 @@ import org.geogebra.common.plugin.script.GgbScript;
 import org.geogebra.common.util.InternalClipboard;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraViewD;
+import org.geogebra.desktop.headless.AppDNoGui;
+import org.geogebra.desktop.headless.GFileHandler;
+import org.geogebra.desktop.main.LocalizationD;
 import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -196,6 +203,54 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		assertEquals(2, lookup(app, "B").getLayer());
 		assertEquals(3, lookup(app, "n").getLayer(), "redo restores the stored numeric layer");
 		assertEquals(8, workspace.getWorkingLayer());
+	}
+
+	@Test
+	void classicRestoresExplicitNativeLayersFromFileAndHistory() throws Exception {
+		AppGeoCeDG source = G9U1TestApp.create();
+		source.getLayerWorkspace().setWorkingLayer(6);
+		eval(source, "A=(1,1)");
+		source.getLayerWorkspace().setWorkingLayer(3);
+		eval(source, "n=x(A)+1");
+		source.getLayerWorkspace().setWorkingLayer(0);
+		eval(source, "zeroValue=x(A)-1");
+		ByteArrayOutputStream file = new ByteArrayOutputStream();
+		((MyXMLioJre) source.getXMLio()).writeGeoGebraFile(file, false);
+
+		AppDNoGui classic = new AppDNoGui(new LocalizationD(3), false);
+		assertTrue(GFileHandler.loadPreflightedNativeXML(classic,
+				new ByteArrayInputStream(file.toByteArray())));
+		assertClassicLayers(classic, 3);
+		classic.getKernel().setUndoActive(true);
+		classic.getKernel().initUndoInfo();
+		classic.getKernel().lookupLabel("n").setLayer(4);
+		classic.getKernel().storeUndoInfo();
+		classic.getKernel().undo();
+		assertClassicLayers(classic, 3);
+		classic.getKernel().redo();
+		assertClassicLayers(classic, 4);
+
+		var xmlio = (MyXMLioJre) classic.getXMLio();
+		ByteArrayOutputStream saved = new ByteArrayOutputStream();
+		xmlio.writeGeoGebraFile(saved, false);
+		assertTrue(GFileHandler.loadPreflightedNativeXML(classic,
+				new ByteArrayInputStream(saved.toByteArray())));
+		assertClassicLayers(classic, 4);
+		String previous = classic.getXML();
+		ByteArrayOutputStream brokenSnapshot = new ByteArrayOutputStream();
+		MyXMLioJre.writeZipped(brokenSnapshot,
+				new StringBuilder(previous.replace("<layer val=\"4\"/>", "<layer val=\"bad\"/>")));
+		assertThrows(XMLParseException.class,
+				() -> xmlio.readZipFromMemory(new ByteArrayInputStream(brokenSnapshot.toByteArray())));
+		assertClassicLayers(classic, 4);
+		assertEquals(previous, classic.getXML());
+	}
+
+	private static void assertClassicLayers(AppDNoGui app, int numericLayer) {
+		assertEquals(6, app.getKernel().lookupLabel("A").getLayer());
+		assertEquals(numericLayer, app.getKernel().lookupLabel("n").getLayer());
+		assertEquals(0, app.getKernel().lookupLabel("zeroValue").getLayer());
+		assertEquals(2, app.getKernel().lookupLabel("n").evaluateDouble());
 	}
 
 	@Test

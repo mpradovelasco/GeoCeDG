@@ -6,6 +6,7 @@
 package org.geocedg.desktop;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
-import org.geogebra.common.io.XMLStringBuilder;
+import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.PathParameter;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -47,9 +48,9 @@ import org.xml.sax.InputSource;
  * is loaded in a fresh headless app (the GeoCeDG preflight configuration and the
  * Classic default configuration) and the SHA-256 of its construction XML and of
  * its full XML is recorded.
- * The original compute/fingerprint entry points remain strict. The explicitly
- * named CU7 projection below implements the pending native-state payload exception;
- * it does not regenerate that original fixture or claim unchanged whole XML.
+ * The original compute/fingerprint entry points remain strict. The historical
+ * projection validates the adopted CU7 checkpoints and numeric-layer additions
+ * before comparing the original, immutable fixture.
  */
 final class PreG9BR6PlusD1LegacyFingerprints {
 
@@ -172,20 +173,19 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 	}
 
 	/**
-	 * Candidate CU7 exception: only GeoCeDG's independently validated additive native
-	 * checkpoint lines are removed before comparing the original legacy payload.
-	 * Classic remains a strict, unprojected whole-XML comparison.
+	 * Only GeoCeDG's independently validated checkpoints and additive numeric layers
+	 * are projected. Classic remains a strict whole-XML comparison.
 	 */
-	static Map<String, Fingerprint> computeWithValidatedCu7NativePayloadProjection(
+	static Map<String, Fingerprint> computeWithValidatedHistoricalPayloadProjection(
 			Path root, boolean classic, int loads) {
 		return compute(root, classic, loads, !classic);
 	}
 
 	private static Map<String, Fingerprint> compute(Path root, boolean classic, int loads,
-			boolean projectCu7NativePayload) {
+			boolean projectHistoricalPayload) {
 		Map<String, Fingerprint> result = new TreeMap<>();
 		for (String path : CORPUS) {
-			result.put(path, fingerprint(root.resolve(path), classic, loads, projectCu7NativePayload));
+			result.put(path, fingerprint(root.resolve(path), classic, loads, projectHistoricalPayload));
 		}
 		return result;
 	}
@@ -195,7 +195,7 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 	}
 
 	private static Fingerprint fingerprint(Path file, boolean classic, int loads,
-			boolean projectCu7NativePayload) {
+			boolean projectHistoricalPayload) {
 		byte[] archive;
 		try {
 			archive = Files.readAllBytes(file);
@@ -208,10 +208,12 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 		for (int i = 0; i < loads; i++) {
 			String[] xml;
 			try {
-				xml = load(archive, classic, projectCu7NativePayload);
+				xml = load(archive, classic, projectHistoricalPayload);
 			} catch (Throwable failure) {
 				return new Fingerprint(null, null,
-						"load failed: " + failure.getClass().getName(), false);
+						"load failed: " + failure.getClass().getName()
+								+ (projectHistoricalPayload && failure.getClass() == IllegalStateException.class
+										? " " + failure.getMessage() : ""), false);
 			}
 			if (xml == null) {
 				return new Fingerprint(null, null, "load rejected (MyError)", false);
@@ -240,12 +242,12 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 		return load(archive, classic, false);
 	}
 
-	private static String[] load(byte[] archive, boolean classic, boolean projectCu7NativePayload)
+	private static String[] load(byte[] archive, boolean classic, boolean projectHistoricalPayload)
 			throws Exception {
 		AtomicReference<Object> outcome = new AtomicReference<>();
 		SwingUtilities.invokeAndWait(() -> {
 			try {
-				outcome.set(loadOnEventThread(archive, classic, projectCu7NativePayload));
+				outcome.set(loadOnEventThread(archive, classic, projectHistoricalPayload));
 			} catch (Throwable failure) {
 				outcome.set(failure);
 			}
@@ -261,8 +263,29 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 	}
 
 	private static String[] loadOnEventThread(byte[] archive, boolean classic,
-			boolean projectCu7NativePayload)
+			boolean projectHistoricalPayload)
 			throws Exception {
+		AppDNoGui app = newApp(classic);
+		try {
+			if (!GFileHandler.loadXML(app, new ByteArrayInputStream(archive), false)) {
+				return null;
+			}
+			String[] xml = {NumericLayerXmlProjection.constructionXml(app), app.getXML()};
+			if (projectHistoricalPayload) {
+				var projection = NumericLayerXmlProjection.verify(app, xml[0]);
+				verifyNativeLayerReopen(app, projection);
+				xml[0] = projectValidatedCu7NativePayload(projection.legacyConstruction(), app);
+				xml[1] = projectValidatedCu7NativePayload(projection.projectFullXml(xml[1]), app);
+			}
+			return xml;
+		} finally {
+			// A running animation would otherwise keep the application reachable
+			// through its timer for the whole test JVM.
+			app.getKernel().getAnimationManager().stopAnimation();
+		}
+	}
+
+	private static AppDNoGui newApp(boolean classic) {
 		AppConfig config = classic ? new AppConfigDefault()
 				: new AppConfigGeoCeDG(true, true);
 		Log previousLogger = Log.getLogger();
@@ -277,23 +300,25 @@ final class PreG9BR6PlusD1LegacyFingerprints {
 					.bindPreservationContext(() -> app.getKernel()
 							.getConstruction().isFileLoading());
 		}
+		return app;
+	}
+
+	private static void verifyNativeLayerReopen(AppDNoGui app,
+			NumericLayerXmlProjection.Projection projection) throws Exception {
+		if (projection.additions().isEmpty()) {
+			return;
+		}
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		((MyXMLioJre) app.getXMLio()).writeGeoGebraFile(output, false);
+		byte[] archive = output.toByteArray();
+		projection.projectFullXml(NumericLayerXmlProjection.archiveXml(new ByteArrayInputStream(archive)));
+		AppDNoGui reopened = newApp(false);
 		try {
-			if (!GFileHandler.loadXML(app, new ByteArrayInputStream(archive), false)) {
-				return null;
-			}
-			StringBuilder construction = new StringBuilder();
-			app.getKernel().getConstruction().getConstructionXML(
-					new XMLStringBuilder(construction), false);
-			String[] xml = {construction.toString(), app.getXML()};
-			if (projectCu7NativePayload) {
-				xml[0] = projectValidatedCu7NativePayload(xml[0], app);
-				xml[1] = projectValidatedCu7NativePayload(xml[1], app);
-			}
-			return xml;
+			require(GFileHandler.loadXML(reopened, new ByteArrayInputStream(archive), false),
+					"native numeric-layer archive reopens");
+			projection.verifyReopenedLayers(reopened);
 		} finally {
-			// A running animation would otherwise keep the application reachable
-			// through its timer for the whole test JVM.
-			app.getKernel().getAnimationManager().stopAnimation();
+			reopened.getKernel().getAnimationManager().stopAnimation();
 		}
 	}
 

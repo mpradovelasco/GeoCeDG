@@ -153,6 +153,7 @@ public class GeoNumeric extends GeoElement
 
 	private boolean showAVSlider = false;
 	private boolean explicitNameAndValueLabel;
+	private boolean preservedNumericLayer;
 	private static volatile Comparator<GeoNumberValue> comparator;
 	private BigDecimal exactValue;
 	private @CheckForNull GeoPointND startPoint;
@@ -224,6 +225,16 @@ public class GeoNumeric extends GeoElement
 	@Override
 	public GeoClass getGeoClassType() {
 		return GeoClass.NUMERIC;
+	}
+
+	/** Record that the document reader accepted this instance's explicit layer. */
+	public void markPreservedNumericLayer() {
+		preservedNumericLayer = true;
+	}
+
+	/** @return whether a preservation load accepted this instance's layer */
+	public boolean hasPreservedNumericLayer() {
+		return preservedNumericLayer;
 	}
 
 	@Override

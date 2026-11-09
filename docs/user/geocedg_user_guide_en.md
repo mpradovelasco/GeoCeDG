@@ -468,6 +468,11 @@ The GeoCeDG Classic diagnostic session is a separate process with its own
 isolated preferences. It reads ordinary documents, but it does not acquire
 GeoCeDG semantic-curve creation. See section 14.
 
+When you open a valid native `.cedg` in Classic, explicitly saved layers on
+numbers are preserved in saves and history, including layer 0. Classic
+supports layers 0 through 9. It clamps higher layers to 9 on open. Keep a
+copy in GeoCeDG if your document uses higher layers.
+
 ### 4.5 Picture export and the export area
 
 **File → Import and export** offers **Graphics View as Picture…** (PNG, PDF,

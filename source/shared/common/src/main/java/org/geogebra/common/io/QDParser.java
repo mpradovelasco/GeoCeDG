@@ -287,6 +287,7 @@ public class QDParser {
 					if (doc.hasStrictEmptyElementGrammar(tagName)) {
 						exc("Element must be an empty self-closing leaf: " + tagName, line, col);
 					}
+				doc.recordNonCanonicalEmptyElement(tagName);
 					sb.setLength(0);
 					depth++;
 					doc.startElement(tagName, attrs);
@@ -341,8 +342,11 @@ public class QDParser {
 				if (c == quotec) {
 					String rvalue = sb.toString();
 					sb.setLength(0);
-					if (doc.hasStrictEmptyElementGrammar(tagName) && attrs.containsKey(lvalue)) {
+				if (attrs.containsKey(lvalue)) {
+					if (doc.hasStrictEmptyElementGrammar(tagName)) {
 						exc("Duplicate attribute " + lvalue + " in " + tagName, line, col);
+					}
+					doc.recordNonCanonicalEmptyElement(tagName);
 					}
 					attrs.put(lvalue, rvalue);
 					mode = IN_TAG;
@@ -404,6 +408,7 @@ public class QDParser {
 					if (doc.hasStrictEmptyElementGrammar(tagName)) {
 						exc("Element must be an empty self-closing leaf: " + tagName, line, col);
 					}
+				doc.recordNonCanonicalEmptyElement(tagName);
 					mode = popMode(stack);
 					doc.startElement(tagName, attrs);
 					depth++;

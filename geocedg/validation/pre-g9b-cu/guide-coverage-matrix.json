@@ -2206,7 +2206,7 @@
           "documents/4.4"
         ]
       },
-      "notes": "Route File → Open Classic diagnostic session is correct (a direct File item)."
+      "notes": "File → Open Classic diagnostic session is a direct File item. Section 4.4 covers native explicit numeric layer preservation and the Classic layer limit."
     },
     {
       "id": "action:settings.product-language",

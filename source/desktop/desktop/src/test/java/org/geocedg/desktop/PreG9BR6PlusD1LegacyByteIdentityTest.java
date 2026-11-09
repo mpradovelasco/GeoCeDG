@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
 
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.move.ggtapi.models.json.JSONArray;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
@@ -31,20 +33,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Original-payload byte identity with the explicit candidate CU7 native-checkpoint
- * exception: Classic construction/full XML stay strictly byte identical. GeoCeDG
- * compares the same immutable hashes after removing only independently validated
- * version-one native checkpoint lines. No other existing bytes or unit metadata
- * may change. This is not an unqualified whole-XML byte-identity assertion or an
- * adopted amendment to D1. The unchanged fixture was produced on the original tree
- * and reproduced on a git archive of the published base.
+ * Original-payload byte identity. GeoCeDG compares the immutable historic hashes
+ * after independently validating the adopted CU7 checkpoints and additive numeric
+ * layers. Classic compares the original construction and full XML without projection.
  */
 @ExtendWith(PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class)
 class PreG9BR6PlusD1LegacyByteIdentityTest {
 
 	@Test
-	// The earlier failed whole-XML receipt remains evidence. This assertion checks
-	// the exact original payload under the explicitly validated candidate exception.
 	void legacyCorpusOriginalPayloadIsByteIdenticalAfterValidatedCu7NativeMetadata() throws Exception {
 		assertValidatedCu7ProjectionFailsClosed();
 		JSONObject fixture;
@@ -57,7 +53,7 @@ class PreG9BR6PlusD1LegacyByteIdentityTest {
 		for (String configuration : new String[] {"geocedg", "classic"}) {
 			Map<String, PreG9BR6PlusD1LegacyFingerprints.Fingerprint> actual =
 					PreG9BR6PlusD1LegacyFingerprints
-							.computeWithValidatedCu7NativePayloadProjection(root,
+							.computeWithValidatedHistoricalPayloadProjection(root,
 									"classic".equals(configuration), 1);
 			JSONArray expected = fixture.getJSONArray(configuration);
 			Map<String, JSONObject> byPath = new TreeMap<>();
@@ -71,11 +67,12 @@ class PreG9BR6PlusD1LegacyByteIdentityTest {
 				JSONObject row = byPath.get(entry.getKey());
 				String context = configuration + " " + entry.getKey()
 						+ ("classic".equals(configuration) ? " strict whole XML"
-								: " original payload; candidate validated CU7 checkpoint exception");
+								: " original payload after validated checkpoints and numeric layers");
 				if (row.has("excluded")) {
 					assertEquals(row.getString("excluded"), entry.getValue().exclusion, context);
 					continue;
 				}
+				assertNull(entry.getValue().exclusion, context);
 				assertEquals(row.getString("constructionXmlSha256"),
 						entry.getValue().constructionXmlSha256, context);
 				assertEquals(row.getString("fullXmlSha256"), entry.getValue().fullXmlSha256,
@@ -172,8 +169,51 @@ class PreG9BR6PlusD1LegacyByteIdentityTest {
 			app.getKernel().lookupLabel("c").setUndefined(); point.updateCascade();
 			assertThrows(Exception.class, () -> PreG9BR6PlusD1LegacyFingerprints
 					.projectValidatedCu7NativePayload(xml, app), "Undefined state is outside the payload exception");
+			assertNumericLayerProjectionFailsClosed(app);
 		} finally {
 			app.getKernel().getAnimationManager().stopAnimation();
 		}
+	}
+
+	private static void assertNumericLayerProjectionFailsClosed(AppDNoGui app) {
+		var kernel = app.getKernel();
+		GeoNumeric legacySlider = new GeoNumeric(kernel.getConstruction(), 3);
+		legacySlider.setLabel("m");
+		legacySlider.setDrawable(true, false);
+		legacySlider.setLayer(2);
+		kernel.getAlgebraProcessor().processAlgebraCommand("n=2*m", false);
+		var scalar = kernel.lookupLabel("n");
+		scalar.setLayer(4);
+		scalar.setCaption("layer owner");
+		String xml = NumericLayerXmlProjection.constructionXml(app);
+		var projection = NumericLayerXmlProjection.verify(app, xml);
+		assertEquals(Map.of("n", 4), projection.additions());
+		String added = "\t<layer val=\"4\"/>\n";
+		String prior = "\t<layer val=\"2\"/>\n";
+		String caption = "\t<caption val=\"layer owner\"/>\n";
+		assertTrue(projection.legacyConstruction().contains(prior), "pre-existing slider layer");
+		assertEquals(xml.replace(added, ""), projection.legacyConstruction());
+		assertTrue(xml.contains(added + caption));
+		for (String invalid : new String[] {
+				xml.replace(added, ""),
+				xml.replace(added, added + added),
+				xml.replace(added, "\t<layer val=\"5\"/>\n"),
+				xml.replace(added, "\t<layer val=\"04\"/>\n"),
+				xml.replace(added, added.strip()),
+				xml.replace(added + caption, caption + added),
+				xml.replace(added, "").replace(prior, prior + added),
+				xml.replace("</construction>", "<macro><construction>\n"
+						+ "<element type=\"numeric\" label=\"n\">\n" + added
+						+ "</element>\n</construction></macro>\n</construction>"),
+				xml.replace(prior, ""),
+				xml.replace(caption, caption.replace("owner", "changed"))}) {
+			assertThrows(IllegalStateException.class,
+					() -> NumericLayerXmlProjection.verify(app, invalid));
+		}
+
+		String full = app.getXML();
+		assertEquals(full.replace(xml, projection.legacyConstruction()), projection.projectFullXml(full));
+		assertThrows(IllegalStateException.class, () -> projection.projectFullXml(full.replace(
+				"</geogebra>", xml + "</geogebra>")));
 	}
 }

@@ -35,7 +35,7 @@ One internal diagnostic dispatch precedes all of this
 `--classic-diagnostic`, the entry point removes only that marker, keeps every
 other argument unchanged, adds `--showSplash=false` and the isolated
 `classic-diagnostic.properties` beside the GeoCeDG preference file only when
-the caller gave no splash or settings argument, starts the unchanged upstream
+the caller gave no splash or settings argument, starts the Classic 3D
 `org.geogebra.desktop.GeoGebra3D.main` and returns without creating any GeoCeDG
 configuration, profile, preference selection or frame. The marker is launcher
 protocol of the separate diagnostic Classic process (a packaged GeoCeDG starts
@@ -70,7 +70,10 @@ are not emitted into the toolbar.
 
 ## Classic diagnostic route
 
-The upstream two-argument launcher behavior and configuration remain unchanged.
+The Classic launcher arguments and configuration retain their established
+contract. Since the 2026-11-09 CU6 preservation amendment, Classic 3D creates
+its frame and construction on the EDT, where opening a native document
+commits its validated spatial payload. Splash behavior is unchanged.
 From the composite root, `:desktop:desktop:run` launches GeoGebra Classic 5 and
 `:desktop:desktop:runGeoCeDG` launches GeoCeDG. This process-level diagnostic
 route avoids mixing preference namespaces or product profiles in one JVM.

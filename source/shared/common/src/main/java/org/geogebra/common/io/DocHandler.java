@@ -24,6 +24,15 @@ public interface DocHandler {
 	}
 
 	/**
+	 * Reports non-self-closing syntax or a duplicate attribute to a handler that
+	 * may need to validate the leaf after reading the document.
+	 * @param tag element name
+	 */
+	default void recordNonCanonicalEmptyElement(String tag) {
+		// Most handlers do not distinguish native leaves.
+	}
+
+	/**
 	 * @param tag
 	 *            element name
 	 * @param h

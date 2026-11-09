@@ -108,6 +108,19 @@ public abstract class MyXMLioJre extends MyXMLio {
 		}
 	}
 
+	/**
+	 * Reads a structurally preflighted native archive or a locally captured rollback.
+	 * @param input native document archive
+	 * @throws IOException if the archive cannot be read
+	 * @throws XMLParseException if its XML is invalid
+	 */
+	public final void readNativeZipFromInputStream(InputStream input)
+			throws IOException, XMLParseException {
+		try (ZipInputStream zip = new ZipInputStream(input)) {
+			readZip(zip, false, NumericLayerInput.NATIVE);
+		}
+	}
+
 	@Override
 	public void readZipFromString(ZipFile zipFile) throws IOException, XMLParseException {
 		if (zipFile instanceof ByteArrayZipFile) {
@@ -132,6 +145,11 @@ public abstract class MyXMLioJre extends MyXMLio {
 	 * @throws IOException if stream cannot be read
 	 */
 	protected void readZip(ZipInputStream zip, boolean isGGTFile)
+			throws IOException, XMLParseException {
+		readZip(zip, isGGTFile, NumericLayerInput.LEGACY);
+	}
+
+	private void readZip(ZipInputStream zip, boolean isGGTFile, NumericLayerInput numericLayerInput)
 			throws IOException, XMLParseException {
 		documentLabelingStyle = false;
 		// we have to read everything (i.e. all images)
@@ -253,9 +271,12 @@ public abstract class MyXMLioJre extends MyXMLio {
 				kernel.getConstruction().setNextSpatialIdentityLoadPurpose(
 						LoadPurpose.NATIVE_OR_UNDO_RESTORE);
 			}
-			processXMLBuffer(xmlFileBuffer, macroXmlFileBuffer == null, isGGTFile);
-			documentLabelingStyle = handler.hasLabelingStyle();
-			kernel.getConstruction().setFileLoading(false);
+			try {
+				processXMLBuffer(xmlFileBuffer, macroXmlFileBuffer == null, false, numericLayerInput);
+				documentLabelingStyle = handler.hasLabelingStyle();
+			} finally {
+				kernel.getConstruction().setFileLoading(false);
+			}
 		}
 
 		// process defaults (after construction for labeling styles)
@@ -307,11 +328,17 @@ public abstract class MyXMLioJre extends MyXMLio {
 	 */
 	protected void processXMLBuffer(byte[] buffer, boolean clearConstruction,
 			boolean isGGTOrDefaults) throws XMLParseException, IOException {
+		processXMLBuffer(buffer, clearConstruction, isGGTOrDefaults, NumericLayerInput.LEGACY);
+	}
+
+	private void processXMLBuffer(byte[] buffer, boolean clearConstruction,
+			boolean isGGTOrDefaults, NumericLayerInput numericLayerInput)
+			throws XMLParseException, IOException {
 		// handle the data in the memory buffer
 		try (ByteArrayInputStream bs = new ByteArrayInputStream(buffer)) {
 			XMLStreamInputStream ir = new XMLStreamInputStream(bs);
 			// process xml file
-			doParseXML(ir, clearConstruction, isGGTOrDefaults, true, true, true);
+			doParseXML(ir, clearConstruction, isGGTOrDefaults, true, true, true, numericLayerInput);
 		}
 	}
 
@@ -325,22 +352,21 @@ public abstract class MyXMLioJre extends MyXMLio {
 	 * @throws IOException if stream cannot be read
 	 */
 	public final void readZipFromMemory(InputStream is) throws IOException, XMLParseException {
-		ZipInputStream zip = new ZipInputStream(is);
-
-		// get all entries from the zip archive
-		ZipEntry entry = zip.getNextEntry();
-		if (entry != null && entry.getName().equals(XML_FILE)) {
-			// process xml file
-			kernel.getConstruction().setFileLoading(true);
-			doParseXML(new XMLStreamInputStream(zip), true, false, true, true,
-					false);
-			kernel.getConstruction().setFileLoading(false);
-			zip.close();
-		} else {
-			zip.close();
-			throw new IOException(XML_FILE + " not found");
+		try (ZipInputStream zip = new ZipInputStream(is)) {
+			ZipEntry entry = zip.getNextEntry();
+			if (entry == null || !entry.getName().equals(XML_FILE)) {
+				throw new IOException(XML_FILE + " not found");
+			}
+			Construction construction = kernel.getConstruction();
+			boolean wasFileLoading = construction.isFileLoading();
+			construction.setFileLoading(true);
+			try {
+				doParseXML(new XMLStreamInputStream(zip), true, false, true, true,
+						false, NumericLayerInput.NATIVE);
+			} finally {
+				construction.setFileLoading(wasFileLoading);
+			}
 		}
-
 	}
 
 	/**

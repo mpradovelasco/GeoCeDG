@@ -12,6 +12,8 @@
  * Note: The overall GeoGebra software package is free to use for
  * non-commercial purposes only.
  * See https://www.geogebra.org/license for full licensing details
+ *
+ * Modified for GeoCeDG: initialize the Classic 3D frame on the Swing EDT.
  */
 
 package org.geogebra.desktop;
@@ -30,7 +32,8 @@ public class GeoGebra3D {
 	 * @param cmdArgs command line arguments
 	 */
 	public static void main(String[] cmdArgs) {
-		GeoGebra.doMain(cmdArgs, GeoGebraFrame3D::new);
+		// Spatial state belongs to the same thread that opens documents from Swing.
+		GeoGebra.doMain(cmdArgs, GeoGebraFrame3D::new, true);
 	}
 
 }

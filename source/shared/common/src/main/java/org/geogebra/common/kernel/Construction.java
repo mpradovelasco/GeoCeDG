@@ -103,6 +103,7 @@ import org.geogebra.common.kernel.prover.AlgoLocusEquation;
 import org.geogebra.common.kernel.prover.AlgoProve;
 import org.geogebra.common.kernel.prover.AlgoProveDetails;
 import org.geogebra.common.main.App;
+import org.geogebra.common.main.settings.config.AppConfigDefault;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.main.MyError;
 import org.geogebra.common.main.MyError.Errors;
@@ -1562,7 +1563,8 @@ public class Construction {
 		boolean geoCeDGDocument = usesGeoCeDGConstructionXml();
 		nativeFileFidelityPass = geoCeDGDocument ? NativeSourceFidelity2D.fileSerializationPass() : null;
 		boolean previousNumericLayers = sb.writesNumericLayers();
-		sb.setWriteNumericLayers(geoCeDGDocument);
+		boolean previousPreservedNumericLayers = sb.writesPreservedNumericLayers();
+		configureNumericLayerOutput(sb);
 		beginSpatialIdentityXML();
 		try {
 			// save construction elements
@@ -1602,6 +1604,7 @@ public class Construction {
 		} finally {
 			endSpatialIdentityXML();
 			sb.setWriteNumericLayers(previousNumericLayers);
+			sb.setWritePreservedNumericLayers(previousPreservedNumericLayers);
 			if (nativeFileFidelityPass != null) {
 				lastNativeFileFidelityMetrics = nativeFileFidelityPass.metrics();
 			}
@@ -1611,6 +1614,13 @@ public class Construction {
 
 	private boolean usesGeoCeDGConstructionXml() {
 		return getApplication().getConfig() instanceof AppConfigGeoCeDG && !kernel.isMacroKernel();
+	}
+
+	private void configureNumericLayerOutput(XMLStringBuilder xml) {
+		boolean geoCeDGDocument = usesGeoCeDGConstructionXml();
+		xml.setWriteNumericLayers(geoCeDGDocument);
+		xml.setWritePreservedNumericLayers(!geoCeDGDocument && !kernel.isMacroKernel()
+				&& getApplication().getConfig() instanceof AppConfigDefault);
 	}
 
 	/** One fresh, pure serialization-pass memo; no cache survives native edits. */
@@ -3317,7 +3327,7 @@ public class Construction {
 	private String redefineXml(ConstructionElement element) {
 		XMLStringBuilder xml = new XMLStringBuilder();
 		// Match the native construction XML being replaced, including numeric layers.
-		xml.setWriteNumericLayers(usesGeoCeDGConstructionXml());
+		configureNumericLayerOutput(xml);
 		element.getXML(false, xml);
 		return xml.toString();
 	}
@@ -4531,8 +4541,11 @@ public class Construction {
 		setFileLoading(true);
 		setCasCellUpdate(true);
 		try {
-			getXMLio().processXMLString(strXML, true, isGGTOrDefaults,
-					true, randomize);
+			if (isGGTOrDefaults) {
+				getXMLio().processXMLString(strXML, true, true, true, randomize);
+			} else {
+				getXMLio().processConstructionSnapshot(strXML, randomize);
+			}
 		} finally {
 			setFileLoading(previousFileLoading);
 			setCasCellUpdate(previousCasCellUpdate);

@@ -221,3 +221,49 @@ Stop for author review if:
 
 This specification is approved normative design authority. It makes no
 `.cedg` implementation or observable-product claim.
+
+## Author-approved amendment of 2026-11-09 — CU6 explicit numeric layers
+
+The existing GeoCeDG writer records every numeric's layer in document and
+history XML. A serialized layer of `0` is explicit state. In Classic, the
+ordinary writer continues to apply its inherited rules, with one addition
+for document and history XML. For a numeric that received a valid explicit
+layer in a preservation load, the writer emits its current layer even
+when the inherited rule would omit it. The addition applies to the actual
+numeric instance and never supplies a tag for a value assigned only by a
+default or by omission on input. Order, geometry, dependencies and durable
+identity retain their existing authorities.
+
+Preservation loads are the structurally preflighted native document route,
+the restoration of a locally written construction snapshot (including
+Undo/Redo, rebuild and rollback), and a replacing direct XML load whose
+native G9 payload is validated by the existing spatial reader. The file
+suffix and an object's label or position never establish provenance. The
+compatibility archive route, generic XML without native evidence, merges,
+clipboard, defaults and macro XML retain the inherited rule. A new parse
+establishes provenance from its own accepted tags and commits it only
+after successful parsing. Deleting an instance or recreating it under the
+same label does not transfer provenance.
+
+The numeric property must be a single empty `layer` element on its owner
+with one integer `val` attribute. A malformed property in a preservation
+load rejects that load and restores the previous state. The layer domains
+and the existing clamp for integers outside them remain governed by
+`AQ-L1a` and `AQ-L1c` (GeoCeDG `0..99`, Classic `0..9`). A value changed
+by that clamp does not establish preservation of the original value.
+
+### Historical XML comparison
+
+For the R5-B and D1 historical comparisons only, start from the native
+GeoCeDG XML produced by the actual writer. A counterfactual serialization
+of the same live construction changes only the rule added in
+`8abfd2df3d0255c7505649b5be520c9cd3e6b39e` that emits layers for additional
+numerics. A removable line must be a single canonical `<layer val="k"/>`
+line at the writer's layer position, owned by that numeric, with the
+integer value of its live layer. The counterfactual must omit that line
+under the inherited rule and the native output must restore the same
+layer when saved and reopened. Keep layers emitted by the inherited
+rule. The resulting comparison requires byte equality against the
+unchanged historical reference, including all spaces, order and other
+fields. This verification projection has no role in the product writer
+or reader.

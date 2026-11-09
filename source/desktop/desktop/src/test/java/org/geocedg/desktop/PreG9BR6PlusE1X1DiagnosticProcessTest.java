@@ -39,9 +39,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.SwingUtilities;
 
+import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.main.App;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
@@ -71,6 +74,7 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 
 	static final String PROBE_DIRECTORY = "GEOCEDG_E1X1_PROBE_DIR";
 	private static final String MARKER = "--classic-diagnostic";
+	private static final String SPATIAL_DOCUMENT = "spatial.cedg";
 	private static final long JVM_TIMEOUT_SECONDS = 300;
 	private static final long REPORT_TIMEOUT_SECONDS = 150;
 	/** product classes that must never be loaded in a diagnostic Classic JVM */
@@ -107,6 +111,7 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 			throws Exception {
 		Path appData = Files.createDirectories(temporary.resolve("appdata"));
 		Path probes = Files.createDirectories(temporary.resolve("probes"));
+		writeSpatialDocument(probes);
 		Files.writeString(probes.resolve("exit-mode"), "exit");
 		Path console = temporary.resolve("dispatch-console.txt");
 		Process process = startJvm(GeoCeDG.class.getName(), List.of(MARKER), appData, probes,
@@ -133,6 +138,7 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 			assertEquals(diagnosticPreferences.toString(), classic.getProperty("settings"),
 					detail);
 			assertEquals("", classic.getProperty("currentFile"), detail);
+			assertEquals("18", classic.getProperty("openedSpatialRecords"), detail);
 			assertEquals(0, process.exitValue(), "Classic exit\n" + detail);
 			assertTrue(Files.isRegularFile(diagnosticPreferences),
 					"Classic wrote its own preferences at exit\n" + detail);
@@ -148,6 +154,7 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 	void realGeoCeDGParentStartsSeparateClassicProcesses() throws Exception {
 		Path appData = Files.createDirectories(temporary.resolve("appdata"));
 		Path probes = Files.createDirectories(temporary.resolve("probes"));
+		writeSpatialDocument(probes);
 		Path model = Files.createDirectories(temporary.resolve("models"))
 				.resolve("Templatev7.ggb");
 		Files.copy(repositoryRoot().resolve("models").resolve("legacy")
@@ -192,6 +199,7 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 					laboratory.getProperty("settings"), detail);
 			assertEquals("", classic.getProperty("currentFile"),
 					"the active GeoCeDG document is not forwarded\n" + detail);
+			assertEquals("18", classic.getProperty("openedSpatialRecords"), detail);
 			assertEquals(preferenceDirectory.resolve("classic-diagnostic.properties")
 					.toString(), classic.getProperty("settings"), detail);
 			// the Laboratory child closed by itself; the parent survived it untouched
@@ -213,6 +221,17 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 					"the Classic child survives its parent\n" + detail);
 		} finally {
 			destroy(started, probes);
+		}
+	}
+
+	private static void writeSpatialDocument(Path probes) throws IOException {
+		Path xml = repositoryRoot().resolve("source/shared/common-jre/src/test/resources/"
+				+ "org/geocedg/common/spatial/g9a3/v2-shuffled-forward-closure.xml");
+		try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(
+				probes.resolve(SPATIAL_DOCUMENT)))) {
+			zip.putNextEntry(new ZipEntry(MyXMLio.XML_FILE));
+			Files.copy(xml, zip);
+			zip.closeEntry();
 		}
 	}
 
@@ -451,6 +470,16 @@ class PreG9BR6PlusE1X1DiagnosticProcessTest {
 						? "" : ready.getCurrentFile().getAbsolutePath()));
 				report.setProperty("constructionSteps", Integer.toString(onEdt(
 						() -> ready.getKernel().getConstruction().steps())));
+				if (report.getProperty("currentFile").isEmpty()) {
+					File document = probes.resolve(SPATIAL_DOCUMENT).toFile();
+					int records = onEdt(() -> {
+						if (!ready.loadFile(document, false)) {
+							throw new IllegalStateException("Classic spatial document open failed");
+						}
+						return ready.getKernel().getConstruction().getSpatialIdentityRegistry().size();
+					});
+					report.setProperty("openedSpatialRecords", Integer.toString(records));
+				}
 				Field settings = GeoGebraPreferencesD.class.getDeclaredField(
 						"PROPERTY_FILEPATH");
 				settings.setAccessible(true);

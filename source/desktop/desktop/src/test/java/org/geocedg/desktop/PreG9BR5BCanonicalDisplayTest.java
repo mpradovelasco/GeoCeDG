@@ -11,17 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TreeSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.geocedg.common.main.command.CanonicalCommandEntry;
 import org.geocedg.common.main.command.CanonicalCommandSurface;
@@ -348,8 +345,11 @@ class PreG9BR5BCanonicalDisplayTest {
 		for (Locale language : new Locale[] {Locale.ENGLISH, PreG9BR5BFingerprints.SPANISH}) {
 			AppGeoCeDG app = application(language);
 			assertTrue(app.loadFile(document.toFile(), false));
-			assertEquals(expectedXml, PreG9BR5BFingerprints.constructionXml(app),
-					language.toString());
+			var projection = NumericLayerXmlProjection.verify(app,
+					NumericLayerXmlProjection.constructionFromFullXml(app.getXML()));
+			assertEquals(Map.of("ex", 5, "d", 5, "e", 5, "mu", 5, "q1", 5, "bc", 5,
+					"s", 5, "n", 0, "b", 5), projection.additions(), language.toString());
+			assertEquals(expectedXml + "\n", projection.legacyConstruction(), language.toString());
 			assertEquals(PreG9BR5BFingerprints.string(fixture, "historicalDocument",
 					"constructionCore"), PreG9BR5BFingerprints.constructionCore(app));
 			for (String[] witness : PreG9BR5BFingerprints.WITNESS) {
@@ -365,8 +365,12 @@ class PreG9BR5BCanonicalDisplayTest {
 			File saved = temporaryDirectory.resolve("resaved-" + language.getLanguage()
 					+ ".cedg").toFile();
 			assertTrue(((GuiManagerGeoCeDG) app.getGuiManager()).saveAsTo(saved));
-			assertEquals(expectedXml, construction(zipXml(saved.toPath())),
-					language.toString());
+			String savedXml = NumericLayerXmlProjection.archiveXml(Files.newInputStream(saved.toPath()));
+			assertEquals(expectedXml + "\n", NumericLayerXmlProjection.constructionFromFullXml(
+					projection.projectFullXml(savedXml)), language.toString());
+			AppGeoCeDG reopened = application(language);
+			assertTrue(reopened.loadFile(saved, false));
+			projection.verifyReopenedLayers(reopened);
 		}
 	}
 
@@ -447,25 +451,6 @@ class PreG9BR5BCanonicalDisplayTest {
 
 	private static AppGeoCeDG application(Locale language) {
 		return PreG9BR5BCanonicalCommandGateTest.application(language);
-	}
-
-	private static String zipXml(Path archive) throws IOException {
-		try (InputStream input = Files.newInputStream(archive);
-				ZipInputStream zip = new ZipInputStream(input)) {
-			ZipEntry entry;
-			while ((entry = zip.getNextEntry()) != null) {
-				if ("geogebra.xml".equals(entry.getName())) {
-					return new String(zip.readAllBytes(), StandardCharsets.UTF_8);
-				}
-			}
-		}
-		throw new IOException("Missing geogebra.xml in " + archive);
-	}
-
-	private static String construction(String xml) {
-		int start = xml.indexOf("<construction");
-		String end = "</construction>";
-		return xml.substring(start, xml.indexOf(end, start) + end.length());
 	}
 
 	/** Canonical Input Help heads. */

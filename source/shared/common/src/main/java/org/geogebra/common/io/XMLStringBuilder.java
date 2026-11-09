@@ -22,6 +22,7 @@ public class XMLStringBuilder {
 
 	private final StringBuilder sb;
 	private boolean writeNumericLayers;
+	private boolean writePreservedNumericLayers;
 	boolean currentTagEmpty = false;
 	String currentTag = null;
 
@@ -41,6 +42,16 @@ public class XMLStringBuilder {
 	/** @param writeNumericLayers whether to persist numeric layers in this section */
 	public void setWriteNumericLayers(boolean writeNumericLayers) {
 		this.writeNumericLayers = writeNumericLayers;
+	}
+
+	/** @return whether to write explicit numeric layers accepted by the document reader */
+	public boolean writesPreservedNumericLayers() {
+		return writePreservedNumericLayers;
+	}
+
+	/** @param preserve whether to write accepted explicit layers in this document section */
+	public void setWritePreservedNumericLayers(boolean preserve) {
+		writePreservedNumericLayers = preserve;
 	}
 
 	/**

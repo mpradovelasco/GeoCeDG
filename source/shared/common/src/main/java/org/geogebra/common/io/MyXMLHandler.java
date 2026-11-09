@@ -51,6 +51,7 @@ import org.geogebra.common.gui.view.algebra.AlgebraView;
 import org.geogebra.common.gui.view.data.DataDisplayModel.PlotType;
 import org.geogebra.common.gui.view.probcalculator.Procedure;
 import org.geogebra.common.gui.view.probcalculator.StatisticsCollection;
+import org.geogebra.common.io.MyXMLio.NumericLayerInput;
 import org.geogebra.common.io.layout.DockPanelData;
 import org.geogebra.common.io.layout.DockSplitPaneData;
 import org.geogebra.common.io.layout.Perspective;
@@ -165,6 +166,11 @@ public class MyXMLHandler implements DocHandler {
 	private int constMode; // submode for <construction>
 	private int casMode; // submode for <cascell>
 	private LoadPurpose spatialIdentityLoadPurpose = LoadPurpose.GENERIC_MERGE;
+	private NumericLayerInput numericLayerInput = NumericLayerInput.LEGACY;
+	private final Map<GeoNumeric, Integer> explicitNumericLayers = new IdentityHashMap<>();
+	private boolean invalidNumericLayer;
+	private boolean validatedMainSpatialPayload;
+	private int geoPropertyDepth;
 	private LoadSession spatialIdentityLoadSession;
 	private Construction spatialIdentityLoadConstruction;
 	private int spatialIdentityRecordDepth;
@@ -332,6 +338,14 @@ public class MyXMLHandler implements DocHandler {
 	@Override
 	public boolean hasStrictEmptyElementGrammar(String tag) {
 		return "conicPointState".equals(tag) || "nativeRollbackBinding".equals(tag);
+	}
+
+	@Override
+	public void recordNonCanonicalEmptyElement(String tag) {
+		if (numericLayerInput != NumericLayerInput.LEGACY && "layer".equals(tag)
+				&& numericLayerOwner() != null) {
+			invalidNumericLayer = true;
+		}
 	}
 
 	@Override
@@ -2994,6 +3008,60 @@ public class MyXMLHandler implements DocHandler {
 		spatialIdentityBearingParse = false;
 	}
 
+	void beginNumericLayerLoad(NumericLayerInput input) {
+		endNumericLayerLoad();
+		numericLayerInput = input;
+	}
+
+	void endNumericLayerLoad() {
+		numericLayerInput = NumericLayerInput.LEGACY;
+		explicitNumericLayers.clear();
+		invalidNumericLayer = false;
+		validatedMainSpatialPayload = false;
+	}
+
+	boolean preservesNumericLayers() {
+		return !origKernel.isMacroKernel() && (numericLayerInput == NumericLayerInput.NATIVE
+				|| numericLayerInput == NumericLayerInput.DIRECT && validatedMainSpatialPayload);
+	}
+
+	private GeoNumeric numericLayerOwner() {
+		return mode == MODE_CONSTRUCTION && constMode == MODE_CONST_GEO_ELEMENT
+				&& kernel == origKernel && !kernel.isMacroKernel()
+				? geoHandler.getNumericLayerOwner() : null;
+	}
+
+	private void recordNumericLayer(Map<String, String> attrs) {
+		GeoNumeric numeric = numericLayerOwner();
+		if (numeric == null) {
+			return;
+		}
+		try {
+			int layer = Integer.parseInt(attrs.get("val"));
+			if (geoPropertyDepth != 0 || attrs.size() != 1
+					|| explicitNumericLayers.putIfAbsent(numeric, layer) != null) {
+				invalidNumericLayer = true;
+			}
+		} catch (NumberFormatException exception) {
+			invalidNumericLayer = true;
+		}
+	}
+
+	void commitNumericLayerLoad() throws XMLParseException {
+		if (!preservesNumericLayers()) {
+			return;
+		}
+		if (invalidNumericLayer) {
+			throw new XMLParseException("Invalid or duplicate explicit numeric layer");
+		}
+		int maxLayer = LayerDomain.maxLayer(app);
+		explicitNumericLayers.forEach((numeric, layer) -> {
+			if (layer >= 0 && layer <= maxLayer && numeric.getLayer() == layer) {
+				numeric.markPreservedNumericLayer();
+			}
+		});
+	}
+
 	/**
 	 * PRE-G9B-R6-plus-D1: classifies the parse that is about to start. Unit metadata is
 	 * applied only by a clearing load of the document construction, identified by its
@@ -3207,6 +3275,7 @@ public class MyXMLHandler implements DocHandler {
 			}
 			if (spatialIdentityLoadSession != null) {
 				spatialIdentityLoadSession.commit();
+				validatedMainSpatialPayload |= kernel == origKernel;
 			}
 		} catch (RuntimeException | Error failure) {
 			LoadSession failedSession = finishingSession == null
@@ -3260,6 +3329,7 @@ public class MyXMLHandler implements DocHandler {
 					twinCell.setTwinLoadedFromFile(true);
 				}
 				geoHandler.init(attrs);
+				geoPropertyDepth = 0;
 			} else if ("command".equals(eName)) {
 				cons.setOutputGeo(null);
 				constMode = MODE_CONST_COMMAND;
@@ -3288,6 +3358,12 @@ public class MyXMLHandler implements DocHandler {
 					"geocedgUnits cannot contain child elements");
 
 		case MODE_CONST_GEO_ELEMENT:
+			if (numericLayerInput != NumericLayerInput.LEGACY) {
+				if ("layer".equals(eName)) {
+					recordNumericLayer(attrs);
+				}
+				geoPropertyDepth++;
+			}
 			this.geoHandler.startGeoElement(eName, attrs, errors);
 			break;
 
@@ -3342,7 +3418,9 @@ public class MyXMLHandler implements DocHandler {
 			break;
 
 		case MODE_CONST_GEO_ELEMENT:
-			if ("element".equals(eName)) {
+			if (geoPropertyDepth > 0) {
+				geoPropertyDepth--;
+			} else if ("element".equals(eName)) {
 				this.geoHandler.finish();
 				casMap = null;
 				constMode = MODE_CONSTRUCTION;

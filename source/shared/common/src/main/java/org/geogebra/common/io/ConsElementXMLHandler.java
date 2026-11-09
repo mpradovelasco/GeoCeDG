@@ -678,6 +678,11 @@ public class ConsElementXMLHandler {
 		}
 	}
 
+	GeoNumeric getNumericLayerOwner() {
+		return geo instanceof GeoNumeric numeric && geo.getGeoClassType() == GeoClass.NUMERIC
+				? numeric : null;
+	}
+
 	private boolean handleAnimation(Map<String, String> attrs) {
 		try {
 

@@ -136,7 +136,7 @@ public class GFileHandler {
 		app.getKernel().setEquationBehaviour(
 				app.getConfig().getEquationBehaviour());
 		app.resetUniqueId();
-		((MyXMLioJre) app.getXMLio()).readZipFromInputStream(input, false);
+		((MyXMLioJre) app.getXMLio()).readNativeZipFromInputStream(input);
 		return true;
 	}
 }
