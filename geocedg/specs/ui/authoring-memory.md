@@ -19,6 +19,8 @@ The [CU5 implementation design](../../../docs/architecture/pre_g9b_cu5_implement
 records the author-directed B03/H05 successor for the CU5 candidate. Its
 activation, status and protocol-step rules supersede the corresponding F2/F2-R1
 rules within that candidate. The approved F2/F2-R1 baseline is recorded below.
+The author-approved CU5 axis amendment in §12 extends that candidate's
+reference admission and currentness rules.
 
 This specification is the durable contract of the GeoCeDG authoring memory
 (F2, with the F2-R1 dual activation of §11). It was written as the contract of
@@ -298,3 +300,26 @@ content.
 | `NORMAL` gate and cancellation | `GeoCeDGEuclidianController.processLineReferenceTool`, `cancelPartialGesture` |
 | indication | `GeoCeDGStatusBar` segment `tool-memory`; profile texts `AuthoringMemory.Status.*` |
 | tests | `PreG9BR6PlusF2R1DualActivationTest`; `PreG9BR6PlusF2AuthoringMemoryTest` with explicit `MEMORY_ENABLED` activation |
+
+## 12. Author-approved amendment of 2026-11-09 — CU5 canonical axes
+
+GeoCeDG Desktop Graphics View 1 admits the current kernel's canonical
+`xAxis` and `yAxis` for both Parallel and Perpendicular. The exception to
+§3.5 is exact instance identity with those kernel constants
+(`Kernel.isAxis`). The construction order remains the authority for
+ordinary references. An axis is available at every protocol step. For
+the axis branch of §3.6, the object must be defined and its axis must be
+shown and selectable in Graphics View 1. Ordinary object visibility,
+view membership and layer checks still govern ordinary references.
+
+A canonical axis may enter the slot only as the input actually used by
+a successful `AlgoLinePointLine` or `AlgoOrthoLinePointLine` construction
+that satisfies §6. While the axis is hidden or selection is disabled,
+the slot is suspended. Restoring the view setting makes the same
+instance usable again. Undo, Redo, a rebuild and document replacement
+invalidate the slot even when the kernel retains the same axis object.
+Recovery after those boundaries requires an explicit successful new
+construction. Activation, tool isolation, inherited line direction and
+the lack of XML or Undo entries for memory retain their existing rules.
+The [orientation cue contract](../presentation/orientation-cue.md)
+continues to exclude drawing a cue on either axis.

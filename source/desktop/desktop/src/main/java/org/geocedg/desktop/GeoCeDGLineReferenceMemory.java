@@ -11,12 +11,14 @@ import java.util.EnumSet;
 import java.util.Map;
 
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoLinePointVector;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
 import org.geogebra.common.kernel.algos.AlgoOrthoLinePointVector;
+import org.geogebra.common.kernel.geos.GeoAxis;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoLine;
@@ -28,9 +30,9 @@ import org.geogebra.common.plugin.EventListener;
 /**
  * Session memory of the Parallel and Perpendicular tools of Graphics View 1
  * (geocedg/specs/ui/authoring-memory.md). Holds exact object references only:
- * currentness is exact-instance membership in the construction order, never a
- * label, {@code isInConstructionList} or {@code isLabelSet}. Not serialized; never
- * an undo point.
+ * ordinary references are exact-instance members of the construction order.
+ * The two Cartesian axes are exact-instance constants of the current kernel.
+ * Memory is session-only and creates no undo point.
  */
 final class GeoCeDGLineReferenceMemory implements EventListener {
 
@@ -100,8 +102,8 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 	}
 
 	/**
-	 * Admissibility of a reference: a 2D line (line, segment, ray, polygon edge), a 2D
-	 * vector, or a function whose kernel linear interpretation is defined
+	 * Admissibility of a reference: a canonical 2D axis, a 2D line (line, segment,
+	 * ray, polygon edge), a 2D vector, or a function whose linear interpretation is defined
 	 * ({@link GeoFunction#getX()} finite; NaN for constant, higher-degree and
 	 * non-polynomial functions).
 	 *
@@ -112,6 +114,9 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 		if (geo == null || geo.isGeoElement3D()) {
 			return false;
 		}
+		if (geo.isAxis()) {
+			return geo.getKernel().isAxis(geo);
+		}
 		if (geo instanceof GeoLine || geo instanceof GeoVector) {
 			return true;
 		}
@@ -120,13 +125,16 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 
 	/**
 	 * @param geo object
-	 * @return whether this exact instance belongs to the current construction
+	 * @return whether this instance is a current construction member or a canonical axis
 	 */
 	boolean isCurrent(GeoElement geo) {
 		if (geo == null) {
 			return false;
 		}
 		Kernel kernel = app.getKernel();
+		if (geo.isAxis()) {
+			return kernel.isAxis(geo);
+		}
 		for (GeoElement member : kernel.getConstruction().getGeoSetConstructionOrder()) {
 			if (member == geo) {
 				return true;
@@ -136,6 +144,11 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 	}
 
 	private boolean isUsable(GeoElement geo) {
+		if (geo instanceof GeoAxis axis) {
+			EuclidianView view = app.getEuclidianView1();
+			return axis.isDefined() && view.getShowAxis(axis.getType())
+					&& axis.isSelectionAllowed(view);
+		}
 		return isAdmissible(geo) && geo.isDefined() && geo.isEuclidianVisible()
 				&& geo.isVisibleInView(App.VIEW_EUCLIDIAN)
 				&& app.isLayerShown(geo.getLayer());
@@ -190,6 +203,11 @@ final class GeoCeDGLineReferenceMemory implements EventListener {
 		invalidated.remove(slot);
 		if (!listening) {
 			app.getEventDispatcher().addEventListener(this);
+			app.getSettings().getEuclidian(1).addListener(settings -> {
+				if (slots.values().stream().anyMatch(GeoElement::isAxis)) {
+					queueStatusRefresh();
+				}
+			});
 			listening = true;
 		}
 		queueStatusRefresh();

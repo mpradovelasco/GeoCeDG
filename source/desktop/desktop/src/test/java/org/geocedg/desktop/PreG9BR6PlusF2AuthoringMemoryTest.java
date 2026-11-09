@@ -5,6 +5,8 @@
 
 package org.geocedg.desktop;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,6 +22,7 @@ import static org.mockito.Mockito.spy;
 
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -45,9 +48,12 @@ import org.geogebra.common.kernel.algos.AlgoOrthoLinePointVector;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.algos.AlgoRotatePoint;
 import org.geogebra.common.kernel.geos.GeoAngle;
+import org.geogebra.common.kernel.geos.GeoAxis;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoLine;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.kernelND.GeoAxisND;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoSegmentND;
@@ -64,6 +70,7 @@ import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * PRE-G9B-R6-plus-F2: Parallel/Perpendicular session memory and the hidden Angle with
@@ -77,11 +84,16 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 
 	private static final double[] ON_L = {0, -4};
 	private static final double[] ON_M = {0, 4.5};
+	private static final double[] ON_X_AXIS = {-5, 0};
+	private static final double[] ON_Y_AXIS = {0, 6};
 	private static final double[] P = {-2, 1};
 	private static final double[] Q = {2, 0};
 	private static final double[] R = {4, 3};
 	private static final double[] S = {-1, 3};
 	private static final double[] EMPTY = {-3, -1};
+
+	@TempDir
+	Path temporary;
 
 	// ------------------------------------------------------------------ harness
 
@@ -144,6 +156,13 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		eval(app, "k(x)=-6.8");
 		eval(app, "tri=Polygon((3,-2),(7,-2),(7,2))");
 		app.storeUndoInfo();
+		return app;
+	}
+
+	private static AppGeoCeDG sceneWithAxes() throws Exception {
+		AppGeoCeDG app = scene();
+		app.getSettings().getEuclidian(1).setShowAxes(true);
+		app.getEuclidianView1().setShowAxes(true, true);
 		return app;
 	}
 
@@ -250,6 +269,9 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			assertConstruction(created(app), (Class<?>) reference[2], lookup(app, "R"), ref);
 			assertEquals(List.of(), selection(app), "an injected reference never stays selected");
 		}
+		assertAll("Parallel uses both canonical axes",
+				() -> assertAxisReuse(EuclidianConstants.MODE_PARALLEL, GeoAxisND.X_AXIS),
+				() -> assertAxisReuse(EuclidianConstants.MODE_PARALLEL, GeoAxisND.Y_AXIS));
 	}
 
 	@Test
@@ -271,6 +293,48 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			click(app, Q);
 			assertConstruction(created(app), (Class<?>) reference[2], lookup(app, "Q"), ref);
 		}
+		assertAll("Perpendicular uses both canonical axes",
+				() -> assertAxisReuse(EuclidianConstants.MODE_ORTHOGONAL, GeoAxisND.X_AXIS),
+				() -> assertAxisReuse(EuclidianConstants.MODE_ORTHOGONAL, GeoAxisND.Y_AXIS));
+	}
+
+	private static void assertAxisReuse(int mode, int axisType) throws Exception {
+		AppGeoCeDG app = sceneWithAxes();
+		boolean horizontal = axisType == GeoAxisND.X_AXIS;
+		GeoAxis axis = horizontal ? app.getKernel().getXAxis() : app.getKernel().getYAxis();
+		boolean parallel = mode == EuclidianConstants.MODE_PARALLEL;
+		Class<?> algorithm = parallel ? AlgoLinePointLine.class : AlgoOrthoLinePointLine.class;
+		Slot slot = Slot.forMode(mode);
+		activateWithMemory(app, mode);
+		int before = size(app);
+		click(app, horizontal ? ON_X_AXIS : ON_Y_AXIS);
+		assertEquals(State.EMPTY, memory(app).getState(slot), "selection is not a certificate");
+		assertEquals(before, size(app));
+		click(app, P);
+		assertConstruction(created(app), algorithm, lookup(app, "P"), axis);
+		assertAxisDirection((GeoLine) created(app), axis, parallel);
+		assertSame(axis, memory(app).peek(slot), "certified " + axis.getLabelSimple());
+		assertEquals(State.HELD, memory(app).getState(slot));
+		click(app, R);
+		assertConstruction(created(app), algorithm, lookup(app, "R"), axis);
+		assertAxisDirection((GeoLine) created(app), axis, parallel);
+		assertEquals(before + 2, size(app));
+		assertEquals(List.of(), selection(app), "the injected axis never stays selected");
+
+		var construction = app.getKernel().getConstruction();
+		int lastStep = app.getKernel().getConstructionStep();
+		construction.setStep(-1);
+		assertSame(axis, memory(app).getUsable(slot), "an axis has no construction step");
+		construction.setStep(lastStep);
+	}
+
+	private static void assertAxisDirection(GeoLine line, GeoAxis axis, boolean parallel) {
+		double[] expected = new double[2];
+		axis.getDirection(expected);
+		double[] direction = new double[2];
+		line.getDirection(direction);
+		assertArrayEquals(parallel ? expected : new double[] {-expected[1], expected[0]},
+				direction, 1e-12);
 	}
 
 	@Test
@@ -332,6 +396,36 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 				lookup(app, "m"));
 		assertSame(lookup(app, "l"), memory(app).peek(Slot.PARALLEL));
 		assertSame(lookup(app, "m"), memory(app).peek(Slot.PERPENDICULAR));
+		assertAxisSlotsAreIndependent();
+	}
+
+	private static void assertAxisSlotsAreIndependent() throws Exception {
+		AppGeoCeDG app = sceneWithAxes();
+		GeoAxis x = app.getKernel().getXAxis();
+		GeoAxis y = app.getKernel().getYAxis();
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
+		click(app, ON_X_AXIS);
+		click(app, P);
+		activateWithMemory(app, EuclidianConstants.MODE_ORTHOGONAL);
+		int before = size(app);
+		click(app, R);
+		assertEquals(before, size(app), "Parallel's axis never feeds Perpendicular");
+		click(app, ON_Y_AXIS);
+		assertConstruction(created(app), AlgoOrthoLinePointLine.class, lookup(app, "R"), y);
+		assertSame(x, memory(app).getUsable(Slot.PARALLEL));
+		assertSame(y, memory(app).getUsable(Slot.PERPENDICULAR));
+
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
+		before = size(app);
+		click(app, ON_Y_AXIS);
+		app.setMoveMode(); // cancel the pending reference-first gesture
+		assertEquals(before, size(app));
+		assertSame(x, memory(app).getUsable(Slot.PARALLEL));
+		app.setMode(EuclidianConstants.MODE_POINT);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
+		click(app, S);
+		assertConstruction(created(app), AlgoLinePointLine.class, lookup(app, "S"), x);
+		assertSame(y, memory(app).getUsable(Slot.PERPENDICULAR));
 	}
 
 	@Test
@@ -541,6 +635,37 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		assertEquals(State.HELD, memory(app).getState(Slot.PARALLEL));
 		click(app, R);
 		assertConstruction(created(app), AlgoLinePointLine.class, lookup(app, "R"), l);
+		assertAxisSuspensionFollowsGraphicsView1();
+	}
+
+	private static void assertAxisSuspensionFollowsGraphicsView1() throws Exception {
+		AppGeoCeDG app = sceneWithAxes();
+		GeoAxis axis = app.getKernel().getXAxis();
+		var settings = app.getSettings().getEuclidian(1);
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
+		click(app, ON_X_AXIS);
+		click(app, P);
+		assertSame(axis, memory(app).getUsable(Slot.PARALLEL));
+
+		settings.setShowAxis(GeoAxisND.X_AXIS, false);
+		SwingUtilities.invokeAndWait(() -> assertTrue(app.getStatusBar()
+				.getSegment(GeoCeDGStatusBar.TOOL_MEMORY_SEGMENT).getText()
+				.endsWith(app.layerText("AuthoringMemory.Status.Suspended"))));
+		assertEquals(State.SUSPENDED, memory(app).getState(Slot.PARALLEL));
+		assertSame(axis, memory(app).peek(Slot.PARALLEL));
+		int before = size(app);
+		click(app, R);
+		assertEquals(before, size(app), "the hidden axis is not reused");
+		app.setMoveMode();
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
+		settings.setShowAxis(GeoAxisND.X_AXIS, true);
+		assertSame(axis, memory(app).getUsable(Slot.PARALLEL));
+		settings.setSelectionAllowed(GeoAxisND.X_AXIS, false);
+		assertEquals(State.SUSPENDED, memory(app).getState(Slot.PARALLEL));
+		settings.setSelectionAllowed(GeoAxisND.X_AXIS, true);
+		assertSame(axis, memory(app).getUsable(Slot.PARALLEL));
+		click(app, S);
+		assertConstruction(created(app), AlgoLinePointLine.class, lookup(app, "S"), axis);
 	}
 
 	@Test
@@ -576,13 +701,41 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 		click(app, R);
 		assertEquals(before, size(app));
 		assertNotNull(recreated);
+		assertAxisIdentityIsNotDerivedFromGeometry();
+	}
+
+	private static void assertAxisIdentityIsNotDerivedFromGeometry() throws Exception {
+		AppGeoCeDG app = sceneWithAxes();
+		var kernel = app.getKernel();
+		GeoAxis synthetic = new GeoAxis(kernel.getConstruction(), GeoAxisND.X_AXIS);
+		assertFalse(GeoCeDGLineReferenceMemory.isAdmissible(synthetic));
+		assertFalse(memory(app).isCurrent(synthetic));
+		GeoAxis foreign = G9U1TestApp.create().getKernel().getXAxis();
+		assertFalse(memory(app).isCurrent(foreign));
+
+		app.getEuclidianView1().setShowAxis(GeoAxisND.X_AXIS, false, true);
+		GeoElement line = eval(app, "coincident=Line((-8,0),(8,0))")[0].toGeoElement();
+		assertFalse(kernel.isAxis(line));
+		assertTrue(memory(app).isCurrent(line));
+		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
+		click(app, ON_X_AXIS);
+		click(app, P);
+		assertSame(line, memory(app).getUsable(Slot.PARALLEL));
+		app.getEuclidianView1().setShowAxis(GeoAxisND.X_AXIS, true, true);
+		click(app, R);
+		assertConstruction(created(app), AlgoLinePointLine.class, lookup(app, "R"), line);
 	}
 
 	@Test
 	void rebuildsAndDocumentBoundariesClearBothSlots() throws Exception {
-		String[] actions = {"undo", "redo", "rebuild", "setXML", "loadXML", "new"};
+		assertDocumentBoundariesClearBothSlots(false);
+		assertDocumentBoundariesClearBothSlots(true);
+	}
+
+	private void assertDocumentBoundariesClearBothSlots(boolean useAxes) throws Exception {
+		String[] actions = {"undo", "redo", "rebuild", "setXML", "loadXML", "open", "new"};
 		for (String action : actions) {
-			AppGeoCeDG app = scene();
+			AppGeoCeDG app = useAxes ? sceneWithAxes() : scene();
 			UndoManagerD undo = undo(app);
 			PreG9BR6PlusA1LayerWorkspaceTest.baseline(undo);
 			eval(app, "C2=Point(m)");
@@ -590,21 +743,30 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			CountDownLatch toolStores = new CountDownLatch(2);
 			undo.addUndoInfoStoredListener(toolStores::countDown);
 			activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
-			click(app, ON_L);
+			click(app, useAxes ? ON_X_AXIS : ON_L);
 			click(app, P);
 			activateWithMemory(app, EuclidianConstants.MODE_ORTHOGONAL);
-			click(app, ON_L);
-			click(app, Q);
+			click(app, useAxes ? ON_Y_AXIS : ON_L);
+			click(app, useAxes ? R : Q);
 			assertTrue(toolStores.await(5, TimeUnit.SECONDS));
-			assertNotNull(memory(app).peek(Slot.PARALLEL));
-			assertNotNull(memory(app).peek(Slot.PERPENDICULAR));
+			assertEquals(State.HELD, memory(app).getState(Slot.PARALLEL));
+			assertEquals(State.HELD, memory(app).getState(Slot.PERPENDICULAR));
 			switch (action) {
 			case "undo":
 				app.getKernel().undo();
 				break;
 			case "redo":
 				app.getKernel().undo();
-				memory(app).remember(Slot.PARALLEL, lookup(app, "l"));
+				assertEquals(State.INVALIDATED, memory(app).getState(Slot.PERPENDICULAR));
+				// Certify a new reference without consuming the pending Redo.
+				app.getKernel().setUndoActive(false);
+				try {
+					click(app, useAxes ? ON_X_AXIS : ON_L);
+					click(app, S);
+					assertEquals(State.HELD, memory(app).getState(Slot.PERPENDICULAR));
+				} finally {
+					app.getKernel().setUndoActive(true);
+				}
 				app.getKernel().redo();
 				break;
 			case "rebuild":
@@ -616,6 +778,15 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			case "loadXML":
 				assertTrue(app.loadXML(app.getXML()));
 				break;
+			case "open":
+				AppGeoCeDG other = G9U1TestApp.create();
+				eval(other, "J=(-2,1)");
+				var file = temporary.resolve("different-document.cedg").toFile();
+				assertTrue(((GuiManagerGeoCeDG) other.getGuiManager()).saveAsTo(file));
+				assertTrue(app.loadFile(file, false));
+				assertNotNull(lookup(app, "J"));
+				assertNull(lookup(app, "P"));
+				break;
 			default:
 				app.setSaved();
 				app.fileNew();
@@ -625,25 +796,40 @@ class PreG9BR6PlusF2AuthoringMemoryTest {
 			assertNull(memory(app).peek(Slot.PARALLEL), action);
 			assertNull(memory(app).peek(Slot.PERPENDICULAR), action);
 			assertEquals(State.INVALIDATED, memory(app).getState(Slot.PARALLEL), action);
+			assertEquals(State.INVALIDATED, memory(app).getState(Slot.PERPENDICULAR), action);
 		}
 	}
 
 	@Test
 	void memoryIsNotAnUndoPointAndNotSerialized() throws Exception {
-		AppGeoCeDG app = scene();
+		assertMemoryIsNotAnUndoPointAndNotSerialized(false);
+		assertMemoryIsNotAnUndoPointAndNotSerialized(true);
+	}
+
+	private static void assertMemoryIsNotAnUndoPointAndNotSerialized(boolean useAxis)
+			throws Exception {
+		AppGeoCeDG app = useAxis ? sceneWithAxes() : scene();
 		UndoManagerD undo = undo(app);
 		PreG9BR6PlusA1LayerWorkspaceTest.baseline(undo);
+		AtomicInteger commits = new AtomicInteger();
+		CountDownLatch firstCommit = new CountDownLatch(1);
+		undo.addUndoInfoStoredListener(() -> {
+			commits.incrementAndGet();
+			firstCommit.countDown();
+		});
 		activateWithMemory(app, EuclidianConstants.MODE_PARALLEL);
-		click(app, ON_L);
+		click(app, useAxis ? ON_X_AXIS : ON_L);
 		click(app, P);
-		Thread.sleep(500);
+		assertTrue(firstCommit.await(5, TimeUnit.SECONDS));
 		String held = app.getXML();
 		CountDownLatch stored = new CountDownLatch(1);
 		undo.addUndoInfoStoredListener(stored::countDown);
 		memory(app).clear();
-		memory(app).remember(Slot.PARALLEL, lookup(app, "m"));
+		memory(app).remember(Slot.PARALLEL,
+				useAxis ? app.getKernel().getYAxis() : lookup(app, "m"));
 		memory(app).getState(Slot.PARALLEL);
 		assertFalse(stored.await(2, TimeUnit.SECONDS), "memory operations store no undo point");
+		assertEquals(1, commits.get(), "only the construction stores a point");
 		memory(app).clear();
 		assertEquals(held, app.getXML(), "the document never contains the memory");
 		assertFalse(held.contains("referenceMemory"));

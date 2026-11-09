@@ -302,7 +302,7 @@
           "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The remembered-reference (Ctrl+click) mode is documented in detail. Spanish: the guide says 'Recta paralela', the visible tool is 'Paralela' (close)."
+      "notes": "Section 5.2 covers the per-tool Ctrl+click memory, canonical axes and suspension in Graphics 1."
     },
     {
       "id": "action:construction.perpendicular-line",
@@ -320,7 +320,7 @@
           "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The remembered-reference mode is documented. Spanish: the guide says 'Recta perpendicular', the visible tool is 'Perpendicular' (close)."
+      "notes": "Section 5.2 covers the per-tool Ctrl+click memory, canonical axes and suspension in Graphics 1."
     },
     {
       "id": "action:construction.perpendicular-bisector",

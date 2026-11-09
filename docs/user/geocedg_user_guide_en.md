@@ -794,25 +794,25 @@ depends only on how an equation was typed or on a configuration (for example
 cue. The option is off by default, is a user preference kept after a restart,
 and never appears in a saved file, an export, a print or the clipboard.
 
-**Remembered reference.** In Graphics 1, **Parallel line** and **Perpendicular
-line** work as usual when you choose them. On Windows, hold **Ctrl** while
-clicking the tool on the toolbar (or choosing it in its toolbar menu) to turn on
-its remembered reference; the status bar then shows "Parallel Line · Memory" or
-"Perpendicular Line · Memory". In that mode the tool remembers the reference
-(line, segment, ray, polygon side, vector or linear function) of the last line
-it built in that mode. While a reference is remembered, clicking a point, or
-empty space, which creates the point, builds the next line at once; to use
-another reference, click it first and then the point, and it becomes the
-remembered one. A plain click on the tool, Esc or another tool returns to the
-normal tool, and a half-made line is discarded when the mode changes; changing
-the language keeps the mode. Menus and scripts always choose the normal tool,
-and the normal tool neither uses nor changes the remembered reference. The two
-tools remember independently, and changing tools or pressing Esc keeps the
-reference for the next Ctrl+click. It is forgotten after Undo or Redo, New or
-Open, and when the object is deleted or redefined. While the reference is
-hidden, undefined or on a hidden layer, the tool asks for a reference again
-instead of using it. Constant functions cannot be references. Nothing is saved
-in the file, and Graphics 2 behaves as before.
+**Remembered reference.** In Graphics 1 on Windows, **Ctrl+click** **Parallel
+Line** or **Perpendicular Line** on the toolbar or its flyout to toggle that
+tool's memory. A plain toolbar click applies the session choice. The status
+bar shows memory mode and whether the reference is available. Application
+menus and scripts use the normal tool.
+
+In memory mode, click a reference and then a point. The tool remembers the
+reference when it builds the line. You can use the visible `xAxis` and `yAxis`,
+as well as lines, segments, rays, polygon sides, vectors and linear functions.
+With a reference available, click another point or empty space to build the
+next line. To replace it, choose the new reference first and complete the
+construction.
+
+Each tool remembers its own reference. Changing tools or pressing Esc
+cancels the unfinished gesture and keeps the memories. Hiding an axis
+suspends its use until it is shown again. Ordinary references are also
+suspended when they are outside the current step, undefined or on a hidden
+layer. Undo/Redo, a rebuild, New and Open require a new selection. The file
+saves the constructed lines. The memory belongs to the Graphics 1 session.
 
 ### 5.3 Circles and conics
 

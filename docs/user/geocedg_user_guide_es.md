@@ -844,27 +844,27 @@ desactivada por defecto, es una preferencia de usuario que se conserva al
 reiniciar y nunca aparece en un archivo guardado, una exportación, una
 impresión ni el portapapeles.
 
-**Referencia recordada.** En Gráficos 1, **Recta paralela** y **Recta
-perpendicular** funcionan como siempre al elegirlas. En Windows, mantenga
-pulsada **Ctrl** al hacer clic en la herramienta de la barra (o al elegirla en su
-menú de la barra) para activar su referencia recordada; la barra de estado
-muestra entonces «Paralela · Memoria» o «Perpendicular · Memoria». En ese modo la
-herramienta recuerda la referencia (recta, segmento, semirrecta, lado de
-polígono, vector o función lineal) de la última recta que construyó en ese modo.
-Mientras hay una referencia recordada, al hacer clic en un punto, o en un lugar
-vacío, que crea el punto, se construye la siguiente recta de inmediato; para usar
-otra referencia, haga clic primero en ella y después en el punto, y pasa a ser la
-recordada. Un clic normal en la herramienta, Esc u otra herramienta vuelven a la
-herramienta normal, y una recta a medio hacer se descarta al cambiar de modo;
-cambiar de idioma conserva el modo. Los menús y los scripts eligen siempre la
-herramienta normal, y la herramienta normal ni usa ni cambia la referencia
-recordada. Las dos herramientas recuerdan por separado, y cambiar de herramienta
-o pulsar Esc conserva la referencia para el siguiente Ctrl+clic. Se olvida al
-deshacer o rehacer, con Nuevo o Abrir, y cuando el objeto se borra o se redefine.
-Mientras la referencia está oculta, indefinida o en una capa oculta, la
-herramienta vuelve a pedir una referencia en lugar de usarla. Las funciones
-constantes no pueden ser referencias. No se guarda nada en el archivo, y
-Gráficos 2 se comporta como antes.
+**Referencia recordada.** En Gráficos 1 de Windows, **Ctrl+clic** en **Paralela**
+o **Perpendicular**, en la barra o su desplegable, activa o desactiva la memoria
+de esa herramienta. Un clic normal en la barra aplica la elección de la sesión.
+La barra de estado muestra el modo con memoria y la disponibilidad de su
+referencia. Los menús de la aplicación y los scripts usan la herramienta normal.
+
+En modo con memoria, haga clic en una referencia y luego en un punto. La
+herramienta recuerda la referencia cuando construye la recta. Puede usar los
+ejes visibles `xAxis` e `yAxis`, además de rectas, segmentos, semirrectas, lados
+de polígonos, vectores y funciones lineales. Con una referencia disponible,
+basta hacer clic en otro punto o en un lugar vacío para construir la siguiente
+recta. Para sustituirla, elija primero la nueva referencia y complete la
+construcción.
+
+Cada herramienta recuerda su propia referencia. Cambiar de herramienta o
+pulsar Esc cancela el gesto incompleto y conserva las memorias. Un eje oculto
+suspende su uso hasta que vuelva a mostrarse. Las referencias ordinarias se
+suspenden también si quedan fuera del paso actual, están indefinidas o están
+en una capa oculta. Undo/Redo, una reconstrucción, Nuevo y Abrir requieren
+una nueva selección. El archivo guarda las rectas construidas. La memoria
+pertenece a la sesión de Gráficos 1.
 
 ### 5.3 Circunferencias y cónicas
 

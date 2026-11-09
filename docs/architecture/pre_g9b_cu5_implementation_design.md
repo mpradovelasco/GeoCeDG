@@ -62,6 +62,13 @@ El vector de `GeoLine.getDirection` para los ejes es (+1,0) o (0,+1).
 Las salidas y sus cadenas usan el signo que producen los algoritmos existentes.
 No hay nuevos cálculos, tolerancias, campos XML ni cambios de hit-testing.
 
+La [enmienda CU5 de memoria de ejes](../../geocedg/specs/ui/authoring-memory.md#12-author-approved-amendment-of-2026-11-09--cu5-canonical-axes)
+extiende B03/H05 a esas mismas instancias canónicas en Gráficos 1. Su vigencia
+usa el kernel y su disponibilidad visual usa la configuración de Gráficos 1.
+Se reutilizan la certificación de salida y las barreras de reconstrucción de
+B03/H05. Las pruebas ejercitan ambas herramientas y ambos ejes mediante sus
+gestos Desktop, así como la pérdida y recuperación de la disponibilidad.
+
 ## Verificación e impacto
 
 `VERIFICATION_CLASS=BOUNDED_PHASE`, `frozenAtPhaseStart=true`,

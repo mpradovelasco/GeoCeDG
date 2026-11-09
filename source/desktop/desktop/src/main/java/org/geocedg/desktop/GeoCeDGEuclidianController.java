@@ -995,7 +995,7 @@ public final class GeoCeDGEuclidianController
 	private boolean unavailableInput(GeoElementND input) {
 		GeoElement geo = input.toGeoElement();
 		return !geo.isAvailableAtConstructionStep(kernel.getConstructionStep())
-				|| !kernel.isAxis(geo) && !referenceMemory.isCurrent(geo);
+				|| !referenceMemory.isCurrent(geo);
 	}
 
 	private GeoElement injectRememberedReference(GeoCeDGLineReferenceMemory.Slot slot,
