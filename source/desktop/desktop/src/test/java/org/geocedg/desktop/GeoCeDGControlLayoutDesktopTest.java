@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 import org.geocedg.common.document.controls.ControlLayout;
 import org.geocedg.common.document.controls.ControlLayout.Anchor;
@@ -21,6 +22,7 @@ import org.geocedg.common.document.controls.ControlLayout.Panel;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.euclidian.event.PointerEventType;
+import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.draw.DrawSlider;
 import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoBoolean;
@@ -28,6 +30,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App.ExportType;
+import org.geogebra.desktop.awt.GGraphics2DD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -87,8 +90,11 @@ class GeoCeDGControlLayoutDesktopTest {
 			GeoBoolean q = (GeoBoolean) absolute(app, "q=Checkbox()");
 			q.setCheckboxFixed(false);
 			q.setLayer(3);
+			must(app, "n=7");
+			GeoElement field = absolute(app, "f=InputBox(n)");
 			Panel panel = layout.addPanel(Anchor.FIXED, 40, 60, 200, 90, true);
 			layout.addSlot(panel.id(), q, 20, 30);
+			layout.addSlot(panel.id(), field, 120, 45);
 			view.controlLayoutWorkspace().refreshPanel(panel.id());
 			assertTrue(view.isControlLayoutVisible(q));
 			GPoint2D at = view.getControlLayoutPosition(q);
@@ -110,11 +116,15 @@ class GeoCeDGControlLayoutDesktopTest {
 			view.setHits(hit, PointerEventType.MOUSE);
 			assertFalse(view.getHits().contains(q));
 			layout.updatePanel(panel);
+			view.controlLayoutWorkspace().refreshPanel(panel.id());
+			double fieldX = drawnFieldX(view, field);
 			int step = q.getConstruction().getStep();
 			q.getConstruction().setStep(-1);
 			assertFalse(view.isControlLayoutVisible(q));
 			q.getConstruction().setStep(step);
 			assertTrue(view.isControlLayoutVisible(q));
+			assertTrue(view.isControlLayoutVisible(field));
+			assertEquals(fieldX, drawnFieldX(view, field), 1);
 			assertTrue(q.getBoolean());
 			assertEquals(3, q.getLayer());
 			assertEquals(87, q.getAbsoluteScreenLocX());
@@ -187,5 +197,18 @@ class GeoCeDGControlLayoutDesktopTest {
 				0, MouseEvent.BUTTON1_DOWN_MASK, point.x, point.y, 1, false, MouseEvent.BUTTON1));
 		controller.mouseReleased(new MouseEvent(view.getJPanel(), MouseEvent.MOUSE_RELEASED,
 				1, 0, point.x, point.y, 1, false, MouseEvent.BUTTON1));
+	}
+
+	private static double drawnFieldX(GeoCeDGEuclidianView view, GeoElement field) {
+		var image = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+		var graphics = image.createGraphics();
+		try {
+			view.drawObjects(new GGraphics2DD(graphics));
+			var drawable = (DrawInputBox) view.getDrawableFor(field);
+			assertNotNull(drawable);
+			return drawable.getInputFieldBounds().getX();
+		} finally {
+			graphics.dispose();
+		}
 	}
 }

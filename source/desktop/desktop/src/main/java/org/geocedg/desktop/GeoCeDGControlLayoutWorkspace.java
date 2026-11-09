@@ -251,7 +251,7 @@ final class GeoCeDGControlLayoutWorkspace {
 			if (shown(geo) && view.getDrawableFor(geo) instanceof Drawable drawable) {
 				drawable.updateIfNeeded();
 				GRectangle child = drawable.getBounds();
-				if (child != null) {
+				if (child != null && (child.getWidth() > 0 || child.getHeight() > 0)) {
 					rect.add(new Rectangle((int) child.getX() - MARGIN,
 							(int) child.getY() - MARGIN,
 							(int) child.getWidth() + 2 * MARGIN,

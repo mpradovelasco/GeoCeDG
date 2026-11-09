@@ -232,15 +232,15 @@ public class DrawInputBox extends CanvasDrawable {
 		isVisible = geo.isEuclidianVisible();
 		updateRenderer();
 		if (!view.isControlLayoutVisible(geo)) {
-			isVisible = false;
 			if (view.getSymbolicEditor() != null
 					&& view.getSymbolicEditor().getDrawInputBox() == this) {
 				view.getSymbolicEditor().applyAndHidDeferred();
 			} else {
 				hideWidget();
 			}
-			return;
 		}
+		// Protocol notifies newly available drawables before publishing its step.
+		// Initialize their bounds regardless; the view owns paint and hit filtering.
 		if (getTextField() == null) {
 			updateLabel();
 			updateLabelSize();
