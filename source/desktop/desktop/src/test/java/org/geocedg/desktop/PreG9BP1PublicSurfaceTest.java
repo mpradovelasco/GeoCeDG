@@ -116,6 +116,7 @@ class PreG9BP1PublicSurfaceTest {
 	@Test
 	void onlyTheTwoAuthorizedFeaturesArePromoted() throws IOException {
 		Map<String, Boolean> defaults = experimentalFeatureDefaults();
+		assertEquals(Boolean.TRUE, defaults.get("cedg.export.dxf.2d"));
 		assertEquals(Boolean.TRUE, defaults.get("cedg.locus.v2"));
 		assertEquals(Boolean.TRUE, defaults.get("cedg.export.dxf.extended"));
 		// Everything else keeps its gate; P1 is not "enable every experiment".
@@ -124,8 +125,9 @@ class PreG9BP1PublicSurfaceTest {
 		// PRE-G9B-R6-plus-E1-L (author decision DQ-E1-14, 2026-10-07): the curated GGT
 		// library is experimental and enabled by default; it is not a stable promotion.
 		assertEquals(Boolean.TRUE, defaults.get("cedg.library.curated-ggt"));
-		assertEquals(5, defaults.values().stream().filter(value -> !value).count()
-				+ defaults.values().stream().filter(value -> value).count() - 1);
+		// CU8 independently adds an experimental default for the GeoCeDG profile.
+		assertEquals(Boolean.TRUE, defaults.get("cedg.presentation.control-layout"));
+		assertEquals(7, defaults.size());
 	}
 
 	@Test

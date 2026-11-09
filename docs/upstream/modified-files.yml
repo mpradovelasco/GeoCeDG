@@ -4512,7 +4512,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BP1PublicSurfaceTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-P1: Verify the approved default public surfaces, independent feature overrides and package-profile/version contracts. PRE-G9B-R6-plus-E1-L: the experimental feature-set pin admits the author-approved default-enabled cedg.library.curated-ggt (DQ-E1-14), which is not a stable promotion.",
+      "purpose": "PRE-G9B-P1: Verify the approved default public surfaces, independent feature overrides and package-profile/version contracts. PRE-G9B-R6-plus-E1-L: the experimental feature-set pin admits the author-approved default-enabled cedg.library.curated-ggt (DQ-E1-14), which is not a stable promotion. PRE-G9B-CU8-I: explicitly verify the experimental control-layout default and the exact feature inventory.",
       "authority": "docs/validation/pre_g9b_p1_public_surface_and_nc_packaging_candidate_report.md"
     },
     {
