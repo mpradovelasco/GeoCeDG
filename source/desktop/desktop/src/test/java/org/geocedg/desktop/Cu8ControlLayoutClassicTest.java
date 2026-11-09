@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +122,10 @@ class Cu8ControlLayoutClassicTest {
 	@Test
 	void classicUndoRedoAndRejectedOpenKeepLiveSlots() throws Exception {
 		Fixture source = onEdt(this::fixture);
+		List<Panel> redoPanels = new ArrayList<>(source.panels());
+		Panel back = redoPanels.get(0);
+		redoPanels.set(0, new Panel(back.id(), back.anchor(), back.x(), back.y(),
+				back.width(), back.height(), back.visible(), "Revisión & Ω", 0x485AC3, 55));
 		Path invalid = temporary.resolve("orphan-layout.cedg");
 		Path compatibility = temporary.resolve("marked.ggb");
 		File replacement = temporary.resolve("valid-replacement.cedg").toFile();
@@ -149,6 +154,8 @@ class Cu8ControlLayoutClassicTest {
 			GeoNumeric slider = (GeoNumeric) named(classic, "n");
 			slider.setValue(4);
 			slider.updateCascade();
+			layout(classic).updatePanel(redoPanels.get(0));
+			assertRegistry(classic, source, redoPanels);
 			undo(classic).addUndoInfoStoredListener(stored::countDown);
 			classic.getKernel().storeUndoInfo();
 			return null;
@@ -171,7 +178,7 @@ class Cu8ControlLayoutClassicTest {
 			assertRedoPending(classic, source);
 
 			classic.getKernel().redo();
-			assertRegistry(classic, source);
+			assertRegistry(classic, source, redoPanels);
 			assertControls(classic, 4);
 			assertFalse(undo(classic).redoPossible());
 			return null;
@@ -219,8 +226,14 @@ class Cu8ControlLayoutClassicTest {
 				ScriptType.GGBSCRIPT, CLICK_SCRIPT, false));
 
 		ControlLayout layout = layout(app);
-		Panel fixed = layout.addPanel(Anchor.FIXED, 410, 220, 340, 180, false);
-		Panel world = layout.addPanel(Anchor.WORLD, -2, 3, 210, 120, true);
+		Panel fixed = layout.addPanel(Anchor.FIXED, 410, 220, 340, 180, false,
+				"Ámbito <A> & π", 0x2364AA, 25);
+		Panel world = layout.addPanel(Anchor.WORLD, -2, 3, 210, 120, true,
+				"Lienzo λ", 0xAA3C60, 80);
+		Panel empty = layout.addPanel(Anchor.FIXED, 430, 240, 210, 120, true);
+		assertEquals("", empty.name());
+		assertEquals(0xE1EDF7, empty.rgb());
+		assertEquals(65, empty.opacity());
 		Map<String, Slot> slots = new LinkedHashMap<>();
 		for (int index = 0; index < LABELS.size(); index++) {
 			String label = LABELS.get(index);
@@ -238,7 +251,7 @@ class Cu8ControlLayoutClassicTest {
 		}
 		File archive = temporary.resolve("layout.cedg").toFile();
 		assertTrue(app.saveGeoGebraFile(archive));
-		return new Fixture(app, archive, List.of(fixed, world), slots);
+		return new Fixture(app, archive, List.of(fixed, world, empty), slots);
 	}
 
 	private static AppD classic() {
@@ -249,11 +262,17 @@ class Cu8ControlLayoutClassicTest {
 	}
 
 	private static void assertRegistry(AppD app, Fixture source) {
+		assertRegistry(app, source, source.panels());
+	}
+
+	private static void assertRegistry(AppD app, Fixture source, List<Panel> expectedPanels) {
 		ControlLayout layout = layout(app);
-		assertEquals(source.panels().size(), layout.panels().size());
-		for (Panel panel : source.panels()) {
+		assertEquals(expectedPanels, layout.panels());
+		for (Panel panel : expectedPanels) {
 			assertEquals(panel, layout.panel(panel.id()));
-			assertEquals(2, layout.slots(panel.id()).size());
+			long expectedSlots = source.slots().values().stream()
+					.filter(slot -> panel.id().equals(slot.panelId())).count();
+			assertEquals(expectedSlots, layout.slots(panel.id()).size());
 		}
 		source.slots().forEach((label, expected) -> {
 			GeoElement owner = named(app, label);

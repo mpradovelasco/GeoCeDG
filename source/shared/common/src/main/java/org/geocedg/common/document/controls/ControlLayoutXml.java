@@ -9,15 +9,19 @@ import static org.geocedg.common.document.controls.ControlLayout.failure;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.TreeMap;
 
 import org.geocedg.common.document.controls.ControlLayout.Anchor;
 import org.geocedg.common.document.controls.ControlLayout.Panel;
@@ -32,7 +36,9 @@ import org.geogebra.common.kernel.geos.GeoElement;
 public final class ControlLayoutXml {
 	public static final String LAYOUT_ATTRIBUTE = "geocedgControlLayout";
 	public static final String SLOT_ATTRIBUTE = "geocedgControlSlot";
+	public static final String APPEARANCE_ATTRIBUTE = "geocedgControlAppearance";
 	public static final int MAX_BYTES = 65_536;
+	private static final int MAX_NAME_HEX_LENGTH = 8 * ControlLayout.MAX_NAME_CODE_POINTS;
 
 	private ControlLayoutXml() {
 	}
@@ -40,15 +46,21 @@ public final class ControlLayoutXml {
 	/** Immutable values scoped to the XML builder for this one complete document write. */
 	public static final class Output {
 		private final String header;
+		private final String appearance;
 		private final Map<GeoElement, String> slots;
 
-		private Output(String header, Map<GeoElement, String> slots) {
+		private Output(String header, String appearance, Map<GeoElement, String> slots) {
 			this.header = header;
+			this.appearance = appearance;
 			this.slots = slots;
 		}
 
 		public String header() {
 			return header;
+		}
+
+		public String appearance() {
+			return appearance;
 		}
 
 		public String slot(GeoElement owner) {
@@ -63,7 +75,9 @@ public final class ControlLayoutXml {
 		}
 		StringJoiner records = new StringJoiner(";", "1|", "");
 		Map<GeoElement, String> slots = new IdentityHashMap<>();
-		for (Panel panel : layout.panels().stream().sorted(Comparator.comparing(Panel::id)).toList()) {
+		List<Panel> panels = layout.panels();
+		List<Panel> canonical = panels.stream().sorted(Comparator.comparing(Panel::id)).toList();
+		for (Panel panel : canonical) {
 			StringJoiner ids = new StringJoiner(":");
 			for (Slot slot : layout.slots(panel.id()).stream()
 					.sorted(Comparator.comparing(Slot::id)).toList()) {
@@ -79,12 +93,26 @@ public final class ControlLayoutXml {
 					Integer.toString(panel.width()), Integer.toString(panel.height()),
 					panel.visible() ? "1" : "0", ids.toString()));
 		}
-		return new Output(records.toString(), slots);
+		return new Output(records.toString(), appearance(panels, canonical), slots);
+	}
+
+	private static String appearance(List<Panel> panels, List<Panel> canonical) {
+		if (panels.equals(canonical) && panels.stream().allMatch(Panel::hasDefaultStyle)) {
+			return null;
+		}
+		StringJoiner records = new StringJoiner(";", "1|", "");
+		for (Panel panel : panels) {
+			records.add(String.join(",", panel.id(),
+					Integer.toHexString(0x1000000 | panel.rgb()).substring(1),
+					Integer.toString(panel.opacity()), encodeName(panel.name())));
+		}
+		return records.toString();
 	}
 
 	/** Detects the attributes structurally without touching a document, even for a merge. */
 	public static boolean inspect(String xml) throws XMLParseException {
-		if (!xml.contains(LAYOUT_ATTRIBUTE) && !xml.contains(SLOT_ATTRIBUTE)) {
+		if (!xml.contains(LAYOUT_ATTRIBUTE) && !xml.contains(SLOT_ATTRIBUTE)
+				&& !xml.contains(APPEARANCE_ATTRIBUTE)) {
 			return false;
 		}
 		MarkerInspection inspection = new MarkerInspection();
@@ -117,16 +145,21 @@ public final class ControlLayoutXml {
 			}
 			boolean header = attributes.containsKey(LAYOUT_ATTRIBUTE);
 			boolean slot = attributes.containsKey(SLOT_ATTRIBUTE);
-			if (header || slot) {
+			boolean appearance = attributes.containsKey(APPEARANCE_ATTRIBUTE);
+			if (header || slot || appearance) {
 				if (duplicateAttribute) {
 					throw failure(Code.GRAMMAR, "Duplicate XML attribute on control layout block");
 				}
-				if ((header && !(elements.size() == 1 && "geogebra".equals(elements.peek())
+				if (((header || appearance)
+						&& !(elements.size() == 1 && "geogebra".equals(elements.peek())
 						&& "construction".equals(tag)))
 						|| (slot && !(elements.size() == 2 && "construction".equals(elements.peek())
 								&& "geogebra".equals(elements.peekLast()) && "element".equals(tag)
 								&& !attributes.containsKey("default")))) {
 					throw failure(Code.CONTEXT, "Control layout attribute has no native owner block");
+				}
+				if (appearance && !header) {
+					throw failure(Code.ORPHAN, "Control appearance has no layout header");
 				}
 				marked = true;
 			}
@@ -162,11 +195,12 @@ public final class ControlLayoutXml {
 
 	/** Stages a complete input until the ordinary reader has resolved all of its controls. */
 	public static final class Input {
-		private final ControlLayout.State state = new ControlLayout.State();
+		private final Map<String, Panel> panelsById = new TreeMap<>();
 		private final Map<String, Set<String>> expected = new LinkedHashMap<>();
 		private final Map<GeoElement, String> owners = new IdentityHashMap<>();
 		private int bytes;
 		private boolean header;
+		private List<Panel> appearance;
 
 		public void readHeader(String value) {
 			if (header) {
@@ -174,22 +208,8 @@ public final class ControlLayoutXml {
 			}
 			header = true;
 			account(value);
-			int divider = value.indexOf('|');
-			String version = divider < 0 ? value : value.substring(0, divider);
-			if (!"1".equals(version)) {
-				throw failure(version.matches("[0-9]+") ? Code.VERSION : Code.GRAMMAR,
-						"Unsupported control layout version");
-			}
-			if (divider < 0) {
-				throw failure(Code.GRAMMAR, "Missing control panel records");
-			}
 			int remainingSlots = ControlLayout.MAX_SLOTS;
-			String[] records = value.substring(divider + 1)
-					.split(";", ControlLayout.MAX_PANELS + 1);
-			if (records.length > ControlLayout.MAX_PANELS) {
-				throw failure(Code.LIMIT, "Too many control panels");
-			}
-			for (String record : records) {
+			for (String record : records(value, "control layout")) {
 				String[] fields = record.split(",", 10);
 				if (fields.length != 9 || !"1".equals(fields[1])) {
 					throw failure(Code.GRAMMAR, "Invalid control panel fields");
@@ -197,7 +217,9 @@ public final class ControlLayoutXml {
 				Panel panel = new Panel(identifier(fields[0]), anchor(fields[2]), number(fields[3]),
 						number(fields[4]), positiveInteger(fields[5]), positiveInteger(fields[6]),
 						visible(fields[7]));
-				state.addPanel(panel);
+				if (panelsById.putIfAbsent(panel.id(), panel) != null) {
+					throw failure(Code.DUPLICATE, "Duplicate control panel");
+				}
 				Set<String> slotIds = new HashSet<>();
 				if (!fields[8].isEmpty()) {
 					String[] ids = fields[8].split(":", remainingSlots + 1);
@@ -215,6 +237,39 @@ public final class ControlLayoutXml {
 			}
 		}
 
+		/** Resolves the complete optional style and order table against the preceding header. */
+		public void readAppearance(String value) {
+			if (!header) {
+				throw failure(Code.ORPHAN, "Control appearance has no layout header");
+			}
+			if (appearance != null) {
+				throw failure(Code.DUPLICATE, "Duplicate control appearance table");
+			}
+			account(value);
+			Map<String, Panel> ordered = new LinkedHashMap<>();
+			for (String record : records(value, "control appearance")) {
+				String[] fields = record.split(",", 5);
+				if (fields.length != 4 || !fields[1].matches("[0-9a-f]{6}")
+						|| !fields[2].matches("[1-9][0-9]")) {
+					throw failure(Code.GRAMMAR, "Invalid control appearance fields");
+				}
+				String id = identifier(fields[0]);
+				Panel panel = panelsById.get(id);
+				if (panel == null) {
+					throw failure(Code.ORPHAN, "Unknown panel in control appearance");
+				}
+				Panel styled = panel.withStyle(decodeName(fields[3]),
+						Integer.parseInt(fields[1], 16), Integer.parseInt(fields[2]));
+				if (ordered.putIfAbsent(id, styled) != null) {
+					throw failure(Code.DUPLICATE, "Duplicate panel in control appearance");
+				}
+			}
+			if (ordered.size() != panelsById.size()) {
+				throw failure(Code.ORPHAN, "Control appearance does not cover all panels");
+			}
+			appearance = List.copyOf(ordered.values());
+		}
+
 		public void claim(GeoElement owner, String value) {
 			account(value);
 			if (owner == null) {
@@ -230,6 +285,8 @@ public final class ControlLayoutXml {
 
 		/** Validates all claims before replacing the live record in a single publication. */
 		public void publish(ControlLayout layout) {
+			ControlLayout.State state = new ControlLayout.State();
+			(appearance == null ? panelsById.values() : appearance).forEach(state::addPanel);
 			for (var attachment : owners.entrySet()) {
 				GeoElement owner = attachment.getKey();
 				String[] fields = attachment.getValue().split(",", 6);
@@ -266,6 +323,54 @@ public final class ControlLayoutXml {
 			}
 			bytes += value.length();
 		}
+	}
+
+	private static String[] records(String value, String kind) {
+		int divider = value.indexOf('|');
+		String version = divider < 0 ? value : value.substring(0, divider);
+		if (!"1".equals(version)) {
+			throw failure(version.matches("[0-9]+") ? Code.VERSION : Code.GRAMMAR,
+					"Unsupported " + kind + " version");
+		}
+		if (divider < 0) {
+			throw failure(Code.GRAMMAR, "Missing " + kind + " records");
+		}
+		String[] records = value.substring(divider + 1)
+				.split(";", ControlLayout.MAX_PANELS + 1);
+		if (records.length > ControlLayout.MAX_PANELS) {
+			throw failure(Code.LIMIT, "Too many " + kind + " records");
+		}
+		return records;
+	}
+
+	private static String encodeName(String name) {
+		byte[] bytes = name.getBytes(StandardCharsets.UTF_8);
+		StringBuilder encoded = new StringBuilder(bytes.length * 2);
+		for (byte current : bytes) {
+			encoded.append(Character.forDigit((current & 0xff) >>> 4, 16));
+			encoded.append(Character.forDigit(current & 0x0f, 16));
+		}
+		return encoded.toString();
+	}
+
+	private static String decodeName(String value) {
+		if (value.length() > MAX_NAME_HEX_LENGTH) {
+			throw failure(Code.LIMIT, "Encoded control panel name exceeds its byte limit");
+		}
+		if ((value.length() & 1) != 0 || !value.matches("[0-9a-f]*")) {
+			throw failure(Code.GRAMMAR, "Invalid hexadecimal control panel name");
+		}
+		byte[] bytes = new byte[value.length() / 2];
+		for (int index = 0; index < bytes.length; index++) {
+			int high = Character.digit(value.charAt(index * 2), 16);
+			int low = Character.digit(value.charAt(index * 2 + 1), 16);
+			bytes[index] = (byte) ((high << 4) | low);
+		}
+		String decoded = new String(bytes, StandardCharsets.UTF_8);
+		if (!Arrays.equals(bytes, decoded.getBytes(StandardCharsets.UTF_8))) {
+			throw failure(Code.GRAMMAR, "Malformed UTF-8 control panel name");
+		}
+		return decoded;
 	}
 
 	private static String identifier(String text) {

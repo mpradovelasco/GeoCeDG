@@ -6,6 +6,7 @@
 package org.geocedg.desktop;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -14,19 +15,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -38,16 +44,20 @@ import org.geocedg.common.document.controls.ControlLayout.Slot;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
+import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.awt.GRectangle;
 import org.geogebra.common.euclidian.Drawable;
 import org.geogebra.common.euclidian.EuclidianConstants;
+import org.geogebra.common.euclidian.Hits;
+import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.draw.DrawSlider;
 import org.geogebra.common.euclidian.event.AbstractEvent;
 import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoButton;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoInputBox;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.main.App;
 import org.geogebra.common.plugin.EventType;
 
@@ -56,8 +66,9 @@ final class GeoCeDGControlLayoutWorkspace {
 	private static final int HEADER = 24;
 	private static final int HANDLE = 12;
 	private static final int MARGIN = 8;
-	private static final GColor BACKGROUND = GColor.newColor(239, 244, 249);
 	private static final GColor OUTLINE = GColor.newColor(54, 91, 123);
+	private static final Comparator<GeoElement> MEMBER_ORDER = Comparator
+			.comparingInt(GeoElement::getLayer).thenComparingInt(GeoElement::getConstructionIndex);
 
 	private final AppGeoCeDG app;
 	private final GeoCeDGEuclidianView view;
@@ -69,6 +80,8 @@ final class GeoCeDGControlLayoutWorkspace {
 	private Gesture gesture;
 	private Panel previewPanel;
 	private Slot previewSlot;
+	private GeoCeDGControlLayoutStyleDialog styleEditor;
+	private Panel stylePreviewPanel;
 	private boolean ownsPointer;
 
 	private record Transform(double xZero, double yZero, double xScale, double yScale,
@@ -118,7 +131,8 @@ final class GeoCeDGControlLayoutWorkspace {
 		var insets = view.getSafeAreaInsets();
 		if (anchor == Anchor.FIXED) {
 			return new Panel(panel.id(), anchor, x - insets.getLeft(), y - insets.getTop(),
-					panel.width(), panel.height(), panel.visible());
+					panel.width(), panel.height(), panel.visible(), panel.name(), panel.rgb(),
+					panel.opacity());
 		}
 		double worldX = view.getXaxisLog()
 				? fromLogScale(view.getXmin(), view.getXmax(), x / view.getWidth())
@@ -127,7 +141,7 @@ final class GeoCeDGControlLayoutWorkspace {
 				? fromLogScale(view.getYmin(), view.getYmax(), 1 - y / view.getHeight())
 				: view.toRealWorldCoordY(y);
 		return new Panel(panel.id(), anchor, worldX, worldY, panel.width(), panel.height(),
-				panel.visible());
+				panel.visible(), panel.name(), panel.rgb(), panel.opacity());
 	}
 
 	private static double fromLogScale(double min, double max, double fraction) {
@@ -147,6 +161,10 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	private Panel displayedPanel(Panel panel) {
+		Panel style = stylePreviewFor(panel);
+		if (style != null) {
+			return style;
+		}
 		return previewPanel != null && gesture != null && gesture.panel() == panel
 				? previewPanel : panel;
 	}
@@ -178,7 +196,7 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	boolean deferred(GeoElement geo) {
-		return !(geo instanceof GeoInputBox) && liveSlot(geo) != null;
+		return liveSlot(geo) != null;
 	}
 
 	private boolean shown(GeoElement geo) {
@@ -190,21 +208,32 @@ final class GeoCeDGControlLayoutWorkspace {
 		if (!live() || layout().isEmpty()) {
 			return;
 		}
-		var membersToPaint = new ArrayList<GeoElement>();
+		finishCoveredEditor();
+		Rectangle viewport = new Rectangle(0, 0, view.getWidth(), view.getHeight());
 		for (Panel stored : layout().panels()) {
 			Panel panel = displayedPanel(stored);
-			if (panel.visible() || dialog != null) {
-				paintPanel(graphics, panel);
+			if (!panel.visible() && dialog == null) {
+				continue;
 			}
-			for (Slot slot : layout().slots(panel.id())) {
-				if (deferred(slot.control()) && shown(slot.control())) {
-					membersToPaint.add(slot.control());
-				}
+			Rectangle bounds = bounds(panel);
+			Rectangle clip = bounds.intersection(viewport);
+			if (clip.isEmpty()) {
+				continue;
 			}
+			if (panel.visible()) {
+				int rgb = panel.rgb();
+				graphics.setColor(GColor.newColor(rgb >> 16, rgb >> 8 & 0xff, rgb & 0xff,
+						(int) Math.round(panel.opacity() * 255 / 100.0)));
+				graphics.fillRect(clip.x, clip.y, clip.width, clip.height);
+				paintMembers(graphics, panel);
+			}
+			paintChrome(graphics, panel, bounds);
 		}
-		membersToPaint.sort(Comparator.comparingInt(GeoElement::getLayer)
-				.thenComparingInt(GeoElement::getConstructionIndex));
-		for (GeoElement geo : membersToPaint) {
+	}
+
+	private void paintMembers(GGraphics2D graphics, Panel panel) {
+		for (GeoElement geo : layout().slots(panel.id()).stream().map(Slot::control)
+				.filter(this::shown).sorted(MEMBER_ORDER).toList()) {
 			if (view.getDrawableFor(geo) instanceof Drawable drawable && geo.isDefined()) {
 				drawable.updateIfNeeded();
 				drawable.draw(graphics);
@@ -212,46 +241,62 @@ final class GeoCeDGControlLayoutWorkspace {
 		}
 	}
 
-	private void paintPanel(GGraphics2D graphics, Panel panel) {
-		Rectangle viewport = new Rectangle(0, 0, view.getWidth(), view.getHeight());
-		Rectangle bounds = bounds(panel);
-		Rectangle clip = bounds.intersection(viewport);
-		if (clip.isEmpty()) {
-			return;
-		}
-		if (panel.visible()) {
-			graphics.setColor(BACKGROUND);
-			graphics.fillRect(clip.x, clip.y, clip.width, clip.height);
-		}
+	private void paintChrome(GGraphics2D graphics, Panel panel, Rectangle bounds) {
 		graphics.setColor(OUTLINE);
 		graphics.setStroke(AwtFactory.getPrototype().newBasicStroke(1));
-		graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+		graphics.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
+		Rectangle bar = header(bounds);
+		graphics.fillRect(bar.x, bar.y, bar.width, bar.height);
+		graphics.setColor(GColor.WHITE);
+		var font = view.getFontPoint();
+		graphics.setFont(font);
+		String label = fittedName(graphics, panelName(panel), bar.width - 2 * MARGIN);
+		graphics.drawString(label, bar.x + MARGIN, bar.y + (bar.height + font.getSize()) / 2 - 2);
 		if (dialog != null) {
-			Rectangle bar = header(panel).intersection(viewport);
-			if (!bar.isEmpty()) {
-				graphics.fillRect(bar.x, bar.y, bar.width, bar.height);
-				graphics.setColor(GColor.WHITE);
-				graphics.setFont(view.getFontPoint());
-				graphics.drawString(panelName(panel), bar.x + MARGIN, bar.y + 17);
-			}
 			Rectangle grip = handle(bounds);
 			graphics.setColor(OUTLINE);
 			graphics.fillRect(grip.x, grip.y, grip.width, grip.height);
 		}
 	}
 
-	private Rectangle bounds(Panel panel) {
-		Rectangle rect = header(panel);
-		if (rect.isEmpty()) {
-			return rect;
+	String fittedName(GGraphics2D graphics, String label, int width) {
+		if (textWidth(graphics, label) <= width) {
+			return label;
 		}
-		rect.height = Math.min(panel.height(), Integer.MAX_VALUE / 4);
+		BreakIterator boundaries = BreakIterator.getCharacterInstance(app.getLocale());
+		boundaries.setText(label);
+		for (int end = boundaries.preceding(label.length()); end > 0;
+				end = boundaries.previous()) {
+			String shortened = label.substring(0, end) + "…";
+			if (textWidth(graphics, shortened) <= width) {
+				return shortened;
+			}
+		}
+		return textWidth(graphics, "…") <= width ? "…" : "";
+	}
+
+	private double textWidth(GGraphics2D graphics, String text) {
+		return AwtFactory.getPrototype().newTextLayout(text, view.getFontPoint(),
+				graphics.getFontRenderContext()).getAdvance();
+	}
+
+	private Rectangle bounds(Panel panel) {
+		GPoint2D point = origin(panel);
+		if (!screenPoint(point)) {
+			return new Rectangle();
+		}
+		int headerHeight = headerHeight();
+		Rectangle rect = new Rectangle((int) Math.round(point.x), (int) Math.round(point.y),
+				Math.min(panel.width(), Integer.MAX_VALUE / 4),
+				Math.max(headerHeight, Math.min(panel.height(), Integer.MAX_VALUE / 4)));
+		int top = rect.y;
 		for (Slot slot : layout().slots(panel.id())) {
 			GeoElement geo = slot.control();
 			if (shown(geo) && view.getDrawableFor(geo) instanceof Drawable drawable) {
 				drawable.updateIfNeeded();
 				GRectangle child = drawable.getBounds();
 				if (child != null && (child.getWidth() > 0 || child.getHeight() > 0)) {
+					top = Math.min(top, (int) child.getY() - MARGIN - headerHeight);
 					rect.add(new Rectangle((int) child.getX() - MARGIN,
 							(int) child.getY() - MARGIN,
 							(int) child.getWidth() + 2 * MARGIN,
@@ -259,14 +304,16 @@ final class GeoCeDGControlLayoutWorkspace {
 				}
 			}
 		}
+		rect.add(rect.x, top);
 		return rect;
 	}
 
-	private Rectangle header(Panel panel) {
-		GPoint2D point = origin(panel);
-		return screenPoint(point) ? new Rectangle((int) Math.round(point.x),
-				(int) Math.round(point.y), Math.min(panel.width(), Integer.MAX_VALUE / 4),
-				HEADER) : new Rectangle();
+	private int headerHeight() {
+		return Math.max(HEADER, (int) Math.ceil(view.getFontPoint().getSize()) + 8);
+	}
+
+	private Rectangle header(Rectangle bounds) {
+		return new Rectangle(bounds.x, bounds.y, bounds.width, headerHeight());
 	}
 
 	private static Rectangle handle(Rectangle bounds) {
@@ -274,8 +321,105 @@ final class GeoCeDGControlLayoutWorkspace {
 				bounds.y + bounds.height - HANDLE, HANDLE, HANDLE);
 	}
 
-	private boolean eligibleContext() {
-		return live() && !app.isInsertionIsolated()
+	Panel panelAt(int x, int y) {
+		if (!live()) {
+			return null;
+		}
+		var ordered = layout().panels();
+		for (int i = ordered.size() - 1; i >= 0; i--) {
+			Panel panel = ordered.get(i);
+			if (panel.visible() && bounds(displayedPanel(panel)).contains(x, y)) {
+				return panel;
+			}
+		}
+		return null;
+	}
+
+	void filterHits(GPoint point, Hits hits) {
+		if (!live() || layout().isEmpty() || hits.isEmpty()) {
+			return;
+		}
+		Panel front = panelAt(point.x, point.y);
+		List<GeoElement> visibleHits = new ArrayList<>(hits.size());
+		boolean frontMemberHit = false;
+		for (GeoElement geo : hits) {
+			boolean inFront = isMemberOf(geo, front);
+			if ((front == null || inFront || !isControl(geo))
+					&& (!(geo instanceof GeoInputBox) || !editorCovered(geo))) {
+				visibleHits.add(geo);
+				frontMemberHit |= inFront;
+			}
+		}
+		if (frontMemberHit && app.getMode() == EuclidianConstants.MODE_MOVE
+				&& hits.stream().noneMatch(geo -> geo.isMask() || geo.isMeasurementTool())) {
+			visibleHits.removeIf(geo -> !isMemberOf(geo, front));
+		}
+		if (visibleHits.size() != hits.size()) {
+			hits.init();
+			visibleHits.forEach(hits::add);
+		}
+	}
+
+	private boolean isMemberOf(GeoElement geo, Panel panel) {
+		Slot slot = liveSlot(geo);
+		return panel != null && slot != null && panel.id().equals(slot.panelId());
+	}
+
+	private static boolean isControl(GeoElement geo) {
+		return geo instanceof GeoButton || geo.isGeoBoolean()
+				|| geo instanceof GeoNumeric numeric && numeric.isSlider();
+	}
+
+	private boolean editorCovered(GeoElement geo) {
+		if (!(view.getDrawableFor(geo) instanceof DrawInputBox box)) {
+			return false;
+		}
+		GRectangle field = box.getBounds();
+		if (field == null) {
+			return false;
+		}
+		Rectangle region = new Rectangle((int) field.getX(), (int) field.getY(),
+				(int) field.getWidth(), (int) field.getHeight());
+		var ordered = layout().panels();
+		for (int i = ordered.size() - 1; i >= 0; i--) {
+			Panel panel = ordered.get(i);
+			if (isMemberOf(geo, panel)) {
+				break;
+			}
+			if (panel.visible() && bounds(displayedPanel(panel)).intersects(region)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void finishCoveredEditor() {
+		var symbolic = view.getSymbolicEditor();
+		DrawInputBox box = symbolic == null ? null : symbolic.getDrawInputBox();
+		if (box != null && box.isEditing() && editorCovered(box.getGeoElement())) {
+			symbolic.applyAndHidDeferred();
+		}
+		var field = view.getTextField();
+		if (field != null && field.hasFocus() && field.getInputBox() != null
+				&& editorCovered(field.getInputBox())) {
+			view.getViewTextField().hideDeferred();
+		}
+	}
+
+	JPopupMenu panelContextMenu(Panel panel) {
+		JPopupMenu menu = new JPopupMenu();
+		JMenuItem item = new JMenuItem(text("ControlLayout.OpenForPanel"));
+		item.addActionListener(event -> {
+			if (layout().panel(panel.id()) == panel && eligibleContext()) {
+				openPanel(panel.id());
+			}
+		});
+		menu.add(item);
+		return menu;
+	}
+
+	boolean eligibleContext() {
+		return styleEditor == null && live() && !app.isInsertionIsolated()
 				&& app.getActiveEuclidianView() == view
 				&& view.getEuclidianController() instanceof GeoCeDGEuclidianController controller
 				&& app.getMode() == EuclidianConstants.MODE_MOVE
@@ -288,11 +432,18 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	void open() {
+		openPanel(null);
+	}
+
+	void openPanel(String panelId) {
 		if (!eligibleContext()) {
 			warn("ControlLayout.Context");
 			return;
 		}
 		if (dialog != null) {
+			if (panelId != null) {
+				refreshManager(panelId, null);
+			}
 			dialog.toFront();
 			return;
 		}
@@ -317,8 +468,16 @@ final class GeoCeDGControlLayoutWorkspace {
 		});
 		JPanel selectors = new JPanel(new FlowLayout(FlowLayout.LEADING));
 		panels = new JComboBox<>();
-		panels.setRenderer((list, item, index, selected, focus) ->
-				new JLabel(item == null ? " " : panelName(item)));
+		panels.setRenderer(new DefaultListCellRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value,
+					int index, boolean selected, boolean focus) {
+				putClientProperty("html.disable", true);
+				return super.getListCellRendererComponent(list,
+						value instanceof Panel panel ? panelSelectorName(panel) : " ",
+						index, selected, focus);
+			}
+		});
 		panels.getAccessibleContext().setAccessibleName(text("ControlLayout.Panel"));
 		panels.addActionListener(event -> refreshMembers(null));
 		members = new JComboBox<>();
@@ -336,6 +495,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		button(buttons, "Detach", this::detach);
 		button(buttons, "Anchor", this::convert);
 		button(buttons, "Visibility", this::toggleVisible);
+		button(buttons, "Appearance", this::editAppearance);
 		button(buttons, "Duplicate", this::duplicate);
 		button(buttons, "BringIntoView", this::bringIntoView);
 		button(buttons, "Remove", this::remove);
@@ -349,7 +509,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		content.add(new JLabel("<html><div style='width: 420px'>"
 				+ GeoCeDGControlLayoutNotice.message(app) + "</div></html>"), BorderLayout.SOUTH);
 		dialog.setContentPane(content);
-		refreshManager(null, null);
+		refreshManager(panelId, null);
 		dialog.pack();
 		dialog.setLocationRelativeTo(view.getJPanel());
 		dialog.setVisible(true);
@@ -373,8 +533,20 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	private String panelName(Panel panel) {
-		return text(panel.anchor() == Anchor.FIXED ? "ControlLayout.Fixed" : "ControlLayout.World")
-				+ " " + panel.id().substring(0, 8)
+		return panel.name().isBlank() ? text("ControlLayout.DefaultName") : panel.name();
+	}
+
+	private Panel stylePreviewFor(Panel panel) {
+		return styleEditor != null && styleEditor.isEditing(panel) ? stylePreviewPanel : null;
+	}
+
+	private String panelSelectorName(Panel panel) {
+		String name = panelName(panel);
+		if (name.codePointCount(0, name.length()) > 24) {
+			name = name.substring(0, name.offsetByCodePoints(0, 24)) + "…";
+		}
+		return name + " · " + text(panel.anchor() == Anchor.FIXED
+				? "ControlLayout.Fixed" : "ControlLayout.World") + " " + panel.id().substring(0, 8)
 				+ (panel.visible() ? "" : " (" + text("ControlLayout.Hidden") + ")");
 	}
 
@@ -420,6 +592,33 @@ final class GeoCeDGControlLayoutWorkspace {
 		commit(panel.id(), null, List.of());
 	}
 
+	private void editAppearance() {
+		Panel panel = selectedPanel();
+		if (panel == null) {
+			return;
+		}
+		cancelGesture();
+		ControlLayout originalLayout = layout();
+		var editor = new GeoCeDGControlLayoutStyleDialog(app, dialog, panel, preview -> {
+			stylePreviewPanel = preview;
+			view.repaintView();
+		});
+		styleEditor = editor;
+		Panel accepted;
+		try {
+			accepted = editor.open();
+		} finally {
+			editor.close();
+			styleEditor = null;
+			stylePreviewPanel = null;
+			view.repaintView();
+		}
+		if (accepted != null && dialog != null && eligibleContext() && layout() == originalLayout
+				&& layout().panel(panel.id()) == panel) {
+			update(accepted);
+		}
+	}
+
 	private void duplicate() {
 		Panel panel = selectedPanel();
 		if (panel == null || !layout().slots(panel.id()).isEmpty()) {
@@ -438,7 +637,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		}
 		Panel copy = layout().addPanel(panel.anchor(), Double.parseDouble(x.getText()),
 				Double.parseDouble(y.getText()),
-				panel.width(), panel.height(), panel.visible());
+				panel.width(), panel.height(), panel.visible(), panel.name(), panel.rgb(), panel.opacity());
 		commit(copy.id(), null, List.of());
 	}
 
@@ -523,7 +722,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		Panel panel = selectedPanel();
 		if (panel != null) {
 			update(new Panel(panel.id(), panel.anchor(), panel.x(), panel.y(), panel.width(),
-					panel.height(), !panel.visible()));
+					panel.height(), !panel.visible(), panel.name(), panel.rgb(), panel.opacity()));
 		}
 	}
 
@@ -578,10 +777,14 @@ final class GeoCeDGControlLayoutWorkspace {
 		var available = layout().panels();
 		for (int i = available.size() - 1; i >= 0; i--) {
 			Panel panel = available.get(i);
-			boolean resize = handle(bounds(panel)).contains(event.getX(), event.getY());
-			if (resize || header(panel).contains(event.getX(), event.getY())) {
+			Rectangle bounds = bounds(panel);
+			boolean resize = !bounds.isEmpty() && handle(bounds).contains(event.getX(), event.getY());
+			if (resize || header(bounds).contains(event.getX(), event.getY())) {
 				begin(panel, null, resize, event);
 				return true;
+			}
+			if (panel.visible() && bounds.contains(event.getX(), event.getY())) {
+				break;
 			}
 		}
 		for (GeoElement geo : hits) {
@@ -635,7 +838,8 @@ final class GeoCeDGControlLayoutWorkspace {
 				previewPanel = gesture.resize()
 						? new Panel(panel.id(), panel.anchor(), panel.x(), panel.y(),
 								preferredSize(panel.width() + dx, HANDLE * 2),
-								preferredSize(panel.height() + dy, HEADER), panel.visible())
+								preferredSize(panel.height() + dy, headerHeight()), panel.visible(),
+								panel.name(), panel.rgb(), panel.opacity())
 						: positioned(panel, panel.anchor(), point.x + dx, point.y + dy);
 			} catch (IllegalStateException invalidPosition) {
 				previewPanel = null;
@@ -718,6 +922,10 @@ final class GeoCeDGControlLayoutWorkspace {
 
 	void close() {
 		cancelGesture();
+		if (styleEditor != null) {
+			styleEditor.close();
+		}
+		stylePreviewPanel = null;
 		JDialog previous = dialog;
 		dialog = null;
 		candidate = null;

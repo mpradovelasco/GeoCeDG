@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geocedg.common.document.controls.ControlLayout.Panel;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
@@ -82,6 +83,14 @@ public final class GeoCeDGEuclidianController
 	private boolean navigationCursorCurrent;
 	private int zoomStartX;
 	private int zoomStartY;
+	private PanelContext panelContext;
+	private boolean panelContextDragged;
+
+	private record PanelContext(Panel panel, int x, int y) {
+		boolean moved(AbstractEvent event) {
+			return Math.abs(event.getX() - x) > 4 || Math.abs(event.getY() - y) > 4;
+		}
+	}
 
 	/** A press-owned point choice is bound by its existing durable ID and address. */
 	private record DragPointWitness(GeoPoint point, PersistentGeoId id,
@@ -166,6 +175,8 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMousePressed(AbstractEvent event) {
+		panelContext = null;
+		panelContextDragged = false;
 		if (isInsertionIsolated()) {
 			return;
 		}
@@ -182,6 +193,14 @@ public final class GeoCeDGEuclidianController
 			return;
 		}
 		var controlLayout = controlLayoutWorkspace();
+		if (controlLayout != null && app.isRightClickEnabled() && app.isRightClick(event)
+				&& controlLayout.eligibleContext()) {
+			Panel panel = controlLayout.panelAt(event.getX(), event.getY());
+			if (panel != null) {
+				panelContext = new PanelContext(panel, event.getX(), event.getY());
+				return;
+			}
+		}
 		if (controlLayout != null && controlLayout.isOpen()) {
 			setMouseLocation(event);
 			setViewHits(event.getType());
@@ -349,6 +368,10 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseDragged(AbstractEvent event, boolean startCapture) {
+		if (panelContext != null) {
+			panelContextDragged |= panelContext.moved(event);
+			return;
+		}
 		if (referencePointTool.hasPendingWorldSelection()) { return; }
 		if (referencePointTool.isReferenceRequestActive()) { return; }
 		if (isInsertionIsolated()) {
@@ -399,6 +422,19 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseReleased(AbstractEvent event) {
+		if (panelContext != null) {
+			PanelContext press = panelContext;
+			panelContext = null;
+			var workspace = controlLayoutWorkspace();
+			if (!panelContextDragged && !press.moved(event) && app.isRightClick(event)
+					&& workspace != null && workspace.eligibleContext()
+					&& workspace.panelAt(event.getX(), event.getY()) == press.panel()
+					&& getView() instanceof GeoCeDGEuclidianView view && view.getJPanel().isShowing()) {
+				workspace.panelContextMenu(press.panel()).show(view.getJPanel(),
+						event.getX(), event.getY());
+			}
+			return;
+		}
 		if (referencePointTool.hasPendingWorldSelection()) { return; }
 		if (referencePointTool.isReferenceRequestActive()) { return; }
 		if (isInsertionIsolated()) {

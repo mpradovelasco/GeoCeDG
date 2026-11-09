@@ -394,7 +394,8 @@ final class GeoCeDGInspectionXml {
 		for (int i = 0; i < reader.getAttributeCount(); i++) {
 			String key = reader.getAttributeLocalName(i);
 			boolean layoutAttribute = empty(reader.getAttributeNamespace(i))
-					&& ("construction".equals(name) && ControlLayoutXml.LAYOUT_ATTRIBUTE.equals(key)
+					&& ("construction".equals(name) && (ControlLayoutXml.LAYOUT_ATTRIBUTE.equals(key)
+							|| ControlLayoutXml.APPEARANCE_ATTRIBUTE.equals(key))
 							|| "element".equals(name) && ControlLayoutXml.SLOT_ATTRIBUTE.equals(key));
 			if (layoutAttribute && !controlLayout) {
 				controlLayout = true;

@@ -1587,6 +1587,9 @@ public class Construction {
 			sb.attr("date", getDate());
 			if (layout != null) {
 				sb.attr(ControlLayoutXml.LAYOUT_ATTRIBUTE, layout.header());
+				if (layout.appearance() != null) {
+					sb.attr(ControlLayoutXml.APPEARANCE_ATTRIBUTE, layout.appearance());
+				}
 			}
 			sb.endTag();
 

@@ -72,14 +72,17 @@ are not emitted into the toolbar.
 
 GeoCeDG Desktop ofrece **Disposición de controles** como acción
 experimental de Gráficos 1. En el modo Mover, abre el gestor desde
-**Vista → Visibilidad y estilo**, crea un panel y añade un control
-elegible. El encabezado mueve el panel y el tirador cambia su tamaño.
-El gestor también permite cambiar su anclaje, ocultarlo y separar
-controles. Classic de la misma distribución conserva la disposición
-y muestra los controles en sus posiciones de respaldo. Una versión
-anterior puede eliminar la disposición y volver a bloquear la posición
-de casillas desbloqueadas al guardar y reabrir. Guarda una copia del
-original antes de editar con una versión anterior. [Contrato v1](control-layout-v1.md)
+**Vista → Visibilidad y estilo** o desde el menú contextual de un panel.
+Crea un panel y añade un control elegible. El encabezado mueve el panel
+y el tirador cambia su tamaño. **Apariencia del panel** permite editar el
+nombre, el color y la transparencia. Los paneles nuevos se sitúan delante
+y atenúan los controles que quedan detrás, incluidos los desacoplados.
+El gestor también permite cambiar el anclaje, ocultar un panel y separar
+controles. Classic de la misma distribución conserva la disposición y
+la apariencia y muestra los controles en sus posiciones de respaldo.
+Un lector anterior puede perder la apariencia o la disposición al guardar.
+Guarda una copia del original antes de usar una versión anterior.
+[Contrato v1](control-layout-v1.md) · [Apariencia y orden R1](control-layout-r1.md)
 
 The Classic launcher arguments and configuration retain their established
 contract. Since the 2026-11-09 CU6 preservation amendment, Classic 3D creates

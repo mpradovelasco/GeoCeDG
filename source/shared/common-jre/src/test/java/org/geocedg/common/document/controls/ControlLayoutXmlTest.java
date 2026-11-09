@@ -14,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
+import java.util.List;
+
 import org.geocedg.common.document.controls.ControlLayout.Anchor;
 import org.geocedg.common.document.controls.ControlLayoutException.Code;
 import org.geogebra.common.BaseUnitTest;
@@ -118,6 +122,86 @@ class ControlLayoutXmlTest extends BaseUnitTest {
 		assertFalse(layout().isEligible(slider));
 		assertEquals(Code.OWNER, assertThrows(ControlLayoutException.class,
 				() -> layout().addSlot(panel.id(), slider, 0, 0)).code());
+	}
+
+	@Test
+	void appearanceRoundTripPreservesCompositionOrderAndReadsLegacyDefaults() throws Exception {
+		GeoElement slider = control("s=Slider(0,10,1)", 70, 120);
+		var fixed = layout().addPanel(Anchor.FIXED, 0, 0, 300, 250, true);
+		layout().addPanel(Anchor.WORLD, 2, 3, 300, 250, true);
+		var slot = layout().addSlot(fixed.id(), slider, 4, 6);
+		String legacy = snapshot().replaceAll(" geocedgControlAppearance=\"[^\"]*\"", "");
+		construction().processXML(legacy, false, null);
+		var canonical = layout().panels();
+		assertTrue(canonical.get(0).id().compareTo(canonical.get(1).id()) < 0);
+		assertEquals("", canonical.get(0).name());
+		assertEquals(ControlLayout.DEFAULT_RGB, canonical.get(0).rgb());
+		assertEquals(ControlLayout.DEFAULT_OPACITY, canonical.get(0).opacity());
+		assertFalse(snapshot().contains(ControlLayoutXml.APPEARANCE_ATTRIBUTE));
+
+		var back = canonical.get(1);
+		var front = canonical.get(0);
+		String reverse = "1|" + back.id() + ",e1edf7,65,;" + front.id() + ",e1edf7,65,";
+		construction().processXML(withAppearance(legacy, reverse), false, null);
+		assertEquals(List.of(back, front), layout().panels());
+		assertTrue(snapshot().contains("geocedgControlAppearance=\"" + reverse + "\""));
+		assertEquals(slot.id(), layout().slot(lookup("s")).id());
+
+		String title = "Árbol <céDG>,; 🎨";
+		var styled = back.withStyle(title, 0x041215, ControlLayout.MIN_OPACITY);
+		layout().updatePanel(styled);
+		var newest = layout().addPanel(Anchor.FIXED, 2, 3, 300, 250, true,
+				title, 0xffffff, ControlLayout.MAX_OPACITY);
+		String saved = snapshot();
+		assertTrue(saved.contains(styled.id() + ",041215,25,"
+				+ HexFormat.of().formatHex(title.getBytes(StandardCharsets.UTF_8))));
+		construction().processXML(saved, false, null);
+		assertEquals(List.of(styled, front, newest), layout().panels());
+		assertEquals(slot.id(), layout().slot(lookup("s")).id());
+		assertSame(lookup("s"), layout().slot(lookup("s")).control());
+	}
+
+	@Test
+	void appearanceRejectsInvalidNamesGrammarAndCoverageWithoutPublishing() throws Exception {
+		GeoElement button = control("b=Button()", 70, 120);
+		String longest = "🎨".repeat(ControlLayout.MAX_NAME_CODE_POINTS);
+		var panel = layout().addPanel(Anchor.FIXED, 0, 0, 300, 250, true,
+				longest, 0x041215, ControlLayout.MIN_OPACITY);
+		var slot = layout().addSlot(panel.id(), button, 4, 6);
+		String saved = snapshot();
+		String wire = "1|" + panel.id() + ",041215,25,"
+				+ HexFormat.of().formatHex(longest.getBytes(StandardCharsets.UTF_8));
+		assertTrue(saved.contains(wire));
+		assertEquals(Code.LIMIT, assertThrows(ControlLayoutException.class,
+				() -> panel.withStyle(longest + "a", 0x041215, 25)).code());
+		assertEquals(Code.GRAMMAR, assertThrows(ControlLayoutException.class,
+				() -> panel.withStyle("bad" + (char) 0xd800, 0x041215, 25)).code());
+		assertEquals(Code.GRAMMAR, assertThrows(ControlLayoutException.class,
+				() -> panel.withStyle("bad" + (char) 0xfffe, 0x041215, 25)).code());
+
+		assertRejected(saved.replaceAll(" geocedgControlLayout=\"[^\"]*\"", ""), Code.ORPHAN);
+		assertSame(button, lookup("b"));
+		assertRejected(saved.replace(wire, "2" + wire.substring(1)), Code.VERSION);
+		assertRejected(saved.replace(wire, wire + ";" + wire.substring(2)), Code.DUPLICATE);
+		assertRejected(saved.replace(wire, "1|00000000-0000-0000-0000-000000000000,041215,25,"),
+				Code.ORPHAN);
+		assertRejected(saved.replace(wire, "1|" + panel.id() + ",x41215,25,"), Code.GRAMMAR);
+		assertRejected(saved.replace(wire, "1|" + panel.id() + ",041215,24,"), Code.GRAMMAR);
+		assertRejected(saved.replace(wire, "1|" + panel.id() + ",041215,25,ff"), Code.GRAMMAR);
+		assertRejected(saved.replace(wire, "1|" + panel.id() + ",041215,25,0a"), Code.GRAMMAR);
+		assertRejected(saved.replace(wire, "1|" + panel.id() + ",041215,25," + "ff".repeat(257)),
+				Code.LIMIT);
+		assertEquals(List.of(panel), layout().panels());
+		assertEquals(slot.id(), layout().slot(lookup("b")).id());
+	}
+
+	private static String withAppearance(String xml, String appearance) {
+		return xml.replace("<construction ", "<construction geocedgControlAppearance=\""
+				+ appearance + "\" ");
+	}
+
+	private String snapshot() {
+		return construction().getCurrentUndoXML(true).toString();
 	}
 
 	private void assertRejected(String xml, Code code) {

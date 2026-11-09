@@ -230,7 +230,7 @@ class Cu8ControlLayoutTransportTest {
 	void failureKeepsRedoWithSameOwnerOrCertifiedNativeReclaim() throws Exception {
 		onEdt(() -> {
 			File source = PreG9BR6PlusF3Documents.single(directory, "rollback-source", "Added=(2,3)");
-			for (boolean reload : new boolean[] {false, true}) {
+			for (ReceiverFault fault : ReceiverFault.values()) {
 				Receiver fixture = receiver(Kernel.ANGLE_DEGREE);
 				AppGeoCeDG target = fixture.app();
 				GeoElement original = lookup(target, "n");
@@ -244,14 +244,25 @@ class Cu8ControlLayoutTransportTest {
 							return;
 						}
 						firstAttach = false;
-						if (!reload) {
+						switch (fault) {
+						case BEFORE_ATTACH ->
 							throw new IllegalStateException("CU8 injected publication failure");
+						case SLOT_OFFSET -> {
+							Slot slot = layout(target).slot(original);
+							layout(target).updateSlot(new Slot(slot.panelId(), slot.id(), original,
+									31, 61));
 						}
-						Slot slot = layout(target).slot(original);
-						layout(target).updateSlot(new Slot(slot.panelId(), slot.id(), original, 31, 61));
+						case PANEL_STYLE -> {
+							Panel panel = fixture.panels().get(0);
+							layout(target).updatePanel(new Panel(panel.id(), panel.anchor(),
+									panel.x(), panel.y(), panel.width(), panel.height(),
+									panel.visible(), "Cambio no publicado", panel.rgb(), 53));
+						}
+						}
 					}
 				});
 				var result = insert(target, source);
+				boolean reload = fault != ReceiverFault.BEFORE_ATTACH;
 				assertEquals(reload ? FAILED_RECOVERY_CERTIFIED_SESSION_RESET : FAILED_RECOVERY_CERTIFIED,
 						result.getOutcome(), () -> result.getMessage() + " " + result.getFailure());
 				var after = new PreG9BR6PlusF3Documents.Observation(target);
@@ -291,14 +302,17 @@ class Cu8ControlLayoutTransportTest {
 		receiver.getKernel().setAngleUnit(angularMode);
 		must(receiver, "A=(1,2)");
 		GeoNumeric resident = slider(receiver, "n");
-		Panel panel = layout(receiver).addPanel(Anchor.FIXED, 120, 80, 320, 120, true);
+		Panel panel = layout(receiver).addPanel(Anchor.FIXED, 120, 80, 320, 120, true,
+				"Receptor & α", 0x2B6B8E, 40);
+		Panel front = layout(receiver).addPanel(Anchor.WORLD, 2, 1, 140, 90, true,
+				"Portada Ω", 0xAA5B48, 75);
 		Slot slot = layout(receiver).addSlot(panel.id(), resident, 13, 27);
 		baseline(receiver);
 		must(receiver, "RedoPoint=(4,5)");
 		store(receiver);
 		undo(receiver).undo();
 		awaitQuiescent(receiver);
-		return new Receiver(receiver, panel, slot.id());
+		return new Receiver(receiver, List.of(panel, front), slot.id());
 	}
 
 	private static GeoNumeric slider(AppGeoCeDG app, String label) {
@@ -335,8 +349,9 @@ class Cu8ControlLayoutTransportTest {
 
 	private static void assertMember(Receiver receiver, GeoElement owner) {
 		ControlLayout layout = layout(receiver.app());
-		assertEquals(List.of(receiver.panel()), layout.panels());
-		assertEquals(1, layout.slots(receiver.panel().id()).size());
+		assertEquals(receiver.panels(), layout.panels());
+		assertEquals(1, layout.slots(receiver.panels().get(0).id()).size());
+		assertTrue(layout.slots(receiver.panels().get(1).id()).isEmpty());
 		Slot member = layout.slot(owner);
 		assertNotNull(member);
 		assertSame(owner, member.control());
@@ -345,6 +360,10 @@ class Cu8ControlLayoutTransportTest {
 		assertEquals(27, member.dy());
 	}
 
-	private record Receiver(AppGeoCeDG app, Panel panel, String slotId) {
+	private record Receiver(AppGeoCeDG app, List<Panel> panels, String slotId) {
+	}
+
+	private enum ReceiverFault {
+		BEFORE_ATTACH, SLOT_OFFSET, PANEL_STYLE
 	}
 }

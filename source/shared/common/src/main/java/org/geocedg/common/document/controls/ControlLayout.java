@@ -29,13 +29,23 @@ import org.geogebra.common.plugin.GeoClass;
 public final class ControlLayout {
 	public static final int MAX_PANELS = 32;
 	public static final int MAX_SLOTS = 256;
+	public static final int MAX_NAME_CODE_POINTS = 64;
+	public static final int DEFAULT_RGB = 0xe1edf7;
+	public static final int DEFAULT_OPACITY = 65;
+	public static final int MIN_OPACITY = 25;
+	public static final int MAX_OPACITY = 80;
 
 	public enum Anchor {
 		FIXED, WORLD
 	}
 
 	public record Panel(String id, Anchor anchor, double x, double y, int width, int height,
-			boolean visible) {
+			boolean visible, String name, int rgb, int opacity) {
+		public Panel(String id, Anchor anchor, double x, double y, int width, int height,
+				boolean visible) {
+			this(id, anchor, x, y, width, height, visible, "", DEFAULT_RGB, DEFAULT_OPACITY);
+		}
+
 		public Panel {
 			Objects.requireNonNull(id);
 			Objects.requireNonNull(anchor);
@@ -43,6 +53,19 @@ public final class ControlLayout {
 			if (width <= 0 || height <= 0) {
 				throw failure(Code.GRAMMAR, "Panel dimensions must be positive");
 			}
+			requireValidName(name);
+			if (rgb < 0 || rgb > 0xffffff || opacity < MIN_OPACITY || opacity > MAX_OPACITY) {
+				throw failure(Code.GRAMMAR, "Invalid control panel background");
+			}
+		}
+
+		/** Changes only the presentation style of this panel. */
+		public Panel withStyle(String name, int rgb, int opacity) {
+			return new Panel(id, anchor, x, y, width, height, visible, name, rgb, opacity);
+		}
+
+		boolean hasDefaultStyle() {
+			return name.isEmpty() && rgb == DEFAULT_RGB && opacity == DEFAULT_OPACITY;
 		}
 	}
 
@@ -70,7 +93,7 @@ public final class ControlLayout {
 		return state.panels.isEmpty();
 	}
 
-	/** @return a snapshot of the panel records */
+	/** @return a snapshot of the panels in composition order, back to front */
 	public List<Panel> panels() {
 		return List.copyOf(state.panels.values());
 	}
@@ -94,7 +117,13 @@ public final class ControlLayout {
 	/** Adds an empty panel with a fresh documentary ID. */
 	public Panel addPanel(Anchor anchor, double x, double y, int width, int height,
 			boolean visible) {
-		Panel panel = new Panel(nextId(), anchor, x, y, width, height, visible);
+		return addPanel(anchor, x, y, width, height, visible, "", DEFAULT_RGB, DEFAULT_OPACITY);
+	}
+
+	/** Adds a styled empty panel at the front with a fresh documentary ID. */
+	public Panel addPanel(Anchor anchor, double x, double y, int width, int height,
+			boolean visible, String name, int rgb, int opacity) {
+		Panel panel = new Panel(nextId(), anchor, x, y, width, height, visible, name, rgb, opacity);
 		state.addPanel(panel);
 		return panel;
 	}
@@ -233,6 +262,26 @@ public final class ControlLayout {
 	private static void requireFinite(double x, double y) {
 		if (!Double.isFinite(x) || !Double.isFinite(y)) {
 			throw failure(Code.GRAMMAR, "Control layout coordinate must be finite");
+		}
+	}
+
+	private static void requireValidName(String name) {
+		if (name == null) {
+			throw failure(Code.GRAMMAR, "Missing control panel name");
+		}
+		int count = 0;
+		for (int index = 0; index < name.length();) {
+			if (++count > MAX_NAME_CODE_POINTS) {
+				throw failure(Code.LIMIT, "Control panel name exceeds 64 Unicode scalars");
+			}
+			int codePoint = name.codePointAt(index);
+			if (codePoint <= 0x1f || codePoint >= 0x7f && codePoint <= 0x9f
+					|| codePoint >= 0xd800 && codePoint <= 0xdfff
+					|| codePoint >= 0xfdd0 && codePoint <= 0xfdef
+					|| (codePoint & 0xfffe) == 0xfffe) {
+				throw failure(Code.GRAMMAR, "Invalid Unicode scalar in control panel name");
+			}
+			index += Character.charCount(codePoint);
 		}
 	}
 

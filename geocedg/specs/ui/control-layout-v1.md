@@ -4,6 +4,9 @@ Estado experimental en GeoCeDG Desktop, Gráficos 1. El diseño adoptado
 define la elegibilidad, las operaciones y sus invariantes.
 [CU8-D, §2 y §5](../../../docs/architecture/pre_g9b_cu8_d_control_containers_candidate.md)
 
+La composición, la edición de apariencia y la extensión opcional de
+archivo se especifican en [CU8-I-R1](control-layout-r1.md).
+
 ## Puerta A
 
 Base publicada `876a67362939cb5208a9562e396bbd3add7dfc04`, árbol

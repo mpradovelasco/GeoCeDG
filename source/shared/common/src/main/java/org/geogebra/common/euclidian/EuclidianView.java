@@ -3701,6 +3701,11 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 		return false;
 	}
 
+	/** Applies any view-specific presentation priority to point hits. */
+	protected void filterPresentationHits(GPoint point, Hits hits) {
+		// The ordinary view uses its native hit order.
+	}
+
 	/**
 	 * Fills background with background color
 	 * 
@@ -4293,7 +4298,8 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 		DrawDropDownList selected = null;
 		DrawDropDownList opened = null;
 		for (Drawable d : allDrawableList) {
-			if (actionObjectsOnShownLayersOnly && !isOnShownLayer(d)) {
+			if (actionObjectsOnShownLayersOnly && (!isOnShownLayer(d)
+					|| drawInControlLayout(d.getGeoElement()))) {
 				continue;
 			}
 			if (d instanceof DrawDropDownList) {

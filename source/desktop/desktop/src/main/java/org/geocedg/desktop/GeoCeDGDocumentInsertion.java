@@ -2102,11 +2102,11 @@ final class GeoCeDGDocumentInsertion {
 	}
 
 	/** Compare the presentation records independently of the native construction addresses. */
-	private record ReceiverControlLayout(Set<Panel> panels, Map<LayoutSlot, GeoElement> owners) {
+	private record ReceiverControlLayout(List<Panel> panels, Map<LayoutSlot, GeoElement> owners) {
 		static ReceiverControlLayout capture(AppGeoCeDG app) {
 			Construction construction = app.getKernel().getConstruction();
 			var layout = construction.getControlLayout();
-			Set<Panel> panels = Set.copyOf(layout.panels());
+			List<Panel> panels = layout.panels();
 			Map<LayoutSlot, GeoElement> owners = new HashMap<>();
 			for (Panel panel : panels) {
 				for (var slot : layout.slots(panel.id())) {

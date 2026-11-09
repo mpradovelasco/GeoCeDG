@@ -3053,16 +3053,18 @@ public class MyXMLHandler implements DocHandler {
 	private void checkControlLayoutContext(String name, Map<String, String> attrs) {
 		String header = attrs.get(ControlLayoutXml.LAYOUT_ATTRIBUTE);
 		String slot = attrs.get(ControlLayoutXml.SLOT_ATTRIBUTE);
+		String appearance = attrs.get(ControlLayoutXml.APPEARANCE_ATTRIBUTE);
 		boolean duplicates = duplicateLayoutAttribute;
 		duplicateLayoutAttribute = false;
-		if (header == null && slot == null) {
+		if (header == null && slot == null && appearance == null) {
 			return;
 		}
 		if (duplicates) {
 			throw new ControlLayoutException(Code.GRAMMAR, "Duplicate XML attribute");
 		}
 		if (!controlLayoutAllowed || kernel != origKernel
-				|| header != null && !(mode == MODE_GEOGEBRA && "construction".equals(name))
+				|| (header != null || appearance != null)
+						&& !(mode == MODE_GEOGEBRA && "construction".equals(name))
 				|| slot != null && !(mode == MODE_CONSTRUCTION && constMode == MODE_CONSTRUCTION
 						&& "element".equals(name) && !attrs.containsKey("default"))) {
 			throw new ControlLayoutException(Code.CONTEXT, "Control layout outside native document");
@@ -3072,6 +3074,9 @@ public class MyXMLHandler implements DocHandler {
 		}
 		if (header != null) {
 			controlLayoutInput.readHeader(header);
+		}
+		if (appearance != null) {
+			controlLayoutInput.readAppearance(appearance);
 		}
 	}
 

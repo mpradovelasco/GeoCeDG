@@ -16,9 +16,11 @@ import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
+import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EuclidianController;
+import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -85,11 +87,19 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 
 	@Override
 	public void drawActionObjectsOnShownLayers(GGraphics2D graphics) {
+		super.drawActionObjectsOnShownLayers(graphics);
 		var workspace = controlLayoutWorkspace();
 		if (workspace != null) {
 			workspace.paint(graphics);
 		}
-		super.drawActionObjectsOnShownLayers(graphics);
+	}
+
+	@Override
+	protected void filterPresentationHits(GPoint point, Hits hits) {
+		var workspace = controlLayoutWorkspace();
+		if (workspace != null) {
+			workspace.filterHits(point, hits);
+		}
 	}
 
 	@Override

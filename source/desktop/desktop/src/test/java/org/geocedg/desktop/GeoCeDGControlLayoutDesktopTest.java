@@ -11,10 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JMenuItem;
 
 import org.geocedg.common.document.controls.ControlLayout;
 import org.geocedg.common.document.controls.ControlLayout.Anchor;
@@ -37,6 +41,117 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /** Checks live Graphics 1 presentation against the native drawable and hit paths. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class GeoCeDGControlLayoutDesktopTest {
+	@Test
+	void overlappingPanelsCompositeBackToFront() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			GeoCeDGEuclidianView view = view(app);
+			var layout = layout(app);
+			Panel rear = layout.addPanel(Anchor.FIXED, 50, 50, 180, 155, true,
+					"Rear", 0x5599dd, 65);
+			GeoBoolean check = checkbox(app);
+			layout.addSlot(rear.id(), check, 30, 70);
+			view.controlLayoutWorkspace().refreshPanel(rear.id());
+			GPoint sample = controlHit(view, check);
+			Color original = sample(view, sample);
+			view.setHits(sample, PointerEventType.MOUSE);
+			assertTrue(view.getHits().contains(check));
+
+			Panel middle = layout.addPanel(Anchor.FIXED, 65, 72, 150, 110, true,
+					"Middle", 0xffaa22, ControlLayout.MIN_OPACITY);
+			assertComposite(original, middle, sample(view, sample));
+			Color twice = sample(view, sample);
+			Panel front = layout.addPanel(Anchor.FIXED, 78, 87, 145, 115, true,
+					"Front", 0x129943, ControlLayout.MAX_OPACITY);
+			assertComposite(twice, front, sample(view, sample));
+			assertSame(front, view.controlLayoutWorkspace().panelAt(sample.x, sample.y));
+			view.setHits(sample, PointerEventType.MOUSE);
+			assertFalse(view.getHits().contains(check));
+			click(view, sample);
+			assertTrue(check.getBoolean());
+			layout.removePanel(front.id());
+			layout.removePanel(middle.id());
+			click(view, sample);
+			assertFalse(check.getBoolean());
+		});
+	}
+
+	@Test
+	void detachMovesTheControlBehindItsOldPanel() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			GeoCeDGEuclidianView view = view(app);
+			var layout = layout(app);
+			Panel panel = layout.addPanel(Anchor.FIXED, 55, 50, 200, 160, true,
+					"Panel", 0xcc5500, 70);
+			GeoBoolean check = checkbox(app);
+			layout.addSlot(panel.id(), check, 32, 64);
+			view.controlLayoutWorkspace().refreshPanel(panel.id());
+			GPoint point = controlHit(view, check);
+			Color grouped = sample(view, point);
+			layout.removeSlot(check);
+			check.updateRepaint();
+			assertNull(view.getControlLayoutPosition(check));
+			assertComposite(grouped, panel, sample(view, point));
+			view.setHits(point, PointerEventType.MOUSE);
+			assertFalse(view.getHits().contains(check));
+			click(view, point);
+			assertTrue(check.getBoolean());
+			layout.removePanel(panel.id());
+			view.setHits(point, PointerEventType.MOUSE);
+			assertTrue(view.getHits().contains(check));
+			click(view, point);
+			assertFalse(check.getBoolean());
+		});
+	}
+
+	@Test
+	void contextResolvesTheFrontAccessiblePanelWithoutChangingTheLayout() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			GeoCeDGEuclidianView view = view(app);
+			var layout = layout(app);
+			var workspace = view.controlLayoutWorkspace();
+			Panel rear = layout.addPanel(Anchor.FIXED, 40, 40, 150, 120, true);
+			Panel front = layout.addPanel(Anchor.FIXED, 100, 70, 150, 120, true);
+			var before = layout.panels();
+			assertSame(front, workspace.panelAt(130, 110));
+			assertSame(rear, workspace.panelAt(60, 85));
+			assertNull(workspace.panelAt(310, 200));
+			var menu = workspace.panelContextMenu(front);
+			assertEquals(1, menu.getComponentCount());
+			assertTrue(menu.getComponent(0) instanceof JMenuItem);
+			assertEquals(before, layout.panels());
+		});
+	}
+
+	@Test
+	void longUnicodeHeaderFitsWithoutSplittingCharacters() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			GeoCeDGEuclidianView view = view(app);
+			String name = "Δ𐐷e\u0301".repeat(12);
+			Panel panel = layout(app).addPanel(Anchor.FIXED, 50, 50, 85, 90, true,
+					name, 0x51aa29, 65);
+			var image = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+			var graphics = image.createGraphics();
+			try {
+				var surface = new GGraphics2DD(graphics);
+				var workspace = view.controlLayoutWorkspace();
+				String fitted = workspace.fittedName(surface, panel.name(), 60);
+				assertTrue(fitted.endsWith("…"));
+				assertTrue(fitted.length() < name.length());
+				assertTrue(fitted.codePoints().noneMatch(cp -> cp >= 0xd800 && cp <= 0xdfff));
+				workspace.paint(surface);
+				var insets = view.getSafeAreaInsets();
+				assertEquals(0x365b7b,
+						image.getRGB(insets.getLeft() + 52, insets.getTop() + 52) & 0xffffff);
+			} finally {
+				graphics.dispose();
+			}
+		});
+	}
+
 	@Test
 	void panAndAnisotropicZoomMoveOnlyTheWorldOrigin() throws Exception {
 		onEdt(() -> {
@@ -183,6 +298,39 @@ class GeoCeDGControlLayoutDesktopTest {
 		geo.setEuclidianVisible(true);
 		geo.updateRepaint();
 		return geo;
+	}
+
+	private static GeoBoolean checkbox(AppGeoCeDG app) {
+		GeoBoolean check = (GeoBoolean) absolute(app, "q=Checkbox()");
+		check.setCheckboxFixed(false);
+		return check;
+	}
+
+	private static GPoint controlHit(GeoCeDGEuclidianView view, GeoElement control) {
+		GPoint2D at = view.getControlLayoutPosition(control);
+		return new GPoint((int) at.x + 10, (int) at.y + 10);
+	}
+
+	private static Color sample(GeoCeDGEuclidianView view, GPoint point) {
+		var image = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+		var graphics = image.createGraphics();
+		try {
+			graphics.setColor(Color.WHITE);
+			graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+			view.drawObjects(new GGraphics2DD(graphics));
+			return new Color(image.getRGB(point.x, point.y));
+		} finally {
+			graphics.dispose();
+		}
+	}
+
+	private static void assertComposite(Color behind, Panel front, Color actual) {
+		var tint = new Color(front.rgb());
+		double alpha = Math.round(front.opacity() * 255 / 100.0) / 255.0;
+		assertEquals(behind.getRed() * (1 - alpha) + tint.getRed() * alpha, actual.getRed(), 1);
+		assertEquals(behind.getGreen() * (1 - alpha) + tint.getGreen() * alpha,
+				actual.getGreen(), 1);
+		assertEquals(behind.getBlue() * (1 - alpha) + tint.getBlue() * alpha, actual.getBlue(), 1);
 	}
 
 	private static void assertPosition(double x, double y, GPoint2D actual) {

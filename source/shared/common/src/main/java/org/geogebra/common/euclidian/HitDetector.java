@@ -101,6 +101,7 @@ public class HitDetector {
 			addXAxis(p, hitThreshold);
 			addYAxis(p, hitThreshold);
 		}
+		ev.filterPresentationHits(p, hits);
 
 		// keep geoelements only on the top layer
 		int maxlayer = 0;
