@@ -5,6 +5,7 @@
 
 package org.geocedg.common.spatial;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -243,12 +244,16 @@ class G9A3SpatialExplicitMigrationTest extends BaseUnitTest {
 				copiedObject.getId());
 		assertThrows(ClassNotFoundException.class, () -> Class.forName(
 				"org.geocedg.common.kernel.spatial.commands.CmdSpatialPoint"));
+		String numericLayerXml = nativeLayerFixture();
+		assertAll("Classic explicit numeric layer preservation",
+				() -> assertClassicPreservesOnlyCurrentNativeNumericLayers(numericLayerXml),
+				() -> assertClassicRestoresNativeLayersAfterAtomicFailure(numericLayerXml),
+				() -> assertClassicRejectsMalformedNativeLayers(numericLayerXml),
+				() -> assertClassicClampsOutOfDomainNumericLayer(numericLayerXml));
 	}
 
-	@Test
-	void classicPreservesOnlyTheExplicitNumericLayersOfTheCurrentNativeDocument()
+	private static void assertClassicPreservesOnlyCurrentNativeNumericLayers(String nativeXml)
 			throws Exception {
-		String nativeXml = nativeLayerFixture();
 		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
 		classic.getXMLio().processXMLString(nativeXml, true, false, false);
 		assertNativeLayerFixture(classic);
@@ -276,10 +281,8 @@ class G9A3SpatialExplicitMigrationTest extends BaseUnitTest {
 		assertTrue(classic.getKernel().getConstruction().getSpatialIdentityRegistry().isEmpty());
 	}
 
-	@Test
-	void classicRestoresNativeNumericLayersAndSpatialGraphAfterAtomicFailure()
+	private static void assertClassicRestoresNativeLayersAfterAtomicFailure(String nativeXml)
 			throws Exception {
-		String nativeXml = nativeLayerFixture();
 		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
 		classic.getXMLio().processXMLString(nativeXml, true, false, false);
 		Construction construction = classic.getKernel().getConstruction();
@@ -299,10 +302,8 @@ class G9A3SpatialExplicitMigrationTest extends BaseUnitTest {
 		assertEquals(before, G9A3SpatialGraphSnapshot.capture(construction));
 	}
 
-	@Test
-	void classicRejectsMalformedNativeNumericLayersAndRestoresItsDocument()
+	private static void assertClassicRejectsMalformedNativeLayers(String nativeXml)
 			throws Exception {
-		String nativeXml = nativeLayerFixture();
 		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());
 		classic.getXMLio().processXMLString(nativeXml, true, false, false);
 		Construction construction = classic.getKernel().getConstruction();
@@ -324,12 +325,11 @@ class G9A3SpatialExplicitMigrationTest extends BaseUnitTest {
 		}
 	}
 
-	@Test
-	void classicClampsAnExplicitNumericLayerOutsideItsDomainWithoutRetainingIt()
+	private static void assertClassicClampsOutOfDomainNumericLayer(String sourceXml)
 			throws Exception {
-		nativeLayerFixture();
-		lookup("NumericLayerOne").setLayer(99);
-		String nativeXml = getApp().getXML();
+		String owner = numericXml(sourceXml, "NumericLayerOne");
+		String nativeXml = sourceXml.replace(owner,
+				owner.replace("<layer val=\"6\"/>", "<layer val=\"99\"/>"));
 		assertTrue(numericXml(nativeXml, "NumericLayerOne").contains("<layer val=\"99\"/>"));
 
 		AppCommon classic = AppCommonFactory.create3D(new AppConfigDefault());

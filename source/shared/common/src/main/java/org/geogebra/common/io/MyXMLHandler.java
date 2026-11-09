@@ -3031,11 +3031,7 @@ public class MyXMLHandler implements DocHandler {
 				? geoHandler.getNumericLayerOwner() : null;
 	}
 
-	private void recordNumericLayer(Map<String, String> attrs) {
-		GeoNumeric numeric = numericLayerOwner();
-		if (numeric == null) {
-			return;
-		}
+	private void recordNumericLayer(GeoNumeric numeric, Map<String, String> attrs) {
 		try {
 			int layer = Integer.parseInt(attrs.get("val"));
 			if (geoPropertyDepth != 0 || attrs.size() != 1
@@ -3358,9 +3354,11 @@ public class MyXMLHandler implements DocHandler {
 					"geocedgUnits cannot contain child elements");
 
 		case MODE_CONST_GEO_ELEMENT:
-			if (numericLayerInput != NumericLayerInput.LEGACY) {
+			GeoNumeric numeric = numericLayerInput == NumericLayerInput.LEGACY
+					? null : numericLayerOwner();
+			if (numeric != null) {
 				if ("layer".equals(eName)) {
-					recordNumericLayer(attrs);
+					recordNumericLayer(numeric, attrs);
 				}
 				geoPropertyDepth++;
 			}
@@ -3418,12 +3416,13 @@ public class MyXMLHandler implements DocHandler {
 			break;
 
 		case MODE_CONST_GEO_ELEMENT:
-			if (geoPropertyDepth > 0) {
-				geoPropertyDepth--;
-			} else if ("element".equals(eName)) {
+			if ("element".equals(eName)) {
+				invalidNumericLayer |= geoPropertyDepth > 0;
 				this.geoHandler.finish();
 				casMap = null;
 				constMode = MODE_CONSTRUCTION;
+			} else if (geoPropertyDepth > 0) {
+				geoPropertyDepth--;
 			}
 
 			break;

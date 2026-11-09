@@ -203,10 +203,11 @@ class PreG9BR6PlusA1LayerWorkspaceTest {
 		assertEquals(2, lookup(app, "B").getLayer());
 		assertEquals(3, lookup(app, "n").getLayer(), "redo restores the stored numeric layer");
 		assertEquals(8, workspace.getWorkingLayer());
+		assertClassicRestoresExplicitNativeLayersFromFileAndHistory();
 	}
 
-	@Test
-	void classicRestoresExplicitNativeLayersFromFileAndHistory() throws Exception {
+	private static void assertClassicRestoresExplicitNativeLayersFromFileAndHistory()
+			throws Exception {
 		AppGeoCeDG source = G9U1TestApp.create();
 		source.getLayerWorkspace().setWorkingLayer(6);
 		eval(source, "A=(1,1)");
