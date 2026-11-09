@@ -6,6 +6,7 @@
 | Estado del marco | `PLANNING FRAMEWORK — AUTHOR APPROVED WITH AMENDMENTS` (instrucción autoral «PRE-G9B-CU — Author Plan Approval, Architectural Refinements and CU0 Authorization», 2026-10-19) |
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
 | Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); `CU2` `PASS — AUTHOR APPROVED` (2026-10-24, con la comprobación manual del autor; [registro de cierre de `CU2`](../validation/pre_g9b_cu2_closeout_record.md), única autoridad de ese estado) sobre el candidato `6ff1ddf7` y su descendiente documental `098ec04f`, integrado en `main` por avance rápido con su cierre (§2.6). Historia de `CU2`: arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo `2856f246` verificado ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); la resolución autoral consolidada de 2026-10-23 aprobó sus doce decisiones de nivel C (§2.5), y el candidato final `6ff1ddf7` ([paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md)) se aprobó con el cierre de 2026-10-24. `CU3`: preparación autorizada el 2026-10-24 sobre `main` = `e6c908f2` (§2.7) y publicada en su rama de revisión en `80d72a50` ([expediente](../validation/pre_g9b_cu3_preparation_candidate_report.md)); diseño `AUTHOR APPROVED` e implementación **autorizada** en dos incrementos con puertas bloqueantes sobre `80d72a50` (2026-10-24, §2.8; [registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado), detenida en el paso T2 porque la puerta G-M3 no se supera en la autoridad del objetivo ([informe de la puerta](../validation/pre_g9b_cu3_m3_gate_report.md); rama publicada en `1a0903aa` para su auditoría); bloqueo confirmado y estudio de la autoridad geométrica constructiva autorizado (§2.9; [estudio](pre_g9b_cu3_constructive_authority_study.md)), publicado para su auditoría en `da7ca96a`; dirección A2, B2, C y D adoptada para desarrollo normativo y consolidación focal entregada como propuesta normativa candidata (§2.10; [propuesta](pre_g9b_cu3_constructive_authority_normative_proposal.md)), publicada para su auditoría en `18740956`; dirección A2+B2+C+D aceptada como referencia arquitectónica y conciliación final de la propuesta publicada en `3cd0f710` (§2.11); arquitectura de la autoridad constructiva y su normativa **aprobadas** por el autor el 2026-10-25 e implementación reanudada desde T2 sobre `3cd0f710` en los incrementos E0 a E4 con puertas bloqueantes (§2.12; [registro de aprobación](../validation/pre_g9b_cu3_constructive_authority_approval_record.md), única autoridad de ese estado); candidato técnico de `CU3` congelado con `CU3-A` completo y `CU3-B` pendiente (`CU3 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; [informe del candidato](../validation/pre_g9b_cu3_implementation_candidate_report.md)), publicado en su rama en `735c55c6`, con la caracterización publicada en `7f1a81ae`; `CU3-A` aceptado provisionalmente por el autor el 2026-10-26, con el smoke funcional `PASS — AUTHOR REPORTED` y el rendimiento interactivo `NOT ACCEPTED` (§2.14), optimización focal T1 a T4 autorizada y entregada como candidato optimizado `68bfd764` (§2.15), publicada en `b1813da1` con auditoría independiente favorable, y T6 entregada como candidato `3f096838` pendiente de revisión autoral (§2.16), con la caracterización de T7-a (§2.17) y su implementación, aprobada como dirección y tras su puerta normativa, entregada como candidato `9f6f27f2` (§2.18), con la estabilización de `CU3-A` preparada (§2.19), D1-A implementada y el candidato definitivo `f61f2954` verificado tras el smoke autoral funcionalmente satisfactorio (§2.20); `CU3-A` `PASS — AUTHOR APPROVED` sobre `f61f2954` (2026-10-27; [registro de cierre de `CU3-A`](../validation/pre_g9b_cu3_a_closeout_record.md), única autoridad de ese estado; §2.23), y `CU3-B1` `PASS — AUTHOR APPROVED` sobre `dd3a2676` y su descendiente de pruebas `aabfd0b9` (2026-10-28; [registro de cierre de `CU3-B1`](../validation/pre_g9b_cu3_b1_closeout_record.md), única autoridad de ese estado; §2.25); `CU3-B2` `PASS — AUTHOR APPROVED` sobre `2d13ad4c` (2026-10-28; [registro de cierre de `CU3-B2`](../validation/pre_g9b_cu3_b2_closeout_record.md), única autoridad de ese estado; §2.29); **`CU3` global `PASS — AUTHOR APPROVED`** (2026-10-28; [registro de cierre global](../validation/pre_g9b_cu3_global_closeout_record.md), única autoridad de ese estado; §2.30), con `CU3-B` completo. `CU7-D` aprobado el 2026-10-29 (§2.33), `M08-S-R2` aprobado el 2026-11-02 y `CU7-R5` aprobado con alcance reducido el 2026-11-05 e integrado en `main`. [Conciliación CU7](../validation/pre_g9b_cu7_status_reconciliation.md). `CU4` **`PASS — AUTHOR APPROVED`** (2026-11-07), incluida la adopción de B2 certificada. [Registro de cierre](../validation/pre_g9b_cu4_closeout_record.md) |
+| CU5, CU6 y CU8 | `CU5` **PASS — AUTHOR APPROVED** y `CU6` **PASS — AUTHOR APPROVED WITH EXPLICIT LIMITATION** el 2026-11-09. CU6 conserva la deuda M07 de deslizadores de Gráficos 1. `CU8-D` tiene dirección de complejidad media aceptada. `CU8-I` se autoriza como siguiente actuación en una sesión nueva, con las puertas de formato y compatibilidad de §2.36. [Registro conjunto](../validation/pre_g9b_cu5_cu6_closeout_record.md) |
 | Mandato editorial | E1, aprobado por el autor el 2026-10-20 como obligación de cierre del track (§2.3 y §8): diseño detallado de los apéndices pendiente de preparación y revisión; redacción e incorporación a `geocedg_book` no autorizadas |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
@@ -544,6 +545,21 @@ ni implementada. Original y correctivo pendientes de revisión y smoke; no se de
 M08-S general completo. M08-D, M09/A0, I2G/I3 y reconstrucción general siguen excluidos.
 Compromisos CU10/guía/E1 y deuda de tangencias preservados; libro sin modificación.
 
+## 2.36 Cierre de CU5 y CU6 y transición a CU8-I (2026-11-09)
+
+| Decisión autoral | Efecto |
+|---|---|
+| CU5 `PASS — AUTHOR APPROVED` | B02, B03, M04 y H05, incluida la memoria de ejes canónicos, sobre `547fdee503f837218db06991c6c17be366c10578`. |
+| CU6 `PASS — AUTHOR APPROVED WITH EXPLICIT LIMITATION` | B04, M02, M03, M06, M07 y M10 en el perímetro demostrado. Se adoptan las enmiendas R5-B/D1 y la persistencia nativa de capas numéricas Classic del 2026-11-09. `OBS-CU6-M07-GV1-SLIDER-PICK` queda abierta y no bloqueante. |
+| Publicación | Descendiente exclusivamente documental del mismo producto, con `STATIC` propio y fast-forward no forzado. Los informes PHASE e INTEGRATION permanecen ligados al SHA técnico. |
+| CU8 | Dirección media aceptada e implementación CU8-I autorizada para una sesión nueva tras la publicación. Desktop, Gráficos 1, cuatro familias y dos anclajes. La gramática de persistencia, interoperabilidad y conciliación de inserción tienen puerta previa al código afectado. |
+
+El [registro conjunto](../validation/pre_g9b_cu5_cu6_closeout_record.md)
+conserva el perímetro y la procedencia de ambas decisiones. El [diseño
+CU8-D y su adopción](pre_g9b_cu8_d_control_containers_candidate.md)
+distinguen los límites adoptados y las decisiones pendientes.
+CU9 y CU10 permanecen reservados. `selfApproved=false`.
+
 ## 3. Incidencias y paquetes
 
 Prioridad tras `CU0`. Las incidencias H10–H12 son hallazgos nuevos de `CU0`. Con el cierre de
@@ -751,10 +767,13 @@ propuesta independiente, pendiente de delimitación y autorización. [Propuesta 
 
 ### CU5 — Flujo de construcción en la interfaz
 
-B02 (política estable de alto de filas: la reproducción ventaneada muestra 20 px tras
-abrir o refrescar la interfaz y 36/40 px tras una edición, un deshacer o un cambio de
-idioma), B03 (activación persistente por herramienta, indicación de estado, suspensión
-por paso, sin reasociación), M04 (DC-4) y H05.
+`PASS — AUTHOR APPROVED` desde 2026-11-09. B02 mide el contenido con la
+fuente y los renderizadores vigentes. B03 y H05 conservan activación de
+sesión por herramienta, indicación de estado y suspensión por paso, con
+vigencia por instancia. M04 (DC-4) admite ambos ejes canónicos como
+referencias de orientación, y la enmienda de memoria los admite para
+reutilización en Paralela y Perpendicular.
+[Cierre conjunto](../validation/pre_g9b_cu5_cu6_closeout_record.md)
 
 ### CU6 — Interacción y presentación
 
@@ -765,6 +784,13 @@ textual en el comando, pero no prueba la identidad de un objeto seleccionado ant
 diseño comprueba la vigencia de la selección tras Deshacer, Rehacer o reconstrucción,
 pide una selección nueva cuando no puede establecerla y nunca reasocia en silencio un
 objeto distinto que haya adquirido la misma etiqueta.
+
+`PASS — AUTHOR APPROVED WITH EXPLICIT LIMITATION` desde 2026-11-09.
+El clic sobre un deslizador en Gráficos 1 no introduce su nombre en el
+diálogo M07 activo. La selección desde Álgebra pertenece al alcance
+verificado y la limitación queda registrada como deuda no bloqueante.
+Se incorporan las enmiendas de compatibilidad R5-B/D1 y persistencia Classic.
+[Cierre y limitación M07](../validation/pre_g9b_cu5_cu6_closeout_record.md#obs-cu6-m07-gv1-slider-pick)
 
 ### CU7 — Puntos sobre Locus V2 y redefinición
 
@@ -778,7 +804,13 @@ recoge el estado y las dependencias de cada capacidad.
 
 ### CU8 — Contenedores de controles
 
-`CU8-D` solamente; `CU8-I` requiere autorización separada.
+`CU8-D` tiene dirección de complejidad media aceptada. La autorización
+separada de `CU8-I` se comunicó el 2026-11-09 para una sesión nueva,
+con alcance Desktop, Gráficos 1, cuatro controles y dos anclajes. Las
+decisiones de formato, interoperabilidad e inserción se concilian antes
+del código afectado. La limitación M07 se incorpora como regresión de no
+interferencia.
+[Adopción y puertas](pre_g9b_cu8_d_control_containers_candidate.md#5-adopción-y-puertas-de-cu8-i-2026-11-09)
 
 ### CU9 — Guía de usuario
 
@@ -809,7 +841,7 @@ punto 11).
 CU0 ──► CU1 ──► CU2 ──► CU3 ──► CU7-D ──► CU7-R5 ─┐
   ├──► CU4 ────────────────────────────────────────┤
   ├──► CU5 ──► CU6-D ──► CU6 ─────────────────────┼──► CU9 ──► CU10
-  └──► CU8-D ─────────────────────────────────────┘
+  └──► CU8-D ──► CU8-I ──────────────────────────┘
 ```
 
 `CU1`–`CU3` son la línea principal de estabilización científica. `CU4`, `CU5` y `CU8-D`

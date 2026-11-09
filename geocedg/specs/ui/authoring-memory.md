@@ -15,12 +15,12 @@
 
 ## 0. Status and normative language
 
-The [CU5 implementation design](../../../docs/architecture/pre_g9b_cu5_implementation_design.md)
-records the author-directed B03/H05 successor for the CU5 candidate. Its
-activation, status and protocol-step rules supersede the corresponding F2/F2-R1
-rules within that candidate. The approved F2/F2-R1 baseline is recorded below.
-The author-approved CU5 axis amendment in §12 extends that candidate's
-reference admission and currentness rules.
+The [CU5 author closeout of 2026-11-09](../../../docs/validation/pre_g9b_cu5_cu6_closeout_record.md)
+adopts the [CU5 implementation design](../../../docs/architecture/pre_g9b_cu5_implementation_design.md)
+for B03/H05. Its activation, status and protocol-step rules supersede the
+corresponding F2/F2-R1 rules in GeoCeDG Desktop Graphics View 1. The baseline
+F2/F2-R1 contract is recorded below. The CU5 axis amendment in §12
+specifies admission and currentness for the two kernel-owned axes.
 
 This specification is the durable contract of the GeoCeDG authoring memory
 (F2, with the F2-R1 dual activation of §11). It was written as the contract of

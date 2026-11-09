@@ -5,6 +5,11 @@ Base autorizada `b842165733261126e0f742586834e2bfc612b6f1`, árbol
 autoral del 2026-11-08. El plan consolidado y los contratos F1/F2 siguen siendo
 la autoridad en todo comportamiento ajeno a B02, B03, H05 y DC-4.
 
+El [cierre autoral del 2026-11-09](../validation/pre_g9b_cu5_cu6_closeout_record.md)
+adopta B02, B03, H05 y M04 con su comportamiento verificado en
+`547fdee503f837218db06991c6c17be366c10578`. Las condiciones de entrada y
+verificación del diseño conservan su valor histórico.
+
 ## B02
 
 Desktop mide las celdas visibles con sus renderizadores y su tipografía real.
@@ -30,7 +35,7 @@ estado de la referencia.
 | Estado de la referencia | Regla |
 |---|---|
 | Vacía | No se ha confirmado una construcción con referencia utilizable para esta ranura |
-| Disponible | Misma instancia del orden de construcción y vigente, disponible en el paso y usable según F2 |
+| Disponible | Misma instancia vigente según F2 o la excepción de ejes, disponible en el paso y usable |
 | Suspendida por paso | Misma instancia vigente, con índice constructivo posterior al paso |
 | Suspendida | Misma instancia vigente, temporalmente no utilizable por los predicados F2 |
 | Invalidada | Instancia retirada o reconstruida sin correspondencia explícita. Requiere selección nueva |

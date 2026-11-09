@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu5_cu6_closeout_record.md",
+  "authorApprovalDate": "2026-11-09",
+  "selfApproved": false,
+  "authority": {
+    "source": "human author in the current work session",
+    "instruction": "GeoCeDG — PRE-G9B-CU5/CU6 · Cierre autoral conjunto, publicación y preparación de CU8-I"
+  },
+  "identities": {
+    "technicalCandidate": {
+      "branch": "codex/pre-g9b-cu5-cu6",
+      "commit": "547fdee503f837218db06991c6c17be366c10578",
+      "tree": "a22d1fe136fdbcc6dd953527394751c30935a082"
+    },
+    "publishedBaseline": {
+      "ref": "refs/heads/main",
+      "commit": "b842165733261126e0f742586834e2bfc612b6f1",
+      "tree": "607af3a916025d8a1bbd5cc8f4a21c9a95d7fd66"
+    },
+    "documentaryCloseout": {
+      "branch": "codex/pre-g9b-cu5-cu6-closeout",
+      "parent": "547fdee503f837218db06991c6c17be366c10578",
+      "commitIdentity": "commit containing this record"
+    }
+  },
+  "phases": [
+    {
+      "phase": "PRE-G9B-CU5",
+      "status": "PASS — AUTHOR APPROVED",
+      "authorApproved": true,
+      "passClaimed": true,
+      "approvedScope": [
+        "B02",
+        "B03",
+        "M04",
+        "H05",
+        "canonical xAxis and yAxis memory in Parallel and Perpendicular"
+      ]
+    },
+    {
+      "phase": "PRE-G9B-CU6",
+      "status": "PASS — AUTHOR APPROVED WITH EXPLICIT LIMITATION",
+      "authorApproved": true,
+      "passClaimed": true,
+      "approvedScope": [
+        "B04",
+        "M02",
+        "M03",
+        "M06",
+        "M07 in verified contexts",
+        "M10",
+        "2026-11-09 R5-B, D1 and Classic native numeric-layer amendments"
+      ],
+      "explicitLimitation": "OBS-CU6-M07-GV1-SLIDER-PICK"
+    }
+  ],
+  "authorSmoke": {
+    "status": "PASS — AUTHOR REPORTED",
+    "source": "human closeout instruction",
+    "explicitLimitation": "OBS-CU6-M07-GV1-SLIDER-PICK"
+  },
+  "agentSmoke": {
+    "method": "Computer Use on GeoCeDG Desktop",
+    "candidateCommit": "547fdee503f837218db06991c6c17be366c10578",
+    "candidateTree": "a22d1fe136fdbcc6dd953527394751c30935a082",
+    "axisActivation": "author performed Ctrl+click in both tools",
+    "axisScenarios": [
+      "Parallel xAxis",
+      "Parallel yAxis",
+      "Perpendicular xAxis",
+      "Perpendicular yAxis",
+      "reuse",
+      "cancel",
+      "tool switching",
+      "Undo/Redo",
+      "save and reopen"
+    ],
+    "savedLines": 10,
+    "m07Algebra": "insertion at caret, confirm, and Escape verified",
+    "m07Graphics1Slider": "rejected",
+    "evidenceRoot": "artifacts/cu5-axis-memory/"
+  },
+  "debt": {
+    "id": "OBS-CU6-M07-GV1-SLIDER-PICK",
+    "status": "OPEN — AUTHOR ACCEPTED AS NONBLOCKING",
+    "blockingCu6": false,
+    "fixture": "artifacts/cu5-axis-memory/cu6-m07-reproduccion.cedg",
+    "reproduction": "Dilate from Point on S and O, arm Pick object, click a visible slider in Graphics 1.",
+    "admitted": "Verified numeric argument fields and selection contexts, including Algebra with caret insertion, confirmation and Escape.",
+    "limitation": "A slider click in Graphics 1 does not insert its name in the active M07 dialog.",
+    "reproducedCommits": [
+      "0728b0948f0392d2d2d9c786e54fd154a81e0776",
+      "547fdee503f837218db06991c6c17be366c10578"
+    ],
+    "cu8Interaction": "Compare loose and grouped sliders. Preserve Algebra and Escape, isolate capture from layout editing and value changes. Fixing M07 is outside the CU8-I entry gate."
+  },
+  "normativeAdoption": {
+    "cu5": [
+      "docs/architecture/pre_g9b_cu5_implementation_design.md",
+      "geocedg/specs/ui/authoring-memory.md",
+      "geocedg/specs/presentation/orientation-cue.md"
+    ],
+    "cu6": [
+      "docs/architecture/pre_g9b_cu6_d_interaction_design.md",
+      "geocedg/specs/ui/native-document-identity.md",
+      "geocedg/specs/units/unit-system.md",
+      "docs/adr/0031-canonical-english-command-surface-compatibility.md",
+      "geocedg/specs/ui/application-profile.md"
+    ],
+    "nativeAmendmentsDate": "2026-11-09"
+  },
+  "verificationTraceability": {
+    "focal": {
+      "cohort": "pre-freeze focal axis correction",
+      "tests": 52,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "report": "artifacts/pre-g9b-cu5-cu6-worktree/artifacts/axis-focal2/producer.json"
+    },
+    "exactTechnicalCandidate": [
+      {
+        "label": "PHASE PRE-G9B-CU5",
+        "report": "artifacts/pre-g9b-cu5-cu6-worktree/artifacts/axis-phase-cu5/verification-result.json",
+        "runId": "verification-65f0a05cae344b31a4c081f9133c9750",
+        "resultHash": "e381d41d43d2b8713c3cc85525f37c0c884593391efaaabe8670645f2ab65928",
+        "reportFileSha256": "e2ce3a7c92b97de02a410d1db8903671ae6aa19b1cfa72db7f7092270b716067",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 4,
+        "junitCases": 57
+      },
+      {
+        "label": "PHASE PRE-G9B-CU6",
+        "report": "artifacts/pre-g9b-cu5-cu6-worktree/artifacts/axis-phase-cu6/verification-result.json",
+        "runId": "verification-f242fe2b9ffa47e0bde2d69ed8f717f8",
+        "resultHash": "06e0bd2c257b4d03dceb22f1c8e059302ef0d1d04aaebcfa65afef90cdb0379d",
+        "reportFileSha256": "24d8187ee2b980f1ea20fa3bb8f49dcf40c2369d918c43798495b1dff6683a1b",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 4,
+        "junitCases": 114
+      },
+      {
+        "label": "INTEGRATION",
+        "report": "artifacts/pre-g9b-cu5-cu6-worktree/artifacts/axis-integration/verification-result.json",
+        "runId": "verification-a6a750c5b255430384b74f6f3881ca4d",
+        "resultHash": "18fd4a437a599851c1bc0ea6aa28a8d95e40d0cbf5ed1f496f60c346e4f7da6c",
+        "reportFileSha256": "caa1d3f4f2e2dcb46acb54bc46cca2923c4185276ee8e56f5eac1bd5dab43052",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 19
+      }
+    ],
+    "diagnostics": [
+      "Three focal-test Checkstyle warnings about distance between declaration and first use",
+      "Historical G9U1 Revision3 fixture unavailable",
+      "Recorded integrated suite omissions"
+    ],
+    "manifests": [
+      {
+        "path": "artifacts/cu5-axis-memory/manifest.json",
+        "sha256": "93b60e9be71325764eba2506388c4937cb13824b04c2af49b421b5a444ddf153",
+        "verifiedEntries": 1193
+      },
+      {
+        "path": "artifacts/cu6-native-reconciliation/manifest.json",
+        "sha256": "d534e7b987e8db08a89e8d121ee4161660e3c2fc4749bbc1fb31d7855ecda3d4",
+        "verifiedEntries": 52,
+        "candidateCommit": "0728b0948f0392d2d2d9c786e54fd154a81e0776"
+      }
+    ],
+    "documentaryClass": "DOCUMENTATION_STATUS_ONLY",
+    "documentaryChecks": [
+      "STATIC",
+      "exhaustive Git-tree delta",
+      "mirror and links"
+    ],
+    "evidenceRoot": "artifacts/agent/pre-g9b-cu5-cu6-closeout/",
+    "productCampaignOnDocumentaryCommit": false,
+    "newFinal": false
+  },
+  "cu8": {
+    "design": {
+      "status": "DESIGN DIRECTION — AUTHOR ACCEPTED",
+      "complexity": "MEDIUM",
+      "record": "docs/architecture/pre_g9b_cu8_d_control_containers_candidate.md",
+      "originalCommit": "fef825860693cfb3f6412946b07816c8895e30ec",
+      "originalTree": "226dfa681949ec39e98c8ff2292c37501a960e66",
+      "originalBlob": "2e1d8832b1a015cc35e57235e0a2f4ba07358859"
+    },
+    "implementation": {
+      "phase": "PRE-G9B-CU8-I",
+      "authorized": true,
+      "execution": "next session after publication and normative reconciliation",
+      "scope": {
+        "frontend": "GeoCeDG Desktop",
+        "view": "Graphics 1",
+        "controls": [
+          "slider",
+          "button",
+          "checkbox",
+          "input box"
+        ],
+        "anchors": [
+          "screen-fixed",
+          "view-coordinate"
+        ]
+      },
+      "pending": [
+        "exact v1 carrier, grammar, limits and context proof",
+        "validated Classic and older-reader interoperability policy",
+        "transactional disposition of CU8-bearing F3/P4/B2 or expert insertion"
+      ],
+      "m07Limitation": "OBS-CU6-M07-GV1-SLIDER-PICK"
+    }
+  },
+  "reservedPhases": [
+    "PRE-G9B-CU9",
+    "PRE-G9B-CU10"
+  ],
+  "publication": {
+    "authorAuthorized": true,
+    "target": "refs/heads/main",
+    "method": "exact documentary descendant by non-forced fast-forward",
+    "observedResult": "external closeout evidence"
+  },
+  "productChangeByCloseout": "NONE",
+  "verificationInfrastructureImpact": "NONE",
+  "bootstrapImpact": "NO CHANGE REQUIRED",
+  "guideImpact": "NONE"
+}

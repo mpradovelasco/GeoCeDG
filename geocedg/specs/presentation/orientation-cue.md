@@ -4,7 +4,7 @@
 |---|---|
 | Status | **NORMATIVE / AUTHOR APPROVED** (author closeout of 2026-10-11, [F1 closeout record](../../../docs/validation/pre_g9b_r6_plus_f1_closeout_record.md)); the approved implementation is the technical candidate `1cea3c89e34d32ab6321a434e7bb873bc1a33f83`. Earlier: `PROPOSED — TECHNICAL CANDIDATE PENDING AUTHOR REVIEW` |
 | Approval scope | the behavior of the F1 author decisions (`DQ-F1-1` to `DQ-F1-9`, `OTQ-F1-1` to `OTQ-F1-4`) as implemented by the approved candidate; it does not extend to the excluded routes `X1`–`X10` or to Graphics View 2 |
-| CU5 candidate | The [DC-4 implementation design](../../../docs/architecture/pre_g9b_cu5_implementation_design.md#m04) admits canonical 2D axes as orientation-bearing inputs of Parallel and Perpendicular. The axes themselves remain excluded from cue rendering. |
+| CU5 amendment, 2026-11-09 | The [author closeout](../../../docs/validation/pre_g9b_cu5_cu6_closeout_record.md) adopts [M04 / DC-4](../../../docs/architecture/pre_g9b_cu5_implementation_design.md#m04) in GeoCeDG Desktop Graphics View 1. The canonical axes supply the kernel's positive X and Y directions as inputs of Parallel and Perpendicular. The cue can appear on eligible outputs and their chains. The axes carry no cue of their own. |
 | Version | `1.0` |
 | Owner phase | `PRE-G9B-R6-plus-F1` (orientation cue) |
 | Governing author decisions | [F1 author-decision record](../../../docs/validation/pre_g9b_r6_plus_f1_author_decisions_record.md) v1.2 (`DQ-F1-1` to `DQ-F1-9`, `OTQ-F1-1` to `OTQ-F1-4`, implementation authorization §8) |

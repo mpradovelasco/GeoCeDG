@@ -7,6 +7,17 @@ La caracterización de código corresponde al baseline publicado
 `607af3a916025d8a1bbd5cc8f4a21c9a95d7fd66`. Antes de implementar se cotejarán
 los puntos de extensión que haya cambiado el checkpoint CU5.
 
+## Disposición autoral del 2026-11-09
+
+El [cierre CU6](../validation/pre_g9b_cu5_cu6_closeout_record.md) adopta el
+perímetro funcional demostrado de DF-1 a DF-6 y las enmiendas de
+compatibilidad y persistencia de esa fecha. Las secciones de diseño se
+leen con la limitación explícita M07. En un diálogo activo, el clic
+sobre un deslizador de Gráficos 1 no introduce su nombre. La selección
+desde Álgebra, inserción en el cursor, confirmación y cancelación
+comprobadas se admiten. La aceptación se limita a las rutas verificadas.
+[Reproducción y deuda](../validation/pre_g9b_cu5_cu6_closeout_record.md#obs-cu6-m07-gv1-slider-pick)
+
 ## Autoridad y colocación
 
 El [plan consolidado](pre_g9b_cu_corrective_usability_plan.md#cu6--interacción-y-presentación)
@@ -30,7 +41,7 @@ heredados siguen determinando qué expresiones y tipos admite cada campo.
 
 | Diálogo y entrada normal | Campo habilitado y ejemplo | Exclusiones y semántica preservada |
 |---|---|---|
-| Punto por dirección semántica, `GeoCeDGLocusV2Dialogs.createSemanticPoint` | Parámetro numérico. Con `t=0.25` ya existente, seleccionar su deslizador o su fila algebraica e insertar `t` en el campo. | Rama es una clave textual. La fuente Locus V2 preseleccionada y el contrato de `createSemanticPoint` conservan sus guardas. El selector Q de CU7 es independiente. |
+| Punto por dirección semántica, `GeoCeDGLocusV2Dialogs.createSemanticPoint` | Parámetro numérico. Con `t=0.25` ya existente, seleccionar su fila algebraica e insertar `t` en el campo. | El clic sobre el deslizador está sujeto a la limitación del cierre. Rama es una clave textual. La fuente Locus V2 preseleccionada y el contrato de `createSemanticPoint` conservan sus guardas. El selector Q de CU7 es independiente. |
 | Rotar Locus V2, `GeoCeDGSimilarityTools.click` | Ángulo. Seleccionar el ángulo numérico `α` existente. | Centro y fuente son operandos previos. Se conserva `evaluateToNumeric`, su tratamiento angular y la operación transaccional. |
 | Dilatar Locus V2, mismo punto de entrada | Factor. Seleccionar el número `k` existente. | Centro, fuente, admisibilidad del factor y similitud conservan su contrato. |
 | SplineV2 con grado, `GeoCeDGSplineV2Authoring.hostDegreeDialog` | Grado. Seleccionar el número `d` existente. | Los puntos conservan el orden de selección y se pasan por instancia. Conservar `NumberInputHandler`, `DegreeInput` y la validación del comando. |

@@ -4,6 +4,8 @@
 `b842165733261126e0f742586834e2bfc612b6f1`, árbol
 `607af3a916025d8a1bbd5cc8f4a21c9a95d7fd66`. La especificación que habilitaría CU8-I
 requiere adopción expresa. M05.1 ya pertenece al cierre de CU4.
+La [disposición autoral de 2026-11-09](#5-adopción-y-puertas-de-cu8-i-2026-11-09)
+adopta la dirección y acota las decisiones de formato pendientes.
 
 Fuentes de alcance y compatibilidad.
 [Plan consolidado](pre_g9b_cu_corrective_usability_plan.md) ·
@@ -242,6 +244,7 @@ dos modos de esta propuesta.
 | Protocolo e historial | Ocultar pasos, volver, borrar, deshacer y rehacer, redefinir otro objeto, intentar sustituir un miembro, cancelar un arrastre. Certificar ranuras, DAG, estado guardado y un Undo por edición. |
 | Transformación | Pan, zoom con escalas distintas, cambio de tamaño, insets y DPI. El modo fijo conserva offsets respecto al área útil. El vinculado sigue la transformación de la vista y conserva dimensiones lógicas. Conversión de modo con diferencia de hasta un píxel por cuantización final. |
 | Interacción real Swing | Botón con contador, casilla, deslizador horizontal y vertical y campo con vínculo. Comparar hit, clic y valor antes y después del movimiento. Probar editor simbólico y normal, Escape, foco, cambio de documento y conflicto con selector de diálogo. |
+| M07 en captura activa | Reproducir `OBS-CU6-M07-GV1-SLIDER-PICK` con un deslizador suelto y comparar uno agrupado. El rechazo gráfico conocido puede mantenerse. El clic capturado conserva el texto y la apertura del diálogo, y queda aislado del arrastre, cambios de valor, scripts y edición de la disposición. Verificar inserción en el cursor y confirmación desde Álgebra, ambos pasos de ESC y reanudación de las acciones nativas al cerrar. La reparación del clic de M07 no es una puerta de CU8-I. |
 | Visibilidad | Matriz panel, capa, condición, paso y vista. Ningún control invisible recibe hit o mantiene un editor fantasma. Ocultar y mostrar conserva valores y condiciones. Probar Gráficos 2 y el visor de exportación. |
 | Transporte | Copia parcial y total, duplicación vacía, apertura o intento de inserción de fuente con paneles y receptor con paneles en ambas rutas. Verificar respuesta en diagnóstico y recuperación de Undo/Redo con fallos inducidos. |
 | Carga | Sonda de 1.000 objetos ajenos y 256 ranuras usando contadores de visita. En un gesto se actualizan solo las ranuras del panel afectado y la búsqueda de pertenencia usa un índice por instancia. Ningún escaneo del DAG por evento de ratón ni escrituras de XML por fotograma. |
@@ -269,3 +272,71 @@ BOOTSTRAP_JUSTIFICATION = El candidato documental conserva el launcher, los prer
 GUIDE_IMPACT = NONE
 GUIDE_JUSTIFICATION = M05 está en diseño candidato. El comportamiento observable y las guías de usuario no cambian.
 ```
+
+## 5. Adopción y puertas de CU8-I (2026-11-09)
+
+El autor acepta la dirección de complejidad media de CU8-D y autoriza
+CU8-I en una sesión nueva después de la publicación. La caracterización
+original corresponde a `fef825860693cfb3f6412946b07816c8895e30ec`,
+árbol `226dfa681949ec39e98c8ff2292c37501a960e66`, blob del diseño
+`2e1d8832b1a015cc35e57235e0a2f4ba07358859`. El producto técnico de
+CU5/CU6 contiene ese mismo blob. `selfApproved=false`.
+[Decisión de cierre y transición](../validation/pre_g9b_cu5_cu6_closeout_record.md)
+
+### Dirección adoptada
+
+- Panel documental de presentación en GeoCeDG Desktop, Gráficos 1.
+  Se aplica la tabla positiva de §2.1 para deslizadores numéricos, botones,
+  casillas y campos de entrada nativos. Sus acciones, valores, dependencias,
+  capas y posiciones de respaldo conservan su autoridad.
+- Dos modalidades de anclaje. El origen fijo se expresa en píxeles lógicos
+  respecto al área útil. El origen vinculado proyecta un par finito de
+  coordenadas de Gráficos 1. Los desplazamientos y tamaños intrínsecos de
+  los controles se expresan en píxeles lógicos en ambas modalidades.
+- La pertenencia se prueba por registro del documento, ranura e instancia
+  viva de la misma vista y construcción. Cada control ocupa a lo sumo una
+  ranura. El panel aporta identidad de presentación y conserva el DAG
+  existente. La selección, reconstrucción y restauración requieren
+  correspondencia explícita. Etiquetas, posición, orden y proximidad
+  carecen de autoridad de reasociación.
+- La presentación combina vista, capa, condición, paso constructivo y
+  visibilidad del panel. Dibujo, hit, arrastre y posición del editor
+  comparten origen. Un gesto de disposición respeta el editor activo y la
+  captura M07. Los modos normales de los cuatro controles y las
+  interacciones aprobadas de CU5/CU6 son regresiones obligatorias.
+- La persistencia de archivo, Undo/Redo y reconstrucción debe restaurar
+  el estado de pertenencia de su propio documento de forma transaccional.
+  Una edición confirmada tiene una entrada Undo. Navegación y cancelación
+  conservan el historial. Un documento anterior sin disposición abre
+  con cero paneles y mantiene sus garantías de escritura histórica.
+- Copia ordinaria de controles y duplicación de una disposición vacía
+  delimitan el diseño inicial. La transferencia entre documentos, copia
+  de panel poblado, anclas a GeoElements vivos, paneles anidados y alcance
+  multivista quedan fuera. El transporte de fragmentos conserva sus
+  fronteras de identidad y las garantías vigentes de inserción y rollback.
+
+### Contrato de compatibilidad y decisiones previas al código
+
+La lectura de una disposición necesita contexto autorizado, prueba de
+instancia por bloque propietario, validación de relaciones y publicación
+atómica del registro. La escritura histórica de documentos sin disposición
+y el tratamiento de capas explícitas de CU6, incluido `0`, conservan su
+perímetro. La conservación validada en Classic incluye geometría, DAG y
+propiedades nativas de los cuatro controles, más sus posiciones de respaldo.
+Un guardado que admita la disposición debe preservar su registro. La UI
+de creación de paneles pertenece a GeoCeDG Desktop Gráficos 1.
+[Identidad nativa y enmienda CU6](../../geocedg/specs/ui/native-document-identity.md) ·
+[Cotejo histórico D1](../../geocedg/specs/units/unit-system.md)
+
+| Decisión pendiente | Sonda y regla para resolverla |
+|---|---|
+| CU8-FORMAT-V1 | La pareja XML `geocedgControlLayout`/`geocedgControlSlot`, su soporte exacto, campos, orden y límites 32/256/64 KiB son propuestas. Cotejar la correspondencia por bloque de los cuatro productores, las rutas FILE/MEMORY, la restauración y el comportamiento al encontrar datos malformados o versión desconocida. Ratificar la gramática y los límites antes del codec. |
+| CU8-CLASSIC-LEGACY | Probar Classic de la misma distribución y un lector anterior con entrada nativa y archivo heredado. Determinar si el formato conserva la disposición y las posiciones de respaldo, si la ruta se debe rechazar o si puede ofrecer una degradación explícita. La eventual pérdida de disposición al guardar con un lector anterior requiere decisión autoral. |
+| CU8-INSERT | La propuesta rechaza una fuente con paneles antes de copiar y admite un receptor con paneles solo bajo certificado y rollback completos. Verificar las barreras de F3/P4/B2 y de inserción experta. Toda nueva exclusión en un contrato vigente y toda ampliación de la clase certificada requieren conciliación expresa. |
+
+La primera puerta de CU8-I congela estas decisiones y los negativos
+correspondientes. Si la prueba por instancia exige cambiar la autoridad de
+identidad durable o la recuperación transaccional existente, elevar ese
+punto al autor antes del código afectado. La matriz anterior usa la
+[limitación M07 aceptada](../validation/pre_g9b_cu5_cu6_closeout_record.md#obs-cu6-m07-gv1-slider-pick)
+como línea base de no interferencia. CU9 y CU10 conservan su reserva.
