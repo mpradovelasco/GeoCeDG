@@ -5934,7 +5934,8 @@ public abstract class EuclidianController implements SpecialPointsListener {
 
 	protected final void moveBoolean() {
 		// part of snap to grid code
-		if (isMoveCheckboxExpected() || !movedGeoBoolean.isLockedPosition()) {
+		if (view.getControlLayoutPosition(movedGeoBoolean) == null
+				&& (isMoveCheckboxExpected() || !movedGeoBoolean.isLockedPosition())) {
 			movedGeoBoolean.setAbsoluteScreenLoc(
 					view.toScreenCoordX(xRW - getStartPointX()),
 					view.toScreenCoordY(yRW - getStartPointY()));
@@ -5943,6 +5944,9 @@ public abstract class EuclidianController implements SpecialPointsListener {
 	}
 
 	private void moveWidget() {
+		if (view.getControlLayoutPosition(movedObject.toGeoElement()) != null) {
+			return;
+		}
 		if (movedObject.isAbsoluteScreenLocActive()) {
 			// part of snap to grid code
 			movedObject.setAbsoluteScreenLoc(
@@ -7451,7 +7455,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 	 */
 	protected boolean isMoveSliderExpected(int hitThreshold) {
 		DrawableND drawable = view.getDrawableFor(movedGeoNumeric);
-		if (drawable == null) {
+		if (drawable == null || view.getControlLayoutPosition(movedGeoNumeric) != null) {
 			return false;
 		}
 		DrawSlider ds = (DrawSlider) drawable;

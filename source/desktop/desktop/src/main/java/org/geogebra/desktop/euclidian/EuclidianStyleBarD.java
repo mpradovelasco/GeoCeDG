@@ -30,6 +30,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JToolBar;
 
+import org.geocedg.desktop.GeoCeDGControlLayoutEdits;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GFont;
 import org.geogebra.common.euclidian.EuclidianConstants;
@@ -1544,13 +1545,19 @@ public class EuclidianStyleBarD extends JToolBar
 		}
 
 		else if (source == btnFixPosition) {
-			needUndo = EuclidianStyleBarStatic.applyFixPosition(targetGeos,
-					btnFixPosition.isSelected(), ev) != null;
+			boolean fixed = btnFixPosition.isSelected();
+			if (!fixed && GeoCeDGControlLayoutEdits.rejectIncompatible(app, targetGeos.toArray())) {
+				updateStyleBar();
+			} else {
+				needUndo = EuclidianStyleBarStatic.applyFixPosition(targetGeos, fixed, ev) != null;
+			}
 		}
 
 		else if (source == btnFixObject) {
-			needUndo = EuclidianStyleBarStatic.applyFixObject(targetGeos,
-					btnFixObject.isSelected(), ev) != null;
+			boolean fixed = btnFixObject.isSelected();
+			if (!fixed || !GeoCeDGControlLayoutEdits.rejectIncompatible(app, targetGeos.toArray())) {
+				needUndo = EuclidianStyleBarStatic.applyFixObject(targetGeos, fixed, ev) != null;
+			}
 			btnFixObject.update(targetGeos);
 		}
 

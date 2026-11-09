@@ -33,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
+import org.geocedg.desktop.GeoCeDGControlLayoutEdits;
 import org.geogebra.common.gui.ContextMenuGeoElement;
 import org.geogebra.common.gui.dialog.options.model.ConicEqnModel;
 import org.geogebra.common.kernel.Kernel;
@@ -474,9 +475,16 @@ public class ContextMenuGeoElementD extends ContextMenuGeoElement {
 			cbItem.setSelected(getGeo().isPinned());
 			cbItem.addActionListener(e -> {
 				boolean isSelected = cbItem.isSelected();
-				pinCmd(isSelected);
+				runPlacementEdit(!isSelected, () -> pinCmd(isSelected));
 			});
 			addItem(cbItem);
+		}
+	}
+
+	private void runPlacementEdit(boolean incompatible, Runnable action) {
+		if (!incompatible || !GeoCeDGControlLayoutEdits.rejectIncompatible((AppD) app,
+				checkOneGeo().toArray())) {
+			action.run();
 		}
 	}
 
@@ -596,7 +604,10 @@ public class ContextMenuGeoElementD extends ContextMenuGeoElement {
 				cbItem = new JCheckBoxMenuItem(loc.getMenu("FixObject"));
 				((AppD) app).setEmptyIcon(cbItem);
 				cbItem.setSelected(getGeo().isLocked());
-				cbItem.addActionListener(e -> fixObjectCmd(!getGeo().isLocked()));
+				cbItem.addActionListener(e -> {
+					boolean fixed = !getGeo().isLocked();
+					runPlacementEdit(fixed, () -> fixObjectCmd(fixed));
+				});
 				addItem(cbItem);
 			} else
 
@@ -607,7 +618,8 @@ public class ContextMenuGeoElementD extends ContextMenuGeoElement {
 					cbItem = new JCheckBoxMenuItem(loc.getMenu("FixObject"));
 					((AppD) app).setEmptyIcon(cbItem);
 					cbItem.setSelected(num.isLockedPosition());
-					cbItem.addActionListener(e -> fixObjectNumericCmd(num));
+					cbItem.addActionListener(e -> runPlacementEdit(true,
+							() -> fixObjectNumericCmd(num)));
 					addItem(cbItem);
 				}
 			} else if (getGeo().isGeoBoolean()) {
@@ -615,7 +627,8 @@ public class ContextMenuGeoElementD extends ContextMenuGeoElement {
 				cbItem = new JCheckBoxMenuItem(loc.getMenu("FixCheckbox"));
 				((AppD) app).setEmptyIcon(cbItem);
 				cbItem.setSelected(getGeo().isLockedPosition());
-				cbItem.addActionListener(e -> fixCheckboxCmd());
+				cbItem.addActionListener(e -> runPlacementEdit(true,
+						this::fixCheckboxCmd));
 				addItem(cbItem);
 			}
 

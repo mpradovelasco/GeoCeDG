@@ -101,19 +101,25 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     $cu7M08SReferenceActionIds = @("semantic.locus-v2.point-from-reference")
     # POST-CU4 authorizes one default-enabled expert document action.
     $expertInsertionActionIds = @("document.insert-expert")
+    # CU8-I adopts one experimental Desktop action for Graphics 1.
+    $controlLayoutActionIds = @("presentation.control-layout")
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
         $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
         $preG9BR6PlusE2ActionIds + $preG9BR6PlusE3ActionIds + $preG9BR6PlusF1ActionIds +
         $preG9BR6PlusF3ActionIds + $cu7M08SReferenceActionIds +
-        $expertInsertionActionIds | Sort-Object -CaseSensitive)
+        $expertInsertionActionIds + $controlLayoutActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
-        throw "Live action IDs differ from the G9U1 catalog plus its approved amendments and the authorized CU7 M08-S-R2 and POST-CU4 I3–I5 Desktop actions."
+        throw "Live action IDs differ from the G9U1 catalog plus its approved amendments and the authorized Desktop actions."
     }
     $featureIds = @($profile.features.id)
     $approvedFeatures = @($candidate.features) + @(@{
         id = "cedg.document.expert-insertion"
         source = "geocedg/features/stable.yml"
+        enabled_by_default = $true
+    }, @{
+        id = "cedg.presentation.control-layout"
+        source = "geocedg/features/experimental.yml"
         enabled_by_default = $true
     })
     if ($featureIds.Count -ne $approvedFeatures.Count -or
@@ -133,6 +139,12 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         $expertAction.target.symbol -cne "geocedg.document.insert-expert" -or
         ($expertAction.feature_requirements -join ",") -cne "cedg.document.expert-insertion") {
         throw "Expert insertion must retain its separate, feature-controlled action."
+    }
+    $controlLayoutAction = $profile.actions | Where-Object id -CEQ "presentation.control-layout"
+    if ($controlLayoutAction.maturity -cne "experimental" -or
+        $controlLayoutAction.target.symbol -cne "geocedg.presentation.control-layout" -or
+        ($controlLayoutAction.feature_requirements -join ",") -cne "cedg.presentation.control-layout") {
+        throw "Control layout must retain its experimental, feature-controlled action."
     }
     if ($profile.product_policies.continuity.value -ne $false -or
         $profile.product_policies.continuity.locked -ne $true -or

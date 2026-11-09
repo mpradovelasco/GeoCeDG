@@ -30,6 +30,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.geocedg.common.kernel.units.UnitMetadataException;
 import org.geocedg.common.kernel.units.UnitStateXml;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geocedg.desktop.GeoCeDGInspectionArchive.Code;
 import org.geocedg.desktop.GeoCeDGInspectionArchive.Declaration;
 import org.geocedg.desktop.GeoCeDGInspectionArchive.Disposition;
@@ -177,6 +178,7 @@ final class GeoCeDGInspectionXml {
 	private final Map<String, String> referencedLabels = new HashMap<>();
 	private final Set<String> declared = new HashSet<>();
 	private boolean safe = true;
+	private boolean controlLayout;
 
 	private GeoCeDGInspectionXml(String entry, List<Finding> findings) {
 		this.entry = entry;
@@ -391,8 +393,16 @@ final class GeoCeDGInspectionXml {
 		}
 		for (int i = 0; i < reader.getAttributeCount(); i++) {
 			String key = reader.getAttributeLocalName(i);
+			boolean layoutAttribute = empty(reader.getAttributeNamespace(i))
+					&& ("construction".equals(name) && ControlLayoutXml.LAYOUT_ATTRIBUTE.equals(key)
+							|| "element".equals(name) && ControlLayoutXml.SLOT_ATTRIBUTE.equals(key));
+			if (layoutAttribute && !controlLayout) {
+				controlLayout = true;
+				refuse(Code.CONTROL_LAYOUT, name, "Control layout outside the passive vocabulary");
+			}
 			String value = reader.getAttributeValue(i);
-			if (key.length() > 64 || value.length() > MAX_ATTR_LENGTH) {
+			int maxLength = layoutAttribute ? ControlLayoutXml.MAX_BYTES : MAX_ATTR_LENGTH;
+			if (key.length() > 64 || value.length() > maxLength) {
 				throw new XMLStreamException("XML attribute size limit");
 			}
 			if (!empty(reader.getAttributeNamespace(i))) {

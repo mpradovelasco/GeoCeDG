@@ -101,6 +101,11 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 				&& owner(app) instanceof RootPaneContainer;
 	}
 
+	static boolean isOpen(AppD app) {
+		return owner(app) instanceof RootPaneContainer root
+				&& root.getRootPane().getClientProperty(SESSION) != null;
+	}
+
 	private static Window owner(AppD app) {
 		Component main = app.getMainComponent();
 		return main instanceof Window window ? window : SwingUtilities.getWindowAncestor(main);
@@ -116,6 +121,7 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 						&& controller.referencePointTool().isPanelActive()) {
 			return;
 		}
+		app.closeControlLayout();
 		new GeoCeDGArgumentDialog(app, (Window) owner, title, form, field, operands, submit)
 				.open(owner.getRootPane());
 	}

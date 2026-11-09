@@ -572,6 +572,11 @@ public class ConsElementXMLHandler {
 		}
 	}
 
+	/** @return the instance natively created or reclaimed for the open owner block */
+	GeoElement getControlLayoutOwner() {
+		return geo;
+	}
+
 	// for point or vector
 	private boolean handleCoordStyle(Map<String, String> attrs) {
 		if (!(geo instanceof CoordStyle v)) {

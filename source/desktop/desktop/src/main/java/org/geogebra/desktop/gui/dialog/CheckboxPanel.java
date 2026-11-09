@@ -23,7 +23,11 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+import org.geocedg.desktop.GeoCeDGControlLayoutEdits;
+import org.geogebra.common.gui.dialog.options.model.AbsoluteScreenLocationModel;
 import org.geogebra.common.gui.dialog.options.model.BooleanOptionModel;
+import org.geogebra.common.gui.dialog.options.model.FixCheckboxModel;
+import org.geogebra.common.gui.dialog.options.model.FixObjectModel;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.LocalizationD;
 
@@ -94,6 +98,12 @@ class CheckboxPanel extends OptionPanel
 	}
 
 	public void apply(boolean value) {
+		boolean placementEdit = model instanceof AbsoluteScreenLocationModel && !value
+				|| (model instanceof FixCheckboxModel || model instanceof FixObjectModel) && value;
+		if (placementEdit && GeoCeDGControlLayoutEdits.rejectIncompatible(app, model.getGeos())) {
+			updatePanel(model.getGeos());
+			return;
+		}
 		model.applyChanges(value);
 		tabs.updateTabs(model.getGeos());
 	}

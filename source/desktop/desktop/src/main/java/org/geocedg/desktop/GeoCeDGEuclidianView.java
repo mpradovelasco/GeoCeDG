@@ -16,11 +16,13 @@ import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GGraphics2D;
+import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.awt.GRectangle2D;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.main.App;
 import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.desktop.euclidian.EuclidianStyleBarD;
 import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
@@ -29,6 +31,7 @@ import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
 public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 	private static final GColor EXPORT_AREA_OVERLAY = GColor.newColor(230, 120, 0);
 	private static final GColor INTERSECTION_BADGE_BACKGROUND = GColor.newColor(0, 90, 125);
+	private GeoCeDGControlLayoutWorkspace controlLayout;
 
 	/** Creates the regular Desktop view with a non-semantic overlay. */
 	public GeoCeDGEuclidianView(EuclidianController controller, boolean[] axes,
@@ -41,8 +44,52 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 					((GeoCeDGEuclidianController) controller)
 							.invalidateNavigationCursorContext();
 				}
+				if (controlLayout != null) {
+					controlLayout.cancelGesture();
+				}
 			}
 		});
+	}
+
+	GeoCeDGControlLayoutWorkspace controlLayoutWorkspace() {
+		if (controlLayout == null && getViewID() == App.VIEW_EUCLIDIAN
+				&& getApplication() instanceof AppGeoCeDG app) {
+			controlLayout = new GeoCeDGControlLayoutWorkspace(app, this);
+		}
+		return controlLayout;
+	}
+
+	void closeControlLayout() {
+		if (controlLayout != null) {
+			controlLayout.close();
+		}
+	}
+
+	@Override
+	public GPoint2D getControlLayoutPosition(GeoElement geo) {
+		var workspace = controlLayoutWorkspace();
+		return workspace == null ? null : workspace.position(geo);
+	}
+
+	@Override
+	public boolean isControlLayoutVisible(GeoElement geo) {
+		var workspace = controlLayoutWorkspace();
+		return workspace == null || workspace.visible(geo);
+	}
+
+	@Override
+	protected boolean drawInControlLayout(GeoElement geo) {
+		var workspace = controlLayoutWorkspace();
+		return workspace != null && workspace.deferred(geo);
+	}
+
+	@Override
+	public void drawActionObjectsOnShownLayers(GGraphics2D graphics) {
+		var workspace = controlLayoutWorkspace();
+		if (workspace != null) {
+			workspace.paint(graphics);
+		}
+		super.drawActionObjectsOnShownLayers(graphics);
 	}
 
 	@Override

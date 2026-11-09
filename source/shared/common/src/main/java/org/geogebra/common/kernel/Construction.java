@@ -40,6 +40,9 @@ import java.util.function.Predicate;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.document.controls.ControlLayout;
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geocedg.common.kernel.spatial.identity.ConstructionGeoRedefineProvider;
 import org.geocedg.common.kernel.locus.NativeSourceFidelity2D;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
@@ -123,6 +126,12 @@ import com.google.j2objc.annotations.Weak;
  * @author Markus
  */
 public class Construction {
+	private final ControlLayout controlLayout = new ControlLayout(this);
+
+	/** @return the presentation-only layout owned by this document */
+	public ControlLayout getControlLayout() {
+		return controlLayout;
+	}
 
 	private ConstructionCompanion companion;
 	/** maps arbconst indices to related numbers */
@@ -1559,6 +1568,9 @@ public class Construction {
 	 * @param getListenersToo whether to include JS listener names
 	 */
 	public void getConstructionXML(XMLStringBuilder sb, boolean getListenersToo) {
+		ControlLayoutXml.Output layout = kernel.isMacroKernel()
+				? null : ControlLayoutXml.capture(controlLayout);
+		ControlLayoutXml.Output previousLayout = sb.getControlLayout();
 		NativeSourceFidelity2D previousPass = nativeFileFidelityPass;
 		boolean geoCeDGDocument = usesGeoCeDGConstructionXml();
 		nativeFileFidelityPass = geoCeDGDocument ? NativeSourceFidelity2D.fileSerializationPass() : null;
@@ -1566,12 +1578,16 @@ public class Construction {
 		boolean previousPreservedNumericLayers = sb.writesPreservedNumericLayers();
 		configureNumericLayerOutput(sb);
 		beginSpatialIdentityXML();
+		sb.setControlLayout(layout);
 		try {
 			// save construction elements
 			sb.startOpeningTag("construction", 0);
 			sb.attr("title", getTitle());
 			sb.attr("author", getAuthor());
 			sb.attr("date", getDate());
+			if (layout != null) {
+				sb.attr(ControlLayoutXml.LAYOUT_ATTRIBUTE, layout.header());
+			}
 			sb.endTag();
 
 			// worksheet text
@@ -1602,6 +1618,7 @@ public class Construction {
 		} catch (Exception e) {
 			Log.debug(e);
 		} finally {
+			sb.setControlLayout(previousLayout);
 			endSpatialIdentityXML();
 			sb.setWriteNumericLayers(previousNumericLayers);
 			sb.setWritePreservedNumericLayers(previousPreservedNumericLayers);
@@ -1918,6 +1935,10 @@ public class Construction {
 			boolean captureExplicitOldTarget,
 			SpatialRedefineContext preOperationContext)
 			throws CircularDefinitionException, XMLParseException {
+		if (controlLayout.slot(oldGeo) != null) {
+			throw new ControlLayoutException(ControlLayoutException.Code.OWNER,
+					"Detach the control before replacing its native instance");
+		}
 		boolean participating = oldGeo != null
 				&& spatialIdentityRegistry.isParticipating(oldGeo);
 		// GeoCeDG PRE-G9B-R3: an ordinary edit on the durable frontier of a version-2
@@ -2971,7 +2992,11 @@ public class Construction {
 				nativeRollbackRestore.beginRestore();
 				nativeRollbackLoadPurpose = LoadPurpose.ROLLBACK_RESTORE;
 			}
-			getXMLio().processXMLString(rollbackXml, true, false);
+			if (ControlLayoutXml.inspect(rollbackXml)) {
+				getXMLio().processConstructionSnapshot(rollbackXml, false);
+			} else {
+				getXMLio().processXMLString(rollbackXml, true, false);
+			}
 			if (nativeRollbackRestore != null) {
 				nativeRollbackRestore.finishRestore();
 			}
@@ -4393,6 +4418,7 @@ public class Construction {
 	 * After this the construction list will be empty.
 	 */
 	public void clearConstruction() {
+		controlLayout.clear();
 		if (nextSpatialIdentityLoadPurpose == LoadPurpose.REDEFINE_REBUILD) {
 			spatialIdentityRegistry.clearForRedefineRebuild(
 					nextSpatialIdentityRedefineRebuildToken);
@@ -5024,6 +5050,7 @@ public class Construction {
 	 * @param geos - list of geos selected for grouping
 	 */
 	public void createGroup(ArrayList<GeoElement> geos) {
+		requireControlsOutsideGroup(geos);
 		Group group = new Group(geos);
 		addGroupToGroupList(group);
 	}
@@ -5037,6 +5064,7 @@ public class Construction {
 	 * @param geos - list of geos to be grouped
 	 */
 	public void createGroupFromSelected(ArrayList<GeoElement> geos) {
+		requireControlsOutsideGroup(geos);
 		EuclidianView ev = getApplication().getActiveEuclidianView();
 
 		ungroupGroups(geos);
@@ -5046,6 +5074,13 @@ public class Construction {
 		createGroup(geos);
 		getLayerManager().groupObjects(geos);
 		ev.invalidateDrawableList();
+	}
+
+	private void requireControlsOutsideGroup(List<GeoElement> geos) {
+		if (geos.stream().anyMatch(geo -> controlLayout.slot(geo) != null)) {
+			throw new ControlLayoutException(ControlLayoutException.Code.OWNER,
+					"Detach the controls before creating a native group");
+		}
 	}
 
 	/**

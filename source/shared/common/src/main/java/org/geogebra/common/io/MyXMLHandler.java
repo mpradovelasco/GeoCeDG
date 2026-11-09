@@ -27,6 +27,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.document.controls.ControlLayoutException.Code;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
 import org.geocedg.common.kernel.layers.HiddenLayersXml;
@@ -170,6 +173,11 @@ public class MyXMLHandler implements DocHandler {
 	private final Map<GeoNumeric, Integer> explicitNumericLayers = new IdentityHashMap<>();
 	private boolean invalidNumericLayer;
 	private boolean validatedMainSpatialPayload;
+	private boolean controlLayoutAllowed;
+	private boolean duplicateLayoutAttribute;
+	private ControlLayoutXml.Input controlLayoutInput;
+	private GeoElement controlSlotOwner;
+	private String controlSlotClaim;
 	private int geoPropertyDepth;
 	private LoadSession spatialIdentityLoadSession;
 	private Construction spatialIdentityLoadConstruction;
@@ -349,6 +357,11 @@ public class MyXMLHandler implements DocHandler {
 	}
 
 	@Override
+	public void recordDuplicateAttribute(String tag) {
+		duplicateLayoutAttribute = true;
+	}
+
+	@Override
 	final public void text(String str) throws XMLParseException {
 		if (constMode == MODE_CONST_SPATIAL_IDENTITY && !str.trim().isEmpty()) {
 			throw spatialFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
@@ -398,6 +411,7 @@ public class MyXMLHandler implements DocHandler {
 	final public void startElement(String eName,
 			Map<String, String> attrs) throws XMLParseException {
 
+		checkControlLayoutContext(eName, attrs);
 		if (kernel.userStopsLoading()) {
 			kernel.setUserStopsLoading(false);
 			throw new XMLParseException("User has cancelled loading");
@@ -3013,6 +3027,54 @@ public class MyXMLHandler implements DocHandler {
 		numericLayerInput = input;
 	}
 
+	void beginControlLayoutLoad(boolean allowed) {
+		endControlLayoutLoad();
+		controlLayoutAllowed = allowed;
+	}
+
+	void endControlLayoutLoad() {
+		controlLayoutAllowed = false;
+		duplicateLayoutAttribute = false;
+		controlLayoutInput = null;
+		controlSlotOwner = null;
+		controlSlotClaim = null;
+	}
+
+	boolean isControlLayoutBearingParse() {
+		return controlLayoutInput != null;
+	}
+
+	void commitControlLayoutLoad() {
+		if (controlLayoutInput != null) {
+			controlLayoutInput.publish(origKernel.getConstruction().getControlLayout());
+		}
+	}
+
+	private void checkControlLayoutContext(String name, Map<String, String> attrs) {
+		String header = attrs.get(ControlLayoutXml.LAYOUT_ATTRIBUTE);
+		String slot = attrs.get(ControlLayoutXml.SLOT_ATTRIBUTE);
+		boolean duplicates = duplicateLayoutAttribute;
+		duplicateLayoutAttribute = false;
+		if (header == null && slot == null) {
+			return;
+		}
+		if (duplicates) {
+			throw new ControlLayoutException(Code.GRAMMAR, "Duplicate XML attribute");
+		}
+		if (!controlLayoutAllowed || kernel != origKernel
+				|| header != null && !(mode == MODE_GEOGEBRA && "construction".equals(name))
+				|| slot != null && !(mode == MODE_CONSTRUCTION && constMode == MODE_CONSTRUCTION
+						&& "element".equals(name) && !attrs.containsKey("default"))) {
+			throw new ControlLayoutException(Code.CONTEXT, "Control layout outside native document");
+		}
+		if (controlLayoutInput == null) {
+			controlLayoutInput = new ControlLayoutXml.Input();
+		}
+		if (header != null) {
+			controlLayoutInput.readHeader(header);
+		}
+	}
+
 	void endNumericLayerLoad() {
 		numericLayerInput = NumericLayerInput.LEGACY;
 		explicitNumericLayers.clear();
@@ -3325,6 +3387,15 @@ public class MyXMLHandler implements DocHandler {
 					twinCell.setTwinLoadedFromFile(true);
 				}
 				geoHandler.init(attrs);
+				controlSlotClaim = attrs.get(ControlLayoutXml.SLOT_ATTRIBUTE);
+				if (controlSlotClaim != null) {
+					controlSlotOwner = geoHandler.getControlLayoutOwner();
+					if (controlSlotOwner == null
+							|| !controlSlotOwner.getXMLTypeString().equals(attrs.get("type"))) {
+						throw new ControlLayoutException(Code.OWNER,
+								"Slot owner does not match the native element block");
+					}
+				}
 				geoPropertyDepth = 0;
 			} else if ("command".equals(eName)) {
 				cons.setOutputGeo(null);
@@ -3354,6 +3425,9 @@ public class MyXMLHandler implements DocHandler {
 					"geocedgUnits cannot contain child elements");
 
 		case MODE_CONST_GEO_ELEMENT:
+			if (controlSlotClaim != null && "element".equals(eName)) {
+				throw new ControlLayoutException(Code.GRAMMAR, "Nested control owner block");
+			}
 			GeoNumeric numeric = numericLayerInput == NumericLayerInput.LEGACY
 					? null : numericLayerOwner();
 			if (numeric != null) {
@@ -3419,6 +3493,15 @@ public class MyXMLHandler implements DocHandler {
 			if ("element".equals(eName)) {
 				invalidNumericLayer |= geoPropertyDepth > 0;
 				this.geoHandler.finish();
+				if (controlSlotClaim != null) {
+					if (controlSlotOwner != geoHandler.getControlLayoutOwner()) {
+						throw new ControlLayoutException(Code.OWNER,
+								"Slot owner changed during native block processing");
+					}
+					controlLayoutInput.claim(controlSlotOwner, controlSlotClaim);
+					controlSlotClaim = null;
+					controlSlotOwner = null;
+				}
 				casMap = null;
 				constMode = MODE_CONSTRUCTION;
 			} else if (geoPropertyDepth > 0) {

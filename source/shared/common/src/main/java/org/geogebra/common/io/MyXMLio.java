@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayersXml;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
@@ -212,6 +214,9 @@ public abstract class MyXMLio {
 	 */
 	public void processXMLString(String xml, boolean clearConstruction,
 			boolean isGgtFile, boolean randomize) throws XMLParseException {
+		if (!restoringRejectedSpatialParse) {
+			rejectControlLayoutInGenericXml(xml);
+		}
 		boolean wasFileLoading = cons != null && cons.isFileLoading();
 		if (cons != null) {
 			cons.setFileLoading(true);
@@ -413,11 +418,24 @@ public abstract class MyXMLio {
 	private void processXMLString(String str, boolean clearAll, boolean isGGTOrDefaults,
 			boolean settingsBatch, boolean randomize, NumericLayerInput input)
 			throws XMLParseException {
+		if (input == NumericLayerInput.NATIVE) {
+			ControlLayoutXml.inspect(str);
+		} else {
+			rejectControlLayoutInGenericXml(str);
+		}
 		try {
 			doParseXML(createXMLStreamString(str), clearAll, isGGTOrDefaults,
 					clearAll, settingsBatch, randomize, input);
 		} catch (IOException ex) {
 			throw new XMLParseException(ex);
+		}
+	}
+
+	/** Prevents unsupported XML APIs from clearing a document before noticing a layout. */
+	public static void rejectControlLayoutInGenericXml(String xml) throws XMLParseException {
+		if (ControlLayoutXml.inspect(xml)) {
+			throw new ControlLayoutException(ControlLayoutException.Code.CONTEXT,
+					"Control layout requires a native document or construction snapshot");
 		}
 	}
 
@@ -462,6 +480,7 @@ public abstract class MyXMLio {
 			throws XMLParseException, IOException {
 		String rejectedSpatialRollbackXml = kernel.isMacroKernel()
 				? null : app.getXML();
+		boolean previousControlLayout = !cons.getControlLayout().isEmpty();
 		boolean oldVal = kernel.isNotifyViewsActive();
 		CommandLookupStrategy oldVal2 = kernel.getCommandLookupStrategy();
 		kernel.setLoadingMode(true);
@@ -481,13 +500,17 @@ public abstract class MyXMLio {
 		handler.beginUnitLoad();
 		handler.beginHiddenLayerLoad();
 		handler.beginNumericLayerLoad(numericLayerInput);
+		handler.beginControlLayoutLoad(numericLayerInput == NumericLayerInput.NATIVE
+				&& !isGGTOrDefaults && !kernel.isMacroKernel());
 		try {
 			parseXmlUnsafe(stream, settingsBatch, isGGTOrDefaults);
 			handler.commitNumericLayerLoad();
 			handler.reportHiddenLayerLoad();
+			handler.commitControlLayoutLoad();
 		} catch (CommandNotLoadedError e) {
 			boolean restoreEntry = handler.isSpatialIdentityBearingParse()
-					|| handler.preservesNumericLayers();
+					|| handler.preservesNumericLayers() || handler.isControlLayoutBearingParse()
+					|| previousControlLayout && clearConstruction;
 			handler.abortSpatialIdentityLoad();
 			if (restoreEntry && canRestoreRejectedSpatialParse()) {
 				try {
@@ -499,7 +522,8 @@ public abstract class MyXMLio {
 			throw e;
 		} catch (Error | XMLParseException | IOException | RuntimeException e) {
 			boolean restoreEntry = handler.isSpatialIdentityBearingParse()
-					|| handler.preservesNumericLayers();
+					|| handler.preservesNumericLayers() || handler.isControlLayoutBearingParse()
+					|| previousControlLayout && clearConstruction;
 			handler.abortSpatialIdentityLoad();
 			if (requiresParseRollback(e, restoreEntry)
 					&& canRestoreRejectedSpatialParse()) {
@@ -511,10 +535,12 @@ public abstract class MyXMLio {
 			}
 			Log.error(e.getMessage());
 			if (e instanceof SpatialIdentityException || e instanceof UnitMetadataException
-					|| e instanceof HiddenLayerMetadataException || !isGGTOrDefaults) {
+					|| e instanceof HiddenLayerMetadataException || e instanceof ControlLayoutException
+					|| !isGGTOrDefaults) {
 				throw e;
 			}
 		} finally {
+			handler.endControlLayoutLoad();
 			handler.endNumericLayerLoad();
 			handler.endUnitLoad();
 			handler.endHiddenLayerLoad();
@@ -568,7 +594,8 @@ public abstract class MyXMLio {
 		// PRE-G9B-R6-plus-A-2: so does a fail-closed hidden-layer rejection.
 		return failure instanceof SpatialIdentityException
 				|| failure instanceof UnitMetadataException
-				|| failure instanceof HiddenLayerMetadataException || restoreEntry;
+				|| failure instanceof HiddenLayerMetadataException
+				|| failure instanceof ControlLayoutException || restoreEntry;
 	}
 
 	private boolean canRestoreRejectedSpatialParse() {

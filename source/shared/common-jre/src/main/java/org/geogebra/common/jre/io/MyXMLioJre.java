@@ -38,6 +38,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geocedg.common.kernel.geos.V2StyleDefaults;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.LoadPurpose;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
@@ -234,6 +236,12 @@ public abstract class MyXMLioJre extends MyXMLio {
 			}
 		}
 		zip.close();
+		if (xmlFileBuffer != null && ControlLayoutXml.inspect(
+				new String(xmlFileBuffer, StandardCharsets.UTF_8))
+				&& numericLayerInput != NumericLayerInput.NATIVE) {
+			throw new ControlLayoutException(ControlLayoutException.Code.CONTEXT,
+					"Control layout requires a native .cedg document");
+		}
 		if (geoCeDGLibraryJavaScript != null) {
 			kernel.setLibraryJavaScript(geoCeDGLibraryJavaScript);
 		}

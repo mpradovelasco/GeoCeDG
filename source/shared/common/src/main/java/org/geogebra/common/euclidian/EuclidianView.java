@@ -3626,7 +3626,8 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	private void drawGeometricObjects(GGraphics2D g2) {
 		// only draw drawables we need
 		// GeoCeDG (2026-10-02): PRE-G9B-R6-plus-A-1 skips hidden layers.
-		allDrawableList.drawAll(g2, this::isOnShownLayer);
+		allDrawableList.drawAll(g2, d -> isOnShownLayer(d)
+				&& !drawInControlLayout(d.getGeoElement()));
 
 		if (getEuclidianController().isMultiSelection()) {
 			getEuclidianController()
@@ -3681,7 +3682,23 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 	 * @return whether the layer of the drawable's object is shown
 	 */
 	boolean isOnShownLayer(Drawable d) {
-		return app.isLayerShown(d.getGeoElement().getLayer());
+		return app.isLayerShown(d.getGeoElement().getLayer())
+				&& isControlLayoutVisible(d.getGeoElement());
+	}
+
+	/** @return the live CU8 presentation origin, or null for native positioning */
+	public GPoint2D getControlLayoutPosition(GeoElement geo) {
+		return null;
+	}
+
+	/** @return whether live CU8 presentation permits the control to be shown */
+	public boolean isControlLayoutVisible(GeoElement geo) {
+		return true;
+	}
+
+	/** @return whether live painting will draw this control after the panel background */
+	protected boolean drawInControlLayout(GeoElement geo) {
+		return false;
 	}
 
 	/**

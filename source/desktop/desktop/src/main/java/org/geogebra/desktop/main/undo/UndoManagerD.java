@@ -17,13 +17,19 @@
 // GeoCeDG modification, 2026-11-04: owned history state factory/reader/error seams; defaults unchanged.
 package org.geogebra.desktop.main.undo;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.swing.DefaultListSelectionModel;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.main.App;
@@ -104,7 +110,78 @@ public class UndoManagerD extends UndoManager {
 
 	/** @return the historical file state by default; called by worker and baseline preparation */
 	protected FileAppState createUndoState(StringBuilder xml) throws IOException {
+		if (xml.indexOf(" " + ControlLayoutXml.LAYOUT_ATTRIBUTE + "=\"") >= 0) {
+			return new ControlLayoutFileState(this, xml);
+		}
 		return new FileAppState(xml);
+	}
+
+	private static final class ControlLayoutFileState extends FileAppState {
+		private final UndoManagerD owner;
+		private final byte[] digest;
+
+		private ControlLayoutFileState(UndoManagerD owner, StringBuilder xml) throws IOException {
+			super(xml);
+			this.owner = owner;
+			try {
+				digest = digest(Files.readAllBytes(getFile().toPath()));
+			} catch (IOException | RuntimeException failure) {
+				delete();
+				throw failure;
+			}
+		}
+
+		private InputStream checkedInput(UndoManagerD manager, InputStream source)
+				throws IOException {
+			byte[] archive = source.readAllBytes();
+			if (owner != manager || !MessageDigest.isEqual(digest, digest(archive))) {
+				throw new IOException("Control layout Undo state is foreign or has changed");
+			}
+			return new ByteArrayInputStream(archive);
+		}
+
+		private static byte[] digest(byte[] archive) {
+			try {
+				return MessageDigest.getInstance("SHA-256").digest(archive);
+			} catch (NoSuchAlgorithmException exception) {
+				throw new IllegalStateException(exception);
+			}
+		}
+	}
+
+	@Override
+	public synchronized void undo() {
+		runControlLayoutHistory(super::undo);
+	}
+
+	@Override
+	public synchronized void redo() {
+		runControlLayoutHistory(super::redo);
+	}
+
+	private void runControlLayoutHistory(Runnable action) {
+		int cursor = getHistorySize() + 1;
+		boolean stitched = undoInfoList.stream().anyMatch(UndoCommand::shouldStitchToNext)
+				&& (undoInfoList.stream()
+						.anyMatch(command -> command.getAppState() instanceof ControlLayoutFileState)
+					|| !construction.getControlLayout().isEmpty());
+		String previous = stitched ? construction.getCurrentUndoXML(true).toString() : null;
+		try {
+			action.run();
+		} catch (ControlLayoutUndoFailure failure) {
+			try {
+				if (previous != null) {
+					app.getEventDispatcher().disableListeners();
+					construction.processXML(previous, false, null);
+				}
+			} catch (XMLParseException | RuntimeException restoreFailure) {
+				failure.addSuppressed(restoreFailure);
+			} finally {
+				restoreUndoCursor(cursor);
+				app.getEventDispatcher().enableListeners();
+			}
+			throw failure;
+		}
 	}
 
 	/**
@@ -251,17 +328,29 @@ public class UndoManagerD extends UndoManager {
 	/** Existing native ZIP read; owned adapters may scope an authenticated memory companion. */
 	protected void readUndoState(FileAppState state, InputStream input)
 			throws IOException, XMLParseException {
-		((MyXMLioD) construction.getXMLio()).readZipFromMemory(input);
+		InputStream checked = state instanceof ControlLayoutFileState layoutState
+				? layoutState.checkedInput(this, input) : input;
+		((MyXMLioD) construction.getXMLio()).readZipFromMemory(checked);
 	}
 
 	/** Default error/fallback policy retained; owned exact states can fail explicitly. */
 	protected void handleUndoLoadFailure(AppState state, Throwable failure) {
+		if (state instanceof ControlLayoutFileState || failure instanceof ControlLayoutException) {
+			app.getEventDispatcher().enableListeners();
+			throw new ControlLayoutUndoFailure(failure);
+		}
 		if (failure instanceof OutOfMemoryError) {
 			Log.error("UndoManager.loadUndoInfo: " + failure);
 		} else {
 			Log.error("Problem setting undo info");
 			Log.debug(failure);
 			restoreCurrentUndoInfo();
+		}
+	}
+
+	private static final class ControlLayoutUndoFailure extends IllegalStateException {
+		private ControlLayoutUndoFailure(Throwable cause) {
+			super("Control layout Undo restoration failed", cause);
 		}
 	}
 

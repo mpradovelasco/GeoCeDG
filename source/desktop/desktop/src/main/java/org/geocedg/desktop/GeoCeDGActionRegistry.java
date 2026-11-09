@@ -77,6 +77,7 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.export.area.show", "geocedg.export.area.clear",
 			"geocedg.export.area.iso-a", "geocedg.export.area.use-iso-a-border",
 			"geocedg.document.units", "geocedg.presentation.orientation-cue",
+			"geocedg.presentation.control-layout",
 			"geocedg.document.insert-file", "geocedg.document.apply-styles",
 			"geocedg.document.insert-expert");
 
@@ -425,6 +426,9 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.presentation.orientation-cue":
 			((AppGeoCeDG) app).toggleOrientationCue();
+			break;
+		case "geocedg.presentation.control-layout":
+			((AppGeoCeDG) app).openControlLayout();
 			break;
 		case "geocedg.export.area.clear":
 			((AppGeoCeDG) app).clearExportArea();

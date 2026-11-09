@@ -105,6 +105,8 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.desktop.GeoCeDGControlLayoutNotice;
 import org.geocedg.desktop.export.ExportScalePresentation;
 import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.GeoGebraConstants;
@@ -130,6 +132,7 @@ import org.geogebra.common.factories.UtilFactory;
 import org.geogebra.common.geogebra3D.io.OFFHandler;
 import org.geogebra.common.gui.toolbar.ToolBar;
 import org.geogebra.common.gui.view.algebra.AlgebraView;
+import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.io.layout.DockPanelData;
@@ -3107,6 +3110,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return loading status
 	 */
 	public boolean loadExistingFile(File file, boolean isMacroFile) {
+		if (rejectCompatibilityControlLayout(file, isMacroFile)) {
+			return false;
+		}
 		byte[] nativeArchive = readAndPreflightNativeArchive(file, isMacroFile);
 		if (!isMacroFile && isTransactionalDocument(file) && nativeArchive == null) {
 			return false;
@@ -3127,6 +3133,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @return true if successful
 	 */
 	final public boolean loadXML(File file, boolean isMacroFile) {
+		if (rejectCompatibilityControlLayout(file, isMacroFile)) {
+			return false;
+		}
 		byte[] nativeArchive = readAndPreflightNativeArchive(file, isMacroFile);
 		if (!isMacroFile && isTransactionalDocument(file) && nativeArchive == null) {
 			return false;
@@ -3141,6 +3150,13 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		InputStream input = null;
 		try {
 			input = new FileInputStream(file);
+			if (!isMacroFile && FileExtensions.GEOGEBRA.equals(
+					StringUtil.getFileExtension(file.getName()))) {
+				byte[] archive = input.readAllBytes();
+				input.close();
+				requireNoCompatibilityControlLayout(new ByteArrayInputStream(archive));
+				input = new ByteArrayInputStream(archive);
+			}
 
 			boolean success;
 
@@ -3159,6 +3175,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			}
 
 			return success;
+		} catch (ControlLayoutException rejection) {
+			showDocumentLoadFailure(file.getName(), rejection);
+			return false;
 		} catch (Exception e) {
 			setCurrentFile(null);
 			Log.debug(e);
@@ -3183,7 +3202,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		try {
 			byte[] archive = Files.readAllBytes(file.toPath());
 			if (!DocumentArchivePreflight.validate(archive,
-					createDocumentPreflightConfig())) {
+					createDocumentPreflightConfig(), isNativeDocument(file))) {
 				showDocumentLoadFailure(file.getName(), null);
 				return null;
 			}
@@ -3192,6 +3211,30 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			Log.debug(exception);
 			showDocumentLoadFailure(file.getName(), exception);
 			return null;
+		}
+	}
+
+	private boolean rejectCompatibilityControlLayout(File file, boolean isMacroFile) {
+		if (file != null && !isMacroFile && !isTransactionalDocument(file)
+				&& FileExtensions.GEOGEBRA.equals(StringUtil.getFileExtension(file.getName()))) {
+			try {
+				requireNoCompatibilityControlLayout(Files.newInputStream(file.toPath()));
+			} catch (ControlLayoutException rejection) {
+				showDocumentLoadFailure(file.getName(), rejection);
+				return true;
+			} catch (IOException | XMLParseException exception) {
+				// The existing compatibility reader handles failures in an unmarked archive.
+				Log.debug(exception);
+			}
+		}
+		return false;
+	}
+
+	private void requireNoCompatibilityControlLayout(InputStream input)
+			throws IOException, XMLParseException {
+		if (DocumentArchivePreflight.hasControlLayout(input)) {
+			throw new ControlLayoutException(ControlLayoutException.Code.CONTEXT,
+					"Control layout requires a native .cedg document");
 		}
 	}
 
@@ -3231,7 +3274,8 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 * @param failure the rejection, or {@code null} when the reader only refused
 	 */
 	protected void showDocumentLoadFailure(String fileName, Throwable failure) {
-		showError(Errors.LoadFileFailed, fileName);
+		showError(Errors.LoadFileFailed, failure instanceof ControlLayoutException rejection
+				? fileName + " (CU8_LAYOUT_" + rejection.code() + ")" : fileName);
 	}
 
 	/**
@@ -3266,7 +3310,14 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			InputStream input = url.openStream();
 			boolean success;
 			try (InputStream documentInput = input) {
-				success = doLoadXML(documentInput, isMacroFile);
+				if (!isMacroFile && FileExtensions.GEOGEBRA.equals(
+						StringUtil.getFileExtension(url.getPath()))) {
+					byte[] archive = documentInput.readAllBytes();
+					requireNoCompatibilityControlLayout(new ByteArrayInputStream(archive));
+					success = doLoadXML(new ByteArrayInputStream(archive), false);
+				} else {
+					success = doLoadXML(documentInput, isMacroFile);
+				}
 			}
 
 			// don't clear JavaScript here -- we may have just read one from the
@@ -3276,6 +3327,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 			return success;
 		} catch (NativeDocumentRollbackException invariantFailure) {
 			throw invariantFailure;
+		} catch (ControlLayoutException rejection) {
+			showDocumentLoadFailure(url.getPath(), rejection);
+			return false;
 		} catch (Exception e) {
 			showError(Errors.LoadFileFailed, e.getMessage());
 			if (!transactionalDocument) {
@@ -3346,6 +3400,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 		refreshNativeDocumentPublication(wasIniting);
 		nativeDocumentLoadCommitted();
+		if (isErrorDialogsActive() && isUsingFullGui()
+				&& !kernel.getConstruction().getControlLayout().isEmpty()) {
+			GeoCeDGControlLayoutNotice.show(this);
+		}
 		return true;
 	}
 
@@ -3469,14 +3527,15 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 		try (InputStream input = url.openStream()) {
 			byte[] archive = input.readAllBytes();
 			if (!DocumentArchivePreflight.validate(archive,
-					createDocumentPreflightConfig())) {
+					createDocumentPreflightConfig(), FileExtensions.GEOCEDG.equals(
+							StringUtil.getFileExtension(url.getPath())))) {
 				showError(Errors.LoadFileFailed, url.getPath());
 				return null;
 			}
 			return archive;
 		} catch (Exception exception) {
 			Log.debug(exception);
-			showError(Errors.LoadFileFailed, url.getPath());
+			showDocumentLoadFailure(url.getPath(), exception);
 			return null;
 		}
 	}
@@ -3505,6 +3564,7 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 	 */
 	public boolean loadXML(String xml) {
 		try {
+			MyXMLio.rejectControlLayoutInGenericXml(xml);
 
 			// make sure objects are displayed in the correct View
 			setActiveView(App.VIEW_EUCLIDIAN);
@@ -3521,7 +3581,9 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 			return true;
 		} catch (RuntimeException | XMLParseException err) {
-			setCurrentFile(null);
+			if (!(err instanceof ControlLayoutException)) {
+				setCurrentFile(null);
+			}
 			Log.debug(err);
 			return false;
 		}
@@ -3572,6 +3634,10 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 					}
 				});
 			} else {
+				if (!kernel.getConstruction().getControlLayout().isEmpty()) {
+					throw new ControlLayoutException(ControlLayoutException.Code.CONTEXT,
+							"Save the control layout in a native .cedg document");
+				}
 				getXMLio().writeGeoGebraFile(file);
 			}
 			setSaved();

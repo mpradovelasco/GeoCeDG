@@ -196,6 +196,11 @@ public abstract class SymbolicEditor implements MathFieldListener {
 		// only needed in Web
 	}
 
+	/** Repositions the active editor after a view change without replacing its text. */
+	public void updateLayoutBounds(GRectangle bounds) {
+		// Only Desktop projects the live CU8 layout onto an active editor.
+	}
+
 	@Override
 	public boolean onEscape() {
 		resetChanges();

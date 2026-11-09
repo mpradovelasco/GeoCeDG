@@ -159,6 +159,11 @@ public final class GeoCeDGEuclidianController
 		return app instanceof AppGeoCeDG geoCeDG && geoCeDG.isInsertionIsolated();
 	}
 
+	private GeoCeDGControlLayoutWorkspace controlLayoutWorkspace() {
+		return getView() instanceof GeoCeDGEuclidianView view
+				? view.controlLayoutWorkspace() : null;
+	}
+
 	@Override
 	public void wrapMousePressed(AbstractEvent event) {
 		if (isInsertionIsolated()) {
@@ -175,6 +180,14 @@ public final class GeoCeDGEuclidianController
 			referencePointTool.click(new ArrayList<>(getView().getHits()),
 					((org.geogebra.desktop.euclidian.EuclidianViewD) getView()).getJPanel(), event.getX(), event.getY());
 			return;
+		}
+		var controlLayout = controlLayoutWorkspace();
+		if (controlLayout != null && controlLayout.isOpen()) {
+			setMouseLocation(event);
+			setViewHits(event.getType());
+			if (controlLayout.press(event, getView().getHits())) {
+				return;
+			}
 		}
 		interactionTailCancelled = false;
 		if (zoomWindowActive && event.isRightClick()) {
@@ -341,6 +354,10 @@ public final class GeoCeDGEuclidianController
 		if (isInsertionIsolated()) {
 			return;
 		}
+		var controlLayout = controlLayoutWorkspace();
+		if (controlLayout != null && controlLayout.drag(event)) {
+			return;
+		}
 		markNavigationCursorCurrent(event);
 		if (interactionTailCancelled) {
 			return;
@@ -385,6 +402,10 @@ public final class GeoCeDGEuclidianController
 		if (referencePointTool.hasPendingWorldSelection()) { return; }
 		if (referencePointTool.isReferenceRequestActive()) { return; }
 		if (isInsertionIsolated()) {
+			return;
+		}
+		var controlLayout = controlLayoutWorkspace();
+		if (controlLayout != null && controlLayout.release()) {
 			return;
 		}
 		markNavigationCursorCurrent(event);
@@ -790,6 +811,9 @@ public final class GeoCeDGEuclidianController
 	@Override
 	public void setMode(int newMode, ModeSetter setter) {
 		if (newMode != mode) { clearPointInteractionNotice(); }
+		if (newMode != mode && getView() instanceof GeoCeDGEuclidianView view) {
+			view.closeControlLayout();
+		}
 		// Host focus/dock synchronization is not a new L -> Q operation.
 		if (referencePointTool != null && mode == newMode
 				&& (newMode == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT

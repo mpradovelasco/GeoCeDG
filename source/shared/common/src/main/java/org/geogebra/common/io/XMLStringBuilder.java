@@ -16,6 +16,7 @@
 
 package org.geogebra.common.io;
 
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geogebra.common.util.debug.Log;
 
 public class XMLStringBuilder {
@@ -23,6 +24,7 @@ public class XMLStringBuilder {
 	private final StringBuilder sb;
 	private boolean writeNumericLayers;
 	private boolean writePreservedNumericLayers;
+	private ControlLayoutXml.Output controlLayout;
 	boolean currentTagEmpty = false;
 	String currentTag = null;
 
@@ -52,6 +54,16 @@ public class XMLStringBuilder {
 	/** @param preserve whether to write accepted explicit layers in this document section */
 	public void setWritePreservedNumericLayers(boolean preserve) {
 		writePreservedNumericLayers = preserve;
+	}
+
+	/** @return the complete-construction control layout write scope, if active */
+	public ControlLayoutXml.Output getControlLayout() {
+		return controlLayout;
+	}
+
+	/** Scopes native control layout output to this XML builder. */
+	public void setControlLayout(ControlLayoutXml.Output controlLayout) {
+		this.controlLayout = controlLayout;
 	}
 
 	/**

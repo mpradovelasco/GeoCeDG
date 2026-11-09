@@ -40,6 +40,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.geocedg.desktop.GeoCeDGControlLayoutEdits;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.gui.SetLabels;
 import org.geogebra.common.gui.UpdateFonts;
@@ -381,7 +382,9 @@ public class SliderPropertiesPanelD extends JPanel
 	}
 
 	private void doCheckBoxActionPerformed(JCheckBox source) {
-		model.applyFixed(source.isSelected());
+		if (!source.isSelected() || !GeoCeDGControlLayoutEdits.rejectIncompatible(app, model.getGeos())) {
+			model.applyFixed(source.isSelected());
+		}
 		updatePanel(model.getGeos());
 	}
 

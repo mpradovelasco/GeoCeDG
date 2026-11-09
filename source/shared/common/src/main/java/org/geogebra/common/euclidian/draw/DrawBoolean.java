@@ -113,8 +113,11 @@ public final class DrawBoolean extends Drawable {
 	}
 
 	private void updateLabel() {
-		xLabel = geoBool.getAbsoluteScreenLocX();
-		yLabel = geoBool.getAbsoluteScreenLocY();
+		var panelLocation = view.getControlLayoutPosition(geoBool);
+		xLabel = panelLocation == null ? geoBool.getAbsoluteScreenLocX()
+				: (int) Math.round(panelLocation.x);
+		yLabel = panelLocation == null ? geoBool.getAbsoluteScreenLocY()
+				: (int) Math.round(panelLocation.y);
 		int prefSize = CHECKBOX_SIZE + 12;
 		labelRectangle.setBounds(xLabel, yLabel,
 				prefSize + textWidth, prefSize);
@@ -124,8 +127,8 @@ public final class DrawBoolean extends Drawable {
 	public void draw(GGraphics2D g2) {
 		if (isVisible) {
 			g2.setFont(view.getFontPoint());
-			int checkboxX = geoBool.getAbsoluteScreenLocX() + LEGACY_OFFSET;
-			int checkboxY = geoBool.getAbsoluteScreenLocY() + LEGACY_OFFSET;
+			int checkboxX = xLabel + LEGACY_OFFSET;
+			int checkboxY = yLabel + LEGACY_OFFSET;
 			CheckBoxIcon.paintIcon(geoBool.getBoolean(),
 					!geoBool.isSelectionAllowed(view), g2, checkboxX, checkboxY);
 			if (isHighlighted()) {
@@ -193,9 +196,9 @@ public final class DrawBoolean extends Drawable {
 
 	@Override
 	public int getCaptionY(boolean latex, int height) {
-		return latex ? geoBool.getAbsoluteScreenLocY()
+		return latex ? yLabel
 				+ (CHECKBOX_SIZE - height) / 2 + LEGACY_OFFSET
-				: geoBool.getAbsoluteScreenLocY()
+				: yLabel
 				+ (CHECKBOX_SIZE + height) / 2 + LEGACY_OFFSET;
 	}
 

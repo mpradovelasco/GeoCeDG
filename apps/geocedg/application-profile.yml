@@ -1986,6 +1986,21 @@
       "notes": "PRE-G9B-R6-plus-F1 global orientation-cue preference geocedg.view.orientation-cue.v1 (default OFF), shared with the Layout & Presentation checkbox; a presentation-only Graphics 1 arrowhead showing the kernel orientation of admitted lines, segments and rays; never exported, never a document or undo change."
     },
     {
+      "id": "presentation.control-layout",
+      "kind": "product-action",
+      "target": {"symbol": "geocedg.presentation.control-layout"},
+      "maturity": "experimental",
+      "feature_requirements": ["cedg.presentation.control-layout"],
+      "selection_contract_ref": "none",
+      "effect_profile_id": "document-metadata",
+      "localization_ref": "geocedg.action.ControlLayout",
+      "icon_ref": "upstream.view.Properties",
+      "availability_profile_id": "product-only",
+      "command_surface_profile_id": "action-only",
+      "planning_disposition": "must",
+      "implementation_state": "existing"
+    },
+    {
       "id": "navigation.pan-view",
       "kind": "upstream-mode",
       "target": {
@@ -3117,6 +3132,7 @@
         "presentation.axes-toggle",
         "presentation.grid-toggle",
         "presentation.orientation-cue",
+        "presentation.control-layout",
         "view.properties"
       ],
       "context_action_ids": [
@@ -3394,6 +3410,11 @@
       "enabled_by_default": true
     },
     {
+      "id": "cedg.presentation.control-layout",
+      "source": "geocedg/features/experimental.yml",
+      "enabled_by_default": true
+    },
+    {
       "id": "cedg.document.expert-insertion",
       "source": "geocedg/features/stable.yml",
       "enabled_by_default": true
@@ -3609,7 +3630,7 @@
     {
       "id": "view-visibility-style",
       "name_key": "Group.View.VisibilityStyle",
-      "action_ids": ["presentation.show-hide-object", "presentation.show-hide-label", "presentation.copy-style", "presentation.orientation-cue"],
+      "action_ids": ["presentation.show-hide-object", "presentation.show-hide-label", "presentation.copy-style", "presentation.orientation-cue", "presentation.control-layout"],
       "toolbar_action_ids": []
     },
     {
@@ -3886,6 +3907,40 @@
     "Presentation.ConstructionProtocolFont": {"en": "Construction Protocol font size", "es": "Tamaño de fuente del Protocolo de Construcción"},
     "Presentation.GraphicsFont": {"en": "Graphics font size", "es": "Tamaño de fuente de Gráficos"},
     "Presentation.OrientationCue.Title": {"en": "Orientation cue", "es": "Indicación de orientación"},
+    "ControlLayout.Title": {"en": "Control layout", "es": "Disposición de controles"},
+    "ControlLayout.LegacyWarning": {"en": "Opening and saving this file with an older version can permanently remove the control layout. Older versions can also lock the position of unlocked checkboxes on reopening. Keep a copy of the original file.", "es": "Abrir y volver a guardar este archivo con una versión anterior puede eliminar irreversiblemente la disposición de los paneles. Las versiones anteriores también pueden bloquear la posición de casillas desbloqueadas al reabrir. Conserva una copia del archivo original."},
+    "ControlLayout.New": {"en": "Create panel", "es": "Crear panel"},
+    "ControlLayout.Attach": {"en": "Attach control", "es": "Añadir control"},
+    "ControlLayout.Detach": {"en": "Detach control", "es": "Separar control"},
+    "ControlLayout.Anchor": {"en": "Change anchor", "es": "Cambiar anclaje"},
+    "ControlLayout.Visibility": {"en": "Show or hide panel", "es": "Mostrar u ocultar panel"},
+    "ControlLayout.Duplicate": {"en": "Duplicate empty panel", "es": "Duplicar panel vacío"},
+    "ControlLayout.DuplicateOrigin": {"en": "Choose the new origin in the panel's anchor coordinates.", "es": "Elige el nuevo origen en las coordenadas de anclaje del panel."},
+    "ControlLayout.BringIntoView": {"en": "Move panel into view", "es": "Llevar panel a la vista"},
+    "ControlLayout.Remove": {"en": "Remove panel", "es": "Eliminar panel"},
+    "ControlLayout.Close": {"en": "Close", "es": "Cerrar"},
+    "ControlLayout.Panel": {"en": "Panel", "es": "Panel"},
+    "ControlLayout.Member": {"en": "Member", "es": "Miembro"},
+    "ControlLayout.Fixed": {"en": "Fixed", "es": "Fijo"},
+    "ControlLayout.World": {"en": "Canvas anchor", "es": "Vinculado al lienzo"},
+    "ControlLayout.Hidden": {"en": "hidden", "es": "oculto"},
+    "ControlLayout.Context": {"en": "Use Move in Graphics 1 and finish the active tool or field edit first.", "es": "Activa Mover en Gráficos 1 y termina la herramienta o la edición de campo en curso."},
+    "ControlLayout.Pick": {"en": "Select a panel and click an eligible loose control.", "es": "Selecciona un panel y pulsa un control suelto elegible."},
+    "ControlLayout.Rejected": {"en": "The control layout cannot accept this change.", "es": "La disposición de controles no admite este cambio."},
+    "ControlLayout.DetachFirst": {"en": "Detach the control from its panel in GeoCeDG before changing this property.", "es": "Separa el control de su panel en GeoCeDG antes de cambiar esta propiedad."},
+    "ControlLayout.EmptyOnly": {"en": "Only an empty panel can be duplicated.", "es": "Solo se puede duplicar un panel vacío."},
+    "ControlLayout.Outside": {"en": "The control is outside Graphics 1. Choose its position after detaching.", "es": "El control está fuera de Gráficos 1. Elige su posición al separarlo."},
+    "ControlLayout.VisiblePosition": {"en": "Place within view", "es": "Colocar en la vista"},
+    "ControlLayout.Backup": {"en": "Keep backup position", "es": "Conservar posición de respaldo"},
+    "ControlLayout.Overlap": {"en": "The controls overlap. Confirm or cancel to choose another position.", "es": "Los controles se solapan. Confirma o cancela para elegir otra posición."},
+    "geocedg.action.ControlLayout.name": {"en": "Control layout", "es": "Disposición de controles"},
+    "geocedg.action.ControlLayout.short_help": {"en": "Arrange controls in Graphics 1.", "es": "Organiza controles en Gráficos 1."},
+    "geocedg.action.ControlLayout.long_help": {"en": "Create a fixed panel or anchor it to the canvas, then attach eligible native controls.", "es": "Crea un panel fijo o vincúlalo al lienzo y añade controles nativos elegibles."},
+    "geocedg.action.ControlLayout.status": {"en": "Ready to arrange controls.", "es": "Disposición de controles disponible."},
+    "geocedg.action.ControlLayout.error": {"en": "Control layout is unavailable here.", "es": "La disposición de controles no está disponible aquí."},
+    "Insert.Reject.ControlLayoutSource": {"en": "documents with a control layout cannot be inserted", "es": "no se pueden insertar documentos con disposición de controles"},
+    "Insert.Reject.ControlLayoutReceiver": {"en": "expert insertion cannot certify a receiver with a control layout", "es": "la inserción experta no puede certificar un receptor con disposición de controles"},
+    "Insert.Reject.ControlLayoutMismatch": {"en": "the receiver control layout could not be preserved", "es": "no pudo conservarse la disposición de controles del receptor"},
     "Presentation.OrientationCue": {"en": "Show the orientation of lines, segments and rays in Graphics", "es": "Mostrar la orientación de rectas, segmentos y semirrectas en Gráficos"},
     "Presentation.OrientationCue.Help": {"en": "A small hollow arrowhead shows the direction the kernel uses for supported lines, segments and rays in Graphics 1. Presentation only: never exported and never stored in the document.", "es": "Una pequeña punta de flecha hueca muestra el sentido que usa el núcleo para las rectas, segmentos y semirrectas admitidos en Gráficos 1. Solo presentación: nunca se exporta ni se guarda en el documento."},
     "Presentation.LayoutTab": {"en": "Layout & Presentation", "es": "Disposición y presentación"},

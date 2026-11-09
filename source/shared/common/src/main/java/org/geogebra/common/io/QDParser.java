@@ -346,6 +346,7 @@ public class QDParser {
 					if (doc.hasStrictEmptyElementGrammar(tagName)) {
 						exc("Duplicate attribute " + lvalue + " in " + tagName, line, col);
 					}
+					doc.recordDuplicateAttribute(tagName);
 					doc.recordNonCanonicalEmptyElement(tagName);
 					}
 					attrs.put(lvalue, rvalue);

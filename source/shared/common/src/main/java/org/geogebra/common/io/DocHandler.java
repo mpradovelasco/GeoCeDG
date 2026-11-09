@@ -32,6 +32,11 @@ public interface DocHandler {
 		// Most handlers do not distinguish native leaves.
 	}
 
+	/** Reports a duplicate before the parser overwrites its earlier value. */
+	default void recordDuplicateAttribute(String tag) {
+		// Most handlers retain the historical last-value policy.
+	}
+
 	/**
 	 * @param tag
 	 *            element name

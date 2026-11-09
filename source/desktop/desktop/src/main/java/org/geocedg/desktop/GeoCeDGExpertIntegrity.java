@@ -78,6 +78,10 @@ final class GeoCeDGExpertIntegrity {
 	static AppGeoCeDG loadSource(AppGeoCeDG host, byte[] bytes) throws IOException {
 		var archive = GeoCeDGInspectionArchive.inspect(bytes);
 		if (!archive.loadable()) {
+			if (archive.findings().stream().anyMatch(finding ->
+					finding.code() == GeoCeDGInspectionArchive.Code.CONTROL_LAYOUT)) {
+				throw new IOException(host.layerText("Insert.Reject.ControlLayoutSource"));
+			}
 			throw new IOException("The source is outside the passive native envelope: "
 					+ archive.findings());
 		}

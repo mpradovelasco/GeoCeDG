@@ -420,7 +420,7 @@ class PreG9BR6PlusE2NativeDimensionDesktopTest {
 				assertTrue(svg.contains("viewBox=\"0 0 24 24\""), icon.name());
 				assertFalse(svg.contains("<image"), "vector source only: " + icon.name());
 			}
-			assertEquals(135, GeoCeDGProfile.getActions().size());
+			assertEquals(136, GeoCeDGProfile.getActions().size());
 		}
 
 		// ------------------------------------------------------------------ tools

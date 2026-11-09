@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.swing.SwingUtilities;
 
+import org.geocedg.common.document.controls.ControlLayout.Panel;
+import org.geocedg.common.document.controls.ControlLayoutException;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.units.DocumentUnitSystem;
@@ -215,6 +218,9 @@ final class GeoCeDGDocumentInsertion {
 	/** Opens the one live review for this document. Invalidations start before capture. */
 	ExpertReview beginExpertReview() throws IOException {
 		requireExpertEdt();
+		if (!app.getKernel().getConstruction().getControlLayout().isEmpty()) {
+			throw new IOException(text("Insert.Reject.ControlLayoutReceiver"));
+		}
 		if (activeExpertReview != null || awaitingAngularConfirmation || app.isInsertionIsolated()
 				|| !app.getKernel().isUndoActive() || !(app.getUndoManager() instanceof GeoCeDGUndoManager undo)
 				|| !awaitQuiescence(undo)) {
@@ -339,6 +345,9 @@ final class GeoCeDGDocumentInsertion {
 				return staleExpertOffer(name);
 			}
 			try {
+				if (!app.getKernel().getConstruction().getControlLayout().isEmpty()) {
+					throw new IOException(text("Insert.Reject.ControlLayoutReceiver"));
+				}
 				if (!passiveReceiver()) {
 					throw new IOException("The receiver has active content or animation");
 				}
@@ -413,7 +422,12 @@ final class GeoCeDGDocumentInsertion {
 		byte[] bytes;
 		try {
 			bytes = Files.readAllBytes(file.toPath());
-		} catch (IOException unreadable) {
+			if (DocumentArchivePreflight.hasControlLayout(bytes)) {
+				return rejected(name, "Insert.Reject.ControlLayoutSource", "");
+			}
+		} catch (ControlLayoutException rejectedLayout) {
+			return rejected(name, "Insert.Reject.ControlLayoutSource", "");
+		} catch (IOException | XMLParseException unreadable) {
 			return rejected(name, "Insert.Reject.Invalid", "");
 		}
 		int targetMode = app.getKernel().getAngleUnit();
@@ -437,6 +451,9 @@ final class GeoCeDGDocumentInsertion {
 			helper = app.newInsertionHelper();
 			if (!helper.loadFile(file, false)) {
 				return rejected(name, "Insert.Reject.Invalid", "");
+			}
+			if (!helper.getKernel().getConstruction().getControlLayout().isEmpty()) {
+				return rejected(name, "Insert.Reject.ControlLayoutSource", "");
 			}
 			helper.getKernel().getAnimationManager().stopAnimation();
 			GeoCeDGInsertionAdmission admission = GeoCeDGInsertionAdmission.admit(app, helper);
@@ -884,19 +901,32 @@ final class GeoCeDGDocumentInsertion {
 		AppGeoCeDG scratch = null;
 		AppGeoCeDG helper = adapted;
 		try {
+			ReceiverControlLayout layout = ReceiverControlLayout.capture(app);
 			ByteArrayOutputStream target = new ByteArrayOutputStream();
 			app.getXMLio().writeGeoGebraFile(target, false);
 			scratch = app.newInsertionHelper();
-			if (proof != null) {
+			boolean nativeLayout = !layout.panels().isEmpty();
+			if (proof != null || nativeLayout) {
 				// The native stream loader normally schedules its initial Undo store.
 				// The trial paste needs a current state before it can start.
 				scratch.getKernel().setUndoActive(false);
 			}
-			if (!GFileHandler.loadXML(scratch, new ByteArrayInputStream(target.toByteArray()),
-					false)) {
+			ByteArrayInputStream trialArchive = new ByteArrayInputStream(target.toByteArray());
+			if (nativeLayout) {
+				if (!GFileHandler.loadPreflightedNativeXML(scratch, trialArchive)
+						|| scratch.getXMLio().hasErrors()) {
+					return text("Insert.Reject.ControlLayoutMismatch");
+				}
+				scratch.updateCommandDictionary();
+				scratch.documentReplacementCommitted();
+			} else if (!GFileHandler.loadXML(scratch, trialArchive, false)) {
 				return "target";
 			}
-			if (proof != null) {
+			ReceiverControlLayout trialLayout = ReceiverControlLayout.capture(scratch);
+			if (!layout.samePresentation(trialLayout)) {
+				return text("Insert.Reject.ControlLayoutMismatch");
+			}
+			if (proof != null || nativeLayout) {
 				scratch.getKernel().setUndoActive(true);
 				prepareCopyBaseline(scratch);
 			}
@@ -905,6 +935,9 @@ final class GeoCeDGDocumentInsertion {
 				if (!helper.loadFile(file, false)) {
 					return "source";
 				}
+			}
+			if (!helper.getKernel().getConstruction().getControlLayout().isEmpty()) {
+				return text("Insert.Reject.ControlLayoutSource");
 			}
 			helper.getKernel().getAnimationManager().stopAnimation();
 			scratch.getKernel().getAnimationManager().stopAnimation();
@@ -919,6 +952,9 @@ final class GeoCeDGDocumentInsertion {
 			GeoCeDGInsertionCopyPaste buffer = new GeoCeDGInsertionCopyPaste(
 					scratchAdmission.getTransferredMacros());
 			buffer.insertFrom(helper, scratch, scratchAdmission.getDuplicateLabels(), false);
+			if (!trialLayout.sameOwners(ReceiverControlLayout.capture(scratch))) {
+				return text("Insert.Reject.ControlLayoutMismatch");
+			}
 			List<GeoElement> created = createdSince(scratch, before);
 			String mismatch = verify(scratchAdmission.getSource(), created, scratch, helper,
 					idsBefore, buffer.getCopies());
@@ -1348,6 +1384,8 @@ final class GeoCeDGDocumentInsertion {
 			faults.beforeOwnStore();
 			if (offer != null) {
 				verifyExpertLiveState(offer, "pre-history state");
+			} else {
+				requireUnchangedControlLayout();
 			}
 			// one undo step made by the orchestration, carrying the kept document identity
 			String live = currentUndoXml();
@@ -1371,7 +1409,7 @@ final class GeoCeDGDocumentInsertion {
 			if (expertBefore != null) {
 				app.setUnsaved();
 			}
-			attachBlock(temporary, finalHistory, finalHistory.size(), discarded, offer);
+			attachBlock(temporary, finalHistory, finalHistory.size(), discarded, offer, true);
 			if (expertBefore != null) {
 				barrier.snapshot.release();
 				try {
@@ -1385,6 +1423,12 @@ final class GeoCeDGDocumentInsertion {
 			app.unitPasteCompleted(provenance, app);
 			barrier.snapshot.release();
 			return new Result(Outcome.INSERTED, null, List.of(), null);
+		}
+
+		private void requireUnchangedControlLayout() {
+			if (!before.controlLayout.sameOwners(ReceiverControlLayout.capture(app))) {
+				throw new IllegalStateException(text("Insert.Reject.ControlLayoutMismatch"));
+			}
 		}
 
 		private boolean topMatchesLiveBaseline(List<UndoCommand> prefix) throws IOException {
@@ -1634,12 +1678,12 @@ final class GeoCeDGDocumentInsertion {
 		private void attachBlock(List<UndoCommand> expectedTemporary,
 				List<UndoCommand> finalHistory, int cursor, List<UndoCommand> discarded)
 				throws Exception {
-			attachBlock(expectedTemporary, finalHistory, cursor, discarded, null);
+			attachBlock(expectedTemporary, finalHistory, cursor, discarded, null, false);
 		}
 
 		private void attachBlock(List<UndoCommand> expectedTemporary,
 				List<UndoCommand> finalHistory, int cursor, List<UndoCommand> discarded,
-				ExpertOffer offer) throws Exception {
+				ExpertOffer offer, boolean publishing) throws Exception {
 			faults.beforeAttach();
 			synchronized (undo) {
 				List<UndoCommand> temporary = undo.getCommands();
@@ -1654,6 +1698,8 @@ final class GeoCeDGDocumentInsertion {
 					if (!offer.exactSourceCurrent()) {
 						throw new ExpertSourceChanged();
 					}
+				} else if (publishing) {
+					requireUnchangedControlLayout();
 				}
 				RuntimeException refresh = undo.attach(finalHistory, cursor);
 				attached = true;
@@ -2052,6 +2098,41 @@ final class GeoCeDGDocumentInsertion {
 		}
 	}
 
+	private record LayoutSlot(String panelId, String id, Class<?> family, double dx, double dy) {
+	}
+
+	/** Compare the presentation records independently of the native construction addresses. */
+	private record ReceiverControlLayout(Set<Panel> panels, Map<LayoutSlot, GeoElement> owners) {
+		static ReceiverControlLayout capture(AppGeoCeDG app) {
+			Construction construction = app.getKernel().getConstruction();
+			var layout = construction.getControlLayout();
+			Set<Panel> panels = Set.copyOf(layout.panels());
+			Map<LayoutSlot, GeoElement> owners = new HashMap<>();
+			for (Panel panel : panels) {
+				for (var slot : layout.slots(panel.id())) {
+					GeoElement control = slot.control();
+					if (control.getConstruction() != construction
+							|| !construction.isInConstructionList(control)
+							|| layout.slot(control) != slot) {
+						throw new IllegalStateException("Receiver control slot has no live owner");
+					}
+					owners.put(new LayoutSlot(slot.panelId(), slot.id(), control.getClass(),
+							slot.dx(), slot.dy()), control);
+				}
+			}
+			return new ReceiverControlLayout(panels, Map.copyOf(owners));
+		}
+
+		boolean samePresentation(ReceiverControlLayout other) {
+			return panels.equals(other.panels) && owners.keySet().equals(other.owners.keySet());
+		}
+
+		boolean sameOwners(ReceiverControlLayout other) {
+			return samePresentation(other) && owners.entrySet().stream()
+					.allMatch(entry -> other.owners.get(entry.getKey()) == entry.getValue());
+		}
+	}
+
 	/** Serializable and runtime state compared separately (feasibility report G1). */
 	static final class Certificate {
 		final String xml;
@@ -2064,9 +2145,11 @@ final class GeoCeDGDocumentInsertion {
 		final GeoElement parallel;
 		final GeoElement perpendicular;
 		final Object linkedSheet;
+		final ReceiverControlLayout controlLayout;
 
 		private Certificate(AppGeoCeDG app) {
 			xml = normalize(app.getXML());
+			controlLayout = ReceiverControlLayout.capture(app);
 			StringBuilder ids = new StringBuilder();
 			instances = new LinkedHashMap<>();
 			Construction construction = app.getKernel().getConstruction();
@@ -2126,6 +2209,9 @@ final class GeoCeDGDocumentInsertion {
 			if (!identities.equals(other.identities)) {
 				differences.add("durable identities");
 			}
+			if (!controlLayout.samePresentation(other.controlLayout)) {
+				differences.add("control layout");
+			}
 			if (!macroDigests.equals(other.macroDigests)) {
 				differences.add("macros");
 			}
@@ -2151,7 +2237,7 @@ final class GeoCeDGDocumentInsertion {
 				}
 			}
 			return parallel == other.parallel && perpendicular == other.perpendicular
-					&& linkedSheet == other.linkedSheet;
+					&& linkedSheet == other.linkedSheet && controlLayout.sameOwners(other.controlLayout);
 		}
 	}
 }

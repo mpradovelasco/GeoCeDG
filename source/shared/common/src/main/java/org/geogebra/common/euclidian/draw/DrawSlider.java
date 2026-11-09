@@ -161,6 +161,10 @@ public class DrawSlider extends Drawable {
 	 * @return slider location
 	 */
 	public GPoint2D getSliderLocation() {
+		GPoint2D panelLocation = view.getControlLayoutPosition(number);
+		if (panelLocation != null) {
+			return panelLocation;
+		}
 		double x = number.getSliderX();
 		double y = number.getSliderY();
 		if (number.isAbsoluteScreenLocActive()) {

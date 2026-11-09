@@ -32,6 +32,8 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.document.controls.ControlLayoutXml;
 import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.awt.GColor;
@@ -1554,7 +1556,18 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 					&& isFunctionOrEquationFromUser()
 					&& !this.isDefaultGeo();
 		} else if (isFixable()) {
+			if (isGeoButton() || isGeoInputBox()) {
+				requireControlLayoutDetached();
+			}
 			fixed = true;
+		}
+	}
+
+	/** Rejects changes that would invalidate an attached control's native placement. */
+	protected final void requireControlLayoutDetached() {
+		if (cons.getControlLayout().slot(this) != null) {
+			throw new ControlLayoutException(ControlLayoutException.Code.OWNER,
+					"Detach the control from its panel before changing its native placement");
 		}
 	}
 
@@ -2948,6 +2961,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	public void doRemove() {
 		// stop animation of this geo
 		setAnimating(false);
+		cons.getControlLayout().removeSlot(this);
 		if (!cons.isRemovingGeoToReplaceIt(this)) {
 			cons.getSpatialIdentityRegistry().retireGeo(this);
 		}
@@ -4554,6 +4568,13 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		if (defaultGeoType >= 0) {
 			sb.attr("default", defaultGeoType);
 		}
+		ControlLayoutXml.Output layout = sb.getControlLayout();
+		if (layout != null) {
+			String slot = layout.slot(this);
+			if (slot != null) {
+				sb.attr(ControlLayoutXml.SLOT_ATTRIBUTE, slot);
+			}
+		}
 		sb.endTag();
 	}
 
@@ -5754,6 +5775,9 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 */
 	@SuppressWarnings("PMD.UnnecessaryBoxing")
 	public void setVisibility(final int viewId, final boolean setVisible) {
+		if (setVisible != (viewId == App.VIEW_EUCLIDIAN)) {
+			requireControlLayoutDetached();
+		}
 		if (this.viewFlags == null) {
 			this.viewFlags = new ArrayList<>();
 		}
@@ -5787,6 +5811,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 * set visible in 3D views
 	 */
 	final public void addViews3D() {
+		requireControlLayoutDetached();
 		visibleInView3D = ExtendedBoolean.TRUE;
 	}
 
@@ -5811,6 +5836,9 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		if (flags == null) {
 			viewFlags = null;
 			return;
+		}
+		if (flags.size() != 1 || !Integer.valueOf(App.VIEW_EUCLIDIAN).equals(flags.get(0))) {
+			requireControlLayoutDetached();
 		}
 		if (this.viewFlags == null) {
 			this.viewFlags = new ArrayList<>();
@@ -5897,6 +5925,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 */
 	public void setVisibleInView3D(boolean flag) {
 		if (flag) {
+			requireControlLayoutDetached();
 			visibleInView3D = ExtendedBoolean.TRUE;
 		} else {
 			visibleInView3D = ExtendedBoolean.FALSE;
@@ -5911,6 +5940,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 */
 	public void setVisibleInViewForPlane(boolean flag) {
 		if (flag) {
+			requireControlLayoutDetached();
 			visibleInViewForPlane = ExtendedBoolean.TRUE;
 		} else {
 			visibleInViewForPlane = ExtendedBoolean.FALSE;
@@ -5919,11 +5949,17 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 
 	@Override
 	public void setVisibleInView3D(GeoElement geo) {
+		if (geo.visibleInView3D == ExtendedBoolean.TRUE) {
+			requireControlLayoutDetached();
+		}
 		visibleInView3D = geo.visibleInView3D;
 	}
 
 	@Override
 	public void setVisibleInViewForPlane(GeoElement geo) {
+		if (geo.visibleInViewForPlane == ExtendedBoolean.TRUE) {
+			requireControlLayoutDetached();
+		}
 		visibleInViewForPlane = geo.visibleInViewForPlane;
 	}
 
@@ -7157,6 +7193,9 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	}
 
 	public void setParentGroup(Group parentGroup) {
+		if (parentGroup != null) {
+			requireControlLayoutDetached();
+		}
 		this.parentGroup = parentGroup;
 	}
 

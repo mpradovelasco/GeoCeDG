@@ -70,6 +70,17 @@ are not emitted into the toolbar.
 
 ## Classic diagnostic route
 
+GeoCeDG Desktop ofrece **Disposición de controles** como acción
+experimental de Gráficos 1. En el modo Mover, abre el gestor desde
+**Vista → Visibilidad y estilo**, crea un panel y añade un control
+elegible. El encabezado mueve el panel y el tirador cambia su tamaño.
+El gestor también permite cambiar su anclaje, ocultarlo y separar
+controles. Classic de la misma distribución conserva la disposición
+y muestra los controles en sus posiciones de respaldo. Una versión
+anterior puede eliminar la disposición y volver a bloquear la posición
+de casillas desbloqueadas al guardar y reabrir. Guarda una copia del
+original antes de editar con una versión anterior. [Contrato v1](control-layout-v1.md)
+
 The Classic launcher arguments and configuration retain their established
 contract. Since the 2026-11-09 CU6 preservation amendment, Classic 3D creates
 its frame and construction on the EDT, where opening a native document

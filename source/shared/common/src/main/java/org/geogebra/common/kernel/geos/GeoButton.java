@@ -107,6 +107,9 @@ public class GeoButton extends GeoElement implements TextProperties,
 
 	@Override
 	public void setStartPoint(GeoPointND p) {
+		if (p != null && !p.isAbsoluteStartPoint()) {
+			requireControlLayoutDetached();
+		}
 		// remove old dependencies
 		if (startPoint != null) {
 			startPoint.getLocateableList().unregisterLocateable(this);
@@ -140,6 +143,9 @@ public class GeoButton extends GeoElement implements TextProperties,
 
 	@Override
 	public void initStartPoint(GeoPointND p, int number) {
+		if (p != null && !p.isAbsoluteStartPoint()) {
+			requireControlLayoutDetached();
+		}
 		startPoint = p;
 	}
 
@@ -206,6 +212,9 @@ public class GeoButton extends GeoElement implements TextProperties,
 	public void setAbsoluteScreenLocActive(boolean flag) {
 		if (flag == absLocation) {
 			return;
+		}
+		if (!flag) {
+			requireControlLayoutDetached();
 		}
 		EuclidianView ev = kernel.getApplication().getActiveEuclidianView();
 		if (flag && startPoint != null) {

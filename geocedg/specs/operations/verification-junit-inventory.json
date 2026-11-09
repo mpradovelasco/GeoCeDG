@@ -88,8 +88,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7726,
-      "expected_identities_sha256": "2c928095b4b8352e2e1902c0bb9a57d78138a530bb96fe25d88f369bd60d6e49",
+      "expected_identity_count": 7730,
+      "expected_identities_sha256": "d2f674081e4d19bfa3c814907737e3e61a9935e2c246ddede32f4e6bce80bd3b",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -170,6 +170,10 @@
         {
           "commit": "a06e81cba690f27d575e0dd747728a8a76f5c72f",
           "tree": "dd5e0598344eef07ad464364a089fceb13f42208"
+        },
+        {
+          "commit": "876a67362939cb5208a9562e396bbd3add7dfc04",
+          "tree": "211a518644a51e6507a042c6320bdf13b9d8c349"
         }
       ]
     },
@@ -195,8 +199,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2496,
-      "expected_identities_sha256": "00f4e690f65c940a08829c999a77db6c5dfc6bef6d5f2717108b83a2c00e3022",
+      "expected_identity_count": 2508,
+      "expected_identities_sha256": "da1172f95e524011d2d0edfc0711a11d75e1844b31a39c6ae5544a8ba0b45501",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -226,6 +230,10 @@
         {
           "commit": "e95a2e43e77fea5b36b422157eae978f1399d472",
           "tree": "b59f0978b0000f47d0fea48e0fc5d00a0cc6701b"
+        },
+        {
+          "commit": "876a67362939cb5208a9562e396bbd3add7dfc04",
+          "tree": "211a518644a51e6507a042c6320bdf13b9d8c349"
         }
       ]
     },
@@ -4777,6 +4785,172 @@
         {
           "commit": "b3b43d8c2857cf8c7c7d4610bad5105313c4253a",
           "tree": "de210c471d21c1b8225a2b528a488de334ae84c8"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu8-i.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.document.controls.ControlLayoutXmlTest",
+        "org.geocedg.common.locus.NativeConicPointPersistenceTest",
+        "org.geocedg.common.locus.R4SimilarityContinuationTest",
+        "org.geocedg.common.locus.R5ForwardCreationRoutingTest",
+        "org.geocedg.common.spatial.G9A3SpatialExplicitMigrationTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.document.controls.ControlLayoutXmlTest",
+        "--tests",
+        "org.geocedg.common.locus.NativeConicPointPersistenceTest",
+        "--tests",
+        "org.geocedg.common.locus.R4SimilarityContinuationTest",
+        "--tests",
+        "org.geocedg.common.locus.R5ForwardCreationRoutingTest",
+        "--tests",
+        "org.geocedg.common.spatial.G9A3SpatialExplicitMigrationTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 47,
+      "expected_identities_sha256": "b9bf6010f6b2df302ebb2ba8443899c3dfe42696be51048e16163a5ab79181f4",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "876a67362939cb5208a9562e396bbd3add7dfc04",
+          "tree": "211a518644a51e6507a042c6320bdf13b9d8c349"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu8-i.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.Cu4B2InsertionTest",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "org.geocedg.desktop.Cu8ControlLayoutClassicTest",
+        "org.geocedg.desktop.Cu8ControlLayoutTransportTest",
+        "org.geocedg.desktop.G9U1SimilarityToolsTest",
+        "org.geocedg.desktop.GeoCeDGControlLayoutDesktopTest",
+        "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest",
+        "org.geocedg.desktop.GeoCeDGExpertPublicationTest",
+        "org.geocedg.desktop.GeoCeDGExpertReviewTest",
+        "org.geocedg.desktop.GeoCeDGExpertTrialTest",
+        "org.geocedg.desktop.PreG9BCu0AuthoringCharacterizationTest",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "org.geocedg.desktop.PreG9BCu4InsertionTest",
+        "org.geocedg.desktop.PreG9BCu5ConstructionProtocolTest",
+        "org.geocedg.desktop.PreG9BCu6AlgebraPresentationTest",
+        "org.geocedg.desktop.PreG9BCu6ArgumentDialogTest",
+        "org.geocedg.desktop.PreG9BCu6IndexedIntersectionTest",
+        "org.geocedg.desktop.PreG9BCu6LabelPlacementTest",
+        "org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest",
+        "org.geocedg.desktop.PreG9BR5BCanonicalDisplayTest",
+        "org.geocedg.desktop.PreG9BR6PlusA1LayerWorkspaceTest",
+        "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
+        "org.geocedg.desktop.PreG9BR6PlusF1OrientationCueTest",
+        "org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest",
+        "org.geocedg.desktop.PreG9BR6PlusF2R1DualActivationTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3InsertionTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3RecoveryTest",
+        "org.geocedg.desktop.PreG9BR6PlusF3UndoAccountingTest",
+        "org.geocedg.desktop.PreG9BR6PlusF4AStyleBarThicknessTest",
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest",
+        "org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest",
+        "org.geocedg.desktop.R5SemanticPointPointerDesktopTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.Cu4B2InsertionTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "--tests",
+        "org.geocedg.desktop.Cu8ControlLayoutClassicTest",
+        "--tests",
+        "org.geocedg.desktop.Cu8ControlLayoutTransportTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1SimilarityToolsTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGControlLayoutDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGDocumentLifecycleTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGExpertPublicationTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGExpertReviewTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGExpertTrialTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0AuthoringCharacterizationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu4InsertionTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu5ConstructionProtocolTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu6AlgebraPresentationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu6ArgumentDialogTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu6IndexedIntersectionTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu6LabelPlacementTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5BCanonicalDisplayTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusA1LayerWorkspaceTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusD1LegacyByteIdentityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF1OrientationCueTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF2AuthoringMemoryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF2R1DualActivationTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3InsertionTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3RecoveryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF3UndoAccountingTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF4AStyleBarThicknessTest",
+        "--tests",
+        "org.geocedg.desktop.R3NativeUndoLifecycleDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R3NativeUndoRecoveryDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R5SemanticPointPointerDesktopTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 281,
+      "expected_identities_sha256": "6985c9f7b2ea7688b6e962064e48a05ded771b956736a8226ed2bebe0c68a07d",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "876a67362939cb5208a9562e396bbd3add7dfc04",
+          "tree": "211a518644a51e6507a042c6320bdf13b9d8c349"
         }
       ]
     }

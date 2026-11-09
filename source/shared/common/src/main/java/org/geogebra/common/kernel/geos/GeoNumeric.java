@@ -996,6 +996,9 @@ public class GeoNumeric extends GeoElement
 	 *            New maximum for slider
 	 */
 	public void setIntervalMax(NumberValue max) {
+		if (max == null) {
+			requireControlLayoutDetached();
+		}
 		if (intervalMax instanceof GeoNumeric) {
 			((GeoNumeric) intervalMax).unregisterMinMaxListener(this);
 		}
@@ -1013,6 +1016,9 @@ public class GeoNumeric extends GeoElement
 	 *            New minimum for slider
 	 */
 	public void setIntervalMin(NumberValue min) {
+		if (min == null) {
+			requireControlLayoutDetached();
+		}
 		if (intervalMin instanceof GeoNumeric) {
 			((GeoNumeric) intervalMin).unregisterMinMaxListener(this);
 		}
@@ -1192,6 +1198,9 @@ public class GeoNumeric extends GeoElement
 	 *            true iff slider is fixed in graphics view
 	 */
 	public final void setSliderFixed(boolean lockedPosition) {
+		if (lockedPosition) {
+			requireControlLayoutDetached();
+		}
 		sliderFixed = lockedPosition;
 	}
 
@@ -1254,6 +1263,7 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public void setRealWorldLoc(double x, double y) {
+		requireControlLayoutDetached();
 		if (hasAbsoluteScreenLocation) {
 			if (startPoint != null) {
 				startPoint.getLocateableList().unregisterLocateable(this);
@@ -1280,6 +1290,9 @@ public class GeoNumeric extends GeoElement
 	public void setAbsoluteScreenLocActive(boolean flag) {
 		if (flag == hasAbsoluteScreenLocation) {
 			return;
+		}
+		if (!flag) {
+			requireControlLayoutDetached();
 		}
 		hasAbsoluteScreenLocation = flag;
 		if (flag) {
@@ -2291,6 +2304,9 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public void setStartPoint(GeoPointND p) throws CircularDefinitionException {
+		if (p != null && !p.isAbsoluteStartPoint()) {
+			requireControlLayoutDetached();
+		}
 		if (startPoint != null) {
 			startPoint.getLocateableList().unregisterLocateable(this);
 		}
@@ -2320,6 +2336,9 @@ public class GeoNumeric extends GeoElement
 
 	@Override
 	public void initStartPoint(GeoPointND p, int number) {
+		if (p != null && !p.isAbsoluteStartPoint()) {
+			requireControlLayoutDetached();
+		}
 		startPoint = p;
 	}
 

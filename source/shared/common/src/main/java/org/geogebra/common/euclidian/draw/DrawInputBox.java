@@ -231,6 +231,16 @@ public class DrawInputBox extends CanvasDrawable {
 	private void update(boolean forView) {
 		isVisible = geo.isEuclidianVisible();
 		updateRenderer();
+		if (!view.isControlLayoutVisible(geo)) {
+			isVisible = false;
+			if (view.getSymbolicEditor() != null
+					&& view.getSymbolicEditor().getDrawInputBox() == this) {
+				view.getSymbolicEditor().applyAndHidDeferred();
+			} else {
+				hideWidget();
+			}
+			return;
+		}
 		if (getTextField() == null) {
 			updateLabel();
 			updateLabelSize();
@@ -279,6 +289,12 @@ public class DrawInputBox extends CanvasDrawable {
 			recomputeSize();
 		}
 		view.getViewTextField().setBoxBounds(labelRectangle);
+		if (forView && editing && view.getSymbolicEditor() != null
+				&& view.getSymbolicEditor().getDrawInputBox() == this
+				&& view.getControlLayoutPosition(geo) != null) {
+			inputBoxBounds.update(view, getLabelTop(), textFont, labelDesc);
+			view.getSymbolicEditor().updateLayoutBounds(inputBoxBounds.getBounds());
+		}
 	}
 
 	private void updateRenderer() {
@@ -296,8 +312,11 @@ public class DrawInputBox extends CanvasDrawable {
 	}
 
 	private void updateLabelSize() {
-		xLabel = getGeoInputBox().getScreenLocX(view);
-		yLabel = getGeoInputBox().getScreenLocY(view);
+		var panelLocation = view.getControlLayoutPosition(geoInputBox);
+		xLabel = panelLocation == null ? geoInputBox.getScreenLocX(view)
+				: (int) Math.round(panelLocation.x);
+		yLabel = panelLocation == null ? geoInputBox.getScreenLocY(view)
+				: (int) Math.round(panelLocation.y);
 		if (getDynamicCaption() != null && getDynamicCaption().isEnabled()) {
 			getDynamicCaption().update();
 		}
@@ -571,7 +590,8 @@ public class DrawInputBox extends CanvasDrawable {
 	 * @param show whether to show the widget
 	 */
 	public void setWidgetVisible(boolean show) {
-		if (geo.isEuclidianVisible() && view.isVisibleInThisView(geo) && show) {
+		if (geo.isEuclidianVisible() && view.isVisibleInThisView(geo) && show
+				&& view.isControlLayoutVisible(geo)) {
 			showWidget();
 		} else {
 			hideWidget();

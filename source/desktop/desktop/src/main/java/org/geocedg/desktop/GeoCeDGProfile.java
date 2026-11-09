@@ -350,14 +350,14 @@ public final class GeoCeDGProfile {
 					action.getString("localization_ref"), presentationNameKey,
 					action.getString("icon_ref")));
 		}
-		if (actions.size() != 135) {
+		if (actions.size() != 136) {
 			throw new IllegalStateException("Approved A7 catalog plus the PRE-G9B-R4 tools,"
 					+ " the PRE-G9B-R6-plus-A-1 working layer, the PRE-G9B-R6-plus-B"
 					+ " export surface, the PRE-G9B-R6-plus-D1 document units, the"
 					+ " PRE-G9B-R6-plus-E2 native dimension tools, the PRE-G9B-R6-plus-E3"
 					+ " ISO A sheet actions, the PRE-G9B-R6-plus-F1 orientation cue and the"
 					+ " PRE-G9B-R6-plus-F3 File insert actions, CU7 M08-S reference point"
-					+ " and POST-CU4 expert insertion require 135 actions");
+					+ ", POST-CU4 expert insertion and CU8 control layout require 136 actions");
 		}
 		validatePlacements(root, ids);
 		return actions;

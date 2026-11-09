@@ -4718,12 +4718,13 @@
       },
       "notes": "Profile deferred_inventory document.sheet-export: title blocks are deferred to G15 and broad CAD import is out of scope. The guide states that title blocks and DXF import are unavailable."
     },
-    {"id": "action:semantic.locus-v2.point-from-reference", "kind": "action", "source": "apps/geocedg/application-profile.yml:1483", "label_en": "Point on Locus V2 from reference", "coverage": "MISSING", "anchors": {"en": [], "es": []}, "notes": "M08-S-R2 Desktop candidate: L to existing Q, H1 individual permission and explicit contextual confirmation. The integrated user guide remains a later CU10 obligation; no claim of completed EN/ES guide coverage or author approval."}
+    {"id": "action:semantic.locus-v2.point-from-reference", "kind": "action", "source": "apps/geocedg/application-profile.yml:1483", "label_en": "Point on Locus V2 from reference", "coverage": "MISSING", "anchors": {"en": [], "es": []}, "notes": "M08-S-R2 Desktop candidate: L to existing Q, H1 individual permission and explicit contextual confirmation. The integrated user guide remains a later CU10 obligation; no claim of completed EN/ES guide coverage or author approval."},
+    {"id": "action:presentation.control-layout", "kind": "action", "source": "apps/geocedg/application-profile.yml:1989", "label_en": "Control layout", "coverage": "MISSING", "anchors": {"en": [], "es": []}, "notes": "CU8-I experimental Desktop action for Graphics 1. Bilingual user guide coverage remains pending under CU9."}
   ],
   "totals": {
     "COVERED": 119,
     "PARTIAL": 119,
-    "MISSING": 21,
+    "MISSING": 22,
     "EXCLUDED_WITH_REASON": 12
   }
 }

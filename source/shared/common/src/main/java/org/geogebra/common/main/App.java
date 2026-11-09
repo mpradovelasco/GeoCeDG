@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.document.controls.ControlLayoutException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
 import org.geocedg.common.kernel.layers.LayerDomain;
 import org.geogebra.common.GeoGebraConstants;
@@ -84,6 +85,7 @@ import org.geogebra.common.gui.view.algebra.filter.ProtectiveAlgebraOutputFilter
 import org.geogebra.common.gui.view.properties.PropertiesView;
 import org.geogebra.common.gui.view.table.regression.RegressionSpecificationBuilder;
 import org.geogebra.common.io.MyXMLio;
+import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.io.file.ByteArrayZipFile;
 import org.geogebra.common.io.file.ZipFile;
@@ -5223,6 +5225,12 @@ public abstract class App implements UpdateSelection, AppInterface, EuclidianHos
 	@Override
 	public void setXML(String xml, boolean clearAll) {
 		if (xml == null) {
+			return;
+		}
+		try {
+			MyXMLio.rejectControlLayoutInGenericXml(xml);
+		} catch (XMLParseException | ControlLayoutException e) {
+			showXMLLoadFailure(e);
 			return;
 		}
 		if (clearAll) {

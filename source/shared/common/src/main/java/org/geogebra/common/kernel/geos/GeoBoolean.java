@@ -281,8 +281,9 @@ public class GeoBoolean extends GeoElement implements BooleanValue,
 		getAuxiliaryXML(sb);
 		getBreakpointXML(sb);
 		// checkbox fixed
-		if (checkboxFixed) {
-			sb.startTag("checkbox").attr("fixed", true).endTag();
+		if (checkboxFixed || sb.getControlLayout() != null
+				&& sb.getControlLayout().slot(this) != null) {
+			sb.startTag("checkbox").attr("fixed", checkboxFixed).endTag();
 		}
 		getScriptTags(sb);
 		getCaptionXML(sb);
@@ -355,6 +356,9 @@ public class GeoBoolean extends GeoElement implements BooleanValue,
 	 *            true to fix checkbox
 	 */
 	public final void setCheckboxFixed(boolean checkboxFixed) {
+		if (checkboxFixed) {
+			requireControlLayoutDetached();
+		}
 		this.checkboxFixed = checkboxFixed;
 	}
 
@@ -554,6 +558,9 @@ public class GeoBoolean extends GeoElement implements BooleanValue,
 
 	@Override
 	public void setStartPoint(GeoPointND p) throws CircularDefinitionException {
+		if (p != null) {
+			requireControlLayoutDetached();
+		}
 		if (startPoint != null) {
 			startPoint.getLocateableList().unregisterLocateable(this);
 		}
@@ -586,6 +593,9 @@ public class GeoBoolean extends GeoElement implements BooleanValue,
 
 	@Override
 	public void initStartPoint(GeoPointND p, int number) {
+		if (p != null) {
+			requireControlLayoutDetached();
+		}
 		this.startPoint = p;
 	}
 

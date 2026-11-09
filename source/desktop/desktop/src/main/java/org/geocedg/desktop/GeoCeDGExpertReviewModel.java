@@ -215,11 +215,16 @@ record GeoCeDGExpertReviewModel(String summary, String details) {
 		var findings = report.getJSONArray("diagnostics");
 		for (int i = 0; i < findings.length(); i++) {
 			JSONObject finding = findings.getJSONObject(i);
+			Phase phase = phase(finding, "phase");
 			Status state = status(finding);
-			technicalFailure |= failsIntegrity(state);
-			line(diagnostics, phaseName(app, phase(finding, "phase")) + " · "
-					+ statusName(app, state) + " · " + plain(finding.getString("code"))
-					+ " · " + value(finding, "detail"));
+			String code = finding.getString("code");
+			boolean controlLayout = GeoCeDGInspectionArchive.Code.CONTROL_LAYOUT.name().equals(code);
+			technicalFailure |= controlLayout || failsIntegrity(state);
+			String detail = controlLayout
+					? app.layerText(phase == Phase.SOURCE ? "Insert.Reject.ControlLayoutSource"
+							: "Insert.Reject.ControlLayoutReceiver") : value(finding, "detail");
+			line(diagnostics, phaseName(app, phase) + " · " + statusName(app, state)
+					+ " · " + plain(code) + " · " + detail);
 		}
 		if (available && technicalFailure) {
 			throw new JSONException("Offer has blocking diagnostics");

@@ -584,6 +584,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 */
 	private void resetDocumentSession(boolean openRoute) {
 		documentSessionReset = true;
+		closeControlLayout();
 		clearExpertSaveState();
 		if (openRoute) {
 			getExportAreaSession().resetForDocument();
@@ -591,6 +592,18 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		if (statusBar != null) {
 			statusBar.clearPasteNotice();
 			statusBar.clearPointInteractionNotice();
+		}
+	}
+
+	void closeControlLayout() {
+		if (getEuclidianView1() instanceof GeoCeDGEuclidianView view) {
+			view.closeControlLayout();
+		}
+	}
+
+	void openControlLayout() {
+		if (getEuclidianView1() instanceof GeoCeDGEuclidianView view) {
+			view.controlLayoutWorkspace().open();
 		}
 	}
 
@@ -2218,6 +2231,12 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 					GeoCeDGEuclidianController controller =
 							(GeoCeDGEuclidianController) getActiveEuclidianView()
 									.getEuclidianController();
+					if (getActiveEuclidianView() instanceof GeoCeDGEuclidianView view) {
+						var workspace = view.controlLayoutWorkspace();
+						if (workspace != null && workspace.cancelGesture()) {
+							return true;
+						}
+					}
 					controller.cancelReferencePoint();
 					if (controller.isZoomWindowActive()) {
 						controller.cancelZoomWindow();

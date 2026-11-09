@@ -79,8 +79,11 @@ public final class DrawButton extends Drawable {
 		myButton.setFont(app.getFontCanDisplay(myButton.getText(),
 				geoButton.isSerifFont(), geoButton.getFontStyle(), fontSize));
 
-		xLabel = geoButton.getScreenLocX(view);
-		yLabel = geoButton.getScreenLocY(view);
+		var panelLocation = view.getControlLayoutPosition(geoButton);
+		xLabel = panelLocation == null ? geoButton.getScreenLocX(view)
+				: (int) Math.round(panelLocation.x);
+		yLabel = panelLocation == null ? geoButton.getScreenLocY(view)
+				: (int) Math.round(panelLocation.y);
 		myButton.preparePaint(geoButton.getFontSizeMultiplier(), true);
 		labelRectangle.setBounds(xLabel, yLabel, myButton.getWidth(),
 				myButton.getHeight());

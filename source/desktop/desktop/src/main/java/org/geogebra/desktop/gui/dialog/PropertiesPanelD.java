@@ -54,6 +54,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.geocedg.desktop.GeoCeDGControlLayoutEdits;
 import org.geocedg.desktop.GeoCeDGLineThicknessField;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.gui.SetLabels;
@@ -3198,7 +3199,12 @@ public class PropertiesPanelD extends JPanel implements SetLabels, UpdateFonts,
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+			if (e.getSource() instanceof JCheckBox source
+					&& (source == cbGraphicsView ? !source.isSelected() : source.isSelected())
+					&& GeoCeDGControlLayoutEdits.rejectIncompatible(app, model.getGeos())) {
+				updatePanel(model.getGeos());
+				return;
+			}
 			if (e.getSource() == cbGraphicsView) {
 				model.applyToEuclidianView1(cbGraphicsView.isSelected());
 			} else if (e.getSource() == cbGraphicsView2) {

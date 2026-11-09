@@ -124,6 +124,15 @@ public class SymbolicEditorD extends SymbolicEditor {
 	}
 
 	@Override
+	public void updateLayoutBounds(GRectangle bounds) {
+		int height = Math.max(box.getHeight(), (int) bounds.getHeight());
+		box.setBounds((int) bounds.getX(), (int) bounds.getY(),
+				(int) bounds.getWidth(), height);
+		setBaseline(bounds.getY() + bounds.getHeight() / 2);
+		box.revalidate();
+	}
+
+	@Override
 	public void repaintBox(GGraphics2D g) {
 		GColor bgColor = getGeoInputBox().getBackgroundColor() != null
 				? getInputBoxBackgroundColor() : view.getBackgroundCommon();
