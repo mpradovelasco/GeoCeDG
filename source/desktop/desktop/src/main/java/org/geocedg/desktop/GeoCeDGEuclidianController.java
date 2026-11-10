@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.geocedg.common.document.controls.ControlLayout.Panel;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
@@ -86,7 +85,7 @@ public final class GeoCeDGEuclidianController
 	private PanelContext panelContext;
 	private boolean panelContextDragged;
 
-	private record PanelContext(Panel panel, int x, int y) {
+	private record PanelContext(GeoCeDGControlLayoutWorkspace.ContextTarget target, int x, int y) {
 		boolean moved(AbstractEvent event) {
 			return Math.abs(event.getX() - x) > 4 || Math.abs(event.getY() - y) > 4;
 		}
@@ -195,9 +194,10 @@ public final class GeoCeDGEuclidianController
 		var controlLayout = controlLayoutWorkspace();
 		if (controlLayout != null && app.isRightClickEnabled() && app.isRightClick(event)
 				&& controlLayout.eligibleContext()) {
-			Panel panel = controlLayout.panelAt(event.getX(), event.getY());
-			if (panel != null) {
-				panelContext = new PanelContext(panel, event.getX(), event.getY());
+			var target = controlLayout.contextAt(new GPoint(event.getX(), event.getY()),
+					event.getType());
+			if (target != null) {
+				panelContext = new PanelContext(target, event.getX(), event.getY());
 				return;
 			}
 		}
@@ -426,12 +426,13 @@ public final class GeoCeDGEuclidianController
 			PanelContext press = panelContext;
 			panelContext = null;
 			var workspace = controlLayoutWorkspace();
+			var point = new GPoint(event.getX(), event.getY());
 			if (!panelContextDragged && !press.moved(event) && app.isRightClick(event)
 					&& workspace != null && workspace.eligibleContext()
-					&& workspace.panelAt(event.getX(), event.getY()) == press.panel()
+					&& press.target().matches(workspace.contextAt(point, event.getType()))
 					&& getView() instanceof GeoCeDGEuclidianView view && view.getJPanel().isShowing()) {
-				workspace.panelContextMenu(press.panel()).show(view.getJPanel(),
-						event.getX(), event.getY());
+				workspace.panelContextMenu(press.target(), point, event.getType())
+						.show(view.getJPanel(), point.x, point.y);
 			}
 			return;
 		}

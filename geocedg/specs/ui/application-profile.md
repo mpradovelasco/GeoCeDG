@@ -73,6 +73,8 @@ are not emitted into the toolbar.
 GeoCeDG Desktop ofrece **Disposición de controles** como acción
 experimental de Gráficos 1. En el modo Mover, abre el gestor desde
 **Vista → Visibilidad y estilo** o desde el menú contextual de un panel.
+El clic derecho sobre un miembro accesible también ofrece
+**Propiedades…** del control mediante el editor nativo.
 Crea un panel y añade un control elegible. El encabezado mueve el panel
 y el tirador cambia su tamaño. **Apariencia del panel** permite editar el
 nombre, el color y la transparencia. Los paneles nuevos se sitúan delante

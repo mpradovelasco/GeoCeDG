@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.awaitQuiescent;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.must;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
@@ -18,12 +19,16 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.JMenuItem;
@@ -37,14 +42,20 @@ import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.draw.DrawSlider;
 import org.geogebra.common.io.MyXMLio;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoBoolean;
+import org.geogebra.common.kernel.geos.GeoButton;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.main.App;
 import org.geogebra.common.main.App.ExportType;
+import org.geogebra.common.plugin.ScriptType;
 import org.geogebra.desktop.awt.GGraphics2DD;
+import org.geogebra.desktop.gui.app.GeoGebraFrame;
+import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -119,20 +130,140 @@ class GeoCeDGControlLayoutDesktopTest {
 	void contextResolvesTheFrontAccessiblePanelWithoutChangingTheLayout() throws Exception {
 		onEdt(() -> {
 			AppGeoCeDG app = G9U1TestApp.create();
-			GeoCeDGEuclidianView view = view(app);
-			var layout = layout(app);
-			var workspace = view.controlLayoutWorkspace();
-			Panel rear = layout.addPanel(Anchor.FIXED, 40, 40, 150, 120, true);
-			Panel front = layout.addPanel(Anchor.FIXED, 100, 70, 150, 120, true);
-			var before = layout.panels();
-			assertSame(front, workspace.panelAt(130, 110));
-			assertSame(rear, workspace.panelAt(60, 85));
-			assertNull(workspace.panelAt(310, 200));
-			var menu = workspace.panelContextMenu(front);
-			assertEquals(1, menu.getComponentCount());
-			assertTrue(menu.getComponent(0) instanceof JMenuItem);
-			assertEquals(before, layout.panels());
+			try {
+				assertContext(app);
+			} finally {
+				if (app.getGuiManager().showView(App.VIEW_PROPERTIES)) {
+					app.getGuiManager().setShowView(false, App.VIEW_PROPERTIES);
+				}
+				GeoGebraFrame.getInstances().stream()
+						.filter(frame -> frame.getApplication() == app).toList()
+						.forEach(frame -> {
+							if (frame.isDisplayable()) {
+								frame.removeNotify();
+							}
+							frame.dispose();
+						});
+			}
+			return null;
 		});
+	}
+
+	private static void assertContext(AppGeoCeDG app) throws Exception {
+		GeoCeDGEuclidianView view = view(app);
+		var layout = layout(app);
+		var workspace = view.controlLayoutWorkspace();
+		var slider = (GeoNumeric) absolute(app, "s=Slider(0,10,1)");
+		var button = (GeoButton) absolute(app, "b=Button()");
+		var check = checkbox(app);
+		var field = absolute(app, "f=InputBox(s)");
+		var loose = (GeoButton) absolute(app, "loose=Button()");
+		loose.setAbsoluteScreenLoc(450, 120);
+		loose.updateRepaint();
+		button.setClickScript(app.createScript(ScriptType.GGBSCRIPT, "SetValue(s,9)", true));
+		Panel rear = layout.addPanel(Anchor.FIXED, 40, 40, 340, 220, true);
+		Panel front = layout.addPanel(Anchor.FIXED, 270, 105, 105, 70, true);
+		layout.addSlot(rear.id(), slider, 30, 50);
+		layout.addSlot(rear.id(), button, 30, 85);
+		layout.addSlot(rear.id(), check, 30, 125);
+		layout.addSlot(rear.id(), field, 30, 163);
+		workspace.refreshPanel(rear.id());
+		baseline(app);
+		slider.setValue(4);
+		store(app);
+		undo(app).undo();
+		assertTrue(undo(app).redoPossible());
+		int history = undo(app).getHistorySize();
+		rear = layout.panel(rear.id());
+		front = layout.panel(front.id());
+		String before = constructionXML(app);
+
+		var restoredSlider = (GeoNumeric) app.getKernel().lookupLabel("s");
+		var restoredButton = app.getKernel().lookupLabel("b");
+		var restoredCheck = app.getKernel().lookupLabel("q");
+		var restoredField = app.getKernel().lookupLabel("f");
+		var fieldDrawable = (DrawInputBox) view.getDrawableFor(restoredField);
+		sample(view, new GPoint(1, 1));
+		var fieldBounds = fieldDrawable.getInputFieldBounds();
+		var sliderAt = ((DrawSlider) view.getDrawableFor(restoredSlider)).getSliderLocation();
+		var clickPoints = List.of(new GPoint((int) sliderAt.x + 15, (int) sliderAt.y),
+				controlHit(view, restoredButton), controlHit(view, restoredCheck),
+				new GPoint((int) fieldBounds.getX() + 10, (int) fieldBounds.getY() + 10));
+		var controls = List.of(restoredSlider, restoredButton, restoredCheck, restoredField);
+		for (int i = 0; i < controls.size(); i++) {
+			GPoint at = clickPoints.get(i);
+			var context = workspace.contextAt(at, PointerEventType.MOUSE);
+			assertSame(rear, context.panel());
+			assertSame(controls.get(i), context.control());
+			var menu = workspace.panelContextMenu(context, at, PointerEventType.MOUSE);
+			assertEquals(2, menu.getComponentCount());
+			((JMenuItem) menu.getComponent(0)).doClick(0);
+			assertTrue(app.getGuiManager().showView(App.VIEW_PROPERTIES));
+			assertEquals(List.of(controls.get(i)), app.getSelectionManager().getSelectedGeos());
+			((PropertiesViewD) app.getGuiManager().getPropertiesView()).closeDialog();
+			awaitQuiescent(app);
+			assertTrue(undo(app).redoPossible(), "Closing unchanged properties preserves Redo");
+			assertEquals(history, undo(app).getHistorySize());
+		}
+		assertPanelMenu(workspace, front, new GPoint(300, 115));
+		assertPanelMenu(workspace, front, new GPoint(300, 160));
+		assertPanelMenu(workspace, rear, new GPoint(50, 52));
+		assertNull(workspace.contextAt(new GPoint(460, 130), PointerEventType.MOUSE));
+		view.setHits(new GPoint(460, 130), PointerEventType.MOUSE);
+		assertTrue(view.getHits().contains(app.getKernel().lookupLabel("loose")));
+
+		GPoint buttonAt = clickPoints.get(1);
+		var buttonContext = workspace.contextAt(buttonAt, PointerEventType.MOUSE);
+		var stale = workspace.panelContextMenu(buttonContext, buttonAt, PointerEventType.MOUSE);
+		var controller = view.getEuclidianController();
+		controller.textfieldHasFocus(true);
+		try {
+			assertFalse(workspace.eligibleContext());
+			((JMenuItem) stale.getComponent(0)).doClick(0);
+			assertFalse(app.getGuiManager().showView(App.VIEW_PROPERTIES));
+		} finally {
+			controller.textfieldHasFocus(false);
+		}
+
+		var manager = spy(workspace);
+		doNothing().when(manager).openPanel(rear.id());
+		var memberMenu = manager.panelContextMenu(buttonContext, buttonAt, PointerEventType.MOUSE);
+		((JMenuItem) memberMenu.getComponent(1)).doClick(0);
+		verify(manager).openPanel(rear.id());
+
+		var cover = layout.addPanel(Anchor.FIXED, 55, 110, 120, 60, true);
+		assertPanelMenu(workspace, cover, buttonAt);
+		((JMenuItem) stale.getComponent(0)).doClick(0);
+		assertFalse(app.getGuiManager().showView(App.VIEW_PROPERTIES));
+		layout.removePanel(cover.id());
+		assertEquals(before, constructionXML(app));
+		assertTrue(undo(app).redoPossible());
+
+		GPoint sliderAtPoint = clickPoints.get(0);
+		var sliderMenu = workspace.panelContextMenu(
+				workspace.contextAt(sliderAtPoint, PointerEventType.MOUSE),
+				sliderAtPoint, PointerEventType.MOUSE);
+		((JMenuItem) sliderMenu.getComponent(0)).doClick(0);
+		restoredSlider.setValue(7);
+		((PropertiesViewD) app.getGuiManager().getPropertiesView()).closeDialog();
+		awaitQuiescent(app);
+		assertEquals(history + 1, undo(app).getHistorySize());
+		assertFalse(undo(app).redoPossible());
+	}
+
+	private static void assertPanelMenu(GeoCeDGControlLayoutWorkspace workspace, Panel expected,
+			GPoint at) {
+		var context = workspace.contextAt(at, PointerEventType.MOUSE);
+		assertSame(expected, context.panel());
+		assertNull(context.control());
+		assertEquals(1, workspace.panelContextMenu(context, at, PointerEventType.MOUSE)
+				.getComponentCount());
+	}
+
+	private static String constructionXML(AppGeoCeDG app) {
+		var xml = new XMLStringBuilder();
+		app.getKernel().getConstruction().getConstructionXML(xml, true);
+		return xml.toString();
 	}
 
 	@Test

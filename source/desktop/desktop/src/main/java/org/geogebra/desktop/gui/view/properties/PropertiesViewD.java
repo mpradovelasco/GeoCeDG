@@ -78,6 +78,7 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 	private OptionsObjectD objectPanel;
 
 	private Object selectedOptionPanel = null;
+	private String contextualOpeningUndoXml;
 
 	// GUI elements
 	private JPanel mainPanel;
@@ -197,7 +198,9 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 	 *            visible
 	 */
 	public void setSelectedOptionPanelVisible(boolean isVisible) {
-
+		if (!isVisible) {
+			contextualOpeningUndoXml = null;
+		}
 		if (selectedOptionPanel != null) {
 			((OptionPanelD) selectedOptionPanel).setSelected(isVisible);
 		}
@@ -738,13 +741,26 @@ public class PropertiesViewD extends PropertiesView implements SetLabels {
 	}
 
 	/**
+	 * A contextual inspection may close a floating Properties view without
+	 * committing an edit. Capture after opening, when docking has settled.
+	 */
+	public void preserveHistoryOnUnchangedClose() {
+		contextualOpeningUndoXml = currentUndoXml();
+	}
+
+	private String currentUndoXml() {
+		return app.getKernel().getConstruction().getCurrentUndoXML(true).toString();
+	}
+
+	/**
 	 * Hide the view
 	 */
 	public void closeDialog() {
 		wrappedPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		if (isTextEditorActive()) {
 			discardTextModifications();
-		} else {
+		} else if (contextualOpeningUndoXml == null
+				|| !contextualOpeningUndoXml.equals(currentUndoXml())) {
 			app.storeUndoInfo();
 		}
 		wrappedPanel.setCursor(Cursor.getDefaultCursor());

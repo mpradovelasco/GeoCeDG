@@ -28,7 +28,18 @@ el puntero, incluso con la transparencia máxima. La geometría mantiene
 sus filtros nativos y se prioriza el control accesible en modo Mover.
 El clic derecho en un panel accesible ofrece abrir el gestor existente
 con ese panel seleccionado, fuera de capturas de herramienta, diálogos
-y edición pendiente. La navegación del gestor no crea entradas de Undo.
+y edición pendiente. R2 añade «Propiedades…» cuando los hits nativos
+incluyen un miembro del panel delantero. Si coinciden varios miembros,
+se elige el último según su orden de dibujo. El encabezado y el tirador
+ofrecen el gestor. La pulsación y la suelta deben resolver las mismas
+instancias de panel y control. La acción de propiedades vuelve a
+comprobar el objetivo y delega en la vista nativa de objetos. Abrir o
+descartar estos menús y vistas no crea entradas de Undo.
+Al cerrar la vista de propiedades flotante abierta por R2, se omite
+su checkpoint de cierre si la captura de Undo sigue siendo idéntica a
+la de apertura. Una edición posterior sigue el flujo nativo.
+Al cargar la opacidad del deslizador agrupado, el editor Desktop
+actualiza el selector sin aplicar al objeto el redondeo del porcentaje.
 El widget Swing del campo requiere que su rectángulo esté libre de
 paneles superiores. Con cobertura parcial se dibuja el campo estático
 y el editor no se abre. Si una transformación cubre el editor activo,
@@ -75,6 +86,10 @@ SHA. El impacto de verificación se limita a inventario y selección CU8.
 El launcher, el JDK, Gradle y los prerrequisitos de estación conservan
 su configuración. La matriz de cobertura registra la ampliación de la
 acción existente. La guía de revisión se actualiza en el expediente.
+R2 amplía el caso de contexto existente, conserva su identidad en el
+inventario y usa los mismos perfiles. El cambio es Desktop y no
+requiere cambios en bootstrap. La guía de aplicación documenta el
+acceso a Propiedades.
 
 ```text
 VERIFICATION_CLASS = INTEGRATED_PHASE

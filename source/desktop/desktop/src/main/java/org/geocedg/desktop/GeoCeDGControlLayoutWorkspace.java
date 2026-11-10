@@ -53,6 +53,7 @@ import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.draw.DrawSlider;
 import org.geogebra.common.euclidian.event.AbstractEvent;
+import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoButton;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -60,6 +61,7 @@ import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.main.App;
 import org.geogebra.common.plugin.EventType;
+import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
 
 /** Graphics 1 manager and uncommitted gesture state for CU8 presentation. */
 final class GeoCeDGControlLayoutWorkspace {
@@ -90,6 +92,12 @@ final class GeoCeDGControlLayoutWorkspace {
 
 	private record Gesture(ControlLayout layout, Panel panel, Slot slot, Transform transform,
 			int x, int y, boolean resize) { }
+
+	record ContextTarget(Panel panel, GeoElement control) {
+		boolean matches(ContextTarget other) {
+			return other != null && panel == other.panel && control == other.control;
+		}
+	}
 
 	GeoCeDGControlLayoutWorkspace(AppGeoCeDG app, GeoCeDGEuclidianView view) {
 		this.app = app;
@@ -412,8 +420,43 @@ final class GeoCeDGControlLayoutWorkspace {
 		}
 	}
 
-	JPopupMenu panelContextMenu(Panel panel) {
+	ContextTarget contextAt(GPoint point, PointerEventType type) {
+		Panel panel = panelAt(point.x, point.y);
+		if (panel == null) {
+			return null;
+		}
+		Rectangle bounds = bounds(displayedPanel(panel));
+		if (header(bounds).contains(point.x, point.y)
+				|| (dialog != null && handle(bounds).contains(point.x, point.y))) {
+			return new ContextTarget(panel, null);
+		}
+		view.setHits(point, type);
+		GeoElement control = view.getHits().stream()
+				.filter(geo -> isMemberOf(geo, panel) && shown(geo))
+				.max(MEMBER_ORDER).orElse(null);
+		return new ContextTarget(panel, control);
+	}
+
+	JPopupMenu panelContextMenu(ContextTarget context, GPoint point, PointerEventType type) {
+		Panel panel = context.panel();
+		GeoElement control = context.control();
 		JPopupMenu menu = new JPopupMenu();
+		if (control != null && control.hasProperties() && app.letShowPropertiesDialog()) {
+			JMenuItem properties = new JMenuItem(app.getLocalization().getMenu("Properties") + " ...");
+			properties.addActionListener(event -> {
+				if (eligibleContext() && context.matches(contextAt(point, type))) {
+					var selection = new ArrayList<>(List.of(control));
+					boolean opensProperties = !app.getGuiManager().showView(App.VIEW_PROPERTIES);
+					app.getSelectionManager().setSelectedGeos(selection, true);
+					app.getDialogManager().showPropertiesDialog(selection);
+					if (opensProperties && app.getGuiManager().showView(App.VIEW_PROPERTIES)) {
+						((PropertiesViewD) app.getGuiManager().getPropertiesView())
+								.preserveHistoryOnUnchangedClose();
+					}
+				}
+			});
+			menu.add(properties);
+		}
 		JMenuItem item = new JMenuItem(text("ControlLayout.OpenForPanel"));
 		item.addActionListener(event -> {
 			if (layout().panel(panel.id()) == panel && eligibleContext()) {
