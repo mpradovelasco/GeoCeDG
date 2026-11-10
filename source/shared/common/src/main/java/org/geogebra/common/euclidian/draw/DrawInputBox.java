@@ -16,6 +16,7 @@
 
 package org.geogebra.common.euclidian.draw;
 
+import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.awt.GDimension;
 import org.geogebra.common.awt.GFont;
@@ -284,15 +285,13 @@ public class DrawInputBox extends CanvasDrawable {
 
 		view.getViewTextField().revalidateBox();
 
-		updateLabelSize();
-		if (geoInputBox.needsUpdatedBoundingBox()) {
+		boolean inControlLayout = updateLabelSize();
+		if (!inControlLayout && geoInputBox.needsUpdatedBoundingBox()) {
 			recomputeSize();
 		}
 		view.getViewTextField().setBoxBounds(labelRectangle);
-		if (forView && editing && view.getSymbolicEditor() != null
-				&& view.getSymbolicEditor().getDrawInputBox() == this
-				&& view.getControlLayoutPosition(geo) != null) {
-			inputBoxBounds.update(view, getLabelTop(), textFont, labelDesc);
+		if (forView && inControlLayout && editing && view.getSymbolicEditor() != null
+				&& view.getSymbolicEditor().getDrawInputBox() == this) {
 			view.getSymbolicEditor().updateLayoutBounds(inputBoxBounds.getBounds());
 		}
 	}
@@ -311,7 +310,7 @@ public class DrawInputBox extends CanvasDrawable {
 		inputBoxBounds.setRenderer(textRenderer);
 	}
 
-	private void updateLabelSize() {
+	private boolean updateLabelSize() {
 		var panelLocation = view.getControlLayoutPosition(geoInputBox);
 		xLabel = panelLocation == null ? geoInputBox.getScreenLocX(view)
 				: (int) Math.round(panelLocation.x);
@@ -322,6 +321,19 @@ public class DrawInputBox extends CanvasDrawable {
 		}
 
 		labelRectangle.setBounds(xLabel, yLabel, getPreferredWidth(), getPreferredHeight());
+		if (panelLocation == null) {
+			return false;
+		}
+		// The panel background and hits use these bounds before the field is painted.
+		String text = geoInputBox.getText();
+		if (text != null) {
+			setLabelFont(text);
+		}
+		if (recomputeSize() && isLatexString(labelDesc)) {
+			labelDimension = AwtFactory.getPrototype().newDimension(labelSize.x, labelSize.y);
+		}
+		inputBoxBounds.update(view, getLabelTop(), textFont, labelDesc);
+		return true;
 	}
 
 	private void updateLabel() {
@@ -449,7 +461,6 @@ public class DrawInputBox extends CanvasDrawable {
 
 	/**
 	 * Returns the bounds of the input box.
-	 * This method is public for testing.
 	 *
 	 * @return The bounds of the input box.
 	 */

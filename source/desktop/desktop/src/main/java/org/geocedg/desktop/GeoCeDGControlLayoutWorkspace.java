@@ -295,6 +295,9 @@ final class GeoCeDGControlLayoutWorkspace {
 			if (shown(geo) && view.getDrawableFor(geo) instanceof Drawable drawable) {
 				drawable.updateIfNeeded();
 				GRectangle child = drawable.getBounds();
+				if (drawable instanceof DrawInputBox box) {
+					child = child.union(box.getInputFieldBounds());
+				}
 				if (child != null && (child.getWidth() > 0 || child.getHeight() > 0)) {
 					top = Math.min(top, (int) child.getY() - MARGIN - headerHeight);
 					rect.add(new Rectangle((int) child.getX() - MARGIN,
@@ -375,6 +378,9 @@ final class GeoCeDGControlLayoutWorkspace {
 			return false;
 		}
 		GRectangle field = box.getBounds();
+		if (liveSlot(geo) != null) {
+			field = field.union(box.getInputFieldBounds());
+		}
 		if (field == null) {
 			return false;
 		}

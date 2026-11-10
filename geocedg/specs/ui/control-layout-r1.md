@@ -34,6 +34,9 @@ paneles superiores. Con cobertura parcial se dibuja el campo estático
 y el editor no se abre. Si una transformación cubre el editor activo,
 este sale mediante el flujo nativo. Exportación y otras vistas
 conservan su pintura nativa.
+Al reconstruir el historial o regresar de la miniatura de guardado,
+la actualización del drawable mide la etiqueta y el campo en su
+origen de presentación antes de componer el panel y resolver sus hits.
 
 ## Apariencia y persistencia
 

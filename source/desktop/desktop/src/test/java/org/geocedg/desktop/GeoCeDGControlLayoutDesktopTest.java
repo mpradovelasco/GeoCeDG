@@ -5,11 +5,16 @@
 
 package org.geocedg.desktop;
 
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.baseline;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.must;
 import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.onEdt;
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.store;
+import static org.geocedg.desktop.PreG9BR6PlusF3Fixtures.undo;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.zip.ZipInputStream;
 
 import javax.swing.JMenuItem;
 
@@ -28,9 +36,11 @@ import org.geogebra.common.awt.GPoint2D;
 import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.euclidian.draw.DrawInputBox;
 import org.geogebra.common.euclidian.draw.DrawSlider;
+import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App.ExportType;
@@ -243,7 +253,58 @@ class GeoCeDGControlLayoutDesktopTest {
 			assertTrue(q.getBoolean());
 			assertEquals(3, q.getLayer());
 			assertEquals(87, q.getAbsoluteScreenLocX());
+			assertFieldEnclosureAfterUndoAndThumbnail();
+			return null;
 		});
+	}
+
+	private static void assertFieldEnclosureAfterUndoAndThumbnail() throws Exception {
+		AppGeoCeDG app = G9U1TestApp.create();
+		GeoCeDGEuclidianView view = view(app);
+		must(app, "n=7");
+		GeoInputBox field = (GeoInputBox) absolute(app, "f=InputBox(n)");
+		field.setLabelVisible(true);
+		var layout = layout(app);
+		Panel panel = layout.addPanel(Anchor.FIXED, 330, 145, 60, 80, true);
+		var slot = layout.addSlot(panel.id(), field, 18, 43);
+		view.controlLayoutWorkspace().refreshPanel(panel.id());
+		drawnFieldX(view, field);
+		var drawable = (DrawInputBox) view.getDrawableFor(field);
+		var widget = drawable.getInputFieldBounds();
+		int right = (int) Math.ceil(Math.max(widget.getMaxX(), drawable.getBounds().getMaxX()));
+		var fill = new GPoint(right + 3, (int) (widget.getY() + widget.getHeight() / 2));
+		GPoint2D fieldOrigin = view.getControlLayoutPosition(field);
+		assertTrue(fill.x > fieldOrigin.x - slot.dx() + panel.width());
+		Color expectedFill = sample(view, fill);
+		assertComposite(Color.WHITE, panel, expectedFill);
+		baseline(app);
+		layout.updatePanel(panel.withStyle("Field", 0x265a90, 70));
+		store(app);
+		undo(app).undo();
+
+		GeoInputBox restored = (GeoInputBox) app.getKernel().lookupLabel("f");
+		assertNotNull(restored);
+		assertNotSame(field, restored);
+		Panel restoredPanel = layout.panel(panel.id());
+		assertEquals(panel, restoredPanel);
+		Color firstPaint = sample(view, fill);
+		assertSame(restoredPanel, view.controlLayoutWorkspace().panelAt(fill.x, fill.y));
+
+		var archive = new ByteArrayOutputStream();
+		app.getXMLio().writeGeoGebraFile(archive, true);
+		try (var entries = new ZipInputStream(new ByteArrayInputStream(archive.toByteArray()))) {
+			boolean thumbnail = false;
+			for (var entry = entries.getNextEntry(); entry != null; entry = entries.getNextEntry()) {
+				thumbnail |= MyXMLio.XML_FILE_THUMBNAIL.equals(entry.getName());
+			}
+			assertTrue(thumbnail, "the native writer rendered a thumbnail");
+		}
+		assertFalse(app.isExporting());
+		Color paintAfterThumbnail = sample(view, fill);
+		assertAll(() -> assertEquals(expectedFill, firstPaint, "first paint after Undo"),
+				() -> assertEquals(expectedFill, paintAfterThumbnail, "first paint after thumbnail"));
+		assertEquals(87, restored.getAbsoluteScreenLocX());
+		assertTrue(undo(app).redoPossible());
 	}
 
 	@Test
