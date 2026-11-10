@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu8_i_closeout_record.md",
+  "authorApprovalDate": "2026-11-10",
+  "selfApproved": false,
+  "authority": {
+    "source": "human author in the current work session",
+    "instruction": "GeoCeDG — PRE-G9B-CU8-I / Cierre autoral y publicación",
+    "directPublicationAuthorized": true
+  },
+  "identities": {
+    "publishedBaseline": {
+      "remote": "https://github.com/mpradovelasco/GeoCeDG",
+      "ref": "refs/heads/main",
+      "commit": "876a67362939cb5208a9562e396bbd3add7dfc04",
+      "tree": "211a518644a51e6507a042c6320bdf13b9d8c349"
+    },
+    "technicalCandidate": {
+      "branch": "codex/pre-g9b-cu8-i-r2",
+      "branchNamedInInstruction": "codex/pre-g9b-cu8-i-r1",
+      "commit": "5b4f7f712c7a4fa32881ad58da3c46ff9808f92e",
+      "tree": "0c693aa6b9f6b83e16cf53efd0e7c736cb5155a8"
+    },
+    "checkpoints": [
+      {
+        "phase": "CU8-I",
+        "commit": "81b6fc0661a61c7fa7a853ab17584d6a55b39a19",
+        "tree": "b5d4028fa7aa32b95f175e7ac7a2467921cdb289"
+      },
+      {
+        "phase": "CU8-I-R1",
+        "commit": "075407a3142e1afe3cffebb3327a1d8aca9beddc",
+        "tree": "f60e6a0a1c72fbcc5418704296b950132349942c"
+      }
+    ],
+    "documentaryCloseout": {
+      "branch": "codex/pre-g9b-cu8-i-closeout",
+      "parent": "5b4f7f712c7a4fa32881ad58da3c46ff9808f92e",
+      "commitIdentity": "commit containing this record"
+    }
+  },
+  "phase": {
+    "id": "PRE-G9B-CU8-I",
+    "status": "PASS — AUTHOR APPROVED",
+    "includes": [
+      "CU8-I",
+      "CU8-I-R1",
+      "CU8-I-R2"
+    ],
+    "authorApproved": true,
+    "passClaimed": true
+  },
+  "authorSmoke": {
+    "status": "PASS — AUTHOR REPORTED",
+    "source": "human closeout instruction",
+    "candidateCommit": "5b4f7f712c7a4fa32881ad58da3c46ff9808f92e"
+  },
+  "normativeAdoption": {
+    "contract": "geocedg/specs/ui/control-layout-v1.md",
+    "presentation": "geocedg/specs/ui/control-layout-r1.md",
+    "platform": "Desktop",
+    "view": "Graphics 1",
+    "controls": [
+      "slider",
+      "button",
+      "checkbox",
+      "input box"
+    ],
+    "anchors": [
+      "fixed",
+      "world"
+    ],
+    "legacyLosses": [
+      "control layout including appearance and stacking order",
+      "position unlock for affected checkboxes",
+      "Name and Value mode for sliders with a definition"
+    ],
+    "insertion": {
+      "sourcesWithPanels": "REJECTED",
+      "receiversWithPanels": "CERTIFIED_ROUTES_ONLY",
+      "passiveExpertReceiver": "REJECTED"
+    },
+    "outOfScope": [
+      "Graphics 2",
+      "nested panels",
+      "panel transfer between documents"
+    ],
+    "nonblockingDebt": "OBS-CU6-M07-GV1-SLIDER-PICK"
+  },
+  "verificationTraceability": {
+    "exactTechnicalCandidate": [
+      {
+        "profile": "STATIC",
+        "report": "artifacts/pre-g9b-cu8-i-r1-worktree/artifacts/r1-acceptance-5b4f7f71-r2/static/verification-result.json",
+        "runId": "verification-8c3258fd351d43a1b40146c7e5ae2619",
+        "resultHash": "10049df6e190a821484d41ac10891731b92a295d41faf4ee7f248ef2ddc6fae8",
+        "reportFileSha256": "03c63dcc878730002f4e3042bcd79c87ba07df06d0c56393ea8a1da3d3b5e57e",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 3
+      },
+      {
+        "profile": "PHASE PRE-G9B-CU8-I",
+        "report": "artifacts/pre-g9b-cu8-i-r1-worktree/artifacts/r1-acceptance-5b4f7f71-r2/phase/verification-result.json",
+        "runId": "verification-90f0bcec514d42deb3ba5120807340df",
+        "resultHash": "002e1ac041aff4b4e8943aabb70e8c12dffe03b049bdfe3b5b180b2c36ee1e95",
+        "reportFileSha256": "78aa48f73ae8dd827bf0c8c0eb134a252f94516644726fe9dbb3eb9799498c3e",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 6
+      },
+      {
+        "profile": "INTEGRATION",
+        "report": "artifacts/pre-g9b-cu8-i-r1-worktree/artifacts/r1-acceptance-5b4f7f71-r2-retry/integration/verification-result.json",
+        "runId": "verification-3af39acf0b194950b11d98d3c6fa0aba",
+        "resultHash": "816637dd731d91a682a3f447ec2b69d4f4ce2c88dd6fd10031cef026766ee511",
+        "reportFileSha256": "1c5017d0ad766f926ca31a7e939cb75678ffea199cc200b63032144b32e1b8ea",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 19
+      }
+    ],
+    "focal": {
+      "r1Desktop": "artifacts/pre-g9b-cu8-i-r1-worktree/artifacts/r1-focal-02/desktop/evidence.json",
+      "r1Shared": "artifacts/pre-g9b-cu8-i-r1-worktree/artifacts/r1-focal-01/shared/evidence.json",
+      "r1FieldRecovery": "artifacts/agent/pre-g9b-cu8-i-r1/field-bounds-pixel-patch/java.log",
+      "r2": "artifacts/pre-g9b-cu8-i-r1-worktree/artifacts/r2-focal-06/evidence.json",
+      "r2Cases": 12
+    },
+    "agentSmoke": {
+      "method": "Computer Use on GeoCeDG Desktop",
+      "r1": "artifacts/agent/pre-g9b-cu8-i-r1/INFORME.md",
+      "r2": "artifacts/agent/pre-g9b-cu8-i-r2/INFORME.md",
+      "r2LaunchIdentity": "artifacts/agent/pre-g9b-cu8-i-r1/r2-smoke-01/launch-inputs.json",
+      "r2ReopenIdentity": "artifacts/agent/pre-g9b-cu8-i-r1/r2-reopen-01/launch-inputs.json",
+      "r2ArchiveComparison": "artifacts/agent/pre-g9b-cu8-i-r2/smoke-archive-comparison.json"
+    },
+    "interruption": {
+      "classification": "OPERATIONAL_INTERRUPTION_WITHOUT_VERDICT",
+      "productCausality": "UNDEMONSTRATED",
+      "evidence": "artifacts/agent/pre-g9b-cu8-i-r2/interruption-evidence/hashes.json",
+      "sha256": "e9d38b32ae32655cbcceb0445f127a8d9321357140fd6f922b025f23fd721790"
+    }
+  },
+  "publication": {
+    "mode": "AUTHORIZED_DIRECT_FAST_FORWARD",
+    "ref": "refs/heads/main",
+    "closeoutVerification": "STATIC",
+    "evidence": "artifacts/agent/pre-g9b-cu8-i-closeout/publication.json"
+  },
+  "handoff": {
+    "phase": "PRE-G9B-CU9",
+    "authorization": "PENDING",
+    "commitments": [
+      "B11",
+      "B12",
+      "H07"
+    ],
+    "matrix": "geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json",
+    "artifact": "artifacts/agent/pre-g9b-cu8-i-closeout/CU9-TRASPASO.md",
+    "finalReservedFor": "PRE-G9B-CU10"
+  }
+}

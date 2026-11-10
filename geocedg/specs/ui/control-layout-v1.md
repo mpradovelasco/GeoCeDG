@@ -1,11 +1,18 @@
 # CU8-I · Disposición de controles v1
 
-Estado experimental en GeoCeDG Desktop, Gráficos 1. El diseño adoptado
-define la elegibilidad, las operaciones y sus invariantes.
-[CU8-D, §2 y §5](../../../docs/architecture/pre_g9b_cu8_d_control_containers_candidate.md)
+Contrato adoptado por el autor para GeoCeDG Desktop, Gráficos 1, en
+el cierre conjunto de CU8-I, R1 y R2 del 2026-11-10. La función conserva
+su clasificación experimental en el perfil. El diseño adoptado define
+la elegibilidad, las operaciones y sus invariantes.
+[Cierre autoral](../../../docs/validation/pre_g9b_cu8_i_closeout_record.md) ·
+[CU8-D, §2 y §5](../../../docs/architecture/pre_g9b_cu8_d_control_containers_candidate.md).
 
-La composición, la edición de apariencia y la extensión opcional de
-archivo se especifican en [CU8-I-R1](control-layout-r1.md).
+La composición, el desacoplamiento, la apariencia, la extensión de
+archivo y el contexto del miembro accesible se rigen por
+[CU8-I-R1 y R2](control-layout-r1.md). El alcance admite paneles fijos
+o vinculados al lienzo y las cuatro familias de control indicadas
+abajo. Gráficos 2, paneles anidados y transferencia de paneles entre
+documentos quedan fuera del perímetro adoptado.
 
 ## Puerta A
 
@@ -21,7 +28,9 @@ pasiva experta.
 
 El autor autorizó expresamente el 2026-11-09 la degradación documentada
 con lectores anteriores y la política acotada de inserción de este
-contrato. La autorización cubre únicamente la disposición. Los
+contrato. La disposición incluye la apariencia y el orden de R1.
+Las únicas excepciones adicionales para lectores anteriores son las
+dos propiedades nativas indicadas abajo. Los
 lectores anteriores carecen de aviso propio. La distribución nueva
 advierte que abrir y volver a guardar con una versión anterior puede
 eliminar irreversiblemente la disposición y aconseja conservar una
@@ -43,12 +52,15 @@ Al reabrir, el modo puede pasar a Valor según el etiquetado efectivo.
 El mismo comportamiento se comprobó sin paneles. GeoCeDG anterior
 conserva la selección explícita con el alias `6`. Classic anterior
 puede omitir también ese alias. El aviso de la distribución nueva
-informa de los efectos verificados. La aceptación del cambio de
-rótulo requiere una decisión autoral específica separada.
+informa de los efectos verificados. El autor autorizó por separado
+solo este cambio de rótulo en lectores anteriores y lo ratificó en
+el cierre. La distribución nueva conserva el modo efectivo en el
+perímetro CU8. Ambas excepciones históricas preservan los valores,
+las dependencias, la geometría y la identidad documental.
 
 ## Formato
 
-Dos atributos ASCII sin namespace. El registro pertenece a la apertura
+El formato base consta de dos atributos ASCII sin namespace. El registro pertenece a la apertura
 de la construcción principal. Cada marca de ranura pertenece a la
 apertura del bloque `element` de la instancia que la ocupa.
 
@@ -79,8 +91,18 @@ family = S | B | C | I
   casilla independiente absoluta e `I` campo de entrada absoluto.
   Se aplica el predicado de posición, vista y dependencia de CU8-D.
 - Se admiten simultáneamente 32 paneles, 256 ranuras en total y
-  65.536 bytes ASCII de valores de ambos atributos. Con cero paneles
-  se omiten las dos marcas y se conserva la escritura histórica.
+  65.536 bytes ASCII acumulados en el registro, las marcas de ranura
+  y el atributo opcional de apariencia. Con cero paneles se omiten
+  las marcas CU8 y se conserva la escritura histórica.
+
+El atributo opcional `geocedgControlAppearance` de R1, en la misma
+apertura que el registro, codifica nombre Unicode, RGB, opacidad y
+orden por identificador de panel. El color predeterminado es
+`#E1EDF7`, la opacidad predeterminada es 65 % y el rango admisible
+es de 25 % a 80 %. El nombre vacío toma el rótulo localizado «Panel».
+La ausencia del atributo conserva el orden canónico v1 y la
+apariencia predeterminada. Su gramática y el rechazo seguro de
+datos inválidos se especifican en [Apariencia y persistencia](control-layout-r1.md#apariencia-y-persistencia).
 
 El lector valida la pertenencia completa antes de publicarla. Un
 bloque solo puede reclamar su propia instancia, que el lector nativo
@@ -113,6 +135,11 @@ la vía certifica pertenencia y recuperación, incluido Redo pendiente.
 La envoltura pasiva experta vigente rechaza ese receptor. La copia
 ordinaria de controles genera controles sueltos. La duplicación de
 un panel vacío genera otro ID local.
+
+`OBS-CU6-M07-GV1-SLIDER-PICK` sigue abierta y no bloqueante. La
+captura M07 conserva su política de foco, selección desde Álgebra
+y cancelación. El acceso contextual de CU8 respeta la captura activa.
+[Limitación CU6](../../../docs/validation/pre_g9b_cu5_cu6_closeout_record.md#obs-cu6-m07-gv1-slider-pick).
 
 ## Impacto de verificación
 
